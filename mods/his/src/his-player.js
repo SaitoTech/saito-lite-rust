@@ -951,7 +951,7 @@ if (limit === "build") {
   }
 
   playerSelectSpaceOrNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
-    return this.playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback, cancel_fun, board_clickable);
+    return this.playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback, cancel_func, board_clickable);
   }
 
   playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
@@ -1129,6 +1129,9 @@ if (limit === "build") {
 
     this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
     this.attachCardboxEvents(function(card) {
+
+      this.updateStatus(`Playing ${this.diplomatic_deck[card].name}`, this.game.deck[1].hand);
+
       his_self.addMove("diplomacy_card_event\t"+faction+"\t"+card);
       his_self.addMove("discard_diplomacy_card\t"+faction+"\t"+card);
       his_self.endTurn();
@@ -1329,7 +1332,6 @@ if (limit === "build") {
 console.log("1");
 return;
   }
-
 
   playerPlayPapacyDiplomacyPhaseSpecialTurn(enemies=[]) {
 
@@ -3822,5 +3824,21 @@ return;
     );
   }
 
+  playerAddUnrest(his_self, faction="", zone="", religion="") {
+
+    his_self.playerSelectSpaceWithFilter(
+      "Select Space to add Unrest" ,
+      function(space) {
+        if (space.language === zone && space.religion === religion) { return 1; }
+      },
+      function(spacekey) {
+        his_self.addMove(`unrest\t${spacekey}`);
+        his_self.endTurn();
+      },
+      null,
+      true 
+    );
+
+  }
 
 

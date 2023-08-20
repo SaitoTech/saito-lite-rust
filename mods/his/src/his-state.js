@@ -155,7 +155,8 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
-      if (space.units[faction].type === type) {
+      if (space.units[faction][i].type === type) {
+        this.updateLog(this.returnFactionName(faction) + " removes " + unit_type + " in " + space.name);
 	space.units[faction].splice(i, 1);
 	return;
       }
@@ -517,6 +518,7 @@
 
     state.spring_deploy_across_passes = [];
 
+    state.events.maurice_of_saxony = "";
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
     state.events.papacy_may_found_jesuit_universities = 0;

@@ -110,7 +110,6 @@ console.log("MOVE: " + mv[0]);
 	      if (faction == "ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the Ottomans"); }
 	      if (faction == "france") { this.game.queue.push("ACKNOWLEDGE\tYou are the French"); }
 	      if (faction == "england") { this.game.queue.push("ACKNOWLEDGE\tYou are the English"); }
-	      this.welcome_overlay.pullHudOverOverlay(); 
 	    }
 	  }
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
@@ -230,7 +229,7 @@ console.log("MOVE: " + mv[0]);
 	      this.removeUnit(faction, spacekey, unit_type);
 	    }
 	    if (land_or_sea === "sea") {
-	      this.removeUnit(faction, unit_type, spacekey);
+	      this.removeUnit(faction, spacekey, unit_type);
 	    }
 	  }
 
@@ -519,6 +518,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let faction = mv[1];
 	  let card = mv[2];
+
+          this.updateLog(this.diplomatic_deck[card].name + " occurs.");
 
 	  this.game.queue.splice(qe, 1);
 
@@ -4853,7 +4854,9 @@ console.log("purging naval units and capturing leader");
 
 	  let faction = mv[1];
 	  let debater = mv[2];
-	  this.commitDebater(faction, debater);
+	  let activate_it = 0;
+	  if (parseInt(mv[2]) > 0) { activate_it = parseInt(mv[2]); }
+	  this.commitDebater(faction, debater, activate_it);
 
 	  return 1;
 
@@ -5395,8 +5398,13 @@ if (this.game.state.round >= 1) {
 	  //
 	  // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase
 	  //
-          this.game.queue.push("papacy_diplomacy_phase_special_turn");
-          this.game.queue.push("counter_or_acknowledge\tPapacy papacy_diplomacy_phase_special_turn");
+          let is_papacy_at_war = false;
+          let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
+          for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); is_papacy_at_war = true; } }
+          if (is_papacy_at_war == true) {
+            this.game.queue.push("papacy_diplomacy_phase_special_turn");
+            this.game.queue.push("counter_or_acknowledge\tPapacy Special Diplomacy Phase");
+          }
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -6088,6 +6096,26 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let spacekey = mv[1];
 	  this.game.spaces[spaceley].unrest = 1;
 	  this.displaySpace(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+ 	if (mv[0] === "player_add_unrest") {
+
+	  let faction = mv[1];
+	  let zone = mv[2];
+	  let religion = mv[3];
+	  let player = this.returnPlayerOfFaction(faction);
+
+
+	  if (this.game.player == player) {
+	    this.playerAddUnrest(this, faction, zone, religion);
+	  } else {
+	    this.updateStatus(faction + " adding unrest");
+	  }
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;

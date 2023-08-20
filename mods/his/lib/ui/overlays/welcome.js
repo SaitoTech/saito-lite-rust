@@ -72,7 +72,17 @@ class WelcomeOverlay {
 
     }
 
-    attachEvents() {}
+    attachEvents() {
+
+      let his_self = this.mod;
+
+      $('.welcome').on('click', function() {
+	if (document.querySelector("#confirmit")) {
+	  $('#confirmit').click();
+        }
+      });
+
+    }
 
 }
 
