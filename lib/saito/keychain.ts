@@ -280,7 +280,7 @@ class Keychain {
     }
   }
 
-  returnKey(data = null) {
+  returnKey(data = null, force_local_keychain = false) {
 
     //
     // data might be a publicKey, permit flexibility
@@ -312,10 +312,13 @@ class Keychain {
 
     let return_key = (key_idx != -1) ? this.keys[key_idx] : null;
 
+    if (force_local_keychain) {
+      return return_key;
+    }
+
     //
     // no match - maybe we have a module that has cached this information?
     //
-    
     this.app.modules.getRespondTos("saito-return-key").forEach(modResponse => {
       let key = modResponse.returnKey(data);
       if (key) { 
