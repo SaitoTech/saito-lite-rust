@@ -497,7 +497,8 @@ class Mixin extends ModTemplate {
 
     try {
       this.request(appId, sessionId, privateKey, method, uri).then((res) => {
-        let d = res.data.data;
+        let d = res.data;
+
         for (let i = 0; i < this.mods.length; i++) {
           if (this.mods[i].asset_id === asset_id) {
             let initial_balance = this.mods[i].balance;
@@ -596,7 +597,8 @@ class Mixin extends ModTemplate {
       return;
     }
 
-    let d = res;
+    let d = res.data;
+
     mixin_self.mixin.session_id = d.data.session_id;
     mixin_self.mixin.user_id = d.data.user_id;
     mixin_self.mixin.full_name = d.data.full_name;
@@ -643,15 +645,18 @@ class Mixin extends ModTemplate {
   }
 
   async createAccount(callback = null) {
-    if (this.app.network.peers.length == 0) {
+    
+    let peers = await this.app.network.getPeers();
+
+    if (peers.length == 0) {
       return;
     }
 
-    let mixin_peer = this.app.network.peers[0];
-    for (let i = 0; i < this.app.network.peers.length; i++) {
-      if (this.app.network.peers[i].hasService("mixin")) {
-        mixin_peer = this.app.network.peers[i];
-        i = this.app.network.peers.length + 1;
+    let mixin_peer = peers[0];
+    for (let i = 0; i < peers.length; i++) {
+      if (peers[i].hasService("mixin")) {
+        mixin_peer = peers[i];
+        i = peers.length + 1;
       }
     }
 
