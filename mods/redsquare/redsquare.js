@@ -1454,9 +1454,213 @@ class RedSquare extends ModTemplate {
     return;
   }
 
-  /////////////////////////////////////////
-  // caching top-10 tweets for fast load //
-  /////////////////////////////////////////
+  /////////////////////////////////////
+  // saving and loading wallet state //
+  /////////////////////////////////////
+  loadLocalTweets() {
+    if (!this.app.BROWSER) {
+      return;
+    }
+    if (this.app.options.redsquare) {
+      this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
+      this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
+    } else {
+      this.notifications_last_viewed_ts = new Date().getTime();
+      this.notifications_number_unviewed = 0;
+    }
+
+    if (this.app.browser.returnURLParameter("tweet_id")) {
+      return;
+    }
+    if (this.app.browser.returnURLParameter("user_id")) {
+      return;
+    }
+
+    localforage.getItem(`tweet_history`, (error, value) => {
+      if (value && value.length > 0) {
+        console.log("Using local forage");
+        for (let tx of value) {
+          //console.log(tx);
+          // let txobj = JSON.parse(tx);
+          let newtx = new Transaction();
+          newtx.deserialize_from_web(this.app, tx);
+          // if (txobj.optional) {
+          //   newtx.optional = txobj.optional;
+          // }
+          this.addTweet(newtx);
+        }
+      } else {
+        //
+        // servers can suggest a number of curated tweets for instant-loading
+        // and display. this avoids the need for the browser to handshake with
+        // the peer before there is something to load on-screen.
+        //
+        // if our browser has loaded cached tweets through a direct
+        // download they will be in our tweets object already and we can and
+        // should display them to speed-up the experience of using Red Square.
+        //
+        // this runs after components are rendered or it breaks/fails
+        //
+        try {
+          //Prefer our locally cached tweets to the webServer ones
+          if (window?.tweets?.length > 0) {
+            console.log("Using Server Cached Tweets");
+            for (let z = 0; z < window.tweets.length; z++) {
+              //console.log(window.tweets[z]);
+              let newtx = new Transaction();
+              newtx.deserialize_from_web(this.app, window.tweets[z]);
+              //console.log(newtx);
+              this.addTweet(newtx);
+            }
+          }
+        } catch (err) {
+          console.log("error in initial redsquare post fetch: " + err);
+        }
+
+        this.saveLocalTweets();
+      }
+      if (this.browser_active && this.rendered) {
+        this.app.connection.emit("redsquare-home-render-request", false);
+      }
+    });
+  }
+
+  saveOptions() {
+    if (!this.app.BROWSER || !this.browser_active) {
+      return;
+    }
+
+    if (!this.app.options?.redsquare) {
+      this.app.options.redsquare = {};
+    }
+
+    this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
+    this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
+
+    //console.log(JSON.parse(JSON.stringify(this.app.options.redsquare)));
+    this.app.storage.saveOptions();
+  }
+
+  async saveLocalTweets() {
+    if (!this.app.BROWSER || !this.browser_active) {
+      return;
+    }
+
+    this.saveOptions();
+
+    let tweet_txs = [];
+    let maximum = 10;
+    for (let tweet of this.tweets) {
+      tweet.tx.optional.updated_at = tweet.updated_at;
+      // let tweet_json = tweet.tx.toJson();
+      // tweet_json.optional = tweet.tx.optional;
+      tweet_txs.push(tweet.tx.serialize_to_web(this.app));
+      if (--maximum <= 0) {
+        break;
+      }
+    }
+    console.log("start save");
+    localforage.setItem(`tweet_history`, tweet_txs).then(function () {
+      console.log(`Saved ${tweet_txs.length} tweets`);
+    });
+  }
+
+  //////////////////////////////////////////////////////////
+  /////       **** WEB SERVER STUFF  *****
+  /////////////////////////////////////////////////////////
+  async fetchOpenGraphProperties(app, mod, link) {
+    if (app.BROWSER != 1) {
+      // fetch source code for link inside tweet
+      // (sites which uses firewall like Cloudflare shows Cloudflare loading
+      //  page when fetching page source)
+
+      return fetch(link, { redirect: "follow", follow: 50 })
+        .then((res) => res.text())
+        .then((data) => {
+          // required og properties for link preview
+          let no_tags = {
+            title: "",
+            description: "",
+          };
+          let og_tags = {
+            "og:exists": false,
+            "og:title": "",
+            "og:description": "",
+            "og:url": "",
+            "og:image": "",
+            "og:site_name": "", //We don't do anything with this
+          };
+          let tw_tags = {
+            "twitter:exists": false,
+            "twitter:title": "",
+            "twitter:description": "",
+            "twitter:url": "",
+            "twitter:image": "",
+            "twitter:site": "", //We don't do anything with this
+            "twitter:card": "", //We don't do anything with this
+          };
+
+          // prettify html - unminify html if minified
+          let html = prettify(data);
+
+          //Useful to check, don't delete until perfect
+          //let testReg = /<head>.*<\/head>/gs;
+          //console.log(html.match(testReg));
+
+          // parse string html to DOM html
+          let dom = HTMLParser.parse(html);
+
+          try {
+            no_tags.title = dom.getElementsByTagName("title")[0].textContent;
+          } catch (err) {}
+
+          // fetch meta element for og tags
+          let meta_tags = dom.getElementsByTagName("meta");
+
+          // loop each meta tag and fetch required og properties
+          for (let i = 0; i < meta_tags.length; i++) {
+            let property = meta_tags[i].getAttribute("property");
+            let content = meta_tags[i].getAttribute("content");
+            // get required og properties only, discard others
+            if (property in og_tags) {
+              og_tags[property] = content;
+              og_tags["og:exists"] = true;
+            }
+            if (property in tw_tags) {
+              tw_tags[property] = content;
+              tw_tags["twitter:exists"] = true;
+            }
+            if (meta_tags[i].getAttribute("name") === "description") {
+              no_tags.description = content;
+            }
+          }
+
+          //Fall back to no tags
+          og_tags["og:title"] = og_tags["og:title"] || no_tags["title"];
+          og_tags["og:description"] = og_tags["og:description"] || no_tags["description"];
+
+          if (tw_tags["twitter:exists"] && !og_tags["og:exists"]) {
+            og_tags["og:title"] = tw_tags["twitter:title"];
+            og_tags["og:description"] = tw_tags["twitter:description"];
+            og_tags["og:url"] = tw_tags["twitter:url"];
+            og_tags["og:image"] = tw_tags["twitter:image"];
+            og_tags["og:site_name"] = tw_tags["twitter:site"];
+          }
+
+          return og_tags;
+        })
+        .catch((err) => {
+          console.error("Error fetching content: " + err);
+          return "";
+        });
+    } else {
+      return "";
+    }
+  }
+
+  //
+  // writes the latest 10 tweets to tweets.js
+  //
   async updateTweetsCacheForBrowsers() {
     let hex_entries = [];
 
@@ -1633,7 +1837,7 @@ class RedSquare extends ModTemplate {
                 img_type = "image/svg";
               }
 
-              console.info("### write from 1651 of redsquare.js (request Open Graph Image)");
+              console.info("### write from redsquare.js:1651 (request Open Graph Image)");
               res.writeHead(200, {
                 "Content-Type": img_type,
                 "Content-Length": img.length,

@@ -13,6 +13,10 @@ async function fetchBlock(hash) {
     .then((response) => response.json())
     .then((data) => {
       listTransactions(data, hash);
+    })
+    .catch((err) => {
+      console.error("Error fetching content: " + err);
+      return "";
     });
 }
 

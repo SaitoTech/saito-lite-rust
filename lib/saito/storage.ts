@@ -6,10 +6,12 @@ import Block from "./block";
 class Storage {
   public app: Saito;
   public active_tab: any;
+  public timeout: any;
 
   constructor(app) {
     this.app = app || {};
     this.active_tab = 1; // TODO - only active tab saves, move to Browser class
+    this.timeout = null;
   }
 
   async initialize() {
@@ -195,6 +197,9 @@ console.log("SAVE TRANSACTION IN STORAGE");
 
   async resetOptions() {
     try {
+      //Wipe local storage before resaving options
+      localStorage.clear();
+
       const response = await fetch(`/options`);
       this.app.options = await response.json();
       this.saveOptions();
@@ -203,20 +208,35 @@ console.log("SAVE TRANSACTION IN STORAGE");
     }
   }
 
+  // 
+  // Note: this function won't save options for at least 250 ms from it's call
+  // So, if you are going to redirect the browser after calling it, you need to
+  // build in a sufficient delay so that the browser can complete
+  //
   saveOptions() {
     if (this.app.BROWSER == 1) {
       if (this.active_tab == 0) {
         return;
       }
     }
-    console.log("saving options...", this.app.options);
-    try {
-      // if (typeof Storage !== "undefined") {
-      localStorage.setItem("options", JSON.stringify(this.app.options));
-      // }
-    } catch (err) {
-      console.error(err);
+    //console.log("calling save options...");
+
+    const saveOptionsForReal = () => {
+      clearTimeout(this.timeout);
+      //console.log("Actually saving options");
+      try {
+        localStorage.setItem("options", JSON.stringify(this.app.options));
+      } catch (err) {
+        console.error(err);
+        for (let i = 0; i < localStorage.length; i++) {
+          let item = localStorage.getItem(localStorage.key(i));
+          console.log(localStorage.key(i), item.length, item, JSON.parse(item));
+        }
+      }
     }
+
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(saveOptionsForReal, 250);
   }
 
   getOptions() {

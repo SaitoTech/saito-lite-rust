@@ -1,6 +1,8 @@
 const OnePlayerGameTemplate = require("../../lib/templates/oneplayergametemplate");
 const BeleagueredGameRulesTemplate = require("./lib/beleaguered-game-rules.template");
 
+const CardStack = require("../../lib/saito/ui/game-cardstack/game-cardstack");
+
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -16,9 +18,14 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.publisher_message =
       "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
 
+    this.animationSpeed = 700;
+
     this.app = app;
     this.status = "Beta";
-    this.sides = ["r", "l"];
+    this.stacks = ["l1", "m1", "r1", 
+                  "l2", "m2", "r2", 
+                  "l3", "m3", "r3", 
+                  "l4", "m4", "r4"];
   }
 
   returnGameRulesHTML() {
@@ -26,17 +33,16 @@ class Beleaguered extends OnePlayerGameTemplate {
   }
 
   initializeGame(game_id) {
-    console.log("SET WITH GAMEID: " + game_id);
 
     if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.state = this.returnState();
       this.game.queue = [];
       this.game.queue.push("round");
-      this.game.queue.push("READY");
     }
 
-    console.log(JSON.parse(JSON.stringify(this.game)));
+    this.game.queue.push("READY");
+
 
     if (this.browser_active) {
       $(".slot").css("min-height", $(".card").css("min-height"));
@@ -53,13 +59,17 @@ class Beleaguered extends OnePlayerGameTemplate {
 
     //Clear board
     this.game.board = {};
+
+    for (let slot of this.stacks) {
+      this.cardStacks[slot].clear();
+    }
   }
 
 
 
   async render(app) {
     //console.trace("Initialize HTML");
-    if (!this.browser_active) {
+    if (!this.browser_active || !this.app.BROWSER) {
       return;
     }
 
@@ -112,291 +122,265 @@ class Beleaguered extends OnePlayerGameTemplate {
 
     await this.menu.addChatMenu();
     this.menu.render();
+
+    //Check screen dimensions
+    let dynamic_card_size = Math.min(120, window.innerWidth/5, window.innerHeight * 0.14);
+
+    this.cardStacks = { };
+    for (let slot of this.stacks){
+      this.cardStacks[slot] = new CardStack(app, this, slot);
+      this.cardStacks[slot].card_width = Math.ceil(dynamic_card_size);
+    }
+
+    this.setUpStacks();
+
   }
 
-  getSlotSide(id) {
-    if (id.length === 6) {
-      return "m";
-    } else {
-      return id.substring(10, 11);
+
+  setUpStacks(){
+    for (let i = 1; i <=4 ; i++){
+      this.cardStacks["l"+i].orientation = "left";
+      this.cardStacks["r"+i].orientation = "right";
+      this.cardStacks["m"+i].orientation = "center";
+    }
+    
+  }
+
+  removeEvents(){
+    for (let i of this.stacks){
+      this.cardStacks[i].removeFilter();
     }
   }
 
-  getSlotNumber(id) {
-    if (id.length !== 6) {
-      return parseInt(id.substring(11));
-    }
-  }
 
-  getSlotRow(id) {
-    return parseInt(id.substring(3, 4));
-  }
+  attachEventsToBoard(){
 
-  attachEventsToBoard() {
-    let beleaguered_self = this;
+    const canMoveCard = (card, stack) => {
+      let beleaguered_self = stack.mod;
+      let suit = card[0];
+      let number = parseInt(card.slice(1));
 
-    $(".slot").off();
-    $(".slot").on("click", function () {
-      let slot = $(this).attr("id");
+      //You can't select a card that doesn't exist
+      if (card == "empty") {
+        return false;
+      }
 
-      if (beleaguered_self.game.selected == "") {
-        // can only click valid (outermost) cards
-        if (!beleaguered_self.game.availableMoves.includes(slot)) {
-          return;
+      //You can't move cards from the center
+      if (stack.name[0] == "m") {
+        return false;
+      }
+
+      for (let st in beleaguered_self.game.board){
+
+        //You can move any card to an empty space
+        if (beleaguered_self.game.board[st].length == 0) {
+          return true;
         }
-        beleaguered_self.game.selected = slot;
-        beleaguered_self.toggleCard(slot);
-        // reset availableMoves
-        beleaguered_self.calculateAvailable(slot);
-      } else {
-        // clicking the same card - untoggle and recalculate available moves
-        if (beleaguered_self.game.selected === slot) {
-          beleaguered_self.untoggleCard(slot);
-          beleaguered_self.game.selected = "";
-          beleaguered_self.calculateAvailable("");
+
+        let top_card = beleaguered_self.game.board[st].slice(-1)[0];
+
+        let top_suit = top_card[0];
+        let top_number = parseInt(top_card.slice(1));
+
+        if (st[0] == "m") {
+          //Count up in the middle, suits must match
+          if (suit == top_suit && number == top_number + 1) {
+            return true;
+          }
         } else {
-          if (beleaguered_self.game.availableMoves.includes(slot)) {
-            beleaguered_self.game.board[slot] =
-              beleaguered_self.game.board[beleaguered_self.game.selected];
-            beleaguered_self.game.board[beleaguered_self.game.selected] = "E";
-            beleaguered_self.untoggleCard(beleaguered_self.game.selected);
-
-            let moveToSide = beleaguered_self.getSlotSide(slot);
-            let moveToRow = beleaguered_self.getSlotRow(slot);
-
-            let moveFromSide = beleaguered_self.getSlotSide(beleaguered_self.game.selected);
-            let moveFromRow = beleaguered_self.getSlotRow(beleaguered_self.game.selected);
-            if (moveToSide !== "m") {
-              beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] =
-                beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] + 1;
-            }
-
-            beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] =
-              beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] - 1;
-
-            beleaguered_self.game.selected = "";
-            beleaguered_self.displayBoard();
-            beleaguered_self.calculateAvailable("");
-          } // else - do nothing (invalid move)
+          //Count down on the sides, suits can mismatch
+          if (number + 1 == top_number) {
+            return true;
+          }
         }
       }
-    });
-  }
+      return false;
+    };
 
-  calculateAvailable(selectedSlot) {
-    let outerMost = Object.keys(this.game.outerMost);
-    // calculate available when nothing is selected
-    if (selectedSlot === "") {
-      this.removeAllAvailable();
-      // check if any of the side stacks have no cards - if that's the case
-      // then all other side stacks' outermost cards are available moved
-      let stacksWithCards = [];
-      for (let i = 0; i < outerMost.length; i++) {
-        if (this.game.outerMost[outerMost[i]] !== -1) {
-          let side = outerMost[i][0];
-          let row = outerMost[i][1];
-          stacksWithCards.push(`row${row}_slot_${side}${this.game.outerMost[outerMost[i]]}`);
+    const selectCard = (activated_card_stack, card_index) => {
+      let game_self = activated_card_stack.mod;
+
+      game_self.selected = activated_card_stack.cards[card_index];
+      $(".gameboard").addClass("selected_state");
+
+      for (let slot of game_self.stacks) {
+
+        ////////////////////////
+        // Move Card!
+        ///////////////////////
+        game_self.cardStacks[slot].applyFilter(canPlaceCard, async (target_card_stack) => {
+
+          game_self.prependMove(`move\t${game_self.selected}\t${activated_card_stack.name}\t${target_card_stack.name}`);
+
+          await game_self.moveCard(game_self.selected, activated_card_stack.name, target_card_stack.name);
+
+        });
+      }
+
+      //Clicking on the same stack will unselect the card
+      activated_card_stack.applyFilter(()=>{ return true; }, returnCard);
+      activated_card_stack.markSelected(card_index);
+
+    };
+
+    const canPlaceCard = (card, stack) => {
+      let beleaguered_self = stack.mod;
+      let moving_card = beleaguered_self.selected;
+      let moving_card_suit = moving_card[0];
+      let moving_card_number = parseInt(moving_card.slice(1));
+
+      let suit = card[0];
+      let number = parseInt(card.slice(1));
+  
+      //Can always place on an empty slot
+      if (card === "empty") {
+        return true;
+      }
+
+      if (stack.name[0] == "m") {
+        if (moving_card_suit === suit && number + 1 === moving_card_number ) {
+          return true;
+        }
+      } else {
+        if ( moving_card_number + 1 == number ){
+          return true;
         }
       }
-      // at least one side stack without cards found
-      if (stacksWithCards.length < 8) {
-        // win
-        if (stacksWithCards.length === 0) {
-          this.displayModal("Congratulations!", "You win the deal!");
+
+      return false;
+
+    };
+
+    const returnCard = () => {
+      activateCards();
+    };
+
+    const activateCards = async () => {
+      //Check for victory
+      if (this.game.board["m1"].length + this.game.board["m2"].length + this.game.board["m3"].length + this.game.board["m4"].length == 52) {
+        this.updateStatus("Game Over");
+        let c = await sconfirm("You win! Start new Game?");
+        if (c) {
           this.prependMove("win");
           this.endTurn();
         }
-        for (let i = 0; i < stacksWithCards.length; i++) {
-          this.makeVisible(stacksWithCards[i]);
-          this.enableAvailable(stacksWithCards[i]);
-        }
-        return; // no more checks required
+        return;
       }
-      // get outermost cards
-      for (let i = 0; i < outerMost.length; i++) {
-        let side = outerMost[i][0];
-        let row = outerMost[i][1];
-        let cardSlot = `row${row}_slot_${side}${this.game.outerMost[outerMost[i]]}`;
-        let cardSuit = this.returnCardSuite(cardSlot);
-        let cardNumber = parseInt(this.returnCardNumber(cardSlot));
 
-        // outermost card is a valid move, if one greater than its suits' middle stack
-        let middleStackCurrentCard = "row1_m";
-        if (cardSuit === "D") {
-          middleStackCurrentCard = "row2_m";
-        } else if (cardSuit === "H") {
-          middleStackCurrentCard = "row3_m";
-        } else if (cardSuit === "S") {
-          middleStackCurrentCard = "row4_m";
-        }
-        let middleStackCurrentCardNumber = parseInt(this.returnCardNumber(middleStackCurrentCard));
-        if (middleStackCurrentCardNumber + 1 === cardNumber) {
-          this.enableAvailable(cardSlot);
-          continue;
+      //
+      // Activate events always starts without a selected card
+      // 
+      let success = 0;
+      $(".gameboard").removeClass("selected_state");
+      for (let slot of this.stacks) {
+        success += this.cardStacks[slot].applyFilter(canMoveCard, selectCard);
+      }
+
+      if (!success) {
+        let c = await sconfirm(`No more moves. Start new Game?`)
+        if (c) {
+          this.updateStatus("Game Over");
+          this.prependMove("lose");
+          this.endTurn();
         }
 
-        // if another outermost card is one greater than currently checked other outermost card,
-        // add current card to available moves
-        for (let j = 0; j < outerMost.length; j++) {
-          let comparedCardSide = outerMost[j][0];
-          let comparedCardRow = outerMost[j][1];
-          let comparedCardSlot = `row${comparedCardRow}_slot_${comparedCardSide}${
-            this.game.outerMost[outerMost[j]]
-          }`;
-          let comparedCardNumber = parseInt(this.returnCardNumber(comparedCardSlot));
-          if (comparedCardNumber - 1 === cardNumber) {
-            this.enableAvailable(cardSlot);
-            continue;
-          }
-        }
+        return;
       }
-    } else {
-      // calculate available for selected card
-      this.removeAllAvailable();
-      let cardSuit = this.returnCardSuite(selectedSlot);
-      let cardNumber = parseInt(this.returnCardNumber(selectedSlot));
-      // move to a function
-      let middleStackCurrentCard = "row1_m";
-      if (cardSuit === "D") {
-        middleStackCurrentCard = "row2_m";
-      } else if (cardSuit === "H") {
-        middleStackCurrentCard = "row3_m";
-      } else if (cardSuit === "S") {
-        middleStackCurrentCard = "row4_m";
-      }
-      let middleStackCurrentCardNumber = parseInt(this.returnCardNumber(middleStackCurrentCard));
-      // add middle slot to available moves
-      if (middleStackCurrentCardNumber + 1 === cardNumber) {
-        this.enableAvailable(middleStackCurrentCard);
-      }
-      for (let i = 0; i < outerMost.length; i++) {
-        let side = outerMost[i][0];
-        let row = outerMost[i][1];
-        if (this.game.outerMost[outerMost[i]] === -1) {
-          // empty slot
-          emptySlot = `row${row}_slot_${side}0`;
-          this.makeVisible(emptySlot);
-          this.enableAvailable(emptySlot);
-        } else {
-          // check if current side and row outermost is one higher than selected card
-          let rowAndSideOuter = `row${row}_slot_${side}${this.game.outerMost[outerMost[i]]}`;
-          let availableSlot = `row${row}_slot_${side}${this.game.outerMost[outerMost[i]] + 1}`;
-          if (parseInt(this.returnCardNumber(rowAndSideOuter)) - 1 === cardNumber) {
-            this.makeVisible(availableSlot);
-            this.enableAvailable(availableSlot);
-          }
-        }
-      }
+
+      this.displayUserInterface();  
+
     }
-    console.log("this.game.availableMoves");
-    console.log(this.game.availableMoves);
-    if (this.game.availableMoves.length === 0) {
-      this.displayWarning("Game over", "There are no more available moves to make.", 9000);
-    }
+
+
+    activateCards();
+
   }
 
-  enableAvailable(divname) {
-    if (!this.game.availableMoves.includes(divname)) {
-      $(`#${divname}`).addClass("valid");
-      this.game.availableMoves.push(divname);
-    }
+  async moveCard(card, source_stack, target_stack) {
+
+    console.log(`Move ${card} from ${source_stack} to ${target_stack}`);
+
+    //Update Internal Game Logic
+    this.game.board[source_stack].pop();
+    this.game.board[target_stack].push(card);
+
+    this.selected = "";
+  
+    this.removeEvents();
+
+    this.moveGameElement(
+      this.copyGameElement(this.cardStacks[source_stack].getTopCard().children[0]),
+      this.cardStacks[target_stack].getTopCard(),
+      { 
+        resize: 1,
+      },
+      () => {
+        $(".animated_elem").remove();
+        this.cardStacks[source_stack].pop();
+        this.cardStacks[target_stack].push(card);
+        this.attachEventsToBoard();
+        console.log("Finished animating");
+      });
   }
 
-  removeAvailable(divname) {
-    let index = -1;
-    for (let i = 0; i < this.game.availableMoves.length; i++) {
-      if (this.game.availableMoves[i] === divname) {
-        index = i;
-        $(`#${this.game.availableMoves[i]}`).removeClass("valid");
-        break;
-      }
-    }
-    if (index > -1) {
-      this.game.availableMoves.splice(index, 1);
-    }
-  }
-
-  removeAllAvailable() {
-    if (this.game.availableMoves !== undefined) {
-      for (let i = 1; i <= 4; i++) {
-        for (let j = 0; j <= 17; j++) {
-          for (let s = 0; s < this.sides.length; s++) {
-            $(`#row${i}_slot_${this.sides[s]}${j}`).removeClass("valid");
-          }
-        }
-      }
-      $("#row1_m").removeClass("valid");
-      $("#row2_m").removeClass("valid");
-      $("#row3_m").removeClass("valid");
-      $("#row4_m").removeClass("valid");
-    }
-    this.game.availableMoves = [];
-  }
-
-  toggleCard(divname) {
-    $(`#${divname}`).addClass("selected");
-    $(".gameboard").addClass("selected_state");
-  }
-
-  untoggleAll() {
-    $(".slot").css("opacity", "1.0");
-    $(".selected_state").removeClass("selected_state");
-  }
-
-  untoggleCard(divname) {
-    $(`#${divname}`).removeClass("selected");
-    $(".selected_state").removeClass("selected_state");
-  }
-
-  hideCard(divname) {
-    divname = "#" + divname;
-    $(divname).css("opacity", "0.0");
-  }
 
   /* Copy hand into board*/
-  handToBoard() {
-    this.game.availableMoves = [];
-    this.removeAllAvailable();
-    if (!("board" in this.game) || Object.values(this.game.board).length === 0) {
-      this.game.outerMost = []; // track the outermost card for each row and side
+  async handToBoard() {
+
+    for (let i of this.stacks) {
+      this.cardStacks[i].render();
+    }
+
+    if (!("board" in this.game) || Object.keys(this.game.board).length != this.stacks.length) {
+      this.game.board = {};
+      for (let slot of this.stacks) {
+        this.game.board[slot] = [];
+      }  
+
       let indexCt = 0;
-      this.game.board["row1_m"] = "C1";
-      this.game.board["row2_m"] = "D1";
-      this.game.board["row3_m"] = "H1";
-      this.game.board["row4_m"] = "S1";
-      for (let i = 1; i <= 4; i++) {
-        for (let j = 0; j <= 17; j++) {
-          for (let s = 0; s < this.sides.length; s++) {
-            this.game.outerMost[`${this.sides[s]}${i}`] = 5;
-            let position = `row${i}_slot_${this.sides[s]}${j}`;
-            if (j < 6) {
-              this.game.board[position] =
-                this.game.deck[0].cards[this.game.deck[0].hand[indexCt++]];
-              this.makeVisible(position);
-            } else {
-              this.game.board[position] = "E";
-            }
-          }
+      this.game.board["m1"] = ["C1"];
+      this.game.board["m2"] = ["D1"];
+      this.game.board["m3"] = ["H1"];
+      this.game.board["m4"] = ["S1"];
+
+      this.cardStacks["m1"].push("C1");
+      this.cardStacks["m2"].push("D1");
+      this.cardStacks["m3"].push("H1");
+      this.cardStacks["m4"].push("S1");
+
+      for (let j = 0; j < 6; j++) {
+        for (let i = 1; i <= 4; i++) {
+          let card = this.game.deck[0].cards[this.game.deck[0].hand[indexCt++]];
+          this.game.board[`l${i}`].push(card);
+          await this.timeout(75);
+          this.cardStacks[`l${i}`].push(card);
+          card = this.game.deck[0].cards[this.game.deck[0].hand[indexCt++]];
+          this.game.board[`r${i}`].push(card);
+          await this.timeout(75);
+          this.cardStacks[`r${i}`].push(card);
         }
       }
-    } else {
-      this.game.outerMost = [];
-      for (let i = 1; i <= 4; i++) {
-        for (let s = 0; s < this.sides.length; s++) {
-          for (let j = 0; j <= 17; j++) {
-            let position = `row${i}_slot_${this.sides[s]}${j}`;
-            if (this.game.board[position] === "E") {
-              this.game.outerMost[`${this.sides[s]}${i}`] = j - 1;
-              j = 18; // break the innermost loop
-            }
+    }else{
+      for (let slot of this.stacks) {
+        if (!this.cardStacks[slot].initialized){
+          for (let card of this.game.board[slot]){
+            await this.timeout(15);
+            this.cardStacks[slot].push(card);
           }
+          this.cardStacks[slot].initialized = true;
+        }else {
+          console.log("********************");
+          console.log("Oh no, the cardstack is already initialize");
+          console.log("********************");
         }
       }
     }
 
-    this.game.selected = "";
-    this.calculateAvailable("");
-    this.game.previousMoves = [];
+
+    this.selected = "";
+
+    this.displayBoard();
+
   }
 
   parseIndex(slot) {
@@ -416,10 +400,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-      console.log(JSON.stringify(mv));
-
       if (mv[0] === "round") {
-        this.removeAllAvailable();
         this.newRound();
       }
 
@@ -449,7 +430,6 @@ class Beleaguered extends OnePlayerGameTemplate {
         //this.game.queue.splice(qe, 1);
         if (this.browser_active) {
           this.handToBoard();
-          this.displayBoard();
           this.displayUserInterface();
         }
         return 0;
@@ -457,15 +437,6 @@ class Beleaguered extends OnePlayerGameTemplate {
 
       if (mv[0] === "move") {
         this.game.queue.splice(qe, 1);
-        let card = mv[1]; //rowX_slotY
-        let emptySlot = mv[2]; //rowX_slotY
-
-        let x = this.parseIndex(card);
-        let y = this.parseIndex(emptySlot);
-
-        let temp = this.game.deck[0].hand[x];
-        this.game.deck[0].hand[x] = this.game.deck[0].hand[y];
-        this.game.deck[0].hand[y] = temp;
       }
     }
     return 1;
@@ -475,36 +446,136 @@ class Beleaguered extends OnePlayerGameTemplate {
     if (this.browser_active == 0) {
       return;
     }
-    for (let i in this.game.board) {
-      let divname = "#" + i;
-      $(divname).html(this.returnCardImageHTML(this.game.board[i]));
-      this.untoggleCard(i);
-      if (this.game.board[i][0] == "E") {
-        this.makeInvisible(divname);
-      }
+
+    for (let i of this.stacks) {
+      this.cardStacks[i].render();
     }
 
     this.attachEventsToBoard();
   }
 
-  makeInvisible(divname) {
-    $(`${divname}`).addClass("invisible");
-    $(`${divname}`).removeClass("selected");
-  }
-
-  makeVisible(divname) {
-    $(`#${divname}`).removeClass("invisible");
-  }
 
   /*
   no status atm, but this is to update the hud
   */
   displayUserInterface() {
     let html =
-      '<span class="hidable">Place all cards ascending by number on their suit stacks to win the game.<br>' +
-      "Cards can be moved around on higher cards on the side stacks regardless of their suit. Any card can be placed on the empty side stack</span>";
+      `<div class="hidable">Place all cards ascending by number on their suit stacks to win the game.</div>
+      <div class="hidable">Cards can be moved around on higher cards on the side stacks regardless of their suit. 
+      Any card can be placed on the empty side stack.</div>
+      <div class="controls">`;
 
-    this.updateStatusWithOptions(html, "");
+    if (this.moves.length > 0){
+      html += `<div class="undo_last status_option">Undo</div>`;
+    }
+    html += `<div class="auto_solve status_option">Auto Complete</div></div>`;
+
+    this.updateStatus(html);
+
+    $(".undo_last").on("click", () => {
+      this.undoMove();
+    });
+
+    $(".auto_solve").on("click", async () => {
+      this.removeEvents();
+      let success = await this.autoPlay();
+      if (!success){
+        $(".auto_solve").text("No cards can castle");
+        $(".auto_solve").off();
+        this.displayBoard();
+      }else{
+        if (!this.animating_autoplay){
+          $(".animated_elem").remove();
+          this.displayBoard();
+        }else{
+          let x;
+          x = setInterval(()=>{
+            if (!this.animating_autoplay){
+              $(".animated_elem").remove();
+              this.displayBoard();
+              clearInterval(x);
+            }
+          }, 500);
+        }
+
+      }
+    });
+  }
+
+
+  undoMove(){
+    if (this.moves.length == 0) {
+      return;
+    }
+
+    let mv = this.moves.shift().split("\t");
+
+    if (mv[0] == "move"){
+
+      this.moveCard(mv[1], mv[3], mv[2]);
+
+      $(".undo_last").off();
+    }
+  }
+
+  async autoPlay(){
+    let source_stack = "";
+    let target_stack = "";
+    let target_card = "";
+
+    for (let i = 1; i <= 4; i++) {
+      target_stack = `m${i}`;
+      let top_card = this.game.board[target_stack].slice(-1)[0];
+      target_card = top_card[0] + (parseInt(top_card.slice(1)) + 1);
+
+      for (let slot of this.stacks){
+        if (this.game.board[slot].length > 0){
+          let available_card = this.game.board[slot].slice(-1)[0];
+          if (available_card == target_card){
+            source_stack = slot;
+            break;
+          }
+        }
+      }
+
+      if (source_stack){
+        break;
+      }
+    }
+
+    if (source_stack){
+
+      this.prependMove(`move\t${target_card}\t${source_stack}\t${target_stack}`);
+      //this.animationSpeed = 500;
+
+      //Update Internal Game Logic
+      this.game.board[source_stack].pop();
+      this.game.board[target_stack].push(target_card);
+
+      this.selected = "";
+      this.animating_autoplay = true;
+
+      this.moveGameElement(
+        this.copyGameElement(this.cardStacks[source_stack].getTopCard().children[0]),
+        `#cardstack_${target_stack}`,
+        { 
+          resize: 1,
+          callback: () => {
+            this.cardStacks[source_stack].pop();
+            this.cardStacks[target_stack].push(target_card, false);
+          }
+        },
+        () => {
+          this.animating_autoplay = false;
+          console.log("Running callback at end of animation???");
+        });
+
+      await this.timeout(200);
+      //Recurse as long as we make a move
+      await this.autoPlay();
+      return true;
+    }
+    return false;
   }
 
   returnCardImageHTML(name) {
@@ -528,33 +599,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     return deck;
   }
 
-  returnCardSuite(slot) {
-    let card = this.game.board[slot];
-    return card[0];
-  }
-
-  cardSuitHTML(suit) {
-    switch (suit) {
-      case "D":
-        return "&diams;";
-      case "H":
-        return "&hearts;";
-      case "S":
-        return "&spades;";
-      case "C":
-        return "&clubs;";
-      default:
-        return "";
-    }
-  }
-
-  returnCardNumber(slot) {
-    let card = this.game.board[slot];
-    if (card[0] === "E")
-      //empty slot
-      return 0;
-    return card.substring(1);
-  }
 }
 
 module.exports = Beleaguered;

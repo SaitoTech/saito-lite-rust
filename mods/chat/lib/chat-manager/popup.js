@@ -265,7 +265,6 @@ class ChatPopup {
         }
         let newtx = await mod.createChatTransaction(group_id, message);
         await mod.sendChatTransaction(app, newtx);
-        console.log("Receive my own chat");
         mod.receiveChatTransaction(newtx);
         this.input.setInput("");
         if (document.querySelector(popup_qs + " .chat-body")) {
