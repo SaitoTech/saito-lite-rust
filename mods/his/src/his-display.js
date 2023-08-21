@@ -996,12 +996,13 @@ console.log("here for");
 	  // something else is handling this
 	  return;
 	}
-        if (e.currentTarget.classList.contains("space")) {
+	// otherwise show zoom
+        //if (e.currentTarget.classList.contains("space")) {
           his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
 	  e.stopPropagation();
 	  e.preventDefault();	
 	  return false;
-	}
+	//}
       });
 
       his_self.bound_gameboard_zoom = 1;
