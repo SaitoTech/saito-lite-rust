@@ -395,7 +395,7 @@ class Registry extends ModTemplate {
       } else {
         this.registry_publickey = peer.publicKey;
       }
-      console.log("WE ARE USING LOCAL SERVER: " + this.registry_publickey);
+      console.log("WE ARE USING LOCAL NODE: " + this.registry_publickey);
     }
   }
 
@@ -404,7 +404,6 @@ class Registry extends ModTemplate {
 
     if (conf == 0) {
       if (!!txmsg && txmsg.module === "Registry") {
-
         //console.log("Registry TX: ", txmsg);
         //
         // this is to us, and we are the main registry server
@@ -478,7 +477,6 @@ class Registry extends ModTemplate {
       }
 
       if (!!txmsg && txmsg.module == "Email") {
-
         //console.log("Registry Response TX: ", txmsg);
 
         if (tx.from[0].publicKey == this.registry_publickey) {

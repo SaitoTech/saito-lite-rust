@@ -722,7 +722,7 @@ class Server {
     });
 
     //     io.on('connection', (socket) => {
-    // console.log("IO CONNECTION on SERVER: ");
+    // console.log("IO CONNECTION on NODE: ");
     //       this.app.network.addRemotePeer(socket);
     //     });
     this.initializeWebSocketServer();
