@@ -273,7 +273,7 @@
  	    let msg = "Corsair Raid: "+num+" hit:";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
-            html += '<li class="option" id="eliminate">eliminate squadrom</li>';
+            html += '<li class="option" id="eliminate">eliminate squadron</li>';
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -468,9 +468,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           if (his_self.game.player === p2) {
 	    if (faction_taking === "protestant") {
-              his_self.addMove("diplomatic_pressure_results_papacy\t"+JSON.stringify(his_self.game.deck[1].hand));
-	    } else {
               his_self.addMove("diplomatic_pressure_results_protestant\t"+JSON.stringify(his_self.game.deck[1].hand));
+	    } else {
+              his_self.addMove("diplomatic_pressure_results_papacy\t"+JSON.stringify(his_self.game.deck[1].hand));
 	    }
             his_self.endTurn();
           }
@@ -547,7 +547,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           let cards = JSON.parse(mv[2]);
 
- 	  let msg = "Choose Action:";
+ 	  let msg = "Papal Card is "+his_self.game.deck[1].cards[cards[0]];
           let html = '<ul>';
           html += `<li class="option" id="discard">discard ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
           html += `<li class="option" id="swap">swap ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
@@ -737,6 +737,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
         if (mv[0] === "henry_petitions_for_divorce_grant") {
 
+          his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.events.henry_petitions_for_divorce_grant = 1;
 
 	  let p = his_self.returnPlayerOfFaction("protestant");
@@ -1002,7 +1003,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; } , 
       onEvent(his_self, faction) {
-        his_self.game.queue("shipbuilding_diplomacy_event\t"+faction);
+        his_self.game.queue.push("shipbuilding_diplomacy_event\t"+faction);
         return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {

@@ -893,21 +893,32 @@ if (limit === "build") {
 
     let html = '';
     html += '<ul>';
+
+console.log("BOARD CLICKABLE: " + board_clickable);
+
+    this.theses_overlay.space_onclick_callback = mycallback;
+
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
         html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
+
+	//
+	// the spaces that are selectable are clickable on the main board (whatever board shows)
+	//
 	if (board_clickable) {
 	  let t = "."+key;
 	  document.querySelectorAll(t).forEach((el) => {
+	    his_self.addSelectable(el);
 	    el.onclick = (e) => {
+	      e.stopPropagation();
+	      e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	      el.onclick = () => {};
 	      $('.option').off();
 	      $('.space').off();
 	      $('.hextile').off();
-
-alert("CLICKED ON SPACE");
-
-//	      mycallback(key);
+              his_self.theses_overlay.space_onclick_callback = null;
+	      his_self.removeSelectable();
+	      mycallback(key);
 	    }
 	  });
 	}
@@ -926,16 +937,16 @@ alert("CLICKED ON SPACE");
       //
       // and remove on-board clickability
       //
-      if (board_clickable) {
-        for (let key in his_self.game.spaces) {
-          if (filter_func(his_self.game.spaces[key]) == 1) {
-	    let t = "."+key;
-	    document.querySelectorAll(t).forEach((el) => {
-	      el.onclick = (e) => {};
-	    });
-	  }
-	}
-      }
+//      if (board_clickable) {
+//        for (let key in his_self.game.spaces) {
+//          if (filter_func(his_self.game.spaces[key]) == 1) {
+//	    let t = "."+key;
+//	    document.querySelectorAll(t).forEach((el) => {
+//	      el.onclick = (e) => {};
+//	    });
+//	  }
+//	}
+//      }
 
       $('.option').off();
       $('.space').off();
@@ -947,6 +958,7 @@ alert("CLICKED ON SPACE");
         return 0;
       }
 
+      his_self.theses_overlay.space_onclick_callback = null;
       mycallback(action);
 
     });
@@ -961,6 +973,10 @@ alert("CLICKED ON SPACE");
 
     let his_self = this;
 
+    this.theses_overlay.space_onclick_callback = mycallback;
+
+console.log("BOARD CLICKABLE: " + board_clickable);
+
     let html = '';
     html += '<ul>';
     for (let key in this.game.navalspaces) {
@@ -968,7 +984,12 @@ alert("CLICKED ON SPACE");
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
+	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	    $('.option').off();
+	    e.stopPropagation();
+	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
+	    his_self.removeSelectable();
+            his_self.theses_overlay.space_onclick_callback = null;
 	    mycallback(key);
 	  }
 	}
@@ -979,7 +1000,12 @@ alert("CLICKED ON SPACE");
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
+	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	    $('.option').off();
+	    e.stopPropagation();
+	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
+	    his_self.removeSelectable();
+            his_self.theses_overlay.space_onclick_callback = null;
 	    mycallback(key);
 	  }
 	}
@@ -1000,6 +1026,7 @@ alert("CLICKED ON SPACE");
         return 0;
       }
 
+      his_self.theses_overlay.space_onclick_callback = null;
       mycallback(action);
 
     });
@@ -1804,7 +1831,12 @@ return;
               });
             }
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-          }
+          },
+
+	  null ,
+
+	  true
+
         );
       });
     }
@@ -2126,7 +2158,11 @@ return;
 	    }
 
 	  });
-	}
+	},
+
+	null,
+
+	true 
       );
     }
 
@@ -2851,6 +2887,8 @@ console.log("units length: " + space.units[defender].length);
 
       cancel_func,
 
+      true
+
     );
 
   }
@@ -3060,6 +3098,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
+
+      null,
+
+      true
 
     );
   }

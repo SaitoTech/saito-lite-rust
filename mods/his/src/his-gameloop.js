@@ -6719,7 +6719,6 @@ console.log("SPACE: " + space);
 	// objects and cards can add commands
 	//
         for (let i in z) {
-console.log("handlegameloop: " + i + " -- " + z[i].name);
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 

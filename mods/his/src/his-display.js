@@ -938,18 +938,30 @@
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displayNavalSpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displayNavalSpaceDetailedView(key);
+//        }
       }
     }
 
   }
 
+  addSelectable(el) {
+console.log("here for");
+    if (!el.classList.contains("selectable")) {
+      el.classList.add('selectable');
+    }
+  }
+
+  removeSelectable() {
+    document.querySelectorAll(".selectable").forEach((el) => {
+      el.classList.remove('selectable');
+    });
+  }
+
   displaySpaces() {
 
     let his_self = this;
-
 
     //
     // add tiles
@@ -957,9 +969,9 @@
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displaySpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displaySpaceDetailedView(key);
+//        }
       }
     }
 
@@ -977,8 +989,15 @@
       $('.gameboard').on('mouseup', function (e) { 
         if (Math.abs(xpos-e.clientX) > 4) { return; }
         if (Math.abs(ypos-e.clientY) > 4) { return; }
-        his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+	//
+	// if this is a selectable space, let people select directly
+	//
+	if (e.currentTarget.classList.contains("selectable")) {
+	  // something else is handling this
+	  return;
+	}
         if (e.currentTarget.classList.contains("space")) {
+          his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
 	  e.stopPropagation();
 	  e.preventDefault();	
 	  return false;

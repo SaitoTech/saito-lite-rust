@@ -9,6 +9,7 @@ class ThesesOverlay {
 	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
         this.rendering_at_coordinates = false;
+	this.spaces_onclick_callback = null;
     }
 
     pullHudOverOverlay() {
@@ -60,7 +61,6 @@ class ThesesOverlay {
       if (percent_right > 62.5) { percent_right = 62.5; }
       if (percent_down > 63.5) { percent_down = 63.5; }
 
-      this.overlay.clickToClose = true;
       this.render();
       this.rendering_at_coordinates = false;
 
@@ -91,9 +91,6 @@ class ThesesOverlay {
         }
 
 	this.visible = true;
-        if (this.rendering_at_coordinates != true) {
-          this.overlay.clickToClose = false;
-        }
         this.overlay.show(ThesesTemplate());
 
 	let dw = document.querySelector(".theses-overlay");
@@ -119,6 +116,24 @@ class ThesesOverlay {
     }
 
     attachEvents(){
+
+      //
+      // add tiles
+      //
+      for (let key in this.mod.spaces) {
+        let qs = ".theses-overlay .gameboard ."+key;
+	document.querySelector(qs).onclick = (e) => {
+	  let space_id = e.currentTarget.id;
+	  if (this.spaces_onclick_callback != null) {
+alert("A");
+	    this.spaces_onclick_callback(space_id);
+	  } else {
+alert("B");
+	    this.mod.displaySpaceDetailedView(space_id);
+	  }
+	}
+      }
+
     }
 
 }

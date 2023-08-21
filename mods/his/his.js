@@ -2920,7 +2920,7 @@ console.log("\n\n\n\n");
  	    let msg = "Corsair Raid: "+num+" hit:";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
-            html += '<li class="option" id="eliminate">eliminate squadrom</li>';
+            html += '<li class="option" id="eliminate">eliminate squadron</li>';
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -3115,9 +3115,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           if (his_self.game.player === p2) {
 	    if (faction_taking === "protestant") {
-              his_self.addMove("diplomatic_pressure_results_papacy\t"+JSON.stringify(his_self.game.deck[1].hand));
-	    } else {
               his_self.addMove("diplomatic_pressure_results_protestant\t"+JSON.stringify(his_self.game.deck[1].hand));
+	    } else {
+              his_self.addMove("diplomatic_pressure_results_papacy\t"+JSON.stringify(his_self.game.deck[1].hand));
 	    }
             his_self.endTurn();
           }
@@ -3194,7 +3194,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           let cards = JSON.parse(mv[2]);
 
- 	  let msg = "Choose Action:";
+ 	  let msg = "Papal Card is "+his_self.game.deck[1].cards[cards[0]];
           let html = '<ul>';
           html += `<li class="option" id="discard">discard ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
           html += `<li class="option" id="swap">swap ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
@@ -3384,6 +3384,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
         if (mv[0] === "henry_petitions_for_divorce_grant") {
 
+          his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.events.henry_petitions_for_divorce_grant = 1;
 
 	  let p = his_self.returnPlayerOfFaction("protestant");
@@ -3649,7 +3650,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; } , 
       onEvent(his_self, faction) {
-        his_self.game.queue("shipbuilding_diplomacy_event\t"+faction);
+        his_self.game.queue.push("shipbuilding_diplomacy_event\t"+faction);
         return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
@@ -13692,22 +13693,17 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
   }
 
   areAllies(faction1, faction2) {
-console.log("DIPLOMACY: " + JSON.stringify(this.game.state.diplomacy));
-console.log("checking if allies: " + faction1 + " -- " + faction2);
     try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
     if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
-console.log("minor power...");
       let f1cp = this.returnControllingPower(faction1);
       let f2cp = this.returnControllingPower(faction2);
-      console.log(f1cp + " -- " + f2cp + " -- " + faction1 + " -- " + faction2);
       try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
       try { if (this.game.state.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
       try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
     }
-console.log("saying no!");
     return 0;
   }
 
@@ -13726,8 +13722,6 @@ console.log("saying no!");
   }
 
   setAllies(faction1, faction2, amp=1) {
-
-console.log("set allies: " + faction1 + " || " + faction2);
 
     try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
@@ -22043,7 +22037,6 @@ console.log("SPACE: " + space);
 	// objects and cards can add commands
 	//
         for (let i in z) {
-console.log("handlegameloop: " + i + " -- " + z[i].name);
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 
@@ -22959,21 +22952,32 @@ if (limit === "build") {
 
     let html = '';
     html += '<ul>';
+
+console.log("BOARD CLICKABLE: " + board_clickable);
+
+    this.theses_overlay.space_onclick_callback = mycallback;
+
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
         html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
+
+	//
+	// the spaces that are selectable are clickable on the main board (whatever board shows)
+	//
 	if (board_clickable) {
 	  let t = "."+key;
 	  document.querySelectorAll(t).forEach((el) => {
+	    his_self.addSelectable(el);
 	    el.onclick = (e) => {
+	      e.stopPropagation();
+	      e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	      el.onclick = () => {};
 	      $('.option').off();
 	      $('.space').off();
 	      $('.hextile').off();
-
-alert("CLICKED ON SPACE");
-
-//	      mycallback(key);
+              his_self.theses_overlay.space_onclick_callback = null;
+	      his_self.removeSelectable();
+	      mycallback(key);
 	    }
 	  });
 	}
@@ -22992,16 +22996,16 @@ alert("CLICKED ON SPACE");
       //
       // and remove on-board clickability
       //
-      if (board_clickable) {
-        for (let key in his_self.game.spaces) {
-          if (filter_func(his_self.game.spaces[key]) == 1) {
-	    let t = "."+key;
-	    document.querySelectorAll(t).forEach((el) => {
-	      el.onclick = (e) => {};
-	    });
-	  }
-	}
-      }
+//      if (board_clickable) {
+//        for (let key in his_self.game.spaces) {
+//          if (filter_func(his_self.game.spaces[key]) == 1) {
+//	    let t = "."+key;
+//	    document.querySelectorAll(t).forEach((el) => {
+//	      el.onclick = (e) => {};
+//	    });
+//	  }
+//	}
+//      }
 
       $('.option').off();
       $('.space').off();
@@ -23013,6 +23017,7 @@ alert("CLICKED ON SPACE");
         return 0;
       }
 
+      his_self.theses_overlay.space_onclick_callback = null;
       mycallback(action);
 
     });
@@ -23027,6 +23032,10 @@ alert("CLICKED ON SPACE");
 
     let his_self = this;
 
+    this.theses_overlay.space_onclick_callback = mycallback;
+
+console.log("BOARD CLICKABLE: " + board_clickable);
+
     let html = '';
     html += '<ul>';
     for (let key in this.game.navalspaces) {
@@ -23034,7 +23043,12 @@ alert("CLICKED ON SPACE");
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
+	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	    $('.option').off();
+	    e.stopPropagation();
+	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
+	    his_self.removeSelectable();
+            his_self.theses_overlay.space_onclick_callback = null;
 	    mycallback(key);
 	  }
 	}
@@ -23045,7 +23059,12 @@ alert("CLICKED ON SPACE");
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
+	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	    $('.option').off();
+	    e.stopPropagation();
+	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
+	    his_self.removeSelectable();
+            his_self.theses_overlay.space_onclick_callback = null;
 	    mycallback(key);
 	  }
 	}
@@ -23066,6 +23085,7 @@ alert("CLICKED ON SPACE");
         return 0;
       }
 
+      his_self.theses_overlay.space_onclick_callback = null;
       mycallback(action);
 
     });
@@ -23870,7 +23890,12 @@ return;
               });
             }
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-          }
+          },
+
+	  null ,
+
+	  true
+
         );
       });
     }
@@ -24192,7 +24217,11 @@ return;
 	    }
 
 	  });
-	}
+	},
+
+	null,
+
+	true 
       );
     }
 
@@ -24917,6 +24946,8 @@ console.log("units length: " + space.units[defender].length);
 
       cancel_func,
 
+      true
+
     );
 
   }
@@ -25126,6 +25157,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
+
+      null,
+
+      true
 
     );
   }
@@ -27763,18 +27798,30 @@ return;
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displayNavalSpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displayNavalSpaceDetailedView(key);
+//        }
       }
     }
 
   }
 
+  addSelectable(el) {
+console.log("here for");
+    if (!el.classList.contains("selectable")) {
+      el.classList.add('selectable');
+    }
+  }
+
+  removeSelectable() {
+    document.querySelectorAll(".selectable").forEach((el) => {
+      el.classList.remove('selectable');
+    });
+  }
+
   displaySpaces() {
 
     let his_self = this;
-
 
     //
     // add tiles
@@ -27782,9 +27829,9 @@ return;
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displaySpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displaySpaceDetailedView(key);
+//        }
       }
     }
 
@@ -27802,8 +27849,15 @@ return;
       $('.gameboard').on('mouseup', function (e) { 
         if (Math.abs(xpos-e.clientX) > 4) { return; }
         if (Math.abs(ypos-e.clientY) > 4) { return; }
-        his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+	//
+	// if this is a selectable space, let people select directly
+	//
+	if (e.currentTarget.classList.contains("selectable")) {
+	  // something else is handling this
+	  return;
+	}
         if (e.currentTarget.classList.contains("space")) {
+          his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
 	  e.stopPropagation();
 	  e.preventDefault();	
 	  return false;
