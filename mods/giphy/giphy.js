@@ -79,7 +79,11 @@ class Giphy extends ModTemplate {
             reader.onerror = reject;
             reader.readAsDataURL(blob);
           })
-      );
+      )
+      .catch((err) => {
+        console.error("Error fetching content: " + err);
+        return "";
+      });
 
   attachEvents(auth) {
     let app = this.app;

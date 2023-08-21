@@ -150,6 +150,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
       .then((buffer: ArrayBuffer) => {
         console.log("buffer fetched for block : " + buffer.byteLength);
         return new Uint8Array(buffer);
+      })
+      .catch((err) => {
+        console.error("Error fetching block: " + err);
+        return "";
       });
   }
 
