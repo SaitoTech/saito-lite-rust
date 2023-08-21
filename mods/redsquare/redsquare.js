@@ -1180,7 +1180,7 @@ class RedSquare extends ModTemplate {
           // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
           // from archives by fetching on field3 will get this.
           //
-          await this.app.storage.saveTransaction(tx, {
+          this.app.storage.saveTransaction(tx, {
             owner: this.publicKey,
             field1: "RedSquare",
             field3: this.publicKey,
