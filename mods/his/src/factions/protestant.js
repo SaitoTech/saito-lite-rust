@@ -36,7 +36,10 @@
 
       calculateBonusVictoryPoints  :    function(game_mod) {
 	// + VP from disgraced papal debaters
-        return game_mod.game.state.papal_debaters_disgraced_vp;
+	let bonus_vp_points = 0;
+	bonus_vp_points += game_mod.game.state.papal_debaters_disgraced_vp;
+	bonus_vp_points += game_mod.game.state.protestant_war_winner_vp;
+        return bonus_vp_points;
       }
 ,
       calculateSpecialVictoryPoints  :  function(game_mod) {

@@ -4,12 +4,17 @@
     // remove foul weather
     //
     this.game.state.events.foul_weather = 0;
+    this.game.state.spring_deploy_across_passes = [];
+    this.game.state.spring_deploy_across_seas = [];
+    this.game.state.events.spring_preparations = "";
+    this.game.state.events.henry_petitions_for_divorce_grant = 0;
 
     //
     // remove gout
     //
     if (this.game.state.events.gout != 0) {
       for (let i in this.game.spaces) {
+	let space = this.game.spaces[i];
         for (let f in space.units) {
           for (let z = space.units[f].length-1;  z >= 0; z--) {
 	    space.units[f][z].gout = false; 
@@ -18,7 +23,42 @@
       }
       this.game.state.events.gout = 0;    
     }
+
+    //
+    // remove temporary bonuses and modifiers
+    //
+    this.game.state.events.augsburg_confession = false;
+
+
   }
+
+  onNewRound() {
+
+    this.game.state.tmp_reformations_this_turn = [];
+    this.game.state.tmp_counter_reformations_this_turn = [];
+    this.game.state.tmp_protestant_reformation_modifier = 0;
+    this.game.state.tmp_protestant_reformation_bonus = 0;
+    this.game.state.tmp_protestant_reformation_bonus_spaces = [];
+    this.game.state.tmp_catholic_reformation_modifier = 0;
+    this.game.state.tmp_catholic_reformation_bonus = 0;
+    this.game.state.tmp_catholic_reformation_bonus_spaces = [];
+            
+    this.game.state.tmp_protestant_counter_reformation_modifier = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus_spaces = [];
+    this.game.state.tmp_catholic_counter_reformation_modifier = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus_spaces = [];
+    this.game.state.tmp_papacy_may_specify_debater = 0;
+    this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+        
+    //
+    // allow stuff to move again
+    //
+    this.resetLockedTroops();
+
+  }
+
 
   returnLoanedUnits() {
     for (let i in this.game.spaces) {
@@ -113,8 +153,10 @@
 
   removeUnit(faction, space, type) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
-      if (space.units[faction].type === type) {
+      if (space.units[faction][i].type === type) {
+        this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
 	return;
       }
@@ -388,6 +430,8 @@
     state.translations['full']['french'] = 0;
     state.translations['full']['english'] = 0;
 
+    state.protestant_war_winner_vp = 0;
+
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
     state.saint_peters_cathedral['vp'] = 0;    
@@ -403,13 +447,17 @@
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
+    state.tmp_protestant_reformation_modifier = 0;
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_protestant_reformation_bonus_spaces = [];
+    state.tmp_catholic_reformation_modifier = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus_spaces = [];
 
+    state.tmp_protestant_counter_reformation_modifier = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus_spaces = [];
+    state.tmp_catholic_counter_reformation_modifier = 0;
     state.tmp_catholic_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus_spaces = [];
     state.tmp_papacy_may_specify_debater = 0;
@@ -419,6 +467,8 @@
     state.tmp_bonus_protestant_translation_french_zone = 0;
     state.tmp_bonus_protestant_translation_english_zone = 0;
     state.tmp_bonus_papacy_burn_books = 0;
+
+    state.skip_next_impulse = [];
 
     //
     // foreign wars
@@ -441,7 +491,9 @@
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
+    state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
+    state.excommunicated_factions = {};
     state.excommunicated = [];
     state.debaters = [];
     state.explorers = [];
@@ -464,6 +516,10 @@
     state.leaders.elizabeth_i = 0;
     state.leaders.calvin = 0;
 
+    state.spring_deploy_across_seas = [];
+    state.spring_deploy_across_passes = [];
+
+    state.events.maurice_of_saxony = "";
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
     state.events.papacy_may_found_jesuit_universities = 0;
@@ -472,6 +528,16 @@
     state.events.wartburg = 0;
 
     return state;
+
+  }
+
+  excommunicateFaction(faction="") {
+    this.game.state.excommunicated_faction[faction] = 1;
+    return;
+  }
+
+  restoreReformers() {
+
 
   }
 
@@ -499,13 +565,13 @@
     obj.space = s;
     obj.faction = faction;
     obj.idx = idx;
-    obj.reformer = this.game.state.spaces[s].units[faction][idx];
+    obj.reformer = this.game.spaces[s].units[faction][idx];
 
     //
     // remove reformer
     //
     if (idx != -1) {
-      this.game.state.spaces[s].units[faction].splice(idx, 1);
+      this.game.spaces[s].units[faction].splice(idx, 1);
     }
 
     //
@@ -527,6 +593,26 @@
 
   }
 
+  restoreReformers() {
+
+    for (let i = 0; i < this.game.state.reformers_removed_until_next_round.length; i++) {
+      if (obj.reformer) {
+
+        let leader = obj.reformer;
+	let s = obj.space;
+        let faction = obj.faction;
+
+	if (reformer) {
+	  if (s) {
+	    if (faction) {
+	      this.game.spaces[s].units[faction].push(reformer);
+	    }
+	  }
+	}
+      }
+    }
+
+  }
   restoreMilitaryLeaders() {
 
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
@@ -539,7 +625,7 @@
 	if (leader) {
 	  if (s) {
 	    if (faction) {
-	      this.game.state.spaces[s].units[faction].push(leader);
+	      this.game.spaces[s].units[faction].push(leader);
 	    }
 	  }
 	}
@@ -561,7 +647,7 @@
 	if (reformer) {
 	  if (s) {
 	    if (faction) {
-	      this.game.state.spaces[s].units[faction].push(reformer);
+	      this.game.spaces[s].units[faction].push(reformer);
 	    }
 	  }
 	}

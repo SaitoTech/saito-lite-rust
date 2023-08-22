@@ -552,44 +552,21 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     return this.game.state.players_info[player-1].factions;
   }
 
-  returnActionMenuOptions(player=null, faction=null) {
+
+  returnActionMenuOptions(player=null, faction=null, limit="") {
 
     let menu = [];
 
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
-      cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Move formation in clear",
-      check : this.canPlayerMoveFormationInClear,
-      fnct : this.playerMoveFormationInClear,
-    });
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
-      cost : [2,2,2,2,2,2,2,2,2,2],
-      name : "Move formation over pass",
-      check : this.canPlayerMoveFormationOverPass,
-      fnct : this.playerMoveFormationOverPass,
-    });
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
-      cost : [2,2,2,2,2,2,2,2],
-      name : "Naval transport",
-      check : this.canPlayerNavalTransport,
-      fnct : this.playerNavalTransport,
-    });
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
-      cost : [1,1,1,1,1,1,1,1],
-      name : "Naval move",
-      check : this.canPlayerNavalMove,
-      fnct : this.playerNavalMove,
-    });
+if (limit === "build") {
+
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
       name : "Buy mercenary",
       check : this.canPlayerBuyMercenary,
       fnct : this.playerBuyMercenary,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/mercenary.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -597,6 +574,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Raise regular",
       check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
@@ -604,48 +583,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Build naval squadron",
       check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
-    });
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
-      cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Assault",
-      check : this.canPlayerAssault,
-      fnct : this.playerAssault,
-    });
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
-      cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Control unfortified space",
-      check : this.canPlayerControlUnfortifiedSpace,
-      fnct : this.playerControlUnfortifiedSpace,
-    });
-    menu.push({
-      factions : ['hapsburg','england','france'],
-      cost : [2,2,2],
-      name : "Explore",
-      check : this.canPlayerExplore,
-      fnct : this.playerExplore,
-    });
-    menu.push({
-      factions : ['hapsburg','england','france'],
-      cost : [2,3,3],
-      name : "Colonize",
-      check : this.canPlayerColonize,
-      fnct : this.playerColonize,
-    });
-    menu.push({
-      factions : ['hapsburg','england','france'],
-      cost : [4,4,4],
-      name : "Conquer",
-      check : this.canPlayerConquer,
-      fnct : this.playerConquer,
-    });
-    menu.push({
-      factions : ['ottoman'],
-      cost : [2],
-      name : "Initiate piracy in a sea",
-      check : this.canPlayerInitiatePiracyInASea,
-      fnct : this.playerInitiatePiracyInASea,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/squadron.jpg',
     });
     menu.push({
       factions : ['ottoman'],
@@ -653,6 +592,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Raise Cavalry",
       check : this.canPlayerRaiseCavalry,
       fnct : this.playerRaiseCavalry,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/cavalry.jpg',
     });
     menu.push({
       factions : ['ottoman'],
@@ -660,6 +601,146 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Build corsair",
       check : this.canPlayerBuildCorsair,
       fnct : this.playerBuildCorsair,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/corsair.jpg',
+    });
+
+} else {
+
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1,1,1],
+      name : "Move formation in clear",
+      check : this.canPlayerMoveFormationInClear,
+      fnct : this.playerMoveFormationInClear,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_in_clear.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2,2,2],
+      name : "Move formation over pass",
+      check : this.canPlayerMoveFormationOverPass,
+      fnct : this.playerMoveFormationOverPass,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_over_pass.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2],
+      name : "Naval transport",
+      check : this.canPlayerNavalTransport,
+      fnct : this.playerNavalTransport,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_transport.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1],
+      name : "Naval move",
+      check : this.canPlayerNavalMove,
+      fnct : this.playerNavalMove,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_fleet.jpg',
+    });
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1],
+      name : "Buy mercenary",
+      check : this.canPlayerBuyMercenary,
+      fnct : this.playerBuyMercenary,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/mercenary.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2,2,2],
+      name : "Raise regular",
+      check : this.canPlayerRaiseRegular,
+      fnct : this.playerRaiseRegular,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2],
+      name : "Build naval squadron",
+      check : this.canPlayerBuildNavalSquadron,
+      fnct : this.playerBuildNavalSquadron,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/squadron.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1,1,1],
+      name : "Assault",
+      check : this.canPlayerAssault,
+      fnct : this.playerAssault,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1,1,1],
+      name : "Control unfortified space",
+      check : this.canPlayerControlUnfortifiedSpace,
+      fnct : this.playerControlUnfortifiedSpace,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/control.jpg',
+    });
+    menu.push({
+      factions : ['hapsburg','england','france'],
+      cost : [2,2,2],
+      name : "Explore",
+      check : this.canPlayerExplore,
+      fnct : this.playerExplore,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/explore.jpg',
+    });
+    menu.push({
+      factions : ['hapsburg','england','france'],
+      cost : [2,3,3],
+      name : "Colonize",
+      check : this.canPlayerColonize,
+      fnct : this.playerColonize,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/colonize.jpg',
+    });
+    menu.push({
+      factions : ['hapsburg','england','france'],
+      cost : [4,4,4],
+      name : "Conquer",
+      check : this.canPlayerConquer,
+      fnct : this.playerConquer,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/conquer.jpg',
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [2],
+      name : "Initiate piracy in a sea",
+      check : this.canPlayerInitiatePiracyInASea,
+      fnct : this.playerInitiatePiracyInASea,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/piracy.jpg',
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Raise Cavalry",
+      check : this.canPlayerRaiseCavalry,
+      fnct : this.playerRaiseCavalry,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/cavalry.jpg',
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Build corsair",
+      check : this.canPlayerBuildCorsair,
+      fnct : this.playerBuildCorsair,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/corsair.jpg',
     });
     menu.push({
       factions : ['protestant'],
@@ -667,6 +748,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Translate scripture",
       check : this.canPlayerTranslateScripture,
       fnct : this.playerTranslateScripture,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/translate.jpg',
     });
     menu.push({
       factions : ['england','protestant'],
@@ -674,6 +757,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Publish treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/printing_press.jpg',
     });
     menu.push({
       factions : ['papacy','protestant'],
@@ -681,6 +766,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Call theological debate",
       check : this.canPlayerCallTheologicalDebate,
       fnct : this.playerCallTheologicalDebate,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/theological_debate.jpg',
     });
     menu.push({
       factions : ['papacy'],
@@ -688,6 +775,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Build Saint Peters",
       check : this.canPlayerBuildSaintPeters,
       fnct : this.playerBuildSaintPeters,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/saint_peters.png',
     });
     menu.push({
       factions : ['papacy'],
@@ -695,6 +784,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Burn books",
       check : this.canPlayerBurnBooks,
       fnct : this.playerBurnBooks,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/burn_books.jpg',
     });
     // Loyola reduces Jesuit University Cost
     if (this.canPlayerCommitDebater("papacy", "loyola-debater")) {
@@ -704,6 +795,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
         name : "Found Jesuit University w/ Loyola",
         check : this.canPlayerFoundJesuitUniversity,
         fnct : this.playerFoundJesuitUniversityWithLoyola,
+        category : "special" ,
+        img : '/his/img/backgrounds/move/university.png',
       });
     }
     menu.push({
@@ -712,7 +805,11 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       name : "Found Jesuit University",
       check : this.canPlayerFoundJesuitUniversity,
       fnct : this.playerFoundJesuitUniversity,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/university.png',
     });
+
+}
 
     if (player == null) { return menu; }
 
@@ -796,17 +893,29 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let html = '';
     html += '<ul>';
+
+    this.theses_overlay.space_onclick_callback = mycallback;
+
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
         html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
+
+	//
+	// the spaces that are selectable are clickable on the main board (whatever board shows)
+	//
 	if (board_clickable) {
 	  let t = "."+key;
 	  document.querySelectorAll(t).forEach((el) => {
+	    his_self.addSelectable(el);
 	    el.onclick = (e) => {
+	      e.stopPropagation();
+	      e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	      el.onclick = () => {};
 	      $('.option').off();
 	      $('.space').off();
 	      $('.hextile').off();
+              his_self.theses_overlay.space_onclick_callback = null;
+	      his_self.removeSelectable();
 	      mycallback(key);
 	    }
 	  });
@@ -826,16 +935,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       //
       // and remove on-board clickability
       //
-      if (board_clickable) {
-        for (let key in his_self.game.spaces) {
-          if (filter_func(his_self.game.spaces[key]) == 1) {
-	    let t = "."+key;
-	    document.querySelectorAll(t).forEach((el) => {
-	      el.onclick = (e) => {};
-	    });
-	  }
-	}
-      }
+//      if (board_clickable) {
+//        for (let key in his_self.game.spaces) {
+//          if (filter_func(his_self.game.spaces[key]) == 1) {
+//	    let t = "."+key;
+//	    document.querySelectorAll(t).forEach((el) => {
+//	      el.onclick = (e) => {};
+//	    });
+//	  }
+//	}
+//      }
 
       $('.option').off();
       $('.space').off();
@@ -847,15 +956,24 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
         return 0;
       }
 
+      his_self.theses_overlay.space_onclick_callback = null;
       mycallback(action);
 
     });
 
   }
 
+  playerSelectSpaceOrNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
+    return this.playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback, cancel_func, board_clickable);
+  }
+
   playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
+
+    this.theses_overlay.space_onclick_callback = mycallback;
+
+console.log("BOARD CLICKABLE: " + board_clickable);
 
     let html = '';
     html += '<ul>';
@@ -863,8 +981,13 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       if (filter_func(this.game.navalspaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
+	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
 	    $('.option').off();
+	    e.stopPropagation();
+	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
+	    his_self.removeSelectable();
+            his_self.theses_overlay.space_onclick_callback = null;
 	    mycallback(key);
 	  }
 	}
@@ -874,8 +997,13 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       if (filter_func(this.game.spaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
-	  document.getElementById(key).onclick = (e) => {
+	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
+	  document.getElementById(key).onclick = (e) => { 
 	    $('.option').off();
+	    e.stopPropagation();
+	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
+	    his_self.removeSelectable();
+            his_self.theses_overlay.space_onclick_callback = null;
 	    mycallback(key);
 	  }
 	}
@@ -896,6 +1024,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
         return 0;
       }
 
+      his_self.theses_overlay.space_onclick_callback = null;
       mycallback(action);
 
     });
@@ -1028,6 +1157,9 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
     this.attachCardboxEvents(function(card) {
+
+      this.updateStatus(`Playing ${this.diplomatic_deck[card].name}`, this.game.deck[1].hand);
+
       his_self.addMove("diplomacy_card_event\t"+faction+"\t"+card);
       his_self.addMove("discard_diplomacy_card\t"+faction+"\t"+card);
       his_self.endTurn();
@@ -1050,7 +1182,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     //
     // mandatory event cards effect first, then 2 OPS
     //
-    if (this.deck[card].type === "mandatory") {
+    if (this.deck[card].type === "mandatory" && this.deck[card].canEvent(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -1082,12 +1214,14 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
   }
 
-  async playerPlayOps(card, faction, ops=null) {
+  async playerPlayOps(card="", faction, ops=null) {
 
     //
     // discard the card
     //
-    this.addMove("discard\t"+faction+"\t"+card);
+    if (card != "") {
+      this.addMove("discard\t"+faction+"\t"+card);
+    }
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
@@ -1095,7 +1229,6 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     if (ops == null) { ops = 2; }
     if (ops == 0) { console.log("OPS ARE ZERO!"); }
-
 
     if (this.game.state.activated_powers[faction].length > 0) {
 
@@ -1132,6 +1265,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
         html    += `<li class="card" id="end_turn">end turn</li>`;
         html    += `</ul>`;
+
+	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops);
 
         his_self.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
@@ -1178,6 +1313,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       html    += `<li class="card" id="end_turn">end turn</li>`;
       html    += `</ul>`;
 
+      this.menu_overlay.render(menu, this.game.player, faction, ops);
+
       this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
 
@@ -1204,7 +1341,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\t"+card);
+    this.addMove("discard\t"+faction+"\t"+card);
+    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + this.game.deck[0].cards[card].name + " for the event\tevent\t"+card);
     this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
@@ -1223,11 +1361,306 @@ console.log("1");
 return;
   }
 
+  playerPlayPapacyDiplomacyPhaseSpecialTurn(enemies=[]) {
 
-  playerPlayPapacyDiplomacyPhaseSpecialTurn() {
-this.updateLog("Papacy Diplomacy Phase Special Turn");
-    this.endTurn();
-    return;
+    let his_self = this;
+    let player = this.returnPlayerOfFaction("papacy");
+    if (this.game.player != player) { this.updateStatus("ERROR: you are not the papacy"); return; }
+
+    let msg = `Do you wish to end a war? [${JSON.stringify(enemies)}]`;
+    let opt = "<ul>";
+    opt += `<li class="option" id="yes">yes</li>`;
+    opt += `<li class="option" id="no">no</li>`;
+    opt += '</ul>';
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      $(".option").off();
+      let id = $(this).attr('id');
+
+      if (id === "no") {
+	his_self.endTurn();
+	return 0;
+      }
+
+      //
+      // otherwise YES
+      //
+      let msg = `Which Faction?`;
+      let opt = "<ul>";
+      for (let i = 0; i < enemies.length; i++) {
+        opt += `<li class="option" id="${enemies[i]}">${enemies[i]}</li>`;
+      }
+      opt += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, opt);
+
+      $(".option").off();
+      $(".option").on('click', function() {
+
+	let enemy = $(this).attr('id');
+
+        //
+        // otherwise YES
+        //
+        let msg = `How would you like to End the War?`;
+        let opt = "<ul>";
+	if ((enemy == "hapsburg" && his_self.game.state.excommunicated_faction["hapsburg"] != 1) || (enemy == "france" && his_self.game.state.excommunicated_faction["france"] != 1)) {
+          opt += `<li class="option" id="005">Papal Bull</li>`;
+	}
+        opt += `<li class="option" id="sue">sue for peace</li>`;
+        opt += '</ul>';
+
+        his_self.updateStatusWithOptions(msg, opt);
+
+        $(".option").off();
+        $(".option").on('click', function() {
+
+	  let method = $(this).attr('id');
+
+	  if (method === "005") {
+
+	    //
+	    // excommunicate faction 
+	    //
+	    his_self.addMove("excommunicate_faction\t"+enemy);
+
+	    //
+	    // factions no longer At War
+	    //
+	    his_self.addMove("unset_enemies\tpapacy\t"+enemy);
+
+	    //
+	    // regain control of home space, or draw card
+	    //
+    	    let msg = `Regain Home Space or Draw Card?`;
+    	    let opt = "<ul>";
+    	    opt += `<li class="option" id="regain">regain home space</li>`;
+    	    opt += `<li class="option" id="draw">draw card</li>`;
+    	    opt += '</ul>';
+
+	    his_self.updateStatusWithOptions(msg, opt);
+
+	    $(".option").off();
+	    $(".option").on('click', function() {
+
+	      let action2 = $(this).attr('id');
+
+	      if (action2 === "draw") {
+                his_self.addMove("hand_to_fhand\t1\t"+his_self.game.player+"\t"+"papacy");
+                his_self.addMove(`DEAL\t1\t${his_self.game.player}\t1`);
+		his_self.endTurn();
+	      }
+
+	      if (action2 === "regain") {
+
+    	        his_self.playerSelectSpaceWithFilter(
+
+                  "Select Home Space to Recapture" ,
+
+        	  function(space) {
+	            if (space.home === "papacy" && space.political !== "papacy") {
+		      return 1;
+		    }
+		  },
+
+      		  function(spacekey) {
+                    his_self.addMove(`control\tpapacy\t${spacekey}`);
+                    his_self.addMove(`withdraw_to_nearest_fortified_space\t${enemy}\t${spacekey}`);
+	            his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+		    his_self.endTurn();
+		  },
+
+	    	  cancel_func,
+
+	    	  true 
+
+	  	);
+
+	      }
+
+	    });
+
+	  }
+
+	  if (method === "sue") {
+
+	    //
+	    // protestants get War Winner 1 VP
+	    //
+	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+
+	    //
+	    // papacy removes 2 units
+	    //
+            his_self.playerSelectSpaceOrNavalSpaceWithFilter(
+              `Select Space to Remove 1st Unit` ,
+              function(space) {
+	        if (space.units["papacy"].length > 0) { return 1; }
+		return 0;
+              },
+              function(spacekey) {
+	        let land_or_sea = "land";
+	        let space = null;
+	        if (his_self.game.navalspaces[spacekey]) {
+	  	  land_or_sea = "sea";
+		  space = his_self.game.navalspaces[spacekey];
+	        } else {
+		  space = his_self.game.spaces[spacekey];
+	        }
+	        if (space == null) {
+		  alert("ERROR: not sure where you clicked - reload to continue");
+		  return 1;
+	        }
+	        let faction_to_destroy = "papacy";
+   	        let msg = "Destroy Which Unit: ";
+                let unittypes = [];
+                let html = '<ul>';
+                for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
+                  if (space.units[faction_to_destroy][i].admin_rating == 0) {
+                    if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
+                      html += `<li class="option" id="${space.units[faction_to_destroy][i].unittype}">${space.units[faction_to_destroy][i].unittype}</li>`;
+                      unittypes.push(space.units[faction_to_destroy][i].unittype);
+                    }
+                  }
+                }
+                html += '</ul>';
+                his_self.updateStatusWithOptions(msg, html);
+                $('.option').off();
+                $('.option').on('click', function () {
+                  let unittype = $(this).attr("id");
+                  his_self.removeUnit(faction_to_destroy, spacekey, unittype);
+                  his_self.displaySpace(spacekey);
+                  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
+	    	  //
+	          // papacy removes 2 units
+	          //
+                  his_self.playerSelectSpaceOrNavalSpaceWithFilter(
+                    `Select Space to Remove 1st Unit` ,
+                    function(space) {
+	              if (space.units["papacy"].length > 0) { return 1; }
+		      return 0;
+                    },
+                    function(spacekey) {
+	              let land_or_sea = "land";
+	              let space = null;
+	              if (his_self.game.navalspaces[spacekey]) {
+	  	        land_or_sea = "sea";
+		        space = his_self.game.navalspaces[spacekey];
+	              } else {
+		        space = his_self.game.spaces[spacekey];
+	              }
+	              if (space == null) {
+		        alert("ERROR: not sure where you clicked - reload to continue");
+		        return 1;
+	              }
+	              let faction_to_destroy = "papacy";
+   	              let msg = "Destroy Which Unit: ";
+                      let unittypes = [];
+                      let html = '<ul>';
+                      for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
+                        if (space.units[faction_to_destroy][i].admin_rating == 0) {
+                          if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
+                            html += `<li class="option" id="${space.units[faction_to_destroy][i].unittype}">${space.units[faction_to_destroy][i].unittype}</li>`;
+                            unittypes.push(space.units[faction_to_destroy][i].unittype);
+                          }
+                        }
+                      }
+                      html += '</ul>';
+                      his_self.updateStatusWithOptions(msg, html);
+                      $('.option').off();
+                      $('.option').on('click', function () {
+                        let unittype = $(this).attr("id");
+                        his_self.removeUnit(faction_to_destroy, spacekey, unittype);
+                        his_self.displaySpace(spacekey);
+                        his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
+			let z = false;
+                        his_self.addMove("player_play_papacy_regain_spaces_for_vp");
+		        his_self.endTurn();
+		      });
+	            },
+	            0 ,
+	            1
+	          );
+		});
+	      },
+	      0 ,
+	      1
+	    );
+	  }	
+	});
+      });
+    });
+
+    return 0;
+
+  }
+
+  playerPlayPapacyRegainSpacesForVP(faction) {
+ 
+    let spaces = his_self.returnSpacesWithFilter(
+      function(spacekey) {
+	if (his_self.game.spaces[spacekey].home == "papacy" && his_self.game.spaces[spacekey].political == faction) { return true; }
+        return false;
+      }
+    ); 
+
+    if (spaces.length == 0) {
+      his_self.endTurn();
+      return;
+    }
+
+    let msg = "Do you wish to Regain Home Space for 1 VP: ";
+    let opt = "<ul>";
+    opt += `<li class="option" id="regain">regain and give VP</li>`;
+    opt += `<li class="option" id="skip">skip</li>`;
+    opt += '</ul>';
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      $(".option").off();
+      let id = $(this).attr('id');
+
+      if (id === "skip") {
+	his_self.endTurn();
+	return;
+      }
+
+      if (id === "regain") {
+        his_self.playerSelectSpaceWithFilter(
+
+          "Select Home Space to Recapture" ,
+
+          function(space) {
+	    if (space.home === "papacy" && space.political !== "papacy") {
+	      return 1;
+	    }
+	  },
+
+      	  function(spacekey) {
+            his_self.addMove(`control\tpapacy\t${spacekey}`);
+            his_self.addMove(`withdraw_to_nearest_fortified_space\t${faction}\t${spacekey}`);
+	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+            his_self.addMove("player_play_papacy_regain_spaces_for_vp");
+	    his_self.endTurn();
+	  },
+
+	  null,
+
+	  true 
+
+        );
+
+      }
+
+    });
+
   }
 
 
@@ -1256,11 +1689,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       let msg = "Do you wish to Spring Deploy from: ";
      
-      let opt = "";
+      let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
 	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
       opt += `<li class="option" id="pass">skip</li>`;
+      opt += '</ul>';
 
       this.updateStatusWithOptions(msg, opt);
 
@@ -1330,6 +1764,8 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
    	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
+
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
 
               let html = "<ul>";
@@ -1370,7 +1806,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 		  }
 		}
 
-
 	        if (units_to_move.includes(id)) {
 	          let idx = units_to_move.indexOf(id);
 	          if (idx > -1) {
@@ -1394,7 +1829,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
               });
             }
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-          }
+          },
+
+	  null ,
+
+	  true
+
         );
       });
     }
@@ -1439,6 +1879,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let units_to_move = [];
     let cancel_func = null;
     let spacekey = "";
+    let space = null;
 
 	//
 	// first define the functions that will be used internally
@@ -1492,8 +1933,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+          space = his_self.game.spaces[spacekey];
+
 	  let mobj = {
-	    space : his_self.game.spaces[spacekey] ,
+	    space : space ,
 	    faction : faction ,
    	    source : spacekey ,
 	    destination : "" ,
@@ -1505,7 +1948,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-	      if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+	      if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
 	        } else {
@@ -1614,7 +2057,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 	      for (let i = 0; i < space.units[faction].length; i++) {
 		let u = space.units[faction][i];
-		if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.admin_rating > 0) {
+		if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.command_value > 0) {
 		  if (u.locked == false && (his_self.game.state.events.foul_weather != 1 && u.already_moved != 1)) { 
 		    units_to_move.push(i);
 		  } else {
@@ -1713,7 +2156,11 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	    }
 
 	  });
-	}
+	},
+
+	null,
+
+	true 
       );
     }
 
@@ -1863,6 +2310,64 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
+
+
+  playerEvaluateBreakSiegeRetreatOpportunity(attacker, spacekey) {
+
+    let his_self = this;
+    let retreat_destination = "";
+    let space_name = this.game.spaces[spacekey].name;
+
+    let onFinishSelect = function(his_self, destination_spacekey) {
+      his_self.addMove("retreat"+"\t"+attacker+"\t"+spacekey+"\t"+destination_spacekey);
+      his_self.endTurn();
+    };
+
+    let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
+
+      let space = his_self.game.spaces[spacekey];
+
+      let html = "<ul>";
+      for (let i = 0; i < space.neighbours.length; i++) {
+        if (his_self.canFactionRetreatToSpace(attacker, space.neighbours[i])) {
+          html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+        }
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions("Choose Destination for Retreat: ", html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+        onFinishSelect(his_self, id);
+      });
+
+    };
+
+    
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="skip">sacrifice forces</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Break Siege and Retreat: ${space_name}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "retreat") {
+	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
+
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender, is_attacker_loser=false) {
 
     let his_self = this;
@@ -1907,7 +2412,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     };
 
     
-
     let html = `<ul>`;
     html    += `<li class="card" id="retreat">retreat</li>`;
     if (is_attacker_loser) { 
@@ -2253,11 +2757,12 @@ console.log("units length: " + space.units[defender].length);
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+console.log("A: " + JSON.stringify(spaces_with_units));
     for (let i = 0; i < spaces_with_units.length; i++) {
       if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
-        let any_unlocked_units = false;
         for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
   	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
+console.log("B: pass identified in " + spaces_with_units[i]);
 	    return 1;
 	  }
         }
@@ -2339,7 +2844,7 @@ console.log("units length: " + space.units[defender].length);
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-              if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+              if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	        } else {
@@ -2380,6 +2885,8 @@ console.log("units length: " + space.units[defender].length);
       },
 
       cancel_func,
+
+      true
 
     );
 
@@ -2590,6 +3097,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
+
+      null,
+
+      true
 
     );
   }
@@ -3032,13 +3543,20 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
-	    if (id === "carlstadt") {
+	    his_self.cardbox.hide();
+
+	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
+	    if (id === "carlstadt-debater") {
+	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
+	    if (id === "carlstadt") {
+	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t1");
+	    }
+
 	    his_self.endTurn();
 
 	    return 0;
@@ -3105,8 +3623,6 @@ return;
       $('.option').off();
       let language_zone = e.currentTarget.id;
 
-      his_self.language_zone_overlay.hide();
-
       let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
@@ -3131,6 +3647,8 @@ return;
       $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
+
+        his_self.language_zone_overlay.hide();
 
         if (committed === "committed") { committed = 1; } else { committed = 0; }
 
@@ -3197,8 +3715,9 @@ return;
 
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
+        html += '<li class="option" style="" id="no">No</li>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">Tetzel +1 to St Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
           html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
@@ -3206,7 +3725,6 @@ return;
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
           html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
-        html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
 
         his_self.updateStatusWithOptions(msg, html);
@@ -3226,6 +3744,8 @@ return;
         });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
+
+	  his_self.cardbox.hide();
 
 	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
@@ -3348,5 +3868,21 @@ return;
     );
   }
 
+  playerAddUnrest(his_self, faction="", zone="", religion="") {
+
+    his_self.playerSelectSpaceWithFilter(
+      "Select Space to add Unrest" ,
+      function(space) {
+        if (space.language === zone && space.religion === religion) { return 1; }
+      },
+      function(spacekey) {
+        his_self.addMove(`unrest\t${spacekey}`);
+        his_self.endTurn();
+      },
+      null,
+      true 
+    );
+
+  }
 
 

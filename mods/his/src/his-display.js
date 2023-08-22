@@ -239,7 +239,7 @@
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
-      if (this.returnElectoralBonus(key)) {
+      if (this.returnElectoralBonus(key) != 0) {
         obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
       }
     }
@@ -252,7 +252,7 @@
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
       return 2;
     }
-    if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
+    if (space === "mainz" && this.game.state.mainz_electoral_bonus == 0) {
       return 1;
     }
     if (space === "trier" && this.game.state.trier_electoral_bonus == 0) {
@@ -938,18 +938,30 @@
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displayNavalSpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displayNavalSpaceDetailedView(key);
+//        }
       }
     }
 
   }
 
+  addSelectable(el) {
+console.log("here for");
+    if (!el.classList.contains("selectable")) {
+      el.classList.add('selectable');
+    }
+  }
+
+  removeSelectable() {
+    document.querySelectorAll(".selectable").forEach((el) => {
+      el.classList.remove('selectable');
+    });
+  }
+
   displaySpaces() {
 
     let his_self = this;
-
 
     //
     // add tiles
@@ -957,32 +969,62 @@
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displaySpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displaySpaceDetailedView(key);
+//        }
       }
     }
 
     let xpos = 0;
     let ypos = 0;
 
-if (!his_self.bound_gameboard_zoom) {
 
-    $('.gameboard').on('mousedown', function (e) {
-      if (e.currentTarget.classList.contains("space")) { return; }
-      xpos = e.clientX;
-      ypos = e.clientY;
-    });
-    $('.gameboard').on('mouseup', function (e) { 
-      if (e.currentTarget.classList.contains("space")) { return; }
-      if (Math.abs(xpos-e.clientX) > 4) { return; }
-      if (Math.abs(ypos-e.clientY) > 4) { return; }
-      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
-    });
+    if (!his_self.bound_gameboard_zoom) {
 
-    his_self.bound_gameboard_zoom = 1;
+      $('.gameboard').on('mousedown', function (e) {
+        if (e.currentTarget.classList.contains("space")) { return; }
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
+      $('.gameboard').on('mouseup', function (e) { 
+        if (Math.abs(xpos-e.clientX) > 4) { return; }
+        if (Math.abs(ypos-e.clientY) > 4) { return; }
+	//
+	// if this is a selectable space, let people select directly
+	//
+	// this is a total hack by the way, but it captures the embedding that happens when
+	// we are clicking and the click actino is technically on the item that is INSIDE
+	// the selectable DIV, like a click on a unit in a key, etc.
+	//
+	if (e.target.classList.contains("selectable")) {
+	  // something else is handling this
+	  return;
+	} else {
+	  if (el.parentNode) {
+	    if (el.parentNode.classList.contains("selectable")) {
+	      // something else is handling this
+	      return;
+	    } else {
+	      if (el.parentNode.parentNode) {
+	        if (el.parentNode.parentNode.classList.contains("selectable")) {
+	          return;
+	        }
+	      }
+	    }
+	  }
+	}
+	// otherwise show zoom
+        //if (e.target.classList.contains("space")) {
+          his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+	  //e.stopPropagation();
+	  //e.preventDefault();	
+	  //return;
+	//}
+      });
 
-}
+      his_self.bound_gameboard_zoom = 1;
+
+    }
 
 
   }
@@ -1017,9 +1059,6 @@ if (!his_self.bound_gameboard_zoom) {
       return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
-    //
-    //
-    //
     if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
 
     for (let i = 0; i < this.game.deck.length; i++) {

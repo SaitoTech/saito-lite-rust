@@ -31,7 +31,18 @@ console.log("\n\n\n\n");
       //
       this.game.queue.push("round");
       this.game.queue.push("READY");
-      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.deck));
+
+      let deck2 = JSON.parse(JSON.stringify(this.deck));
+      delete deck2['001'];
+      delete deck2['002'];
+      delete deck2['003'];
+      delete deck2['004'];
+      delete deck2['005'];
+      delete deck2['006'];
+      delete deck2['007'];
+      delete deck2['008'];
+
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(deck2));
       this.game.queue.push("init");
 
     }
@@ -53,13 +64,6 @@ console.log("\n\n\n\n");
       // 1517 scenario
       //
       if (this.game.state.scenario == "1517") {
-
-	// TEMPORARY AND TESTING
-	this.addMercenary("papacy", "siena", 4);
-	this.addMercenary("papacy", "nuremberg", 4);
-	this.addRegular("papacy", "ravenna", 2);
-	this.setAllies("protestant", "venice");
-  	this.addUnrest("graz");
 
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
@@ -153,20 +157,6 @@ console.log("\n\n\n\n");
 	this.addDebater("protestant", "melanchthon-debater");
 	this.addDebater("protestant", "bucer-debater");
 	this.addDebater("protestant", "carlstadt-debater");
-
-	this.game.spaces['worms'].religion = "protestant";
-
-	// HACK
-	this.addDebater("protestant", "bullinger-debater");
-	this.addDebater("protestant", "oekolampadius-debater");
-	this.addDebater("protestant", "zwingli-debater");
-	this.addDebater("papacy", "caraffa-debater");
-	this.addDebater("papacy", "gardiner-debater");
-	this.addDebater("papacy", "loyola-debater");
-	this.addDebater("papacy", "pole-debater");
-	this.addDebater("papacy", "canisius-debater");
-	this.addDebater("papacy", "contarini-debater");
-	this.addDebater("papacy", "faber-debater");
 
       }
 

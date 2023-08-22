@@ -105,7 +105,6 @@ class FactionOverlay {
           }
         }
 
-
         if (this.mod.game.state.leaders.clement_vii == 1) {
 	  this.app.browser.addElementToSelector(this.mod.returnCardImage("010"), ".faction_sheet_ruler");
 	}

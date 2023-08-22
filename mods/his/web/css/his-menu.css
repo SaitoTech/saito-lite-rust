@@ -1,0 +1,54 @@
+
+
+.menu {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  row-gap: 2rem;
+  column-gap: 2rem;
+  width: 90vw;
+  max-width: 1400px;
+  height: 85vh;
+  max-width: 1400px;
+  overflow-y: auto;
+  background-color: transparent;
+}
+
+.menu-option-container {
+  width: 100%;
+  border: 1px solid var(--saito-border-color);
+  position: relative;
+  cursor: pointer;
+  max-height: 181px;
+}
+
+.menu-option-image {
+  width: 100%;
+  height: 100%;
+}
+
+.menu-option-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-option-title {
+    position: absolute;
+    height: 6rem;
+    background-color: #000A;
+    overflow-x: hide;
+    color: white;
+    width: 100%;
+    top: 0;
+    left: 0px;
+    padding: 1.6rem;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+

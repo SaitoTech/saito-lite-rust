@@ -31,22 +31,17 @@
   }
 
   areAllies(faction1, faction2) {
-console.log("DIPLOMACY: " + JSON.stringify(this.game.state.diplomacy));
-console.log("checking if allies: " + faction1 + " -- " + faction2);
     try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
     if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
-console.log("minor power...");
       let f1cp = this.returnControllingPower(faction1);
       let f2cp = this.returnControllingPower(faction2);
-      console.log(f1cp + " -- " + f2cp + " -- " + faction1 + " -- " + faction2);
       try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
       try { if (this.game.state.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
       try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
     }
-console.log("saying no!");
     return 0;
   }
 
@@ -65,8 +60,6 @@ console.log("saying no!");
   }
 
   setAllies(faction1, faction2, amp=1) {
-
-console.log("set allies: " + faction1 + " || " + faction2);
 
     try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}

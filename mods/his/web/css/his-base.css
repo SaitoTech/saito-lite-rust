@@ -36,6 +36,7 @@ img {
 }
 
 .revolt_in_egypt {
+    display: none;
     background-color: transparent;
     width: 350px;
     height: 500px;
@@ -48,6 +49,7 @@ img {
     background-repeat: no-repeat;
 }
 .revolt_in_ireland {
+    display: none;
     background-color: transparent;
     width: 350px;
     height: 500px;
@@ -60,6 +62,7 @@ img {
     background-repeat: no-repeat;
 }
 .war_in_persia {
+    display: none;
     background-color: transparent;
     width: 350px;
     height: 500px;

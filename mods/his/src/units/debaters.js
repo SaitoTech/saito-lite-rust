@@ -159,20 +159,20 @@
           }
         }
         return 0;
-      },  
+      },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "protestant_reformation") {
           his_self.addMove("martin_bucer");
-          his_self.endTurn();
         } 
         return 0; 
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "martin_bucer") {
 	  his_self.commitDebater("protestant", "bucer-debater");
-	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
           his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"];
+	  his_self.game.queue.splice(qe, 1);
+	  return 1;
 	}
         return 1;
       }

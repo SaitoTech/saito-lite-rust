@@ -67,8 +67,10 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    this.addEvents(obj);
-    this.army[name] = obj;
+    if (!this.army[name]) {
+      this.addEvents(obj);
+      this.army[name] = obj;
+    }
   }
 
   importNavyLeader(name, obj) {
@@ -93,8 +95,10 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    this.addEvents(obj);
-    this.navy[name] = obj;
+    if (!this.navy[name]) {
+      this.addEvents(obj);
+      this.navy[name] = obj;
+    }
   }
 
   importWife(name, obj) {
@@ -119,8 +123,10 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    this.addEvents(obj);
-    this.wives[name] = obj;
+    if (!this.wives[name]) {
+      this.addEvents(obj);
+      this.wives[name] = obj;
+    }
   }
 
   importReformer(name, obj) {
@@ -145,8 +151,10 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    this.addEvents(obj);
-    this.reformers[name] = obj;
+    if (!this.reformers[name]) {
+      this.addEvents(obj);
+      this.reformers[name] = obj;
+    }
   }
 
   importDebater(name, obj) {
@@ -182,10 +190,10 @@
       }
     }
 
-console.log(` importing ${name} with power ${obj.power}`);
-
-    this.addEvents(obj);
-    this.debaters[name] = obj;
+    if (!this.debaters[name]) {
+      this.debaters[name] = obj;
+      this.addEvents(obj);
+    }
   }
 
   importExplorer(name, obj) {
@@ -210,8 +218,10 @@ console.log(` importing ${name} with power ${obj.power}`);
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    this.addEvents(obj);
-    this.explorers[name] = obj;
+    if (!this.explorers[name]) {
+      this.addEvents(obj);
+      this.explorers[name] = obj;
+    }
   }
 
   importConquistador(name, obj) {
@@ -236,9 +246,28 @@ console.log(` importing ${name} with power ${obj.power}`);
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    this.addEvents(obj);
-    this.conquistadors[name] = obj;
+    if (!this.conquistadors[name]) {
+      this.addEvents(obj);
+      this.conquistadors[name] = obj;
+    }
   }
+
+  removeArmyLeader(faction, space, leader) {
+
+    if (!this.army[leader]) {
+      console.log("ARMY LEADER: " + leader + " not found");
+      return;
+    }
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === leader) {
+	space.units[faction].splice(i, 1);
+      }
+    }
+
+  }
+
 
   addArmyLeader(faction, space, leader) {
 
@@ -269,6 +298,19 @@ console.log(` importing ${name} with power ${obj.power}`);
   }
 
 
+  removeReformer(faction, space, reformer) {
+    if (!this.reformers[reformer]) {
+      console.log("REFORMER: " + reformer + " not found");
+      return;
+    }
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === reformer) {
+	space.units[faction].splice(i, 1);
+      }
+    }
+  }
+
   addReformer(faction, space, reformer) {
     if (!this.reformers[reformer]) {
       console.log("REFORMER: " + reformer + " not found");
@@ -288,16 +330,44 @@ console.log(` importing ${name} with power ${obj.power}`);
       return;
     }
 
+    for (let i = 0; i < this.game.state.wives.length; i++) {
+      if (this.game.state.wives[i].type === wife) {
+	return;
+      }
+    }
+
+
     this.game.state.wives.push(this.wives[wife]);
     this.game.state.wives[this.game.state.wives.length-1].owner = faction; 
 
   }
 
+  removeDebater(faction, debater) {
+
+    if (!this.debaters[debater]) {
+      console.log("DEBATER: " + debater + " not found");
+      return;
+    }
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].type == debater) { 
+	this.game.state.debaters.splice(i, 1);
+      }
+    }
+
+  }
   addDebater(faction, debater) {
 
     if (!this.debaters[debater]) {
       console.log("DEBATER: " + debater + " not found");
       return;
+    }
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].type === debater) {
+	console.log("DEBATER: " + debater + " already added");
+	return;
+      }
     }
 
     this.game.state.debaters.push(this.debaters[debater]);
@@ -313,6 +383,13 @@ console.log(` importing ${name} with power ${obj.power}`);
       return;
     }
 
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].type === explorer) {
+	console.log("EXPLORER: " + explorer + " already added");
+	return;
+      }
+    }
+
     this.game.state.explorers.push(this.explorers[explorer]);
   }
 
@@ -321,6 +398,12 @@ console.log(` importing ${name} with power ${obj.power}`);
     if (!this.conquistadors[conquistador]) {
       console.log("CONQUISTADOR: " + conquistador + " not found");
       return;
+    }
+
+    for (let i = 0; i < this.game.state.conquistador.length; i++) {
+      if (this.game.state.conquistador[i].type === conquistador) {
+	return;
+      }
     }
 
     this.game.state.conquistador.push(this.conquistadors[conquistador]);

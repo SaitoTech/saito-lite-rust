@@ -3346,7 +3346,9 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         // of dynamic balancing behavior.
         //
         if (this.game.state.round >= 1) {
-          this.game.queue.push("dynamic_deck_management");
+	  if (this.game.options.deck === "saito") {
+            this.game.queue.push("dynamic_deck_management");
+	  }
     	  // tournament reveal before reshuffles
           this.game.queue.push("sharehandsize\t2");
           this.game.queue.push("sharehandsize\t1");
@@ -7170,10 +7172,6 @@ if (inc_optional == true) {
 
         if (deck[key] != undefined) { delete deck[key]; }
 
-        //
-        // optional midwar cards
-        //
-
 	// SAITO
         if (key === "berlinagreement") { deck['berlinagreement'] = { img : "TNRnTS-217png" , name : "Berlin Agreement", scoring : 0 , player : "both" , recurring : 0 , ops : 3 }; }
         if (key === "pinochet") { deck['pinochet']      	= { img : "TNRnTS-208png" ,name : "Pinochet", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
@@ -9288,6 +9286,11 @@ if (inc_optional == true) {
   dynamicDeckManagement() {
 
     //
+    // sanity check
+    //
+    if (this.game.options.deck != "saito") { return; }
+
+    //
     // living history / saito edition -- SAITO COMMUNITY
     //
     if (!this.game.saito_cards_added) {
@@ -10163,6 +10166,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
             
             twilight_self.updateStatusAndListCards("Choose a card to discard:",cards_to_discard, function(card) {
               twilight_self.removeCardFromHand(card);
+	      twilight_self.addMove("discard\tus\t"+card);
+
               twilight_self.addMove(`NOTIFY\tUS discarded ${twilight_self.cardToText(card)} to resolve ${twilight_self.cardToText("blockade")}`);
               twilight_self.endTurn();
               return 0;
