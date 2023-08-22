@@ -19,35 +19,7 @@ class PeerManager {
     });
 
     app.connection.on("stun-event-message", (data) => {
-      if (data.room_code !== this.room_code) {
-        return;
-      }
-
-      if (data.type === "peer-joined") {
-        let peerConnection = this.peers.get(data.public_key);
-        if (!peerConnection) {
-          this.createPeerConnection(data.public_key, "offer");
-        }
-      } else if (data.type === "peer-left") {
-        this.removePeerConnection(data.public_key);
-      } else if (data.type === "toggle-audio") {
-        // console.log(data);
-        app.connection.emit("toggle-peer-audio-status", data);
-      } else if (data.type === "toggle-video") {
-        app.connection.emit("toggle-peer-video-status", data);
-      } else {
-        let peerConnection = this.peers.get(data.public_key);
-        if (!peerConnection) {
-          console.log("Create Peer Connection with " + data.public_key);
-          this.createPeerConnection(data.public_key);
-          peerConnection = this.peers.get(data.public_key);
-        }
-        console.log("peers consoled", peerConnection);
-
-        if (peerConnection) {
-          this.handleSignalingMessage(data);
-        }
-      }
+      this.handleStunEventMessage(data);
     });
 
     app.connection.on("stun-disconnect", () => {
@@ -211,6 +183,36 @@ class PeerManager {
     });
   }
 
+  handleStunEventMessage(data) {
+    console.log("handling stun event message", data.type);
+    console.log(this.room_code, data.room_code);
+    if (data.room_code !== this.room_code) {
+      return;
+    }
+
+    let peerConnection = this.peers.get(data.public_key);
+
+    if (data.type === "peer-joined") {
+      this.createPeerConnection(data.public_key, "offer");
+    } else if (data.type === "peer-left") {
+      this.removePeerConnection(data.public_key);
+    } else if (data.type === "toggle-audio") {
+      // console.log(data);
+      app.connection.emit("toggle-peer-audio-status", data);
+    } else if (data.type === "toggle-video") {
+      app.connection.emit("toggle-peer-video-status", data);
+    } else {
+      peerConnection = this.peers.get(data.public_key);
+      if (!peerConnection) {
+        console.log("Create Peer Connection with " + data.public_key);
+        this.createPeerConnection(data.public_key);
+      }
+    }
+
+    console.log("peer connection", peerConnection);
+    this.handleSignalingMessage(data);
+  }
+
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
     if (type === "renegotiate-offer" || type === "offer") {
@@ -278,6 +280,8 @@ class PeerManager {
     const peerConnection = new RTCPeerConnection({
       iceServers: this.mod.servers,
     });
+
+    console.log("creating peer connection");
 
     this.peers.set(peerId, peerConnection);
 
@@ -436,20 +440,17 @@ class PeerManager {
         }
         return;
       }
-
       if (peerConnection && peerConnection.connectionState === "connected") {
         console.log("Reconnection successful");
         // remove connection message
         return;
       }
-
       if (peerConnection && peerConnection.connectionState !== "connected") {
         this.removePeerConnection(peerId);
         if (type === "offer") {
           this.createPeerConnection(peerId, "offer");
         }
       }
-
       setTimeout(() => {
         console.log(`Reconnection attempt ${currentRetry + 1}/${maxRetries}`);
         attemptReconnect(currentRetry + 1);
