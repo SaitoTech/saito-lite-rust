@@ -194,6 +194,7 @@ class PeerManager {
 
     if (data.type === "peer-joined") {
       this.createPeerConnection(data.public_key, "offer");
+      return;
     } else if (data.type === "peer-left") {
       this.removePeerConnection(data.public_key);
     } else if (data.type === "toggle-audio") {
@@ -201,29 +202,25 @@ class PeerManager {
       app.connection.emit("toggle-peer-audio-status", data);
     } else if (data.type === "toggle-video") {
       app.connection.emit("toggle-peer-video-status", data);
+    } else if (data.type === "renegotiate-offer" || data.type === "offer") {
+      this.createPeerConnection(data.public_key);
+      this.handleSignalingMessage(data);
     } else {
       peerConnection = this.peers.get(data.public_key);
       if (!peerConnection) {
         console.log("Create Peer Connection with " + data.public_key);
         this.createPeerConnection(data.public_key);
       }
-    }
 
-    console.log("peer connection", peerConnection);
-    this.handleSignalingMessage(data);
+      this.handleSignalingMessage(data);
+
+      console.log("types ", data.type);
+    }
   }
 
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
     if (type === "renegotiate-offer" || type === "offer") {
-      //  if (
-      //    this.getPeerConnection(public_key).connectionState === "connected" ||
-      //   this.getPeerConnection(public_key).remoteDescription !== null ||
-      //    this.getPeerConnection(public_key).connectionState === "stable"
-      //  ) {
-      //    return;
-      //  }
-
       console.log(this.getPeerConnection(public_key), "remote description offer");
 
       this.getPeerConnection(public_key)
