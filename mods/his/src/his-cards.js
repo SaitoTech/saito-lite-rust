@@ -1,4 +1,17 @@
 
+  popup(card) {
+    let c = null;
+    if (!c && this.game.deck[0]) { c = this.game.deck[0].cards[card]; }
+    if (!c && this.game.deck[1]) { c = this.game.deck[1].cards[card]; }
+    if (!c && this.debaters) { c = this.debaters[card]; }
+    if (!c) {
+      // catches Here I Stand -- first event before DEAL
+      let x = this.returnDeck();
+      if (x[card]) { c = x[card]; }
+    }
+    return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+  }
+
   returnNewCardsForThisTurn(turn = 1) {
 
     let deck = this.returnDeck();
@@ -61,7 +74,7 @@
 	  if (f != "papacy") {
             his_self.deactivateMinorPower(f, "genoa");
             his_self.activateMinorPower("papacy", "genoa");
-	    his_self.updateLog("Papacy now controls Genoa");
+	    his_self.updateLog("Papacy allies with Genoa");
 	  } else {
 	    his_self.game.queue.push("andrea_dorea_placement\tpapacy");
 	  }
@@ -74,7 +87,7 @@
 	  if (f != "france") {
             his_self.deactivateMinorPower(f, "genoa");
             his_self.activateMinorPower("france", "genoa");
-	    his_self.updateLog("France now controls Genoa");
+	    his_self.updateLog("France allies with Genoa");
 	  } else {
 	    his_self.game.queue.push("andrea_dorea_placement\tprotestant");
 	  }
@@ -110,6 +123,8 @@
               his_self.endTurn();
             }
           );
+	  } else {
+	    this.updateStatus("Opponent adding 4 Regulars for Genoa");
 	  }
 
           return 0;
@@ -240,7 +255,7 @@
 	if (d3 >= 5) { hits++; }
 	if (d4 >= 5) { hits++; }
 
-	his_self.updateLog("Corsair Raid rolls " + hits + " hits ["+d1+","+d2+","+d3+","+d4+"]");
+	his_self.updateLog(`${his_self.popup('203')} rolls ` + hits + " hits ["+d1+","+d2+","+d3+","+d4+"]");
 
         if (his_self.game.player == p) {
 	  for (let i = hits-1; i >= 0; i--) {
@@ -506,7 +521,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               his_self.addMove("diplomacy_card_event\tprotestant\t"+action);
               his_self.addMove("discard_diplomacy_card\tprotestant\t"+action);
 	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
-	      his_self.addMove("NOTIFY\tPapacy selects "+his_self.game.deck[1].cards[action].name+" to play");
+	      his_self.addMove("NOTIFY\tPapacy selects "+his_self.popup(action));
 	      his_self.endTurn();
 	    });
 
@@ -564,7 +579,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    if (action === "discard") {
 	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
               his_self.addMove("discard_diplomacy_card\tpapacy\t"+cards[0]);
-	      his_self.addMove("NOTIFY\tProtestants discard "+his_self.game.deck[1].cards[cards[0]].name);
+	      his_self.addMove("NOTIFY\tProtestants discard "+his_self.popup(cards[0]));
 	    }
 
 	    if (action === "swap") {
@@ -843,8 +858,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    let card = his_self.game.deck[0].cards[c];
 	    let ops = card.ops;
 
-	    his_self.addMove("NOTIFY\t"+faction+" pulls "+card.name+" - "+ops +" CP");
 	    his_self.addMove("build_saint_peters_with_cp\t"+ops);
+	    his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" pulls "+his_self.popup(c)+ " "+ops+" CP");
 	    his_self.endTurn();
 
 	  }
@@ -1913,7 +1928,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         if (mv[0] == "janissaries") {
 
           his_self.game.queue.splice(qe, 1);
-	  his_self.updateLog("Ottoman Empire plays Janissaries");
+	  his_self.updateLog("Ottoman Empire plays "+his_self.popup('001'));
 	  his_self.game.state.field_battle.attacker_rolls += 5;
 	  his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
 
@@ -2043,7 +2058,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	  let roll = his_self.rollDice(6);
 
-	  his_self.updateLog("France rolls " + roll + " for Patron of the Arts");
+	  his_self.updateLog("France rolls " + roll + " for "+his_self.popup('004'));
 
 	  if (his_self.isSpaceControlled("milan", "france")) {
 	    his_self.updateLog("French control Milan - roll adjusted to 6");
@@ -2055,7 +2070,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  //
 	  if (roll >= 3) {
 	    if (his_self.game.state.french_chateaux_vp < 6) {
-	      his_self.updateLog("SUCCESS: France gains 1VP from Patron of the Arts");
+	      his_self.updateLog("France gains 1VP from "+his_self.popup('004'));
 	      his_self.game.state.french_chateaux_vp++;
               his_self.displayVictoryPoints();
 	    }
@@ -2441,7 +2456,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu === "debate") {
 	  his_self.addMove("discard\tprotestant\t007");
-	  his_self.addMove("NOTIFY\tHere I Stand played to substitute Luther into the Theological Debate");
+	  his_self.addMove("NOTIFY\t"+his_self.popup("007") + ": Luther enters Theological Debate");
 	  his_self.addMove("here_i_stand_response");
 	  his_self.endTurn();
         }
@@ -2489,7 +2504,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  //
 	  if (his_self.game.state.events.wartburg == 0) {
 
-	    his_self.updateLog("Luther accepts the Debate Challenge - Here I Stand");
+	    his_self.updateLog(his_self.popup('007') + ": Luther enters Debate");
 
 
 	    //
@@ -3667,8 +3682,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
           let faction = mv[2];
           his_self.game.queue.splice(qe, 1);
 
-	  his_self.updateLog(faction + " plays Foul Weather");
-
 	  his_self.game.state.events.foul_weather = 1;
 
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
@@ -4580,7 +4593,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
-	his_self.game.queue.push("NOTIFY\tAffair of the Placards");
+	his_self.game.queue.push("NOTIFY\t"+his_self.popup("044"));
 
 	return 1;
       },
@@ -4766,7 +4779,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
-	his_self.updateLog(faction + " gets 1 VP from Michael Servetus");
+	his_self.updateLog(his_self.returnFactionName(faction) + " +1 VP from Michael Servetus");
 	his_self.game.state.events.michael_servetus = faction;
 	his_self.game.queue.push("discard_random\tprotestant");
 
@@ -4785,7 +4798,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	let x = his_self.rollDice(6);
 	let y = his_self.rollDice(6);
 
-	his_self.updateLog("Michelangelo");
 	his_self.updateLog("Papacy rolls "+x+" and "+y);
 
 	his_self.game.queue.push("build_saint_peters_with_cp\t"+(x+y));
@@ -4888,7 +4900,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.addMove("papal_inquisition_card_draw");
 	his_self.addMove("papal_inquisition_target_player");
 	his_self.addMove("papal_inquisition_convert_spaces");
-	his_self.addMove("NOTIFY\tPapal Inquisition");
 	his_self.endTurn();
 
 	return 1;
@@ -5296,7 +5307,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
 	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
 	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
-	his_self.game.queue.push("NOTIFY\tMary Defies Council");
 
 	return 1;
       },
@@ -5331,7 +5341,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
-	his_self.game.queue.push("NOTIFY\tBook of Common Prayer");
 
 	return 1;
       },
@@ -5350,7 +5359,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("discard_random\tpapacy");
-	his_self.game.queue.push("NOTIFY\tDissolution of the Monasteries");
 
 	return 1;
       }
@@ -5825,7 +5833,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           his_self.game.queue.splice(qe, 1);
 
-          his_self.updateLog(faction + " plays City State Rebels against " + spacekey);
+          his_self.updateLog(his_self.returnFactionName(faction) + " plays " + his_self.popup("071") + " against " + spacekey);
 
 	  let hits = 0;
 	  for (let i = 0; i < 5; i++) {
@@ -6998,7 +7006,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 					faction + "\t" +
 					space.units[faction][i].type + "\t" +
 					space.key );
-		      his_self.addMove("NOTIFY\t"+faction+" removes unit from " + space.key);
+		      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" removes unit from " + space.key);
 		      his_self.endTurn();
 
 		    });
@@ -7007,7 +7015,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		return 0;
 	      }
               if (action === "no") {
-		his_self.addMove("NOTIFY\t"+faction+" does not support Irish rebels");
+		his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" does not support Irish rebels");
 		his_self.endTurn();
 	      }
 	    });
@@ -7408,7 +7416,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	        his_self.addMove("assault\t"+attacker+"\t"+spacekey);
                 his_self.endTurn();
 	      } else {
-                his_self.addMove("NOTIFY\tTreachery cannot find attacker in seige");
+                his_self.addMove("NOTIFY\t"+his_self.popup("105") + " cannot find attacker in seige");
                 his_self.endTurn();
 	      }
             }
@@ -7445,7 +7453,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	  if (total_defenders < total_attackers) {
 	    his_self.game.queue.push(`control\t${attacker}\t${spacekey}`);
-	    his_self.updateLog("Treachery - besiegers capture defenders and control space");
+	    his_self.updateLog(his_self.popup("105") + " - besiegers capture defenders and control space");
 	    for (let i = 0; i < defenders.length; i++) {
 	      his_self.game.queue.push(`purge_units_and_capture_leaders\t${defenders[i]}\t${attacker}\t${spacekey}`);
 	    }
@@ -7571,7 +7579,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
             function(space) {
 	      for (let key in space.units) {
-	        if (his_self.returnFactionLandUnitsInSpace(space.key) > 0) { return 1; }
+	        if (his_self.returnFactionLandUnitsInSpace(key, space.key) > 0) { return 1; }
 	      }
 	      return 0;
             },
@@ -7582,7 +7590,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	      let factions = [];
 
 	      for (let key in space.units) {
-	        if (his_self.returnFactionLandUnitsInSpace(space.key) > 0) { factions.push(key); }
+	        if (his_self.returnFactionLandUnitsInSpace(key, space.key) > 0) { factions.push(key); }
 	      }
 
 	      if (factions.length > 0) {
@@ -7752,7 +7760,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
           if (his_self.game.player == p1) {
 
 	    for (let i = 0; i < cards.length; i++) {
-	      his_self.updateLog(faction_giving + " has " + his_self.deck[cards[i]].name);
+	      his_self.updateLog(his_self.returnFactionName(faction_giving) + " has " + his_self.popup(cards[i]));
 	    }
           }
 

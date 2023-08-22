@@ -20,6 +20,11 @@
         document.getElementById("status").innerHTML = str;
       }
 
+      if (this.useCardbox) {
+	this.cardbox.attachCardboxEvents();
+      }
+
+
     } catch (err) {
       console.warn("Error Updating Status: ignoring: " + err);
     }
