@@ -1341,7 +1341,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + this.game.deck[0].cards[card].name + " for the event\tevent\t"+card);
+    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
     this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }

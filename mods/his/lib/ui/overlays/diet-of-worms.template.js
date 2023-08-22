@@ -2,7 +2,7 @@ module.exports = (players=2) => {
  
   let help = 'Protestants and Papacy both select card. Protestants add +4 while Papacy draws card adds its value (2 if Mandatory Event). Both sides roll requisite number of dice. Hits on 5 or 6. Winner converts spaces equal to difference in hits.';
   if (players > 2) {
-    help = 'Protestants pick a card and +4 its value. Papacy and Hapsburgs each pick cards and combine their values. Both sides roll requisite number of dice. Hits on 5 or 6. Winner converts spaces equal to difference in hits.';
+    help = 'Protestants select card and add +4. Papacy selects card and adds randomly-drawn card (2 OPs if Mandatory Event). Hits on 5 or 6. Winner converts difference in hits.';
   }
   
   let html = `

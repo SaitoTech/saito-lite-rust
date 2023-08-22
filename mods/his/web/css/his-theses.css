@@ -25,6 +25,11 @@
     padding-right: 1rem;
 }
 
+.theses-overlay .controls {
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
 .theses-overlay .controls ul {
     display: block;
     position: relative;

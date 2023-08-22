@@ -1071,6 +1071,10 @@ console.log("here for");
       }
     }
 
+    //
+    // triggered before card deal
+    //
+    if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
 
     if (deckidx === -1) {
       //

@@ -2868,10 +2868,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
-	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
-	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
-	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
-	his_self.game.queue.push(`STATUS\tPapacy may make 3 counter-reformation attempts`);
+	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
+	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
+	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 
 	return 1;
       },

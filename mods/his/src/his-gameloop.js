@@ -79,8 +79,9 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // TESTING
 	    //
-	    this.updateStatus("Game Over");
-	    return 0;
+	    //this.updateStatus("Game Over");
+	    //return 0;
+
 	  }
 
           return 1;
@@ -1783,7 +1784,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      papacy_rolls++;
 	      let x = this.rollDice(6);
 	      papacy_arolls.push(x);
-	      this.updateLog("Hapsburg rolls: " + x);
 	      if (x >= 5) { papacy_hits++; }
 	    }
 	  } else {
@@ -1791,7 +1791,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      papacy_rolls++;
 	      let x = this.rollDice(6);
 	      papacy_arolls.push(x);
-	      this.updateLog("Hapsburg rolls: " + x);
 	      if (x >= 5) { papacy_hits++; }
 	    }
 	  }
@@ -5364,8 +5363,7 @@ console.log("NEW WORLD PHASE!");
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
-if (this.game.state.round >= 1) {
-//	  if (this.game.state.round > 1) {
+	  if (this.game.state.round > 1) {
     	    this.game.queue.push("play_diplomacy_card\tprotestant");
     	    this.game.queue.push("play_diplomacy_card\tpapacy");
 	  }
@@ -5966,7 +5964,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.addDebater("protestant", location, name);
 	  if (this.game.spaces[space].religion != "protestant") {
 	    this.game.spaces[space].religion = "protestant";
-	    this.updateLog(location + " converts to Protestant Religion");
+	    this.updateLog(this.returnSpaceName(location) + " converts Protestant");
 	  }
 	  this.displaySpace(location);
 
@@ -6201,7 +6199,11 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let space = mv[1];
 	  let religion = mv[2];
 
-	  this.updateLog(this.game.spaces[space].name + " converts to the " + religion + " religion");
+	  if (religion == "protestant") {
+	    this.updateLog(this.returnSpaceName(space) + " converts Protestant");
+	  } else {
+	    this.updateLog(this.returnSpaceName(space) + " converts Catholic");
+	  }
 
 	  if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
 	    this.game.spaces['augsburg'].units['protestant'].push();
@@ -6499,14 +6501,13 @@ console.log("SPACE: " + space);
 	  // handle victory
 	  //
 	  if (protestants_win == 1) {
-	    this.updateLog("Protestants win!");
 	    this.game.queue.push("convert\t"+space+"\tprotestant");
 	  } else {
 	    if (parseInt(this.game.state.events.carlstadt_debater) == 1) {
 	      // unrest
 	      this.game.queue.push("unrest\t"+space);
 	    }
-	    this.updateLog("Catholics win!");
+	    this.updateLog(this.returnSpaceName(space) + " remains Catholic");
 	  }
 
 	  return 1;
@@ -6701,10 +6702,9 @@ console.log("SPACE: " + space);
 	  // handle victory
 	  //
 	  if (catholics_win == 1) {
-	    this.updateLog("Catholics win!");
 	    this.game.queue.push("convert\t"+space+"\tcatholic");
 	  } else {
-	    this.updateLog("Protestants win!");
+	    this.updateLog(this.returnSpaceName(space) + " remains Protestant");
 	  }
 
 	  return 1;
