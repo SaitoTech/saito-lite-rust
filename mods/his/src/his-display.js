@@ -992,16 +992,33 @@ console.log("here for");
 	//
 	// if this is a selectable space, let people select directly
 	//
-	if (e.currentTarget.classList.contains("selectable")) {
+	// this is a total hack by the way, but it captures the embedding that happens when
+	// we are clicking and the click actino is technically on the item that is INSIDE
+	// the selectable DIV, like a click on a unit in a key, etc.
+	//
+	if (e.target.classList.contains("selectable")) {
 	  // something else is handling this
 	  return;
+	} else {
+	  if (el.parentNode) {
+	    if (el.parentNode.classList.contains("selectable")) {
+	      // something else is handling this
+	      return;
+	    } else {
+	      if (el.parentNode.parentNode) {
+	        if (el.parentNode.parentNode.classList.contains("selectable")) {
+	          return;
+	        }
+	      }
+	    }
+	  }
 	}
 	// otherwise show zoom
-        //if (e.currentTarget.classList.contains("space")) {
+        //if (e.target.classList.contains("space")) {
           his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
-	  e.stopPropagation();
-	  e.preventDefault();	
-	  return false;
+	  //e.stopPropagation();
+	  //e.preventDefault();	
+	  //return;
 	//}
       });
 

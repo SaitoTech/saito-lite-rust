@@ -5515,6 +5515,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let f = {};
@@ -5546,13 +5547,13 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         ops : 2 ,
         turn : 1 ,
         type : "mandatory" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         canEvent : function(his_self, faction) {
 	  if (his_self.game.state.round >= 2 && his_self.returnNumberOfProtestantSpacesInLanguageZone("all") >= 12) {
 	    return 1; 
 	  }
 	  return 0;
 	},
-        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league_round = his_self.game.state.round;
           his_self.game.state.events.schmalkaldic_league = 1;
@@ -5594,6 +5595,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 	his_self.game.state.leaders.leo_x = 0;
 	his_self.game.state.leaders.clement_vii = 0;
@@ -5609,6 +5611,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 5 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let papacy = his_self.returnPlayerOfFaction("papacy");
@@ -5627,6 +5630,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	his_self.game.state.leaders['luther'] = 0;
@@ -5657,9 +5661,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-        return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	his_self.game.state.council_of_trent = {};
@@ -5735,9 +5737,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      canEvent : function(his_self, faction) {
-        return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	// barbarossa dies, replaced by Dragut
@@ -5990,6 +5990,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu == "field_battle") {
           let f = "";
@@ -22953,8 +22954,6 @@ if (limit === "build") {
     let html = '';
     html += '<ul>';
 
-console.log("BOARD CLICKABLE: " + board_clickable);
-
     this.theses_overlay.space_onclick_callback = mycallback;
 
     for (let key in this.game.spaces) {
@@ -23042,8 +23041,8 @@ console.log("BOARD CLICKABLE: " + board_clickable);
       if (filter_func(this.game.navalspaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
+	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
-	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	    $('.option').off();
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
@@ -23058,8 +23057,8 @@ console.log("BOARD CLICKABLE: " + board_clickable);
       if (filter_func(this.game.spaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
-	  document.getElementById(key).onclick = (e) => {
-	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
+	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
+	  document.getElementById(key).onclick = (e) => { 
 	    $('.option').off();
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
@@ -24818,11 +24817,12 @@ console.log("units length: " + space.units[defender].length);
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+console.log("A: " + JSON.stringify(spaces_with_units));
     for (let i = 0; i < spaces_with_units.length; i++) {
       if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
-        let any_unlocked_units = false;
         for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
   	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
+console.log("B: pass identified in " + spaces_with_units[i]);
 	    return 1;
 	  }
         }
@@ -27852,16 +27852,33 @@ console.log("here for");
 	//
 	// if this is a selectable space, let people select directly
 	//
-	if (e.currentTarget.classList.contains("selectable")) {
+	// this is a total hack by the way, but it captures the embedding that happens when
+	// we are clicking and the click actino is technically on the item that is INSIDE
+	// the selectable DIV, like a click on a unit in a key, etc.
+	//
+	if (e.target.classList.contains("selectable")) {
 	  // something else is handling this
 	  return;
+	} else {
+	  if (el.parentNode) {
+	    if (el.parentNode.classList.contains("selectable")) {
+	      // something else is handling this
+	      return;
+	    } else {
+	      if (el.parentNode.parentNode) {
+	        if (el.parentNode.parentNode.classList.contains("selectable")) {
+	          return;
+	        }
+	      }
+	    }
+	  }
 	}
 	// otherwise show zoom
-        //if (e.currentTarget.classList.contains("space")) {
+        //if (e.target.classList.contains("space")) {
           his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
-	  e.stopPropagation();
-	  e.preventDefault();	
-	  return false;
+	  //e.stopPropagation();
+	  //e.preventDefault();	
+	  //return;
 	//}
       });
 

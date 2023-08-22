@@ -2868,6 +2868,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let f = {};
@@ -2899,13 +2900,13 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         ops : 2 ,
         turn : 1 ,
         type : "mandatory" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         canEvent : function(his_self, faction) {
 	  if (his_self.game.state.round >= 2 && his_self.returnNumberOfProtestantSpacesInLanguageZone("all") >= 12) {
 	    return 1; 
 	  }
 	  return 0;
 	},
-        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league_round = his_self.game.state.round;
           his_self.game.state.events.schmalkaldic_league = 1;
@@ -2947,6 +2948,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 	his_self.game.state.leaders.leo_x = 0;
 	his_self.game.state.leaders.clement_vii = 0;
@@ -2962,6 +2964,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 5 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let papacy = his_self.returnPlayerOfFaction("papacy");
@@ -2980,6 +2983,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	his_self.game.state.leaders['luther'] = 0;
@@ -3010,9 +3014,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-        return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	his_self.game.state.council_of_trent = {};
@@ -3088,9 +3090,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      canEvent : function(his_self, faction) {
-        return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	// barbarossa dies, replaced by Dragut
@@ -3343,6 +3343,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu == "field_battle") {
           let f = "";

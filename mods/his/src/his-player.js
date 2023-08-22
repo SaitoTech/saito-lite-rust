@@ -894,8 +894,6 @@ if (limit === "build") {
     let html = '';
     html += '<ul>';
 
-console.log("BOARD CLICKABLE: " + board_clickable);
-
     this.theses_overlay.space_onclick_callback = mycallback;
 
     for (let key in this.game.spaces) {
@@ -983,8 +981,8 @@ console.log("BOARD CLICKABLE: " + board_clickable);
       if (filter_func(this.game.navalspaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
+	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
-	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	    $('.option').off();
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
@@ -999,8 +997,8 @@ console.log("BOARD CLICKABLE: " + board_clickable);
       if (filter_func(this.game.spaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
-	  document.getElementById(key).onclick = (e) => {
-	    document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
+	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
+	  document.getElementById(key).onclick = (e) => { 
 	    $('.option').off();
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
@@ -2759,11 +2757,12 @@ console.log("units length: " + space.units[defender].length);
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+console.log("A: " + JSON.stringify(spaces_with_units));
     for (let i = 0; i < spaces_with_units.length; i++) {
       if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
-        let any_unlocked_units = false;
         for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
   	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
+console.log("B: pass identified in " + spaces_with_units[i]);
 	    return 1;
 	  }
         }
