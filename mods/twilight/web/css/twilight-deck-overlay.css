@@ -35,7 +35,7 @@
 
 .custom_card_resize {
     scale: 0.95;
-    margin-top: -5;
+    margin-top: -1rem;
 }
 
 .deck-overlay .cardlist-container.cards_added .card::before {
@@ -94,15 +94,15 @@
 }
 
 .deck-overlay .cardlist-container .card {
-    max-width: 200px;
-    max-height: calc(200px * 1.44);
-    height: calc(200px * 1.44);
-    width: 200px;
+    max-width: 300px;
+    max-height: calc(300px * 1.44);
+    height: calc(300px * 1.44);
+    width: 300px;
 }
 
 .deck-overlay .cardlist-container .card .desc {
     position: relative;
-    top: 230px;
+    top: 350px;
     text-align: center;
     background: #0009;
     width: 80%;

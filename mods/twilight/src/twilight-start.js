@@ -761,7 +761,7 @@ initializeGame(game_id) {
 	// SAITO COMMUNITY - edition
         //
         if (this.game.options.deck === "saito") {
-	  this.removeCardFromDeck('nato', "Prerequisites Not Met");
+	  this.removeCardFromDeck('nato', "Prerequisites Unmet");
 	  this.addCardToDeck('iranianultimatum', "New Card");
 	  this.addCardToDeck('unitedfruit', "New Card");
 	  early_war_deck = this.returnEarlyWarCards();
@@ -3250,7 +3250,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
             if (this.isControlled("us", "southkorea") == 1 && this.game.state.events.revolutionsof1989_added != 1) {
 	    } else {
 	      delete late_war_cards['KAL007'];
-	      this.removeCardFromDeckNextDeal("KAL007", "Prerequisite Not Met");
+	      this.removeCardFromDeckNextDeal("KAL007", "Prerequisite Unmet");
 	    }
 	    //
 	    // Star Wars
