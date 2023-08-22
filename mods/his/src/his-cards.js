@@ -2177,7 +2177,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	    return 0;
 
-          }
+          } else {
+	    his_self.updateStatus("Papacy playing "+his_self.popup("004"));
+	  }
 
 	  return 0;
 	},
@@ -2372,7 +2374,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
       name : "Here I Stand" ,
-      ops : 3 ,
+      ops : 5 ,
       turn : 1 ,
       type : "normal" ,
       faction : "protestant" ,
@@ -2784,10 +2786,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      // launch reformation
 	      //
 	      function(spacekey) {
-	  	his_self.updateStatus("Reformation attempt in "+spacekey);
 		his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
-		his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+spacekey+"\tprotestant_reformation\t"+spacekey);
+		his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
         	his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	  	his_self.updateStatus("Reformation attempt in "+his_self.returnSpaceName(spacekey));
 		his_self.endTurn();
 	      },
 
@@ -2799,6 +2801,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    } else {
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	      his_self.updateStatus("No Valid Targets");
 	      his_self.endTurn();
 	    }
 	  } else {
@@ -4781,6 +4784,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.updateLog(his_self.returnFactionName(faction) + " +1 VP from Michael Servetus");
 	his_self.game.state.events.michael_servetus = faction;
 	his_self.game.queue.push("discard_random\tprotestant");
+
+	return 1;
 
       }
     }
@@ -7195,6 +7200,9 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
         if (menu == "pre_spring_deployment") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('102')) {
+	      if (his_self.returnPlayerOfFaction("protestant") == his_self.game.player && his_self.game.players.length == 2) { 
+ 		return 0;
+	      }
               return 1;
             }
           }
@@ -7631,7 +7639,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		      his_self.addMove(`destroy_unit\t${action}\t${z}`);
 		      regulars_to_delete--;
 		    }
-		    if (u.type != "regular" && npnregulars_to_delete > 0) {
+		    if (u.type != "regular" && nonregulars_to_delete > 0) {
 		      his_self.addMove(`destroy_unit\t${action}\t${z}`);
 		      nonregulars_to_delete--;
 		    }
@@ -7664,7 +7672,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
 		    regulars_to_delete--;
 		  }
-		  if (u.type != "regular" && npnregulars_to_delete > 0) {
+		  if (u.type != "regular" && nonregulars_to_delete > 0) {
 		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
 		    nonregulars_to_delete--;
 		  }

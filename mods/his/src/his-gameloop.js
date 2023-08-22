@@ -1759,7 +1759,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  for (let i = 0; i < protestant_rolls; i++) {
 	    let x = this.rollDice(6);
 	    protestant_arolls.push(x);
-	    this.updateLog("Protestants roll: " + x);
 	    if (x >= 5) { protestant_hits++; }
 	  }
 
@@ -1769,7 +1768,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  for (let i = 0; i < papacy_rolls; i++) {
 	    let x = this.rollDice(6);
 	    papacy_arolls.push(x);
-	    this.updateLog("Papacy rolls: " + x);
 	    if (x >= 5) { papacy_hits++; }
 	  }
 
@@ -4851,6 +4849,9 @@ console.log("purging naval units and capturing leader");
 	  let faction = mv[1];
 	  let debater = mv[2];
 	  let activate_it = 0;
+
+	  this.updateLog(this.returnFactionName(faction) + " commits " + this.debaters[debater].name);
+
 	  if (parseInt(mv[2]) > 0) { activate_it = parseInt(mv[2]); }
 	  this.commitDebater(faction, debater, activate_it);
 
@@ -5043,9 +5044,9 @@ console.log("purging naval units and capturing leader");
 	      }
 
 	      if (total_spaces_to_convert == 1) {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space}`);
+	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces}`);
+	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
 
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
@@ -5704,7 +5705,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction_giving = mv[2];
 	  let card = mv[3];
 
-	  this.updateLog(faction_taking + " pulls card " + card);
+	  this.updateLog(this.returnFactionName(faction_taking) + " pulls " + this.popup(card));
 
 	  let p1 = this.returnPlayerOfFaction(faction_taking);
 	  let p2 = this.returnPlayerOfFaction(faction_giving);
@@ -5717,7 +5718,14 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  if (this.game.player == p1) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
-	    this.game.deck[0].fhand[fhand_idx].push(card);
+	    for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
+	      for (let z = 0; z < this.game.deck[0].fhand[i].length; z++) {
+		if (this.game.deck[0].fhand[i][z] === card) {
+		  this.game.deck[0].fhand[i].splice(z, 1);
+		  z--;
+		}
+	      }
+	    }
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -5838,25 +5846,51 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	if (mv[0] === "discard_random") {
 
 	  let faction = mv[1];
+	  let home_cards_permitted = 0;
+	  if (parseInt(mv[2]) > 0) { home_cards_permitted = parseInt(mv[2]); }
 	  let num = 1;
 
 	  let player_of_faction = this.returnPlayerOfFaction(faction);
 
 	  this.game.queue.splice(qe, 1);
 
-	    if (this.game.player === player_of_faction) {
+	    if (this.game.player == player_of_faction) {
 
               let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
 	      let num_cards = this.game.deck[0].fhand[fhand_idx].length;
 	      if (num_cards == 0) {
 		this.rollDice(6);
+		this.addMove("NOTIFY\t"+this.returnFactionname(faction)+ " has no cards to discard");
 		this.endTurn();
+		return 0;
 	      }
 
 	      let discards = [];
 	      if (num_cards < num) { num = num_cards; }
-
 	      let roll = this.rollDice(num_cards) - 1;
+	      let is_this_home_card = 0;
+	      let pulled = this.game.deck[0].fhand[fhand_idx][roll];
+	      if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+		is_this_home_card = 1;
+	      }
+
+	      if (home_cards_permitted == 0 && is_this_home_card == 1) {
+	        while (roll > 0 && is_this_home_card == 1) {
+		  is_this_home_card = 0;
+		  roll--;
+		  if (roll == -1) {
+		    this.addMove("NOTIFY\t"+this.returnFactionname(faction)+ " has no non-home cards to discard");
+		    this.endTurn();
+		    return 0;
+		  }
+	      	  let pulled = this.game.deck[0].fhand[fhand_idx][roll];
+	      	  if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+		    is_this_home_card = 1;
+		  }
+		}
+	      }
+
+
 	      discards.push(roll);
 	      discards.sort();
 	      for (let zz = 0; zz < discards.length; zz++) {
@@ -5867,6 +5901,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    } else {
 	      this.rollDice(6);
 	    }
+
 
 	  return 0;
 
@@ -6346,8 +6381,6 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  // neighbours
 	  //
 	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
-
-console.log("SPACE: " + space);
 
 	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
 	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});

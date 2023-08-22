@@ -1000,6 +1000,7 @@ console.log("here for");
 	  // something else is handling this
 	  return;
 	} else {
+	  let el = e.target;
 	  if (el.parentNode) {
 	    if (el.parentNode.classList.contains("selectable")) {
 	      // something else is handling this

@@ -2908,8 +2908,8 @@
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
-    for (let key in this.game.spaces[space].units) {
-      if (this.game.spaces[space].units[key].length > 0) { return 1; }
+    for (let key in space.units) {
+      if (space.units[key].length > 0) { return 1; }
     }
 
     return 0;

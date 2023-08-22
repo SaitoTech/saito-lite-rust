@@ -26,11 +26,11 @@
 }
 
 .theses-overlay .controls {
-    overflow-y: auto;
     max-height: 80vh;
 }
 
 .theses-overlay .controls ul {
+    overflow-y: auto;
     display: block;
     position: relative;
     background-color: whitesmoke;
