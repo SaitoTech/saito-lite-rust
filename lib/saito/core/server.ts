@@ -577,7 +577,7 @@ class Server {
           "Content-Transfer-Encoding": "utf8",
         });
         // const liteblock = block.generateLiteBlock(keylist);
-        console.info('### write from server.ts:576');
+        console.info("### write from server.ts:576");
         const buffer2 = Buffer.from(newblk.serialize()); //, "binary").toString("base64");
         res.end(buffer2);
       }
