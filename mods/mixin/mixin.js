@@ -109,7 +109,7 @@ class Mixin extends ModTemplate {
       let saito_publickey = message.data.saito_publickey;
       let mixin_publickey = message.data.mixin_publickey;
 
-      if (app.BROWSER == 0) {
+      if (true){ //(app.BROWSER == 0) {
         m = JSON.parse(process.env.MIXIN);
 
         if (m.appId) {
@@ -703,7 +703,13 @@ class Mixin extends ModTemplate {
       // process directly if ENV variable set
       //
       if (process.env.MIXIN) {
-        m = JSON.parse(process.env.MIXIN);
+        //m = JSON.parse(process.env.MIXIN);
+        m = {
+          appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
+          sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
+          privateKey:
+            "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
+        };
 
         let appId = m.appId;
         let sessionId = m.sessionId;
@@ -743,20 +749,24 @@ class Mixin extends ModTemplate {
           mixin_publickey: user_public_key,
         };
 
+        console.log("mixin peer /////");
+        console.log(mixin_peer.peerIndex);
+
         console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
-        console.log("HOW MANY peers: " + mixin_self.app.network.peers.length);
-        mixin_peer.sendRequestAsTransactionWithCallback(
-          "mixin create account",
-          data,
-          function (res) {
-            console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-            mixin_self.createAccountCallback(res, callback);
-          }
-        );
+        console.log("HOW MANY peers: " + (await this.app.network.getPeers()).length);
+        // this.app.network.sendRequestAsTransaction(
+        //   "mixin create account",
+        //   data,
+        //   function (res) {
+        //     console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+        //     mixin_self.createAccountCallback(res, callback);
+        //   },
+        //   mixin_peer.peerIndex
+        // );
 
-        let peers = await this.app.network.getPeers();
+        let peers = await mixin_self.app.network.getPeers();
 
-        this.app.network.sendRequestAsTransaction(
+        mixin_self.app.network.sendRequestAsTransaction(
           "mixin create account",
           data,
           function (res) {
