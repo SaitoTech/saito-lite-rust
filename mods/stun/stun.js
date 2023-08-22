@@ -8,6 +8,7 @@ const PeerManager = require("./lib/appspace/PeerManager");
 //Do these do anything???
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
+const { default: Transaction } = require("../../lib/saito/transaction");
 const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
@@ -279,8 +280,6 @@ class Stun extends ModTemplate {
     // Shouldn't this be set by onPeerServiceUp
     let server = (await this.app.network.getPeers())[0];
 
-    console.log("server", this.server);
-
     let data = {
       recipient: server.publicKey,
       request: "stun-create-room-transaction",
@@ -297,9 +296,7 @@ class Stun extends ModTemplate {
   // server receives this
   async receiveCreateRoomTransaction(app, tx) {
     let txmsg = tx.returnMessage();
-    console.log(txmsg, "txmsg");
     this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
-    console.log(this.rooms, "rooms created");
   }
 
   async sendStunMessageToServerTransaction(_data) {
@@ -344,8 +341,6 @@ class Stun extends ModTemplate {
       recipients = this.rooms.get(room_code)?.filter((p) => p !== public_key);
     }
 
-    // console.log(this.rooms.get(room_code), "this.rooms.get(room_code)");
-
     let data = {
       ...txmsg.data,
       public_key,
@@ -361,15 +356,13 @@ class Stun extends ModTemplate {
     // onchain
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-    // console.log(recipients, "recipients");
     if (recipients) {
       recipients.forEach((recipient) => {
-        let slip = new Slip();
-        slip.publicKey = recipient;
-        slip.amount = BigInt(0);
-        newtx.addToSlip(slip);
+        newtx.addTo(recipient);
       });
     }
+
+    // let _data = { ..._data, recipients };
 
     newtx.msg.module = "Stun";
     newtx.msg.request = "stun-send-message-to-peers";
@@ -377,14 +370,22 @@ class Stun extends ModTemplate {
     await newtx.sign();
 
     // offchain data
+
     let data = {
       recipient: recipients,
       request,
       data: _data,
     };
-
-    console.log("sending relay message to peers");
     this.app.connection.emit("relay-send-message", data);
+
+    recipients.forEach((recipient) => {
+      let data = {
+        recipient: [recipient],
+        request,
+        data: _data,
+      };
+      this.app.connection.emit("relay-send-message", data);
+    });
 
     setTimeout(async () => {
       //This is the only proper onChain TX... ?
@@ -393,10 +394,8 @@ class Stun extends ModTemplate {
   }
 
   receiveStunMessageToPeersTransaction(app, tx) {
-    let txmsg = tx.returnMessage();
     let data = tx.msg.data;
-    app.connection.emit("stun-event-message", data);
-    console.log("receiving stun message in peers ", data);
+    this.peerManager.handleStunEventMessage(data);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
@@ -433,16 +432,12 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    // console.log("sending to", recipients);
     this.app.connection.emit("relay-send-message", data);
-
-    //Relay only...
   }
 
   async receiveGameCallMessageToPeers(app, tx) {
     let txmsg = tx.returnMessage();
     let data = tx.msg.data;
-    console.log(data, "data");
 
     switch (data.type) {
       case "connection-request":
