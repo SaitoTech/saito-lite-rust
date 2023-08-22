@@ -562,7 +562,7 @@ if (limit === "build") {
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
-      name : "Buy mercenary",
+      name : "Mercenary",
       check : this.canPlayerBuyMercenary,
       fnct : this.playerBuyMercenary,
       category : "build" ,
@@ -571,7 +571,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2,2,2],
-      name : "Raise regular",
+      name : "Regular",
       check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
       category : "build" ,
@@ -580,7 +580,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
-      name : "Build naval squadron",
+      name : "Squadron",
       check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
       category : "build" ,
@@ -589,7 +589,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman'],
       cost : [1],
-      name : "Raise Cavalry",
+      name : "Cavalry",
       check : this.canPlayerRaiseCavalry,
       fnct : this.playerRaiseCavalry,
       category : "build" ,
@@ -598,7 +598,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman'],
       cost : [1],
-      name : "Build corsair",
+      name : "Corsair",
       check : this.canPlayerBuildCorsair,
       fnct : this.playerBuildCorsair,
       category : "build" ,
@@ -610,7 +610,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Move formation in clear",
+      name : "Move",
       check : this.canPlayerMoveFormationInClear,
       fnct : this.playerMoveFormationInClear,
       category : "move" ,
@@ -619,7 +619,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2,2,2],
-      name : "Move formation over pass",
+      name : "Move over Pass",
       check : this.canPlayerMoveFormationOverPass,
       fnct : this.playerMoveFormationOverPass,
       category : "move" ,
@@ -628,7 +628,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
-      name : "Naval transport",
+      name : "Move across Sea",
       check : this.canPlayerNavalTransport,
       fnct : this.playerNavalTransport,
       category : "move" ,
@@ -637,56 +637,74 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1],
-      name : "Naval move",
+      name : "Move Ships",
       check : this.canPlayerNavalMove,
       fnct : this.playerNavalMove,
       category : "move" ,
       img : '/his/img/backgrounds/move/move_fleet.jpg',
     });
     menu.push({
-      factions : ['hapsburg','england','france','papacy','protestant'],
-      cost : [1,1,1,1,1],
-      name : "Buy mercenary",
-      check : this.canPlayerBuyMercenary,
-      fnct : this.playerBuyMercenary,
-      category : "build" ,
-      img : '/his/img/backgrounds/move/mercenary.jpg',
-    });
-    menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2,2,2],
-      name : "Raise regular",
+      name : "Regular",
       check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
       category : "build" ,
       img : '/his/img/backgrounds/move/regular.jpg',
     });
     menu.push({
+      factions : ['hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1],
+      name : "Mercenary",
+      check : this.canPlayerBuyMercenary,
+      fnct : this.playerBuyMercenary,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/mercenary.jpg',
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Cavalry",
+      check : this.canPlayerRaiseCavalry,
+      fnct : this.playerRaiseCavalry,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/cavalry.jpg',
+    });
+    menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
-      name : "Build naval squadron",
+      name : "Squadron",
       check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
       category : "build" ,
       img : '/his/img/backgrounds/move/squadron.jpg',
     });
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
-      cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Assault",
-      check : this.canPlayerAssault,
-      fnct : this.playerAssault,
-      category : "attack" ,
-      img : '/his/img/backgrounds/move/assault.jpg',
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Corsair",
+      check : this.canPlayerBuildCorsair,
+      fnct : this.playerBuildCorsair,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/corsair.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Control unfortified space",
+      name : "Control Space",
       check : this.canPlayerControlUnfortifiedSpace,
       fnct : this.playerControlUnfortifiedSpace,
       category : "attack" ,
       img : '/his/img/backgrounds/move/control.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1,1,1],
+      name : "Assault Space",
+      check : this.canPlayerAssault,
+      fnct : this.playerAssault,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
     });
     menu.push({
       factions : ['hapsburg','england','france'],
@@ -718,34 +736,16 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman'],
       cost : [2],
-      name : "Initiate piracy in a sea",
+      name : "Piracy",
       check : this.canPlayerInitiatePiracyInASea,
       fnct : this.playerInitiatePiracyInASea,
       category : "attack" ,
       img : '/his/img/backgrounds/move/piracy.jpg',
     });
     menu.push({
-      factions : ['ottoman'],
-      cost : [1],
-      name : "Raise Cavalry",
-      check : this.canPlayerRaiseCavalry,
-      fnct : this.playerRaiseCavalry,
-      category : "build" ,
-      img : '/his/img/backgrounds/move/cavalry.jpg',
-    });
-    menu.push({
-      factions : ['ottoman'],
-      cost : [1],
-      name : "Build corsair",
-      check : this.canPlayerBuildCorsair,
-      fnct : this.playerBuildCorsair,
-      category : "build" ,
-      img : '/his/img/backgrounds/move/corsair.jpg',
-    });
-    menu.push({
       factions : ['protestant'],
       cost : [1],
-      name : "Translate scripture",
+      name : "Translate Scripture",
       check : this.canPlayerTranslateScripture,
       fnct : this.playerTranslateScripture,
       category : "special" ,
@@ -754,7 +754,7 @@ if (limit === "build") {
     menu.push({
       factions : ['england','protestant'],
       cost : [3,2],
-      name : "Publish treatise",
+      name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
       category : "special" ,
@@ -763,7 +763,7 @@ if (limit === "build") {
     menu.push({
       factions : ['papacy','protestant'],
       cost : [3,3],
-      name : "Call theological debate",
+      name : "Call Debate",
       check : this.canPlayerCallTheologicalDebate,
       fnct : this.playerCallTheologicalDebate,
       category : "special" ,
@@ -781,35 +781,28 @@ if (limit === "build") {
     menu.push({
       factions : ['papacy'],
       cost : [2],
-      name : "Burn books",
+      name : "Burn Books",
       check : this.canPlayerBurnBooks,
       fnct : this.playerBurnBooks,
       category : "special" ,
       img : '/his/img/backgrounds/move/burn_books.jpg',
     });
     // Loyola reduces Jesuit University Cost
+    let university_founding_cost = 3;
     if (this.canPlayerCommitDebater("papacy", "loyola-debater")) {
-      menu.push({
-        factions : ['papacy'],
-        cost : [2],
-        name : "Found Jesuit University w/ Loyola",
-        check : this.canPlayerFoundJesuitUniversity,
-        fnct : this.playerFoundJesuitUniversityWithLoyola,
-        category : "special" ,
-        img : '/his/img/backgrounds/move/university.png',
-      });
+      let university_founding_cost = 2;
     }
     menu.push({
       factions : ['papacy'],
-      cost : [3],
-      name : "Found Jesuit University",
+      cost : [university_founding_cost],
+      name : "Found University",
       check : this.canPlayerFoundJesuitUniversity,
       fnct : this.playerFoundJesuitUniversity,
       category : "special" ,
       img : '/his/img/backgrounds/move/university.png',
     });
-
 }
+
 
     if (player == null) { return menu; }
 
@@ -1158,8 +1151,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
     this.attachCardboxEvents(function(card) {
 
-      this.updateStatus(`Playing ${this.diplomatic_deck[card].name}`, this.game.deck[1].hand);
-
+      this.updateStatus(`Playing ${this.popup(card)}`, this.game.deck[1].hand);
       his_self.addMove("diplomacy_card_event\t"+faction+"\t"+card);
       his_self.addMove("discard_diplomacy_card\t"+faction+"\t"+card);
       his_self.endTurn();
@@ -1195,7 +1187,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
       }
       html    += `</ul>`;
 
-      this.updateStatusWithOptions('Playing card:', html, true);
+      this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
       this.bindBackButtonFunction(() => {
         this.playerTurn(faction);
       });
@@ -1276,18 +1268,63 @@ console.log("BOARD CLICKABLE: " + board_clickable);
             return;
           }
 
-          for (let z = 0; z < menu[user_choice].factions.length; z++) {
-            if (pfactions.includes(menu[user_choice].factions[z])) {
-              ops -= menu[user_choice].cost[z];
-	        z = menu[user_choice].factions.length+1;
-            }
-          }
+	  //
+	  // cost of founding depends on Loyola
+	  //
+	  if (menu[user_choice].name.indexOf("University") != -1) {
 
-          if (ops > 0) {
-	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
-          }
-          menu[user_choice].fnct(this, this.game.player, selected_faction);
-          return;
+	    let default_cost = 3;
+    	    if (this.canPlayerCommitDebater("papacy", "loyola-debater")) {
+
+	      let msg = "Commit Loyola to reduce cost to 2 OPs?";
+      	      let html = `<ul>`;
+              html += `<li class="option" id="commit">commit Loyola (2 OPs)</li>`;
+              html += `<li class="option" id="donot">do not commit (3 OPs)</li>`;
+	      html += '</ul>';
+
+	      his_self.updateStatusWithOptions(msg, html);
+      	      his_self.attachCardboxEvents(async (moar_user_choice) => {      
+
+	        if (moar_user_choice === "commit") {
+                  ops -= 2;
+                  if (ops > 0) { his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+                  his_self.addMove("commit\tpapacy\tloyola-debater");
+                  his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
+                  return;
+		}
+
+		if (moar_user_choice === "donot") {
+                  ops -= 3;
+                  if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+                  his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
+                  return;
+		}
+
+	      });
+
+	    } else {
+              ops -= 3;
+              if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              return;
+	    }
+
+	  } else {
+
+            for (let z = 0; z < menu[user_choice].factions.length; z++) {
+              if (pfactions.includes(menu[user_choice].factions[z])) {
+                ops -= menu[user_choice].cost[z];
+	          z = menu[user_choice].factions.length+1;
+              }
+            }
+
+            if (ops > 0) {
+	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+            }
+            menu[user_choice].fnct(this, this.game.player, selected_faction);
+            return;
+
+	  }
 
         });
       });
@@ -1342,7 +1379,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + this.game.deck[0].cards[card].name + " for the event\tevent\t"+card);
+    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
     this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
@@ -1367,7 +1404,7 @@ return;
     let player = this.returnPlayerOfFaction("papacy");
     if (this.game.player != player) { this.updateStatus("ERROR: you are not the papacy"); return; }
 
-    let msg = `Do you wish to end a war? [${JSON.stringify(enemies)}]`;
+    let msg = `End a War? [${JSON.stringify(enemies)}]`;
     let opt = "<ul>";
     opt += `<li class="option" id="yes">yes</li>`;
     opt += `<li class="option" id="no">no</li>`;
@@ -1687,7 +1724,7 @@ return;
       this.endTurn();
     } else {
 
-      let msg = "Do you wish to Spring Deploy from: ";
+      let msg = "Spring Deploy from: ";
      
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
@@ -2239,7 +2276,7 @@ return;
 
     }
 
-    selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
+    selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
 	
   }
 
@@ -3780,11 +3817,6 @@ return;
   canPlayerFoundJesuitUniversity(his_self, player, faction) {
     if (faction === "papacy" && his_self.game.state.events.papacy_may_found_jesuit_universities == 1) { return 1; }
     return 0;
-  }
-  async playerFoundJesuitUniversityWithLoyola(his_self, player, faction) {
-    this.addMove("NOTIFY\tPapacy commits Loyola to lower cost of Jesuit University");
-    this.addMove("commit\tpapacy\tloyola-debater");
-    return this.playerFoundJesuitUniversity(his_self, player, faction);
   }
   async playerFoundJesuitUniversity(his_self, player, faction) {
 

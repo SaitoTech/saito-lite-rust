@@ -68,6 +68,10 @@ class HereIStand extends GameTemplate {
     //
     this.confirm_moves = 1;
 
+    //
+    // "showcard" popups
+    //
+    this.useCardbox = 1;
 
     //
     //

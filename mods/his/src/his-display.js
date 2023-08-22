@@ -1000,6 +1000,7 @@ console.log("here for");
 	  // something else is handling this
 	  return;
 	} else {
+	  let el = e.target;
 	  if (el.parentNode) {
 	    if (el.parentNode.classList.contains("selectable")) {
 	      // something else is handling this
@@ -1071,6 +1072,10 @@ console.log("here for");
       }
     }
 
+    //
+    // triggered before card deal
+    //
+    if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
 
     if (deckidx === -1) {
       //

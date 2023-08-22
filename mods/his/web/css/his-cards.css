@@ -1,4 +1,8 @@
 
+.showcard {
+  border-bottom: 2px dashed;
+}
+
 .cardtext {
     position: relative;
     font-size: 2rem;

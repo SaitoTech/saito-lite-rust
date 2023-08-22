@@ -1,4 +1,10 @@
 
+  returnSpaceName(spacekey) {
+    if (this.game.spaces[spacekey]) { return this.game.spaces[spacekey].name; }
+    if (this.game.navalspaces[spacekey]) { return this.game.navalspaces[spacekey].name; }
+    return spacekey;
+  }
+
   resetBesiegedSpaces() {
     for (let space in this.game.spaces) {
       if (space.besieged == 2) { space.besieged = 1; }
@@ -2902,8 +2908,8 @@
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
-    for (let key in this.game.spaces[space].units) {
-      if (this.game.spaces[space].units[key].length > 0) { return 1; }
+    for (let key in space.units) {
+      if (space.units[key].length > 0) { return 1; }
     }
 
     return 0;
