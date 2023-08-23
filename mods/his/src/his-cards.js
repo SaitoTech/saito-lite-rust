@@ -2905,7 +2905,26 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { return 1; } ,
+      canEvent : function(his_self, faction) { 
+
+	let f = {};
+	if (!f[his_self.game.spaces['genoa'].political]) { f[his_self.game.spaces['genoa'].political] = 1; }
+	else { f[his_self.game.spaces['genoa'].political]++ }
+
+	for (let key in f) {
+	  if (f[key] >= 4) {
+	    return 1;
+	  }
+	  if (f[key] == 3) {
+	    return 1;
+	  }
+	  if (f[key] == 2) {
+	    return 1;
+	  }
+	}
+
+	return 0;
+      } ,
       onEvent : function(his_self, faction) {
 
 	let f = {};
@@ -3667,6 +3686,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu == "move" || menu == "assault" || menu == "piracy") {
+
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
+
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('031')) {
@@ -3737,6 +3759,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      break;
 	    }
 	  }
+
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
 
 	  if (f == "") { return {}; }
 
@@ -3897,6 +3921,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu == "field_battle") {
+
 	  let f = "";
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -4196,6 +4221,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       menuOption  :       function(his_self, menu, player, card="") {
         if (menu == "event") {
 
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
+
 	  let p = his_self.returnPlayerOfFaction();
 
           if (his_self.game.state.leaders.luther !== 1) { return {}; }
@@ -4276,6 +4303,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { return 1; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu != "") {
+
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
+
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('038')) {
@@ -5407,7 +5437,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-	        already_selected,push(spacekey);
+	        already_selected.push(spacekey);
 		his_self.game.spaces[spacekey].unrest = 1;
 		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
@@ -5417,7 +5447,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-	        already_selected,push(spacekey);
+	        already_selected.push(spacekey);
 		his_self.game.spaces[spacekey].unrest = 1;
 		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
@@ -5427,7 +5457,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-	        already_selected,push(spacekey);
+	        already_selected.push(spacekey);
 		his_self.game.spaces[spacekey].unrest = 1;
 		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
@@ -5437,7 +5467,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-	        already_selected,push(spacekey);
+	        already_selected.push(spacekey);
 		his_self.game.spaces[spacekey].unrest = 1;
 		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
@@ -5447,7 +5477,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-	        already_selected,push(spacekey);
+	        already_selected.push(spacekey);
 		his_self.game.spaces[spacekey].unrest = 1;
 		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
