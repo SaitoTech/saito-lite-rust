@@ -3059,29 +3059,22 @@ try {
       // STATS - aggregate the statisics
       //
       if (this.game.state.round > 1) {
-
-	while (this.game.state.stats.round.length < this.game.state.round) {
+	while (this.game.state.stats.round.length < (this.game.state.round - 1)) {
           this.game.state.stats.round.push({});
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
 	}
-
-console.log("STATS ROUNDS: " + this.game.state.stats.round.length);
-
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
-
-console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
-
       }
 
 
@@ -3129,10 +3122,10 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
         this.game.queue.push("reshuffle");
 
-
 	if (this.game.state.round == 3) {
           if (this.game.options.deck === "saito") {
-            if (this.game.state.events.cia != 1) {
+            if (this.game.state.events.cia != 1 && this.game.state.events.tsarbomba_added != 1) {
+	      this.game.state.events.tsarbomba_added = 1;
 	      this.addCardToDeck('tsarbomba', "New Card");
 	    }
 	  }
@@ -9493,7 +9486,6 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     this.game.queue.push("DECK\t1\t"+JSON.stringify(shuffle_in_these_cards));
     this.game.queue.push("HANDBACKUP\t1");
     this.game.queue.push("NOTIFY\tShuffling New Cards into Deck");
-    this.updateLog("Shuffling new cards into deck...");
     
   }
 
@@ -10454,8 +10446,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
-
+      if (!this.game.state.events.unitedfruit_removed != 1) {
+        this.game.state.events.unitedfruit_removed = 1;
+        this.cancelEvent("unitedfruit");
+        this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
+      }
      
       let twilight_self = this;
       let valid_targets = 0;
@@ -11266,8 +11261,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
-      this.cancelEvent("unitedfruit");
+      if (!this.game.state.events.unitedfruit_removed != 1) {
+        this.game.state.events.unitedfruit_removed = 1;
+        this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
+        this.cancelEvent("unitedfruit");
+      }
 
 
       let usinf = parseInt(this.countries['cuba'].us);
@@ -12155,8 +12153,12 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
-      this.cancelEvent("unitedfruit");
+      if (!this.game.state.events.unitedfruit_removed != 1) {
+        this.game.state.events.unitedfruit_removed = 1;
+        this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
+        this.cancelEvent("unitedfruit");
+      }
+
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -16855,20 +16857,20 @@ console.log("ROUND: " + this.game.state.round);
   preloadImages() {
 
     let allImages = [
-	"/twilight/img/backgrounds/europe-scoring-bg.png",
-	"/twilight/img/backgrounds/asia-scoring-bg.png",
-	"/twilight/img/backgrounds/mideast-scoring-bg.png",
-	"/twilight/img/backgrounds/africa-scoring-bg.png",
-	"/twilight/img/backgrounds/southamerica-scoring-bg.png",
-	"/twilight/img/backgrounds/centralamerica-scoring-bg.png",
-	"/twilight/img/backgrounds/seasia-scoring-bg.png",
-	"/twilight/img/backgrounds/indopaki-bg.jpg",
-	"/twilight/img/backgrounds/arabisraeli-bg.jpg",
-	"/twilight/img/backgrounds/iraniraq-bg.jpg",
-	"/twilight/img/backgrounds/koreanwar-bg.jpg",
-	"/twilight/img/backgrounds/brushwar-bg.jpg"
+        "img/backgrounds/europe-scoring-bg.png",
+        "img/backgrounds/asia-scoring-bg.png",
+        "img/backgrounds/mideast-scoring-bg.png",
+        "img/backgrounds/africa-scoring-bg.png",
+        "img/backgrounds/southamerica-scoring-bg.png",
+        "img/backgrounds/centralamerica-scoring-bg.png",
+        "img/backgrounds/seasia-scoring-bg.png",
+        "img/backgrounds/indopaki-bg.jpg",
+        "img/backgrounds/arabisraeli-bg.jpg",
+        "img/backgrounds/iraniraq-bg.jpg",
+        "img/backgrounds/koreanwar-bg.jpg",
+        "img/backgrounds/brushwar-bg.jpg"
     ];
-
+    
     this.preloadImageArray(allImages, 0);
 
   }
@@ -16881,7 +16883,7 @@ console.log("ROUND: " + this.game.state.round);
       pre_images[idx].onload = () => {
         this.preloadImageArray(imageArray, idx+1);
       }
-      pre_images[idx].src = "/imperium/" + imageArray[idx];
+      pre_images[idx].src = "/twilight/" + imageArray[idx];
     }
 
   }

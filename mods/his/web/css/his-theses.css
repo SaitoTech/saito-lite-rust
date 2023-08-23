@@ -37,6 +37,7 @@
     line-height: 4rem;
     width: 30rem;
     max-width: 35rem;
+    max-height: 80vh;
     z-index: 10;
     border-radius: 1rem;
     top: 0px;
@@ -49,7 +50,6 @@
     padding-right: 1rem;
     clear: both;
     min-height: max-content;
-    max-height: max-content;
     height: auto;
     cursor: pointer;
 }
