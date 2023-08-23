@@ -885,7 +885,7 @@ if (limit === "build") {
     let his_self = this;
 
     let html = '';
-    html += '<ul>';
+    html += '<ul class="hide-scrollbar">';
 
     this.theses_overlay.space_onclick_callback = mycallback;
 
@@ -928,16 +928,16 @@ if (limit === "build") {
       //
       // and remove on-board clickability
       //
-//      if (board_clickable) {
-//        for (let key in his_self.game.spaces) {
-//          if (filter_func(his_self.game.spaces[key]) == 1) {
-//	    let t = "."+key;
-//	    document.querySelectorAll(t).forEach((el) => {
-//	      el.onclick = (e) => {};
-//	    });
-//	  }
-//	}
-//      }
+      if (board_clickable) {
+        for (let key in his_self.game.spaces) {
+          if (filter_func(his_self.game.spaces[key]) == 1) {
+	    let t = "."+key;
+	    document.querySelectorAll(t).forEach((el) => {
+	      el.onclick = (e) => {};
+	    });
+	  }
+	}
+      }
 
       $('.option').off();
       $('.space').off();
@@ -969,7 +969,7 @@ if (limit === "build") {
 console.log("BOARD CLICKABLE: " + board_clickable);
 
     let html = '';
-    html += '<ul>';
+    html += '<ul class="hide-scrollbar">';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
@@ -1177,6 +1177,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     if (this.deck[card].type === "mandatory" && this.deck[card].canEvent(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
+      this.addMove("faction_acknowledge\t"+faction+"\t"+this.returnFactionName(faction) + " now plays 2 OPs");
       this.playerPlayEvent(card, faction);
     } else {
 
@@ -1287,7 +1288,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	        if (moar_user_choice === "commit") {
                   ops -= 2;
-                  if (ops > 0) { his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+                  if (ops > 0) {
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+		  }
                   his_self.addMove("commit\tpapacy\tloyola-debater");
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
@@ -1295,7 +1298,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 		if (moar_user_choice === "donot") {
                   ops -= 3;
-                  if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+		  if (ops > 0) {
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+                  }
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
 		}
@@ -1304,7 +1309,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	    } else {
               ops -= 3;
-              if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+	      if (ops > 0) {
+ 	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+              }
               menu[user_choice].fnct(this, this.game.player, selected_faction);
               return;
 	    }
@@ -3538,13 +3545,19 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    his_self.addMove("hide_overlay\tpublish_treastise\tfrench");
+	    his_self.updateStatus("submitting...");
+	    his_self.addMove("hide_overlay\tpublish_treatise\tfrench");
+	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
-	    his_self.addMove("show_overlay\tpublish_treastise\tfrench");
+	    his_self.addMove("show_overlay\tpublish_treatise\tfrench");
+	    if (id === "calvin-debater") {
+	      his_self.addMove("commit\tprotestant\tcalvin_debater\t1");
+	    }
+	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	    his_self.endTurn();
 
 	    return 0;
@@ -3556,7 +3569,7 @@ return;
 
 	if (id === "german" && his_self.canPlayerCommitDebater("protestant", "carlstadt-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 
-          let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
+          let msg = "Use Carlstadt Debater Bonus +1 Attempt:";
           let html = '<ul>';
           html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
@@ -3580,19 +3593,23 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
+	    his_self.updateStatus("submitting...");
 	    his_self.cardbox.hide();
 
 	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
+	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	    if (id === "carlstadt-debater") {
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
-	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
-	    if (id === "carlstadt") {
+	    his_self.addMove("show_overlay\tpublish_treatise\tgerman");
+	    if (id === "carlstadt-debater") {
+	      his_self.addMove("commit\tprotestant\tcarlstadt-debater\t1");
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t1");
 	    }
+	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	    his_self.endTurn();
 
@@ -3602,10 +3619,12 @@ return;
 	  return 0;
         }
 
-	his_self.addMove("hide_overlay\tpublish_treastise\t"+id);
+	his_self.addMove("hide_overlay\tpublish_treatise\t"+id);
+	his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
-	his_self.addMove("show_overlay\tpublish_treastise\t"+id);
+	his_self.addMove("show_overlay\tpublish_treatise\t"+id);
+	his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.endTurn();
       });
 
@@ -3786,9 +3805,11 @@ return;
 
 	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
+            his_self.addMove("commit\tpapacy\ttetzel-debater");
 	  }
 
 	  his_self.addMove("hide_overlay\tburn_books\t"+id);
+	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
 	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
 	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
@@ -3797,6 +3818,7 @@ return;
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  his_self.addMove("show_overlay\tburn_books\t"+id);
+	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	  his_self.endTurn();
 
 	  return 0;
@@ -3806,8 +3828,10 @@ return;
       }
 
       his_self.addMove("hide_overlay\tburn_books\t"+id);
+      his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
       his_self.addMove("show_overlay\tburn_books\t"+id);
       his_self.endTurn();
     });

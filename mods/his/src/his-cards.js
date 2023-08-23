@@ -2508,7 +2508,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	    his_self.updateLog(his_self.popup('007') + ": Luther enters Debate");
 
-
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
@@ -2668,6 +2667,16 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    }
 	  );
 
+	  //
+	  // no valid reformation targets
+	  //
+	  if (target_spaces == 0) {
+	    his_self.updateStatus("No valid counter-reformation targets"); 
+	    his_self.updateLog("No valid counter-reformation targets"); 
+	    return 1;
+	  }
+
+
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
 
@@ -2700,10 +2709,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      // launch counter_reformation
 	      //
 	      function(spacekey) {
-	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
+	  	his_self.updateStatus("Counter-Reformation attempt: "+his_self.returnSpaceName(spacekey));
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
 		let name = his_self.game.spaces[spacekey].name;
-		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
+		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt: "+his_self.returnSpaceName(spacekey)+"\tcatholic_counter_reformation\t"+name);
                 his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
@@ -2753,6 +2762,16 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      return 0;
 	    }
 	  );
+
+	  //
+	  // no valid reformation targets
+	  //
+	  if (target_spaces == 0) {
+	    his_self.updateStatus("No valid reformation targets"); 
+	    his_self.updateLog("No valid reformation targets"); 
+	    return 1;
+	  }
+
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
@@ -2871,6 +2890,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
+	his_self.game.queue.push(`hide_overlay\tburn_books`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
@@ -2885,7 +2905,26 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { return 1; } ,
+      canEvent : function(his_self, faction) { 
+
+	let f = {};
+	if (!f[his_self.game.spaces['genoa'].political]) { f[his_self.game.spaces['genoa'].political] = 1; }
+	else { f[his_self.game.spaces['genoa'].political]++ }
+
+	for (let key in f) {
+	  if (f[key] >= 4) {
+	    return 1;
+	  }
+	  if (f[key] == 3) {
+	    return 1;
+	  }
+	  if (f[key] == 2) {
+	    return 1;
+	  }
+	}
+
+	return 0;
+      } ,
       onEvent : function(his_self, faction) {
 
 	let f = {};
@@ -3647,6 +3686,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu == "move" || menu == "assault" || menu == "piracy") {
+
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
+
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('031')) {
@@ -3717,6 +3759,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      break;
 	    }
 	  }
+
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
 
 	  if (f == "") { return {}; }
 
@@ -3877,6 +3921,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu == "field_battle") {
+
 	  let f = "";
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -4176,6 +4221,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       menuOption  :       function(his_self, menu, player, card="") {
         if (menu == "event") {
 
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
+
 	  let p = his_self.returnPlayerOfFaction();
 
           if (his_self.game.state.leaders.luther !== 1) { return {}; }
@@ -4256,6 +4303,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { return 1; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu != "") {
+
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
+
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('038')) {
@@ -5376,58 +5426,73 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
+
+	let player = his_self.returnPlayerOfFaction(faction);
+	if (his_self.game.player === player) {
+
+	    let already_selected = [];
+
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected.push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected.push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected.push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected.push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected.push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
-		his_seld.endTurn();
+		his_self.endTurn();
 
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
+
+	} else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("064"));
+	}
 
 	   return 0;
       },
@@ -6263,7 +6328,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  res3.push(res2[i]);
 	}
 
-	let msg = "Select Towns to Flip Protestant: ";
+	let msg = "Select Towns to Convert Protestant: ";
         let html = '<ul>';
         for (let i = 0; i < res3.length; i++) {
 	  html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;

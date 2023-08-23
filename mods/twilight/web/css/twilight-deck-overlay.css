@@ -38,7 +38,7 @@
     margin-top: -1rem;
 }
 
-.deck-overlay .cardlist-container.cards_added .card::before {
+.deck-overlay .cardlist-container .card_added::before {
     content: "";
     color: white;
     width: 0;
@@ -52,7 +52,7 @@
     margin-right: 6px;
     border-top-right-radius: 1rem;
 }
-.deck-overlay .cardlist-container.cards_removed .card::before {
+.deck-overlay .cardlist-container .card_removed::before {
     content: "";
     color: white;
     width: 0;
@@ -66,7 +66,7 @@
     margin-right: 6px;
     border-top-right-radius: 1rem;
 }
-.deck-overlay .cardlist-container.cards_added .card::after {
+.deck-overlay .cardlist-container .card_added::after {
     content: "+";
     color: white;
     top: 0;
@@ -79,7 +79,7 @@
     padding-left: 1rem;
     padding-right: 1rem;
 }
-.deck-overlay .cardlist-container.cards_removed .card::after {
+.deck-overlay .cardlist-container .card_removed::after {
     content: "-";
     color: white;
     top: 0;
