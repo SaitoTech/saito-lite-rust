@@ -34,7 +34,9 @@ export class NodeSharedMethods extends CustomSharedMethods {
   sendMessage(peerIndex: bigint, buffer: Uint8Array): void {
     try {
       let socket = S.getInstance().getSocket(peerIndex);
-      socket.send(buffer);
+      if (socket) {
+        socket.send(buffer);
+      }
     } catch (e) {
       console.error(e);
     }
