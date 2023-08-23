@@ -97,6 +97,12 @@ console.log("MOVE: " + mv[0]);
 	}
 
 	if (mv[0] === "show_overlay") {
+
+	  //
+	  // hide any cardbox
+	  //
+	  this.cardbox.hide();
+
 	  this.displayElectorateDisplay();
 	  if (mv[1] === "welcome") { 
 	    let faction = mv[2];
@@ -175,6 +181,8 @@ console.log("MOVE: " + mv[0]);
 	  let unit_type = mv[3];
 	  let spacekey = mv[4];
           let player_to_ignore = parseInt(mv[5]);
+
+	  this.updateLog(this.returnFactionName(faction) + " builds " + unit_type + " in " + this.returnSpaceName(spacekey));
 
 	  if (this.game.player != player_to_ignore) {
 	    if (land_or_sea === "land") {
@@ -5144,22 +5152,28 @@ console.log("purging naval units and capturing leader");
 
 	  if (zone === "german") {
 	    if (this.game.state.translations['new']['german'] >= 6) {
+	      this.updateLog("Protestants translate New Testament (german)");
 	      this.game.state.translations['full']['german']++;
 	    } else {
+	      this.updateLog("Protestants translate Old Testament (german)");
 	      this.game.state.translations['new']['german']++;
 	    }
 	  }
 	  if (zone === "french") {
 	    if (this.game.state.translations['new']['french'] >= 6) {
+	      this.updateLog("Protestants translate New Testament (french)");
 	      this.game.state.translations['full']['french']++;
 	    } else {
+	      this.updateLog("Protestants translate Old Testament (french)");
 	      this.game.state.translations['new']['french']++;
 	    }
 	  }
 	  if (zone === "english") {
 	    if (this.game.state.translations['new']['english'] >= 6) {
+	      this.updateLog("Protestants translate New Testament (english)");
 	      this.game.state.translations['full']['english']++;
 	    } else {
+	      this.updateLog("Protestants translate Old Testament (english)");
 	      this.game.state.translations['new']['english']++;
 	    }
 	  }
@@ -5991,6 +6005,27 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
           return 0;
         }
 
+	if (mv[0] === "faction_acknowledge") {
+
+	  let faction = mv[1];
+	  let msg = mv[2];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.player == player) {
+	    // active player halts, then continues once acknowledgement happens
+	    this.playerAcknowledgeNotice(msg, () => {
+	      this.handleGameLoop();
+	    });
+	  } else {
+	    // everyone else continues processing
+	    return 1;
+	  }
+
+	  return 0;
+
+	}
 
 	if (mv[0] === "place_protestant_debater") {
 
@@ -6130,7 +6165,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
  	if (mv[0] === "unrest") {
 
 	  let spacekey = mv[1];
-	  this.game.spaces[spaceley].unrest = 1;
+	  this.game.spaces[spacekey].unrest = 1;
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);

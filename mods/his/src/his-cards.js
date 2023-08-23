@@ -2890,6 +2890,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
+	his_self.game.queue.push(`hide_overlay\tburn_books`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
@@ -5395,58 +5396,73 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
+
+	let player = his_self.returnPlayerOfFaction(faction);
+	if (his_self.game.player === player) {
+
+	    let already_selected = [];
+
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
-		his_seld.endTurn();
+		his_self.endTurn();
 
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
+
+	} else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("064"));
+	}
 
 	   return 0;
       },

@@ -5541,6 +5541,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
+	his_self.game.queue.push(`hide_overlay\tburn_books`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
@@ -8046,58 +8047,73 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
+
+	let player = his_self.returnPlayerOfFaction(faction);
+	if (his_self.game.player === player) {
+
+	    let already_selected = [];
+
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select English Space to throw into Unrest" ,
-	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(space) { if (!already_selected.includes(space.key) && space.home === "england"){ return 1;} return 0; } ,
 	      function(spacekey) {
 
-		let s = his_self.game.spaces[spacekey].unrest = 1;
-		his_self.displaySpace(s);
+	        already_selected,push(spacekey);
+		his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(spacekey);
 		his_self.addMove("unrest\t"+spacekey);
 
-		his_seld.endTurn();
+		his_self.endTurn();
 
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
 	   }, null, true);
+
+	} else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("064"));
+	}
 
 	   return 0;
       },
@@ -15460,6 +15476,12 @@ console.log("MOVE: " + mv[0]);
 	}
 
 	if (mv[0] === "show_overlay") {
+
+	  //
+	  // hide any cardbox
+	  //
+	  this.cardbox.hide();
+
 	  this.displayElectorateDisplay();
 	  if (mv[1] === "welcome") { 
 	    let faction = mv[2];
@@ -15538,6 +15560,8 @@ console.log("MOVE: " + mv[0]);
 	  let unit_type = mv[3];
 	  let spacekey = mv[4];
           let player_to_ignore = parseInt(mv[5]);
+
+	  this.updateLog(this.returnFactionName(faction) + " builds " + unit_type + " in " + this.returnSpaceName(spacekey));
 
 	  if (this.game.player != player_to_ignore) {
 	    if (land_or_sea === "land") {
@@ -20507,22 +20531,28 @@ console.log("purging naval units and capturing leader");
 
 	  if (zone === "german") {
 	    if (this.game.state.translations['new']['german'] >= 6) {
+	      this.updateLog("Protestants translate New Testament (german)");
 	      this.game.state.translations['full']['german']++;
 	    } else {
+	      this.updateLog("Protestants translate Old Testament (german)");
 	      this.game.state.translations['new']['german']++;
 	    }
 	  }
 	  if (zone === "french") {
 	    if (this.game.state.translations['new']['french'] >= 6) {
+	      this.updateLog("Protestants translate New Testament (french)");
 	      this.game.state.translations['full']['french']++;
 	    } else {
+	      this.updateLog("Protestants translate Old Testament (french)");
 	      this.game.state.translations['new']['french']++;
 	    }
 	  }
 	  if (zone === "english") {
 	    if (this.game.state.translations['new']['english'] >= 6) {
+	      this.updateLog("Protestants translate New Testament (english)");
 	      this.game.state.translations['full']['english']++;
 	    } else {
+	      this.updateLog("Protestants translate Old Testament (english)");
 	      this.game.state.translations['new']['english']++;
 	    }
 	  }
@@ -21354,6 +21384,27 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
           return 0;
         }
 
+	if (mv[0] === "faction_acknowledge") {
+
+	  let faction = mv[1];
+	  let msg = mv[2];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.player == player) {
+	    // active player halts, then continues once acknowledgement happens
+	    this.playerAcknowledgeNotice(msg, () => {
+	      this.handleGameLoop();
+	    });
+	  } else {
+	    // everyone else continues processing
+	    return 1;
+	  }
+
+	  return 0;
+
+	}
 
 	if (mv[0] === "place_protestant_debater") {
 
@@ -21493,7 +21544,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
  	if (mv[0] === "unrest") {
 
 	  let spacekey = mv[1];
-	  this.game.spaces[spaceley].unrest = 1;
+	  this.game.spaces[spacekey].unrest = 1;
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -23025,7 +23076,7 @@ if (limit === "build") {
     let his_self = this;
 
     let html = '';
-    html += '<ul>';
+    html += '<ul class="hide-scrollbar">';
 
     this.theses_overlay.space_onclick_callback = mycallback;
 
@@ -23109,7 +23160,7 @@ if (limit === "build") {
 console.log("BOARD CLICKABLE: " + board_clickable);
 
     let html = '';
-    html += '<ul>';
+    html += '<ul class="hide-scrollbar">';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
@@ -23317,6 +23368,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     if (this.deck[card].type === "mandatory" && this.deck[card].canEvent(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
+      this.addMove("faction_acknowledge\t"+faction+"\t"+this.returnFactionName(faction) + " now plays 2 OPs");
       this.playerPlayEvent(card, faction);
     } else {
 
@@ -25684,13 +25736,17 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    his_self.addMove("hide_overlay\tpublish_treastise\tfrench");
+	    his_self.updateStatus("submitting...");
+	    his_self.addMove("hide_overlay\tpublish_treatise\tfrench");
 	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
-	    his_self.addMove("show_overlay\tpublish_treastise\tfrench");
+	    his_self.addMove("show_overlay\tpublish_treatise\tfrench");
+	    if (id === "calvin-debater") {
+	      his_self.addMove("commit\tprotestant\tcalvin_debater\t1");
+	    }
 	    his_self.endTurn();
 
 	    return 0;
@@ -25726,6 +25782,7 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
+	    his_self.updateStatus("submitting...");
 	    his_self.cardbox.hide();
 
 	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
@@ -25735,8 +25792,9 @@ return;
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
-	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
+	    his_self.addMove("show_overlay\tpublish_treatise\tgerman");
 	    if (id === "carlstadt-debater") {
+	      his_self.addMove("commit\tprotestant\tcarlstadt-debater\t1");
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t1");
 	    }
 
@@ -25748,10 +25806,10 @@ return;
 	  return 0;
         }
 
-	his_self.addMove("hide_overlay\tpublish_treastise\t"+id);
+	his_self.addMove("hide_overlay\tpublish_treatise\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
-	his_self.addMove("show_overlay\tpublish_treastise\t"+id);
+	his_self.addMove("show_overlay\tpublish_treatise\t"+id);
 	his_self.endTurn();
       });
 
@@ -25932,6 +25990,7 @@ return;
 
 	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
+            his_self.addMove("commit\tpapacy\ttetzel-debater");
 	  }
 
 	  his_self.addMove("hide_overlay\tburn_books\t"+id);
