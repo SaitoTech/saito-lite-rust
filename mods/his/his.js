@@ -5159,7 +5159,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	    his_self.updateLog(his_self.popup('007') + ": Luther enters Debate");
 
-
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
@@ -5319,6 +5318,16 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    }
 	  );
 
+	  //
+	  // no valid reformation targets
+	  //
+	  if (target_spaces == 0) {
+	    his_self.updateStatus("No valid counter-reformation targets"); 
+	    his_self.updateLog("No valid counter-reformation targets"); 
+	    return 1;
+	  }
+
+
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
 
@@ -5351,10 +5360,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      // launch counter_reformation
 	      //
 	      function(spacekey) {
-	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
+	  	his_self.updateStatus("Counter-Reformation attempt: "+his_self.returnSpaceName(spacekey));
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
 		let name = his_self.game.spaces[spacekey].name;
-		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
+		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt: "+his_self.returnSpaceName(spacekey)+"\tcatholic_counter_reformation\t"+name);
                 his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
@@ -5404,6 +5413,16 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      return 0;
 	    }
 	  );
+
+	  //
+	  // no valid reformation targets
+	  //
+	  if (target_spaces == 0) {
+	    his_self.updateStatus("No valid reformation targets"); 
+	    his_self.updateLog("No valid reformation targets"); 
+	    return 1;
+	  }
+
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
@@ -8914,7 +8933,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  res3.push(res2[i]);
 	}
 
-	let msg = "Select Towns to Flip Protestant: ";
+	let msg = "Select Towns to Convert Protestant: ";
         let html = '<ul>';
         for (let i = 0; i < res3.length; i++) {
 	  html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
@@ -15347,7 +15366,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
   //
   // Core Game Logic
   //
-  handleGameLoop() {
+  async handleGameLoop() {
 
     let his_self = this;
 
@@ -17301,6 +17320,8 @@ console.log("2. insert index: " + index_to_insert_moves);
               for (let i = 0; i < menu_triggers.length; i++) {
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
+		  his_self.updateStatus("acknowledged...");
+                  his_self.prependMove("RESOLVE\t"+his_self.publicKey);
                   z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
                 }
@@ -20968,7 +20989,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.updateLog("removing " + this.game.deck[0].cards[card].name + " from deck");
+	  this.updateLog(this.popup(card) + " removed from deck");
 	  this.removeCardFromGame(card);
 
 	  return 1;
@@ -21324,7 +21345,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
-	    this.playerPlayOps(card, faction, ops);
+	    this.playerAcknowledgeNotice(`You have ${ops} OPS remaining...`, () => {
+	      this.playerPlayOps(card, faction, ops);
+	    });
 	  } else {
 	    this.updateStatusAndListCards("Opponent Turn", () => {});
 	  }
@@ -21382,6 +21405,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
               },
 
               function(spacekey) {
+    	        his_self.updateStatusWithOptions(`Converting ${his_self.returnSpaceName(spacekey)}`);
                 his_self.addMove("convert\t"+spacekey+"\tcatholic");
                 his_self.endTurn();
               },
@@ -21431,6 +21455,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
               },
 
               function(spacekey) {
+    	        his_self.updateStatusWithOptions(`Reforming ${his_self.returnSpaceName(spacekey)}`);
                 his_self.addMove("convert\t"+spacekey+"\tprotestant");
                 his_self.endTurn();
               },
@@ -23043,16 +23068,16 @@ if (limit === "build") {
       //
       // and remove on-board clickability
       //
-//      if (board_clickable) {
-//        for (let key in his_self.game.spaces) {
-//          if (filter_func(his_self.game.spaces[key]) == 1) {
-//	    let t = "."+key;
-//	    document.querySelectorAll(t).forEach((el) => {
-//	      el.onclick = (e) => {};
-//	    });
-//	  }
-//	}
-//      }
+      if (board_clickable) {
+        for (let key in his_self.game.spaces) {
+          if (filter_func(his_self.game.spaces[key]) == 1) {
+	    let t = "."+key;
+	    document.querySelectorAll(t).forEach((el) => {
+	      el.onclick = (e) => {};
+	    });
+	  }
+	}
+      }
 
       $('.option').off();
       $('.space').off();
@@ -23402,7 +23427,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	        if (moar_user_choice === "commit") {
                   ops -= 2;
-                  if (ops > 0) { his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+                  if (ops > 0) {
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+		  }
                   his_self.addMove("commit\tpapacy\tloyola-debater");
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
@@ -23410,7 +23437,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 		if (moar_user_choice === "donot") {
                   ops -= 3;
-                  if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+		  if (ops > 0) {
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+                  }
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
 		}
@@ -23419,7 +23448,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	    } else {
               ops -= 3;
-              if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+	      if (ops > 0) {
+ 	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+              }
               menu[user_choice].fnct(this, this.game.player, selected_faction);
               return;
 	    }
@@ -25671,7 +25702,7 @@ return;
 
 	if (id === "german" && his_self.canPlayerCommitDebater("protestant", "carlstadt-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 
-          let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
+          let msg = "Use Carlstadt Debater Bonus +1 Attempt:";
           let html = '<ul>';
           html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
@@ -25705,7 +25736,7 @@ return;
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
-	    if (id === "carlstadt") {
+	    if (id === "carlstadt-debater") {
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t1");
 	    }
 

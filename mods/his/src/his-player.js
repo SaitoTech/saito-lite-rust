@@ -928,16 +928,16 @@ if (limit === "build") {
       //
       // and remove on-board clickability
       //
-//      if (board_clickable) {
-//        for (let key in his_self.game.spaces) {
-//          if (filter_func(his_self.game.spaces[key]) == 1) {
-//	    let t = "."+key;
-//	    document.querySelectorAll(t).forEach((el) => {
-//	      el.onclick = (e) => {};
-//	    });
-//	  }
-//	}
-//      }
+      if (board_clickable) {
+        for (let key in his_self.game.spaces) {
+          if (filter_func(his_self.game.spaces[key]) == 1) {
+	    let t = "."+key;
+	    document.querySelectorAll(t).forEach((el) => {
+	      el.onclick = (e) => {};
+	    });
+	  }
+	}
+      }
 
       $('.option').off();
       $('.space').off();
@@ -1287,7 +1287,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	        if (moar_user_choice === "commit") {
                   ops -= 2;
-                  if (ops > 0) { his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+                  if (ops > 0) {
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+		  }
                   his_self.addMove("commit\tpapacy\tloyola-debater");
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
@@ -1295,7 +1297,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 		if (moar_user_choice === "donot") {
                   ops -= 3;
-                  if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+		  if (ops > 0) {
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+                  }
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
 		}
@@ -1304,7 +1308,9 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	    } else {
               ops -= 3;
-              if (ops > 0) { this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); }
+	      if (ops > 0) {
+ 	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+              }
               menu[user_choice].fnct(this, this.game.player, selected_faction);
               return;
 	    }
@@ -3556,7 +3562,7 @@ return;
 
 	if (id === "german" && his_self.canPlayerCommitDebater("protestant", "carlstadt-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 
-          let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
+          let msg = "Use Carlstadt Debater Bonus +1 Attempt:";
           let html = '<ul>';
           html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
@@ -3590,7 +3596,7 @@ return;
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
-	    if (id === "carlstadt") {
+	    if (id === "carlstadt-debater") {
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t1");
 	    }
 

@@ -35,6 +35,8 @@ class ThesesOverlay {
  
     renderAtCoordinates(xpos, ypos) {
 
+      this.pushHudUnderOverlay();
+
       this.visible = true;
       this.rendering_at_coordinates = true;
       let gb   = document.querySelector(".gameboard");
@@ -83,6 +85,8 @@ class ThesesOverlay {
   
     render(language_zone="german") {
 
+        this.pushHudUnderOverlay();
+
 	//
 	// if already visible, don't reload
 	//
@@ -125,10 +129,8 @@ class ThesesOverlay {
 	document.querySelector(qs).onclick = (e) => {
 	  let space_id = e.currentTarget.id;
 	  if (this.spaces_onclick_callback != null) {
-alert("A");
 	    this.spaces_onclick_callback(space_id);
 	  } else {
-alert("B");
 	    this.mod.displaySpaceDetailedView(space_id);
 	  }
 	}

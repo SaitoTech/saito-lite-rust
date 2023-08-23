@@ -2508,7 +2508,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	    his_self.updateLog(his_self.popup('007') + ": Luther enters Debate");
 
-
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
@@ -2668,6 +2667,16 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    }
 	  );
 
+	  //
+	  // no valid reformation targets
+	  //
+	  if (target_spaces == 0) {
+	    his_self.updateStatus("No valid counter-reformation targets"); 
+	    his_self.updateLog("No valid counter-reformation targets"); 
+	    return 1;
+	  }
+
+
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
 
@@ -2700,10 +2709,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      // launch counter_reformation
 	      //
 	      function(spacekey) {
-	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
+	  	his_self.updateStatus("Counter-Reformation attempt: "+his_self.returnSpaceName(spacekey));
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
 		let name = his_self.game.spaces[spacekey].name;
-		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
+		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt: "+his_self.returnSpaceName(spacekey)+"\tcatholic_counter_reformation\t"+name);
                 his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
@@ -2753,6 +2762,16 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      return 0;
 	    }
 	  );
+
+	  //
+	  // no valid reformation targets
+	  //
+	  if (target_spaces == 0) {
+	    his_self.updateStatus("No valid reformation targets"); 
+	    his_self.updateLog("No valid reformation targets"); 
+	    return 1;
+	  }
+
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
@@ -6263,7 +6282,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  res3.push(res2[i]);
 	}
 
-	let msg = "Select Towns to Flip Protestant: ";
+	let msg = "Select Towns to Convert Protestant: ";
         let html = '<ul>';
         for (let i = 0; i < res3.length; i++) {
 	  html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;

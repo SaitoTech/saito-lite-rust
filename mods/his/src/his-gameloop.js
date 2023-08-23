@@ -3,7 +3,7 @@
   //
   // Core Game Logic
   //
-  handleGameLoop() {
+  async handleGameLoop() {
 
     let his_self = this;
 
@@ -1957,6 +1957,8 @@ console.log("2. insert index: " + index_to_insert_moves);
               for (let i = 0; i < menu_triggers.length; i++) {
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
+		  his_self.updateStatus("acknowledged...");
+                  his_self.prependMove("RESOLVE\t"+his_self.publicKey);
                   z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
                 }
@@ -5624,7 +5626,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.updateLog("removing " + this.game.deck[0].cards[card].name + " from deck");
+	  this.updateLog(this.popup(card) + " removed from deck");
 	  this.removeCardFromGame(card);
 
 	  return 1;
@@ -5980,7 +5982,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
-	    this.playerPlayOps(card, faction, ops);
+	    this.playerAcknowledgeNotice(`You have ${ops} OPS remaining...`, () => {
+	      this.playerPlayOps(card, faction, ops);
+	    });
 	  } else {
 	    this.updateStatusAndListCards("Opponent Turn", () => {});
 	  }
@@ -6038,6 +6042,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
               },
 
               function(spacekey) {
+    	        his_self.updateStatusWithOptions(`Converting ${his_self.returnSpaceName(spacekey)}`);
                 his_self.addMove("convert\t"+spacekey+"\tcatholic");
                 his_self.endTurn();
               },
@@ -6087,6 +6092,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
               },
 
               function(spacekey) {
+    	        his_self.updateStatusWithOptions(`Reforming ${his_self.returnSpaceName(spacekey)}`);
                 his_self.addMove("convert\t"+spacekey+"\tprotestant");
                 his_self.endTurn();
               },
