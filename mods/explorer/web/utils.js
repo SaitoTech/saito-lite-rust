@@ -21,7 +21,7 @@ async function fetchBlock(hash) {
 }
 
 async function fetchRawBlock(hash) {
-  var url = window.location.origin + "/json-blocks/" + hash + "/blk";
+  var url = window.location.origin + "/explorer/json-blocks/" + hash;
   var block = [];
   for await (let line of makeTextFileLineIterator(url)) {
     block.push(JSON.parse(line));

@@ -1,6 +1,7 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
 const sanitizer = require("sanitizer");
 const JSON = require("json-bigint");
+import Block from "../../lib/saito/block";
 
 class ExplorerCore extends ModTemplate {
   constructor(app) {
@@ -75,6 +76,54 @@ class ExplorerCore extends ModTemplate {
         }
       }
     });
+
+    // //////////////////////
+    // full json blocks //
+    //////////////////////
+    expressapp.get("/explorer/json-blocks/:bhash", async (req, res) => {
+      const bhash = req.params.bhash;
+      if (bhash == null) {
+        return;
+      }
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const blk = await app.blockchain.getBlock(bhash);
+        if (!blk) {
+          return;
+        }
+        /*
+        const blkwtx = new Block(app);
+        blkwtx.block = JSON.parse(JSON.stringify(blk.block));
+        blkwtx.transactions = blk.transactions;
+        blkwtx.app = null;
+        */
+
+
+        // console.info("### write from line 232 of server.ts.");
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Content-Transfer-Encoding": "utf8",
+        });
+        // res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
+        res.end(blk.toJson());
+      } catch (err) {
+        //
+        // file does not exist on disk, check in memory
+        //
+        //let blk = await this.app.blockchain.returnBlockByHash(bsh);
+
+        console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+        // console.info("### write from line 188 of server.ts.");
+        res.status(400);
+        res.end({
+          error: {
+            message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
+          },
+        });
+      }
+    });
   }
 
   returnHead() {
@@ -117,9 +166,9 @@ class ExplorerCore extends ModTemplate {
           <div class="explorer-data"><h4>Balance:</h4> </div><div>' +
       (await this.app.wallet.getBalance()) +
       '</div> \
-          <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
-      this.app.mempool.transactions.length +
-      " txs</a></div> \
+          <!--div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
+      //this.app.mempool.transactions.length +
+      " txs</a></div--> \
         </div>" +
       '\
         <div class="explorer-data"><h4>Search for Block (by hash):</h4> \
