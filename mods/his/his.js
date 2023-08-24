@@ -2651,6 +2651,7 @@ console.log("\n\n\n\n");
 
 
   popup(card) {
+
     let c = null;
     if (!c && this.game.deck[0]) { c = this.game.deck[0].cards[card]; }
     if (!c && this.game.deck[1]) { c = this.game.deck[1].cards[card]; }
@@ -2660,7 +2661,11 @@ console.log("\n\n\n\n");
       let x = this.returnDeck();
       if (x[card]) { c = x[card]; }
     }
-    return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+    if (c.name) {
+      return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+    } else {
+     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
+    }
   }
 
   returnNewCardsForThisTurn(turn = 1) {
@@ -4776,6 +4781,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               $('.option').on('click', function () {
 		
                 let action2 = $(this).attr("id");
+	        his_self.updateStatus("submitting...");
 
 		if (action2 === "yes") {
 		  his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
@@ -4829,7 +4835,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    return 0;
 
           } else {
-	    his_self.updateStatus("Papacy playing "+his_self.popup("004"));
+	    his_self.updateStatus("Papacy playing "+his_self.popup("005"));
 	  }
 
 	  return 0;
@@ -6970,6 +6976,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu != "") {
+	  if (!his_self.game.deck) { return 0; }
+	  if (!his_self.game.deck[0]) { return 0; }
+	  if (!his_self.game.deck[0].fhand) { return 0; }
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('038')) {
               return 1;
@@ -15465,7 +15474,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // cards dealt before diet of worms
 	    //
-//this.game.queue.push("is_testing");
+this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
 
@@ -15860,21 +15869,8 @@ console.log("MOVE: " + mv[0]);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "021");
-    	  this.addCard("protestant", "027");
-    	  this.addCard("protestant", "028");
-    	  this.addCard("protestant", "031");
-    	  this.addCard("protestant", "032");
-    	  this.addCard("protestant", "035");
-    	  this.addCard("protestant", "037");
-//    	  this.addCard("protestant", "036");
-//    	  this.addCard("protestant", "026");
-//    	  this.addCard("protestant", "027");
-//    	  this.addCard("protestant", "028");
-//    	  this.addCard("papacy", "029");
-//    	  this.addCard("papacy", "030");
-//    	  this.addCard("papacy", "024");
-//    	  this.addCard("papacy", "025");
+    	  this.addCard("papacy", "079"); 
+   	  this.addCard("protestant", "027");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';

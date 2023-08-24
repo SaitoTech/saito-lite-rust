@@ -1,5 +1,6 @@
 
   popup(card) {
+
     let c = null;
     if (!c && this.game.deck[0]) { c = this.game.deck[0].cards[card]; }
     if (!c && this.game.deck[1]) { c = this.game.deck[1].cards[card]; }
@@ -9,7 +10,11 @@
       let x = this.returnDeck();
       if (x[card]) { c = x[card]; }
     }
-    return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+    if (c.name) {
+      return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+    } else {
+     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
+    }
   }
 
   returnNewCardsForThisTurn(turn = 1) {
@@ -2125,6 +2130,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               $('.option').on('click', function () {
 		
                 let action2 = $(this).attr("id");
+	        his_self.updateStatus("submitting...");
 
 		if (action2 === "yes") {
 		  his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
@@ -2178,7 +2184,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    return 0;
 
           } else {
-	    his_self.updateStatus("Papacy playing "+his_self.popup("004"));
+	    his_self.updateStatus("Papacy playing "+his_self.popup("005"));
 	  }
 
 	  return 0;
