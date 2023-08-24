@@ -395,7 +395,8 @@ class Stun extends ModTemplate {
 
   receiveStunMessageToPeersTransaction(app, tx) {
     let data = tx.msg.data;
-    this.peerManager.handleStunEventMessage(data);
+    app.connection.emit("stun-event-message", data);
+    // this.peerManager.handleStunEventMessage(data);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
