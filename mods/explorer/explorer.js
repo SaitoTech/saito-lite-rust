@@ -80,7 +80,7 @@ class ExplorerCore extends ModTemplate {
     // //////////////////////
     // full json blocks //
     //////////////////////
-    expressapp.get("/explorer/json-blocks/:bhash", async (req, res) => {
+    expressapp.get("/explorer/json-block/:bhash", async (req, res) => {
       const bhash = req.params.bhash;
       if (bhash == null) {
         return;
@@ -99,6 +99,12 @@ class ExplorerCore extends ModTemplate {
         blkwtx.transactions = blk.transactions;
         blkwtx.app = null;
         */
+        var txwmsgs = []
+        blk.transactions.forEach(transaction => {
+          let tx = transaction.toJson();
+          tx.msg = transaction.returnMessage();
+          txwmsgs.push(tx);          
+        });
 
 
         // console.info("### write from line 232 of server.ts.");
@@ -107,7 +113,9 @@ class ExplorerCore extends ModTemplate {
           "Content-Transfer-Encoding": "utf8",
         });
         // res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
-        res.end(blk.toJson());
+        var fullblock = JSON.parse(blk.toJson());
+        fullblock.transactions = txwmsgs;
+        res.end(JSON.stringify(fullblock));
       } catch (err) {
         //
         // file does not exist on disk, check in memory
@@ -231,7 +239,7 @@ class ExplorerCore extends ModTemplate {
       hash +
       '):</h3><div class="blockJson"><div class="loader"></div></div>';
     html += '<script> \
-        await fetchRawBlock("' + hash + '"); \
+        fetchRawBlock("' + hash + '"); \
       </script>';
     html += this.returnPageClose();
     return html;
@@ -301,7 +309,7 @@ class ExplorerCore extends ModTemplate {
       <div class="txlist"><div class="loader"></div></div> \
       </div> \
       <script> \
-        await fetchBlock("' +
+        fetchBlock("' +
       hash +
       '"); \
       </script> \
