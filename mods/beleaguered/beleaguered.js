@@ -313,7 +313,7 @@ class Beleaguered extends OnePlayerGameTemplate {
 
     this.moveGameElement(
       this.copyGameElement(this.cardStacks[source_stack].getTopCardElement().children[0]),
-      this.cardStacks[target_stack].getTopCardgetTopCardElement(),
+      this.cardStacks[target_stack].getTopCardElement(),
       { 
         resize: 1,
       },
@@ -559,7 +559,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       this.animating_autoplay = true;
 
       this.moveGameElement(
-        this.copyGameElement(this.cardStacks[source_stack].getTopCardgetTopCardElement().children[0]),
+        this.copyGameElement(this.cardStacks[source_stack].getTopCardElement().children[0]),
         `#cardstack_${target_stack}`,
         { 
           resize: 1,
