@@ -4319,6 +4319,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu != "") {
+	  if (!his_self.game.deck) { return 0; }
+	  if (!his_self.game.deck[0]) { return 0; }
+	  if (!his_self.game.deck[0].fhand) { return 0; }
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('038')) {
               return 1;
