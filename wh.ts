@@ -5,22 +5,50 @@ import fs from "fs-extra";
 
 import mods_config from "./config/modules.config";
 import * as blake3 from "blake3";
+import S, { initialize as initS } from "saito-js/index.node";
+import { NodeSharedMethods } from "./lib/saito/core/server";
+import Factory from "./lib/saito/factory";
+import { LogLevel } from "saito-js/saito";
+import Wallet from "./lib/saito/wallet";
+import Blockchain from "./lib/saito/blockchain";
 
 async function initCLI() {
   const app = new Saito({
-    mod_paths: mods_config.core
+    mod_paths: mods_config.core,
   });
 
   //app.server = new Server(app);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
-  app.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
 
   app.BROWSER = 0;
   app.SPVMODE = 0;
+  //
+  // app.hash = (data) => {
+  //   return blake3.hash(data).toString("hex");
+  // };
+  await app.storage.initialize();
+
+  let privateKey = app.options.wallet?.privateKey || "";
+
+  await initS(
+    app.options,
+    new NodeSharedMethods(app),
+    new Factory(),
+    privateKey,
+    LogLevel.Info
+  ).then(() => {
+    console.log("saito wasm lib initialized");
+  });
+  app.wallet = (await S.getInstance().getWallet()) as Wallet;
+  app.wallet.app = app;
+  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  app.blockchain.app = app;
+
+  // await app.init();
+  //
+  // S.getInstance().start();
 
   console.log("npm run cli help - for help");
 
@@ -163,7 +191,7 @@ async function initCLI() {
                 $tx_from: tx_from,
                 $tx_to: blk.transactions[i].to[ii].publicKey,
                 $name: tname,
-                $module: tmodule
+                $module: tmodule,
               };
               await app.storage.executeDatabase(sql, params, "warehouse");
             }
@@ -191,11 +219,11 @@ async function initCLI() {
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
-  process.on("SIGTERM", function() {
+  process.on("SIGTERM", function () {
     console.log("Network Shutdown");
     process.exit(0);
   });
-  process.on("SIGINT", function() {
+  process.on("SIGINT", function () {
     console.log("Network Shutdown");
     process.exit(0);
   });
