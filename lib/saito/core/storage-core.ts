@@ -222,7 +222,7 @@ class StorageCore extends Storage {
     if (!block) {
       return null;
     }
-    block = await this.loadBlockByFilename(block.file_name);
+    block = await this.loadBlockByFilename(this.data_dir + "/blocks/" + block.file_name);
     return block;
   }
 
