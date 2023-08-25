@@ -304,20 +304,57 @@
       factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
-
-    // base
-
-    // protestant spaces
-
-    // bonus vp
+    //
     //• Bible translation completed (1 VP for each language)    ***
+    // protestant faction class
     //• Protestant debater burned (1 per debate rating)         ***
+    // protestant faction class
     //• Papal debater disgraced (1 per debate rating)           ***
+    // protestant faction class
+
+
+
     //• Successful voyage of exploration
     //• Successful voyage of conquest
     //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
     //• War Winner marker received during Peace Segment
     //• Master of Italy VP marker received during Action Phase
+
+
+    //
+    // domination victory (5 more vp than everyone else
+    //
+    let max_vp = 0;
+    let runner_up_vp = 0;
+    let leaders = [];
+    for (let key in factions) {
+      if (factions[key].vp == max_vp) {
+        leaders.push(key);
+      }
+      if (factions[key].vp > max_vp) {
+	runner_up_vp = max_vp;
+	max_vp = factions[key].vp;
+	leaders = [];
+        leaders.push(key);
+      }
+      if (max_vp >= (runner_up_vp+5) && this.game.state.round >= 5) {
+	if (leaders.length == 1) {
+	  factions[leaders[0]].victory = 1;
+	  factions[leaders[0]].reason = "Domination Victory";
+	}
+      }
+    }
+
+    //
+    // final victory if round 9
+    //
+    if (this.game.state.round >= 9) {
+      for (let i = 0; i < leaders.length; i++) {
+	factions[leaders[0]].victory = 1;
+	factions[leaders[0]].reason = "Final Victory";
+      }
+    }
+
 
     return factions;
 

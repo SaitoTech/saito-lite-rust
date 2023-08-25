@@ -921,8 +921,8 @@ Habsburg conquistadores:
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_german_language_zone") {
-          his_self.prependMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tluther-debater");
-          his_self.prependMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tluther-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
           his_self.endTurn();
         } 
         return 0; 
@@ -2780,7 +2780,7 @@ console.log("\n\n\n\n");
             }
           );
 	  } else {
-	    this.updateStatus("Opponent adding 4 Regulars for Genoa");
+	    this.updateStatus("Genoa adding 4 Regulars");
 	  }
 
           return 0;
@@ -5020,7 +5020,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  });
 
 	} else {
-	  his_self.updateStatus("Papacy calling a Theological Debate");
+	  his_self.updateStatus("Papacy calling Theological Debate");
 	}
 
 	return 0;
@@ -5683,6 +5683,29 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player === papacy) {
 	  his_self.game.state.events.papacy_may_found_jesuit_universities = 1;
+
+          his_self.playerSelectSpaceWithFilter(
+            "Select First Catholic-Controlled Space for Jesuit University",
+            function(space) {
+              if (space.religion === "catholic" && space.university != 1) { return 1; }
+              return 0; 
+      	    },
+            function(destination_spacekey) {
+              his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+              his_self.playerSelectSpaceWithFilter(
+                "Select Second Catholic-Controlled Space for Jesuit University",
+                function(space) {
+                  if (space.key != destination_spacekey && space.religion === "catholic" && space.university != 1) { return 1; }
+                  return 0; 
+      	        },
+                function(destination_spacekey) {
+                  his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+                  his_self.endTurn();
+                }    
+              );
+	    },
+	  );
+   
 	  return 0;
 	}
 
@@ -6959,7 +6982,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu != "") {
+        if (menu != "" && menu != "pre_spring_deployment") {
 
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
 
@@ -6989,8 +7012,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu != "") {
-  	  his_self.game.queue.push("event\t"+faction+"\t038");
-  	  his_self.game.queue.push("discard\t"+faction+"\t038");
+  	  his_self.addMove("event\t"+faction+"\t038");
+  	  his_self.addMove("discard\t"+faction+"\t038");
 	  his_self.endTurn();
         }
         return 0;
@@ -7798,7 +7821,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.events.papal_inquisition_debate_bonus = 1;
-	  his_self.addMove("SETVAR\tstate\tevents\tpapal_inquisition_debate_bonus\t0");
+	  his_self.game.queue.push("SETVAR\tstate\tevents\tpapal_inquisition_debate_bonus\t0");
 	  his_self.game.queue.push("papal_inquisition_call_theological_debate");
 	  return 1;
 
@@ -8909,7 +8932,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
-	his_self.updateStatus(faction + " playing Foreign Recruits");
+	his_self.updateStatus(his_self.returnFactionName(faction) + " playing "+ his_self.popup("076"));
 	let player = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player == player) {
   	  his_self.playerPlayOps("", faction, 4);
@@ -14295,20 +14318,57 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
-
-    // base
-
-    // protestant spaces
-
-    // bonus vp
+    //
     //• Bible translation completed (1 VP for each language)    ***
+    // protestant faction class
     //• Protestant debater burned (1 per debate rating)         ***
+    // protestant faction class
     //• Papal debater disgraced (1 per debate rating)           ***
+    // protestant faction class
+
+
+
     //• Successful voyage of exploration
     //• Successful voyage of conquest
     //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
     //• War Winner marker received during Peace Segment
     //• Master of Italy VP marker received during Action Phase
+
+
+    //
+    // domination victory (5 more vp than everyone else
+    //
+    let max_vp = 0;
+    let runner_up_vp = 0;
+    let leaders = [];
+    for (let key in factions) {
+      if (factions[key].vp == max_vp) {
+        leaders.push(key);
+      }
+      if (factions[key].vp > max_vp) {
+	runner_up_vp = max_vp;
+	max_vp = factions[key].vp;
+	leaders = [];
+        leaders.push(key);
+      }
+      if (max_vp >= (runner_up_vp+5) && this.game.state.round >= 5) {
+	if (leaders.length == 1) {
+	  factions[leaders[0]].victory = 1;
+	  factions[leaders[0]].reason = "Domination Victory";
+	}
+      }
+    }
+
+    //
+    // final victory if round 9
+    //
+    if (this.game.state.round >= 9) {
+      for (let i = 0; i < leaders.length; i++) {
+	factions[leaders[0]].victory = 1;
+	factions[leaders[0]].reason = "Final Victory";
+      }
+    }
+
 
     return factions;
 
@@ -20653,6 +20713,7 @@ console.log("purging naval units and capturing leader");
 	    if (f.victory == 1) {
 	      let player = this.returnPlayerOfFaction(faction);
 	      this.endGame([this.game.players[player-1]], f.details);
+	      return 0;
 	    }
 	  }
 
@@ -20751,6 +20812,8 @@ console.log("NEW WORLD PHASE!");
         }
 
         if (mv[0] === "spring_deployment_phase") {
+
+this.setAllies("papacy","hapsburg");
 
 	  this.game.queue.splice(qe, 1);
 
@@ -21677,6 +21740,37 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.displaySpace(space);
 	  this.displayVictoryTrack();
 
+
+          //
+          // military victory
+          //
+	  let keys = this.returnNumberOfKeysControlledByFaction(faction);
+	  if (faction === "hapsburg" && heys >= this.game.state.autowin_hapsburg_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "ottoman" && heys >= this.game.state.autowin_ottoman_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "france" && heys >= this.game.state.autowin_france_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "england" && heys >= this.game.state.autowin_england_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "papacy" && heys >= this.game.state.autowin_papacy_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+
 	  return 1;
 
 	}
@@ -21734,6 +21828,15 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  this.displaySpace(space);
 	  this.displayElectorateDisplay();
 	  this.displayVictoryTrack();
+
+	  //
+	  // check for victory condition
+	  //
+          if (this.returnNumberOfProtestantSpacesInLanguageZone() >= 50) {
+	    let player = this.returnPlayerOfFaction("protestant");
+	    this.endGame([this.game.players[player-1]], "Religious Victory");
+	    return 0;
+	  }
 
 	  return 1;
 
@@ -23435,7 +23538,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     }
   }
 
-  async playerPlayOps(card="", faction, ops=null) {
+  async playerPlayOps(card="", faction, ops=null, limit="") {
 
     //
     // discard the card
@@ -23445,7 +23548,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     }
 
     let his_self = this;
-    let menu = this.returnActionMenuOptions(this.game.player);
+    let menu = this.returnActionMenuOptions(this.game.player, faction, limit);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
@@ -23489,7 +23592,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops);
 
-        his_self.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
+        his_self.updateStatusWithOptions(`${his_self.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
 
           if (user_choice === "end_turn") {
@@ -23587,7 +23690,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
       this.menu_overlay.render(menu, this.game.player, faction, ops);
 
-      this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
 
         if (user_choice === "end_turn") {

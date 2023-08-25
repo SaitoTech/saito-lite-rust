@@ -129,7 +129,7 @@
             }
           );
 	  } else {
-	    this.updateStatus("Opponent adding 4 Regulars for Genoa");
+	    this.updateStatus("Genoa adding 4 Regulars");
 	  }
 
           return 0;
@@ -2369,7 +2369,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  });
 
 	} else {
-	  his_self.updateStatus("Papacy calling a Theological Debate");
+	  his_self.updateStatus("Papacy calling Theological Debate");
 	}
 
 	return 0;
@@ -3032,6 +3032,29 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player === papacy) {
 	  his_self.game.state.events.papacy_may_found_jesuit_universities = 1;
+
+          his_self.playerSelectSpaceWithFilter(
+            "Select First Catholic-Controlled Space for Jesuit University",
+            function(space) {
+              if (space.religion === "catholic" && space.university != 1) { return 1; }
+              return 0; 
+      	    },
+            function(destination_spacekey) {
+              his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+              his_self.playerSelectSpaceWithFilter(
+                "Select Second Catholic-Controlled Space for Jesuit University",
+                function(space) {
+                  if (space.key != destination_spacekey && space.religion === "catholic" && space.university != 1) { return 1; }
+                  return 0; 
+      	        },
+                function(destination_spacekey) {
+                  his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+                  his_self.endTurn();
+                }    
+              );
+	    },
+	  );
+   
 	  return 0;
 	}
 
@@ -4308,7 +4331,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu != "") {
+        if (menu != "" && menu != "pre_spring_deployment") {
 
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
 
@@ -4338,8 +4361,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu != "") {
-  	  his_self.game.queue.push("event\t"+faction+"\t038");
-  	  his_self.game.queue.push("discard\t"+faction+"\t038");
+  	  his_self.addMove("event\t"+faction+"\t038");
+  	  his_self.addMove("discard\t"+faction+"\t038");
 	  his_self.endTurn();
         }
         return 0;
@@ -5147,7 +5170,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.events.papal_inquisition_debate_bonus = 1;
-	  his_self.addMove("SETVAR\tstate\tevents\tpapal_inquisition_debate_bonus\t0");
+	  his_self.game.queue.push("SETVAR\tstate\tevents\tpapal_inquisition_debate_bonus\t0");
 	  his_self.game.queue.push("papal_inquisition_call_theological_debate");
 	  return 1;
 
@@ -6258,7 +6281,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
-	his_self.updateStatus(faction + " playing Foreign Recruits");
+	his_self.updateStatus(his_self.returnFactionName(faction) + " playing "+ his_self.popup("076"));
 	let player = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player == player) {
   	  his_self.playerPlayOps("", faction, 4);
