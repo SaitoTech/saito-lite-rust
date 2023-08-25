@@ -29,7 +29,7 @@
 }
 
 .gameboard.selection * { 
-  cursor: none !important;
+  /*cursor: none !important;*/
 }
 
 .game-scoreboard{
@@ -51,27 +51,30 @@
   max-width: 1375px;
 }
 
+.nomoves .card-stack-array {
+  filter: brightness(0.5);
+}
+
+.nomoves .draw-pile {
+  box-shadow: 0 0 15px 5px whitesmoke;
+}
+
 #helper, #helper:hover{
   position: absolute;
   width: min(130px, calc(10vw - 10px));
   pointer-events: none;
+  z-index: 50;
 }
 
 
-.card-stack{
-  display: grid;
-  grid-template-rows: repeat(auto-fit, min(0.7vw, 9px));
-  height: calc(100vh - 200px);
-
-}
 
 .spider-footer{
   position: absolute;
   bottom: 3px;
   width: 100%;
-  height: min(15vh,140px);
   display: grid;
   grid-template-columns: 1fr min-content min-content;
+  grid-template-rows: min(12.24vw, 199px);
   grid-column-gap: 10px;
   align-items: center;
 
@@ -82,39 +85,44 @@
 .completed_stack_box{
   height: 100%;
   display: flex;
-  max-width: 80%;
   line-height: 300%;
   justify-content: flex-start;
 }
 
 
 .completed_stack{
-  width: 95px;
-  height: 100%;
+  width: min(8vw, 130px);
+  height: min(12.24vw, 199px);
   position: relative;
+  margin-left: 10px;
 }
 
-
-.completed_card{
-  transition: left 2s, top 2s;
+.icon_container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
 }
 
-.undo{
-  height: 75px;
-  width: fit-content;
-  font-size: 50px;
+.icon_container > div i {
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  font-size: 45px;
   cursor: pointer;
 }
-.undo:hover{
+
+.icon_container > div i:hover{
   background-color: whitesmoke;
   color: black;
 }
 
 
 .draw-pile{
-  width: min(7vw, 100px);
-  min-width: 80px;
-  height: 100%;
+  width: min(8vw, 100px);
+  height: min(12.24vw, 153px);
   border-radius: 5px;
   border: 1px solid whitesmoke;
   font-size: min(2vw, 32px);
@@ -127,8 +135,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  position: relative;
   transition: font-size 0.2s;
+  padding: calc(14px - 1vw) 0;
 }
 
 .draw-pile div {
@@ -140,46 +148,48 @@
   font-size: min(2.5vw, 36px);
 }
 
-.card{
-  width: 100%;
-  position: relative;
+.card-slot{
+  width: min(8vw, 130px);
+  height: min(12.24vw, 199px);
+  position: absolute;
   perspective: 500px;
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 
-.card img{
+.card-slot img{
   width: 100%;
   height: auto;
   position: absolute;
-  pointer-events: none;
+  z-index: 0;
 }
 
 .animated_elem img {
   width: 100%;
 }
 
-/*.card-stack .card:last-child img.cardFront {
- pointer-events: unset; 
-} 
-*/
 
-.facedown { 
-  pointer-events: none;
-}
 
-.card.selected {
+.card-slot.selected {
   filter: brightness(0.85);
 }
 
-.card.flipped {
-  grid-area: span 4;
-  cursor: grab;
+
+.cs-empty {
+  border: 1px var(--saito-red) dashed;
+  background-color: var(--saito-red);
+  opacity: 0.3;
 }
 
-.card.empty_slot {
-  grid-area: span 18;
-  border: 1px var(--saito-red) dashed;
-  width: 100%;
+.selected .cs-empty {
+  cursor: pointer;
+}
+
+/* Color empty slots */
+.cs-empty.cs-selectable:hover {
+  border-color: #00ff00;
+  /*background-color: rgba(160, 255, 160, 0.85);*/
+  opacity: 0.8;
 }
 
 
@@ -197,16 +207,21 @@
   transform: rotateY(0deg);
 }
 
-.flipped .cardFront, .completed_card .cardFront {
+.faceup .cardFront, .completed_card .cardFront {
   transform: rotateY(0deg);
 }
 
 
-.flipped .cardBack, .completed_card .cardBack {
+.faceup .cardBack, .completed_card .cardBack {
   transform: rotateY(-180deg);
 }
 
-.hover img.cardFront {
+.card-slot.cs-selectable {
+  cursor: grab;
+  pointer-events: unset;
+}
+
+.hover img.cardFront, .cardstack .cs-selectable:hover img, .cardstack .cs-selectable:hover ~ .card-slot img {
   filter: brightness(0.5);
 }
 
