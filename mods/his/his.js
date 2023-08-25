@@ -27298,8 +27298,6 @@ return;
 
   displayBoard() {
 
-    this.setAllies("hapsburg", "ottoman");
-
     try {
       this.displayWarBox();
     } catch (err) {
