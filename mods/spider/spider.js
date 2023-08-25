@@ -22,7 +22,8 @@ class Spider extends OnePlayerGameTemplate {
     this.animationSpeed = 1000;
 
     this.selected_stack = null;
-    this.possible_moves = null;
+    this.possible_moves = null; //When using auto mode, some temporary memory
+    this.hints = null;
   }
 
   // Create an exp league by default
@@ -268,12 +269,15 @@ class Spider extends OnePlayerGameTemplate {
     //Deal another round of cards
     $(".draw-pile").off();
     $(".draw-pile").on("click", async function () {
-      if (spider_self.moves.length == 0) {
+      if (spider_self.moves.length == 0 && spider_self.hints.length > 0) {
         let c = await sconfirm("Are you sure you want to do that?");
         if (!c) {
           return;
         }
       }
+      
+      $(".gameboard").removeClass("nomoves");
+
       if (spider_self.game.state.draws_remaining > 0) {
         if (spider_self.canDraw()) {
           spider_self.updateScore();
@@ -295,6 +299,94 @@ class Spider extends OnePlayerGameTemplate {
         this.cardStacks[i].applyFilter(this.canSelectStack.bind(this), this.pickUpStack, false);
       }      
     }
+
+    $("#hint").off();
+
+    if (this.hints?.length > 0){
+      $("#hint").css("visibility", "visible");
+      $("#hint").on("click", ()=> {
+        let next_hint = this.hints.shift();
+        this.hints.push(next_hint);
+
+        if (!document.getElementById("helper")) {
+          this.app.browser.addElementToSelector(
+            `<div id="helper" class="cardstack animated_elem"></div>`,
+            ".gameboard"
+          );
+        }
+
+        this.invisible_scaffolding.push("dummy");
+        this.cardStacks[next_hint.target].push("dummy");
+
+        const helper = document.getElementById("helper");
+
+        let divname = "#cardstack_" + next_hint.source + "_" + next_hint.index;
+
+        let first_in_stack = document.querySelector(divname);
+        let offset = parseInt(first_in_stack.style.top);
+        $("#helper").css({ top: first_in_stack.getBoundingClientRect().y, left: first_in_stack.getBoundingClientRect().x });
+
+        helper.style.zIndex = 100;
+
+        let as = `${this.animationSpeed / 1500}s`; //Make it faster
+        helper.style.transition = `left ${as}, top ${as}, width ${as}, height ${as}`;
+
+        for (let i = next_hint.index; i < this.cardStacks[next_hint.source].getCardCount(); i++) {
+          divname = "#cardstack_" + next_hint.source + "_" + i;
+          let elem = document.querySelector(divname);
+          elem.style.top = `${parseInt(elem.style.top) - offset}px`;
+          helper.append(elem);
+        }
+
+        this.moveGameElement("helper", this.cardStacks[next_hint.target].getTopCardElement(), null, ()=>{
+          this.cardStacks[next_hint.target].pop();
+          this.invisible_scaffolding = [];
+          $("#helper").remove();
+          this.cardStacks[next_hint.source].render();
+          this.attachEventsToBoard();
+        });
+      }); 
+    } else {
+      $("#hint").css("visibility", "hidden");
+      $(".gameboard").addClass("nomoves");
+    }
+
+  }
+
+  calculateHints(){
+    //Build hints
+    this.hints = [];
+    for (let i = 0; i < 10; i++){
+      //Get the maximum stack
+      let last_card = this.cardStacks[i].getTopCardValue();
+      let suit = last_card[0];
+      let value = parseInt(last_card.substring(1));
+      let stack_index = this.cardStacks[i].getCardCount() - 1 
+      for (let j = stack_index - 1; j >= 0; j--){
+        let next_card = this.cardStacks[i].cards[j];
+        if (next_card[0] == suit && parseInt(next_card.substring(1)) == ++value){
+          stack_index--;
+        }else{
+          break;
+        }
+      }
+
+      // stack_index will be the depth of the maximum selectable substack from this stack
+      // now we see if and where we can place it
+      
+      for (let j = 0; j < 10; j++){
+        if (j == i) { continue; }
+        let bottom_card = this.cardStacks[j].getTopCardValue();
+        if (parseInt(bottom_card.substring(1)) == (value + 1)) {
+          this.hints.push({
+            source: i,
+            target: j,
+            index: stack_index
+          });
+        }
+      }
+    }
+
   }
 
 
@@ -537,6 +629,7 @@ class Spider extends OnePlayerGameTemplate {
       this.cardStacks[target].render();
       this.cardStacks[source].render();
       if (!this.checkStack(target)) {
+        this.calculateHints();
         setTimeout(this.attachEventsToBoard.bind(this), 5);  
       }
     });
@@ -615,6 +708,7 @@ class Spider extends OnePlayerGameTemplate {
           spider_self.placeStack(target_card_stack);
           await spider_self.commitMove(top_card_to_move, target_card_stack.name, num_of_cards_to_move);
           if (!spider_self.checkStack(target_card_stack.name)) {
+            this.calculateHints();
             setTimeout(spider_self.attachEventsToBoard.bind(spider_self), 50);  
           }
         }
@@ -796,6 +890,7 @@ class Spider extends OnePlayerGameTemplate {
               this.prependMove("win");
               this.endTurn();
             } else {
+              this.calculateHints();
               this.attachEventsToBoard();
             }
           }, 1000);
@@ -892,6 +987,7 @@ class Spider extends OnePlayerGameTemplate {
           this.displayBoard();
 
           if (this.game.deck[0].hand.length == 0) {
+            this.calculateHints();
             this.attachEventsToBoard();
             return 0;
           }
@@ -1004,7 +1100,10 @@ class Spider extends OnePlayerGameTemplate {
     html += "</div>";
     html += `<div class="spider-footer">
               <div class="completed_stack_box"></div>
-              <div class="undo"><i class="fas fa-undo fa-border"></i></div>
+              <div class="icon_container">
+                <div id="hint" class="hint"><i class="fa-solid fa-question fa-border"></i></div>
+                <div class="undo"><i class="fas fa-undo fa-border"></i></div>
+              </div>
               <div class="draw-pile">New Game</div>
             </div>
             `;
