@@ -5673,7 +5673,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       onEvent : function(his_self, faction) {
 
-	let p = his_self.selectPlayerOfFaction(faction);
+	let p = his_self.returnPlayerOfFaction(faction);
 	if (p == his_self.game.player) {
           his_self.playerSelectSpaceWithFilter(
 

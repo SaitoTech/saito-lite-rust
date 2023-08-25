@@ -252,8 +252,13 @@
       }
       for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	let f = this.game.state.players_info[i].factions[z];
-        if (this.game.state.activated_powers[f].includes(faction)) {
-	  return (i+1);
+        if (this.game.state.activated_powers) {
+console.log("faction: " + f);
+	  if (this.game.state.activated_powers[f]) {
+            if (this.game.state.activated_powers[f].includes(faction)) {
+	      return (i+1);
+            }
+          }
         }
       }
     }
