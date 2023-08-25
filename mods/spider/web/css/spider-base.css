@@ -51,6 +51,14 @@
   max-width: 1375px;
 }
 
+.nomoves .card-stack-array {
+  filter: brightness(0.5);
+}
+
+.nomoves .draw-pile {
+  box-shadow: 0 0 15px 5px whitesmoke;
+}
+
 #helper, #helper:hover{
   position: absolute;
   width: min(130px, calc(10vw - 10px));
@@ -89,14 +97,24 @@
   margin-left: 10px;
 }
 
+.icon_container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
 
-.undo{
-  height: 75px;
-  width: fit-content;
-  font-size: 50px;
+.icon_container > div i {
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  font-size: 45px;
   cursor: pointer;
 }
-.undo:hover{
+
+.icon_container > div i:hover{
   background-color: whitesmoke;
   color: black;
 }
@@ -104,7 +122,7 @@
 
 .draw-pile{
   width: min(8vw, 100px);
-  height: calc(100% - 6px);
+  height: min(12.24vw, 153px);
   border-radius: 5px;
   border: 1px solid whitesmoke;
   font-size: min(2vw, 32px);
@@ -136,6 +154,7 @@
   position: absolute;
   perspective: 500px;
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 
 .card-slot img{
@@ -143,7 +162,6 @@
   height: auto;
   position: absolute;
   z-index: 0;
-  pointer-events: none;
 }
 
 .animated_elem img {
@@ -198,8 +216,9 @@
   transform: rotateY(-180deg);
 }
 
-.cs-selectable {
+.card-slot.cs-selectable {
   cursor: grab;
+  pointer-events: unset;
 }
 
 .hover img.cardFront, .cardstack .cs-selectable:hover img, .cardstack .cs-selectable:hover ~ .card-slot img {
