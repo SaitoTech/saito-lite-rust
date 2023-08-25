@@ -8324,7 +8324,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       onEvent : function(his_self, faction) {
 
-	let p = his_self.selectPlayerOfFaction(faction);
+	let p = his_self.returnPlayerOfFaction(faction);
 	if (p == his_self.game.player) {
           his_self.playerSelectSpaceWithFilter(
 
@@ -22480,8 +22480,12 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
       }
       for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	let f = this.game.state.players_info[i].factions[z];
-        if (this.game.state.activated_powers[f].includes(faction)) {
-	  return (i+1);
+        if (this.game.state.activated_powers) {
+	  if (this.game.state.activated_powers[f]) {
+            if (this.game.state.activated_powers[f].includes(faction)) {
+	      return (i+1);
+            }
+          }
         }
       }
     }
