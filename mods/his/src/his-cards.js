@@ -1,5 +1,6 @@
 
   popup(card) {
+
     let c = null;
     if (!c && this.game.deck[0]) { c = this.game.deck[0].cards[card]; }
     if (!c && this.game.deck[1]) { c = this.game.deck[1].cards[card]; }
@@ -9,7 +10,11 @@
       let x = this.returnDeck();
       if (x[card]) { c = x[card]; }
     }
-    return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+    if (c.name) {
+      return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+    } else {
+     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
+    }
   }
 
   returnNewCardsForThisTurn(turn = 1) {
@@ -2125,6 +2130,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               $('.option').on('click', function () {
 		
                 let action2 = $(this).attr("id");
+	        his_self.updateStatus("submitting...");
 
 		if (action2 === "yes") {
 		  his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
@@ -2178,7 +2184,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    return 0;
 
           } else {
-	    his_self.updateStatus("Papacy playing "+his_self.popup("004"));
+	    his_self.updateStatus("Papacy playing "+his_self.popup("005"));
 	  }
 
 	  return 0;
@@ -6821,7 +6827,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	    } 	
 	  }	
 
-	  his_self.playerSelectOptions(res, options, false, (selected) => {
+	  his_self.playerSelectOptions("Select a Captured Leader: ", options, false, (selected) => {
 	    if (selected.length == 0) {
 	      his_self.endTurn();
 	      return;
@@ -7640,9 +7646,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-	return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
@@ -7769,6 +7773,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "pre_spring_deployment") {
           let f = "";
@@ -7857,8 +7862,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
             let html = '<ul>';
 	    for (let i = 0; i < powers.length; i++) {
-	      if (powers[i] != faction) {
-                html += '<li class="option" id="${powers[i]}">${powers[i]}</li>';
+	      if (powers[i] != faction && his_self.returnPlayerOfFaction(powers[i]) > 0) {
+                html += `<li class="option" id="${powers[i]}">${his_self.returnFactionName(powers[i])}</li>`;
 	      }
 	    }
             html += '</ul>';
@@ -7984,6 +7989,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	if (s) { if (s.language == "italian") { return 1; } }
 	return 0;
       },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let s = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
@@ -8012,6 +8018,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { if (his_self.areAllies("ottoman", "france")) { return 1; } return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	if (his_self.areAllies("ottoman", "france")) {
