@@ -35,7 +35,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = true;
+    this.local_dev = false;
 
     //
     // event listeners -
