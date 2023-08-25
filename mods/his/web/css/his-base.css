@@ -3,6 +3,17 @@
   padding-top: 15px;
 }
 
+.warbox {
+  position: relative;
+  height: 9rem;
+  width: 9rem;
+}
+
+.warbox img {
+  height: 100%;
+  width: 100%;
+}
+
 img {
   width: unset;
 }

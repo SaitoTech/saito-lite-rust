@@ -56,9 +56,9 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // cards dealt before diet of worms
 	    //
-this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
+//this.game.queue.push("is_testing");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -413,6 +413,7 @@ this.game.queue.push("is_testing");
 
 
 	if (mv[0] === "is_testing") {
+
 
 	  //this.game.queue.push("retreat_to_winter_spaces");
 

@@ -9478,7 +9478,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	    } 	
 	  }	
 
-	  his_self.playerSelectOptions(res, options, false, (selected) => {
+	  his_self.playerSelectOptions("Select a Captured Leader: ", options, false, (selected) => {
 	    if (selected.length == 0) {
 	      his_self.endTurn();
 	      return;
@@ -10297,9 +10297,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-	return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
@@ -10426,6 +10424,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "pre_spring_deployment") {
           let f = "";
@@ -10514,8 +10513,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
             let html = '<ul>';
 	    for (let i = 0; i < powers.length; i++) {
-	      if (powers[i] != faction) {
-                html += '<li class="option" id="${powers[i]}">${powers[i]}</li>';
+	      if (powers[i] != faction && his_self.returnPlayerOfFaction(powers[i]) > 0) {
+                html += `<li class="option" id="${powers[i]}">${his_self.returnFactionName(powers[i])}</li>`;
 	      }
 	    }
             html += '</ul>';
@@ -10641,6 +10640,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	if (s) { if (s.language == "italian") { return 1; } }
 	return 0;
       },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let s = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
@@ -10669,6 +10669,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { if (his_self.areAllies("ottoman", "france")) { return 1; } return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	if (his_self.areAllies("ottoman", "france")) {
@@ -13841,6 +13842,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       }
     }
 
+    this.displayWarBox();
+
   }
 
   unsetAllies(faction1, faction2, amp=1) {
@@ -13859,6 +13862,9 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
         }
       }
     }
+
+    this.displayWarBox();
+
   }
 
   setEnemies(faction1, faction2) {
@@ -13866,11 +13872,17 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+
+    this.displayWarBox();
+
   }
 
   unsetEnemies(faction1, faction2) {
     try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+
+    this.displayWarBox();
+
   }
 
 
@@ -13919,8 +13931,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
   deactivateMinorPower(faction, power) {
     this.unsetAllies(faction, power, 0);
     for (let key in this.game.state.activated_powers) {
-console.log("KEY IS: " + key);
-console.log(JSON.stringify(this.game.state.activated_powers[key]));
       for (let i = 0; i < this.game.state.activated_powers[key].length; i++) {
         if (this.game.state.activated_powers[key][i] === power) {
   	  this.game.state.activated_powers[key].splice(i, 1);
@@ -14707,7 +14717,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
       left : 55
     }
     colonies['6'] = {
-      top : 1568,
+      top : 1530,
       left : 55
     }
     colonies['7'] = {
@@ -14801,7 +14811,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
       left : 178
     }
     conquest['6'] = {
-      top : 1568,
+      top : 1530,
       left : 178
     }
     conquest['7'] = {
@@ -14883,7 +14893,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     }
     track['16'] = {
       top : 3026,
-      left : 1568
+      left : 1530
     }
     track['17'] = {
       top : 3026,
@@ -15095,226 +15105,226 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     diplomacy["hapsburg"] 	= {};
 
     diplomacy["ottoman"]["hapsburg"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4128 ,
     }
     diplomacy["ottoman"]["england"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4222 ,
     }
     diplomacy["ottoman"]["france"] = {
-        top 	:             205 ,
+        top 	:       170 ,
         left	:	4310 ,
     }
     diplomacy["ottoman"]["papacy"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4400 ,
     }
     diplomacy["ottoman"]["protestant"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4490 ,
     }
     diplomacy["ottoman"]["genoa"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4580 ,
     }
     diplomacy["ottoman"]["hungary"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4670 ,
     }
     diplomacy["ottoman"]["scotland"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4760 ,
     }
     diplomacy["ottoman"]["venice"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4851 ,
     }
 
     diplomacy["hapsburg"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4128 ,
     }
     diplomacy["hapsburg"]["england"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4220 ,
     }
     diplomacy["hapsburg"]["france"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4310 ,
     }
     diplomacy["hapsburg"]["papacy"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4400 ,
     }
     diplomacy["hapsburg"]["protestant"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4490 ,
     }
     diplomacy["hapsburg"]["genoa"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4580 ,
     }
     diplomacy["hapsburg"]["hungary"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4670 ,
     }
     diplomacy["hapsburg"]["scotland"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4760 ,
     }
     diplomacy["hapsburg"]["venice"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4851 ,
     }
 
 
     diplomacy["england"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4222 ,
     }
     diplomacy["england"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4220 ,
     }
     diplomacy["england"]["france"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4310 ,
     }
     diplomacy["england"]["papacy"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4400 ,
     }
     diplomacy["england"]["protestant"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4490 ,
     }
     diplomacy["england"]["genoa"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4580 ,
     }
     diplomacy["england"]["hungary"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4670 ,
     }
     diplomacy["england"]["scotland"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4760 ,
     }
     diplomacy["england"]["venice"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4851 ,
     }
 
     diplomacy["france"]["ottoman"] = {
-        top 	:       205 ,
+        top 	:       170 ,
         left	:	4310 ,
     }
     diplomacy["france"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4310 ,
     }
     diplomacy["france"]["england"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4310 ,
     }
     diplomacy["france"]["papacy"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4400 ,    
     }
     diplomacy["france"]["protestant"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4490 ,    
     }
     diplomacy["france"]["genoa"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4580 ,    
     }
     diplomacy["france"]["hungary"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4670 ,    
     }
     diplomacy["france"]["scotland"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4760 ,    
     }
     diplomacy["france"]["venice"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4851 ,    
     }
 
 
     diplomacy["papacy"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4400 ,
     }
     diplomacy["papacy"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4400 ,
     }
     diplomacy["papacy"]["england"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4400 ,
     }
     diplomacy["papacy"]["france"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4400 ,    
     }
     diplomacy["papacy"]["protestant"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4490 ,    
     }
     diplomacy["papacy"]["genoa"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4580 ,    
     }
     diplomacy["papacy"]["hungary"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4670 ,    
     }
     diplomacy["papacy"]["scotland"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4760 ,    
     }
     diplomacy["papacy"]["venice"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4851 ,    
     }
 
     diplomacy["protestant"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4490 ,
     }
     diplomacy["protestant"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4490 ,
     }
     diplomacy["protestant"]["england"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4490 ,
     }
     diplomacy["protestant"]["france"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4490 ,    
     }
     diplomacy["protestant"]["papacy"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4490 ,    
     }
     diplomacy["protestant"]["genoa"] = {
-        top     :       658 ,
+        top     :       620 ,
         left    :       4580 ,    
     }
     diplomacy["protestant"]["hungary"] = {
-        top     :       658 ,
+        top     :       620 ,
         left    :       4670 ,    
     }
     diplomacy["protestant"]["scotland"] = {
-        top     :       658 ,
+        top     :       620 ,
         left    :       4760 ,    
     }
     diplomacy["protestant"]["venice"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4851 ,    
     }
 
@@ -15474,9 +15484,9 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // cards dealt before diet of worms
 	    //
-this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
+//this.game.queue.push("is_testing");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -15831,6 +15841,7 @@ this.game.queue.push("is_testing");
 
 
 	if (mv[0] === "is_testing") {
+
 
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
@@ -27077,6 +27088,33 @@ return;
 
 
 
+  displayWarBox() {
+
+    let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
+    for (let i = 0; i < factions.length; i++) {
+      for (let ii = 0; ii < factions.length; ii++) {
+	if (ii > i) {
+	  let obj = null;
+	  let box = '#' + factions[i] + "_" + factions[ii];
+	  obj = document.querySelector(box);
+	  if (obj) {
+	    if (this.areAllies(factions[i], factions[ii])) {
+	      obj.innerHTML = '<img src="/his/img/Allied.svg" />';
+	      obj.style.display = "block";
+	    } else {
+	      if (this.areEnemies(factions[i], factions[ii])) {
+	        obj.innerHTML = '<img src="/his/img/AtWar.svg" />';
+	        obj.style.display = "block";
+	      } else {
+	        obj.style.display = "none";
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
   displayDebaters() {
     this.debaters_overlay.render();
   }
@@ -27259,6 +27297,14 @@ return;
   }
 
   displayBoard() {
+
+    this.setAllies("hapsburg", "ottoman");
+
+    try {
+      this.displayWarBox();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayColony();
     } catch (err) {
