@@ -79,6 +79,8 @@
       }
     }
 
+    this.displayWarBox();
+
   }
 
   unsetAllies(faction1, faction2, amp=1) {
@@ -97,6 +99,9 @@
         }
       }
     }
+
+    this.displayWarBox();
+
   }
 
   setEnemies(faction1, faction2) {
@@ -104,10 +109,16 @@
     try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+
+    this.displayWarBox();
+
   }
 
   unsetEnemies(faction1, faction2) {
     try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+
+    this.displayWarBox();
+
   }
 

@@ -305,9 +305,10 @@ class Spider extends OnePlayerGameTemplate {
     if (this.hints?.length > 0){
       $("#hint").css("visibility", "visible");
       $("#hint").on("click", ()=> {
+        $("#hint").off();
         let next_hint = this.hints.shift();
         this.hints.push(next_hint);
-
+        this.displayBoard();
         if (!document.getElementById("helper")) {
           this.app.browser.addElementToSelector(
             `<div id="helper" class="cardstack animated_elem"></div>`,
@@ -328,7 +329,7 @@ class Spider extends OnePlayerGameTemplate {
 
         helper.style.zIndex = 100;
 
-        let as = `${this.animationSpeed / 1500}s`; //Make it faster
+        let as = `${this.animationSpeed / 1800}s`; //Make it faster
         helper.style.transition = `left ${as}, top ${as}, width ${as}, height ${as}`;
 
         for (let i = next_hint.index; i < this.cardStacks[next_hint.source].getCardCount(); i++) {
@@ -338,7 +339,7 @@ class Spider extends OnePlayerGameTemplate {
           helper.append(elem);
         }
 
-        this.moveGameElement("helper", this.cardStacks[next_hint.target].getTopCardElement(), null, ()=>{
+        this.moveGameElement("helper", this.cardStacks[next_hint.target].getTopCardElement(), {}, ()=>{
           this.cardStacks[next_hint.target].pop();
           this.invisible_scaffolding = [];
           $("#helper").remove();
@@ -708,7 +709,7 @@ class Spider extends OnePlayerGameTemplate {
           spider_self.placeStack(target_card_stack);
           await spider_self.commitMove(top_card_to_move, target_card_stack.name, num_of_cards_to_move);
           if (!spider_self.checkStack(target_card_stack.name)) {
-            this.calculateHints();
+            spider_self.calculateHints();
             setTimeout(spider_self.attachEventsToBoard.bind(spider_self), 50);  
           }
         }
@@ -803,6 +804,7 @@ class Spider extends OnePlayerGameTemplate {
 
     this.game.state.moves++;
     this.displayBoard();
+    this.calculateHints();
     this.attachEventsToBoard();
   }
 

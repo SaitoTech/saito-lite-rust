@@ -56,9 +56,9 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // cards dealt before diet of worms
 	    //
-//this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
+//this.game.queue.push("is_testing");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -414,6 +414,7 @@ console.log("MOVE: " + mv[0]);
 
 	if (mv[0] === "is_testing") {
 
+
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
 	  // moar debaters
@@ -451,21 +452,8 @@ console.log("MOVE: " + mv[0]);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "021");
-    	  this.addCard("protestant", "027");
-    	  this.addCard("protestant", "028");
-    	  this.addCard("protestant", "031");
-    	  this.addCard("protestant", "032");
-    	  this.addCard("protestant", "035");
-    	  this.addCard("protestant", "037");
-//    	  this.addCard("protestant", "036");
-//    	  this.addCard("protestant", "026");
-//    	  this.addCard("protestant", "027");
-//    	  this.addCard("protestant", "028");
-//    	  this.addCard("papacy", "029");
-//    	  this.addCard("papacy", "030");
-//    	  this.addCard("papacy", "024");
-//    	  this.addCard("papacy", "025");
+    	  this.addCard("papacy", "079"); 
+   	  this.addCard("protestant", "027");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';

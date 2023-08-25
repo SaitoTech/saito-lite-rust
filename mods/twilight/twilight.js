@@ -2713,7 +2713,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["sudan", "cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
+          this.game.deck[0].hand = ["fidel", "asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -4438,6 +4438,11 @@ console.log("getPrivateKey(): " + privateKey);
         //
         if (ac[card].player == opponent) { can_play_event = 0; }
 
+
+        announcement += '<li class="option" id="ops">play ops</li>';
+        if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
+        announcement += twilight_self.isSpaceRaceAvailable(ops);    
+
         //
         // cancel cuban missile crisis
         //
@@ -4446,10 +4451,6 @@ console.log("getPrivateKey(): " + privateKey);
             announcement += '<li class="option" id="cancel_cmc">cancel cuban missile crisis</li>';
           }
         }
-
-        announcement += '<li class="option" id="ops">play ops</li>';
-        if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
-        announcement += twilight_self.isSpaceRaceAvailable(ops);    
         let header_msg = `${player.toUpperCase()} playing <span>${ac[card].name}</span>`; 
 
         if (twilight_self.game.state.back_button_cancelled != 1) {
@@ -4658,15 +4659,15 @@ console.log("getPrivateKey(): " + privateKey);
       }
 
       let html = '<ul>';
+      if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
+      if (this.game.state.limit_coups == 0) { html += '<li class="option" id="coup">launch coup</li>'; }
+      if (this.game.state.limit_realignments == 0) { html += '<li class="option" id="realign">realign country</li>'; }
+      if (this.game.state.events.unintervention == 1) {html += this.isSpaceRaceAvailable(ops); }
       if ((this.game.player == this.game.state.events.cubanmissilecrisis)  && this.game.state.events.cubanmissilecrisis > 0 ) {
         if (this.canCancelCMC()) {
           html += '<li class="option" id="cancel_cmc">cancel cuban missile crisis</li>';
         }
       }
-      if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
-      if (this.game.state.limit_coups == 0) { html += '<li class="option" id="coup">launch coup</li>'; }
-      if (this.game.state.limit_realignments == 0) { html += '<li class="option" id="realign">realign country</li>'; }
-      if (this.game.state.events.unintervention == 1) {html += this.isSpaceRaceAvailable(ops); }
       html += '</ul>';
 
 
@@ -4690,7 +4691,9 @@ console.log("getPrivateKey(): " + privateKey);
         twilight_self.addMove("resolve\tops");
 
         if (action2 == "cancel_cmc") {
-          this.moves = [];
+
+	  // don't resolve OPs
+          twilight_self.moves = [];
 
           let are_we_playing_ops = 0;
           if (twilight_self.game.queue[twilight_self.game.queue.length-1].split("\t")[0] === "ops") {
@@ -10446,7 +10449,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      if (!this.game.state.events.unitedfruit_removed != 1) {
+      if (this.game.state.events.unitedfruit_removed != 1) {
         this.game.state.events.unitedfruit_removed = 1;
         this.cancelEvent("unitedfruit");
         this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
@@ -11261,7 +11264,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      if (!this.game.state.events.unitedfruit_removed != 1) {
+      if (!this.game.state.events.unitedfruit_removed) {
         this.game.state.events.unitedfruit_removed = 1;
         this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
         this.cancelEvent("unitedfruit");
@@ -12153,7 +12156,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      if (!this.game.state.events.unitedfruit_removed != 1) {
+      if (this.game.state.events.unitedfruit_removed != 1) {
         this.game.state.events.unitedfruit_removed = 1;
         this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
         this.cancelEvent("unitedfruit");
@@ -12328,7 +12331,10 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     if (card == "marshall") {
 
       // SAITO COMMUNITY
-      this.addCardToDeck("nato", "Prerequisites Met");
+      if (!this.game.state.events.nato_added) {
+        this.game.state.events.nato_added = 1;
+        this.addCardToDeck("nato", "Prerequisites Met");
+      }
 
       this.game.state.events.marshall = 1;
       var twilight_self = this;
@@ -14569,7 +14575,10 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     if (card == "warsawpact") {
 
       // SAITO COMMUNITY
-      this.addCardToDeck("nato", "Prerequisites Met");
+      if (!this.game.state.events.nato_added) {
+        this.game.state.events.nato_added = 1;
+        this.addCardToDeck("nato", "Prerequisites Met");
+      }
 
       this.game.state.events.warsawpact = 1;
 

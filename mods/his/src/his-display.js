@@ -1,4 +1,31 @@
 
+  displayWarBox() {
+
+    let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
+    for (let i = 0; i < factions.length; i++) {
+      for (let ii = 0; ii < factions.length; ii++) {
+	if (ii > i) {
+	  let obj = null;
+	  let box = '#' + factions[i] + "_" + factions[ii];
+	  obj = document.querySelector(box);
+	  if (obj) {
+	    if (this.areAllies(factions[i], factions[ii])) {
+	      obj.innerHTML = '<img src="/his/img/Allied.svg" />';
+	      obj.style.display = "block";
+	    } else {
+	      if (this.areEnemies(factions[i], factions[ii])) {
+	        obj.innerHTML = '<img src="/his/img/AtWar.svg" />';
+	        obj.style.display = "block";
+	      } else {
+	        obj.style.display = "none";
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
   displayDebaters() {
     this.debaters_overlay.render();
   }
@@ -181,6 +208,12 @@
   }
 
   displayBoard() {
+
+    try {
+      this.displayWarBox();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayColony();
     } catch (err) {
