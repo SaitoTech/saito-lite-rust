@@ -524,6 +524,7 @@ console.log("MOVE: " + mv[0]);
 
     	  this.addCard("papacy", "079"); 
    	  this.addCard("protestant", "027");
+   	  this.addCard("protestant", "017");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
@@ -4929,7 +4930,7 @@ console.log("purging naval units and capturing leader");
 	  if (this.game.player == player) {
 	    this.playerCallTheologicalDebate(this, player, faction);
 	  } else {
-	    this.updateStatus(faction + " calling theological debater");
+	    this.updateStatus(this.returnFactionName(faction) + " calling theological debater");
 	  }
 	  return 0;
 	}
@@ -5432,7 +5433,7 @@ console.log("NEW WORLD PHASE!");
 	  if (this.game.player == player) {
 	    this.playerPlaySpringDeployment(faction, player);
 	  } else {
-	    this.updateStatus(faction.charAt(0).toUpperCase() + faction.slice(1) + " Spring Deployment");
+	    this.updateStatus(this.returnFactionName(faction) + " Spring Deployment");
 	  }
 
 	  return 0;
@@ -5897,6 +5898,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.state.skip_next_impulse.push(target_faction);
 
+	  this.game.queue.splice(qe, 1);
           return 1;
         }
 
@@ -6023,6 +6025,20 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
+
+	  //
+	  // skip turn if required
+	  //
+	  if (this.game.state.skip_next_impulse.includes(faction)) {
+	    for (let i = 0; i < this.game.state.skip_next_impulse.length; i++) {
+	      if (this.game.state.skip_next_impulse[i] == faction) {
+		this.game.state.skip_next_impulse.splice(i, 1);
+	      }
+	    }
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
 
 	  //
 	  // reset player/state vars and set as active player
@@ -6253,7 +6269,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  if (this.game.player == player) {
 	    this.playerAddUnrest(this, faction, zone, religion);
 	  } else {
-	    this.updateStatus(faction + " adding unrest");
+	    this.updateStatus(this.returnFactionName(faction) + " stirring unrest");
 	  }
 
 	  this.game.queue.splice(qe, 1);

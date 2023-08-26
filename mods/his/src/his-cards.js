@@ -4410,6 +4410,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      $('.option').off();
 	      let action = $(this).attr("id");
 
+	      his_self.updateStatus("submitted");
+
 	      if (action === "discard") {
                 his_self.addMove("discard_random\t"+target_faction);
 		his_self.endTurn();
@@ -6294,10 +6296,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { return 1; },
+      canEvent : function(his_self, faction) { if (faction == "protestants") { return 0; } return 1; },
       onEvent : function(his_self, faction) {
 
-	his_self.updateStatus(faction + " playing Foreign Recruits");
+	his_self.updateStatus(his_self.returnFactionName(faction) + " playing Foreign Recruits");
 	let player = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player == player) {
   	  his_self.playerPlayOps("", faction, 4);

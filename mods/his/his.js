@@ -7086,6 +7086,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      $('.option').off();
 	      let action = $(this).attr("id");
 
+	      his_self.updateStatus("submitted");
+
 	      if (action === "discard") {
                 his_self.addMove("discard_random\t"+target_faction);
 		his_self.endTurn();
@@ -8970,7 +8972,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { return 1; },
+      canEvent : function(his_self, faction) { if (faction == "protestants") { return 0; } return 1; },
       onEvent : function(his_self, faction) {
 
 	his_self.updateStatus(faction + " playing Foreign Recruits");
@@ -16065,6 +16067,7 @@ console.log("MOVE: " + mv[0]);
 
     	  this.addCard("papacy", "079"); 
    	  this.addCard("protestant", "027");
+   	  this.addCard("protestant", "017");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
@@ -21438,6 +21441,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.state.skip_next_impulse.push(target_faction);
 
+	  this.game.queue.splice(qe, 1);
           return 1;
         }
 
@@ -21564,6 +21568,20 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
+
+	  //
+	  // skip turn if required
+	  //
+	  if (this.game.state.skip_next_impulse.includes(faction)) {
+	    for (let i = 0; i < this.game.state.skip_next_impulse.length; i++) {
+	      if (this.game.state.skip_next_impulse[i] == faction) {
+		this.game.state.skip_next_impulse.splice(i, 1);
+	      }
+	    }
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
 
 	  //
 	  // reset player/state vars and set as active player
@@ -23130,6 +23148,17 @@ if (limit === "build") {
       category : "build" ,
       img : '/his/img/backgrounds/move/corsair.jpg',
     });
+    if (this.game.players.length == 2) {
+      menu.push({
+        factions : ['papacy','protestant'] ,
+        cost : [1,1,1,1,1,1,1,1,1,1],
+        name : "Remove Unrest",
+        check : this.canPlayerRemoveUnrest,
+        fnct : this.playerRemoveUnrest,
+        category : "attack" ,
+        img : '/his/img/backgrounds/move/control.jpg',
+      });
+    }
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
@@ -25708,6 +25737,16 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     );
   }
 
+  // 2P requires only that it is in protestant or catholic religious influence
+  canPlayerRemoveUnrest(his_self, player, faction) {
+ 
+    let spaces_in_unrest = his_self.returnSpacesInUnrest();
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
+      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
+      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
+    }
+    return 0;
+  }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
  
     // no for protestants early-game
@@ -25735,6 +25774,43 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	}
       } 
     }
+    return 0;
+  }
+  async playerRemoveUnrest(his_self, player, faction) {
+    let spaces_in_unrest = his_self.returnSpacesInUnrest();
+    let spaces_to_fix = [];
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
+      if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant"){spaces_to_fix.push(spaces_in_unrest[i]);}
+      if (faction == "papacy" && his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic"){spaces_to_fix.push(spaces_in_unrest[i]);}
+    }
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Space to Pacify:",
+
+      function(space) {
+        if (spaces_to_fix.includes(space.key)) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("pacify\t"+faction+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+      null,
+
+      true
+
+    );
+    return 0;
+  }
+  canPlayerExplore(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
+    if (this.game.state.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
@@ -25771,6 +25847,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	his_self.addMove("pacify\t"+faction+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
+
+      null,
+
+      true
 
     );
     return 0;
