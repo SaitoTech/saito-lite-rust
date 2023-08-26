@@ -133,7 +133,7 @@
             }
           );
 	  } else {
-	    this.updateStatus("Opponent adding 4 Regulars for Genoa");
+	    this.updateStatus("Genoa adding 4 Regulars");
 	  }
 
           return 0;
@@ -2373,7 +2373,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  });
 
 	} else {
-	  his_self.updateStatus("Papacy calling a Theological Debate");
+	  his_self.updateStatus("Papacy calling Theological Debate");
 	}
 
 	return 0;
@@ -2901,9 +2901,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         }
 	// three counter-reformation attempts
 	his_self.game.queue.push(`hide_overlay\tburn_books`);
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
 	his_self.game.queue.push(`catholic_counter_reformation\tpapacy\tall`);
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	return 1;
       },
@@ -4170,6 +4172,14 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+	let num = 2;
+	let f = faction;
+	if (faction == "france" || faction == "ottoman") { num = 4; f = "france"; }
+        his_self.game.queue.push("swiss_mercenaries\t"+f+"\t"+num);
+	return 1;
+      },
       menuOption  :       function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  let f = "";
@@ -4333,7 +4343,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu != "") {
+        if (menu != "" && menu != "pre_spring_deployment") {
 
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
 
@@ -4349,7 +4359,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
-        if (menu != "") {
+        if (menu != "" && menu != "pre_spring_deployment") {
 	  if (!his_self.game.deck) { return 0; }
 	  if (!his_self.game.deck[0]) { return 0; }
 	  if (!his_self.game.deck[0].fhand) { return 0; }
@@ -4362,9 +4372,9 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu != "") {
-  	  his_self.game.queue.push("event\t"+faction+"\t038");
-  	  his_self.game.queue.push("discard\t"+faction+"\t038");
+        if (menu != "" && menu != "pre_spring_deployment") {
+  	  his_self.addMove("event\t"+faction+"\t038");
+  	  his_self.addMove("discard\t"+faction+"\t038");
 	  his_self.endTurn();
         }
         return 0;
@@ -4546,6 +4556,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    let action = $(this).attr("id");
 	    let refs = 0;
 
+            his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+
 	    if (action !== "lz") {
 	      his_self.addMove("commit\tprotestant\tluther-debater");
 	      his_self.addMove("commit\tprotestant\tzwingli-debater");
@@ -4570,7 +4582,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    for (let i = 0; i < refs; i++) {
               his_self.prependMove("protestant_reformation\t"+player+"\tall");
 	    }
-
+	
+            his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	    his_self.endTurn();
 
 	  });
@@ -4677,10 +4690,12 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	his_self.commitDebater("protestant", "cop-debater", 0); // no bonus
 
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("NOTIFY\t"+his_self.popup("044"));
 
 	return 1;
@@ -4733,12 +4748,14 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	his_self.commitDebater("protestant", "calvin-debater", 0); // no bonus
 
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t0");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t1");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("LOG\tCalvin's Institutes");
 
 	return 1;
@@ -5174,7 +5191,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.events.papal_inquisition_debate_bonus = 1;
-	  his_self.addMove("SETVAR\tstate\tevents\tpapal_inquisition_debate_bonus\t0");
+	  his_self.game.queue.push("SETVAR\tstate\tevents\tpapal_inquisition_debate_bonus\t0");
 	  his_self.game.queue.push("papal_inquisition_call_theological_debate");
 	  return 1;
 
@@ -5394,9 +5411,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
 	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
 	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	return 1;
       },
@@ -5427,10 +5446,12 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
           }
 	}
 
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	return 1;
       },
@@ -5445,9 +5466,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 	
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("discard_random\tpapacy");
 
 	return 1;
@@ -5548,12 +5571,14 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	player = his_self.returnPlayerOfFaction("protestant");
 
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Protestants - A Mighty Fortress - 6 Reformation Attempts in German Zone");
 	his_self.commitDebater("protestant", "luther-debater");
 
@@ -5718,7 +5743,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      let space = his_self.game.spaces[spacekey];
 	      let first_choice = space.key;
 
-
               his_self.playerSelectSpaceWithFilter(
 
 	        "Select Second Space to Convert", 
@@ -5739,8 +5763,16 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 		  his_self.endTurn();
 
 	        },
+
+		null , 
+
+		true 
 	      );
-	    }
+	    } ,
+
+	    null ,
+
+	    true 
 	  );
 	}
 	return 0;
@@ -6271,19 +6303,23 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	  let player = his_self.returnPlayerOfFaction("protestant");
 
+          his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
           his_self.game.queue.push("protestant_reformation\t"+player+"\tall");
           his_self.game.queue.push("protestant_reformation\t"+player+"\tall");
           his_self.game.queue.push("protestant_reformation\t"+player+"\tall");
           his_self.game.queue.push("protestant_reformation\t"+player+"\tall");
+          his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	} else {
 
 	  let player = his_self.returnPlayerOfFaction("papacy");   
 
+          his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
           his_self.game.queue.push("catholic_counter_reformation\t"+player+"\tall");
           his_self.game.queue.push("catholic_counter_reformation\t"+player+"\tall");
           his_self.game.queue.push("catholic_counter_reformation\t"+player+"\tall");
           his_self.game.queue.push("catholic_counter_reformation\t"+player+"\tall");
+          his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	}
 
 	return 1;
@@ -6299,7 +6335,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       canEvent : function(his_self, faction) { if (faction == "protestants") { return 0; } return 1; },
       onEvent : function(his_self, faction) {
 
-	his_self.updateStatus(his_self.returnFactionName(faction) + " playing Foreign Recruits");
+	his_self.updateStatus(his_self.returnFactionName(faction) + " playing "+ his_self.popup("076"));
 	let player = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player == player) {
   	  his_self.playerPlayOps("", faction, 4);
@@ -6656,11 +6692,13 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	//
 	let p = his_self.returnPlayerOfFaction("protestant");
 
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	//
 	// and commit luther
@@ -6833,9 +6871,11 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	let p = his_self.returnPlayerOfFaction(faction);
 
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
+        his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	return 1;
       },

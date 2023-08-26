@@ -1234,7 +1234,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     }
   }
 
-  async playerPlayOps(card="", faction, ops=null) {
+  async playerPlayOps(card="", faction, ops=null, limit="") {
 
     //
     // discard the card
@@ -1244,7 +1244,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     }
 
     let his_self = this;
-    let menu = this.returnActionMenuOptions(this.game.player);
+    let menu = this.returnActionMenuOptions(this.game.player, faction, limit);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
@@ -1288,7 +1288,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops);
 
-        his_self.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
+        his_self.updateStatusWithOptions(`${his_self.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
 
           if (user_choice === "end_turn") {
@@ -1386,7 +1386,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
       this.menu_overlay.render(menu, this.game.player, faction, ops);
 
-      this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
 
         if (user_choice === "end_turn") {

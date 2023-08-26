@@ -5306,6 +5306,7 @@ console.log("purging naval units and capturing leader");
 	    if (f.victory == 1) {
 	      let player = this.returnPlayerOfFaction(faction);
 	      this.endGame([this.game.players[player-1]], f.details);
+	      return 0;
 	    }
 	  }
 
@@ -5404,6 +5405,8 @@ console.log("NEW WORLD PHASE!");
         }
 
         if (mv[0] === "spring_deployment_phase") {
+
+this.setAllies("papacy","hapsburg");
 
 	  this.game.queue.splice(qe, 1);
 
@@ -6361,6 +6364,37 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.displaySpace(space);
 	  this.displayVictoryTrack();
 
+
+          //
+          // military victory
+          //
+	  let keys = this.returnNumberOfKeysControlledByFaction(faction);
+	  if (faction === "hapsburg" && heys >= this.game.state.autowin_hapsburg_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "ottoman" && heys >= this.game.state.autowin_ottoman_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "france" && heys >= this.game.state.autowin_france_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "england" && heys >= this.game.state.autowin_england_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+	  if (faction === "papacy" && heys >= this.game.state.autowin_papacy_keys_controlled) {
+	    let player = this.returnPlayerOfFaction(faction);
+	    this.endGame([this.game.players[player-1]], "Military Victory");
+	    return 0;
+	  }
+
 	  return 1;
 
 	}
@@ -6418,6 +6452,15 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  this.displaySpace(space);
 	  this.displayElectorateDisplay();
 	  this.displayVictoryTrack();
+
+	  //
+	  // check for victory condition
+	  //
+          if (this.returnNumberOfProtestantSpacesInLanguageZone() >= 50) {
+	    let player = this.returnPlayerOfFaction("protestant");
+	    this.endGame([this.game.players[player-1]], "Religious Victory");
+	    return 0;
+	  }
 
 	  return 1;
 

@@ -22,7 +22,7 @@ do
   cat $file >> ./his.js
 done
 
-cat ./src/his-init2.js >> ./his.js
+cat ./src/his-setup.js >> ./his.js
 
 
 
