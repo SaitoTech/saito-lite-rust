@@ -296,4 +296,29 @@ img {
   margin-left: 1rem;
 }
 
+.space_regulars img:nth-child(1) {
+  top: -5px;
+  left: -5px;
+}
+.space_regulars img:nth-child(2) {
+  top: -15px;
+  left: -15px;
+}
+.space_regulars img:nth-child(3) {
+  top: -25px;
+  left: -25px;
+}
+.space_mercenaries img:nth-child(1) {
+  top: -5px;
+  left: -5px;
+}
+.space_mercenaries img:nth-child(2) {
+  top: -15px;
+  left: -15px;
+}
+.space_mercenaries img:nth-child(3) {
+  top: -25px;
+  left: -25px;
+}
+
 

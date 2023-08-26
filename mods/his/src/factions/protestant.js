@@ -47,6 +47,16 @@
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
 
+	// burned papal debaters
+	for (let i = 0; i < game_mod.game.state.burned.length; i++) {
+	  let bd = game_mod.game.state.burned[i];
+	  if (game_mod.debaters[bd]) {
+	    if (game_mod.debaters[bd].faction == "papacy") {
+	      base += game_mod.debaters[bd].power;
+	    }
+	  }
+	}
+	
 	// 1 VP for each full bible translation
         if (game_mod.game.state.translations['full']['german'] == 10) { base++; }
         if (game_mod.game.state.translations['full']['french'] == 10) { base++; }

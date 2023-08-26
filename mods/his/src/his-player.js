@@ -696,7 +696,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Control Space",
+      name : "Control",
       check : this.canPlayerControlUnfortifiedSpace,
       fnct : this.playerControlUnfortifiedSpace,
       category : "attack" ,
@@ -705,7 +705,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Assault Space",
+      name : "Assault",
       check : this.canPlayerAssault,
       fnct : this.playerAssault,
       category : "attack" ,
@@ -807,6 +807,17 @@ if (limit === "build") {
       img : '/his/img/backgrounds/move/university.png',
     });
 }
+
+    //
+    // hapsburg options limited in 2P version
+    //
+    if (this.game.players.length == 2 && faction === "hapsburg") {
+      for (let i = menu.length-1; i >= 0; i--) {
+	if (menu[i].category == "build") { menu.splice(i, 1); }
+	if (menu[i].category == "special") { menu.splice(i, 1); }
+	if (menu[i].name === "Move across Sea") { menu.splice(i, 1); }
+      }
+    } 
 
 
     if (player == null) { return menu; }
@@ -2779,19 +2790,23 @@ console.log("units length: " + space.units[defender].length);
   canPlayerCommitDebater(faction, debater) {
   
     if (faction !== "protestant" && faction !== "papacy") { return false; }
-      
+   
+    if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
+
     let already_committed = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") { return false; }
-      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
       if (this.game.state.debaters[i].key == debater) {
-    
+
+        if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") {}
+        if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
+        if (this.game.state.debaters[i].committed == 1) { return false; }
+
         let is_mine = false;
 
-        if (this.game.state.debaters[i].owner === "papacy" && faction === "papacy") {
+        if (this.game.state.debaters[i].faction === "papacy" && faction === "papacy") {
           is_mine = true;               
         }
-        if (this.game.state.debaters[i].owner !== "papacy" && faction === "protestant") {
+        if (this.game.state.debaters[i].faction !== "papacy" && faction === "protestant") {
           is_mine = true;
         }
     
@@ -3257,7 +3272,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
-
+ 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
@@ -3268,20 +3283,19 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
-	    console.log("1 SPACE IS: " + neighbours[z]);
 	    return 1;
 	  } 
 	}
 	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) {
-	  console.log("2 SPACE IS: " + spaces_in_unrest[i]);
 	  return 1;
 	} 
       }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
-	console.log("3 SPACE IS: " + conquerable_spaces[i]);
-	return 1;
+	if (his_self.game.spaces[conquerable_spaces[i]].besieged != 1) {
+	  return 1;
+	}
       } 
     }
     return 0;

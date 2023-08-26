@@ -356,6 +356,41 @@
     }
 
   }
+
+  disgraceDebater(debater) { return this.burnDebater(debater); }
+  burnDebater(debater) {
+
+    if (!this.debaters[debater]) {
+      console.log("DEBATER: " + debater + " not found");
+      return;
+    }
+
+    //
+    // remove the debater
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].type == debater) { 
+	this.game.state.debaters.splice(i, 1);
+        this.game.state.burned.push(debater);
+        let x = debater.split("-");
+	//
+	// also remove reformer (if exists)
+	//
+	let reformer = x[0] + "-reformer";
+        let s = his_self.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
+	if (s) {
+          this.removeReformer(this.debaters[debater].faction, reformer);
+        }
+      }
+    }
+
+    //
+    //
+    //
+    this.displayVictoryTrack();
+
+  }
+
   addDebater(faction, debater) {
 
     if (!this.debaters[debater]) {
@@ -453,6 +488,9 @@
 
   commitDebater(faction, debater, activate=1) {
     let his_self = this;
+
+    this.game.state.debater_committed_this_impulse[faction] = 1;
+
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	this.game.state.debaters[i].committed = 1;

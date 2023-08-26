@@ -740,7 +740,7 @@
         }
       }
 
-      for (let i = 0; i < army; i+= 2) {
+      while (army > 0) {
         if (z != "") {
           if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
@@ -793,11 +793,11 @@
               tile += `PapacyMerc-4.svg`;
 	      army -= 4;
 	    }
-	    if (army >= 2) {
+	    if (army >= 2 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-2.svg`;
 	      army -= 2;
 	    }
-	    if (army >= 1) {
+	    if (army >= 1 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-1.svg`;
 	      army -= 1;
 	    }
@@ -859,7 +859,15 @@
 	  tile = html;
 	}
 	if (space.units[z][zz].personage === true) {
-          html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	  if (space.units[z][zz].army_leader) {
+            html += `<img src="/his/img/tiles/army/${space.units[z][zz].img}" />`;
+	  } else {
+            if (space.units[z][zz].navy_leader) {
+	      html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
+	    } else {
+	      html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	    }
+	  }
 	  tile = html;
 	}
       }

@@ -87,6 +87,17 @@
     try { this.game.state.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
 
+    if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "papacy") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Papacy must remain allied in 2P game after Schmalkaldic League formed");
+      }
+    } } 
+    if (this.game.players.length == 2) { if (faction2 === "hapsburg" && faction1 === "papacy") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Papacy must remain allied in 2P game after Schmalkaldic League formed");
+      }
+    } }
+
     if (amp == 1) {
       if (this.isMinorPower(faction1)) {
         if (!this.isMinorPower(faction2)) {
@@ -115,6 +126,29 @@
   }
 
   unsetEnemies(faction1, faction2) {
+
+    if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Protestants must remain at war in 2P variant");
+      }
+    } }
+    if (this.game.players.length == 2) { if (faction2 === "hapsburg" && faction1 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Protestants must remain at war in 2P variant");
+      }
+    } }
+    if (this.game.players.length == 2) { if (faction1 === "papacy" && faction2 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Papacy and Protestants must remain at war in 2P variant");
+      }
+    } }
+    if (this.game.players.length == 2) { if (faction2 === "papacy" && faction1 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Papacy and Protestants must remain at war in 2P variant");
+      }
+    } }
+
+
     try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
 

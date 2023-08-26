@@ -58,10 +58,45 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
-//this.game.queue.push("is_testing");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
+
+
+	    //
+	    // round 2 - zwingli in zurich
+	    //
+	    this.addDebater("protestant", "zwingli-debater");
+	    this.addReformer("protestant", "zurich", "zwingli-reformer");
+
+	    //
+	    // round 4 - calvin in genoa
+	    //
+	    this.addDebater("protestant", "calvin-debater");
+	    this.addReformer("protestant", "genoa", "calvin-reformer");
+
+	    //
+	    // round 5 - cranmer in london
+	    //
+	    this.addDebater("protestant", "cranmer-debater");
+	    this.addDebater("protestant", "latimer-debater");
+	    this.addDebater("protestant", "coverdale-debater");
+	    this.addReformer("protestant", "genoa", "cranmer-reformer");
+
+	    //
+	    // round 6 - maurice of saxony
+	    //
+	    this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
+
+
+
+
+
+
+
+
+
+
 	  }
 
 	  //
@@ -300,6 +335,41 @@ console.log("MOVE: " + mv[0]);
 
         }
 
+        if (mv[0] === "protestants-place-maurice-of-saxony-round-six") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let player = this.returnPlayerOfFaction("protestant");
+
+	  if (this.game.player === player) {
+
+            his_self.playerSelectSpaceWithFilter(
+
+              "Select Protestant Electorate for Maurice of Saxony",
+
+              function(space) {
+                if (space.type == "electorate" && space.political == "protestant") { return 1; }
+  	        return 0;
+              },
+
+              function(spacekey) {
+                his_self.addMove("add_army_leader\tprotestant\t"+spacekey+"\tmaurice-of-saxony");
+                his_self.endTurn();
+              },
+
+	      null,
+
+	      true
+
+            );
+
+	  } else {
+	    this.updateStatus("Protestants placing Maurice of Saxony");
+	  }
+
+	  return 0;
+
+	}
 
 	if (mv[0] === "retreat_to_winter_spaces_resolve") {
 
@@ -1830,8 +1900,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	// for however many people need to have the opportunity to counter or acknowledge.
 	//
 	if (mv[0] === "insert_before_counter_or_acknowledge") {
-
-alert("IBCOA: " + mv[1]);
 
           this.game.queue.splice(qe, 1);
 
@@ -3833,7 +3901,6 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  let defending_factions = 0;
 	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
           
-
 	  //
 	  // migrate any bonuses to attacker or defender
 	  //
@@ -4410,7 +4477,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	    if (defender_land_units_remaining == 0 && attacker_land_units_remaining > 0) {
 	      space.besieged = 0;
 	      space.unrest = 0;
-	      this.controlSpace(attacker_faction, "");
+	      this.controlSpace(attacker_faction, space.key);
 	    }
 
           } else {
@@ -4419,10 +4486,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      space.besieged = 0;
 	      space.unrest = 0;
 	    } else {
-
               his_self.game.queue.push("break_siege");
               his_self.game.queue.push("hide_overlay\tassault");
-
 	    }
 	  }
 
@@ -4848,7 +4913,7 @@ console.log("purging naval units and capturing leader");
 	  let debater = mv[2];
 	  let activate_it = 0;
 
-	  this.updateLog(this.returnFactionName(faction) + " commits " + this.popup(this.debaters[debater].name));
+	  this.updateLog(this.returnFactionName(faction) + " commits " + this.popup(debater));
 
 	  if (parseInt(mv[2]) > 0) { activate_it = parseInt(mv[2]); }
 	  this.commitDebater(faction, debater, activate_it);
@@ -5047,6 +5112,13 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
 
+	      //
+	      // attacker has more hits, is defender burned?
+	      //
+	      if (total_spaces_to_convert > this.game.state.theological_debate.defender_debater_power) {
+		this.burnDebater(this.game.state.theological_debate.defender_debater);
+	      }
+
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
 
 	      for (let i = (total_spaces_to_convert+bonus_conversions); i >= 1; i--) {
@@ -5098,6 +5170,14 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Space}`);
 	      } else {
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
+	      }
+
+
+	      //
+	      // defender has more hits, is attacker burned?
+	      //
+	      if (total_spaces_to_convert > this.game.state.theological_debate.attacker_debater_power) {
+		this.burnDebater(this.game.state.theological_debate.attacker_debater);
 	      }
 
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
@@ -6244,6 +6324,22 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let space = mv[2];
 
 	  this.game.spaces[space].unrest = 0;
+
+	  //
+	  // 2P restriction on which keys can 
+	  //
+	  if (this.game.players.length == 2) {
+	    if (space != "metz" && space != "liege" && this.game.spaces[space].language != "german" && this.game.spaces[space].langauge != "italian") { 
+	      this.updateLog("NOTE: only Metz, Liege and German and Italian spaces may change control in the 2P game");
+	    } else {
+	      this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));
+	      this.game.spaces[space].political = faction;
+	    }
+	  } else {
+	    this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));
+	    this.game.spaces[space].political = faction;
+	  }
+
 	  this.game.spaces[space].political = faction;
 
 	  this.displaySpace(space);

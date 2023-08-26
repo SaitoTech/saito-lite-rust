@@ -8,17 +8,17 @@
       c = this.debaters[card];
       if (c) { return `<span class="showcard ${card}" id="${card}">${c.name}</span>`; }
     }
-
     if (!c) {
       // catches Here I Stand -- first event before DEAL
       let x = this.returnDeck();
       if (x[card]) { c = x[card]; }
     }
-    if (c.name) {
-      return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
-    } else {
-     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
+    if (c) { 
+      if (c.name) {
+        return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+      }
     }
+    return `<span class="showcard ${card}" id="${card}">${card}</span>`;
   }
 
   returnNewCardsForThisTurn(turn = 1) {
@@ -3032,15 +3032,33 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
-
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player === papacy) {
-	  his_self.game.state.events.papacy_may_found_jesuit_universities = 1;
-	  return 0;
-	}
-
+    	  his_self.playerSelectSpaceWithFilter(
+      	    "Select Catholic-Controlled Space for First Jesuit University",
+      	    function(space) {
+              if (space.religion === "catholic" && space.university != 1) { return 1; }
+              return 0; 
+            },          
+            function(destination_spacekey) {
+    	      his_self.playerSelectSpaceWithFilter(
+      	        "Select Catholic-Controlled Space for Second Jesuit University",
+       	        function(space) {
+                  if (space.key != destination_spacekey && space.religion === "catholic" && space.university != 1) { return 1; }
+                  return 0; 
+                },
+                function(second_spacekey) {
+                  his_self.addMove("found_jesuit_university\t"+second_spacekey);
+                  his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+	          his_self.addMove("SETVAR\tstate\tevents\tpapacy_may_found_jesuit_universities\t1");
+                  his_self.endTurn();
+	        }
+	      );
+	    }
+	  );
+        }
 	return 0;
-      }
+      },    
     }
     deck['016'] = { 
       img : "cards/HIS-016.svg" , 
@@ -3308,9 +3326,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       ops : 2 ,
       turn : 0 ,
       type : "mandatory" ,
-      canEvent : function(his_self, faction) {
-        return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       onEvent : function(his_self, faction) {
 	his_self.game.state.leaders.henry_viii = 0;
@@ -3929,6 +3945,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+        his_self.game.queue.push("landsknechts\t"+faction);
+	return 1;
+      },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "field_battle") {
 
@@ -5835,6 +5856,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    "Select Unbesieged Space You Control",
 
 	    function(space) {
+	      // 2P must be German or Iralian space
+	      if (his_self.game.players.length == 2) { if (space.language != "italian" && space.language != "german") { return false; } }
 	      if (space.besieged) { return 0; }
 	      if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	      return 0;
@@ -5847,8 +5870,15 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
 	      his_self.endTurn();
-	    }
+	    },
+
+	    null,
+
+	    true 
+
 	  );
+	} else {
+	  his_self.updateStatus(his_self.popup("070") + " entering play");
 	}
 
 	return 0;
@@ -5875,6 +5905,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    "Select Space to Target",
 
 	    function(space) {
+
+	      // 2P game - may be played against electorate under Hapsburg Control
+	      if (his_self.game.players.length == 2) {
+		if (space.type == "electorate" && (space.political == "hapsburg" || space.political == "")) { return 1; }
+	      }
 
 	      // captured key
 	      if (space.home === "independent" && space.political != space.home) { return 1; }

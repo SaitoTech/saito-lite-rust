@@ -33,7 +33,7 @@ class HereIStand extends GameTemplate {
     this.gamename        = "Here I Stand";
     this.slug		 = "his";
     this.description     = `Here I Stand is a boardgame based on the military, political and religious conflicts within Europe at the outbreak of the Protestant Reformation (1517-1555). Each player controls one or more major powers that dominated Europe: the Ottoman Empire, the Hapsburgs, England, France, the Papacy and the Protestant states.`;
-    this.publisher_message = "Here I Stand is owned by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game.";
+    this.publisher_message = `Here I Stand is published by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game. Support GMT Games: <a href="https://www.gmtgames.com/p-917-here-i-stand-500th-anniversary-reprint-edition-2nd-printing.aspx">purchase</a>`;
     this.categories      = "Games Boardgame Strategy";
 
     this.interface = 1; // graphical interface
@@ -542,6 +542,16 @@ class HereIStand extends GameTemplate {
 	// protestant spaces track
 	let base = game_mod.returnProtestantSpacesTrackVictoryPoints().papacy;
 
+        // burned protestant debaters
+        for (let i = 0; i < game_mod.game.state.burned.length; i++) {
+          let bd = game_mod.game.state.burned[i];
+          if (game_mod.debaters[bd]) {
+            if (game_mod.debaters[bd].faction == "papacy") {
+              base += game_mod.debaters[bd].power;
+            }
+          }
+        }
+
 	// saint peters cathedral
  	base += game_mod.game.state.saint_peters_cathedral['vp'] = 0;
 
@@ -601,6 +611,16 @@ class HereIStand extends GameTemplate {
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
 
+	// burned papal debaters
+	for (let i = 0; i < game_mod.game.state.burned.length; i++) {
+	  let bd = game_mod.game.state.burned[i];
+	  if (game_mod.debaters[bd]) {
+	    if (game_mod.debaters[bd].faction == "papacy") {
+	      base += game_mod.debaters[bd].power;
+	    }
+	  }
+	}
+	
 	// 1 VP for each full bible translation
         if (game_mod.game.state.translations['full']['german'] == 10) { base++; }
         if (game_mod.game.state.translations['full']['french'] == 10) { base++; }
@@ -2664,17 +2684,17 @@ console.log("\n\n\n\n");
       c = this.debaters[card];
       if (c) { return `<span class="showcard ${card}" id="${card}">${c.name}</span>`; }
     }
-
     if (!c) {
       // catches Here I Stand -- first event before DEAL
       let x = this.returnDeck();
       if (x[card]) { c = x[card]; }
     }
-    if (c.name) {
-      return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
-    } else {
-     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
+    if (c) { 
+      if (c.name) {
+        return `<span class="showcard ${card}" id="${card}">${c.name}</span>`;
+      }
     }
+    return `<span class="showcard ${card}" id="${card}">${card}</span>`;
   }
 
   returnNewCardsForThisTurn(turn = 1) {
@@ -5688,15 +5708,33 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
-
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player === papacy) {
-	  his_self.game.state.events.papacy_may_found_jesuit_universities = 1;
-	  return 0;
-	}
-
+    	  his_self.playerSelectSpaceWithFilter(
+      	    "Select Catholic-Controlled Space for First Jesuit University",
+      	    function(space) {
+              if (space.religion === "catholic" && space.university != 1) { return 1; }
+              return 0; 
+            },          
+            function(destination_spacekey) {
+    	      his_self.playerSelectSpaceWithFilter(
+      	        "Select Catholic-Controlled Space for Second Jesuit University",
+       	        function(space) {
+                  if (space.key != destination_spacekey && space.religion === "catholic" && space.university != 1) { return 1; }
+                  return 0; 
+                },
+                function(second_spacekey) {
+                  his_self.addMove("found_jesuit_university\t"+second_spacekey);
+                  his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+	          his_self.addMove("SETVAR\tstate\tevents\tpapacy_may_found_jesuit_universities\t1");
+                  his_self.endTurn();
+	        }
+	      );
+	    }
+	  );
+        }
 	return 0;
-      }
+      },    
     }
     deck['016'] = { 
       img : "cards/HIS-016.svg" , 
@@ -5964,9 +6002,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       ops : 2 ,
       turn : 0 ,
       type : "mandatory" ,
-      canEvent : function(his_self, faction) {
-        return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       onEvent : function(his_self, faction) {
 	his_self.game.state.leaders.henry_viii = 0;
@@ -6585,6 +6621,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+        his_self.game.queue.push("landsknechts\t"+faction);
+	return 1;
+      },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "field_battle") {
 
@@ -8491,6 +8532,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    "Select Unbesieged Space You Control",
 
 	    function(space) {
+	      // 2P must be German or Iralian space
+	      if (his_self.game.players.length == 2) { if (space.language != "italian" && space.language != "german") { return false; } }
 	      if (space.besieged) { return 0; }
 	      if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	      return 0;
@@ -8503,8 +8546,15 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
 	      his_self.endTurn();
-	    }
+	    },
+
+	    null,
+
+	    true 
+
 	  );
+	} else {
+	  his_self.updateStatus(his_self.popup("070") + " entering play");
 	}
 
 	return 0;
@@ -8531,6 +8581,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    "Select Space to Target",
 
 	    function(space) {
+
+	      // 2P game - may be played against electorate under Hapsburg Control
+	      if (his_self.game.players.length == 2) {
+		if (space.type == "electorate" && (space.political == "hapsburg" || space.political == "")) { return 1; }
+	      }
 
 	      // captured key
 	      if (space.home === "independent" && space.political != space.home) { return 1; }
@@ -13859,6 +13914,17 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     try { this.game.state.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
 
+    if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "papacy") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Papacy must remain allied in 2P game after Schmalkaldic League formed");
+      }
+    } } 
+    if (this.game.players.length == 2) { if (faction2 === "hapsburg" && faction1 === "papacy") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Papacy must remain allied in 2P game after Schmalkaldic League formed");
+      }
+    } }
+
     if (amp == 1) {
       if (this.isMinorPower(faction1)) {
         if (!this.isMinorPower(faction2)) {
@@ -13887,6 +13953,29 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
   }
 
   unsetEnemies(faction1, faction2) {
+
+    if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Protestants must remain at war in 2P variant");
+      }
+    } }
+    if (this.game.players.length == 2) { if (faction2 === "hapsburg" && faction1 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Hapsburg and Protestants must remain at war in 2P variant");
+      }
+    } }
+    if (this.game.players.length == 2) { if (faction1 === "papacy" && faction2 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Papacy and Protestants must remain at war in 2P variant");
+      }
+    } }
+    if (this.game.players.length == 2) { if (faction2 === "papacy" && faction1 === "protestant") {
+      if (this.game.state.events.schmalkaldic_league) { 
+	this.updateLog("NOTE: Papacy and Protestants must remain at war in 2P variant");
+      }
+    } }
+
+
     try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
 
@@ -14010,6 +14099,12 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
 
     //
+    // reset impulse commits
+    //
+    this.game.state.debater_committed_this_impulse = {};
+    
+
+    //
     // remove gout
     //
     if (this.game.state.events.gout != 0) {
@@ -14033,6 +14128,12 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
   }
 
   onNewRound() {
+
+    //
+    // reset impulse commits
+    //
+    this.game.state.debater_committed_this_impulse = {};
+    
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -14412,6 +14513,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
     state.naval_leaders_lost_at_sea = [];
 
+    state.debater_committed_this_impulse = {};
+
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
     state.activated_powers['hapsburg'] = [];
@@ -14495,6 +14598,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     state.military_leaders_removed_until_next_round = [];
     state.excommunicated_factions = {};
     state.excommunicated = [];
+    state.burned = [];
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
@@ -15495,10 +15599,45 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
-//this.game.queue.push("is_testing");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
+
+
+	    //
+	    // round 2 - zwingli in zurich
+	    //
+	    this.addDebater("protestant", "zwingli-debater");
+	    this.addReformer("protestant", "zurich", "zwingli-reformer");
+
+	    //
+	    // round 4 - calvin in genoa
+	    //
+	    this.addDebater("protestant", "calvin-debater");
+	    this.addReformer("protestant", "genoa", "calvin-reformer");
+
+	    //
+	    // round 5 - cranmer in london
+	    //
+	    this.addDebater("protestant", "cranmer-debater");
+	    this.addDebater("protestant", "latimer-debater");
+	    this.addDebater("protestant", "coverdale-debater");
+	    this.addReformer("protestant", "genoa", "cranmer-reformer");
+
+	    //
+	    // round 6 - maurice of saxony
+	    //
+	    this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
+
+
+
+
+
+
+
+
+
+
 	  }
 
 	  //
@@ -15737,6 +15876,41 @@ console.log("MOVE: " + mv[0]);
 
         }
 
+        if (mv[0] === "protestants-place-maurice-of-saxony-round-six") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let player = this.returnPlayerOfFaction("protestant");
+
+	  if (this.game.player === player) {
+
+            his_self.playerSelectSpaceWithFilter(
+
+              "Select Protestant Electorate for Maurice of Saxony",
+
+              function(space) {
+                if (space.type == "electorate" && space.political == "protestant") { return 1; }
+  	        return 0;
+              },
+
+              function(spacekey) {
+                his_self.addMove("add_army_leader\tprotestant\t"+spacekey+"\tmaurice-of-saxony");
+                his_self.endTurn();
+              },
+
+	      null,
+
+	      true
+
+            );
+
+	  } else {
+	    this.updateStatus("Protestants placing Maurice of Saxony");
+	  }
+
+	  return 0;
+
+	}
 
 	if (mv[0] === "retreat_to_winter_spaces_resolve") {
 
@@ -17267,8 +17441,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	// for however many people need to have the opportunity to counter or acknowledge.
 	//
 	if (mv[0] === "insert_before_counter_or_acknowledge") {
-
-alert("IBCOA: " + mv[1]);
 
           this.game.queue.splice(qe, 1);
 
@@ -19270,7 +19442,6 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  let defending_factions = 0;
 	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
           
-
 	  //
 	  // migrate any bonuses to attacker or defender
 	  //
@@ -19847,7 +20018,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	    if (defender_land_units_remaining == 0 && attacker_land_units_remaining > 0) {
 	      space.besieged = 0;
 	      space.unrest = 0;
-	      this.controlSpace(attacker_faction, "");
+	      this.controlSpace(attacker_faction, space.key);
 	    }
 
           } else {
@@ -19856,10 +20027,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      space.besieged = 0;
 	      space.unrest = 0;
 	    } else {
-
               his_self.game.queue.push("break_siege");
               his_self.game.queue.push("hide_overlay\tassault");
-
 	    }
 	  }
 
@@ -20285,7 +20454,7 @@ console.log("purging naval units and capturing leader");
 	  let debater = mv[2];
 	  let activate_it = 0;
 
-	  this.updateLog(this.returnFactionName(faction) + " commits " + this.popup(this.debaters[debater].name));
+	  this.updateLog(this.returnFactionName(faction) + " commits " + this.popup(debater));
 
 	  if (parseInt(mv[2]) > 0) { activate_it = parseInt(mv[2]); }
 	  this.commitDebater(faction, debater, activate_it);
@@ -20484,6 +20653,13 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
 
+	      //
+	      // attacker has more hits, is defender burned?
+	      //
+	      if (total_spaces_to_convert > this.game.state.theological_debate.defender_debater_power) {
+		this.burnDebater(this.game.state.theological_debate.defender_debater);
+	      }
+
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
 
 	      for (let i = (total_spaces_to_convert+bonus_conversions); i >= 1; i--) {
@@ -20535,6 +20711,14 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Space}`);
 	      } else {
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
+	      }
+
+
+	      //
+	      // defender has more hits, is attacker burned?
+	      //
+	      if (total_spaces_to_convert > this.game.state.theological_debate.attacker_debater_power) {
+		this.burnDebater(this.game.state.theological_debate.attacker_debater);
 	      }
 
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
@@ -21681,6 +21865,22 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let space = mv[2];
 
 	  this.game.spaces[space].unrest = 0;
+
+	  //
+	  // 2P restriction on which keys can 
+	  //
+	  if (this.game.players.length == 2) {
+	    if (space != "metz" && space != "liege" && this.game.spaces[space].language != "german" && this.game.spaces[space].langauge != "italian") { 
+	      this.updateLog("NOTE: only Metz, Liege and German and Italian spaces may change control in the 2P game");
+	    } else {
+	      this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));
+	      this.game.spaces[space].political = faction;
+	    }
+	  } else {
+	    this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));
+	    this.game.spaces[space].political = faction;
+	  }
+
 	  this.game.spaces[space].political = faction;
 
 	  this.displaySpace(space);
@@ -22933,7 +23133,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Control Space",
+      name : "Control",
       check : this.canPlayerControlUnfortifiedSpace,
       fnct : this.playerControlUnfortifiedSpace,
       category : "attack" ,
@@ -22942,7 +23142,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
-      name : "Assault Space",
+      name : "Assault",
       check : this.canPlayerAssault,
       fnct : this.playerAssault,
       category : "attack" ,
@@ -23044,6 +23244,17 @@ if (limit === "build") {
       img : '/his/img/backgrounds/move/university.png',
     });
 }
+
+    //
+    // hapsburg options limited in 2P version
+    //
+    if (this.game.players.length == 2 && faction === "hapsburg") {
+      for (let i = menu.length-1; i >= 0; i--) {
+	if (menu[i].category == "build") { menu.splice(i, 1); }
+	if (menu[i].category == "special") { menu.splice(i, 1); }
+	if (menu[i].name === "Move across Sea") { menu.splice(i, 1); }
+      }
+    } 
 
 
     if (player == null) { return menu; }
@@ -25016,19 +25227,23 @@ console.log("units length: " + space.units[defender].length);
   canPlayerCommitDebater(faction, debater) {
   
     if (faction !== "protestant" && faction !== "papacy") { return false; }
-      
+   
+    if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
+
     let already_committed = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") { return false; }
-      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
       if (this.game.state.debaters[i].key == debater) {
-    
+
+        if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") {}
+        if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
+        if (this.game.state.debaters[i].committed == 1) { return false; }
+
         let is_mine = false;
 
-        if (this.game.state.debaters[i].owner === "papacy" && faction === "papacy") {
+        if (this.game.state.debaters[i].faction === "papacy" && faction === "papacy") {
           is_mine = true;               
         }
-        if (this.game.state.debaters[i].owner !== "papacy" && faction === "protestant") {
+        if (this.game.state.debaters[i].faction !== "papacy" && faction === "protestant") {
           is_mine = true;
         }
     
@@ -25494,7 +25709,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
-
+ 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
@@ -25505,20 +25720,19 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
-	    console.log("1 SPACE IS: " + neighbours[z]);
 	    return 1;
 	  } 
 	}
 	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) {
-	  console.log("2 SPACE IS: " + spaces_in_unrest[i]);
 	  return 1;
 	} 
       }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
-	console.log("3 SPACE IS: " + conquerable_spaces[i]);
-	return 1;
+	if (his_self.game.spaces[conquerable_spaces[i]].besieged != 1) {
+	  return 1;
+	}
       } 
     }
     return 0;
@@ -26973,6 +27187,41 @@ return;
     }
 
   }
+
+  disgraceDebater(debater) { return this.burnDebater(debater); }
+  burnDebater(debater) {
+
+    if (!this.debaters[debater]) {
+      console.log("DEBATER: " + debater + " not found");
+      return;
+    }
+
+    //
+    // remove the debater
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].type == debater) { 
+	this.game.state.debaters.splice(i, 1);
+        this.game.state.burned.push(debater);
+        let x = debater.split("-");
+	//
+	// also remove reformer (if exists)
+	//
+	let reformer = x[0] + "-reformer";
+        let s = his_self.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
+	if (s) {
+          this.removeReformer(this.debaters[debater].faction, reformer);
+        }
+      }
+    }
+
+    //
+    //
+    //
+    this.displayVictoryTrack();
+
+  }
+
   addDebater(faction, debater) {
 
     if (!this.debaters[debater]) {
@@ -27070,6 +27319,9 @@ return;
 
   commitDebater(faction, debater, activate=1) {
     let his_self = this;
+
+    this.game.state.debater_committed_this_impulse[faction] = 1;
+
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	this.game.state.debaters[i].committed = 1;
@@ -27843,7 +28095,7 @@ return;
         }
       }
 
-      for (let i = 0; i < army; i+= 2) {
+      while (army > 0) {
         if (z != "") {
           if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
@@ -27896,11 +28148,11 @@ return;
               tile += `PapacyMerc-4.svg`;
 	      army -= 4;
 	    }
-	    if (army >= 2) {
+	    if (army >= 2 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-2.svg`;
 	      army -= 2;
 	    }
-	    if (army >= 1) {
+	    if (army >= 1 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-1.svg`;
 	      army -= 1;
 	    }
@@ -27962,7 +28214,15 @@ return;
 	  tile = html;
 	}
 	if (space.units[z][zz].personage === true) {
-          html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	  if (space.units[z][zz].army_leader) {
+            html += `<img src="/his/img/tiles/army/${space.units[z][zz].img}" />`;
+	  } else {
+            if (space.units[z][zz].navy_leader) {
+	      html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
+	    } else {
+	      html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	    }
+	  }
 	  tile = html;
 	}
       }

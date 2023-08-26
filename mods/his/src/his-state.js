@@ -10,6 +10,12 @@
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
 
     //
+    // reset impulse commits
+    //
+    this.game.state.debater_committed_this_impulse = {};
+    
+
+    //
     // remove gout
     //
     if (this.game.state.events.gout != 0) {
@@ -33,6 +39,12 @@
   }
 
   onNewRound() {
+
+    //
+    // reset impulse commits
+    //
+    this.game.state.debater_committed_this_impulse = {};
+    
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -412,6 +424,8 @@
 
     state.naval_leaders_lost_at_sea = [];
 
+    state.debater_committed_this_impulse = {};
+
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
     state.activated_powers['hapsburg'] = [];
@@ -495,6 +509,7 @@
     state.military_leaders_removed_until_next_round = [];
     state.excommunicated_factions = {};
     state.excommunicated = [];
+    state.burned = [];
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
