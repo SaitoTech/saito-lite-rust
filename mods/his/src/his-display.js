@@ -1142,3 +1142,37 @@ console.log("here for");
     
   }
 
+
+
+  async preloadImages() {
+    var allImages = [
+      "img/factions/protestant.png",
+      "img/factions/papacy.png",
+      "img/factions/england.png",
+      "img/factions/france.png",
+      "img/factions/ottoman.png",
+      "img/factions/hapsburg.png",
+      "img/backgrounds/reformation.jpg",
+      "img/backgrounds/theological-debate.jpg",
+    ];
+  }
+
+  preloadImageArray(imageArray=[], idx=0) {
+
+    let pre_images = [imageArray.length];
+
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = "/his/" + imageArray[idx];
+    }
+
+  }
+
+
+
+
+
+

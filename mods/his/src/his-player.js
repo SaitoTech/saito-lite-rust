@@ -2107,7 +2107,7 @@ return;
 	      for (let i = 0; i < space.units[faction].length; i++) {
 		let u = space.units[faction][i];
 		if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.command_value > 0) {
-		  if (u.locked == false && (his_self.game.state.events.foul_weather != 1 && u.already_moved != 1)) { 
+		  if (u.locked == false && (his_self.game.state.events.foul_weather != 1 || u.already_moved != 1)) { 
 		    units_to_move.push(i);
 		  } else {
 		    his_self.updateLog("Some units unable to auto-move because of Foul Weather");
@@ -3604,7 +3604,7 @@ return;
 	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
 	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	    if (id === "carlstadt-debater") {
-	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
+	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt-debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");

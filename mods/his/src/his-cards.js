@@ -4,7 +4,11 @@
     let c = null;
     if (!c && this.game.deck[0]) { c = this.game.deck[0].cards[card]; }
     if (!c && this.game.deck[1]) { c = this.game.deck[1].cards[card]; }
-    if (!c && this.debaters) { c = this.debaters[card]; }
+    if (!c && this.debaters) { 
+      c = this.debaters[card];
+      if (c) { return `<span class="showcard ${card}" id="${card}">${c.name}</span>`; }
+    }
+
     if (!c) {
       // catches Here I Stand -- first event before DEAL
       let x = this.returnDeck();
@@ -2489,7 +2493,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    // player returns to hand
 	    //
 	    if (his_self.game.player === p) {
-              let fhand_idx = his_self.returnFactionHandIdx(p, faction);
+              let fhand_idx = his_self.returnFactionHandIdx(p, "protestant");
 	      his_self.game.deck[0].fhand[fhand_idx].push(card);
 	    }
 
@@ -4586,7 +4590,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  for (let i = 0; i < targets.length; i++) {
 	    if (his_self.hasCatholicLandUnits(targets[i])) {
 	      viable_targets++;
-              html += '<li class="option" id="${targets[i]}">${targets[i]}</li>';
+              html += `<li class="option" id="${targets[i]}">${targets[i]}</li>`;
 	    }
 	  }
 	  if (viable_targets == 0) {
@@ -7840,7 +7844,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
           if (his_self.game.player == p1) {
 
 	    for (let i = 0; i < cards.length; i++) {
-	      his_self.updateLog(his_self.returnFactionName(faction_giving) + " has " + his_self.popup(cards[i]));
+	      his_self.updateLog(his_self.returnFactionName(faction_giving) + ": " + his_self.popup(cards[i]));
 	    }
           }
 
@@ -7875,7 +7879,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	      $('.option').off();
 	      let action = $(this).attr("id");
 	      his_self.addMove("show_hand\t"+faction+"\t"+action);
-	      his_self.endMove();
+	      his_self.endTurn();
 	    });
 
 	  }

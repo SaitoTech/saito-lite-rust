@@ -14,6 +14,11 @@
       this.game.state = this.returnState();
     }
 
+    //
+    // preload images
+    //
+    this.preloadImages();
+
 
     // required here so menu will be proper
     try {

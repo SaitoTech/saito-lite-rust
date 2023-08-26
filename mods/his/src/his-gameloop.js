@@ -182,7 +182,7 @@ console.log("MOVE: " + mv[0]);
 	  let spacekey = mv[4];
           let player_to_ignore = parseInt(mv[5]);
 
-	  this.updateLog(this.returnFactionName(faction) + " builds " + unit_type + " in " + this.returnSpaceName(spacekey));
+	  this.updateLog(this.returnFactionName(faction) + " builds " + unit_type + " in " + this.returnSpaceName(spacekey), true);
 
 	  if (this.game.player != player_to_ignore) {
 	    if (land_or_sea === "land") {
@@ -1831,6 +1831,8 @@ console.log("2. insert index: " + index_to_insert_moves);
 	//
 	if (mv[0] === "insert_before_counter_or_acknowledge") {
 
+alert("IBCOA: " + mv[1]);
+
           this.game.queue.splice(qe, 1);
 
 	  let insert = "";
@@ -3164,8 +3166,6 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 	  let space = this.game.spaces[spacekey];
 	  let unit_destroyed = false;
 
-console.log(JSON.stringify(this.game.state.assault));
-
 	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
 	    if (space.units[faction][i].type === unit_type) {
 	      if (this.game.state.assault.faction_map[faction] === this.game.state.assault.attacker_faction) {
@@ -3206,8 +3206,6 @@ console.log(JSON.stringify(this.game.state.assault));
 
 	  let space = this.game.spaces[spacekey];
 	  let unit_destroyed = false;
-
-console.log(JSON.stringify(this.game.state.field_battle));
 
 	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
 	    if (space.units[faction][i].type === unit_type) {
@@ -3323,7 +3321,6 @@ console.log(JSON.stringify(this.game.state.field_battle));
               let can_faction_retreat = 0;
               if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.attacker_faction) {
                 for (let z = 0; z < space.neighbours.length; z++) {
-console.log("checking if faction " + f + " can retreat to " + space.neighbours[z]);
                   let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
                   if (fluis > 0) {
                     can_faction_retreat = 1;
@@ -4329,6 +4326,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  his_self.updateLog("Defender UnModified: " + JSON.stringify(defender_results));
 	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.assault.attacker_modified_rolls));
 	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.assault.defender_modified_rolls));
+	  his_self.updateLog("Attacker Units: " + attacker_units);
+	  his_self.updateLog("Defender Units: " + defender_units);
 	  his_self.updateLog("Attacker Hits: " + attacker_hits);
 	  his_self.updateLog("Defender Hits: " + defender_hits);
 
@@ -4347,6 +4346,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
+
 
 
 	  if (attacker_land_units_remaining <= 0 && defender_land_units_remaining <= 0) {
@@ -4848,7 +4848,7 @@ console.log("purging naval units and capturing leader");
 	  let debater = mv[2];
 	  let activate_it = 0;
 
-	  this.updateLog(this.returnFactionName(faction) + " commits " + this.debaters[debater].name);
+	  this.updateLog(this.returnFactionName(faction) + " commits " + this.popup(this.debaters[debater].name));
 
 	  if (parseInt(mv[2]) > 0) { activate_it = parseInt(mv[2]); }
 	  this.commitDebater(faction, debater, activate_it);
