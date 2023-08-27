@@ -16,6 +16,10 @@
         if (this.areAllies(faction, io[i])) { f.push(io[i]); }
       }
     }
+    if (this.areAllies(faction, "genoa")) { f.push("genoa"); }
+    if (this.areAllies(faction, "venice")) { f.push("venice"); }
+    if (this.areAllies(faction, "hungary")) { f.push("hungary"); }
+    if (this.areAllies(faction, "scotland")) { f.push("scotland"); }
     return f;
   }
 

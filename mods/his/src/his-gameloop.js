@@ -504,7 +504,6 @@ console.log("MOVE: " + mv[0]);
           this.addArmyLeader("papacy", "siena", "renegade");
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
-          this.setAllies("protestant", "venice");
           this.addUnrest("graz");
 
     	  this.addDebater("papacy", "bucer-debater");
@@ -5405,8 +5404,6 @@ console.log("NEW WORLD PHASE!");
         }
 
         if (mv[0] === "spring_deployment_phase") {
-
-this.setAllies("papacy","hapsburg");
 
 	  this.game.queue.splice(qe, 1);
 

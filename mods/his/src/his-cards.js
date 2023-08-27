@@ -5942,7 +5942,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	      // 2P game - may be played against electorate under Hapsburg Control
 	      if (his_self.game.players.length == 2) {
-		if (space.type == "electorate" && (space.political == "hapsburg" || space.political == "")) { return 1; }
+		if (his_self.game.state.events.schmalkaldic_league) { if (space.type == "electorate" && (space.political == "hapsburg" || space.political == "")) { return 1; } }
 	      }
 
 	      // captured key
@@ -7515,7 +7515,12 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
                 his_self.addMove("build\t"+controller+"\t"+"regular"+"\t"+spacekey);
 	      }
               his_self.addMove("fortify\t"+spacekey);
-            }
+	      his_self.endTurn();
+            },
+
+	    null,
+
+	    true
 
           );
         }
@@ -7881,6 +7886,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "pre_spring_deployment") {
 	  if (his_self.game.player === player) {
+            his_self.addMove("discard\t"+faction+"\t109");
             his_self.addMove("venetian_informant\t"+faction);
 	    his_self.endTurn();
 	  }

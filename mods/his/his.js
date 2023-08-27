@@ -2334,6 +2334,7 @@ console.log("\n\n\n\n");
 	  this.controlSpace("ottoman", "ragusa");
 
 	  this.setAllies("hungary", "hapsburg");
+	  this.setAllies("venice", "papacy");
 	  
 
 
@@ -8710,7 +8711,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	      // 2P game - may be played against electorate under Hapsburg Control
 	      if (his_self.game.players.length == 2) {
-		if (space.type == "electorate" && (space.political == "hapsburg" || space.political == "")) { return 1; }
+		if (his_self.game.state.events.schmalkaldic_league) { if (space.type == "electorate" && (space.political == "hapsburg" || space.political == "")) { return 1; } }
 	      }
 
 	      // captured key
@@ -10283,7 +10284,12 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
                 his_self.addMove("build\t"+controller+"\t"+"regular"+"\t"+spacekey);
 	      }
               his_self.addMove("fortify\t"+spacekey);
-            }
+	      his_self.endTurn();
+            },
+
+	    null,
+
+	    true
 
           );
         }
@@ -10649,6 +10655,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "pre_spring_deployment") {
 	  if (his_self.game.player === player) {
+            his_self.addMove("discard\t"+faction+"\t109");
             his_self.addMove("venetian_informant\t"+faction);
 	    his_self.endTurn();
 	  }
@@ -11481,6 +11488,18 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
         fip.push(this.game.state.activated_powers[faction][i]);
       }
+    }
+
+    //
+    // if this is the 2P game, include any major activated units
+    //
+    if (this.game.players.length == 2) { 
+      if (this.areAllies(faction, "hapsburg") && faction != "hapsburg") { fip.push("hapsburg"); }
+      if (this.areAllies(faction, "protestant") && faction != "protestant") { fip.push("protestant"); }
+      if (this.areAllies(faction, "france") && faction != "france") { fip.push("france"); }
+      if (this.areAllies(faction, "england") && faction != "england") { fip.push("england"); }
+      if (this.areAllies(faction, "papacy") && faction != "papacy") { fip.push("papacy"); }
+      if (this.areAllies(faction, "ottoman") && faction != "ottoman") { fip.push("ottoman"); }
     }
 
     //
@@ -13977,6 +13996,10 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
         if (this.areAllies(faction, io[i])) { f.push(io[i]); }
       }
     }
+    if (this.areAllies(faction, "genoa")) { f.push("genoa"); }
+    if (this.areAllies(faction, "venice")) { f.push("venice"); }
+    if (this.areAllies(faction, "hungary")) { f.push("hungary"); }
+    if (this.areAllies(faction, "scotland")) { f.push("scotland"); }
     return f;
   }
 
@@ -16220,7 +16243,6 @@ console.log("MOVE: " + mv[0]);
           this.addArmyLeader("papacy", "siena", "renegade");
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
-          this.setAllies("protestant", "venice");
           this.addUnrest("graz");
 
     	  this.addDebater("papacy", "bucer-debater");
@@ -21122,8 +21144,6 @@ console.log("NEW WORLD PHASE!");
 
         if (mv[0] === "spring_deployment_phase") {
 
-this.setAllies("papacy","hapsburg");
-
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.players === 2) {
@@ -23450,7 +23470,7 @@ if (limit === "build") {
     menu.push({
       factions : ['papacy','protestant'],
       cost : [3,3],
-      name : "Call Debate",
+      name : "Convene Debate",
       check : this.canPlayerCallTheologicalDebate,
       fnct : this.playerCallTheologicalDebate,
       category : "special" ,
@@ -25502,13 +25522,13 @@ console.log("units length: " + space.units[defender].length);
     
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
-console.log("A: " + JSON.stringify(spaces_with_units));
     for (let i = 0; i < spaces_with_units.length; i++) {
       if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
         for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
   	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
-console.log("B: pass identified in " + spaces_with_units[i]);
 	    return 1;
 	  }
         }
@@ -25645,6 +25665,14 @@ console.log("B: pass identified in " + spaces_with_units[i]);
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
+    // 2P game, papacy+protestant can move minor + allied naval units during their own turn
+    if (this.game.players.length == 2) {
+      let allies = this.returnAllies(faction);
+      for (let i = 0; i < allies.length; i++) {
+        if (his_self.doesFactionHaveNavalUnitsOnBoard(allies[i])) { return 1; }
+      }
+    }
 
     if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
     return 0;

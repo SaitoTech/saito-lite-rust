@@ -153,6 +153,7 @@ console.log("\n\n\n\n");
 	  this.controlSpace("ottoman", "ragusa");
 
 	  this.setAllies("hungary", "hapsburg");
+	  this.setAllies("venice", "papacy");
 	  
 
 

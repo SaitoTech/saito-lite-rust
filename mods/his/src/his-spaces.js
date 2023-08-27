@@ -507,6 +507,18 @@
     }
 
     //
+    // if this is the 2P game, include any major activated units
+    //
+    if (this.game.players.length == 2) { 
+      if (this.areAllies(faction, "hapsburg") && faction != "hapsburg") { fip.push("hapsburg"); }
+      if (this.areAllies(faction, "protestant") && faction != "protestant") { fip.push("protestant"); }
+      if (this.areAllies(faction, "france") && faction != "france") { fip.push("france"); }
+      if (this.areAllies(faction, "england") && faction != "england") { fip.push("england"); }
+      if (this.areAllies(faction, "papacy") && faction != "papacy") { fip.push("papacy"); }
+      if (this.areAllies(faction, "ottoman") && faction != "ottoman") { fip.push("ottoman"); }
+    }
+
+    //
     // find units
     //
     for (let i = 0; i < fip.length; i++) {

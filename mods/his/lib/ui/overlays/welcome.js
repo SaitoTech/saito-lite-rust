@@ -47,13 +47,7 @@ class WelcomeOverlay {
       // PAPACY
       if (faction === "papacy") {
 	document.querySelector('.welcome-title').innerHTML = `You are the Papacy`;
-	document.querySelector('.welcome-text').innerHTML = `
-	  The Rock of Saint Peter is worn.
-	  <p></p>
-	  Infidels burn the Southern reaches.
-	  <p></p>
-	  And heresy spreads her wings in Europe...
-	`;
+	document.querySelector('.welcome-text').innerHTML = `Since God has given us the Papacy, let us enjoy it.`;
       }
 
       // PROTESTANT
@@ -64,7 +58,7 @@ class WelcomeOverlay {
 	  <p></p>
 	  But from their gentle shelter,
 	  <p></p>
-	  Great Oaks may yet grow across Europe...
+	  Great Oaks may yet spread across Europe...
 	`;
       }
 

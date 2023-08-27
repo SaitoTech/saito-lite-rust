@@ -779,7 +779,7 @@ if (limit === "build") {
     menu.push({
       factions : ['papacy','protestant'],
       cost : [3,3],
-      name : "Call Debate",
+      name : "Convene Debate",
       check : this.canPlayerCallTheologicalDebate,
       fnct : this.playerCallTheologicalDebate,
       category : "special" ,
@@ -2831,13 +2831,13 @@ console.log("units length: " + space.units[defender].length);
     
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
-console.log("A: " + JSON.stringify(spaces_with_units));
     for (let i = 0; i < spaces_with_units.length; i++) {
       if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
         for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
   	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
-console.log("B: pass identified in " + spaces_with_units[i]);
 	    return 1;
 	  }
         }
@@ -2974,6 +2974,14 @@ console.log("B: pass identified in " + spaces_with_units[i]);
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
+    // 2P game, papacy+protestant can move minor + allied naval units during their own turn
+    if (this.game.players.length == 2) {
+      let allies = this.returnAllies(faction);
+      for (let i = 0; i < allies.length; i++) {
+        if (his_self.doesFactionHaveNavalUnitsOnBoard(allies[i])) { return 1; }
+      }
+    }
 
     if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
     return 0;

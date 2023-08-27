@@ -1,8 +1,19 @@
-module.exports = (players=2) => {
- 
-  let help = 'Protestants select card and add +4. Papacy selects card and draws random card, combining values (2 OPs if Mandatory Event drawn). Hits on 5 or 6. Winner converts difference in hits.';
+module.exports = (game_self, players=2) => {
+
+  let help = `Protestants and Catholics debate at the Diet of Worms...`;
+  if (game_self.game.player == game_self.returnPlayerOfFaction("protestant")) {
+    help = "Protestants - select card to indicate your commitment during the Diet of Worms";
+  } else {
+    if (game_self.game.player == game_self.returnPlayerOfFaction("papacy")) {
+      help = "Papacy - select card to indicate your commitment during the Diet of Worms";
+    } else {
+      if (game_self.game.player == game_self.returnPlayerOfFaction("hapsburg")) {
+        help = "Hapsburg - select card to indicate your commitment during the Diet of Worms";
+      }
+    }
+  }
   if (players > 2) {
-    help = 'Protestants and Papacy and Hapsburg select cards. Protestants add +4 while Papacy and Hapsburg combine card value. Both sides roll requisite number of dice. Hits on 5 or 6. Winner converts spaces equal to difference in hits.';
+    help = 'The Protestant and Catholic Powers convene for Theological Debate during the Diet of Worms. Both sides pick cards to indicate their level of commitment during the debate.';
   }
   
   let html = `

@@ -4,9 +4,10 @@
 }
 
 .warbox {
-  position: relative;
   height: 9rem;
   width: 9rem;
+  position: absolute;
+  display: block;
 }
 
 .warbox img {
