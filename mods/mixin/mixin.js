@@ -110,7 +110,7 @@ class Mixin extends ModTemplate {
       let mixin_publickey = message.data.mixin_publickey;
 
       if (app.BROWSER == 0) {
-        m = JSON.parse(process.env.MIXIN);
+        let m = JSON.parse(process.env.MIXIN);
 
         if (m.appId) {
           let method = "POST";
