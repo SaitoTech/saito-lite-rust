@@ -18,15 +18,19 @@ class Warehouse extends ModTemplate {
 
   onNewBlock(blk, lc) {
     // console.log('warehouse - on new block');
-    this.addTransactionsToDatabase(blk);
+    if(blk.transactions) {
+      this.addTransactionsToDatabase(blk);
+    }
   }
 
   async addTransactionsToDatabase(blk) {
     try {
       console.log("adding block to warehouse : " + blk.hash);
       for (let i = 0; i < blk.transactions.length; i++) {
-        if (blk.transactions[i].type >= -999) {
-          for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
+        if (blk.transactions[i].type && blk.transactions[i].type >= -999) {
+          //need to come back and make tx value add up all recipients... and remove change.
+          let ii = 0;
+//          for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
             let sql = `INSERT
             OR IGNORE INTO transactions (
                                 address, 
@@ -67,42 +71,42 @@ class Warehouse extends ModTemplate {
             let ttype = 0;
             let tname = "";
             let tmodule = "";
-            if (blk.transactions[i].msg.type) {
+            if (blk.transactions[i].msg && blk.transactions[i].msg.type) {
               ttype = blk.transactions[i].type;
             }
-            if (blk.transactions[i].msg.name) {
+            if (blk.transactions[i].msg &&  blk.transactions[i].msg.name) {
               tname = blk.transactions[i].msg.name;
             }
 
-            if (blk.transactions[i].msg.module) {
+            if (blk.transactions[i].msg && blk.transactions[i].msg.module) {
               tmodule = blk.transactions[i].msg.module;
-            } else if (Object.keys(blk.transactions[i].msg).length == 308) {
+            } else if (blk.transactions[i].msg && Object.keys(blk.transactions[i].msg).length == 308) {
               tmodule = "Encrypted";
             }
             let tx_from = "";
-            if (blk.transactions[i].from.length > 0) {
+            if (blk.transactions[i].from && blk.transactions[i].from.length > 0) {
               tx_from = blk.transactions[i].from[0].publicKey;
             }
             let params = {
-              $address: blk.transactions[i].to[ii].publicKey,
-              $amt: blk.transactions[i].to[ii].amount,
+              $address: blk.transactions[i].to[ii]?.publicKey || "",
+              $amt: Number(blk.transactions[i].to[ii]?.amount || 0),
               $bid: blk.id,
               $tid: "",
               $sid: ii,
               $bhash: blk.hash,
               $lc: 1,
               $rebroadcast: 0,
-              $sig: blk.transactions[i].signature,
-              $ts: blk.transactions[i].timestamp,
-              $block_ts: blk.transactions[i].timestamp,
+              $sig: blk.transactions[i]?.signature || "",
+              $ts: blk.transactions[i]?.timestamp || 0,
+              $block_ts: blk.transactions[i]?.timestamp || 0,
               $type: ttype,
               $tx_from: tx_from,
-              $tx_to: blk.transactions[i].to[ii].publicKey,
+              $tx_to: blk.transactions[i].to[ii]?.publicKey || 0,
               $name: tname,
               $module: tmodule,
             };
-            await this.app.storage.executeDatabase(sql, params, "warehouse");
-          }
+            this.app.storage.executeDatabase(sql, params, "warehouse");
+//          }
         }
       }
     } catch (err) {
