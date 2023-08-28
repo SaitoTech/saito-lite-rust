@@ -2996,8 +2996,8 @@ console.log("units length: " + space.units[defender].length);
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     // 2P game, papacy+protestant can move minor + allied naval units during their own turn
-    if (this.game.players.length == 2) {
-      let allies = this.returnAllies(faction);
+    if (his_self.game.players.length == 2) {
+      let allies = his_self.returnAllies(faction);
       for (let i = 0; i < allies.length; i++) {
         if (his_self.doesFactionHaveNavalUnitsOnBoard(allies[i])) { return 1; }
       }
@@ -3383,7 +3383,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
-    if (this.game.state.players_info[player-1].has_explored == 0) { return 1; }
+    if (his_self.game.state.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
@@ -3433,11 +3433,11 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
-    if (this.game.state.players_info[player-1].has_explored == 0) { return 1; }
+    if (his_self.game.state.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerExplore(his_self, player, faction) {
-    this.game.state.players_info[player-1].has_explored = 1;
+    his_self.game.state.players_info[player-1].has_explored = 1;
 console.log("10");
 return;
   }
@@ -3446,11 +3446,11 @@ return;
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
-    if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
+    if (his_self.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerColonize(his_self, player, faction) {
-    this.game.state.players_info[player-1].has_colonized = 1;
+    his_self.game.state.players_info[player-1].has_colonized = 1;
 console.log("11");
 return;
   }
@@ -3459,11 +3459,11 @@ return;
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
-    if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
+    if (his_self.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerConquer(his_self, player, faction) {
-    this.game.state.players_info[player-1].has_conquered = 1;
+    his_self.game.state.players_info[player-1].has_conquered = 1;
 console.log("12");
 return;
   }
