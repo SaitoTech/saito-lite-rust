@@ -360,6 +360,9 @@ class Spider extends OnePlayerGameTemplate {
     for (let i = 0; i < 10; i++){
       //Get the maximum stack
       let last_card = this.cardStacks[i].getTopCardValue();
+      if (!last_card) {
+        continue;
+      }
       let suit = last_card[0];
       let value = parseInt(last_card.substring(1));
       let stack_index = this.cardStacks[i].getCardCount() - 1 
@@ -378,7 +381,7 @@ class Spider extends OnePlayerGameTemplate {
       for (let j = 0; j < 10; j++){
         if (j == i) { continue; }
         let bottom_card = this.cardStacks[j].getTopCardValue();
-        if (parseInt(bottom_card.substring(1)) == (value + 1)) {
+        if (!bottom_card || parseInt(bottom_card.substring(1)) == (value + 1)) {
           this.hints.push({
             source: i,
             target: j,

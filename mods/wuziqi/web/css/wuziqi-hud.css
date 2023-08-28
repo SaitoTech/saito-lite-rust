@@ -16,3 +16,10 @@
     height: unset;
 }
 
+.controls ul li {
+    height: 50px;
+    line-height: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
