@@ -28,6 +28,7 @@ class Chessgame extends GameTemplate {
     this.categories = "Games Boardgame Classic";
 
     this.confirm_moves = 1;
+    this.can_bet = 1;
 
     this.roles = ["observer", "white", "black"];
     this.app = app;

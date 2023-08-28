@@ -35,6 +35,8 @@ class Wordblocks extends GameTemplate {
 
     this.defaultMsg = `Click on the board to enter a word from that square, click a tile to select it for play, or <span class="link tosstiles" title="Double click tiles to select them for deletion">discard tiles</span> if you cannot move.`;
 
+    this.can_bet = 1;
+
     return this;
   }
 
