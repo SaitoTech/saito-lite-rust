@@ -25,6 +25,7 @@ class Blackjack extends GameTableTemplate {
     this.settlement = [];
     this.updateHTML = "";
     this.decimal_precision = 8;
+    this.can_bet = 1;
 
     return this;
   }
@@ -1337,7 +1338,6 @@ class Blackjack extends GameTableTemplate {
 
   returnGameOptionsHTML() {
     let options_html = `<h1 class="overlay-title">Blackjack Options</h1>`;
-    options_html += this.returnCryptoOptionsHTML();
 
     return options_html;
   }
