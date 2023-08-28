@@ -497,7 +497,9 @@ class Mixin extends ModTemplate {
 
     try {
       this.request(appId, sessionId, privateKey, method, uri).then((res) => {
+
         let d = res.data.data;
+
         for (let i = 0; i < this.mods.length; i++) {
           if (this.mods[i].asset_id === asset_id) {
             let initial_balance = this.mods[i].balance;
@@ -596,7 +598,8 @@ class Mixin extends ModTemplate {
       return;
     }
 
-    let d = res;
+    let d = res.data;
+
     mixin_self.mixin.session_id = d.data.session_id;
     mixin_self.mixin.user_id = d.data.user_id;
     mixin_self.mixin.full_name = d.data.full_name;
@@ -620,6 +623,7 @@ class Mixin extends ModTemplate {
           // fetching the balance of the module given the need
           // for mixin account creation.
           //
+          //  set_preferred_crypto is run previously saito-header.js attach events >> wallet.ts
           mixin_self.app.connection.emit("set_preferred_crypto");
         });
       }
@@ -643,15 +647,18 @@ class Mixin extends ModTemplate {
   }
 
   async createAccount(callback = null) {
-    if (this.app.network.peers.length == 0) {
+    
+    let peers = await this.app.network.getPeers();
+
+    if (peers.length == 0) {
       return;
     }
 
-    let mixin_peer = this.app.network.peers[0];
-    for (let i = 0; i < this.app.network.peers.length; i++) {
-      if (this.app.network.peers[i].hasService("mixin")) {
-        mixin_peer = this.app.network.peers[i];
-        i = this.app.network.peers.length + 1;
+    let mixin_peer = peers[0];
+    for (let i = 0; i < peers.length; i++) {
+      if (peers[i].hasService("mixin")) {
+        mixin_peer = peers[i];
+        i = peers.length + 1;
       }
     }
 
@@ -684,7 +691,7 @@ class Mixin extends ModTemplate {
       let uri = "/users";
       let body = {
         session_secret: user_public_key,
-        full_name: `Saito Uawait ser ${this.publicKey}`,
+        full_name: `Saito User ${this.publicKey}`,
       };
 
       this.mixin.publickey = original_user_public_key;
@@ -710,6 +717,7 @@ class Mixin extends ModTemplate {
         //
         try {
           this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
+
             mixin_self.createAccountCallback(res, callback);
             //processRes(res);
           });
@@ -738,20 +746,24 @@ class Mixin extends ModTemplate {
           mixin_publickey: user_public_key,
         };
 
+        console.log("mixin peer /////");
+        console.log(mixin_peer.peerIndex);
+
         console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
-        console.log("HOW MANY peers: " + mixin_self.app.network.peers.length);
-        mixin_peer.sendRequestAsTransactionWithCallback(
-          "mixin create account",
-          data,
-          function (res) {
-            console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-            mixin_self.createAccountCallback(res, callback);
-          }
-        );
+        console.log("HOW MANY peers: " + (await this.app.network.getPeers()).length);
+        // this.app.network.sendRequestAsTransaction(
+        //   "mixin create account",
+        //   data,
+        //   function (res) {
+        //     console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+        //     mixin_self.createAccountCallback(res, callback);
+        //   },
+        //   mixin_peer.peerIndex
+        // );
 
-        let peers = await this.app.network.getPeers();
+        let peers = await mixin_self.app.network.getPeers();
 
-        this.app.network.sendRequestAsTransaction(
+        mixin_self.app.network.sendRequestAsTransaction(
           "mixin create account",
           data,
           function (res) {

@@ -252,6 +252,10 @@ export default class Wallet extends SaitoWallet {
 
           this.app.storage.saveOptions();
         }
+      } else {
+        if (typeof this.app.options.wallet.preferred_crypto != "undefined") {
+          this.preferred_crypto = this.app.options.wallet.preferred_crypto;
+        }
       }
 
       this.instance = Object.assign(this.instance, this.app.options.wallet);
