@@ -109,7 +109,7 @@ class Mixin extends ModTemplate {
       let saito_publickey = message.data.saito_publickey;
       let mixin_publickey = message.data.mixin_publickey;
 
-      if (true){ //(app.BROWSER == 0) {
+      if (app.BROWSER == 0) {
         m = JSON.parse(process.env.MIXIN);
 
         if (m.appId) {
