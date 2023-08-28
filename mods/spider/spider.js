@@ -1,4 +1,4 @@
-const OnePlayerGameTemplate = require("../../lib/templates/oneplayergametemplate");
+const OnePlayerGameTemplate = require("../../lib/templates/oneplayer-gametemplate");
 const SpiderGameRulesTemplate = require("./lib/spider-game-rules.template");
 const SpiderGameOptionsTemplate = require("./lib/spider-game-options.template");
 const CardStack = require("../../lib/saito/ui/game-cardstack/game-cardstack");

@@ -1,4 +1,4 @@
-const GameTableTemplate = require("../../lib/templates/gametabletemplate");
+const GameTableTemplate = require("../../lib/templates/table-gametemplate");
 const JSON = require("json-bigint");
 const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
 const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");

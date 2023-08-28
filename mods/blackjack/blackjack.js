@@ -1,4 +1,4 @@
-const GameTableTemplate = require("../../lib/templates/gametabletemplate");
+const GameTableTemplate = require("../../lib/templates/table-gametemplate");
 const saito = require("../../lib/saito/saito");
 const BlackjackGameRulesTemplate = require("./lib/blackjack-game-rules.template");
 

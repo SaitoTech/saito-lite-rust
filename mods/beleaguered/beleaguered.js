@@ -1,4 +1,4 @@
-const OnePlayerGameTemplate = require("../../lib/templates/oneplayergametemplate");
+const OnePlayerGameTemplate = require("../../lib/templates/oneplayer-gametemplate");
 const BeleagueredGameRulesTemplate = require("./lib/beleaguered-game-rules.template");
 
 const CardStack = require("../../lib/saito/ui/game-cardstack/game-cardstack");
