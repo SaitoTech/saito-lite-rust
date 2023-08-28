@@ -423,6 +423,26 @@ console.log("faction: " + f);
 
   }
 
+  //
+  // 2P variant needs automatic determination of where to retreat
+  //
+  autoResolveWinterRetreat(faction, spacekey) {
+
+    let his_self = this;
+    let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
+    let space = this.game.spaces[spacekey];
+
+    let roll = this.rollDie(res.length);
+
+    // retrea
+    let retreat_destination = res[roll-1].key;
+    his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+
+  }
+
+
+  
+
   playerResolveWinterRetreat(faction, spacekey) {
 
     let his_self = this;

@@ -295,7 +295,15 @@ console.log("MOVE: " + mv[0]);
 	        let space = this.game.spaces[i];
 		if (!this.isSpaceFortified(space)) {
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
-		  moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+
+		  //
+		  // 2P has to happen automatically
+		  //
+		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
+	            this.autoResolveWinterRetreat(key, space.key);
+		  } else {
+		    moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+		  }
 		}
 	      }
 	    }
@@ -5338,6 +5346,7 @@ console.log("NEW WORLD PHASE!");
 
 	  // Remove loaned naval squadron markers
 	  this.returnLoanedUnits();
+	  this.restoreDebaters();
 
 	  // Remove the Renegade Leader if in play
 	  // Return naval units to the nearest port

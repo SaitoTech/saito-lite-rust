@@ -9146,11 +9146,12 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	let res  = [];
 	let res2 = [];
+	let res3 = [];
 
 	res = his_self.returnNearestSpaceWithFilter(
 	  "wittenberg",
 	  function(spacekey) {
-	    if (his_self.game.spaces[spacekey].religious == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
+	    if (his_self.game.spaces[spacekey].religion == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
 	    return 0;
 	  },
 	  function(propagation_filter) {
@@ -9165,7 +9166,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    "wittenberg",
 	    function(spacekey) {
 	      if (spacekey === res[0].key) { return 0; }
-	      if (his_self.game.spaces[spacekey].religious == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
+	      if (his_self.game.spaces[spacekey].religion == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
 	      return 0;
 	    },
 	    function(propagation_filter) {
@@ -14838,12 +14839,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     return;
   }
 
-  restoreReformers() {
-
-
-  }
-
-
   excommunicateReformer(reformer="") {
 
     if (reformer == "") { return; }
@@ -14892,6 +14887,14 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     this.game.state.excommunicated.push(obj);
 
     return;
+
+  }
+
+  restoreDebaters() {
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      this.game.state.debaters[i].committed = 0;
+    }
 
   }
 
@@ -16034,7 +16037,15 @@ console.log("MOVE: " + mv[0]);
 	        let space = this.game.spaces[i];
 		if (!this.isSpaceFortified(space)) {
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
-		  moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+
+		  //
+		  // 2P has to happen automatically
+		  //
+		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
+	            this.autoResolveWinterRetreat(key, space.key);
+		  } else {
+		    moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+		  }
 		}
 	      }
 	    }
@@ -21077,6 +21088,7 @@ console.log("NEW WORLD PHASE!");
 
 	  // Remove loaned naval squadron markers
 	  this.returnLoanedUnits();
+	  this.restoreDebaters();
 
 	  // Remove the Renegade Leader if in play
 	  // Return naval units to the nearest port
@@ -23113,6 +23125,26 @@ console.log("faction: " + f);
     });
 
   }
+
+  //
+  // 2P variant needs automatic determination of where to retreat
+  //
+  autoResolveWinterRetreat(faction, spacekey) {
+
+    let his_self = this;
+    let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
+    let space = this.game.spaces[spacekey];
+
+    let roll = this.rollDie(res.length);
+
+    // retrea
+    let retreat_destination = res[roll-1].key;
+    his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+
+  }
+
+
+  
 
   playerResolveWinterRetreat(faction, spacekey) {
 

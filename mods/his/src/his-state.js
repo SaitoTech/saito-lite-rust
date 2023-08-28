@@ -592,12 +592,6 @@
     return;
   }
 
-  restoreReformers() {
-
-
-  }
-
-
   excommunicateReformer(reformer="") {
 
     if (reformer == "") { return; }
@@ -646,6 +640,14 @@
     this.game.state.excommunicated.push(obj);
 
     return;
+
+  }
+
+  restoreDebaters() {
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      this.game.state.debaters[i].committed = 0;
+    }
 
   }
 

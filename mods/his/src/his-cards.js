@@ -6377,11 +6377,12 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	let res  = [];
 	let res2 = [];
+	let res3 = [];
 
 	res = his_self.returnNearestSpaceWithFilter(
 	  "wittenberg",
 	  function(spacekey) {
-	    if (his_self.game.spaces[spacekey].religious == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
+	    if (his_self.game.spaces[spacekey].religion == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
 	    return 0;
 	  },
 	  function(propagation_filter) {
@@ -6396,7 +6397,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    "wittenberg",
 	    function(spacekey) {
 	      if (spacekey === res[0].key) { return 0; }
-	      if (his_self.game.spaces[spacekey].religious == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
+	      if (his_self.game.spaces[spacekey].religion == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
 	      return 0;
 	    },
 	    function(propagation_filter) {
