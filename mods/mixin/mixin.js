@@ -497,7 +497,8 @@ class Mixin extends ModTemplate {
 
     try {
       this.request(appId, sessionId, privateKey, method, uri).then((res) => {
-        let d = res.data;
+
+        let d = res.data.data;
 
         for (let i = 0; i < this.mods.length; i++) {
           if (this.mods[i].asset_id === asset_id) {
@@ -622,6 +623,7 @@ class Mixin extends ModTemplate {
           // fetching the balance of the module given the need
           // for mixin account creation.
           //
+          //  set_preferred_crypto is run previously saito-header.js attach events >> wallet.ts
           mixin_self.app.connection.emit("set_preferred_crypto");
         });
       }
@@ -689,7 +691,7 @@ class Mixin extends ModTemplate {
       let uri = "/users";
       let body = {
         session_secret: user_public_key,
-        full_name: `Saito Uawait ser ${this.publicKey}`,
+        full_name: `Saito User ${this.publicKey}`,
       };
 
       this.mixin.publickey = original_user_public_key;
@@ -703,13 +705,7 @@ class Mixin extends ModTemplate {
       // process directly if ENV variable set
       //
       if (process.env.MIXIN) {
-        //m = JSON.parse(process.env.MIXIN);
-        m = {
-          appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
-          sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
-          privateKey:
-            "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
-        };
+        m = JSON.parse(process.env.MIXIN);
 
         let appId = m.appId;
         let sessionId = m.sessionId;
@@ -721,6 +717,7 @@ class Mixin extends ModTemplate {
         //
         try {
           this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
+
             mixin_self.createAccountCallback(res, callback);
             //processRes(res);
           });

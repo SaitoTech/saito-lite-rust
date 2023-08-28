@@ -29,6 +29,7 @@ class Crypto extends ModTemplate {
       //
       // only show if games are winnable
       //
+
       let gm = this.app.modules.returnActiveModule();
 
       if (!gm.can_bet) { return null; }
@@ -44,72 +45,78 @@ class Crypto extends ModTemplate {
       };
 
       for (let i = 0; i < ac.length; i++) {
+
+
       	menu.submenus.push({
           text : ac[i].ticker,
           id : "game-crypto-"+ac[i].ticker,
           class : "game-crypto-ticker",
           callback : async (app, game_mod) => {
 
-	    this.attachStyleSheets();
-	    this.ticker = ac[i].ticker;
+        	    this.attachStyleSheets();
+        	    this.ticker = ac[i].ticker;
 
-console.log("CRYPTOS");
-console.log(JSON.stringify(game_mod.game.cryptos));
+              console.log("CRYPTOS");
+              console.log(JSON.stringify(game_mod.game.cryptos));
 
-	    this.min_balance = 0.0;
-	
-	    //
-	    // check everyone else has crypto installed
-	    //
-	    let usernum = 0;
-	    for (let key in game_mod.game.cryptos) {
-	      usernum++;
-	      let c = game_mod.game.cryptos[key][this.ticker];
-	      if (!c) {
-		this.overlay_inadequate.render();
-		return;
-	      }
-	      if (parseFloat(c.balance) <= 0) { 
-		this.overlay_inadequate.render();
-		return;
-	      } else {
-		if (parseFloat(c.balance) >= 0) {
-		  if (usernum == 1) {
-		    this.min_balance = parseFloat(c.balance);
-		  } else {
-		    if (parseFloat(c.balance) < this.min_balance) {
-		      this.min_balance = parseFloat(c.balance);
-	            }
-		  }
-	        }
-	      }
-	    }
+        	    this.min_balance = 0.0;
+        	
+        	    //
+        	    // check everyone else has crypto installed
+        	    //
+        	    let usernum = 0;
+        	    for (let key in game_mod.game.cryptos) {
+        	      usernum++;
+        	      let c = game_mod.game.cryptos[key][this.ticker];
+        	      if (!c) {
+              		this.overlay_inadequate.render();
+              		return;
+        	      }
+        	      if (parseFloat(c.balance) <= 0) { 
+                		this.overlay_inadequate.render();
+                		return;
+        	      } else {
+                		if (parseFloat(c.balance) >= 0) {
+                		  if (usernum == 1) {
+                		    this.min_balance = parseFloat(c.balance);
+                		  } else {
+                		    if (parseFloat(c.balance) < this.min_balance) {
+                		      this.min_balance = parseFloat(c.balance);
+                	            }
+                		  }
+        	        }
+        	      }
+        	    }
 
-	    this.overlay.render(async (amount) => {
-              game_mod.menu.hideSubMenus();
+        	    this.overlay.render(async (amount) => {
+                      game_mod.menu.hideSubMenus();
 
-    	      let ticker = ac[i].ticker;
-	      let cryptomod = game_mod.app.wallet.returnCryptoModuleByTicker(ticker);
-	      let current_balance = await cryptomod.returnBalance();
+            	      let ticker = ac[i].ticker;
+        	      let cryptomod = game_mod.app.wallet.returnCryptoModuleByTicker(ticker);
+        	      let current_balance = await cryptomod.returnBalance();
 
 
-	      //
-	      // if proposing, you should be ready
-	      //
-	      if (Number(current_balance) < Number(amount)) {
-		alert("You do not have "+ticker+" available yourself. Please deposit more before enabling this game.");
-		return;
-	      }
-	      if (Number(this.min_balance) < Number(amount)) {
-		alert("Some players have only "+Number(this.min_balance)+" "+ticker+" in wallet. Please try a lower amount");
-		return;
-	      }
+        	      //
+        	      // if proposing, you should be ready
+        	      //
+        	      if (Number(current_balance) < Number(amount)) {
+        		alert("You do not have "+ticker+" available yourself. Please deposit more before enabling this game.");
+        		return;
+        	      }
+        	      if (Number(this.min_balance) < Number(amount)) {
+        		alert("Some players have only "+Number(this.min_balance)+" "+ticker+" in wallet. Please try a lower amount");
+        		return;
+        	      }
 
-      	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
-	    });
+              	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
+        	    });
           }
         });
       }
+
+      console.log("returning menus /////////////////");
+      console.log(menu);
+
       return menu;
     }
 
