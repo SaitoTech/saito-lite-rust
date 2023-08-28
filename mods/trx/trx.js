@@ -34,6 +34,10 @@ class TRX extends ModTemplate {
     return null;
   }
 
+  returnBalance(){    
+    return this.balance;
+  }
+
 }
 
 module.exports = TRX;
