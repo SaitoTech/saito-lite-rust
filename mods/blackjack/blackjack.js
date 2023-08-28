@@ -1337,7 +1337,6 @@ class Blackjack extends GameTableTemplate {
 
   returnGameOptionsHTML() {
     let options_html = `<h1 class="overlay-title">Blackjack Options</h1>`;
-    options_html += this.returnCryptoOptionsHTML();
 
     return options_html;
   }

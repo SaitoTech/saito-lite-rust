@@ -26,6 +26,5 @@ module.exports = (app, mod) => {
       
           </div>`;
 
-    html += mod.returnCryptoOptionsHTML();
     return html;
 }
