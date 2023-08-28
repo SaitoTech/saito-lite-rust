@@ -943,7 +943,6 @@ class Spider extends OnePlayerGameTemplate {
           this.game.state.session.losses++;
           final_score = this.game.state.score;
           this.game.state.scores.push(final_score);
-          //this.endGame([], final_score.toString());
         }
         this.newRound();
         if (final_score > 0) {
@@ -962,7 +961,6 @@ class Spider extends OnePlayerGameTemplate {
         this.animateFinalVictory();
         let final_score = this.game.state.score + 400;
         this.game.state.scores.push(final_score);
-        //this.endGame(this.publicKey, final_score.toString());
         this.overlay.show(this.returnStatsHTML("Winner!"), () => {
           this.newRound();
           this.game.queue.push(

@@ -95,7 +95,7 @@ class Chessgame extends GameTemplate {
         callback: async function (app, game_mod) {
           let c = await sconfirm("Do you really want to resign?");
           if (c) {
-            await game_mod.resignGame(game_mod.game.id, "resignation");
+            await game_mod.sendStopGameTransaction(game_mod.game.id, "resignation");
             return;
           }
         },
@@ -229,7 +229,7 @@ class Chessgame extends GameTemplate {
     if (data.draw) {
       if (data.draw === "accept") {
         console.log("Ending game");
-        await this.endGame(this.game.players, "draw");
+        await this.sendGameOverTransaction(this.game.players, "draw");
         return;
       } else {
         //(data.draw == "offer")
@@ -265,7 +265,7 @@ class Chessgame extends GameTemplate {
 
       //Check for draw according to game engine
       if (this.engine.in_draw() === true) {
-        await this.endGame(this.game.players, "draw");
+        await this.sendGameOverTransaction(this.game.players, "draw");
         return 0;
       }
 
@@ -274,7 +274,7 @@ class Chessgame extends GameTemplate {
       if (msg.extra.target == this.game.player) {
         //I announce that I am in checkmate to end the game
         if (this.engine.in_checkmate() === true) {
-          await this.resignGame(this.game.id, "checkmate");
+          await this.sendStopGameTransaction(this.game.id, "checkmate");
           return 0;
         }
 
@@ -324,14 +324,16 @@ class Chessgame extends GameTemplate {
 
   removeEvents() {
     this.lockBoard(this.game.position);
-  }
 
-  endGameCleanUp() {
-    let cont = document.getElementById("commands-cont");
-    if (cont) {
-      cont.style.display = "none";
+    if (this.game.over){
+      let cont = document.getElementById("commands-cont");
+      if (cont) {
+        cont.style.display = "none";
+      }
+
     }
   }
+
 
   endTurn(data) {
     let extra = {};
@@ -342,7 +344,7 @@ class Chessgame extends GameTemplate {
     let data_to_send = this.app.crypto.stringToBase64(JSON.stringify(extra));
     this.game.turn = [data_to_send];
     this.moves = [];
-    this.sendMessage("game", extra);
+    this.sendGameMoveTransaction("game", extra);
   }
 
   updateStatusMessage(str = "") {

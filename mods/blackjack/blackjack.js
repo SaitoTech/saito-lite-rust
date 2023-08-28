@@ -737,7 +737,7 @@ class Blackjack extends GameTableTemplate {
         this.game.crypto = null; //Clear crypto to prevent double dipping
         //Notably not keyed to game.player, but by the index
         if (this.game.player == parseInt(mv[1]) + 1) {
-          await this.endGame(this.publicKey, "elimination");
+          await this.sendGameOverTransaction(this.publicKey, "elimination");
         }
         return 0;
       }
@@ -1036,17 +1036,11 @@ class Blackjack extends GameTableTemplate {
   Sends a message to restart the queue
   */
   async endTurn(nextTarget = 0) {
-    $(".menu_option").off();
-
-    let extra = {};
-    extra.target = this.returnNextPlayer(this.game.player);
-
-    if (nextTarget != 0) {
-      extra.target = nextTarget;
+    if (this.browser_active) {
+      $(".menu_option").off();  
     }
-    this.game.turn = this.moves;
-    this.moves = [];
-    await this.sendMessage("game", extra);
+    
+    super.endTurn();
   }
 
   //Return -1 for bust
@@ -1361,8 +1355,8 @@ class Blackjack extends GameTableTemplate {
     return 0;
   }
 
-  async processResignation(resigning_player, txmsg) {
-    await super.processResignation(resigning_player, txmsg);
+  async receiveStopGameTransaction(resigning_player, txmsg) {
+    await super.receiveStopGameTransaction(resigning_player, txmsg);
 
     if (!txmsg.loser) {
       return;

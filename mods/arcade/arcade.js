@@ -1272,7 +1272,7 @@ class Arcade extends ModTemplate {
       from initializing, so... we should wait for feedback and nope out of the spinner if something breaks
       */
 
-      let game_engine_id = await gamemod.processAcceptRequest(tx);
+      let game_engine_id = await gamemod.initializeGameFromAcceptTransaction(tx);
 
       console.log("game engine id ///////");
       console.log(game_engine_id);

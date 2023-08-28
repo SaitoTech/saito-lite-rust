@@ -564,15 +564,15 @@ class Thirteen extends GameTemplate {
         }
 
         if (us_loses == 1 && ussr_loses == 1) {
-          this.endGame({}, "US and USSR both lose");
+          this.sendGameOverTransaction({}, "US and USSR both lose");
           return 0;
         }
         if (us_loses == 1) {
-          this.endGame(this.game.players[0], "US DEFCON too high");
+          this.sendGameOverTransaction(this.game.players[0], "US DEFCON too high");
           return 0;
         }
         if (ussr_loses == 1) {
-          this.endGame(this.game.players[1], "USSR DEFCON too high");
+          this.sendGameOverTransaction(this.game.players[1], "USSR DEFCON too high");
           return 0;
         }
 
@@ -848,13 +848,13 @@ class Thirteen extends GameTemplate {
         //
         if (this.game.state.round == 4) {
           if (this.game.state.prestige > 7) {
-            this.endGame(this.game.players[0], "prestige track");
+            this.sendGameOverTransaction(this.game.players[0], "prestige track");
           }
           if (this.game.state.prestige < 7) {
-            this.endGame(this.game.players[1], "prestige track");
+            this.sendGameOverTransaction(this.game.players[1], "prestige track");
           }
           if (this.game.state.prestige == 7) {
-            this.tieGame();
+            this.sendGameOverTransaction(this.game.players, "tie");
           }
           return 0;
         }
