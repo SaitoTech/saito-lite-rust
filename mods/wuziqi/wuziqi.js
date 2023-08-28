@@ -32,6 +32,8 @@ class Wuziqi extends GameTemplate {
         this.roles = ["observer", "black", "white"];
         this.acknowledge_text = "next round..."; // not "i understand..."
 
+        this.can_bet = 1;
+
         return this;
     }
 

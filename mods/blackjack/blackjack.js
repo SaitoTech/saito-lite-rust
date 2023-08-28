@@ -25,6 +25,7 @@ class Blackjack extends GameTableTemplate {
     this.settlement = [];
     this.updateHTML = "";
     this.decimal_precision = 8;
+    this.can_bet = 1;
 
     return this;
   }
