@@ -248,9 +248,16 @@
     bottom: 0;
   }
   .card-stack-array{
-    margin-top: 10px;
-    margin-left: 70px;
+    margin: 10px 0 0 80px;
+    height: calc(100vh - 100px);
   }
+
+.icon_container > div i {
+  height: 40px;
+  width: 40px;
+  font-size: 25px;
+}
+
 
 }
 
