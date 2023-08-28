@@ -35,20 +35,20 @@
   preloadImages() {
 
     let allImages = [
-	"/twilight/img/backgrounds/europe-scoring-bg.png",
-	"/twilight/img/backgrounds/asia-scoring-bg.png",
-	"/twilight/img/backgrounds/mideast-scoring-bg.png",
-	"/twilight/img/backgrounds/africa-scoring-bg.png",
-	"/twilight/img/backgrounds/southamerica-scoring-bg.png",
-	"/twilight/img/backgrounds/centralamerica-scoring-bg.png",
-	"/twilight/img/backgrounds/seasia-scoring-bg.png",
-	"/twilight/img/backgrounds/indopaki-bg.jpg",
-	"/twilight/img/backgrounds/arabisraeli-bg.jpg",
-	"/twilight/img/backgrounds/iraniraq-bg.jpg",
-	"/twilight/img/backgrounds/koreanwar-bg.jpg",
-	"/twilight/img/backgrounds/brushwar-bg.jpg"
+        "img/backgrounds/europe-scoring-bg.png",
+        "img/backgrounds/asia-scoring-bg.png",
+        "img/backgrounds/mideast-scoring-bg.png",
+        "img/backgrounds/africa-scoring-bg.png",
+        "img/backgrounds/southamerica-scoring-bg.png",
+        "img/backgrounds/centralamerica-scoring-bg.png",
+        "img/backgrounds/seasia-scoring-bg.png",
+        "img/backgrounds/indopaki-bg.jpg",
+        "img/backgrounds/arabisraeli-bg.jpg",
+        "img/backgrounds/iraniraq-bg.jpg",
+        "img/backgrounds/koreanwar-bg.jpg",
+        "img/backgrounds/brushwar-bg.jpg"
     ];
-
+    
     this.preloadImageArray(allImages, 0);
 
   }
@@ -61,7 +61,7 @@
       pre_images[idx].onload = () => {
         this.preloadImageArray(imageArray, idx+1);
       }
-      pre_images[idx].src = "/imperium/" + imageArray[idx];
+      pre_images[idx].src = "/twilight/" + imageArray[idx];
     }
 
   }

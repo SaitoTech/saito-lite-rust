@@ -9,6 +9,23 @@ class ThesesOverlay {
 	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
         this.rendering_at_coordinates = false;
+	this.spaces_onclick_callback = null;
+    }
+
+    pullHudOverOverlay() {
+      let overlay_zindex = parseInt(this.overlay.zIndex);
+      if (document.querySelector(".hud")) {
+        document.querySelector(".hud").style.zIndex = overlay_zindex+1;
+        this.mod.hud.zIndex = overlay_zindex+1;
+      }
+    }
+
+    pushHudUnderOverlay() {
+      let overlay_zindex = parseInt(this.overlay.zIndex);
+      if (document.querySelector(".hud")) {
+        document.querySelector(".hud").style.zIndex = overlay_zindex-2;
+        this.mod.hud.zIndex = overlay_zindex-2;
+      }
     }
 
     hide() {
@@ -18,6 +35,9 @@ class ThesesOverlay {
  
     renderAtCoordinates(xpos, ypos) {
 
+      this.pushHudUnderOverlay();
+
+      this.visible = true;
       this.rendering_at_coordinates = true;
       let gb   = document.querySelector(".gameboard");
 
@@ -43,7 +63,6 @@ class ThesesOverlay {
       if (percent_right > 62.5) { percent_right = 62.5; }
       if (percent_down > 63.5) { percent_down = 63.5; }
 
-      this.overlay.clickToClose = true;
       this.render();
       this.rendering_at_coordinates = false;
 
@@ -66,10 +85,16 @@ class ThesesOverlay {
   
     render(language_zone="german") {
 
-	this.visible = true;
-        if (this.rendering_at_coordinates != true) {
-          this.overlay.clickToClose = false;
+        this.pushHudUnderOverlay();
+
+	//
+	// if already visible, don't reload
+	//
+        if (this.visible == true) {
+	  if (document.querySelector(".theses_overlay")) { return; }
         }
+
+	this.visible = true;
         this.overlay.show(ThesesTemplate());
 
 	let dw = document.querySelector(".theses-overlay");
@@ -95,6 +120,22 @@ class ThesesOverlay {
     }
 
     attachEvents(){
+
+      //
+      // add tiles
+      //
+      for (let key in this.mod.spaces) {
+        let qs = ".theses-overlay .gameboard ."+key;
+	document.querySelector(qs).onclick = (e) => {
+	  let space_id = e.currentTarget.id;
+	  if (this.spaces_onclick_callback != null) {
+	    this.spaces_onclick_callback(space_id);
+	  } else {
+	    this.mod.displaySpaceDetailedView(space_id);
+	  }
+	}
+      }
+
     }
 
 }

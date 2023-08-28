@@ -1162,7 +1162,7 @@ class RedSquare extends ModTemplate {
       if (tx.isTo(this.publicKey)) {
         console.log("Save (like) notification to archive");
 
-        await this.app.storage.saveTransaction(tx, {
+        this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
           field3: this.publicKey,
         });

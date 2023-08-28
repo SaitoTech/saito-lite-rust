@@ -249,35 +249,6 @@
   left: 500px;
 }
 
-.faction_sheet_papacy_keytile1 {
-  top: 678px;
-  left: 47px;
-}
-.faction_sheet_papacy_keytile2 {
-  top: 678px;
-  left: 160px;
-}
-.faction_sheet_papacy_keytile3 {
-  top: 678px;
-  left: 273px;
-}
-.faction_sheet_papacy_keytile4 {
-  top: 678px;
-  left: 387px;
-}
-.faction_sheet_papacy_keytile5 {
-  top: 678px;
-  left: 500px;
-}
-.faction_sheet_papacy_keytile6 {
-  top: 678px;
-  left: 613px;
-}
-.faction_sheet_papacy_keytile7 {
-  top: 678px;
-  left: 727px;
-}
-
 .faction_sheet_hapsburg_keytile1 {
   top: 454px;
   left: 43px;
@@ -335,71 +306,114 @@
   left: 383px;
 }
 
+.protestant_translation_status0 {
+  top: 57%;
+  left: 3%;
+  height: 7%;
+  width: 7%;
+}
+.protestant_translation_status1 {
+  top: 57%;
+  left: 11%;
+  height: 7%;
+  width: 7%;
+}
+.protestant_translation_status2 {
+  top: 57%;
+  left: 18%;
+  height: 7%;
+  width: 7%;
+}
+.protestant_translation_status3 {
+  top: 57%;
+  left: 26%;
+  height: 7%;
+  width: 7%;
+}
+.protestant_translation_status4 {
+  top: 57%;
+  left: 33.5%;
+  height: 7%;
+  width: 7%;
+}
+.protestant_translation_status5 {
+  top: 57%;
+  left: 41%;
+  height: 7%;
+  width: 7%;
+}
+.protestant_translation_status6 {
+  top: 57%;
+  left: 48.5%;
+  height: 7%;
+  width: 7%;
+}
+
 .faction_sheet_protestant_keytile1 {
-  top: 600px;
-  left: 40px;
-  height: 85px;
-  width: 85px;
+  top: 73.5%;
+  left: 2.5%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile2 {
-  top: 600px;
-  left: 133px;
-  height: 85px;
-  width: 85px;
+  top: 73.5%;
+  left: 10%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile3 {
-  top: 600px;
-  left: 226px;
-  height: 85px;
-  width: 85px;
+  top: 73.5%;
+  left: 17.5%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile4 {
-  top: 600px;
-  left: 320px;
-  height: 85px;
-  width: 85px;
+  top: 73.5%;
+  left: 25%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile5 {
-  top: 600px;
-  left: 416px;
-  height: 85px;
-  width: 85px;
+  top: 73.5%;
+  left: 32.5%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile6 {
-  top: 600px;
-  left: 510px;
-  height: 85px;
-  width: 85px;
+  top: 73.5%;
+  left: 40%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile7 {
-  top: 694px;
-  left: 40px;
-  height: 85px;
-  width: 85px;
+  top: 85.5%;
+  left: 2.5%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile8 {
-  top: 694px;
-  left: 133px;
-  height: 85px;
-  width: 85px;
+  top: 85.5%;
+  left: 10%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile9 {
-  top: 694px;
-  left: 226px;
-  height: 85px;
-  width: 85px;
+  top: 85.5%;
+  left: 17.5%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile10 {
-  top: 694px;
-  left: 320px;
-  height: 85px;
-  width: 85px;
+  top: 85.5%;
+  left: 25%;
+  height: 10%;
+  width: 7%;
 }
 .faction_sheet_protestant_keytile11 {
-  top: 694px;
-  left: 416px;
-  height: 85px;
-  width: 85px;
+  top: 85.5%;
+  left: 32.5%;
+  height: 10%;
+  width: 7%;
 }
 
 .england_marital_status1 {
@@ -541,120 +555,120 @@
   left: 141px;
 }
 
-.protestant_translation_status0 {
-  top: 57%;
-  left: 3%;
-  height: 7%;
-  width: 7%;
-}
-.protestant_translation_status1 {
-  top: 57%;
-  left: 11%;
-  height: 7%;
-  width: 7%;
-}
-.protestant_translation_status2 {
-  top: 57%;
-  left: 18%;
-  height: 7%;
-  width: 7%;
-}
-.protestant_translation_status3 {
-  top: 57%;
-  left: 26%;
-  height: 7%;
-  width: 7%;
-}
-.protestant_translation_status4 {
-  top: 57%;
-  left: 33.5%;
-  height: 7%;
-  width: 7%;
-}
-.protestant_translation_status5 {
-  top: 57%;
-  left: 41%;
-  height: 7%;
-  width: 7%;
-}
-.protestant_translation_status6 {
-  top: 57%;
-  left: 48.5%;
-  height: 7%;
-  width: 7%;
-}
-
 .papacy_construction_status1 {
-  height: 85px;
-  width: 85px;
-  top: 450px;
-  left: 47px;
+  height: 11%;
+  width: 7%;
+  top: 54.5%;
+  left: 3%;
 }
 .papacy_construction_status2 {
-  height: 85px;
-  width: 85px;
-  top: 450px;
-  left: 142px;
+  height: 11%;
+  width: 7%;
+  top: 54.5%;
+  left: 10.5%;
 }
 .papacy_construction_status3 {
-  height: 85px;
-  width: 85px;
-  top: 450px;
-  left: 234px;
+  height: 11%;
+  width: 7%;
+  top: 54.5%;
+  left: 18%;
 }
 .papacy_construction_status4 {
-  height: 85px;
-  width: 85px;
-  top: 450px;
-  left: 330px;
+  height: 11%;
+  width: 7%;
+  top: 54.5%;
+  left: 25.5%;
 }
 .papacy_construction_status5 {
-  height: 85px;
-  width: 85px;
-  top: 450px;
-  left: 425px;
+  height: 11%;
+  width: 7%;
+  top: 54.5%;
+  left: 33%;
 }
 .papacy_construction_status6 {
-  height: 85px;
-  width: 85px;
-  top: 450px;
-  left: 520px;
+  height: 11%;
+  width: 7%;
+  top: 54.5%;
+  left: 41%;
 }
 .papacy_construction_status7 {
-  height: 85px;
-  width: 85px;
-  top: 544px;
-  left: 47px;
+  height: 11%;
+  width: 7%;
+  top: 66.5%;
+  left: 3%;
 }
 .papacy_construction_status8 {
-  height: 85px;
-  width: 85px;
-  top: 544px;
-  left: 142px;
+  height: 11%;
+  width: 7%;
+  top: 66.5%;
+  left: 10.5%;
 }
 .papacy_construction_status9 {
-  height: 85px;
-  width: 85px;
-  top: 544px;
-  left: 234px;
+  height: 11%;
+  width: 7%;
+  top: 66.5%;
+  left: 18%;
 }
 .papacy_construction_status10 {
-  height: 85px;
-  width: 85px;
-  top: 544px;
-  left: 330px;
+  height: 11%;
+  width: 7%;
+  top: 66.5%;
+  left: 25.5%;
 }
 .papacy_construction_status11 {
-  height: 85px;
-  width: 85px;
-  top: 544px;
-  left: 425px;
+  height: 11%;
+  width: 7%;
+  top: 66.5%;
+  left: 33%;
 }
 .papacy_construction_status12 {
-  height: 85px;
-  width: 85px;
-  top: 544px;
-  left: 520px;
+  height: 11%;
+  width: 7%;
+  top: 66.5%;
+  left: 41%;
+}
+
+.faction_sheet_papacy_keytile1 {
+  top: 83%;
+  left: 3%;
+  height: 12%;
+  width: 8%;
+}
+.faction_sheet_papacy_keytile2 {
+  top: 83%;
+  left: 12%;
+  height: 12%;
+  width: 8%;
+}
+.faction_sheet_papacy_keytile3 {
+  top: 83%;
+  left: 21%;
+  height: 12%;
+  width: 8%;
+}
+.faction_sheet_papacy_keytile4 {
+  top: 83%;
+  left: 30%;
+  height: 12%;
+  width: 8%;
+}
+.faction_sheet_papacy_keytile5 {
+  top: 83%;
+  left: 39.5%;
+  height: 12%;
+  width: 8%;
+}
+.faction_sheet_papacy_keytile6 {
+  top: 83%;
+  left: 48.5%;
+  height: 12%;
+  width: 8%;
+}
+.faction_sheet_papacy_keytile7 {
+  top: 83%;
+  left: 57.5%;
+  height: 12%;
+  width: 8%;
 }
 
 

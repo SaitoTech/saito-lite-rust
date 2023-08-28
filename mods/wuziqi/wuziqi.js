@@ -86,6 +86,7 @@ class Wuziqi extends GameTemplate {
       
         this.racetrack.win = Math.ceil(this.game.options.best_of/2);
         this.racetrack.title = "Best of " + this.game.options.best_of;
+        this.racetrack.icon = `<i class="fa-solid fa-trophy"></i>`;
         for (let i = 0; i < this.game.players.length; i++){
             let player = {
                 name: this.roles[i+1].toUpperCase(),
@@ -429,7 +430,10 @@ class Wuziqi extends GameTemplate {
                 if (this.game.player !== player && this.game.player !== 0){
                     //Let player make their move
                     this.addEvents(this.game.board);
-                    this.updateStatus("Your move");
+                    this.updateStatus(`Your move <span class="replay">Replay Last</span>`);
+                    document.querySelector(".replay").onclick = (e) => {
+                        this.animatePlay(cell);
+                    }
                 }else{
                     this.updateStatus("Waiting on <span class='playertitle'>" + this.roles[3-player] + "</span>");
                 }

@@ -26,6 +26,22 @@
     margin: 1em 0;
 }
 
+.replay { 
+    position: absolute;
+    right: 16px;
+    top: 6px;
+    border: 1px solid black;
+    background-color: rgba(55, 55, 55, 0.2);
+    padding: 0.25rem 0.75rem;
+    cursor: pointer;
+    border-radius: 3px;
+ }
+
+ .replay:hover{
+    color: white;
+    background-color: rgba(55, 55, 55, 0.9);
+ }
+
 .board {
     display: grid;
     margin: auto auto;

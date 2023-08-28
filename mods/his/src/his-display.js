@@ -1,4 +1,31 @@
 
+  displayWarBox() {
+
+    let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
+    for (let i = 0; i < factions.length; i++) {
+      for (let ii = 0; ii < factions.length; ii++) {
+	if (ii > i) {
+	  let obj = null;
+	  let box = '#' + factions[i] + "_" + factions[ii];
+	  obj = document.querySelector(box);
+	  if (obj) {
+	    if (this.areAllies(factions[i], factions[ii])) {
+	      obj.innerHTML = '<img src="/his/img/Allied.svg" />';
+	      obj.style.display = "block";
+	    } else {
+	      if (this.areEnemies(factions[i], factions[ii])) {
+	        obj.innerHTML = '<img src="/his/img/AtWar.svg" />';
+	        obj.style.display = "block";
+	      } else {
+	        obj.style.display = "none";
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
   displayDebaters() {
     this.debaters_overlay.render();
   }
@@ -181,6 +208,12 @@
   }
 
   displayBoard() {
+
+    try {
+      this.displayWarBox();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayColony();
     } catch (err) {
@@ -239,7 +272,7 @@
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
-      if (this.returnElectoralBonus(key)) {
+      if (this.returnElectoralBonus(key) != 0) {
         obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
       }
     }
@@ -252,7 +285,7 @@
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
       return 2;
     }
-    if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
+    if (space === "mainz" && this.game.state.mainz_electoral_bonus == 0) {
       return 1;
     }
     if (space === "trier" && this.game.state.trier_electoral_bonus == 0) {
@@ -707,7 +740,7 @@
         }
       }
 
-      for (let i = 0; i < army; i+= 2) {
+      while (army > 0) {
         if (z != "") {
           if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
@@ -760,11 +793,11 @@
               tile += `PapacyMerc-4.svg`;
 	      army -= 4;
 	    }
-	    if (army >= 2) {
+	    if (army >= 2 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-2.svg`;
 	      army -= 2;
 	    }
-	    if (army >= 1) {
+	    if (army >= 1 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-1.svg`;
 	      army -= 1;
 	    }
@@ -826,7 +859,15 @@
 	  tile = html;
 	}
 	if (space.units[z][zz].personage === true) {
-          html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	  if (space.units[z][zz].army_leader) {
+            html += `<img src="/his/img/tiles/army/${space.units[z][zz].img}" />`;
+	  } else {
+            if (space.units[z][zz].navy_leader) {
+	      html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
+	    } else {
+	      html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	    }
+	  }
 	  tile = html;
 	}
       }
@@ -938,18 +979,30 @@
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displayNavalSpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displayNavalSpaceDetailedView(key);
+//        }
       }
     }
 
   }
 
+  addSelectable(el) {
+console.log("here for");
+    if (!el.classList.contains("selectable")) {
+      el.classList.add('selectable');
+    }
+  }
+
+  removeSelectable() {
+    document.querySelectorAll(".selectable").forEach((el) => {
+      el.classList.remove('selectable');
+    });
+  }
+
   displaySpaces() {
 
     let his_self = this;
-
 
     //
     // add tiles
@@ -957,32 +1010,63 @@
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displaySpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displaySpaceDetailedView(key);
+//        }
       }
     }
 
     let xpos = 0;
     let ypos = 0;
 
-if (!his_self.bound_gameboard_zoom) {
 
-    $('.gameboard').on('mousedown', function (e) {
-      if (e.currentTarget.classList.contains("space")) { return; }
-      xpos = e.clientX;
-      ypos = e.clientY;
-    });
-    $('.gameboard').on('mouseup', function (e) { 
-      if (e.currentTarget.classList.contains("space")) { return; }
-      if (Math.abs(xpos-e.clientX) > 4) { return; }
-      if (Math.abs(ypos-e.clientY) > 4) { return; }
-      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
-    });
+    if (!his_self.bound_gameboard_zoom) {
 
-    his_self.bound_gameboard_zoom = 1;
+      $('.gameboard').on('mousedown', function (e) {
+        if (e.currentTarget.classList.contains("space")) { return; }
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
+      $('.gameboard').on('mouseup', function (e) { 
+        if (Math.abs(xpos-e.clientX) > 4) { return; }
+        if (Math.abs(ypos-e.clientY) > 4) { return; }
+	//
+	// if this is a selectable space, let people select directly
+	//
+	// this is a total hack by the way, but it captures the embedding that happens when
+	// we are clicking and the click actino is technically on the item that is INSIDE
+	// the selectable DIV, like a click on a unit in a key, etc.
+	//
+	if (e.target.classList.contains("selectable")) {
+	  // something else is handling this
+	  return;
+	} else {
+	  let el = e.target;
+	  if (el.parentNode) {
+	    if (el.parentNode.classList.contains("selectable")) {
+	      // something else is handling this
+	      return;
+	    } else {
+	      if (el.parentNode.parentNode) {
+	        if (el.parentNode.parentNode.classList.contains("selectable")) {
+	          return;
+	        }
+	      }
+	    }
+	  }
+	}
+	// otherwise show zoom
+        //if (e.target.classList.contains("space")) {
+          his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+	  //e.stopPropagation();
+	  //e.preventDefault();	
+	  //return;
+	//}
+      });
 
-}
+      his_self.bound_gameboard_zoom = 1;
+
+    }
 
 
   }
@@ -1017,9 +1101,6 @@ if (!his_self.bound_gameboard_zoom) {
       return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
-    //
-    //
-    //
     if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
 
     for (let i = 0; i < this.game.deck.length; i++) {
@@ -1032,6 +1113,10 @@ if (!his_self.bound_gameboard_zoom) {
       }
     }
 
+    //
+    // triggered before card deal
+    //
+    if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
 
     if (deckidx === -1) {
       //
@@ -1064,4 +1149,38 @@ if (!his_self.bound_gameboard_zoom) {
   displayDebaterPopup(debater) {
     
   }
+
+
+
+  async preloadImages() {
+    var allImages = [
+      "img/factions/protestant.png",
+      "img/factions/papacy.png",
+      "img/factions/england.png",
+      "img/factions/france.png",
+      "img/factions/ottoman.png",
+      "img/factions/hapsburg.png",
+      "img/backgrounds/reformation.jpg",
+      "img/backgrounds/theological-debate.jpg",
+    ];
+  }
+
+  preloadImageArray(imageArray=[], idx=0) {
+
+    let pre_images = [imageArray.length];
+
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = "/his/" + imageArray[idx];
+    }
+
+  }
+
+
+
+
+
 

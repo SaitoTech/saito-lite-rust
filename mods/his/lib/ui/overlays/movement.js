@@ -21,7 +21,6 @@ class MovementOverlay {
     let source = mobj.source;
     let destination = mobj.destination;
     let max_formation_size = this.mod.returnMaxFormationSize(units_to_move);
-
     let units = space.units[faction];
     
 
@@ -58,7 +57,9 @@ class MovementOverlay {
       if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 
 	if (space.units[faction][i].command_value > 0) {
-	  commanders.push(i);
+	  if (space.units[faction][i].gout != true) {
+	    commanders.push(i);
+	  }
 	}
 
 	if (space.units[faction][i].type == "regular") {
@@ -129,6 +130,7 @@ class MovementOverlay {
       mam_idx : mam ,
       ctm_idx : ctm ,
       cam_idx : cam ,
+      space : space ,
       commanders : commanders ,
       units_to_move : units_to_move ,
       from : from ,

@@ -11,6 +11,8 @@ const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
+const WelcomeOverlay = require('./lib/ui/overlays/welcome');
+const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const JSON = require('json-bigint');
 
@@ -31,7 +33,7 @@ class HereIStand extends GameTemplate {
     this.gamename        = "Here I Stand";
     this.slug		 = "his";
     this.description     = `Here I Stand is a boardgame based on the military, political and religious conflicts within Europe at the outbreak of the Protestant Reformation (1517-1555). Each player controls one or more major powers that dominated Europe: the Ottoman Empire, the Hapsburgs, England, France, the Papacy and the Protestant states.`;
-    this.publisher_message = "Here I Stand is owned by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game.";
+    this.publisher_message = `Here I Stand is published by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game. Support GMT Games: <a href="https://www.gmtgames.com/p-917-here-i-stand-500th-anniversary-reprint-edition-2nd-printing.aspx">purchase</a>`;
     this.categories      = "Games Boardgame Strategy";
 
     this.interface = 1; // graphical interface
@@ -52,6 +54,8 @@ class HereIStand extends GameTemplate {
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
+    this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
+    this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
 
     //
     // this sets the ratio used for determining
@@ -64,6 +68,10 @@ class HereIStand extends GameTemplate {
     //
     this.confirm_moves = 1;
 
+    //
+    // "showcard" popups
+    //
+    this.useCardbox = 1;
 
     //
     //

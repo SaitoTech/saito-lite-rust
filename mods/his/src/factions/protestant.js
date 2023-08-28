@@ -36,7 +36,10 @@
 
       calculateBonusVictoryPoints  :    function(game_mod) {
 	// + VP from disgraced papal debaters
-        return game_mod.game.state.papal_debaters_disgraced_vp;
+	let bonus_vp_points = 0;
+	bonus_vp_points += game_mod.game.state.papal_debaters_disgraced_vp;
+	bonus_vp_points += game_mod.game.state.protestant_war_winner_vp;
+        return bonus_vp_points;
       }
 ,
       calculateSpecialVictoryPoints  :  function(game_mod) {
@@ -44,6 +47,16 @@
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
 
+	// burned papal debaters
+	for (let i = 0; i < game_mod.game.state.burned.length; i++) {
+	  let bd = game_mod.game.state.burned[i];
+	  if (game_mod.debaters[bd]) {
+	    if (game_mod.debaters[bd].faction == "papacy") {
+	      base += game_mod.debaters[bd].power;
+	    }
+	  }
+	}
+	
 	// 1 VP for each full bible translation
         if (game_mod.game.state.translations['full']['german'] == 10) { base++; }
         if (game_mod.game.state.translations['full']['french'] == 10) { base++; }

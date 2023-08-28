@@ -222,21 +222,22 @@ class StorageCore extends Storage {
     if (!block) {
       return null;
     }
-    block = await this.loadBlockByFilename(block.file_name);
+    block = await this.loadBlockByFilename(this.data_dir + "/blocks/" + block.file_name);
     return block;
   }
 
   async loadBlockByFilename(filename: string) {
     try {
       const data = await fs.readFile(filename);
-      const block = new Block(this.app);
+      const block = new Block();
+      // console.log("instance : ", block.instance);
       block.deserialize(data);
 
       // block.generateMetadata();
       // block.generateHashes();
       return block;
     } catch (err) {
-      console.log("Error reading block from disk");
+      console.error("Error reading block from disk");
       console.error(err);
     }
 

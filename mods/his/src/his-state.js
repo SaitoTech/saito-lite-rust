@@ -4,12 +4,23 @@
     // remove foul weather
     //
     this.game.state.events.foul_weather = 0;
+    this.game.state.spring_deploy_across_passes = [];
+    this.game.state.spring_deploy_across_seas = [];
+    this.game.state.events.spring_preparations = "";
+    this.game.state.events.henry_petitions_for_divorce_grant = 0;
+
+    //
+    // reset impulse commits
+    //
+    this.game.state.debater_committed_this_impulse = {};
+    
 
     //
     // remove gout
     //
     if (this.game.state.events.gout != 0) {
       for (let i in this.game.spaces) {
+	let space = this.game.spaces[i];
         for (let f in space.units) {
           for (let z = space.units[f].length-1;  z >= 0; z--) {
 	    space.units[f][z].gout = false; 
@@ -18,7 +29,48 @@
       }
       this.game.state.events.gout = 0;    
     }
+
+    //
+    // remove temporary bonuses and modifiers
+    //
+    this.game.state.events.augsburg_confession = false;
+
+
   }
+
+  onNewRound() {
+
+    //
+    // reset impulse commits
+    //
+    this.game.state.debater_committed_this_impulse = {};
+    
+
+    this.game.state.tmp_reformations_this_turn = [];
+    this.game.state.tmp_counter_reformations_this_turn = [];
+    this.game.state.tmp_protestant_reformation_modifier = 0;
+    this.game.state.tmp_protestant_reformation_bonus = 0;
+    this.game.state.tmp_protestant_reformation_bonus_spaces = [];
+    this.game.state.tmp_catholic_reformation_modifier = 0;
+    this.game.state.tmp_catholic_reformation_bonus = 0;
+    this.game.state.tmp_catholic_reformation_bonus_spaces = [];
+            
+    this.game.state.tmp_protestant_counter_reformation_modifier = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus_spaces = [];
+    this.game.state.tmp_catholic_counter_reformation_modifier = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus_spaces = [];
+    this.game.state.tmp_papacy_may_specify_debater = 0;
+    this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+        
+    //
+    // allow stuff to move again
+    //
+    this.resetLockedTroops();
+
+  }
+
 
   returnLoanedUnits() {
     for (let i in this.game.spaces) {
@@ -113,8 +165,10 @@
 
   removeUnit(faction, space, type) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
-      if (space.units[faction].type === type) {
+      if (space.units[faction][i].type === type) {
+        this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
 	return;
       }
@@ -262,20 +316,61 @@
       factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
-
-    // base
-
-    // protestant spaces
-
-    // bonus vp
+    //
     //• Bible translation completed (1 VP for each language)    ***
+    // protestant faction class
     //• Protestant debater burned (1 per debate rating)         ***
+    // protestant faction class
     //• Papal debater disgraced (1 per debate rating)           ***
+    // protestant faction class
+
+
+
     //• Successful voyage of exploration
     //• Successful voyage of conquest
     //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
     //• War Winner marker received during Peace Segment
     //• Master of Italy VP marker received during Action Phase
+
+
+    //
+    // domination victory (5 more vp than everyone else
+    //
+    let max_vp = 0;
+    let runner_up_vp = 0;
+    let lead_required = 5;
+    let domination_round = 5;
+    if (this.game.players.length == 2) { lead_required = 8; domination_round = 4; }
+
+    let leaders = [];
+    for (let key in factions) {
+      if (factions[key].vp == max_vp) {
+        leaders.push(key);
+      }
+      if (factions[key].vp > max_vp) {
+	runner_up_vp = max_vp;
+	max_vp = factions[key].vp;
+	leaders = [];
+        leaders.push(key);
+      }
+      if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round) {
+	if (leaders.length == 1) {
+	  factions[leaders[0]].victory = 1;
+	  factions[leaders[0]].reason = "Domination Victory";
+	}
+      }
+    }
+
+    //
+    // final victory if round 9
+    //
+    if (this.game.state.round >= 9) {
+      for (let i = 0; i < leaders.length; i++) {
+	factions[leaders[0]].victory = 1;
+	factions[leaders[0]].reason = "Final Victory";
+      }
+    }
+
 
     return factions;
 
@@ -370,6 +465,8 @@
 
     state.naval_leaders_lost_at_sea = [];
 
+    state.debater_committed_this_impulse = {};
+
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
     state.activated_powers['hapsburg'] = [];
@@ -388,6 +485,8 @@
     state.translations['full']['french'] = 0;
     state.translations['full']['english'] = 0;
 
+    state.protestant_war_winner_vp = 0;
+
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
     state.saint_peters_cathedral['vp'] = 0;    
@@ -403,13 +502,17 @@
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
+    state.tmp_protestant_reformation_modifier = 0;
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_protestant_reformation_bonus_spaces = [];
+    state.tmp_catholic_reformation_modifier = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus_spaces = [];
 
+    state.tmp_protestant_counter_reformation_modifier = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus_spaces = [];
+    state.tmp_catholic_counter_reformation_modifier = 0;
     state.tmp_catholic_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus_spaces = [];
     state.tmp_papacy_may_specify_debater = 0;
@@ -419,6 +522,8 @@
     state.tmp_bonus_protestant_translation_french_zone = 0;
     state.tmp_bonus_protestant_translation_english_zone = 0;
     state.tmp_bonus_papacy_burn_books = 0;
+
+    state.skip_next_impulse = [];
 
     //
     // foreign wars
@@ -441,8 +546,11 @@
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
+    state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
+    state.excommunicated_factions = {};
     state.excommunicated = [];
+    state.burned = [];
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
@@ -464,6 +572,10 @@
     state.leaders.elizabeth_i = 0;
     state.leaders.calvin = 0;
 
+    state.spring_deploy_across_seas = [];
+    state.spring_deploy_across_passes = [];
+
+    state.events.maurice_of_saxony = "";
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
     state.events.papacy_may_found_jesuit_universities = 0;
@@ -475,6 +587,10 @@
 
   }
 
+  excommunicateFaction(faction="") {
+    this.game.state.excommunicated_faction[faction] = 1;
+    return;
+  }
 
   excommunicateReformer(reformer="") {
 
@@ -499,13 +615,13 @@
     obj.space = s;
     obj.faction = faction;
     obj.idx = idx;
-    obj.reformer = this.game.state.spaces[s].units[faction][idx];
+    obj.reformer = this.game.spaces[s].units[faction][idx];
 
     //
     // remove reformer
     //
     if (idx != -1) {
-      this.game.state.spaces[s].units[faction].splice(idx, 1);
+      this.game.spaces[s].units[faction].splice(idx, 1);
     }
 
     //
@@ -527,6 +643,34 @@
 
   }
 
+  restoreDebaters() {
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      this.game.state.debaters[i].committed = 0;
+    }
+
+  }
+
+  restoreReformers() {
+
+    for (let i = 0; i < this.game.state.reformers_removed_until_next_round.length; i++) {
+      if (obj.reformer) {
+
+        let leader = obj.reformer;
+	let s = obj.space;
+        let faction = obj.faction;
+
+	if (reformer) {
+	  if (s) {
+	    if (faction) {
+	      this.game.spaces[s].units[faction].push(reformer);
+	    }
+	  }
+	}
+      }
+    }
+
+  }
   restoreMilitaryLeaders() {
 
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
@@ -539,7 +683,7 @@
 	if (leader) {
 	  if (s) {
 	    if (faction) {
-	      this.game.state.spaces[s].units[faction].push(leader);
+	      this.game.spaces[s].units[faction].push(leader);
 	    }
 	  }
 	}
@@ -561,7 +705,7 @@
 	if (reformer) {
 	  if (s) {
 	    if (faction) {
-	      this.game.state.spaces[s].units[faction].push(reformer);
+	      this.game.spaces[s].units[faction].push(reformer);
 	    }
 	  }
 	}
@@ -640,7 +784,7 @@
       left : 55
     }
     colonies['6'] = {
-      top : 1568,
+      top : 1530,
       left : 55
     }
     colonies['7'] = {
@@ -734,7 +878,7 @@
       left : 178
     }
     conquest['6'] = {
-      top : 1568,
+      top : 1530,
       left : 178
     }
     conquest['7'] = {
@@ -816,7 +960,7 @@
     }
     track['16'] = {
       top : 3026,
-      left : 1568
+      left : 1530
     }
     track['17'] = {
       top : 3026,
@@ -1028,226 +1172,226 @@
     diplomacy["hapsburg"] 	= {};
 
     diplomacy["ottoman"]["hapsburg"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4128 ,
     }
     diplomacy["ottoman"]["england"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4222 ,
     }
     diplomacy["ottoman"]["france"] = {
-        top 	:             205 ,
+        top 	:       170 ,
         left	:	4310 ,
     }
     diplomacy["ottoman"]["papacy"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4400 ,
     }
     diplomacy["ottoman"]["protestant"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4490 ,
     }
     diplomacy["ottoman"]["genoa"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4580 ,
     }
     diplomacy["ottoman"]["hungary"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4670 ,
     }
     diplomacy["ottoman"]["scotland"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4760 ,
     }
     diplomacy["ottoman"]["venice"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4851 ,
     }
 
     diplomacy["hapsburg"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4128 ,
     }
     diplomacy["hapsburg"]["england"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4220 ,
     }
     diplomacy["hapsburg"]["france"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4310 ,
     }
     diplomacy["hapsburg"]["papacy"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4400 ,
     }
     diplomacy["hapsburg"]["protestant"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4490 ,
     }
     diplomacy["hapsburg"]["genoa"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4580 ,
     }
     diplomacy["hapsburg"]["hungary"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4670 ,
     }
     diplomacy["hapsburg"]["scotland"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4760 ,
     }
     diplomacy["hapsburg"]["venice"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4851 ,
     }
 
 
     diplomacy["england"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4222 ,
     }
     diplomacy["england"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4220 ,
     }
     diplomacy["england"]["france"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4310 ,
     }
     diplomacy["england"]["papacy"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4400 ,
     }
     diplomacy["england"]["protestant"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4490 ,
     }
     diplomacy["england"]["genoa"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4580 ,
     }
     diplomacy["england"]["hungary"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4670 ,
     }
     diplomacy["england"]["scotland"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4760 ,
     }
     diplomacy["england"]["venice"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4851 ,
     }
 
     diplomacy["france"]["ottoman"] = {
-        top 	:       205 ,
+        top 	:       170 ,
         left	:	4310 ,
     }
     diplomacy["france"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4310 ,
     }
     diplomacy["france"]["england"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4310 ,
     }
     diplomacy["france"]["papacy"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4400 ,    
     }
     diplomacy["france"]["protestant"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4490 ,    
     }
     diplomacy["france"]["genoa"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4580 ,    
     }
     diplomacy["france"]["hungary"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4670 ,    
     }
     diplomacy["france"]["scotland"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4760 ,    
     }
     diplomacy["france"]["venice"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4851 ,    
     }
 
 
     diplomacy["papacy"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4400 ,
     }
     diplomacy["papacy"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4400 ,
     }
     diplomacy["papacy"]["england"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4400 ,
     }
     diplomacy["papacy"]["france"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4400 ,    
     }
     diplomacy["papacy"]["protestant"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4490 ,    
     }
     diplomacy["papacy"]["genoa"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4580 ,    
     }
     diplomacy["papacy"]["hungary"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4670 ,    
     }
     diplomacy["papacy"]["scotland"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4760 ,    
     }
     diplomacy["papacy"]["venice"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4851 ,    
     }
 
     diplomacy["protestant"]["ottoman"] = {
-        top 	:	205 ,
+        top 	:	170 ,
         left	:	4490 ,
     }
     diplomacy["protestant"]["hapsburg"] = {
-        top 	:	297 ,
+        top 	:	160 ,
         left	:	4490 ,
     }
     diplomacy["protestant"]["england"] = {
-        top 	:	386 ,
+        top 	:	350 ,
         left	:	4490 ,
     }
     diplomacy["protestant"]["france"] = {
-        top     :       478 ,
+        top     :       440 ,
         left    :       4490 ,    
     }
     diplomacy["protestant"]["papacy"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4490 ,    
     }
     diplomacy["protestant"]["genoa"] = {
-        top     :       658 ,
+        top     :       620 ,
         left    :       4580 ,    
     }
     diplomacy["protestant"]["hungary"] = {
-        top     :       658 ,
+        top     :       620 ,
         left    :       4670 ,    
     }
     diplomacy["protestant"]["scotland"] = {
-        top     :       658 ,
+        top     :       620 ,
         left    :       4760 ,    
     }
     diplomacy["protestant"]["venice"] = {
-        top     :       568 ,
+        top     :       530 ,
         left    :       4851 ,    
     }
 

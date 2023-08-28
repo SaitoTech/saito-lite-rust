@@ -547,13 +547,11 @@ class Arcade extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message?.request === "arcade spv update") {
-
       let tx = new Transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
 
       if (txmsg.module === "Arcade") {
-
         if (this.debug) {
           console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
         }
@@ -642,7 +640,7 @@ class Arcade extends ModTemplate {
     }
     let peers = await this.app.network.getPeers();
     for (let peer of peers) {
-      console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
+      // console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
       if (peer.synctype == "lite") {
         //
         // fwd tx to peer
@@ -651,11 +649,11 @@ class Arcade extends ModTemplate {
         message.request = "arcade spv update";
         message.data = tx.toJson();
 
-        console.log("notifying peer : " + peer.peerIndex);
+        // console.log("notifying peer : " + peer.peerIndex);
         this.app.network
           .sendRequestAsTransaction(message.request, message.data, null, peer.peerIndex)
           .then(() => {
-            console.log("peer notified : " + peer.peerIndex);
+            // console.log("peer notified : " + peer.peerIndex);
           });
       }
     }
@@ -938,7 +936,6 @@ class Arcade extends ModTemplate {
   }
 
   async changeGameStatus(game_id, newStatus) {
-
     let game = this.returnGame(game_id);
 
     if (!game) {
@@ -1001,8 +998,8 @@ class Arcade extends ModTemplate {
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
 
-    if (this.debug){
-    console.log("Winner updated in arcade");
+    if (this.debug) {
+      console.log("Winner updated in arcade");
     }
   }
 

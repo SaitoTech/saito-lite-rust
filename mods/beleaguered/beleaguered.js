@@ -155,15 +155,17 @@ class Beleaguered extends OnePlayerGameTemplate {
 
   attachEventsToBoard(){
 
-    const canMoveCard = (card, stack) => {
+    const canMoveCard = (card_index, stack) => {
+      //You can't select a card that doesn't exist
+      if (card_index == -1) {
+        return false;
+      }
+
+      let card = stack.cards[card_index];
       let beleaguered_self = stack.mod;
       let suit = card[0];
       let number = parseInt(card.slice(1));
 
-      //You can't select a card that doesn't exist
-      if (card == "empty") {
-        return false;
-      }
 
       //You can't move cards from the center
       if (stack.name[0] == "m") {
@@ -223,7 +225,13 @@ class Beleaguered extends OnePlayerGameTemplate {
 
     };
 
-    const canPlaceCard = (card, stack) => {
+    const canPlaceCard = (card_index, stack) => {
+      //Can always place on an empty slot
+      if (card_index === -1) {
+        return true;
+      }
+
+      let card = stack.cards[card_index];
       let beleaguered_self = stack.mod;
       let moving_card = beleaguered_self.selected;
       let moving_card_suit = moving_card[0];
@@ -232,11 +240,6 @@ class Beleaguered extends OnePlayerGameTemplate {
       let suit = card[0];
       let number = parseInt(card.slice(1));
   
-      //Can always place on an empty slot
-      if (card === "empty") {
-        return true;
-      }
-
       if (stack.name[0] == "m") {
         if (moving_card_suit === suit && number + 1 === moving_card_number ) {
           return true;
@@ -309,8 +312,8 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.removeEvents();
 
     this.moveGameElement(
-      this.copyGameElement(this.cardStacks[source_stack].getTopCard().children[0]),
-      this.cardStacks[target_stack].getTopCard(),
+      this.copyGameElement(this.cardStacks[source_stack].getTopCardElement().children[0]),
+      this.cardStacks[target_stack].getTopCardElement(),
       { 
         resize: 1,
       },
@@ -556,7 +559,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       this.animating_autoplay = true;
 
       this.moveGameElement(
-        this.copyGameElement(this.cardStacks[source_stack].getTopCard().children[0]),
+        this.copyGameElement(this.cardStacks[source_stack].getTopCardElement().children[0]),
         `#cardstack_${target_stack}`,
         { 
           resize: 1,
