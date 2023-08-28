@@ -23,6 +23,7 @@ class Poker extends GameTableTemplate {
     this.maxPlayers = 6;
     this.crypto_msg = "settles round-by-round";
     this.settlement = [];
+    this.can_bet = 1;
 
     /********************
      *********************
