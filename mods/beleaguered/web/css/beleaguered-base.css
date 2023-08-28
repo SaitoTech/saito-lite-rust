@@ -125,15 +125,14 @@
   grid-gap: min(10px,1vh);
 }
 
-.cardstack .card-slot {
+/*.cardstack .card-slot {
   width: unset;
-}
+}*/
 
 .card-slot {
   position: absolute;
-  max-width: min(15.5vh, 120px, 20vw);
-  max-height: min(184px, 24vh, 30.6vw);
-  height: 100%;
+  width: min(15.5vh, 120px, 20vw);
+  height: min(184px, 24vh, 30.6vw);
   border-radius: 10px;
 }
 
