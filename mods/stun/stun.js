@@ -439,7 +439,7 @@ class Stun extends ModTemplate {
     this.sendStunCallMessageToPeers(this.app, data, recipients);
 
     setTimeout(() => {
-      // stop the call after 30seconds
+      // cancel the call after 30seconds
       let data = {
         type: "cancel-connection-request",
         room_code,
@@ -456,7 +456,7 @@ class Stun extends ModTemplate {
 
     const result = await sconfirm("establishing connection with peers");
     if (!result) {
-      // stop the call
+      // cancel the call
       let data = {
         type: "cancel-connection-request",
         room_code,
@@ -523,9 +523,12 @@ class Stun extends ModTemplate {
       case "connection-accepted":
         console.log("connection accepted");
         this.stopRing();
-        document
-          .getElementById("saito-alert")
-          .parentElement.removeChild(document.getElementById("saito-alert"));
+        if (document.getElementById("saito-alert")) {
+          document
+            .getElementById("saito-alert")
+            .parentElement.removeChild(document.getElementById("saito-alert"));
+        }
+
         salert(`Call accepted by ${data.sender}`);
         setTimeout(() => {
           app.connection.emit("start-stun-call");
