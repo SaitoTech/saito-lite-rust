@@ -1261,21 +1261,21 @@ console.log("restoring B");
 	//
         if (this.game.options.deck === "late-war") {
           if (this.game.state.vp < 20) {
-            this.endGame(this.game.players[0], "Wargames");
+            this.sendGameOverTransaction(this.game.players[0], "Wargames");
           } else {
-            this.endGame(this.game.players[1], "Wargames");
+            this.sendGameOverTransaction(this.game.players[1], "Wargames");
           }
 	  return 0;
         }
 
         if (this.game.state.vp > 0) {
-          this.endGame(this.game.players[1],"Wargames");
+          this.sendGameOverTransaction(this.game.players[1],"Wargames");
         }
         if (this.game.state.vp < 0) {
-          this.endGame(this.game.players[0],"Wargames");
+          this.sendGameOverTransaction(this.game.players[0],"Wargames");
         }
         if (this.game.state.vp == 0) {
-          this.tieGame();
+          this.sendGameOverTransaction(this.game.players, "tie");
         }
 
       }
@@ -6006,11 +6006,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     // Cuban Missile Crisis
     //
     if (player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) {
-      this.endGame(this.game.players[1], "Cuban Missile Crisis");
+      this.sendGameOverTransaction(this.game.players[1], "Cuban Missile Crisis");
       return;
     }
     if (player == "us" && this.game.state.events.cubanmissilecrisis == 2) {
-      this.endGame(this.game.players[0], "Cuban Missile Crisis");
+      this.sendGameOverTransaction(this.game.players[0], "Cuban Missile Crisis");
       return;
     }
 
@@ -6264,7 +6264,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let extra = {};
     this.game.turn = this.moves;
     this.moves = [];
-    this.sendMessage("game", extra);
+    this.sendGameMoveTransaction("game", extra);
 
   }
 
@@ -6347,7 +6347,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 	    // hard-exception
 	    if (this.game.options.deck != "late-war" && this.game.state.round != 8) {
               //There may be an issue if both players simulataneously resign...
-              this.resignGame(this.game.id, "scoring card held");
+              this.sendStopGameTransaction(this.game.id, "scoring card held");
               return 0;
 	    }
           }
@@ -7569,14 +7569,14 @@ if (inc_optional == true) {
       this.game.state.vp--;
       this.updateLog("USSR receives 1 VP for the China Card");
       if (this.game.state.vp <= -20) {
-        this.endGame(this.game.players[0], "victory points");
+        this.sendGameOverTransaction(this.game.players[0], "victory points");
         return;
       }
     } else {
       this.game.state.vp++;
       this.updateLog("US receives 1 VP for the China Card");
       if (this.game.state.vp >= 20) {
-        this.endGame(this.game.players[1], "victory points");
+        this.sendGameOverTransaction(this.game.players[1], "victory points");
         return;
       }
     }
@@ -7621,9 +7621,9 @@ if (inc_optional == true) {
     //
     if (this.game.options.deck === "late-war") {
       if (this.game.state.vp < 20) {
-        this.endGame(this.game.players[0], "final scoring");
+        this.sendGameOverTransaction(this.game.players[0], "final scoring");
       } else {
-        this.endGame(this.game.players[1], "final scoring");
+        this.sendGameOverTransaction(this.game.players[1], "final scoring");
       }
     }
 
@@ -7631,13 +7631,13 @@ if (inc_optional == true) {
     // normal game
     //
     if (this.game.state.vp == 0) {
-      this.tieGame();
+      this.sendGameOverTransaction(this.game.players, "tie");
       return 1;
     }
     if (this.game.state.vp < 0) {
-      this.endGame(this.game.players[0], "final scoring");
+      this.sendGameOverTransaction(this.game.players[0], "final scoring");
     } else {
-      this.endGame(this.game.players[1], "final scoring");
+      this.sendGameOverTransaction(this.game.players[1], "final scoring");
     }
 
     return 1;
@@ -8419,9 +8419,9 @@ if (inc_optional == true) {
     if (this.game.state.defcon <= 1) {
       if (this.game.state.headline == 1) {
         // phasing player in headline loses
-        this.endGame(this.game.players[2 - this.game.state.player_to_go], "thermonuclear war");
+        this.sendGameOverTransaction(this.game.players[2 - this.game.state.player_to_go], "thermonuclear war");
       }else{
-        this.endGame(this.game.players[2 - this.game.state.turn], "thermonuclear war");
+        this.sendGameOverTransaction(this.game.players[2 - this.game.state.turn], "thermonuclear war");
       }
       return;
     }
@@ -9020,10 +9020,10 @@ if (inc_optional == true) {
     }
 
     if (this.game.state.vp > 19) {
-        this.endGame(this.game.players[1], "victory point track");
+        this.sendGameOverTransaction(this.game.players[1], "victory point track");
     }
     if (this.game.state.vp < -19) {
-      this.endGame(this.game.players[0], "victory point track");
+      this.sendGameOverTransaction(this.game.players[0], "victory point track");
     }
 
   }

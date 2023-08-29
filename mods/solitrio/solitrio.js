@@ -1,4 +1,4 @@
-const OnePlayerGameTemplate = require("../../lib/templates/oneplayergametemplate");
+const OnePlayerGameTemplate = require("../../lib/templates/oneplayer-gametemplate");
 const SolitrioGameRulesTemplate = require("./lib/solitrio-game-rules.template");
 const SolitrioGameOptionsTemplate = require("./lib/solitrio-game-options.template");
 
