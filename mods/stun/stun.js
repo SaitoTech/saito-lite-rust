@@ -1,5 +1,5 @@
 const saito = require("../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
+const ModTemplate = require("./../../lib/templates/modtemplate");
 const StunLauncher = require("./lib/appspace/call-launch");
 const CallInterfaceVideo = require("./lib/components/call-interface-video");
 const CallInterfaceAudio = require("./lib/components/call-interface-audio");
@@ -83,6 +83,7 @@ class Stun extends ModTemplate {
       return;
     }
 
+    this.ring_sound = new Audio("/videocall/audio/ring.mp3");
     if (app.browser.returnURLParameter("stun_video_chat")) {
       let room_obj = JSON.parse(
         app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
@@ -144,8 +145,40 @@ class Stun extends ModTemplate {
     }
   }
 
-  respondTo(type, obj) {
+  startRing() {
+    this.ring_sound.play();
+  }
+  stopRing() {
+    this.ring_sound.pause();
+  }
+
+  respondTo(type = "") {
+    console.log(arguments, "arguments");
+    // console.log(type, obj);
     let stun_self = this;
+    let obj = arguments[1];
+    if (type === "user-menu") {
+      console.log(obj, this.app.wallet.publicKey, "this is from redsquare");
+      if (obj?.publicKey) {
+        if (obj.publicKey !== this.app.wallet.publicKey) {
+          console.log("inside this function");
+          this.attachStyleSheets();
+          super.render(this.app, this);
+          return [
+            {
+              text: "Video/Audio Call",
+              icon: "fas fa-video",
+              callback: function (app, public_key) {
+                //stun_self.renderInto(".saito-overlay");
+                //salert("You still need to send an invitation link to the call (after you start it)");
+                stun_self.startRing();
+                stun_self.establishStunCallWithPeers("large", [public_key]);
+              },
+            },
+          ];
+        }
+      }
+    }
 
     if (type === "invite") {
       this.attachStyleSheets();
@@ -189,26 +222,6 @@ class Stun extends ModTemplate {
             },
           ],
         };
-      }
-    }
-
-    if (type === "user-menu") {
-      if (obj?.publickey) {
-        if (obj.publickey !== this.app.wallet.publickey) {
-          this.attachStyleSheets();
-          super.render(this.app, this);
-          return [
-            {
-              text: "Video/Audio Call",
-              icon: "fas fa-video",
-              callback: function (app, public_key) {
-                //stun_self.renderInto(".saito-overlay");
-                //salert("You still need to send an invitation link to the call (after you start it)");
-                stun_self.establishStunCallWithPeers("large", [public_key]);
-              },
-            },
-          ];
-        }
       }
     }
 
@@ -400,7 +413,7 @@ class Stun extends ModTemplate {
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
-    salert("Establishing a connection with your peers...");
+    // salert("Establishing a connection with your peers...");
 
     // init peer manager and chat manager through self event
     this.app.connection.emit("stun-init-peer-manager", ui_type);
@@ -424,6 +437,35 @@ class Stun extends ModTemplate {
     };
 
     this.sendStunCallMessageToPeers(this.app, data, recipients);
+
+    setTimeout(() => {
+      // stop the call after 30seconds
+      let data = {
+        type: "cancel-connection-request",
+        room_code,
+        ui: ui_type,
+        sender: this.publicKey,
+      };
+      this.sendStunCallMessageToPeers(this.app, data, recipients);
+      this.stopRing();
+      document
+        .getElementById("saito-alert")
+        .parentElement.removeChild(document.getElementById("saito-alert"));
+      salert("connection cannot be established");
+    }, 30000);
+
+    const result = await sconfirm("establishing connection with peers");
+    if (!result) {
+      // stop the call
+      let data = {
+        type: "cancel-connection-request",
+        room_code,
+        ui: ui_type,
+        sender: this.publicKey,
+      };
+      this.stopRing();
+      this.sendStunCallMessageToPeers(this.app, data, recipients);
+    }
   }
 
   sendStunCallMessageToPeers(app, _data, recipients) {
@@ -443,7 +485,9 @@ class Stun extends ModTemplate {
     switch (data.type) {
       case "connection-request":
         let call_type = data.ui == "voice" ? "Voice" : "Video";
-        let result = await sconfirm(`Accept Saito ${call_type} Call`);
+        this.startRing();
+        let result = await sconfirm(`Accept Saito ${call_type} Call from ${data.sender}`);
+
         if (result === true) {
           // connect
           // send to sender and inform
@@ -461,8 +505,9 @@ class Stun extends ModTemplate {
 
           // send the information to the other peers and ask them to join the call
           // show-call-interface
+
           app.connection.emit("start-stun-call");
-        } else if (result == false) {
+        } else {
           //send to sender to stop connection
           let _data = {
             type: "connection-rejected",
@@ -471,17 +516,37 @@ class Stun extends ModTemplate {
           };
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
         }
-        console.log(result);
+        this.stopRing();
+        // console.log(result);
         break;
 
       case "connection-accepted":
         console.log("connection accepted");
+        this.stopRing();
+        document
+          .getElementById("saito-alert")
+          .parentElement.removeChild(document.getElementById("saito-alert"));
         salert(`Call accepted by ${data.sender}`);
-        app.connection.emit("start-stun-call");
+        setTimeout(() => {
+          app.connection.emit("start-stun-call");
+        }, 2000);
+
         break;
       case "connection-rejected":
         console.log("connection rejected");
+        this.stopRing();
+        document
+          .getElementById("saito-alert")
+          .parentElement.removeChild(document.getElementById("saito-alert"));
         salert(`Call rejected by ${data.sender}`);
+        break;
+      case "cancel-connection-request":
+        // console.log("connection rejected");
+        this.stopRing();
+        document
+          .getElementById("saito-alert")
+          .parentElement.removeChild(document.getElementById("saito-alert"));
+        // salert(`Call cancelled by ${data.sender}`);
         break;
 
       default:
