@@ -388,7 +388,7 @@ class ChatManager {
           icon.classList.remove("fa-bell-slash");
         }
       }
-      
+
       document.querySelector(".toggle-notifications").onclick = (e) => {
         if (this.mod.enable_notifications) {
           this.mod.enable_notifications = false;
@@ -399,7 +399,7 @@ class ChatManager {
           this.app.options.chat.enable_notifications = false;
           this.app.storage.saveOptions();
         } else {
-          Notification.requestPermission().then(result => {
+          Notification.requestPermission().then((result) => {
             console.log(result);
             if (result === "granted") {
               this.mod.enable_notifications = true;
@@ -407,16 +407,14 @@ class ChatManager {
                 icon.classList.add("fa-bell");
                 icon.classList.remove("fa-bell-slash");
               }
-      
+
               this.app.options.chat.enable_notifications = true;
               this.app.storage.saveOptions();
             }
           });
         }
-      }
-      
+      };
     }
-    
   }
 }
 

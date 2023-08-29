@@ -157,7 +157,7 @@ class CallInterfaceVideo {
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,
-      target_container: `.stun-chatbox .${this.remote_container}`,
+      target_container: `.stun-chatbox`,
     };
 
     chat_mod.groups.push(this.chat_group);
@@ -177,7 +177,7 @@ class CallInterfaceVideo {
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
       //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
-
+      console.log(this.chat_group, "chat group");
       if (document.querySelector(".chat-static")) {
         //document.querySelector(".chat-static").remove();
         this.app.connection.emit("chat-popup-remove-request", this.chat_group);

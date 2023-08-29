@@ -448,10 +448,11 @@ class Stun extends ModTemplate {
       };
       this.sendStunCallMessageToPeers(this.app, data, recipients);
       this.stopRing();
-      document
-        .getElementById("saito-alert")
-        .parentElement.removeChild(document.getElementById("saito-alert"));
-      salert("connection cannot be established");
+      if (document.getElementById("saito-alert")) {
+        document
+          .getElementById("saito-alert")
+          .parentElement.removeChild(document.getElementById("saito-alert"));
+      }
     }, 30000);
 
     const result = await sconfirm("establishing connection with peers");
@@ -538,17 +539,23 @@ class Stun extends ModTemplate {
       case "connection-rejected":
         console.log("connection rejected");
         this.stopRing();
-        document
-          .getElementById("saito-alert")
-          .parentElement.removeChild(document.getElementById("saito-alert"));
+        if (document.getElementById("saito-alert")) {
+          document
+            .getElementById("saito-alert")
+            .parentElement.removeChild(document.getElementById("saito-alert"));
+        }
+
         salert(`Call rejected by ${data.sender}`);
         break;
       case "cancel-connection-request":
         // console.log("connection rejected");
         this.stopRing();
-        document
-          .getElementById("saito-alert")
-          .parentElement.removeChild(document.getElementById("saito-alert"));
+        if (document.getElementById("saito-alert")) {
+          document
+            .getElementById("saito-alert")
+            .parentElement.removeChild(document.getElementById("saito-alert"));
+        }
+
         // salert(`Call cancelled by ${data.sender}`);
         break;
 
