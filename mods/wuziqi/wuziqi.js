@@ -308,16 +308,6 @@ class Wuziqi extends GameTemplate {
         this.drawBoard(this.game.board);
     }
     
-    // Bundle moves and send them off.
-    async endTurn() {
-        let extra = {};
-        extra.target = (this.game.player + 1) % 2;
-        this.game.turn = this.moves;
-        this.moves = [];
-        await this.sendMessage("game", extra);
-    }
-
-
 
     //
     // Core Game Logic
@@ -345,7 +335,7 @@ class Wuziqi extends GameTemplate {
                 //console.log(this.game.options);
                 //console.log(this.game.crypto);
 
-                await this.endGame(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
+                await this.sendGameOverTransaction(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
                 return 0; //end queue cycling
             }
 

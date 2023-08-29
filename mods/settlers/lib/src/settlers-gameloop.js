@@ -74,7 +74,7 @@ class SettlersGameloop {
         this.stats_overlay.render();
         $(".rules-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
 
-        this.endGame(this.game.players[winner]);
+        this.sendGameOverTransaction(this.game.players[winner]);
 
         return 0;
       }

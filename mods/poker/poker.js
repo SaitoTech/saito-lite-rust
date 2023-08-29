@@ -1,4 +1,4 @@
-const GameTableTemplate = require("../../lib/templates/gametabletemplate");
+const GameTableTemplate = require("../../lib/templates/table-gametemplate");
 const JSON = require("json-bigint");
 const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
 const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");
@@ -476,7 +476,7 @@ class Poker extends GameTableTemplate {
         this.game.queue = [];
         this.game.crypto = null;
         this.settleDebt();
-        this.endGame(this.game.players[parseInt(mv[1])], "elimination");
+        this.sendGameOverTransaction(this.game.players[parseInt(mv[1])], "elimination");
         return 0;
       }
 
@@ -1885,8 +1885,8 @@ class Poker extends GameTableTemplate {
             </svg>`;
   }
 
-  processResignation(resigning_player, txmsg) {
-    super.processResignation(resigning_player, txmsg);
+  receiveStopGameTransaction(resigning_player, txmsg) {
+    super.receiveStopGameTransaction(resigning_player, txmsg);
 
     if (!txmsg.loser) {
       return;
@@ -1913,21 +1913,10 @@ class Poker extends GameTableTemplate {
   endTurn(nextTarget = 0) {
     if (this.browser_active) {
       this.updateStatus("waiting for information from peers...");
-    }
-
-    try {
       $(".option").off();
-    } catch (err) {}
-
-    let extra = {};
-    extra.target = this.returnNextPlayer(this.game.player);
-
-    if (nextTarget != 0) {
-      extra.target = nextTarget;
     }
-    this.game.turn = this.moves;
-    this.moves = [];
-    this.sendMessage("game", extra);
+
+    super.endTurn(nextTarget);
   }
 
   /* Functions to analyze hands and compare them*/
