@@ -93,12 +93,14 @@ class ChatManager {
     // handle requests to re-render chat popups
     //
     app.connection.on("chat-popup-remove-request", (group = null) => {
+      console.log("removing chat popup", group);
       if (!group) {
         return;
       } else {
         if (this.popups[group.id]) {
           this.popups[group.id].remove();
           delete this.popups[group.id];
+          console.log("removed chat popup", group);
         }
       }
     });

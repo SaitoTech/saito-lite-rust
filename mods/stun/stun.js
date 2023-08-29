@@ -157,10 +157,8 @@ class Stun extends ModTemplate {
     let stun_self = this;
     let obj = arguments[1];
     if (type === "user-menu") {
-      console.log(obj, this.app.wallet.publicKey, "this is from redsquare");
       if (obj?.publicKey) {
         if (obj.publicKey !== this.app.wallet.publicKey) {
-          console.log("inside this function");
           this.attachStyleSheets();
           super.render(this.app, this);
           return [
@@ -418,14 +416,11 @@ class Stun extends ModTemplate {
   async establishStunCallWithPeers(ui_type, recipients) {
     // salert("Establishing a connection with your peers...");
 
-    // init peer manager and chat manager through self event
-    this.app.connection.emit("stun-init-peer-manager", ui_type);
-
     // create a room
     let room_code = await this.sendCreateRoomTransaction();
 
     //Store room_code in PeerManager
-    this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
+    // this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
 
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
@@ -501,11 +496,11 @@ class Stun extends ModTemplate {
             sender: app.wallet.publicKey,
           };
 
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
-
           // init peer manager
           app.connection.emit("stun-init-peer-manager", data.ui);
           app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
+
+          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
 
           // send the information to the other peers and ask them to join the call
           // show-call-interface
@@ -535,6 +530,9 @@ class Stun extends ModTemplate {
 
         salert(`Call accepted by ${data.sender}`);
         setTimeout(() => {
+          // init peer manager and chat manager through self event
+          this.app.connection.emit("stun-init-peer-manager", data.ui);
+          app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
           app.connection.emit("start-stun-call");
         }, 2000);
 
