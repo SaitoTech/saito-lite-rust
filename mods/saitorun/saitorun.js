@@ -1,4 +1,4 @@
-const OnePlayerGameTemplate = require("./../../lib/templates/oneplayergametemplate");
+const OnePlayerGameTemplate = require("./../../lib/templates/oneplayer-gametemplate");
 const SaitoRunRulesTemplate = require("./lib/saitorun-rules.template");
 
 //////////////////

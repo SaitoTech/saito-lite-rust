@@ -18,8 +18,20 @@ class Warehouse extends ModTemplate {
 
   onNewBlock(blk, lc) {
     // console.log('warehouse - on new block');
-    if(blk.transactions) {
-      this.addTransactionsToDatabase(blk);
+    var json_block = JSON.parse(blk.toJson());
+    var txwmsgs = []
+    try {
+      blk.transactions.forEach(transaction => {
+        let tx = transaction.toJson();
+        tx.msg = transaction.returnMessage();
+        txwmsgs.push(tx);          
+      });
+    } catch(err) {
+      console.error(err);
+    }
+    if(txwmsgs.length > 0) {
+      json_block.transactions = txwmsgs;
+      this.addTransactionsToDatabase(json_block);
     }
   }
 
@@ -83,8 +95,8 @@ class Warehouse extends ModTemplate {
               tmodule = "Encrypted";
             }
             let tx_to = "";
-            if (blk.transactions[i].from && blk.transactions[i].to.length > 0) {
-              tx_to = blk.transactions[i].to[0].publicKey;
+            if (blk.transactions[i].to && blk.transactions[i].to.length > 0) {
+              tx_to = blk.transactions[i].to[blk.transactions[i].to.length -1].publicKey;
             }
             let tx_from = "";
             if (blk.transactions[i].from && blk.transactions[i].from.length > 0) {
@@ -93,7 +105,7 @@ class Warehouse extends ModTemplate {
             let params = {
               $address: blk.transactions[i].to[ii]?.publicKey || "",
               $amt: Number(blk.transactions[i].to[ii]?.amount || 0),
-              $bid: Number(blk.id),
+              $bid: blk.id,
               $tid: "",
               $sid: ii,
               $bhash: blk.hash,
@@ -104,7 +116,7 @@ class Warehouse extends ModTemplate {
               $block_ts: blk.transactions[i]?.timestamp || 0,
               $type: ttype,
               $tx_from: tx_from,
-              $tx_to: blk.transactions[i].to[ii]?.publicKey || 0,
+              $tx_to: tx_to,
               $name: tname,
               $module: tmodule,
             };
