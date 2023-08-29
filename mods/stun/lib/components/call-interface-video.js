@@ -14,7 +14,6 @@ class CallInterfaceVideo {
     this.peers = []; //people in the call
     this.localStream;
     this.room_code;
-    this.loaded = false;
     this.video_boxes = {};
 
     this.local_container = "expanded-video";
@@ -44,8 +43,6 @@ class CallInterfaceVideo {
 
       // create chat group
       await this.createRoomTextChat();
-
-      this.loaded = true;
     });
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
