@@ -27,7 +27,7 @@ class Warehouse extends ModTemplate {
     try {
       console.log("adding block to warehouse : " + blk.hash);
       for (let i = 0; i < blk.transactions.length; i++) {
-        if (blk.transactions[i].type && blk.transactions[i].type >= -999) {
+        //if (blk.transactions[i].type && blk.transactions[i].type >= -999) {
           //need to come back and make tx value add up all recipients... and remove change.
           let ii = 0;
 //          for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
@@ -71,17 +71,20 @@ class Warehouse extends ModTemplate {
             let ttype = 0;
             let tname = "";
             let tmodule = "";
-            if (blk.transactions[i].msg && blk.transactions[i].msg.type) {
+            if (blk.transactions[i].msg && blk.transactions[i].type) {
               ttype = blk.transactions[i].type;
             }
-            if (blk.transactions[i].msg &&  blk.transactions[i].msg.name) {
+            if (blk.transactions[i].msg && blk.transactions[i].msg.name) {
               tname = blk.transactions[i].msg.name;
             }
-
             if (blk.transactions[i].msg && blk.transactions[i].msg.module) {
               tmodule = blk.transactions[i].msg.module;
             } else if (blk.transactions[i].msg && Object.keys(blk.transactions[i].msg).length == 308) {
               tmodule = "Encrypted";
+            }
+            let tx_to = "";
+            if (blk.transactions[i].from && blk.transactions[i].to.length > 0) {
+              tx_to = blk.transactions[i].to[0].publicKey;
             }
             let tx_from = "";
             if (blk.transactions[i].from && blk.transactions[i].from.length > 0) {
@@ -90,7 +93,7 @@ class Warehouse extends ModTemplate {
             let params = {
               $address: blk.transactions[i].to[ii]?.publicKey || "",
               $amt: Number(blk.transactions[i].to[ii]?.amount || 0),
-              $bid: blk.id,
+              $bid: Number(blk.id),
               $tid: "",
               $sid: ii,
               $bhash: blk.hash,
@@ -105,9 +108,9 @@ class Warehouse extends ModTemplate {
               $name: tname,
               $module: tmodule,
             };
-            this.app.storage.executeDatabase(sql, params, "warehouse");
+            await this.app.storage.executeDatabase(sql, params, "warehouse");
 //          }
-        }
+ //       }
       }
     } catch (err) {
       console.error(err);

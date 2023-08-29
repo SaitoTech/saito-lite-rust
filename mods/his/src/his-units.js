@@ -357,8 +357,8 @@
 
   }
 
-  disgraceDebater(debater) { return this.burnDebater(debater); }
-  burnDebater(debater) {
+  disgraceDebater(debater) { return this.burnDebater(debater, 1); }
+  burnDebater(debater, disgraced = 0) {
 
     if (!this.debaters[debater]) {
       console.log("DEBATER: " + debater + " not found");
@@ -370,14 +370,24 @@
     //
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].type == debater) { 
+
+	if (disgraced == 1) {
+	  this.updateLog("Papacy gains " + this.game.state.debaters[i].power + " VP");
+	  this.updateLog(this.popup(debater) + " burned");
+	} else {
+	  this.updateLog("Protestants gain " + this.game.state.debaters[i].power + " VP");
+	  this.updateLog(this.popup(debater) + " disgraced");
+	}
+
 	this.game.state.debaters.splice(i, 1);
         this.game.state.burned.push(debater);
+
         let x = debater.split("-");
 	//
 	// also remove reformer (if exists)
 	//
 	let reformer = x[0] + "-reformer";
-        let s = his_self.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
+        let s = this.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
 	if (s) {
           this.removeReformer(this.debaters[debater].faction, reformer);
         }

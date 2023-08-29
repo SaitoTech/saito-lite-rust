@@ -3262,6 +3262,9 @@ try {
 	    // Cambridge
 	    //
 	    this.removeCardFromDeckNextDeal("cambridge", "Removed from Game");
+	    //
+	    //
+	    //
 
 
 	    //
@@ -3270,15 +3273,16 @@ try {
 	    late_war_cards = this.returnLateWarCards();
 
 	    //
-	    // add
-	    //
-	    //
 	    // SOLIDARITY
 	    //
 	    if (this.game.state.events.johnpaul == 1 && this.game.state.events.solidarity_added != 1) {
-	      this.game.state.events.solidarity_added = 1 ;
+	      this.game.state.events.solidarity_added = 1;
 	      this.addCardToDeck("solidarity", "Prerequisite Met");
+	    } else {
+	      delete late_war_cards['solidarity'];
+	      this.removeCardFromDeckNextDeal("solidarity", "Prerequisite Unmet");
 	    }
+
 	    //
 	    // RUST IN RED SQUARE
 	    //
