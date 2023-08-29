@@ -306,6 +306,15 @@ MixinModule.prototype.receivePayment = function(amount = "", sender = "", recipi
 
 };
 
+/**
+ * Abstract method which should get withdrawl fee
+ * @abstract
+ * @return {String} Private Key
+ */
+MixinModule.prototype.returnWithdrawalFee = function(asset_id, callback) {
+  return this.mixin.checkWithdrawalFee(asset_id, callback);
+};
+
 module.exports = MixinModule;
 
 
