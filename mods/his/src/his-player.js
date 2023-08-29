@@ -524,7 +524,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  //
 	  for (let i = units_available.length; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
-	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+spacekey+"\t"+units_available[i].idx);
 	    }
 	  }
 	  his_self.endTurn();
@@ -555,7 +555,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  //
 	  for (let i = units_available.length; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
-	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+spacekey+"\t"+units_available[i].idx);
 	    }
 	  }
 	  his_self.endTurn();
