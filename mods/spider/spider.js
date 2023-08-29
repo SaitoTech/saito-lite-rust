@@ -1,4 +1,4 @@
-const OnePlayerGameTemplate = require("../../lib/templates/oneplayergametemplate");
+const OnePlayerGameTemplate = require("../../lib/templates/oneplayer-gametemplate");
 const SpiderGameRulesTemplate = require("./lib/spider-game-rules.template");
 const SpiderGameOptionsTemplate = require("./lib/spider-game-options.template");
 const CardStack = require("../../lib/saito/ui/game-cardstack/game-cardstack");
@@ -304,6 +304,8 @@ class Spider extends OnePlayerGameTemplate {
 
     if (this.hints?.length > 0){
       $("#hint").css("visibility", "visible");
+      $(".gameboard").removeClass("nomoves");
+
       $("#hint").on("click", ()=> {
         $("#hint").off();
         let next_hint = this.hints.shift();
@@ -943,7 +945,6 @@ class Spider extends OnePlayerGameTemplate {
           this.game.state.session.losses++;
           final_score = this.game.state.score;
           this.game.state.scores.push(final_score);
-          //this.endGame([], final_score.toString());
         }
         this.newRound();
         if (final_score > 0) {
@@ -962,7 +963,6 @@ class Spider extends OnePlayerGameTemplate {
         this.animateFinalVictory();
         let final_score = this.game.state.score + 400;
         this.game.state.scores.push(final_score);
-        //this.endGame(this.publicKey, final_score.toString());
         this.overlay.show(this.returnStatsHTML("Winner!"), () => {
           this.newRound();
           this.game.queue.push(
