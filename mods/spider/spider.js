@@ -304,6 +304,8 @@ class Spider extends OnePlayerGameTemplate {
 
     if (this.hints?.length > 0){
       $("#hint").css("visibility", "visible");
+      $(".gameboard").removeClass("nomoves");
+
       $("#hint").on("click", ()=> {
         $("#hint").off();
         let next_hint = this.hints.shift();
