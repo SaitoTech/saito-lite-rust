@@ -65,6 +65,7 @@ class ChatManager {
         group = this.mod.returnCommunityChat();
       }
 
+      console.log("rendered group", group);
       if (group) {
         if (!this.popups[group.id]) {
           this.popups[group.id] = new ChatPopup(
@@ -75,9 +76,12 @@ class ChatManager {
           this.popups[group.id].group = group;
         }
 
-        if (this.render_popups_to_screen || this.popups[group.id].is_rendered) {
-          this.popups[group.id].render();
-        }
+        console.log("popup to render", this.popups[group.id]);
+        this.popups[group.id].manually_closed = false;
+        // this.popups[group.id].render();
+        // if (this.render_popups_to_screen || !this.popups[group.id].is_rendered) {
+        this.popups[group.id].render();
+        // }
 
         if (this.render_manager_to_screen) {
           await this.render();
@@ -313,6 +317,7 @@ class ChatManager {
           this.switchTabs();
         }
 
+        console.log("clcked popup", this.popups[gid]);
         // unset manually closed to permit rendering
         this.popups[gid].manually_closed = false;
         this.popups[gid].render();

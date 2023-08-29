@@ -157,7 +157,7 @@ class CallInterfaceVideo {
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,
-      target_container: `.stun-chatbox`,
+      target_container: `.stun-chatbox .${this.remote_container}`,
     };
 
     chat_mod.groups.push(this.chat_group);

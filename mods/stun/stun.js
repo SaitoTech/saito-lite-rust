@@ -153,7 +153,6 @@ class Stun extends ModTemplate {
   }
 
   respondTo(type = "") {
-    console.log(arguments, "arguments");
     // console.log(type, obj);
     let stun_self = this;
     let obj = arguments[1];
@@ -223,6 +222,10 @@ class Stun extends ModTemplate {
           ],
         };
       }
+    }
+
+    if (type === "chat-popup") {
+      console.log("chat popup");
     }
 
     return null;
