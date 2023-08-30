@@ -642,6 +642,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let card = mv[2];
 	  let opsnum = parseInt(mv[3]);
+ 
+          this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for ops");
 
 	  let p = this.returnPlayerOfFaction(faction);
 
@@ -3455,13 +3457,13 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 
 	  let faction = mv[1];
 	  let spacekey = mv[2];
-	  let unit_type = parseInt(mv[3]);
+	  let unit_type = mv[3];
 
-	  if (this.game.space[spacekey]) {
-	    for (let i = 0; i < this.game.space[spacekey].units[faction].length; i++) {
-	      if (this.game.space[spacekey].units[faction][i].type === unit_type) {
-	        this.game.space[spacekey].units[faction].splice(i, 1);
-		i = this.game.space[spacekey].units[faction].length + 10;
+	  if (this.game.spaces[spacekey]) {
+	    for (let i = 0; i < this.game.spaces[spacekey].units[faction].length; i++) {
+	      if (this.game.spaces[spacekey].units[faction][i].type === unit_type) {
+	        this.game.spaces[spacekey].units[faction].splice(i, 1);
+		i = this.game.spaces[spacekey].units[faction].length + 10;
 		break;
 	      }
 	    }
@@ -3481,8 +3483,8 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 
 console.log("spacekey: " + spacekey);
 
-	  if (this.game.space[spacekey]) {
-	    this.game.space[spacekey].units[faction].splice(unit_idx, 1);
+	  if (this.game.spaces[spacekey]) {
+	    this.game.spaces[spacekey].units[faction].splice(unit_idx, 1);
 	  }
 
 	  this.displaySpace(spacekey);
@@ -3502,7 +3504,7 @@ console.log("spacekey: " + spacekey);
 
 	  let space;
 
-	  if (this.game.space[spacekey]) { space = this.game.space[spacekey]; }
+	  if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
 
 	  units_to_destroy.sort();
 	  if (units_to_destroy[0] < units_to_destroy[units_to_destroy.length-1]) {
@@ -3533,8 +3535,8 @@ console.log("spacekey: " + spacekey);
 
 	  let space;
 
-	  if (this.game.space[spacekey]) { space = this.game.space[spacekey]; }
-	  if (this.game.navalspace[spacekey]) { space = this.game.navalspace[spacekey]; }
+	  if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
+	  if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
 
 	  units_to_destroy.sort();
 	  if (units_to_destroy[0] < units_to_destroy[units_to_destroy.length-1]) {
@@ -5171,7 +5173,7 @@ console.log("purging naval units and capturing leader");
 	      //
 	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
-	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
+	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 
@@ -5199,9 +5201,9 @@ console.log("purging naval units and capturing leader");
 
 
 	      if (total_spaces_to_convert == 1) {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Space}`);
+	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Space`);
 	      } else {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
+	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces`);
 	      }
 
 
@@ -5232,7 +5234,7 @@ console.log("purging naval units and capturing leader");
 	      }
 	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
-	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
+	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 	    }
@@ -5856,12 +5858,14 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	if (mv[0] === "fortify") {
 
 	  let spacekey = mv[1];
-	  this.game.spaces[spacekey].type = "fortress";
+	  this.game.spaces[spacekey].fortified = 1;
+	  if (this.game.spaces[spacekey].type != "electorate" && this.game.spaces[spacekey].type != "key") { this.game.spaces[spacekey].type = "fortress"; }
 	  this.game.queue.splice(qe, 1);
 
 	  this.displaySpace(spacekey);
 
-	  return 0;
+	  return 1;
+
 	}
 
 
@@ -6094,6 +6098,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[2];
 	  let card = mv[3];
 	  let ops = mv[4];
+	  let limit = "";
+	  if (mv[5]) { limit = mv[5]; }
 
 	  this.game.queue.splice(qe, 1);
 
@@ -6115,7 +6121,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
 	    this.playerAcknowledgeNotice(`You have ${ops} OPS remaining...`, () => {
-	      this.playerPlayOps(card, faction, ops);
+	      this.playerPlayOps(card, faction, ops, limit);
 	    });
 	  } else {
 	    this.updateStatusAndListCards("Opponent Turn", () => {});

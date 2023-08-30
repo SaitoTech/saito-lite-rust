@@ -865,7 +865,11 @@
             if (space.units[z][zz].navy_leader) {
 	      html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
 	    } else {
-	      html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+              if (space.units[z][zz].reformer) {
+	        html += `<img src="/his/img/tiles/reformers/${space.units[z][zz].img}" />`;
+	      } else {
+	        html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	      }
 	    }
 	  }
 	  tile = html;
@@ -937,6 +941,9 @@
         obj.innerHTML += this.returnPersonages(space);
       }
 
+      if (space.fortified == 1) {
+        obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
+      }
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }

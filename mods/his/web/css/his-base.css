@@ -3,11 +3,31 @@
   padding-top: 15px;
 }
 
+.selectable::before {
+    content: " ";
+    box-shadow: 2rem 2rem 7rem 3rem #FFFC, -2rem -2rem 7rem 3rem #FFFC;
+    height: 6rem;
+    width: 6rem;
+    display: block;
+    margin-top: 2.5rem;
+    margin-left: 2rem;
+    position: absolute;
+}
+
 .warbox {
   height: 9rem;
   width: 9rem;
   position: absolute;
   display: block;
+}
+
+.fortified {
+    display: block;
+    position: absolute;
+    width: 18rem;
+    height: 18rem;
+    left: -4.5rem;
+    top: -4.5rem;
 }
 
 .warbox img {

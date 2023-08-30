@@ -40,8 +40,8 @@ console.log("protestants = " + protestants_player);
 	    document.querySelector(".council-of-trent-overlay .help").innerHTML = `Papacy select up to 4 Debaters. (<span class="finish-selecting-debaters">click when done</span>)`;
 	  }
 	}
-	if (stage == "protestants") {
-	  let debaters = this.mod.returnDebaters("protestants", "uncommitted");
+	if (stage == "protestant") {
+	  let debaters = this.mod.returnDebaters("protestant", "uncommitted");
 	  for (let i = 0; i < debaters.length; i++) {
 	    this.app.browser.addElementToSelector(this.mod.returnCardImage(debaters[i].type), ".council-of-trent-overlay .debaters");
 	  }

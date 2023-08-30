@@ -2811,7 +2811,7 @@
       ports: ["adriatic"],
       neighbours: ["venice","modena","ancona"],
       language: "italian",
-      type: "key"
+      type: "key" 
     }
     spaces['venice'] = {
       top: 1399,
