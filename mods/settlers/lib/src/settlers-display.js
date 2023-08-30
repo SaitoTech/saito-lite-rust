@@ -323,7 +323,7 @@ console.log("DONE GENERATING MAP");
 
             this.playerbox.updateAddress(this.game.playerNames[i-1], i);
             this.playerbox.updateUserline(userline, i);
-            this.playerbox.updateGraphics(statshtml, i);
+            this.playerbox.updateIcons(statshtml, i);
 
             //
             // PLAYERBOX BODY

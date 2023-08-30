@@ -120,8 +120,8 @@
 }
 
 .shim-notice .card {
-  width: 10vw;
-  height: calc(10vw, 1.55);
+  width: min(10vw, 150px);
+  height: auto;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }

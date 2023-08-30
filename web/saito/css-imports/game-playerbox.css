@@ -48,6 +48,11 @@
 }
 
 .game-playerbox-graphics {
+  display: none;
+  position: absolute;
+}
+
+.game-playerbox-icons {
     top: 0rem;
     right: 0rem;
     display: flex;
