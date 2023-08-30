@@ -74,6 +74,18 @@ class Chat extends ModTemplate {
       }
     });
 
+    this.app.connection.on("chat-message-user", async (pkey, message) => {
+      let group = this.returnOrCreateChatGroupFromMembers([this.publicKey, pkey]);
+
+      let newtx = await this.createChatTransaction(group.id, message);
+      await this.sendChatTransaction(this.app, newtx);
+
+      siteMessage("Message sent through chat", 2500);
+      
+    });
+
+
+
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
     this.theme_options = {
@@ -935,12 +947,12 @@ class Chat extends ModTemplate {
       }
     }
 
-    //
-    // swap first two addresses so if private chat we will encrypt with proper shared-secret
-    //
-
     if (members.length == 2) {
       console.log("Chat: Encrypting Message for " + secret_holder);
+
+      //
+      // Only encrypts if we have swapped keys and haveSharedKey, otherwise just signs
+      //
       newtx = await this.app.wallet.signAndEncryptTransaction(newtx, secret_holder);
     } else {
       await newtx.sign();
