@@ -23765,6 +23765,8 @@ if (limit === "build") {
 	}
       }
 
+      his_self.removeSelectable();
+
       $('.option').off();
       $('.space').off();
       $('.hextile').off();
