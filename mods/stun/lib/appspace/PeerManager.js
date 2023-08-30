@@ -212,13 +212,12 @@ class PeerManager {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
 
     if (type === "renegotiate-offer" || type === "offer") {
-      //  if (
-      //    this.getPeerConnection(public_key).connectionState === "connected" ||
-      //   this.getPeerConnection(public_key).remoteDescription !== null ||
-      //    this.getPeerConnection(public_key).connectionState === "stable"
-      //  ) {
-      //    return;
-      //  }
+      // if (
+      //   this.getPeerConnection(public_key).connectionState === "connected" ||
+      //   this.getPeerConnection(public_key).signalingState === "stable"
+      // ) {
+      //   return;
+      // }
 
       console.log(this.getPeerConnection(public_key), "remote description offer");
 
@@ -240,7 +239,7 @@ class PeerManager {
           this.mod.sendStunMessageToServerTransaction(data);
         })
         .catch((error) => {
-          console.error("Error handling offer:", error);
+          // console.error("Error handling offer:", error);
         });
       this.peers.set(data.public_key, this.getPeerConnection(public_key));
     } else if (type === "renegotiate-answer" || type === "answer") {
@@ -249,16 +248,16 @@ class PeerManager {
         this.getPeerConnection(public_key).connectionState,
         "remote description answer"
       );
-      //if (
-      //  this.getPeerConnection(public_key).connectionState === "connected" ||
-      //  this.getPeerConnection(public_key).signalingState === "stable"
-      //)
-      //  return;
+      // if (
+      //   this.getPeerConnection(public_key).connectionState === "connected" ||
+      //   this.getPeerConnection(public_key).signalingState === "stable"
+      // )
+      //   return;
       this.getPeerConnection(public_key)
         .setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp }))
         .then((answer) => {})
         .catch((error) => {
-          console.error("Error handling answer:", error);
+          // console.error("Error handling answer:", error);
         });
       this.peers.set(data.public_key, this.getPeerConnection(public_key));
     } else if (type === "candidate") {
@@ -397,7 +396,7 @@ class PeerManager {
       ) {
         setTimeout(() => {
           // console.log('sending offer');
-          // this.reconnect(peerId, type);
+          this.reconnect(peerId, type);
         }, 10000);
       }
       if (peerConnection.connectionState === "connected") {
