@@ -34,14 +34,12 @@
 .cardFront{
   transform: rotateY(180deg);
 }
-.flipped .cardFront{
+
+.flipped .cardFront, .cardBack {
   transform: rotateY(0deg);
 }
-.cardBack{
-  transform: rotateY(0deg);
-}
+
 .flipped .cardBack{
-  display: none;
   transform: rotateY(-180deg);
 }
 
