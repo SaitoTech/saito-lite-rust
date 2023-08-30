@@ -1,7 +1,7 @@
 const LeagueOverlayTemplate = require("./league.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const Leaderboard = require("./../leaderboard");
-const LeagueWelcomeTemplate = require("./league-welcome.template");
+const LeagueWelcome = require("./league-welcome");
 const JoinLeagueOverlay = require("./join");
 const InvitationLink = require("./../../../../lib/saito/ui/modals/saito-link/saito-link");
 
@@ -106,7 +106,14 @@ class LeagueOverlay {
 
     if (document.querySelector(".contact_admin")) {
       document.querySelector(".contact_admin").onclick = () => {
-        document.querySelector("#admin_details").classList.remove("hidden");
+        if (!this.email_admin){
+          this.overlay.remove();
+          this.email_admin = new LeagueWelcome(this.app, this.mod, this.league);
+          this.email_admin.render();
+          this.league.email_sent = true;
+        } else {
+          salert("You already messaged the league admin. Please be patient");
+        }
       };
     }
 

@@ -98,6 +98,9 @@ class FactionOverlay {
 	  if (his_self.game.state.saint_peters_cathedral['state'] == i) {
             keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1} saint_peters_tile" id="papacy_construction_status_keytile${i+1}"></div>`;
           }
+	  if (his_self.game.state.saint_peters_cathedral['vp'] == i) {
+            keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${7+i} saint_peters_tile" id="papacy_construction_status_keytile${7+i}"></div>`;
+          }
         }
         for (let i = 1; i <= 7; i++) {
           if (i == controlled_keys) {

@@ -6924,6 +6924,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
   returnAllCards(inc_optional=false) {
     // SAITO COMMUNITY
+    let original_deck = this.game.options.deck;
     this.game.options.deck = "saito";
     let x = this.returnEarlyWarCards(inc_optional);
     let y = this.returnMidWarCards(inc_optional);
@@ -6931,6 +6932,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let a = Object.assign({}, x, y);
     let b = Object.assign({}, a, z);
     b['china'] = this.returnChinaCard();
+    this.game.options.deck = original_deck;
     return b;
   }
 
@@ -9498,6 +9500,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
   addCardToDeck(key="", reason="") {
 
+    if (this.game.options.deck != "saito") { return; }
+
     if (!this.game.saito_cards_added) {
       //
       // living history / saito edition -- SAITO COMMUNITY
@@ -9557,6 +9561,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
   }
   removeCardFromDeckNextDeal(key="", reason="") {
 
+    if (this.game.options.deck != "saito") { return; }
+
     if (!this.game.saito_cards_added) {
       //
       // living history / saito edition -- SAITO COMMUNITY
@@ -9582,6 +9588,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
   }
   removeCardFromDeck(key="", reason="") {
+
+    if (this.game.options.deck != "saito") { return; }
 
     if (!this.game.saito_cards_added) {
       //
