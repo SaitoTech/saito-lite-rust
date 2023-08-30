@@ -16,7 +16,7 @@ class Poker extends GameTableTemplate {
     this.description =
       "Texas Hold'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?";
     this.categories = "Games Cardgame Casino";
-    this.card_img_dir = "/poker/img/cards";
+    this.card_img_dir = "/saito/img/arcade/cards";
     this.icon = "fa-solid fa-diamond";
 
     this.minPlayers = 2;

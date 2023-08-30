@@ -65,6 +65,7 @@ class ChatManager {
         group = this.mod.returnCommunityChat();
       }
 
+      console.log("rendered group", group);
       if (group) {
         if (!this.popups[group.id]) {
           this.popups[group.id] = new ChatPopup(
@@ -75,9 +76,12 @@ class ChatManager {
           this.popups[group.id].group = group;
         }
 
-        if (this.render_popups_to_screen || this.popups[group.id].is_rendered) {
-          this.popups[group.id].render();
-        }
+        console.log("popup to render", this.popups[group.id]);
+        this.popups[group.id].manually_closed = false;
+        // this.popups[group.id].render();
+        // if (this.render_popups_to_screen || !this.popups[group.id].is_rendered) {
+        this.popups[group.id].render();
+        // }
 
         if (this.render_manager_to_screen) {
           await this.render();
@@ -89,12 +93,14 @@ class ChatManager {
     // handle requests to re-render chat popups
     //
     app.connection.on("chat-popup-remove-request", (group = null) => {
+      console.log("removing chat popup", group);
       if (!group) {
         return;
       } else {
         if (this.popups[group.id]) {
           this.popups[group.id].remove();
           delete this.popups[group.id];
+          console.log("removed chat popup", group);
         }
       }
     });
@@ -313,6 +319,7 @@ class ChatManager {
           this.switchTabs();
         }
 
+        console.log("clcked popup", this.popups[gid]);
         // unset manually closed to permit rendering
         this.popups[gid].manually_closed = false;
         this.popups[gid].render();
@@ -388,7 +395,7 @@ class ChatManager {
           icon.classList.remove("fa-bell-slash");
         }
       }
-      
+
       document.querySelector(".toggle-notifications").onclick = (e) => {
         if (this.mod.enable_notifications) {
           this.mod.enable_notifications = false;
@@ -399,7 +406,7 @@ class ChatManager {
           this.app.options.chat.enable_notifications = false;
           this.app.storage.saveOptions();
         } else {
-          Notification.requestPermission().then(result => {
+          Notification.requestPermission().then((result) => {
             console.log(result);
             if (result === "granted") {
               this.mod.enable_notifications = true;
@@ -407,16 +414,14 @@ class ChatManager {
                 icon.classList.add("fa-bell");
                 icon.classList.remove("fa-bell-slash");
               }
-      
+
               this.app.options.chat.enable_notifications = true;
               this.app.storage.saveOptions();
             }
           });
         }
-      }
-      
+      };
     }
-    
   }
 }
 

@@ -259,13 +259,13 @@ class Arcade extends ModTemplate {
       // For processing direct link to game invite
       //
       if (arcade_self.app.browser.returnURLParameter("game_id")) {
-        let game_id = arcade_self.app.browser.returnURLParameter("game_id");
+        let game_id_short = arcade_self.app.browser.returnURLParameter("game_id");
 
         if (arcade_self.debug) {
-          console.log("attempting to join game... " + game_id);
+          console.log("attempting to join game... " + game_id_short);
         }
 
-        let game = arcade_self.returnGame(game_id);
+        let game = arcade_self.returnGameFromHash(game_id_short);
 
         if (!game) {
           salert("Sorry, the game is no longer available");
@@ -275,10 +275,11 @@ class Arcade extends ModTemplate {
         if (arcade_self.isAvailableGame(game)) {
           console.log("Make it my game");
           //Mark myself as an invited guest
-          game.msg.options.desired_opponent_publickey = this.publicKey;
+          //game.msg.options.desired_opponent_publickey = this.publicKey;
+          
           //Then we have to remove and readd the game so it goes under "mine"
-          arcade_self.removeGame(game_id);
-          arcade_self.addGame(game, "private");
+          //arcade_self.removeGame(game.signature);
+          //arcade_self.addGame(game, "private");
         }
 
         await app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
@@ -846,7 +847,7 @@ class Arcade extends ModTemplate {
 
         await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
       }
-    } else if (tx.isFrom(game.msg.options.desired_opponent_publickey)) {
+    } else if (game.msg.options?.desired_opponent_publickey && tx.isFrom(game.msg.options.desired_opponent_publickey)) {
       if (this.publicKey == game.msg.originator) {
         siteMessage("Your game invite was declined", 5000);
       }
@@ -1686,6 +1687,20 @@ class Arcade extends ModTemplate {
     return null;
   }
 
+  returnGameFromHash(game_id) {
+    for (let key in this.games) {
+      let game = this.games[key].find((g) => this.app.crypto.hash(g.signature).slice(-6) == game_id);
+      if (game) {
+        if (this.debug) {
+          console.log(`Game found in ${key} list`);
+        }
+        return game;
+      }
+    }
+    return null;
+  }
+
+
   shouldAffixCallbackToModule(modname) {
     if (modname == "Arcade") {
       return 1;
@@ -1756,7 +1771,7 @@ class Arcade extends ModTemplate {
 
     if (accepted_game) {
       data.game = accepted_game.msg.game;
-      data.game_id = game_sig;
+      data.game_id = this.app.crypto.hash(game_sig).slice(-6);
       data.path = "/arcade/";
     } else {
       return;
