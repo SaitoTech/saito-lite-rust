@@ -3451,14 +3451,38 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
         }
 
 
- 	if (mv[0] === "destroy_unit") {
+ 	if (mv[0] === "destroy_unit_by_type") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let unit_type = parseInt(mv[3]);
+
+	  if (this.game.space[spacekey]) {
+	    for (let i = 0; i < this.game.space[spacekey].units[faction].length; i++) {
+	      if (this.game.space[spacekey].units[faction][i].type === unit_type) {
+	        this.game.space[spacekey].units[faction].splice(i, 1);
+		i = this.game.space[spacekey].units[faction].length + 10;
+		break;
+	      }
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+        }
+ 	if (mv[0] === "destroy_unit_by_index") {
 
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  let unit_idx = parseInt(mv[3]);
 
+console.log("spacekey: " + spacekey);
+
 	  if (this.game.space[spacekey]) {
-	    this.game.space[spacekey].units[faction].splice(i, 1);
+	    this.game.space[spacekey].units[faction].splice(unit_idx, 1);
 	  }
 
 	  this.displaySpace(spacekey);
@@ -5283,6 +5307,7 @@ console.log("purging naval units and capturing leader");
 	    this.game.state.saint_peters_cathedral['state'] += 1;
 	    if (this.game.state.saint_peters_cathedral['state'] >= 5) {
 	      this.game.state.saint_peters_cathedral['state'] = 0;
+	      this.updateLog(this.returnFactionName("papacy") + " +1 VP from St. Peter's Basilica");
 	      this.game.state.saint_peters_cathedral['vp'] += 1;
 	    }
 	  }
@@ -6375,27 +6400,27 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
           // military victory
           //
 	  let keys = this.returnNumberOfKeysControlledByFaction(faction);
-	  if (faction === "hapsburg" && heys >= this.game.state.autowin_hapsburg_keys_controlled) {
+	  if (faction === "hapsburg" && keys >= this.game.state.autowin_hapsburg_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "ottoman" && heys >= this.game.state.autowin_ottoman_keys_controlled) {
+	  if (faction === "ottoman" && keys >= this.game.state.autowin_ottoman_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "france" && heys >= this.game.state.autowin_france_keys_controlled) {
+	  if (faction === "france" && keys >= this.game.state.autowin_france_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "england" && heys >= this.game.state.autowin_england_keys_controlled) {
+	  if (faction === "england" && keys >= this.game.state.autowin_england_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "papacy" && heys >= this.game.state.autowin_papacy_keys_controlled) {
+	  if (faction === "papacy" && keys >= this.game.state.autowin_papacy_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;

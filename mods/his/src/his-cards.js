@@ -49,7 +49,7 @@
       }
     }
 
-    if (turn == (this.game.state.schmalkaldic_league_round+1)) {
+    if (turn == (this.game.state.events.schmalkaldic_league_round+1)) {
         new_deck['213'] = deck['213'];
         new_deck['214'] = deck['214'];
         new_deck['215'] = deck['215'];
@@ -2880,7 +2880,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.game.state.leaders.clement_vii = 1;
 	return 1;
       },
-
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
@@ -4662,7 +4661,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      $('.option').on('click', function () {
 	        $('.option').off();
 	        let x = $(this).attr("id").split("_");
-		his_self.addMove("destroy_unit\t"+x[0]+"\t"+x[1]);
+		his_self.addMove("destroy_unit_by_index\t"+x[0]+"\t"+action+"\t"+"\t"+x[1]);
 		his_self.endTurn();            
 	      });
 
@@ -5877,6 +5876,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+        if (faction === "protestant" && this.game.state.events.schmalkaldic_league != 1) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {
@@ -7708,14 +7708,14 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	    	  let action = $(this).attr("id");
 
 		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
-		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		    his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
 		  }
 		  his_self.endTurn();
 		});
 
 	      } else {
 		for (let z = his_self.game.spaces[spacekey].units[factions[0]].length-1; z >= 0; z--) {
-		  his_self.addMove(`destroy_unit\t${factions[0]}\t${z}`);
+		  his_self.addMove(`destroy_unit\t${factions[0]}\t${spacekey}\t${z}`);
 		}
 		his_self.endTurn();
 	      }
@@ -7795,11 +7795,11 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
 		    let u = his_self.game.spaces[spacekey].units[action][z];
 		    if (u.type == "regular" && regulars_to_delete > 0) {
-		      his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      regulars_to_delete--;
 		    }
 		    if (u.type != "regular" && nonregulars_to_delete > 0) {
-		      his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      nonregulars_to_delete--;
 		    }
 		  }
@@ -7828,11 +7828,10 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
 		  let u = his_self.game.spaces[spacekey].units[action][z];
 		  if (u.type == "regular" && regulars_to_delete > 0) {
-		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
-		    regulars_to_delete--;
+		    his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		  }
 		  if (u.type != "regular" && nonregulars_to_delete > 0) {
-		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		    his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		    nonregulars_to_delete--;
 		  }
 		}

@@ -19,6 +19,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
 
     this.animationSpeed = 700;
+    this.card_img_dir = "/saito/img/arcade/cards";
 
     this.app = app;
     this.status = "Beta";
@@ -582,11 +583,10 @@ class Beleaguered extends OnePlayerGameTemplate {
   }
 
   returnCardImageHTML(name) {
-    // return '<img src="/beleaguered/img/cards/C1.png"/>'
     if (name[0] == "E") {
       return "";
     } else {
-      return '<img src="/beleaguered/img/cards/' + name + '.png" />';
+      return `<img src="${this.card_img_dir}/${name}.png" />`;
     }
   }
 

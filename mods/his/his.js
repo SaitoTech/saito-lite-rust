@@ -2818,7 +2818,7 @@ console.log("\n\n\n\n");
       }
     }
 
-    if (turn == (this.game.state.schmalkaldic_league_round+1)) {
+    if (turn == (this.game.state.events.schmalkaldic_league_round+1)) {
         new_deck['213'] = deck['213'];
         new_deck['214'] = deck['214'];
         new_deck['215'] = deck['215'];
@@ -5649,7 +5649,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	his_self.game.state.leaders.clement_vii = 1;
 	return 1;
       },
-
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
@@ -7431,7 +7430,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      $('.option').on('click', function () {
 	        $('.option').off();
 	        let x = $(this).attr("id").split("_");
-		his_self.addMove("destroy_unit\t"+x[0]+"\t"+x[1]);
+		his_self.addMove("destroy_unit_by_index\t"+x[0]+"\t"+action+"\t"+"\t"+x[1]);
 		his_self.endTurn();            
 	      });
 
@@ -8646,6 +8645,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+        if (faction === "protestant" && this.game.state.events.schmalkaldic_league != 1) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {
@@ -10477,14 +10477,14 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	    	  let action = $(this).attr("id");
 
 		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
-		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		    his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
 		  }
 		  his_self.endTurn();
 		});
 
 	      } else {
 		for (let z = his_self.game.spaces[spacekey].units[factions[0]].length-1; z >= 0; z--) {
-		  his_self.addMove(`destroy_unit\t${factions[0]}\t${z}`);
+		  his_self.addMove(`destroy_unit\t${factions[0]}\t${spacekey}\t${z}`);
 		}
 		his_self.endTurn();
 	      }
@@ -10564,11 +10564,11 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
 		    let u = his_self.game.spaces[spacekey].units[action][z];
 		    if (u.type == "regular" && regulars_to_delete > 0) {
-		      his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      regulars_to_delete--;
 		    }
 		    if (u.type != "regular" && nonregulars_to_delete > 0) {
-		      his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      nonregulars_to_delete--;
 		    }
 		  }
@@ -10597,11 +10597,10 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
 		  let u = his_self.game.spaces[spacekey].units[action][z];
 		  if (u.type == "regular" && regulars_to_delete > 0) {
-		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
-		    regulars_to_delete--;
+		    his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		  }
 		  if (u.type != "regular" && nonregulars_to_delete > 0) {
-		    his_self.addMove(`destroy_unit\t${action}\t${z}`);
+		    his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		    nonregulars_to_delete--;
 		  }
 		}
@@ -19193,14 +19192,38 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
         }
 
 
- 	if (mv[0] === "destroy_unit") {
+ 	if (mv[0] === "destroy_unit_by_type") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let unit_type = parseInt(mv[3]);
+
+	  if (this.game.space[spacekey]) {
+	    for (let i = 0; i < this.game.space[spacekey].units[faction].length; i++) {
+	      if (this.game.space[spacekey].units[faction][i].type === unit_type) {
+	        this.game.space[spacekey].units[faction].splice(i, 1);
+		i = this.game.space[spacekey].units[faction].length + 10;
+		break;
+	      }
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+        }
+ 	if (mv[0] === "destroy_unit_by_index") {
 
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  let unit_idx = parseInt(mv[3]);
 
+console.log("spacekey: " + spacekey);
+
 	  if (this.game.space[spacekey]) {
-	    this.game.space[spacekey].units[faction].splice(i, 1);
+	    this.game.space[spacekey].units[faction].splice(unit_idx, 1);
 	  }
 
 	  this.displaySpace(spacekey);
@@ -21025,6 +21048,7 @@ console.log("purging naval units and capturing leader");
 	    this.game.state.saint_peters_cathedral['state'] += 1;
 	    if (this.game.state.saint_peters_cathedral['state'] >= 5) {
 	      this.game.state.saint_peters_cathedral['state'] = 0;
+	      this.updateLog(this.returnFactionName("papacy") + " +1 VP from St. Peter's Basilica");
 	      this.game.state.saint_peters_cathedral['vp'] += 1;
 	    }
 	  }
@@ -22117,27 +22141,27 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
           // military victory
           //
 	  let keys = this.returnNumberOfKeysControlledByFaction(faction);
-	  if (faction === "hapsburg" && heys >= this.game.state.autowin_hapsburg_keys_controlled) {
+	  if (faction === "hapsburg" && keys >= this.game.state.autowin_hapsburg_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "ottoman" && heys >= this.game.state.autowin_ottoman_keys_controlled) {
+	  if (faction === "ottoman" && keys >= this.game.state.autowin_ottoman_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "france" && heys >= this.game.state.autowin_france_keys_controlled) {
+	  if (faction === "france" && keys >= this.game.state.autowin_france_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "england" && heys >= this.game.state.autowin_england_keys_controlled) {
+	  if (faction === "england" && keys >= this.game.state.autowin_england_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
 	  }
-	  if (faction === "papacy" && heys >= this.game.state.autowin_papacy_keys_controlled) {
+	  if (faction === "papacy" && keys >= this.game.state.autowin_papacy_keys_controlled) {
 	    let player = this.returnPlayerOfFaction(faction);
 	    this.sendGameOverTransaction([this.game.players[player-1]], "Military Victory");
 	    return 0;
@@ -23227,7 +23251,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  //
 	  for (let i = units_available.length; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
-	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+spacekey+"\t"+units_available[i].idx);
 	    }
 	  }
 	  his_self.endTurn();
@@ -23258,7 +23282,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  //
 	  for (let i = units_available.length; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
-	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+spacekey+"\t"+units_available[i].idx);
 	    }
 	  }
 	  his_self.endTurn();
@@ -28709,7 +28733,6 @@ return;
   }
 
   addSelectable(el) {
-console.log("here for");
     if (!el.classList.contains("selectable")) {
       el.classList.add('selectable');
     }
@@ -28717,8 +28740,10 @@ console.log("here for");
 
   removeSelectable() {
     document.querySelectorAll(".selectable").forEach((el) => {
+      el.onclick = (e) => {};
       el.classList.remove('selectable');
     });
+    $('.space').off();
   }
 
   displaySpaces() {

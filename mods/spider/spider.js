@@ -304,6 +304,8 @@ class Spider extends OnePlayerGameTemplate {
 
     if (this.hints?.length > 0){
       $("#hint").css("visibility", "visible");
+      $(".gameboard").removeClass("nomoves");
+
       $("#hint").on("click", ()=> {
         $("#hint").off();
         let next_hint = this.hints.shift();
@@ -365,23 +367,25 @@ class Spider extends OnePlayerGameTemplate {
       }
       let suit = last_card[0];
       let value = parseInt(last_card.substring(1));
-      let stack_index = this.cardStacks[i].getCardCount() - 1 
+      let stack_index = this.cardStacks[i].getCardCount() - 1;
       for (let j = stack_index - 1; j >= 0; j--){
         let next_card = this.cardStacks[i].cards[j];
-        if (next_card[0] == suit && parseInt(next_card.substring(1)) == ++value){
+        if (parseInt(next_card.substring(1)) == ++value && next_card[0] == suit){
           stack_index--;
         }else{
           break;
         }
       }
 
+      //Requery value
+      value = parseInt(this.cardStacks[i].cards[stack_index].substring(1)) + 1;
+
       // stack_index will be the depth of the maximum selectable substack from this stack
       // now we see if and where we can place it
-      
       for (let j = 0; j < 10; j++){
         if (j == i) { continue; }
         let bottom_card = this.cardStacks[j].getTopCardValue();
-        if (!bottom_card || parseInt(bottom_card.substring(1)) == (value + 1)) {
+        if (!bottom_card || parseInt(bottom_card.substring(1)) == value) {
           this.hints.push({
             source: i,
             target: j,

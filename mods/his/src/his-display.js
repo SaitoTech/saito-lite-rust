@@ -988,7 +988,6 @@
   }
 
   addSelectable(el) {
-console.log("here for");
     if (!el.classList.contains("selectable")) {
       el.classList.add('selectable');
     }
@@ -996,8 +995,10 @@ console.log("here for");
 
   removeSelectable() {
     document.querySelectorAll(".selectable").forEach((el) => {
+      el.onclick = (e) => {};
       el.classList.remove('selectable');
     });
+    $('.space').off();
   }
 
   displaySpaces() {

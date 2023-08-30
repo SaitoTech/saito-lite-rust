@@ -80,7 +80,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
           if (newPlayer) {
             html += `<div class="error_line"><span>Please backup your account. <span class="backup_account attention">Enable login</span></span></div>`;
           }
-          if (league.unverified) {
+          if (league.unverified && !league?.email_sent) {
             html += `<div class="error_line"><span class="contact_admin attention">Message the admin</span> for full access to the league</div>`;
           }
         }
@@ -90,9 +90,15 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
     }
   }
 
-  html += `<div class="league-overlay-controls${
-    newPlayer || league.unverified || (league.admin && !isMember) ? " hidden" : ""
-  }">`;
+  html += `<div class="league-overlay-controls`
+
+  let extra_class = (newPlayer || league.unverified || (league.admin && !isMember)) ? " hidden" : "";
+  
+  if (league.admin && league.admin == mod.publicKey){
+    extra_class = "";
+  }
+
+  html += extra_class + `">`;
 
   if (league.admin == mod.publicKey) {
     html += `<button id="league-invite-button" class="saito-button saito-button-primary">invite link</button>`;
@@ -101,7 +107,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
     html += `<button id="league-chat-button" class="saito-button saito-button-primary">league chat</button>`;
   }
 
-  html += `<button id="league-overlay-create-game-button" class="saito-button saito-button-primary">create game</button>
+  html += `<button id="league-overlay-create-game-button" class="saito-button saito-button-primary${(league.admin && !isMember)? " hidden":""}">create game</button>
              </div>
 
             </div>

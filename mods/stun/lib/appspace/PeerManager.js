@@ -313,6 +313,7 @@ class PeerManager {
         remoteStream.addTrack(event.track);
         //this.remoteStreams.set("Presentation", { remoteStream, peerConnection });
         //console.log(this.remoteStreams, "presentation stream");
+
         this.app.connection.emit("add-remote-stream-request", "presentation", remoteStream);
         setTimeout(() => {
           this.trackIsPresentation = false;
@@ -328,8 +329,11 @@ class PeerManager {
 
         this.remoteStreams.set(peerId, { remoteStream, peerConnection });
         console.log(this.remoteStreams, "remote stream new");
-        this.app.connection.emit("add-remote-stream-request", peerId, remoteStream);
 
+        // let stun_mod = this.app.modules.returnModule("Stun");
+        // console.log(stun_mod, "stun mopd");
+
+        this.app.connection.emit("add-remote-stream-request", peerId, remoteStream);
         this.analyzeAudio(remoteStream, peerId);
       }
     });
