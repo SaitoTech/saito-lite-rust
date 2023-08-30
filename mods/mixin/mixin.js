@@ -109,8 +109,20 @@ class Mixin extends ModTemplate {
       let saito_publickey = message.data.saito_publickey;
       let mixin_publickey = message.data.mixin_publickey;
 
+      let m = "";
+
       if (app.BROWSER == 0) {
-        let m = JSON.parse(process.env.MIXIN);
+
+        if (typeof process.env.MIXIN != 'undefined') {
+          m = JSON.parse(process.env.MIXIN);
+        } else {
+          m = {
+            appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
+            sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
+            privateKey:
+              "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
+          };
+        }
 
         if (m.appId) {
           let method = "POST";
@@ -598,7 +610,7 @@ class Mixin extends ModTemplate {
       return;
     }
 
-    let d = res.data;
+    let d = res;
 
     mixin_self.mixin.session_id = d.data.session_id;
     mixin_self.mixin.user_id = d.data.user_id;
@@ -705,7 +717,17 @@ class Mixin extends ModTemplate {
       // process directly if ENV variable set
       //
       if (process.env.MIXIN) {
-        m = JSON.parse(process.env.MIXIN);
+
+        if (typeof process.env.MIXIN != 'undefined') {
+          m = JSON.parse(process.env.MIXIN);
+        } else {
+          m = {
+            appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
+            sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
+            privateKey:
+              "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
+          };
+        }
 
         let appId = m.appId;
         let sessionId = m.sessionId;

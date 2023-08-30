@@ -306,6 +306,25 @@ MixinModule.prototype.receivePayment = function(amount = "", sender = "", recipi
 
 };
 
+/**
+ * Abstract method which should get withdrawl fee
+ * @abstract
+ * @return {Function} Callback function
+ */
+MixinModule.prototype.returnWithdrawalFee = function(asset_id, callback=null) {
+  return this.mixin.checkWithdrawalFee(asset_id, callback);
+};
+
+/**
+ * Abstract method which returns snapshot of asset withdrawls, deposits
+ * @abstract
+ * @return {Function} Callback function
+ */
+
+MixinModule.prototype.returnHistory = function(asset_id="", records=20, callback=null) {
+  return this.mixin.fetchSnapshots(asset_id, records, callback);
+};
+
 module.exports = MixinModule;
 
 
