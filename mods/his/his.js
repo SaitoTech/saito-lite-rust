@@ -7023,9 +7023,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
-		if (!his_self.isSpaceUnderSiege(space.key)) { return 0; }
-		if (!his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 0; }
-		if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+		if (his_self.isSpaceUnderSiege(space.key)) { return 0; }
+		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
+		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
+	        return 0;
 	      } ,
 	      null ,
 	      null ,
@@ -10313,7 +10314,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	      his_self.updateStatus("selected...");
 	      let s = his_self.game.spaces[spacekey];
 	      if (s.home === "independent" && s.political === "") {
-                his_self.addMove("build\tland\tindependent\t"+"regular"+"\t"+spacekey);
 	      } else {
 		let controller = s.political;
 		if (controller == "") { controller = s.home; }
@@ -15845,34 +15845,42 @@ console.log("MOVE: " + mv[0]);
 	    this.game.queue.push("event\tprotestant\t008");
 
 	  } else {
+
 	    this.game.queue.push("card_draw_phase");
 
 
 	    //
 	    // round 2 - zwingli in zurich
 	    //
-	    this.addDebater("protestant", "zwingli-debater");
-	    this.addReformer("protestant", "zurich", "zwingli-reformer");
+	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "zwingli-debater");
+	      this.addReformer("protestant", "zurich", "zwingli-reformer");
+	    }
 
 	    //
 	    // round 4 - calvin in genoa
 	    //
-	    this.addDebater("protestant", "calvin-debater");
-	    this.addReformer("protestant", "genoa", "calvin-reformer");
+	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "calvin-debater");
+	      this.addReformer("protestant", "genoa", "calvin-reformer");
+	    }
 
 	    //
 	    // round 5 - cranmer in london
 	    //
-	    this.addDebater("protestant", "cranmer-debater");
-	    this.addDebater("protestant", "latimer-debater");
-	    this.addDebater("protestant", "coverdale-debater");
-	    this.addReformer("protestant", "genoa", "cranmer-reformer");
+	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "cranmer-debater");
+	      this.addDebater("protestant", "latimer-debater");
+	      this.addDebater("protestant", "coverdale-debater");
+	      this.addReformer("protestant", "genoa", "cranmer-reformer");
+	    }
 
 	    //
 	    // round 6 - maurice of saxony
 	    //
-	    this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
-
+	    if (this.game.state.round == 2) {
+	      this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
+	    }
 
 
 
@@ -16136,7 +16144,7 @@ console.log("MOVE: " + mv[0]);
 
 	  if (this.game.player === player) {
 
-            his_self.playerSelectSpaceWithFilter(
+            if (0 == his_self.playerSelectSpaceWithFilter(
 
               "Select Protestant Electorate for Maurice of Saxony",
 
@@ -16154,7 +16162,10 @@ console.log("MOVE: " + mv[0]);
 
 	      true
 
-            );
+            )) {
+	      his_self.addMove("NOTIFY\tNo valid electorates for Maurice of Saxony to enter - skipping");
+	      his_self.endTurn();
+	    };
 
 	  } else {
 	    this.updateStatus("Protestants placing Maurice of Saxony");

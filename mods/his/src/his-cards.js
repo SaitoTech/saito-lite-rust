@@ -4254,9 +4254,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
-		if (!his_self.isSpaceUnderSiege(space.key)) { return 0; }
-		if (!his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 0; }
-		if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+		if (his_self.isSpaceUnderSiege(space.key)) { return 0; }
+		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
+		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
+	        return 0;
 	      } ,
 	      null ,
 	      null ,
@@ -7544,7 +7545,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	      his_self.updateStatus("selected...");
 	      let s = his_self.game.spaces[spacekey];
 	      if (s.home === "independent" && s.political === "") {
-                his_self.addMove("build\tland\tindependent\t"+"regular"+"\t"+spacekey);
 	      } else {
 		let controller = s.political;
 		if (controller == "") { controller = s.home; }

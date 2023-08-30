@@ -60,34 +60,42 @@ console.log("MOVE: " + mv[0]);
 	    this.game.queue.push("event\tprotestant\t008");
 
 	  } else {
+
 	    this.game.queue.push("card_draw_phase");
 
 
 	    //
 	    // round 2 - zwingli in zurich
 	    //
-	    this.addDebater("protestant", "zwingli-debater");
-	    this.addReformer("protestant", "zurich", "zwingli-reformer");
+	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "zwingli-debater");
+	      this.addReformer("protestant", "zurich", "zwingli-reformer");
+	    }
 
 	    //
 	    // round 4 - calvin in genoa
 	    //
-	    this.addDebater("protestant", "calvin-debater");
-	    this.addReformer("protestant", "genoa", "calvin-reformer");
+	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "calvin-debater");
+	      this.addReformer("protestant", "genoa", "calvin-reformer");
+	    }
 
 	    //
 	    // round 5 - cranmer in london
 	    //
-	    this.addDebater("protestant", "cranmer-debater");
-	    this.addDebater("protestant", "latimer-debater");
-	    this.addDebater("protestant", "coverdale-debater");
-	    this.addReformer("protestant", "genoa", "cranmer-reformer");
+	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "cranmer-debater");
+	      this.addDebater("protestant", "latimer-debater");
+	      this.addDebater("protestant", "coverdale-debater");
+	      this.addReformer("protestant", "genoa", "cranmer-reformer");
+	    }
 
 	    //
 	    // round 6 - maurice of saxony
 	    //
-	    this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
-
+	    if (this.game.state.round == 2) {
+	      this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
+	    }
 
 
 
@@ -351,7 +359,7 @@ console.log("MOVE: " + mv[0]);
 
 	  if (this.game.player === player) {
 
-            his_self.playerSelectSpaceWithFilter(
+            if (0 == his_self.playerSelectSpaceWithFilter(
 
               "Select Protestant Electorate for Maurice of Saxony",
 
@@ -369,7 +377,10 @@ console.log("MOVE: " + mv[0]);
 
 	      true
 
-            );
+            )) {
+	      his_self.addMove("NOTIFY\tNo valid electorates for Maurice of Saxony to enter - skipping");
+	      his_self.endTurn();
+	    };
 
 	  } else {
 	    this.updateStatus("Protestants placing Maurice of Saxony");
