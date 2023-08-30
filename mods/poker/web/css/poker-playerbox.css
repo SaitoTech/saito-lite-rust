@@ -10,13 +10,21 @@
   overflow: visible;
 }
 .game-playerbox.game-playerbox-seat-1 {
+  height: 250px;
   overflow: auto;
+}
+
+.game-playerbox.game-playerbox-seat-4 {
+  height: 100px;
 }
 .game-playerbox-1 .game-playerbox-seat-1 .game-playerbox-head .saito-user .game-playerbox-graphics {
   display: none;
   overflow: auto;
 }
 
+.game-playerbox-manager.game-playerbox-seat-manager {
+  display: none;
+}
 
 .game-playerbox {
   min-width: 250px;

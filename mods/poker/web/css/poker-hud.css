@@ -7,16 +7,14 @@
 }
 
 .status ul li , .option {
-    height: 8rem;
+    height: 6rem;
     border-top: 1px solid var(--saito-border-color);
     width: 100%;
     font-size: 1.8rem;
-    display: list-item;
-    line-height: 5.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     list-style: none;
-    cursor: pointer;
-    text-align: center;
-    padding: 1rem;
     cursor: pointer;
 }
 

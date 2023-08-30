@@ -156,15 +156,6 @@ class Poker extends GameTableTemplate {
         game_mod.handleStatsMenu();
       },
     });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      },
-    });
 
     /****
      this.menu.addSubMenuOption("game-game", {
@@ -194,6 +185,7 @@ class Poker extends GameTableTemplate {
 
     this.log.render();
 
+    this.playerbox.container = "body";
     this.playerbox.mode = 2; // poker/cards
     this.playerbox.render();
 
