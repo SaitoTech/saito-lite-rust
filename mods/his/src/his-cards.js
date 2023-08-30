@@ -517,7 +517,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
    	    let msg = "Choose Protestant Card:";
             let html = '<ul>';
 	    for (let i = 0; i < cards.length; i++) {
-              html += `<li class="option" id="${i}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
+              html += `<li class="option showcard" id="${cards[i]}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
 	    }
     	    html += '</ul>';
 
@@ -2522,6 +2522,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	    his_self.updateLog(his_self.popup('007') + ": Luther enters Debate");
 
+console.log("defender debater: " + his_self.game.state.theological_debate.round1_defender_debater);
+
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
@@ -2530,24 +2532,24 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      if (his_self.game.state.theological_debate.attacker === "papacy") {
 	        if (his_self.game.state.theological_debate.round == 1) {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
-	  	    his_self.commitDebater(d.key);
+	  	    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        } else {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
-		    his_self.commitDebater(d.key);
+		    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        }
 	      } else {
 	        if (his_self.game.state.theological_debate.round == 1) {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
-		    his_self.commitDebater(d.key);
+		    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        } else {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
-		    his_self.commitDebater(d.key);
+		    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        }
@@ -2988,6 +2990,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league_round = his_self.game.state.round;
           his_self.game.state.events.schmalkaldic_league = 1;
+	  his_self.schmalkaldic_overlay.render();
           his_self.setEnemies("protestant","papacy");
           his_self.setEnemies("protestant","hapsburg");
           his_self.setAllies("papacy","hapsburg");

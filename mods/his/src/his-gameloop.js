@@ -63,7 +63,6 @@ console.log("MOVE: " + mv[0]);
 
 	    this.game.queue.push("card_draw_phase");
 
-
 	    //
 	    // round 2 - zwingli in zurich
 	    //
@@ -75,7 +74,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // round 4 - calvin in genoa
 	    //
-	    if (this.game.state.round == 2) {
+	    if (this.game.state.round == 4) {
 	      this.addDebater("protestant", "calvin-debater");
 	      this.addReformer("protestant", "genoa", "calvin-reformer");
 	    }
@@ -83,7 +82,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // round 5 - cranmer in london
 	    //
-	    if (this.game.state.round == 2) {
+	    if (this.game.state.round == 5) {
 	      this.addDebater("protestant", "cranmer-debater");
 	      this.addDebater("protestant", "latimer-debater");
 	      this.addDebater("protestant", "coverdale-debater");
@@ -93,7 +92,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // round 6 - maurice of saxony
 	    //
-	    if (this.game.state.round == 2) {
+	    if (this.game.state.round == 6) {
 	      this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
 	    }
 
@@ -5395,6 +5394,14 @@ console.log("NEW WORLD PHASE!");
 	  // Flip all debaters to their uncommitted (white) side, and
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
+	  //
+	  // form Schmalkaldic League if unformed by end of round 4
+	  //
+	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
+	    this.game.queue.push("ACKNOWLEDGE\tSchmalkaldic League Forms");
+	    this.game.queue.push("event\tprotestant\t013");
+	  }
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -5493,6 +5500,14 @@ console.log("NEW WORLD PHASE!");
 	  // return 0;
 
 	  //
+	  // no diplomacy phase round 1
+	  //
+	  if (this.game.state.round == 1) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
+	  //
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
@@ -5505,9 +5520,13 @@ console.log("NEW WORLD PHASE!");
 	  // 2-player game? Diplomacy Deck
 	  //
 	  if (this.game.players.length == 2) {
+
+	    let cards_to_deal = 2;
+	    if (this.game.state.round > 2) { cards_to_deal = 1; }
+
 	    for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
 	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t2");
+    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t"+cards_to_deal);
 	      }
 	    }
             this.game.queue.push("SHUFFLE\t2");
@@ -6396,7 +6415,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // 2P restriction on which keys can 
 	  //
 	  if (this.game.players.length == 2) {
-	    if (space != "metz" && space != "liege" && this.game.spaces[space].language != "german" && this.game.spaces[space].langauge != "italian") { 
+	    if (space != "metz" && space != "liege" && this.game.spaces[space].language != "german" && this.game.spaces[space].language != "italian") { 
 	      this.updateLog("NOTE: only Metz, Liege and German and Italian spaces may change control in the 2P game");
 	    } else {
 	      this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));

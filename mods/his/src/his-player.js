@@ -1273,8 +1273,14 @@ if (limit === "build") {
     //
     if (card != "") {
       this.addMove("discard\t"+faction+"\t"+card);
+      if (this.game.deck[0]) {
+        if (this.game.deck[0].cards[card]) {
+          if (this.game.deck[0].cards[card].ops == ops) {
+            this.addEndMove("NOTIFY\t" + this.returnFactionName(faction) + " plays " + this.popup(card) + " for ops");
+          }
+        }
+      }
     }
-    this.addMove("NOTIFY\t" + this.returnFactionName(faction) + " plays " + this.popup(card) + " for ops");
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player, faction, limit);

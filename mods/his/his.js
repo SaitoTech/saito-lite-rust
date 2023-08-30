@@ -8,6 +8,7 @@ const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
+const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
@@ -51,6 +52,7 @@ class HereIStand extends GameTemplate {
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
     this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
     this.debaters_overlay = new DebatersOverlay(this.app, this);  // language zone selection
+    this.schmalkaldic_overlay = new SchmalkaldicOverlay(this.app, this);  // schmalkaldic league
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
@@ -3286,7 +3288,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
    	    let msg = "Choose Protestant Card:";
             let html = '<ul>';
 	    for (let i = 0; i < cards.length; i++) {
-              html += `<li class="option" id="${i}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
+              html += `<li class="option showcard" id="${cards[i]}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
 	    }
     	    html += '</ul>';
 
@@ -5291,6 +5293,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 	    his_self.updateLog(his_self.popup('007') + ": Luther enters Debate");
 
+console.log("defender debater: " + his_self.game.state.theological_debate.round1_defender_debater);
+
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
@@ -5299,24 +5303,24 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      if (his_self.game.state.theological_debate.attacker === "papacy") {
 	        if (his_self.game.state.theological_debate.round == 1) {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
-	  	    his_self.commitDebater(d.key);
+	  	    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        } else {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
-		    his_self.commitDebater(d.key);
+		    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        }
 	      } else {
 	        if (his_self.game.state.theological_debate.round == 1) {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
-		    his_self.commitDebater(d.key);
+		    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        } else {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
-		    his_self.commitDebater(d.key);
+		    his_self.commitDebater("protestant", d.key);
 	  	    his_self.deactivateDebater(d.key);
 	          }
 	        }
@@ -5757,6 +5761,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league_round = his_self.game.state.round;
           his_self.game.state.events.schmalkaldic_league = 1;
+	  his_self.schmalkaldic_overlay.render();
           his_self.setEnemies("protestant","papacy");
           his_self.setEnemies("protestant","hapsburg");
           his_self.setAllies("papacy","hapsburg");
@@ -15848,7 +15853,6 @@ console.log("MOVE: " + mv[0]);
 
 	    this.game.queue.push("card_draw_phase");
 
-
 	    //
 	    // round 2 - zwingli in zurich
 	    //
@@ -15860,7 +15864,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // round 4 - calvin in genoa
 	    //
-	    if (this.game.state.round == 2) {
+	    if (this.game.state.round == 4) {
 	      this.addDebater("protestant", "calvin-debater");
 	      this.addReformer("protestant", "genoa", "calvin-reformer");
 	    }
@@ -15868,7 +15872,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // round 5 - cranmer in london
 	    //
-	    if (this.game.state.round == 2) {
+	    if (this.game.state.round == 5) {
 	      this.addDebater("protestant", "cranmer-debater");
 	      this.addDebater("protestant", "latimer-debater");
 	      this.addDebater("protestant", "coverdale-debater");
@@ -15878,7 +15882,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // round 6 - maurice of saxony
 	    //
-	    if (this.game.state.round == 2) {
+	    if (this.game.state.round == 6) {
 	      this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
 	    }
 
@@ -21180,6 +21184,14 @@ console.log("NEW WORLD PHASE!");
 	  // Flip all debaters to their uncommitted (white) side, and
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
+	  //
+	  // form Schmalkaldic League if unformed by end of round 4
+	  //
+	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
+	    this.game.queue.push("ACKNOWLEDGE\tSchmalkaldic League Forms");
+	    this.game.queue.push("event\tprotestant\t013");
+	  }
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -21278,6 +21290,14 @@ console.log("NEW WORLD PHASE!");
 	  // return 0;
 
 	  //
+	  // no diplomacy phase round 1
+	  //
+	  if (this.game.state.round == 1) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
+	  //
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
@@ -21290,9 +21310,13 @@ console.log("NEW WORLD PHASE!");
 	  // 2-player game? Diplomacy Deck
 	  //
 	  if (this.game.players.length == 2) {
+
+	    let cards_to_deal = 2;
+	    if (this.game.state.round > 2) { cards_to_deal = 1; }
+
 	    for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
 	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t2");
+    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t"+cards_to_deal);
 	      }
 	    }
             this.game.queue.push("SHUFFLE\t2");
@@ -22181,7 +22205,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // 2P restriction on which keys can 
 	  //
 	  if (this.game.players.length == 2) {
-	    if (space != "metz" && space != "liege" && this.game.spaces[space].language != "german" && this.game.spaces[space].langauge != "italian") { 
+	    if (space != "metz" && space != "liege" && this.game.spaces[space].language != "german" && this.game.spaces[space].language != "italian") { 
 	      this.updateLog("NOTE: only Metz, Liege and German and Italian spaces may change control in the 2P game");
 	    } else {
 	      this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));
@@ -24061,8 +24085,14 @@ if (limit === "build") {
     //
     if (card != "") {
       this.addMove("discard\t"+faction+"\t"+card);
+      if (this.game.deck[0]) {
+        if (this.game.deck[0].cards[card]) {
+          if (this.game.deck[0].cards[card].ops == ops) {
+            this.addEndMove("NOTIFY\t" + this.returnFactionName(faction) + " plays " + this.popup(card) + " for ops");
+          }
+        }
+      }
     }
-    this.addMove("NOTIFY\t" + this.returnFactionName(faction) + " plays " + this.popup(card) + " for ops");
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player, faction, limit);
@@ -27782,6 +27812,7 @@ return;
   }
 
   commitDebater(faction, debater, activate=1) {
+
     let his_self = this;
 
     this.game.state.debater_committed_this_impulse[faction] = 1;

@@ -497,6 +497,7 @@
   }
 
   commitDebater(faction, debater, activate=1) {
+
     let his_self = this;
 
     this.game.state.debater_committed_this_impulse[faction] = 1;
