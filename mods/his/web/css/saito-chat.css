@@ -1,5 +1,8 @@
 
 .chat-container {
-  z-index: 160;
+  z-index: 400;
+}
+.chat-container.active {
+  z-index: 400;
 }
 

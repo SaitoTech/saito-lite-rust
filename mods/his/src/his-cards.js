@@ -2157,7 +2157,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
             $('.option').off();
             $('.option').on('click', function () {
               let selected_reformer = $(this).attr("id");
-	      his_self.addMove("excommunicate_reformer\t"+selected_reformer);
+	      his_self.addEndMove("excommunicate_reformer\t"+selected_reformer);
 
               let msg = "Convene Theological Debate?";
               let html = '<ul>';
@@ -2172,6 +2172,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                 let action2 = $(this).attr("id");
 
 		if (action2 === "yes") {
+		  his_self.excommunicateReformer(selected_reformer);
 		  his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
 		  return;
 		}
@@ -2293,82 +2294,107 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
             let language_zone = $(this).attr("id");
 
-            let msg = "Leigzip Debate Format?";
+            let msg = "Target Committed or Uncommitted Protestant?";
             let html = '<ul>';
-            html += '<li class="option" id="select">Pick My Debater</li>';
-            if (1 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
-              html += '<li class="option" id="prohibit">Prohibit Protestant Debater</li>';
+            if (1 <= his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
+              html += '<li class="option" id="uncommitted">Uncommitted</li>';
+            }
+            if (1 <= his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+              html += '<li class="option" id="committed">Committed</li>';
             }
             html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
-  
+
             $('.option').off();
             $('.option').on('click', function () {
 
-              let opt = $(this).attr("id");
+              let is_committed = $(this).attr("id");
+	      if (is_committed == "uncommitted") { is_committed = 1; } else { is_committed = 0; }
 
-	      if (opt === "select") {
+              let msg = "Leigzip Debate Format?";
+              let html = '<ul>';
+              html += '<li class="option" id="select">Pick My Debater</li>';
+	      // or prohibit uncommitted debaters
+              if (1 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", is_committed)) {
+                html += '<li class="option" id="prohibit">Prohibit Protestant Debater</li>';
+              }
+              html += '</ul>';
 
-                let msg = "Select Uncommitted Papal Debater:";
-                let html = '<ul>';
-		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
-		  let d = his_self.game.state.debaters[i];
-		  if (d.faction === "papacy") {
-            	    html += `<li class="option" id="${d.type}">${d.name}</li>`;
-		  }
-		}
-		html += '</ul>';
-                his_self.updateStatusWithOptions(msg, html);
+              his_self.updateStatusWithOptions(msg, html);
   
-                $('.option').off();
-                $('.option').on('mouseover', function() {
-                  let action2 = $(this).attr("id");
-                  if (his_self.debaters[action2]) {
-                    his_self.cardbox.show(action2);
-                  }
-                });
-                $('.option').on('mouseout', function() {
-                  let action2 = $(this).attr("id");
-                  if (his_self.debaters[action2]) {
-                    his_self.cardbox.hide(action2);
-                  }
-                });
-                $('.option').on('click', function () {
-                  his_self.language_zone_overlay.hide();
-                  let selected_papal_debater = $(this).attr("id");
-	          his_self.addMove("theological_debate");
-        	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
-        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
-		  his_self.endTurn();
-		});
-	
-	      } else {
+              $('.option').off();
+              $('.option').on('click', function () {
 
-                let msg = "Prohibit Protestant Debater:";
-                let html = '<ul>';
-		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
-		  let d = his_self.game.state.debaters[i];
-		  if (d.faction !== "papacy" && d.language_zone === language_zone) {
-            	    html += `<li class="option" id="${i}">${d.name}</li>`;
+                let opt = $(this).attr("id");
+
+	        if (opt === "select") {
+
+                  let msg = "Select Uncommitted Papal Debater:";
+                  let html = '<ul>';
+		  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		    let d = his_self.game.state.debaters[i];
+		    if (d.faction === "papacy") {
+            	      html += `<li class="option" id="${d.type}">${d.name}</li>`;
+		    }
 		  }
-		}
-		html += '</ul>';
-                his_self.updateStatusWithOptions(msg, html);
+		  html += '</ul>';
+                  his_self.updateStatusWithOptions(msg, html);
   
-                $('.option').off();
-                $('.option').on('click', function () {
-                  his_self.language_zone_overlay.hide();
-                  let prohibited_protestant_debater = $(this).attr("id");
-	          his_self.addMove("theological_debate");
-        	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
-        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t\t"+prohibited_protestant_debater);
-		  his_self.endTurn();
-		});
+                  $('.option').off();
+                  $('.option').on('mouseover', function() {
+                    let action2 = $(this).attr("id");
+                    if (his_self.debaters[action2]) {
+                      his_self.cardbox.show(action2);
+                    }
+                  });
+                  $('.option').on('mouseout', function() {
+                    let action2 = $(this).attr("id");
+                    if (his_self.debaters[action2]) {
+                      his_self.cardbox.hide(action2);
+                    }
+                  });
+                  $('.option').on('click', function () {
+                    his_self.language_zone_overlay.hide();
+                    let selected_papal_debater = $(this).attr("id");
+	            his_self.addMove("theological_debate");
+        	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
+        	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	            his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
+		    his_self.endTurn();
+		  });
 	
-	      }
+	        } else {
+
+                  let msg = "Prohibit Protestant Debater:";
+                  let html = '<ul>';
+		  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		    let d = his_self.game.state.debaters[i];
+		    if (d.faction !== "papacy" && d.language_zone === language_zone && d.committed == is_committed) {
+            	      html += `<li class="option" id="${i}">${d.name}</li>`;
+		    }
+		  }
+		  html += '</ul>';
+                  his_self.updateStatusWithOptions(msg, html);
+  
+                  $('.option').off();
+                  $('.option').on('click', function () {
+                    his_self.language_zone_overlay.hide();
+                    let prohibited_protestant_debater = $(this).attr("id");
+	            his_self.addMove("theological_debate");
+        	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
+        	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	 	    if (is_committed == 0) {
+	              his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t\t"+prohibited_protestant_debater);
+		    } else {
+	              his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"committed\t\t"+prohibited_protestant_debater);
+		    }
+		    his_self.endTurn();
+		  });
+	
+	        }
+
+	      });
 	    });
 	  });
 
@@ -2462,6 +2488,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
 	  if (his_self.game.state.leaders.luther == 1) {
+	    if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
+	    if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
+	    if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
+	    if (his_self.game.state.theological_debate.round2_defender_debater == "luther-debater") { return 0; }
 	    if (player === his_self.returnPlayerOfFaction("protestant")) {
 	      if (his_self.canPlayerPlayCard("protestant", "007")) { return 1; }
 	    }
@@ -2515,14 +2545,15 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           his_self.game.queue.splice(qe, 1);
 
+	  his_self.updateLog("Protestants trigger " + his_self.popup("007"));
+	  his_self.game.queue.push("ACKNOWLEDGE\tProtestants swap Martin Luther into debate");
+
 	  //
 	  // second option -- only possible if Wartburg not in-play
 	  //
 	  if (his_self.game.state.events.wartburg == 0) {
 
-	    his_self.updateLog(his_self.popup('007') + ": Luther enters Debate");
 
-console.log("defender debater: " + his_self.game.state.theological_debate.round1_defender_debater);
 
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
@@ -2561,6 +2592,11 @@ console.log("defender debater: " + his_self.game.state.theological_debate.round1
 	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 	      if (his_self.game.state.debaters[i].key === "luther-debater") {
 		if (his_self.game.state.debaters[i].committed == 1) { is_luther_committed = 1; }
+	      }
+	    }
+	    for (let i = 0; i < his_self.game.state.excommunicated.length; i++) {
+	      if (his_self.game.state.excommunicated[i].key === "luther-debater") {
+		if (his_self.game.state.excommunicated[i].committed == 1) { is_luther_committed = 1; }
 	      }
 	    }
 
@@ -2602,6 +2638,8 @@ console.log("defender debater: " + his_self.game.state.theological_debate.round1
 	      }
 	    }
 	  }
+console.log("1 defender debater: " + his_self.game.state.theological_debate.defender_debater_power);
+console.log("2 defender debater: " + his_self.game.state.theological_debate.defender_debater_bonus);
 
 	  return 1;
 
@@ -3637,6 +3675,7 @@ console.log("defender debater: " + his_self.game.state.theological_debate.round1
         if (mv[0] == "siege_mining") {
           his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.players_info[his_self.game.state.active_player-1].tmp_roll_bonus = 3;
+alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + JSON.stringify(his_self.game.state.players_info[his_self.game.state.active_player-1].tmp_roll_bonus));
 	}
         return 1;
       }
@@ -6392,7 +6431,7 @@ console.log("defender debater: " + his_self.game.state.theological_debate.round1
 	let p = his_self.returnPlayerOfFaction("protestant");
 
 	//
-	// get wartburg card if in discards
+	// protestants get wartburg card if in discards
 	//
         if (his_self.game.deck[0].discards["037"]) {
 	  delete his_self.game.deck[0].discards["037"];
@@ -6442,38 +6481,44 @@ console.log("defender debater: " + his_self.game.state.theological_debate.round1
 	  res3.push(res2[i]);
 	}
 
-	let msg = "Select Towns to Convert Protestant: ";
-        let html = '<ul>';
-        for (let i = 0; i < res3.length; i++) {
-	  html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
-	}
-        html += '</ul>';
+	let fp = his_self.returnPlayerOfFaction(faction);
+	if (his_self.game.player == fp) {
 
-    	his_self.updateStatusWithOptions(msg, html);
-
-	let total_picked = 0;
-	let picked = [];
-
-	$('.option').off();
-	$('.option').on('click', function () {
-
-	  let action = $(this).attr("id");
-
-	  if (!picked.includes(action)) {
-	    picked.push(action);
-	    total_picked++;
-	    document.getElementById(action).remove();
+  	  let msg = "Select Towns to Convert Protestant: ";
+          let html = '<ul>';
+          for (let i = 0; i < res3.length; i++) {
+	    html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
 	  }
+          html += '</ul>';
 
-	  if (total_picked >= 2) {
-	    $('option').off();
-	    for (let i = 0; i < 2; i++) {
-	      his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
+    	  his_self.updateStatusWithOptions(msg, html);
+
+	  let total_picked = 0;
+	  let picked = [];
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+	    let action = $(this).attr("id");
+
+	    if (!picked.includes(action)) {
+	      picked.push(action);
+	      total_picked++;
 	    }
-	    his_self.endTurn();
-	  }
 
-	});
+	    if (total_picked >= 2) {
+	      his_self.updateStatus("submitting");
+	      $('option').off();
+	      for (let i = 0; i < 2; i++) {
+	        his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
+	      }
+	      his_self.endTurn();
+	    }
+	  });
+
+	} else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("078"));
+	}
       },
     }
     deck['079'] = { 
