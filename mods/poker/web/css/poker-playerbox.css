@@ -10,13 +10,29 @@
   overflow: visible;
 }
 .game-playerbox.game-playerbox-seat-1 {
-  overflow: auto;
-}
-.game-playerbox-1 .game-playerbox-seat-1 .game-playerbox-head .saito-user .game-playerbox-graphics {
-  display: none;
-  overflow: auto;
+  height: 250px;
 }
 
+.game-playerbox.game-playerbox-seat-4 {
+  height: 100px;
+}
+
+.game-playerbox-graphics {
+  display: flex;
+}
+
+.game-playerbox-head .saito-user .game-playerbox-icons {
+  grid-row: 1;
+  position: absolute;
+}
+
+.game-playerbox-head .saito-user .saito-userline {
+  grid-column: 2 / span 3;
+}
+
+.game-playerbox-manager.game-playerbox-seat-manager {
+  display: none;
+}
 
 .game-playerbox {
   min-width: 250px;
@@ -68,8 +84,10 @@
 
 .game-playerbox-graphics {
   position: absolute;
-  height: 100%;
+  height: 100px;
   width: 100%;
+  left: 100%;
+  top: 20%;
   z-index: -10;
 }
 

@@ -390,7 +390,6 @@ class Stun extends ModTemplate {
       request,
       data: _data,
     };
-    this.app.connection.emit("relay-send-message", data);
 
     recipients.forEach((recipient) => {
       let data = {
@@ -500,12 +499,10 @@ class Stun extends ModTemplate {
           app.connection.emit("stun-init-peer-manager", data.ui);
           app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
 
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
-
           // send the information to the other peers and ask them to join the call
           // show-call-interface
-
           app.connection.emit("start-stun-call");
+          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
         } else {
           //send to sender to stop connection
           let _data = {

@@ -48,6 +48,11 @@
 }
 
 .game-playerbox-graphics {
+  display: none;
+  position: absolute;
+}
+
+.game-playerbox-icons {
     top: 0rem;
     right: 0rem;
     display: flex;
@@ -94,7 +99,7 @@
 .game-playerbox-seat-4 {
   position: absolute;
   left: 50vw;
-  top: 30px;
+  top: 40px;
   transform: translateX(-50%);
 }
 

@@ -156,15 +156,6 @@ class Poker extends GameTableTemplate {
         game_mod.handleStatsMenu();
       },
     });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      },
-    });
 
     /****
      this.menu.addSubMenuOption("game-game", {
@@ -194,6 +185,7 @@ class Poker extends GameTableTemplate {
 
     this.log.render();
 
+    this.playerbox.container = "body";
     this.playerbox.mode = 2; // poker/cards
     this.playerbox.render();
 
@@ -700,12 +692,13 @@ class Poker extends GameTableTemplate {
 
           // if everyone has folded - start a new round
           this.settleLastRound();
-          this.clearTable();
           this.game.queue.push(
             `ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}\tfold`
           );
 
-          return 1;
+          this.clearTable();
+
+          return 0;
         }
         this.game.state.plays_since_last_raise++;
 
@@ -1062,8 +1055,10 @@ class Poker extends GameTableTemplate {
           this.overlay.closebox = true;
           this.overlay.show(`<div class="shim-notice">${winner_html}${updateHTML}</div>`, () => {
             this.overlay.closebox = false;
-            this.clearTable();
-            this.restartQueue();
+            $(".status").on("click", ()=> {
+              $(".status").off();
+              this.clearTable();
+            });
           });
           this.app.browser.makeDraggable;
           `saito-overlay${this.overlay.ordinal}`;
@@ -1673,15 +1668,16 @@ class Poker extends GameTableTemplate {
   }
 
   returnPlayerRole(player) {
-    if (player == this.game.state.button_player) {
-      return "dealer";
-    }
     if (player == this.game.state.small_blind_player) {
       return "small blind";
     }
     if (player == this.game.state.big_blind_player) {
       return "big blind";
     }
+    if (player == this.game.state.button_player) {
+      return "dealer";
+    }
+
     return "";
   }
 
@@ -1695,6 +1691,8 @@ class Poker extends GameTableTemplate {
         if (!preserveLog) {
           this.refreshPlayerLog("", i);
         }
+
+        this.playerbox.updateIcons(`<i class="fa-solid fa-circle-dot"></i>`, this.game.state.button_player);
       }
     } catch (err) {
       console.log("error displaying player box", err);
@@ -1791,11 +1789,18 @@ class Poker extends GameTableTemplate {
     }
 
     $(".winner").removeClass("winner");
-    $("#pot").fadeOut();
-    if (document.querySelector(".flipped")) {
+    $(".game-playerbox-graphics .hand").animate({ left: "1000px" }, 1200, "swing", function () {
+      $(this).remove();
+    });
+
+    await this.timeout(600);
+
+    $("#pot").fadeOut(1250);
+
+    /*if (document.querySelector(".flipped")) {
       $(".flipped")
         .removeClass("flipped")
-        .delay(200)
+        .delay(20)
         .queue(function () {
           $("#deal")
             .children()
@@ -1810,10 +1815,21 @@ class Poker extends GameTableTemplate {
         .animate({ left: "1000px" }, 1200, "swing", function () {
           $(this).remove();
         });
-    }
-    $(".game-playerbox-graphic .hand").animate({ left: "1000px" }, 1200, "swing", function () {
-      $(this).remove();
+    }*/
+
+    $($("#deal").children().get().reverse()).each(function(index){
+      $(this).delay(50 * index).queue(function(){
+        $(this).removeClass("flipped").delay(20 * index).queue(function(){
+          $(this).animate({left: "1000px"}, 1200, "swing", function(){
+            $(this).remove();
+          }).dequeue();
+        }).dequeue();
+      });
     });
+
+    await this.timeout(1000);
+    this.restartQueue();
+
   }
 
   refreshPlayerLog(html, player) {
