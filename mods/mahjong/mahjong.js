@@ -412,6 +412,8 @@ class Mahjong extends OnePlayerGameTemplate {
   attachEventsToBoard() {
     let mahjong_self = this;
 
+    $(".slot").css("transition", "opacity 1.5s");
+
     $(".slot").off();
     $(".slot").on("click", function () {
       let card = $(this).attr("id");
