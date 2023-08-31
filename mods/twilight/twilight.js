@@ -9374,12 +9374,14 @@ if (inc_optional == true) {
     let saito_edition_removed = this.game.saito_cards_removed;
     let saito_edition_added   = this.game.saito_cards_added;
 
+    let original_deck = this.game.options.deck;
     this.game.options.deck = "saito";
     let a = this.returnEarlyWarCards();
     let b = this.returnMidWarCards();
     let c = this.returnLateWarCards();
     let d = Object.assign({}, a, b);
     let fulldeck = Object.assign({}, d, c);
+    this.game.options.deck = original_deck;
 
     let cards_added_to_deck = 0;
     let cards_removed_from_deck = 0;
@@ -9520,12 +9522,14 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       if (!this.game.options[key]) { this.game.options[key] = 1; } else { delete this.game.options[key]; }
     }
 
+    let original_deck = this.game.options.deck;
     this.game.options.deck = "saito";
     a = this.returnEarlyWarCards();
     b = this.returnMidWarCards();
     c = this.returnLateWarCards();
     let d = Object.assign({}, a, b);
     let fulldeck = Object.assign({}, d, c);
+    this.game.options.deck = original_deck;
 
     //
     // add to deck
