@@ -19,7 +19,6 @@ class Spider extends OnePlayerGameTemplate {
 
     this.status = "Beta";
     this.difficulty = 2; //default medium, 1 = easy, 4 = hard
-    this.animationSpeed = 1000;
 
     this.selected_stack = null;
     this.possible_moves = null; //When using auto mode, some temporary memory
@@ -331,7 +330,9 @@ class Spider extends OnePlayerGameTemplate {
 
         helper.style.zIndex = 100;
 
-        let as = `${this.animationSpeed / 1800}s`; //Make it faster
+        this.animationSpeed = 750;
+
+        let as = `${this.animationSpeed / 1000}s`; 
         helper.style.transition = `left ${as}, top ${as}, width ${as}, height ${as}`;
 
         for (let i = next_hint.index; i < this.cardStacks[next_hint.source].getCardCount(); i++) {
@@ -611,7 +612,11 @@ class Spider extends OnePlayerGameTemplate {
 
     helper.style.zIndex = 100;
 
-    let as = `${this.animationSpeed / 2000}s`; //Make it faster
+
+    //>>>>>>>> Change the animation speed!
+    this.animationSpeed = 450;
+
+    let as = `${this.animationSpeed / 1000}s`; //Make it faster
     helper.style.transition = `left ${as}, top ${as}, width ${as}, height ${as}`;
 
 
@@ -717,7 +722,7 @@ class Spider extends OnePlayerGameTemplate {
           await spider_self.commitMove(top_card_to_move, target_card_stack.name, num_of_cards_to_move);
           if (!spider_self.checkStack(target_card_stack.name)) {
             spider_self.calculateHints();
-            setTimeout(spider_self.attachEventsToBoard.bind(spider_self), 50);  
+            setTimeout(spider_self.attachEventsToBoard.bind(spider_self), 20);  
           }
         }
       );
@@ -765,7 +770,7 @@ class Spider extends OnePlayerGameTemplate {
           await this.timeout(30);
           card_to_reveal.classList.remove("facedown");
           card_to_reveal.classList.add("faceup");
-          await this.timeout(400);
+          await this.timeout(300);
         }
 
         return topCard;
@@ -1002,6 +1007,8 @@ class Spider extends OnePlayerGameTemplate {
           console.log("Animate card deal");
 
           $(".empty_slot").remove();
+
+          this.animationSpeed = 900;
 
           while (this.game.deck[0].hand.length > 0) {
             let card = this.game.deck[0].hand.pop();
