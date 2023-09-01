@@ -303,6 +303,14 @@
     return false;
   }
 
+  isSpaceAdjacentToProtestantReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let z = 0; z < space.neighbours.length; z++) {
+      if (this.doesSpaceContainProtestantReformer(space.neighbours[z])) { return true; }
+    }
+    return false;
+  }
+
   doesSpaceContainProtestantReformer(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units["protestant"].length; i++) {

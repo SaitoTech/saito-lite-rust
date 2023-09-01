@@ -2811,6 +2811,8 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 		!his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		(space.language === language_zone || language_zone == "all") &&
 		(
+			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
+			||
 			his_self.isSpaceAdjacentToReligion(space, "protestant")
 			||
 			his_self.doesSpaceContainProtestantReformer(space)
@@ -2818,6 +2820,15 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
 		)
 	      ) {
+console.log("THIS");
+console.log("THIS");
+console.log("THIS");
+console.log("THIS");
+console.log("THIS SPACE MATCHES: " + space.name);
+console.log("THIS");
+console.log("THIS");
+console.log("THIS");
+
 	        return 1;
 	      }
 	      return 0;
@@ -2855,7 +2866,15 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 		  space.religion === "catholic" &&
 		  !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		  (space.language === language_zone || language_zone == "all") &&
-		  his_self.isSpaceAdjacentToReligion(space, "protestant")
+		  (
+			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
+			||
+			his_self.isSpaceAdjacentToReligion(space, "protestant")
+			||
+			his_self.doesSpaceContainProtestantReformer(space)
+			||
+			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
+		  )
 	        ) {
 		  return 1;
 	        }

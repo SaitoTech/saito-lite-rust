@@ -1943,7 +1943,9 @@ console.log("2. insert index: " + index_to_insert_moves);
 
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
             this.game.queue.splice(qe, 1);
-	    return 1;
+	    if (this.game.state.active_player != this.game.player) {
+	      return 1;
+	    }
  	  }
 
 	  //
@@ -2037,8 +2039,10 @@ console.log("2. insert index: " + index_to_insert_moves);
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-                  his_self.prependMove("RESOLVE\t"+his_self.publicKey);
-                  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
+	          if (this.game.state.skip_counter_or_acknowledge == 1) {
+                    his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+                  }
+		  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
                 }
               }
@@ -2048,7 +2052,9 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      //
 	      // this ensures we clear regardless of choice
 	      //
-              his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+	      if (this.game.state.skip_counter_or_acknowledge == 1) {
+                his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+	      }
 	      his_self.updateStatus("acknowledged");
               await his_self.endTurn();
               return 0;
@@ -5509,6 +5515,18 @@ console.log("NEW WORLD PHASE!");
 	  // no diplomacy phase round 1
 	  //
 	  if (this.game.state.round == 1) {
+
+            this.game.queue.push("SHUFFLE\t2");
+            this.game.queue.push("DECKRESTORE\t2");
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKENCRYPT\t2\t"+(i));
+	    }
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKXOR\t2\t"+(i));
+	    }
+	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
+    	    this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
+
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -6326,6 +6344,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let spacekey = mv[1];
 	  this.game.spaces[spacekey].unrest = 1;
+	  this.displaySpace(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+ 	if (mv[0] === "remove_unrest") {
+
+	  let spacekey = mv[1];
+	  this.game.spaces[spacekey].unrest = 0;
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);

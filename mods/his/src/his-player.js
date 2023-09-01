@@ -3331,12 +3331,13 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
   // 2P requires only that it is in protestant or catholic religious influence
   canPlayerRemoveUnrest(his_self, player, faction) {
- 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
+console.log("SPACES IN UNREST: " + JSON.stringify(spaces_in_unrest));
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
-      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
+      if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
+      if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }
+console.log("return no");
     return 0;
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
@@ -3378,7 +3379,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
     his_self.playerSelectSpaceWithFilter(
 
-      "Select Space to Pacify:",
+      "Select Space to Remove Unrest:",
 
       function(space) {
         if (spaces_to_fix.includes(space.key)) { return 1; }
@@ -3386,7 +3387,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       },
 
       function(destination_spacekey) {
-	his_self.addMove("pacify\t"+faction+"\t"+destination_spacekey);
+	his_self.addMove("remove_unrest\t"+faction+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
 

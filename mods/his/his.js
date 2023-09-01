@@ -1052,14 +1052,17 @@ Habsburg conquistadores:
       committed		: 	0,
       menuOption  :       function(his_self, menu, player, extra) {
         if (menu == "protestant_reformation") {
+console.log("Bucer in Protestant Reformation");
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
+console.log(" ... returning option");
             return { faction : extra , event : 'bucer-debater', html : `<li class="option" id="bucer-debater">Martin Bucer +1 Roll</li>` };
           }
         } 
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+console.log("can player commit debater: " + his_self.canPlayerCommitDebater("protestant", "bucer-debater"));
         if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "bucer-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"].includes(spacekey)) { 
@@ -2338,7 +2341,11 @@ console.log("\n\n\n\n");
 
 	  this.setAllies("hungary", "hapsburg");
 	  this.setAllies("venice", "papacy");
-	  
+
+
+	  // TESTING
+          this.addReformer("protestant", "zurich", "zwingli-reformer");
+
 
 
 	} else {
@@ -5583,6 +5590,8 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 		!his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		(space.language === language_zone || language_zone == "all") &&
 		(
+			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
+			||
 			his_self.isSpaceAdjacentToReligion(space, "protestant")
 			||
 			his_self.doesSpaceContainProtestantReformer(space)
@@ -5590,6 +5599,15 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
 		)
 	      ) {
+console.log("THIS");
+console.log("THIS");
+console.log("THIS");
+console.log("THIS");
+console.log("THIS SPACE MATCHES: " + space.name);
+console.log("THIS");
+console.log("THIS");
+console.log("THIS");
+
 	        return 1;
 	      }
 	      return 0;
@@ -5627,7 +5645,15 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 		  space.religion === "catholic" &&
 		  !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		  (space.language === language_zone || language_zone == "all") &&
-		  his_self.isSpaceAdjacentToReligion(space, "protestant")
+		  (
+			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
+			||
+			his_self.isSpaceAdjacentToReligion(space, "protestant")
+			||
+			his_self.doesSpaceContainProtestantReformer(space)
+			||
+			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
+		  )
 	        ) {
 		  return 1;
 	        }
@@ -11378,6 +11404,14 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       if (this.game.spaces[space.neighbours[i]].religion === religion) {
 	return true;
       }
+    }
+    return false;
+  }
+
+  isSpaceAdjacentToProtestantReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let z = 0; z < space.neighbours.length; z++) {
+      if (this.doesSpaceContainProtestantReformer(space.neighbours[z])) { return true; }
     }
     return false;
   }
@@ -17784,7 +17818,9 @@ console.log("2. insert index: " + index_to_insert_moves);
 
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
             this.game.queue.splice(qe, 1);
-	    return 1;
+	    if (this.game.state.active_player != this.game.player) {
+	      return 1;
+	    }
  	  }
 
 	  //
@@ -17878,8 +17914,10 @@ console.log("2. insert index: " + index_to_insert_moves);
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-                  his_self.prependMove("RESOLVE\t"+his_self.publicKey);
-                  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
+	          if (this.game.state.skip_counter_or_acknowledge == 1) {
+                    his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+                  }
+		  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
                 }
               }
@@ -17889,7 +17927,9 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      //
 	      // this ensures we clear regardless of choice
 	      //
-              his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+	      if (this.game.state.skip_counter_or_acknowledge == 1) {
+                his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+	      }
 	      his_self.updateStatus("acknowledged");
               await his_self.endTurn();
               return 0;
@@ -21350,6 +21390,18 @@ console.log("NEW WORLD PHASE!");
 	  // no diplomacy phase round 1
 	  //
 	  if (this.game.state.round == 1) {
+
+            this.game.queue.push("SHUFFLE\t2");
+            this.game.queue.push("DECKRESTORE\t2");
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKENCRYPT\t2\t"+(i));
+	    }
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKXOR\t2\t"+(i));
+	    }
+	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
+    	    this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
+
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -22167,6 +22219,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let spacekey = mv[1];
 	  this.game.spaces[spacekey].unrest = 1;
+	  this.displaySpace(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+ 	if (mv[0] === "remove_unrest") {
+
+	  let spacekey = mv[1];
+	  this.game.spaces[spacekey].unrest = 0;
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -26200,12 +26263,13 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
   // 2P requires only that it is in protestant or catholic religious influence
   canPlayerRemoveUnrest(his_self, player, faction) {
- 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
+console.log("SPACES IN UNREST: " + JSON.stringify(spaces_in_unrest));
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
-      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
+      if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
+      if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }
+console.log("return no");
     return 0;
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
@@ -26247,7 +26311,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
     his_self.playerSelectSpaceWithFilter(
 
-      "Select Space to Pacify:",
+      "Select Space to Remove Unrest:",
 
       function(space) {
         if (spaces_to_fix.includes(space.key)) { return 1; }
@@ -26255,7 +26319,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       },
 
       function(destination_spacekey) {
-	his_self.addMove("pacify\t"+faction+"\t"+destination_spacekey);
+	his_self.addMove("remove_unrest\t"+faction+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
 
