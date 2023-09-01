@@ -1,8 +1,8 @@
 .arcade-game-overlay {
   background: var(--saito-arcade-background);
   width: 60vw;
-  max-width: 140rem;
-  min-width: 66rem;
+  max-width: 100rem;
+  min-width: min(66rem,95vw);
   height: max-content;
   max-height: 90vh;
   padding: 2rem;

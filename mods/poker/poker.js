@@ -1055,10 +1055,7 @@ class Poker extends GameTableTemplate {
           this.overlay.closebox = true;
           this.overlay.show(`<div class="shim-notice">${winner_html}${updateHTML}</div>`, () => {
             this.overlay.closebox = false;
-            $(".status").on("click", ()=> {
-              $(".status").off();
-              this.clearTable();
-            });
+            this.clearTable();
           });
           this.app.browser.makeDraggable;
           `saito-overlay${this.overlay.ordinal}`;
