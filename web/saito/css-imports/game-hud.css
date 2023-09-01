@@ -166,6 +166,8 @@
     margin-right: auto;
     overflow-y: auto;
     font-size: 1.6rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .controls ul li , .options {
@@ -175,11 +177,12 @@
     width: 100%;
     font-size: 1.8rem;
     display: list-item;
-    line-height: 5.75rem;
     list-style: none;
     cursor: pointer;
-    text-align: center;
     padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .controls ul li:hover , .options {

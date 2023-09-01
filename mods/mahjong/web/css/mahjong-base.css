@@ -5,30 +5,15 @@
 
 
 
-#hint{
-  margin-top: 1em;
-  cursor: pointer;
-}
-
-.tip .tiptext{
-  min-width: unset;
-  width: 100%;
-}
-
-.hint_btn{
-  font-weight: bold;
-  font-style: italic;
-}
 
 .mahj-rowbox {
   margin: 80px;
-  padding: 15px;
-  padding-left: 70px;
+  margin-left: 160px;
   display: grid;
   grid-template-columns: repeat(14, 80px) !important;
   grid-template-rows: repeat(21, 107px);
-  width: 1200px;
-  height: 825px;
+  width: 1120px;
+  height: 856px;
   /*max-width: min(90vw,120vh);*/
   /*grid-gap: min(0px,1vh);*/
   /*height: fit-content;*/
@@ -54,16 +39,11 @@
   opacity: 0;
   pointer-events: none;
   filter: none;
-  border: none;
 }
 
 .slot.selected{
-  background-color: #00ff00;
-  box-shadow: -7px -9px 1px 5px #00ff00;
-}
-.slot.invalid{
-  background-color: #ff0000;
-  box-shadow: -7px -9px 1px 5px #ff0000;
+  background-color: #0000ff;
+  box-shadow: -7px -9px 1px 5px #0000ff;
 }
 
 .slot.hint{
@@ -71,7 +51,7 @@
   box-shadow: -7px -9px 1px 5px #ffff00;
 }
 
-.slot.selected img, .slot.invalid img, .slot.hint img{
+.slot.selected img, .slot.hint img{
   opacity: 0.75;
 }
 
@@ -82,13 +62,27 @@
  bottom: 0;
 }
 
-.slot.available:hover{
-  background-color: ghostwhite;
-  box-shadow: -7px -9px 1px 5px ghostwhite;
+.slot.available {
   cursor: pointer;
 }
+
 .slot.available img:hover{
-  filter: brightness(1.5);
+  filter: brightness(1.4);
+}
+
+.slot.valid.available:hover{
+  background-color: #00ff00;
+  box-shadow: -7px -9px 1px 5px #00ff00;
+}
+
+
+.slot.invalid.available:hover {
+  background-color: #ff0000;
+  box-shadow: -7px -9px 1px 5px #ff0000;
+}
+
+.slot.valid.available:hover img, .slot.invalid.available:hover img {
+  opacity: 0.65;
 }
 
 .row > img {
@@ -119,7 +113,8 @@
 
 .gameboard {
   position: absolute;
-  background-image: url(/saito/img/arcade/greenfelt.jpg);
+  /*background-image: url(/saito/img/arcade/greenfelt.jpg);*/
+  background-image: url(/wuziqi/img/BG.jpg);
   background-size: cover;
   width: 100%;
   height: 100%;
@@ -131,8 +126,13 @@
   position: absolute;
   font-size: 20px;
   max-width: 200px;
-  margin: 80px 20px;
+  margin: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
+
 .logobox div{
   border-radius: 5px;
 }
@@ -164,7 +164,7 @@ div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="
   z-index: 2;
   position: relative;
   top: -714%;  
-  left: -20%;
+  left: -17%;
 }
 div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="row13"], div[id^="row14"]{
 
@@ -174,47 +174,71 @@ div[id^="row15"], div[id^="row16"], div[id^="row17"], div[id^="row18"] {
   z-index: 4;
   position: relative;
   top: -1228%;
-  left: -40%;
+  left: -36%;
 }
 
 div[id^="row19"], div[id^="row20"] {
   z-index: 6;
   position: relative;
   top: -1542%;
-  left: -60%;
+  left: -54%;
 }
 
 div[id^="row21"] {
   z-index: 8;
   position: relative;
   top: -1710%;
-  left: -80%;
+  left: -70%;
 }
 
+/********************************
+/** The side display of tiles **/
+/********************************/
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  margin-top: 1rem;
+}
 
+.scoreboard_tile {
+  width: 100%;
+}
+
+.tiles .scoreboard_tile img {
+  margin-bottom: unset;
+}
+
+.notfound {
+  filter: grayscale(100%) brightness(0.7);
+}
+
+@media screen and (orientation: landscape) and (max-height: 900px) {
+  .tiles {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 700px) {
+  .logobox > img{
+    display: none;
+  }
+
+}
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .logobox{
     order: 1;
-    max-width: 150px;
-  }
-  .logobox img{
-    display: none;
+    max-width: 180px;
+    min-width: 100px;
   }
   .hidable{
     display: none;
   }
-  .rowbox{
-    margin-top: 0;
-    padding: 15px;
-    order: 2;
-  }
 
-  .status-header {
-    display: none;
+  .mahj-rowbox {
+    margin: 40px 60px 40px 80px;
   }
-
-}
+ }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
   .gameboard{
@@ -222,30 +246,52 @@ div[id^="row21"] {
     grid-template-rows: 1fr 1fr;
     
   }
-  .logobox{
-    order: 2;
-    /*grid-row: 2 / 2;*/
-    max-width: unset;
-    margin: 5px auto;
-    font-size: 18px;
-    align-self: end;
-  }
-  .logobox img{
-    display: none;
-  }
-  .hidable{
-    display: none;
-  }
-  .logobox .status, .logobox .status-text-menu{
-    width: min(500px, 90vw);
-  }
-  .rowbox{
-    max-width: 100vw;
-    order: 1;
+
+
+  .mahj-rowbox {
+    margin: 100px 10px 0 10px;
   }
 
-  .logobox .status-header {
-    display: none;  
-  } 
+  .logobox{
+    margin: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+  }
+
+  .logobox > img, .hidable {
+    display: none;
+  }
+
+
 }
 
+
+
+/******* RULES ************/
+.rules-overlay, .solitaire-stats-overlay {
+  font-family: papyrus;
+  border-radius: 5px;
+  border: 3px solid var(--saito-red);
+}
+
+.rules-overlay h1 {
+  text-align: center;
+}
+
+.rules-overlay li {
+  list-style: none;
+  margin: 1rem 0;
+  font-size: 18px;
+}
+
+.rules-overlay img {
+  max-width: 50vh;
+  border-radius: 30px;
+}
+
+.image_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
