@@ -2344,7 +2344,7 @@ console.log("\n\n\n\n");
 
 
 	  // TESTING
-          this.addReformer("protestant", "zurich", "zwingli-reformer");
+          //this.addReformer("protestant", "zurich", "zwingli-reformer");
 
 
 
@@ -17914,7 +17914,7 @@ console.log("2. insert index: " + index_to_insert_moves);
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-	          if (this.game.state.skip_counter_or_acknowledge == 1) {
+	          if (his_self.game.state.skip_counter_or_acknowledge != 1) {
                     his_self.prependMove("RESOLVE\t"+his_self.publicKey);
                   }
 		  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
@@ -17927,7 +17927,7 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      //
 	      // this ensures we clear regardless of choice
 	      //
-	      if (this.game.state.skip_counter_or_acknowledge == 1) {
+	      if (his_self.game.state.skip_counter_or_acknowledge != 1) {
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 	      }
 	      his_self.updateStatus("acknowledged");
@@ -28876,8 +28876,8 @@ return;
     //
     // do not show under some conditions
     //
-    if (space.political == space.home) { show_tile = 0; }
-    if (space.political === "") { show_tile = 0; }
+    if (space.political == space.home && space.religion != "protestant") { show_tile = 0; }
+    if (space.political === "" && space.religion != "protestant") { show_tile = 0; }
 
     //
     // and force for keys

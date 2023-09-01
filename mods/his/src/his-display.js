@@ -905,8 +905,8 @@
     //
     // do not show under some conditions
     //
-    if (space.political == space.home) { show_tile = 0; }
-    if (space.political === "") { show_tile = 0; }
+    if (space.political == space.home && space.religion != "protestant") { show_tile = 0; }
+    if (space.political === "" && space.religion != "protestant") { show_tile = 0; }
 
     //
     // and force for keys

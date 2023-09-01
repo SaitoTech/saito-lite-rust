@@ -157,7 +157,7 @@ console.log("\n\n\n\n");
 
 
 	  // TESTING
-          this.addReformer("protestant", "zurich", "zwingli-reformer");
+          //this.addReformer("protestant", "zurich", "zwingli-reformer");
 
 
 

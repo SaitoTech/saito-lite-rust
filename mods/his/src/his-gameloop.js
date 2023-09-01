@@ -2039,7 +2039,7 @@ console.log("2. insert index: " + index_to_insert_moves);
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-	          if (this.game.state.skip_counter_or_acknowledge == 1) {
+	          if (his_self.game.state.skip_counter_or_acknowledge != 1) {
                     his_self.prependMove("RESOLVE\t"+his_self.publicKey);
                   }
 		  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
@@ -2052,7 +2052,7 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      //
 	      // this ensures we clear regardless of choice
 	      //
-	      if (this.game.state.skip_counter_or_acknowledge == 1) {
+	      if (his_self.game.state.skip_counter_or_acknowledge != 1) {
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 	      }
 	      his_self.updateStatus("acknowledged");
