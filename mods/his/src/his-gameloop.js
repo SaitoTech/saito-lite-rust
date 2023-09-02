@@ -42,8 +42,8 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("diplomacy_phase");
-this.game.queue.push("is_testing");
+	  this.game.queue.push("diplomacy_phase");
+//this.game.queue.push("is_testing");
 
 
 	  //
@@ -51,9 +51,9 @@ this.game.queue.push("is_testing");
 	  //
 	  if (this.game.state.round == 1) {
 
-//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-//  	    this.game.queue.push("diet_of_worms");
-//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+  	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
@@ -1935,6 +1935,11 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  return 1;
 
         }
+
+
+	//
+	// this bit of code is complicated, because it stops and starts game-flow but selecively.
+	//
 	if (mv[0] === "counter_or_acknowledge") {
 
 	  //
@@ -1942,38 +1947,14 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  //
 	  this.cardbox.hide();
 
-	  if (this.game.state.skip_counter_or_acknowledge == 1) {
-
-console.log("1. skipping counter or acknowledge... active and me: " + this.game.state.active_player + " / " + this.game.player);
-
-            this.game.queue.splice(qe, 1);
-
-	    //
-	    // no confirms needed
-	    //
-	    for (let z = 0; z < this.game.confirms_needed.length; z++) {
-	      if (z != this.game.state.active_player && this.game.state.active_player == -1) {
-	        this.game.confirms_needed[z] = 0;
-	      }
-	    }
-
-	    if (this.game.state.active_player == -1) {
-console.log("2. skipping counter or acknowledge... active and me: " + this.game.state.active_player + " / " + this.game.player);
-	      return 1;
-	    }
-
-
-	    if (this.game.state.active_player != this.game.player) {
-console.log("3. skipping counter or acknowledge... active and me: " + this.game.state.active_player + " / " + this.game.player);
-	      return 1;
-	    }
- 	  }
 
 	  //
-	  // return 1
+	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
 	  //
-	  if (this.game.confirms_needed[this.game.player-1] == 0 && this.game.state.skip_counter_or_acknowledge != 1) {
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+
 	    let ack = 1;
+
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
 	      if (this.game.confirms_needed[i] == 1) { ack = 0; }
 	    }
@@ -1981,7 +1962,6 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
-
 
 	  let msg = mv[1];
 	  let stage = mv[2];
@@ -2025,10 +2005,18 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
 	  //
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
 	    if (attach_menu_events == 0) {
-	      return 1;
+	      // manually add, to avoid re-processing
+	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	        his_self.game.confirms_needed[his_self.game.player-1] = 2;
+                his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+	        his_self.updateStatus("skipping acknowledge...");
+                his_self.endTurn();
+	      } else {
+	      }
+	      return 0;
+	    } else {
 	    }
 	  }
-
 
 	  this.updateStatusWithOptions(msg, html);
 
@@ -2068,11 +2056,13 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-	          if (his_self.game.state.skip_counter_or_acknowledge != 1) {
+	          // manually add, to avoid re-processing
+	          if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	            his_self.game.confirms_needed[his_self.game.player-1] = 2;
                     his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+		    z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   }
-		  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
-                  return 0;
+                  return;
                 }
               }
             }
@@ -2081,12 +2071,14 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
 	      //
 	      // this ensures we clear regardless of choice
 	      //
-	      if (his_self.game.state.skip_counter_or_acknowledge != 1) {
+	      // manually add, to avoid re-processing
+	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	        his_self.game.confirms_needed[his_self.game.player-1] = 2;
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
-	      }
-	      his_self.updateStatus("acknowledged");
-              await his_self.endTurn();
-              return 0;
+	        his_self.updateStatus("acknowledged");
+                await his_self.endTurn();
+              }
+	      return 0;
             }
 
           });

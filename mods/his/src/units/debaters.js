@@ -144,17 +144,14 @@
       committed		: 	0,
       menuOption  :       function(his_self, menu, player, extra) {
         if (menu == "protestant_reformation") {
-console.log("Bucer in Protestant Reformation");
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-console.log(" ... returning option");
             return { faction : extra , event : 'bucer-debater', html : `<li class="option" id="bucer-debater">Martin Bucer +1 Roll</li>` };
           }
         } 
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-console.log("can player commit debater: " + his_self.canPlayerCommitDebater("protestant", "bucer-debater"));
         if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "bucer-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"].includes(spacekey)) { 

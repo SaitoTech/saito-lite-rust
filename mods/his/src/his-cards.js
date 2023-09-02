@@ -2690,8 +2690,6 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
-his_self.convertSpace("protestant", "magdeburg");
-his_self.convertSpace("protestant", "brandenburg");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -2805,6 +2803,7 @@ his_self.convertSpace("protestant", "brandenburg");
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
+
           his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
@@ -2823,15 +2822,6 @@ his_self.convertSpace("protestant", "brandenburg");
 			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
 		)
 	      ) {
-console.log("THIS");
-console.log("THIS");
-console.log("THIS");
-console.log("THIS");
-console.log("THIS SPACE MATCHES: " + space.name);
-console.log("THIS");
-console.log("THIS");
-console.log("THIS");
-
 	        return 1;
 	      }
 	      return 0;
@@ -2847,29 +2837,28 @@ console.log("THIS");
 	    return 1;
 	  }
 
-
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
 
-	    if (language_zone != "all" && language_zone != "") {
-	      his_self.theses_overlay.render(language_zone);
-	    } else {
-	      his_self.theses_overlay.render();
-	    }
+	      if (language_zone != "all" && language_zone != "") {
+	        his_self.theses_overlay.render(language_zone);
+	      } else {
+	        his_self.theses_overlay.render();
+	      }
 
-            his_self.playerSelectSpaceWithFilter(
+              his_self.playerSelectSpaceWithFilter(
 
-	      "Select Reformation Target",
+	        "Select Reformation Target",
 
-	      //
-	      // catholic spaces adjacent to protestant 
-	      //
-	      function(space) {
-		if (
-		  space.religion === "catholic" &&
-		  !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
-		  (space.language === language_zone || language_zone == "all") &&
-		  (
+	        //
+	        // catholic spaces adjacent to protestant 
+	        //
+	        function(space) {
+	  	  if (
+		    space.religion === "catholic" &&
+		    !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
+		    (space.language === language_zone || language_zone == "all") &&
+		    (
 			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
 			||
 			his_self.isSpaceAdjacentToReligion(space, "protestant")
@@ -2877,29 +2866,26 @@ console.log("THIS");
 			his_self.doesSpaceContainProtestantReformer(space)
 			||
 			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
-		  )
-	        ) {
-		  return 1;
-	        }
-		return 0;
-	      },
+		    )
+	          ) {
+		    return 1;
+	          }
+		  return 0;
+	        },
 
-	      //
-	      // launch reformation
-	      //
-	      function(spacekey) {
-		his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
-		his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
-        	his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	  	his_self.updateStatus("Reformation attempt in "+his_self.returnSpaceName(spacekey));
-		his_self.endTurn();
-	      },
-
-	      null ,
-
-	      1     // permit board clicks
-
-	    );
+	        //
+	        // launch reformation
+	        //
+	        function(spacekey) {
+	  	  his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
+		  his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	  	  his_self.updateStatus("Reformation attempt in "+his_self.returnSpaceName(spacekey));
+		  his_self.endTurn();
+	        },
+	        null ,
+	        1     // permit board clicks
+	      );
 	    } else {
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -2909,11 +2895,8 @@ console.log("THIS");
 	  } else {
 	    his_self.updateStatus("Protestant Reformation...");
 	  }
-
           return 0;
-
         }
-
 	return 1;
       }
     }

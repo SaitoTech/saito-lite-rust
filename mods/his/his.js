@@ -1052,17 +1052,14 @@ Habsburg conquistadores:
       committed		: 	0,
       menuOption  :       function(his_self, menu, player, extra) {
         if (menu == "protestant_reformation") {
-console.log("Bucer in Protestant Reformation");
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-console.log(" ... returning option");
             return { faction : extra , event : 'bucer-debater', html : `<li class="option" id="bucer-debater">Martin Bucer +1 Roll</li>` };
           }
         } 
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-console.log("can player commit debater: " + his_self.canPlayerCommitDebater("protestant", "bucer-debater"));
         if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "bucer-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"].includes(spacekey)) { 
@@ -5469,8 +5466,6 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
-his_self.convertSpace("protestant", "magdeburg");
-his_self.convertSpace("protestant", "brandenburg");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -5584,6 +5579,7 @@ his_self.convertSpace("protestant", "brandenburg");
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
+
           his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
@@ -5602,15 +5598,6 @@ his_self.convertSpace("protestant", "brandenburg");
 			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
 		)
 	      ) {
-console.log("THIS");
-console.log("THIS");
-console.log("THIS");
-console.log("THIS");
-console.log("THIS SPACE MATCHES: " + space.name);
-console.log("THIS");
-console.log("THIS");
-console.log("THIS");
-
 	        return 1;
 	      }
 	      return 0;
@@ -5626,29 +5613,28 @@ console.log("THIS");
 	    return 1;
 	  }
 
-
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
 
-	    if (language_zone != "all" && language_zone != "") {
-	      his_self.theses_overlay.render(language_zone);
-	    } else {
-	      his_self.theses_overlay.render();
-	    }
+	      if (language_zone != "all" && language_zone != "") {
+	        his_self.theses_overlay.render(language_zone);
+	      } else {
+	        his_self.theses_overlay.render();
+	      }
 
-            his_self.playerSelectSpaceWithFilter(
+              his_self.playerSelectSpaceWithFilter(
 
-	      "Select Reformation Target",
+	        "Select Reformation Target",
 
-	      //
-	      // catholic spaces adjacent to protestant 
-	      //
-	      function(space) {
-		if (
-		  space.religion === "catholic" &&
-		  !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
-		  (space.language === language_zone || language_zone == "all") &&
-		  (
+	        //
+	        // catholic spaces adjacent to protestant 
+	        //
+	        function(space) {
+	  	  if (
+		    space.religion === "catholic" &&
+		    !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
+		    (space.language === language_zone || language_zone == "all") &&
+		    (
 			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
 			||
 			his_self.isSpaceAdjacentToReligion(space, "protestant")
@@ -5656,29 +5642,26 @@ console.log("THIS");
 			his_self.doesSpaceContainProtestantReformer(space)
 			||
 			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
-		  )
-	        ) {
-		  return 1;
-	        }
-		return 0;
-	      },
+		    )
+	          ) {
+		    return 1;
+	          }
+		  return 0;
+	        },
 
-	      //
-	      // launch reformation
-	      //
-	      function(spacekey) {
-		his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
-		his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
-        	his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	  	his_self.updateStatus("Reformation attempt in "+his_self.returnSpaceName(spacekey));
-		his_self.endTurn();
-	      },
-
-	      null ,
-
-	      1     // permit board clicks
-
-	    );
+	        //
+	        // launch reformation
+	        //
+	        function(spacekey) {
+	  	  his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
+		  his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	  	  his_self.updateStatus("Reformation attempt in "+his_self.returnSpaceName(spacekey));
+		  his_self.endTurn();
+	        },
+	        null ,
+	        1     // permit board clicks
+	      );
 	    } else {
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -5688,11 +5671,8 @@ console.log("THIS");
 	  } else {
 	    his_self.updateStatus("Protestant Reformation...");
 	  }
-
           return 0;
-
         }
-
 	return 1;
       }
     }
@@ -15976,8 +15956,8 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("diplomacy_phase");
-this.game.queue.push("is_testing");
+	  this.game.queue.push("diplomacy_phase");
+//this.game.queue.push("is_testing");
 
 
 	  //
@@ -15985,9 +15965,9 @@ this.game.queue.push("is_testing");
 	  //
 	  if (this.game.state.round == 1) {
 
-//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-//  	    this.game.queue.push("diet_of_worms");
-//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+  	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
@@ -17869,6 +17849,11 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  return 1;
 
         }
+
+
+	//
+	// this bit of code is complicated, because it stops and starts game-flow but selecively.
+	//
 	if (mv[0] === "counter_or_acknowledge") {
 
 	  //
@@ -17876,38 +17861,14 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  //
 	  this.cardbox.hide();
 
-	  if (this.game.state.skip_counter_or_acknowledge == 1) {
-
-console.log("1. skipping counter or acknowledge... active and me: " + this.game.state.active_player + " / " + this.game.player);
-
-            this.game.queue.splice(qe, 1);
-
-	    //
-	    // no confirms needed
-	    //
-	    for (let z = 0; z < this.game.confirms_needed.length; z++) {
-	      if (z != this.game.state.active_player && this.game.state.active_player == -1) {
-	        this.game.confirms_needed[z] = 0;
-	      }
-	    }
-
-	    if (this.game.state.active_player == -1) {
-console.log("2. skipping counter or acknowledge... active and me: " + this.game.state.active_player + " / " + this.game.player);
-	      return 1;
-	    }
-
-
-	    if (this.game.state.active_player != this.game.player) {
-console.log("3. skipping counter or acknowledge... active and me: " + this.game.state.active_player + " / " + this.game.player);
-	      return 1;
-	    }
- 	  }
 
 	  //
-	  // return 1
+	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
 	  //
-	  if (this.game.confirms_needed[this.game.player-1] == 0 && this.game.state.skip_counter_or_acknowledge != 1) {
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+
 	    let ack = 1;
+
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
 	      if (this.game.confirms_needed[i] == 1) { ack = 0; }
 	    }
@@ -17915,7 +17876,6 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
-
 
 	  let msg = mv[1];
 	  let stage = mv[2];
@@ -17959,10 +17919,18 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
 	  //
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
 	    if (attach_menu_events == 0) {
-	      return 1;
+	      // manually add, to avoid re-processing
+	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	        his_self.game.confirms_needed[his_self.game.player-1] = 2;
+                his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+	        his_self.updateStatus("skipping acknowledge...");
+                his_self.endTurn();
+	      } else {
+	      }
+	      return 0;
+	    } else {
 	    }
 	  }
-
 
 	  this.updateStatusWithOptions(msg, html);
 
@@ -18002,11 +17970,13 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-	          if (his_self.game.state.skip_counter_or_acknowledge != 1) {
+	          // manually add, to avoid re-processing
+	          if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	            his_self.game.confirms_needed[his_self.game.player-1] = 2;
                     his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+		    z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   }
-		  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
-                  return 0;
+                  return;
                 }
               }
             }
@@ -18015,12 +17985,14 @@ console.log("3. skipping counter or acknowledge... active and me: " + this.game.
 	      //
 	      // this ensures we clear regardless of choice
 	      //
-	      if (his_self.game.state.skip_counter_or_acknowledge != 1) {
+	      // manually add, to avoid re-processing
+	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	        his_self.game.confirms_needed[his_self.game.player-1] = 2;
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
-	      }
-	      his_self.updateStatus("acknowledged");
-              await his_self.endTurn();
-              return 0;
+	        his_self.updateStatus("acknowledged");
+                await his_self.endTurn();
+              }
+	      return 0;
             }
 
           });
