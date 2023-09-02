@@ -10471,6 +10471,9 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	      let space = his_self.game.spaces[spacekey];
 	      let attacker = "";
+
+console.log("TESTING: " + JSON.stringify(space.units));
+
 	      for (let key in space.units) {
 		for (let i = 0; i < space.units[key].length; i++) {
 		  if (space.units[key][i].besieged == 0) {
@@ -15963,8 +15966,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
-//this.game.queue.push("is_testing");
-
+this.game.queue.push("is_testing");
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -16415,7 +16417,6 @@ console.log("MOVE: " + mv[0]);
 
 	if (mv[0] === "is_testing") {
 
-
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
 	  // moar debaters
@@ -16452,7 +16453,7 @@ console.log("MOVE: " + mv[0]);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "028"); 
+    	  this.addCard("papacy", "105"); 
     	  this.addCard("papacy", "078"); 
    	  this.addCard("protestant", "027");
    	  this.addCard("protestant", "017");
@@ -17024,9 +17025,9 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let space = this.game.spaces[spacekey];
 
           space.besieged = 2; // 2 = cannot attack this round
-          space.besieged_factions.push(f);
-	  for (let i = 0; i < units.length; i++) {
-	    space.units[faction][units[i]].besieged = 1;
+          space.besieged_factions.push(faction);
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    space.units[faction][i].besieged = 1;
 	  }
 
 	  return 1;

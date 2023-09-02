@@ -7695,6 +7695,9 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	      let space = his_self.game.spaces[spacekey];
 	      let attacker = "";
+
+console.log("TESTING: " + JSON.stringify(space.units));
+
 	      for (let key in space.units) {
 		for (let i = 0; i < space.units[key].length; i++) {
 		  if (space.units[key][i].besieged == 0) {
