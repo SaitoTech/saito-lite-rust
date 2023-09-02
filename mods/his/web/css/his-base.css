@@ -300,15 +300,6 @@ img {
   width: 122px;
 }
 
-.space_view {
-  height: 60vh;
-  width: calc(60vh * 0.74);
-  background-color: whitesmoke;
-  border-radius: 10px;
-  font-size: 2em;
-  padding: 1.5rem;
-}
-
 .space_faction {
   font-size: 2rem;
 }

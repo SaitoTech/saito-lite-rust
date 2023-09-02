@@ -1,4 +1,52 @@
 
+  returnLanguageImage(language) {
+    return "/his/img/tiles/leaders/Henry_II.svg";
+  }
+
+  returnReligionImage(religion) {
+    if (religion === "protestant") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
+    if (religion === "catholic") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
+    return "/his/img/tiles/leaders/LutherReformer.svg";
+  }
+
+  returnFactionLeaderImage(faction) {
+
+    if (faction == "papacy") {
+      if (this.game.state.leaders.leo_x == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.clement_vii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.paul_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.julius_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "france") {
+      if (this.game.state.leaders.francis_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.henry_ii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "protestant") {
+      if (this.game.state.leaders.luther == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.calvin == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "england") {
+      if (this.game.state.leaders.henry_viii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.mary_i == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.edward_vi == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.elizabeth_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "ottoman") {
+      if (this.game.state.leaders.suleiman == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "hapsburg") {
+      if (this.game.state.leaders.charles_v == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+   return "/his/img/tiles/leaders/Henry_II.svg";
+   
+  }
+
   displayWarBox() {
 
     let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];

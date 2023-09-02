@@ -2989,29 +2989,35 @@
 
 	let html = '<div class="space_view" id="">';
 
-	let religious = obj.religion;
+	let religion = obj.religion;
 	let political = obj.political;
+	let language = obj.language;
 	if (!political) { political = obj.home; }
 
 	html += `
-	  <div class="religious">${religious}</div>
-	  <div class="political">${political}</div>
+	  <div class="space_name">${obj.name}</div>
+	  <div class="space_properties">
+	    <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(religion)}')"></div><div class="label">${religion} religion</div></div>
+	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnFactionLeaderImage(political)}')"></div><div class="label">${political} control</div></div>
+	    <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(language)}')"></div><div class="label">${language} language</div></div>
+	  </div>
+	  <div class="space_units">
 	`;
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
 
-	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
             for (let i = 0; i < this.units[f].length; i++) {
 
 	      let b = "";
 	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
 
-	      html += `<div class="space_unit">1 - ${this.units[f][i].type} ${b}</div>`;
+	      html += `<div class="space_unit">${f} - ${this.units[f][i].type} ${b}</div>`;
 	    }
 	  }
 	}
 
+	html += `</div>`;
 	html += `</div>`;
 
 	return html;
