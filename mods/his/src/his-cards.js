@@ -2690,6 +2690,9 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
+his_self.convertSpace("protestant", "magdeburg");
+his_self.convertSpace("protestant", "brandenburg");
+        his_self.convertSpace("protestant", "wittenberg");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -6504,11 +6507,18 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	if (his_self.game.player == fp) {
 
   	  let msg = "Select Towns to Convert Protestant: ";
+  	  let options_available = 0;
           let html = '<ul>';
           for (let i = 0; i < res3.length; i++) {
+	    options_available++;
 	    html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
 	  }
           html += '</ul>';
+
+	  if (options_available == 0) {
+	    his_self.endTurn();
+	    return 0;
+	  }
 
     	  his_self.updateStatusWithOptions(msg, html);
 
@@ -6519,20 +6529,47 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  $('.option').on('click', function () {
 
 	    let action = $(this).attr("id");
+	    options_available = 0;
 
-	    if (!picked.includes(action)) {
-	      picked.push(action);
-	      total_picked++;
+	    $('.option').off();
+	    picked.push(action);
+	    total_picked++;
+
+  	    let msg = "Select Town to Convert Protestant: ";
+            let html = '<ul>';
+            for (let i = 0; i < res3.length; i++) {
+	      if (!picked.includes(res3[i].key)) {
+		options_available++;
+	        html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
+	      }
 	    }
+            html += '</ul>';
 
-	    if (total_picked >= 2) {
-	      his_self.updateStatus("submitting");
-	      $('option').off();
-	      for (let i = 0; i < 2; i++) {
+	    if (options_available == 0) {
+	      for (let i = 0; i < picked.length; i++) {
 	        his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
 	      }
 	      his_self.endTurn();
+	      return 0;
 	    }
+
+       	    his_self.updateStatusWithOptions(msg, html);
+
+	    $('.option').on('click', function () {
+
+	      $('option').off();
+	      let action = $(this).attr("id");
+
+	      picked.push(action);
+	      total_picked++;
+
+	      his_self.updateStatus("submitting");
+	      for (let i = 0; i < picked.length; i++) {
+	        his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
+	      }
+	      his_self.endTurn();
+
+	    });
 	  });
 
 	} else {

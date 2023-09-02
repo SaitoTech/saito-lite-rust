@@ -755,7 +755,7 @@ if (limit === "build") {
       factions : ['hapsburg','england','france'],
       cost : [2,3,3],
       name : "Colonize",
-      check : this.canPlayerColonize,
+
       fnct : this.playerColonize,
       category : "special" ,
       img : '/his/img/backgrounds/move/colonize.jpg',
@@ -1384,21 +1384,49 @@ if (limit === "build") {
 
 	  } else {
 
-            for (let z = 0; z < menu[user_choice].factions.length; z++) {
-              if (pfactions.includes(menu[user_choice].factions[z])) {
-                ops -= menu[user_choice].cost[z];
-	          z = menu[user_choice].factions.length+1;
+	    //
+	    // sub-menu to simplify translations / st peters
+	    //
+	    if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
+
+	      let msg = "How many OPs to Spend: ";
+              let html = `<ul>`;
+	      let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
+              for (let i = 1; i <= ops; i++) {
+                html += `<li class="card" id="${i}">${desc[i-1]}>`;
               }
-            }
+              html += '</ul>';
 
-            if (ops > 0) {
-	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
-            }
-            menu[user_choice].fnct(this, this.game.player, selected_faction);
-            return;
+              this.updateStatusWithOptions(msg, html, false);
+              this.attachCardboxEvents(async (uc) => {      
 
+	        let ops_to_spend = parseInt(uc);
+	        let ops_remaining = ops - ops_to_spend;
+
+                if (ops_remaining > 0) {
+  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+                }
+                menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+                return;
+	      });
+
+	    } else {
+
+              for (let z = 0; z < menu[user_choice].factions.length; z++) {
+                if (pfactions.includes(menu[user_choice].factions[z])) {
+                  ops -= menu[user_choice].cost[z];
+	          z = menu[user_choice].factions.length+1;
+                }
+              }
+
+              if (ops > 0) {
+	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
+              }
+              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              return;
+
+	    }
 	  }
-
         });
       });
     } else {
@@ -1433,18 +1461,48 @@ if (limit === "build") {
           return;
         }
 
-        for (let z = 0; z < menu[user_choice].factions.length; z++) {
-          if (pfactions.includes(menu[user_choice].factions[z])) {
-            ops -= menu[user_choice].cost[z];
-  	    z = menu[user_choice].factions.length+1;
-          }
-        }
+	//
+	// sub-menu to simplify translations / st peters
+	//
+	if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
 
-        if (ops > 0) {
-  	  this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
-        }
-        menu[user_choice].fnct(this, this.game.player, faction);
-        return;
+	  let msg = "How many OPs to Spend: ";
+          let html = `<ul>`;
+	  let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
+          for (let i = 1; i <= ops; i++) {
+            html += `<li class="card" id="${i}">${desc[i-1]}</li>`;
+          }
+          html += '</ul>';
+
+          this.updateStatusWithOptions(msg, html, false);
+          this.attachCardboxEvents(async (uc) => {      
+
+	    let ops_to_spend = parseInt(uc);
+	    let ops_remaining = ops - ops_to_spend;
+
+            if (ops_remaining > 0) {
+  	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+            }
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+            return;
+	  });
+
+	} else {
+
+          for (let z = 0; z < menu[user_choice].factions.length; z++) {
+            if (pfactions.includes(menu[user_choice].factions[z])) {
+              ops -= menu[user_choice].cost[z];
+  	      z = menu[user_choice].factions.length+1;
+            }
+          }
+
+          if (ops > 0) {
+  	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+          }
+          menu[user_choice].fnct(this, this.game.player, faction);
+          return;
+
+	}
       });
 
     }
@@ -3554,7 +3612,7 @@ return;
     if (faction === "protestant") { return 1; }
     return 0;
   }
-  async playerTranslateScripture(his_self, player, faction) {
+  async playerTranslateScripture(his_self, player, faction, ops=1) {
 
     let msg = "Select Work to Translate:";
     let html = '<ul>';
@@ -3593,15 +3651,15 @@ return;
       his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
-	his_self.addMove("translation\tgerman"); 
+	his_self.addMove("translation\tgerman\t"+ops);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in German Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
       if (id == 2 || id == 5) { 
-	his_self.addMove("translation\tfrench"); 
+	his_self.addMove("translation\tfrench\t"+ops); 
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in French Language Zone\ttranslation_french_language_zone\tfrench\t"+faction);
       }
       if (id == 3 || id == 6) { 
-	his_self.addMove("translation\tenglish"); 
+	his_self.addMove("translation\tenglish\t"+ops);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
       // we only ask for our own CONFIRMS
@@ -3862,8 +3920,10 @@ return;
     }
     return 0;
   }
-  async playerBuildSaintPeters(his_self, player, faction) {
-    his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+  async playerBuildSaintPeters(his_self, player, faction, ops=1) {
+    for (let z = 0; z < ops; z++) {
+      his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+    }
     his_self.endTurn();
     return 0;
   }

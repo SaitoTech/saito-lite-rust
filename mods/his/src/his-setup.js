@@ -153,11 +153,11 @@ console.log("\n\n\n\n");
 	  this.controlSpace("ottoman", "ragusa");
 
 	  this.setAllies("hungary", "hapsburg");
-	  this.setAllies("venice", "papacy");
 
 
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
+	  //this.setAllies("venice", "papacy");
 
 
 

@@ -1053,6 +1053,8 @@
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
     }
 
+
+
     //
     // otherwise propagate outwards searching pending
     //
@@ -1069,13 +1071,18 @@
 	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
+	  if (searched_spaces[key]) {
+	    // we've searched for this before
+	  } else {
+	    searched_spaces[key] = { hops : (hops+1) , key : key };
+	  }
 	} else {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.navalspaces[key].neighbours[i]]) {
+	      if (searched_spaces[this.game.navalspaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+      	        pending_spaces[this.game.navalspaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.navalspaces[key].neighbours[i] };
 	      }
     	    }
 	  }
@@ -1084,7 +1091,12 @@
 	delete pending_spaces[key];
 
       }
-      if (count == 0) { continue_searching = 0; }
+      if (count == 0) {
+	continue_searching = 0;
+	for (let newkey in pending_spaces) {
+	  if (pending_spaces[newkey]) { continue_searching = 1; }
+	}
+      }
     }
 
     //
@@ -1143,13 +1155,18 @@
 	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
+	  if (searched_spaces[key]) {
+	    // we've searched for this before
+	  } else {
+	    searched_spaces[key] = { hops : (hops+1) , key : key };
+	  }
 	} else {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
+	      if (searched_spaces[this.game.spaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+      	        pending_spaces[this.game.spaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] };
 	      }
     	    }
 	  }
@@ -1158,7 +1175,12 @@
 	delete pending_spaces[key];
 
       }
-      if (count == 0) { continue_searching = 0; }
+      if (count == 0) {
+	continue_searching = 0;
+	for (let newkey in pending_spaces) {
+	  if (pending_spaces[newkey]) { continue_searching = 1; }
+	}
+      }
     }
 
     //

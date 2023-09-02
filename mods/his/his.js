@@ -2340,11 +2340,11 @@ console.log("\n\n\n\n");
 	  this.controlSpace("ottoman", "ragusa");
 
 	  this.setAllies("hungary", "hapsburg");
-	  this.setAllies("venice", "papacy");
 
 
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
+	  //this.setAllies("venice", "papacy");
 
 
 
@@ -5469,6 +5469,9 @@ console.log("2 defender debater: " + his_self.game.state.theological_debate.defe
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
+his_self.convertSpace("protestant", "magdeburg");
+his_self.convertSpace("protestant", "brandenburg");
+        his_self.convertSpace("protestant", "wittenberg");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -9283,11 +9286,18 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	if (his_self.game.player == fp) {
 
   	  let msg = "Select Towns to Convert Protestant: ";
+  	  let options_available = 0;
           let html = '<ul>';
           for (let i = 0; i < res3.length; i++) {
+	    options_available++;
 	    html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
 	  }
           html += '</ul>';
+
+	  if (options_available == 0) {
+	    his_self.endTurn();
+	    return 0;
+	  }
 
     	  his_self.updateStatusWithOptions(msg, html);
 
@@ -9298,20 +9308,47 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  $('.option').on('click', function () {
 
 	    let action = $(this).attr("id");
+	    options_available = 0;
 
-	    if (!picked.includes(action)) {
-	      picked.push(action);
-	      total_picked++;
+	    $('.option').off();
+	    picked.push(action);
+	    total_picked++;
+
+  	    let msg = "Select Town to Convert Protestant: ";
+            let html = '<ul>';
+            for (let i = 0; i < res3.length; i++) {
+	      if (!picked.includes(res3[i].key)) {
+		options_available++;
+	        html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
+	      }
 	    }
+            html += '</ul>';
 
-	    if (total_picked >= 2) {
-	      his_self.updateStatus("submitting");
-	      $('option').off();
-	      for (let i = 0; i < 2; i++) {
+	    if (options_available == 0) {
+	      for (let i = 0; i < picked.length; i++) {
 	        his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
 	      }
 	      his_self.endTurn();
+	      return 0;
 	    }
+
+       	    his_self.updateStatusWithOptions(msg, html);
+
+	    $('.option').on('click', function () {
+
+	      $('option').off();
+	      let action = $(this).attr("id");
+
+	      picked.push(action);
+	      total_picked++;
+
+	      his_self.updateStatus("submitting");
+	      for (let i = 0; i < picked.length; i++) {
+	        his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
+	      }
+	      his_self.endTurn();
+
+	    });
 	  });
 
 	} else {
@@ -12158,6 +12195,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
     }
 
+
+
     //
     // otherwise propagate outwards searching pending
     //
@@ -12174,13 +12213,18 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
+	  if (searched_spaces[key]) {
+	    // we've searched for this before
+	  } else {
+	    searched_spaces[key] = { hops : (hops+1) , key : key };
+	  }
 	} else {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.navalspaces[key].neighbours[i]]) {
+	      if (searched_spaces[this.game.navalspaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+      	        pending_spaces[this.game.navalspaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.navalspaces[key].neighbours[i] };
 	      }
     	    }
 	  }
@@ -12189,7 +12233,12 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	delete pending_spaces[key];
 
       }
-      if (count == 0) { continue_searching = 0; }
+      if (count == 0) {
+	continue_searching = 0;
+	for (let newkey in pending_spaces) {
+	  if (pending_spaces[newkey]) { continue_searching = 1; }
+	}
+      }
     }
 
     //
@@ -12248,13 +12297,18 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
+	  if (searched_spaces[key]) {
+	    // we've searched for this before
+	  } else {
+	    searched_spaces[key] = { hops : (hops+1) , key : key };
+	  }
 	} else {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
+	      if (searched_spaces[this.game.spaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+      	        pending_spaces[this.game.spaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] };
 	      }
     	    }
 	  }
@@ -12263,7 +12317,12 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	delete pending_spaces[key];
 
       }
-      if (count == 0) { continue_searching = 0; }
+      if (count == 0) {
+	continue_searching = 0;
+	for (let newkey in pending_spaces) {
+	  if (pending_spaces[newkey]) { continue_searching = 1; }
+	}
+      }
     }
 
     //
@@ -15917,7 +15976,8 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("diplomacy_phase");
+this.game.queue.push("is_testing");
 
 
 	  //
@@ -15925,9 +15985,9 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    this.game.queue.push("diet_of_worms");
-  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("diet_of_worms");
+//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
@@ -16407,7 +16467,7 @@ console.log("MOVE: " + mv[0]);
     	  this.game.spaces['agram'].type = "fortress";
 
     	  this.addCard("papacy", "028"); 
-    	  this.addCard("papacy", "079"); 
+    	  this.addCard("papacy", "078"); 
    	  this.addCard("protestant", "027");
    	  this.addCard("protestant", "017");
 
@@ -21174,34 +21234,117 @@ console.log("purging naval units and capturing leader");
         if (mv[0] === "translation") {
 
 	  let zone = mv[1];
+	  let ops = 1;
+	  if (mv[2]) { if (parseInt(mv[2]) > ops) { ops = parseInt(mv[2]); } }
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (zone === "german") {
-	    if (this.game.state.translations['new']['german'] >= 6) {
-	      this.updateLog("Protestants translate New Testament (german)");
-	      this.game.state.translations['full']['german']++;
-	    } else {
-	      this.updateLog("Protestants translate Old Testament (german)");
-	      this.game.state.translations['new']['german']++;
+	  for (let z = 0; z < ops; z++) {
+	    if (zone === "german") {
+	      if (this.game.state.translations['new']['german'] >= 6) {
+	        this.updateLog("Protestants translate Old Testament (german)");
+	        this.game.state.translations['full']['german']++;
+
+		if (this.game.state.translations['full']['german'] == 6) {
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+
+  	      } else {
+	        this.updateLog("Protestants translate New Testament (german)");
+	        this.game.state.translations['new']['german']++;
+		if (this.game.state.translations['new']['german'] == 6) {
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+
+	      }
 	    }
-	  }
-	  if (zone === "french") {
-	    if (this.game.state.translations['new']['french'] >= 6) {
-	      this.updateLog("Protestants translate New Testament (french)");
-	      this.game.state.translations['full']['french']++;
-	    } else {
-	      this.updateLog("Protestants translate Old Testament (french)");
-	      this.game.state.translations['new']['french']++;
+	    if (zone === "french") {
+	      if (this.game.state.translations['new']['french'] >= 6) {
+	        this.updateLog("Protestants translate Old Testament (french)");
+	        this.game.state.translations['full']['french']++;
+		if (this.game.state.translations['full']['french'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      } else {
+	        this.updateLog("Protestants translate New Testament (french)");
+	        this.game.state.translations['new']['french']++;
+		if (this.game.state.translations['full']['french'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      }
 	    }
-	  }
-	  if (zone === "english") {
-	    if (this.game.state.translations['new']['english'] >= 6) {
-	      this.updateLog("Protestants translate New Testament (english)");
-	      this.game.state.translations['full']['english']++;
-	    } else {
-	      this.updateLog("Protestants translate Old Testament (english)");
-	      this.game.state.translations['new']['english']++;
+	    if (zone === "english") {
+	      if (this.game.state.translations['new']['english'] >= 6) {
+	        this.updateLog("Protestants translate Old Testament (english)");
+	        this.game.state.translations['full']['english']++;
+		if (this.game.state.translations['full']['english'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      } else {
+	        this.updateLog("Protestants translate New Testament (english)");
+	        this.game.state.translations['new']['english']++;
+		if (this.game.state.translations['full']['english'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      }
 	    }
 	  }
 
@@ -23715,7 +23858,7 @@ if (limit === "build") {
       factions : ['hapsburg','england','france'],
       cost : [2,3,3],
       name : "Colonize",
-      check : this.canPlayerColonize,
+
       fnct : this.playerColonize,
       category : "special" ,
       img : '/his/img/backgrounds/move/colonize.jpg',
@@ -24344,21 +24487,49 @@ if (limit === "build") {
 
 	  } else {
 
-            for (let z = 0; z < menu[user_choice].factions.length; z++) {
-              if (pfactions.includes(menu[user_choice].factions[z])) {
-                ops -= menu[user_choice].cost[z];
-	          z = menu[user_choice].factions.length+1;
+	    //
+	    // sub-menu to simplify translations / st peters
+	    //
+	    if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
+
+	      let msg = "How many OPs to Spend: ";
+              let html = `<ul>`;
+	      let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
+              for (let i = 1; i <= ops; i++) {
+                html += `<li class="card" id="${i}">${desc[i-1]}>`;
               }
-            }
+              html += '</ul>';
 
-            if (ops > 0) {
-	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
-            }
-            menu[user_choice].fnct(this, this.game.player, selected_faction);
-            return;
+              this.updateStatusWithOptions(msg, html, false);
+              this.attachCardboxEvents(async (uc) => {      
 
+	        let ops_to_spend = parseInt(uc);
+	        let ops_remaining = ops - ops_to_spend;
+
+                if (ops_remaining > 0) {
+  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+                }
+                menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+                return;
+	      });
+
+	    } else {
+
+              for (let z = 0; z < menu[user_choice].factions.length; z++) {
+                if (pfactions.includes(menu[user_choice].factions[z])) {
+                  ops -= menu[user_choice].cost[z];
+	          z = menu[user_choice].factions.length+1;
+                }
+              }
+
+              if (ops > 0) {
+	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
+              }
+              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              return;
+
+	    }
 	  }
-
         });
       });
     } else {
@@ -24393,18 +24564,48 @@ if (limit === "build") {
           return;
         }
 
-        for (let z = 0; z < menu[user_choice].factions.length; z++) {
-          if (pfactions.includes(menu[user_choice].factions[z])) {
-            ops -= menu[user_choice].cost[z];
-  	    z = menu[user_choice].factions.length+1;
-          }
-        }
+	//
+	// sub-menu to simplify translations / st peters
+	//
+	if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
 
-        if (ops > 0) {
-  	  this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
-        }
-        menu[user_choice].fnct(this, this.game.player, faction);
-        return;
+	  let msg = "How many OPs to Spend: ";
+          let html = `<ul>`;
+	  let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
+          for (let i = 1; i <= ops; i++) {
+            html += `<li class="card" id="${i}">${desc[i-1]}</li>`;
+          }
+          html += '</ul>';
+
+          this.updateStatusWithOptions(msg, html, false);
+          this.attachCardboxEvents(async (uc) => {      
+
+	    let ops_to_spend = parseInt(uc);
+	    let ops_remaining = ops - ops_to_spend;
+
+            if (ops_remaining > 0) {
+  	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+            }
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+            return;
+	  });
+
+	} else {
+
+          for (let z = 0; z < menu[user_choice].factions.length; z++) {
+            if (pfactions.includes(menu[user_choice].factions[z])) {
+              ops -= menu[user_choice].cost[z];
+  	      z = menu[user_choice].factions.length+1;
+            }
+          }
+
+          if (ops > 0) {
+  	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+          }
+          menu[user_choice].fnct(this, this.game.player, faction);
+          return;
+
+	}
       });
 
     }
@@ -26514,7 +26715,7 @@ return;
     if (faction === "protestant") { return 1; }
     return 0;
   }
-  async playerTranslateScripture(his_self, player, faction) {
+  async playerTranslateScripture(his_self, player, faction, ops=1) {
 
     let msg = "Select Work to Translate:";
     let html = '<ul>';
@@ -26553,15 +26754,15 @@ return;
       his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
-	his_self.addMove("translation\tgerman"); 
+	his_self.addMove("translation\tgerman\t"+ops);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in German Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
       if (id == 2 || id == 5) { 
-	his_self.addMove("translation\tfrench"); 
+	his_self.addMove("translation\tfrench\t"+ops); 
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in French Language Zone\ttranslation_french_language_zone\tfrench\t"+faction);
       }
       if (id == 3 || id == 6) { 
-	his_self.addMove("translation\tenglish"); 
+	his_self.addMove("translation\tenglish\t"+ops);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
       // we only ask for our own CONFIRMS
@@ -26822,8 +27023,10 @@ return;
     }
     return 0;
   }
-  async playerBuildSaintPeters(his_self, player, faction) {
-    his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+  async playerBuildSaintPeters(his_self, player, faction, ops=1) {
+    for (let z = 0; z < ops; z++) {
+      his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+    }
     his_self.endTurn();
     return 0;
   }

@@ -42,7 +42,8 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("diplomacy_phase");
+this.game.queue.push("is_testing");
 
 
 	  //
@@ -50,9 +51,9 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    this.game.queue.push("diet_of_worms");
-  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("diet_of_worms");
+//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
@@ -532,7 +533,7 @@ console.log("MOVE: " + mv[0]);
     	  this.game.spaces['agram'].type = "fortress";
 
     	  this.addCard("papacy", "028"); 
-    	  this.addCard("papacy", "079"); 
+    	  this.addCard("papacy", "078"); 
    	  this.addCard("protestant", "027");
    	  this.addCard("protestant", "017");
 
@@ -5299,34 +5300,117 @@ console.log("purging naval units and capturing leader");
         if (mv[0] === "translation") {
 
 	  let zone = mv[1];
+	  let ops = 1;
+	  if (mv[2]) { if (parseInt(mv[2]) > ops) { ops = parseInt(mv[2]); } }
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (zone === "german") {
-	    if (this.game.state.translations['new']['german'] >= 6) {
-	      this.updateLog("Protestants translate New Testament (german)");
-	      this.game.state.translations['full']['german']++;
-	    } else {
-	      this.updateLog("Protestants translate Old Testament (german)");
-	      this.game.state.translations['new']['german']++;
+	  for (let z = 0; z < ops; z++) {
+	    if (zone === "german") {
+	      if (this.game.state.translations['new']['german'] >= 6) {
+	        this.updateLog("Protestants translate Old Testament (german)");
+	        this.game.state.translations['full']['german']++;
+
+		if (this.game.state.translations['full']['german'] == 6) {
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+
+  	      } else {
+	        this.updateLog("Protestants translate New Testament (german)");
+	        this.game.state.translations['new']['german']++;
+		if (this.game.state.translations['new']['german'] == 6) {
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+
+	      }
 	    }
-	  }
-	  if (zone === "french") {
-	    if (this.game.state.translations['new']['french'] >= 6) {
-	      this.updateLog("Protestants translate New Testament (french)");
-	      this.game.state.translations['full']['french']++;
-	    } else {
-	      this.updateLog("Protestants translate Old Testament (french)");
-	      this.game.state.translations['new']['french']++;
+	    if (zone === "french") {
+	      if (this.game.state.translations['new']['french'] >= 6) {
+	        this.updateLog("Protestants translate Old Testament (french)");
+	        this.game.state.translations['full']['french']++;
+		if (this.game.state.translations['full']['french'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      } else {
+	        this.updateLog("Protestants translate New Testament (french)");
+	        this.game.state.translations['new']['french']++;
+		if (this.game.state.translations['full']['french'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      }
 	    }
-	  }
-	  if (zone === "english") {
-	    if (this.game.state.translations['new']['english'] >= 6) {
-	      this.updateLog("Protestants translate New Testament (english)");
-	      this.game.state.translations['full']['english']++;
-	    } else {
-	      this.updateLog("Protestants translate Old Testament (english)");
-	      this.game.state.translations['new']['english']++;
+	    if (zone === "english") {
+	      if (this.game.state.translations['new']['english'] >= 6) {
+	        this.updateLog("Protestants translate Old Testament (english)");
+	        this.game.state.translations['full']['english']++;
+		if (this.game.state.translations['full']['english'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      } else {
+	        this.updateLog("Protestants translate New Testament (english)");
+	        this.game.state.translations['new']['english']++;
+		if (this.game.state.translations['full']['english'] == 6) {
+		  // protestant gets 1 roll bonus at start
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+        	  his_self.game.queue.push("hide_overlay\ttheses");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+		}
+	      }
 	    }
 	  }
 
