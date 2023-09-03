@@ -5565,6 +5565,7 @@ console.log("NEW WORLD PHASE!");
 	  let factions_force_pass = [];
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	      let faction = this.game.state.players_info[i].factions[z];
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
 		if (!this.game.state.skip_next_impulse.includes(this.game.state.players_info[i].factions[z])) {
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);

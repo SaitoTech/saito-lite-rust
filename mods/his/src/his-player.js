@@ -1107,7 +1107,8 @@ if (limit === "build") {
       if (c === "010") { can_pass = false; }
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
     } // no home card? can pass
-    if (this.factions[faction].returnAdminRating() >= this.game.deck[0].fhand[faction_hand_idx].length) {
+
+    if (this.factions[faction].returnAdminRating() < this.game.deck[0].fhand[faction_hand_idx].length) {
       can_pass = false;
     }
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
@@ -1119,11 +1120,6 @@ if (limit === "build") {
 
     this.updateStatusAndListCards("Select a Card: ", cards);
     
-    try {
-      $('#pass').onmouseover = (e) => {}
-      $('#pass').onmouseout = (e) => {}
-    } catch (err) {}
-
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
