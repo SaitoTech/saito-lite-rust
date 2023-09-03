@@ -109,18 +109,19 @@
   background: #222b;
   color: #fff;
   padding: min(5vh,5vw);
-  min-width: min(500px,85vw);
-  max-width: 95vw;
+  width: min(700px,85vw);
   overflow-y: auto;
+  border-radius: 1%;
+  border: 2px solid var(--saito-black);
+  cursor: grab;
 }
 
 .shim-notice  .htmlCards{
   display: flex;
-  margin-right: 3rem;
 }
 
 .shim-notice .card {
-  width: min(10vw, 150px);
+  width: min(10vw, 110px);
   height: auto;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
