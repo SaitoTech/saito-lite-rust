@@ -3989,7 +3989,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                 let ak_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
           
                 his_self.addMove("spanish_invasion_naval\t"+controlling_player+"\t"+spacekey);
-                his_self.addMove("moveunit" + "\t" + "hapsburg" + "\t" + "land" + "\t" + ak + "\t" + ak_idx + "\t" + "land" + spacekey);
+		if (ak_idx == -1) {
+                  his_self.addMove("add_army_leader" + "\t" + "hapsburg" + "\t" + spacekey + "\t" + "duke-of-alva");
+		} else {
+                  his_self.addMove("moveunit" + "\t" + "hapsburg" + "\t" + "land" + "\t" + ak + "\t" + ak_idx + "\t" + "land" + "\t" + spacekey);
+		}
 	        his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
 	        his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
 	        his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
@@ -15603,7 +15607,15 @@ console.log(i + " 4");
         top 	:	170 ,
         left	:	4128 ,
     }
+    diplomacy["hapsburg"]["ottoman"] = {
+        top 	:	170 ,
+        left	:	4128 ,
+    }
     diplomacy["ottoman"]["england"] = {
+        top 	:	170 ,
+        left	:	4222 ,
+    }
+    diplomacy["england"]["ottoman"] = {
         top 	:	170 ,
         left	:	4222 ,
     }
@@ -15611,11 +15623,23 @@ console.log(i + " 4");
         top 	:       170 ,
         left	:	4310 ,
     }
+    diplomacy["france"]["ottoman"] = {
+        top 	:       170 ,
+        left	:	4310 ,
+    }
     diplomacy["ottoman"]["papacy"] = {
         top 	:	170 ,
         left	:	4400 ,
     }
+    diplomacy["papacy"]["ottoman"] = {
+        top 	:	170 ,
+        left	:	4400 ,
+    }
     diplomacy["ottoman"]["protestant"] = {
+        top 	:	170 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["ottoman"] = {
         top 	:	170 ,
         left	:	4490 ,
     }
@@ -15636,53 +15660,61 @@ console.log(i + " 4");
         left	:	4851 ,
     }
 
-    diplomacy["hapsburg"]["ottoman"] = {
-        top 	:	170 ,
-        left	:	4128 ,
-    }
     diplomacy["hapsburg"]["england"] = {
-        top 	:	160 ,
+        top 	:	260 ,
+        left	:	4220 ,
+    }
+    diplomacy["england"]["hapsburg"] = {
+        top 	:	260 ,
         left	:	4220 ,
     }
     diplomacy["hapsburg"]["france"] = {
-        top 	:	160 ,
+        top 	:	260 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["hapsburg"] = {
+        top 	:	260 ,
         left	:	4310 ,
     }
     diplomacy["hapsburg"]["papacy"] = {
-        top 	:	160 ,
+        top 	:	260 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["hapsburg"] = {
+        top 	:	260 ,
         left	:	4400 ,
     }
     diplomacy["hapsburg"]["protestant"] = {
-        top 	:	160 ,
+        top 	:	260 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["hapsburg"] = {
+        top 	:	260 ,
         left	:	4490 ,
     }
     diplomacy["hapsburg"]["genoa"] = {
-        top 	:	160 ,
+        top 	:	260 ,
         left	:	4580 ,
     }
     diplomacy["hapsburg"]["hungary"] = {
-        top 	:	160 ,
+        top 	:	260 ,
         left	:	4670 ,
     }
     diplomacy["hapsburg"]["scotland"] = {
-        top 	:	160 ,
+        top 	:	260 ,
         left	:	4760 ,
     }
     diplomacy["hapsburg"]["venice"] = {
-        top 	:	160 ,
+        top 	:	260 ,
         left	:	4851 ,
     }
 
 
-    diplomacy["england"]["ottoman"] = {
-        top 	:	170 ,
-        left	:	4222 ,
-    }
-    diplomacy["england"]["hapsburg"] = {
-        top 	:	160 ,
-        left	:	4220 ,
-    }
     diplomacy["england"]["france"] = {
+        top 	:	350 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["england"] = {
         top 	:	350 ,
         left	:	4310 ,
     }
@@ -15690,7 +15722,15 @@ console.log(i + " 4");
         top 	:	350 ,
         left	:	4400 ,
     }
+    diplomacy["papacy"]["england"] = {
+        top 	:	350 ,
+        left	:	4400 ,
+    }
     diplomacy["england"]["protestant"] = {
+        top 	:	350 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["england"] = {
         top 	:	350 ,
         left	:	4490 ,
     }
@@ -15711,23 +15751,19 @@ console.log(i + " 4");
         left	:	4851 ,
     }
 
-    diplomacy["france"]["ottoman"] = {
-        top 	:       170 ,
-        left	:	4310 ,
-    }
-    diplomacy["france"]["hapsburg"] = {
-        top 	:	160 ,
-        left	:	4310 ,
-    }
-    diplomacy["france"]["england"] = {
-        top 	:	350 ,
-        left	:	4310 ,
-    }
     diplomacy["france"]["papacy"] = {
         top     :       440 ,
         left    :       4400 ,    
     }
+    diplomacy["papacy"]["france"] = {
+        top     :       440 ,
+        left    :       4400 ,    
+    }
     diplomacy["france"]["protestant"] = {
+        top     :       440 ,
+        left    :       4490 ,    
+    }
+    diplomacy["protestant"]["france"] = {
         top     :       440 ,
         left    :       4490 ,    
     }
@@ -15749,23 +15785,11 @@ console.log(i + " 4");
     }
 
 
-    diplomacy["papacy"]["ottoman"] = {
-        top 	:	170 ,
-        left	:	4400 ,
-    }
-    diplomacy["papacy"]["hapsburg"] = {
-        top 	:	160 ,
-        left	:	4400 ,
-    }
-    diplomacy["papacy"]["england"] = {
-        top 	:	350 ,
-        left	:	4400 ,
-    }
-    diplomacy["papacy"]["france"] = {
-        top     :       440 ,
-        left    :       4400 ,    
-    }
     diplomacy["papacy"]["protestant"] = {
+        top     :       530 ,
+        left    :       4490 ,    
+    }
+    diplomacy["protestant"]["papacy"] = {
         top     :       530 ,
         left    :       4490 ,    
     }
@@ -15786,26 +15810,6 @@ console.log(i + " 4");
         left    :       4851 ,    
     }
 
-    diplomacy["protestant"]["ottoman"] = {
-        top 	:	170 ,
-        left	:	4490 ,
-    }
-    diplomacy["protestant"]["hapsburg"] = {
-        top 	:	160 ,
-        left	:	4490 ,
-    }
-    diplomacy["protestant"]["england"] = {
-        top 	:	350 ,
-        left	:	4490 ,
-    }
-    diplomacy["protestant"]["france"] = {
-        top     :       440 ,
-        left    :       4490 ,    
-    }
-    diplomacy["protestant"]["papacy"] = {
-        top     :       530 ,
-        left    :       4490 ,    
-    }
     diplomacy["protestant"]["genoa"] = {
         top     :       620 ,
         left    :       4580 ,    

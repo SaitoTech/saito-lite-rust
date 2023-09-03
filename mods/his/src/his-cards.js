@@ -1213,7 +1213,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                 let ak_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
           
                 his_self.addMove("spanish_invasion_naval\t"+controlling_player+"\t"+spacekey);
-                his_self.addMove("moveunit" + "\t" + "hapsburg" + "\t" + "land" + "\t" + ak + "\t" + ak_idx + "\t" + "land" + spacekey);
+		if (ak_idx == -1) {
+                  his_self.addMove("add_army_leader" + "\t" + "hapsburg" + "\t" + spacekey + "\t" + "duke-of-alva");
+		} else {
+                  his_self.addMove("moveunit" + "\t" + "hapsburg" + "\t" + "land" + "\t" + ak + "\t" + ak_idx + "\t" + "land" + "\t" + spacekey);
+		}
 	        his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
 	        his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
 	        his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
