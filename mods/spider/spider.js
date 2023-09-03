@@ -72,6 +72,7 @@ class Spider extends OnePlayerGameTemplate {
     if (this.browser_active) {
       // Insert game board
       $(".gameboard").html(this.returnBoard());
+      this.removeEvents();
       this.changeDifficulty(input_dif);
     } else {
       this.game.queue.push("READY");
@@ -249,24 +250,37 @@ class Spider extends OnePlayerGameTemplate {
     }
   }
 
+  removeEvents(){
+    $(".undo").off();
+    $("#hint").off();
+    $(".draw-pile").off();
+    $(".undo").css("opacity", "50%");
+    $("#hint").css("opacity", "50%");
+  }
+
   attachEventsToBoard() {
     let spider_self = this;
+
+    //Just in case
+    this.removeEvents();
 
     //Undo last move
     if (this.moves.length > 0) {
       $(".undo").css("visibility", "visible");
+      $(".undo").css("opacity", "100%");
     } else {
       $(".undo").css("visibility", "hidden");
     }
 
-    $(".undo").off();
+
     $(".undo").on("click", function () {
+      spider_self.removeEvents();
       spider_self.updateScore();
       spider_self.undoMove();
     });
 
     //Deal another round of cards
-    $(".draw-pile").off();
+
     $(".draw-pile").on("click", async function () {
       if (spider_self.moves.length == 0 && spider_self.hints.length > 0) {
         let c = await sconfirm("Are you sure you want to do that?");
@@ -279,6 +293,7 @@ class Spider extends OnePlayerGameTemplate {
 
       if (spider_self.game.state.draws_remaining > 0) {
         if (spider_self.canDraw()) {
+          spider_self.removeEvents();
           spider_self.updateScore();
           spider_self.prependMove("draw");
           spider_self.endTurn();
@@ -299,14 +314,14 @@ class Spider extends OnePlayerGameTemplate {
       }      
     }
 
-    $("#hint").off();
 
     if (this.hints?.length > 0){
       $("#hint").css("visibility", "visible");
+      $("#hint").css("opacity", "100%");
       $(".gameboard").removeClass("nomoves");
 
       $("#hint").on("click", ()=> {
-        $("#hint").off();
+        this.removeEvents();
         let next_hint = this.hints.shift();
         this.hints.push(next_hint);
         this.displayBoard();
@@ -627,6 +642,7 @@ class Spider extends OnePlayerGameTemplate {
       helper.append(elem);
     }
 
+    this.removeEvents();
     this.moveGameElement("helper", this.cardStacks[target].getTopCardElement(), {
       callback: ()=> {
         let stack_to_move = this.cardStacks[source].cards.splice(index);
@@ -660,6 +676,8 @@ class Spider extends OnePlayerGameTemplate {
   pickUpStack(activated_card_stack, card_index, event) {
     let spider_self = activated_card_stack.mod;
     let af = null;
+
+    this.removeEvents();
 
     if (!document.getElementById("helper")) {
       spider_self.app.browser.addElementToSelector(
