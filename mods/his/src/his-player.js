@@ -1118,6 +1118,12 @@ if (limit === "build") {
     }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
+    
+    try {
+      $('#pass').onmouseover = (e) => {}
+      $('#pass').onmouseout = (e) => {}
+    } catch (err) {}
+
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
@@ -1219,12 +1225,14 @@ if (limit === "build") {
   }
 
   playerPlayCard(card, player, faction) {
+    
+    this.cardbox.hide();
 
     //
-    // maybe we are passing
-    //
     if (card === "pass") {
-      this.addMove("pass\t"+faction);
+      let faction_hand_idx = this.returnFactionHandIdx(player, faction);
+      // auto updates cards_left (last entry)
+      this.addMove("pass\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
       this.endTurn();
       return;
     }
@@ -1267,6 +1275,13 @@ if (limit === "build") {
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // cards left
+    //
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
+
 
     //
     // discard the card

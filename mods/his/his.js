@@ -14898,6 +14898,8 @@ console.log(i + " 4");
 
     state.debater_committed_this_impulse = {};
 
+    state.cards_left = {};
+
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
     state.activated_powers['hapsburg'] = [];
@@ -15954,6 +15956,8 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+	  this.game.state.cards_left = {};
+
 	  this.onNewRound();
 	  this.restoreReformers();
 	  this.restoreMilitaryLeaders();
@@ -16120,9 +16124,23 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
-	if (mv[0] === "pass") {
+	if (mv[0] === "cards_left") {
+
           let faction = mv[1];
+          let cards_left = parseInt(mv[2]);
+	  this.game.state.cards_left[faction] = cards_left;
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "pass") {
+ 
+          let faction = mv[1];
+          let cards_left = parseInt(mv[2]);
 	  let player = this.returnPlayerOfFaction(faction);
+	  this.game.state.cards_left[faction] = cards_left;
 
           for (let z = 0; z < this.game.state.players_info[player-1].factions.length; z++) {
 	    if (this.game.state.players_info[player-1].factions[z] == faction) {
@@ -20417,8 +20435,25 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
+	  //
+	  // attacker and defender both wiped out
+	  //
+	  if (attacker_land_units_remaining <= 0 && defender_land_units_remaining >= 0) {
+	    space.besieged = false;
+	    space.unrest = false;
+	    //
+	    // remove besieged
+	    //
+	    for (let key in space.units) {
+	      for (let i = 0; i < space.units[key].length; i++) {
+	        space.units[key][i].besieged = 0;
+	      }
+	    }
+	  }
 
-
+	  //
+	  // attacker does better than defender
+	  //
 	  if (attacker_land_units_remaining <= 0 && defender_land_units_remaining <= 0) {
 	    if (attacker_hits > defender_hits) {
 
@@ -21451,7 +21486,9 @@ console.log("NEW WORLD PHASE!");
 
 	  //
 	  // check if we are really ready for a new round, or just need another loop
-	  // until all of the players have passed.
+	  // until all of the players have passed. note that players who have passed 
+	  // and have more than their admin_rating (saved cards) are forced to eventually
+	  // stop passing and play....
 	  //
 	  let factions_in_play = [];
 	  let factions_force_pass = [];
@@ -21459,7 +21496,7 @@ console.log("NEW WORLD PHASE!");
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
 		if (!this.game.state.skip_next_impulse.includes(this.game.state.players_info[i].factions[z])) {
-		  factions_in_play.push(this.factions[this.game.state.players_info[i].factions[z]]);
+		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 		} else {
 		  for (let ii = 0; ii < this.game.state.skip_next_impulse.length; ii++) {
 		    if (this.game.state.skip_next_impulse[ii] === this.game.state.players_info[i].factions[z]) {
@@ -21468,9 +21505,28 @@ console.log("NEW WORLD PHASE!");
 		    }
 		  }
 		}
+	      } else {
+		// they passed but maybe they have more cards left than their admin rating?
+		let far = this.factions[faction].returnAdminRating();
+	        if (far < this.game.state.cards_left[faction]) {
+		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
+	        }
 	      }
 	    }
 	  }
+
+	  //
+	  // if anyone is left to play, everyone with cards left needs to pass again
+	  //
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	      let f = this.game.state.players_info[i].factions[z];
+	      if (!factions_in_play.includes(f) && !factions_force_pass.includes(f)) {
+		factions_in_play.push(f);
+	      }
+	    }
+	  }
+
 
 	  //
 	  // players still to go...
@@ -21479,13 +21535,15 @@ console.log("NEW WORLD PHASE!");
 	    let io = this.returnImpulseOrder();
 	    for (let i = io.length-1; i >= 0; i--) {
 	      for (let k = 0; k < factions_in_play.length; k++) {
-	        if (factions_in_play[k].key === io[i]) {
+	        if (factions_in_play[k] === io[i]) {
 	          this.game.queue.push("play\t"+io[i]);
+		  k = factions_in_play.length+2;
 	        }
 	      }
 	      for (let k = 0; i < factions_force_pass.length; k++) {
-	        if (factions_force_pass[k].key === io[i]) {
+	        if (factions_force_pass[k] === io[i]) {
 	          this.game.queue.push("skipturn\t"+io[i]);
+		  k = factions_force_pass.length+2;
 	        }
 	      }
 	    }
@@ -23086,7 +23144,6 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 
 
 
-
   returnPlayers(num = 0) {
 
     var players = [];
@@ -24205,6 +24262,12 @@ if (limit === "build") {
     }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
+    
+    try {
+      $('#pass').onmouseover = (e) => {}
+      $('#pass').onmouseout = (e) => {}
+    } catch (err) {}
+
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
@@ -24306,12 +24369,14 @@ if (limit === "build") {
   }
 
   playerPlayCard(card, player, faction) {
+    
+    this.cardbox.hide();
 
     //
-    // maybe we are passing
-    //
     if (card === "pass") {
-      this.addMove("pass\t"+faction);
+      let faction_hand_idx = this.returnFactionHandIdx(player, faction);
+      // auto updates cards_left (last entry)
+      this.addMove("pass\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
       this.endTurn();
       return;
     }
@@ -24354,6 +24419,13 @@ if (limit === "build") {
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // cards left
+    //
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
+
 
     //
     // discard the card
@@ -27526,6 +27598,7 @@ return;
     if (obj.img == null)                { obj.img = ""; }
     if (obj.key == null)	        { obj.key = name; }
     if (obj.ruler == null)		{ obj.ruler = ""; }
+    if (obj.cards == null)		{ obj.cards = 0; }
     if (obj.capitals == null)	        { obj.capitals = []; }
     if (obj.admin_rating == null)	{ obj.admin_rating = 0; } // cards "holdable"
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }

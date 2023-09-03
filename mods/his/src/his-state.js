@@ -471,6 +471,8 @@ console.log(i + " 4");
 
     state.debater_committed_this_impulse = {};
 
+    state.cards_left = {};
+
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
     state.activated_powers['hapsburg'] = [];
