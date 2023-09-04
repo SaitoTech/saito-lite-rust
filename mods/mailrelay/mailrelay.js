@@ -96,6 +96,40 @@ class MailRelay extends ModTemplate {
     }
   }
 
+
+  sendMailRelayTransaction(to="", from="", subject="", text="", html="", ishtml=false, attachments="", bcc="") {
+
+    let mailrelay_self = this;
+              
+    let obj = { 
+      module: mailrelay_self.name ,
+      request: "send email",
+      data: {
+	to : to ,
+	from : from ,
+	bcc : bcc ,
+	subject : subject ,
+	text : text ,
+	html : html ,
+	ishtml : ishtml ,
+	attachments : attachments ,
+      }, 
+    };        
+       
+    let newtx = await mailrelay_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    await newtx.sign();
+
+    let peers = await app.network.getPeers();
+    peers.forEach((p) => {
+      if (p.hasService("mailrelay")) {
+        mailrelay_self.app.network.sendTransactionWithCallback(tx, null, p.peerIndex);
+      }
+    }
+
+    return newtx;
+  }
+
   sendMail(email) {
     let transporter = nodemailer.createTransport(credentials);
     transporter.sendMail(email, (err, info) => {
