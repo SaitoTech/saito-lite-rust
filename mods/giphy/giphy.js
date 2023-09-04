@@ -14,6 +14,7 @@ const SaitoOverlay = require("./../../lib/saito/ui/saito-overlay/saito-overlay")
 const saitoGifTemplate = require("./lib/giphy.template");
 const SaitoLoader = require("./../../lib/saito/ui/saito-loader/saito-loader");
 const ModTemplate = require("../../lib/templates/modtemplate");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 class Giphy extends ModTemplate {
   constructor(app, mod, input_id, parent_callback = null) {
@@ -27,6 +28,11 @@ class Giphy extends ModTemplate {
     this.overlay = new SaitoOverlay(app, mod);
     this.loader = new SaitoLoader(app, mod);
     this.auth = null;
+
+   this.gf = null;
+
+    this.styles = ["/giphy/style.css"];
+
   }
 
   async initialize(app) {
@@ -34,39 +40,107 @@ class Giphy extends ModTemplate {
   }
 
   async render() {
-    let app = this.app;
-    let mod = this.mod;
+    let giphy_self = this;
 
-    // get this parent element
-    //let input = document.querySelector(`.saito-emoji-container > #${this.input_id}`);
-    //this.parentElement = input.parentElement;
-    if (document.querySelector(".saito-gif-icon-container")) {
-      this.app.browser.addElementToElement(
-        `<div class="saito-gif"><i class="fa-solid fa-video"></i></div>`,
-        document.querySelector(".saito-gif-icon-container")
-      );
+    //
+    //Calculate reasonable sizing of results 
+    //
+    this.selectorWidth = window.innerWidth;
+    if (this.container) {
+      let container = document.querySelector(this.container);
+      if (container) {
+        this.selectorWidth = container.getBoundingClientRect().width;
+      }
     }
 
-    if (!document.getElementById("giphy-styles")) {
-      var s = document.createElement("link");
-      s.id = "giphy-styles";
-      s.rel = "stylesheet";
-      s.type = "text/css";
-      s.href = "/giphy/css/giphy.css";
-      document.querySelector("head").appendChild(s);
+    this.selectorColumns = 3;
+
+    if (this.selectorWidth > 525) {
+      this.selectorWidth = 500 + (this.selectorWidth - 500) / 2;
+    }
+    if (this.selectorWidth > 750) {
+      this.selectorWidth = 750;
+    }
+    this.selectorColumns = Math.floor(this.selectorWidth / 150);
+
+    //
+    // Initiate the Giphy search service
+    //
+    if (!this.gf || this.gf.apiKey === null) {
+      this.gf = new GiphyFetch(this.auth);
     }
 
-    if (!this.auth) {
-      let saitogif_self = this;
-      await app.network.sendRequestAsTransaction("get giphy auth", {}, function (res) {
-        //console.log(res);
-        saitogif_self.auth = res;
-        saitogif_self.attachEvents(res);
-      });
+
+    if (this.container) {
+        if (!document.querySelector(".saito-gif-container")){
+            this.app.browser.addElementToSelector(saitoGifTemplate(this.app, this.mod), this.container);      
+        }
     } else {
-      this.attachEvents(this.auth);
+      this.overlay.show(saitoGifTemplate(this.app, this.mod));
+    }
+
+    //this.loader.render(this.app, this.mod, "saito-gif-content");
+    let onGifClick = (gif, e) => {
+      e.preventDefault();
+      this.parent_callback(gif.images.original.url);
+      this.overlay.remove();
+    };
+
+    renderGrid(
+      {
+        width: giphy_self.selectorWidth,
+        fetchGifs: (offset) => {
+            //giphy_self.loader.remove();
+          return this.gf.search("inception", { offset });
+        },
+        columns: giphy_self.selectorColumns,
+        gutter: 2,
+        onGifClick,
+        key: 34,
+      },
+      document.querySelector(".saito-gif-content")
+    );
+
+  }
+
+
+  returnServices() {
+    let services = [];
+    if (this.app.BROWSER == 0) {
+      services.push(new PeerService(null, "giphy"));
+    }
+
+    return services;
+  }
+
+  onPeerServiceUp(app, peer, service = {}) {
+    let gif_self = this;
+
+    if (service.service === "giphy") {
+      app.network.sendRequestAsTransactionWithCallback("get giphy auth", {}, function (res) {
+        gif_self.auth = res;
+      });
     }
   }
+
+  respondTo(type, obj = null) {
+    let giphy_self = this;
+    if (type === "giphy") {
+      this.attachStyleSheets();
+      return {
+        renderInto: (container, callback) => {
+          giphy_self.container = container;
+          giphy_self.parent_callback = callback;
+          giphy_self.render();
+          giphy_self.attachEvents();
+        },
+      };
+    }
+
+    return super.respondTo(type, obj);
+  }
+
+
 
   toDataURL = (url) =>
     fetch(url)
@@ -86,84 +160,40 @@ class Giphy extends ModTemplate {
       });
 
   attachEvents(auth) {
-    let app = this.app;
-    let mod = this.mod;
+    let giphy_self = this;
+    let gif_search_icon = document.querySelector(".saito-gif-search i");
+    let gif_input_search = document.querySelector(".saito-gif-search input");
 
-    let self = this;
-    let gif_icon = document.querySelector(".saito-gif");
-    let selectorWidth = window.innerWidth;
-    let selectorColumns = 3;
+    gif_search_icon.onclick = () => {
+      let value = gif_input_search.value;
+      console.log(gif_input_search.value, "value");
+      document.querySelector(".saito-gif-content").innerHTML = "";
+      //this.loader.render(this.app, this.mod, "saito-gif-content");
 
-    let gf = new GiphyFetch(auth);
-
-    if (selectorWidth > 525) {
-      selectorWidth = 500 + (window.innerWidth - 500) / 2;
-    }
-    if (selectorWidth > 750) {
-      selectorWidth = 750;
-    }
-    selectorColumns = Math.floor(selectorWidth / 150);
-
-    gif_icon.onclick = (e) => {
-      this.overlay.show(saitoGifTemplate(app, mod));
-      this.loader.render(app, mod, "saito-gif-content");
       let onGifClick = (gif, e) => {
-        console.log(gif, e);
         e.preventDefault();
         this.parent_callback(gif.images.original.url);
-        //document.getElementById(self.input_id).value += `${gif.embed_url} \n `;
-        self.overlay.remove();
+        this.overlay.remove();
       };
 
       renderGrid(
         {
-          width: selectorWidth,
+          width: giphy_self.selectorWidth,
           fetchGifs: (offset) => {
-            return gf.search("inception", { offset });
+            //giphy_self.loader.remove();
+            //console.log("offset", offset, "value ", value);
+            return this.gf.search(value, { offset });
           },
-          columns: selectorColumns,
+          columns: giphy_self.selectorColumns,
           gutter: 2,
           onGifClick,
-          key: 34,
+          key: value,
         },
         document.querySelector(".saito-gif-content")
       );
-
-      this.loader.remove();
-
-      let gif_search_icon = document.querySelector(".saito-gif-search i");
-      let gif_input_search = document.querySelector(".saito-gif-search input");
-
-      gif_search_icon.onclick = () => {
-        let value = gif_input_search.value;
-        console.log(gif_input_search.value, "value");
-        document.querySelector(".saito-gif-content").innerHTML = "";
-        this.loader.render(app, mod, "saito-gif-content");
-
-        let onGifClick = (gif, e) => {
-          e.preventDefault();
-          this.parent_callback(gif.images.original.url);
-          //document.getElementById(self.input_id).value += `${gif.embed_url} \n `;
-          self.overlay.remove();
-        };
-
-        renderGrid(
-          {
-            width: selectorWidth,
-            fetchGifs: (offset) => {
-              console.log("offset", offset, "value ", value);
-              return gf.search(value, { offset });
-            },
-            columns: selectorColumns,
-            gutter: 2,
-            onGifClick,
-            key: value,
-          },
-          document.querySelector(".saito-gif-content")
-        );
-        this.loader.remove();
-      };
+      
     };
+
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
