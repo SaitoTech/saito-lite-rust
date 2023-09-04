@@ -3835,7 +3835,13 @@ console.log("getPrivateKey(): " + privateKey);
     $('.card').off();
     twilight_self.hideCard();
     twilight_self.endTurn();
+
+    //
+    // Update status no longer hides the cards !!!!!!
+    //
     twilight_self.updateStatus("simultaneous blind pick... encrypting selected card");
+
+    $(`.controls #${card}`).css("filter", "brightness(0.5)");
 
     return;
 
