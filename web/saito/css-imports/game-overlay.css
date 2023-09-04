@@ -106,25 +106,46 @@
 
 .shim-notice {
   font-size: 20px;
-  background: #222b;
+  background: #000c;
   color: #fff;
   padding: min(5vh,5vw);
-  min-width: min(500px,85vw);
-  max-width: 95vw;
+  width: min(800px,95vw);
   overflow-y: auto;
+  border-radius: 2%;
+  border: 2px solid var(--saito-gray);
+  cursor: grab;
+}
+
+.shim-notice .player-result{
+  display: grid;
+  width: 100%;
+  max-width: 750px;
+  margin: auto;
+  grid-template-columns: 2fr 5fr;
+  grid-column-gap: 2rem;
 }
 
 .shim-notice  .htmlCards{
   display: flex;
-  margin-right: 3rem;
+  width: 100%;
+  max-width: 500px;
+  justify-content: space-between;
 }
 
 .shim-notice .card {
-  width: min(10vw, 150px);
+  max-width: 100px;
   height: auto;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+  margin-left: 3px;
 }
+
+.shim-notice .htmlCards.pocket .card{
+  width: 50%;
+}
+
+.shim-notice .htmlCards.pool .card{
+  width: 20%;
+}
+
 
 .game_warning_overlay{
   background: #222b;

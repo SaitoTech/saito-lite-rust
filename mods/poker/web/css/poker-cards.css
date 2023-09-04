@@ -5,6 +5,17 @@
   height: min(27.54vw, 199px);
 }
 
+.card.used {
+  /*border: 2px solid var(--saito-secondary);
+  background-color: var(--saito-secondary);
+  border-radius: 8px;*/
+}
+
+.card.not_used {
+  filter: grayscale(100%) brightness(0.55);
+}
+
+
 .cardfan {
   max-height: 20vh;
   max-width: 20vw;

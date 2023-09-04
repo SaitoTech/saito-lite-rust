@@ -653,6 +653,11 @@ class Poker extends GameTableTemplate {
           );
           this.game.stats[this.game.players[player_left_idx]].handsWon++;
 
+          let userline = `Winner! <div class="saito-balance">${this.formatWager(
+            this.game.state.player_credit[player_left_idx],
+            true)}</div>`;
+          this.playerbox.updateUserline(userline, player_left_idx+1);
+
           //
           // everyone settles with winner if needed
           //
@@ -927,6 +932,12 @@ class Poker extends GameTableTemplate {
             this.game.state.player_credit[winners[i]],
             this.fts(pot_size)
           );
+
+          let userline = `Winner! <div class="saito-balance">${this.formatWager(
+            this.game.state.player_credit[winners[i]],
+            true)}</div>`;
+          this.playerbox.updateUserline(userline, winners[i]+1);
+
         }
 
         // update logs and splash!
@@ -945,12 +956,9 @@ class Poker extends GameTableTemplate {
           );
 
           let player_hand = this.game.state.player_cards[pl.player].slice(0, 2);
-          updateHTML =
-            `<div class="htmlCards">` +
-            this.handToHTML(player_hand) +
-            this.handToHTML(pl.player_hand.cards_to_score) +
-            `</div>` +
-            updateHTML;
+          updateHTML = `<div class="player-result">` + 
+                          this.handToHTML(pl.player_hand.cards_to_score, player_hand) +
+                        "</div>" + updateHTML;
 
           updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${
             pl.player_hand.hand_description
@@ -1057,8 +1065,10 @@ class Poker extends GameTableTemplate {
             this.overlay.closebox = false;
             this.clearTable();
           });
-          this.app.browser.makeDraggable;
-          `saito-overlay${this.overlay.ordinal}`;
+          this.overlay.blockClose();
+          $(".saito-overlay-backdrop").css("opacity", "70%");
+          this.app.browser.makeDraggable(`saito-overlay${this.overlay.ordinal}`);
+
           $(".shim-notice").disableSelection();
 
           this.game.halted = 1;
@@ -1210,7 +1220,7 @@ class Poker extends GameTableTemplate {
 
         this.game.queue.splice(qe, 1);
 
-        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+        this.refreshPlayerStack(player); //Here we don't want to hide cards
 
         if (this.browser_active == 1 && this.game.player !== player) {
           this.refreshPlayerLog(`<div class="plog-update">calls</div>`, player);
@@ -1331,7 +1341,7 @@ class Poker extends GameTableTemplate {
           }
         }
         this.game.queue.splice(qe, 1);
-        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+        this.refreshPlayerStack(player); //Here we don't want to hide cards
 
         return 1;
       }
@@ -1684,13 +1694,13 @@ class Poker extends GameTableTemplate {
     }
     try {
       for (let i = 1; i <= this.game.players.length; i++) {
-        this.refreshPlayerStack(i, true);
+        this.refreshPlayerStack(i);
+        this.playerbox.updateIcons(``, i);
         if (!preserveLog) {
           this.refreshPlayerLog("", i);
         }
-
-        this.playerbox.updateIcons(`<i class="fa-solid fa-circle-dot"></i>`, this.game.state.button_player);
       }
+      this.playerbox.updateIcons(`<i class="fa-solid fa-circle-dot"></i>`, this.game.state.button_player);
     } catch (err) {
       console.log("error displaying player box", err);
     }
@@ -1765,8 +1775,6 @@ class Poker extends GameTableTemplate {
       return;
     }
 
-    const timeout = (ms) => new Promise((res) => setTimeout(res, ms));
-
     for (let i = 0; i < this.game.pool[0].hand.length; i++) {
       let card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
       let nthSlot = $("#deal").children().get(i);
@@ -1775,7 +1783,7 @@ class Poker extends GameTableTemplate {
         continue;
       }
       $(nthSlot).append(`<img class="card cardFront" src="${this.card_img_dir}/${card.name}">`);
-      await timeout(250);
+      await this.timeout(250);
       $(nthSlot).addClass("flipped");
     }
   }
@@ -1785,14 +1793,11 @@ class Poker extends GameTableTemplate {
       return;
     }
 
-    $(".winner").removeClass("winner");
     $(".game-playerbox-graphics .hand").animate({ left: "1000px" }, 1200, "swing", function () {
       $(this).remove();
     });
 
     await this.timeout(600);
-
-    $("#pot").fadeOut(1250);
 
     /*if (document.querySelector(".flipped")) {
       $(".flipped")
@@ -1824,6 +1829,9 @@ class Poker extends GameTableTemplate {
       });
     });
 
+    $(".winner").removeClass("winner");
+    $("#pot").fadeOut(1650);
+
     await this.timeout(1000);
     this.restartQueue();
 
@@ -1833,13 +1841,13 @@ class Poker extends GameTableTemplate {
     this.playerbox.updateBody(html, player);
   }
 
-  refreshPlayerStack(player, includeCards = true) {
+  refreshPlayerStack(player) {
     if (!this.browser_active) {
       return;
     }
     let userline =
       this.returnPlayerRole(player) +
-      `<div class="saito-balance" style="float:right">${this.formatWager(
+      `<div class="saito-balance">${this.formatWager(
         this.game.state.player_credit[player - 1],
         true
       )}</div>`;
@@ -3263,12 +3271,19 @@ class Poker extends GameTableTemplate {
     this.overlay.show(html);
   }
 
-  handToHTML(hand) {
-    let html = "<div class='htmlCards'>";
-    hand.forEach((card) => {
-      html += `<img class="card" src="${this.card_img_dir}/${card}.png">`;
+  handToHTML(hand, pocket) {
+    let html = "<div class='htmlCards pocket'>";
+    pocket.forEach((card) => {
+      html += `<img class="card ${(hand.includes(card))? "used":"not_used"}" src="${this.card_img_dir}/${card}.png">`;
     });
     html += "</div> ";
+
+    html += "<div class='htmlCards pool'>";
+    this.game.pool[0].hand.forEach((card)=> {
+      card = this.game.pool[0].cards[card].name.replace(".png","");
+      html += `<img class="card ${(hand.includes(card))? "used":"not_used"}" src="${this.card_img_dir}/${card}.png">`;
+    });
+    html += "</div> ";    
     return html;
   }
 
