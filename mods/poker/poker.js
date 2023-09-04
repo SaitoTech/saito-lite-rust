@@ -956,8 +956,9 @@ class Poker extends GameTableTemplate {
           );
 
           let player_hand = this.game.state.player_cards[pl.player].slice(0, 2);
-          updateHTML = this.handToHTML(pl.player_hand.cards_to_score, player_hand) +
-            updateHTML;
+          updateHTML = `<div class="player-result">` + 
+                          this.handToHTML(pl.player_hand.cards_to_score, player_hand) +
+                        "</div>" + updateHTML;
 
           updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${
             pl.player_hand.hand_description
@@ -1065,7 +1066,7 @@ class Poker extends GameTableTemplate {
             this.clearTable();
           });
           this.overlay.blockClose();
-          $(".saito-overlay-backdrop").css("opacity", "50%");
+          $(".saito-overlay-backdrop").css("opacity", "70%");
           this.app.browser.makeDraggable(`saito-overlay${this.overlay.ordinal}`);
 
           $(".shim-notice").disableSelection();
@@ -3271,11 +3272,18 @@ class Poker extends GameTableTemplate {
   }
 
   handToHTML(hand, pocket) {
-    let html = "<div class='htmlCards'>";
-    hand.forEach((card) => {
-      html += `<img class="card${(pocket.includes(card))? " pocket":""}" src="${this.card_img_dir}/${card}.png">`;
+    let html = "<div class='htmlCards pocket'>";
+    pocket.forEach((card) => {
+      html += `<img class="card ${(hand.includes(card))? "used":"not_used"}" src="${this.card_img_dir}/${card}.png">`;
     });
     html += "</div> ";
+
+    html += "<div class='htmlCards pool'>";
+    this.game.pool[0].hand.forEach((card)=> {
+      card = this.game.pool[0].cards[card].name.replace(".png","");
+      html += `<img class="card ${(hand.includes(card))? "used":"not_used"}" src="${this.card_img_dir}/${card}.png">`;
+    });
+    html += "</div> ";    
     return html;
   }
 

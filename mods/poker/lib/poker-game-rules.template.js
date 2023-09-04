@@ -33,7 +33,7 @@ module.exports = (app, mod) => {
 					<img class="mcard" src="/poker/img/cards/D11.png">
 					<img class="mcard" src="/poker/img/cards/S11.png">
 					<img class="mcard" src="/poker/img/cards/C11.png">
-					<img class="mcard" src="/poker/img/cards/D4.png">
+					<img class="mcard not_used" src="/poker/img/cards/D4.png">
 				</div>
 			</div>
 
@@ -78,8 +78,8 @@ module.exports = (app, mod) => {
 					<img class="mcard" src="/poker/img/cards/C7.png">
 					<img class="mcard" src="/poker/img/cards/D7.png">
 					<img class="mcard" src="/poker/img/cards/S7.png">
-					<img class="mcard" src="/poker/img/cards/C13.png">
-					<img class="mcard" src="/poker/img/cards/D3.png">
+					<img class="mcard not_used" src="/poker/img/cards/C13.png">
+					<img class="mcard not_used" src="/poker/img/cards/D3.png">
 				</div>
 			</div>
 
@@ -90,7 +90,7 @@ module.exports = (app, mod) => {
 					<img class="mcard" src="/poker/img/cards/S4.png">
 					<img class="mcard" src="/poker/img/cards/C3.png">
 					<img class="mcard" src="/poker/img/cards/D3.png">
-					<img class="mcard" src="/poker/img/cards/C12.png">
+					<img class="mcard not_used" src="/poker/img/cards/C12.png">
 				</div>
 			</div>
 
@@ -99,20 +99,20 @@ module.exports = (app, mod) => {
 				<div class="poker-modal-cardbox">
 					<img class="mcard" src="/poker/img/cards/H1.png">
 					<img class="mcard" src="/poker/img/cards/D1.png">
-					<img class="mcard" src="/poker/img/cards/C8.png">
-					<img class="mcard" src="/poker/img/cards/S4.png">
-					<img class="mcard" src="/poker/img/cards/H7.png">
+					<img class="mcard not_used" src="/poker/img/cards/C8.png">
+					<img class="mcard not_used" src="/poker/img/cards/S4.png">
+					<img class="mcard not_used" src="/poker/img/cards/H7.png">
 				</div>
 			</div>
 
 
 			<div class="poker-box-description">10. Highest Card
 				<div class="poker-modal-cardbox">
-					<img class="mcard" src="/poker/img/cards/D3.png">
+					<img class="mcard not_used" src="/poker/img/cards/D3.png">
 					<img class="mcard" src="/poker/img/cards/C13.png">
-					<img class="mcard" src="/poker/img/cards/S8.png">
-					<img class="mcard" src="/poker/img/cards/H4.png">
-					<img class="mcard" src="/poker/img/cards/S2.png">
+					<img class="mcard not_used" src="/poker/img/cards/S8.png">
+					<img class="mcard not_used" src="/poker/img/cards/H4.png">
+					<img class="mcard not_used" src="/poker/img/cards/S2.png">
 				</div>
 			</div>
 		</div>
