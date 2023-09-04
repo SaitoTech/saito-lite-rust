@@ -117,7 +117,7 @@ class Giphy extends ModTemplate {
     let gif_self = this;
 
     if (service.service === "giphy") {
-      app.network.sendRequestAsTransactionWithCallback("get giphy auth", {}, function (res) {
+      app.network.sendRequestAsTransaction("get giphy auth", {}, function (res) {
         gif_self.auth = res;
       });
     }
