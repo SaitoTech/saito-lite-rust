@@ -106,25 +106,28 @@
 
 .shim-notice {
   font-size: 20px;
-  background: #222b;
+  background: #000c;
   color: #fff;
   padding: min(5vh,5vw);
-  width: min(700px,85vw);
+  width: min(700px,95vw);
   overflow-y: auto;
-  border-radius: 1%;
-  border: 2px solid var(--saito-black);
+  border-radius: 2%;
+  border: 2px solid var(--saito-white);
   cursor: grab;
 }
 
 .shim-notice  .htmlCards{
   display: flex;
+  width: 100%;
+  max-width: 550px;
+  justify-content: space-between;
+  margin: auto;
 }
 
 .shim-notice .card {
-  width: min(10vw, 110px);
+  width: 19%;
+  max-width: 110px;
   height: auto;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
 }
 
 .game_warning_overlay{

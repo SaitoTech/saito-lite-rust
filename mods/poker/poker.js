@@ -653,6 +653,11 @@ class Poker extends GameTableTemplate {
           );
           this.game.stats[this.game.players[player_left_idx]].handsWon++;
 
+          let userline = `Winner! <div class="saito-balance">${this.formatWager(
+            this.game.state.player_credit[player_left_idx],
+            true)}</div>`;
+          this.playerbox.updateUserline(userline, player_left_idx+1);
+
           //
           // everyone settles with winner if needed
           //
@@ -927,6 +932,12 @@ class Poker extends GameTableTemplate {
             this.game.state.player_credit[winners[i]],
             this.fts(pot_size)
           );
+
+          let userline = `Winner! <div class="saito-balance">${this.formatWager(
+            this.game.state.player_credit[winners[i]],
+            true)}</div>`;
+          this.playerbox.updateUserline(userline, winners[i]+1);
+
         }
 
         // update logs and splash!
@@ -1208,7 +1219,7 @@ class Poker extends GameTableTemplate {
 
         this.game.queue.splice(qe, 1);
 
-        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+        this.refreshPlayerStack(player); //Here we don't want to hide cards
 
         if (this.browser_active == 1 && this.game.player !== player) {
           this.refreshPlayerLog(`<div class="plog-update">calls</div>`, player);
@@ -1329,7 +1340,7 @@ class Poker extends GameTableTemplate {
           }
         }
         this.game.queue.splice(qe, 1);
-        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+        this.refreshPlayerStack(player); //Here we don't want to hide cards
 
         return 1;
       }
@@ -1682,13 +1693,13 @@ class Poker extends GameTableTemplate {
     }
     try {
       for (let i = 1; i <= this.game.players.length; i++) {
-        this.refreshPlayerStack(i, true);
+        this.refreshPlayerStack(i);
+        this.playerbox.updateIcons(``, i);
         if (!preserveLog) {
           this.refreshPlayerLog("", i);
         }
-
-        this.playerbox.updateIcons(`<i class="fa-solid fa-circle-dot"></i>`, this.game.state.button_player);
       }
+      this.playerbox.updateIcons(`<i class="fa-solid fa-circle-dot"></i>`, this.game.state.button_player);
     } catch (err) {
       console.log("error displaying player box", err);
     }
@@ -1781,13 +1792,11 @@ class Poker extends GameTableTemplate {
       return;
     }
 
-    $(".winner").removeClass("winner");
     $(".game-playerbox-graphics .hand").animate({ left: "1000px" }, 1200, "swing", function () {
       $(this).remove();
     });
 
     await this.timeout(600);
-
 
     /*if (document.querySelector(".flipped")) {
       $(".flipped")
@@ -1819,6 +1828,7 @@ class Poker extends GameTableTemplate {
       });
     });
 
+    $(".winner").removeClass("winner");
     $("#pot").fadeOut(1650);
 
     await this.timeout(1000);
@@ -1830,13 +1840,13 @@ class Poker extends GameTableTemplate {
     this.playerbox.updateBody(html, player);
   }
 
-  refreshPlayerStack(player, includeCards = true) {
+  refreshPlayerStack(player) {
     if (!this.browser_active) {
       return;
     }
     let userline =
       this.returnPlayerRole(player) +
-      `<div class="saito-balance" style="float:right">${this.formatWager(
+      `<div class="saito-balance">${this.formatWager(
         this.game.state.player_credit[player - 1],
         true
       )}</div>`;
