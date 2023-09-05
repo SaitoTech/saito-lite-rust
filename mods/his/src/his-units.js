@@ -372,11 +372,11 @@
       if (this.game.state.debaters[i].type == debater) { 
 
 	if (disgraced == 1) {
-	  this.updateLog("Papacy gains " + this.game.state.debaters[i].power + " VP");
-	  this.updateLog(this.popup(debater) + " burned");
-	} else {
 	  this.updateLog("Protestants gain " + this.game.state.debaters[i].power + " VP");
 	  this.updateLog(this.popup(debater) + " disgraced");
+	} else {
+	  this.updateLog("Papacy gains " + this.game.state.debaters[i].power + " VP");
+	  this.updateLog(this.popup(debater) + " burned");
 	}
 
 	this.game.state.debaters.splice(i, 1);

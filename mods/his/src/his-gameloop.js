@@ -170,7 +170,7 @@ console.log("MOVE: " + mv[0]);
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
           }
-	  if (mv[1] === "theological_debate") { this.debate_overlay.render(); }
+	  if (mv[1] === "theological_debate") { this.debate_overlay.render(his_self.game.state.theological_debate); }
 	  if (mv[1] === "field_battle") {
 	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(his_self.game.state.field_battle); }
 	    if (mv[2] === "post_field_battle_defenders_win") { this.field_battle_overlay.defendersWin(his_self.game.state.field_battle); }
@@ -4873,6 +4873,7 @@ console.log("purging naval units and capturing leader");
 	  let defender = mv[2];
 	  let language_zone = mv[3];
 	  let committed = mv[4];
+	  if (parseInt(mv[4]) == 1) { committed = "committed"; } else { committed = "uncommitted"; }
 	  let selected_papal_debater = "";
 	  if (mv[5]) { selected_papal_debater = mv[5]; }
 	  let prohibited_protestant_debater = "";
@@ -4886,7 +4887,7 @@ console.log("purging naval units and capturing leader");
 	  this.game.state.theological_debate.attacker = mv[1];
 	  this.game.state.theological_debate.defender = mv[2];
 	  this.game.state.theological_debate.language_zone = mv[3];
-	  this.game.state.theological_debate.committed = mv[4];
+	  this.game.state.theological_debate.committed = committed;
 	  this.game.state.theological_debate.round = 1;
 	  this.game.state.theological_debate.round1_attacker_debater = "";
 	  this.game.state.theological_debate.round1_defender_debater = "";
@@ -4973,26 +4974,26 @@ console.log("purging naval units and capturing leader");
 	  dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
-	    if (this.game.state.theological_debate.committed == "committed") {
-	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	        if (x === dd) {
-		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          if (x === dd) {
+		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+	          }
+	          dd++;
 	        }
-	        dd++;
+	      } else {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
+	          if (x === dd) {
+		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
+	            this.game.state.theological_debate.defender_debater_bonus++;
+		  }
+	          dd++;
+	        }
 	      }
-	    } else {
-	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
-	        if (x === dd) {
-		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
-	          this.game.state.theological_debate.defender_debater_bonus++;
-		}
-	        dd++;
-	      }
-	    }
 	    }
 	  }
 
@@ -5066,25 +5067,76 @@ console.log("purging naval units and capturing leader");
 	    }
 	  }
 
+console.log("DEBATER FOR DEFENSE IS: " +  this.game.state.theological_debate.defender_debater);
+
+
+
+	  //
+	  // defender power and bonus check is complicated because of Here I Stand
+	  //
+	  let defender_debater_power = 1;
+	  let defender_debater_bonus = 0;
+
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
 	      defender_idx = i;
+	      defender_debater_power = this.game.state.debaters[defender_idx].power;
 	      if (this.game.state.debaters[i].committed == 0) {
 	        was_defender_uncommitted = 1;
 		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
 	      }
 	    }
 	  }
+	  for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+	    if (this.game.state.excommunicated[i].debater) {
+	      if (this.game.state.excommunicated[i].debater.type === this.game.state.theological_debate.defender_debater) {
+	        defender_debater_power = this.game.state.excommunicated[i].debater.power;
+	        if (this.game.state.excommunicated[i].debater.committed == 0) {
+console.log("excommunicated but not committed");
+	          was_defender_uncommitted = 1;
+	  	  this.game.state.excommunicated[i].debater.committed = 1;
+	        }
+	      }
+	    }
+	  }
+
+
+	  let attacker_debater_power = 1;
+	  let attacker_debater_bonus = 3;
+
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
+	      attacker_idx = i;
+	      attacker_debater_power = this.game.state.debaters[attacker_idx].power;
+	      if (this.game.state.debaters[i].committed == 0) {
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+	      }
+	    }
+	  }
+	  for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+	    if (this.game.state.excommunicated[i].debater) {
+	      if (this.game.state.excommunicated[i].debater.type === this.game.state.theological_debate.attacker_debater) {
+	        attacker_debater_power = this.game.state.excommunicated[i].debater.power;
+	        if (this.game.state.excommunicated[i].debater.committed == 0) {
+	  	  this.game.state.excommunicated[i].debater.committed = 1;
+	        }
+	      }
+	    }
+	  }
+
 
 	  //
-	  // some wrangling lets defender switch up if Protestant
+	  // even Luther gets 3 if invoked w/ Here I Stand as attacker
 	  //
-	  let attacker_rolls = this.game.state.debaters[attacker_idx].power + 3; // power of debater + 3;
-	  let attacker_debater_power = this.game.state.debaters[attacker_idx].power;
-	  let attacker_debater_bonus = 3;
-	  let defender_rolls = this.game.state.debaters[defender_idx].power + 1 + was_defender_uncommitted;
-	  let defender_debater_power = this.game.state.debaters[defender_idx].power;
-	  let defender_debater_bonus = 1 + was_defender_uncommitted;
+	  let attacker_rolls = attacker_debater_power + 3;
+	  //
+	  // defender_debater_power handled above - Luther because may be excommunicated
+	  //
+	  defender_debater_bonus = 1 + was_defender_uncommitted;
+	  let defender_rolls = defender_debater_power + 1 + was_defender_uncommitted;
+
+console.log("ATTACKER: " + attacker_debater_power + " - " + attacker_debater_bonus);
+console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bonus);
 
 	  //
 	  // papal inquisition

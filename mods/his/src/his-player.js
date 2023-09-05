@@ -411,7 +411,7 @@ console.log("faction: " + f);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', () => {
+    $(".option").on('click', function () {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -463,7 +463,7 @@ console.log("faction: " + f);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', () => {
+    $(".option").on('click', function () {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -1555,7 +1555,7 @@ return;
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', function () {
 
       $(".option").off();
       let id = $(this).attr('id');
@@ -1578,7 +1578,7 @@ return;
       his_self.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', function () {
 
 	let enemy = $(this).attr('id');
 
@@ -1596,7 +1596,7 @@ return;
         his_self.updateStatusWithOptions(msg, opt);
 
         $(".option").off();
-        $(".option").on('click', function() {
+        $(".option").on('click', function () {
 
 	  let method = $(this).attr('id');
 
@@ -1624,7 +1624,7 @@ return;
 	    his_self.updateStatusWithOptions(msg, opt);
 
 	    $(".option").off();
-	    $(".option").on('click', function() {
+	    $(".option").on('click', function () {
 
 	      let action2 = $(this).attr('id');
 
@@ -1801,7 +1801,7 @@ return;
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', function () {
 
       $(".option").off();
       let id = $(this).attr('id');
@@ -1878,7 +1878,7 @@ return;
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', function () {
 
         let id = $(this).attr('id');
 
@@ -3728,13 +3728,13 @@ return;
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
-          $('.option').on('mouseover', function() {
+          $('.option').on('mouseover', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.show(action2);
             }
           });
-          $('.option').on('mouseout', function() {
+          $('.option').on('mouseout', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.hide(action2);
@@ -3776,13 +3776,13 @@ return;
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
-          $('.option').on('mouseover', function() {
+          $('.option').on('mouseover', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.show(action2);
             }
           });
-          $('.option').on('mouseout', function() {
+          $('.option').on('mouseout', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.hide(action2);
@@ -3876,13 +3876,15 @@ return;
 
       $('.option').off();
       let language_zone = e.currentTarget.id;
+      let opponent_faction = "protestant";
+      if (faction != "papacy") { opponent_faction = "papacy"; }
 
       let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
-      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 1)) {
           html += '<li class="option" id="committed">Committed</li>';
       }
-      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 0)) {
           html += '<li class="option" id="uncommitted">Uncommitted</li>';
       }
       html += '</ul>';
@@ -3890,15 +3892,15 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
-      $('.option').on('mouseover', function() {
+      $('.option').on('mouseover', function () {
         let action2 = $(this).attr("id");
         his_self.cardbox.show(action2);
       });
-      $('.option').on('mouseout', function() {
+      $('.option').on('mouseout', function () {
         let action2 = $(this).attr("id");
         his_self.cardbox.hide(action2);
       });
-      $('.option').on('click', () => {
+      $('.option').on('click', function () {
 
         let committed = $(this).attr("id");
 
@@ -3986,13 +3988,13 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
-        $('.option').on('mouseover', function() {
+        $('.option').on('mouseover', function () {
           let action2 = $(this).attr("id");
           if (his_self.debaters[action2]) {
             his_self.cardbox.show(action2);
           }
         });
-        $('.option').on('mouseout', function() {
+        $('.option').on('mouseout', function () {
           let action2 = $(this).attr("id");
           if (his_self.debaters[action2]) {
             his_self.cardbox.hide(action2);

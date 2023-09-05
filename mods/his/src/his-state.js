@@ -384,13 +384,9 @@
   returnDebatersInLanguageZone(language_zone="german", faction="papacy", committed=-1) {
     let num = 0;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-console.log(i + " 1");
-      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].langauge_zone === "any") {
-console.log(i + " 2");
+      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].language_zone === "any") {
         if (this.game.state.debaters[i].faction === faction || (faction != "papacy" && this.game.state.debaters[i].faction != "papacy")) {
-console.log(i + " 3 --> " + committed + " ||| " + this.game.state.debaters[i].committed);
           if (this.game.state.debaters[i].committed === committed || committed == -1) {
-console.log(i + " 4");
 	    num++;
           }
         }

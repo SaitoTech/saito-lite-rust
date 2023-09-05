@@ -5333,8 +5333,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  //
 	  if (his_self.game.state.events.wartburg == 0) {
 
-
-
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
@@ -5367,7 +5365,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      }
 	    }
 
-
 	    let is_luther_committed = 0;
 	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 	      if (his_self.game.state.debaters[i].key === "luther-debater") {
@@ -5375,8 +5372,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      }
 	    }
 	    for (let i = 0; i < his_self.game.state.excommunicated.length; i++) {
-	      if (his_self.game.state.excommunicated[i].key === "luther-debater") {
-		if (his_self.game.state.excommunicated[i].committed == 1) { is_luther_committed = 1; }
+	      if (his_self.game.state.excommunicated[i].debater) {
+	        if (his_self.game.state.excommunicated[i].debater.type === "luther-debater") {
+		  if (his_self.game.state.excommunicated[i].committed == 1) { is_luther_committed = 1; }
+	        }
 	      }
 	    }
 
@@ -5402,24 +5401,23 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      if (his_self.game.state.theological_debate.round == 1) {
                 his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
-                his_self.game.state.theological_debate.defender_debater_power = 4;
-                his_self.game.state.theological_debate.defender_debater_bonus = 2;
-		if (is_luther_committed == 0) {
-                  his_self.game.state.theological_debate.defender_debater_bonus++;
-		}
+                his_self.game.state.theological_debate.attacker_debater_power = 4;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
 	      } else {
                 his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
-                his_self.game.state.theological_debate.defender_debater_power = 4;
-                his_self.game.state.theological_debate.defender_debater_bonus = 2;
-		if (is_luther_committed == 0) {
-                  his_self.game.state.theological_debate.defender_debater_bonus++;
-		}
+                his_self.game.state.theological_debate.attacker_debater_power = 4;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
 	      }
 	    }
 	  }
 console.log("1 defender debater: " + his_self.game.state.theological_debate.defender_debater_power);
 console.log("2 defender debater: " + his_self.game.state.theological_debate.defender_debater_bonus);
+
+	  // re-render debate overlay with luther there
+          his_self.debate_overlay.render(his_self.game.state.theological_debate);
+          his_self.displayTheologicalDebater(his_self.game.state.theological_debate.attacker_debater, true);
+          his_self.displayTheologicalDebater(his_self.game.state.theological_debate.defender_debater, false);
 
 	  return 1;
 
@@ -14811,13 +14809,9 @@ console.log("TESTING: " + JSON.stringify(space.units));
   returnDebatersInLanguageZone(language_zone="german", faction="papacy", committed=-1) {
     let num = 0;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-console.log(i + " 1");
-      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].langauge_zone === "any") {
-console.log(i + " 2");
+      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].language_zone === "any") {
         if (this.game.state.debaters[i].faction === faction || (faction != "papacy" && this.game.state.debaters[i].faction != "papacy")) {
-console.log(i + " 3 --> " + committed + " ||| " + this.game.state.debaters[i].committed);
           if (this.game.state.debaters[i].committed === committed || committed == -1) {
-console.log(i + " 4");
 	    num++;
           }
         }
@@ -16099,7 +16093,7 @@ console.log("MOVE: " + mv[0]);
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
           }
-	  if (mv[1] === "theological_debate") { this.debate_overlay.render(); }
+	  if (mv[1] === "theological_debate") { this.debate_overlay.render(his_self.game.state.theological_debate); }
 	  if (mv[1] === "field_battle") {
 	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(his_self.game.state.field_battle); }
 	    if (mv[2] === "post_field_battle_defenders_win") { this.field_battle_overlay.defendersWin(his_self.game.state.field_battle); }
@@ -20802,6 +20796,7 @@ console.log("purging naval units and capturing leader");
 	  let defender = mv[2];
 	  let language_zone = mv[3];
 	  let committed = mv[4];
+	  if (parseInt(mv[4]) == 1) { committed = "committed"; } else { committed = "uncommitted"; }
 	  let selected_papal_debater = "";
 	  if (mv[5]) { selected_papal_debater = mv[5]; }
 	  let prohibited_protestant_debater = "";
@@ -20815,7 +20810,7 @@ console.log("purging naval units and capturing leader");
 	  this.game.state.theological_debate.attacker = mv[1];
 	  this.game.state.theological_debate.defender = mv[2];
 	  this.game.state.theological_debate.language_zone = mv[3];
-	  this.game.state.theological_debate.committed = mv[4];
+	  this.game.state.theological_debate.committed = committed;
 	  this.game.state.theological_debate.round = 1;
 	  this.game.state.theological_debate.round1_attacker_debater = "";
 	  this.game.state.theological_debate.round1_defender_debater = "";
@@ -20902,26 +20897,26 @@ console.log("purging naval units and capturing leader");
 	  dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
-	    if (this.game.state.theological_debate.committed == "committed") {
-	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	        if (x === dd) {
-		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          if (x === dd) {
+		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+	          }
+	          dd++;
 	        }
-	        dd++;
+	      } else {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
+	          if (x === dd) {
+		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
+	            this.game.state.theological_debate.defender_debater_bonus++;
+		  }
+	          dd++;
+	        }
 	      }
-	    } else {
-	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
-	        if (x === dd) {
-		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
-	          this.game.state.theological_debate.defender_debater_bonus++;
-		}
-	        dd++;
-	      }
-	    }
 	    }
 	  }
 
@@ -20995,25 +20990,76 @@ console.log("purging naval units and capturing leader");
 	    }
 	  }
 
+console.log("DEBATER FOR DEFENSE IS: " +  this.game.state.theological_debate.defender_debater);
+
+
+
+	  //
+	  // defender power and bonus check is complicated because of Here I Stand
+	  //
+	  let defender_debater_power = 1;
+	  let defender_debater_bonus = 0;
+
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
 	      defender_idx = i;
+	      defender_debater_power = this.game.state.debaters[defender_idx].power;
 	      if (this.game.state.debaters[i].committed == 0) {
 	        was_defender_uncommitted = 1;
 		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
 	      }
 	    }
 	  }
+	  for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+	    if (this.game.state.excommunicated[i].debater) {
+	      if (this.game.state.excommunicated[i].debater.type === this.game.state.theological_debate.defender_debater) {
+	        defender_debater_power = this.game.state.excommunicated[i].debater.power;
+	        if (this.game.state.excommunicated[i].debater.committed == 0) {
+console.log("excommunicated but not committed");
+	          was_defender_uncommitted = 1;
+	  	  this.game.state.excommunicated[i].debater.committed = 1;
+	        }
+	      }
+	    }
+	  }
+
+
+	  let attacker_debater_power = 1;
+	  let attacker_debater_bonus = 3;
+
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
+	      attacker_idx = i;
+	      attacker_debater_power = this.game.state.debaters[attacker_idx].power;
+	      if (this.game.state.debaters[i].committed == 0) {
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+	      }
+	    }
+	  }
+	  for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+	    if (this.game.state.excommunicated[i].debater) {
+	      if (this.game.state.excommunicated[i].debater.type === this.game.state.theological_debate.attacker_debater) {
+	        attacker_debater_power = this.game.state.excommunicated[i].debater.power;
+	        if (this.game.state.excommunicated[i].debater.committed == 0) {
+	  	  this.game.state.excommunicated[i].debater.committed = 1;
+	        }
+	      }
+	    }
+	  }
+
 
 	  //
-	  // some wrangling lets defender switch up if Protestant
+	  // even Luther gets 3 if invoked w/ Here I Stand as attacker
 	  //
-	  let attacker_rolls = this.game.state.debaters[attacker_idx].power + 3; // power of debater + 3;
-	  let attacker_debater_power = this.game.state.debaters[attacker_idx].power;
-	  let attacker_debater_bonus = 3;
-	  let defender_rolls = this.game.state.debaters[defender_idx].power + 1 + was_defender_uncommitted;
-	  let defender_debater_power = this.game.state.debaters[defender_idx].power;
-	  let defender_debater_bonus = 1 + was_defender_uncommitted;
+	  let attacker_rolls = attacker_debater_power + 3;
+	  //
+	  // defender_debater_power handled above - Luther because may be excommunicated
+	  //
+	  defender_debater_bonus = 1 + was_defender_uncommitted;
+	  let defender_rolls = defender_debater_power + 1 + was_defender_uncommitted;
+
+console.log("ATTACKER: " + attacker_debater_power + " - " + attacker_debater_bonus);
+console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bonus);
 
 	  //
 	  // papal inquisition
@@ -23556,7 +23602,7 @@ console.log("faction: " + f);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', () => {
+    $(".option").on('click', function () {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -23608,7 +23654,7 @@ console.log("faction: " + f);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', () => {
+    $(".option").on('click', function () {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -24700,7 +24746,7 @@ return;
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', function () {
 
       $(".option").off();
       let id = $(this).attr('id');
@@ -24723,7 +24769,7 @@ return;
       his_self.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', function () {
 
 	let enemy = $(this).attr('id');
 
@@ -24741,7 +24787,7 @@ return;
         his_self.updateStatusWithOptions(msg, opt);
 
         $(".option").off();
-        $(".option").on('click', function() {
+        $(".option").on('click', function () {
 
 	  let method = $(this).attr('id');
 
@@ -24769,7 +24815,7 @@ return;
 	    his_self.updateStatusWithOptions(msg, opt);
 
 	    $(".option").off();
-	    $(".option").on('click', function() {
+	    $(".option").on('click', function () {
 
 	      let action2 = $(this).attr('id');
 
@@ -24946,7 +24992,7 @@ return;
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', function () {
 
       $(".option").off();
       let id = $(this).attr('id');
@@ -25023,7 +25069,7 @@ return;
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', function () {
 
         let id = $(this).attr('id');
 
@@ -26873,13 +26919,13 @@ return;
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
-          $('.option').on('mouseover', function() {
+          $('.option').on('mouseover', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.show(action2);
             }
           });
-          $('.option').on('mouseout', function() {
+          $('.option').on('mouseout', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.hide(action2);
@@ -26921,13 +26967,13 @@ return;
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
-          $('.option').on('mouseover', function() {
+          $('.option').on('mouseover', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.show(action2);
             }
           });
-          $('.option').on('mouseout', function() {
+          $('.option').on('mouseout', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.hide(action2);
@@ -27021,13 +27067,15 @@ return;
 
       $('.option').off();
       let language_zone = e.currentTarget.id;
+      let opponent_faction = "protestant";
+      if (faction != "papacy") { opponent_faction = "papacy"; }
 
       let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
-      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 1)) {
           html += '<li class="option" id="committed">Committed</li>';
       }
-      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 0)) {
           html += '<li class="option" id="uncommitted">Uncommitted</li>';
       }
       html += '</ul>';
@@ -27035,15 +27083,15 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
-      $('.option').on('mouseover', function() {
+      $('.option').on('mouseover', function () {
         let action2 = $(this).attr("id");
         his_self.cardbox.show(action2);
       });
-      $('.option').on('mouseout', function() {
+      $('.option').on('mouseout', function () {
         let action2 = $(this).attr("id");
         his_self.cardbox.hide(action2);
       });
-      $('.option').on('click', () => {
+      $('.option').on('click', function () {
 
         let committed = $(this).attr("id");
 
@@ -27131,13 +27179,13 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
-        $('.option').on('mouseover', function() {
+        $('.option').on('mouseover', function () {
           let action2 = $(this).attr("id");
           if (his_self.debaters[action2]) {
             his_self.cardbox.show(action2);
           }
         });
-        $('.option').on('mouseout', function() {
+        $('.option').on('mouseout', function () {
           let action2 = $(this).attr("id");
           if (his_self.debaters[action2]) {
             his_self.cardbox.hide(action2);
@@ -28093,11 +28141,11 @@ return;
       if (this.game.state.debaters[i].type == debater) { 
 
 	if (disgraced == 1) {
-	  this.updateLog("Papacy gains " + this.game.state.debaters[i].power + " VP");
-	  this.updateLog(this.popup(debater) + " burned");
-	} else {
 	  this.updateLog("Protestants gain " + this.game.state.debaters[i].power + " VP");
 	  this.updateLog(this.popup(debater) + " disgraced");
+	} else {
+	  this.updateLog("Papacy gains " + this.game.state.debaters[i].power + " VP");
+	  this.updateLog(this.popup(debater) + " burned");
 	}
 
 	this.game.state.debaters.splice(i, 1);

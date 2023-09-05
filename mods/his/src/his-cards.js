@@ -2557,8 +2557,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  //
 	  if (his_self.game.state.events.wartburg == 0) {
 
-
-
 	    //
 	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
@@ -2591,7 +2589,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      }
 	    }
 
-
 	    let is_luther_committed = 0;
 	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 	      if (his_self.game.state.debaters[i].key === "luther-debater") {
@@ -2599,8 +2596,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      }
 	    }
 	    for (let i = 0; i < his_self.game.state.excommunicated.length; i++) {
-	      if (his_self.game.state.excommunicated[i].key === "luther-debater") {
-		if (his_self.game.state.excommunicated[i].committed == 1) { is_luther_committed = 1; }
+	      if (his_self.game.state.excommunicated[i].debater) {
+	        if (his_self.game.state.excommunicated[i].debater.type === "luther-debater") {
+		  if (his_self.game.state.excommunicated[i].committed == 1) { is_luther_committed = 1; }
+	        }
 	      }
 	    }
 
@@ -2626,24 +2625,23 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	      if (his_self.game.state.theological_debate.round == 1) {
                 his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
-                his_self.game.state.theological_debate.defender_debater_power = 4;
-                his_self.game.state.theological_debate.defender_debater_bonus = 2;
-		if (is_luther_committed == 0) {
-                  his_self.game.state.theological_debate.defender_debater_bonus++;
-		}
+                his_self.game.state.theological_debate.attacker_debater_power = 4;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
 	      } else {
                 his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
-                his_self.game.state.theological_debate.defender_debater_power = 4;
-                his_self.game.state.theological_debate.defender_debater_bonus = 2;
-		if (is_luther_committed == 0) {
-                  his_self.game.state.theological_debate.defender_debater_bonus++;
-		}
+                his_self.game.state.theological_debate.attacker_debater_power = 4;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
 	      }
 	    }
 	  }
 console.log("1 defender debater: " + his_self.game.state.theological_debate.defender_debater_power);
 console.log("2 defender debater: " + his_self.game.state.theological_debate.defender_debater_bonus);
+
+	  // re-render debate overlay with luther there
+          his_self.debate_overlay.render(his_self.game.state.theological_debate);
+          his_self.displayTheologicalDebater(his_self.game.state.theological_debate.attacker_debater, true);
+          his_self.displayTheologicalDebater(his_self.game.state.theological_debate.defender_debater, false);
 
 	  return 1;
 
