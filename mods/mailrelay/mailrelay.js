@@ -20,6 +20,10 @@ class MailRelay extends ModTemplate {
   }
 
   async initialize(app) {
+
+    // browsers will not have server endpoint coded
+    if (app.BROWSER) { return; }
+
     //For testing only, no need to initialize module
     await super.initialize(app);
 
