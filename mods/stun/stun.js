@@ -526,12 +526,13 @@ class Stun extends ModTemplate {
         }
 
         salert(`Call accepted by ${data.sender}`);
+
         setTimeout(() => {
           // init peer manager and chat manager through self event
           this.app.connection.emit("stun-init-peer-manager", data.ui);
           app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
           app.connection.emit("start-stun-call");
-        }, 2000);
+        }, 4000);
 
         break;
       case "connection-rejected":
