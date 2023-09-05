@@ -161,7 +161,7 @@ try {
 
   returnServices() {
     let services = [];
-    services.push(new PeerService(null, "mailrelay"));
+    services.push(new PeerService(null, "mailrelay", "Mail Relay Service"));
     return services;
   }
 
