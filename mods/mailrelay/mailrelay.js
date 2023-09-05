@@ -1,6 +1,4 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
-const nodemailer = require("nodemailer");
-const credentials = require("./lib/credentials");
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class MailRelay extends ModTemplate {
@@ -16,7 +14,10 @@ class MailRelay extends ModTemplate {
     this.categories = "Core Utilities";
   }
 
-  onConfirmation(blk, tx, conf) {}
+  onConfirmation(blk, tx, conf) {
+
+
+  }
 
   async initialize(app) {
     //For testing only, no need to initialize module
@@ -33,7 +34,7 @@ class MailRelay extends ModTemplate {
       ishtml: true,
       attachments: "",
     };
-    email.to = "richard@saito.tech";
+    email.to = "david@saito.tech";
     email.from = "network@saito.tech";
     email.bcc = "";
     email.subject = "Saito Network Initialised";
@@ -129,16 +130,29 @@ class MailRelay extends ModTemplate {
     return newtx;
   }
 
+
+  //
+  // only servers will have this 
+  //
   sendMail(email) {
-    let transporter = nodemailer.createTransport(credentials);
-    transporter.sendMail(email, (err, info) => {
-      if (info) {
-        console.log(info.envelope);
-        console.log(info.messageId);
-      } else {
-        console.log(err);
-      }
-    });
+    if (!app.BROWSER) {
+try {
+      const nodemailer = require("nodemailer");
+      const credentials = require("./lib/credentials");
+
+      let transporter = nodemailer.createTransport(credentials);
+      transporter.sendMail(email, (err, info) => {
+        if (info) {
+          console.log(info.envelope);
+          console.log(info.messageId);
+        } else {
+          console.log(err);
+        }
+      });
+} catch (err) {
+  console.log("Error sending mail");
+}
+    }
   }
 
   returnServices() {
