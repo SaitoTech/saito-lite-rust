@@ -76,9 +76,6 @@ class ChatManager {
           this.popups[group.id].group = group;
         }
 
-        console.log("popup to render", this.popups[group.id]);
-        this.popups[group.id].manually_closed = false;
-        // this.popups[group.id].render();
         // if (this.render_popups_to_screen || !this.popups[group.id].is_rendered) {
         this.popups[group.id].render();
         // }
@@ -115,23 +112,33 @@ class ChatManager {
         console.log("open-chat-with");
       }
 
-      let group;
+      let group = null;
 
       if (!data) {
         group = this.mod.returnCommunityChat();
       } else {
-        if (Array.isArray(data.key)) {
-          group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
-        } else {
-          group = this.mod.returnOrCreateChatGroupFromMembers(
-            [this.mod.publicKey, data.key],
-            data.name
-          );
+
+        if (data.key){
+          if (Array.isArray(data.key)) {
+            group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
+          } else {
+            group = this.mod.returnOrCreateChatGroupFromMembers(
+              [this.mod.publicKey, data.key],
+              data.name
+            );
+          }
         }
 
         //Other modules can specify a chat group id (maybe linked to game_id or league_id)
         if (data.id) {
-          group.id = data.id;
+          let group2 = this.mod.returnGroup(data.id);
+          if (!group2 && group){
+            group.id = data.id;
+          }else{
+            group = group2;
+          }
+
+          
         }
         if (data.admin) {
           //

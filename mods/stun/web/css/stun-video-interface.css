@@ -4,17 +4,24 @@
   font-size: 3rem;
 }
 
+.stun-overlay-container{
+  position: fixed;
+  z-index: 100;
+}
+
+.stun-overlay-container + .chat-container{
+  z-index: 101;
+}
+
 .stun-chatbox {
   top: 0;
   left: 0;
   width: 100vw;
-  background-color: var(--saito-white) fff;
-  position: fixed;
-  z-index: 100;
-  transition: all 0.2s;
   height: 100vh;
   height: calc(100 * var(--saito-vh));
-  width: 100vw;
+  position: fixed;
+  background-color: var(--saito-white) fff;
+  transition: all 0.2s;
 }
 
 .stun-chatbox .minimizer {

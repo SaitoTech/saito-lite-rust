@@ -154,10 +154,14 @@ class CallInterfaceVideo {
     this.chat_group = {
       id: this.room_code,
       members: [peer],
-      name: `Chat ${this.room_code}`,
+      name: `Video Chat ${this.room_code}`,
       txs: [],
       unread: 0,
-      target_container: `.stun-chatbox .${this.remote_container}`,
+      //
+      // USE A TARGET Container if the chat box is supposed to show up embedded within the UI
+      // Don't include if you want it to be just a chat popup.... 
+      //
+      //target_container: `.stun-chatbox .${this.remote_container}`,
     };
 
     chat_mod.groups.push(this.chat_group);
@@ -177,8 +181,7 @@ class CallInterfaceVideo {
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
       //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
-
-      this.app.connection.emit("chat-popup-render-request", this.chat_group);
+      this.app.connection.emit("open-chat-with", { id: this.chat_group.id});
     });
 
     if (document.querySelector(".effects-control")) {
