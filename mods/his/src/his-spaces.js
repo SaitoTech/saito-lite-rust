@@ -303,6 +303,14 @@
     return false;
   }
 
+  isSpaceAdjacentToProtestantReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let z = 0; z < space.neighbours.length; z++) {
+      if (this.doesSpaceContainProtestantReformer(space.neighbours[z])) { return true; }
+    }
+    return false;
+  }
+
   doesSpaceContainProtestantReformer(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units["protestant"].length; i++) {
@@ -1045,6 +1053,8 @@
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
     }
 
+
+
     //
     // otherwise propagate outwards searching pending
     //
@@ -1061,13 +1071,18 @@
 	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
+	  if (searched_spaces[key]) {
+	    // we've searched for this before
+	  } else {
+	    searched_spaces[key] = { hops : (hops+1) , key : key };
+	  }
 	} else {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.navalspaces[key].neighbours[i]]) {
+	      if (searched_spaces[this.game.navalspaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+      	        pending_spaces[this.game.navalspaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.navalspaces[key].neighbours[i] };
 	      }
     	    }
 	  }
@@ -1076,7 +1091,12 @@
 	delete pending_spaces[key];
 
       }
-      if (count == 0) { continue_searching = 0; }
+      if (count == 0) {
+	continue_searching = 0;
+	for (let newkey in pending_spaces) {
+	  if (pending_spaces[newkey]) { continue_searching = 1; }
+	}
+      }
     }
 
     //
@@ -1135,13 +1155,18 @@
 	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
+	  if (searched_spaces[key]) {
+	    // we've searched for this before
+	  } else {
+	    searched_spaces[key] = { hops : (hops+1) , key : key };
+	  }
 	} else {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
+	      if (searched_spaces[this.game.spaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+      	        pending_spaces[this.game.spaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] };
 	      }
     	    }
 	  }
@@ -1150,7 +1175,12 @@
 	delete pending_spaces[key];
 
       }
-      if (count == 0) { continue_searching = 0; }
+      if (count == 0) {
+	continue_searching = 0;
+	for (let newkey in pending_spaces) {
+	  if (pending_spaces[newkey]) { continue_searching = 1; }
+	}
+      }
     }
 
     //
@@ -2811,7 +2841,7 @@
       ports: ["adriatic"],
       neighbours: ["venice","modena","ancona"],
       language: "italian",
-      type: "key"
+      type: "key" 
     }
     spaces['venice'] = {
       top: 1399,
@@ -2959,29 +2989,35 @@
 
 	let html = '<div class="space_view" id="">';
 
-	let religious = obj.religion;
+	let religion = obj.religion;
 	let political = obj.political;
+	let language = obj.language;
 	if (!political) { political = obj.home; }
 
 	html += `
-	  <div class="religious">${religious}</div>
-	  <div class="political">${political}</div>
+	  <div class="space_name">${obj.name}</div>
+	  <div class="space_properties">
+	    <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(religion)}')"></div><div class="label">${religion} religion</div></div>
+	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnFactionLeaderImage(political)}')"></div><div class="label">${political} control</div></div>
+	    <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(language)}')"></div><div class="label">${language} language</div></div>
+	  </div>
+	  <div class="space_units">
 	`;
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
 
-	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
             for (let i = 0; i < this.units[f].length; i++) {
 
 	      let b = "";
 	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
 
-	      html += `<div class="space_unit">1 - ${this.units[f][i].type} ${b}</div>`;
+	      html += `<div class="space_unit">${f} - ${this.units[f][i].type} ${b}</div>`;
 	    }
 	  }
 	}
 
+	html += `</div>`;
 	html += `</div>`;
 
 	return html;

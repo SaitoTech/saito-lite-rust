@@ -38,14 +38,76 @@ class Mahjong extends OnePlayerGameTemplate {
     if (!this.game.state) {
       this.game.state = this.returnState();
       this.newRound();
+    }else{
+      this.game.queue.push("READY");
     }
 
     this.saveGame(this.game.id);
 
-    if (this.browser_active) {
-      $(".slot").css("min-height", $(".card").css("min-height"));
+  }
+
+    //
+  // runs whenever we load the game into the browser. render()
+  //
+  render(app) {
+    if (!this.browser_active) {
+      return;
+    }
+
+    super.render(app);
+
+    this.menu.addMenuOption("game-game", "Game");
+
+    this.menu.addSubMenuOption("game-game", {
+      text: "Start New Game",
+      id: "game-new",
+      class: "game-new",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.prependMove("lose");
+        game_mod.endTurn();
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "How to Play",
+      id: "game-intro",
+      class: "game-intro",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Stats",
+      id: "game-stats",
+      class: "game-stats",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.show(game_mod.returnStatsHTML("Mahjong 统计"));
+      },
+    });
+
+    this.menu.addChatMenu();
+
+    //
+    // render menu
+    //
+    this.menu.render();
+
+    //
+    // display the board?
+    //
+    this.displayBoard();
+
+    if (app.browser.isMobileBrowser(navigator.userAgent)) {
+      this.hammer.render(this.app, this);
+      this.hammer.attachEvents(this.app, this, "#mahj-rowbox");
+    } else {
+      this.sizer.render();
+      this.sizer.attachEvents("#mahj-rowbox");
     }
   }
+
 
   newRound() {
     //Set up queue
@@ -268,13 +330,12 @@ class Mahjong extends OnePlayerGameTemplate {
 
     index = 0;
     try {
-      //Want to add a timed delay for animated effect
-      const timeout = (ms) => new Promise((res) => setTimeout(res, ms));
+
       for (let row = 1; row <= 21; row++) {
         for (let column = 1; column <= 14; column++) {
           var divname = `row${row}_slot${column}`;
           if (!this.isArrayInArray(this.emptyCells, [row, column]) && deckSize > index) {
-            await timeout(timeInterval);
+            await this.timeout(timeInterval);
             $("#" + divname).html(this.returnCardImageHTML(this.game.board[divname]));
             this.makeVisible(divname);
             if (this.game.hidden.includes(divname)) {
@@ -291,49 +352,27 @@ class Mahjong extends OnePlayerGameTemplate {
   }
 
   makeInvisible(divname) {
-    //let noShadowBox = 'none';
-    //this.applyShadowBox(divname, noShadowBox);
     $(`#${divname}`).addClass("invisible");
     $(`#${divname}`).removeClass("selected");
   }
 
   makeVisible(divname) {
     $(`#${divname}`).removeClass("invisible");
-    //let boxShadow = '12px 10px 12px 1px #000000';
-    //this.applyShadowBox(divname, boxShadow);
   }
 
   toggleCard(divname) {
     $(`#${divname}`).addClass("selected");
-  }
-
-  toggleInvalidCard(divname) {
-    let mahjong_self = this;
-
-    $(`#${divname}`).addClass("invalid");
-    $(`#${mahjong_self.game.selected}`).addClass("invalid");
-    $(".selected").removeClass("selected");
-
-    let last = mahjong_self.game.selected;
-
-    setTimeout(() => {
-      $(".invalid").removeClass("invalid");
-      mahjong_self.untoggleCard(divname);
-      mahjong_self.untoggleCard(last);
-      mahjong_self.game.selected = "";
-    }, 900);
+    $(`#${divname}`).removeClass("available");
+    this.game.selected = divname;
+    this.getAvailableTiles();
   }
 
   untoggleCard(divname) {
     $(`#${divname}`).removeClass("selected");
+    $(`#${divname}`).addClass("available");
+    this.game.selected = "";
+    this.getAvailableTiles();
   }
-
-  /*applyShadowBox(divname, property) {
-    let boxShadowProperties = ['box-shadow', '-moz-box-shadow', '-webkit-box-shadow', '-o-box-shadow'];
-    for (let i = 0; i < boxShadowProperties.length; i++) {
-      $(`#${divname}`).css(boxShadowProperties[i],property);
-    }
-  }*/
 
   returnCardImageHTML(name) {
     if (name[0] === "E") {
@@ -343,71 +382,7 @@ class Mahjong extends OnePlayerGameTemplate {
     }
   }
 
-  returnBackgroundImageHtml() {
-    return '<img src="/mahjong/img/tiles/Export/Regular/Front.png" />';
-  }
 
-  //
-  // runs whenever we load the game into the browser. render()
-  //
-  render(app) {
-    if (!this.browser_active) {
-      return;
-    }
-
-    super.render(app);
-
-    this.menu.addMenuOption("game-game", "Game");
-
-    this.menu.addSubMenuOption("game-game", {
-      text: "Start New Game",
-      id: "game-new",
-      class: "game-new",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.prependMove("lose");
-        game_mod.endTurn();
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text: "How to Play",
-      id: "game-intro",
-      class: "game-intro",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnGameRulesHTML());
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Stats",
-      id: "game-stats",
-      class: "game-stats",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnStatsHTML());
-      },
-    });
-
-    this.menu.addChatMenu();
-
-    //
-    // render menu
-    //
-    this.menu.render();
-
-    //
-    // display the board?
-    //
-    this.displayBoard();
-
-    if (app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.hammer.render(this.app, this);
-      this.hammer.attachEvents(this.app, this, "#mahj-rowbox");
-    } else {
-      this.sizer.render();
-      this.sizer.attachEvents("#mahj-rowbox");
-    }
-  }
 
   attachEventsToBoard() {
     let mahjong_self = this;
@@ -422,36 +397,48 @@ class Mahjong extends OnePlayerGameTemplate {
       if (mahjong_self.game.selected === card) {
         //Selecting same card again
         mahjong_self.untoggleCard(card);
-        mahjong_self.game.selected = "";
         return;
       } else {
         if (mahjong_self.game.selected === "") {
           // New Card
-          mahjong_self.game.selected = card;
           mahjong_self.toggleCard(card);
           return;
         } else {
           if (
             mahjong_self.game.board[card] === mahjong_self.game.board[mahjong_self.game.selected]
           ) {
+
+            $(".selected").removeClass("selected");
+
+            mahjong_self.moveGameElement(mahjong_self.copyGameElement("#"+card), `.notfound.${mahjong_self.game.board[card].toLowerCase()}`, 
+              { 
+                resize: 1,
+                callback: (id)=>{
+                  document.getElementById(id).style.opacity = 0;
+                }
+              }, null);
+            mahjong_self.moveGameElement(mahjong_self.copyGameElement("#"+mahjong_self.game.selected), `.notfound.${mahjong_self.game.board[card].toLowerCase()}`, { 
+                resize: 1,
+                callback: (id)=>{
+                  document.getElementById(id).style.opacity = 0;
+                }
+              }, null);
+
             mahjong_self.makeInvisible(card);
             mahjong_self.makeInvisible(mahjong_self.game.selected);
             mahjong_self.game.hidden.push(card);
             mahjong_self.game.hidden.push(mahjong_self.game.selected);
             mahjong_self.game.cardsLeft = mahjong_self.game.cardsLeft - 2;
+
             if (mahjong_self.game.cardsLeft === 0) {
               mahjong_self.prependMove("win");
               mahjong_self.endTurn();
               return;
-            }
-            mahjong_self.displayUserInterface();
+            }            
+  
             mahjong_self.game.selected = "";
-            return;
-          } else {
-            // no match
-            mahjong_self.toggleInvalidCard(card);
-            return;
-          }
+            mahjong_self.displayUserInterface();
+          }          
         }
       }
     });
@@ -460,7 +447,7 @@ class Mahjong extends OnePlayerGameTemplate {
   getAvailableTiles() {
     let availableTiles = new Map([]);
     this.game.availableMoves = [];
-    $(".slot").removeClass("available");
+    $(".slot").removeClass("available").removeClass("valid").removeClass("invalid");
     for (let row = 1; row <= 21; row++) {
       for (let column = 1; column <= 14; column++) {
         if (
@@ -513,6 +500,13 @@ class Mahjong extends OnePlayerGameTemplate {
           }
           this.game.availableMoves.push(`row${row}_slot${column}`);
           $(`#row${row}_slot${column}`).addClass("available");
+          if (this.game.selected && this.game.selected !== `row${row}_slot${column}`){
+            if (this.game.board[`row${row}_slot${column}`] == this.game.board[this.game.selected]){
+              $(`#row${row}_slot${column}`).addClass("valid");
+            }else{
+              $(`#row${row}_slot${column}`).addClass("invalid");
+            }
+          }
         }
       }
     }
@@ -535,7 +529,7 @@ class Mahjong extends OnePlayerGameTemplate {
   async displayUserInterface() {
     let tilesLeftToUnlock = this.getAvailableTiles();
 
-    if (!tilesLeftToUnlock || tilesLeftToUnlock.length == 0) {
+    if (this.game.cardsLeft > 0 && (!tilesLeftToUnlock || tilesLeftToUnlock.length == 0)) {
       let c = await sconfirm("There are no more available moves to make, start new game?");
       if (c) {
         this.prependMove("lose");
@@ -545,18 +539,26 @@ class Mahjong extends OnePlayerGameTemplate {
     }
     let mahjong_self = this;
 
-    let html = `<div class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.</div>
-                <div id="hint" class="tip">Available tile pairs to unlock: <span class="hint_btn">${tilesLeftToUnlock.length}</span>
-                  <div class="tiptext">Click for a hint</div>
-                </div>`;
+    let html = `Remove tiles in pairs until none remain. Tiles must not be blocked to their left and right.`;
 
-    let option = "";
+    let option = "<ul>";
+    option += `<li id="hint" class="option"><span>Hint: ${tilesLeftToUnlock.length}<span class="hidable"> pairs available</span></span></li>`;
     if (this.game.hidden.length > 0) {
-      option += `<ul><li class="option" id="undo">Undo`;
-      option += "</li></ul>";
+      option += `<li class="option" id="undo">Undo</li>`;
     }
+    option += `</ul>`;
 
     this.updateStatusWithOptions(html, option);
+
+    let tiles = this.returnTiles();
+    html = "";
+    for (let tile of tiles) {
+      let num_found = this.returnHidden(tile);
+      html += `<div class="scoreboard_tile ${(num_found>1)?"found":"notfound"} ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
+               <div class="scoreboard_tile ${(num_found>3)?"found":"notfound"} ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
+       `;
+    }
+    $("#tiles").html(html);
 
     $(".option").off();
     $(".option").on("click", function () {
@@ -565,32 +567,28 @@ class Mahjong extends OnePlayerGameTemplate {
         mahjong_self.undoMove();
         return;
       }
-    });
 
-    $("#hint").off();
-
-    $("#hint").on("click", function () {
-      if (tilesLeftToUnlock.length > 0) {
+      if (action == "hint" && tilesLeftToUnlock.length > 0) {
         let pair = tilesLeftToUnlock.pop();
         $(`#${pair[0]}, #${pair[1]}`)
           .addClass("hint")
-          .delay(500)
+          .delay(400)
           .queue(function () {
             $(this).removeClass("hint").dequeue();
           })
-          .delay(400)
+          .delay(300)
           .queue(function () {
             $(this).addClass("hint").dequeue();
           })
-          .delay(500)
+          .delay(400)
           .queue(function () {
             $(this).removeClass("hint").dequeue();
           })
-          .delay(400)
+          .delay(300)
           .queue(function () {
             $(this).addClass("hint").dequeue();
           })
-          .delay(500)
+          .delay(400)
           .queue(function () {
             $(this).removeClass("hint").dequeue();
           });
@@ -603,7 +601,6 @@ class Mahjong extends OnePlayerGameTemplate {
   undoMove() {
     if (this.game.selected !== "") {
       this.untoggleCard(this.game.selected);
-      this.game.selected = "";
     }
     this.makeVisible(this.game.hidden.pop());
     this.makeVisible(this.game.hidden.pop());
@@ -672,45 +669,59 @@ class Mahjong extends OnePlayerGameTemplate {
     return 0;
   }
 
-  returnDeck() {
-    let cards = [
-      "Chun",
-      "Hatsu",
-      "Man1",
-      "Man2",
-      "Man3",
-      "Man4",
-      "Man5-Dora",
-      "Man5",
-      "Man6",
-      "Man7",
-      "Man8",
-      "Man9",
-      "Nan",
-      "Pei",
+  returnHidden(tile){
+    let count = 0;
+    for (let slot of this.game.hidden){
+      if (this.game.board[slot] == tile){
+        count++;
+      }
+    }
+    return count;
+  }
+
+  returnTiles() {
+    return [
       "Pin1",
       "Pin2",
       "Pin3",
       "Pin4",
-      "Pin5-Dora",
       "Pin5",
       "Pin6",
       "Pin7",
       "Pin8",
       "Pin9",
-      "Shaa",
+      "Man1",
+      "Man2",
+      "Man3",
+      "Man4",
+      "Man5",
+      "Man6",
+      "Man7",
+      "Man8",
+      "Man9",
       "Sou1",
       "Sou2",
       "Sou3",
       "Sou4",
-      "Sou5-Dora",
       "Sou5",
       "Sou6",
       "Sou7",
       "Sou8",
       "Sou9",
+      "Pin5-Dora",
+      "Man5-Dora",
+      "Sou5-Dora",
       "Ton",
+      "Nan",
+      "Shaa",
+      "Pei",
+      "Chun",
+      "Hatsu",
     ];
+  }
+
+  returnDeck() {
+    let cards = this.returnTiles();
 
     // TODO - remove (use for testing)
 

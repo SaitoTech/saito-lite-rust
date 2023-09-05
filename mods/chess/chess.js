@@ -119,9 +119,9 @@ class Chessgame extends GameTemplate {
 
     await this.playerbox.render();
 
-    for (let i = 1; i < 2; i++) {
+    for (let i = 1; i <= 2; i++) {
       this.playerbox.updateUserline(this.roles[i], i);
-      this.playerbox.updateGraphics(
+      this.playerbox.updateIcons(
         `<div class="tool-item item-detail turn-shape ${this.roles[i].toLowerCase()}"></div>`,
         i
       );

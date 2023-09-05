@@ -163,6 +163,7 @@
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "protestant_reformation") {
           his_self.addMove("martin_bucer");
+	  his_self.endTurn();
         } 
         return 0; 
       },

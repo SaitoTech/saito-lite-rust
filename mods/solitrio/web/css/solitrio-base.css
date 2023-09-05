@@ -69,7 +69,8 @@
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: 1fr 1fr 1fr 1fr;
-    max-width: min(90vw, 160vh);
+    width: 1250px;
+    max-width: min(80vw, 156vh);
     grid-gap: min(5px, 1vh);
     height: fit-content;
     transition: filter 1s;

@@ -1,6 +1,4 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
-const nodemailer = require("nodemailer");
-const credentials = require("./lib/credentials");
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class MailRelay extends ModTemplate {
@@ -16,9 +14,16 @@ class MailRelay extends ModTemplate {
     this.categories = "Core Utilities";
   }
 
-  onConfirmation(blk, tx, conf) {}
+  onConfirmation(blk, tx, conf) {
+
+
+  }
 
   async initialize(app) {
+
+    // browsers will not have server endpoint coded
+    if (app.BROWSER) { return; }
+
     //For testing only, no need to initialize module
     await super.initialize(app);
 
@@ -33,7 +38,7 @@ class MailRelay extends ModTemplate {
       ishtml: true,
       attachments: "",
     };
-    email.to = "richard@saito.tech";
+    email.to = "david@saito.tech";
     email.from = "network@saito.tech";
     email.bcc = "";
     email.subject = "Saito Network Initialised";
@@ -96,21 +101,67 @@ class MailRelay extends ModTemplate {
     }
   }
 
-  sendMail(email) {
-    let transporter = nodemailer.createTransport(credentials);
-    transporter.sendMail(email, (err, info) => {
-      if (info) {
-        console.log(info.envelope);
-        console.log(info.messageId);
-      } else {
-        console.log(err);
+
+  async sendMailRelayTransaction(to="", from="", subject="", text="", html="", ishtml=false, attachments="", bcc="") {
+
+    let mailrelay_self = this;
+              
+    let obj = { 
+      module: mailrelay_self.name ,
+      request: "send email",
+      data:{
+        to : to ,
+	      from : from ,
+	      bcc : bcc ,
+	      subject : subject ,
+	      text : text ,
+	      html : html ,
+	      ishtml : ishtml ,
+	      attachments : attachments 
+      }
+    };        
+       
+    let newtx = await mailrelay_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    await newtx.sign();
+
+    let peers = await app.network.getPeers();
+    peers.forEach((p) => {
+      if (p.hasService("mailrelay")) {
+        mailrelay_self.app.network.sendTransactionWithCallback(tx, null, p.peerIndex);
       }
     });
+    return newtx;
+  }
+
+
+  //
+  // only servers will have this 
+  //
+  sendMail(email) {
+    if (!app.BROWSER) {
+try {
+      const nodemailer = require("nodemailer");
+      const credentials = require("./lib/credentials");
+
+      let transporter = nodemailer.createTransport(credentials);
+      transporter.sendMail(email, (err, info) => {
+        if (info) {
+          console.log(info.envelope);
+          console.log(info.messageId);
+        } else {
+          console.log(err);
+        }
+      });
+} catch (err) {
+  console.log("Error sending mail");
+}
+    }
   }
 
   returnServices() {
     let services = [];
-    services.push(new PeerService(null, "mailrelay"));
+    services.push(new PeerService(null, "mailrelay", "Mail Relay Service"));
     return services;
   }
 

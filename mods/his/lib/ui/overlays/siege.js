@@ -91,10 +91,11 @@ class AssaultOverlay {
       // replace with actual units
       //
       if (side === ".attacker") {
+	  let faction_name = "";
           for (let i = 0; i < res.attacker_units_units.length; i++) {
               let roll = "x";
               let unit_type = res.attacker_units_units[i].type;
-              let faction_name = res.attacker_units_faction[i];
+              if (res.attacker_units_faction[i]) { faction_name = res.attacker_units_faction[i]; }
               let assignable = "";
               if (am_i_attacker) { assignable = " not-assignable"; }
               if (["regular","mercenary","squadron","cavalry","corsair"].includes(unit_type)) {
@@ -113,10 +114,11 @@ class AssaultOverlay {
               this.app.browser.addElementToSelector(html, ".siege-grid .attacker");
           }
       } else {
+          let faction_name = "";
           for (let i = 0; i < res.defender_units_units.length; i++) {
               let roll = "x";
               let unit_type = res.defender_units_units[i].type;
-              let faction_name = res.defender_units_faction[i];
+              if (res.defender_units_faction[i]) { faction_name = res.defender_units_faction[i]; }
               let assignable = "";
               if (am_i_defender) { assignable = " not-assignable"; }
               if (["regular","mercenary","squadron","cavalry","corsair"].includes(unit_type)) {
@@ -234,13 +236,13 @@ class AssaultOverlay {
 	if (pre_battle == 1) { res.attacker_modified_rolls = res.attacker_results; }
 	if (pre_battle == 1) { res.defender_modified_rolls = res.defender_results }
 
-
 	  if (res.attacker_modified_rolls) {
+	    let faction_name = "";
 	    for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
 
 	      let roll = res.attacker_modified_rolls[i];
 	      let unit_type = "assault";
-	      let faction_name = res.attacker_units_faction[i];
+	      if (res.attacker_units_faction[i]) { faction_name = res.attacker_units_faction[i]; }
 	      let rrclass = "";
 	      if (roll >= 5) { rrclass = "hit"; }
 	      if (pre_battle) { roll = "?"; rrclass = ""; }
@@ -258,10 +260,11 @@ class AssaultOverlay {
  
 
 	  if (res.defender_modified_rolls) {
+	    let faction_name = "";
 	    for (let i = 0; i < res.defender_modified_rolls.length; i++) {
 	      let roll = res.defender_modified_rolls[i];
 	      let unit_type = "assault";
-	      let faction_name = res.defender_units_faction[i];
+	      if (res.defender_units_faction[i]) { faction_name = res.defender_units_faction[i]; }
 	      let rrclass = "";
 	      if (roll >= 5) { rrclass = "hit"; }
 	      if (pre_battle) { roll = "?"; rrclass = ""; }

@@ -45,7 +45,7 @@
   height: calc(100vh - 200px);
   margin: 50px auto;
   display: grid;
-  grid-template-columns: repeat(10, minmax(auto,130px));
+  grid-template-columns: repeat(10, minmax(auto,120px));
   justify-content: space-evenly;
   grid-gap: 3px;
   max-width: 1375px;
@@ -61,7 +61,7 @@
 
 #helper, #helper:hover{
   position: absolute;
-  width: min(130px, calc(10vw - 10px));
+  width: min(120px, calc(10vw - 10px));
   pointer-events: none;
   z-index: 50;
 }
@@ -74,7 +74,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: 1fr min-content min-content;
-  grid-template-rows: min(12.24vw, 199px);
+  grid-template-rows: min(12.24vw, 184px);
   grid-column-gap: 10px;
   align-items: center;
 
@@ -91,8 +91,8 @@
 
 
 .completed_stack{
-  width: min(8vw, 130px);
-  height: min(12.24vw, 199px);
+  width: min(8vw, 120px);
+  height: min(12.24vw, 184px);
   position: relative;
   margin-left: 10px;
 }
@@ -104,6 +104,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
+}
+
+.icon_container > div{
+  transition: opacity 0.1;
 }
 
 .icon_container > div i {
@@ -149,8 +153,8 @@
 }
 
 .card-slot{
-  width: min(8vw, 130px);
-  height: min(12.24vw, 199px);
+  width: min(8vw, 120px);
+  height: min(12.24vw, 184px);
   position: absolute;
   perspective: 500px;
   transform-style: preserve-3d;

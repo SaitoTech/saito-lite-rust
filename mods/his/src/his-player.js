@@ -411,7 +411,7 @@ console.log("faction: " + f);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', () => {
+    $(".option").on('click', function () {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -463,7 +463,7 @@ console.log("faction: " + f);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', () => {
+    $(".option").on('click', function () {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -755,7 +755,7 @@ if (limit === "build") {
       factions : ['hapsburg','england','france'],
       cost : [2,3,3],
       name : "Colonize",
-      check : this.canPlayerColonize,
+
       fnct : this.playerColonize,
       category : "special" ,
       img : '/his/img/backgrounds/move/colonize.jpg',
@@ -931,6 +931,7 @@ if (limit === "build") {
 
     let his_self = this;
 
+    let at_least_one_option = false;
     let html = '';
     html += '<ul class="hide-scrollbar">';
 
@@ -938,6 +939,7 @@ if (limit === "build") {
 
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
+        at_least_one_option = true;
         html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
 
 	//
@@ -986,6 +988,8 @@ if (limit === "build") {
 	}
       }
 
+      his_self.removeSelectable();
+
       $('.option').off();
       $('.space').off();
       $('.hextile').off();
@@ -1001,6 +1005,8 @@ if (limit === "build") {
 
     });
 
+    if (at_least_one_option) { return 1; }
+    return 0;
   }
 
   playerSelectSpaceOrNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
@@ -1010,15 +1016,15 @@ if (limit === "build") {
   playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
+    let at_least_one_option = false;
 
     this.theses_overlay.space_onclick_callback = mycallback;
-
-console.log("BOARD CLICKABLE: " + board_clickable);
 
     let html = '';
     html += '<ul class="hide-scrollbar">';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
+	at_least_one_option = true;
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
@@ -1035,6 +1041,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
     }
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
+        at_least_one_option = true;
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
@@ -1069,6 +1076,8 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
     });
 
+    if (at_least_one_option) { return 1; }
+    return 0;
   }
 
 
@@ -1098,14 +1107,19 @@ console.log("BOARD CLICKABLE: " + board_clickable);
       if (c === "010") { can_pass = false; }
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
     } // no home card? can pass
-    if (this.factions[faction].returnAdminRating() > this.game.deck[0].fhand[faction_hand_idx].length) {
+
+    if (this.factions[faction].returnAdminRating() < this.game.deck[0].fhand[faction_hand_idx].length) {
       can_pass = false;
+    }
+    if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
+      can_pass = true;
     }
     if (can_pass) {
       cards.push("pass");
     }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
+    
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
@@ -1207,12 +1221,14 @@ console.log("BOARD CLICKABLE: " + board_clickable);
   }
 
   playerPlayCard(card, player, faction) {
+    
+    this.cardbox.hide();
 
     //
-    // maybe we are passing
-    //
     if (card === "pass") {
-      this.addMove("pass\t"+faction);
+      let faction_hand_idx = this.returnFactionHandIdx(player, faction);
+      // auto updates cards_left (last entry)
+      this.addMove("pass\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
       this.endTurn();
       return;
     }
@@ -1257,10 +1273,24 @@ console.log("BOARD CLICKABLE: " + board_clickable);
   async playerPlayOps(card="", faction, ops=null, limit="") {
 
     //
+    // cards left
+    //
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
+
+
+    //
     // discard the card
     //
     if (card != "") {
       this.addMove("discard\t"+faction+"\t"+card);
+      if (this.game.deck[0]) {
+        if (this.game.deck[0].cards[card]) {
+          if (this.game.deck[0].cards[card].ops == ops) {
+            this.addEndMove("NOTIFY\t" + this.returnFactionName(faction) + " plays " + this.popup(card) + " for ops");
+          }
+        }
+      }
     }
 
     let his_self = this;
@@ -1336,7 +1366,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 	        if (moar_user_choice === "commit") {
                   ops -= 2;
                   if (ops > 0) {
- 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
 		  }
                   his_self.addMove("commit\tpapacy\tloyola-debater");
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
@@ -1346,7 +1376,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 		if (moar_user_choice === "donot") {
                   ops -= 3;
 		  if (ops > 0) {
- 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+ 		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
                   }
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
@@ -1357,7 +1387,7 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 	    } else {
               ops -= 3;
 	      if (ops > 0) {
- 	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops); 
+ 	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
               }
               menu[user_choice].fnct(this, this.game.player, selected_faction);
               return;
@@ -1365,21 +1395,49 @@ console.log("BOARD CLICKABLE: " + board_clickable);
 
 	  } else {
 
-            for (let z = 0; z < menu[user_choice].factions.length; z++) {
-              if (pfactions.includes(menu[user_choice].factions[z])) {
-                ops -= menu[user_choice].cost[z];
-	          z = menu[user_choice].factions.length+1;
+	    //
+	    // sub-menu to simplify translations / st peters
+	    //
+	    if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
+
+	      let msg = "How many OPs to Spend: ";
+              let html = `<ul>`;
+	      let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
+              for (let i = 1; i <= ops; i++) {
+                html += `<li class="card" id="${i}">${desc[i-1]}>`;
               }
-            }
+              html += '</ul>';
 
-            if (ops > 0) {
-	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
-            }
-            menu[user_choice].fnct(this, this.game.player, selected_faction);
-            return;
+              this.updateStatusWithOptions(msg, html, false);
+              this.attachCardboxEvents(async (uc) => {      
 
+	        let ops_to_spend = parseInt(uc);
+	        let ops_remaining = ops - ops_to_spend;
+
+                if (ops_remaining > 0) {
+  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+                }
+                menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+                return;
+	      });
+
+	    } else {
+
+              for (let z = 0; z < menu[user_choice].factions.length; z++) {
+                if (pfactions.includes(menu[user_choice].factions[z])) {
+                  ops -= menu[user_choice].cost[z];
+	          z = menu[user_choice].factions.length+1;
+                }
+              }
+
+              if (ops > 0) {
+	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
+              }
+              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              return;
+
+	    }
 	  }
-
         });
       });
     } else {
@@ -1414,18 +1472,48 @@ console.log("BOARD CLICKABLE: " + board_clickable);
           return;
         }
 
-        for (let z = 0; z < menu[user_choice].factions.length; z++) {
-          if (pfactions.includes(menu[user_choice].factions[z])) {
-            ops -= menu[user_choice].cost[z];
-  	    z = menu[user_choice].factions.length+1;
-          }
-        }
+	//
+	// sub-menu to simplify translations / st peters
+	//
+	if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
 
-        if (ops > 0) {
-  	  this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
-        }
-        menu[user_choice].fnct(this, this.game.player, faction);
-        return;
+	  let msg = "How many OPs to Spend: ";
+          let html = `<ul>`;
+	  let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
+          for (let i = 1; i <= ops; i++) {
+            html += `<li class="card" id="${i}">${desc[i-1]}</li>`;
+          }
+          html += '</ul>';
+
+          this.updateStatusWithOptions(msg, html, false);
+          this.attachCardboxEvents(async (uc) => {      
+
+	    let ops_to_spend = parseInt(uc);
+	    let ops_remaining = ops - ops_to_spend;
+
+            if (ops_remaining > 0) {
+  	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+            }
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+            return;
+	  });
+
+	} else {
+
+          for (let z = 0; z < menu[user_choice].factions.length; z++) {
+            if (pfactions.includes(menu[user_choice].factions[z])) {
+              ops -= menu[user_choice].cost[z];
+  	      z = menu[user_choice].factions.length+1;
+            }
+          }
+
+          if (ops > 0) {
+  	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+          }
+          menu[user_choice].fnct(this, this.game.player, faction);
+          return;
+
+	}
       });
 
     }
@@ -1467,7 +1555,7 @@ return;
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', function () {
 
       $(".option").off();
       let id = $(this).attr('id');
@@ -1490,7 +1578,7 @@ return;
       his_self.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', function () {
 
 	let enemy = $(this).attr('id');
 
@@ -1508,7 +1596,7 @@ return;
         his_self.updateStatusWithOptions(msg, opt);
 
         $(".option").off();
-        $(".option").on('click', function() {
+        $(".option").on('click', function () {
 
 	  let method = $(this).attr('id');
 
@@ -1536,7 +1624,7 @@ return;
 	    his_self.updateStatusWithOptions(msg, opt);
 
 	    $(".option").off();
-	    $(".option").on('click', function() {
+	    $(".option").on('click', function () {
 
 	      let action2 = $(this).attr('id');
 
@@ -1713,7 +1801,7 @@ return;
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', function () {
 
       $(".option").off();
       let id = $(this).attr('id');
@@ -1790,7 +1878,7 @@ return;
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', function () {
 
         let id = $(this).attr('id');
 
@@ -2273,9 +2361,9 @@ return;
       let html = "<ul>";
       for (let i = 0; i < options.length; i++) {
         if (options_selected.includes(parseInt(i))) {
-	  html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	  html += `<li class="option" style="font-weight:bold" id="${i}">${options[i]}</li>`;
 	} else {
-          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          html += `<li class="option" id="${i}">${options[i]}</li>`;
         }
       }
       html += `<li class="option" id="end">finish</li>`;
@@ -3302,7 +3390,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
       function(destination_spacekey) {
 	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
-        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces seige of "+his_self.game.spaces[destination_spacekey].name + "\tassault");
+        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault");
         his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	his_self.endTurn();
       },
@@ -3312,12 +3400,13 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
   // 2P requires only that it is in protestant or catholic religious influence
   canPlayerRemoveUnrest(his_self, player, faction) {
- 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
+console.log("SPACES IN UNREST: " + JSON.stringify(spaces_in_unrest));
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
-      if (!his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
+      if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
+      if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }
+console.log("return no");
     return 0;
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
@@ -3359,7 +3448,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
     his_self.playerSelectSpaceWithFilter(
 
-      "Select Space to Pacify:",
+      "Select Space to Remove Unrest:",
 
       function(space) {
         if (spaces_to_fix.includes(space.key)) { return 1; }
@@ -3367,7 +3456,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       },
 
       function(destination_spacekey) {
-	his_self.addMove("pacify\t"+faction+"\t"+destination_spacekey);
+	his_self.addMove("remove_unrest\t"+faction+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
 
@@ -3534,7 +3623,7 @@ return;
     if (faction === "protestant") { return 1; }
     return 0;
   }
-  async playerTranslateScripture(his_self, player, faction) {
+  async playerTranslateScripture(his_self, player, faction, ops=1) {
 
     let msg = "Select Work to Translate:";
     let html = '<ul>';
@@ -3573,15 +3662,15 @@ return;
       his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
-	his_self.addMove("translation\tgerman"); 
+	his_self.addMove("translation\tgerman\t"+ops);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in German Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
       if (id == 2 || id == 5) { 
-	his_self.addMove("translation\tfrench"); 
+	his_self.addMove("translation\tfrench\t"+ops); 
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in French Language Zone\ttranslation_french_language_zone\tfrench\t"+faction);
       }
       if (id == 3 || id == 6) { 
-	his_self.addMove("translation\tenglish"); 
+	his_self.addMove("translation\tenglish\t"+ops);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
       // we only ask for our own CONFIRMS
@@ -3639,13 +3728,13 @@ return;
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
-          $('.option').on('mouseover', function() {
+          $('.option').on('mouseover', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.show(action2);
             }
           });
-          $('.option').on('mouseout', function() {
+          $('.option').on('mouseout', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.hide(action2);
@@ -3687,13 +3776,13 @@ return;
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
-          $('.option').on('mouseover', function() {
+          $('.option').on('mouseover', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.show(action2);
             }
           });
-          $('.option').on('mouseout', function() {
+          $('.option').on('mouseout', function () {
             let action2 = $(this).attr("id");
             if (his_self.debaters[action2]) {
               his_self.cardbox.hide(action2);
@@ -3787,13 +3876,15 @@ return;
 
       $('.option').off();
       let language_zone = e.currentTarget.id;
+      let opponent_faction = "protestant";
+      if (faction != "papacy") { opponent_faction = "papacy"; }
 
       let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
-      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 1)) {
           html += '<li class="option" id="committed">Committed</li>';
       }
-      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 0)) {
           html += '<li class="option" id="uncommitted">Uncommitted</li>';
       }
       html += '</ul>';
@@ -3801,15 +3892,15 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
-      $('.option').on('mouseover', function() {
+      $('.option').on('mouseover', function () {
         let action2 = $(this).attr("id");
         his_self.cardbox.show(action2);
       });
-      $('.option').on('mouseout', function() {
+      $('.option').on('mouseout', function () {
         let action2 = $(this).attr("id");
         his_self.cardbox.hide(action2);
       });
-      $('.option').on('click', () => {
+      $('.option').on('click', function () {
 
         let committed = $(this).attr("id");
 
@@ -3842,8 +3933,10 @@ return;
     }
     return 0;
   }
-  async playerBuildSaintPeters(his_self, player, faction) {
-    his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+  async playerBuildSaintPeters(his_self, player, faction, ops=1) {
+    for (let z = 0; z < ops; z++) {
+      his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+    }
     his_self.endTurn();
     return 0;
   }
@@ -3895,13 +3988,13 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
-        $('.option').on('mouseover', function() {
+        $('.option').on('mouseover', function () {
           let action2 = $(this).attr("id");
           if (his_self.debaters[action2]) {
             his_self.cardbox.show(action2);
           }
         });
-        $('.option').on('mouseout', function() {
+        $('.option').on('mouseout', function () {
           let action2 = $(this).attr("id");
           if (his_self.debaters[action2]) {
             his_self.cardbox.hide(action2);
@@ -3977,7 +4070,6 @@ return;
 
     let his_self = this;
     let placed = 0;
-    let unit = new Unit();
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -3988,17 +4080,19 @@ return;
       function(spacekey) {
         
 	his_self.addUnit(faction, spacekey, unittype);
-        his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
+	his_self.displaySpace(spacekey);
+        his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	
 
 	if (num == 1) {
           his_self.endTurn();
 	} else {
-  	  his_self.playerPlaceUnitsInSpaceWithFilter(msg, unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
+  	  his_self.playerPlaceUnitsInSpaceWithFilter(unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
 	}
       },
 
-      cancel_func 
+      cancel_func ,
 
+      board_clickable 
     );
   }
 
@@ -4007,7 +4101,6 @@ return;
 
     let his_self = this;
     let placed = 0;
-    let unit = new Unit();
 
     his_self.playerSelectSpaceWithFilter(
 

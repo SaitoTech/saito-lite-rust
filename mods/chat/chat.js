@@ -326,6 +326,7 @@ class Chat extends ModTemplate {
               active_module?.request_no_interrupts
             ) {
               this.app.connection.emit("chat-manager-request-no-interrupts");
+              return;
             }
             this.app.connection.emit("chat-popup-render-request");
           }

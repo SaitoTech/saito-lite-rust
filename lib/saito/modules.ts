@@ -273,12 +273,10 @@ class Mods {
 
     let m = [];
     for (let mod of this.mods) {
-      console.log(mod.respondTo(request))
       if ((mod.respondTo(request, obj)) != null) {
         m.push(mod);
       }
     }
-    console.log('modules', m, request, obj)
     return m;
   }
 

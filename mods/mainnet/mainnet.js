@@ -32,6 +32,45 @@ class Mainnet extends ModTemplate {
     }
   }
 
+  render() {
+
+    if (!this.browser_active) { return; }
+
+    let el = document.querySelector(".withdraw-button");
+    el.onclick = (e) => {
+
+      try {
+
+        let email = document.querySelector("#email").value;
+        let publickey = document.querySelector("#publickey").value;
+
+	let mailrelay_mod = this.app.modules.returnModule("MailRelay");
+	if (!mailrelay_mod) { 
+	  alert("Your Saito install does not contain email support, please write the project manually to process token withdrawal");
+	  return;
+	}
+
+	let emailtext = `
+
+	  This is a template email to test the mail relay module in the mainnet transfer module.
+
+	  The publickey submitted was ${publickey}
+
+
+	`;
+
+	mailrelay_mod.sendMailRelayTransaction("david.lancashire@gmail.com", "info@saito.tech", "Saito Token Withdrawal (mainnet)", emailtext);
+
+      } catch (err) {
+
+alert("Error Reading Email or Saito Address: please contact us manually");
+
+      }
+
+    }
+
+  }
+
 
   receiveMigrateTokensTransaction() {
 
