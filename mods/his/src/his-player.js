@@ -1121,6 +1121,10 @@ if (limit === "build") {
     this.updateStatusAndListCards("Select a Card: ", cards);
     
     this.attachCardboxEvents((card) => {
+      try {
+        $('.card').off();
+        $('.card img').off();
+      } catch (err) {}
       this.playerPlayCard(card, this.game.player, faction);
     });  
 

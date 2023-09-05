@@ -2626,17 +2626,15 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                 his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater_power = 4;
-                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 3;
 	      } else {
                 his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater_power = 4;
-                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 3;
 	      }
 	    }
 	  }
-console.log("1 defender debater: " + his_self.game.state.theological_debate.defender_debater_power);
-console.log("2 defender debater: " + his_self.game.state.theological_debate.defender_debater_bonus);
 
 	  // re-render debate overlay with luther there
           his_self.debate_overlay.render(his_self.game.state.theological_debate);
@@ -5949,7 +5947,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        if (faction === "protestant" && this.game.state.events.schmalkaldic_league != 1) { return 0; }
+        if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {

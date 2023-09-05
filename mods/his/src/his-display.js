@@ -781,9 +781,12 @@
 
     for (let z in space.units) {
 
+      new_units = false;
+
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
         if (space.units[z][zz].type === "mercenary") {
+	  new_units = true;
           army++;
         }
       }
@@ -795,14 +798,16 @@
 	    if (army >= 4) {
               tile += `HapsburgMerc-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2) {
               tile += `HapsburgMerc-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1) {
               tile += `HapsburgMerc-1.svg`;
 	      army -= 1;
+	    }
+	    }
 	    }
           }
           if (z === "england") {
@@ -810,14 +815,16 @@
 	    if (army >= 4) {
               tile += `EnglandMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `EnglandMerc-2.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `EnglandMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "france") {
@@ -825,14 +832,16 @@
 	    if (army >= 4) {
               tile += `FrenchMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `FrenchMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `FrenchMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "papacy") {
@@ -840,14 +849,16 @@
 	    if (army >= 4) {
               tile += `PapacyMerc-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-1.svg`;
 	      army -= 1;
+	    }
+	    }
 	    }
           }
           if (z === "protestant") {
@@ -855,14 +866,16 @@
 	    if (army >= 4) {
               tile += `ProtestantMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `ProtestantMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `ProtestantMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "ottoman") {
@@ -870,14 +883,16 @@
 	    if (army >= 4) {
               tile += `OttomanMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `OttomanMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `OttomanMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
         }
@@ -1218,6 +1233,10 @@
       "img/factions/hapsburg.png",
       "img/backgrounds/reformation.jpg",
       "img/backgrounds/theological-debate.jpg",
+      "img/backgrounds/theological-debate2.jpg",
+      "img/backgrounds/diet_of_worms.jpeg",
+      "img/backgrounds/language-zone.jpg",
+      "img/backgrounds/95_theses.jpeg",
     ];
   }
 

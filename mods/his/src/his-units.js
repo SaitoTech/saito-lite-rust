@@ -371,7 +371,7 @@
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].type == debater) { 
 
-	if (disgraced == 1) {
+	if (this.game.state.debaters[i].owner == "papacy") {
 	  this.updateLog("Protestants gain " + this.game.state.debaters[i].power + " VP");
 	  this.updateLog(this.popup(debater) + " disgraced");
 	} else {

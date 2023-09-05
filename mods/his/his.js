@@ -5402,17 +5402,15 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                 his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater_power = 4;
-                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 3;
 	      } else {
                 his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater = "luther-debater";
                 his_self.game.state.theological_debate.attacker_debater_power = 4;
-                his_self.game.state.theological_debate.attacker_debater_bonus = 2;
+                his_self.game.state.theological_debate.attacker_debater_bonus = 3;
 	      }
 	    }
 	  }
-console.log("1 defender debater: " + his_self.game.state.theological_debate.defender_debater_power);
-console.log("2 defender debater: " + his_self.game.state.theological_debate.defender_debater_bonus);
 
 	  // re-render debate overlay with luther there
           his_self.debate_overlay.render(his_self.game.state.theological_debate);
@@ -8725,7 +8723,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        if (faction === "protestant" && this.game.state.events.schmalkaldic_league != 1) { return 0; }
+        if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {
@@ -21164,6 +21162,7 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	    // if aleander is in play, flip extra space
 	    //
 	    if ((this.game.state.theological_debate.attacker_debater === "aleander-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) || (this.game.state.theological_debate.defender_debater === "aleander-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1)) {
+	      this.updateLog(this.popup("aleander-debater") + " bonus: +1 conversion");
 	      bonus_conversions = 1;
 	    }
 
@@ -21562,14 +21561,18 @@ console.log("NEW WORLD PHASE!");
 	    }
 	  }
 
+console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
+
 	  //
 	  // if anyone is left to play, everyone with cards left needs to pass again
 	  //
-	  for (let i = 0; i < this.game.state.players_info.length; i++) {
-	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-	      let f = this.game.state.players_info[i].factions[z];
-	      if (!factions_in_play.includes(f) && !factions_force_pass.includes(f)) {
-		factions_in_play.push(f);
+          if (factions_in_play.length > 0) {
+	    for (let i = 0; i < this.game.state.players_info.length; i++) {
+	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	        let f = this.game.state.players_info[i].factions[z];
+	        if (!factions_in_play.includes(f) && !factions_force_pass.includes(f)) {
+	    	  factions_in_play.push(f);
+	        }
 	      }
 	    }
 	  }
@@ -21608,7 +21611,7 @@ console.log("NEW WORLD PHASE!");
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (this.game.players === 2) {
+	  if (this.game.players.length === 2) {
 	    // only papacy moves units
 	    this.game.queue.push("spring_deployment\tpapacy");
 	  } else {
@@ -21630,6 +21633,8 @@ console.log("NEW WORLD PHASE!");
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
+	  if (faction === "protestant") { return 1; }
+	  if (player == 0) { return 1; }
 
 	  if (this.game.player == player) {
 	    this.playerPlaySpringDeployment(faction, player);
@@ -22231,6 +22236,22 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
           this.displayBoard();
+
+	  //
+	  // if everyone has passed, we can avoid this
+	  //
+	  let everyone_has_passed = true;
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	      if (this.game.state.players_info[i].factions_passed[z] != true) { everyone_has_passed = false; }
+	    }
+	  }
+	  if (everyone_has_passed == true) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
+
 
 	  //
 	  // new impulse
@@ -24312,6 +24333,10 @@ if (limit === "build") {
     this.updateStatusAndListCards("Select a Card: ", cards);
     
     this.attachCardboxEvents((card) => {
+      try {
+        $('.card').off();
+        $('.card img').off();
+      } catch (err) {}
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
@@ -28140,7 +28165,7 @@ return;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].type == debater) { 
 
-	if (disgraced == 1) {
+	if (this.game.state.debaters[i].owner == "papacy") {
 	  this.updateLog("Protestants gain " + this.game.state.debaters[i].power + " VP");
 	  this.updateLog(this.popup(debater) + " disgraced");
 	} else {
@@ -29085,9 +29110,12 @@ return;
 
     for (let z in space.units) {
 
+      new_units = false;
+
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
         if (space.units[z][zz].type === "mercenary") {
+	  new_units = true;
           army++;
         }
       }
@@ -29099,14 +29127,16 @@ return;
 	    if (army >= 4) {
               tile += `HapsburgMerc-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2) {
               tile += `HapsburgMerc-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1) {
               tile += `HapsburgMerc-1.svg`;
 	      army -= 1;
+	    }
+	    }
 	    }
           }
           if (z === "england") {
@@ -29114,14 +29144,16 @@ return;
 	    if (army >= 4) {
               tile += `EnglandMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `EnglandMerc-2.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `EnglandMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "france") {
@@ -29129,14 +29161,16 @@ return;
 	    if (army >= 4) {
               tile += `FrenchMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `FrenchMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `FrenchMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "papacy") {
@@ -29144,14 +29178,16 @@ return;
 	    if (army >= 4) {
               tile += `PapacyMerc-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-1.svg`;
 	      army -= 1;
+	    }
+	    }
 	    }
           }
           if (z === "protestant") {
@@ -29159,14 +29195,16 @@ return;
 	    if (army >= 4) {
               tile += `ProtestantMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `ProtestantMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `ProtestantMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "ottoman") {
@@ -29174,14 +29212,16 @@ return;
 	    if (army >= 4) {
               tile += `OttomanMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `OttomanMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `OttomanMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
         }
@@ -29522,6 +29562,10 @@ return;
       "img/factions/hapsburg.png",
       "img/backgrounds/reformation.jpg",
       "img/backgrounds/theological-debate.jpg",
+      "img/backgrounds/theological-debate2.jpg",
+      "img/backgrounds/diet_of_worms.jpeg",
+      "img/backgrounds/language-zone.jpg",
+      "img/backgrounds/95_theses.jpeg",
     ];
   }
 
