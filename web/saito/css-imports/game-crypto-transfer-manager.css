@@ -24,6 +24,11 @@ input[type="checkbox"].ignore_checkbox {
   position: relative;
 }
 
+.game-crypto-transfer-manager-container .stake-input-container{
+  margin: auto;
+  position: relative;
+}
+
 .game-crypto-transfer-manager-container .stake {
   background: none;
   border: none;
@@ -32,9 +37,20 @@ input[type="checkbox"].ignore_checkbox {
   text-align: center;
   padding: 1rem;
   font-size: 4rem;
-  margin: auto;
   display: inline-block;
   width: 18rem;
+}
+
+.stake-input-container .crypto-max {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+.stake-input-container .crypto-ticker {
+  position: absolute;
+  right: 0;
+  bottom: 2.5rem;
 }
 
 .auth_title {
