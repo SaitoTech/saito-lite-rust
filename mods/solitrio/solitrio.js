@@ -640,7 +640,7 @@ no status atm, but this is to update the hud
     let solitrio_self = this;
 
     let html =
-      '<span class="hidable">Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>';
+      '<span>Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>';
     let option = `<ul><li class="option"`;
     if (this.game.state.recycles_remaining > 0) {
       html += "<span>You may shuffle the unarranged cards ";
