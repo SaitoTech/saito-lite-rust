@@ -8,9 +8,9 @@ module.exports = (app, mod, group, isStatic = false) => {
 
   let class_name = "chat-container";
 
-  // if (isStatic) {
-  //   class_name = "chat-static";
-  // }
+  if (isStatic) {
+     class_name = "chat-static";
+  }
 
   let html = `
       <div class="${class_name} chat-popup" id="chat-popup-${group.id}">

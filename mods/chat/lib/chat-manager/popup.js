@@ -7,6 +7,7 @@ class ChatPopup {
     this.app = app;
     this.mod = mod;
 
+    console.log("Rendering chat popup into" + container);
     this.container = container;
     this.input = null; //new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
     this.manually_closed = false;

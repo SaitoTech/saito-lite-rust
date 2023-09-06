@@ -5241,6 +5241,7 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	    // if aleander is in play, flip extra space
 	    //
 	    if ((this.game.state.theological_debate.attacker_debater === "aleander-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) || (this.game.state.theological_debate.defender_debater === "aleander-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1)) {
+	      this.updateLog(this.popup("aleander-debater") + " bonus: +1 conversion");
 	      bonus_conversions = 1;
 	    }
 
@@ -5639,14 +5640,18 @@ console.log("NEW WORLD PHASE!");
 	    }
 	  }
 
+console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
+
 	  //
 	  // if anyone is left to play, everyone with cards left needs to pass again
 	  //
-	  for (let i = 0; i < this.game.state.players_info.length; i++) {
-	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-	      let f = this.game.state.players_info[i].factions[z];
-	      if (!factions_in_play.includes(f) && !factions_force_pass.includes(f)) {
-		factions_in_play.push(f);
+          if (factions_in_play.length > 0) {
+	    for (let i = 0; i < this.game.state.players_info.length; i++) {
+	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	        let f = this.game.state.players_info[i].factions[z];
+	        if (!factions_in_play.includes(f) && !factions_force_pass.includes(f)) {
+	    	  factions_in_play.push(f);
+	        }
 	      }
 	    }
 	  }
@@ -5685,7 +5690,7 @@ console.log("NEW WORLD PHASE!");
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (this.game.players === 2) {
+	  if (this.game.players.length === 2) {
 	    // only papacy moves units
 	    this.game.queue.push("spring_deployment\tpapacy");
 	  } else {
@@ -5707,6 +5712,8 @@ console.log("NEW WORLD PHASE!");
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
+	  if (faction === "protestant") { return 1; }
+	  if (player == 0) { return 1; }
 
 	  if (this.game.player == player) {
 	    this.playerPlaySpringDeployment(faction, player);
@@ -6308,6 +6315,22 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
           this.displayBoard();
+
+	  //
+	  // if everyone has passed, we can avoid this
+	  //
+	  let everyone_has_passed = true;
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	      if (this.game.state.players_info[i].factions_passed[z] != true) { everyone_has_passed = false; }
+	    }
+	  }
+	  if (everyone_has_passed == true) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
+
 
 	  //
 	  // new impulse
