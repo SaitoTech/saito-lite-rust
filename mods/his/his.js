@@ -20863,8 +20863,8 @@ console.log("purging naval units and capturing leader");
 	  this.game.state.theological_debate.defender_debater_bonus = 1;
 	  this.game.state.theological_debate.selected_papal_debater = "";
 	  this.game.state.theological_debate.prohibited_protestant_debater = "";
-	  this.game.state.theological_debate.attacker_faction = attacker.charAt(0).toUpperCase() + attacker.slice(1);
-	  this.game.state.theological_debate.defender_faction = defender.charAt(0).toUpperCase() + defender.slice(1);
+	  this.game.state.theological_debate.attacker_faction = attacker;
+	  this.game.state.theological_debate.defender_faction = defender;
 
 	  let x = 0;
 
@@ -21153,9 +21153,9 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	    this.game.state.theological_debate.status = "Inconclusive - Second Round";
 	  } else {
 	    if (attacker_hits > defender_hits) {
-	      this.game.state.theological_debate.status = this.game.state.theological_debate.attacker_faction + " Wins";
+	      this.game.state.theological_debate.status = this.returnFactionName(this.game.state.theological_debate.attacker_faction) + " Wins";
 	    } else {
-	      this.game.state.theological_debate.status = this.game.state.theological_debate.defender_faction + " Wins";
+	      this.game.state.theological_debate.status = this.returnFactionName(this.game.state.theological_debate.defender_faction) + " Wins";
 	    }
 	  }
 
@@ -21227,9 +21227,9 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	      }
 
 	      if ((bonus_conversions+total_spaces_to_convert) == 1) {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
+	        this.updateLog(this.returnFactionName(this.game.state.theological_debate.attacker_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
+	        this.updateLog(this.returnFactionName(this.game.state.theological_debate.attacker_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
 
 
@@ -21271,9 +21271,9 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      if ((total_spaces_to_convert+bonus_conversions) == 1) {
-		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${(total_spaces_to_convert+bonus_conversions)} Space`);
+		this.game.queue.push("counter_or_acknowledge\t"+this.returnFactionName(this.game.state.theological_debate.attacker_faction) + ` Wins - Convert ${(total_spaces_to_convert+bonus_conversions)} Space`);
 	      } else { 
-	        this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${(total_spaces_to_convert+bonus_conversions)} Spaces`);
+	        this.game.queue.push("counter_or_acknowledge\t"+this.returnFactionName(this.game.state.theological_debate.attacker_faction) + ` Wins - Convert ${(total_spaces_to_convert+bonus_conversions)} Spaces`);
               }
 	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
