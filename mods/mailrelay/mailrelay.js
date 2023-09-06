@@ -143,8 +143,6 @@ class MailRelay extends ModTemplate {
   // only servers will have this
   //
   sendMail(email) {
-    console.log(process.env.SENDGRID);
-    console.info(JSON.stringify(JSON.parse(process.env.SENDGRID)));
     if (!this.app.BROWSER) {
       try {
         const nodemailer = require("nodemailer");
@@ -153,8 +151,6 @@ class MailRelay extends ModTemplate {
         if (process.env.SENDGRID) {
           credentials = JSON.parse(process.env.SENDGRID);
         }
-        console.info(credentials);
-        console.info(credentials.host);
         let transporter = nodemailer.createTransport(credentials);
         transporter.sendMail(email, (err, info) => {
           if (info) {
