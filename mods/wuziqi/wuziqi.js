@@ -332,9 +332,6 @@ class Wuziqi extends GameTemplate {
                 // Remove this item from the queue.
                 this.game.queue = [];
 
-                //console.log(this.game.options);
-                //console.log(this.game.crypto);
-
                 await this.sendGameOverTransaction(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
                 return 0; //end queue cycling
             }
