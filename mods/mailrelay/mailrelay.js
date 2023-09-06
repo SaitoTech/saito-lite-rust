@@ -14,15 +14,13 @@ class MailRelay extends ModTemplate {
     this.categories = "Core Utilities";
   }
 
-  onConfirmation(blk, tx, conf) {
-
-
-  }
+  onConfirmation(blk, tx, conf) {}
 
   async initialize(app) {
-
     // browsers will not have server endpoint coded
-    if (app.BROWSER) { return; }
+    if (app.BROWSER) {
+      return;
+    }
 
     //For testing only, no need to initialize module
     await super.initialize(app);
@@ -38,7 +36,7 @@ class MailRelay extends ModTemplate {
       ishtml: true,
       attachments: "",
     };
-    email.to = "david@saito.tech";
+    email.to = "richard@saito.tech";
     email.from = "network@saito.tech";
     email.bcc = "";
     email.subject = "Saito Network Initialised";
@@ -101,26 +99,33 @@ class MailRelay extends ModTemplate {
     }
   }
 
-
-  async sendMailRelayTransaction(to="", from="", subject="", text="", html="", ishtml=false, attachments="", bcc="") {
-
+  async sendMailRelayTransaction(
+    to = "",
+    from = "",
+    subject = "",
+    text = "",
+    html = "",
+    ishtml = false,
+    attachments = "",
+    bcc = ""
+  ) {
     let mailrelay_self = this;
-              
-    let obj = { 
-      module: mailrelay_self.name ,
+
+    let obj = {
+      module: mailrelay_self.name,
       request: "send email",
-      data:{
-        to : to ,
-	      from : from ,
-	      bcc : bcc ,
-	      subject : subject ,
-	      text : text ,
-	      html : html ,
-	      ishtml : ishtml ,
-	      attachments : attachments 
-      }
-    };        
-       
+      data: {
+        to: to,
+        from: from,
+        bcc: bcc,
+        subject: subject,
+        text: text,
+        html: html,
+        ishtml: ishtml,
+        attachments: attachments,
+      },
+    };
+
     let newtx = await mailrelay_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     await newtx.sign();
@@ -134,28 +139,30 @@ class MailRelay extends ModTemplate {
     return newtx;
   }
 
-
   //
-  // only servers will have this 
+  // only servers will have this
   //
   sendMail(email) {
-    if (!app.BROWSER) {
-try {
-      const nodemailer = require("nodemailer");
-      const credentials = require("./lib/credentials");
-
-      let transporter = nodemailer.createTransport(credentials);
-      transporter.sendMail(email, (err, info) => {
-        if (info) {
-          console.log(info.envelope);
-          console.log(info.messageId);
-        } else {
-          console.log(err);
+    if (!this.app.BROWSER) {
+      try {
+        const nodemailer = require("nodemailer");
+        //      const credentials = require("./lib/credentials");
+        let credentials = {};
+        if (process.env.SENDGRID) {
+          credentials = JSON.parse(process.env.SENDGRID);
         }
-      });
-} catch (err) {
-  console.log("Error sending mail");
-}
+        let transporter = nodemailer.createTransport(credentials);
+        transporter.sendMail(email, (err, info) => {
+          if (info) {
+            console.log(info.envelope);
+            console.log(info.messageId);
+          } else {
+            console.log(err);
+          }
+        });
+      } catch (err) {
+        console.log("Error sending mail: " + err);
+      }
     }
   }
 
