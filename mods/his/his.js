@@ -16115,6 +16115,11 @@ console.log("MOVE: " + mv[0]);
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
           }
+	  if (mv[1] === "theological_debate_and_debaters") { 
+	    this.debate_overlay.render(his_self.game.state.theological_debate); 
+            this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
+            this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
+	  }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.render(his_self.game.state.theological_debate); }
 	  if (mv[1] === "field_battle") {
 	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(his_self.game.state.field_battle); }
@@ -17926,6 +17931,8 @@ console.log("into counter or acknowledge...");
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
+
+console.log("into counter or acknowledge 2");
 
 	  let msg = mv[1];
 	  let stage = mv[2];
@@ -21174,11 +21181,12 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	    } else {
 
 	      this.game.queue.push("theological_debate");
-              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("counter_or_acknowledge\tTheological Debate: 2nd Round\tdebate");
-	      this.game.queue.push("show_overlay\ttheological_debate");
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	      this.game.queue.push("show_overlay\ttheological_debate_and_debaters");
 	      this.game.queue.push("pick_second_round_debaters");
 	      this.game.queue.push("counter_or_acknowledge\tThe Debate is Tied - Progress to 2nd Round");
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 
 	    }
@@ -21201,7 +21209,7 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	      let total_spaces_overall = this.returnNumberOfProtestantSpacesInLanguageZone();
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
-	      if (attacker === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
+	      if (defender === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
 
 	      //
 	      // if campeggio is the debater, we have 1/3 chance of ignoring result
@@ -21279,7 +21287,7 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	      let total_spaces_overall = this.returnNumberOfProtestantSpacesInLanguageZone();
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
-	      if (defender === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
+	      if (attacker === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
 
 	      //
 	      // if campeggio is the debater, we have 1/3 chance of ignoring result
@@ -21306,6 +21314,9 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	      // reduce number of convertible spaces to total available to convert
 	      //
 	      let flip_this_number = total_spaces_to_convert + bonus_conversions;
+console.log("defender is papacy, right? " + this.game.state.theological_debate.defender_faction);
+console.log("protestant spaces and flip this number: " + this.returnNumberOfProtestantSpacesInLanguageZone() + " -- " + flip_this_number);
+
 	      if (this.game.state.theological_debate.defender_faction == "papacy" && this.returnNumberOfProtestantSpacesInLanguageZone() < flip_this_number) {
 	        this.updateLog("Protestants only have " + this.returnNumberOfProtestantSpacesInLanguageZone() + " spaces to flip");
 	        flip_this_number = this.returnNumberOfProtestantSpacesInLanguageZone();
@@ -27138,7 +27149,8 @@ return;
 // If all Protestant debaters in a language zone are committed, the Protestant player may not initiate debates in that language zone. Similarly, if all Papal debaters are committed, the Papal player may not initiate debates in any language zone. If none of the Protestant debaters for a language zone have entered the game (or all of them have been burnt at the stake, excommuni- cated, or removed from play), neither player may call a debate in that zone. 
 //
     if (his_self.returnNumberOfUncommittedDebaters(faction) <= 0) { return 0; }
-    if (is_self.game.state.events.wartburg == 1) { if (faction === "protestant") { return 0; } }
+    if (his_self.game.state.events.wartburg == 1) { if (faction === "protestant") { return 0; } }
+    if (faction === "protestant") { return 1; }
     if (faction === "papacy") { return 1; }
     return 0;
   }

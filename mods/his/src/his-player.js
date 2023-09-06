@@ -3849,7 +3849,8 @@ return;
 // If all Protestant debaters in a language zone are committed, the Protestant player may not initiate debates in that language zone. Similarly, if all Papal debaters are committed, the Papal player may not initiate debates in any language zone. If none of the Protestant debaters for a language zone have entered the game (or all of them have been burnt at the stake, excommuni- cated, or removed from play), neither player may call a debate in that zone. 
 //
     if (his_self.returnNumberOfUncommittedDebaters(faction) <= 0) { return 0; }
-    if (is_self.game.state.events.wartburg == 1) { if (faction === "protestant") { return 0; } }
+    if (his_self.game.state.events.wartburg == 1) { if (faction === "protestant") { return 0; } }
+    if (faction === "protestant") { return 1; }
     if (faction === "papacy") { return 1; }
     return 0;
   }
