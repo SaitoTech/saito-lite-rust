@@ -426,9 +426,13 @@
 
   returnSpaceOfPersonage(faction, personage) {
     for (let key in this.game.spaces) {
-      for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-	if (this.game.spaces[key].units[faction][i].type === personage) {
-	  return key;
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i]) {
+	    if (this.game.spaces[key].units[faction][i].type === personage) {
+  	      return key;
+            }
+          }
         }
       }
     }
