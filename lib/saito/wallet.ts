@@ -435,12 +435,14 @@ export default class Wallet extends SaitoWallet {
   returnActivatedCryptos() {
     const allMods = this.returnInstalledCryptos();
     const activeMods = [];
-    console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
+
+    console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length, "HOW MANY ACTIVATED: " + activeMods.length);
+
     return activeMods;
   }
 
@@ -533,18 +535,17 @@ export default class Wallet extends SaitoWallet {
     return "";
   }
 
-  returnAvailableCryptosAssociativeArray() {
+  async returnAvailableCryptosAssociativeArray() {
     let cryptos = {};
     let mods = this.returnActivatedCryptos();
     for (let i = 0; i < mods.length; i++) {
       let ticker = mods[i].ticker;
-      let address = mods[i].returnAddress();
-      let balance = mods[i].balance;
+      let address = await mods[i].returnAddress();
+      let balance = await mods[i].returnBalance();
       if (!cryptos[ticker]) {
-        cryptos[ticker] = { address: "", balance: "0.0" };
+        cryptos[ticker] = { address, balance };
       }
-      cryptos[ticker].address = address;
-      cryptos[ticker].balance = balance;
+
       if (parseFloat(balance) > 0) {
         mods[i].save();
       }

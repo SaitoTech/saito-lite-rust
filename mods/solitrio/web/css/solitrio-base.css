@@ -110,10 +110,12 @@
 @media screen and (orientation: landscape) and (max-height: 600px) {
     .logobox {
         order: 1;
-        margin-top: 40px;
+        margin-top: unset;
         max-width: 150px;
         max-height: 100vh;
         height: fit-content;
+        top: 50vh;
+        transform: translateY(-50%);
     }
 
     .logobox img {

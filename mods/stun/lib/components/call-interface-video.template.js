@@ -1,5 +1,5 @@
 module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEnabled = true) => {
-  return `
+  let html = `
     <div class="stun-chatbox" id="stun-chatbox">
       <main>
         <section class="large-wrapper">
@@ -70,4 +70,10 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
     }
 
   </div>`;
+
+  if (!mod.browser_active){
+    html = `<div class="stun-overlay-container">${html}</div>`;
+  }
+
+  return html;
 };

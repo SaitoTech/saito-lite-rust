@@ -612,6 +612,33 @@ class Server {
       }
     });
 
+    expressApp.get("/balance/:key", async (req, res) => {
+      try {
+        const key = req.params.key;
+        if (!key) {
+          console.warn("key not provided for balance");
+          return res.sendStatus(400);
+        }
+
+        const snapshot = await S.getInstance().getBalanceSnapshot();
+        // console.log("snapshot rows: ", snapshot.rows);
+        res.setHeader("Content-Disposition", "attachment; filename=" + snapshot.file_name);
+        let content = "";
+        for (let rowsKey of snapshot.rows) {
+          // console.log("checking : " + rowsKey);
+          if (rowsKey.includes(key)) {
+            content = content + rowsKey + ";";
+          }
+        }
+        // console.log("content : " + content);
+        // console.log("key  : " + key);
+        res.end(content);
+      } catch (error) {
+        console.error(error);
+        res.sendStatus(404);
+      }
+    });
+
     // app.get("/json-block/:hash", async (req, res) => {
     //   try {
     //     const hash = req.params.hash;
