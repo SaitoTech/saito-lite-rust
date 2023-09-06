@@ -6652,7 +6652,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
  	if (mv[0] === "remove_unrest") {
 
-	  let spacekey = mv[1];
+	  let faction = mv[1];
+	  let spacekey = mv[2];
 	  this.game.spaces[spacekey].unrest = 0;
 	  this.displaySpace(spacekey);
 

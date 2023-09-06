@@ -1230,7 +1230,7 @@
       "img/factions/england.png",
       "img/factions/france.png",
       "img/factions/ottoman.png",
-      "img/factions/hapsburg.png",
+      "img/factions/hapsburgs.png",
       "img/backgrounds/reformation.jpg",
       "img/backgrounds/theological-debate.jpg",
       "img/backgrounds/theological-debate2.jpg",
@@ -1238,6 +1238,8 @@
       "img/backgrounds/language-zone.jpg",
       "img/backgrounds/95_theses.jpeg",
     ];
+
+    this.preloadImageArray(allImages);
   }
 
   preloadImageArray(imageArray=[], idx=0) {
