@@ -386,11 +386,13 @@
 	//
 	// also remove reformer (if exists)
 	//
-	let reformer = x[0] + "-reformer";
-        let s = this.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
-	if (s) {
-          this.removeReformer(this.debaters[debater].faction, reformer);
-        }
+	try {
+	  let reformer = x[0] + "-reformer";
+          let s = this.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
+	  if (s) { this.removeReformer(this.debaters[debater].faction, reformer); }
+	} catch (err) {
+	  // reformer does not exist
+	}
       }
     }
 
@@ -469,6 +471,14 @@
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	if (this.game.state.debaters[i].committed == 1) { return 1; }
+      }
+    }
+    // sometimes debaters will be excommunicated without being committed
+    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+      if (this.game.state.excommunicated[i].debater) {
+	if (this.game.state.excommunicated[i].debater.type == debater) {
+	  if (this.game.state.debaters[i].committed == 1) { return 1; }
+        }
       }
     }
     return 0;

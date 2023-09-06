@@ -270,6 +270,7 @@
 	  for (let i = hits-1; i >= 0; i--) {
 	    his_self.addMove("corsair_raid\t"+opponent_faction+"\t"+(i+1));
 	  }
+	  his_self.addMove(`NOTIFY\t${his_self.popup('203')} rolls ${hits} hits`);
 	  his_self.endTurn();
 	}
 	
@@ -354,6 +355,7 @@
 		  	  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
           	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
+          	  	      his_self.addMove("NOTIFY\tPapacy removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
 			    }
@@ -368,6 +370,7 @@
 			  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
           	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
+          	  	      his_self.addMove("NOTIFY\tProtestant removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
 			    }
@@ -391,6 +394,7 @@
 
 	      if (action === "discard") {
 		his_self.addMove("discard_random\t"+faction);
+          	his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " discards card");
 		his_self.endTurn();
 	      }
 
@@ -720,7 +724,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	let p = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player == p) {
 
-          let msg = "Henry Petitions for Divorce: ";
+          let msg = his_self.popup("207") + " played for Diplomatic Event";
           let html = '<ul>';
           html += '<li class="option" id="grant">Grant Divorce</li>';
           html += '<li class="option" id="refuse">Refuse Divorce</li>';
@@ -796,6 +800,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 
         if (mv[0] === "henry_petitions_for_divorce_refuse") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let num = parseInt(mv[1]);
 
@@ -2338,7 +2344,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                   let html = '<ul>';
 		  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 		    let d = his_self.game.state.debaters[i];
-		    if (d.faction === "papacy") {
+		    if (d.faction === "papacy" && d.committed === 0) {
             	      html += `<li class="option" id="${d.type}">${d.name}</li>`;
 		    }
 		  }
@@ -2420,6 +2426,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+	if (his_self.isCommitted("luther-debater")) { return 0; }
 	if (his_self.game.state.leaders.luther == 1) { return 1; }
 	if (Object.keys(his_self.game.deck[0].discards).length > 0) { return 1; }
 	return 0;
@@ -2478,7 +2485,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    });
 	  });
 	} else {
-	  this.updateStatus("Protestants retrieving card");
+	  his_self.updateStatus("Protestants retrieving card: " + his_self.popup("007"));
 	}
 
 	return 0;
@@ -2491,7 +2498,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
+	  // Wartburg stops Luther
+	  if (his_self.game.state.events.wartburg == 1) { return 0; }
 	  if (his_self.game.state.leaders.luther == 1) {
+
 	    if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
 	    if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
 	    if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
@@ -4325,6 +4335,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player, card="") {
+
         if (menu == "event") {
 
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
@@ -4351,19 +4362,28 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  if (cardobj.type === "response") { return {}; }
 	  if (cardobj.type === "mandatory") { return {}; }
 	  if (cardobj.type === "combat") { return {}; }
-	  
-          return { faction : "protestant" , event : '037', html : `<li class="option" id="037">jwartburg (protestant)</li>` };
+
+          return { faction : "protestant" , event : '037', html : `<li class="option" id="037">wartburg (protestant)</li>` };
         }
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "event") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('037')) {
+	      if (his_self.returnPlayerOfFaction("protestant") == his_self.game.player) {
+ 		return 1;
+	      }
+            }
+          }
         }
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "event") {
           his_self.addMove("wartburg");
+          his_self.addMove("discard\tprotestant\t037");
+          his_self.addMove("commit\tprotestant\tluther-debater");
 	  his_self.endTurn();
 	  his_self.updateStatus("wartburg acknowledge");
         }
@@ -4389,7 +4409,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  his_self.game.state.events.wartburg = 1;
 	  his_self.commitDebater("protestant", "luther-debater");
 
-	  his_self.updateLog("Wartburg Updated!");
+	  his_self.updateLog(his_self.popup("037") + " triggered");
           his_self.game.queue.splice(qe, 1);
 
 	  return 1;

@@ -3046,6 +3046,7 @@ console.log("\n\n\n\n");
 	  for (let i = hits-1; i >= 0; i--) {
 	    his_self.addMove("corsair_raid\t"+opponent_faction+"\t"+(i+1));
 	  }
+	  his_self.addMove(`NOTIFY\t${his_self.popup('203')} rolls ${hits} hits`);
 	  his_self.endTurn();
 	}
 	
@@ -3130,6 +3131,7 @@ console.log("\n\n\n\n");
 		  	  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
           	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
+          	  	      his_self.addMove("NOTIFY\tPapacy removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
 			    }
@@ -3144,6 +3146,7 @@ console.log("\n\n\n\n");
 			  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
           	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
+          	  	      his_self.addMove("NOTIFY\tProtestant removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
 			    }
@@ -3167,6 +3170,7 @@ console.log("\n\n\n\n");
 
 	      if (action === "discard") {
 		his_self.addMove("discard_random\t"+faction);
+          	his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " discards card");
 		his_self.endTurn();
 	      }
 
@@ -3496,7 +3500,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	let p = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player == p) {
 
-          let msg = "Henry Petitions for Divorce: ";
+          let msg = his_self.popup("207") + " played for Diplomatic Event";
           let html = '<ul>';
           html += '<li class="option" id="grant">Grant Divorce</li>';
           html += '<li class="option" id="refuse">Refuse Divorce</li>';
@@ -3572,6 +3576,8 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 
         if (mv[0] === "henry_petitions_for_divorce_refuse") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let num = parseInt(mv[1]);
 
@@ -5114,7 +5120,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                   let html = '<ul>';
 		  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 		    let d = his_self.game.state.debaters[i];
-		    if (d.faction === "papacy") {
+		    if (d.faction === "papacy" && d.committed === 0) {
             	      html += `<li class="option" id="${d.type}">${d.name}</li>`;
 		    }
 		  }
@@ -5196,6 +5202,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+	if (his_self.isCommitted("luther-debater")) { return 0; }
 	if (his_self.game.state.leaders.luther == 1) { return 1; }
 	if (Object.keys(his_self.game.deck[0].discards).length > 0) { return 1; }
 	return 0;
@@ -5254,7 +5261,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    });
 	  });
 	} else {
-	  this.updateStatus("Protestants retrieving card");
+	  his_self.updateStatus("Protestants retrieving card: " + his_self.popup("007"));
 	}
 
 	return 0;
@@ -5267,7 +5274,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
+	  // Wartburg stops Luther
+	  if (his_self.game.state.events.wartburg == 1) { return 0; }
 	  if (his_self.game.state.leaders.luther == 1) {
+
 	    if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
 	    if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
 	    if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
@@ -7101,6 +7111,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player, card="") {
+
         if (menu == "event") {
 
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
@@ -7127,19 +7138,28 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  if (cardobj.type === "response") { return {}; }
 	  if (cardobj.type === "mandatory") { return {}; }
 	  if (cardobj.type === "combat") { return {}; }
-	  
-          return { faction : "protestant" , event : '037', html : `<li class="option" id="037">jwartburg (protestant)</li>` };
+
+          return { faction : "protestant" , event : '037', html : `<li class="option" id="037">wartburg (protestant)</li>` };
         }
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "event") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('037')) {
+	      if (his_self.returnPlayerOfFaction("protestant") == his_self.game.player) {
+ 		return 1;
+	      }
+            }
+          }
         }
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "event") {
           his_self.addMove("wartburg");
+          his_self.addMove("discard\tprotestant\t037");
+          his_self.addMove("commit\tprotestant\tluther-debater");
 	  his_self.endTurn();
 	  his_self.updateStatus("wartburg acknowledge");
         }
@@ -7165,7 +7185,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  his_self.game.state.events.wartburg = 1;
 	  his_self.commitDebater("protestant", "luther-debater");
 
-	  his_self.updateLog("Wartburg Updated!");
+	  his_self.updateLog(his_self.popup("037") + " triggered");
           his_self.game.queue.splice(qe, 1);
 
 	  return 1;
@@ -11551,9 +11571,13 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
   returnSpaceOfPersonage(faction, personage) {
     for (let key in this.game.spaces) {
-      for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-	if (this.game.spaces[key].units[faction][i].type === personage) {
-	  return key;
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i]) {
+	    if (this.game.spaces[key].units[faction][i].type === personage) {
+  	      return key;
+            }
+          }
         }
       }
     }
@@ -17878,11 +17902,15 @@ console.log("2. insert index: " + index_to_insert_moves);
 	//
 	if (mv[0] === "counter_or_acknowledge") {
 
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("into counter or acknowledge...");
+
 	  //
 	  // hide any cardbox
 	  //
 	  this.cardbox.hide();
-
 
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
@@ -17925,6 +17953,7 @@ console.log("2. insert index: " + index_to_insert_moves);
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
+console.log(z[i].name + " -- " + i);
             if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
               let x = z[i].menuOption(this, stage, this.game.player, extra);
               html += x.html;
@@ -17935,6 +17964,9 @@ console.log("2. insert index: " + index_to_insert_moves);
 	    }
 	  }
 	  html += '</ul>';
+
+console.log("SKIP COUNTER OR ACKNOWLEDGE: " + this.game.state.skip_counter_or_acknowledge);
+console.log("attach menu events? " + attach_menu_events);
 
 	  //
 	  // skipping, and no options for active player -- skip completely
@@ -20892,6 +20924,7 @@ console.log("purging naval units and capturing leader");
 	  }
 
 	  x = this.rollDice(dd) - 1;
+
 	  dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
@@ -20901,6 +20934,7 @@ console.log("purging naval units and capturing leader");
 		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
 	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+
 	          }
 	          dd++;
 	        }
@@ -20988,10 +21022,6 @@ console.log("purging naval units and capturing leader");
 	    }
 	  }
 
-console.log("DEBATER FOR DEFENSE IS: " +  this.game.state.theological_debate.defender_debater);
-
-
-
 	  //
 	  // defender power and bonus check is complicated because of Here I Stand
 	  //
@@ -21013,7 +21043,6 @@ console.log("DEBATER FOR DEFENSE IS: " +  this.game.state.theological_debate.def
 	      if (this.game.state.excommunicated[i].debater.type === this.game.state.theological_debate.defender_debater) {
 	        defender_debater_power = this.game.state.excommunicated[i].debater.power;
 	        if (this.game.state.excommunicated[i].debater.committed == 0) {
-console.log("excommunicated but not committed");
 	          was_defender_uncommitted = 1;
 	  	  this.game.state.excommunicated[i].debater.committed = 1;
 	        }
@@ -21055,9 +21084,6 @@ console.log("excommunicated but not committed");
 	  //
 	  defender_debater_bonus = 1 + was_defender_uncommitted;
 	  let defender_rolls = defender_debater_power + 1 + was_defender_uncommitted;
-
-console.log("ATTACKER: " + attacker_debater_power + " - " + attacker_debater_bonus);
-console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bonus);
 
 	  //
 	  // papal inquisition
@@ -21102,6 +21128,7 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	    ddice.push(x);
 	    if (x >= 5) { defender_hits++; }
 	  }
+this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) + " vs " + this.popup(this.game.state.theological_debate.defender_debater) + ` [${attacker_hits}/${defender_hits}]`);
 
 	  //
 	  //
@@ -21116,7 +21143,7 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	  this.game.state.theological_debate.defender_debater_bonus = defender_debater_bonus;
 
 	  if (attacker_hits == defender_hits) {
-	    this.game.state.theological_debate.status = "Tie - Second Round";
+	    this.game.state.theological_debate.status = "Inconclusive - Second Round";
 	  } else {
 	    if (attacker_hits > defender_hits) {
 	      this.game.state.theological_debate.status = this.game.state.theological_debate.attacker_faction + " Wins";
@@ -21147,9 +21174,11 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	    } else {
 
 	      this.game.queue.push("theological_debate");
-	      this.game.queue.push("counter_or_acknowledge\tThe Debate is Tied - Progress to 2nd Round\tdebate");
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	      this.game.queue.push("counter_or_acknowledge\tTheological Debate: 2nd Round\tdebate");
+	      this.game.queue.push("show_overlay\ttheological_debate");
 	      this.game.queue.push("pick_second_round_debaters");
+	      this.game.queue.push("counter_or_acknowledge\tThe Debate is Tied - Progress to 2nd Round");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 
 	    }
@@ -21161,7 +21190,7 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	    //
 	    // if aleander is in play, flip extra space
 	    //
-	    if ((this.game.state.theological_debate.attacker_debater === "aleander-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) || (this.game.state.theological_debate.defender_debater === "aleander-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1)) {
+	    if ((this.game.state.theological_debate.attacker_debater === "aleander-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) || (this.game.state.theological_debate.defender_debater === "aleander-debater")) {
 	      this.updateLog(this.popup("aleander-debater") + " bonus: +1 conversion");
 	      bonus_conversions = 1;
 	    }
@@ -21181,19 +21210,30 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
 		let roll = this.rollDice(6);
 	        if (roll >= 5) {
-	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
+	          this.updateLog(this.popup("campeggio-debater") + " rolls: " + roll + " debate loss discarded");
 		  total_spaces_to_convert = 0;
 		  bonus_conversions = 0;
 	        } else {
-	          this.updateLog("Campeggio rolls: " + roll + " debate loss sustained");
+	          this.updateLog(this.popup("campeggio-debater") + " rolls: " + roll + " debate loss sustained");
 	 	}
 	      }
 
-	      if (total_spaces_to_convert == 1) {
+	      if ((bonus_conversions+total_spaces_to_convert) == 1) {
 	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
 	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
+
+
+	      //
+	      // reduce number of convertible spaces to total available to convert
+	      //
+	      let flip_this_number = total_spaces_to_convert + bonus_conversions;
+	      if (this.game.state.theological_debate.attacker_faction == "papacy" && this.returnNumberOfProtestantSpacesInLanguageZone() < flip_this_number) {
+	        this.updateLog("Protestants only have " + this.returnNumberOfProtestantSpacesInLanguageZone() + " spaces to flip");
+	        flip_this_number = this.returnNumberOfProtestantSpacesInLanguageZone();
+	      }
+
 
 	      //
 	      // attacker has more hits, is defender burned?
@@ -21204,7 +21244,7 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
 
-	      for (let i = (total_spaces_to_convert+bonus_conversions); i >= 1; i--) {
+	      for (let i = flip_this_number; i >= 1; i--) {
 	        if (i > (total_spaces_in_zone+bonus_conversions)) {
 		  if (attacker === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
@@ -21222,10 +21262,17 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	      //
 	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
-	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces`);
-              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	      if ((total_spaces_to_convert+bonus_conversions) == 1) {
+		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${(total_spaces_to_convert+bonus_conversions)} Space`);
+	      } else { 
+	        this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${(total_spaces_to_convert+bonus_conversions)} Spaces`);
+              }
+	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 
+	    //
+	    // defender has more hits than attacker
+	    //
 	    } else {
 
 	      let total_spaces_to_convert = defender_hits - attacker_hits;
@@ -21249,11 +21296,21 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	      }
 
 
-	      if (total_spaces_to_convert == 1) {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Space`);
+	      if ((total_spaces_to_convert+bonus_conversions) == 1) {
+	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces`);
+	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
+
+	      //
+	      // reduce number of convertible spaces to total available to convert
+	      //
+	      let flip_this_number = total_spaces_to_convert + bonus_conversions;
+	      if (this.game.state.theological_debate.defender_faction == "papacy" && this.returnNumberOfProtestantSpacesInLanguageZone() < flip_this_number) {
+	        this.updateLog("Protestants only have " + this.returnNumberOfProtestantSpacesInLanguageZone() + " spaces to flip");
+	        flip_this_number = this.returnNumberOfProtestantSpacesInLanguageZone();
+	      }
+
 
 
 	      //
@@ -21265,8 +21322,7 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
 
-
-	      for (let i = total_spaces_to_convert; i >= 1; i--) {
+	      for (let i = flip_this_number; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (defender === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
@@ -21283,8 +21339,12 @@ console.log("DEFENDER: " + defender_debater_power + " - " + defender_debater_bon
 	      }
 	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
-	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces`);
-              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	      if ((total_spaces_to_convert+bonus_conversions) == 1) { 
+		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
+	      } else {
+		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
+              }
+	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 	    }
 	  }
@@ -22434,9 +22494,26 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let faction = mv[1];
 	  let zone = "";
+	  let force_in_zone = 0;
 	  if (mv[2]) { zone = mv[2]; }
+	  if (mv[3]) { force_in_zone = true; }
 
 	  this.game.queue.splice(qe, 1);
+
+	  //
+	  //
+	  //
+	  let available_spaces = this.returnNumberOfProtestantSpacesInLanguageZone(zone);
+	  if (available_spaces == 0) {
+	    if (force_in_zone) { 
+	      return 1; 
+	    } else { 
+	      zone = ""; 
+	    }
+	  }
+	  if (1 > this.returnNumberOfProtestantSpacesInLanguageZone(zone)) {
+	    return 1;
+	  }
 
 	  if (this.theses_overlay.visible) { this.theses_overlay.pushHudUnderOverlay(); }
 
@@ -27060,7 +27137,8 @@ return;
 //
 // If all Protestant debaters in a language zone are committed, the Protestant player may not initiate debates in that language zone. Similarly, if all Papal debaters are committed, the Papal player may not initiate debates in any language zone. If none of the Protestant debaters for a language zone have entered the game (or all of them have been burnt at the stake, excommuni- cated, or removed from play), neither player may call a debate in that zone. 
 //
-    if (faction === "protestant") { return 1; }
+    if (his_self.returnNumberOfUncommittedDebaters(faction) <= 0) { return 0; }
+    if (is_self.game.state.events.wartburg == 1) { if (faction === "protestant") { return 0; } }
     if (faction === "papacy") { return 1; }
     return 0;
   }
@@ -28180,11 +28258,13 @@ return;
 	//
 	// also remove reformer (if exists)
 	//
-	let reformer = x[0] + "-reformer";
-        let s = this.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
-	if (s) {
-          this.removeReformer(this.debaters[debater].faction, reformer);
-        }
+	try {
+	  let reformer = x[0] + "-reformer";
+          let s = this.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
+	  if (s) { this.removeReformer(this.debaters[debater].faction, reformer); }
+	} catch (err) {
+	  // reformer does not exist
+	}
       }
     }
 
@@ -28263,6 +28343,14 @@ return;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	if (this.game.state.debaters[i].committed == 1) { return 1; }
+      }
+    }
+    // sometimes debaters will be excommunicated without being committed
+    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+      if (this.game.state.excommunicated[i].debater) {
+	if (this.game.state.excommunicated[i].debater.type == debater) {
+	  if (this.game.state.debaters[i].committed == 1) { return 1; }
+        }
       }
     }
     return 0;
