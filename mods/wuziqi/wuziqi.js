@@ -114,6 +114,7 @@ class Wuziqi extends GameTemplate {
 
             // Set the game board to the size set in the options
             this.game.size = this.game.options.board_size;
+            this.generateBoard(this.game.options.board_size);
 
             // Send 'let's get started' message.
             this.game.queue.push("clearboard\t1");
@@ -314,7 +315,6 @@ class Wuziqi extends GameTemplate {
 
             if (mv[0] === "clearboard"){
 
-
                 let first_player = parseInt(mv[1]);
                 this.generateBoard(this.game.options.board_size);
                 this.drawBoard(this.game.board);
@@ -407,7 +407,7 @@ class Wuziqi extends GameTemplate {
                 
                 // Remove this item from the queue.
                 this.game.queue.splice(this.game.queue.length - 1, 1);
-                return 0;
+                return 1;
             }
         }
         return 0;
