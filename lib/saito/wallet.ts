@@ -7,6 +7,7 @@ import Slip from "./slip";
 import { Saito } from "../../apps/core";
 import S from "saito-js/saito";
 import SaitoWallet from "saito-js/lib/wallet";
+import BalanceSnapshot from "saito-js/lib/balance_snapshot";
 
 const CryptoModule = require("../templates/cryptomodule");
 
@@ -441,7 +442,10 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length, "HOW MANY ACTIVATED: " + activeMods.length);
+    console.log(
+      "HOW MANY INSTALLED CRYPTOS: " + allMods.length,
+      "HOW MANY ACTIVATED: " + activeMods.length
+    );
 
     return activeMods;
   }
@@ -1020,5 +1024,18 @@ export default class Wallet extends SaitoWallet {
     await tx.sign();
 
     return tx;
+  }
+
+  public async fetchBalanceSnapshot(key: string) {
+    try {
+      let response = await fetch("/balance/" + key);
+      let data = await response.text();
+      let snapshot = BalanceSnapshot.fromString(data);
+      if (snapshot) {
+        await S.getInstance().updateBalanceFrom(snapshot);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
