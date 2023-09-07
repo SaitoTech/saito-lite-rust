@@ -18,7 +18,6 @@ class Blackjack extends GameTableTemplate {
 
     this.card_img_dir = "/saito/img/arcade/cards";
 
-    this.crypto_msg = "settles round-by-round";
     this.minPlayers = 2;
     this.maxPlayers = 6;
 

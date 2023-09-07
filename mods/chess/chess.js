@@ -28,7 +28,12 @@ class Chessgame extends GameTemplate {
     this.categories = "Games Boardgame Classic";
 
     this.confirm_moves = 1;
-    this.can_bet = 1;
+    
+    /* 
+      This should be 1, but chess doesn't use the normal game queue command logic... 
+      to be fixed at a later date!
+    */
+    this.can_bet = 0;
 
     this.roles = ["observer", "white", "black"];
     this.app = app;

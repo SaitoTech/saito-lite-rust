@@ -41,7 +41,7 @@ input[type="checkbox"].ignore_checkbox {
   width: 18rem;
 }
 
-.stake-input-container .crypto-max {
+.stake-input-container .crypto_msg {
   display: flex;
   flex-direction: row-reverse;
   margin-top: 0.5rem;

@@ -64,16 +64,6 @@ class Wuziqi extends GameTemplate {
         // Render menu and attach events
         await this.menu.render();
 
-        // Initialize our game
-        this.game.score = [0, 0];
-
-        // Set the game board to the size set in the options
-        this.game.size = this.game.options.board_size;
-
-        // Create the game board object if it does not exist.
-        if (!this.game.board || this.game.board.length < 1) {
-            this.generateBoard(this.game.size);
-        }
 
         if (this.game.player > 0) {
             this.hud.render();    
@@ -97,29 +87,6 @@ class Wuziqi extends GameTemplate {
         }
         this.racetrack.render();
 
-        // Render board and set up values.
-        try {
-            // Check if anyone has played yet (black goes first)
-            let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
-            this.drawBoard(this.game.board);
-
-            // If no one has played set up the board
-            if (blackplayedyet < 0) {
-                // If you are black, you are up.
-                if (this.game.player == 1) {
-                    this.addEvents(this.game.board);
-                    this.updateStatus("Your move, "+this.formatPlayer());
-                } else {
-                    this.updateStatus("Waiting on <span class='playertitle'>Black</span> to start");
-                }
-
-            }
-
-        } catch (err) {
-            console.log(err);
-        }
-
-
     }
 
     /*
@@ -139,16 +106,55 @@ class Wuziqi extends GameTemplate {
     initializeGame(game_id) {
 
         if (this.game.initializing) {
+            console.log("Initialize WuZiQi");
+            // Initialize our game
+            this.game.score = [0, 0];
+
+            // Set the game board to the size set in the options
+            this.game.size = this.game.options.board_size;
+
             // Send 'let's get started' message.
             this.game.queue.push("READY");
             return;
         } 
 
+        // Create the game board object if it does not exist.
+        if (!this.game.board || this.game.board.length < 1) {
+            this.generateBoard(this.game.size);
+        }
+
+
+        if (this.browser_active){
+            // Render board and set up values.
+            try {
+                
+                // Check if anyone has played yet (black goes first)
+                let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
+                this.drawBoard(this.game.board);
+
+                // If no one has played set up the board
+                if (blackplayedyet < 0) {
+                    // If you are black, you are up.
+                    if (this.game.player == 1) {
+                        this.addEvents(this.game.board);
+                        this.updateStatus("Your move, "+this.formatPlayer());
+                    } else {
+                        this.updateStatus("Waiting on <span class='playertitle'>Black</span> to start");
+                    }
+
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+
+        }
+
     }
 
     // Create the game board data structure
     generateBoard(x) {
-        //console.log("Generate board for " + x);
+        console.log("Generate board for " + x);
         // Set the board size (always a square of side length set by the user.)
         var cells = x * x;
         // Clear the board
@@ -179,7 +185,7 @@ class Wuziqi extends GameTemplate {
             cell.sets.rudiag = cell.sets.row + cell.sets.col - 1;
             this.game.board.push(cell);
         }
-        //console.log(this.game.board);
+        console.log(this.game.board);
     }
 
     // UI Score Update
