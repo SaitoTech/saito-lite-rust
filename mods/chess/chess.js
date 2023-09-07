@@ -100,7 +100,7 @@ class Chessgame extends GameTemplate {
         callback: async function (app, game_mod) {
           let c = await sconfirm("Do you really want to resign?");
           if (c) {
-            await game_mod.sendStopGameTransaction(game_mod.game.id, "resignation");
+            await game_mod.sendStopGameTransaction("resignation");
             return;
           }
         },
@@ -279,7 +279,7 @@ class Chessgame extends GameTemplate {
       if (msg.extra.target == this.game.player) {
         //I announce that I am in checkmate to end the game
         if (this.engine.in_checkmate() === true) {
-          await this.sendStopGameTransaction(this.game.id, "checkmate");
+          await this.sendStopGameTransaction("checkmate");
           return 0;
         }
 

@@ -421,7 +421,7 @@ class Scotland extends GameTemplate {
           this.updateLog(`The detectives encircled Mister X forcing him to surrender`);
         }
         if (this.game.player == this.game.state.x) {
-          this.sendStopGameTransaction(this.game.id, "arrest");
+          this.sendStopGameTransaction("arrest");
         }
         return 0;
       }
