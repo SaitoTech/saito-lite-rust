@@ -11,10 +11,18 @@ class Initializer {
       this.notify(game_details.name);
       this.attachEvents(game_details.slug);
     });
+
+    app.connection.on("arcade-close-game", (game_id)=>{
+      if (game_id == this?.game_id){
+        this.mod.is_game_initializing = false;
+        this.app.connection.emit("rerender-whole-arcade");
+      }
+    });
   }
 
   render(game_id = null) {
     this.mod.is_game_initializing = true;
+    this.game_id = game_id;
 
     let html = InitializerTemplate(game_id);
 
