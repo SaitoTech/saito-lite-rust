@@ -22,7 +22,6 @@ class Poker extends GameTableTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 6;
     this.settlement = [];
-    this.can_bet = 1;
 
     /********************
      *********************
