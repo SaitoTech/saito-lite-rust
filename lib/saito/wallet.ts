@@ -632,7 +632,7 @@ export default class Wallet extends SaitoWallet {
     mycallback = null,
     ticker
   ) {
-    console.log("wallet sendPayment");
+    console.log("wallet sendPayment 1");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
       //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
@@ -644,15 +644,13 @@ export default class Wallet extends SaitoWallet {
       //mycallback({err: "Only supports one transaction"});
       return;
     }
+
     // only send if hasn't been sent before
-    console.log(
-      "does preferred crypto transaction exist: " +
-        this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
-    );
 
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
+      console.log("preferred crypto transaction does not already exist");
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         //
