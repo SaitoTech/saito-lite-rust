@@ -50,7 +50,7 @@ class MailRelay extends ModTemplate {
     email.ishtml = false;
     email.attachments = "";
     try {
-      this.sendMail(email);
+      //this.sendMail(email);
     } catch (err) {
       console.log(err);
     }
