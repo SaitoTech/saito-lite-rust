@@ -121,12 +121,18 @@ Board is a grid of wooden squares
     border-radius: 100%;
 }
 
-.active:hover .empty{
+
+.white .active:hover .empty{
     cursor: pointer;
-    border: 2px solid white;
+    border: 2px solid rgba(255,255,255,0.9);
     background-color: rgba(255,255,255,0.5);
 }
 
+.black .active:hover .empty{
+    cursor: pointer;
+    border: 2px solid rgba(0,0,0,0.8);
+    background-color: rgba(0,0,0,0.4);
+}
 
 
 /*

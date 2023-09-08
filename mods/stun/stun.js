@@ -23,7 +23,7 @@ class Stun extends ModTemplate {
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
-    this.publicKey = this.app.wallet.getPublicKey();
+    this.publicKey = this.app.wallet.publicKey;
 
     this.servers = [
       {
@@ -526,12 +526,13 @@ class Stun extends ModTemplate {
         }
 
         salert(`Call accepted by ${data.sender}`);
+
         setTimeout(() => {
           // init peer manager and chat manager through self event
           this.app.connection.emit("stun-init-peer-manager", data.ui);
           app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
           app.connection.emit("start-stun-call");
-        }, 2000);
+        }, 4000);
 
         break;
       case "connection-rejected":

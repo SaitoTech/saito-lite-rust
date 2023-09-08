@@ -7,6 +7,7 @@ import Slip from "./slip";
 import { Saito } from "../../apps/core";
 import S from "saito-js/saito";
 import SaitoWallet from "saito-js/lib/wallet";
+import BalanceSnapshot from "saito-js/lib/balance_snapshot";
 
 const CryptoModule = require("../templates/cryptomodule");
 
@@ -20,7 +21,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 2;
 
-  version = 5.329;
+  version = 5.331;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -441,7 +442,10 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length, "HOW MANY ACTIVATED: " + activeMods.length);
+    console.log(
+      "HOW MANY INSTALLED CRYPTOS: " + allMods.length,
+      "HOW MANY ACTIVATED: " + activeMods.length
+    );
 
     return activeMods;
   }
@@ -628,7 +632,7 @@ export default class Wallet extends SaitoWallet {
     mycallback = null,
     ticker
   ) {
-    console.log("wallet sendPayment");
+    console.log("wallet sendPayment 1");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
       //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
@@ -640,15 +644,13 @@ export default class Wallet extends SaitoWallet {
       //mycallback({err: "Only supports one transaction"});
       return;
     }
+
     // only send if hasn't been sent before
-    console.log(
-      "does preferred crypto transaction exist: " +
-        this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
-    );
 
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
+      console.log("preferred crypto transaction does not already exist");
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         //
@@ -1020,5 +1022,18 @@ export default class Wallet extends SaitoWallet {
     await tx.sign();
 
     return tx;
+  }
+
+  public async fetchBalanceSnapshot(key: string) {
+    try {
+      let response = await fetch("/balance/" + key);
+      let data = await response.text();
+      let snapshot = BalanceSnapshot.fromString(data);
+      if (snapshot) {
+        await S.getInstance().updateBalanceFrom(snapshot);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

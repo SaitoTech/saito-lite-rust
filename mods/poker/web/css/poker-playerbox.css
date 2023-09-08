@@ -65,10 +65,6 @@
     background: unset;
 }
 
-.game-playerbox .status-text-menu ul li:hover, .game-playerbox .textchoice:hover {
-  background-color: whitesmoke;
-}
-
 .game-playerbox .status-text-menu, .game-playerbox .status-text-menu ul {
     background: unset;
 }

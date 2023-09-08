@@ -6353,7 +6353,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 	    // hard-exception
 	    if (this.game.options.deck != "late-war" && this.game.state.round != 8) {
               //There may be an issue if both players simulataneously resign...
-              this.sendStopGameTransaction(this.game.id, "scoring card held");
+              this.sendStopGameTransaction("scoring card held");
               return 0;
 	    }
           }

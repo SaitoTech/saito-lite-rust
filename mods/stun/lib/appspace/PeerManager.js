@@ -239,7 +239,7 @@ class PeerManager {
           this.mod.sendStunMessageToServerTransaction(data);
         })
         .catch((error) => {
-          // console.error("Error handling offer:", error);
+          console.error("Error handling offer:", error);
         });
       this.peers.set(data.public_key, this.getPeerConnection(public_key));
     } else if (type === "renegotiate-answer" || type === "answer") {
@@ -257,7 +257,7 @@ class PeerManager {
         .setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp }))
         .then((answer) => {})
         .catch((error) => {
-          // console.error("Error handling answer:", error);
+          console.error("Error handling answer:", error);
         });
       this.peers.set(data.public_key, this.getPeerConnection(public_key));
     } else if (type === "candidate") {

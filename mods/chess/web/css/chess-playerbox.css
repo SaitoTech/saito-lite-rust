@@ -20,3 +20,15 @@
     flex: 1; /* Make sure body fills up available space in player-box*/
 }
 
+
+.status ul li {
+    border-top: 1px solid;
+    cursor: pointer;
+}
+
+.status ul li:hover{
+    background-color: #b58863;    
+}
+
+
+

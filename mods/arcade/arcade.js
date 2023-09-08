@@ -853,7 +853,9 @@ class Arcade extends ModTemplate {
       }
       await this.changeGameStatus(txmsg.game_id, "close");
     }
-
+    
+    console.log("Cancel game transaction");
+    this.app.connection.emit("arcade-close-game", txmsg.game_id);
     this.app.connection.emit("arcade-invite-manager-render-request");
   }
 
@@ -1006,6 +1008,8 @@ class Arcade extends ModTemplate {
 
   async receiveCloseTransaction(tx) {
     let txmsg = tx.returnMessage();
+    console.log("Close transaction");
+    this.app.connection.emit("arcade-close-game", txmsg.game_id);
     await this.changeGameStatus(txmsg.game_id, "close");
   }
 

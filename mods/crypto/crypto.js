@@ -59,10 +59,15 @@ class Crypto extends ModTemplate {
             this.min_balance = 0.0;
             this.max_balance = ac[ticker];
 
-            this.overlay.render(async (amount) => {
-              game_mod.menu.hideSubMenus();
+            console.log(game_mod.game.crypto);
+            if (game_mod.game.crypto && game_mod.game.crypto != "CHIPS") {
+              salert(`Exiting: ${game_mod.game.crypto} already enabled for this game!`);
+              return;
+            }
 
-              this.enableCrypto(game_mod, ticker, amount);
+            this.overlay.render((amount) => {
+              game_mod.menu.hideSubMenus();
+              game_mod.proposeGameStake(ticker, amount);
             });
           },
         });
@@ -128,14 +133,6 @@ class Crypto extends ModTemplate {
     return intersection;
   }
 
-  async enableCrypto(game_mod, ticker, amount) {
-    if (game_mod.game.crypto && game_mod.game.crypto != "CHIPS") {
-      salert("Exiting: crypto already enabled for this game!");
-      return;
-    }
-
-    await game_mod.proposeGameStake(ticker, amount);
-  }
 
   returnCryptoOptionsHTML(values = null) {
     values = values || [0.001, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000];

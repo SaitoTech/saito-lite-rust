@@ -41,7 +41,7 @@ input[type="checkbox"].ignore_checkbox {
   width: 18rem;
 }
 
-.stake-input-container .crypto-max {
+.stake-input-container .crypto_msg {
   display: flex;
   flex-direction: row-reverse;
   margin-top: 0.5rem;
@@ -81,9 +81,6 @@ input[type="checkbox"].ignore_checkbox {
   cursor: pointer;
   border-radius: 0.5rem;
   width: fit-content;
-  height: 7rem;
-  line-height: 5rem;
-  padding: 0rem;
 }
 
 .crypto_transfer_btn.secondary {
