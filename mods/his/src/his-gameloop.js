@@ -304,6 +304,22 @@ console.log("MOVE: " + mv[0]);
 
 	}
 
+
+	if (mv[0] === "winter_attrition") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+
+console.log("TODO: winter_attrition");
+
+	  this.game.spaces[spacekey].units[faction] = [];
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
 	if (mv[0] === "retreat_to_winter_spaces") {
 
 	  let moves = [];
@@ -323,7 +339,21 @@ console.log("MOVE: " + mv[0]);
 		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
 	            this.autoResolveWinterRetreat(key, space.key);
 		  } else {
-		    moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+	    	    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
+		    if (res.length == 0) {
+		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
+		      if (this.game.players.length == 2) {
+		        this.game.spaces[i].units[key] = [];
+		      } else {
+		        moves.push("winter_attrition\t"+key+"\t"+space.key);
+		      }
+		    } else {
+		      if (res.length > 1) {
+		        moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+		      } else {
+	                this.autoResolveWinterRetreat(key, space.key);
+		      }
+		    }
 		  }
 		}
 	      }
@@ -5631,15 +5661,51 @@ console.log("NEW WORLD PHASE!");
 
 	  // Remove loaned naval squadron markers
 	  this.returnLoanedUnits();
+
+	  // Flip all debaters to their uncommitted (white) side, and
 	  this.restoreDebaters();
 
 	  // Remove the Renegade Leader if in play
-	  // Return naval units to the nearest port
-	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
+	  let rl_idx = "";
+	  rl_s = his_self.returnSpaceOfPersonage("hapsburg", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\thapsburg\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("papacy", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tpapacy\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("england", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tengland\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("france", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tfrance\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("ottoman", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tottoman\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("protestant", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tprotestant\trenegade-leader\t"+rl_s+"\t0"); }
+
 	  // Remove major power alliance markers
+	  this.unsetAllies("hapsburg", "papacy");
+	  this.unsetAllies("hapsburg", "england");
+	  this.unsetAllies("hapsburg", "france");
+	  this.unsetAllies("hapsburg", "ottoman");
+	  this.unsetAllies("hapsburg", "protestant");
+	  this.unsetAllies("papacy", "england");
+	  this.unsetAllies("papacy", "france");
+	  this.unsetAllies("papacy", "ottoman");
+	  this.unsetAllies("papacy", "protestant");
+	  this.unsetAllies("england", "france");
+	  this.unsetAllies("england", "ottoman");
+	  this.unsetAllies("england", "protestant");
+	  this.unsetAllies("france", "ottoman");
+	  this.unsetAllies("france", "protestant");
+	  this.unsetAllies("ottoman", "protestant");
+
 	  // Add 1 regular to each friendly-controlled capital
+	  if (this.isSpaceControlled("london", "england")) { this.game.queue.push("build\tland\tengland\tregular\tlondon\t0"); }
+	  if (this.isSpaceControlled("paris", "france")) { this.game.queue.push("build\tland\tfrance\tregular\tlondon\t0"); }
+	  if (this.isSpaceControlled("valladolid", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvalladolid\t0"); }
+	  if (this.isSpaceControlled("vienna", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvienna\t0"); }
+	  if (this.isSpaceControlled("rome", "hapsburg")) { this.game.queue.push("build\tland\tpapacy\tregular\trome\t0"); }
+	  if (this.isSpaceControlled("istanbul", "ottoman")) { this.game.queue.push("build\tland\tottoman\tregular\tistanbul\t0"); }
+
 	  // Remove all piracy markers
-	  // Flip all debaters to their uncommitted (white) side, and
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
 	  //
@@ -5650,9 +5716,19 @@ console.log("NEW WORLD PHASE!");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 
+	  // Return naval units to the nearest port
+	  this.game.queue.push("retreat_to_winter_ports");
+
+	  // TODO - ATTRITION
+
+	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
+	  this.game.queue.push("retreat_to_winter_spaces");
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
+
+
         if (mv[0] === "action_phase") {
 
 	  //

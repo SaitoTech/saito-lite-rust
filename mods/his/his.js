@@ -5216,7 +5216,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  let msg = "Retrieve Card from Discard Pile: ";
           let html = '<ul>';
 	  for (let key in his_self.game.deck[0].discards) {
-	    if (parseInt(key) < 9) {
+	    if (parseInt(key) > 9) {
               html += `<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>`;
 	    }
 	  }
@@ -11746,6 +11746,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
   returnNearestFriendlyFortifiedSpaces(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space.key]; }
 
     let his_self = this;
     let already_routed_through = {};
@@ -13488,7 +13489,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
       ports: ["aegean","africa"],
       neighbours: [],
       language: "other",
-      type: "town"
+      type: "fortress"
     }
     spaces['corfu'] = {
       top: 2210,
@@ -14085,7 +14086,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
       if (!spaces[key].ports) { spaces[key].ports = []; }
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
-      if (!spaces[key].key) { spaces[key].key = spaces[key].name; }
+      if (!spaces[key].key) { spaces[key].key = key; }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
       if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
     }
@@ -16249,6 +16250,22 @@ console.log("MOVE: " + mv[0]);
 
 	}
 
+
+	if (mv[0] === "winter_attrition") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+
+console.log("TODO: winter_attrition");
+
+	  this.game.spaces[spacekey].units[faction] = [];
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
 	if (mv[0] === "retreat_to_winter_spaces") {
 
 	  let moves = [];
@@ -16268,7 +16285,21 @@ console.log("MOVE: " + mv[0]);
 		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
 	            this.autoResolveWinterRetreat(key, space.key);
 		  } else {
-		    moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+	    	    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
+		    if (res.length == 0) {
+		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
+		      if (this.game.players.length == 2) {
+		        this.game.spaces[i].units[key] = [];
+		      } else {
+		        moves.push("winter_attrition\t"+key+"\t"+space.key);
+		      }
+		    } else {
+		      if (res.length > 1) {
+		        moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+		      } else {
+	                this.autoResolveWinterRetreat(key, space.key);
+		      }
+		    }
 		  }
 		}
 	      }
@@ -21576,15 +21607,51 @@ console.log("NEW WORLD PHASE!");
 
 	  // Remove loaned naval squadron markers
 	  this.returnLoanedUnits();
+
+	  // Flip all debaters to their uncommitted (white) side, and
 	  this.restoreDebaters();
 
 	  // Remove the Renegade Leader if in play
-	  // Return naval units to the nearest port
-	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
+	  let rl_idx = "";
+	  rl_s = his_self.returnSpaceOfPersonage("hapsburg", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\thapsburg\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("papacy", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tpapacy\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("england", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tengland\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("france", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tfrance\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("ottoman", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tottoman\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("protestant", "renegade-leader");
+          if (rl_s) { this.game.queue.push("remove_unit\tprotestant\trenegade-leader\t"+rl_s+"\t0"); }
+
 	  // Remove major power alliance markers
+	  this.unsetAllies("hapsburg", "papacy");
+	  this.unsetAllies("hapsburg", "england");
+	  this.unsetAllies("hapsburg", "france");
+	  this.unsetAllies("hapsburg", "ottoman");
+	  this.unsetAllies("hapsburg", "protestant");
+	  this.unsetAllies("papacy", "england");
+	  this.unsetAllies("papacy", "france");
+	  this.unsetAllies("papacy", "ottoman");
+	  this.unsetAllies("papacy", "protestant");
+	  this.unsetAllies("england", "france");
+	  this.unsetAllies("england", "ottoman");
+	  this.unsetAllies("england", "protestant");
+	  this.unsetAllies("france", "ottoman");
+	  this.unsetAllies("france", "protestant");
+	  this.unsetAllies("ottoman", "protestant");
+
 	  // Add 1 regular to each friendly-controlled capital
+	  if (this.isSpaceControlled("london", "england")) { this.game.queue.push("build\tland\tengland\tregular\tlondon\t0"); }
+	  if (this.isSpaceControlled("paris", "france")) { this.game.queue.push("build\tland\tfrance\tregular\tlondon\t0"); }
+	  if (this.isSpaceControlled("valladolid", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvalladolid\t0"); }
+	  if (this.isSpaceControlled("vienna", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvienna\t0"); }
+	  if (this.isSpaceControlled("rome", "hapsburg")) { this.game.queue.push("build\tland\tpapacy\tregular\trome\t0"); }
+	  if (this.isSpaceControlled("istanbul", "ottoman")) { this.game.queue.push("build\tland\tottoman\tregular\tistanbul\t0"); }
+
 	  // Remove all piracy markers
-	  // Flip all debaters to their uncommitted (white) side, and
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
 	  //
@@ -21595,9 +21662,19 @@ console.log("NEW WORLD PHASE!");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 
+	  // Return naval units to the nearest port
+	  this.game.queue.push("retreat_to_winter_ports");
+
+	  // TODO - ATTRITION
+
+	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
+	  this.game.queue.push("retreat_to_winter_spaces");
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
+
+
         if (mv[0] === "action_phase") {
 
 	  //
@@ -23733,10 +23810,10 @@ console.log("faction: " + f);
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
     let space = this.game.spaces[spacekey];
 
-    let roll = this.rollDie(res.length);
+    let roll = this.rollDice(res.length);
 
     // retrea
-    let retreat_destination = res[roll-1].key;
+    let retreat_destination = res[roll-1];
     his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
 
   }
@@ -24407,6 +24484,7 @@ if (limit === "build") {
       if (c === "009") { can_pass = false; }
       if (c === "010") { can_pass = false; }
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+      if (this.game.deck[0].cards[c].type == "mandatory") { can_pass = false; }
     } // no home card? can pass
 
     if (this.factions[faction].returnAdminRating() < this.game.deck[0].fhand[faction_hand_idx].length) {
@@ -24529,11 +24607,19 @@ if (limit === "build") {
     
     this.cardbox.hide();
 
-    //
     if (card === "pass") {
-      let faction_hand_idx = this.returnFactionHandIdx(player, faction);
+console.log("player is : " + this.game.player + " and faction is " + faction);
+      let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+      let cards_in_hand = 0;
+      if (this.game.deck[0]) {
+	if (this.game.deck[0].fhand[faction_hand_idx]) {
+	  if (this.game.deck[0].fhand[faction_hand_idx].length > 0) {
+	    cards_in_hand = this.game.deck[0].fhand[faction_hand_idx].length;
+	  }
+	}
+      }
       // auto updates cards_left (last entry)
-      this.addMove("pass\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
+      this.addMove("pass\t"+faction+"\t"+cards_in_hand);
       this.endTurn();
       return;
     }
@@ -27102,7 +27188,7 @@ return;
 	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
 	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	    if (id === "carlstadt-debater") {
-	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt-debater\t0");
+	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");

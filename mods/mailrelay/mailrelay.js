@@ -36,7 +36,8 @@ class MailRelay extends ModTemplate {
       ishtml: true,
       attachments: "",
     };
-    email.to = "richard@saito.tech";
+
+    email.to = "david@saito.tech";
     email.from = "network@saito.tech";
     email.bcc = "";
     email.subject = "Saito Network Initialised";
@@ -92,6 +93,7 @@ class MailRelay extends ModTemplate {
       // ref: https://github.com/guileen/node-sendmail/blob/master/examples/attachmentFile.js
 
       try {
+console.log("sending email: " + JSON.stringify(email));
         this.sendMail(email);
       } catch (err) {
         console.err(err);
@@ -104,7 +106,6 @@ class MailRelay extends ModTemplate {
     from = "",
     subject = "",
     text = "",
-    html = "",
     ishtml = false,
     attachments = "",
     bcc = ""
@@ -119,8 +120,7 @@ class MailRelay extends ModTemplate {
         from: from,
         bcc: bcc,
         subject: subject,
-        text: text,
-        html: html,
+        body: text,
         ishtml: ishtml,
         attachments: attachments,
       },
@@ -130,10 +130,14 @@ class MailRelay extends ModTemplate {
     newtx.msg = obj;
     await newtx.sign();
 
-    let peers = await app.network.getPeers();
+    let peers = await mailrelay_self.app.network.getPeers();
+    let sent_email = false;
     peers.forEach((p) => {
-      if (p.hasService("mailrelay")) {
-        mailrelay_self.app.network.sendTransactionWithCallback(tx, null, p.peerIndex);
+      if (sent_email == false) {
+        if (p.hasService("mailrelay")) {
+          mailrelay_self.app.network.sendTransactionWithCallback(newtx, null, p.peerIndex);
+          sent_email = true;
+        }
       }
     });
     return newtx;

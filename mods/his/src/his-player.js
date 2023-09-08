@@ -432,10 +432,10 @@ console.log("faction: " + f);
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
     let space = this.game.spaces[spacekey];
 
-    let roll = this.rollDie(res.length);
+    let roll = this.rollDice(res.length);
 
     // retrea
-    let retreat_destination = res[roll-1].key;
+    let retreat_destination = res[roll-1];
     his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
 
   }
@@ -1106,6 +1106,7 @@ if (limit === "build") {
       if (c === "009") { can_pass = false; }
       if (c === "010") { can_pass = false; }
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+      if (this.game.deck[0].cards[c].type == "mandatory") { can_pass = false; }
     } // no home card? can pass
 
     if (this.factions[faction].returnAdminRating() < this.game.deck[0].fhand[faction_hand_idx].length) {
@@ -1228,11 +1229,19 @@ if (limit === "build") {
     
     this.cardbox.hide();
 
-    //
     if (card === "pass") {
-      let faction_hand_idx = this.returnFactionHandIdx(player, faction);
+console.log("player is : " + this.game.player + " and faction is " + faction);
+      let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+      let cards_in_hand = 0;
+      if (this.game.deck[0]) {
+	if (this.game.deck[0].fhand[faction_hand_idx]) {
+	  if (this.game.deck[0].fhand[faction_hand_idx].length > 0) {
+	    cards_in_hand = this.game.deck[0].fhand[faction_hand_idx].length;
+	  }
+	}
+      }
       // auto updates cards_left (last entry)
-      this.addMove("pass\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
+      this.addMove("pass\t"+faction+"\t"+cards_in_hand);
       this.endTurn();
       return;
     }
@@ -3801,7 +3810,7 @@ return;
 	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
 	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	    if (id === "carlstadt-debater") {
-	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt-debater\t0");
+	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");

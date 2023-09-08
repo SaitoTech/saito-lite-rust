@@ -601,6 +601,7 @@
 
   returnNearestFriendlyFortifiedSpaces(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space.key]; }
 
     let his_self = this;
     let already_routed_through = {};
@@ -2343,7 +2344,7 @@
       ports: ["aegean","africa"],
       neighbours: [],
       language: "other",
-      type: "town"
+      type: "fortress"
     }
     spaces['corfu'] = {
       top: 2210,
@@ -2940,7 +2941,7 @@
       if (!spaces[key].ports) { spaces[key].ports = []; }
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
-      if (!spaces[key].key) { spaces[key].key = spaces[key].name; }
+      if (!spaces[key].key) { spaces[key].key = key; }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
       if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
     }

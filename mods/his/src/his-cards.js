@@ -2440,7 +2440,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  let msg = "Retrieve Card from Discard Pile: ";
           let html = '<ul>';
 	  for (let key in his_self.game.deck[0].discards) {
-	    if (parseInt(key) < 9) {
+	    if (parseInt(key) > 9) {
               html += `<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>`;
 	    }
 	  }
