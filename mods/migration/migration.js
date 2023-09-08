@@ -1,15 +1,15 @@
 const ModTemplate = require("./../../lib/templates/modtemplate");
 const PeerService = require("saito-js/lib/peer_service").default;
 
-class Mainnet extends ModTemplate {
+class Migration extends ModTemplate {
 
   constructor(app) {
 
     super(app);
 
     this.app = app;
-    this.name = "Mainnet";
-    this.description = "Migrate ERC20 tokens to Saito Mainnet";
+    this.name = "Migration";
+    this.description = "Migrate ERC20 tokens to Saito Migration";
     this.categories = "Core Utilities Messaging";
     this.publickey = "";
 
@@ -17,7 +17,6 @@ class Mainnet extends ModTemplate {
   }
 
   async onConfirmation(blk, tx, conf) {}
-  }
 
   async render() {
 
@@ -79,7 +78,7 @@ class Mainnet extends ModTemplate {
 
 	  <p></p>
 
- 	  -- Saito Mainnet Transfer Service
+ 	  -- Saito Migration Transfer Service
 
 	  `;
 
@@ -154,7 +153,7 @@ class Mainnet extends ModTemplate {
 
 	  <p></p>
 
-	  http://localhost:12101/mainnet?publickey=${publickey}&erc20=${erc20}&email=${email}
+	  http://saito.io/migration?publickey=${publickey}&erc20=${erc20}&email=${email}
 
 	  <p></p>
 
@@ -166,7 +165,7 @@ class Mainnet extends ModTemplate {
 
 	`;
 
-	mailrelay_mod.sendMailRelayTransaction("migration@saito.io", "info@saito.tech", "Saito Token Withdrawal (mainnet)", emailtext, true);
+	mailrelay_mod.sendMailRelayTransaction("migration@saito.io", "info@saito.tech", "Saito Token Withdrawal (migration)", emailtext, true);
 
 	document.querySelector(".withdraw-outtro").style.display = "none";
 	document.querySelector(".withdraw-title").innerHTML = "Email Sent";
@@ -182,6 +181,6 @@ class Mainnet extends ModTemplate {
 
 }
 
-module.exports = Mainnet;
+module.exports = Migration;
 
 

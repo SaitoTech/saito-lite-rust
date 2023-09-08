@@ -17,6 +17,7 @@ class MailRelay extends ModTemplate {
   onConfirmation(blk, tx, conf) {}
 
   async initialize(app) {
+
     // browsers will not have server endpoint coded
     if (app.BROWSER) {
       return;
