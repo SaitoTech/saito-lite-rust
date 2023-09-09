@@ -203,7 +203,10 @@ class SettingsAppspace {
             // await app.blockchain.resetBlockchain();
             await app.wallet.saveWallet();
 
-            console.log("222 : " + (await app.wallet.getPublicKey()));
+
+            // await fetch wallet balance
+            await app.wallet.fetchBalanceSnapshot(publicKey);
+
             // window.location.reload();
           }
         } catch (e) {
