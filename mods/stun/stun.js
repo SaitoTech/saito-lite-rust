@@ -23,7 +23,6 @@ class Stun extends ModTemplate {
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
-    this.publicKey = this.app.wallet.publicKey;
 
     this.servers = [
       {
