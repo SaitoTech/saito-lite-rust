@@ -2968,7 +2968,7 @@ console.log("\n\n\n\n");
 
 	}
 
-	return 1;
+	return 0;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
