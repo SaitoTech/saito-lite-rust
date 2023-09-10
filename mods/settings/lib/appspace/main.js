@@ -204,10 +204,12 @@ class SettingsAppspace {
             await app.wallet.saveWallet();
 
 
+alert("about to fetch balance");
             // await fetch wallet balance
             await app.wallet.fetchBalanceSnapshot(publicKey);
+alert("success");
 
-            // window.location.reload();
+            //window.location.reload();
           }
         } catch (e) {
           salert("Restore Private Key ERROR: " + e);
