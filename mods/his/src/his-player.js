@@ -434,7 +434,7 @@
     let roll = this.rollDice(res.length);
 
     // retrea
-    let retreat_destination = res[roll-1];
+    let retreat_destination = res[roll-1].key;
     his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
 
   }

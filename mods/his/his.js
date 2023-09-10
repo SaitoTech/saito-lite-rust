@@ -3359,7 +3359,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
         if (mv[0] === "diplomatic_pressure_results_protestant") {
 
-          let cards = JSON.parse(mv[2]);
+          let cards = JSON.parse(mv[1]);
 
  	  let msg = "Papal Card is "+his_self.game.deck[1].cards[cards[0]];
           let html = '<ul>';
@@ -11318,6 +11318,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
   }
 
   isSpaceControlled(space, faction) {
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     // home spaces that have not fallen to another power.
@@ -11340,16 +11341,9 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
   isSpaceFortified(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "key" || space.type === "fortress") { return false; }
+    if (space.type === "electorate" || space.type === "key" || space.type === "fortress") { return true; }
     return false;
   }
-
-  isSpaceFortified(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "key" || space.type === "fortress") { return false; }
-    return false;
-  }
-
 
   returnHopsToFortifiedHomeSpace(source, faction) {
     let his_self = this;
@@ -11776,9 +11770,11 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
 
   returnNearestFriendlyFortifiedSpaces(faction, space) {
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space.key]; }
 
+    let original_spacekey = space.key;
     let his_self = this;
     let already_routed_through = {};
 
@@ -11789,10 +11785,10 @@ console.log("TESTING: " + JSON.stringify(space.units));
       // fortified spaces
       function(spacekey) {
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
-	  if (his_self.isSpaceControlled(space, faction)) {
+	  if (his_self.isSpaceControlled(spacekey, faction)) {
 	    return 1;
 	  }
-	  if (his_self.isSpaceFriendly(space, faction)) {
+	  if (his_self.isSpaceFriendly(spacekey, faction)) {
 	    return 1;
 	  }
 	}
@@ -11804,6 +11800,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
 	if (already_routed_through[spacekey] == 1) { return 0; }
         already_routed_through[spacekey] = 1;
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	if (spacekey == original_spacekey) { return 1; }
 	return 0;
       }
     );
@@ -16004,9 +16001,9 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
-this.updateLog(`#############`);
+this.updateLog(`###############`);
 this.updateLog(`### Round ${this.game.state.round} ###`);
-this.updateLog(`#############`);
+this.updateLog(`###############`);
 
 	  this.game.state.cards_left = {};
 
@@ -16320,11 +16317,14 @@ console.log("TODO: winter_attrition");
 		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
 	            this.autoResolveWinterRetreat(key, space.key);
 		  } else {
+
 	    	    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
+
 		    if (res.length == 0) {
 		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
 		      if (this.game.players.length == 2) {
 		        this.game.spaces[i].units[key] = [];
+			this.displaySpace(i);
 		      } else {
 		        moves.push("winter_attrition\t"+key+"\t"+space.key);
 		      }
@@ -16427,6 +16427,9 @@ console.log("TODO: winter_attrition");
 	    this.game.spaces[from].units[faction].splice(i, 1);
 	  }
 
+	  this.displaySpace(from);
+	  this.displaySpace(to);
+
 	  return 1;
 
         }
@@ -16492,6 +16495,9 @@ console.log("TODO: winter_attrition");
 	    this.game.spaces[to].units[faction].push(this.game.navalspaces[from].units[faction][i]);
 	    this.game.navalspaces[from].units[faction].splice(i, 1);
 	  }
+
+	  this.displayNavalSpace(from);
+	  this.displaySpace(to);
 
 	  return 1;
 
@@ -23847,7 +23853,7 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
     let roll = this.rollDice(res.length);
 
     // retrea
-    let retreat_destination = res[roll-1];
+    let retreat_destination = res[roll-1].key;
     his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
 
   }

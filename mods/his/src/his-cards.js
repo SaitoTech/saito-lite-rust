@@ -586,7 +586,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
         if (mv[0] === "diplomatic_pressure_results_protestant") {
 
-          let cards = JSON.parse(mv[2]);
+          let cards = JSON.parse(mv[1]);
 
  	  let msg = "Papal Card is "+his_self.game.deck[1].cards[cards[0]];
           let html = '<ul>';

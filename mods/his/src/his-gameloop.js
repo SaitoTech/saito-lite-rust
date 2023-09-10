@@ -27,9 +27,9 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
-this.updateLog(`#############`);
+this.updateLog(`###############`);
 this.updateLog(`### Round ${this.game.state.round} ###`);
-this.updateLog(`#############`);
+this.updateLog(`###############`);
 
 	  this.game.state.cards_left = {};
 
@@ -343,11 +343,14 @@ console.log("TODO: winter_attrition");
 		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
 	            this.autoResolveWinterRetreat(key, space.key);
 		  } else {
+
 	    	    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
+
 		    if (res.length == 0) {
 		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
 		      if (this.game.players.length == 2) {
 		        this.game.spaces[i].units[key] = [];
+			this.displaySpace(i);
 		      } else {
 		        moves.push("winter_attrition\t"+key+"\t"+space.key);
 		      }
@@ -450,6 +453,9 @@ console.log("TODO: winter_attrition");
 	    this.game.spaces[from].units[faction].splice(i, 1);
 	  }
 
+	  this.displaySpace(from);
+	  this.displaySpace(to);
+
 	  return 1;
 
         }
@@ -515,6 +521,9 @@ console.log("TODO: winter_attrition");
 	    this.game.spaces[to].units[faction].push(this.game.navalspaces[from].units[faction][i]);
 	    this.game.navalspaces[from].units[faction].splice(i, 1);
 	  }
+
+	  this.displayNavalSpace(from);
+	  this.displaySpace(to);
 
 	  return 1;
 
