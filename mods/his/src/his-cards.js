@@ -2523,7 +2523,6 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  // Wartburg stops Luther
 	  if (his_self.game.state.events.wartburg == 1) { return 0; }
 	  if (his_self.game.state.leaders.luther == 1) {
-
 	    if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
 	    if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
 	    if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
@@ -4420,14 +4419,11 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lmv = his_self.game.queue[i].split("\t");
-	    if (lmv[0] !== "round" && lmv[0] !== "play") {
+	    if (lmv[0] !== "discard" || lmv[0] !== "round" && lmv[0] !== "play") {
 	      his_self.game.queue.splice(i, 1);
 	    }
 	  }
 
-	  //
-	  // 
-	  //
 	  his_self.game.state.events.wartburg = 1;
 	  his_self.commitDebater("protestant", "luther-debater");
 
@@ -6039,6 +6035,10 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+	if (his_self.game.players.length == 2) {
+	  if (his_self.game.state.events.schmalkaldic_league && space.political == "hapsburg") { return 1; }
+	  return 0;
+	}
 	return 1;
       },
       onEvent : function(his_self, faction) {
@@ -6049,22 +6049,24 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
 	  his_self.playerSelectSpaceWithFilter(
 
-	    "Select Space to Target",
+	    "Select Occupied Territory",
 
 	    function(space) {
 
 	      // 2P game - may be played against electorate under Hapsburg Control
 	      if (his_self.game.players.length == 2) {
-		if (his_self.game.state.events.schmalkaldic_league) { if (space.type == "electorate" && (space.political == "hapsburg" || space.political == "")) { return 1; } }
+		if (his_self.game.state.events.schmalkaldic_league) { if (space.type == "electorate" && ((space.political == "protestant" && space.home == "hapsburg") || (space.political == "hapsburg" && space.home == "protestant"))) { if (his_self.returnFactionLandUnitsInSpace("haspburg", space.key)) { return 1; } } }
 	      }
 
 	      // captured key
-	      if (space.home === "independent" && space.political != space.home) { return 1; }
+	      if (space.home === "independent" && (space.political !== space.home && space.political !== "" && space.political)) { return 1; }
 
 	      // captured non-allied home
 	      if (space.home !== space.political && space.political !== "") {
 		if (!space.besieged) {
-	          if (!his_self.areAllies(space.home, space.political)) { return 1; }
+	          if (!his_self.areAllies(space.home, space.political)) { 
+		    if (space.home !== "" && space.political !== "") { return 1; }
+		  }
 	        }
 	      }
 
@@ -6081,8 +6083,15 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	    function(spacekey) {
 	      his_self.addMove("city-state-rebels\t"+faction+"\t"+spacekey);
 	      his_self.endTurn();
-	    }
+	    },
+
+	    null,
+
+	    true
+
 	  );
+	} else {
+	  his_self.updateStatus("Opponent playing " + his_self.popup("071"));
 	}
 
 	return 0;
@@ -6110,7 +6119,10 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  //
 	  // TODO, return zero and add choice of unit removal, for now remove army before navy
 	  //
-	  let p = his_self.returnPlayerOfFaction(respondent);	  
+	  let p = his_self.returnPlayerOfFaction(respondent);
+
+console.log("HITS: " + hits);
+
 	  if (his_self.game.player == p) {
 	    his_self.addMove("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
 	    his_self.playerAssignHits(faction, spacekey, hits, 1);

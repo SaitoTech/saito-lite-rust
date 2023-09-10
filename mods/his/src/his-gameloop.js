@@ -27,6 +27,10 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+this.updateLog(`#############`);
+this.updateLog(`### Round ${this.game.state.round} ###`);
+this.updateLog(`#############`);
+
 	  this.game.state.cards_left = {};
 
 	  this.onNewRound();
