@@ -130,7 +130,12 @@
               his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
               his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            }, 
+
+	    null, 
+
+	    true
+
           );
 	  } else {
 	    this.updateStatus("Genoa adding 4 Regulars");
@@ -176,7 +181,11 @@
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null ,
+
+	    true 
           );
 
           return 0;
@@ -219,7 +228,11 @@
                 function(spacekey) {
                   his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
                   his_self.endTurn();
-                }
+                },
+
+		null ,
+
+		true
 
               );
 	    }
@@ -651,7 +664,12 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null,
+
+	    true 
+
           );
 
 	}
@@ -692,7 +710,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                 function(spacekey) {
                   his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
                   his_self.endTurn();
-                }
+                },
+
+		null,
+
+		true
 
               );
 	    }

@@ -2906,7 +2906,12 @@ console.log("\n\n\n\n");
               his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
               his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            }, 
+
+	    null, 
+
+	    true
+
           );
 	  } else {
 	    this.updateStatus("Genoa adding 4 Regulars");
@@ -2952,7 +2957,11 @@ console.log("\n\n\n\n");
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null ,
+
+	    true 
           );
 
           return 0;
@@ -2995,7 +3004,11 @@ console.log("\n\n\n\n");
                 function(spacekey) {
                   his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
                   his_self.endTurn();
-                }
+                },
+
+		null ,
+
+		true
 
               );
 	    }
@@ -3427,7 +3440,12 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null,
+
+	    true 
+
           );
 
 	}
@@ -3468,7 +3486,11 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
                 function(spacekey) {
                   his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
                   his_self.endTurn();
-                }
+                },
+
+		null,
+
+		true
 
               );
 	    }
@@ -23631,7 +23653,6 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
       for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	let f = this.game.state.players_info[i].factions[z];
         if (this.game.state.activated_powers) {
-console.log("faction: " + f);
 	  if (this.game.state.activated_powers[f]) {
             if (this.game.state.activated_powers[f].includes(faction)) {
 	      return (i+1);
@@ -24498,7 +24519,6 @@ if (limit === "build") {
     }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
-    
     this.attachCardboxEvents((card) => {
       try {
         $('.card').off();
@@ -24608,7 +24628,7 @@ if (limit === "build") {
     this.cardbox.hide();
 
     if (card === "pass") {
-console.log("player is : " + this.game.player + " and faction is " + faction);
+      this.updateStatus("Passing this Round...");
       let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
       let cards_in_hand = 0;
       if (this.game.deck[0]) {

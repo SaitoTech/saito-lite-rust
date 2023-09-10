@@ -253,7 +253,6 @@
       for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	let f = this.game.state.players_info[i].factions[z];
         if (this.game.state.activated_powers) {
-console.log("faction: " + f);
 	  if (this.game.state.activated_powers[f]) {
             if (this.game.state.activated_powers[f].includes(faction)) {
 	      return (i+1);
@@ -1120,7 +1119,6 @@ if (limit === "build") {
     }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
-    
     this.attachCardboxEvents((card) => {
       try {
         $('.card').off();
@@ -1230,7 +1228,7 @@ if (limit === "build") {
     this.cardbox.hide();
 
     if (card === "pass") {
-console.log("player is : " + this.game.player + " and faction is " + faction);
+      this.updateStatus("Passing this Round...");
       let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
       let cards_in_hand = 0;
       if (this.game.deck[0]) {
