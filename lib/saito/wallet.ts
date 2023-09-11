@@ -58,6 +58,12 @@ export default class Wallet extends SaitoWallet {
   async initialize() {
     console.log("wallet.initialize");
 
+    let privateKey = await this.getPrivateKey();
+    let publicKey = await this.getPublicKey();
+    this.publicKey = publicKey;
+    console.log("public key = " + publicKey);
+
+
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
       constructor(app) {
@@ -65,14 +71,15 @@ export default class Wallet extends SaitoWallet {
         this.name = "Saito";
         this.description = "Saito";
         this.balance = "0.0";
+        this.publicKey = publicKey;
       }
 
       async returnBalance() {
         return parseFloat(await this.app.wallet.getBalance());
       }
 
-      async returnAddress() {
-        return await this.app.wallet.getPublicKey();
+      returnAddress() {
+        return this.publicKey;
       }
 
       returnPrivateKey() {
@@ -148,10 +155,6 @@ export default class Wallet extends SaitoWallet {
     // this.privatekey = await S.getInstance().getPrivateKey();
 
     this.saitoCrypto = new SaitoCrypto(this.app);
-    let privateKey = await this.getPrivateKey();
-    let publicKey = await this.getPublicKey();
-    this.publicKey = publicKey;
-    console.log("public key = " + publicKey);
 
     // if (privateKey === "") {
     if (this.app.options.wallet != null) {
@@ -525,13 +528,16 @@ export default class Wallet extends SaitoWallet {
     }
   }
 
-  async returnCryptoAddressByTicker(ticker = "SAITO") {
+  returnCryptoAddressByTicker(ticker = "SAITO") {
     try {
       if (ticker === "SAITO") {
-        return this.getPublicKey();
+        return this.publicKey;
       } else {
         const cmod = this.returnCryptoModuleByTicker(ticker);
-        return cmod.returnAddress();
+        if (cmod) {
+          return cmod.returnAddress();  
+        }
+        console.log(`Crypto Module (${ticker}) not found`);
       }
     } catch (err) {
       console.error(err);
@@ -544,7 +550,7 @@ export default class Wallet extends SaitoWallet {
     let mods = this.returnActivatedCryptos();
     for (let i = 0; i < mods.length; i++) {
       let ticker = mods[i].ticker;
-      let address = await mods[i].returnAddress();
+      let address = mods[i].returnAddress();
       let balance = await mods[i].returnBalance();
       if (!cryptos[ticker]) {
         cryptos[ticker] = { address, balance };
@@ -657,7 +663,7 @@ export default class Wallet extends SaitoWallet {
         // DEBUGGING - sender is address to which we send the crypto
         //       - not our own publickey
         //
-        if (senders[i] === (await cryptomod.returnAddress())) {
+        if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           await this.savePreferredCryptoTransaction(
             senders,
@@ -702,7 +708,7 @@ export default class Wallet extends SaitoWallet {
         }else{
           console.warn("Cannot send payment from wrong crypto address");
           console.log(cryptomod.name);
-          console.log(senders[i], (await cryptomod.returnAddress()));
+          console.log(senders[i], cryptomod.returnAddress());
         }
       }
     } else {

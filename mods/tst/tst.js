@@ -17,15 +17,21 @@ class TST extends CryptoModule {
   //
   returnAddress() {
     // just given them our Saito publickey - easy to test
-    return this.publicKey;
+    //console.log("TST return address: " + this.publicKey);
+
+    //
+    // Strange that this.publicKey is not intialized... 
+    //
+
+    return this.app.wallet.publicKey;
   }
 
   //
   // returns the web3 crypto private key
   //
-  returnPrivateKey() {
+  async returnPrivateKey() {
     // just give them our Saito privatekey - easy to test
-    return this.app.wallet.returnPrivateKey();
+    return await this.app.wallet.returnPrivateKey();
   }
 
   //
