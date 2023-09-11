@@ -21,7 +21,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 2;
 
-  version = 5.337;
+  version = 5.338;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -699,6 +699,10 @@ export default class Wallet extends SaitoWallet {
             //mycallback({err: err});
             return;
           }
+        }else{
+          console.warn("Cannot send payment from wrong crypto address");
+          console.log(cryptomod.name);
+          console.log(senders[i], (await cryptomod.returnAddress()));
         }
       }
     } else {
