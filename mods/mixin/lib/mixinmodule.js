@@ -152,7 +152,6 @@ MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
   `;
 };
 
-
 MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptomod) {
   let ab = document.querySelector(".mixin_risk_acknowledge");
   ab.onclick = (e) => {
@@ -314,6 +313,71 @@ MixinModule.prototype.receivePayment = function(amount = "", sender = "", recipi
 MixinModule.prototype.returnWithdrawalFee = function(asset_id, callback=null) {
   return this.mixin.checkWithdrawalFee(asset_id, callback);
 };
+//
+// this function creates a Mixin address associated with the account in order to check
+// if it can offer zero-fee in-network transfers or requires a network fee to be paid
+// in order to process the payment.
+//
+MixinModule.prototype.returnWithdrawalFeeForAddress = function(recipient = "", mycallback) {
+
+  let r = recipient.split("|");
+  let ts = new Date().getTime();
+
+  //
+  // internal MIXIN transfer
+  //
+  if (r.length >= 2) {
+    if (r[2] === "mixin") {
+      mycallback(0);
+    }
+  }
+
+  //
+  // external withdrawal to network
+  //
+  let destination = this.returnNetworkAddress(recipient);
+  let withdrawal_address_exists = 0;
+  let withdrawal_address_id = "";
+
+  for (let i = 0; i < this.mixin.addresses.length; i++) {
+    if (this.mixin.addresses[i].destination === destination) {
+      withdrawal_address_exists = 1;
+      withdrawal_address_id = this.mixin.addresses[i].address_id;
+    }
+  }
+
+  //
+  // existing withdrawal address
+  //
+  if (withdrawal_address_exists === 1) {
+
+    //
+    // return 0 if in-network address, or estimate if external
+    //
+    if (withdrawal_address_id) { mycallback(0); }
+    this.returnWithdrawalFee(this.asset_id, mycallback);
+
+  //
+  // create withdrawal address to see if is Mixin address
+  //
+  } else {
+
+    let mm_self = this;
+
+    this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
+
+      //
+      // return 0 if in-network address, or estimate if external
+      //
+      if (withdrawal_address_id) { mycallback(0); }
+      this.returnWithdrawalFee(this.asset_id, mycallback);
+
+    });
+
+  }
+
+};
+
 
 /**
  * Abstract method which returns snapshot of asset withdrawls, deposits
