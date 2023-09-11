@@ -86,6 +86,8 @@ export default class Wallet extends SaitoWallet {
         return this.app.wallet.getPrivateKey();
       }
 
+      returnWithdrawalFeeForAddress(address="", mycallback=null) { if (mycallback) { mycallback(0); } }
+
       async sendPayment(amount, to_address, unique_hash = "") {
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
           to_address,

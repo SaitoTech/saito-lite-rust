@@ -354,7 +354,7 @@ MixinModule.prototype.returnWithdrawalFeeForAddress = function(recipient = "", m
     //
     // return 0 if in-network address, or estimate if external
     //
-    if (withdrawal_address_id) { mycallback(0); }
+    if (withdrawal_address_id) { mycallback(0); return; }
     this.returnWithdrawalFee(this.asset_id, mycallback);
 
   //
@@ -369,8 +369,10 @@ MixinModule.prototype.returnWithdrawalFeeForAddress = function(recipient = "", m
       //
       // return 0 if in-network address, or estimate if external
       //
-      if (withdrawal_address_id) { mycallback(0); }
-      this.returnWithdrawalFee(this.asset_id, mycallback);
+      try {
+        if (d.data.fee) { mycallback(d.data.fee); return; }
+        this.returnWithdrawalFee(this.asset_id, mycallback);
+      } catch (err) {}
 
     });
 
