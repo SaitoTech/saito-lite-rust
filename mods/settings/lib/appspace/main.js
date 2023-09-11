@@ -201,15 +201,18 @@ class SettingsAppspace {
             app.wallet.pending = [];
 
             // await app.blockchain.resetBlockchain();
+            delete app.options.keys;
+
             await app.wallet.saveWallet();
 
-
-alert("about to fetch balance");
             // await fetch wallet balance
             await app.wallet.fetchBalanceSnapshot(publicKey);
-alert("success");
 
-            //window.location.reload();
+            let c = await sconfirm("Success! Confirm to reload");
+  
+            if (c) {
+              window.location.reload();
+            }
           }
         } catch (e) {
           salert("Restore Private Key ERROR: " + e);
