@@ -1915,6 +1915,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 
   removeCardFromGame(card) {
+    if (!this.game.state.removed.includes(card)) { this.game.state.removed.push(card); }
     try { delete this.game.deck[0].cards[card]; } catch (err) {}
     try { delete this.game.deck[0].discards[card]; } catch (err) {}
   }

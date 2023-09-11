@@ -1530,6 +1530,7 @@ if (limit === "build") {
     }
   }
   playerPlayEvent(card, faction, ops=null) {
+    this.addMove("remove\t"+faction+"\t"+card);
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);

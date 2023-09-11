@@ -45,6 +45,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("victory_determination_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
+	  this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
+	  this.game.queue.push("show_overlay\twinter");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\all");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
@@ -162,6 +165,7 @@ this.updateLog(`###############`);
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
 	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.render(); }
+	  if (mv[1] === "winter") { this.winter_overlay.render(); }
 	  if (mv[1] === "zoom") {
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
@@ -189,6 +193,7 @@ this.updateLog(`###############`);
 	}
 	if (mv[0] === "hide_overlay") {
 	  this.displayElectorateDisplay();
+	  if (mv[1] === "winter") { this.winter_overlay.pushHudUnderOverlay(); this.winter_overlay.hide(); }
 	  if (mv[1] === "welcome") { this.welcome_overlay.pushHudUnderOverlay(); this.welcome_overlay.hide(); }
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
 	  if (mv[1] === "zoom") { this.theses_overlay.hide(); }
@@ -313,8 +318,6 @@ this.updateLog(`###############`);
 
 	  let faction = mv[1];
 	  let spacekey = mv[2];
-
-console.log("TODO: winter_attrition");
 
 	  this.game.spaces[spacekey].units[faction] = [];
 
@@ -558,8 +561,6 @@ console.log("TODO: winter_attrition");
 
 
 	if (mv[0] === "is_testing") {
-
-	  //this.game.queue.push("retreat_to_winter_spaces");
 
 	  // moar debaters
           this.addDebater("protestant", "bullinger-debater");
@@ -5670,7 +5671,8 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "winter_phase") {
 
-	  console.log("Winter Phase!");
+	  // show the winter overlay to let people know WTF is happening
+	  //this.winter_overlay.render();
 
 	  // Remove loaned naval squadron markers
 	  this.returnLoanedUnits();
@@ -6158,7 +6160,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.updateLog(this.popup(card) + " removed from deck");
+	  if (!this.game.state.removed.includes(card)) { 
+	    this.updateLog(this.popup(card) + " removed from deck");
+	  }
 	  this.removeCardFromGame(card);
 
 	  return 1;

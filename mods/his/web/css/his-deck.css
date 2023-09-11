@@ -1,0 +1,18 @@
+
+.deck-overlay {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    column-gap: 2rem;
+    row-gap: 2rem;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+.deck-overlay .card {
+    height: calc(20vw * 1.4);
+    width: 20vw;
+    max-width: 230px;
+    max-height: 322px;
+}
+

@@ -69,8 +69,53 @@
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addMenuOption("game-cards", "Cards");
+    this.menu.addMenuOption("game-info", "Info");
+    this.menu.addSubMenuOption("game-info", {
+      text: "Cards",
+      id: "game-cards",
+      class: "game-cards",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-cards");
+      }
+    });
     this.menu.addSubMenuOption("game-cards", {
+      text : "My Hand",
+      id : "game-my-hand",
+      class : "game-my-hand",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("hand");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Discards",
+      id : "game-discards",
+      class : "game-discards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("discards");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "All Cards",
+      id : "game-all-cards",
+      class : "game-all-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("all");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Removed",
+      id : "game-removed-cards",
+      class : "game-removed-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("removed");
+      }
+    });
+
+    this.menu.addSubMenuOption("game-info", {
       text : "Field Battle",
       id : "game-field-battle",
       class : "game-field_battle",
@@ -79,7 +124,7 @@
         game_mod.field_battle_overlay.renderFortification();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Religion",
       id : "game-religious-conflict",
       class : "game-religious-conflict",
@@ -88,7 +133,7 @@
         game_mod.religious_overlay.render();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Debaters",
       id : "game-debaters",
       class : "game-debaters",
@@ -97,7 +142,7 @@
         game_mod.displayDebaters();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Explorers",
       id : "game-explorers",
       class : "game-explorers",
@@ -106,7 +151,7 @@
         game_mod.displayExplorers();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Conquistadors",
       id : "game-conquistadors",
       class : "game-conquistadors",
