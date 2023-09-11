@@ -203,7 +203,7 @@ MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique
       let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {
       });
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
-      return;
+      return trace_id;
     }
   }
 

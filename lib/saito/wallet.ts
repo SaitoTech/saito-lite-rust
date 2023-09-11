@@ -685,6 +685,7 @@ export default class Wallet extends SaitoWallet {
             // hash is "" if unsuccessful, trace_id if successful
             //
             if (hash === "") {
+              console.log("Deleting preferred crypto transaction");
               this.deletePreferredCryptoTransaction(
                 senders,
                 receivers,
