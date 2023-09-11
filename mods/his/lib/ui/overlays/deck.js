@@ -78,6 +78,20 @@ class DeckOverlay {
 	}
       }
 
+      if (deck == "unplayed") {
+	for (let key in his_self.game.deck[0].cards) {
+	  if (!his_self.game.state.removed.includes(key)) {
+	    if (!his_self.game.deck[0].discards[key]) {
+	      if (!his_self.game.deck[0].removed[key]) {	      
+	  	let cimg = his_self.returnCardImage(key);
+	 	let html = `<div id="${key}" class="card ${key}">${cimg}</div>`;
+		his_self.app.browser.addElementToSelector(html, ".deck-overlay");
+	      }
+	    }
+	  }
+	}
+      }
+
       this.pushHudUnderOverlay();
 
       this.attachEvents();

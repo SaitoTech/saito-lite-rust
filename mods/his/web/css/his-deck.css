@@ -6,7 +6,7 @@
     row-gap: 2rem;
     max-width: 90vw;
     max-height: 90vh;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .deck-overlay .card {

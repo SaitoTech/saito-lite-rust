@@ -106,6 +106,15 @@
       }
     });
     this.menu.addSubMenuOption("game-cards", {
+      text : "Unplayed",
+      id : "game-unplayed-cards",
+      class : "game-unplayed-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("unplayed");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
       text : "Removed",
       id : "game-removed-cards",
       class : "game-removed-cards",
