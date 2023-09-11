@@ -5403,9 +5403,9 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 
 
 	      if ((total_spaces_to_convert+bonus_conversions) == 1) {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
+	        this.updateLog(this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
+	        this.updateLog(this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
 
 	      //
@@ -6073,7 +6073,11 @@ console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
 	  if (this.game.deck[0]['008']) { delete this.game.deck[0]['008']; }
 
 	  let deck_to_deal = new_cards;
-	  for (let key in deck_to_deal) { reshuffle_cards[key] = deck_to_deal[key]; }
+	  for (let key in deck_to_deal) { 
+	    if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+	      reshuffle_cards[key] = deck_to_deal[key]; 
+	    }
+	  }
 
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");

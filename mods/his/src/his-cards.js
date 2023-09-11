@@ -3828,8 +3828,9 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "move" || menu == "assault" || menu == "piracy") {
-  	  his_self.addMove("discard\t"+faction+"\t"+"031");
 	  his_self.addMove(`foul_weather\t${player}\t${faction}`);
+  	  his_self.addMove("discard\t"+faction+"\t"+"031");
+  	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.endTurn();
         }
         return 1;
@@ -3842,6 +3843,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
           let faction = mv[2];
           his_self.game.queue.splice(qe, 1);
 
+	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("031"));
 	  his_self.game.state.events.foul_weather = 1;
 
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {

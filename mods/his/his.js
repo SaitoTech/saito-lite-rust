@@ -6601,8 +6601,9 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "move" || menu == "assault" || menu == "piracy") {
-  	  his_self.addMove("discard\t"+faction+"\t"+"031");
 	  his_self.addMove(`foul_weather\t${player}\t${faction}`);
+  	  his_self.addMove("discard\t"+faction+"\t"+"031");
+  	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.endTurn();
         }
         return 1;
@@ -6615,6 +6616,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
           let faction = mv[2];
           his_self.game.queue.splice(qe, 1);
 
+	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("031"));
 	  his_self.game.state.events.foul_weather = 1;
 
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
@@ -21377,9 +21379,9 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 
 
 	      if ((total_spaces_to_convert+bonus_conversions) == 1) {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
+	        this.updateLog(this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
-	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
+	        this.updateLog(this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
 	      }
 
 	      //
@@ -22047,7 +22049,11 @@ console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
 	  if (this.game.deck[0]['008']) { delete this.game.deck[0]['008']; }
 
 	  let deck_to_deal = new_cards;
-	  for (let key in deck_to_deal) { reshuffle_cards[key] = deck_to_deal[key]; }
+	  for (let key in deck_to_deal) { 
+	    if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+	      reshuffle_cards[key] = deck_to_deal[key]; 
+	    }
+	  }
 
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
@@ -26342,6 +26348,8 @@ console.log("units length: " + space.units[defender].length);
    
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
 
+    if (this.isBurned(debater)) { return false; }
+
     let already_committed = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
@@ -28475,6 +28483,13 @@ return;
       }
     }
     return 0;
+  }
+
+  isDebaterDisgraced(debater) { return this.isBurned(debater); }
+  isDisgraced(debater) { return this.isBurned(debater); }
+  isDebaterBurned(debater) { return this.isBurned(debater); }
+  isBurned(debater) {
+    if (this.game.state.burned.contains(debater)) { return true; }
   }
   isCommitted(debater) { return this.isDebaterCommitted(debater); }
   isDebaterCommitted(debater) {

@@ -2923,6 +2923,8 @@ console.log("units length: " + space.units[defender].length);
    
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
 
+    if (this.isBurned(debater)) { return false; }
+
     let already_committed = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
