@@ -26839,12 +26839,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   // 2P requires only that it is in protestant or catholic religious influence
   canPlayerRemoveUnrest(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
-console.log("SPACES IN UNREST: " + JSON.stringify(spaces_in_unrest));
     for (let i = 0; i < spaces_in_unrest.length; i++) {
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }
-console.log("return no");
     return 0;
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
@@ -28488,9 +28486,7 @@ return;
   isDebaterDisgraced(debater) { return this.isBurned(debater); }
   isDisgraced(debater) { return this.isBurned(debater); }
   isDebaterBurned(debater) { return this.isBurned(debater); }
-  isBurned(debater) {
-    if (this.game.state.burned.contains(debater)) { return true; }
-  }
+  isBurned(debater) { if (this.game.state.burned.includes(debater)) { return true; } return false; }
   isCommitted(debater) { return this.isDebaterCommitted(debater); }
   isDebaterCommitted(debater) {
     for (let i = 0; i < this.game.state.debaters.length; i++) {
