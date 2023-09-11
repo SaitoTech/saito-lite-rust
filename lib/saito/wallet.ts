@@ -19,7 +19,7 @@ export default class Wallet extends SaitoWallet {
   preferred_crypto = "SAITO";
   preferred_txs = [];
 
-  default_fee = 2;
+  default_fee = 0;
 
   version = 5.339;
 
