@@ -3414,12 +3414,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   // 2P requires only that it is in protestant or catholic religious influence
   canPlayerRemoveUnrest(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
-console.log("SPACES IN UNREST: " + JSON.stringify(spaces_in_unrest));
     for (let i = 0; i < spaces_in_unrest.length; i++) {
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }
-console.log("return no");
     return 0;
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {

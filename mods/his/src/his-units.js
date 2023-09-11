@@ -470,9 +470,7 @@
   isDebaterDisgraced(debater) { return this.isBurned(debater); }
   isDisgraced(debater) { return this.isBurned(debater); }
   isDebaterBurned(debater) { return this.isBurned(debater); }
-  isBurned(debater) {
-    if (this.game.state.burned.contains(debater)) { return true; }
-  }
+  isBurned(debater) { if (this.game.state.burned.includes(debater)) { return true; } return false; }
   isCommitted(debater) { return this.isDebaterCommitted(debater); }
   isDebaterCommitted(debater) {
     for (let i = 0; i < this.game.state.debaters.length; i++) {

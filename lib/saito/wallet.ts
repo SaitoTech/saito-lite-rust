@@ -21,7 +21,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 2;
 
-  version = 5.338;
+  version = 5.339;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -85,6 +85,8 @@ export default class Wallet extends SaitoWallet {
       returnPrivateKey() {
         return this.app.wallet.getPrivateKey();
       }
+
+      returnWithdrawalFeeForAddress(address="", mycallback=null) { if (mycallback) { mycallback(0); } }
 
       async sendPayment(amount, to_address, unique_hash = "") {
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
@@ -926,16 +928,29 @@ export default class Wallet extends SaitoWallet {
   // UI Functions //
   //////////////////
 
+  //
+  // We can use this function to selectively exclude some things from the "wallet"
+  // for backup purposes
+  //
+  exportWallet(){
+    let newObj = JSON.parse(JSON.stringify(this.app.options));
+
+    delete newObj.games;
+
+    return JSON.stringify(newObj);
+  }
+
+
   /**
    * Serialized the user's wallet to JSON and downloads it to their local machine
    */
   async backupWallet() {
     try {
       if (this.app.BROWSER == 1) {
-        let content = JSON.stringify(this.app.options);
+        //let content = JSON.stringify(this.app.options);
         let pom = document.createElement("a");
         pom.setAttribute("type", "hidden");
-        pom.setAttribute("href", "data:application/json;utf-8," + encodeURIComponent(content));
+        pom.setAttribute("href", "data:application/json;utf-8," + encodeURIComponent(this.exportWallet()));
         pom.setAttribute("download", "saito.wallet.json");
         document.body.appendChild(pom);
         pom.click();
