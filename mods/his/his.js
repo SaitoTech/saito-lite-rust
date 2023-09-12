@@ -16103,7 +16103,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
-this.game.queue.push("is_testing");
+//this.game.queue.push("is_testing");
+
 
 
 
