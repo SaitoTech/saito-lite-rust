@@ -7248,6 +7248,11 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
         if (mv[0] == "wartburg") {
 
+	  his_self.game.state.events.wartburg = 1;
+	  his_self.commitDebater("protestant", "luther-debater");
+	  his_self.updateLog(his_self.popup("037") + " triggered");
+          his_self.game.queue.splice(qe, 1);
+
 	  //
 	  // remove event from execution and end player turn
 	  //
@@ -7255,14 +7260,13 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	    let lmv = his_self.game.queue[i].split("\t");
 	    if (lmv[0] !== "discard" || lmv[0] !== "round" && lmv[0] !== "play") {
 	      his_self.game.queue.splice(i, 1);
+	    } else {
+	      if (lmv[0] === "round" || lmv[0] === "play") {
+		his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	        i = -1;
+	      }
 	    }
 	  }
-
-	  his_self.game.state.events.wartburg = 1;
-	  his_self.commitDebater("protestant", "luther-debater");
-
-	  his_self.updateLog(his_self.popup("037") + " triggered");
-          his_self.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -9327,9 +9331,10 @@ console.log("HITS: " + hits);
 	// protestants get wartburg card if in discards
 	//
         if (his_self.game.deck[0].discards["037"]) {
+	  his_self.game.deck[0].cards["037"] = his_self.game.deck[0].discards["037"];
 	  delete his_self.game.deck[0].discards["037"];
 	  if (his_self.game.player == p) {
-            let fhand_idx = his_self.returnFactionHandIdx(p, faction);
+            let fhand_idx = his_self.returnFactionHandIdx(p, "protestant");
 	    his_self.game.deck[0].fhand[fhand_idx].push("037");
 	  }
 	}
@@ -21187,13 +21192,13 @@ console.log("purging naval units and capturing leader");
 	  this.game.queue.splice(qe, 1);
 
 	  //
-	  // commit debaters if uncommitted
+	  // commit attacker if uncommitted
 	  //
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
 	      attacker_idx = i;
-	      if (this.game.state.debaters[i].committed == 0) {
-		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+	      if (!this.isCommitted(this.game.state.theological_debate.attacker_debater)) {
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater, 0);
 	      }
 	    }
 	  }
@@ -21208,9 +21213,9 @@ console.log("purging naval units and capturing leader");
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
 	      defender_idx = i;
 	      defender_debater_power = this.game.state.debaters[defender_idx].power;
-	      if (this.game.state.debaters[i].committed == 0) {
+	      if (!this.isCommitted(this.game.state.theological_debate.defender_debater)) {
 	        was_defender_uncommitted = 1;
-		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
+		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater, 0);
 	      }
 	    }
 	  }
@@ -21235,7 +21240,7 @@ console.log("purging naval units and capturing leader");
 	      attacker_idx = i;
 	      attacker_debater_power = this.game.state.debaters[attacker_idx].power;
 	      if (this.game.state.debaters[i].committed == 0) {
-		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater, 0);
 	      }
 	    }
 	  }
@@ -21249,7 +21254,6 @@ console.log("purging naval units and capturing leader");
 	      }
 	    }
 	  }
-
 
 	  //
 	  // even Luther gets 3 if invoked w/ Here I Stand as attacker
@@ -26441,9 +26445,9 @@ console.log("units length: " + space.units[defender].length);
   }
 
   canPlayerCommitDebater(faction, debater) {
-  
+
     if (faction !== "protestant" && faction !== "papacy") { return false; }
-   
+
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
 
     if (this.isBurned(debater)) { return false; }
@@ -28630,7 +28634,12 @@ return;
 
     let his_self = this;
 
-    this.game.state.debater_committed_this_impulse[faction] = 1;
+    //
+    // we can only commit 1 debater for the bonus each impulse, so note it if so
+    //
+    if (activate == 1) {
+      this.game.state.debater_committed_this_impulse[faction] = 1;
+    }
 
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {

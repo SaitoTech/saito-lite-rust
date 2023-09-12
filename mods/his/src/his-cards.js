@@ -4417,6 +4417,11 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
         if (mv[0] == "wartburg") {
 
+	  his_self.game.state.events.wartburg = 1;
+	  his_self.commitDebater("protestant", "luther-debater");
+	  his_self.updateLog(his_self.popup("037") + " triggered");
+          his_self.game.queue.splice(qe, 1);
+
 	  //
 	  // remove event from execution and end player turn
 	  //
@@ -4424,14 +4429,13 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	    let lmv = his_self.game.queue[i].split("\t");
 	    if (lmv[0] !== "discard" || lmv[0] !== "round" && lmv[0] !== "play") {
 	      his_self.game.queue.splice(i, 1);
+	    } else {
+	      if (lmv[0] === "round" || lmv[0] === "play") {
+		his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	        i = -1;
+	      }
 	    }
 	  }
-
-	  his_self.game.state.events.wartburg = 1;
-	  his_self.commitDebater("protestant", "luther-debater");
-
-	  his_self.updateLog(his_self.popup("037") + " triggered");
-          his_self.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -6496,9 +6500,10 @@ console.log("HITS: " + hits);
 	// protestants get wartburg card if in discards
 	//
         if (his_self.game.deck[0].discards["037"]) {
+	  his_self.game.deck[0].cards["037"] = his_self.game.deck[0].discards["037"];
 	  delete his_self.game.deck[0].discards["037"];
 	  if (his_self.game.player == p) {
-            let fhand_idx = his_self.returnFactionHandIdx(p, faction);
+            let fhand_idx = his_self.returnFactionHandIdx(p, "protestant");
 	    his_self.game.deck[0].fhand[fhand_idx].push("037");
 	  }
 	}
