@@ -77,14 +77,26 @@ this.updateLog(`###############`);
 	    // round 2 - zwingli in zurich
 	    //
 	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "oekolampadius-debater");
 	      this.addDebater("protestant", "zwingli-debater");
 	      this.addReformer("protestant", "zurich", "zwingli-reformer");
+	      this.addDebater("papacy", "contarini-debater");
+	    }
+
+	    //
+	    // round 3
+	    //
+	    if (this.game.state.round == 3) {
+	      this.addDebater("protestant", "bullinger-debater");
 	    }
 
 	    //
 	    // round 4 - calvin in genoa
 	    //
 	    if (this.game.state.round == 4) {
+	      this.addDebater("protestant", "farel-debater");
+	      this.addDebater("protestant", "cop-debater");
+	      this.addDebater("protestant", "olivetan-debater");
 	      this.addDebater("protestant", "calvin-debater");
 	      this.addReformer("protestant", "genoa", "calvin-reformer");
 	    }
@@ -97,13 +109,27 @@ this.updateLog(`###############`);
 	      this.addDebater("protestant", "latimer-debater");
 	      this.addDebater("protestant", "coverdale-debater");
 	      this.addReformer("protestant", "genoa", "cranmer-reformer");
+	      this.addDebater("papacy", "pole-debater");
+	      this.addDebater("papacy", "caraffa-debater");
 	    }
 
 	    //
 	    // round 6 - maurice of saxony
 	    //
 	    if (this.game.state.round == 6) {
+	      this.addDebater("protestant", "wishart-debater");
+	      this.addDebater("protestant", "knox-debater");
 	      this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
+	      this.addDebater("papacy", "loyola-debater");
+	      this.addDebater("papacy", "faber-debater");
+	      this.addDebater("papacy", "canisius-debater");
+	    }
+
+	    //
+	    // round 7
+	    //
+	    if (this.game.state.round == 7) {
+	      this.addDebater("papacy", "gardiner-debater");
 	    }
 
 	  }
