@@ -65,43 +65,48 @@ class Storage {
   //    ---> peers fetch from DB, return via callback or return TX
   //
   async saveTransaction(tx: Transaction, obj = {}, peer = null) {
-    const txmsg = tx.returnMessage();
-    const message = "archive";
+    try {
+      const txmsg = tx.returnMessage();
+      const message = "archive";
 
-    let data: any = {};
-    data.request = "save";
-    data.serial_transaction = tx.serialize_to_web(this.app);
+      let data: any = {};
+      data.request = "save";
+      data.serial_transaction = tx.serialize_to_web(this.app);
 
-    data = Object.assign(data, obj);
+      data = Object.assign(data, obj);
 
-    if (!data.field1) {
-      data.field1 = txmsg.module;
-    }
-    if (!data.field2) {
-      data.field2 = tx.from[0].publicKey;
-    }
-    if (!data.field3) {
-      data.field3 = tx.to[0].publicKey;
-    }
+      if (!data.field1) {
+        data.field1 = txmsg.module;
+      }
+      if (!data.field2) {
+        data.field2 = tx.from[0].publicKey;
+      }
+      if (!data.field3) {
+        data.field3 = tx.to[0].publicKey;
+      }
 
 console.log("SAVE TRANSACTION IN STORAGE");
 
-    if (peer === "localhost") {
-      let archive_mod = this.app.modules.returnModule("Archive");
-      if (archive_mod) {
-        let res = archive_mod.saveTransaction(tx, data);
+      if (peer === "localhost") {
+        let archive_mod = this.app.modules.returnModule("Archive");
+        if (archive_mod) {
+          let res = await archive_mod.saveTransaction(tx, data);
+        }
+        this.app.connection.emit("saito-save-transaction", tx);
+        return;
       }
-      this.app.connection.emit("saito-save-transaction", tx);
-      return;
-    }
-    if (peer != null) {
-      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
-      this.app.connection.emit("saito-save-transaction", tx);
-      return;
-    } else {
-      await this.app.network.sendRequestAsTransaction(message, data);
-      this.app.connection.emit("saito-save-transaction", tx);
-      return;
+      if (peer != null) {
+        await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
+        this.app.connection.emit("saito-save-transaction", tx);
+        return;
+      } else {
+        await this.app.network.sendRequestAsTransaction(message, data);
+        this.app.connection.emit("saito-save-transaction", tx);
+        return;
+      }
+    } catch (error) {
+      console.warn("failed saving tx : " + tx.signature);
+      console.error(error);
     }
   }
 
@@ -143,7 +148,11 @@ console.log("SAVE TRANSACTION IN STORAGE");
     // We could have the archive module handle this
     // idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
     //
+
+console.log("we have moved into loadTransactions in storage.ts on this machine...");
+
     let internal_callback = (res) => {
+console.log("at the start of our internal callback in loadTransactions in storage");
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
@@ -155,9 +164,12 @@ console.log("SAVE TRANSACTION IN STORAGE");
       mycallback(txs);
     };
 
+
     if (peer === "localhost") {
+console.log("peer is localhost!");
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
+console.log("loadTXS with callback!");
         archive_mod.loadTransactionsWithCallback(obj, (res) => {
           internal_callback(res);
         });
@@ -166,18 +178,24 @@ console.log("SAVE TRANSACTION IN STORAGE");
     }
 
     if (peer != null) {
+console.log("peer is not null");
       //peer.sendRequestAsTransaction(message, data, function (res) {
       this.app.network.sendRequestAsTransaction(
         message,
         data,
         function (res) {
+console.log("received response, calling internal callback");
           internal_callback(res);
         },
         peer.peerIndex
       );
       return;
     } else {
+console.log("else in storage.ts");
+console.log("message - " + message);
+console.log(JSON.stringify(data));
       this.app.network.sendRequestAsTransaction(message, data, function (res) {
+console.log("RECEIVED RESPONSE FROM SEND REQUEST AS TRANSACTION");
         internal_callback(res);
       });
       return;
@@ -208,7 +226,7 @@ console.log("SAVE TRANSACTION IN STORAGE");
     }
   }
 
-  // 
+  //
   // Note: this function won't save options for at least 250 ms from it's call
   // So, if you are going to redirect the browser after calling it, you need to
   // build in a sufficient delay so that the browser can complete
@@ -233,7 +251,7 @@ console.log("SAVE TRANSACTION IN STORAGE");
           console.log(localStorage.key(i), item.length, item, JSON.parse(item));
         }
       }
-    }
+    };
 
     clearTimeout(this.timeout);
     this.timeout = setTimeout(saveOptionsForReal, 250);

@@ -15,7 +15,7 @@ module.exports = SendTokensOverlay = {
     let app = this.app;
     let mod = this.mod;
 
-    document.getElementById("wallet-send-tokens-form").onsubmit = (e) => {
+    document.getElementById("wallet-send-tokens-form").onsubmit = async (e) => {
       e.preventDefault();
 
       let recipient = document.getElementById("wallet-send-tokens-recipient").value;
@@ -35,7 +35,7 @@ module.exports = SendTokensOverlay = {
       );
       if (c) {
         let sender = cryptomod.returnAddress();
-        let hash = app.wallet.sendPayment(
+        let hash = await app.wallet.sendPayment(
           [sender],
           [recipient],
           [amount],

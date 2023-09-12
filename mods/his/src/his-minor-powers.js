@@ -44,8 +44,6 @@
   deactivateMinorPower(faction, power) {
     this.unsetAllies(faction, power, 0);
     for (let key in this.game.state.activated_powers) {
-console.log("KEY IS: " + key);
-console.log(JSON.stringify(this.game.state.activated_powers[key]));
       for (let i = 0; i < this.game.state.activated_powers[key].length; i++) {
         if (this.game.state.activated_powers[key][i] === power) {
   	  this.game.state.activated_powers[key].splice(i, 1);

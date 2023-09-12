@@ -38,5 +38,5 @@ done
 cat ./src/twilight-end.js >> ./twilight.js
 
 
-npm run compile
+npm run go
 

@@ -259,6 +259,7 @@ class Mods {
   }
 
   returnModulesRespondingTo(request, obj = null) {
+
     let m = [];
     for (let mod of this.mods) {
       if (mod.respondTo(request, obj) != null) {
@@ -269,6 +270,7 @@ class Mods {
   }
 
   respondTo(request, obj = null) {
+
     let m = [];
     for (let mod of this.mods) {
       if (mod.respondTo(request, obj) != null) {

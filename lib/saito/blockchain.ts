@@ -60,9 +60,9 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   public async affixCallbacks(block: Block) {
-    console.log("affixing callbacks for block : " + block.hash);
-    let callbacks = new Array<any>();
-    let callbackIndices = new Array<number>();
+    // console.log("affixing callbacks for block : " + block.hash);
+    let callbacks = [];
+    let callbackIndices = [];
     let txs: Transaction[] = block.transactions as Transaction[];
     let validTxs = 0;
     for (let z = 0; z < txs.length; z++) {
@@ -78,7 +78,7 @@ export default class Blockchain extends SaitoBlockchain {
         validTxs++;
       }
     }
-    console.log(`affixed callbacks for : ${validTxs} out of ${txs.length}`);
+    // console.log(`affixed callbacks for : ${validTxs} out of ${txs.length}`);
     this.callbacks.set(block.hash, callbacks);
     this.callbackIndices.set(block.hash, callbackIndices);
     this.confirmations.set(block.hash, BigInt(-1));

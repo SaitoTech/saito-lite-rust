@@ -1,4 +1,4 @@
-const OnePlayerGameTemplate = require("../../lib/templates/oneplayergametemplate");
+const OnePlayerGameTemplate = require("../../lib/templates/oneplayer-gametemplate");
 const SolitrioGameRulesTemplate = require("./lib/solitrio-game-rules.template");
 const SolitrioGameOptionsTemplate = require("./lib/solitrio-game-options.template");
 
@@ -16,6 +16,7 @@ class Solitrio extends OnePlayerGameTemplate {
       "Once you've started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.";
     this.categories = "Games Cardgame One-player";
     this.animationSpeed = 500;
+    this.card_img_dir = "/saito/img/arcade/cards";
     this.app = app;
   }
 
@@ -142,7 +143,7 @@ class Solitrio extends OnePlayerGameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnStatsHTML());
+        game_mod.overlay.show(game_mod.returnStatsHTML("Solitrio!"));
       },
     });
 
@@ -623,7 +624,7 @@ class Solitrio extends OnePlayerGameTemplate {
         this.untoggleCard(i);
         if (this.game.board[i][0] == "E") {
           $(divname).addClass("empty");
-          $(divname).html('<img src="/solitrio/img/cards/red_back.png" />');
+          $(divname).html(`<img src="${this.card_img_dir}/red_back.png" />`);
           $(divname)
             .children()
             .fadeOut(10 * timeInterval);
@@ -639,7 +640,7 @@ no status atm, but this is to update the hud
     let solitrio_self = this;
 
     let html =
-      '<span class="hidable">Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>';
+      '<span>Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>';
     let option = `<ul><li class="option"`;
     if (this.game.state.recycles_remaining > 0) {
       html += "<span>You may shuffle the unarranged cards ";
@@ -693,8 +694,8 @@ no status atm, but this is to update the hud
   returnCardImageHTML(name) {
     if (name[0] == "E") {
       return "";
-    } else {
-      return '<img src="/solitrio/img/cards/' + name + '.png" />';
+    } else { 
+      return `<img src="${this.card_img_dir}/${name}.png" />`;
     }
   }
 

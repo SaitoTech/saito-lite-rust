@@ -74,6 +74,18 @@ class Chat extends ModTemplate {
       }
     });
 
+    this.app.connection.on("chat-message-user", async (pkey, message) => {
+      let group = this.returnOrCreateChatGroupFromMembers([this.publicKey, pkey]);
+
+      let newtx = await this.createChatTransaction(group.id, message);
+      await this.sendChatTransaction(this.app, newtx);
+
+      siteMessage("Message sent through chat", 2500);
+      
+    });
+
+
+
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
     this.theme_options = {
@@ -192,6 +204,7 @@ class Chat extends ModTemplate {
     this.chat_manager.container = ".saito-sidebar.left";
     this.chat_manager.chat_popup_container = ".saito-main";
     this.chat_manager.render_manager_to_screen = 1;
+    //Main Chat Application doesn't use popups as such...
     this.chat_manager.render_popups_to_screen = 0;
 
     await super.render();
@@ -314,6 +327,7 @@ class Chat extends ModTemplate {
               active_module?.request_no_interrupts
             ) {
               this.app.connection.emit("chat-manager-request-no-interrupts");
+              return;
             }
             this.app.connection.emit("chat-popup-render-request");
           }
@@ -347,6 +361,7 @@ class Chat extends ModTemplate {
         //We need another way to display/open it...
         if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
           if (this.chat_manger) {
+            //Don't want mobile chat auto popping up
             this.chat_manager.render_popups_to_screen = 0;
           }
 
@@ -935,12 +950,12 @@ class Chat extends ModTemplate {
       }
     }
 
-    //
-    // swap first two addresses so if private chat we will encrypt with proper shared-secret
-    //
-
     if (members.length == 2) {
       console.log("Chat: Encrypting Message for " + secret_holder);
+
+      //
+      // Only encrypts if we have swapped keys and haveSharedKey, otherwise just signs
+      //
       newtx = await this.app.wallet.signAndEncryptTransaction(newtx, secret_holder);
     } else {
       await newtx.sign();

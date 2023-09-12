@@ -25,14 +25,13 @@
     color: var(--text-color);
 }
 
-.game-playerbox-graphics {
+.game-playerbox-icons {
     top: 0rem;
     right: 0rem;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
 }
-
 
   
 /******************************/

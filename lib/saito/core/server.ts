@@ -34,7 +34,9 @@ export class NodeSharedMethods extends CustomSharedMethods {
   sendMessage(peerIndex: bigint, buffer: Uint8Array): void {
     try {
       let socket = S.getInstance().getSocket(peerIndex);
-      socket.send(buffer);
+      if (socket) {
+        socket.send(buffer);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -577,7 +579,7 @@ class Server {
           "Content-Transfer-Encoding": "utf8",
         });
         // const liteblock = block.generateLiteBlock(keylist);
-        console.info('### write from server.ts:576');
+        console.info("### write from server.ts:576");
         const buffer2 = Buffer.from(newblk.serialize()); //, "binary").toString("base64");
         res.end(buffer2);
       }
@@ -606,6 +608,22 @@ class Server {
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
+        res.sendStatus(404);
+      }
+    });
+
+    expressApp.get("/balance/:keys?", async (req, res) => {
+      try {
+        let keys = [];
+        if (req.params.keys) {
+          keys = req.params.keys.split(";");
+        }
+
+        const snapshot = await S.getInstance().getBalanceSnapshot(keys);
+        res.setHeader("Content-Disposition", "attachment; filename=" + snapshot.file_name);
+        res.end(snapshot.toString());
+      } catch (error) {
+        console.error(error);
         res.sendStatus(404);
       }
     });

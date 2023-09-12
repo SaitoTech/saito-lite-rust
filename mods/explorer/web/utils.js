@@ -7,7 +7,7 @@ HTMLElement.prototype.toggleClass = function toggleClass(className) {
 };
 
 async function fetchBlock(hash) {
-  var url = window.location.origin + "/json-block/" + hash;
+  var url = window.location.origin + "/explorer/json-block/" + hash;
 
   fetch(url)
     .then((response) => response.json())
@@ -21,7 +21,7 @@ async function fetchBlock(hash) {
 }
 
 async function fetchRawBlock(hash) {
-  var url = window.location.origin + "/json-blocks/" + hash + "/blk";
+  var url = window.location.origin + "/explorer/json-block/" + hash;
   var block = [];
   for await (let line of makeTextFileLineIterator(url)) {
     block.push(JSON.parse(line));

@@ -115,19 +115,9 @@
       name		: 	"Maurice of Saxony",
       personage		:	true,
       army_leader	:	true,
-      img		:	"Maurice_Protestant.svg",
+      img		:	"Maurice_Protestant.svg", // "Maurice_Hapsburg.svg"
       battle_rating	:	1,
       command_value	:	6,
-    });
-
-    this.importArmyLeader('maurice-of-saxony', {
-      type              :       "maurice-of-saxony" ,
-      name              :       "Maurice of Saxony",
-      personage         :       true,
-      army_leader       :       true,
-      img               :       "Maurice_Hapsburg.svg",
-      battle_rating     :       1,
-      command_value     :       6,
     });
 
     this.importArmyLeader('dudley', {

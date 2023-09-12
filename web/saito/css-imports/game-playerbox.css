@@ -22,6 +22,10 @@
     padding: 1rem;
     z-index: 3;
     max-width: 25vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .game-playerbox.active {
@@ -45,9 +49,15 @@
     margin-top: 0.5rem;
     line-height: 2.3rem;
     font-size: 1.6rem;
+    flex-grow: 1;
 }
 
 .game-playerbox-graphics {
+  display: none;
+  position: absolute;
+}
+
+.game-playerbox-icons {
     top: 0rem;
     right: 0rem;
     display: flex;
@@ -94,7 +104,7 @@
 .game-playerbox-seat-4 {
   position: absolute;
   left: 50vw;
-  top: 30px;
+  top: 40px;
   transform: translateX(-50%);
 }
 

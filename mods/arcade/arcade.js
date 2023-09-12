@@ -259,13 +259,13 @@ class Arcade extends ModTemplate {
       // For processing direct link to game invite
       //
       if (arcade_self.app.browser.returnURLParameter("game_id")) {
-        let game_id = arcade_self.app.browser.returnURLParameter("game_id");
+        let game_id_short = arcade_self.app.browser.returnURLParameter("game_id");
 
         if (arcade_self.debug) {
-          console.log("attempting to join game... " + game_id);
+          console.log("attempting to join game... " + game_id_short);
         }
 
-        let game = arcade_self.returnGame(game_id);
+        let game = arcade_self.returnGameFromHash(game_id_short);
 
         if (!game) {
           salert("Sorry, the game is no longer available");
@@ -275,10 +275,11 @@ class Arcade extends ModTemplate {
         if (arcade_self.isAvailableGame(game)) {
           console.log("Make it my game");
           //Mark myself as an invited guest
-          game.msg.options.desired_opponent_publickey = this.publicKey;
+          //game.msg.options.desired_opponent_publickey = this.publicKey;
+          
           //Then we have to remove and readd the game so it goes under "mine"
-          arcade_self.removeGame(game_id);
-          arcade_self.addGame(game, "private");
+          //arcade_self.removeGame(game.signature);
+          //arcade_self.addGame(game, "private");
         }
 
         await app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
@@ -547,13 +548,11 @@ class Arcade extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message?.request === "arcade spv update") {
-
       let tx = new Transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
 
       if (txmsg.module === "Arcade") {
-
         if (this.debug) {
           console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
         }
@@ -642,7 +641,7 @@ class Arcade extends ModTemplate {
     }
     let peers = await this.app.network.getPeers();
     for (let peer of peers) {
-      console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
+      // console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
       if (peer.synctype == "lite") {
         //
         // fwd tx to peer
@@ -651,11 +650,11 @@ class Arcade extends ModTemplate {
         message.request = "arcade spv update";
         message.data = tx.toJson();
 
-        console.log("notifying peer : " + peer.peerIndex);
+        // console.log("notifying peer : " + peer.peerIndex);
         this.app.network
           .sendRequestAsTransaction(message.request, message.data, null, peer.peerIndex)
           .then(() => {
-            console.log("peer notified : " + peer.peerIndex);
+            // console.log("peer notified : " + peer.peerIndex);
           });
       }
     }
@@ -848,13 +847,15 @@ class Arcade extends ModTemplate {
 
         await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
       }
-    } else if (tx.isFrom(game.msg.options.desired_opponent_publickey)) {
+    } else if (game.msg.options?.desired_opponent_publickey && tx.isFrom(game.msg.options.desired_opponent_publickey)) {
       if (this.publicKey == game.msg.originator) {
         siteMessage("Your game invite was declined", 5000);
       }
       await this.changeGameStatus(txmsg.game_id, "close");
     }
-
+    
+    console.log("Cancel game transaction");
+    this.app.connection.emit("arcade-close-game", txmsg.game_id);
     this.app.connection.emit("arcade-invite-manager-render-request");
   }
 
@@ -938,7 +939,6 @@ class Arcade extends ModTemplate {
   }
 
   async changeGameStatus(game_id, newStatus) {
-
     let game = this.returnGame(game_id);
 
     if (!game) {
@@ -1001,13 +1001,15 @@ class Arcade extends ModTemplate {
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
 
-    if (this.debug){
-    console.log("Winner updated in arcade");
+    if (this.debug) {
+      console.log("Winner updated in arcade");
     }
   }
 
   async receiveCloseTransaction(tx) {
     let txmsg = tx.returnMessage();
+    console.log("Close transaction");
+    this.app.connection.emit("arcade-close-game", txmsg.game_id);
     await this.changeGameStatus(txmsg.game_id, "close");
   }
 
@@ -1275,7 +1277,7 @@ class Arcade extends ModTemplate {
       from initializing, so... we should wait for feedback and nope out of the spinner if something breaks
       */
 
-      let game_engine_id = await gamemod.processAcceptRequest(tx);
+      let game_engine_id = await gamemod.initializeGameFromAcceptTransaction(tx);
 
       console.log("game engine id ///////");
       console.log(game_engine_id);
@@ -1689,6 +1691,20 @@ class Arcade extends ModTemplate {
     return null;
   }
 
+  returnGameFromHash(game_id) {
+    for (let key in this.games) {
+      let game = this.games[key].find((g) => this.app.crypto.hash(g.signature).slice(-6) == game_id);
+      if (game) {
+        if (this.debug) {
+          console.log(`Game found in ${key} list`);
+        }
+        return game;
+      }
+    }
+    return null;
+  }
+
+
   shouldAffixCallbackToModule(modname) {
     if (modname == "Arcade") {
       return 1;
@@ -1759,7 +1775,7 @@ class Arcade extends ModTemplate {
 
     if (accepted_game) {
       data.game = accepted_game.msg.game;
-      data.game_id = game_sig;
+      data.game_id = this.app.crypto.hash(game_sig).slice(-6);
       data.path = "/arcade/";
     } else {
       return;

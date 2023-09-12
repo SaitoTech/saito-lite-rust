@@ -1,4 +1,79 @@
 
+  returnLanguageImage(language) {
+    return "/his/img/tiles/leaders/Henry_II.svg";
+  }
+
+  returnReligionImage(religion) {
+    if (religion === "protestant") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
+    if (religion === "catholic") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
+    return "/his/img/tiles/leaders/LutherReformer.svg";
+  }
+
+  returnFactionLeaderImage(faction) {
+
+    if (faction == "papacy") {
+      if (this.game.state.leaders.leo_x == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.clement_vii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.paul_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.julius_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "france") {
+      if (this.game.state.leaders.francis_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.henry_ii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "protestant") {
+      if (this.game.state.leaders.luther == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.calvin == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "england") {
+      if (this.game.state.leaders.henry_viii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.mary_i == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.edward_vi == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+      if (this.game.state.leaders.elizabeth_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "ottoman") {
+      if (this.game.state.leaders.suleiman == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+    if (faction == "hapsburg") {
+      if (this.game.state.leaders.charles_v == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
+    }
+
+   return "/his/img/tiles/leaders/Henry_II.svg";
+   
+  }
+
+  displayWarBox() {
+
+    let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
+    for (let i = 0; i < factions.length; i++) {
+      for (let ii = 0; ii < factions.length; ii++) {
+	if (ii > i) {
+	  let obj = null;
+	  let box = '#' + factions[i] + "_" + factions[ii];
+	  obj = document.querySelector(box);
+	  if (obj) {
+	    if (this.areAllies(factions[i], factions[ii])) {
+	      obj.innerHTML = '<img src="/his/img/Allied.svg" />';
+	      obj.style.display = "block";
+	    } else {
+	      if (this.areEnemies(factions[i], factions[ii])) {
+	        obj.innerHTML = '<img src="/his/img/AtWar.svg" />';
+	        obj.style.display = "block";
+	      } else {
+	        obj.style.display = "none";
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
   displayDebaters() {
     this.debaters_overlay.render();
   }
@@ -181,6 +256,12 @@
   }
 
   displayBoard() {
+
+    try {
+      this.displayWarBox();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayColony();
     } catch (err) {
@@ -239,7 +320,7 @@
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
-      if (this.returnElectoralBonus(key)) {
+      if (this.returnElectoralBonus(key) != 0) {
         obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
       }
     }
@@ -252,7 +333,7 @@
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
       return 2;
     }
-    if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
+    if (space === "mainz" && this.game.state.mainz_electoral_bonus == 0) {
       return 1;
     }
     if (space === "trier" && this.game.state.trier_electoral_bonus == 0) {
@@ -700,28 +781,33 @@
 
     for (let z in space.units) {
 
+      new_units = false;
+
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
         if (space.units[z][zz].type === "mercenary") {
+	  new_units = true;
           army++;
         }
       }
 
-      for (let i = 0; i < army; i+= 2) {
+      while (army > 0) {
         if (z != "") {
           if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
 	    if (army >= 4) {
               tile += `HapsburgMerc-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2) {
               tile += `HapsburgMerc-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1) {
               tile += `HapsburgMerc-1.svg`;
 	      army -= 1;
+	    }
+	    }
 	    }
           }
           if (z === "england") {
@@ -729,14 +815,16 @@
 	    if (army >= 4) {
               tile += `EnglandMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `EnglandMerc-2.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `EnglandMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "france") {
@@ -744,14 +832,16 @@
 	    if (army >= 4) {
               tile += `FrenchMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `FrenchMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `FrenchMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "papacy") {
@@ -759,14 +849,16 @@
 	    if (army >= 4) {
               tile += `PapacyMerc-4.svg`;
 	      army -= 4;
-	    }
-	    if (army >= 2) {
+	    } else {
+	    if (army >= 2 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-2.svg`;
 	      army -= 2;
-	    }
-	    if (army >= 1) {
+	    } else {
+	    if (army >= 1 && tile.indexOf("svg") == -1) {
               tile += `PapacyMerc-1.svg`;
 	      army -= 1;
+	    }
+	    }
 	    }
           }
           if (z === "protestant") {
@@ -774,14 +866,16 @@
 	    if (army >= 4) {
               tile += `ProtestantMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `ProtestantMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `ProtestantMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
           if (z === "ottoman") {
@@ -789,14 +883,16 @@
 	    if (army >= 4) {
               tile += `OttomanMerc-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `OttomanMerc-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `OttomanMerc-1.svg`;
 	      army -= 1;
+            }
+            }
             }
           }
         }
@@ -826,7 +922,19 @@
 	  tile = html;
 	}
 	if (space.units[z][zz].personage === true) {
-          html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	  if (space.units[z][zz].army_leader) {
+            html += `<img src="/his/img/tiles/army/${space.units[z][zz].img}" />`;
+	  } else {
+            if (space.units[z][zz].navy_leader) {
+	      html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
+	    } else {
+              if (space.units[z][zz].reformer) {
+	        html += `<img src="/his/img/tiles/reformers/${space.units[z][zz].img}" />`;
+	      } else {
+	        html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
+	      }
+	    }
+	  }
 	  tile = html;
 	}
       }
@@ -860,8 +968,8 @@
     //
     // do not show under some conditions
     //
-    if (space.political == space.home) { show_tile = 0; }
-    if (space.political === "") { show_tile = 0; }
+    if (space.political == space.home && space.religion != "protestant") { show_tile = 0; }
+    if (space.political === "" && space.religion != "protestant") { show_tile = 0; }
 
     //
     // and force for keys
@@ -896,6 +1004,9 @@
         obj.innerHTML += this.returnPersonages(space);
       }
 
+      if (space.fortified == 1) {
+        obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
+      }
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
@@ -938,18 +1049,31 @@
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displayNavalSpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displayNavalSpaceDetailedView(key);
+//        }
       }
     }
 
   }
 
+  addSelectable(el) {
+    if (!el.classList.contains("selectable")) {
+      el.classList.add('selectable');
+    }
+  }
+
+  removeSelectable() {
+    document.querySelectorAll(".selectable").forEach((el) => {
+      el.onclick = (e) => {};
+      el.classList.remove('selectable');
+    });
+    $('.space').off();
+  }
+
   displaySpaces() {
 
     let his_self = this;
-
 
     //
     // add tiles
@@ -957,32 +1081,63 @@
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-        document.getElementById(key).onclick = (e) => {
-	  this.displaySpaceDetailedView(key);
-        }
+//        document.getElementById(key).onclick = (e) => {
+//	  this.displaySpaceDetailedView(key);
+//        }
       }
     }
 
     let xpos = 0;
     let ypos = 0;
 
-if (!his_self.bound_gameboard_zoom) {
 
-    $('.gameboard').on('mousedown', function (e) {
-      if (e.currentTarget.classList.contains("space")) { return; }
-      xpos = e.clientX;
-      ypos = e.clientY;
-    });
-    $('.gameboard').on('mouseup', function (e) { 
-      if (e.currentTarget.classList.contains("space")) { return; }
-      if (Math.abs(xpos-e.clientX) > 4) { return; }
-      if (Math.abs(ypos-e.clientY) > 4) { return; }
-      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
-    });
+    if (!his_self.bound_gameboard_zoom) {
 
-    his_self.bound_gameboard_zoom = 1;
+      $('.gameboard').on('mousedown', function (e) {
+        if (e.currentTarget.classList.contains("space")) { return; }
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
+      $('.gameboard').on('mouseup', function (e) { 
+        if (Math.abs(xpos-e.clientX) > 4) { return; }
+        if (Math.abs(ypos-e.clientY) > 4) { return; }
+	//
+	// if this is a selectable space, let people select directly
+	//
+	// this is a total hack by the way, but it captures the embedding that happens when
+	// we are clicking and the click actino is technically on the item that is INSIDE
+	// the selectable DIV, like a click on a unit in a key, etc.
+	//
+	if (e.target.classList.contains("selectable")) {
+	  // something else is handling this
+	  return;
+	} else {
+	  let el = e.target;
+	  if (el.parentNode) {
+	    if (el.parentNode.classList.contains("selectable")) {
+	      // something else is handling this
+	      return;
+	    } else {
+	      if (el.parentNode.parentNode) {
+	        if (el.parentNode.parentNode.classList.contains("selectable")) {
+	          return;
+	        }
+	      }
+	    }
+	  }
+	}
+	// otherwise show zoom
+        //if (e.target.classList.contains("space")) {
+          his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+	  //e.stopPropagation();
+	  //e.preventDefault();	
+	  //return;
+	//}
+      });
 
-}
+      his_self.bound_gameboard_zoom = 1;
+
+    }
 
 
   }
@@ -1012,14 +1167,13 @@ if (!his_self.bound_gameboard_zoom) {
     let cardclass = "cardimg";
     let deckidx = -1;
     let card;
+    let cdeck = this.returnDeck();
+    let ddeck = this.returnDiplomaticDeck();
 
     if (cardname === "pass") {
       return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
-    //
-    //
-    //
     if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
 
     for (let i = 0; i < this.game.deck.length; i++) {
@@ -1031,9 +1185,15 @@ if (!his_self.bound_gameboard_zoom) {
         card = c;
       }
     }
+    if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
+    if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
 
+    //
+    // triggered before card deal
+    //
+    if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
 
-    if (deckidx === -1) {
+    if (deckidx === -1 && !cdeck[cardname] && !ddeck[cardname]) {
       //
       // this is not a card, it is something like "skip turn" or cancel
       //
@@ -1046,8 +1206,10 @@ if (!his_self.bound_gameboard_zoom) {
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-      if (!this.deck[cardname].canEvent(this, "")) {
-        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+      if (!this.deck[cardname]) {
+        if (!this.deck[cardname].canEvent(this, "")) {
+          html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+        }
       }
     }
     if (deckidx == 1) { 
@@ -1064,4 +1226,44 @@ if (!his_self.bound_gameboard_zoom) {
   displayDebaterPopup(debater) {
     
   }
+
+
+
+  async preloadImages() {
+    var allImages = [
+      "img/factions/protestant.png",
+      "img/factions/papacy.png",
+      "img/factions/england.png",
+      "img/factions/france.png",
+      "img/factions/ottoman.png",
+      "img/factions/hapsburgs.png",
+      "img/backgrounds/reformation.jpg",
+      "img/backgrounds/theological-debate.jpg",
+      "img/backgrounds/theological-debate2.jpg",
+      "img/backgrounds/diet_of_worms.jpeg",
+      "img/backgrounds/language-zone.jpg",
+      "img/backgrounds/95_theses.jpeg",
+    ];
+
+    this.preloadImageArray(allImages);
+  }
+
+  preloadImageArray(imageArray=[], idx=0) {
+
+    let pre_images = [imageArray.length];
+
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = "/his/" + imageArray[idx];
+    }
+
+  }
+
+
+
+
+
 

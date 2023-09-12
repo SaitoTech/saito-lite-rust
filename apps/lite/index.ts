@@ -27,11 +27,15 @@ class WebMethods extends WebSharedMethods {
     //   "WebMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
     // );
     const mycallback = async (response_object) => {
-      await S.getInstance().sendApiSuccess(
-        msgIndex,
-        Buffer.from(JSON.stringify(response_object), "utf-8"),
-        peerIndex
-      );
+      try {
+        await S.getInstance().sendApiSuccess(
+          msgIndex,
+          Buffer.from(JSON.stringify(response_object), "utf-8"),
+          peerIndex
+        );
+      } catch (error) {
+        console.error(error);
+      }
     };
     let peer = await this.app.network.getPeer(peerIndex);
     let newtx = new Transaction();
@@ -120,5 +124,9 @@ async function init() {
 
 // init();
 window.onload = async function () {
-  await init();
+  try {
+    await init();
+  } catch (error) {
+    console.error(error);
+  }
 };

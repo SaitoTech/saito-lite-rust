@@ -68,11 +68,6 @@ class Recovery extends ModTemplate {
       this.backup_overlay.render();
     });
 
-    app.connection.on("recovery-login-overlay-render-request", (success_callback = null) => {
-      console.debug("Received recovery-login-overlay-render-request");
-      this.login_overlay.success_callback = success_callback;
-      this.login_overlay.render();
-    });
   }
 
   returnDecryptionSecret(email = "", pass = "") {
@@ -168,12 +163,13 @@ class Recovery extends ModTemplate {
   ////////////
   async createBackupTransaction(decryption_secret, retrieval_hash) {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
     newtx.msg = {
       module: "Recovery",
       request: "recovery backup",
       email: "",
       hash: retrieval_hash,
-      wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.options), decryption_secret),
+      wallet: this.app.crypto.aesEncrypt(this.app.wallet.exportWallet(), decryption_secret),
     };
 
     newtx.addTo(this.publicKey);
@@ -194,6 +190,10 @@ class Recovery extends ModTemplate {
       $hash: hash,
       $tx: txjson,
     };
+
+    console.log("********************")
+    console.log("Backup Transaction");
+    console.log("********************");
 
     let res = await this.app.storage.executeDatabase(sql, params, "recovery");
 
@@ -242,8 +242,15 @@ class Recovery extends ModTemplate {
 
     let results = await this.app.storage.queryDatabase(sql, params, "recovery");
 
+    console.log("********************")
+    console.log("Restore Transaction");
+    console.log("********************");
+
+
     if (mycallback){
       await mycallback(results);  
+    }else{
+      console.warn("No callback to process recovered wallet");
     }
     
   }
@@ -282,6 +289,8 @@ class Recovery extends ModTemplate {
         this.app.network.sendTransactionWithCallback(
           newtx,
           async (rows_as_tx) => {
+            console.log("Restoring wallet!!!!!");
+
             //This is so weird that the passed data gets turned into a pseudotransaction
             let rows = rows_as_tx.msg;
 
@@ -301,16 +310,19 @@ class Recovery extends ModTemplate {
 
             let txmsg = newtx.returnMessage();
             
+            console.log(txmsg);
+
             let encrypted_wallet = txmsg.wallet;
             let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 
-            //Junk any games...
-            decrypted_wallet.games = [];
             this.app.options = JSON.parse(decrypted_wallet);
+
+            console.log(this.app.options);
 
             this.app.storage.saveOptions();
 
             this.login_overlay.success();
+            console.log("Recover success");
           },
           peer.peerIndex
         );

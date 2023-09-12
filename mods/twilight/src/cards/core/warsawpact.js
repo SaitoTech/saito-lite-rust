@@ -5,7 +5,10 @@
     if (card == "warsawpact") {
 
       // SAITO COMMUNITY
-      this.addCardToDeck("nato", "Prerequisites Met");
+      if (!this.game.state.events.nato_added) {
+        this.game.state.events.nato_added = 1;
+        this.addCardToDeck("nato", "Prerequisites Met");
+      }
 
       this.game.state.events.warsawpact = 1;
 

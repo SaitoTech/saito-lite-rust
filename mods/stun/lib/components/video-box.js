@@ -66,7 +66,6 @@ class VideoBox {
         this.renderStream({ muted: true });
       } else {
         this.renderStream({ muted: false });
-        // console.log('rendering stream');
       }
 
       let key;

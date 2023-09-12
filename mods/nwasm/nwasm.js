@@ -1,5 +1,5 @@
 const saito = require("./../../lib/saito/saito");
-const OnePlayerGameTemplate = require("../../lib/templates/oneplayergametemplate");
+const OnePlayerGameTemplate = require("../../lib/templates/oneplayer-gametemplate");
 const NwasmGameOptionsTemplate = require("./lib/nwasm-game-options.template");
 const UploadRom = require("./lib/upload-rom");
 const ControlsOverlay = require("./lib/controls");

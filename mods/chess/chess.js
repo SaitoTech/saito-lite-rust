@@ -28,6 +28,12 @@ class Chessgame extends GameTemplate {
     this.categories = "Games Boardgame Classic";
 
     this.confirm_moves = 1;
+    
+    /* 
+      This should be 1, but chess doesn't use the normal game queue command logic... 
+      to be fixed at a later date!
+    */
+    this.can_bet = 1;
 
     this.roles = ["observer", "white", "black"];
     this.app = app;
@@ -94,7 +100,7 @@ class Chessgame extends GameTemplate {
         callback: async function (app, game_mod) {
           let c = await sconfirm("Do you really want to resign?");
           if (c) {
-            await game_mod.resignGame(game_mod.game.id, "resignation");
+            await game_mod.sendStopGameTransaction("resignation");
             return;
           }
         },
@@ -118,9 +124,9 @@ class Chessgame extends GameTemplate {
 
     await this.playerbox.render();
 
-    for (let i = 1; i < 2; i++) {
+    for (let i = 1; i <= 2; i++) {
       this.playerbox.updateUserline(this.roles[i], i);
-      this.playerbox.updateGraphics(
+      this.playerbox.updateIcons(
         `<div class="tool-item item-detail turn-shape ${this.roles[i].toLowerCase()}"></div>`,
         i
       );
@@ -228,7 +234,7 @@ class Chessgame extends GameTemplate {
     if (data.draw) {
       if (data.draw === "accept") {
         console.log("Ending game");
-        await this.endGame(this.game.players, "draw");
+        await this.sendGameOverTransaction(this.game.players, "draw");
         return;
       } else {
         //(data.draw == "offer")
@@ -264,7 +270,7 @@ class Chessgame extends GameTemplate {
 
       //Check for draw according to game engine
       if (this.engine.in_draw() === true) {
-        await this.endGame(this.game.players, "draw");
+        await this.sendGameOverTransaction(this.game.players, "draw");
         return 0;
       }
 
@@ -273,7 +279,7 @@ class Chessgame extends GameTemplate {
       if (msg.extra.target == this.game.player) {
         //I announce that I am in checkmate to end the game
         if (this.engine.in_checkmate() === true) {
-          await this.resignGame(this.game.id, "checkmate");
+          await this.sendStopGameTransaction("checkmate");
           return 0;
         }
 
@@ -323,14 +329,16 @@ class Chessgame extends GameTemplate {
 
   removeEvents() {
     this.lockBoard(this.game.position);
-  }
 
-  endGameCleanUp() {
-    let cont = document.getElementById("commands-cont");
-    if (cont) {
-      cont.style.display = "none";
+    if (this.game.over){
+      let cont = document.getElementById("commands-cont");
+      if (cont) {
+        cont.style.display = "none";
+      }
+
     }
   }
+
 
   endTurn(data) {
     let extra = {};
@@ -341,7 +349,7 @@ class Chessgame extends GameTemplate {
     let data_to_send = this.app.crypto.stringToBase64(JSON.stringify(extra));
     this.game.turn = [data_to_send];
     this.moves = [];
-    this.sendMessage("game", extra);
+    this.sendGameMoveTransaction("game", extra);
   }
 
   updateStatusMessage(str = "") {

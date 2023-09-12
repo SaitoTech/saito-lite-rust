@@ -33,6 +33,11 @@ class ArcadeMain {
       let initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
       await initializer.render();
     });
+
+
+    app.connection.on("rerender-whole-arcade", () => {
+      this.render();
+    });
   }
 
   async render() {

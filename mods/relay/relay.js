@@ -28,15 +28,19 @@ class Relay extends ModTemplate {
     //
 
     app.connection.on("relay-send-message", async (obj) => {
-      if (obj.recipient === "PEERS") {
-        let peers = [];
-        let p = await app.network.getPeers();
-        for (let i = 0; i < p.length; i++) {
-          peers.push(p[i].publicKey);
+      try {
+        if (obj.recipient === "PEERS") {
+          let peers = [];
+          let p = await app.network.getPeers();
+          for (let i = 0; i < p.length; i++) {
+            peers.push(p[i].publicKey);
+          }
+          obj.recipient = peers;
         }
-        obj.recipient = peers;
+        await this.sendRelayMessage(obj.recipient, obj.request, obj.data);
+      } catch (error) {
+        console.error(error);
       }
-      await this.sendRelayMessage(obj.recipient, obj.request, obj.data);
     });
     app.connection.on("set-relay-status-to-busy", () => {
       this.busy = true;
@@ -65,9 +69,9 @@ class Relay extends ModTemplate {
     }
 
     if (this.debug) {
-    console.log("RECIPIENTS: " + JSON.stringify(recipients));
-    console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
-    //console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
+      console.log("RECIPIENTS: " + JSON.stringify(recipients));
+      console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
+      //console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
     }
 
     //
@@ -161,10 +165,9 @@ class Relay extends ModTemplate {
         //
         // if interior transaction is intended for me, I process regardless
         //
-        if (this.debug){
-          console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));  
+        if (this.debug) {
+          console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));
         }
-        
 
         if (relayed_tx.isTo(this.publicKey)) {
           app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);

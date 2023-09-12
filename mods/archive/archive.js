@@ -127,6 +127,12 @@ class Archive extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+
+console.log("->");
+console.log("-> handle peer transaction");
+console.log("->");
+
+
     if (tx == null) {
       return;
     }
@@ -146,7 +152,9 @@ class Archive extends ModTemplate {
     //
     if (req.request === "archive") {
       if (req.data.request === "load") {
+console.log("req . data . request is load...");
         let txs = await this.loadTransactions(req.data);
+console.log("and out with txs numbering: " + txs.length);
         mycallback(txs);
         return;
       }
@@ -159,6 +167,7 @@ class Archive extends ModTemplate {
         await this.deleteTransaction(newtx, req.data);
       }
       if (req.data.request === "save") {
+console.log("req . data . request is save..");
         await this.saveTransaction(newtx, req.data);
       }
       if (req.data.request === "update") {
@@ -175,6 +184,9 @@ class Archive extends ModTemplate {
   async saveTransaction(tx, obj = {}, onchain = 0) {
     let newObj = {};
 
+console.log("-----");
+console.log("----- archive.js");
+console.log("-----");
 console.log("SAVE TRANSACTION IN ARCHIVE");
 
     newObj.user_id = obj?.user_id || 0; //What is this supposed to be

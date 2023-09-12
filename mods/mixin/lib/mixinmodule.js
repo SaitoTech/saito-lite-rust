@@ -152,7 +152,6 @@ MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
   `;
 };
 
-
 MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptomod) {
   let ab = document.querySelector(".mixin_risk_acknowledge");
   ab.onclick = (e) => {
@@ -203,7 +202,7 @@ MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique
       let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {
       });
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
-      return;
+      return trace_id;
     }
   }
 
@@ -304,6 +303,92 @@ MixinModule.prototype.receivePayment = function(amount = "", sender = "", recipi
   });
   return 0;
 
+};
+
+/**
+ * Abstract method which should get withdrawl fee
+ * @abstract
+ * @return {Function} Callback function
+ */
+MixinModule.prototype.returnWithdrawalFee = function(asset_id, callback=null) {
+  return this.mixin.checkWithdrawalFee(asset_id, callback);
+};
+//
+// this function creates a Mixin address associated with the account in order to check
+// if it can offer zero-fee in-network transfers or requires a network fee to be paid
+// in order to process the payment.
+//
+MixinModule.prototype.returnWithdrawalFeeForAddress = function(recipient = "", mycallback) {
+
+  let r = recipient.split("|");
+  let ts = new Date().getTime();
+
+  //
+  // internal MIXIN transfer
+  //
+  if (r.length >= 2) {
+    if (r[2] === "mixin") {
+      mycallback(0);
+    }
+  }
+
+  //
+  // external withdrawal to network
+  //
+  let destination = this.returnNetworkAddress(recipient);
+  let withdrawal_address_exists = 0;
+  let withdrawal_address_id = "";
+
+  for (let i = 0; i < this.mixin.addresses.length; i++) {
+    if (this.mixin.addresses[i].destination === destination) {
+      withdrawal_address_exists = 1;
+      withdrawal_address_id = this.mixin.addresses[i].address_id;
+    }
+  }
+
+  //
+  // existing withdrawal address
+  //
+  if (withdrawal_address_exists === 1) {
+
+    //
+    // return 0 if in-network address, or estimate if external
+    //
+    if (withdrawal_address_id) { mycallback(0); return; }
+    this.returnWithdrawalFee(this.asset_id, mycallback);
+
+  //
+  // create withdrawal address to see if is Mixin address
+  //
+  } else {
+
+    let mm_self = this;
+
+    this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
+
+      //
+      // return 0 if in-network address, or estimate if external
+      //
+      try {
+        if (d.data.fee) { mycallback(d.data.fee); return; }
+        this.returnWithdrawalFee(this.asset_id, mycallback);
+      } catch (err) {}
+
+    });
+
+  }
+
+};
+
+
+/**
+ * Abstract method which returns snapshot of asset withdrawls, deposits
+ * @abstract
+ * @return {Function} Callback function
+ */
+
+MixinModule.prototype.returnHistory = function(asset_id="", records=20, callback=null) {
+  return this.mixin.fetchSnapshots(asset_id, records, callback);
 };
 
 module.exports = MixinModule;

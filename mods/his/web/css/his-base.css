@@ -3,6 +3,38 @@
   padding-top: 15px;
 }
 
+.selectable::before {
+    content: " ";
+    box-shadow: 2rem 2rem 7rem 3rem #FFFC, -2rem -2rem 7rem 3rem #FFFC;
+    height: 6rem;
+    width: 6rem;
+    display: block;
+    margin-top: 2.5rem;
+    margin-left: 2rem;
+    position: absolute;
+}
+
+.warbox {
+  height: 9rem;
+  width: 9rem;
+  position: absolute;
+  display: block;
+}
+
+.fortified {
+    display: block;
+    position: absolute;
+    width: 18rem;
+    height: 18rem;
+    left: -4.5rem;
+    top: -4.5rem;
+}
+
+.warbox img {
+  height: 100%;
+  width: 100%;
+}
+
 img {
   width: unset;
 }
@@ -36,6 +68,7 @@ img {
 }
 
 .revolt_in_egypt {
+    display: none;
     background-color: transparent;
     width: 350px;
     height: 500px;
@@ -48,6 +81,7 @@ img {
     background-repeat: no-repeat;
 }
 .revolt_in_ireland {
+    display: none;
     background-color: transparent;
     width: 350px;
     height: 500px;
@@ -60,6 +94,7 @@ img {
     background-repeat: no-repeat;
 }
 .war_in_persia {
+    display: none;
     background-color: transparent;
     width: 350px;
     height: 500px;
@@ -265,21 +300,37 @@ img {
   width: 122px;
 }
 
-.space_view {
-  height: 60vh;
-  width: calc(60vh * 0.74);
-  background-color: whitesmoke;
-  border-radius: 10px;
-  font-size: 2em;
-  padding: 1.5rem;
-}
-
 .space_faction {
   font-size: 2rem;
 }
 
 .space_unit {
   margin-left: 1rem;
+}
+
+.space_regulars img:nth-child(1) {
+  top: -5px;
+  left: -5px;
+}
+.space_regulars img:nth-child(2) {
+  top: -15px;
+  left: -15px;
+}
+.space_regulars img:nth-child(3) {
+  top: -25px;
+  left: -25px;
+}
+.space_mercenaries img:nth-child(1) {
+  top: -5px;
+  left: -5px;
+}
+.space_mercenaries img:nth-child(2) {
+  top: -15px;
+  left: -15px;
+}
+.space_mercenaries img:nth-child(3) {
+  top: -25px;
+  left: -25px;
 }
 
 

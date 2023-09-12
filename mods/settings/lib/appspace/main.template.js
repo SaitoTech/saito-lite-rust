@@ -10,16 +10,16 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
   console.log(publicKey);
 
   let key = app.keychain.returnKey({ publicKey : publicKey});
-  let identifier_registered = key?.identifier || "";
-
+  let identifier_registered = "";
+  if (key?.identifier) { identifier_registered = key.identifier; }
 
   console.log("key ////////");
   console.log(key);
 
-  if (!identifier_registered) {
-    if (key.has_registered_username){
+  if (identifier_registered != "") {
+    if (key?.has_registered_username){
       identifier_registered = `<span class="register-identifier-btn settings-appspace-link">Registering...</span>`;  
-    }else{
+    } else{
       identifier_registered = `<span id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</span>`;  
     }
   }

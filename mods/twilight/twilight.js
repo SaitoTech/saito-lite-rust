@@ -761,7 +761,7 @@ initializeGame(game_id) {
 	// SAITO COMMUNITY - edition
         //
         if (this.game.options.deck === "saito") {
-	  this.removeCardFromDeck('nato', "Prerequisites Not Met");
+	  this.removeCardFromDeck('nato', "Prerequisites Unmet");
 	  this.addCardToDeck('iranianultimatum', "New Card");
 	  this.addCardToDeck('unitedfruit', "New Card");
 	  early_war_deck = this.returnEarlyWarCards();
@@ -1261,21 +1261,21 @@ console.log("restoring B");
 	//
         if (this.game.options.deck === "late-war") {
           if (this.game.state.vp < 20) {
-            this.endGame(this.game.players[0], "Wargames");
+            this.sendGameOverTransaction(this.game.players[0], "Wargames");
           } else {
-            this.endGame(this.game.players[1], "Wargames");
+            this.sendGameOverTransaction(this.game.players[1], "Wargames");
           }
 	  return 0;
         }
 
         if (this.game.state.vp > 0) {
-          this.endGame(this.game.players[1],"Wargames");
+          this.sendGameOverTransaction(this.game.players[1],"Wargames");
         }
         if (this.game.state.vp < 0) {
-          this.endGame(this.game.players[0],"Wargames");
+          this.sendGameOverTransaction(this.game.players[0],"Wargames");
         }
         if (this.game.state.vp == 0) {
-          this.tieGame();
+          this.sendGameOverTransaction(this.game.players, "tie");
         }
 
       }
@@ -2713,7 +2713,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["sudan", "cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
+          this.game.deck[0].hand = ["fidel", "asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -3059,29 +3059,22 @@ try {
       // STATS - aggregate the statisics
       //
       if (this.game.state.round > 1) {
-
-	while (this.game.state.stats.round.length < this.game.state.round) {
+	while (this.game.state.stats.round.length < (this.game.state.round - 1)) {
           this.game.state.stats.round.push({});
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
 	}
-
-console.log("STATS ROUNDS: " + this.game.state.stats.round.length);
-
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
-
-console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
-
       }
 
 
@@ -3129,10 +3122,10 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
         this.game.queue.push("reshuffle");
 
-
 	if (this.game.state.round == 3) {
           if (this.game.options.deck === "saito") {
-            if (this.game.state.events.cia != 1) {
+            if (this.game.state.events.cia != 1 && this.game.state.events.tsarbomba_added != 1) {
+	      this.game.state.events.tsarbomba_added = 1;
 	      this.addCardToDeck('tsarbomba', "New Card");
 	    }
 	  }
@@ -3250,7 +3243,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
             if (this.isControlled("us", "southkorea") == 1 && this.game.state.events.revolutionsof1989_added != 1) {
 	    } else {
 	      delete late_war_cards['KAL007'];
-	      this.removeCardFromDeckNextDeal("KAL007", "Prerequisite Not Met");
+	      this.removeCardFromDeckNextDeal("KAL007", "Prerequisite Unmet");
 	    }
 	    //
 	    // Star Wars
@@ -3269,6 +3262,9 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    // Cambridge
 	    //
 	    this.removeCardFromDeckNextDeal("cambridge", "Removed from Game");
+	    //
+	    //
+	    //
 
 
 	    //
@@ -3277,15 +3273,16 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    late_war_cards = this.returnLateWarCards();
 
 	    //
-	    // add
-	    //
-	    //
 	    // SOLIDARITY
 	    //
 	    if (this.game.state.events.johnpaul == 1 && this.game.state.events.solidarity_added != 1) {
-	      this.game.state.events.solidarity_added = 1 ;
+	      this.game.state.events.solidarity_added = 1;
 	      this.addCardToDeck("solidarity", "Prerequisite Met");
+	    } else {
+	      delete late_war_cards['solidarity'];
+	      this.removeCardFromDeckNextDeal("solidarity", "Prerequisite Unmet");
 	    }
+
 	    //
 	    // RUST IN RED SQUARE
 	    //
@@ -3346,7 +3343,9 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         // of dynamic balancing behavior.
         //
         if (this.game.state.round >= 1) {
-          this.game.queue.push("dynamic_deck_management");
+	  if (this.game.options.deck === "saito") {
+            this.game.queue.push("dynamic_deck_management");
+	  }
     	  // tournament reveal before reshuffles
           this.game.queue.push("sharehandsize\t2");
           this.game.queue.push("sharehandsize\t1");
@@ -3836,7 +3835,13 @@ console.log("getPrivateKey(): " + privateKey);
     $('.card').off();
     twilight_self.hideCard();
     twilight_self.endTurn();
+
+    //
+    // Update status no longer hides the cards !!!!!!
+    //
     twilight_self.updateStatus("simultaneous blind pick... encrypting selected card");
+
+    $(`.controls #${card}`).css("filter", "brightness(0.5)");
 
     return;
 
@@ -4443,6 +4448,11 @@ console.log("getPrivateKey(): " + privateKey);
         //
         if (ac[card].player == opponent) { can_play_event = 0; }
 
+
+        announcement += '<li class="option" id="ops">play ops</li>';
+        if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
+        announcement += twilight_self.isSpaceRaceAvailable(ops);    
+
         //
         // cancel cuban missile crisis
         //
@@ -4451,10 +4461,6 @@ console.log("getPrivateKey(): " + privateKey);
             announcement += '<li class="option" id="cancel_cmc">cancel cuban missile crisis</li>';
           }
         }
-
-        announcement += '<li class="option" id="ops">play ops</li>';
-        if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
-        announcement += twilight_self.isSpaceRaceAvailable(ops);    
         let header_msg = `${player.toUpperCase()} playing <span>${ac[card].name}</span>`; 
 
         if (twilight_self.game.state.back_button_cancelled != 1) {
@@ -4663,15 +4669,15 @@ console.log("getPrivateKey(): " + privateKey);
       }
 
       let html = '<ul>';
+      if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
+      if (this.game.state.limit_coups == 0) { html += '<li class="option" id="coup">launch coup</li>'; }
+      if (this.game.state.limit_realignments == 0) { html += '<li class="option" id="realign">realign country</li>'; }
+      if (this.game.state.events.unintervention == 1) {html += this.isSpaceRaceAvailable(ops); }
       if ((this.game.player == this.game.state.events.cubanmissilecrisis)  && this.game.state.events.cubanmissilecrisis > 0 ) {
         if (this.canCancelCMC()) {
           html += '<li class="option" id="cancel_cmc">cancel cuban missile crisis</li>';
         }
       }
-      if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
-      if (this.game.state.limit_coups == 0) { html += '<li class="option" id="coup">launch coup</li>'; }
-      if (this.game.state.limit_realignments == 0) { html += '<li class="option" id="realign">realign country</li>'; }
-      if (this.game.state.events.unintervention == 1) {html += this.isSpaceRaceAvailable(ops); }
       html += '</ul>';
 
 
@@ -4695,7 +4701,9 @@ console.log("getPrivateKey(): " + privateKey);
         twilight_self.addMove("resolve\tops");
 
         if (action2 == "cancel_cmc") {
-          this.moves = [];
+
+	  // don't resolve OPs
+          twilight_self.moves = [];
 
           let are_we_playing_ops = 0;
           if (twilight_self.game.queue[twilight_self.game.queue.length-1].split("\t")[0] === "ops") {
@@ -6004,11 +6012,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     // Cuban Missile Crisis
     //
     if (player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) {
-      this.endGame(this.game.players[1], "Cuban Missile Crisis");
+      this.sendGameOverTransaction(this.game.players[1], "Cuban Missile Crisis");
       return;
     }
     if (player == "us" && this.game.state.events.cubanmissilecrisis == 2) {
-      this.endGame(this.game.players[0], "Cuban Missile Crisis");
+      this.sendGameOverTransaction(this.game.players[0], "Cuban Missile Crisis");
       return;
     }
 
@@ -6262,7 +6270,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let extra = {};
     this.game.turn = this.moves;
     this.moves = [];
-    this.sendMessage("game", extra);
+    this.sendGameMoveTransaction("game", extra);
 
   }
 
@@ -6345,7 +6353,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 	    // hard-exception
 	    if (this.game.options.deck != "late-war" && this.game.state.round != 8) {
               //There may be an issue if both players simulataneously resign...
-              this.resignGame(this.game.id, "scoring card held");
+              this.sendStopGameTransaction("scoring card held");
               return 0;
 	    }
           }
@@ -6922,6 +6930,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
   returnAllCards(inc_optional=false) {
     // SAITO COMMUNITY
+    let original_deck = this.game.options.deck;
     this.game.options.deck = "saito";
     let x = this.returnEarlyWarCards(inc_optional);
     let y = this.returnMidWarCards(inc_optional);
@@ -6929,6 +6938,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let a = Object.assign({}, x, y);
     let b = Object.assign({}, a, z);
     b['china'] = this.returnChinaCard();
+    this.game.options.deck = original_deck;
     return b;
   }
 
@@ -7169,10 +7179,6 @@ if (inc_optional == true) {
       for (var key in this.game.options) {
 
         if (deck[key] != undefined) { delete deck[key]; }
-
-        //
-        // optional midwar cards
-        //
 
 	// SAITO
         if (key === "berlinagreement") { deck['berlinagreement'] = { img : "TNRnTS-217png" , name : "Berlin Agreement", scoring : 0 , player : "both" , recurring : 0 , ops : 3 }; }
@@ -7571,14 +7577,14 @@ if (inc_optional == true) {
       this.game.state.vp--;
       this.updateLog("USSR receives 1 VP for the China Card");
       if (this.game.state.vp <= -20) {
-        this.endGame(this.game.players[0], "victory points");
+        this.sendGameOverTransaction(this.game.players[0], "victory points");
         return;
       }
     } else {
       this.game.state.vp++;
       this.updateLog("US receives 1 VP for the China Card");
       if (this.game.state.vp >= 20) {
-        this.endGame(this.game.players[1], "victory points");
+        this.sendGameOverTransaction(this.game.players[1], "victory points");
         return;
       }
     }
@@ -7623,9 +7629,9 @@ if (inc_optional == true) {
     //
     if (this.game.options.deck === "late-war") {
       if (this.game.state.vp < 20) {
-        this.endGame(this.game.players[0], "final scoring");
+        this.sendGameOverTransaction(this.game.players[0], "final scoring");
       } else {
-        this.endGame(this.game.players[1], "final scoring");
+        this.sendGameOverTransaction(this.game.players[1], "final scoring");
       }
     }
 
@@ -7633,13 +7639,13 @@ if (inc_optional == true) {
     // normal game
     //
     if (this.game.state.vp == 0) {
-      this.tieGame();
+      this.sendGameOverTransaction(this.game.players, "tie");
       return 1;
     }
     if (this.game.state.vp < 0) {
-      this.endGame(this.game.players[0], "final scoring");
+      this.sendGameOverTransaction(this.game.players[0], "final scoring");
     } else {
-      this.endGame(this.game.players[1], "final scoring");
+      this.sendGameOverTransaction(this.game.players[1], "final scoring");
     }
 
     return 1;
@@ -8421,9 +8427,9 @@ if (inc_optional == true) {
     if (this.game.state.defcon <= 1) {
       if (this.game.state.headline == 1) {
         // phasing player in headline loses
-        this.endGame(this.game.players[2 - this.game.state.player_to_go], "thermonuclear war");
+        this.sendGameOverTransaction(this.game.players[2 - this.game.state.player_to_go], "thermonuclear war");
       }else{
-        this.endGame(this.game.players[2 - this.game.state.turn], "thermonuclear war");
+        this.sendGameOverTransaction(this.game.players[2 - this.game.state.turn], "thermonuclear war");
       }
       return;
     }
@@ -9022,10 +9028,10 @@ if (inc_optional == true) {
     }
 
     if (this.game.state.vp > 19) {
-        this.endGame(this.game.players[1], "victory point track");
+        this.sendGameOverTransaction(this.game.players[1], "victory point track");
     }
     if (this.game.state.vp < -19) {
-      this.endGame(this.game.players[0], "victory point track");
+      this.sendGameOverTransaction(this.game.players[0], "victory point track");
     }
 
   }
@@ -9288,6 +9294,11 @@ if (inc_optional == true) {
   dynamicDeckManagement() {
 
     //
+    // sanity check
+    //
+    if (this.game.options.deck != "saito") { return; }
+
+    //
     // living history / saito edition -- SAITO COMMUNITY
     //
     if (!this.game.saito_cards_added) {
@@ -9369,12 +9380,14 @@ if (inc_optional == true) {
     let saito_edition_removed = this.game.saito_cards_removed;
     let saito_edition_added   = this.game.saito_cards_added;
 
+    let original_deck = this.game.options.deck;
     this.game.options.deck = "saito";
     let a = this.returnEarlyWarCards();
     let b = this.returnMidWarCards();
     let c = this.returnLateWarCards();
     let d = Object.assign({}, a, b);
     let fulldeck = Object.assign({}, d, c);
+    this.game.options.deck = original_deck;
 
     let cards_added_to_deck = 0;
     let cards_removed_from_deck = 0;
@@ -9490,11 +9503,12 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     this.game.queue.push("DECK\t1\t"+JSON.stringify(shuffle_in_these_cards));
     this.game.queue.push("HANDBACKUP\t1");
     this.game.queue.push("NOTIFY\tShuffling New Cards into Deck");
-    this.updateLog("Shuffling new cards into deck...");
     
   }
 
   addCardToDeck(key="", reason="") {
+
+    if (this.game.options.deck != "saito") { return; }
 
     if (!this.game.saito_cards_added) {
       //
@@ -9514,12 +9528,14 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       if (!this.game.options[key]) { this.game.options[key] = 1; } else { delete this.game.options[key]; }
     }
 
+    let original_deck = this.game.options.deck;
     this.game.options.deck = "saito";
     a = this.returnEarlyWarCards();
     b = this.returnMidWarCards();
     c = this.returnLateWarCards();
     let d = Object.assign({}, a, b);
     let fulldeck = Object.assign({}, d, c);
+    this.game.options.deck = original_deck;
 
     //
     // add to deck
@@ -9555,6 +9571,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
   }
   removeCardFromDeckNextDeal(key="", reason="") {
 
+    if (this.game.options.deck != "saito") { return; }
+
     if (!this.game.saito_cards_added) {
       //
       // living history / saito edition -- SAITO COMMUNITY
@@ -9580,6 +9598,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
   }
   removeCardFromDeck(key="", reason="") {
+
+    if (this.game.options.deck != "saito") { return; }
 
     if (!this.game.saito_cards_added) {
       //
@@ -10163,6 +10183,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
             
             twilight_self.updateStatusAndListCards("Choose a card to discard:",cards_to_discard, function(card) {
               twilight_self.removeCardFromHand(card);
+	      twilight_self.addMove("discard\tus\t"+card);
+
               twilight_self.addMove(`NOTIFY\tUS discarded ${twilight_self.cardToText(card)} to resolve ${twilight_self.cardToText("blockade")}`);
               twilight_self.endTurn();
               return 0;
@@ -10449,8 +10471,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
-
+      if (this.game.state.events.unitedfruit_removed != 1) {
+        this.game.state.events.unitedfruit_removed = 1;
+        this.cancelEvent("unitedfruit");
+        this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
+      }
      
       let twilight_self = this;
       let valid_targets = 0;
@@ -11261,8 +11286,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
-      this.cancelEvent("unitedfruit");
+      if (!this.game.state.events.unitedfruit_removed) {
+        this.game.state.events.unitedfruit_removed = 1;
+        this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
+        this.cancelEvent("unitedfruit");
+      }
 
 
       let usinf = parseInt(this.countries['cuba'].us);
@@ -12150,8 +12178,12 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
-      this.cancelEvent("unitedfruit");
+      if (this.game.state.events.unitedfruit_removed != 1) {
+        this.game.state.events.unitedfruit_removed = 1;
+        this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
+        this.cancelEvent("unitedfruit");
+      }
+
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -12321,7 +12353,10 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     if (card == "marshall") {
 
       // SAITO COMMUNITY
-      this.addCardToDeck("nato", "Prerequisites Met");
+      if (!this.game.state.events.nato_added) {
+        this.game.state.events.nato_added = 1;
+        this.addCardToDeck("nato", "Prerequisites Met");
+      }
 
       this.game.state.events.marshall = 1;
       var twilight_self = this;
@@ -14562,7 +14597,10 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     if (card == "warsawpact") {
 
       // SAITO COMMUNITY
-      this.addCardToDeck("nato", "Prerequisites Met");
+      if (!this.game.state.events.nato_added) {
+        this.game.state.events.nato_added = 1;
+        this.addCardToDeck("nato", "Prerequisites Met");
+      }
 
       this.game.state.events.warsawpact = 1;
 
@@ -16850,20 +16888,20 @@ console.log("ROUND: " + this.game.state.round);
   preloadImages() {
 
     let allImages = [
-	"/twilight/img/backgrounds/europe-scoring-bg.png",
-	"/twilight/img/backgrounds/asia-scoring-bg.png",
-	"/twilight/img/backgrounds/mideast-scoring-bg.png",
-	"/twilight/img/backgrounds/africa-scoring-bg.png",
-	"/twilight/img/backgrounds/southamerica-scoring-bg.png",
-	"/twilight/img/backgrounds/centralamerica-scoring-bg.png",
-	"/twilight/img/backgrounds/seasia-scoring-bg.png",
-	"/twilight/img/backgrounds/indopaki-bg.jpg",
-	"/twilight/img/backgrounds/arabisraeli-bg.jpg",
-	"/twilight/img/backgrounds/iraniraq-bg.jpg",
-	"/twilight/img/backgrounds/koreanwar-bg.jpg",
-	"/twilight/img/backgrounds/brushwar-bg.jpg"
+        "img/backgrounds/europe-scoring-bg.png",
+        "img/backgrounds/asia-scoring-bg.png",
+        "img/backgrounds/mideast-scoring-bg.png",
+        "img/backgrounds/africa-scoring-bg.png",
+        "img/backgrounds/southamerica-scoring-bg.png",
+        "img/backgrounds/centralamerica-scoring-bg.png",
+        "img/backgrounds/seasia-scoring-bg.png",
+        "img/backgrounds/indopaki-bg.jpg",
+        "img/backgrounds/arabisraeli-bg.jpg",
+        "img/backgrounds/iraniraq-bg.jpg",
+        "img/backgrounds/koreanwar-bg.jpg",
+        "img/backgrounds/brushwar-bg.jpg"
     ];
-
+    
     this.preloadImageArray(allImages, 0);
 
   }
@@ -16876,7 +16914,7 @@ console.log("ROUND: " + this.game.state.round);
       pre_images[idx].onload = () => {
         this.preloadImageArray(imageArray, idx+1);
       }
-      pre_images[idx].src = "/imperium/" + imageArray[idx];
+      pre_images[idx].src = "/twilight/" + imageArray[idx];
     }
 
   }

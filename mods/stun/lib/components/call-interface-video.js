@@ -14,7 +14,6 @@ class CallInterfaceVideo {
     this.peers = []; //people in the call
     this.localStream;
     this.room_code;
-
     this.video_boxes = {};
 
     this.local_container = "expanded-video";
@@ -70,6 +69,7 @@ class CallInterfaceVideo {
         this.video_boxes[peer_id].video_box.renderPlaceholder("connecting");
       } else if (status === "connected") {
         this.video_boxes[peer_id].video_box.removeConnectionMessage();
+        console.log("removing reconnection message");
         this.startTimer();
         this.updateImages();
       } else if (status === "disconnected") {
@@ -154,10 +154,14 @@ class CallInterfaceVideo {
     this.chat_group = {
       id: this.room_code,
       members: [peer],
-      name: `Chat ${this.room_code}`,
+      name: `Video Chat ${this.room_code}`,
       txs: [],
       unread: 0,
-      target_container: `.stun-chatbox .${this.remote_container}`,
+      //
+      // USE A TARGET Container if the chat box is supposed to show up embedded within the UI
+      // Don't include if you want it to be just a chat popup.... 
+      //
+      //target_container: `.stun-chatbox .${this.remote_container}`,
     };
 
     chat_mod.groups.push(this.chat_group);
@@ -177,13 +181,7 @@ class CallInterfaceVideo {
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
       //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
-
-      if (document.querySelector(".chat-static")) {
-        //document.querySelector(".chat-static").remove();
-        this.app.connection.emit("chat-popup-remove-request", this.chat_group);
-      } else {
-        this.app.connection.emit("chat-popup-render-request", this.chat_group);
-      }
+      this.app.connection.emit("open-chat-with", { id: this.chat_group.id});
     });
 
     if (document.querySelector(".effects-control")) {
@@ -193,7 +191,9 @@ class CallInterfaceVideo {
     }
 
     document.querySelectorAll(".disconnect-control").forEach((item) => {
-      item.addEventListener("click", (e) => {
+      item.addEventListener("click", async (e) => {
+        let chat_module = this.app.modules.returnModule("Chat");
+        await chat_module.deleteChatGroup(this.chat_group);
         this.disconnect();
         siteMessage("You have been disconnected", 3000);
       });

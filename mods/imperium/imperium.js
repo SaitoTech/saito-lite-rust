@@ -22858,10 +22858,6 @@ class Imperium extends GameTemplate {
   ///////////////////////
   // Imperium Specific //
   ///////////////////////
-  prependMove(mv) {
-    this.moves.unshift(mv);
-  }
-
   endTurn(nextTarget = 0) {
     for (let i = this.rmoves.length - 1; i >= 0; i--) {
       this.moves.push(this.rmoves[i]);
@@ -22874,12 +22870,12 @@ class Imperium extends GameTemplate {
     this.game.turn = this.moves;
     this.moves = [];
     this.rmoves = [];
-    this.sendMessage("game", {});
+    this.sendGameMoveTransaction("game", {});
 
     this.updateStatus("Waiting for information from peers....");
   }
 
-  endGame(winner, method) {
+  sendGameOverTransaction(winner, method) {
     this.game.over = 1;
 
     if (this.active_browser == 1) {

@@ -98,13 +98,15 @@ class FactionOverlay {
 	  if (his_self.game.state.saint_peters_cathedral['state'] == i) {
             keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1} saint_peters_tile" id="papacy_construction_status_keytile${i+1}"></div>`;
           }
+	  if (his_self.game.state.saint_peters_cathedral['vp'] == i) {
+            keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${7+i} saint_peters_tile" id="papacy_construction_status_keytile${7+i}"></div>`;
+          }
         }
         for (let i = 1; i <= 7; i++) {
           if (i == controlled_keys) {
             keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} papacy_keytile" id="faction_sheet_keytile${i}"></div>`;
           }
         }
-
 
         if (this.mod.game.state.leaders.clement_vii == 1) {
 	  this.app.browser.addElementToSelector(this.mod.returnCardImage("010"), ".faction_sheet_ruler");

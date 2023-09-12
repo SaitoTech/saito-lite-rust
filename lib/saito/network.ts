@@ -102,6 +102,7 @@ export default class Network {
     callback?: any,
     peerIndex?: bigint
   ) {
+console.log("about to send request as transaction...");
     return S.getInstance().sendRequest(message, data, callback, peerIndex);
   }
 

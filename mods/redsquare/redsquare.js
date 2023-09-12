@@ -1093,6 +1093,7 @@ class RedSquare extends ModTemplate {
     //
     // fetch original
     //
+    console.log("this is the somewhat critical bit where we try to update the dynamically-saved TX");
     console.log("NOW FETCH ORIGINAL TX");
     this.app.storage.loadTransactions({ sig: txmsg.data.signature }, (txs) => {
       console.log("LOAD TRANSACTIONS RETURNED IN LIKE: " + txs.length);
@@ -1397,7 +1398,6 @@ class RedSquare extends ModTemplate {
       //
       this.updateTweetsCacheForBrowsers();
       this.sqlcache = {};
-
       return;
     } catch (err) {
       console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
@@ -1666,7 +1666,7 @@ class RedSquare extends ModTemplate {
 
     let sql = `SELECT *, (updated_at + 10 * (num_likes + num_replies + num_retweets)) AS virality
                FROM tweets
-               WHERE (flagged IS NOT 1 AND moderated IS NOT 1)
+               WHERE (flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size > 1000)
                ORDER BY virality DESC LIMIT 10`;
 
     let params = {};
@@ -1692,9 +1692,16 @@ class RedSquare extends ModTemplate {
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
+console.log("THIS TX WITH num replies: " + rows[i].num_replies);
+console.log("THIS TX WITH num likes: " + rows[i].num_likes);
+      let tweet = new Tweet(this.app, this, tx, "");
+      console.log("TWEET TEXT: " + tweet.text);
+
       let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
     }
+
+console.log("UPDATING TWEETS CACHE FOR BROWSERS 2");
 
     try {
       let path = this.app.storage.returnPath();
@@ -1716,6 +1723,7 @@ class RedSquare extends ModTemplate {
           html = "";
         }
       }
+console.log("UPDATIG TWEETS CACHE FOR BROWSERS 3");
     } catch (err) {
       console.error("ERROR 2832329: error tweet cache to disk. ", err);
     }

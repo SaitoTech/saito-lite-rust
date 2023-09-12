@@ -1,6 +1,4 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
-const nodemailer = require("nodemailer");
-const credentials = require("./lib/credentials");
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class MailRelay extends ModTemplate {
@@ -19,6 +17,12 @@ class MailRelay extends ModTemplate {
   onConfirmation(blk, tx, conf) {}
 
   async initialize(app) {
+
+    // browsers will not have server endpoint coded
+    if (app.BROWSER) {
+      return;
+    }
+
     //For testing only, no need to initialize module
     await super.initialize(app);
 
@@ -33,7 +37,8 @@ class MailRelay extends ModTemplate {
       ishtml: true,
       attachments: "",
     };
-    email.to = "richard@saito.tech";
+
+    email.to = "david@saito.tech";
     email.from = "network@saito.tech";
     email.bcc = "";
     email.subject = "Saito Network Initialised";
@@ -45,7 +50,7 @@ class MailRelay extends ModTemplate {
     email.ishtml = false;
     email.attachments = "";
     try {
-      this.sendMail(email);
+      //this.sendMail(email);
     } catch (err) {
       console.log(err);
     }
@@ -89,6 +94,7 @@ class MailRelay extends ModTemplate {
       // ref: https://github.com/guileen/node-sendmail/blob/master/examples/attachmentFile.js
 
       try {
+console.log("sending email: " + JSON.stringify(email));
         this.sendMail(email);
       } catch (err) {
         console.err(err);
@@ -96,21 +102,78 @@ class MailRelay extends ModTemplate {
     }
   }
 
-  sendMail(email) {
-    let transporter = nodemailer.createTransport(credentials);
-    transporter.sendMail(email, (err, info) => {
-      if (info) {
-        console.log(info.envelope);
-        console.log(info.messageId);
-      } else {
-        console.log(err);
+  async sendMailRelayTransaction(
+    to = "",
+    from = "",
+    subject = "",
+    text = "",
+    ishtml = false,
+    attachments = "",
+    bcc = ""
+  ) {
+    let mailrelay_self = this;
+
+    let obj = {
+      module: mailrelay_self.name,
+      request: "send email",
+      data: {
+        to: to,
+        from: from,
+        bcc: bcc,
+        subject: subject,
+        body: text,
+        ishtml: ishtml,
+        attachments: attachments,
+      },
+    };
+
+    let newtx = await mailrelay_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    await newtx.sign();
+
+    let peers = await mailrelay_self.app.network.getPeers();
+    let sent_email = false;
+    peers.forEach((p) => {
+      if (sent_email == false) {
+        if (p.hasService("mailrelay")) {
+          mailrelay_self.app.network.sendTransactionWithCallback(newtx, null, p.peerIndex);
+          sent_email = true;
+        }
       }
     });
+    return newtx;
+  }
+
+  //
+  // only servers will have this
+  //
+  sendMail(email) {
+    if (!this.app.BROWSER) {
+      try {
+        const nodemailer = require("nodemailer");
+        //      const credentials = require("./lib/credentials");
+        let credentials = {};
+        if (process.env.SENDGRID) {
+          credentials = JSON.parse(process.env.SENDGRID);
+        }
+        let transporter = nodemailer.createTransport(credentials);
+        transporter.sendMail(email, (err, info) => {
+          if (info) {
+            console.log(info.envelope);
+            console.log(info.messageId);
+          } else {
+            console.log(err);
+          }
+        });
+      } catch (err) {
+        console.log("Error sending mail: " + err);
+      }
+    }
   }
 
   returnServices() {
     let services = [];
-    services.push(new PeerService(null, "mailrelay"));
+    services.push(new PeerService(null, "mailrelay", "Mail Relay Service"));
     return services;
   }
 
