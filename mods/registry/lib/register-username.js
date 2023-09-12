@@ -47,12 +47,14 @@ class RegisterUsername {
         //
         // No filter, check all possible registries
         //
+        let domain = "@saito";
+
         console.log("REGISTRY: Check if name available");
         this.mod.sendPeerDatabaseRequestWithFilter(
 
           "Registry",
 
-          `SELECT * FROM records WHERE identifier = "${identifier}@saito"`,
+          `SELECT * FROM records WHERE identifier = "${identifier}${domain}"`,
 
           async (res) => {
             if (res.rows) {
@@ -63,7 +65,7 @@ class RegisterUsername {
               } else {
                 console.log("REGISTRY: name available, try to register");
                 try {
-                  let register_success = await this.mod.tryRegisterIdentifier(identifier);
+                  let register_success = await this.mod.tryRegisterIdentifier(identifier, domain);
                   if (register_success) {
                     console.log("REGISTRY: tx to register successfully sent");
                     //

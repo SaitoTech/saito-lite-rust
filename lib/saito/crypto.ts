@@ -251,6 +251,10 @@ export default class Crypto {
     return stringx.toFixed(p).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, "");
   }
 
+  convertFloatToSmartPrecision(num, max_precision = 8) {
+    return num.toFixed(max_precision).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, ""); 
+  }
+
   /**
    * Checks if a publickey passed into a function
    * fits the criteria for a publickey
