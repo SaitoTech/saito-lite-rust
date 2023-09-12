@@ -35,13 +35,15 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners -
     //
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", async (keys) => {
       let unidentified_keys = [];
+
+      console.log("registry-fetch-identifiers-and-update-dom", keys);
 
       for (let i = 0; i < keys.length; i++) {
         if (this.cached_keys[keys[i]]) {
@@ -56,6 +58,8 @@ class Registry extends ModTemplate {
         let peer = peers[i];
         if (peer.hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
+            console.log("callback: ", answer);
+
             Object.entries(answer).forEach(([key, value]) => {
               if (value !== this.publicKey) {
                 this.cached_keys[key] = value;
@@ -109,6 +113,14 @@ class Registry extends ModTemplate {
 
   async initialize(app) {
     await super.initialize(app);
+
+    if (this.app.BROWSER == 0) {
+      if (this.local_dev) {
+        this.registry_publickey = this.publicKey;
+       }  
+    }
+
+    console.log("Registry Address: " + this.registry_publickey);   
   }
 
   returnServices() {
@@ -119,8 +131,9 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-      //if (this.registry_publickey == this.publicKey) {
-      services.push(new PeerService(null, "registry", "saito"));
+      if (this.registry_publickey == this.publicKey) {
+        services.push(new PeerService(null, "registry", "saito"));
+      }
     }
     return services;
   }
@@ -204,8 +217,10 @@ class Registry extends ModTemplate {
       return;
     }
 
-    const found_keys = [];
+    const found_keys = {};
     const missing_keys = [];
+
+    console.log("fetchManyIdentifiers", publickeys);
 
     publickeys.forEach((publickey) => {
       const identifier = this.app.keychain.returnIdentifierByPublicKey(publickey);
@@ -217,6 +232,7 @@ class Registry extends ModTemplate {
     });
 
     if (missing_keys.length == 0) {
+      console.log("No missing keys");
       if (mycallback) {
         mycallback(found_keys);
       }
@@ -224,9 +240,11 @@ class Registry extends ModTemplate {
     }
 
     const where_statement = `publickey in (${missing_keys.join(",")})`;
-    const sql = `select *
-                 from records
-                 where ${where_statement}`;
+    const sql = `SELECT *
+                 FROM records
+                 WHERE ${where_statement}`;
+
+    console.log(sql);
 
     this.sendPeerDatabaseRequestWithFilter(
       "Registry",
@@ -235,13 +253,13 @@ class Registry extends ModTemplate {
 
       (res) => {
         try {
+          console.log("Database results: ", res);
           if (!res.err) {
             if (res?.rows?.length > 0) {
+              console.log(res.rows);
               res.rows.forEach((row) => {
                 const { publickey, identifier, bid, bsh, lc } = row;
-                if (!found_keys.includes(publickey)) {
-                  found_keys[publickey] = identifier;
-                }
+                found_keys[publickey] = identifier;
               });
             }
           }
@@ -251,6 +269,7 @@ class Registry extends ModTemplate {
         }
       },
 
+      // Maybe don't filter??
       (p) => {
         if (peer) {
           if (p.publicKey == peer.publicKey) {
@@ -357,6 +376,10 @@ class Registry extends ModTemplate {
     return super.respondTo(type);
   }
 
+  //
+  // Creates and sends an on-chain tx to register the identifier @ the domain
+  // Throws errors for invalid identifier types
+  //
   async tryRegisterIdentifier(identifier, domain = "@saito") {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
     if (!newtx) {
@@ -370,13 +393,15 @@ class Registry extends ModTemplate {
         throw Error("Alphanumeric Characters only");
       }
       newtx.msg.module = "Registry";
-      //newtx.msg.request = "register";
+      newtx.msg.request = "register";
       newtx.msg.identifier = identifier + domain;
 
       newtx.addTo(this.registry_publickey);
 
       await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
+
+      console.log(newtx);
 
       // sucessful send
       return true;
@@ -385,10 +410,20 @@ class Registry extends ModTemplate {
     }
   }
 
-  onPeerServiceUp(app, peer, service = {}) {}
+  onPeerServiceUp(app, peer, service = {}) {
+    if (!app.BROWSER) {
+      return;
+    }
+
+    //Update our key for the active register service node
+    if (service.service === "registry") {
+      this.registry_publickey = peer.publicKey;
+      console.log("We are using " + this.registry_publickey + " for the Registry");
+    }
+  }
 
   async onPeerHandshakeComplete(app, peer) {
-    /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
+    /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******
     if (this.local_dev) {
       if (this.app.options.server != undefined) {
         this.registry_publickey = this.publicKey;
@@ -397,6 +432,7 @@ class Registry extends ModTemplate {
       }
       console.log("WE ARE USING LOCAL NODE: " + this.registry_publickey);
     }
+    */
   }
 
   async onConfirmation(blk, tx, conf) {
@@ -404,12 +440,13 @@ class Registry extends ModTemplate {
 
     if (conf == 0) {
       if (!!txmsg && txmsg.module === "Registry") {
-        //console.log("Registry TX: ", txmsg);
+        console.log("Registry TX: ", txmsg);
+        console.log(tx.toJson());
         //
         // this is to us, and we are the main registry server
         //
         if (tx.isTo(this.publicKey) && this.publicKey === this.registry_publickey) {
-          //console.log("Process Registry TX");
+          console.log("Process Registry TX");
           let identifier = txmsg.identifier;
           let publickey = tx.from[0].publicKey;
           let unixtime = new Date().getTime();
@@ -447,6 +484,7 @@ class Registry extends ModTemplate {
 
           // send message
           if (res == 1) {
+            console.log("Identifier successfully registered");
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
@@ -458,6 +496,7 @@ class Registry extends ModTemplate {
             newtx.msg.signed_message = signed_message;
             newtx.msg.signature = sig;
           } else {
+            console.log("Identifier registration failed");
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
             newtx.msg.message =
@@ -472,21 +511,20 @@ class Registry extends ModTemplate {
           await newtx.sign();
           await this.app.network.propagateTransaction(newtx);
 
+          console.log(newtx);
+
           return;
         }
       }
 
       if (!!txmsg && txmsg.module == "Email") {
-        //console.log("Registry Response TX: ", txmsg);
+        console.log("Registry Response TX: ", txmsg);
+        console.log(tx.toJson());
 
         if (tx.from[0].publicKey == this.registry_publickey) {
           if (tx.to[0].publicKey == this.publicKey) {
-            if (
-              tx.msg.identifier != undefined &&
-              tx.msg.signed_message != undefined &&
-              tx.msg.signature != undefined
-            ) {
-              //console.log("Process Registry TX");
+            if (txmsg.identifier && txmsg.signed_message && txmsg.signature) {
+              console.log("Process Registry Response TX");
               //
               // am email? for us? from the DNS registrar?
               //
@@ -503,7 +541,9 @@ class Registry extends ModTemplate {
                     block_hash: blk.hash,
                     lc: 1,
                   });
+                  console.info("***********************");
                   console.info("verification success for : " + identifier);
+                  console.info("***********************");
                 } else {
                   this.app.keychain.addKey(tx.to[0].publicKey, {
                     has_registered_username: false,
