@@ -454,6 +454,7 @@
     state.round = 0;
     state.players = [];
     state.events = {};
+    state.removed = []; // removed cards
 
     state.diplomacy = this.returnDiplomacyAlliance();
 

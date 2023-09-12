@@ -1530,6 +1530,7 @@ if (limit === "build") {
     }
   }
   playerPlayEvent(card, faction, ops=null) {
+    this.addMove("remove\t"+faction+"\t"+card);
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
@@ -3415,6 +3416,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   canPlayerRemoveUnrest(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     for (let i = 0; i < spaces_in_unrest.length; i++) {
+console.log("checking for unrest: " + spaces_in_unrest[i]);
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }

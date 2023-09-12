@@ -13,6 +13,8 @@ const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
+const WinterOverlay = require('./lib/ui/overlays/winter');
+const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const JSON = require('json-bigint');
@@ -57,7 +59,9 @@ class HereIStand extends GameTemplate {
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
+    this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
+    this.winter_overlay = new WinterOverlay(this.app, this);
 
     //
     // this sets the ratio used for determining
@@ -2530,8 +2534,62 @@ console.log("\n\n\n\n");
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addMenuOption("game-cards", "Cards");
+    this.menu.addMenuOption("game-info", "Info");
+    this.menu.addSubMenuOption("game-info", {
+      text: "Cards",
+      id: "game-cards",
+      class: "game-cards",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-cards");
+      }
+    });
     this.menu.addSubMenuOption("game-cards", {
+      text : "My Hand",
+      id : "game-my-hand",
+      class : "game-my-hand",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("hand");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Discards",
+      id : "game-discards",
+      class : "game-discards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("discards");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "All Cards",
+      id : "game-all-cards",
+      class : "game-all-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("all");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Unplayed",
+      id : "game-unplayed-cards",
+      class : "game-unplayed-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("unplayed");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Removed",
+      id : "game-removed-cards",
+      class : "game-removed-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("removed");
+      }
+    });
+
+    this.menu.addSubMenuOption("game-info", {
       text : "Field Battle",
       id : "game-field-battle",
       class : "game-field_battle",
@@ -2540,7 +2598,7 @@ console.log("\n\n\n\n");
         game_mod.field_battle_overlay.renderFortification();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Religion",
       id : "game-religious-conflict",
       class : "game-religious-conflict",
@@ -2549,7 +2607,7 @@ console.log("\n\n\n\n");
         game_mod.religious_overlay.render();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Debaters",
       id : "game-debaters",
       class : "game-debaters",
@@ -2558,7 +2616,7 @@ console.log("\n\n\n\n");
         game_mod.displayDebaters();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Explorers",
       id : "game-explorers",
       class : "game-explorers",
@@ -2567,7 +2625,7 @@ console.log("\n\n\n\n");
         game_mod.displayExplorers();
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Conquistadors",
       id : "game-conquistadors",
       class : "game-conquistadors",
@@ -4688,6 +4746,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
 
   removeCardFromGame(card) {
+    if (!this.game.state.removed.includes(card)) { this.game.state.removed.push(card); }
     try { delete this.game.deck[0].cards[card]; } catch (err) {}
     try { delete this.game.deck[0].discards[card]; } catch (err) {}
   }
@@ -9500,7 +9559,8 @@ console.log("HITS: " + hits);
 	  let card = his_self.game.state.last_pulled_card;
 	  let ops = his_self.game.deck[0].cards[card].ops;
 
-	  for (let i = 0; i < card.ops; i++) {
+  	  his_self.game.queue.push("show_overlay\tfaction\tpapacy");
+	  for (let i = 0; i < ops; i++) {
   	    his_self.game.queue.push("build_saint_peters");
 	  }
 
@@ -9759,7 +9819,13 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	return 1;
+        let res = his_self.returnSpacesWithFilter(function(spacekey) {
+	  if (his_self.isOccupied(spacekey)) { return 0; }
+	  if (his_self.game.spaces[spacekey].language == "german") { return 1; }
+	  return 0;
+	});
+	if (res.length > 0) { return 1; }
+	return 0;
       },
       onEvent : function(his_self, faction) {
 
@@ -9768,7 +9834,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
           let res = his_self.returnSpacesWithFilter(function(spacekey) {
 	    if (his_self.isOccupied(spacekey)) { return 0; }
-	    if (!his_self.game.spaces[spacekey].language == "german") { return 1; }
+	    if (his_self.game.spaces[spacekey].language == "german") { return 1; }
 	    return 0;
 	  });
 
@@ -9776,7 +9842,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  let spaces_to_select = 5;
 
 	  his_self.playerSelectOptions(res, spaces_to_select, false, (selected) => {
-	    alert("SELECTED SPACES FOR UNREST: " + JSON.stringify(selected));
 	    for (let i = 0; i < selected.length; i++) {
 	      his_self.addMove("unrest\t"+selected[i]);
 	    }
@@ -14932,6 +14997,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
     state.round = 0;
     state.players = [];
     state.events = {};
+    state.removed = []; // removed cards
 
     state.diplomacy = this.returnDiplomacyAlliance();
 
@@ -16021,6 +16087,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("victory_determination_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
+	  this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
+	  this.game.queue.push("show_overlay\twinter");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\all");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
@@ -16050,14 +16119,26 @@ this.updateLog(`###############`);
 	    // round 2 - zwingli in zurich
 	    //
 	    if (this.game.state.round == 2) {
+	      this.addDebater("protestant", "oekolampadius-debater");
 	      this.addDebater("protestant", "zwingli-debater");
 	      this.addReformer("protestant", "zurich", "zwingli-reformer");
+	      this.addDebater("papacy", "contarini-debater");
+	    }
+
+	    //
+	    // round 3
+	    //
+	    if (this.game.state.round == 3) {
+	      this.addDebater("protestant", "bullinger-debater");
 	    }
 
 	    //
 	    // round 4 - calvin in genoa
 	    //
 	    if (this.game.state.round == 4) {
+	      this.addDebater("protestant", "farel-debater");
+	      this.addDebater("protestant", "cop-debater");
+	      this.addDebater("protestant", "olivetan-debater");
 	      this.addDebater("protestant", "calvin-debater");
 	      this.addReformer("protestant", "genoa", "calvin-reformer");
 	    }
@@ -16070,13 +16151,27 @@ this.updateLog(`###############`);
 	      this.addDebater("protestant", "latimer-debater");
 	      this.addDebater("protestant", "coverdale-debater");
 	      this.addReformer("protestant", "genoa", "cranmer-reformer");
+	      this.addDebater("papacy", "pole-debater");
+	      this.addDebater("papacy", "caraffa-debater");
 	    }
 
 	    //
 	    // round 6 - maurice of saxony
 	    //
 	    if (this.game.state.round == 6) {
+	      this.addDebater("protestant", "wishart-debater");
+	      this.addDebater("protestant", "knox-debater");
 	      this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
+	      this.addDebater("papacy", "loyola-debater");
+	      this.addDebater("papacy", "faber-debater");
+	      this.addDebater("papacy", "canisius-debater");
+	    }
+
+	    //
+	    // round 7
+	    //
+	    if (this.game.state.round == 7) {
+	      this.addDebater("papacy", "gardiner-debater");
 	    }
 
 	  }
@@ -16138,6 +16233,8 @@ this.updateLog(`###############`);
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
 	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.render(); }
+	  if (mv[1] === "winter") { this.winter_overlay.render(); }
+	  if (mv[1] === "faction") { this.faction_overlay.render(mv[2]); }
 	  if (mv[1] === "zoom") {
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
@@ -16165,7 +16262,9 @@ this.updateLog(`###############`);
 	}
 	if (mv[0] === "hide_overlay") {
 	  this.displayElectorateDisplay();
+	  if (mv[1] === "winter") { this.winter_overlay.pushHudUnderOverlay(); this.winter_overlay.hide(); }
 	  if (mv[1] === "welcome") { this.welcome_overlay.pushHudUnderOverlay(); this.welcome_overlay.hide(); }
+	  if (mv[1] === "faction") { this.faction_overlay.hide(); }
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
 	  if (mv[1] === "zoom") { this.theses_overlay.hide(); }
 	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
@@ -16289,8 +16388,6 @@ this.updateLog(`###############`);
 
 	  let faction = mv[1];
 	  let spacekey = mv[2];
-
-console.log("TODO: winter_attrition");
 
 	  this.game.spaces[spacekey].units[faction] = [];
 
@@ -16534,8 +16631,6 @@ console.log("TODO: winter_attrition");
 
 
 	if (mv[0] === "is_testing") {
-
-	  //this.game.queue.push("retreat_to_winter_spaces");
 
 	  // moar debaters
           this.addDebater("protestant", "bullinger-debater");
@@ -21646,7 +21741,8 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "winter_phase") {
 
-	  console.log("Winter Phase!");
+	  // show the winter overlay to let people know WTF is happening
+	  //this.winter_overlay.render();
 
 	  // Remove loaned naval squadron markers
 	  this.returnLoanedUnits();
@@ -22134,7 +22230,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.updateLog(this.popup(card) + " removed from deck");
+	  if (!this.game.state.removed.includes(card)) { 
+	    this.updateLog(this.popup(card) + " removed from deck");
+	  }
 	  this.removeCardFromGame(card);
 
 	  return 1;
@@ -22222,12 +22320,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.game.state.last_pulled_card = card;
 
 	  if (this.game.player == p2) {
-            let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
-	    this.game.deck[0].fhand[fhand_idx].push(card);
-	  }
-
-	  if (this.game.player == p1) {
-            let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
 	    for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
 	      for (let z = 0; z < this.game.deck[0].fhand[i].length; z++) {
 		if (this.game.deck[0].fhand[i][z] === card) {
@@ -22236,6 +22328,11 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		}
 	      }
 	    }
+	  }
+
+	  if (this.game.player == p1) {
+            let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
+	    this.game.deck[0].fhand[fhand_idx].push(card);
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -24955,6 +25052,7 @@ if (limit === "build") {
     }
   }
   playerPlayEvent(card, faction, ops=null) {
+    this.addMove("remove\t"+faction+"\t"+card);
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
@@ -26840,6 +26938,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   canPlayerRemoveUnrest(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     for (let i = 0; i < spaces_in_unrest.length; i++) {
+console.log("checking for unrest: " + spaces_in_unrest[i]);
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }
@@ -29733,6 +29832,8 @@ return;
     let cardclass = "cardimg";
     let deckidx = -1;
     let card;
+    let cdeck = this.returnDeck();
+    let ddeck = this.returnDiplomaticDeck();
 
     if (cardname === "pass") {
       return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
@@ -29749,13 +29850,15 @@ return;
         card = c;
       }
     }
+    if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
+    if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
 
     //
     // triggered before card deal
     //
     if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
 
-    if (deckidx === -1) {
+    if (deckidx === -1 && !cdeck[cardname] && !ddeck[cardname]) {
       //
       // this is not a card, it is something like "skip turn" or cancel
       //
@@ -29768,8 +29871,10 @@ return;
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-      if (!this.deck[cardname].canEvent(this, "")) {
-        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+      if (!this.deck[cardname]) {
+        if (!this.deck[cardname].canEvent(this, "")) {
+          html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+        }
       }
     }
     if (deckidx == 1) { 

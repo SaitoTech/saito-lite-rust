@@ -1167,6 +1167,8 @@
     let cardclass = "cardimg";
     let deckidx = -1;
     let card;
+    let cdeck = this.returnDeck();
+    let ddeck = this.returnDiplomaticDeck();
 
     if (cardname === "pass") {
       return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
@@ -1183,13 +1185,15 @@
         card = c;
       }
     }
+    if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
+    if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
 
     //
     // triggered before card deal
     //
     if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
 
-    if (deckidx === -1) {
+    if (deckidx === -1 && !cdeck[cardname] && !ddeck[cardname]) {
       //
       // this is not a card, it is something like "skip turn" or cancel
       //
@@ -1202,8 +1206,10 @@
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-      if (!this.deck[cardname].canEvent(this, "")) {
-        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+      if (!this.deck[cardname]) {
+        if (!this.deck[cardname].canEvent(this, "")) {
+          html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+        }
       }
     }
     if (deckidx == 1) { 
