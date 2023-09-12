@@ -559,7 +559,7 @@ class HereIStand extends GameTemplate {
         }
 
 	// saint peters cathedral
- 	base += game_mod.game.state.saint_peters_cathedral['vp'] = 0;
+ 	base += game_mod.game.state.saint_peters_cathedral['vp'];
 
         return base;
 
@@ -16089,7 +16089,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
 	  this.game.queue.push("show_overlay\twinter");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\all");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");

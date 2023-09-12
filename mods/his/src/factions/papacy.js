@@ -81,7 +81,7 @@
         }
 
 	// saint peters cathedral
- 	base += game_mod.game.state.saint_peters_cathedral['vp'] = 0;
+ 	base += game_mod.game.state.saint_peters_cathedral['vp'];
 
         return base;
 
