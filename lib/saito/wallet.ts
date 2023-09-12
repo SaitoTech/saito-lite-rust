@@ -447,11 +447,6 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    console.log(
-      "HOW MANY INSTALLED CRYPTOS: " + allMods.length,
-      "HOW MANY ACTIVATED: " + activeMods.length
-    );
-
     return activeMods;
   }
 
