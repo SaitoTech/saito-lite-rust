@@ -52,7 +52,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
-//this.game.queue.push("is_testing");
+this.game.queue.push("is_testing");
+
 
 
 	  //
@@ -624,10 +625,8 @@ this.updateLog(`###############`);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "105"); 
-    	  this.addCard("papacy", "078"); 
-   	  this.addCard("protestant", "027");
-   	  this.addCard("protestant", "017");
+    	  this.addCard("papacy", "081"); 
+   	  this.addCard("protestant", "037");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
@@ -2038,6 +2037,8 @@ console.log("@");
 console.log("@");
 console.log("@");
 console.log("into counter or acknowledge...");
+console.log("@ " + JSON.stringify(this.game.confirms_needed));
+console.log("@");
 
 	  //
 	  // hide any cardbox
@@ -6288,7 +6289,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  }
 
 	  if (this.game.player == p1) {
-            let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
+            let fhand_idx = this.returnFactionHandIdx(p1, faction_taking);
 	    this.game.deck[0].fhand[fhand_idx].push(card);
 	  }
 

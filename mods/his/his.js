@@ -7236,6 +7236,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "event") {
+	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("NOTIFY\tWartburg Evented");
           his_self.addMove("wartburg");
           his_self.addMove("discard\tprotestant\t037");
           his_self.addMove("commit\tprotestant\tluther-debater");
@@ -7248,22 +7250,24 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
         if (mv[0] == "wartburg") {
 
-	  his_self.game.state.events.wartburg = 1;
-	  his_self.commitDebater("protestant", "luther-debater");
-	  his_self.updateLog(his_self.popup("037") + " triggered");
           his_self.game.queue.splice(qe, 1);
+
+	  his_self.updateStatus(his_self.popup("037") + " triggered");
+	  his_self.game.state.events.wartburg = 1;
+	  his_self.commitDebater("protestant", "luther-debater", 0);
+	  his_self.updateLog(his_self.popup("037") + " triggered");
 
 	  //
 	  // remove event from execution and end player turn
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lmv = his_self.game.queue[i].split("\t");
-	    if (lmv[0] !== "discard" || lmv[0] !== "round" && lmv[0] !== "play") {
+	    if (lmv[0] !== "remove" && lmv[0] !== "discard" && lmv[0] !== "round" && lmv[0] !== "play") {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
 	      if (lmv[0] === "round" || lmv[0] === "play") {
-		his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	        i = -1;
+		break;
 	      }
 	    }
 	  }
@@ -16099,7 +16103,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
-//this.game.queue.push("is_testing");
+this.game.queue.push("is_testing");
+
 
 
 	  //
@@ -16671,10 +16676,8 @@ this.updateLog(`###############`);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "105"); 
-    	  this.addCard("papacy", "078"); 
-   	  this.addCard("protestant", "027");
-   	  this.addCard("protestant", "017");
+    	  this.addCard("papacy", "081"); 
+   	  this.addCard("protestant", "037");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
@@ -18085,6 +18088,8 @@ console.log("@");
 console.log("@");
 console.log("@");
 console.log("into counter or acknowledge...");
+console.log("@ " + JSON.stringify(this.game.confirms_needed));
+console.log("@");
 
 	  //
 	  // hide any cardbox
@@ -22335,7 +22340,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  }
 
 	  if (this.game.player == p1) {
-            let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
+            let fhand_idx = this.returnFactionHandIdx(p1, faction_taking);
 	    this.game.deck[0].fhand[fhand_idx].push(card);
 	  }
 
