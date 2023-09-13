@@ -618,6 +618,7 @@ class Server {
         if (req.params.keys) {
           keys = req.params.keys.split(";");
         }
+        console.log("fetching balance snapshot with keys : ", keys);
 
         const snapshot = await S.getInstance().getBalanceSnapshot(keys);
         res.setHeader("Content-Disposition", "attachment; filename=" + snapshot.file_name);

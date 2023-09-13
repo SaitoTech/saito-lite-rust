@@ -47,12 +47,14 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
 	  this.game.queue.push("show_overlay\twinter");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\all");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
 //this.game.queue.push("is_testing");
+
+
 
 
 	  //
@@ -624,10 +626,8 @@ this.updateLog(`###############`);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "105"); 
-    	  this.addCard("papacy", "078"); 
-   	  this.addCard("protestant", "027");
-   	  this.addCard("protestant", "017");
+    	  this.addCard("papacy", "081"); 
+   	  this.addCard("protestant", "037");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
@@ -2038,6 +2038,8 @@ console.log("@");
 console.log("@");
 console.log("@");
 console.log("into counter or acknowledge...");
+console.log("@ " + JSON.stringify(this.game.confirms_needed));
+console.log("@");
 
 	  //
 	  // hide any cardbox
@@ -5145,13 +5147,13 @@ console.log("purging naval units and capturing leader");
 	  this.game.queue.splice(qe, 1);
 
 	  //
-	  // commit debaters if uncommitted
+	  // commit attacker if uncommitted
 	  //
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
 	      attacker_idx = i;
-	      if (this.game.state.debaters[i].committed == 0) {
-		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+	      if (!this.isCommitted(this.game.state.theological_debate.attacker_debater)) {
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater, 0);
 	      }
 	    }
 	  }
@@ -5166,9 +5168,9 @@ console.log("purging naval units and capturing leader");
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
 	      defender_idx = i;
 	      defender_debater_power = this.game.state.debaters[defender_idx].power;
-	      if (this.game.state.debaters[i].committed == 0) {
+	      if (!this.isCommitted(this.game.state.theological_debate.defender_debater)) {
 	        was_defender_uncommitted = 1;
-		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
+		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater, 0);
 	      }
 	    }
 	  }
@@ -5193,7 +5195,7 @@ console.log("purging naval units and capturing leader");
 	      attacker_idx = i;
 	      attacker_debater_power = this.game.state.debaters[attacker_idx].power;
 	      if (this.game.state.debaters[i].committed == 0) {
-		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater, 0);
 	      }
 	    }
 	  }
@@ -5207,7 +5209,6 @@ console.log("purging naval units and capturing leader");
 	      }
 	    }
 	  }
-
 
 	  //
 	  // even Luther gets 3 if invoked w/ Here I Stand as attacker
@@ -6052,6 +6053,13 @@ console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
     	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
+
+	      // try to update cards_left
+	      if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
+	        this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
+	      }
+	      this.game.state.cards_left[this.game.state.players_info[i].factions[z]] += cardnum;
+
 	    }
 	  }
 
@@ -6289,7 +6297,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  }
 
 	  if (this.game.player == p1) {
-            let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
+            let fhand_idx = this.returnFactionHandIdx(p1, faction_taking);
 	    this.game.deck[0].fhand[fhand_idx].push(card);
 	  }
 

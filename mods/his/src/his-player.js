@@ -2919,9 +2919,9 @@ console.log("units length: " + space.units[defender].length);
   }
 
   canPlayerCommitDebater(faction, debater) {
-  
+
     if (faction !== "protestant" && faction !== "papacy") { return false; }
-   
+
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
 
     if (this.isBurned(debater)) { return false; }

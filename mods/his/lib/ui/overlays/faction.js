@@ -93,6 +93,8 @@ class FactionOverlay {
         let total_keys = 7;
 	controlled_keys = his_self.returnNumberOfKeysControlledByFaction("papacy");
 
+console.log(JSON.stringify(his_self.game.state.saint_peters_cathedral));
+
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i < 12; i++) {
 	  if (his_self.game.state.saint_peters_cathedral['state'] == i) {

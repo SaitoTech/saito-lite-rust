@@ -1,10 +1,8 @@
-const saito = require('./../../lib/saito/saito');
-const ModTemplate = require('../../lib/templates/modtemplate');
+const saito = require("./../../lib/saito/saito");
+const ModTemplate = require("../../lib/templates/modtemplate");
 
 class TRX extends ModTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.appname = "TRX";
@@ -17,11 +15,8 @@ class TRX extends ModTemplate {
     // MIXIN STUFF
     this.asset_id = "25dabac5-056a-48ff-b9f9-f67395dc407c";
     this.chain_id = "25dabac5-056a-48ff-b9f9-f67395dc407c";
-
-
   }
 
-  
   respondTo(type = "") {
     if (type == "mixin-crypto") {
       return {
@@ -34,12 +29,9 @@ class TRX extends ModTemplate {
     return null;
   }
 
-  returnBalance(){    
-    return this.balance;
-  }
-
+  //returnBalance(){
+  //  return this.balance;
+  //}
 }
 
 module.exports = TRX;
-
-

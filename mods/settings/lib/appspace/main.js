@@ -203,13 +203,14 @@ class SettingsAppspace {
             // await app.blockchain.resetBlockchain();
             delete app.options.keys;
 
-            await app.wallet.saveWallet();
-
             // await fetch wallet balance
             await app.wallet.fetchBalanceSnapshot(publicKey);
 
+            console.log("wallet slips : ", await app.wallet.getSlips());
+            await app.wallet.saveWallet();
+
             let c = await sconfirm("Success! Confirm to reload");
-  
+
             if (c) {
               window.location.reload();
             }

@@ -1026,7 +1026,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           	  his_self.removeUnit(faction_to_destroy, spacekey, unittype);
 		  his_self.displaySpace(spacekey);
-		  if (num === "3rd") { his_self.addMove("discard_random\t"+opponent_faction); }
+		  if (num === "3rd") { 
+		    his_self.updateStatus("submitted");
+		    his_self.addMove("discard_random\t"+opponent_faction);
+		  }
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
@@ -4405,6 +4408,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "event") {
+	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("NOTIFY\tWartburg Evented");
           his_self.addMove("wartburg");
           his_self.addMove("discard\tprotestant\t037");
           his_self.addMove("commit\tprotestant\tluther-debater");
@@ -4417,21 +4422,27 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
         if (mv[0] == "wartburg") {
 
+          his_self.game.queue.splice(qe, 1);
+
+	  his_self.updateStatus(his_self.popup("037") + " triggered");
+	  his_self.game.state.events.wartburg = 1;
+	  his_self.commitDebater("protestant", "luther-debater", 0);
+	  his_self.updateLog(his_self.popup("037") + " triggered");
+
 	  //
 	  // remove event from execution and end player turn
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lmv = his_self.game.queue[i].split("\t");
-	    if (lmv[0] !== "discard" || lmv[0] !== "round" && lmv[0] !== "play") {
+	    if (lmv[0] !== "remove" && lmv[0] !== "discard" && lmv[0] !== "round" && lmv[0] !== "play") {
 	      his_self.game.queue.splice(i, 1);
+	    } else {
+	      if (lmv[0] === "round" || lmv[0] === "play") {
+	        i = -1;
+		break;
+	      }
 	    }
 	  }
-
-	  his_self.game.state.events.wartburg = 1;
-	  his_self.commitDebater("protestant", "luther-debater");
-
-	  his_self.updateLog(his_self.popup("037") + " triggered");
-          his_self.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -6496,9 +6507,10 @@ console.log("HITS: " + hits);
 	// protestants get wartburg card if in discards
 	//
         if (his_self.game.deck[0].discards["037"]) {
+	  his_self.game.deck[0].cards["037"] = his_self.game.deck[0].discards["037"];
 	  delete his_self.game.deck[0].discards["037"];
 	  if (his_self.game.player == p) {
-            let fhand_idx = his_self.returnFactionHandIdx(p, faction);
+            let fhand_idx = his_self.returnFactionHandIdx(p, "protestant");
 	    his_self.game.deck[0].fhand[fhand_idx].push("037");
 	  }
 	}

@@ -515,7 +515,12 @@
 
     let his_self = this;
 
-    this.game.state.debater_committed_this_impulse[faction] = 1;
+    //
+    // we can only commit 1 debater for the bonus each impulse, so note it if so
+    //
+    if (activate == 1) {
+      this.game.state.debater_committed_this_impulse[faction] = 1;
+    }
 
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
