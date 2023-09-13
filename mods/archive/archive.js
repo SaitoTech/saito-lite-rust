@@ -128,10 +128,6 @@ class Archive extends ModTemplate {
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-console.log("->");
-console.log("-> handle peer transaction");
-console.log("->");
-
 
     if (tx == null) {
       return;
@@ -152,10 +148,7 @@ console.log("->");
     //
     if (req.request === "archive") {
       if (req.data.request === "load") {
-console.log("req . data . request is load...");
-console.log(JSON.stringify(req.data));
         let txs = await this.loadTransactions(req.data);
-console.log("and out with txs numbering: " + txs.length);
         mycallback(txs);
         return;
       }
@@ -168,7 +161,6 @@ console.log("and out with txs numbering: " + txs.length);
         await this.deleteTransaction(newtx, req.data);
       }
       if (req.data.request === "save") {
-console.log("req . data . request is save..");
         await this.saveTransaction(newtx, req.data);
       }
       if (req.data.request === "update") {
@@ -184,11 +176,6 @@ console.log("req . data . request is save..");
   //////////
   async saveTransaction(tx, obj = {}, onchain = 0) {
     let newObj = {};
-
-console.log("-----");
-console.log("----- archive.js");
-console.log("-----");
-console.log("SAVE TRANSACTION IN ARCHIVE");
 
     newObj.user_id = obj?.user_id || 0; //What is this supposed to be
     newObj.publicKey = obj?.publicKey || tx.from[0].publicKey;
@@ -293,22 +280,6 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
   // update //
   ////////////
   async updateTransaction(tx, obj = {}) {
-    //
-    // only owner can update
-    //
-    if (tx.from[0].publicKey != obj.owner && obj.signature != "") {
-      //
-      // this may be a transaction that I have saved that was originally from
-      // someone else, such as a RedSquare tweet that I have saved because it
-      // is a reply or a like.
-      //
-      // in this situation, we want to update the version of the transaction
-      // that we have saved rather than the original version of the transaction
-      // that is somewhere on chain.
-      //
-      console.log("Archive: only owner has the rights to modify records");
-      return 0;
-    }
 
     //
     // update records
@@ -319,6 +290,8 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
     newObj.publicKey = obj?.publicKey || "";
     newObj.owner = obj?.owner || "";
     newObj.signature = obj?.signature || "";
+    if (newObj.signature == "" && obj?.sig) { newObj.signature = obj.sig; }
+    if (newObj.signature == "") { if (tx?.signature) { newObj.signature = tx.signature; } }
     //Field1-3 are set by default in app.storage
     newObj.field1 = obj?.field1 || "";
     newObj.field2 = obj?.field2 || "";
@@ -352,9 +325,6 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
       return;
     }
 
-console.log("OK UPDATING THE ARCHIVE FOR THIS TX");
-
-
     let id = rows[0].id;
     let tx_id = rows[0].tx_id;
 
@@ -374,6 +344,7 @@ console.log("OK UPDATING THE ARCHIVE FOR THIS TX");
       $id: id,
       $sig: newObj.signature,
     };
+
     await this.app.storage.executeDatabase(sql, params, "archive");
 
     if (this.app.BROWSER) {
@@ -398,8 +369,8 @@ console.log("OK UPDATING THE ARCHIVE FOR THIS TX");
            SET tx = $tx
            WHERE id = $tx_id`;
     params = {
-      $tx_id: tx_id,
       $tx: tx.serialize_to_web(this.app),
+      $tx_id: tx_id,
     };
 
     await this.app.storage.executeDatabase(sql, params, "archive");
@@ -460,67 +431,25 @@ console.log("OK UPDATING THE ARCHIVE FOR THIS TX");
       limit = Math.min(limit, 100);
     }
 
-console.log("SEARCHING ON WHAT CRITERIA: " + JSON.stringify(obj));
-
+    let searched = false;
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //
-    if (obj.field1) {
+    if (obj.signature && obj.owner && searched == false) {
       sql = `SELECT *
              FROM archives
                       JOIN txs
-             WHERE archives.field1 = $field1
+             WHERE archives.sig = $sig
+               AND archives.owner = $owner 
                AND txs.id = archives.tx_id ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
-      params = { $field1: obj.field1, $limit: limit };
+      params = { $sig: obj.signature, $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["field1"] = obj.field1;
-    }
-    if (obj.field2) {
-      sql = `SELECT *
-             FROM archives
-                      JOIN txs
-             WHERE archives.field2 = $field2
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
-             ORDER BY archives.id DESC LIMIT $limit`;
-      params = { $field2: obj.field2, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["field2"] = obj.field2;
-    }
-    if (obj.field3) {
-      sql = `SELECT *
-             FROM archives
-                      JOIN txs
-             WHERE archives.field3 = $field3
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
-             ORDER BY archives.id DESC LIMIT $limit`;
-      params = { $field3: obj.field3, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["field3"] = obj.field3;
-    }
-    if (obj.owner) {
-      sql = `SELECT *
-             FROM archives
-                      JOIN txs
-             WHERE archives.owner = $owner
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
-             ORDER BY archives.id DESC LIMIT $limit`;
-      params = { $owner: obj.owner, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["sig"] = obj.signature;
       where_obj["owner"] = obj.owner;
+      searched = true;
     }
-    if (obj.publicKey) {
-      sql = `SELECT *
-             FROM archives
-                      JOIN txs
-             WHERE archives.publickey = $publickey
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
-             ORDER BY archives.id DESC LIMIT $limit`;
-      params = { $publickey: obj.publicKey, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["publicKey"] = obj.publicKey;
-    }
-    if (obj.signature) {
+    if (obj.signature && searched == false) {
       sql = `SELECT *
              FROM archives
                       JOIN txs
@@ -530,9 +459,23 @@ console.log("SEARCHING ON WHAT CRITERIA: " + JSON.stringify(obj));
       params = { $sig: obj.signature, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
       where_obj["sig"] = obj.signature;
+      searched = true;
     }
     // acceptable variant on signature
-    if (obj.sig) {
+    if (obj.sig && obj.owner && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.sig = $sig
+               AND archives.owner = $owner 
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $sig: obj.sig, $owner: obj.owner, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["sig"] = obj.sig;
+      searched = true;
+    }
+    if (obj.sig && searched == false) {
       sql = `SELECT *
              FROM archives
                       JOIN txs
@@ -542,12 +485,82 @@ console.log("SEARCHING ON WHAT CRITERIA: " + JSON.stringify(obj));
       params = { $sig: obj.sig, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
       where_obj["sig"] = obj.sig;
+      searched = true;
     }
-
-console.log("SQL: " + sql);
-console.log("PARAMS: " + JSON.stringify(params));
-console.log("LIMIT: " + limit);
-console.log("ROWS: " + JSON.stringify(rows));
+    if (obj.field1 && obj.owner && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.field1 = $field1
+               AND archives.owner = $owner 
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $field1: obj.field1, $owner: obj.owner, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field1"] = obj.field1;
+      where_obj["owner"] = obj.owner;
+      searched = true;
+    }
+    if (obj.field1 && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.field1 = $field1
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $field1: obj.field1, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field1"] = obj.field1;
+      searched = true;
+    }
+    if (obj.field2 && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.field2 = $field2
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $field2: obj.field2, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field2"] = obj.field2;
+      searched = true;
+    }
+    if (obj.field3 && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.field3 = $field3
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $field3: obj.field3, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field3"] = obj.field3;
+      searched = true;
+    }
+    if (obj.owner && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.owner = $owner
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $owner: obj.owner, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["owner"] = obj.owner;
+      searched = true;
+    }
+    if (obj.publicKey && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.publickey = $publickey
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $publickey: obj.publicKey, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["publicKey"] = obj.publicKey;
+      searched = true;
+    }
 
     //
     // browsers handle with localDB search
