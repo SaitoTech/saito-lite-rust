@@ -213,7 +213,7 @@
         return 0; 
       },
       handleGameLoop : function(his_self, qe, mv) {
-        if (mv[0] == "oekolampdius") {
+        if (mv[0] == "oekolampadius") {
 	  his_self.commitDebater("protestant", "oekolampdius-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;

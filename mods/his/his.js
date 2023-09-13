@@ -1125,7 +1125,7 @@ Habsburg conquistadores:
         return 0; 
       },
       handleGameLoop : function(his_self, qe, mv) {
-        if (mv[0] == "oekolampdius") {
+        if (mv[0] == "oekolampadius") {
 	  his_self.commitDebater("protestant", "oekolampdius-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
@@ -3628,49 +3628,53 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	  let spacekey = mv[1];
           his_self.game.queue.splice(qe, 1);
 
- 	  let msg = "Choose Option:";
-          let html = '<ul>';
-          html += '<li class="option" id="squadron">1 squadron in French home port</li>';
-          html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
-    	  html += '</ul>';
+	  let player = his_self.returnPlayerOfFaction("protestant");
+	  if (his_self.game.player == player) {
 
-          his_self.updateStatusWithOptions(msg, html);
+ 	    let msg = "Choose Option:";
+            let html = '<ul>';
+            html += '<li class="option" id="squadron">1 squadron in French home port</li>';
+            html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
+    	    html += '</ul>';
 
-	  $('.option').off();
-	  $('.option').on('click', function () {
+            his_self.updateStatusWithOptions(msg, html);
 
-	    let action = $(this).attr("id");
-	    if (action === "squadron") {
+	    $('.option').off();
+	    $('.option').on('click', function () {
 
-              his_self.playerSelectSpaceWithFilter(
+	      let action = $(this).attr("id");
+	      if (action === "squadron") {
 
-                "Select French Home Port",
+                his_self.playerSelectSpaceWithFilter(
 
-                function(space) {
-                  if (space.ports.length > 0 && space.home == "french") {
-                    return 1;
-                  }
-                },
+                  "Select French Home Port",
 
-                function(spacekey) {
-                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
-                  his_self.endTurn();
-                },
+                  function(space) {
+                    if (space.ports.length > 0 && space.home == "french") {
+                      return 1;
+                    }
+                  },
 
-		null,
+                  function(spacekey) {
+                    his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
+                    his_self.endTurn();
+                  },
 
-		true
+		  null,
 
-              );
-	    }
-	    if (action === "mercenaries") {
-              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
-              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
-              his_self.endTurn();
-	    }
+		  true
 
-	  });
-
+                );
+	      }
+	      if (action === "mercenaries") {
+                his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+                his_self.endTurn();
+	      }
+	    });
+	  } else {
+	    his_self.updateLog("Protestants playing " + his_self.popup("206"));
+	  }
 	  return 0;
 	}
 
