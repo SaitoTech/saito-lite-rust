@@ -8,6 +8,7 @@ import { Saito } from "../../apps/core";
 import S from "saito-js/saito";
 import SaitoWallet from "saito-js/lib/wallet";
 import BalanceSnapshot from "saito-js/lib/balance_snapshot";
+import { WalletSlip } from "saito-js/lib/wallet";
 
 const CryptoModule = require("../templates/cryptomodule");
 
@@ -21,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.351;
+  version = 5.355;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -63,7 +64,6 @@ export default class Wallet extends SaitoWallet {
     this.publicKey = publicKey;
     console.log("public key = " + publicKey);
 
-
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
       constructor(app) {
@@ -86,7 +86,11 @@ export default class Wallet extends SaitoWallet {
         return this.app.wallet.getPrivateKey();
       }
 
-      returnWithdrawalFeeForAddress(address="", mycallback=null) { if (mycallback) { mycallback(0); } }
+      returnWithdrawalFeeForAddress(address = "", mycallback = null) {
+        if (mycallback) {
+          mycallback(0);
+        }
+      }
 
       async sendPayment(amount, to_address, unique_hash = "") {
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
@@ -215,7 +219,16 @@ export default class Wallet extends SaitoWallet {
           this.app.options.wallet.preferred_txs = this.preferred_txs;
           this.app.options.wallet.version = this.version;
           this.app.options.wallet.default_fee = this.default_fee;
+          // this.app.options.wallet.slips = [];
 
+          if (this.app.options.wallet.slips) {
+            let slips = this.app.options.wallet.slips.map((json: any) => {
+              let slip = new WalletSlip();
+              slip.copyFrom(json);
+              return slip;
+            });
+            await this.addSlips(slips);
+          }
           // reset games and restore game settings
           this.app.options.games = [];
           this.app.options.gameprefs = gameprefs;
@@ -250,6 +263,7 @@ export default class Wallet extends SaitoWallet {
           // purge old slips
           //
           this.app.options.wallet.version = this.version;
+          this.app.options.wallet.slips = [];
 
           // this.app.options.wallet.inputs = [];
           // this.app.options.wallet.outputs = [];
@@ -262,9 +276,20 @@ export default class Wallet extends SaitoWallet {
         if (typeof this.app.options.wallet.preferred_crypto != "undefined") {
           this.preferred_crypto = this.app.options.wallet.preferred_crypto;
         }
+        if (this.app.options.wallet.slips) {
+          // for (let slip of this.app.options.wallet.slips) {
+          //   console.log("222 : ", slip);
+          let slips = this.app.options.wallet.slips.map((json: any) => {
+            let slip = new WalletSlip();
+            slip.copyFrom(json);
+            return slip;
+          });
+          await this.addSlips(slips);
+          // }
+        }
       }
 
-      this.instance = Object.assign(this.instance, this.app.options.wallet);
+      // this.instance = Object.assign(this.instance, this.app.options.wallet);
     }
     // }
     ////////////////
@@ -410,6 +435,9 @@ export default class Wallet extends SaitoWallet {
     this.app.options.wallet.preferred_txs = this.preferred_txs;
     this.app.options.wallet.version = this.version;
     this.app.options.wallet.default_fee = this.default_fee;
+    let slips = await this.getSlips();
+
+    this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
     // this.app.options.wallet = this.instance;
     // for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
@@ -446,11 +474,6 @@ export default class Wallet extends SaitoWallet {
         activeMods.push(allMods[i]);
       }
     }
-
-    console.log(
-      "HOW MANY INSTALLED CRYPTOS: " + allMods.length,
-      "HOW MANY ACTIVATED: " + activeMods.length
-    );
 
     return activeMods;
   }
@@ -537,7 +560,7 @@ export default class Wallet extends SaitoWallet {
       } else {
         const cmod = this.returnCryptoModuleByTicker(ticker);
         if (cmod) {
-          return cmod.returnAddress();  
+          return cmod.returnAddress();
         }
         console.log(`Crypto Module (${ticker}) not found`);
       }
@@ -708,7 +731,7 @@ export default class Wallet extends SaitoWallet {
             //mycallback({err: err});
             return;
           }
-        }else{
+        } else {
           console.warn("Cannot send payment from wrong crypto address");
           console.log(cryptomod.name);
           console.log(senders[i], cryptomod.returnAddress());
@@ -932,14 +955,13 @@ export default class Wallet extends SaitoWallet {
   // We can use this function to selectively exclude some things from the "wallet"
   // for backup purposes
   //
-  exportWallet(){
+  exportWallet() {
     let newObj = JSON.parse(JSON.stringify(this.app.options));
 
     delete newObj.games;
 
     return JSON.stringify(newObj);
   }
-
 
   /**
    * Serialized the user's wallet to JSON and downloads it to their local machine
@@ -950,7 +972,10 @@ export default class Wallet extends SaitoWallet {
         //let content = JSON.stringify(this.app.options);
         let pom = document.createElement("a");
         pom.setAttribute("type", "hidden");
-        pom.setAttribute("href", "data:application/json;utf-8," + encodeURIComponent(this.exportWallet()));
+        pom.setAttribute(
+          "href",
+          "data:application/json;utf-8," + encodeURIComponent(this.exportWallet())
+        );
         pom.setAttribute("download", "saito.wallet.json");
         document.body.appendChild(pom);
         pom.click();
@@ -1052,6 +1077,7 @@ export default class Wallet extends SaitoWallet {
 
   public async fetchBalanceSnapshot(key: string) {
     try {
+      console.log("fetching balance snapshot for key : " + key);
       let response = await fetch("/balance/" + key);
       let data = await response.text();
       let snapshot = BalanceSnapshot.fromString(data);
