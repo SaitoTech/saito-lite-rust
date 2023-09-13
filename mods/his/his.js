@@ -2536,13 +2536,127 @@ console.log("\n\n\n\n");
     });
     this.menu.addMenuOption("game-info", "Info");
     this.menu.addSubMenuOption("game-info", {
-      text: "Cards",
+      text: "Faction Cards",
+      id: "game-faction-cards",
+      class: "game-faction-cards",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-faction-cards");
+      }
+    });
+    this.menu.addSubMenuOption("game-info", {
+      text: "Action Cards",
       id: "game-cards",
       class: "game-cards",
       callback: function(app, game_mod){
         game_mod.menu.showSubSubMenu("game-cards");
       }
     });
+    this.menu.addSubMenuOption("game-info", {
+      text: "Diplomatic Cards",
+      id: "game-diplomatic",
+      class: "game-diplomatic",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-diplomatic");
+      }
+    });
+    this.menu.addSubMenuOption("game-diplomatic", {
+      text : "My Hand",
+      id : "game-my-dhand",
+      class : "game-my-dhand",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("dhand");
+      }
+    });
+    this.menu.addSubMenuOption("game-diplomatic", {
+      text : "All Cards",
+      id : "game-all-diplomatic",
+      class : "game-add-diplomatic",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("hand");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Papacy",
+      id : "game-papacy-cards",
+      class : "game-papacy-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("papacy") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("papacy");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Protestant",
+      id : "game-protestant-cards",
+      class : "game-protestant-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("protestant") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("protestant");
+      }
+    });
+if (this.game.players.length > 2) {
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "England",
+      id : "game-england-cards",
+      class : "game-england-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("england") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("england");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "France",
+      id : "game-france-cards",
+      class : "game-france-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("france") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("france");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Hapsburg",
+      id : "game-hapsburg-cards",
+      class : "game-hapsburg-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("hapsburg") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("hapsburg");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Ottoman",
+      id : "game-ottoman-cards",
+      class : "game-ottoman-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("ottoman") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("ottoman");
+      }
+    });
+}
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",
       id : "game-my-hand",
@@ -3857,7 +3971,10 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           	  his_self.removeUnit(faction_to_destroy, spacekey, unittype);
 		  his_self.displaySpace(spacekey);
-		  if (num === "3rd") { his_self.addMove("discard_random\t"+opponent_faction); }
+		  if (num === "3rd") { 
+		    his_self.updateStatus("submitted");
+		    his_self.addMove("discard_random\t"+opponent_faction);
+		  }
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
@@ -22104,6 +22221,13 @@ console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
     	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
+
+	      // try to update cards_left
+	      if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
+	        this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
+	      }
+	      this.game.state.cards_left[this.game.state.players_info[i].factions[z]] += cardnum;
+
 	    }
 	  }
 

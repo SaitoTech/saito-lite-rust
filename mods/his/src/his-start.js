@@ -71,13 +71,127 @@
     });
     this.menu.addMenuOption("game-info", "Info");
     this.menu.addSubMenuOption("game-info", {
-      text: "Cards",
+      text: "Faction Cards",
+      id: "game-faction-cards",
+      class: "game-faction-cards",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-faction-cards");
+      }
+    });
+    this.menu.addSubMenuOption("game-info", {
+      text: "Action Cards",
       id: "game-cards",
       class: "game-cards",
       callback: function(app, game_mod){
         game_mod.menu.showSubSubMenu("game-cards");
       }
     });
+    this.menu.addSubMenuOption("game-info", {
+      text: "Diplomatic Cards",
+      id: "game-diplomatic",
+      class: "game-diplomatic",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-diplomatic");
+      }
+    });
+    this.menu.addSubMenuOption("game-diplomatic", {
+      text : "My Hand",
+      id : "game-my-dhand",
+      class : "game-my-dhand",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("dhand");
+      }
+    });
+    this.menu.addSubMenuOption("game-diplomatic", {
+      text : "All Cards",
+      id : "game-all-diplomatic",
+      class : "game-add-diplomatic",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("hand");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Papacy",
+      id : "game-papacy-cards",
+      class : "game-papacy-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("papacy") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("papacy");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Protestant",
+      id : "game-protestant-cards",
+      class : "game-protestant-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("protestant") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("protestant");
+      }
+    });
+if (this.game.players.length > 2) {
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "England",
+      id : "game-england-cards",
+      class : "game-england-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("england") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("england");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "France",
+      id : "game-france-cards",
+      class : "game-france-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("france") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("france");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Hapsburg",
+      id : "game-hapsburg-cards",
+      class : "game-hapsburg-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("hapsburg") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("hapsburg");
+      }
+    });
+    this.menu.addSubMenuOption("game-faction-cards", {
+      text : "Ottoman",
+      id : "game-ottoman-cards",
+      class : "game-ottoman-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("ottoman") == game_mod.game.player) {
+          game_mod.deck_overlay.render("hand");
+	  return;
+	}
+        game_mod.deck_overlay.render("ottoman");
+      }
+    });
+}
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",
       id : "game-my-hand",
