@@ -1083,6 +1083,7 @@ class RedSquare extends ModTemplate {
                SET num_likes = num_likes + 1
                WHERE sig = $sig`;
     let params = {
+      $txjson: tx.serialize_to_web(this.app),
       $sig: txmsg.data.signature,
     };
     console.log("*");
@@ -1095,7 +1096,12 @@ class RedSquare extends ModTemplate {
     //
     console.log("this is the somewhat critical bit where we try to update the dynamically-saved TX");
     console.log("NOW FETCH ORIGINAL TX");
-    this.app.storage.loadTransactions({ sig: txmsg.data.signature }, (txs) => {
+    //
+    // servers load from themselves
+    //
+    this.app.storage.loadTransactions({ sig: txmsg.data.signature , owner: this.publicKey }, (txs) => {
+      if (!txs) { console.log("no txs returned"); return; }
+      if (txs.length == 0) { console.log("no txs returned 2"); return; }
       console.log("LOAD TRANSACTIONS RETURNED IN LIKE: " + txs.length);
       let tx = txs[0];
       if (!tx.optional) {
@@ -1105,9 +1111,10 @@ class RedSquare extends ModTemplate {
         tx.optional.num_likes = 0;
       }
       tx.optional.num_likes++;
-      console.log("AND RE-SAVE WITH NEW LIKES: " + tx.optiona.num_likes);
-      this.app.storage.updateTransaction(tx, { owner: this.publicKey });
-    });
+      console.log("AND RE-SAVE WITH NEW LIKES: " + tx.optional.num_likes);
+      await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
+      console.log("AND DONE UPDATING TRANSACTION!");
+    }, "localhost");
 
     //
     // update cache
@@ -1155,13 +1162,9 @@ class RedSquare extends ModTemplate {
     console.log("#");
 
     try {
-      console.log("A");
 
       let tweet = new Tweet(app, this, tx, ".tweet-manager");
-      console.log("A2");
       let txmsg = tx.returnMessage();
-
-      console.log("B");
 
       //
       // browsers
@@ -1171,9 +1174,6 @@ class RedSquare extends ModTemplate {
         // save tweets addressed to me
         //
         if (tx.isTo(this.publicKey)) {
-          console.log("$");
-          console.log("$ transaction is to me!");
-          console.log("$");
 
           //
           // this transaction is TO me, but I may not be the tx.to[0].publicKey address, and thus the archive
@@ -1273,20 +1273,17 @@ class RedSquare extends ModTemplate {
         return;
       }
 
-      console.log("C");
       //
-      // lets save this transaction in our archives as a redsquare transaction that is owned by ME (the server), so that I
+      // save this transaction in our archives as a redsquare transaction that is owned by ME (the server), so that I
       // can deliver it to users who want to fetch RedSquare transactions from the archives instead of just through the
-      // sql database.
+      // sql database -- this is done by specifying that I -- "localhost" am the peer required.
       //
-      this.app.storage.saveTransaction(tx, { owner: this.publicKey });
-      console.log("C2");
+      this.app.storage.saveTransaction(tx, { owner: this.publicKey }, "localhost");
 
       //
       // servers
       //
       tweet = await tweet.generateTweetProperties(app, this, 1);
-      console.log("C3");
 
       let type_of_tweet = 0; // unknown
       if (txmsg.data?.parent_id) {
@@ -1304,8 +1301,6 @@ class RedSquare extends ModTemplate {
 
       let created_at = tx.timestamp;
       let updated_at = tx.timestamp;
-
-      console.log("D");
 
       //
       // insert the basic information
@@ -1362,8 +1357,6 @@ class RedSquare extends ModTemplate {
         $has_images: has_images,
         $tx_size: tx_size,
       };
-
-      console.log("G");
 
       await app.storage.executeDatabase(sql, params, "redsquare");
 

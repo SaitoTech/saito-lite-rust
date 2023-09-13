@@ -123,6 +123,7 @@ console.log("SAVE TRANSACTION IN STORAGE");
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
+console.log("STORAGE.JS: about ot update local archive...");
         let res = archive_mod.updateTransaction(tx, obj);
       }
       return;
@@ -153,6 +154,7 @@ console.log("we have moved into loadTransactions in storage.ts on this machine..
 
     let internal_callback = (res) => {
 console.log("at the start of our internal callback in loadTransactions in storage");
+console.log(JSON.stringify(res));
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
@@ -170,7 +172,9 @@ console.log("peer is localhost!");
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
 console.log("loadTXS with callback!");
+console.log("submitting this obj: " + JSON.stringify(obj));
         archive_mod.loadTransactionsWithCallback(obj, (res) => {
+console.log("archive mod returned: " +JSON.stringify(res));
           internal_callback(res);
         });
       }

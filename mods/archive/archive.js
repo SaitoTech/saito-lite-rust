@@ -153,6 +153,7 @@ console.log("->");
     if (req.request === "archive") {
       if (req.data.request === "load") {
 console.log("req . data . request is load...");
+console.log(JSON.stringify(req.data));
         let txs = await this.loadTransactions(req.data);
 console.log("and out with txs numbering: " + txs.length);
         mycallback(txs);
@@ -305,14 +306,13 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
       // that we have saved rather than the original version of the transaction
       // that is somewhere on chain.
       //
-      //console.log("Archive: only owner has the rights to modify records");
+      console.log("Archive: only owner has the rights to modify records");
       return 0;
     }
 
     //
     // update records
     //
-
     let newObj = {};
     newObj.tx_id = obj?.tx_id || 0;
     newObj.user_id = obj?.user_id || 0; //What is this supposed to be
@@ -351,6 +351,9 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
     if (!rows?.length) {
       return;
     }
+
+console.log("OK UPDATING THE ARCHIVE FOR THIS TX");
+
 
     let id = rows[0].id;
     let tx_id = rows[0].tx_id;
@@ -457,6 +460,8 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
       limit = Math.min(limit, 100);
     }
 
+console.log("SEARCHING ON WHAT CRITERIA: " + JSON.stringify(obj));
+
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //
@@ -519,14 +524,34 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
       sql = `SELECT *
              FROM archives
                       JOIN txs
-             WHERE archives.signature = $sig
+             WHERE archives.sig = $sig
                AND txs.id = archives.tx_id ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $sig: obj.signature, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
       where_obj["sig"] = obj.signature;
     }
+    // acceptable variant on signature
+    if (obj.sig) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.sig = $sig
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $sig: obj.sig, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["sig"] = obj.sig;
+    }
 
+console.log("SQL: " + sql);
+console.log("PARAMS: " + JSON.stringify(params));
+console.log("LIMIT: " + limit);
+console.log("ROWS: " + JSON.stringify(rows));
+
+    //
+    // browsers handle with localDB search
+    //
     if (this.app.BROWSER) {
       rows = await this.localDB.select({
         from: "archives",
@@ -541,6 +566,8 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
         limit,
       });
     }
+
+
 
     //
     // FILTER FOR TXS
