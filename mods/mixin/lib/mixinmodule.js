@@ -391,6 +391,11 @@ MixinModule.prototype.returnHistory = function(asset_id="", records=20, callback
   return this.mixin.fetchSnapshots(asset_id, records, callback);
 };
 
+CryptoModule.prototype.fetchBalance = function(asset_id = "", callback=null) {
+  this.mixin.checkBalance(asset_id, callback);
+};
+
+
 module.exports = MixinModule;
 
 
