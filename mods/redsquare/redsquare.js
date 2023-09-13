@@ -1334,11 +1334,24 @@ class RedSquare extends ModTemplate {
         };
         await app.storage.executeDatabase(sql3, params3, "redsquare");
 
-
-
-
-
+	//
+	// fetch archived copy
+        //
+        // servers load from themselves
+        //
+        this.app.storage.loadTransactions({ sig: tweet.thread_id ,owner: this.publicKey }, (txs) => {
+          if (!txs) { return; }
+          if (txs.length == 0) { return; }
+          let tx = txs[0];
+          if (!tx.optional) { tx.optional = {}; }
+          if (!tx.optional.num_retweets) {
+            tx.optional.num_retweets = 0;
+          }
+          tx.optional.num_retweets++;
+          this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
+        }, "localhost");
       }
+
 
       if (tweet.parent_id !== tweet.tx.signature && tweet.parent_id !== "") {
         let ts = new Date().getTime();
@@ -1358,8 +1371,8 @@ class RedSquare extends ModTemplate {
           if (txs.length == 0) { return; }
           let tx = txs[0];
           if (!tx.optional) { tx.optional = {}; }
-          if (!tx.optional.num_likes) {
-            tx.optional.num_likes = 0;
+          if (!tx.optional.num_replies) {
+            tx.optional.num_replies = 0;
           }
           tx.optional.num_replies++;
           this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
@@ -1670,8 +1683,6 @@ alert("SHOW CACHED TWEETS");
         tx.optional.flagged = rows[i].flagged;
       }
       let tweet = new Tweet(this.app, this, tx, "");
-      console.log("TWEET TEXT: " + tweet.text);
-
       let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
     }
