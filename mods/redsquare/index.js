@@ -16,7 +16,7 @@ module.exports = (app, mod) => {
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="saito.io redsquare" />
-  <meta name="apple-mobile-web-app-title" content="🟥 Saito Red Square" />
+  <meta name="apple-mobile-web-app-title" content="🟥 Saito P2P RedSquare" />
   <meta name="theme-color" content="#FFFFFF" />
   <meta name="msapplication-navbutton-color" content="#FFFFFF" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
