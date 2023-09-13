@@ -2574,7 +2574,7 @@ console.log("\n\n\n\n");
       class : "game-add-diplomatic",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.deck_overlay.render("hand");
+        game_mod.deck_overlay.render("diplomatic");
       }
     });
     this.menu.addSubMenuOption("game-faction-cards", {
@@ -23174,9 +23174,12 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
  	  let faction = mv[2];
  	  let hc = this.returnDeck();
 
-	  if (this.game.player === player) {
-	    for (let key in hc) {
-	      if (hc[key].faction === faction) {
+
+	  for (let key in hc) {
+	    if (hc[key].faction === faction) {
+	      if (!this.game.state.cards_left[faction]) { this.game.state.cards_left[faction] = 0; }
+	      this.game.state.cards_left[faction]++;
+	      if (this.game.player === player) {
 	        this.game.deck[0].hand.push(key);
 	      }
 	    }

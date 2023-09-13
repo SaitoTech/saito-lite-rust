@@ -109,7 +109,7 @@
       class : "game-add-diplomatic",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.deck_overlay.render("hand");
+        game_mod.deck_overlay.render("diplomatic");
       }
     });
     this.menu.addSubMenuOption("game-faction-cards", {

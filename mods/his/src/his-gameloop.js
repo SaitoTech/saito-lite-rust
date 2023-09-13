@@ -7006,9 +7006,12 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
  	  let faction = mv[2];
  	  let hc = this.returnDeck();
 
-	  if (this.game.player === player) {
-	    for (let key in hc) {
-	      if (hc[key].faction === faction) {
+
+	  for (let key in hc) {
+	    if (hc[key].faction === faction) {
+	      if (!this.game.state.cards_left[faction]) { this.game.state.cards_left[faction] = 0; }
+	      this.game.state.cards_left[faction]++;
+	      if (this.game.player === player) {
 	        this.game.deck[0].hand.push(key);
 	      }
 	    }
