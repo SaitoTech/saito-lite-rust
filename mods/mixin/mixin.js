@@ -186,7 +186,7 @@ class Mixin extends ModTemplate {
   // fetchDeposits(asset_id, callback)
   // fetchAddresses(asset_id, callback)
   // doesWithdrawalAddressExist(asset_id, address_id_or_withdrawal_address)
-  // sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash, callback);
+  // async sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash);
   // sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash, callback)
   // updateUserPin(new_pin, callback)
   //
@@ -396,7 +396,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash = "", callback = null) {
+  async sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash = "") {
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
     let privateKey = this.mixin.privatekey;
@@ -418,13 +418,21 @@ class Mixin extends ModTemplate {
     };
 
     try {
-      this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
+      
+      let res = await this.request(appId, sessionId, privateKey, method, uri, body);
+      if (res?.data) {
+        this.withdrawals.push(res.data);
+      }
+
+      return res;
+
+      /*.then((res) => {
         let d = res.data;
         this.withdrawals.push(d.data);
         if (callback) {
           callback(res.data);
         }
-      });
+      });*/
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }

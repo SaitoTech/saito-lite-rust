@@ -188,7 +188,7 @@ MixinModule.prototype.returnBalance = async function() {
  * @abstract
  * @return {Number}
  */
-MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique_hash = "") {
+MixinModule.prototype.sendPayment = async function(amount = "", recipient = "", unique_hash = "") {
 
   let r = recipient.split("|");
   let ts = new Date().getTime();
@@ -200,8 +200,7 @@ MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique
     if (r[2] === "mixin") {
       console.log("Send to Mixin address");
       let opponent_address_id = r[1];
-      let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {
-      });
+      let trace_id = await this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash);
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
       return trace_id;
     }
