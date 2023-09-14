@@ -198,6 +198,7 @@ MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique
   //
   if (r.length >= 2) {
     if (r[2] === "mixin") {
+      console.log("Send to Mixin address");
       let opponent_address_id = r[1];
       let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {
       });

@@ -129,6 +129,11 @@ input[type="checkbox"].ignore_checkbox {
   font-size: 1.6rem;
 }
 
+.select_max:hover {
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .amount {
   font-size: 2.4em;
   margin: 1rem auto;
