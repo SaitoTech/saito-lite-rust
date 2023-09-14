@@ -5499,6 +5499,7 @@ console.log("protestant spaces and flip this number: " + this.returnNumberOfProt
 	  let zone = mv[1];
 	  let ops = 1;
 	  if (mv[2]) { if (parseInt(mv[2]) > ops) { ops = parseInt(mv[2]); } }
+          let player = this.returnPlayerOfFaction("protestant");
 
 	  this.game.queue.splice(qe, 1);
 
