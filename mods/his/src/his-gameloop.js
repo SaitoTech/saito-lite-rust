@@ -693,6 +693,20 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
+	  //
+	  // diplomatic pressure might leave an extra event, so we check
+	  // the next queue isn't a duplicate.
+	  //
+          let lqe = qe-1; 
+          if (lqe >= 0) {
+            let lmv = this.game.queue[lqe].split("\t");
+	    if (lmv.length >= 2) {
+              if (lmv[0] === "diplomacy_card_event" && lmv[1] === faction) {
+	  	this.game.queue.splice(qe, 1);
+	      }
+	    }
+	  }
+
 	  if (!this.diplomatic_deck[card].onEvent(this, faction)) { return 0; }
 
 	  return 1;
