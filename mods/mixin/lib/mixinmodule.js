@@ -188,19 +188,24 @@ MixinModule.prototype.returnBalance = async function() {
  * @abstract
  * @return {Number}
  */
-MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique_hash = "") {
+MixinModule.prototype.sendPayment = async function(amount = "", recipient = "", unique_hash = "") {
 
   let r = recipient.split("|");
   let ts = new Date().getTime();
+
+  console.log("Recipient: " + recipient);
 
   //
   // internal MIXIN transfer
   //
   if (r.length >= 2) {
     if (r[2] === "mixin") {
+      console.log("Send to Mixin address");
       let opponent_address_id = r[1];
-      let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {
-      });
+      let trace_id = await this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash);
+      if (trace_id?.error) {
+        return "";
+      }
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
       return trace_id;
     }
@@ -214,7 +219,7 @@ MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique
   let withdrawal_address_id = "";
 
   for (let i = 0; i < this.mixin.addresses.length; i++) {
-    if (this.mixin.addresses[i].destination === destination) {
+    if (this.mixin.addresses[i]?.destination === destination) {
       withdrawal_address_exists = 1;
       withdrawal_address_id = this.mixin.addresses[i].address_id;
     }
@@ -322,6 +327,8 @@ MixinModule.prototype.returnWithdrawalFeeForAddress = function(recipient = "", m
 
   let r = recipient.split("|");
   let ts = new Date().getTime();
+
+  console.log("Mixin Fee Lookup for: " + recipient);
 
   //
   // internal MIXIN transfer
