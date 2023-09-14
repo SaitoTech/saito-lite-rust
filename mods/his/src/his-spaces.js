@@ -1192,6 +1192,16 @@
 
   }
 
+  isSpaceElectorate(spacekey) {
+    if (spacekey === "augsburg") { return true; }
+    if (spacekey === "mainz") { return true; }
+    if (spacekey === "trier") { return true; }
+    if (spacekey === "cologne") { return true; }
+    if (spacekey === "wittenberg") { return true; }
+    if (spacekey === "brandenburg") { return true; }
+    return false;
+  }
+
   returnNumberOfCatholicElectorates() {
     let controlled_keys = 0;
     if (!this.isSpaceControlled('augsburg', "protestant")) { controlled_keys++; }
@@ -1259,7 +1269,7 @@
   returnNumberOfCatholicSpacesInLanguageZone(language="") {  
     let catholic_spaces = 0;
     for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "catholic") {
+      if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
 	if (language == "" || this.game.spaces[key].language == language) {
 	  catholic_spaces++;
 	}
@@ -1271,7 +1281,7 @@
   returnNumberOfProtestantSpacesInLanguageZone(language="") {  
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "protestant") {
+      if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
 	if (language == "all" || language == "" || this.game.spaces[key].language == language) {
 	  protestant_spaces++;
 	}

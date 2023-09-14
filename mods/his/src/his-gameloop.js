@@ -367,7 +367,8 @@ this.updateLog(`###############`);
 	    for (let key in this.game.spaces[i].units) {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
-		if (!this.isSpaceFortified(space)) {
+		// && clause permits Hapsburgs in Tunis for instance
+		if (!this.isSpaceFortified(space) || ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerOfFaction(key) > 0 && !this.isSpaceControlled(i, key))) {
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
 		  //
@@ -395,6 +396,20 @@ this.updateLog(`###############`);
 		      }
 		    }
 		  }
+
+		  //
+		  // if the space is besieged undo that, and un-besiege defenders
+		  //
+		  if (space.besieged > 0) {
+console.log("unbesieging space...");
+		    space.besieged = 0;
+		    for (let key in this.game.spaces[i].units) {
+		      for (let i = 0; i < this.game.spaces[i].units[key].length; i++) {
+			this.game.spaces[i].units[key][i].besieged = 0;
+		      }
+		    }
+		  }
+
 		}
 	      }
 	    }
@@ -430,6 +445,7 @@ this.updateLog(`###############`);
 	  //
 	  // non-player controlled factions skip winter retreat
 	  //
+console.log("should never get here!");
 	  return 1;
 
         }
@@ -1278,6 +1294,18 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	  let spacekey         = his_self.game.state.assault.spacekey;
 	  let space 	       = his_self.game.spaces[spacekey];
 	  let neighbours       = space.neighbours;
+
+	  //
+	  // remove siege record from units/space
+	  //
+	  space.besieged = 0;
+	  for (let f in space.units) {
+	    for (let i = 0; i < space.units[f].length; i++) {
+	      space.units[f][i].besieged = 0;
+	    }
+	  }
+	  this.displaySpace(spacekey);
+
 
 	  for (let zz = 0; zz < neighbours.length; zz++) {
             let fluis = this.canFactionRetreatToSpace(attacker_faction, neighbours[zz]);
@@ -3528,9 +3556,9 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 	    }
 	  }
 
-	  this.updateLog("Winner: "+this.returnFactionName(winner));
-	  this.updateLog("Attacker Units Remaining: "+his_self.game.state.field_battle.attacker_land_units_remaining);
-	  this.updateLog("Defender Units Remaining: "+his_self.game.state.field_battle.efender_land_units_remaining);
+//	  this.updateLog("Winner: "+this.returnFactionName(winner));
+//	  this.updateLog("Attacker Units Remaining: "+his_self.game.state.field_battle.attacker_land_units_remaining);
+//	  this.updateLog("Defender Units Remaining: "+his_self.game.state.field_battle.efender_land_units_remaining);
 
           //
           // conduct retreats
@@ -4009,7 +4037,6 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	if (mv[0] === "assault") {
 
           this.game.queue.splice(qe, 1);
-
 	  this.game.state.assault = {};
 
 	  //
@@ -4052,6 +4079,11 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  let spacekey = mv[2];
 	  let space = this.game.spaces[mv[2]];
 	  let stage = "assault";
+
+	  //
+	  // keep track of assaulted spaces
+	  //
+ 	  this.game.state.spaces_assaulted_this_turn.push(spacekey);
 
 	  //
 	  // prevent from being assaulted again
@@ -4570,14 +4602,14 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 
           }
 
-	  his_self.updateLog("Attacker UnModified: " + JSON.stringify(attacker_results));
-	  his_self.updateLog("Defender UnModified: " + JSON.stringify(defender_results));
-	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.assault.attacker_modified_rolls));
-	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.assault.defender_modified_rolls));
-	  his_self.updateLog("Attacker Units: " + attacker_units);
-	  his_self.updateLog("Defender Units: " + defender_units);
-	  his_self.updateLog("Attacker Hits: " + attacker_hits);
-	  his_self.updateLog("Defender Hits: " + defender_hits);
+//	  his_self.updateLog("Attacker UnModified: " + JSON.stringify(attacker_results));
+//	  his_self.updateLog("Defender UnModified: " + JSON.stringify(defender_results));
+//	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.assault.attacker_modified_rolls));
+//	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.assault.defender_modified_rolls));
+//	  his_self.updateLog("Attacker Units: " + attacker_units);
+//	  his_self.updateLog("Defender Units: " + defender_units);
+//	  his_self.updateLog("Attacker Hits: " + attacker_hits);
+//	  his_self.updateLog("Defender Hits: " + defender_hits);
 
 	  //
 	  // who won?
@@ -4609,30 +4641,25 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	        space.units[key][i].besieged = 0;
 	      }
 	    }
+	    //
+	    // updarte log
+	    //
+	    this.updateLog("Winner: "+this.returnFactionName(defender_faction));
 	  }
 
 	  //
 	  // attacker does better than defender
 	  //
 	  if (attacker_land_units_remaining <= 0 && defender_land_units_remaining <= 0) {
-	    if (attacker_hits > defender_hits) {
 
-	      //
-	      // end unrest, end siege, take control
-	      //
-	      space.besieged = false;
-	      space.unrest = false;
-    	      his_self.controlSpace(winner, space.key);
+	    //
+	    // no-one survived, so just end siege
+	    //
+	    space.besieged = false;
+	    space.unrest = false;
 
-	      his_self.updateLog("Attacker adds 1 regular");
-	      his_self.addRegular(attacker_faction, space);
+	    this.updateLog("Siege in " + this.returnSpaceName(space.key) + " ends");
 
-	    } else {
-
-	      space.besieged = false;
-	      space.unrest = false;
-
-	    }
 	  }
 
 	  //
@@ -4661,9 +4688,6 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	    }
 	  }
 
-	  this.updateLog("Attacker Units Remaining: "+attacker_land_units_remaining);
-	  this.updateLog("Defender Units Remaining: "+defender_land_units_remaining);
-
           //
           // conduct retreats
           //
@@ -4676,6 +4700,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      space.besieged = 0;
 	      space.unrest = 0;
 	      this.controlSpace(attacker_faction, space.key);
+	      this.updateLog(this.returnFactionName(attacker_faction) + " wins seige, controls " + this.returnSpaceName(space.key));
 	    }
 
           } else {
@@ -4683,6 +4708,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
             if (attacker_land_units_remaining == 0) {
 	      space.besieged = 0;
 	      space.unrest = 0;
+	      this.updateLog(this.returnFactionName(defender_faction) + " breaks seige, controls " + this.returnSpaceName(space.key));
 	    } else {
               his_self.game.queue.push("break_siege");
               his_self.game.queue.push("hide_overlay\tassault");
@@ -5116,7 +5142,7 @@ console.log("purging naval units and capturing leader");
 
 	  this.updateLog(this.returnFactionName(faction) + " commits " + this.popup(debater));
 
-	  if (parseInt(mv[2]) > 0) { activate_it = parseInt(mv[2]); }
+	  if (parseInt(mv[3]) > 0) { activate_it = parseInt(mv[3]); }
 	  this.commitDebater(faction, debater, activate_it);
 
 	  return 1;

@@ -429,14 +429,12 @@
 
     let his_self = this;
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
-    let space = this.game.spaces[spacekey];
-
-    let roll = this.rollDice(res.length);
-
-    // retrea
-    let retreat_destination = res[roll-1].key;
-    his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
-
+    if (res.length > 0) {
+      let space = this.game.spaces[spacekey];
+      let roll = this.rollDice(res.length);
+      let retreat_destination = res[roll-1].key;
+      his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+    }
   }
 
 
@@ -449,15 +447,17 @@
     let space = this.game.spaces[spacekey];
 
     let msg = "Select Winter Location for Units in "+space.name;
-    let opt = "";
+    let opt = "<ul>";
     for (let i = 0; i < res.length; i++) {
       opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
     }
+    opt += "</ul>";
 
     if (res.length == 0) {
       this.endTurn();
       return 0;
     }
+
 
     this.updateStatusWithOptions(msg, opt);
 
@@ -467,6 +467,7 @@
       let id = $(this).attr('id');
       $(".option").off();
 
+      his_self.updateStatus("handling retreat...");
       his_self.addMove("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+id);
       his_self.endTurn();
 
@@ -479,6 +480,7 @@
 
     let units_available = [];
     let units_to_retain = [];
+
 
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].units[faction]) {
@@ -1379,7 +1381,7 @@ if (limit === "build") {
                   if (ops > 0) {
  		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
 		  }
-                  his_self.addMove("commit\tpapacy\tloyola-debater");
+                  his_self.addMove("commit\tpapacy\tloyola-debater\t1");
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
 		}
@@ -3375,7 +3377,9 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
-	  return 1;
+	  if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
+	    return 1;
+	  }
 	}
       }
     }
@@ -3444,7 +3448,7 @@ console.log("checking for unrest: " + spaces_in_unrest[i]);
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
-	if (his_self.game.spaces[conquerable_spaces[i]].besieged != 1) {
+	if (his_self.game.spaces[conquerable_spaces[i]].besieged != 1 && his_self.game.spaces[conquerable_spaces[i]].besieged != 2) {
 	  return 1;
 	}
       } 
@@ -3502,7 +3506,7 @@ console.log("checking for unrest: " + spaces_in_unrest[i]);
     }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
+      if (his_self.isSpaceControlled(conquerable_spaces[i], faction) || his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || his_self.game.spaces[conquerable_spaces[i]].besieged == 2) {
 	conquerable_spaces.splice(i, 1);
 	i--;
       }
@@ -4022,14 +4026,14 @@ return;
 
 	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
-            his_self.addMove("commit\tpapacy\ttetzel-debater");
+            his_self.addMove("commit\tpapacy\ttetzel-debater\t1");
 	  }
 
 	  his_self.addMove("hide_overlay\tburn_books\t"+id);
 	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
-	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
-	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater\t1"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater\t1"); }
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
