@@ -690,53 +690,61 @@
 	  let spacekey = mv[1];
           his_self.game.queue.splice(qe, 1);
 
- 	  let msg = "Choose Option:";
-          let html = '<ul>';
-          html += '<li class="option" id="squadron">1 squadron in French home port</li>';
-          html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
-    	  html += '</ul>';
+	  let player = his_self.returnPlayerOfFaction("protestant");
+	  if (his_self.game.player == player) {
 
-          his_self.updateStatusWithOptions(msg, html);
+ 	    let msg = "Choose Option:";
+            let html = '<ul>';
+            html += '<li class="option" id="squadron">1 squadron in French home port</li>';
+            html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
+    	    html += '</ul>';
 
-	  $('.option').off();
-	  $('.option').on('click', function () {
+            his_self.updateStatusWithOptions(msg, html);
 
 	    $('.option').off();
-	    let action = $(this).attr("id");
+	    $('.option').on('click', function () {
 
-	    if (action === "squadron") {
+	      $('.option').off();
+	      let action = $(this).attr("id");
+	      if (action === "squadron") {
 
-              his_self.playerSelectSpaceWithFilter(
+                his_self.playerSelectSpaceWithFilter(
 
-                "Select French Home Port",
+                  "Select French Home Port",
 
-                function(space) {
-                  if (space.ports.length > 0 && space.home == "french") {
-                    return 1;
-                  }
-                },
+                  function(spacekey) {
+		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
+                    his_self.endTurn();
+                  },
 
-                function(spacekey) {
-		  his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
-                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
-                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
-                  his_self.endTurn();
-                },
+                  function(space) {
+                    if (space.ports.length > 0 && space.home == "france") {
+                      return 1;
+                    }
+                  },
 
-		null,
+                  function(spacekey) {
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
+                    his_self.endTurn();
+                  },
 
-		true
+		  null,
 
-              );
-	    }
-	    if (action === "mercenaries") {
-              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
-              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
-              his_self.endTurn();
-	    }
+		  true
 
-	  });
-
+                );
+	      }
+	      if (action === "mercenaries") {
+                his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+                his_self.endTurn();
+	      }
+	    });
+	  } else {
+	    his_self.updateLog("Protestants playing " + his_self.popup("206"));
+	  }
 	  return 0;
 	}
 

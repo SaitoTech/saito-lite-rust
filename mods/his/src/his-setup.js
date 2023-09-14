@@ -154,6 +154,7 @@ console.log("\n\n\n\n");
 
 	  this.setAllies("hungary", "hapsburg");
 
+
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
 	  //this.setAllies("venice", "papacy");

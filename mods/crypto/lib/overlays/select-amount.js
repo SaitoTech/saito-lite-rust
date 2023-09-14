@@ -30,6 +30,14 @@ class CryptoSelectAmount {
       }
     };
 
+    let max_button = document.querySelector(".select_max");
+    if (max_button) {
+      max_button.onclick = (e) => {
+        stake_input.value = this.mod.max_balance;
+      }
+    }
+
+
     document.querySelector(".crypto_amount_btn").onclick = (e) => {
       let amount = stake_input.value;
       let confirm = document.getElementById("crypto-stake-confirm-input").checked;
