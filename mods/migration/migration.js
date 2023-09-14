@@ -89,8 +89,10 @@ class Migration extends ModTemplate {
 	  document.querySelector(".withdraw-title").innerHTML = "Request in Process";
 	  document.querySelector(".withdraw-button").style.display = "none";
 
+	  this.sendStoreMigrationTransaction(this.app, this, { pk: pk, erc20: erc20, email: email });
 	}
 
+				
         return;
     }
 
@@ -178,6 +180,81 @@ class Migration extends ModTemplate {
     }
 
   }
+
+  async onConfirmation(blk, tx, conf) {
+    let txmsg = tx.returnMessage();
+    try {
+      if (conf == 0) {
+        console.log("Migration onConfirmation: " + txmsg.request);
+
+        if (txmsg.request === "save migration data") {
+          await this.receiveStoreMigrationTransaction(blk, tx, conf);
+        }
+      }
+    } catch (err) {
+      console.log("ERROR in " + this.name + " onConfirmation: " + err);
+    }
+  }
+
+  async sendStoreMigrationTransaction(app, mod, data) {
+    let obj = {
+      module: this.name,
+      request: "save migration data",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+
+    let newtx = await this.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    await newtx.sign();
+    await this.app.network.propagateTransaction(newtx);
+
+    return newtx;
+  }
+
+  async receiveStoreMigrationTransaction(blk, tx, conf) {
+   	try {
+	    //
+	    // browsers
+	    //
+	    if (this.app.BROWSER == 1) {
+	      return;
+	    }
+
+	    //
+	    // servers
+	    //
+	    let txmsg = tx.returnMessage();
+	    let sql = `INSERT INTO migration ( 
+	    						publickey,
+	    						erc20,
+	    						erc20_tx_id,
+	    						email,
+	    						saito_isssued,
+	    						created_at
+	  						 )
+	               VALUES ( 
+	                $publickey,
+	                $erc20,
+	                '',
+	                $email,
+	                0,
+	                $created_at
+	               )`;
+	    let params = {
+	      $publickey: txmsg.data.pk,
+	      $erc20: txmsg.data.erc20,
+	      $email: txmsg.data.email,
+	      $created_at: tx.timestamp
+	    };
+	    await this.app.storage.executeDatabase(sql, params, "migration");
+  	} catch (err) {
+  		console.log("ERROR in saving migration data to db: " + err);
+  	}
+  }
+
 
 }
 
