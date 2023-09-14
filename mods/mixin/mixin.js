@@ -112,8 +112,7 @@ class Mixin extends ModTemplate {
       let m = "";
 
       if (app.BROWSER == 0) {
-
-        if (typeof process.env.MIXIN != 'undefined') {
+        if (typeof process.env.MIXIN != "undefined") {
           m = JSON.parse(process.env.MIXIN);
         } else {
           m = {
@@ -136,17 +135,17 @@ class Mixin extends ModTemplate {
           let sessionId = m.sessionId;
           let privateKey = m.privateKey;
 
-          try {
-            this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
+          this.request(appId, sessionId, privateKey, method, uri, body)
+            .then((res) => {
               let d = res.data;
               // send response to browser
               if (mycallback) {
                 mycallback(d);
               }
+            })
+            .catch((err) => {
+              console.error("ERROR: Mixin error sending network request: " + err);
             });
-          } catch (err) {
-            console.log("ERROR: Mixin error sending network request: " + err);
-          }
         }
       }
     }
@@ -204,8 +203,8 @@ class Mixin extends ModTemplate {
     const method = "GET";
     const uri = `/snapshots?limit=100&order=DESC&asset=${asset_id}`;
 
-    try {
-      this.request(appId, sessionId, privateKey, method, uri).then((res) => {
+    this.request(appId, sessionId, privateKey, method, uri)
+      .then((res) => {
         let d = res.data;
         for (let i = 0; i < d.data.length; i++) {
           /********************************************
@@ -248,10 +247,10 @@ class Mixin extends ModTemplate {
         if (callback) {
           callback(res.data);
         }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
       });
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
   }
 
   fetchAddresses(asset_id, callback = null) {
@@ -262,8 +261,8 @@ class Mixin extends ModTemplate {
     const method = "GET";
     const uri = `/assets/${asset_id}/addresses`;
 
-    try {
-      this.request(appId, sessionId, privateKey, method, uri).then((res) => {
+    this.request(appId, sessionId, privateKey, method, uri)
+      .then((res) => {
         let d = res.data;
         for (let i = 0; i < d.data.length; i++) {
           /********************************************
@@ -291,10 +290,10 @@ class Mixin extends ModTemplate {
         if (callback) {
           callback(res.data);
         }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
       });
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
   }
 
   fetchSnapshots(asset_id = "", records, callback) {
@@ -309,8 +308,8 @@ class Mixin extends ModTemplate {
       uri += `&asset=${asset_id}`;
     }
 
-    try {
-      this.request(appId, sessionId, privateKey, method, uri).then((res) => {
+    this.request(appId, sessionId, privateKey, method, uri)
+      .then((res) => {
         let d = res.data;
 
         for (let i = 0; i < d.data.length; i++) {
@@ -327,11 +326,11 @@ class Mixin extends ModTemplate {
         if (callback) {
           callback(history_data);
         }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
+        callback(false);
       });
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-      callback(false);
-    }
   }
 
   doesWithdrawalAddressExist(asset_id, address) {
@@ -369,10 +368,11 @@ class Mixin extends ModTemplate {
       ),
     };
 
-    this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
-      console.log("WITHDRAWAL ADDRESS REQUEST ADDED: ");
-      console.log(res.data);
-      /********************************************
+    this.request(appId, sessionId, privateKey, method, uri, body)
+      .then((res) => {
+        console.log("WITHDRAWAL ADDRESS REQUEST ADDED: ");
+        console.log(res.data);
+        /********************************************
        "type":       "address",
        "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
        "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
@@ -385,12 +385,14 @@ class Mixin extends ModTemplate {
        "updated_at": "2018-07-10T03:58:17.5559296Z"
        *********************************************/
 
-      this.addresses.push(res.data);  
-      if (callback) {
-        callback(res.data);
-      }
-
-    });
+        this.addresses.push(res.data);
+        if (callback) {
+          callback(res.data);
+        }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
+      });
   }
 
   async sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash = "") {
@@ -414,14 +416,17 @@ class Mixin extends ModTemplate {
       memo: "",
     };
 
-      
-    let res = await this.request(appId, sessionId, privateKey, method, uri, body);
-    if (res?.data) {
-      this.withdrawals.push(res.data);
+    try {
+      let res = await this.request(appId, sessionId, privateKey, method, uri, body);
+      if (res?.data) {
+        this.withdrawals.push(res.data);
+      }
+      return res.data;
+    } catch (err) {
+      console.error("ERROR: Mixin", err);
     }
 
-    return res.data;
-
+    return "";
     /*.then((res) => {
       let d = res.data;
       this.withdrawals.push(d.data);
@@ -451,17 +456,17 @@ class Mixin extends ModTemplate {
       ),
     };
 
-    try {
-      this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
+    this.request(appId, sessionId, privateKey, method, uri, body)
+      .then((res) => {
         let d = res.data;
         this.withdrawals.push(d.data);
         if (callback) {
           callback(res.data);
         }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
       });
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
   }
 
   checkWithdrawalFee(asset_id, callback = null) {
@@ -477,8 +482,8 @@ class Mixin extends ModTemplate {
 
     let fee = 1000000;
 
-    try {
-      this.request(appId, sessionId, privateKey, method, uri).then((res) => {
+    this.request(appId, sessionId, privateKey, method, uri)
+      .then((res) => {
         let d = res.data.data;
         for (let i = 0; i < this.mods.length; i++) {
           if (this.mods[i].asset_id === asset_id) {
@@ -491,10 +496,10 @@ class Mixin extends ModTemplate {
             return;
           }
         }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
       });
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
   }
 
   checkBalance(asset_id, callback = null) {
@@ -508,9 +513,8 @@ class Mixin extends ModTemplate {
     const method = "GET";
     const uri = `/assets/${asset_id}`;
 
-    try {
-      this.request(appId, sessionId, privateKey, method, uri).then((res) => {
-
+    this.request(appId, sessionId, privateKey, method, uri)
+      .then((res) => {
         let d = res.data.data;
 
         for (let i = 0; i < this.mods.length; i++) {
@@ -544,10 +548,10 @@ class Mixin extends ModTemplate {
         if (callback) {
           callback(res.data);
         }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
       });
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
   }
 
   updateUserPin(new_pin, callback = null) {
@@ -589,17 +593,17 @@ class Mixin extends ModTemplate {
       pin: encrypted_new_pin,
     };
 
-    try {
-      this.request(user_id, session_id, privatekey, method, uri, body).then((res) => {
+    this.request(user_id, session_id, privatekey, method, uri, body)
+      .then((res) => {
         mixin_self.mixin.pin = new_pin;
         mixin_self.save();
         if (callback != null) {
           callback(res.data);
         }
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin error sending network request: " + err);
       });
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
   }
 
   createAccountCallback(res, callback = null) {
@@ -607,7 +611,7 @@ class Mixin extends ModTemplate {
 
     // check we do not already have an account
     if (this.app.options?.mixin?.user_id) {
-      console.log("skipping mixin account creation as exists");
+      console.warn("skipping mixin account creation as exists");
       return;
     }
 
@@ -660,7 +664,6 @@ class Mixin extends ModTemplate {
   }
 
   async createAccount(callback = null) {
-    
     let peers = await this.app.network.getPeers();
 
     if (peers.length == 0) {
@@ -680,7 +683,7 @@ class Mixin extends ModTemplate {
       let mixin_self = this;
 
       if (this.mixin.publickey !== "") {
-        console.log("Mixin Account already created. Skipping");
+        console.warn("Mixin Account already created. Skipping");
         return;
       }
 
@@ -718,8 +721,7 @@ class Mixin extends ModTemplate {
       // process directly if ENV variable set
       //
       if (process.env.MIXIN) {
-
-        if (typeof process.env.MIXIN != 'undefined') {
+        if (typeof process.env.MIXIN != "undefined") {
           m = JSON.parse(process.env.MIXIN);
         } else {
           m = {
@@ -738,15 +740,14 @@ class Mixin extends ModTemplate {
         // if you have an application ID, you can create your account directly
         // using that....
         //
-        try {
-          this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
-
+        this.request(appId, sessionId, privateKey, method, uri, body)
+          .then((res) => {
             mixin_self.createAccountCallback(res, callback);
             //processRes(res);
+          })
+          .catch((err) => {
+            console.error("ERROR: Mixin error sending network request: " + err);
           });
-        } catch (err) {
-          console.log("ERROR: Mixin error sending network request: " + err);
-        }
       }
 
       //
@@ -797,7 +798,7 @@ class Mixin extends ModTemplate {
         );
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
