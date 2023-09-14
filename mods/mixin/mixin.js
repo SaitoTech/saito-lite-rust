@@ -370,7 +370,7 @@ class Mixin extends ModTemplate {
     };
 
     this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
-      console.log("WITHDRAWAL REQUEST ADDED: ");
+      console.log("WITHDRAWAL ADDRESS REQUEST ADDED: ");
       console.log(res.data);
       /********************************************
        "type":       "address",
@@ -384,15 +384,12 @@ class Mixin extends ModTemplate {
        "dust":       "0.0001",
        "updated_at": "2018-07-10T03:58:17.5559296Z"
        *********************************************/
-      if (!res.data?.error){
-        this.addresses.push(res.data);  
-        if (callback) {
-          callback(res.data);
-        }
-      }else {
-        throw new Error(res.data.error);
+
+      this.addresses.push(res.data);  
+      if (callback) {
+        callback(res.data);
       }
-      
+
     });
   }
 

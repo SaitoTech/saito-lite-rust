@@ -203,7 +203,9 @@ MixinModule.prototype.sendPayment = async function(amount = "", recipient = "", 
       console.log("Send to Mixin address");
       let opponent_address_id = r[1];
       let trace_id = await this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash);
-
+      if (trace_id?.error) {
+        return "";
+      }
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
       return trace_id;
     }
@@ -325,6 +327,8 @@ MixinModule.prototype.returnWithdrawalFeeForAddress = function(recipient = "", m
 
   let r = recipient.split("|");
   let ts = new Date().getTime();
+
+  console.log("Mixin Fee Lookup for: " + recipient);
 
   //
   // internal MIXIN transfer
