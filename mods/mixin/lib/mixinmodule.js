@@ -193,6 +193,8 @@ MixinModule.prototype.sendPayment = async function(amount = "", recipient = "", 
   let r = recipient.split("|");
   let ts = new Date().getTime();
 
+  console.log("Recipient: " + recipient);
+
   //
   // internal MIXIN transfer
   //
@@ -215,7 +217,7 @@ MixinModule.prototype.sendPayment = async function(amount = "", recipient = "", 
   let withdrawal_address_id = "";
 
   for (let i = 0; i < this.mixin.addresses.length; i++) {
-    if (this.mixin.addresses[i].destination === destination) {
+    if (this.mixin.addresses[i]?.destination === destination) {
       withdrawal_address_exists = 1;
       withdrawal_address_id = this.mixin.addresses[i].address_id;
     }
