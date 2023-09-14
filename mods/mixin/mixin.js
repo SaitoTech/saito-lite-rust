@@ -144,7 +144,7 @@ class Mixin extends ModTemplate {
               }
             })
             .catch((err) => {
-              console.error("ERROR: Mixin error sending network request: " + err);
+              console.error("ERROR: Mixin error sending network request (mixin create account): " + err);
             });
         }
       }
@@ -249,7 +249,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (fetchDeposits): " + err);
       });
   }
 
@@ -292,7 +292,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (fetch Addresses): " + err);
       });
   }
 
@@ -328,7 +328,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (fetchSnapShots): " + err);
         callback(false);
       });
   }
@@ -391,7 +391,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (createWithdrawalAddress): " + err);
       });
   }
 
@@ -465,7 +465,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (sendWithdrawalRequest): " + err);
       });
   }
 
@@ -498,7 +498,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (checkWithdrawalFee): " + err);
       });
   }
 
@@ -550,7 +550,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (checkBalance): " + err);
       });
   }
 
@@ -602,7 +602,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request: " + err);
+        console.error("ERROR: Mixin error sending network request (updateUserPin): " + err);
       });
   }
 
@@ -746,7 +746,7 @@ class Mixin extends ModTemplate {
             //processRes(res);
           })
           .catch((err) => {
-            console.error("ERROR: Mixin error sending network request: " + err);
+            console.error("ERROR: Mixin error sending network request (createAccount): " + err);
           });
       }
 
