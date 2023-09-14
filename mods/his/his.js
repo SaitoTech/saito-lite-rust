@@ -3158,6 +3158,7 @@ if (this.game.players.length > 2) {
 	  $('.option').off();
 	  $('.option').on('click', function () {
 
+	    $('.option').off();
 	    let action = $(this).attr("id");
 	    if (action === "squadron") {
 
@@ -3166,12 +3167,13 @@ if (this.game.players.length > 2) {
                 "Select French Home Port",
 
                 function(space) {
-                  if (space.ports.length > 0 && space.home == "french") {
+                  if (space.ports.length > 0 && space.home == "france") {
                     return 1;
                   }
                 },
 
                 function(spacekey) {
+		  his_self.updateStatus("French build squadrons in" + his_self.returnSpaceName(spacekey));
                   his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
                   his_self.endTurn();
                 },
@@ -3183,6 +3185,7 @@ if (this.game.players.length > 2) {
               );
 	    }
 	    if (action === "mercenaries") {
+	      his_self.updateStatus("French add mercenaries in" + his_self.returnSpaceName(spacekey));
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
@@ -3313,6 +3316,8 @@ if (this.game.players.length > 2) {
 		        if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
 		  	  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
+  	    		      $('.option').off();
+			      his_self.updateStatus("Papacy removes squadron");
           	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
           	  	      his_self.addMove("NOTIFY\tPapacy removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
@@ -3328,6 +3333,8 @@ if (this.game.players.length > 2) {
 		        if (key === "france" || key === "ottoman") {
 			  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
+  	    		      $('.option').off();
+			      his_self.updateStatus("Protestants remove squadron");
           	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
           	  	      his_self.addMove("NOTIFY\tProtestant removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
@@ -3338,7 +3345,9 @@ if (this.game.players.length > 2) {
 		      }
 		    }
 
-	            his_self.addMove("NOTIFY\tno squadrons available for removal");
+  	    	    $('.option').off();
+		    his_self.updateStatus("No Squadrons Available to Remove");
+	            his_self.addMove("NOTIFY\tNo Squadrons Available to Remove");
 		    his_self.endTurn();
 		    return 0;
 		  },
@@ -3450,8 +3459,6 @@ if (this.game.players.length > 2) {
 
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);
-
-console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
           if (his_self.game.player === p2) {
 	    if (faction_taking === "protestant") {
@@ -3643,6 +3650,7 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 	    $('.option').off();
 	    $('.option').on('click', function () {
 
+	      $('.option').off();
 	      let action = $(this).attr("id");
 	      if (action === "squadron") {
 
@@ -3650,14 +3658,21 @@ console.log(p1 + " -- " + p2 + " -- " + his_self.game.player);
 
                   "Select French Home Port",
 
+                  function(spacekey) {
+		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
+                    his_self.endTurn();
+                  },
+
                   function(space) {
-                    if (space.ports.length > 0 && space.home == "french") {
+                    if (space.ports.length > 0 && space.home == "france") {
                       return 1;
                     }
                   },
 
                   function(spacekey) {
-                    his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.endTurn();
                   },
 
