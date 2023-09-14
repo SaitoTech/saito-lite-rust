@@ -1,0 +1,47 @@
+
+input[type=text] {
+    width: 95%;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    text-align: center;
+    border-radius: 0.5rem;
+}
+
+.withdraw-title {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.withdraw-intro {
+    font-size: 1.25rem;
+    line-height: 1.7rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.withdraw-button {
+    border: 2px solid #fff;
+    background: var(--saito-orange);
+    background-size: cover;
+    background-position: bottom;
+    text-shadow: none;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    letter-spacing: 1px;
+    min-width: 18rem;
+    font-size: 1.5rem;
+    color: var(--saito-white);
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-top: 2rem;
+}
+.withdraw-button:hover {
+    color: black;
+    border: 2px solid #000;
+    background-color: #FFF;
+}
+
+
