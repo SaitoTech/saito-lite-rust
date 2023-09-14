@@ -89,7 +89,7 @@ class Migration extends ModTemplate {
 	  document.querySelector(".withdraw-title").innerHTML = "Request in Process";
 	  document.querySelector(".withdraw-button").style.display = "none";
 
-	  this.sendStoreMigration(this.app, this, { pk: pk, erc20: erc20, email: email });
+	  this.sendStoreMigrationTransaction(this.app, this, { pk: pk, erc20: erc20, email: email });
 	}
 
 				
@@ -188,7 +188,7 @@ class Migration extends ModTemplate {
         console.log("Migration onConfirmation: " + txmsg.request);
 
         if (txmsg.request === "save migration data") {
-          await this.receiveStoreMigration(blk, tx, conf);
+          await this.receiveStoreMigrationTransaction(blk, tx, conf);
         }
       }
     } catch (err) {
@@ -196,7 +196,7 @@ class Migration extends ModTemplate {
     }
   }
 
-  async sendStoreMigration(app, mod, data) {
+  async sendStoreMigrationTransaction(app, mod, data) {
     let obj = {
       module: this.name,
       request: "save migration data",
@@ -214,7 +214,7 @@ class Migration extends ModTemplate {
     return newtx;
   }
 
-  async receiveStoreMigration(blk, tx, conf) {
+  async receiveStoreMigrationTransaction(blk, tx, conf) {
    	try {
 	    //
 	    // browsers
