@@ -417,25 +417,21 @@ class Mixin extends ModTemplate {
       memo: "",
     };
 
-    try {
       
-      let res = await this.request(appId, sessionId, privateKey, method, uri, body);
-      if (res?.data) {
-        this.withdrawals.push(res.data);
-      }
-
-      return res;
-
-      /*.then((res) => {
-        let d = res.data;
-        this.withdrawals.push(d.data);
-        if (callback) {
-          callback(res.data);
-        }
-      });*/
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
+    let res = await this.request(appId, sessionId, privateKey, method, uri, body);
+    if (res?.data) {
+      this.withdrawals.push(res.data);
     }
+
+    return res.data;
+
+    /*.then((res) => {
+      let d = res.data;
+      this.withdrawals.push(d.data);
+      if (callback) {
+        callback(res.data);
+      }
+    });*/
   }
 
   sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash = "", callback = null) {
