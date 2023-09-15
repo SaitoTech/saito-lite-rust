@@ -13,26 +13,32 @@ class RedSquareNotification {
   }
 
   render(selector = "") {
-    console.log("RENDER NOTIFICATION");
     if (this.tx == null) {
       document.querySelector(selector).innerHTML =
         '<div class="saito-end-of-redsquare">No notifications</div>';
     } else {
-      console.log(this.tx);
       let html = "";
-      let txmsg = this.tx.returnMessage();
       let from = this.tx.from[0].publicKey;
 
-      console.log(txmsg);
+      let txmsg = this.tx.returnMessage();
+
       //
       // We put the entire render in a callback so that if we don't have the original tweet being referenced by the
       // notification, we can make a peer DB request to try to find it
       //
+
       this.mod.loadTweetWithSig(txmsg.data.signature, (tweet_tx) => {
+
         if (!tweet_tx) {
           console.log("Notification for unknown tweet");
           return null;
         }
+
+        if (!tweet_tx.tx) {
+          console.log("Tweet does not contain original TX for unknown reasons");
+          return null;
+        }
+
 
         if (Array.isArray(tweet_tx)) {
           if (tweet_tx.length > 0) {
@@ -43,16 +49,15 @@ class RedSquareNotification {
           }
         }
 
-        //console.log("Render Notification -- ", tweet_tx);
-
         //Process as normal
         if (txmsg.request == "like tweet") {
           this.tweet = new Tweet(
             this.app,
             this.mod,
-            tweet_tx,
+            tweet_tx.tx,
             `.tweet-notif-fav.notification-item-${from}-${txmsg.data.signature} .tweet-body .tweet-main .tweet-preview`
           );
+
           this.user = new SaitoUser(
             this.app,
             this.mod,
@@ -72,10 +77,11 @@ class RedSquareNotification {
             this.user.notice = "</i> <span class='notification-type'>liked your tweet</span>";
           }
         } else if (txmsg.request == "create tweet") {
+
           this.tweet = new Tweet(
             this.app,
             this.mod,
-            tweet_tx,
+            tweet_tx.tx,
             `.notification-item-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
           );
           this.user = new SaitoUser(

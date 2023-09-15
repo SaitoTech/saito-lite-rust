@@ -652,6 +652,7 @@ console.log("add peer for notifications");
 
     let t = this.returnTweet(sig);
     if (t != null) {
+console.log("the tweet is returned!");
       mycallback(t);
       return;
     }
@@ -660,6 +661,10 @@ console.log("add peer for notifications");
                FROM tweets
                WHERE sig = '${sig}'
                ORDER BY created_at DESC`;
+
+console.log("loadtweets with sig: ");
+console.log(sql);
+
     this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
       for (let z = 0; z < txs.length; z++) {
         this.addTweet(txs[z]);

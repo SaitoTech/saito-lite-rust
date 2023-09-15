@@ -48,10 +48,12 @@ class TweetManager {
                 }
 
                 if (txs.length == 0) {
-                  this.app.browser.addElementToSelector(
-                    `<div class="saito-end-of-redsquare">no more tweets</div>`,
-                    ".tweet-manager"
-                  );
+	          if (!document.querySelector(".saito-end-of-redsquare")) {
+                    this.app.browser.addElementToSelector(
+                      `<div class="saito-end-of-redsquare">no more tweets</div>`,
+                      ".tweet-manager"
+                    );
+	 	  }
                   this.intersectionObserver.unobserve(
                     document.querySelector("#redsquare-intersection")
                   );
@@ -73,12 +75,14 @@ class TweetManager {
                     this.mod,
                     this.mod.notifications[i].tx
                   );
+console.log("at least one notification to render");
                   //if (!notification.isRendered()) {
                   notification.render(".tweet-manager");
                   //}
                 }
                 if (this.mod.notifications.length == 0) {
                   let notification = new Notification(this.app, this.mod, null);
+console.log("no notifications to render");
                   notification.render(".tweet-manager");
                 }
 
@@ -108,10 +112,12 @@ class TweetManager {
                 }
                 this.hideLoader();
                 if (txs.length == 0) {
-                  this.app.browser.addElementToSelector(
-                    `<div class="saito-end-of-redsquare">no more tweets</div>`,
-                    ".tweet-manager"
-                  );
+		  if (!document.querySelector(".saito-end-of-redsquare")) {
+                    this.app.browser.addElementToSelector(
+                      `<div class="saito-end-of-redsquare">no more tweets</div>`,
+                      ".tweet-manager"
+                    );
+	          }
                   this.intersectionObserver.unobserve(
                     document.querySelector("#redsquare-intersection")
                   );
