@@ -3658,13 +3658,6 @@ if (this.game.players.length > 2) {
 
                   "Select French Home Port",
 
-                  function(spacekey) {
-		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
-                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
-                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
-                    his_self.endTurn();
-                  },
-
                   function(space) {
                     if (space.ports.length > 0 && space.home == "france") {
                       return 1;
@@ -3672,6 +3665,8 @@ if (this.game.players.length > 2) {
                   },
 
                   function(spacekey) {
+		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.endTurn();
                   },
@@ -21735,7 +21730,6 @@ console.log("protestant spaces and flip this number: " + this.returnNumberOfProt
 	      if (this.game.state.translations['new']['german'] >= 6) {
 	        this.updateLog("Protestants translate Old Testament (german)");
 	        this.game.state.translations['full']['german']++;
-
 		if (this.game.state.translations['full']['german'] == 6) {
 	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
@@ -21748,7 +21742,6 @@ console.log("protestant spaces and flip this number: " + this.returnNumberOfProt
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 		}
-
   	      } else {
 	        this.updateLog("Protestants translate New Testament (german)");
 	        this.game.state.translations['new']['german']++;

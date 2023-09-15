@@ -712,13 +712,6 @@
 
                   "Select French Home Port",
 
-                  function(spacekey) {
-		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
-                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
-                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
-                    his_self.endTurn();
-                  },
-
                   function(space) {
                     if (space.ports.length > 0 && space.home == "france") {
                       return 1;
@@ -726,6 +719,8 @@
                   },
 
                   function(spacekey) {
+		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.endTurn();
                   },
