@@ -691,19 +691,6 @@ input[type="checkbox"] {
   filter: drop-shadow(5px 5px 4px);
 }
 
-/* Disable trade submit button in overlays */
-
-.trade_overlay_button.noselect {
-  background-color: lightgrey;
-  border: unset;
-  color: unset;
-  cursor: unset;
-}
-
-/*.trade_overlay_button.noselect:hover {
-  background-color: lightgrey;
-  color: unset;
-}*/
 
 /* Disable resource selection in trade overlays */
 

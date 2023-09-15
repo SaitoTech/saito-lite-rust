@@ -11,10 +11,109 @@
     padding-top: 1vh;
     color: white;
     font-size: bold;
-    font-size: 17vh;
+    font-size: 9rem;
     -webkit-text-stroke: 2px black;
     margin-left: 1rem;
     margin-right: 1rem;
+}
+
+.trade-overlay {
+  margin: auto;
+}
+
+
+.trade_count_number {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease-in-out;
+}
+
+.trade_count_arrow {
+  content: "";
+  width: 100%;
+  height: 5rem;
+  position: absolute;
+  left: 0px;
+  z-index: 3;
+  background: #331800;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+  
+}
+
+.trade_area:hover .trade_count_arrow.can_select {
+  opacity: 0.7;
+  pointer-events: unset;
+}
+
+
+.trade_count_up {
+  top: 0px;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.trade_count_up::before  {
+  content: "⌃";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down::after {
+  content: "⌄";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down {
+  top: 16vh;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+/* Disable trade submit button in overlays */
+.trade_overlay_button.noselect {
+  opacity: 50%;
+  pointer-events: none;
+}
+
+.trade_overlay_button {
+  padding: 0.5rem 1rem;
+  line-height: 4rem;
+  border: 4px solid #424143;
+  border-radius: 1.5rem;
+  min-width: 16rem;
+  max-width: 250px;
+  text-align: center;
+}
+
+.trade_overlay_button.valid_trade:hover {
+  background-color: #b79e76; 
+  font-size: 18px;
+  cursor: pointer;
+}
+
+
+
+.bank-overlay img {
+  width: 15rem;
+  height: auto!important;
 }
 
 .brick {
@@ -183,11 +282,11 @@ stats overlay
   color: whitesmoke;
   text-shadow: 1px 1px 1px black;
   padding-left: 0.5rem;
-
+  opacity: 0.85;
 }
 
 .no-vp {
-  filter: brightness(50%) grayscale(50%);
+  filter: brightness(65%) grayscale(50%);
 }
 
 .settlers-achievements-row .victory_point_cards img {

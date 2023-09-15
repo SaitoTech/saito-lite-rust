@@ -563,6 +563,11 @@ class SettlersDisplay {
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
         if (this.game.players.includes(this.publicKey)) {
+
+          if (!str.includes("<")){
+            console.log("Settlers: Wrap status message --", str);
+            str = `<div class="player-notice">${str}</div>`;
+          }
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }
