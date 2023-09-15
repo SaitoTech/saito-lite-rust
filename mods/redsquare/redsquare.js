@@ -219,6 +219,10 @@ class RedSquare extends ModTemplate {
   // so most of the work is pre-network init.
   //
   async initialize(app) {
+
+    //
+    // database setup etc.
+    //
     await super.initialize(app);
 
     this.publicKey = await app.wallet.getPublicKey();
@@ -234,7 +238,7 @@ class RedSquare extends ModTemplate {
     if (app.BROWSER == 0) {
       this.updateTweetsCacheForBrowsers();
     } else {
-      this.loadLocalTweets();
+//      this.loadLocalTweets();
     }
   }
 
@@ -302,6 +306,10 @@ class RedSquare extends ModTemplate {
   // peer management //
   /////////////////////
   async addPeer(peer, type = "tweets") {
+
+let mypeers = await this.app.network.getPeers();
+console.log("mypeers: " + JSON.stringify(mypeers));
+console.log("adding this peer: " + JSON.stringify(peer));
 
     let has_tweets = false;
     let has_notifications = false;
@@ -395,7 +403,6 @@ class RedSquare extends ModTemplate {
       //
       // or fetch tweets
       //
-alert("added peer, so fetching tweets from them...");
       await this.addPeer(peer, "tweets");
       this.loadTweets(peer, (txs) => {
         this.app.connection.emit("redsquare-home-render-request");
@@ -410,6 +417,7 @@ alert("added peer, so fetching tweets from them...");
     // archive -- load notifications
     //
     if (service.service === "archive") {
+console.log("add peer for notifications");
       await this.addPeer(peer, "notifications");
       let recursiveLoadNotifications = (peer, delay) => {
         setTimeout(() => {
@@ -492,7 +500,11 @@ alert("added peer, so fetching tweets from them...");
                  WHERE publickey = '${publickey}'
                    AND updated_at < ${this.peers[i].profile_earliest_ts}
                  ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
+
       this.loadTweetsFromPeer(peer, sql, (txs) => {
+
+alert("received response with: " + txs.length);
+
         for (let z = 0; z < txs.length; z++) {
           this.addTweet(txs[z]);
           if (txs[z].timestamp < this.peers[i].profile_earliest_ts) {
@@ -659,6 +671,7 @@ alert("added peer, so fetching tweets from them...");
   loadTweetsFromPeer(peer, sql, mycallback = null) {
     let txs = [];
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
+alert("and we got back what txs: " + txs.length);
       for (let z = 0; z < txs.length; z++) {
         this.addTweet(txs[z]);
       }
@@ -672,10 +685,16 @@ alert("added peer, so fetching tweets from them...");
     let txs = [];
     let tweet_to_track = null;
 
+alert("about to load tweets from peer via DRWF: ");
+
     this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
       async (res) => {
+
+alert("received tweets back from peer... ");
+alert(JSON.stringify(res.rows));
+
         if (res.rows) {
           await this.addPeer(peer, "tweet");
 
@@ -705,6 +724,8 @@ alert("added peer, so fetching tweets from them...");
         }
       },
       (p) => {
+console.log("p: " + JSON.stringify(p));
+console.log("peer: " + JSON.stringify(peer));
         if (p == peer) {
           return 1;
         }
@@ -737,7 +758,6 @@ alert("added peer, so fetching tweets from them...");
                ORDER BY created_at DESC`;
     this.loadTweetsFromPeer(mod.peers[0].peer, sql, (txs) => {
       let x = [];
-      //this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
       this.loadTweetsFromPeer(
         peer,
         sql,
@@ -791,6 +811,9 @@ alert("added peer, so fetching tweets from them...");
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.publicKey)) {
+
+alert("found tweet to me");
+
       //
       // this is a notification, so update our timestamps
       //
@@ -1014,6 +1037,7 @@ alert("added peer, so fetching tweets from them...");
       // save my likes
       //
       if (tx.isTo(this.publicKey)) {
+
         await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
           field3: this.publicKey,
@@ -1145,6 +1169,10 @@ alert("added peer, so fetching tweets from them...");
           // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
           // from archives by fetching on field3 will get this.
           //
+
+console.log("SAVING TRANSACTION!");
+console.log("owner is: " + this.publicKey);
+
           this.app.storage.saveTransaction(tx, {
             owner: this.publicKey,
             field1: "RedSquare",

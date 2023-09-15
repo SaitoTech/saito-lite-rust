@@ -566,6 +566,12 @@ class Server {
       }
       // const blk = await this.app.storage.loadBlockByHash(bsh);
 
+      if (!buffer) { 
+        res.sendStatus(404);
+      }
+      if (!buffer.byteLength) {
+        res.sendStatus(404);
+      }
       if (buffer.byteLength == 0) {
         res.sendStatus(404);
       } else {

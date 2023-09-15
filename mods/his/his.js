@@ -3648,14 +3648,9 @@ if (this.game.players.length > 2) {
             his_self.updateStatusWithOptions(msg, html);
 
 	    $('.option').off();
-<<<<<<< HEAD
-	    let action = $(this).attr("id");
-
-	    if (action === "squadron") {
-=======
 	    $('.option').on('click', function () {
->>>>>>> staging
 
+	      $('.option').off();
 	      let action = $(this).attr("id");
 	      if (action === "squadron") {
 
@@ -3663,23 +3658,21 @@ if (this.game.players.length > 2) {
 
                   "Select French Home Port",
 
-<<<<<<< HEAD
-                function(spacekey) {
-		  his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
-                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
-                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
-                  his_self.endTurn();
-                },
-=======
+                  function(spacekey) {
+		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
+                    his_self.endTurn();
+                  },
+
                   function(space) {
-                    if (space.ports.length > 0 && space.home == "french") {
+                    if (space.ports.length > 0 && space.home == "france") {
                       return 1;
                     }
                   },
->>>>>>> staging
 
                   function(spacekey) {
-                    his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
+                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.endTurn();
                   },
 

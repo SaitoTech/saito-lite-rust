@@ -94,6 +94,7 @@ class TweetManager {
             //
             if (this.mode == "profile") {
               this.mod.loadProfile(null, this.publicKey, (txs) => {
+
                 if (this.mode !== "profile") {
                   return;
                 }
@@ -127,14 +128,22 @@ class TweetManager {
     );
   }
 
-  render(new_mode = "tweets") {
+  render(new_mode = "") {
+
+    //
+    // if someone asks the manager to render with a mode that is not currently
+    // set, we want to update our mode and proceed with it.
+    //
+    if (new_mode != this.mode && new_mode != "") { this.mode = new_mode; }
+    if (this.mode == "") { this.mode = "tweets"; }
+
     let myqs = `.tweet-manager`;
 
-    //Stop observering while we rebuild the page
+    //
+    // Stop observering while we rebuild the page
+    //
     this.intersectionObserver.disconnect();
     this.profile.remove();
-
-    console.log(new_mode);
 
     let holder = document.getElementById("tweet-thread-holder");
     let managerElem = document.querySelector(myqs);
@@ -144,7 +153,6 @@ class TweetManager {
     } else {
       if (this.mode == "tweets") {
         console.log("Cache tweets");
-
         let kids = managerElem.children;
         console.log(kids.length);
         holder.replaceChildren(...kids);
@@ -161,19 +169,16 @@ class TweetManager {
     ////////////
     // tweets //
     ////////////
-    if (new_mode == "newtweets") {
-      //Drop everything so that feed gets reordered correctly
+    if (this.mode == "newtweets") {
       while (holder?.hasChildNodes()){
         holder.firstChild.remove();
       }
       while (managerElem?.hasChildNodes()) {
         managerElem.firstChild.remove();
       }
-
-      new_mode = "tweets";
     }
 
-    if (new_mode == "tweets") {
+    if (this.mode == "tweets") {
       if (holder) {
         console.log("Restore tweets");
         let kids = holder.children;
@@ -194,12 +199,14 @@ class TweetManager {
     ///////////////////
     // notifications //
     ///////////////////
-    if (new_mode == "notifications") {
+    if (this.mode == "notifications") {
+alert("new mode is notifications: " + this.mod.notifications.length);
       if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
         notification.render(".tweet-manager");
       } else {
         for (let i = 0; i < this.mod.notifications.length; i++) {
+console.log("i: " + i);
           let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
           notification.render(".tweet-manager");
         }
@@ -213,26 +220,26 @@ class TweetManager {
     /////////////
     // profile //
     /////////////
-    if (new_mode == "profile") {
+    if (this.mode == "profile") {
+
+alert("new mode is profile!");
+
       this.profile.publicKey = this.publicKey;
 
       this.profile.render();
 
-      //
-      // all peers reset to 0 tweets fetched
-      //
-      this.mod.updatePeerStat(new Date().getTime(), "profile_earliest_ts");
+      this.mod.loadProfile(null, this.publickey, (txs) => {
 
-      /*this.mod.loadProfile(null, this.publickey, (txs) => {
+alert("fetched: " + txs.length);
+
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this.mod, txs[z]);
           tweet.render();
         }
         setTimeout(()=> { this.hideLoader();}, 50);
-      });*/
-    }
+      });
 
-    this.mode = new_mode;
+    }
 
     //Fire up the intersection observer
     this.attachEvents();
