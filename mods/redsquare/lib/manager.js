@@ -93,6 +93,7 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode == "profile") {
+
               this.mod.loadProfile(null, this.publicKey, (txs) => {
 
                 if (this.mode !== "profile") {
@@ -200,13 +201,11 @@ class TweetManager {
     // notifications //
     ///////////////////
     if (this.mode == "notifications") {
-alert("new mode is notifications: " + this.mod.notifications.length);
       if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
         notification.render(".tweet-manager");
       } else {
         for (let i = 0; i < this.mod.notifications.length; i++) {
-console.log("i: " + i);
           let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
           notification.render(".tweet-manager");
         }
@@ -222,16 +221,11 @@ console.log("i: " + i);
     /////////////
     if (this.mode == "profile") {
 
-alert("new mode is profile!");
-
       this.profile.publicKey = this.publicKey;
 
       this.profile.render();
 
       this.mod.loadProfile(null, this.publickey, (txs) => {
-
-alert("fetched: " + txs.length);
-
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this.mod, txs[z]);
           tweet.render();

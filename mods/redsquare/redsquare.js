@@ -315,6 +315,11 @@ console.log("adding this peer: " + JSON.stringify(peer));
     let has_notifications = false;
     let publicKey = peer.publicKey;
 
+for (let i = 0; i < mypeers.length; i++) {
+  console.log("mypeer " + i + " publickey: " + mypeers[i].publicKey);
+}
+console.log("peer publickey: " + peer.publicKey);
+
     if (type === "tweets") {
       has_tweets = true;
     }
@@ -502,9 +507,6 @@ console.log("add peer for notifications");
                  ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
-
-alert("received response with: " + txs.length);
-
         for (let z = 0; z < txs.length; z++) {
           this.addTweet(txs[z]);
           if (txs[z].timestamp < this.peers[i].profile_earliest_ts) {
@@ -671,7 +673,6 @@ alert("received response with: " + txs.length);
   loadTweetsFromPeer(peer, sql, mycallback = null) {
     let txs = [];
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
-alert("and we got back what txs: " + txs.length);
       for (let z = 0; z < txs.length; z++) {
         this.addTweet(txs[z]);
       }
@@ -685,15 +686,10 @@ alert("and we got back what txs: " + txs.length);
     let txs = [];
     let tweet_to_track = null;
 
-alert("about to load tweets from peer via DRWF: ");
-
     this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
       async (res) => {
-
-alert("received tweets back from peer... ");
-alert(JSON.stringify(res.rows));
 
         if (res.rows) {
           await this.addPeer(peer, "tweet");
@@ -724,9 +720,7 @@ alert(JSON.stringify(res.rows));
         }
       },
       (p) => {
-console.log("p: " + JSON.stringify(p));
-console.log("peer: " + JSON.stringify(peer));
-        if (p == peer) {
+        if (p.publicKey == peer.publicKey) {
           return 1;
         }
         return 0;
@@ -811,8 +805,6 @@ console.log("peer: " + JSON.stringify(peer));
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.publicKey)) {
-
-alert("found tweet to me");
 
       //
       // this is a notification, so update our timestamps
@@ -1294,6 +1286,7 @@ console.log("owner is: " + this.publicKey);
       let created_at = tx.timestamp;
       let updated_at = tx.timestamp;
 
+
       //
       // insert the basic information
       //
@@ -1343,12 +1336,16 @@ console.log("owner is: " + this.publicKey);
         $parent_id: tweet.tx.optional.parent_id,
         $type: type_of_tweet,
         $thread_id: tweet.tx.optional.thread_id,
-        $publickey: tx.from[0].add,
+        $publickey: tx.from[0].publicKey,
         $link: tweet.link,
         $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
         $has_images: has_images,
         $tx_size: tx_size,
       };
+
+console.log("TWEETS INSERT: " + JSON.stringify(params));
+console.log("TX FROM: " + JSON.stringify(tx.from));
+console.log("TX FROM: " + JSON.stringify(tx.from));
 
       await app.storage.executeDatabase(sql, params, "redsquare");
 
@@ -1499,7 +1496,6 @@ console.log("owner is: " + this.publicKey);
 /*****
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
-alert("loading tweet history...");
         for (let tx of value) {
           let newtx = new Transaction();
           newtx.deserialize_from_web(this.app, tx);
@@ -1523,7 +1519,6 @@ alert("loading tweet history...");
 // CACHE TWEETS LOADED HERE
 //
 //
-alert("SHOW CACHED TWEETS");
 //
 //
 //
