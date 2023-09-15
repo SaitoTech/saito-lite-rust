@@ -1,15 +1,3 @@
-.saitoa {
-  border: 5px solid #424143;
-  background-color: #d3c38df5;
-  padding: 1rem;
-  border-image: url(https://saito.io/settlers/img/border.png);
-  border-image-slice: 51;
-  border-image-width: 21px;
-  border-image-repeat: stretch;
-  border-style: solid;
-  border-image-outset: 9px;
-  color: #331800;
-}
 
 .settlers-info-overlay {
   display: flex;
@@ -78,17 +66,18 @@
   z-index: 2;
   white-space: pre;
   word-wrap: break-word;
-  background-color: #d3c38d88;
+  background-color: #d3c38dc1;
   line-height: 3rem;
   border-radius: 1rem;
+  filter: drop-shadow(2px 4px 6px black);
 }
 
 .settlers-item-row.item-development-card::after {
-  content: "Buy development card";
+  content: "Buy";
 }
 
 .settlers-item-row.settlers-row-disabled::after {
-  content: "Insufficent resources"!important;
+  content: "cannot purchase"!important;
   cursor: not-allowed;
 }
 
@@ -132,6 +121,7 @@
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  padding: 0.5rem;
 }
 
 .dev-card-overlay .settlers-cards-container {
@@ -150,7 +140,7 @@
 }
 
 .settlers-card-disabled {
-  opacity: 0.5;
+  filter: grayscale(90%) brightness(60%);
 }
 
 @media screen and (max-width: 768px) {
@@ -190,23 +180,11 @@
 }
 
 
-.monopoly .settlers-cards-container {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  cursor: pointer;
-  padding: 0.5rem
-}
 
 .settlers-cards-container img {
   height: 15rem;
 }
 
-
-.settlers-desired-resources img:hover {
-  cursor: pointer;
-  opacity: 0.7;
-}
 
 .year-of-plenty-overlay .settlers-item-info-text,  
 .monopoly .settlers-item-info-text {
@@ -231,7 +209,7 @@
 
 .settlers-desired-resources img:hover {
   cursor: pointer;
-  opacity: 0.7;
+  filter: brightness(1.15) drop-shadow(5px 5px 3px black);
 }
 
 .settlers-icons-container {
@@ -300,21 +278,9 @@
   opacity: 0.5; 
 }
 
-.settlers-desired-resources img:hover {
-  cursor: pointer;
-  opacity: 0.7;
-}
 
 /* discard overlay */
 
-.settlers-cards-container img:hover {
-  cursor: pointer;
-  opacity: 0.7;
-}
-
-.settlers-cards-container .settlers-img-disabled {
-   filter: opacity(0.2);
-}
 
 /*.discard-cards-overlay .settlers-cards-container img {
   height: 7rem;
