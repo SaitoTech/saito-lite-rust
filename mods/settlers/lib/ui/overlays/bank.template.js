@@ -2,7 +2,7 @@ module.exports = BankOverlayTemplate = (app, mod, bank) => {
 
  
   if (Object.keys(bank.my_resources).length > 0) {
-    let html = "<div class='tbd'>Select Resource to Trade: <ul class='bank'>";
+    let html = "<div class='player-notice'>Select Resource to Trade: <ul class='bank'>";
     for (let i in bank.my_resources) {
       html += `<li id="${i}" class="option">`;
       for (let j = 0; j<bank.minForTrade[i]; j++){
