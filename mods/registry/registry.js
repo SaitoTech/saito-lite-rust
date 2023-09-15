@@ -53,44 +53,38 @@ class Registry extends ModTemplate {
         }
       }
 
-      let peers = await this.app.network.getPeers();
-      for (let i = 0; i < peers.length; i++) {
-        let peer = peers[i];
-        if (peer.hasService("registry")) {
-          this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
-            console.log("callback: ", answer);
+      this.fetchManyIdentifiers(unidentified_keys, (answer) => {
+        console.log("Registry callback: ", answer);
 
-            Object.entries(answer).forEach(([key, value]) => {
-              if (value !== this.publicKey) {
-                this.cached_keys[key] = value;
+        Object.entries(answer).forEach(([key, value]) => {
+          if (value !== this.publicKey) {
+            this.cached_keys[key] = value;
 
-                //
-                // We don't NEED or WANT to filter for key == wallet.getPublicKey
-                // If the key is in our keychain, we obviously care enough that we
-                // want to update that key in the keychain!
-                //
+            //
+            // We don't NEED or WANT to filter for key == wallet.getPublicKey
+            // If the key is in our keychain, we obviously care enough that we
+            // want to update that key in the keychain!
+            //
 
-                // save if locally stored
-                if (this.app.keychain.returnKey(key, true) && key !== value) {
-                  this.app.keychain.addKey({ publicKey: key, identifier: value });
-                }
-
-                this.app.browser.updateAddressHTML(key, value);
-              }
-            });
-          });
-
-          //
-          // save all keys queried to cache so even if we get nothing
-          // back we won't query the server again for them.
-          //
-          for (let i = 0; i < unidentified_keys.length; i++) {
-            if (!this.cached_keys[unidentified_keys[i]]) {
-              this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
+            // save if locally stored
+            if (this.app.keychain.returnKey(key, true) && key !== value) {
+              this.app.keychain.addKey({ publicKey: key, identifier: value });
             }
+
+            this.app.browser.updateAddressHTML(key, value);
+          }
+        });
+
+        //
+        // save all keys queried to cache so even if we get nothing
+        // back we won't query the server again for them.
+        //
+        for (let i = 0; i < unidentified_keys.length; i++) {
+          if (!this.cached_keys[unidentified_keys[i]]) {
+            this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
           }
         }
-      }
+      });
     });
 
     this.app.connection.on("register-username-or-login", (obj) => {
@@ -117,10 +111,10 @@ class Registry extends ModTemplate {
     if (this.app.BROWSER == 0) {
       if (this.local_dev) {
         this.registry_publickey = this.publicKey;
-       }  
+      }
     }
 
-    console.log("Registry Address: " + this.registry_publickey);   
+    console.log("Registry Address: " + this.registry_publickey);
   }
 
   returnServices() {
@@ -133,86 +127,17 @@ class Registry extends ModTemplate {
     if (this.app.BROWSER == 0) {
       if (this.registry_publickey == this.publicKey) {
         services.push(new PeerService(null, "registry", "saito"));
+        console.log("I am the Registry!");
       }
     }
     return services;
   }
 
-  //
-  // fetching publicKeys from identifiers
-  // --- not used anywhere, delete???
-  //
-  fetchManyPublicKeys(identifiers = [], peer = null, mycallback = null) {
-    if (mycallback == null) {
-      return;
-    }
-
-    const found_keys = [];
-    const missing_keys = [];
-
-    identifiers.forEach((identifier) => {
-      let publickey = this.app.browser.getPublicKeyByIdentifier(identifier);
-      if (publickey != "" && publickey != identifier) {
-        found_keys.push[publickey] = identifier;
-      } else {
-        missing_keys.push(identifier);
-      }
-    });
-
-    if (missing_keys.length == 0) {
-      if (mycallback) {
-        mycallback(found_keys);
-      }
-      return;
-    }
-
-    const where_statement = `identifier in (${missing_keys.join(",")})`;
-    const sql = `select *
-                 from records
-                 where ${where_statement}`;
-
-    this.sendPeerDatabaseRequestWithFilter(
-      "Registry",
-
-      sql,
-
-      (res) => {
-        try {
-          if (!res.err) {
-            if (res?.rows?.length > 0) {
-              res.rows.forEach((row) => {
-                const { publickey, identifier, bid, bsh, lc } = row;
-                if (!found_keys.includes(publickey)) {
-                  found_keys[publickey] = identifier;
-                }
-              });
-            }
-          }
-          mycallback(found_keys);
-        } catch (err) {
-          console.error(err);
-        }
-      },
-
-      (p) => {
-        if (peer) {
-          if (p.publicKey == peer.publicKey) {
-            return 1;
-          }
-        } else {
-          if (p.hasService("registry")) {
-            return 1;
-          }
-        }
-        return 0;
-      }
-    );
-  }
 
   //
   // fetching identifiers
   //
-  fetchManyIdentifiers(publickeys = [], peer = null, mycallback = null) {
+  fetchManyIdentifiers(publickeys = [], mycallback = null) {
     if (mycallback == null) {
       return;
     }
@@ -256,7 +181,6 @@ class Registry extends ModTemplate {
           console.log("Database results: ", res);
           if (!res.err) {
             if (res?.rows?.length > 0) {
-              console.log(res.rows);
               res.rows.forEach((row) => {
                 const { publickey, identifier, bid, bsh, lc } = row;
                 found_keys[publickey] = identifier;
@@ -267,78 +191,10 @@ class Registry extends ModTemplate {
         } catch (err) {
           console.error(err);
         }
-      },
-
-      // Maybe don't filter??
-      (p) => {
-        if (peer) {
-          if (p.publicKey == peer.publicKey) {
-            return 1;
-          }
-        } else {
-          if (p.hasService("registry")) {
-            return 1;
-          }
-        }
-        return 0;
       }
     );
   }
 
-  //
-  // Also unuser, should delete???
-  //
-  fetchIdentifier(publickey, peer = null, mycallback = null) {
-    if (mycallback == null) {
-      return;
-    }
-
-    this.sendPeerDatabaseRequestWithFilter(
-      "Registry",
-
-      'SELECT * FROM records WHERE publickey = "' + publickey + '"',
-
-      (res) => {
-        let rows = [];
-
-        if (res.rows == undefined) {
-          mycallback(rows);
-        }
-        if (res.err) {
-          mycallback(rows);
-        }
-        if (res.rows == undefined) {
-          mycallback(rows);
-        }
-        if (res.rows.length == 0) {
-          mycallback(rows);
-        }
-        rows = res.rows.map((row) => {
-          const { publickey, identifier, bid, bsh, lc } = row;
-
-          // keep track that we fetched this already
-          this.cached_keys[publickey] = identifier;
-          if (!found_keys.includes(publickey)) {
-            found_keys[publickey] = identifier;
-          }
-        });
-        mycallback(found_keys);
-      },
-
-      (p) => {
-        if (peer) {
-          if (p.publicKey == peer.publicKey) {
-            return 1;
-          }
-        } else {
-          if (p.hasService("registry")) {
-            return 1;
-          }
-        }
-        return 0;
-      }
-    );
-  }
 
   respondTo(type = "") {
     if (type == "saito-return-key") {
