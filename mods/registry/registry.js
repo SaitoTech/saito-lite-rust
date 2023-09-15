@@ -35,7 +35,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners -
@@ -145,7 +145,7 @@ class Registry extends ModTemplate {
     const found_keys = {};
     const missing_keys = [];
 
-    console.log("fetchManyIdentifiers", publickeys);
+    console.log("Registry: fetchManyIdentifiers", publickeys);
 
     publickeys.forEach((publickey) => {
       const identifier = this.app.keychain.returnIdentifierByPublicKey(publickey);
@@ -178,7 +178,7 @@ class Registry extends ModTemplate {
 
       (res) => {
         try {
-          console.log("Database results: ", res);
+          console.log("Registry Database results: ", res);
           if (!res.err) {
             if (res?.rows?.length > 0) {
               res.rows.forEach((row) => {
