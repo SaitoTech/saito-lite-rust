@@ -325,7 +325,7 @@ class Wuziqi extends GameTemplate {
                     this.addEvents(this.game.board);
                     this.updateStatus("You go first");
                 }else{
-                    this.updateStatus(`Waiting for <span class="playertitle">${this.roles[3-first_player]}</span> to start`);
+                    this.updateStatus(`Waiting for <span class="playertitle">${this.roles[first_player]}</span> to start`);
                 }
                 return 0;
             }

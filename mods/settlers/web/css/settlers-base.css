@@ -152,18 +152,15 @@ dt {
 
 /*Richard background*/
 
-body {
-  background: linear-gradient(-75deg, #369, #58b, #58b, #369);
-  background-size: 100% 100%;
-}
-
-/* background moved to body so board is resizable */
-
+/* !-- background moved to body so board is resizable */
+/* gameboard == ocean, the "board" that gets resized is #hexgrid */ 
 .gameboard {
   position: absolute;
   width: 100%;
   height: 100%;
   transition: background 2s;
+  background: linear-gradient(-75deg, #369, #58b, #58b, #369);
+  background-size: 100% 100%;
   background-blend-mode: multiply;
 }
 
@@ -284,13 +281,6 @@ body {
 .city.empty.rhover {
   background-color: rgba(255, 255, 128, 0.95);
   border: 3px dotted purple;
-}
-
-.city img, .village img {
-  transform: scale(1.4);
-  margin: 0 0 3rem;
-  position: relative;
-  top: -4px;
 }
 
 .rhover:hover, .city.empty.rhover:hover {
@@ -437,18 +427,16 @@ body {
   scale: 1.6;
 }
 
-.city>svg, .city>img {
-  width: 100%;
-  height: 100%;
-  top: 0px;
-  left: 0px;
-  padding: 0px;
-}
-
 .city img, .village img {
   transform: scale(1.4);
+  margin: 0 0 3rem;
   position: relative;
-  top: -4px;
+  top: -2px;
+}
+
+.city>svg, .city>img {
+  width: 93%;
+  padding: 0px;
 }
 
 .player-box {
@@ -745,9 +733,6 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
-/*.tbd .icon{
-  height: 1.25em;
-}*/
 
 .horizontal_list {
   display: flex;
@@ -968,20 +953,12 @@ ul.horizontal_list li.iconoption {
   width: max-content;
   margin-right: auto;
   margin-left: auto;
+  font-size: 20px;
+  padding: 8px;
 }
 
-/*
-.player-notice+.tbd {
-  border-top: 1px dashed var(--text-color);
-  padding-top: 1rem;
-}
 
-.hud-body .status .player-notice+.tbd {
-  padding-top: 1rem;
-}
-*/
-
-.tbd ul {
+.player-notice ul {
   margin-top: 0.5em;
 }
 
@@ -1124,7 +1101,7 @@ ul.horizontal_list li.iconoption {
 
 @keyframes flash {
   50% {
-    background-color: #b4a09073;
+    background-color: #b79e76; /*#b4a09073;*/
     color: black;
   }
 }

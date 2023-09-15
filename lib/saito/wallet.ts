@@ -8,6 +8,7 @@ import { Saito } from "../../apps/core";
 import S from "saito-js/saito";
 import SaitoWallet from "saito-js/lib/wallet";
 import BalanceSnapshot from "saito-js/lib/balance_snapshot";
+import { WalletSlip } from "saito-js/lib/wallet";
 
 const CryptoModule = require("../templates/cryptomodule");
 
@@ -19,9 +20,9 @@ export default class Wallet extends SaitoWallet {
   preferred_crypto = "SAITO";
   preferred_txs = [];
 
-  default_fee = 2;
+  default_fee = 0;
 
-  version = 5.333;
+  version = 5.369;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -58,6 +59,11 @@ export default class Wallet extends SaitoWallet {
   async initialize() {
     console.log("wallet.initialize");
 
+    let privateKey = await this.getPrivateKey();
+    let publicKey = await this.getPublicKey();
+    this.publicKey = publicKey;
+    console.log("public key = " + publicKey);
+
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
       constructor(app) {
@@ -65,18 +71,25 @@ export default class Wallet extends SaitoWallet {
         this.name = "Saito";
         this.description = "Saito";
         this.balance = "0.0";
+        this.publicKey = publicKey;
       }
 
       async returnBalance() {
         return parseFloat(await this.app.wallet.getBalance());
       }
 
-      async returnAddress() {
-        return await this.app.wallet.getPublicKey();
+      returnAddress() {
+        return this.publicKey;
       }
 
       returnPrivateKey() {
         return this.app.wallet.getPrivateKey();
+      }
+
+      returnWithdrawalFeeForAddress(address = "", mycallback = null) {
+        if (mycallback) {
+          mycallback(0);
+        }
       }
 
       async sendPayment(amount, to_address, unique_hash = "") {
@@ -148,10 +161,6 @@ export default class Wallet extends SaitoWallet {
     // this.privatekey = await S.getInstance().getPrivateKey();
 
     this.saitoCrypto = new SaitoCrypto(this.app);
-    let privateKey = await this.getPrivateKey();
-    let publicKey = await this.getPublicKey();
-    this.publicKey = publicKey;
-    console.log("public key = " + publicKey);
 
     // if (privateKey === "") {
     if (this.app.options.wallet != null) {
@@ -210,7 +219,16 @@ export default class Wallet extends SaitoWallet {
           this.app.options.wallet.preferred_txs = this.preferred_txs;
           this.app.options.wallet.version = this.version;
           this.app.options.wallet.default_fee = this.default_fee;
+          // this.app.options.wallet.slips = [];
 
+          if (this.app.options.wallet.slips) {
+            let slips = this.app.options.wallet.slips.map((json: any) => {
+              let slip = new WalletSlip();
+              slip.copyFrom(json);
+              return slip;
+            });
+            await this.addSlips(slips);
+          }
           // reset games and restore game settings
           this.app.options.games = [];
           this.app.options.gameprefs = gameprefs;
@@ -245,6 +263,7 @@ export default class Wallet extends SaitoWallet {
           // purge old slips
           //
           this.app.options.wallet.version = this.version;
+          this.app.options.wallet.slips = [];
 
           // this.app.options.wallet.inputs = [];
           // this.app.options.wallet.outputs = [];
@@ -257,9 +276,20 @@ export default class Wallet extends SaitoWallet {
         if (typeof this.app.options.wallet.preferred_crypto != "undefined") {
           this.preferred_crypto = this.app.options.wallet.preferred_crypto;
         }
+        if (this.app.options.wallet.slips) {
+          // for (let slip of this.app.options.wallet.slips) {
+          //   console.log("222 : ", slip);
+          let slips = this.app.options.wallet.slips.map((json: any) => {
+            let slip = new WalletSlip();
+            slip.copyFrom(json);
+            return slip;
+          });
+          await this.addSlips(slips);
+          // }
+        }
       }
 
-      this.instance = Object.assign(this.instance, this.app.options.wallet);
+      // this.instance = Object.assign(this.instance, this.app.options.wallet);
     }
     // }
     ////////////////
@@ -405,6 +435,9 @@ export default class Wallet extends SaitoWallet {
     this.app.options.wallet.preferred_txs = this.preferred_txs;
     this.app.options.wallet.version = this.version;
     this.app.options.wallet.default_fee = this.default_fee;
+    let slips = await this.getSlips();
+
+    this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
     // this.app.options.wallet = this.instance;
     // for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
@@ -441,11 +474,6 @@ export default class Wallet extends SaitoWallet {
         activeMods.push(allMods[i]);
       }
     }
-
-    console.log(
-      "HOW MANY INSTALLED CRYPTOS: " + allMods.length,
-      "HOW MANY ACTIVATED: " + activeMods.length
-    );
 
     return activeMods;
   }
@@ -525,13 +553,16 @@ export default class Wallet extends SaitoWallet {
     }
   }
 
-  async returnCryptoAddressByTicker(ticker = "SAITO") {
+  returnCryptoAddressByTicker(ticker = "SAITO") {
     try {
       if (ticker === "SAITO") {
-        return this.getPublicKey();
+        return this.publicKey;
       } else {
         const cmod = this.returnCryptoModuleByTicker(ticker);
-        return cmod.returnAddress();
+        if (cmod) {
+          return cmod.returnAddress();
+        }
+        console.log(`Crypto Module (${ticker}) not found`);
       }
     } catch (err) {
       console.error(err);
@@ -544,7 +575,7 @@ export default class Wallet extends SaitoWallet {
     let mods = this.returnActivatedCryptos();
     for (let i = 0; i < mods.length; i++) {
       let ticker = mods[i].ticker;
-      let address = await mods[i].returnAddress();
+      let address = mods[i].returnAddress();
       let balance = await mods[i].returnBalance();
       if (!cryptos[ticker]) {
         cryptos[ticker] = { address, balance };
@@ -657,7 +688,7 @@ export default class Wallet extends SaitoWallet {
         // DEBUGGING - sender is address to which we send the crypto
         //       - not our own publickey
         //
-        if (senders[i] === (await cryptomod.returnAddress())) {
+        if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           await this.savePreferredCryptoTransaction(
             senders,
@@ -679,6 +710,7 @@ export default class Wallet extends SaitoWallet {
             // hash is "" if unsuccessful, trace_id if successful
             //
             if (hash === "") {
+              console.log("Deleting preferred crypto transaction");
               this.deletePreferredCryptoTransaction(
                 senders,
                 receivers,
@@ -699,6 +731,10 @@ export default class Wallet extends SaitoWallet {
             //mycallback({err: err});
             return;
           }
+        } else {
+          console.warn("Cannot send payment from wrong crypto address");
+          console.log(cryptomod.name);
+          console.log(senders[i], cryptomod.returnAddress());
         }
       }
     } else {
@@ -915,16 +951,31 @@ export default class Wallet extends SaitoWallet {
   // UI Functions //
   //////////////////
 
+  //
+  // We can use this function to selectively exclude some things from the "wallet"
+  // for backup purposes
+  //
+  exportWallet() {
+    let newObj = JSON.parse(JSON.stringify(this.app.options));
+
+    delete newObj.games;
+
+    return JSON.stringify(newObj);
+  }
+
   /**
    * Serialized the user's wallet to JSON and downloads it to their local machine
    */
   async backupWallet() {
     try {
       if (this.app.BROWSER == 1) {
-        let content = JSON.stringify(this.app.options);
+        //let content = JSON.stringify(this.app.options);
         let pom = document.createElement("a");
         pom.setAttribute("type", "hidden");
-        pom.setAttribute("href", "data:application/json;utf-8," + encodeURIComponent(content));
+        pom.setAttribute(
+          "href",
+          "data:application/json;utf-8," + encodeURIComponent(this.exportWallet())
+        );
         pom.setAttribute("download", "saito.wallet.json");
         document.body.appendChild(pom);
         pom.click();
@@ -1026,6 +1077,7 @@ export default class Wallet extends SaitoWallet {
 
   public async fetchBalanceSnapshot(key: string) {
     try {
+      console.log("fetching balance snapshot for key : " + key);
       let response = await fetch("/balance/" + key);
       let data = await response.text();
       let snapshot = BalanceSnapshot.fromString(data);

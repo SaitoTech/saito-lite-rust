@@ -466,6 +466,11 @@
     }
     return 0;
   }
+
+  isDebaterDisgraced(debater) { return this.isBurned(debater); }
+  isDisgraced(debater) { return this.isBurned(debater); }
+  isDebaterBurned(debater) { return this.isBurned(debater); }
+  isBurned(debater) { if (this.game.state.burned.includes(debater)) { return true; } return false; }
   isCommitted(debater) { return this.isDebaterCommitted(debater); }
   isDebaterCommitted(debater) {
     for (let i = 0; i < this.game.state.debaters.length; i++) {
@@ -510,7 +515,12 @@
 
     let his_self = this;
 
-    this.game.state.debater_committed_this_impulse[faction] = 1;
+    //
+    // we can only commit 1 debater for the bonus each impulse, so note it if so
+    //
+    if (activate == 1) {
+      this.game.state.debater_committed_this_impulse[faction] = 1;
+    }
 
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {

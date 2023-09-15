@@ -109,10 +109,6 @@ stats overlay
   justify-content: space-between;
 }
 
-.settlers-stats-player {
-  font-weight: bold;
-  line-height: 3rem;
-}
 
 .settlers-achievements-row  .achievements .army,
 .settlers-achievements-row  .achievements .victory_point_cards {
@@ -183,7 +179,15 @@ stats overlay
 
 .settlers-stats-player {
   font-size: 1.9rem;
-  font-weight: normal;
+  line-height: 3rem;
+  color: whitesmoke;
+  text-shadow: 1px 1px 1px black;
+  padding-left: 0.5rem;
+
+}
+
+.no-vp {
+  filter: brightness(50%) grayscale(50%);
 }
 
 .settlers-achievements-row .victory_point_cards img {
@@ -269,20 +273,13 @@ stats overlay
 }
 
 .settlers-stats-vp-row img {
-  width: 6rem;
+  width: 6.5rem;
 }
 
 .settlers-stats-vpc img {
   width: 4.5rem;
 }
 
-.settlers-stats-largest-army img {
-  width: 7rem;
-}
-
-.settlers-stats-largest-road img {
-  width: 6.5rem;
-}
 
 .settlers-stats-vp {
   position: relative;
@@ -302,6 +299,19 @@ stats overlay
   line-height: 2.7rem;
   text-shadow: 1px 1px 1px var(--saito-font-color-heavy);
   font-size: 2.4rem;
+}
+
+.settlers-stats-multiplier {
+  position: absolute;
+  bottom: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--saito-profile-background);
+  width: 2.7rem;
+  height: 2.7rem;
+  text-align: center;
+  text-shadow: 1px 1px 1px var(--saito-font-color-heavy), -1px -1px 1px var(--saito-font-color-heavy), -1px 1px 1px var(--saito-font-color-heavy), 1px -1px 1px var(--saito-font-color-heavy);
+  font-size: 2.8rem;
 }
 
 .settlers-stats-largest-road .settlers-stats-vp-count,

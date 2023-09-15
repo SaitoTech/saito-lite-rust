@@ -1785,9 +1785,12 @@ class Browser {
         }
         if (fileName) {
           filelabel.style.border = "none";
-          filelabel.innerHTML = browser_self.sanitize(fileName);
+          filelabel.innerHTML = sanitize(fileName);
         } else {
-          filelabel.innerHTML = browser_self.sanitize(labelVal);
+          //
+          // What is labelVal supposed to be???
+          //
+          //filelabel.innerHTML = sanitize(labelVal);
         }
       });
       input.classList.add("treated");

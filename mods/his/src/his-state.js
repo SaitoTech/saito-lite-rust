@@ -8,6 +8,7 @@
     this.game.state.spring_deploy_across_seas = [];
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
+    this.game.state.spaces_assaulted_this_turn = [];
 
     //
     // reset impulse commits
@@ -44,6 +45,7 @@
     // reset impulse commits
     //
     this.game.state.debater_committed_this_impulse = {};
+    this.game.state.spaces_assaulted_this_turn = [];
     
 
     this.game.state.tmp_reformations_this_turn = [];
@@ -454,6 +456,8 @@
     state.round = 0;
     state.players = [];
     state.events = {};
+    state.removed = []; // removed cards
+    state.spaces_assaulted_this_turn = [];
 
     state.diplomacy = this.returnDiplomacyAlliance();
 

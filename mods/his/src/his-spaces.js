@@ -142,6 +142,7 @@
   }
 
   isSpaceControlled(space, faction) {
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     // home spaces that have not fallen to another power.
@@ -164,16 +165,9 @@
 
   isSpaceFortified(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "key" || space.type === "fortress") { return false; }
+    if (space.type === "electorate" || space.type === "key" || space.type === "fortress") { return true; }
     return false;
   }
-
-  isSpaceFortified(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "key" || space.type === "fortress") { return false; }
-    return false;
-  }
-
 
   returnHopsToFortifiedHomeSpace(source, faction) {
     let his_self = this;
@@ -600,9 +594,11 @@
 
 
   returnNearestFriendlyFortifiedSpaces(faction, space) {
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space.key]; }
 
+    let original_spacekey = space.key;
     let his_self = this;
     let already_routed_through = {};
 
@@ -613,10 +609,10 @@
       // fortified spaces
       function(spacekey) {
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
-	  if (his_self.isSpaceControlled(space, faction)) {
+	  if (his_self.isSpaceControlled(spacekey, faction)) {
 	    return 1;
 	  }
-	  if (his_self.isSpaceFriendly(space, faction)) {
+	  if (his_self.isSpaceFriendly(spacekey, faction)) {
 	    return 1;
 	  }
 	}
@@ -628,6 +624,7 @@
 	if (already_routed_through[spacekey] == 1) { return 0; }
         already_routed_through[spacekey] = 1;
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	if (spacekey == original_spacekey) { return 1; }
 	return 0;
       }
     );
@@ -1195,6 +1192,16 @@
 
   }
 
+  isSpaceElectorate(spacekey) {
+    if (spacekey === "augsburg") { return true; }
+    if (spacekey === "mainz") { return true; }
+    if (spacekey === "trier") { return true; }
+    if (spacekey === "cologne") { return true; }
+    if (spacekey === "wittenberg") { return true; }
+    if (spacekey === "brandenburg") { return true; }
+    return false;
+  }
+
   returnNumberOfCatholicElectorates() {
     let controlled_keys = 0;
     if (!this.isSpaceControlled('augsburg', "protestant")) { controlled_keys++; }
@@ -1262,7 +1269,7 @@
   returnNumberOfCatholicSpacesInLanguageZone(language="") {  
     let catholic_spaces = 0;
     for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "catholic") {
+      if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
 	if (language == "" || this.game.spaces[key].language == language) {
 	  catholic_spaces++;
 	}
@@ -1274,7 +1281,7 @@
   returnNumberOfProtestantSpacesInLanguageZone(language="") {  
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "protestant") {
+      if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
 	if (language == "all" || language == "" || this.game.spaces[key].language == language) {
 	  protestant_spaces++;
 	}

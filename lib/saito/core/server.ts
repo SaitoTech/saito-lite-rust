@@ -612,15 +612,15 @@ class Server {
       }
     });
 
-    expressApp.get("/balance/:key", async (req, res) => {
+    expressApp.get("/balance/:keys?", async (req, res) => {
       try {
-        const key = req.params.key;
-        if (!key) {
-          console.warn("key not provided for balance");
-          return res.sendStatus(400);
+        let keys = [];
+        if (req.params.keys) {
+          keys = req.params.keys.split(";");
         }
+        console.log("fetching balance snapshot with keys : ", keys);
 
-        const snapshot = await S.getInstance().getBalanceSnapshot();
+        const snapshot = await S.getInstance().getBalanceSnapshot(keys);
         res.setHeader("Content-Disposition", "attachment; filename=" + snapshot.file_name);
         res.end(snapshot.toString());
       } catch (error) {

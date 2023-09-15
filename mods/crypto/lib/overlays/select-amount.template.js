@@ -9,7 +9,7 @@ module.exports = (app, mod) => {
       
       <div class="stake-input-container">
         <input autocomplete="off" id="amount_to_stake_input" class="stake" value="0.0" />
-        <div class="crypto_msg">Max: ${mod.max_balance}</div>
+        <div class="crypto_msg select_max">Max: ${mod.max_balance}</div>
         <div class="crypto-ticker">${mod.ticker}</div>
       </div>
 

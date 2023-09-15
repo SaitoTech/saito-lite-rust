@@ -253,7 +253,6 @@
       for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	let f = this.game.state.players_info[i].factions[z];
         if (this.game.state.activated_powers) {
-console.log("faction: " + f);
 	  if (this.game.state.activated_powers[f]) {
             if (this.game.state.activated_powers[f].includes(faction)) {
 	      return (i+1);
@@ -430,14 +429,12 @@ console.log("faction: " + f);
 
     let his_self = this;
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
-    let space = this.game.spaces[spacekey];
-
-    let roll = this.rollDice(res.length);
-
-    // retrea
-    let retreat_destination = res[roll-1];
-    his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
-
+    if (res.length > 0) {
+      let space = this.game.spaces[spacekey];
+      let roll = this.rollDice(res.length);
+      let retreat_destination = res[roll-1].key;
+      his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+    }
   }
 
 
@@ -450,15 +447,17 @@ console.log("faction: " + f);
     let space = this.game.spaces[spacekey];
 
     let msg = "Select Winter Location for Units in "+space.name;
-    let opt = "";
+    let opt = "<ul>";
     for (let i = 0; i < res.length; i++) {
       opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
     }
+    opt += "</ul>";
 
     if (res.length == 0) {
       this.endTurn();
       return 0;
     }
+
 
     this.updateStatusWithOptions(msg, opt);
 
@@ -468,6 +467,7 @@ console.log("faction: " + f);
       let id = $(this).attr('id');
       $(".option").off();
 
+      his_self.updateStatus("handling retreat...");
       his_self.addMove("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+id);
       his_self.endTurn();
 
@@ -480,6 +480,7 @@ console.log("faction: " + f);
 
     let units_available = [];
     let units_to_retain = [];
+
 
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].units[faction]) {
@@ -1120,7 +1121,6 @@ if (limit === "build") {
     }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
-    
     this.attachCardboxEvents((card) => {
       try {
         $('.card').off();
@@ -1230,7 +1230,7 @@ if (limit === "build") {
     this.cardbox.hide();
 
     if (card === "pass") {
-console.log("player is : " + this.game.player + " and faction is " + faction);
+      this.updateStatus("Passing this Round...");
       let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
       let cards_in_hand = 0;
       if (this.game.deck[0]) {
@@ -1381,7 +1381,7 @@ console.log("player is : " + this.game.player + " and faction is " + faction);
                   if (ops > 0) {
  		    his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
 		  }
-                  his_self.addMove("commit\tpapacy\tloyola-debater");
+                  his_self.addMove("commit\tpapacy\tloyola-debater\t1");
                   his_self.playerFoundJesuitUniversity(his_self, player, "papacy");
                   return;
 		}
@@ -1532,6 +1532,7 @@ console.log("player is : " + this.game.player + " and faction is " + faction);
     }
   }
   playerPlayEvent(card, faction, ops=null) {
+    this.addMove("remove\t"+faction+"\t"+card);
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
@@ -2920,10 +2921,12 @@ console.log("units length: " + space.units[defender].length);
   }
 
   canPlayerCommitDebater(faction, debater) {
-  
+
     if (faction !== "protestant" && faction !== "papacy") { return false; }
-   
+
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
+
+    if (this.isBurned(debater)) { return false; }
 
     let already_committed = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
@@ -3374,7 +3377,9 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
-	  return 1;
+	  if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
+	    return 1;
+	  }
 	}
       }
     }
@@ -3414,12 +3419,11 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   // 2P requires only that it is in protestant or catholic religious influence
   canPlayerRemoveUnrest(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
-console.log("SPACES IN UNREST: " + JSON.stringify(spaces_in_unrest));
     for (let i = 0; i < spaces_in_unrest.length; i++) {
+console.log("checking for unrest: " + spaces_in_unrest[i]);
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }
-console.log("return no");
     return 0;
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
@@ -3444,7 +3448,7 @@ console.log("return no");
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
-	if (his_self.game.spaces[conquerable_spaces[i]].besieged != 1) {
+	if (his_self.game.spaces[conquerable_spaces[i]].besieged != 1 && his_self.game.spaces[conquerable_spaces[i]].besieged != 2) {
 	  return 1;
 	}
       } 
@@ -3502,7 +3506,7 @@ console.log("return no");
     }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
+      if (his_self.isSpaceControlled(conquerable_spaces[i], faction) || his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || his_self.game.spaces[conquerable_spaces[i]].besieged == 2) {
 	conquerable_spaces.splice(i, 1);
 	i--;
       }
@@ -4022,14 +4026,14 @@ return;
 
 	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
-            his_self.addMove("commit\tpapacy\ttetzel-debater");
+            his_self.addMove("commit\tpapacy\ttetzel-debater\t1");
 	  }
 
 	  his_self.addMove("hide_overlay\tburn_books\t"+id);
 	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
-	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
-	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater\t1"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater\t1"); }
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
