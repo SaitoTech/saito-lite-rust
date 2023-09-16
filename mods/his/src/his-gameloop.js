@@ -52,7 +52,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
-//this.game.queue.push("is_testing");
+this.game.queue.push("is_testing");
 
 
 
@@ -642,8 +642,7 @@ console.log("should never get here!");
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "081"); 
-   	  this.addCard("protestant", "037");
+   	  this.addCard("protestant", "027");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';

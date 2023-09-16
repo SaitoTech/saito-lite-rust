@@ -813,6 +813,7 @@
 
               (space) => {
                 if (his_self.isSpaceControlled(space.key, "hapsburg") && space.language === "italian") { return 1; }
+		return 0;
 	      },
 
               (spacekey) => {
@@ -853,6 +854,7 @@
               `Select Hapsburg-Controlled Space to add ${num} Regular` ,
 
               function(space) {
+	        if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league == 0) { return 0; }
                 if (his_self.isSpaceControlled(space.key, "hapsburg")) { return 1; }
 	        return 0;
               },
@@ -3611,6 +3613,9 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "mercenaries_grow_restless") {
+
+console.log("here in mercenaries_grow_restless");
+console.log(JSON.stringify(his_self.game.queue));
 
           his_self.game.queue.splice(qe, 1);
 

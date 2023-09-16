@@ -2346,6 +2346,8 @@ console.log("\n\n\n\n");
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
 	  //this.setAllies("venice", "papacy");
+	  this.controlSpace("papacy", "trent");
+	  this.addRegular("papacy", "trent", 1);
 
 	} else {
 
@@ -3759,6 +3761,7 @@ if (this.game.players.length > 2) {
 
               (space) => {
                 if (his_self.isSpaceControlled(space.key, "hapsburg") && space.language === "italian") { return 1; }
+		return 0;
 	      },
 
               (spacekey) => {
@@ -3799,6 +3802,7 @@ if (this.game.players.length > 2) {
               `Select Hapsburg-Controlled Space to add ${num} Regular` ,
 
               function(space) {
+	        if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league == 0) { return 0; }
                 if (his_self.isSpaceControlled(space.key, "hapsburg")) { return 1; }
 	        return 0;
               },
@@ -6557,6 +6561,9 @@ if (this.game.players.length > 2) {
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "mercenaries_grow_restless") {
+
+console.log("here in mercenaries_grow_restless");
+console.log(JSON.stringify(his_self.game.queue));
 
           his_self.game.queue.splice(qe, 1);
 
@@ -15648,8 +15655,8 @@ console.log("TESTING: " + JSON.stringify(space.units));
       left : 1112
     }
     track['13'] = {
-      top : 1226,
-      left : 1
+      top : 3026,
+      left: 1226,
     }
     track['14'] = {
       top : 3026,
@@ -16248,7 +16255,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
-//this.game.queue.push("is_testing");
+this.game.queue.push("is_testing");
 
 
 
@@ -16838,8 +16845,7 @@ console.log("should never get here!");
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "081"); 
-   	  this.addCard("protestant", "037");
+   	  this.addCard("protestant", "027");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
@@ -24008,8 +24014,8 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
       html += "</ul>";
 
       if (targets <= 0 || hits_to_assign <= 0) {
-	this.addMove("destroy_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
-	this.endTurn();
+	his_self.addMove("destroy_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
+	his_self.endTurn();
 	return;
       }
 
@@ -24072,8 +24078,8 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
       }
 
       if (targets <= 0 || hits_to_assign <= 0) {
-	this.addMove("destroy_naval_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
-	this.endTurn();
+	his_self.addMove("destroy_naval_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
+	his_self.endTurn();
 	return;
       }
 
@@ -25785,6 +25791,7 @@ return;
     let cancel_func = null;
     let spacekey = "";
     let space = null;
+    let protestant_player = his_self.returnPlayerOfFaction("protestant");
 
 	//
 	// first define the functions that will be used internally
@@ -25795,12 +25802,18 @@ return;
             "Select Destination for these Units",
 
       	    function(space) {
+	      // no-one can move into electorates before schmalkaldic league forms
+              if (his_self.game.player != protestant_player && his_self.game.state.events.schmalkaldic_league == 0) {
+		if (space.type == "electorate") { return 0; }
+	      }
 	      if (space.neighbours.includes(spacekey)) {
 	        if (!space.pass) { 
 		  return 1; 
 		} else {
  		  if (!space.pass.includes(spacekey)) {
 		    return 1;
+		  } else {
+		    return 0;
 		  }
 		}
 	  	return 1;
@@ -25918,7 +25931,7 @@ return;
 
     his_self.playerSelectSpaceWithFilter(
 
-      "Select Town from Which to Move Units:",
+      "Select Town from which to Move Units:",
 
       function(space) {
 	for (let z in space.units) {
@@ -25933,7 +25946,7 @@ return;
 
 	spacekey = skey;
 
-        let space = his_self.spaces[spacekey];
+        let space = his_self.game.spaces[spacekey];
 
 	//
 	// is this a rapid move ?
@@ -26684,6 +26697,7 @@ console.log("units length: " + space.units[defender].length);
   async playerMoveFormationOverPass(his_self, player, faction) {
 
     let units_to_move = [];
+    let protestant_player = his_self.returnPlayerOfFaction("protestant");
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -26694,7 +26708,7 @@ console.log("units length: " + space.units[defender].length);
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && z === faction) {
 	    let any_unlocked_units = false;
-	    for (let i = 0; i < spaces.units[z].length; i++) {
+	    for (let i = 0; i < space.units[z].length; i++) {
 	      if (space.units[z][i].locked == false) { any_unlocked_units = true; }
 	    }
 	    if (any_unlocked_units) { return 1; }
@@ -26706,7 +26720,7 @@ console.log("units length: " + space.units[defender].length);
 
       function(spacekey) {
 
-        let space = his_self.spaces[spacekey];
+        let space = his_self.game.spaces[spacekey];
 
 	let selectDestinationInterface = function(his_self, units_to_move) {  
     	  his_self.playerSelectSpaceWithFilter(
@@ -26714,6 +26728,10 @@ console.log("units length: " + space.units[defender].length);
             "Select Destination for these Units",
 
       	    function(space) {
+	      // no-one can move into electorates before schmalkaldic league forms
+              if (his_self.game.player != protestant_player && his_self.game.state.events.schmalkaldic_league == 0) {
+		if (space.type == "electorate") { return 0; }
+	      }
 	      if (space.neighbours.includes(spacekey)) {
 		if (space.pass) {
 		  if (space.pass.includes(spacekey)) { return 1; }
@@ -26738,11 +26756,13 @@ console.log("units length: " + space.units[defender].length);
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
-	      this.endTurn();
+	      his_self.endTurn();
 
 	    },
 
-	    cancel_func,
+	    null, 
+
+  	    true
 
 	  );
 	}
@@ -26755,7 +26775,8 @@ console.log("units length: " + space.units[defender].length);
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-              if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+              if (space.units[faction][i].locked == true || (his_self.game.state.events.foul_weather == 1 && space.units[faction][i].already_moved == 1)) {
+	      } else {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	        } else {
@@ -26795,7 +26816,7 @@ console.log("units length: " + space.units[defender].length);
 	
       },
 
-      cancel_func,
+      null ,
 
       true
 
@@ -26986,7 +27007,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       for (let i = 0; i < spaces_with_units.length; i++) {
        for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
 	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
-	    return 1;
+	    // need to be non-pass moves available
+	    if (his_self.game.spaces[spaces_with_units[i]].neighbours.length > his_self.game.spaces[spaces_with_units[i]].pass.length) {
+	      return 1;
+	    }
 	  }
 	}
       }
