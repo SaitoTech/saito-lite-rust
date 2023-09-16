@@ -6553,8 +6553,8 @@ if (this.game.players.length > 2) {
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "pre_assault_hits_roll") {
-  	  his_self.addMove(`discard\t${faction}\t027`);
 	  his_self.addMove(`mercenaries_grow_restless\t${faction}`);
+  	  his_self.addMove(`discard\t${faction}\t027`);
 	  his_self.endTurn();
         }
         return 1;
@@ -6562,12 +6562,12 @@ if (this.game.players.length > 2) {
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "mercenaries_grow_restless") {
 
-console.log("here in mercenaries_grow_restless");
-console.log(JSON.stringify(his_self.game.queue));
-
           his_self.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
+
+	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("027"));
+
           let player = his_self.returnPlayerOfFaction(faction);
 	  let space = his_self.game.spaces[his_self.game.state.assault.spacekey];
 	  let attacker_land_units_remaining = 0;
@@ -6593,9 +6593,17 @@ console.log(JSON.stringify(his_self.game.queue));
 		}
 	      }
 	    }
+
+console.log("FORCES REMAINING");
+console.log(f + ": " + JSON.stringify(space.units[f]));
+
           }
 
+console.log("A - 1");
+
 	  if (defender_land_units_remaining > attacker_land_units_remaining) {
+
+console.log("A - 2");
 
 	    //
 	    // remove rest of assault
@@ -6615,17 +6623,38 @@ console.log(JSON.stringify(his_self.game.queue));
 
 	    his_self.game.queue.push("break_siege");
 	    his_self.game.queue.push("hide_overlay\tassault");
-    	    his_self.game.queue.push(`discard\t${faction}\t032`);
+    	    his_self.game.queue.push(`discard\t${faction}\t027`);
 
+console.log("QUEUE AFTER PURGING: " + JSON.stringify(his_self.game.queue));
+
+	  //
+	  // assault may continue -- this will take us back to the acknowledge menu
+	  //
 	  } else {
 
+	    //
+	    // remove rest of assault
+	    //
+	    for (let i = his_self.game.queue.length-1; i > 0 ; i--) {
+	      let lmv = his_self.game.queue[i].split("\t");
+	      if (!(lmv[0].indexOf("discard") == 0 || lmv[0].indexOf("continue") == 0 || lmv[0].indexOf("play") == 0)) {
+		his_self.game.queue.splice(i, 1);
+	      } else {
+console.log("breaking because of: " + lmv[0]);
+		break;
+	      }
+	    }
+
+console.log("A - 3");
 	    his_self.game.queue.push(`assault\t${his_self.game.state.assault.attacker_faction}\t${his_self.game.state.assault.spacekey}`);
 	    his_self.game.queue.push("hide_overlay\tassault");
-    	    his_self.game.queue.push(`discard\t${faction}\t032`);
+    	    his_self.game.queue.push(`discard\t${faction}\t027`);
 
 	  }
 
 	}
+
+
         return 1;
       }
     }
@@ -16847,6 +16876,13 @@ console.log("should never get here!");
 
    	  this.addCard("protestant", "027");
 
+	  this.controlSpace("papacy", "siena");
+	  this.addMercenary("papacy", "siena", 1);
+	  this.addMercenary("papacy", "siena", 1);
+	  this.addMercenary("papacy", "siena", 1);
+	  this.addRegular("papacy", "siena", 1);
+
+
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
 
@@ -17657,6 +17693,8 @@ console.log("possible? " + fluis);
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];
 
+console.log("RETREAT: " + JSON.stringify(source.units));
+
 	  for (let i = 0; i < source.units[faction].length; i++) {
 	    source.units[faction][i].locked = true;
 	    destination.units[faction].push(source.units[faction][i]);
@@ -18291,6 +18329,7 @@ console.log("@");
 	    return ack;
 	  }
 
+console.log(" - - - - - - - - - - - - - - ");
 console.log("into counter or acknowledge 2");
 
 	  let msg = mv[1];
@@ -20237,6 +20276,10 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 
 
 	if (mv[0] === "assault") {
+
+console.log("!");
+console.log("!! assault !!");
+console.log("!");
 
           this.game.queue.splice(qe, 1);
 	  this.game.state.assault = {};

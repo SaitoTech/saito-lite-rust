@@ -644,6 +644,13 @@ console.log("should never get here!");
 
    	  this.addCard("protestant", "027");
 
+	  this.controlSpace("papacy", "siena");
+	  this.addMercenary("papacy", "siena", 1);
+	  this.addMercenary("papacy", "siena", 1);
+	  this.addMercenary("papacy", "siena", 1);
+	  this.addRegular("papacy", "siena", 1);
+
+
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
 
@@ -1454,6 +1461,8 @@ console.log("possible? " + fluis);
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];
 
+console.log("RETREAT: " + JSON.stringify(source.units));
+
 	  for (let i = 0; i < source.units[faction].length; i++) {
 	    source.units[faction][i].locked = true;
 	    destination.units[faction].push(source.units[faction][i]);
@@ -2088,6 +2097,7 @@ console.log("@");
 	    return ack;
 	  }
 
+console.log(" - - - - - - - - - - - - - - ");
 console.log("into counter or acknowledge 2");
 
 	  let msg = mv[1];
@@ -4034,6 +4044,10 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 
 
 	if (mv[0] === "assault") {
+
+console.log("!");
+console.log("!! assault !!");
+console.log("!");
 
           this.game.queue.splice(qe, 1);
 	  this.game.state.assault = {};
