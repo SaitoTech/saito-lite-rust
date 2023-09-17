@@ -127,7 +127,6 @@ module.exports = MovementOverlayTemplate = (obj) => {
      html += `</div>`;
    }
 
-
    if (obj.commanders.length > 0) {
      html += `
 	<div class="movement-commanders">

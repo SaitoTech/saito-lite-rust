@@ -1008,17 +1008,18 @@
 	      
    	      let msg = "Choose Faction to Destroy Unit:";
               let html = '<ul>';
-              if (space.units["hapsburg"].length) { html += '<li class="option" id="hapsburg">hapsburgs</li>'; }
-              if (space.units["france"].length) { html += '<li class="option" id="france">france</li>'; }
-              if (space.units["england"].length) { html += '<li class="option" id="england">england</li>'; }
-              if (space.units["papacy"].length) { html += '<li class="option" id="papacy">papacy</li>'; }
-              if (space.units["protestant"].length) { html += '<li class="option" id="protestant">protestant</li>'; }
-              if (space.units["ottoman"].length) { html += '<li class="option" id="ottoman">ottoman</li>'; }
-              if (space.units["hungary"].length) { html += '<li class="option" id="hungary">hungary</li>'; }
-              if (space.units["venice"].length) { html += '<li class="option" id="venice">venice</li>'; }
-              if (space.units["scotland"].length) { html += '<li class="option" id="scotland">scotland</li>'; }
-              if (space.units["genoa"].length) { html += '<li class="option" id="genoa">genoa</li>'; }
-              if (space.units["independent"].length) { html += '<li class="option" id="independent">independent</li>'; }
+	      let u = 0;
+              if (space.units["hapsburg"].length) { u++; html += '<li class="option" id="hapsburg">hapsburgs</li>'; }
+              if (space.units["france"].length) { u++; html += '<li class="option" id="france">france</li>'; }
+              if (space.units["england"].length) { u++; html += '<li class="option" id="england">england</li>'; }
+              if (space.units["papacy"].length) { u++; html += '<li class="option" id="papacy">papacy</li>'; }
+              if (space.units["protestant"].length) { u++; html += '<li class="option" id="protestant">protestant</li>'; }
+              if (space.units["ottoman"].length) { u++; html += '<li class="option" id="ottoman">ottoman</li>'; }
+              if (space.units["hungary"].length) { u++; html += '<li class="option" id="hungary">hungary</li>'; }
+              if (space.units["venice"].length) { u++; html += '<li class="option" id="venice">venice</li>'; }
+              if (space.units["scotland"].length) { u++; html += '<li class="option" id="scotland">scotland</li>'; }
+              if (space.units["genoa"].length) { u++; html += '<li class="option" id="genoa">genoa</li>'; }
+              if (space.units["independent"].length) { u++; html += '<li class="option" id="independent">independent</li>'; }
     	      html += '</ul>';
 
               his_self.updateStatusWithOptions(msg, html);
@@ -1030,9 +1031,11 @@
    	        let msg = "Destroy Which Unit: ";
                 let unittypes = [];
                 let html = '<ul>';
+		let du = -1;
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
                   if (space.units[faction_to_destroy][i].command_value == 0) {
 		    if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
+		      if (du == -1) { du = i; } else { du = -2; }
   		      html += `<li class="option" id="${space.units[faction_to_destroy][i].type}">${space.units[faction_to_destroy][i].type}</li>`;
 		      unittypes.push(space.units[faction_to_destroy][i].unittype);
 		    }
@@ -1062,7 +1065,15 @@
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
+
+		// auto-submit if only 1 choice
+		if (du > -1) { $('.option').click(); }
+
               });
+
+	      // auto-submit if only 1 choice
+	      if (u == 1) { $('.option').click(); }
+
 	    },
 
             null, 

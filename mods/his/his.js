@@ -3943,17 +3943,18 @@ if (this.game.players.length > 2) {
 	      
    	      let msg = "Choose Faction to Destroy Unit:";
               let html = '<ul>';
-              if (space.units["hapsburg"].length) { html += '<li class="option" id="hapsburg">hapsburgs</li>'; }
-              if (space.units["france"].length) { html += '<li class="option" id="france">france</li>'; }
-              if (space.units["england"].length) { html += '<li class="option" id="england">england</li>'; }
-              if (space.units["papacy"].length) { html += '<li class="option" id="papacy">papacy</li>'; }
-              if (space.units["protestant"].length) { html += '<li class="option" id="protestant">protestant</li>'; }
-              if (space.units["ottoman"].length) { html += '<li class="option" id="ottoman">ottoman</li>'; }
-              if (space.units["hungary"].length) { html += '<li class="option" id="hungary">hungary</li>'; }
-              if (space.units["venice"].length) { html += '<li class="option" id="venice">venice</li>'; }
-              if (space.units["scotland"].length) { html += '<li class="option" id="scotland">scotland</li>'; }
-              if (space.units["genoa"].length) { html += '<li class="option" id="genoa">genoa</li>'; }
-              if (space.units["independent"].length) { html += '<li class="option" id="independent">independent</li>'; }
+	      let u = 0;
+              if (space.units["hapsburg"].length) { u++; html += '<li class="option" id="hapsburg">hapsburgs</li>'; }
+              if (space.units["france"].length) { u++; html += '<li class="option" id="france">france</li>'; }
+              if (space.units["england"].length) { u++; html += '<li class="option" id="england">england</li>'; }
+              if (space.units["papacy"].length) { u++; html += '<li class="option" id="papacy">papacy</li>'; }
+              if (space.units["protestant"].length) { u++; html += '<li class="option" id="protestant">protestant</li>'; }
+              if (space.units["ottoman"].length) { u++; html += '<li class="option" id="ottoman">ottoman</li>'; }
+              if (space.units["hungary"].length) { u++; html += '<li class="option" id="hungary">hungary</li>'; }
+              if (space.units["venice"].length) { u++; html += '<li class="option" id="venice">venice</li>'; }
+              if (space.units["scotland"].length) { u++; html += '<li class="option" id="scotland">scotland</li>'; }
+              if (space.units["genoa"].length) { u++; html += '<li class="option" id="genoa">genoa</li>'; }
+              if (space.units["independent"].length) { u++; html += '<li class="option" id="independent">independent</li>'; }
     	      html += '</ul>';
 
               his_self.updateStatusWithOptions(msg, html);
@@ -3965,9 +3966,11 @@ if (this.game.players.length > 2) {
    	        let msg = "Destroy Which Unit: ";
                 let unittypes = [];
                 let html = '<ul>';
+		let du = -1;
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
                   if (space.units[faction_to_destroy][i].command_value == 0) {
 		    if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
+		      if (du == -1) { du = i; } else { du = -2; }
   		      html += `<li class="option" id="${space.units[faction_to_destroy][i].type}">${space.units[faction_to_destroy][i].type}</li>`;
 		      unittypes.push(space.units[faction_to_destroy][i].unittype);
 		    }
@@ -3997,7 +4000,15 @@ if (this.game.players.length > 2) {
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
+
+		// auto-submit if only 1 choice
+		if (du > -1) { $('.option').click(); }
+
               });
+
+	      // auto-submit if only 1 choice
+	      if (u == 1) { $('.option').click(); }
+
 	    },
 
             null, 
@@ -25838,7 +25849,7 @@ return;
  	      }
    	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
-	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
 
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
@@ -25876,8 +25887,11 @@ return;
 		for (let i = 0; i < units_to_move.length; i++) {
 		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 		  if (unitno >= max_formation_size) { 
-		    alert("Maximum Formation Size: " + max_formation_size);
-		    return;
+		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	            if (unitno >= max_formation_size) { 
+	              alert("Maximum Formation Size: " + max_formation_size);
+	              return;
+		    }
 		  }
 		}
 
@@ -25915,26 +25929,33 @@ return;
     }
   }
 
-  returnMaxFormationSize(units_to_move) {
+  returnMaxFormationSize(units_to_move, faction = "", spacekey = "") {
+
+    let utm = [];
+    if (faction == "") {
+      utm = units_to_move;
+    } else {
+      for (let i = 0; i < units_to_move.length; i++) { utm.push(this.game.spaces[spacekey].units[faction][units_to_move[i]]); }
+    }
 
     let command_value_one = 0;
     let command_value_two = 0;
     let max_command_value = 0;
 
-    for (let i = 0; i < units_to_move.length; i++) {
-      if (units_to_move[i].command_value > 0) {
+    for (let i = 0; i < utm.length; i++) {
+      if (utm[i].command_value > 0) {
         // we can have up to two army leaders combine command values
 	if (command_value_one == 0) {
-	  command_value_one = units_to_move[i].command_value; 
+	  command_value_one = utm[i].command_value; 
 	} else {
 	  if (command_value_two == 0) {
-	    command_value_one = units_to_move[i].command_value;
+	    command_value_one = utm[i].command_value;
 	  } else {
-	    if (command_value_one > command_value_two && units_to_move[i].command_value > command_value_one) {
-	      command_value_one = units_to_move[i].command_value;
+	    if (command_value_one > command_value_two && utm[i].command_value > command_value_one) {
+	      command_value_one = utm[i].command_value;
 	    } else {
-	      if (command_value_one < command_value_two && units_to_move[i].command_value > command_value_two) {
-	        command_value_two = units_to_move[i].command_value;
+	      if (command_value_one < command_value_two && utm[i].command_value > command_value_two) {
+	        command_value_two = utm[i].command_value;
 	      }
 	    }
 	  }
@@ -26025,7 +26046,7 @@ return;
  	  }
    	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
-	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
@@ -26062,8 +26083,11 @@ return;
 	    for (let i = 0; i < units_to_move.length; i++) {
 	      if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 	      if (unitno >= max_formation_size) { 
-	        alert("Maximum Formation Size: " + max_formation_size);
-	        return;
+		max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	        if (unitno >= max_formation_size) { 
+	          alert("Maximum Formation Size: " + max_formation_size);
+	          return;
+		}
 	      }
 	    }
 
@@ -26562,15 +26586,11 @@ return;
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
-console.log("selecting intercept units");
-
-      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 
       let html = "<ul>";
-
-console.log("units length: " + space.units[defender].length);
 
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
@@ -26933,7 +26953,7 @@ console.log("units length: " + space.units[defender].length);
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
-	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 
 	  let html = "<ul>";

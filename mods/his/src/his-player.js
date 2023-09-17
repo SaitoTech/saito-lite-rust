@@ -1958,7 +1958,7 @@ return;
  	      }
    	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
-	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
 
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
@@ -1996,8 +1996,11 @@ return;
 		for (let i = 0; i < units_to_move.length; i++) {
 		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 		  if (unitno >= max_formation_size) { 
-		    alert("Maximum Formation Size: " + max_formation_size);
-		    return;
+		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	            if (unitno >= max_formation_size) { 
+	              alert("Maximum Formation Size: " + max_formation_size);
+	              return;
+		    }
 		  }
 		}
 
@@ -2035,26 +2038,33 @@ return;
     }
   }
 
-  returnMaxFormationSize(units_to_move) {
+  returnMaxFormationSize(units_to_move, faction = "", spacekey = "") {
+
+    let utm = [];
+    if (faction == "") {
+      utm = units_to_move;
+    } else {
+      for (let i = 0; i < units_to_move.length; i++) { utm.push(this.game.spaces[spacekey].units[faction][units_to_move[i]]); }
+    }
 
     let command_value_one = 0;
     let command_value_two = 0;
     let max_command_value = 0;
 
-    for (let i = 0; i < units_to_move.length; i++) {
-      if (units_to_move[i].command_value > 0) {
+    for (let i = 0; i < utm.length; i++) {
+      if (utm[i].command_value > 0) {
         // we can have up to two army leaders combine command values
 	if (command_value_one == 0) {
-	  command_value_one = units_to_move[i].command_value; 
+	  command_value_one = utm[i].command_value; 
 	} else {
 	  if (command_value_two == 0) {
-	    command_value_one = units_to_move[i].command_value;
+	    command_value_one = utm[i].command_value;
 	  } else {
-	    if (command_value_one > command_value_two && units_to_move[i].command_value > command_value_one) {
-	      command_value_one = units_to_move[i].command_value;
+	    if (command_value_one > command_value_two && utm[i].command_value > command_value_one) {
+	      command_value_one = utm[i].command_value;
 	    } else {
-	      if (command_value_one < command_value_two && units_to_move[i].command_value > command_value_two) {
-	        command_value_two = units_to_move[i].command_value;
+	      if (command_value_one < command_value_two && utm[i].command_value > command_value_two) {
+	        command_value_two = utm[i].command_value;
 	      }
 	    }
 	  }
@@ -2145,7 +2155,7 @@ return;
  	  }
    	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
-	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
@@ -2182,8 +2192,11 @@ return;
 	    for (let i = 0; i < units_to_move.length; i++) {
 	      if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 	      if (unitno >= max_formation_size) { 
-	        alert("Maximum Formation Size: " + max_formation_size);
-	        return;
+		max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	        if (unitno >= max_formation_size) { 
+	          alert("Maximum Formation Size: " + max_formation_size);
+	          return;
+		}
 	      }
 	    }
 
@@ -2682,15 +2695,11 @@ return;
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
-console.log("selecting intercept units");
-
-      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 
       let html = "<ul>";
-
-console.log("units length: " + space.units[defender].length);
 
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
@@ -3053,7 +3062,7 @@ console.log("units length: " + space.units[defender].length);
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
-	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 
 	  let html = "<ul>";
