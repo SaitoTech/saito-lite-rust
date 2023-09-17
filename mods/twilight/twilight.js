@@ -6019,7 +6019,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       return;
     }
 
-
     //
     // Yuri and Samantha
     //

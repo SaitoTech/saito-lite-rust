@@ -426,9 +426,11 @@
   // 2P variant needs automatic determination of where to retreat
   //
   autoResolveWinterRetreat(faction, spacekey) {
-
     let his_self = this;
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
+if (faction === "venice" && spacekey == "agram") {
+  console.log("VENICE CHECK: " + JSON.stringify(res));
+}
     if (res.length > 0) {
       let space = this.game.spaces[spacekey];
       let roll = this.rollDice(res.length);
@@ -841,9 +843,9 @@ if (limit === "build") {
 }
 
     //
-    // hapsburg options limited in 2P version
+    // major powers have limited options in 2P version
     //
-    if (this.game.players.length == 2 && faction === "hapsburg") {
+    if (this.game.players.length == 2 && (faction === "hapsburg" || faction === "england" || faction === "france" || faction == "ottoman")) {
       for (let i = menu.length-1; i >= 0; i--) {
 	if (menu[i].category == "build") { menu.splice(i, 1); }
 	if (menu[i].category == "special") { menu.splice(i, 1); }
@@ -1417,7 +1419,7 @@ if (limit === "build") {
               let html = `<ul>`;
 	      let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
               for (let i = 1; i <= ops; i++) {
-                html += `<li class="card" id="${i}">${desc[i-1]}>`;
+                html += `<li class="card" id="${i}">${desc[i-1]}</li>`;
               }
               html += '</ul>';
 

@@ -201,6 +201,13 @@
 	  let spacekey = mv[1];
           his_self.game.queue.splice(qe, 1);
 
+	  //
+	  // 2P game, so france get activated under protestant control
+	  //
+	  his_self.addMove("set_activated_powers\tprotestant\tfrance");
+	  his_self.addMove("declare_war\tpapacy\tfrance");
+
+
  	  let msg = "Additional Military Support:";
           let html = '<ul>';
           html += '<li class="option" id="squadron">1 squadron in French home port</li>';
@@ -689,6 +696,12 @@
 
 	  let spacekey = mv[1];
           his_self.game.queue.splice(qe, 1);
+
+	  //
+	  // 2P card, so french get activated under protestant control
+	  //
+	  his_self.addMove("set_activated_powers\tprotestant\tfrance");
+	  his_self.addMove("declare_war\tpapacy\tfrance");
 
 	  let player = his_self.returnPlayerOfFaction("protestant");
 	  if (his_self.game.player == player) {
@@ -1229,7 +1242,7 @@
 	// controlling power gets 1 card
 	//
         his_self.game.queue.push(`DEAL\t1\t${controlling_player}\t1`);
-	his_self.game.queue.push("spanish_invasion_land\t"+controlling_player);
+	his_self.game.queue.push("spanish_invasion_land\t"+controlling_player+"\t"+controlling_power);
 
 	return 1;
       },
@@ -1240,7 +1253,15 @@
           his_self.game.queue.splice(qe, 1);
 
 	  let controlling_player = parseInt(mv[1]);
+	  let controlling_power = mv[2];
+
 	  if (his_self.game.player === controlling_player) {
+
+  	    //
+	    // 2P card, so french get activated under protestant control
+	    //
+	    his_self.addMove("set_activated_powers\t"+controlling_power+"\thapsburg");
+	    his_self.addMove("declare_war\t"+controlling_power+"\thapsburg");
 
             his_self.playerSelectSpaceWithFilter(
 
@@ -1569,6 +1590,12 @@
 	his_self.setEnemies("ottoman", "papacy");
 
 	if (his_self.game.player == p) {
+
+  	  //
+	  // 2P card, so ottoman get activated under protestant control
+	  //
+	  his_self.addMove("set_activated_powers\tprotestant\tottoman");
+	  his_self.addMove("declare_war\tpapacy\tottoman");
 
           his_self.playerSelectSpaceWithFilter(
 
@@ -3645,17 +3672,9 @@
 		}
 	      }
 	    }
-
-console.log("FORCES REMAINING");
-console.log(f + ": " + JSON.stringify(space.units[f]));
-
           }
 
-console.log("A - 1");
-
 	  if (defender_land_units_remaining > attacker_land_units_remaining) {
-
-console.log("A - 2");
 
 	    //
 	    // remove rest of assault
@@ -3677,8 +3696,6 @@ console.log("A - 2");
 	    his_self.game.queue.push("hide_overlay\tassault");
     	    his_self.game.queue.push(`discard\t${faction}\t027`);
 
-console.log("QUEUE AFTER PURGING: " + JSON.stringify(his_self.game.queue));
-
 	  //
 	  // assault may continue -- this will take us back to the acknowledge menu
 	  //
@@ -3692,12 +3709,10 @@ console.log("QUEUE AFTER PURGING: " + JSON.stringify(his_self.game.queue));
 	      if (!(lmv[0].indexOf("discard") == 0 || lmv[0].indexOf("continue") == 0 || lmv[0].indexOf("play") == 0)) {
 		his_self.game.queue.splice(i, 1);
 	      } else {
-console.log("breaking because of: " + lmv[0]);
 		break;
 	      }
 	    }
 
-console.log("A - 3");
 	    his_self.game.queue.push(`assault\t${his_self.game.state.assault.attacker_faction}\t${his_self.game.state.assault.spacekey}`);
 	    his_self.game.queue.push("hide_overlay\tassault");
     	    his_self.game.queue.push(`discard\t${faction}\t027`);
@@ -3895,6 +3910,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
           let faction = mv[2];
           his_self.game.queue.splice(qe, 1);
 
+	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Foul Weather");
+
 	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("031"));
 	  his_self.game.state.events.foul_weather = 1;
 
@@ -4059,6 +4076,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  let faction = mv[1];
 	  let source = mv[2];
 	  let unit_idx = parseInt(mv[3]);
+
+	  his_self.displayModal(his_self.returnFactionname(faction) + " triggers Foul Weather");
 
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
@@ -6976,8 +6995,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	    },
 
 	    function (target) {
-	      his_self.addMove("mercendaries-demand-pay\t"+target);
-	      his_self.endTurn();
+	      his_self.addMove("mercendaries-demand-pay\t"+target+"\t"+faction);
+	      ahis_self.endTurn();
 	    }
 	  );
 	}
@@ -6990,7 +7009,10 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
           his_self.game.queue.splice(qe, 1);
 
 	  let target = mv[1];
+	  let faction = mv[2];
 	  let player = his_self.returnPlayerOfFaction(target);
+
+	  his_self.displayModal(his_self.returnFactionName(faction) + " plays Mercenaries Demand Pay");
 
 	  if (player == his_self.game.player) {
 

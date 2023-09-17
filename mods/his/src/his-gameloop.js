@@ -52,7 +52,6 @@ this.updateLog(`###############`);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("diplomacy_phase");
-this.game.queue.push("is_testing");
 
 
 
@@ -62,9 +61,15 @@ this.game.queue.push("is_testing");
 	  //
 	  if (this.game.state.round == 1) {
 
+if (this.game.state.scenario == "is_testing") {
+  this.game.queue.push("is_testing");
+} else {
+
   	    this.game.queue.push("hide_overlay\tdiet_of_worms");
   	    this.game.queue.push("diet_of_worms");
   	    this.game.queue.push("show_overlay\tdiet_of_worms");
+}
+
 	    //
 	    // cards dealt before diet of worms
 	    //
@@ -375,12 +380,26 @@ this.game.queue.push("is_testing");
 		  // 2P has to happen automatically
 		  //
 		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
-	            this.autoResolveWinterRetreat(key, space.key);
+		    if (res.length == 0) {
+		      this.game.spaces[i].units[key] = [];
+		      this.displaySpace(i);
+		    } else {
+		      if (res.length > 0) {
+	                this.autoResolveWinterRetreat(key, space.key);
+		      } else {
+		        this.game.spaces[i].units[key] = [];
+		        this.displaySpace(i);
+		      }
+		    }
 		  } else {
 
 	    	    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
 
-		    if (res.length == 0) {
+		    let no_loc = false;
+		    if (!res) { no_loc = true; }		  
+		    if (res.length == 0) { no_loc = true; }		  
+
+		    if (no_loc) {
 		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
 		      if (this.game.players.length == 2) {
 		        this.game.spaces[i].units[key] = [];
@@ -401,7 +420,6 @@ this.game.queue.push("is_testing");
 		  // if the space is besieged undo that, and un-besiege defenders
 		  //
 		  if (space.besieged > 0) {
-console.log("unbesieging space...");
 		    space.besieged = 0;
 		    for (let key in this.game.spaces[i].units) {
 		      for (let i = 0; i < this.game.spaces[i].units[key].length; i++) {
@@ -445,7 +463,6 @@ console.log("unbesieging space...");
 	  //
 	  // non-player controlled factions skip winter retreat
 	  //
-console.log("should never get here!");
 	  return 1;
 
         }
@@ -640,7 +657,6 @@ console.log("should never get here!");
     	  this.addRegular("protestant", "graz", 3);
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
-    	  this.game.spaces['agram'].type = "fortress";
 
    	  this.addCard("protestant", "027");
 
@@ -4741,8 +4757,6 @@ console.log("!");
 
 	if (mv[0] === "purge_units_and_capture_leaders") {
 
-console.log("purging units and capturing leader");
-
           this.game.queue.splice(qe, 1);
 
           let loser = mv[1];
@@ -5781,7 +5795,7 @@ console.log("NEW WORLD PHASE!");
 
 	  // Add 1 regular to each friendly-controlled capital
 	  if (this.isSpaceControlled("london", "england")) { this.game.queue.push("build\tland\tengland\tregular\tlondon\t0"); }
-	  if (this.isSpaceControlled("paris", "france")) { this.game.queue.push("build\tland\tfrance\tregular\tlondon\t0"); }
+	  if (this.isSpaceControlled("paris", "france")) { this.game.queue.push("build\tland\tfrance\tregular\tparis\t0"); }
 	  if (this.isSpaceControlled("valladolid", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvalladolid\t0"); }
 	  if (this.isSpaceControlled("vienna", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvienna\t0"); }
 	  if (this.isSpaceControlled("rome", "hapsburg")) { this.game.queue.push("build\tland\tpapacy\tregular\trome\t0"); }
@@ -6057,6 +6071,17 @@ console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
 	  return 1;
 	  
 	}
+        if (mv[0] === "unset_allies") {
+
+	  let f1 = mv[1];
+	  let f2 = mv[2];
+
+  	  this.unsetAllies(f1, f2);
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+	  
+	}
 
 	if (mv[0] === "declare_war" || mv[0] === "set_enemies") {
 
@@ -6064,6 +6089,42 @@ console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
 	  let f2 = mv[2];
 
   	  this.setEnemies(f1, f2);
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "declare_alliance" || mv[0] === "set_allies") {
+
+	  let f1 = mv[1];
+	  let f2 = mv[2];
+
+  	  this.setAllies(f1, f2);
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "unset_activated_power") {
+
+	  let f1 = mv[1];
+	  let f2 = mv[2];
+
+  	  this.unsetActivatedPower(f1, f2);
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "set_activated_power" || mv[0] === "set_activated_powers") {
+
+	  let f1 = mv[1];
+	  let f2 = mv[2];
+
+  	  this.setActivatedPower(f1, f2);
 	  this.game.queue.splice(qe, 1);
 
 	  return 1;
@@ -6078,8 +6139,16 @@ console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
 	  //
 	  for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+
               let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
+//
+// is_testing
+//
+if (this.game.state.scenario == "is_testing") { cardnum = 1; }
+//
+//
+//
 	      //
 	      // fuggers card -1
 	      //
