@@ -1360,24 +1360,31 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
   	      if (io[i] !== attacker) {
-console.log("considering retreat options for " + io[i]);
-	        for (let zz = 0; zz < neighbours.length; zz++) {
-	          let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
-console.log("possible? " + fluis);
-	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
+	        let units_in_space = this.returnFactionLandUnitsInSpace(ap, spacekey);
+	        if (units_in_space > 0) {
+	          for (let zz = 0; zz < neighbours.length; zz++) {
+	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
+	            if (fluis > 0) {
+	              this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
+		      zz = neighbours.length;
+	            }
 	          }
 	        }
 	      }
 	    }
+
 	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
 	      let ap = this.game.state.activated_powers[io[i]][zz];
 	      if (ap != attacker) {
-console.log("considering retreat options for " + ap);
-	        let fluis = this.canFactionRetreatToSpace(ap, neighbours[zz], attacker_comes_from_this_spacekey);
-console.log("possible? " + fluis);
-	        if (fluis > 0) {
-	          this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap);
+	        let units_in_space = this.returnFactionLandUnitsInSpace(ap, spacekey);
+	        if (units_in_space > 0) {
+	          for (let zz = 0; zz < neighbours.length; zz++) {
+	            let fluis = this.canFactionRetreatToSpace(ap, neighbours[zz], attacker_comes_from_this_spacekey);
+	            if (fluis > 0) {
+		      this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap);
+		      zz = neighbours.length;
+	            }
+	          }
 	        }
 	      }
 	    }

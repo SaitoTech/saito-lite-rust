@@ -1404,30 +1404,36 @@
 
         if (mv[0] == "venetian_alliance_placement") {
 
-          his_self.playerSelectSpaceWithFilter(
+          his_self.game.queue.splice(qe, 1);
+	  if (his_self.game.player == his_self.returnPlayerOfFaction("papacy")) {  
+            his_self.playerSelectSpaceWithFilter(
 
-            "Select Papal-Controlled Port not under Siege",
+              "Select Papal-Controlled Port not under Siege",
 
-            function(space) {
-	      if (his_self.isSpaceControlled(space, "papacy") && space.ports.length > 0 && !space.besieged) { return 1; }
-	      return 0;
-            },
+              function(space) {
+	        if (his_self.isSpaceControlled(space, "papacy") && space.ports.length > 0 && !space.besieged) { return 1; }
+	        return 0;
+              },
 
-            function(spacekey) {
-	      his_self.addMove("build\tland\tvenice\t"+"regular"+"\t"+spacekey);
-              his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
-              his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
-              his_self.endTurn();
-            }
-          );
+              function(spacekey) {
+	        his_self.addMove("build\tland\tvenice\t"+"regular"+"\t"+spacekey);
+                his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
+                his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
+                his_self.endTurn();
+              }
+            );
+            return 0;
+          } else {
+	    his_self.updateStatus("Papacy executing " + his_self.popup("212"));
+	  }
 
-          return 0;
-
+	  return 0;
 	}
 
 	return 1;
 
       },
+
     }
     deck['213'] = { 
       img : "cards/HIS-213.svg" , 
