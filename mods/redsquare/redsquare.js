@@ -307,18 +307,10 @@ class RedSquare extends ModTemplate {
   /////////////////////
   async addPeer(peer, type = "tweets") {
 
-let mypeers = await this.app.network.getPeers();
-console.log("mypeers: " + JSON.stringify(mypeers));
-console.log("adding this peer: " + JSON.stringify(peer));
-
+    let mypeers = await this.app.network.getPeers();
     let has_tweets = false;
     let has_notifications = false;
     let publicKey = peer.publicKey;
-
-for (let i = 0; i < mypeers.length; i++) {
-  console.log("mypeer " + i + " publickey: " + mypeers[i].publicKey);
-}
-console.log("peer publickey: " + peer.publicKey);
 
     if (type === "tweets") {
       has_tweets = true;
@@ -376,6 +368,10 @@ console.log("peer publickey: " + peer.publicKey);
     //
     if (service.service === "redsquare") {
 
+if (app.BROWSER) {
+  alert("RS service available");
+}
+
       //
       // if viewing a specific tweet
       //
@@ -422,7 +418,6 @@ console.log("peer publickey: " + peer.publicKey);
     // archive -- load notifications
     //
     if (service.service === "archive") {
-console.log("add peer for notifications");
       await this.addPeer(peer, "notifications");
       let recursiveLoadNotifications = (peer, delay) => {
         setTimeout(() => {
@@ -526,10 +521,23 @@ console.log("add peer for notifications");
   loadTweets(peer, mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
+      let peer_publickey = this.peers[i].publickey;
       if (this.peers[i].tweets_earliest_ts != 0) {
+	//
+	// specifying OWNER as the remove peer tells us to fetch the tweets that they
+	// have saved under the publickey associated with RedSquare as opposed to our
+	// own publickey, under which they may have transactions that are indexed for
+	// us separately. we will update the OWNER field in the notifications fetch
+	// so that fetch will return any content specific to us...
+	//
+if (this.app.BROWSER) {
+alert("fetching from peer with publickey: " + peer_publickey);
+}
+
         this.app.storage.loadTransactions(
           {
             field1: "RedSquare",
+            owner: peer_publickey,
             created_earlier_than: this.peers[i].tweets_earliest_ts,
             limit: this.peers[i].tweets_limit,
           },
@@ -562,6 +570,7 @@ console.log("add peer for notifications");
     }
   }
 
+
   loadNotifications(peer, mycallback = null) {
     //
     // notifications are not fetched from peers that index the tweets but from transactions
@@ -573,9 +582,11 @@ console.log("add peer for notifications");
     //
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
+      let peer_publickey = this.peers[i].publickey;
       if (this.peers[i].notifications_earliest_ts != 0) {
         this.app.storage.loadTransactions(
           {
+            owner: this.publicKey,
             field3: this.publicKey,
             created_earlier_than: this.peers[i].notifications_earliest_ts,
             limit: this.peers[i].limit,
@@ -652,7 +663,6 @@ console.log("add peer for notifications");
 
     let t = this.returnTweet(sig);
     if (t != null) {
-console.log("the tweet is returned!");
       mycallback(t);
       return;
     }
@@ -661,9 +671,6 @@ console.log("the tweet is returned!");
                FROM tweets
                WHERE sig = '${sig}'
                ORDER BY created_at DESC`;
-
-console.log("loadtweets with sig: ");
-console.log(sql);
 
     this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
       for (let z = 0; z < txs.length; z++) {
@@ -1100,6 +1107,7 @@ console.log(sql);
         tx.optional.num_likes = 0;
       }
       tx.optional.num_likes++;
+console.log("SERVER UPLOADING TX: " + JSON.stringify(tx.returnMessage()));
       this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
     }, "localhost");
 

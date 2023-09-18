@@ -85,8 +85,6 @@ class Storage {
         data.field3 = tx.to[0].publicKey;
       }
 
-console.log("SAVE TRANSACTION IN STORAGE");
-
       if (peer === "localhost") {
         let archive_mod = this.app.modules.returnModule("Archive");
         if (archive_mod) {
@@ -123,7 +121,6 @@ console.log("SAVE TRANSACTION IN STORAGE");
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-console.log("STORAGE.JS: about ot update local archive...");
         let res = archive_mod.updateTransaction(tx, obj);
       }
       return;
@@ -149,12 +146,7 @@ console.log("STORAGE.JS: about ot update local archive...");
     // We could have the archive module handle this
     // idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
     //
-
-console.log("we have moved into loadTransactions in storage.ts on this machine...");
-
     let internal_callback = (res) => {
-console.log("at the start of our internal callback in loadTransactions in storage");
-console.log(JSON.stringify(res));
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
@@ -168,13 +160,9 @@ console.log(JSON.stringify(res));
 
 
     if (peer === "localhost") {
-console.log("peer is localhost!");
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-console.log("loadTXS with callback!");
-console.log("submitting this obj: " + JSON.stringify(obj));
         archive_mod.loadTransactionsWithCallback(obj, (res) => {
-console.log("archive mod returned: " +JSON.stringify(res));
           internal_callback(res);
         });
       }
@@ -182,24 +170,18 @@ console.log("archive mod returned: " +JSON.stringify(res));
     }
 
     if (peer != null) {
-console.log("peer is not null");
       //peer.sendRequestAsTransaction(message, data, function (res) {
       this.app.network.sendRequestAsTransaction(
         message,
         data,
         function (res) {
-console.log("received response, calling internal callback");
           internal_callback(res);
         },
         peer.peerIndex
       );
       return;
     } else {
-console.log("else in storage.ts");
-console.log("message - " + message);
-console.log(JSON.stringify(data));
       this.app.network.sendRequestAsTransaction(message, data, function (res) {
-console.log("RECEIVED RESPONSE FROM SEND REQUEST AS TRANSACTION");
         internal_callback(res);
       });
       return;
@@ -241,8 +223,6 @@ console.log("RECEIVED RESPONSE FROM SEND REQUEST AS TRANSACTION");
         return;
       }
     }
-    //console.log("calling save options...");
-
     const saveOptionsForReal = () => {
       clearTimeout(this.timeout);
       //console.log("Actually saving options");

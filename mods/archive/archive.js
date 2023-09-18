@@ -128,7 +128,6 @@ class Archive extends ModTemplate {
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-
     if (tx == null) {
       return;
     }
@@ -156,7 +155,6 @@ class Archive extends ModTemplate {
       let newtx = new Transaction();
       newtx.deserialize_from_web(app, req.data.serial_transaction);
 
-      //console.log("Archive Peer Request: ", req.data);
       if (req.data.request === "delete") {
         await this.deleteTransaction(newtx, req.data);
       }
@@ -513,6 +511,19 @@ class Archive extends ModTemplate {
       where_obj["field1"] = obj.field1;
       searched = true;
     }
+    if (obj.field2 && obj.owner && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.field2 = $field2
+               AND archives.owner = $owner 
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $field2: obj.field2, $owner: obj.owner, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field2"] = obj.field2;
+      searched = true;
+    }
     if (obj.field2 && searched == false) {
       sql = `SELECT *
              FROM archives
@@ -523,6 +534,19 @@ class Archive extends ModTemplate {
       params = { $field2: obj.field2, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
       where_obj["field2"] = obj.field2;
+      searched = true;
+    }
+    if (obj.field3 && obj.owner && searched == false) {
+      sql = `SELECT *
+             FROM archives
+                      JOIN txs
+             WHERE archives.field3 = $field3
+               AND archives.owner = $owner 
+               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             ORDER BY archives.id DESC LIMIT $limit`;
+      params = { $field3: obj.field3, $owner: obj.owner, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field3"] = obj.field3;
       searched = true;
     }
     if (obj.field3 && searched == false) {
@@ -588,6 +612,7 @@ class Archive extends ModTemplate {
     if (rows != undefined) {
       if (rows.length > 0) {
         for (let i = 0; i < rows.length; i++) {
+console.log("loaded id / tx_id: " + rows[i].id + "/" + rows[i].tx_id);
           txs.push({ tx: rows[i].tx });
         }
       }
