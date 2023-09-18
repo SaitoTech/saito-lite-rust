@@ -59,6 +59,10 @@ class WebMethods extends WebSharedMethods {
     this.app.connection.emit("add-block-success", { hash, blockId });
   }
 
+  sendWalletUpdate() {
+    this.app.connection.emit("wallet-updated");
+  }
+
   async saveWallet() {
     this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
     this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
