@@ -138,6 +138,14 @@ console.log("no notifications to render");
   render(new_mode = "") {
 
     //
+    // remove notification at end
+    //
+    if (document.querySelector(".saito-end-of-redsquare")) {
+      document.querySelector(".saito-end-of-redsquare").remove();
+    }
+
+
+    //
     // if someone asks the manager to render with a mode that is not currently
     // set, we want to update our mode and proceed with it.
     //

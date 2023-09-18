@@ -15,7 +15,7 @@ class RedSquareNotification {
   render(selector = "") {
     if (this.tx == null) {
       document.querySelector(selector).innerHTML =
-        '<div class="saito-end-of-redsquare">No notifications</div>';
+        '<div class="saito-end-of-redsquare">no notifications</div>';
     } else {
       let html = "";
       let from = this.tx.from[0].publicKey;

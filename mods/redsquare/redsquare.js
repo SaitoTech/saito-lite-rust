@@ -368,10 +368,6 @@ class RedSquare extends ModTemplate {
     //
     if (service.service === "redsquare") {
 
-if (app.BROWSER) {
-  alert("RS service available");
-}
-
       //
       // if viewing a specific tweet
       //
@@ -491,30 +487,48 @@ if (app.BROWSER) {
   loadProfile(peer, publickey = "", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
-      if (this.peers[i].tweets_earliest_ts == 0) {
-        this.peers[i].tweets_earliest_ts = new Date().getTime();
+      let peer_publickey = this.peers[i].publickey;
+      if (this.peers[i].profile_earliest_ts != 0) {
+	//
+	// specifying OWNER as the remote peer tells us to fetch the tweets that they
+	// have saved under the publickey associated with RedSquare as opposed to our
+	// own publickey, under which they may have transactions that are indexed for
+	// us separately. we will update the OWNER field in the notifications fetch
+	// so that fetch will return any content specific to us...
+	//
+        this.app.storage.loadTransactions(
+          {
+            field2: this.publicKey ,
+            owner: peer_publickey,
+            created_earlier_than: this.peers[i].profile_earliest_ts,
+            limit: this.peers[i].profile_limit,
+          },
+          (txs) => {
+            if (txs.length > 0) {
+              for (let z = 0; z < txs.length; z++) {
+                txs[z].decryptMessage(this.app);
+                this.addTweet(txs[z]);
+              }
+            } else {
+              this.peers[i].profile_earliest_ts = 0;
+            }
+
+            for (let z = 0; z < txs.length; z++) {
+              if (txs[z].timestamp < this.peers[i].profile_earliest_ts) {
+                this.peers[i].profile_earliest_ts = txs[z].timestamp;
+              }
+              if (txs[z].timestamp > this.peers[i].profile_latest_ts) {
+                this.peers[i].profile_latest_ts = txs[z].timestamp;
+              }
+            }
+
+            if (mycallback) {
+              mycallback(txs);
+            }
+          },
+          this.peers[i].peer
+        );
       }
-
-      let sql = `SELECT *
-                 FROM tweets
-                 WHERE publickey = '${publickey}'
-                   AND updated_at < ${this.peers[i].profile_earliest_ts}
-                 ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
-
-      this.loadTweetsFromPeer(peer, sql, (txs) => {
-        for (let z = 0; z < txs.length; z++) {
-          this.addTweet(txs[z]);
-          if (txs[z].timestamp < this.peers[i].profile_earliest_ts) {
-            this.peers[i].profile_earliest_ts = txs[z].timestamp;
-          }
-          if (txs[z].timestamp > this.peers[i].profile_latest_ts) {
-            this.peers[i].profile_latest_ts = txs[z].timestamp;
-          }
-        }
-        if (mycallback) {
-          mycallback(txs);
-        }
-      });
     }
   }
 
@@ -530,10 +544,6 @@ if (app.BROWSER) {
 	// us separately. we will update the OWNER field in the notifications fetch
 	// so that fetch will return any content specific to us...
 	//
-if (this.app.BROWSER) {
-alert("fetching from peer with publickey: " + peer_publickey);
-}
-
         this.app.storage.loadTransactions(
           {
             field1: "RedSquare",
@@ -600,7 +610,6 @@ alert("fetching from peer with publickey: " + peer_publickey);
             } else {
               this.peers[i].notifications_earliest_ts = 0;
             }
-
             for (let z = 0; z < txs.length; z++) {
               if (txs[z].timestamp < this.peers[i].notifications_earliest_ts) {
                 this.peers[i].notifications_earliest_ts = txs[z].timestamp;
@@ -844,15 +853,25 @@ alert("fetching from peer with publickey: " + peer_publickey);
         }
 
         is_notification = 1;
-        this.notifications.splice(insertion_index, 0, tweet);
-        this.notifications_sigs_hmap[tweet.tx.signature] = 1;
 
-        //
-        // increment notifications in menu unless is our own
-        //
-        if (tx.timestamp > this.notifications_last_viewed_ts) {
-          this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
-          this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
+	//
+	// only insert notification if doesn't already exist
+	//
+        if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
+
+	  //
+	  // insert / update
+	  //
+          this.notifications.splice(insertion_index, 0, tweet);
+          this.notifications_sigs_hmap[tweet.tx.signature] = 1;
+
+          //
+          // increment notifications in menu unless is our own
+          //
+          if (tx.timestamp > this.notifications_last_viewed_ts) {
+            this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
+            this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
+          }
         }
       }
 
