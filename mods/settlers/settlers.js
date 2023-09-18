@@ -1,5 +1,4 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
-const Scoreboard = require("./lib/ui/scoreboard");
 const SettlersRules = require("./lib/ui/overlays/rules");
 const SettlersWelcome = require("./lib/ui/overlays/welcome");
 const SettlersStats = require("./lib/ui/overlays/stats");
@@ -45,7 +44,6 @@ class Settlers extends GameTemplate {
     //
     // UI components
     //
-    this.scoreboard = new Scoreboard(this.app, this);
     this.rules_overlay = new SettlersRules(this.app, this);
     this.welcome_overlay = new SettlersWelcome(this.app, this);
     this.stats_overlay = new SettlersStats(this.app, this);
@@ -135,13 +133,21 @@ class Settlers extends GameTemplate {
     if (this.initialize_game_run) { return; }
 
 
-    console.log("abovesuper");
-
     await super.render(app);
 
-    console.log("belowsuper");
-    
-    this.scoreboard.render();
+    this.racetrack.win = this.game.options.game_length;
+    this.racetrack.title = "Victory Points";
+    this.racetrack.icon = `<i class="fa-solid fa-crown"></i>`;
+    for (let i = 0; i < this.game.players.length; i++){
+        let player = {
+            name:  app.keychain.returnUsername(this.game.players[i]),
+            score: this.game.state.players[i].vp,
+            color: this.game.colors[i]
+        };
+        this.racetrack.players.push(player);
+    }
+
+    this.racetrack.render();
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addSubMenuOption("game-game", {
@@ -162,16 +168,6 @@ class Settlers extends GameTemplate {
         game_mod.stats_overlay.render();
       },
     });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      },
-    });
-
 
     await this.menu.addChatMenu();
 
@@ -375,6 +371,7 @@ class Settlers extends GameTemplate {
         state.players[i].vpc = 0;
         state.players[i].devcards = 0;
         state.players[i].ports = [];
+        state.players[i].road = 0;
     }
     return state;
   }

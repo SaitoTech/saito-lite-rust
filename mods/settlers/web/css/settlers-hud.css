@@ -3,6 +3,8 @@
   max-width: 70rem;
   z-index: 50 !important;
   padding-top: 3px !important;
+  margin-bottom: 2rem;
+  height: auto;
 }
 
 /* Wrapper for settlers status messages? */
@@ -12,7 +14,7 @@
 }
 
 .hud-body {
-  min-height: 11rem;
+  min-height: 17rem;
   width: calc(100% - 5rem);
   display: flex;
   flex-direction: column;
@@ -28,7 +30,6 @@
   box-shadow: none;
   padding: 0;
   width: 100%;
-  margin: 0 0 1rem;
   min-height: 4.5rem;
 }
 
@@ -121,23 +122,7 @@
     margin-right: 5vw;
     margin-top: 5vw;
   }
-  .scoreboard {
-    display: none;
-    position: absolute;
-    width: 100% !important;
-    height: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    margin-top: auto !important;
-    margin-bottom: auto !important;
-    left: 0 !important;
-    top: 0 !important;
-    padding-top: 10vh !important;
-    background-color: black !important;
-    padding-left: 5vw !important;
-    padding-right: 5vw !important;
-    z-index: 5;
-  }
+
   .mobile-trading-container {
     display: none;
     position: absolute;
