@@ -141,7 +141,6 @@ class SettlersDisplay {
   }
 
   displayScore() {
-    let track_vp = [];
     for (let i = 0; i < this.game.state.players.length; i++) {
       let score = 0;
       //Count towns and cities
@@ -163,10 +162,6 @@ class SettlersDisplay {
       //Count (played) Victory Points
       score += this.game.state.players[i].vpc;
 
-      //
-      // and render to screen
-      //
-      track_vp.push(this.game.state.players[i].vp);
 
       //Save Score
       this.game.state.players[i].vp = score;
@@ -178,9 +173,10 @@ class SettlersDisplay {
     }
 
     for (let i = 0; i < this.game.state.players.length; i++) {
-      if (this.game.state.players[i].vp > track_vp[i]) {
-        this.scoreboard.render();
-        this.scoreboard.lock();
+      if (this.game.state.players[i].vp > this.racetrack.players[i].score) {
+        this.racetrack.players[i].score = this.game.state.players[i].vp;
+        this.racetrack.render();
+        this.racetrack.lock();
       }
     }
   }
@@ -353,8 +349,7 @@ class SettlersDisplay {
                 settlers_self.showTradeOverlay(
                   i,
                   settlers_self.game.state.ads[i - 1].ask,
-                  settlers_self.game.state.ads[i - 1].offer,
-                  i
+                  settlers_self.game.state.ads[i - 1].offer
                 );
               });
             } else {
@@ -369,6 +364,7 @@ class SettlersDisplay {
           }
         } else {
           this.playerbox.onclick(() => {
+            console.log("Playerbox click");
             this.showTradeOverlay();
           });
         }
@@ -384,14 +380,6 @@ class SettlersDisplay {
       $("#cleartrade").on("click", function () {
         settlers_self.clearAdvert();
       });
-      $(".player-box.me").off();
-      $(".player-box.me").on("click", function () {
-        settlers_self.showResourceOverlay();
-      });
-      //$("#tradenow").off();
-      //$("#tradenow").on("click", function(){
-      //  settlers_self.showResourceOverlay();
-      //});
 
       this.cardbox.attachCardEvents();
 
@@ -415,33 +403,31 @@ class SettlersDisplay {
   @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
   */
   showTradeOverlay(
-    tradeType = -1,
+    offering_player = -1,
     i_should_give = null,
-    i_should_accept = null,
-    offering_player = null
-  ) {
-    let settlers_self = this;
+    i_should_accept = null) {
 
     if (i_should_accept) {
-      settlers_self.trade_overlay.get = i_should_accept;
+      this.trade_overlay.get = i_should_accept;
     }
     if (i_should_give) {
-      settlers_self.trade_overlay.give = i_should_give;
+      this.trade_overlay.give = i_should_give;
     }
     if (offering_player) {
-      settlers_self.trade_overlay.offering_player = offering_player;
+      this.trade_overlay.offering_player = offering_player;
     }
-    settlers_self.trade_overlay.render(tradeType, false); // don't reset, we want to start with this trade
-    return;
+
+    if (i_should_give || i_should_accept){
+      console.log("Consider trade offer");
+      console.log(i_should_give, i_should_accept);
+      this.trade_overlay.accepting_trade = 1;
+      this.trade_overlay.render(false); // don't reset, we want to start with this trade  
+    }else{
+      this.trade_overlay.render();
+    }
+    
   }
 
-  /*
-  Alternate UI for advertizing your wants and needs
-  */
-  showResourceOverlay() {
-    this.trade_overlay.render();
-    return;
-  }
 
   /***********
    *
@@ -585,11 +571,12 @@ class SettlersDisplay {
   // this affixes HUD to bottom of screen...
   //
   setHudHeight() {
+    console.log("Adjusting hud");
     let hud = document.querySelector(".hud");
     if (hud) {
-      hud.style.bottom = "24px";
-      hud.style.height = "auto";
-      hud.style.top = "unset";
+      //hud.style.bottom = "24px";
+      //hud.style.height = "auto";
+      //hud.style.top = "unset";
     }
   }
 }

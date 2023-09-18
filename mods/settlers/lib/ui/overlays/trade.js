@@ -12,9 +12,12 @@ class TradeOverlay {
     this.give = {};
     this.offering_player = 0;
     this.accepting_trade = 0;
+    this.resources = null;
+
   }
 
   initialize() {
+
     this.resources = this.mod.returnResources();
 
     for (let r of this.resources) {
@@ -31,12 +34,11 @@ class TradeOverlay {
       this.initialize();
     }
 
-    this.overlay.show(TradeOverlayTemplate(this));
-
-    if (this.accepting_trade == 1) {
-      document.querySelector(".trade_overlay_button").innerHTML =
-        "Accept Trade";
+    if (!this.resources){
+      this.resources = this.mod.returnResources();
     }
+
+    this.overlay.show(TradeOverlayTemplate(this));
 
     this.attachEvents();
   }
