@@ -7443,6 +7443,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
           his_self.game.queue.splice(qe, 1);
 
+	  his_self.displayModal("Protestants cancel event with the Warburg");
+
 	  his_self.updateStatus(his_self.popup("037") + " triggered");
 	  his_self.game.state.events.wartburg = 1;
 	  his_self.commitDebater("protestant", "luther-debater", 0);
@@ -13446,7 +13448,7 @@ console.log("and friendly");
       religion: "catholic",
       neighbours: ["liege","metz","mainz"],
       language: "german",
-      type: "town"
+      type: "electorate"
     }
     spaces['strasburg'] = {
       top: 1070,
@@ -17659,7 +17661,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
   	      if (io[i] !== attacker) {
-	        let units_in_space = this.returnFactionLandUnitsInSpace(ap, spacekey);
+	        let units_in_space = this.returnFactionLandUnitsInSpace(io[i], spacekey);
 	        if (units_in_space > 0) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);

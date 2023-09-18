@@ -1360,7 +1360,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
   	      if (io[i] !== attacker) {
-	        let units_in_space = this.returnFactionLandUnitsInSpace(ap, spacekey);
+	        let units_in_space = this.returnFactionLandUnitsInSpace(io[i], spacekey);
 	        if (units_in_space > 0) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);

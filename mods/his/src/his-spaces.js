@@ -2000,7 +2000,7 @@ console.log("and friendly");
       religion: "catholic",
       neighbours: ["liege","metz","mainz"],
       language: "german",
-      type: "town"
+      type: "electorate"
     }
     spaces['strasburg'] = {
       top: 1070,
