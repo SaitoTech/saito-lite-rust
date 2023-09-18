@@ -954,8 +954,8 @@
       left : 1112
     }
     track['13'] = {
-      top : 1226,
-      left : 1
+      top : 3026,
+      left: 1226,
     }
     track['14'] = {
       top : 3026,

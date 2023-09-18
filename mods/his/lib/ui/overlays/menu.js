@@ -40,10 +40,7 @@ class MenuOverlay {
 	let active_option = "inactive";
         if (cost <= ops) { active_option = "active card"; }
 
-console.log(menu[i].name);
 	if (!menu[i].check(this.mod, this.mod.game.player, faction, ops)) { active_option = "inactive"; }
-
-console.log("cost and active: " + cost + " - " + active_option);
 
 	if (cost != 100) {
 	  let html = `

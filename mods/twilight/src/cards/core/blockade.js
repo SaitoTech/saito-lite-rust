@@ -52,7 +52,6 @@
             twilight_self.updateStatusAndListCards("Choose a card to discard:",cards_to_discard, function(card) {
               twilight_self.removeCardFromHand(card);
 	      twilight_self.addMove("discard\tus\t"+card);
-
               twilight_self.addMove(`NOTIFY\tUS discarded ${twilight_self.cardToText(card)} to resolve ${twilight_self.cardToText("blockade")}`);
               twilight_self.endTurn();
               return 0;

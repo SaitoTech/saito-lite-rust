@@ -17,6 +17,11 @@ const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
+
+const HISRules = require('./lib/core/rules.template');
+const HISOptions = require('./lib/core/advanced-options.template');
+const HISingularOption = require('./lib/core/options.template');
+
 const JSON = require('json-bigint');
 
 
@@ -87,6 +92,18 @@ class HereIStand extends GameTemplate {
 
   }
 
+
+  returnSingularGameOption(){
+    return HISSingularOption();
+  }
+
+  returnAdvancedOptions() {
+    return HISOptions();
+  }
+
+  returnGameRulesHTML(){
+    return HISRules();
+  }
 
 
   ////////////////

@@ -117,7 +117,7 @@ class Settlers extends GameTemplate {
     //
     //
     this.grace_window = 24;
-    this.acknowledge_text = "continue..."; // not "i understand..."
+
     // temp var to help w/ post-splash flash
     this.currently_active_player = 0;
 
@@ -222,15 +222,12 @@ class Settlers extends GameTemplate {
     this.hud.minWidth = 600;
     this.hud.maxWidth = 1;
     this.hud.render();
+
+    //
+    //Maybe we should standardize addClass() or classlist = [], for our UI components
+    //
     document.querySelector('#hud')?.classList.add('saitoa');
-  
-
-
-    //
-    // tweak - make hud draggable by body
-    //
-    document.querySelector(".hud-header").style.display = "none";
- 
+   
 
     //
     //
