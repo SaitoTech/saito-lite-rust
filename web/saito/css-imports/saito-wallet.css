@@ -568,6 +568,11 @@
   flex-direction: column;
 }
 
+
+#withdraw-step-one .input-elem {
+  color: var(--saito-font-color);
+}
+
 @keyframes spin {
   to { -webkit-transform: rotate(360deg); }
 }
