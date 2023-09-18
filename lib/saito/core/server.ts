@@ -192,6 +192,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
     this.app.connection.emit("add-block-success", { hash, blockId });
   }
 
+  sendWalletUpdate() {
+    this.app.connection.emit("wallet-updated");
+  }
+
   async saveWallet(): Promise<void> {
     this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
     this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
@@ -538,7 +542,6 @@ class Server {
         return;
       }
       if (!block.hasKeylistTxs(keylist)) {
-        console.info("### write from server.ts:535");
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
@@ -551,37 +554,38 @@ class Server {
 
       let methods = new NodeSharedMethods(this.app);
       // TODO - load from disk to ensure we have txs -- slow.
-      let buffer;
       try {
+        let buffer = new Uint8Array();
         let list = methods.loadBlockFileList();
-        // console.log("file list : ", list);
         for (let filename of list) {
           if (filename.includes(bsh)) {
             buffer = methods.readValue("./data/blocks/" + filename);
             break;
           }
         }
-      } catch (error) {
-        console.error(error);
-      }
-      // const blk = await this.app.storage.loadBlockByHash(bsh);
-
-      if (buffer.byteLength == 0) {
-        res.sendStatus(404);
-      } else {
+        if (buffer.byteLength == 0) {
+          res.sendStatus(404);
+          return;
+        }
         let blk = new Block();
         blk.deserialize(buffer);
         const newblk = blk.generateLiteBlock(keylist);
 
-        // console.info("### write from line 333 of server.ts.");
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        // const liteblock = block.generateLiteBlock(keylist);
-        console.info("### write from server.ts:576");
-        const buffer2 = Buffer.from(newblk.serialize()); //, "binary").toString("base64");
+        const buffer2 = Buffer.from(newblk.serialize());
         res.end(buffer2);
+        return;
+      } catch (error) {
+        console.log("failed serving lite block : " + bsh);
+        console.error(error);
+      }
+      try {
+        res.sendStatus(400);
+      } catch (error) {
+        console.error(error);
       }
     });
 

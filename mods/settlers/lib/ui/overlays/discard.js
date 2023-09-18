@@ -36,6 +36,7 @@ class DiscardOverlay {
     }
 
     this.overlay.show(DiscardOverlayTemplate(this.app, this.mod, this));
+    this.overlay.blockClose();
     this.attachEvents();
   }
 

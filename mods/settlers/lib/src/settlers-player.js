@@ -97,12 +97,10 @@ class SettlersPlayer {
         this.hud.updateStatus(
           `<div class="flashme player-notice"><span>YOUR TURN: place your second ${this.c1.name}</span></div>`
         );
-        this.setHudHeight();
       } else {
         this.hud.updateStatus(
           `<div class="flashme player-notice"><span>YOUR TURN: place your first ${this.c1.name}</span></div>`
         );
-        this.setHudHeight();
       }
       $(".flashme").addClass("flash");
 
@@ -364,7 +362,8 @@ class SettlersPlayer {
       return;
     }
 
-    settlers_self.updateStatus(settlers_self.getLastNotice());
+    let statushtml = settlers_self.getLastNotice() || `<div class="player-notice">YOUR TURN:</div>`;
+    settlers_self.updateStatus(statushtml);
     settlers_self.updateControls(html);
 
     $(".option").off();

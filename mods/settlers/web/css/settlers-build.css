@@ -198,6 +198,11 @@
   height: 9rem;
 }
 
+
+.settlers-trade-resources.selected {
+  opacity: 0.7; 
+}
+
 .settlers-trade-resources:hover {
   cursor: pointer;
   opacity: 0.7;
@@ -245,6 +250,7 @@
 }
 
 .settlers-items-container .settlers-cards-container img {
+  cursor: pointer;
   height: 13rem;
 }
 
@@ -264,27 +270,19 @@
   height: 6rem;
 }
 
-.settlers-item-row.settlers-trade-resources:hover {
-  cursor: pointer;
-  opacity: 0.7;
-}
-
 
 .discard-cards-overlay .settlers-items-container .settlers-cards-container img {
   height: 13rem;
 }
 
-.settlers-trade-resources.selected {
-  opacity: 0.5; 
+.discard-cards-overlay .settlers-cards-container img.selected {
+  filter: grayscale(50%) brightness(0.7);
 }
 
 
 /* discard overlay */
 
 
-/*.discard-cards-overlay .settlers-cards-container img {
-  height: 7rem;
-}*/
 
 .monopoly-overlay .settlers-cards-container img {
   height: 11rem;
@@ -332,87 +330,5 @@
   z-index: 0;
 }
 
-.discard-cards-overlay .settlers-cards-container img.selected {
-  opacity: 0.5;
-}
 
 
-.trade-overlay {
-  margin: auto;
-}
-
-.trade_area {
-  position: relative;
-  font-size: 14vh;
-}
-
-
-.trade_area:hover .trade_count_arrow {
-  opacity: 0.7;
-}
-
-.trade_count_number {
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  transform: translate(-50%, -50%);
-  transition: all 0.2s ease-in-out;
-}
-
-.trade_area:hover .trade_count_number {
-  font-size: 8rem;
-}
-
-.trade_count_arrow {
-  content: "";
-  width: 100%;
-  height: 5rem;
-  position: absolute;
-  left: 0px;
-  z-index: 3;
-  background: #331800;
-  opacity: 0;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.trade_count_up {
-  top: 0px;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-}
-
-.trade_count_up::before  {
-  content: "⌃";
-  font-size: 5rem;
-  color: #fff !important;
-  position: absolute;
-  left: 50%;
-  top: 80%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  -webkit-text-stroke: #fff;
-}
-
-.trade_count_down::after {
-  content: "⌄";
-  font-size: 5rem;
-  color: #fff !important;
-  position: absolute;
-  left: 50%;
-  top: 40%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  -webkit-text-stroke: #fff;
-}
-
-.trade_count_down {
-  top: 16vh;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-}
-
-.bank-overlay img {
-  width: 15rem;
-  height: auto!important;
-}

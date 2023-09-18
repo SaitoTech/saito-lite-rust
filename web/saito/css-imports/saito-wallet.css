@@ -511,6 +511,19 @@
   font-size: 10rem;
 }
 
+.confirm-msg-container .withdraw-msg-icon.hide {
+  display: none;
+}
+
+.confirm-msg-container .spinner {
+  display: none;
+  height: 9rem;
+}
+
+.confirm-msg-container .spinner.show {
+  display: block;
+}
+
 .confirm-msg-container .confirm-msg {
   display: inline-block;
   width: min-content;
@@ -566,6 +579,11 @@
   gap: 3rem;
   display: flex;
   flex-direction: column;
+}
+
+
+#withdraw-step-one .input-elem {
+  color: var(--saito-font-color);
 }
 
 @keyframes spin {
