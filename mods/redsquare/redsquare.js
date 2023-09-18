@@ -1480,6 +1480,7 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
   // saving and loading wallet state //
   /////////////////////////////////////
   loadLocalTweets() {
+/*****
 
     if (!this.app.BROWSER) { return; }
 
@@ -1498,7 +1499,6 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
       return;
     }
 
-/*****
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
         for (let tx of value) {
@@ -1527,7 +1527,6 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
 //
 //
 //
-****/
           //Prefer our locally cached tweets to the webServer ones
           if (window?.tweets?.length > 0) {
             console.log("Using Server Cached Tweets");
@@ -1539,7 +1538,6 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
               this.addTweet(newtx);
             }
           }
-/****
         } catch (err) {
           console.log("error in initial redsquare post fetch: " + err);
         }
@@ -1593,98 +1591,6 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
     });
   }
 
-  //////////////////////////////////////////////////////////
-  /////       **** WEB SERVER STUFF  *****
-  /////////////////////////////////////////////////////////
-  async fetchOpenGraphProperties(app, mod, link) {
-    if (app.BROWSER != 1) {
-      // fetch source code for link inside tweet
-      // (sites which uses firewall like Cloudflare shows Cloudflare loading
-      //  page when fetching page source)
-
-      return fetch(link, { redirect: "follow", follow: 50 })
-        .then((res) => res.text())
-        .then((data) => {
-          // required og properties for link preview
-          let no_tags = {
-            title: "",
-            description: "",
-          };
-          let og_tags = {
-            "og:exists": false,
-            "og:title": "",
-            "og:description": "",
-            "og:url": "",
-            "og:image": "",
-            "og:site_name": "", //We don't do anything with this
-          };
-          let tw_tags = {
-            "twitter:exists": false,
-            "twitter:title": "",
-            "twitter:description": "",
-            "twitter:url": "",
-            "twitter:image": "",
-            "twitter:site": "", //We don't do anything with this
-            "twitter:card": "", //We don't do anything with this
-          };
-
-          // prettify html - unminify html if minified
-          let html = prettify(data);
-
-          //Useful to check, don't delete until perfect
-          //let testReg = /<head>.*<\/head>/gs;
-          //console.log(html.match(testReg));
-
-          // parse string html to DOM html
-          let dom = HTMLParser.parse(html);
-
-          try {
-            no_tags.title = dom.getElementsByTagName("title")[0].textContent;
-          } catch (err) {}
-
-          // fetch meta element for og tags
-          let meta_tags = dom.getElementsByTagName("meta");
-
-          // loop each meta tag and fetch required og properties
-          for (let i = 0; i < meta_tags.length; i++) {
-            let property = meta_tags[i].getAttribute("property");
-            let content = meta_tags[i].getAttribute("content");
-            // get required og properties only, discard others
-            if (property in og_tags) {
-              og_tags[property] = content;
-              og_tags["og:exists"] = true;
-            }
-            if (property in tw_tags) {
-              tw_tags[property] = content;
-              tw_tags["twitter:exists"] = true;
-            }
-            if (meta_tags[i].getAttribute("name") === "description") {
-              no_tags.description = content;
-            }
-          }
-
-          //Fall back to no tags
-          og_tags["og:title"] = og_tags["og:title"] || no_tags["title"];
-          og_tags["og:description"] = og_tags["og:description"] || no_tags["description"];
-
-          if (tw_tags["twitter:exists"] && !og_tags["og:exists"]) {
-            og_tags["og:title"] = tw_tags["twitter:title"];
-            og_tags["og:description"] = tw_tags["twitter:description"];
-            og_tags["og:url"] = tw_tags["twitter:url"];
-            og_tags["og:image"] = tw_tags["twitter:image"];
-            og_tags["og:site_name"] = tw_tags["twitter:site"];
-          }
-
-          return og_tags;
-        })
-        .catch((err) => {
-          console.error("Error fetching content: " + err);
-          return "";
-        });
-    } else {
-      return "";
-    }
-  }
 
   //
   // writes the latest 10 tweets to tweets.js

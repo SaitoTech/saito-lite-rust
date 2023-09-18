@@ -2,12 +2,13 @@
   width: 60rem;
   max-width: 70rem;
   z-index: 50 !important;
+  padding-top: 3px !important;
 }
 
-.tbd {
-  width: auto;
-  margin-left: auto;
-  margin-right: auto;
+/* Wrapper for settlers status messages? */
+
+.hud-header {
+  display: none;
 }
 
 .hud-body {
@@ -22,7 +23,7 @@
 
 /* override default #efefef background */
 
-.hud-body .status, .controls ul li, options {
+.hud-body .status {
   background-color: transparent;
   box-shadow: none;
   padding: 0;
@@ -41,45 +42,27 @@
   min-height: 4.5rem;
 }
 
-.hud-body .status ul li, .hud-body .controls ul li, .hud-body .status .tbh ul li {
+
+.hud-body .status ul li, .hud-body .controls ul li, .options {
+  background-color: transparent;
+  box-shadow: none;
+  min-height: 4.5rem;
+
   padding: 0.5rem 1rem;
   line-height: 4rem;
   border: 4px solid #424143;
   border-radius: 1.5rem;
   min-width: 12rem;
+  max-width: 250px;
   list-style: none;
   margin: 1rem 0 0;
   height: unset;
 }
-.hud-body .status ul li:hover, .hud-body .controls ul li:hover, .hud-body .status .tbh ul li:hover {
-  background-color: #cbaf83
-}
 
-.hud-body .mobile {
-  display: none;
-  z-index: 10000;
-}
-
-.hud-body .mobile .score {
-  position: absolute;
-  top: 0rem;
-  font-size: 1.7rem;
-  right: 0rem;
-  cursor: pointer;
-  border-bottom: 1px dashed #0008;
-}
-
-.hud-body .mobile .trade {
-  position: absolute;
-  top: 0rem;
-  font-size: 1.7rem;
-  left: 0rem;
-  cursor: pointer;
-  border-bottom: 1px dashed #0008;
-}
-
-.mobile-trading-container {
-  z-index: 0;
+.hud-body .status ul li:hover, .hud-body .controls ul li:hover, .options:hover {
+  background-color: #b79e76; 
+  font-size: 1.2em;
+  /*Trying a darker shade #cbaf83*/
 }
 
 .hud-body .mobile {
@@ -87,7 +70,33 @@
   position: relative;
   width: 100%;
   top: 0rem;
+  z-index: 5;
 }
+
+.hud-body .mobile > div {
+  position: absolute;
+  top: 6px;
+  font-size: 1.7rem;
+  cursor: pointer;
+  border-bottom: 1px dashed #0008;
+}
+
+.hud-body .mobile > div:hover {
+  font-weight: bold;
+}
+
+.hud-body .mobile div.score {
+  right: 0rem;
+}
+
+.hud-body .mobile div.trade {
+  left: 0rem;
+}
+
+.mobile-trading-container {
+  z-index: 0;
+}
+
 
 /* ul to buttons in settlers hud */
 

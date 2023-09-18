@@ -151,7 +151,7 @@ class SettlersGameloop {
           this.playerPlayBandit();
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to move the ${this.b.name}...</div>`
+            `<div class="player-notice">Waiting for ${this.game.playerNames[player - 1]} to move the ${this.b.name}...</div>`
           );
         }
         return 0;
@@ -264,7 +264,7 @@ class SettlersGameloop {
 
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${this.r.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} is building a ${this.r.name}...</div>`
           );
         }
         return 0;
@@ -307,7 +307,7 @@ class SettlersGameloop {
           this.playerBuildTown(mv[1], parseInt(mv[2]));
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${this.c1.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} is building a ${this.c1.name}...</div>`
           );
         }
 
@@ -402,7 +402,7 @@ class SettlersGameloop {
           this.playerBuildCity(player, 1);
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} is upgrading to a ${this.c2.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} is upgrading to a ${this.c2.name}...</div>`
           );
         }
 
@@ -651,7 +651,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
             this.game.deck[0].hand.length;
 
           //Messaging to User
-          let statushtml = `<div class="tbd"><div class="pcb"></div>YOUR TURN:</div>`;
+          let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
           let controlshtml = `<ul>`;
           controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
@@ -674,11 +674,8 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
           //Or, choose menu option
           $(".option").off();
-          $(".option").on("click", async function () {
+          $(".option").on("click", function () {
 
-            console.log("clicking on options");
-
-            await settlers_self.updateStatus("sending move...");
             $(this).addClass("disabled");
 
             let choice = $(this).attr("id");
@@ -693,9 +690,9 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           });
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} rolling dice...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} rolling dice...</div>`
           );
-          this.updateControls("<div></div>");
+          this.updateControls("");
         }
         //this.game.queue.splice(qe, 1);
         return 0;
@@ -719,13 +716,15 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         // board animation
         this.animateDiceRoll(roll);
 
+        this.updateControls("");
+
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
         this.game.queue.push("enable_trading"); //Enable trading after resolving bandit
 
         //Next Step depends on Dice outcome
         if (roll == 7) {
-          this.game.queue.push("play_bandit\t" + player);
+          this.game.queue.push("roll_bandit\t" + player);
 
           //Manage discarding before bandit comes into play
           let playersToDiscard = [];
@@ -762,7 +761,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
       if (mv[0] == "collect_harvest") {
         let roll = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
-        await this.collectHarvest(roll);
+        this.collectHarvest(roll);
         return 1;
       }
 
@@ -812,7 +811,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
       }
 
       //Player Chooses where to put bandit
-      if (mv[0] == "play_bandit") {
+      if (mv[0] == "roll_bandit") {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
@@ -821,7 +820,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           this.playerPlayBandit();
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} moving the ${this.b.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} moving the ${this.b.name}...</div>`
           );
         }
         return 0;
@@ -855,7 +854,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           this.playerMoveBandit(player, hexId);
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to choose the ${this.b.name}'s victim...</div>`
+            `<div class="player-notice">Waiting for ${this.game.playerNames[player - 1]} to choose the ${this.b.name}'s victim...</div>`
           );
         }
 
@@ -875,12 +874,17 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         }
 
         if (this.game.player === thief) {
-          let x = `<div class="card tinycard"><img src="${this.returnCardImage(loot)}" /></div>`;
-          this.updateStatus(`<div class="persistent">You stole ${(loot == "nothing") ? "nothing" : x }</div>`);
+          let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
+          this.updateStatus(`<div class="persistent"><span>You stole ${(loot == "nothing") ? "nothing</span>" : "</span>" + x }</div>`);
         }
         if (this.game.player === victim) {
-          let x = `<div class="card tinycard"><img src="${this.returnCardImage(loot)}" /></div>`;
-          this.updateStatus(`<div class="persistent">${this.game.playerNames[thief - 1]} stole ${(loot == "nothing") ? "nothing" : x } from you</div>`);
+          let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
+          if (loot == "nothing"){
+            this.updateStatus(`<div class="persistent"><span>${this.game.playerNames[thief - 1]} stole nothing from you</span></div>`);
+          }else{
+            this.updateStatus(`<div class="persistent"><span>${this.game.playerNames[thief - 1]} stole your</span>${x}</div>`);
+          }
+          
         }
 
         let victim_name = (victim > 0) ? `${this.game.playerNames[victim - 1]}` : "nobody";
@@ -899,7 +903,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         } else {
           this.updateStatus(
             this.getLastNotice() +
-            `<div class="tbd">${this.game.playerNames[player - 1]} is taking their turn.</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} is taking their turn.</div>`
           );
         }
         return 0;

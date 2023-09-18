@@ -600,11 +600,11 @@ class Archive extends ModTemplate {
   // delete //
   ////////////
   //
-  // Our Rules:
+  // Our Requests:
   //
   // - users can delete any transactions they OWN
   // - server operator can delete any transactions anytime
-  // - server operator will respectfully not delete transaction with preserve=1
+  // - server operator respectfully avoid deleting transactions with preserve=1
   //
   async deleteTransaction(tx) {
 
@@ -636,10 +636,6 @@ class Archive extends ModTemplate {
 
     }
 
-    if (this.app.BROWSER) {
-alert("delete request for single transaction in browser - unimplemented");
-    }
-
     return;
 
   }
@@ -652,7 +648,7 @@ alert("delete request for single transaction in browser - unimplemented");
   //
   // - users can delete any transactions they OWN
   // - server operator can delete any transactions anytime
-  // - server operator will respectfully not delete transaction with preserve=1
+  // - server operator respectfully avoid deleting transactions with preserve=1
   //
   async deleteTransactions(obj = {}) {
 
@@ -718,10 +714,6 @@ alert("delete request for single transaction in browser - unimplemented");
       params = { $sig: obj.sig, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
       where_obj["sig"] = obj.sig;
-    }
-
-    if (this.app.BROWSER){
-alert("delete transactions for localDB not implemented in browser...");
     }
 
     //

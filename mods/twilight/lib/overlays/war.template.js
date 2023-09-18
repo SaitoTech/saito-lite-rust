@@ -13,9 +13,7 @@ module.exports = (card, sobj) => {
   let html = `
 
     <div class="war-overlay ${card}-war ${winner_css}">
-
         <div class="card card-hud"><img class="cardimg" src="/twilight/img/en/TNRnTS-01.svg"><img class="cardimg" src="/twilight/img/EarlyWar.svg"><img class="cardimg" src="/twilight/img/BothPlayerCard.svg"><img class="cardimg" src="/twilight/img/MayNotBeHeld.svg"></div>
-     
         <div class="scoring-box">
           <div class="scoring-result-title">${winner}</div>   
 	  <div class="scoring-text">
@@ -26,7 +24,6 @@ module.exports = (card, sobj) => {
 	    Modified Roll: ${modroll}
 	  </div>
 	</div>
-
     </div>
 
   `;
