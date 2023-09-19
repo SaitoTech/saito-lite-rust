@@ -272,7 +272,7 @@ export default class Wallet extends SaitoWallet {
       }
 
       this.app.connection.on("wallet-updated", async () => {
-        console.log("wallet update event received. saving wallet");
+        console.debug("wallet update event received. saving wallet");
         await this.saveWallet();
       });
 
@@ -335,7 +335,6 @@ export default class Wallet extends SaitoWallet {
    * Saves the current wallet state to local storage.
    */
   async saveWallet() {
-    console.log("saving wallet...");
     if (!this.app.options.wallet) {
       this.app.options.wallet = {};
     }
