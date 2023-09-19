@@ -55,7 +55,7 @@ class Registry extends ModTemplate {
     // set true for testing locally
     //
     this.local_dev = false;
-    this.local_dev = true;
+    //this.local_dev = true;
 
     //
     // EVENTS
@@ -65,9 +65,6 @@ class Registry extends ModTemplate {
     // process by showing a popup. The first is the entry point for most applications.
     //
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", async (keys) => {
-
-console.log("HERE WE ARE FETCHING IDENTIFIERS");
-console.log("CACHED KEYS: " + JSON.stringify(this.cached_keys));
 
       let unidentified_keys = [];
 
@@ -83,13 +80,8 @@ console.log("CACHED KEYS: " + JSON.stringify(this.cached_keys));
 
       this.fetchManyIdentifiers(unidentified_keys, (answer) => {
 
-console.log("FETCH MANY IDENTIFIERS: ");
-console.log(JSON.stringify(answer));
-
         Object.entries(answer).forEach(([key, value]) => {
           if (value !== this.publicKey) {
-
-console.log("CACHING RESULT: " + key + " -- " + value);
 
             this.cached_keys[key] = value;
 
@@ -191,7 +183,6 @@ console.log("CACHING RESULT: " + key + " -- " + value);
     });
 
     if (missing_keys.length == 0) {
-      console.log("No missing keys");
       if (mycallback) {
         mycallback(found_keys);
       }
@@ -204,8 +195,6 @@ console.log("CACHING RESULT: " + key + " -- " + value);
     if (1) {
 
       this.queryKeys(this.peers[0], missing_keys, function(identifiers) {
-console.log("callback from query keys!");
-console.log(JSON.stringify(identifiers));
         for (let key in identifiers) {
 	  registry_self.cached_keys[key] = identifiers[key];
 	  found_keys[key] = identifiers[key];;
@@ -228,7 +217,6 @@ console.log(JSON.stringify(identifiers));
         sql,
         (res) => {
           try {
-            console.log("Registry Database results: ", res);
             if (!res.err) {
               if (res?.rows?.length > 0) {
                 res.rows.forEach((row) => {
@@ -333,8 +321,6 @@ console.log(JSON.stringify(identifiers));
 
   queryKeys(peer, keys, mycallback) {
 
-console.log("queryKeys: " + JSON.stringify(keys));
-
     let data = {
       request: "registry query",
       keys: keys,
@@ -343,8 +329,6 @@ console.log("queryKeys: " + JSON.stringify(keys));
       "registry query",
       data,
       function (res) {
-console.log("response received!");
-        console.log("QUERY PEERS RESULTS: " + JSON.stringify(res));
         mycallback(res);
       },
       peer.peerIndex
@@ -393,8 +377,8 @@ console.log("response received!");
     if (!txmsg?.data) { return; }
 
     if (txmsg.data.request === "registry query") {
-console.log("handle peer transaction request query received");
       let keys = txmsg?.data?.keys;
+console.log("received remote request for keys");
       this.fetchIdentifiersFromDatabase(keys, mycallback);
       return;
     }
@@ -420,9 +404,6 @@ console.log("handle peer transaction request query received");
     if (conf == 0) {
 
       if (!!txmsg && txmsg.module === "Registry") {
-
-        console.log("Registry TX: ", txmsg);
-        console.log(tx.toJson());
 
         /////////////////////////////////////////
         // REGISTRATION REQUESTS - main server //
@@ -564,14 +545,9 @@ console.log("handle peer transaction request query received");
     let found_keys = {};
     let missing_keys = [];
 
-console.log("TESTING A: " + JSON.stringify(keys));
-
     let myregexp = new RegExp('^([a-zA-Z0-9])*$');
     for (let i = 0; i < keys.length; i++) {
-      if (!myregexp.test(keys[i])) {
-console.log("failed regexp: " + keys[i]);
-return false; 
-      }
+      if (!myregexp.test(keys[i])) { return false; }
       if (this.returnCachedIdentifier(keys[i])) {
         found_keys[keys[i]] = this.returnCachedIdentifier(keys[i]);
         keys.splice(i, 1);
@@ -589,8 +565,6 @@ return false;
                    FROM records
                    WHERE ${where_statement}`;
 
-console.log("executing sql: " + sql);
-  
       let rows = await this.app.storage.queryDatabase(sql, {}, "registry");
       if (rows != undefined) {
         if (rows.length > 0) {
@@ -607,9 +581,6 @@ console.log("executing sql: " + sql);
 
     }
 
-
-console.log("cached keys: " + JSON.stringify(this.cached_keys));
-
     //
     // which keys are we missing ?
     //
@@ -621,16 +592,14 @@ console.log("cached keys: " + JSON.stringify(this.cached_keys));
       }
     }
 
-console.log("missing keys: " + JSON.stringify(missing_keys));
-
     //
     // return what we know about
     //
+/**** potentially useful for debugging, sets cached version ot random first time fetched
 let count = 0;
 for (let key in found_keys) {
   count++;
 }
-
 if (count == 0) {
 console.log("keys updating...");
   for (let i = 0; i < keys.length; i++) {
@@ -638,14 +607,10 @@ console.log("keys updating...");
     this.cached_keys[keys[i]] = found_keys[keys[i]];
   }
 }
+****/
 
-
-console.log("sending the found keys back into our callback!");
-console.log("returning: " + JSON.stringify(found_keys));
     if (mycallback) { mycallback(found_keys); }
 
-
-console.log("and keep checking");
 
     //
     // if we were asked about any missing keys, ask our parent server
@@ -655,16 +620,22 @@ console.log("and keep checking");
       if (peers[i].publicKey == this.parent_publickey) {
 	// ask the parent for the missing values, cache results
         this.queryKeys(peer, missing_keys, function(res) {
-console.log("QUERY PEERS RESULTS: " + JSON.stringify(res));
 	  for (let key in res) {
 	    if (res[key] != key) {
-console.log("caching: " + key + " --> " + res[key]);
 	      this.cached_keys[key] = res[key];
 	    }
 	  }
 	});
       }
     }
+
+    //
+    // every 1 in 500 times, clear cache
+    //
+    if (Math.random() < 0.005) {
+      this.cached_keys = {};
+    }
+
   }
 
 
