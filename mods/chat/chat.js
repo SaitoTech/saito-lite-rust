@@ -527,9 +527,6 @@ class Chat extends ModTemplate {
         await mycallback({ payload: "success", error: {} });
       }
     } else if (txmsg.request === "chat message broadcast") {
-      //
-      // This whole block is duplicating the functional logic of the Relay module....
-      //
 
       let inner_tx = new Transaction(undefined, txmsg.data);
 
