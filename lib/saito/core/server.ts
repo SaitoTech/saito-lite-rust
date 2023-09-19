@@ -541,16 +541,19 @@ class Server {
         res.sendStatus(404);
         return;
       }
-      if (!block.hasKeylistTxs(keylist)) {
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-          "Content-Transfer-Encoding": "utf8",
-        });
-        const liteblock = block.generateLiteBlock(keylist);
-        const buffer = Buffer.from(liteblock.serialize());
-        res.end(buffer, "utf8");
-        return;
-      }
+      // if (!block.hasKeylistTxs(keylist)) {
+      //   res.writeHead(200, {
+      //     "Content-Type": "text/plain",
+      //     "Content-Transfer-Encoding": "utf8",
+      //   });
+      //   const liteblock = block.generateLiteBlock(keylist);
+      //   console.log(
+      //     `111 : lite block : ${liteblock.hash} generated with txs : ${liteblock.transactions.length}`
+      //   );
+      //   const buffer = Buffer.from(liteblock.serialize());
+      //   res.end(buffer, "utf8");
+      //   return;
+      // }
 
       let methods = new NodeSharedMethods(this.app);
       // TODO - load from disk to ensure we have txs -- slow.
@@ -570,7 +573,9 @@ class Server {
         let blk = new Block();
         blk.deserialize(buffer);
         const newblk = blk.generateLiteBlock(keylist);
-
+        console.log(
+          `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
+        );
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
