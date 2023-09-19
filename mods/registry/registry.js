@@ -614,8 +614,10 @@ console.log("and we are not that server!!!! so adding!");
       let rows = await this.app.storage.queryDatabase(sql, {}, "registry");
       if (rows != undefined) {
         if (rows.length > 0) {
-          for (let i = 0, k = 0; i < rows.length; i++) {
-            const { publickey, identifier, bid, bsh, lc } = row;
+          for (let i = 0; i < rows.length; i++) {
+            //const { publickey, identifier, bid, bsh, lc } = rows[i];
+	    let identifier = rows[i].identifier;
+console.log("FOUND LOOKUP: " + JSON.stringify(rows[i]));
             if (identifier !== publickey) {
               found_keys[publickey] = identifier;
 	      // and add to the cache for faster responsiveness in future
