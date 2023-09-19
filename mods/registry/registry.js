@@ -616,7 +616,7 @@ console.log("keys updating...");
     // if we were asked about any missing keys, ask our parent server
     //
     for (let i = 0; i < this.peers.length; i++) {
-      if (peers[i].publicKey == this.parent_publickey) {
+      if (this.peers[i].publicKey == this.parent_publickey) {
 	// ask the parent for the missing values, cache results
         this.queryKeys(this.peers[i], missing_keys, function(res) {
 	  for (let key in res) {
