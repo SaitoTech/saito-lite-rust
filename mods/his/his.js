@@ -25864,7 +25864,7 @@ return;
  	      }
    	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
-	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
 
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
@@ -25902,7 +25902,7 @@ return;
 		for (let i = 0; i < units_to_move.length; i++) {
 		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 		  if (unitno >= max_formation_size) { 
-		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	            if (unitno >= max_formation_size) { 
 	              alert("Maximum Formation Size: " + max_formation_size);
 	              return;

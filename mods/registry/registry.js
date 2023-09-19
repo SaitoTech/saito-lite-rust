@@ -323,6 +323,9 @@ console.log("FETCHED REGISTRY IDENTIFIERS: " + JSON.stringify(answer));
 
   queryKeys(peer, keys, mycallback) {
 
+    if (!peer) { return; }
+    if (!peer.peerIndex) { return; }
+
     let data = {
       request: "registry query",
       keys: keys,
