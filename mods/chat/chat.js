@@ -960,6 +960,7 @@ class Chat extends ModTemplate {
     } else {
       await newtx.sign();
     }
+
     return newtx;
   }
 
