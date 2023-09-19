@@ -100,7 +100,7 @@ class Encrypt extends ModTemplate {
       //
       if (txmsg.request == "key exchange request") {
         if (receiver == this.publicKey) {
-          console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
+          console.log("\n\n\nYou have accepted an encrypted channel request from " + sender);
           this.accept_key_exchange(tx, 1, peer);
         }
       }
@@ -331,7 +331,7 @@ class Encrypt extends ModTemplate {
             console.log("\n\n\nYou have sent an encrypted channel request to " + receiver);
           }
           if (receiver == this.publicKey) {
-            console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
+            console.log("\n\n\nYou have accepted an encrypted channel request from " + sender);
             this.accept_key_exchange(tx);
           }
         }
