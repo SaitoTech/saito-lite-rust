@@ -54,7 +54,7 @@ export default class Blockchain extends SaitoBlockchain {
 
   async initialize() {
     this.app.connection.on("add-block-success", async ({ blockId, hash }) => {
-      console.log("calling add block success on : " + hash + " with id : " + blockId);
+      // console.debug("calling add block success on : " + hash + " with id : " + blockId);
       await this.onAddBlockSuccess(blockId, hash);
     });
   }
@@ -81,7 +81,6 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   public async onNewBlock(block: Block, lc: boolean) {
-    console.log("onNewBlock : " + block.hash);
     await this.saveBlockchain();
     this.app.modules.onNewBlock(block, lc);
   }

@@ -269,7 +269,7 @@ class Server {
       path: "/wsopen",
     });
     webserver.on("upgrade", (request: any, socket: any, head: any) => {
-      console.log("connection upgrade ----> " + request.url);
+      // console.debug("connection upgrade ----> " + request.url);
       const { pathname } = parse(request.url);
       if (pathname === "/wsopen") {
         wss.handleUpgrade(request, socket, head, (websocket: any) => {
