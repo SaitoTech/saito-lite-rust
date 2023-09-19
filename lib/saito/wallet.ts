@@ -271,8 +271,9 @@ export default class Wallet extends SaitoWallet {
         }
       }
 
-      this.app.connection.on("wallet-updated", () => {
-        console.log("wallet update event received");
+      this.app.connection.on("wallet-updated", async () => {
+        console.log("wallet update event received. saving wallet");
+        await this.saveWallet();
       });
 
       // this.instance = Object.assign(this.instance, this.app.options.wallet);
