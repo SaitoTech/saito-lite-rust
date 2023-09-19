@@ -55,7 +55,7 @@ class Registry extends ModTemplate {
     // set true for testing locally
     //
     this.local_dev = false;
-    //this.local_dev = true;
+    this.local_dev = true;
 
     //
     // EVENTS
@@ -79,6 +79,8 @@ class Registry extends ModTemplate {
       }
 
       this.fetchManyIdentifiers(unidentified_keys, (answer) => {
+
+console.log("FETCHED REGISTRY IDENTIFIERS: " + JSON.stringify(answer));
 
         Object.entries(answer).forEach(([key, value]) => {
           if (value !== this.publicKey) {
@@ -371,7 +373,6 @@ class Registry extends ModTemplate {
   //
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
 
-
     if (newtx == null) { return; }
     let txmsg = newtx.returnMessage();
     if (!txmsg?.data) { return; }
@@ -379,6 +380,7 @@ class Registry extends ModTemplate {
     if (txmsg.data.request === "registry query") {
       let keys = txmsg?.data?.keys;
 console.log("received remote request for keys");
+console.log("cached: " + JSON.stringify(this.cached_keys));
       this.fetchIdentifiersFromDatabase(keys, mycallback);
       return;
     }
@@ -456,6 +458,13 @@ console.log("received remote request for keys");
               identifier +
               "</span></p>";
             newtx.msg.identifier = identifier;
+            newtx.msg.publickey = publickey;
+            newtx.msg.unixtime = unixtime;
+            newtx.msg.bid = bid;
+            newtx.msg.bsh = bsh;
+            newtx.msg.lock_block = lock_block;
+            newtx.msg.bsh = unixtime;
+            newtx.msg.signer = signer;
             newtx.msg.signed_message = signed_message;
             newtx.msg.signature = sig;
           } else {
@@ -467,6 +476,13 @@ console.log("received remote request for keys");
               identifier +
               "</span>) has already been registered.</p>";
             newtx.msg.identifier = identifier;
+            newtx.msg.publickey = publickey;
+            newtx.msg.unixtime = unixtime;
+            newtx.msg.bid = bid;
+            newtx.msg.bsh = bsh;
+            newtx.msg.lock_block = lock_block;
+            newtx.msg.bsh = unixtime;
+            newtx.msg.signer = signer;
             newtx.msg.signed_message = "";
             newtx.msg.signature = "";
           }
@@ -488,18 +504,51 @@ console.log("received remote request for keys");
         console.log(tx.toJson());
 
         if (tx.from[0].publicKey == this.registry_publickey) {
-          if (tx.to[0].publicKey == this.publicKey) {
-            if (txmsg.identifier && txmsg.signed_message && txmsg.signature) {
-              console.log("Process Registry Response TX");
-              //
-              // am email? for us? from the DNS registrar?
-              //
-              let identifier = tx.msg.identifier;
-              let signed_message = tx.msg.signed_message;
-              let sig = tx.msg.signature;
 
-              try {
-                if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
+console.log("received message from publickey that should register!");
+
+          try {
+
+            //
+            // am email? for us? from the DNS registrar?
+            //
+            let identifier = tx.msg.identifier;
+            let signed_message = tx.msg.signed_message;
+            let sig = tx.msg.signature;
+	    let bid = tx.msg.bid;
+	    let bsh = tx.msg.bsh;
+	    let unixtime = tx.msg.unixtime;
+	    let lock_block = tx.msg.lock_block;
+	    let signer = tx.msg.signer;
+	    let lc = 1;
+
+            if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
+
+console.log("and it verifies!");
+
+	      if (this.publicKey != this.registry_publickey) {
+
+console.log("and we are not that server!!!! so adding!");
+
+		if (!this.app.BROWSER) {
+
+                  // servers update database
+                  let res = await this.addRecord(
+                    identifier,
+                    publickey,
+                    unixtime,
+                    bid,
+                    bsh,
+                    lock_block,
+                    sig,
+                    signer,
+                    1
+                  );
+
+	        }
+
+                if (tx.to[0].publicKey == this.publicKey) {
+
                   this.app.keychain.addKey(tx.to[0].publicKey, {
                     identifier: identifier,
                     watched: true,
@@ -510,18 +559,15 @@ console.log("received remote request for keys");
                   console.info("***********************");
                   console.info("verification success for : " + identifier);
                   console.info("***********************");
-                } else {
-                  this.app.keychain.addKey(tx.to[0].publicKey, {
-                    has_registered_username: false,
-                  });
-                  console.debug("verification failed for sig : ", tx);
-                }
-                this.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
-                this.app.connection.emit("update_identifier", tx.to[0].publicKey);
-              } catch (err) {
-                console.error("ERROR verifying username registration message: ", err);
-              }
-            }
+
+                  this.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
+                  this.app.connection.emit("update_identifier", tx.to[0].publicKey);
+
+		}
+	      }
+	    }
+          } catch (err) {
+            console.error("ERROR verifying username registration message: ", err);
           }
         }
       }
