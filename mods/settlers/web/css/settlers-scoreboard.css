@@ -1,6 +1,6 @@
 
 
-@media only screen and (max-width: 700px) and (orientation: portrait) {
+@media only screen and (max-width: 600px) and (orientation: portrait) {
   .racetrack {
     display: none;
     position: absolute;
@@ -17,5 +17,11 @@
     padding-left: 5vw !important;
     padding-right: 5vw !important;
     z-index: 5;
+  }
+}
+
+@media only screen and (max-height: 600px) and (orientation: landscape) {
+  .racetrack {
+    display: none;
   }
 }

@@ -16,7 +16,7 @@
 }
 
 .cardfan {
-  z-index: 5;
+  z-index: 9;
 }
 
 body {
@@ -961,41 +961,6 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-@media (max-aspect-ratio: 8/7) {
-  .opponents {
-    width: 75vw;
-    top: unset;
-    right: 1rem;
-    bottom: 1px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-  .notme>.player-box-graphic {
-    right: unset;
-    position: absolute;
-    top: calc(100% + 5px);
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  .notme .diceroll {
-    width: min(12vw, 110px);
-    height: 50px;
-    padding: min(0.5vw, 5px) 0;
-    flex-direction: row;
-  }
-}
-
-/* reposition playerbox for me on large screens top-left */
-
-@media screen and (orientation: landscape) and (min-width: 1000px) {
-  .player-box.me {
-    max-height: unset;
-    left: 20px;
-    top: 76px;
-    bottom: unset;
-  }
-}
 
 .saitoa, .player-box {
   border: 5px solid #424143;
@@ -1028,8 +993,15 @@ ul.horizontal_list li.iconoption {
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
   #game-hexgrid {
-    padding: 75px 65px 125px;
-    border-radius: 350px;
+    padding: 75px 45px 125px;
+    border-radius: 300px;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  #game-hexgrid{
+    padding: 75px 45px 125px;
+    border-radius: 300px;
   }
 }
 
