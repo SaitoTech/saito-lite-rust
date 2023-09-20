@@ -149,7 +149,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
         return res.arrayBuffer();
       })
       .then((buffer: ArrayBuffer) => {
-        console.log("block data fetched for " + url + " with size : " + buffer.byteLength);
+        // console.log("block data fetched for " + url + " with size : " + buffer.byteLength);
         return new Uint8Array(buffer);
       })
       .catch((err) => {
