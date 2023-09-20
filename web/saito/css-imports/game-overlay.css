@@ -192,12 +192,12 @@
 /*******************/
 .splash_overlay {
   padding: 2px;
-  width: auto;
+  width: min(800px, 110vh);
   height: auto;
   max-height: 90vh;
   max-width: 95%;
-  min-width: 800px;
 }
+
 .splash_overlay img{
     width: 100%;
     height: auto;
