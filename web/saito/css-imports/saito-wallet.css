@@ -586,6 +586,10 @@
   color: var(--saito-font-color);
 }
 
+.saito-history-msg {
+  color: var(--saito-font-color);
+}
+
 @keyframes spin {
   to { -webkit-transform: rotate(360deg); }
 }
