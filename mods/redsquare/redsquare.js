@@ -305,6 +305,7 @@ class RedSquare extends ModTemplate {
       // render tweet + children
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
+      if (tweet_id === "undefined") { tweet_id = ""; }
       if (tweet_id != "") {
         let sql = `SELECT *
                    FROM tweets
@@ -709,10 +710,10 @@ class RedSquare extends ModTemplate {
   // likes, retweets, replies notifications are added through this function.
   //
   addTweet(tx, prepend = false) {
+
     //
     // create the tweet
     //
-
     let tweet = new Tweet(this.app, this, tx);
 
     if (!tweet?.noerrors) {
@@ -768,6 +769,7 @@ class RedSquare extends ModTemplate {
     // we are adding it because it's updated_at is newer, e.g. there are more replies/retweets/likes
     //
     if (this.tweets_sigs_hmap[tweet.tx.signature]) {
+      let updated = 0;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.signature) {
           this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
@@ -776,8 +778,19 @@ class RedSquare extends ModTemplate {
           this.tweets[i].updated_at = tweet.tx.optional.updated_at;
           console.log("Update stats of tweet we already indexed");
           console.log(this.tweets[i].tx.optional);
+	  updated = true;
           break;
         }
+      }
+      // maybe this is a hidden child
+      if (!updated) {
+        let t = this.returnTweet(tweet.tx.signature);
+        t.tx.optional.num_replies = tweet.tx.optional.num_replies;
+        t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+        t.tx.optional.num_likes = tweet.tx.optional.num_likes;
+        t.updated_at = tweet.tx.optional.updated_at;
+        console.log("Updated stats of sub-tweet we already indexed");
+        console.log(this.tweets[i].tx.optional);
       }
       return;
     }
@@ -960,7 +973,6 @@ class RedSquare extends ModTemplate {
           //
           // if retweets
           //
-
           if (txmsg.data?.retweet_tx) {
             let rtx = new Transaction();
             rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
@@ -1156,7 +1168,6 @@ class RedSquare extends ModTemplate {
       // save my likes
       //
       if (tx.isTo(this.publicKey)) {
-        console.log("Save (like) notification to archive");
 
         this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
