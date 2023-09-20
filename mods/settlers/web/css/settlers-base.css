@@ -1027,8 +1027,9 @@ ul.horizontal_list li.iconoption {
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .gameboard {
-    transform: scale(0.6);
+  #game-hexgrid {
+    padding: 75px 65px 125px;
+    border-radius: 350px;
   }
 }
 

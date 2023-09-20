@@ -184,6 +184,7 @@ class Settlers extends GameTemplate {
       await this.playerbox.render();
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
+        console.log("mobile environment");
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(
           this.app,
