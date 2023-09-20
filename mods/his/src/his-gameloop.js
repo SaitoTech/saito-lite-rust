@@ -1605,9 +1605,11 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	      for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
 	        let ap = this.game.state.activated_powers[io[i]][z];
 	        if (ap != faction) {
-	          let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[z]);
-	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+ap+"\t"+neighbours[z]);
+	          for (let zz = 0; zz < neighbours.length; zz++) {
+	            let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[zz]);
+	            if (fluis > 0) {
+	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+ap+"\t"+neighbours[zz]);
+	            }
 	          }
 	        }
 	      }
@@ -5394,6 +5396,8 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	    if (attacker_hits > defender_hits) {
 
 	      let total_spaces_to_convert = attacker_hits - defender_hits;
+	      let unaltered_total_spaces_to_convert = total_spaces_to_convert;
+attacker_hits - defender_hits;
 	      let total_spaces_overall = this.returnNumberOfProtestantSpacesInLanguageZone();
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
@@ -5434,8 +5438,12 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	      //
 	      // attacker has more hits, is defender burned?
 	      //
-	      if (total_spaces_to_convert > this.game.state.theological_debate.defender_debater_power) {
-		this.burnDebater(this.game.state.theological_debate.defender_debater);
+	      if (unaltered_total_spaces_to_convert > this.game.state.theological_debate.defender_debater_power) {
+		if (this.game.state.theological_debate.defender_faction === "protestant") {
+		  this.burnDebater(this.game.state.theological_debate.defender_debater);
+		} else {
+		  this.disgraceDebater(this.game.state.theological_debate.defender_debater);
+		}
 	      }
 
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
@@ -5472,6 +5480,8 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	    } else {
 
 	      let total_spaces_to_convert = defender_hits - attacker_hits;
+	      let unaltered_total_spaces_to_convert = total_spaces_to_convert;
+defender_hits - attacker_hits;
 	      let total_spaces_overall = this.returnNumberOfProtestantSpacesInLanguageZone();
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
@@ -5502,21 +5512,21 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	      // reduce number of convertible spaces to total available to convert
 	      //
 	      let flip_this_number = total_spaces_to_convert + bonus_conversions;
-console.log("defender is papacy, right? " + this.game.state.theological_debate.defender_faction);
-console.log("protestant spaces and flip this number: " + this.returnNumberOfProtestantSpacesInLanguageZone() + " -- " + flip_this_number);
 
 	      if (this.game.state.theological_debate.defender_faction == "papacy" && this.returnNumberOfProtestantSpacesInLanguageZone() < flip_this_number) {
 	        this.updateLog("Protestants only have " + this.returnNumberOfProtestantSpacesInLanguageZone() + " spaces to flip");
 	        flip_this_number = this.returnNumberOfProtestantSpacesInLanguageZone();
 	      }
 
-
-
 	      //
 	      // defender has more hits, is attacker burned?
 	      //
-	      if (total_spaces_to_convert > this.game.state.theological_debate.attacker_debater_power) {
-		this.burnDebater(this.game.state.theological_debate.attacker_debater);
+	      if (unaltered_total_spaces_to_convert > this.game.state.theological_debate.attacker_debater_power) {
+	        if (this.game.state.theological_debate.attacker_faction === "papacy") {
+		  this.burnDebater(this.game.state.theological_debate.attacker_debater);
+	 	} else {
+		  this.disgraceDebater(this.game.state.theological_debate.attacker_debater);
+		}
 	      }
 
 	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
@@ -5743,7 +5753,6 @@ console.log("protestant spaces and flip this number: " + this.returnNumberOfProt
 	  //
 	  if (this.game.players.length > 2) {
 
-console.log("NEW WORLD PHASE!");
 	    // resolve voyages of exploration
 
 	    // resolve voyages of conquest
@@ -5801,12 +5810,15 @@ console.log("NEW WORLD PHASE!");
 	  this.unsetAllies("ottoman", "protestant");
 
 	  // Add 1 regular to each friendly-controlled capital
-	  if (this.isSpaceControlled("london", "england")) { this.game.queue.push("build\tland\tengland\tregular\tlondon\t0"); }
-	  if (this.isSpaceControlled("paris", "france")) { this.game.queue.push("build\tland\tfrance\tregular\tparis\t0"); }
-	  if (this.isSpaceControlled("valladolid", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvalladolid\t0"); }
-	  if (this.isSpaceControlled("vienna", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvienna\t0"); }
-	  if (this.isSpaceControlled("rome", "hapsburg")) { this.game.queue.push("build\tland\tpapacy\tregular\trome\t0"); }
-	  if (this.isSpaceControlled("istanbul", "ottoman")) { this.game.queue.push("build\tland\tottoman\tregular\tistanbul\t0"); }
+	  if (this.isSpaceControlled("rome", "papacy")) { this.game.queue.push("build\tland\tpapacy\tregular\trome\t0"); }
+	  // only to non-papacy if > 2P game
+	  if (this.game.players.length > 2) {
+	    if (this.isSpaceControlled("london", "england")) { this.game.queue.push("build\tland\tengland\tregular\tlondon\t0"); }
+	    if (this.isSpaceControlled("paris", "france")) { this.game.queue.push("build\tland\tfrance\tregular\tparis\t0"); }
+	    if (this.isSpaceControlled("valladolid", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvalladolid\t0"); }
+	    if (this.isSpaceControlled("vienna", "hapsburg")) { this.game.queue.push("build\tland\thapsburg\tregular\tvienna\t0"); }
+	    if (this.isSpaceControlled("istanbul", "ottoman")) { this.game.queue.push("build\tland\tottoman\tregular\tistanbul\t0"); }
+	  }
 
 	  // Remove all piracy markers
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
@@ -5865,8 +5877,6 @@ console.log("NEW WORLD PHASE!");
 	      }
 	    }
 	  }
-
-console.log("HOW MANY STILL IN PLAY: " + JSON.stringify(factions_in_play));
 
 	  //
 	  // if anyone is left to play, everyone with cards left needs to pass again

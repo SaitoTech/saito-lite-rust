@@ -57,6 +57,11 @@ class RedSquare extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/redsquare/style.css"];
 
+    this.liked_tweets = [];
+    this.retweeted_tweets = [];
+    this.replied_tweets = [];
+
+
     this.social = {
       twitter_card: "summary",
       twitter_site: "@SaitoOfficial",
@@ -148,16 +153,6 @@ class RedSquare extends ModTemplate {
         });
       }
 
-      /*x.push({
-        text: "Camera",
-        icon: "fas fa-camera",
-        rank: 27,
-        callback: function (app, id) {
-          let camera = new SaitoCamera(app, this_mod);
-          camera.render();
-        }
-      });
-      */
       return x;
     }
 
@@ -239,6 +234,7 @@ class RedSquare extends ModTemplate {
       //
       // fetch content from options file -- regardless of whether we are accessing redsquare or not!
       //
+      this.loadOptions();
       this.loadLocalTweets();
     }
   }
@@ -1271,16 +1267,6 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   loadLocalTweets() {
-    if (!this.app.BROWSER) {
-      return;
-    }
-    if (this.app.options.redsquare) {
-      this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
-      this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
-    } else {
-      this.notifications_last_viewed_ts = new Date().getTime();
-      this.notifications_number_unviewed = 0;
-    }
 
     if (this.app.browser.returnURLParameter("tweet_id")) {
       return;
@@ -1338,22 +1324,6 @@ class RedSquare extends ModTemplate {
     });
   }
 
-  saveOptions() {
-    if (!this.app.BROWSER || !this.browser_active) {
-      return;
-    }
-
-    if (!this.app.options?.redsquare) {
-      this.app.options.redsquare = {};
-    }
-
-    this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
-    this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
-
-    //console.log(JSON.parse(JSON.stringify(this.app.options.redsquare)));
-    this.app.storage.saveOptions();
-  }
-
   async saveLocalTweets() {
     if (!this.app.BROWSER || !this.browser_active) {
       return;
@@ -1377,6 +1347,98 @@ class RedSquare extends ModTemplate {
       console.log(`Saved ${tweet_txs.length} tweets`);
     });
   }
+
+  loadOptions() {
+
+    if (!this.app.BROWSER) {
+      return;
+    }
+
+    if (this.app.options.redsquare) {
+      this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
+      this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
+    } else {
+      this.app.options.redsquare = {};
+      this.notifications_last_viewed_ts = new Date().getTime();
+      this.notifications_number_unviewed = 0;
+    }
+
+    if (this.app.options.redsquare.liked_tweets) { this.liked_tweets = this.app.options.redsquare.liked_tweets; }
+    if (this.app.options.redsquare.retweeted_tweets) { this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets; }
+    if (this.app.options.redsquare.replied_tweets) { this.replied_tweets = this.app.options.redsquare.replied_tweets; }
+
+  }
+
+  saveOptions() {
+    if (!this.app.BROWSER || !this.browser_active) {
+      return;
+    }
+
+    if (!this.app.options?.redsquare) {
+      this.app.options.redsquare = {};
+    }
+
+    this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
+    this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
+
+    while (this.liked_tweets.length > 100) { this.liked_tweets.splice(0, 1); }
+    while (this.retweeted_tweets.length > 100) { this.retweeted_tweets.splice(0, 1); }
+    while (this.replied_tweets.length > 100) { this.replied_tweets.splice(0, 1); }
+
+    this.app.options.redsquare.liked_tweets = this.liked_tweets;
+    this.app.options.redsquare.retweeted_tweets = this.retweeted_tweets;
+    this.app.options.redsquare.replied_tweets = this.replied_tweets;
+
+    //console.log(JSON.parse(JSON.stringify(this.app.options.redsquare)));
+    this.app.storage.saveOptions();
+  }
+
+  //////////////
+  // remember //
+  //////////////
+  likeTweet(sig="") {
+    if (sig === "") { return; }
+    if (!this.liked_tweets.includes(sig)) { this.liked_tweets.push(sig); }
+    this.saveOptions();
+  }
+  unlikeTweet(sig="") {
+    if (sig === "") { return; }
+    if (this.liked_tweets.includes(sig)) {
+      for (let i = 0; i < this.liked_tweets.length; i++) {
+	if (this.liked_tweets[i] === sig) { this.liked_tweets.splice(i, 1); i--; }
+      }
+    }
+    this.saveOptions();
+  }
+  retweetTweet(sig="") {
+    if (sig === "") { return; }
+    if (!this.retweeted_tweets.includes(sig)) { this.retweeted_tweets.push(sig); }
+    this.saveOptions();
+  }
+  unretweetTweet(sig="") {
+    if (sig === "") { return; }
+    if (this.retweeted_tweets.includes(sig)) {
+      for (let i = 0; i < this.retweeted_tweets.length; i++) {
+	if (this.retweeted_tweets[i] === sig) { this.retweeted_tweets.splice(i, 1); i--; }
+      }
+    }
+    this.saveOptions();
+  }
+  replyTweet(sig="") {
+    if (sig === "") { return; }
+    if (!this.replied_tweets.includes(sig)) { this.replied_tweets.push(sig); }
+    this.saveOptions();
+  }
+  unreplyTweet(sig="") {
+    if (sig === "") { return; }
+    if (this.replied_tweets.includes(sig)) {
+      for (let i = 0; i < this.replied_tweets.length; i++) {
+	if (this.replied_tweets[i] === sig) { this.replied_tweets.splice(i, 1); i--; }
+      }
+    }
+    this.saveOptions();
+  }
+
 
   //////////////////////////////////////////////////////////
   /////       **** WEB SERVER STUFF  *****

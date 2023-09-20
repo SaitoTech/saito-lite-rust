@@ -1,3 +1,7 @@
+.liked , .replied , .retweeted {
+  color: #c23939;
+}
+
 .redsquare-home {
   margin: -2.5rem 0 0 0;
 }

@@ -158,8 +158,8 @@ console.log("\n\n\n\n");
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
 	  //this.setAllies("venice", "papacy");
-	  this.controlSpace("papacy", "trent");
-	  this.addRegular("papacy", "trent", 1);
+	  //this.controlSpace("papacy", "trent");
+	  //this.addRegular("papacy", "trent", 1);
 
 	} else {
 
