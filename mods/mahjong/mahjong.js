@@ -49,12 +49,12 @@ class Mahjong extends OnePlayerGameTemplate {
     //
   // runs whenever we load the game into the browser. render()
   //
-  render(app) {
+  async render(app) {
     if (!this.browser_active) {
       return;
     }
 
-    super.render(app);
+    await super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
 
@@ -100,8 +100,7 @@ class Mahjong extends OnePlayerGameTemplate {
     this.displayBoard();
 
     if (app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.hammer.render(this.app, this);
-      this.hammer.attachEvents(this.app, this, "#mahj-rowbox");
+      this.hammer.render("#mahj-rowbox");
     } else {
       this.sizer.render();
       this.sizer.attachEvents("#mahj-rowbox");

@@ -181,11 +181,11 @@ class Twilight extends GameTemplate {
   }
 
 
-  render(app) {
+  async render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.render(app);
+    await super.render(app);
 
     //
     // check language preference
@@ -406,9 +406,7 @@ class Twilight extends GameTemplate {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hud.card_width = 110;
         this.cardbox.skip_card_prompt = 0;
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, '.gameboard');
-
+        this.hammer.render();
       } else {
         this.hud.card_width = 120; // hardcode max card size
         this.sizer.render();

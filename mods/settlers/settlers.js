@@ -185,12 +185,8 @@ class Settlers extends GameTemplate {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         console.log("mobile environment");
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(
-          this.app,
-          this,
-          "#game-hexgrid"
-        );
+        this.hammer.render();
+        this.hammer.attachEvents("#game-hexgrid");
       } else {
         this.sizer.render();
         this.sizer.attachEvents("#game-hexgrid");

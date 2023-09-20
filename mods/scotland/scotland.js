@@ -237,8 +237,7 @@ class Scotland extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render();
       } else {
         this.sizer.render();
         this.sizer.attachEvents(".gameboard");

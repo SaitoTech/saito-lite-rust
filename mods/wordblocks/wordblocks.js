@@ -40,14 +40,14 @@ class Wordblocks extends GameTemplate {
     return this;
   }
 
-  render(app) {
+  async render(app) {
     if (!this.browser_active) {
       return;
     }
 
     if (this.initialize_game_run) { return; }
 
-    super.render(app);
+    await super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
 
@@ -114,8 +114,7 @@ class Wordblocks extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render();
       } else {
         this.sizer.render();
         this.sizer.attachEvents(".gameboard");

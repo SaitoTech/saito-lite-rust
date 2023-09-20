@@ -420,8 +420,7 @@ if (this.game.players.length > 2) {
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        //this.hammer.render(this.app, this);
-        //this.hammer.attachEvents(this.app, this, '.gameboard');
+        //this.hammer.render();
       } else {
 	let his_self = this;
         this.sizer.render();
