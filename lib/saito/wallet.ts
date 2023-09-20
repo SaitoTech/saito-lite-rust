@@ -92,6 +92,11 @@ export default class Wallet extends SaitoWallet {
         }
       }
 
+      returnHistory(asset_id = "", records=20, callback=null){
+        // to be implemented in future
+        // redirecting users to block explorer for now
+      }
+
       async sendPayment(amount, to_address, unique_hash = "") {
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
           to_address,
