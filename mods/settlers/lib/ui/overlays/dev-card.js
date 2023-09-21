@@ -27,11 +27,16 @@ class DevCardOverlay {
       card.onclick = (e) => {
 
         let target = e.currentTarget;
+
+        if (target.classList.contains("settlers-card-disabled")){
+          salert("You just bought that card, cannot play now");
+          return;
+        }
+
         let card = target.getAttribute("id");
         let cardobj = this_dev_card.mod.game.deck[0].cards[this_dev_card.mod.game.deck[0].hand[card]];
 
         this_dev_card.overlay.remove();
-
 
         switch (cardobj.action) {
           case 1: //Soldier/Knight

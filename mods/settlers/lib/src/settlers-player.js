@@ -58,6 +58,7 @@ class SettlersPlayer {
   //
   playerPlayBandit() {
     this.updateStatus(`<div class="player-notice"><span>Move the ${this.b.name}</span></div>`);
+    this.updateControls("");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
     $(".sector-container").off();
@@ -523,9 +524,19 @@ class SettlersPlayer {
     return this.doesPlayerHaveResources(player, this.priceList[3]);
   }
 
-  canPlayerPlayCard() {
-    if (this.game.state.players[this.game.player - 1].devcards > 0) {
-      return this.game.state.canPlayCard; 
+  canPlayerPlayCard(onlyKnights = false) {
+    if (onlyKnights){
+      for (let c of this.game.deck[0].hand){
+        let card = this.game.deck[0].cards[c];
+        console.log(card);
+        if (card.card == "Knight"){
+          return true;
+        }
+      }
+    }else{
+      if (this.game.state.players[this.game.player - 1].devcards > 0) {
+        return this.game.state.canPlayCard; 
+      }
     }
     
     return false;
