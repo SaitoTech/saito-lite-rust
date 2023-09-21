@@ -55,7 +55,7 @@ class RedSquare extends ModTemplate {
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
-    this.styles = ["/saito/saito.css", "/redsquare/style.css"];
+    this.styles = ["/redsquare/style.css"];
 
     this.liked_tweets = [];
     this.retweeted_tweets = [];
@@ -222,6 +222,10 @@ class RedSquare extends ModTemplate {
   //
   async initialize(app) {
     await super.initialize(app);
+
+    if (this.browser_active){
+      this.styles = ["/saito/saito.css", "/redsquare/style.css"];  
+    }
 
     //
     // this prints the last 10 tweets to ./web/tweets.js which is optionally

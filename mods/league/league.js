@@ -29,7 +29,7 @@ class League extends ModTemplate {
     this.categories = "Arcade Gaming";
     this.overlay = null;
 
-    this.styles = ["/league/style.css", "/arcade/style.css"];
+    this.styles = ["/arcade/style.css", "/league/style.css"];
 
     this.leagues = [];
 
@@ -97,6 +97,10 @@ class League extends ModTemplate {
 
   async initialize(app) {
     await super.initialize(app);
+
+    if (this.browser_active){
+      this.styles.unshift("/saito/saito.css");
+    }
 
     //Trial -- So that we can display league results in game page
     this.overlay = new LeagueOverlay(app, this);
