@@ -1,6 +1,6 @@
 .hud {
   width: 60rem;
-  max-width: 70rem;
+  max-width: 98vw;
   z-index: 50 !important;
   padding-top: 3px !important;
   margin-bottom: 2rem;
@@ -104,13 +104,22 @@
 .saitoa .status ul, .saitoa .controls ul  {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  gap: 2rem;
+  justify-content: space-evenly;
+  gap: 1rem;
+  width: 100%;
 }
 
 
 
-@media only screen and (max-width: 700px) and (orientation: portrait) {
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .saitoa {
+    padding: 0.5rem;
+  }
+
+  .hud-body{
+    width: calc(100% - 2rem);
+  }
+
   body .player-box {
     height: auto !important;
     width: 100% !important;
@@ -136,5 +145,19 @@
     overflow-y: scroll;
     max-height: 120vh;
     padding-bottom: 40vh;
+  }
+}
+
+@media only screen and (max-height: 600px) and (orientation: landscape) {
+  .hud{
+    max-width: 50vw;
+    max-height: 50vh;
+    margin-bottom: 1rem;
+  }
+
+  .hud.hud-long {
+    left: unset;
+    transform: unset;
+    right: 2rem;
   }
 }

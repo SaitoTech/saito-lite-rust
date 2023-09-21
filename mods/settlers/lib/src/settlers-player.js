@@ -381,7 +381,6 @@ class SettlersPlayer {
       }
       if (id === "playcard") {
         settlers_self.dev_card.render();
-        //settlers_self.playerPlayCard();
         return;
       }
       if (id == "spend") {
@@ -406,83 +405,6 @@ class SettlersPlayer {
     }
   }
 
-  playerPlayCard() {
-    let settlers_self = this;
-    this.displayCardfan("cards");
-    let html = "";
-    html += '<div class="player-notice">Select a card to play: <ul>';
-    let limit = Math.min(
-      this.game.deck[0].hand.length,
-      this.game.state.players[this.game.player - 1].devcards
-    );
-    //Show all old cards
-    for (let i = 0; i < limit; i++) {
-      let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
-      if (this.game.state.canPlayCard || !this.isActionCard(card.card)) {
-        html += `<li class="option tip" id="${i}">${card.card}
-                    <div class="tiptext">${this.rules[card.action]}</div>
-                   </li>`;
-      }
-    }
-    //Show New VP as well
-    for (let i = Math.max(limit, 0); i < this.game.deck[0].hand.length; i++) {
-      let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
-      if (!this.isActionCard(card.card)) {
-        html += `<li class="option tip" id="${i}">${card.card}
-                   <div class="tiptext">${this.rules[card.action]}</div>
-                   </li>`;
-      }
-    }
-
-    html += `<li class="option" id="cancel">go back</li>`;
-    html += "</ul></div>";
-    this.updateStatus(html, 0);
-
-    $(".option").off();
-    $(".option").on("click", function () {
-      let card = $(this).attr("id"); //this is either "cancel" or the card's deck index (i.e. "11")
-      let cardobj = settlers_self.game.deck[0].cards[settlers_self.game.deck[0].hand[card]];
-
-      //Allow a player not to play their dev card
-      if (card == "cancel") {
-        settlers_self.endTurn();
-        /*Restart last move because maybe thought about playing a card before rolling and want to go back to that state
-         */
-        return;
-      }
-
-      //Callback seems to get lost somewhere
-      //cardobj.callback(settlers_self.game.player);
-      //Fallback code, old school switch
-      switch (cardobj.action) {
-        case 1: //Soldier/Knight
-          settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          settlers_self.addMove(`play_knight\t${settlers_self.game.player}\t${cardobj.card}`);
-          settlers_self.endTurn();
-          break;
-        case 2:
-          settlers_self.playYearOfPlenty(settlers_self.game.player, cardobj.card);
-          settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          break;
-        case 3:
-          settlers_self.playMonopoly(settlers_self.game.player, cardobj.card);
-          settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          break;
-        case 4:
-          settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          settlers_self.addMove("player_build_road\t" + settlers_self.game.player);
-          settlers_self.addMove("player_build_road\t" + settlers_self.game.player);
-          settlers_self.addMove(`road_building\t${settlers_self.game.player}\t${cardobj.card}`);
-          settlers_self.endTurn();
-          break;
-        default:
-          //victory point
-          settlers_self.addMove(`vp\t${settlers_self.game.player}\t${cardobj.card}`);
-          settlers_self.endTurn();
-      }
-      settlers_self.removeCardFromHand(settlers_self.game.deck[0].hand[card]);
-    });
-  }
 
   canPlayerTradeWithBank() {
     let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
@@ -603,13 +525,9 @@ class SettlersPlayer {
 
   canPlayerPlayCard() {
     if (this.game.state.players[this.game.player - 1].devcards > 0) {
-      //not deck.length
-      if (this.game.state.canPlayCard) return true;
+      return this.game.state.canPlayCard; 
     }
-    if (this.hasVPCards()) {
-      return true;
-    }
-
+    
     return false;
   }
 }

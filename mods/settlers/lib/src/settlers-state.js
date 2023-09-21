@@ -50,13 +50,6 @@ class SettlersState {
     return true;
   }
 
-  hasVPCards() {
-    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
-      if (!this.isActionCard(cardname)) { return true; }
-    }
-    return false;
-  }
 
 
 

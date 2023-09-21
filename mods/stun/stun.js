@@ -51,7 +51,7 @@ class Stun extends ModTemplate {
       },
     ];
 
-    this.styles = ["/saito/saito.css", "/videocall/style.css"];
+    this.styles = ["/videocall/style.css"];  
 
     //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
@@ -75,6 +75,12 @@ class Stun extends ModTemplate {
         this.CallInterface = new CallInterfaceAudio(app, this);
       }
     });
+  }
+
+  async initialize(app) {
+    if (this.browser_active){
+      this.styles = ["/saito/saito.css", "/videocall/style.css"];  
+    }
   }
 
   onPeerHandshakeComplete(app, peer) {

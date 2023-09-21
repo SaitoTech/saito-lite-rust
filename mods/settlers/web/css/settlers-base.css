@@ -16,7 +16,7 @@
 }
 
 .cardfan {
-  z-index: 5;
+  z-index: 9;
 }
 
 body {
@@ -80,36 +80,6 @@ p {
   background-color: rgba(245, 245, 245, 0.95);
 }
 
-.construction-costs {
-  font-size: 24px;
-  text-align: center;
-}
-
-.construction-costs.saitoa {
-  min-width: unset;
-  padding: 1rem;
-}
-
-.construction-costs .table {
-  display: grid;
-  grid-template-columns: 60px 1fr;
-  grid-gap: 10px;
-}
-
-.construction-costs .table .cost {
-  display: flex;
-}
-
-.construction-costs .icon, .construction-costs .token, .construction-costs img {
-  width: 50px;
-  margin: 2.5px;
-}
-
-.construction-costs .message {
-  font-size: 0.8em;
-  text-align: center;
-  margin: 15px 0;
-}
 
 .cardfan {
   top: 45vh;
@@ -961,46 +931,10 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-@media (max-aspect-ratio: 8/7) {
-  .opponents {
-    width: 75vw;
-    top: unset;
-    right: 1rem;
-    bottom: 1px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-  .notme>.player-box-graphic {
-    right: unset;
-    position: absolute;
-    top: calc(100% + 5px);
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  .notme .diceroll {
-    width: min(12vw, 110px);
-    height: 50px;
-    padding: min(0.5vw, 5px) 0;
-    flex-direction: row;
-  }
-}
 
-/* reposition playerbox for me on large screens top-left */
-
-@media screen and (orientation: landscape) and (min-width: 1000px) {
-  .player-box.me {
-    max-height: unset;
-    left: 20px;
-    top: 76px;
-    bottom: unset;
-  }
-}
-
-.saitoa, .player-box {
+.saitoa, #saito-alert-box {
   border: 5px solid #424143;
   background-color: #d3c38df5;
-  padding: 1rem;
   border-image: url(/settlers/img/border.png);
   border-image-slice: 51;
   border-image-width: 21px;
@@ -1010,12 +944,6 @@ ul.horizontal_list li.iconoption {
   color: var(--text-color);
 }
 
-/*
-.saitoa {
-  min-width: min(500px, 95vw);
-  min-height: min(225px, 80vw);
-}
-*/
 
 .game-menu {
   background-color: #d3c38df5;
@@ -1027,9 +955,40 @@ ul.horizontal_list li.iconoption {
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .gameboard {
-    transform: scale(0.6);
+  #game-hexgrid {
+    padding: 75px 45px 125px;
+    border-radius: 300px;
   }
+
+  .player-notice {
+    font-size: 18px;
+  }
+
+  .saitoa {
+  border-image-width: 15px;
+  border-image-outset: 3px;
+  border-width: 3px;
+}
+
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  #game-hexgrid{
+    padding: 75px 45px 125px;
+    border-radius: 300px;
+  }
+
+  .player-notice {
+    font-size: 18px;
+  }
+
+
+.saitoa {
+  border-image-width: 15px;
+  border-image-outset: 3px;
+  border-width: 3px;
+}
+
 }
 
 .achievements {
