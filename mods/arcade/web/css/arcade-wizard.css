@@ -327,8 +327,7 @@
 }
 
 .saito-multi-btn:hover {
-  background: var(--saito-background-color);
-  color: var(--saito-primary);
+  background: transparent;
 }
 
 .game-wizard-form {
