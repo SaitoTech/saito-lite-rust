@@ -962,7 +962,7 @@ ul.horizontal_list li.iconoption {
 }
 
 
-.saitoa, .player-box {
+.saitoa, .game-playerbox {
   border: 5px solid #424143;
   background-color: #d3c38df5;
   padding: 1rem;
@@ -996,6 +996,17 @@ ul.horizontal_list li.iconoption {
     padding: 75px 45px 125px;
     border-radius: 300px;
   }
+
+  .player-notice {
+    font-size: 18px;
+  }
+
+  .saitoa, .game-playerbox {
+  border-image-width: 15px;
+  border-image-outset: 3px;
+  border-width: 3px;
+}
+
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
@@ -1003,6 +1014,18 @@ ul.horizontal_list li.iconoption {
     padding: 75px 45px 125px;
     border-radius: 300px;
   }
+
+  .player-notice {
+    font-size: 18px;
+  }
+
+
+.saitoa, .game-playerbox {
+  border-image-width: 15px;
+  border-image-outset: 3px;
+  border-width: 3px;
+}
+
 }
 
 .achievements {
