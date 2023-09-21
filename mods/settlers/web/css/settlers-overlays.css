@@ -1,5 +1,5 @@
 
-.settlers-stats-overlay, .trade-overlay, .rules-overlay {
+.settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-info-overlay, .build-overlay {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -8,13 +8,12 @@
 
   overflow-x: hidden;
   overflow-y: auto;
-  padding: min(4rem, 5vw);
+  padding: min(4rem, 3vw, 5vh);
   -ms-overflow-style: none;
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
 }
-
 
 
 .mobile-trading-container .player-box {
@@ -125,11 +124,6 @@
 }
 
 
-
-.bank-overlay img {
-  width: 15rem;
-  height: auto!important;
-}
 
 .brick {
   background-image: url(/settlers/img/cards/brick.png);
