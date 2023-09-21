@@ -2,7 +2,7 @@
 .game-playerbox-manager {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 2rem;
     position: absolute;
     top: 6rem;
     right: 3rem;
@@ -12,6 +12,17 @@
     z-index: 3;
     max-width: 50vw;
     min-width: 30rem;
+
+    /* Manually add saito properties */
+    border: 3px solid #424143;
+    background-color: #d3c38df5;
+    border-image: url(/settlers/img/border.png);
+    border-image-slice: 55;
+    border-image-width: 16px;
+    border-image-repeat: stretch;
+    border-style: solid;
+    border-image-outset: 5px;
+    color: var(--text-color);
 }
 
 .game-playerbox-icons {
@@ -95,6 +106,9 @@
   .game-playerbox {
     width: 100%;
     max-width: 100%;
+    border-image-width: 12px;
+    border-image-outset: 2px;
+    border-width: 2px;
   }
 
 }
@@ -105,6 +119,9 @@
   .game-playerbox { 
     min-width: unset;
     padding: 0.6rem 1.2rem;
+    border-image-width: 12px;
+    border-image-outset: 2px;
+    border-width: 2px;
   }
 
   .game-playerbox-manager {

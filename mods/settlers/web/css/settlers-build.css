@@ -117,9 +117,6 @@
   height: 15rem;
 }
 
-.dev-card-overlay .settlers-cards-container {
-  height: 20rem;
-}
 
 .settlers-cards-container img {
   height: 9rem;
@@ -135,10 +132,6 @@
 
 .settlers-card-disabled {
   filter: grayscale(90%) brightness(60%);
-}
-
-.monopoly .settlers-item-row {
-  gap: 5rem;
 }
 
 .settlers-cards-container img {
@@ -206,16 +199,17 @@
   height: 13rem;
 }
 
-.settlers-items-container-3 .settlers-cards-container img {
-  height: 9rem;
-}
-
 .settlers-items-container-4 .settlers-cards-container img {
   height: 7rem;
 }
 
 .settlers-items-container-5 .settlers-cards-container img {
   height: 6rem;
+}
+
+
+.discard-cards-overlay .settlers-items-container {
+  gap: unset;
 }
 
 .discard-cards-overlay .settlers-items-container .settlers-cards-container img {
@@ -236,34 +230,49 @@
   gap: 1rem;
 }
 
+
+.dev-card-overlay .settlers-cards-container {
+  min-height: 21rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .dev-card-overlay .settlers-cards-container img {
   height: 20rem;
 }
 
-.monopoly-overlay .settlers-cards-container {
-  gap: 1rem;
-}
 
 .settlers-dev-card {
   position: relative;
   width: 14.5rem;
+  height: 20rem;
 }
 
 .settlers-dev-card .settlers-dev-card-title {
-  font-size: 1.4rem;
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
   z-index: 2;
   display: inline-block;
   position: relative;
+  height: 2rem;
   margin-top: 2rem;
+  margin-bottom: 7.5rem;
+  pointer-events: none;
 }
 
 .settlers-dev-card .settlers-dev-card-text {
   font-size: 1.5rem;
-  text-align: center;
   z-index: 2;
   position: relative;
-  margin-top: 8rem;
-  padding: 0rem 1rem;
+  width: 100%;
+  height: 8rem;
+  padding: 0.5rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
 }
 
 .settlers-dev-card img {

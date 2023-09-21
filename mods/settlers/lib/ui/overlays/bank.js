@@ -28,7 +28,7 @@ class BankOverlay {
       if (temp >= this.minForTrade[resource]) this.my_resources[resource] = temp;
     }
 
-    this.overlay.show(BankOverlayTemplate(this.app, this.mod, this));
+    this.overlay.show(BankOverlayTemplate(this.app, this.mod, this), ()=> {this.selected_resource = null; });
     this.attachEvents();
   }
 

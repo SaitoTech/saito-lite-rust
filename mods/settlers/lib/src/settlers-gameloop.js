@@ -658,10 +658,10 @@ class SettlersGameloop {
           //Messaging to User
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
           let controlshtml = `<ul>`;
-          controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
             controlshtml += `<li class="option" id="playcard">play card</li>`;
           }
+          controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
           controlshtml += `</ul>`;
 
           console.log("running UPDATE STATUS");
@@ -689,7 +689,6 @@ class SettlersGameloop {
             }
             if (choice === "playcard") {
               settlers_self.dev_card.render();
-              //             settlers_self.playerPlayCard();
             }
           });
         } else {

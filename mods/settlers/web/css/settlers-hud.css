@@ -104,8 +104,9 @@
 .saitoa .status ul, .saitoa .controls ul  {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  gap: 2rem;
+  justify-content: space-evenly;
+  gap: 1rem;
+  width: 100%;
 }
 
 

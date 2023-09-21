@@ -80,36 +80,6 @@ p {
   background-color: rgba(245, 245, 245, 0.95);
 }
 
-.construction-costs {
-  font-size: 24px;
-  text-align: center;
-}
-
-.construction-costs.saitoa {
-  min-width: unset;
-  padding: 1rem;
-}
-
-.construction-costs .table {
-  display: grid;
-  grid-template-columns: 60px 1fr;
-  grid-gap: 10px;
-}
-
-.construction-costs .table .cost {
-  display: flex;
-}
-
-.construction-costs .icon, .construction-costs .token, .construction-costs img {
-  width: 50px;
-  margin: 2.5px;
-}
-
-.construction-costs .message {
-  font-size: 0.8em;
-  text-align: center;
-  margin: 15px 0;
-}
 
 .cardfan {
   top: 45vh;
@@ -962,10 +932,9 @@ ul.horizontal_list li.iconoption {
 }
 
 
-.saitoa, .game-playerbox {
+.saitoa, #saito-alert-box {
   border: 5px solid #424143;
   background-color: #d3c38df5;
-  padding: 1rem;
   border-image: url(/settlers/img/border.png);
   border-image-slice: 51;
   border-image-width: 21px;
@@ -975,12 +944,6 @@ ul.horizontal_list li.iconoption {
   color: var(--text-color);
 }
 
-/*
-.saitoa {
-  min-width: min(500px, 95vw);
-  min-height: min(225px, 80vw);
-}
-*/
 
 .game-menu {
   background-color: #d3c38df5;
@@ -1001,7 +964,7 @@ ul.horizontal_list li.iconoption {
     font-size: 18px;
   }
 
-  .saitoa, .game-playerbox {
+  .saitoa {
   border-image-width: 15px;
   border-image-outset: 3px;
   border-width: 3px;
@@ -1020,7 +983,7 @@ ul.horizontal_list li.iconoption {
   }
 
 
-.saitoa, .game-playerbox {
+.saitoa {
   border-image-width: 15px;
   border-image-outset: 3px;
   border-width: 3px;
