@@ -87,7 +87,6 @@ class SettlersGameloop {
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards++; //Add card for display
         } else {
-          this.boughtCard = true; //So we display dev cards on next refresh
 
           let lastcard =
             this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
@@ -95,6 +94,11 @@ class SettlersGameloop {
           let html = `<span class="tip">${lastcard.card}
                         <div class="tiptext">${this.rules[lastcard.action]}</div>
                       </span>`;
+
+          console.log("Current status: " + this.game.state.canPlayCard);
+          if (lastcard.action == 0 && this.game.state.canPlayCard == null){
+            this.game.state.canPlayCard = true;
+          }
 
           this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
         }
@@ -658,7 +662,7 @@ class SettlersGameloop {
           //Messaging to User
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
           let controlshtml = `<ul>`;
-          if (settlers_self.canPlayerPlayCard()) {
+          if (settlers_self.canPlayerPlayCard(true)) {
             controlshtml += `<li class="option" id="playcard">play card</li>`;
           }
           controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
@@ -718,7 +722,7 @@ class SettlersGameloop {
         // board animation
         this.animateDiceRoll(roll);
 
-        this.updateControls("");
+        //this.updateControls("");
 
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
@@ -925,7 +929,10 @@ class SettlersGameloop {
       }
 
       if (mv[0] == "end_turn") {
-        this.game.state.canPlayCard = this.game.deck[0].hand.length > 0;
+        this.game.state.canPlayCard = null;
+        if (this.game.deck[0].hand.length > 0) {
+          this.game.state.canPlayCard = true;
+        }
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
         this.is_sleeping = true;

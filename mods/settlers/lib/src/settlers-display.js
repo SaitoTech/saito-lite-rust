@@ -384,12 +384,7 @@ class SettlersDisplay {
       this.cardbox.attachCardEvents();
 
       //Show player cards and add events (Doesn't need to be in for loop!)
-      if (this.boughtCard) {
-        this.displayCardfan("cards"); //Only shows this player's
-        this.boughtCard = false;
-      } else {
-        this.displayCardfan();
-      }
+      this.displayCardfan();
       this.addEventsToHand();
     } catch (e) {
       console.log("error in displayPlayers(): " + e);
