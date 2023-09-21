@@ -4844,6 +4844,8 @@ console.log("getPrivateKey(): " + privateKey);
 
         if (action2 == "realign") {
 
+          twilight_self.game.state.back_button_cancelled = 1;
+
           let alignment_rolls = ops;
           let header_msg = `Pick a target to realign (${alignment_rolls} rolls), or:`;
           let html = `<ul><li class="option" id="cancelrealign">end turn without rolling</li></ul>`;
@@ -4854,7 +4856,6 @@ console.log("getPrivateKey(): " + privateKey);
               return;
             }
           });
-
 
           $(".country").off();
           $(".country").on('click', async function() {
