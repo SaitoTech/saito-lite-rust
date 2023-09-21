@@ -2894,6 +2894,12 @@
 
         if (mv[0] == "protestant_reformation") {
 
+console.log("#");
+console.log("#");
+console.log("REOFMRAITON BONUS ROLLS: " + his_self.game.state.tmp_protestant_reformation_bonus);
+console.log("#");
+console.log("#");
+
           let player = parseInt(mv[1]);
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";

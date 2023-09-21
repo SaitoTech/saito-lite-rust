@@ -64,10 +64,9 @@ this.updateLog(`###############`);
 if (this.game.state.scenario == "is_testing") {
   this.game.queue.push("is_testing");
 } else {
-
-  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    this.game.queue.push("diet_of_worms");
-  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+  this.game.queue.push("hide_overlay\tdiet_of_worms");
+  this.game.queue.push("diet_of_worms");
+  this.game.queue.push("show_overlay\tdiet_of_worms");
 }
 
 	    //
@@ -731,9 +730,18 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
+          let lqe = qe-1;
+          if (lqe >= 0) {
+            let lmv = this.game.queue[lqe].split("\t");
+            if (lmv[0] == "diplomacy_card_event") {
+	      this.game.queue.splice(lqe, 1);
+	    }
+	  }
+
 	  if (!this.diplomatic_deck[card].onEvent(this, faction)) { return 0; }
 
 	  return 1;
+
 	}
 
 
@@ -5578,9 +5586,9 @@ defender_hits - attacker_hits;
 	      if (this.game.state.translations['new']['german'] >= 6) {
 	        this.updateLog("Protestants translate Old Testament (german)");
 	        this.game.state.translations['full']['german']++;
-		if (this.game.state.translations['full']['german'] == 6) {
-	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
+		if (this.game.state.translations['full']['german'] == 10) {
         	  his_self.game.queue.push("hide_overlay\ttheses");
+	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
@@ -5605,14 +5613,13 @@ defender_hits - attacker_hits;
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 		}
-
 	      }
 	    }
 	    if (zone === "french") {
 	      if (this.game.state.translations['new']['french'] >= 6) {
 	        this.updateLog("Protestants translate Old Testament (french)");
 	        this.game.state.translations['full']['french']++;
-		if (this.game.state.translations['full']['french'] == 6) {
+		if (this.game.state.translations['full']['french'] == 10) {
 		  // protestant gets 1 roll bonus at start
 	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
@@ -5647,7 +5654,7 @@ defender_hits - attacker_hits;
 	      if (this.game.state.translations['new']['english'] >= 6) {
 	        this.updateLog("Protestants translate Old Testament (english)");
 	        this.game.state.translations['full']['english']++;
-		if (this.game.state.translations['full']['english'] == 6) {
+		if (this.game.state.translations['full']['english'] == 10) {
 		  // protestant gets 1 roll bonus at start
 	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
