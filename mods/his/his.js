@@ -7587,7 +7587,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['039'] = { 
       img : "cards/HIS-039.svg" , 
-      name : "Ausburg Confession" ,
+      warn : ["papacy"] ,
+      name : "Augsburg Confession" ,
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
@@ -7653,6 +7654,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     deck['041'] = { 
       img : "cards/HIS-041.svg" , 
       name : "Marburg Colloquy" ,
+      warn : ["papacy"] ,
       ops : 5 ,
       turn : 3 ,
       type : "normal" ,
@@ -8136,6 +8138,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
+      warn : ["protestant"] ,
       name : "Papal Inquistion" ,
       ops : 5 ,
       turn : 5 ,
@@ -8431,6 +8434,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['058'] = { 
       img : "cards/HIS-058.svg" , 
+      warn : ["protestant"] ,
       name : "Spanish Inquisition" ,
       ops : 5 ,
       turn : 5 ,
@@ -8447,6 +8451,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['060'] = { 
       img : "cards/HIS-060.svg" , 
+      warn : ["ottoman","england","france","papacy"] ,
       name : "Maurice of Saxony" ,
       ops : 4 ,
       turn : 6 ,
@@ -8546,6 +8551,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['061'] = { 
       img : "cards/HIS-061.svg" , 
+      warn : ["protestant"] ,
       name : "Mary Defies Council" ,
       ops : 1 ,
       turn : 7 ,
@@ -8566,6 +8572,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
       name : "Book of Common Prayer" ,
+      warn : ["papacy"] ,
       ops : 2 ,
       turn : 0 ,
       type : "normal" ,
@@ -8701,6 +8708,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['065'] = { 
       img : "cards/HIS-065.svg" , 
+      warn : ["papacy"] ,
       name : "A Mighty Fortress" ,
       ops : 4 ,
       turn : 1 ,
@@ -8857,6 +8865,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['067'] = { 
       img : "cards/HIS-067.svg" , 
+      warn : ["protestant"] ,
       name : "Anabaptists" ,
       ops : 3 ,
       turn : 1 ,
@@ -9519,6 +9528,7 @@ console.log("HITS: " + hits);
     }
     deck['078'] = { 
       img : "cards/HIS-078.svg" , 
+      warn : ["papacy"] ,
       name : "Frederick the Wise" ,
       ops : 3 ,
       turn : 1 ,
@@ -9883,6 +9893,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     deck['085'] = { 
       img : "cards/HIS-085.svg" , 
       name : "Katherina Bora" ,
+      warn : ["papacy"] ,
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
@@ -10072,6 +10083,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['090'] = { 
       img : "cards/HIS-090.svg" , 
+      warn : ["papacy"] ,
       name : "Printing Press" ,
       ops : 5 ,
       turn : 1 ,
@@ -10207,6 +10219,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['092'] = { 
       img : "cards/HIS-092.svg" , 
+      warn : ["ottoman"] ,
       name : "Revolt in Egypt" ,
       ops : 3 ,
       turn : 1 ,
@@ -10280,6 +10293,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     deck['093'] = { 
       img : "cards/HIS-093.svg" , 
       name : "Revolt in Ireland" ,
+      warn : ["england"] ,
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
@@ -10490,6 +10504,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['095'] = { 
       img : "cards/HIS-095.svg" , 
+      warn : ["papacy"] ,
       name : "Sack of Rome" ,
       ops : 5 ,
       turn : 1 ,
@@ -11218,6 +11233,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
     deck['110'] = { 
       img : "cards/HIS-110.svg" , 
       name : "War in Persia" ,
+      warn : ["ottoman"] ,
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
@@ -11436,6 +11452,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
+      if (!deck[key].warn) { deck[key].warn = []; }
     }
 
 
@@ -16963,7 +16980,7 @@ if (this.game.state.scenario == "is_testing") {
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
 
-   	  this.addCard("protestant", "027");
+   	  this.addCard("papacy", "065");
 
 	  this.controlSpace("papacy", "siena");
 	  this.addMercenary("papacy", "siena", 1);
@@ -21892,7 +21909,7 @@ defender_hits - attacker_hits;
 	      if (this.game.state.translations['new']['german'] >= 6) {
 	        this.updateLog("Protestants translate Old Testament (german)");
 	        this.game.state.translations['full']['german']++;
-		if (this.game.state.translations['full']['german'] == 6) {
+		if (this.game.state.translations['full']['german'] == 10) {
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
@@ -21925,7 +21942,7 @@ defender_hits - attacker_hits;
 	      if (this.game.state.translations['new']['french'] >= 6) {
 	        this.updateLog("Protestants translate Old Testament (french)");
 	        this.game.state.translations['full']['french']++;
-		if (this.game.state.translations['full']['french'] == 6) {
+		if (this.game.state.translations['full']['french'] == 10) {
 		  // protestant gets 1 roll bonus at start
 	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
@@ -21960,7 +21977,7 @@ defender_hits - attacker_hits;
 	      if (this.game.state.translations['new']['english'] >= 6) {
 	        this.updateLog("Protestants translate Old Testament (english)");
 	        this.game.state.translations['full']['english']++;
-		if (this.game.state.translations['full']['english'] == 6) {
+		if (this.game.state.translations['full']['english'] == 10) {
 		  // protestant gets 1 roll bonus at start
 	          his_self.game.state.tmp_protestant_reformation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
@@ -22506,7 +22523,6 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
           this.game.queue.push("SHUFFLE\t1");
           this.game.queue.push("DECKRESTORE\t1");
 
-
 	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
 	  }
@@ -22533,19 +22549,23 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
 	  // our deck for re-shuffling
 	  //
 	  let reshuffle_cards = {};
-	  for (let key in discards) { reshuffle_cards[key] = discards[key]; }
+	  for (let key in discards) {
+	    if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+	      reshuffle_cards[key] = discards[key];
+	    }
+	  }
 
 	  //
 	  // remove home cards 
 	  //
-	  if (this.game.deck[0]['001']) { delete this.game.deck[0]['001']; }
-	  if (this.game.deck[0]['002']) { delete this.game.deck[0]['002']; }
-	  if (this.game.deck[0]['003']) { delete this.game.deck[0]['003']; }
-	  if (this.game.deck[0]['004']) { delete this.game.deck[0]['004']; }
-	  if (this.game.deck[0]['005']) { delete this.game.deck[0]['005']; }
-	  if (this.game.deck[0]['006']) { delete this.game.deck[0]['006']; }
-	  if (this.game.deck[0]['007']) { delete this.game.deck[0]['007']; }
-	  if (this.game.deck[0]['008']) { delete this.game.deck[0]['008']; }
+	  if (this.game.deck[0].cards['001']) { delete this.game.deck[0].cards['001']; }
+	  if (this.game.deck[0].cards['002']) { delete this.game.deck[0].cards['002']; }
+	  if (this.game.deck[0].cards['003']) { delete this.game.deck[0].cards['003']; }
+	  if (this.game.deck[0].cards['004']) { delete this.game.deck[0].cards['004']; }
+	  if (this.game.deck[0].cards['005']) { delete this.game.deck[0].cards['005']; }
+	  if (this.game.deck[0].cards['006']) { delete this.game.deck[0].cards['006']; }
+	  if (this.game.deck[0].cards['007']) { delete this.game.deck[0].cards['007']; }
+	  if (this.game.deck[0].cards['008']) { delete this.game.deck[0].cards['008']; }
 
 	  let deck_to_deal = new_cards;
 	  for (let key in deck_to_deal) { 
@@ -25050,14 +25070,27 @@ if (limit === "build") {
       cards.push("pass");
     }
 
-    this.updateStatusAndListCards("Select a Card: ", cards);
-    this.attachCardboxEvents((card) => {
-      try {
-        $('.card').off();
-        $('.card img').off();
-      } catch (err) {}
-      this.playerPlayCard(card, this.game.player, faction);
-    });  
+    let pick_card_function = () => {
+      this.updateStatusAndListCards("Select a Card: ", cards);
+      this.attachCardboxEvents((card) => {
+
+console.log("WARN: " + this.game.deck[0].cards[card].warn);
+
+        if (this.game.deck[0].cards[card].warn.includes(faction)) {
+	  let c = confirm("Unorthodox! Are you sure you want to event this card?");
+	  if (!c) {
+	    pick_card_function();
+	    return;
+	  }
+	}
+        try {
+          $('.card').off();
+          $('.card img').off();
+        } catch (err) {}
+        this.playerPlayCard(card, this.game.player, faction);
+      });  
+    }
+    pick_card_function();
 
   }
 
@@ -25358,7 +25391,7 @@ if (limit === "build") {
 	        let ops_remaining = ops - ops_to_spend;
 
                 if (ops_remaining > 0) {
-  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
                 }
                 menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
                 return;
@@ -25435,7 +25468,7 @@ if (limit === "build") {
 	    let ops_remaining = ops - ops_to_spend;
 
             if (ops_remaining > 0) {
-  	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+  	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
             }
             menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
             return;
@@ -25451,7 +25484,7 @@ if (limit === "build") {
           }
 
           if (ops > 0) {
-  	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+  	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
           }
           menu[user_choice].fnct(this, this.game.player, faction);
           return;
@@ -26623,7 +26656,7 @@ return;
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
-      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 

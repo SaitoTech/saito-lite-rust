@@ -4653,7 +4653,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['039'] = { 
       img : "cards/HIS-039.svg" , 
-      name : "Ausburg Confession" ,
+      warn : ["papacy"] ,
+      name : "Augsburg Confession" ,
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
@@ -4719,6 +4720,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     deck['041'] = { 
       img : "cards/HIS-041.svg" , 
       name : "Marburg Colloquy" ,
+      warn : ["papacy"] ,
       ops : 5 ,
       turn : 3 ,
       type : "normal" ,
@@ -5202,6 +5204,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
+      warn : ["protestant"] ,
       name : "Papal Inquistion" ,
       ops : 5 ,
       turn : 5 ,
@@ -5497,6 +5500,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['058'] = { 
       img : "cards/HIS-058.svg" , 
+      warn : ["protestant"] ,
       name : "Spanish Inquisition" ,
       ops : 5 ,
       turn : 5 ,
@@ -5513,6 +5517,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['060'] = { 
       img : "cards/HIS-060.svg" , 
+      warn : ["ottoman","england","france","papacy"] ,
       name : "Maurice of Saxony" ,
       ops : 4 ,
       turn : 6 ,
@@ -5612,6 +5617,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['061'] = { 
       img : "cards/HIS-061.svg" , 
+      warn : ["protestant"] ,
       name : "Mary Defies Council" ,
       ops : 1 ,
       turn : 7 ,
@@ -5632,6 +5638,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
       name : "Book of Common Prayer" ,
+      warn : ["papacy"] ,
       ops : 2 ,
       turn : 0 ,
       type : "normal" ,
@@ -5767,6 +5774,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['065'] = { 
       img : "cards/HIS-065.svg" , 
+      warn : ["papacy"] ,
       name : "A Mighty Fortress" ,
       ops : 4 ,
       turn : 1 ,
@@ -5923,6 +5931,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
     }
     deck['067'] = { 
       img : "cards/HIS-067.svg" , 
+      warn : ["protestant"] ,
       name : "Anabaptists" ,
       ops : 3 ,
       turn : 1 ,
@@ -6585,6 +6594,7 @@ console.log("HITS: " + hits);
     }
     deck['078'] = { 
       img : "cards/HIS-078.svg" , 
+      warn : ["papacy"] ,
       name : "Frederick the Wise" ,
       ops : 3 ,
       turn : 1 ,
@@ -6949,6 +6959,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     deck['085'] = { 
       img : "cards/HIS-085.svg" , 
       name : "Katherina Bora" ,
+      warn : ["papacy"] ,
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
@@ -7138,6 +7149,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['090'] = { 
       img : "cards/HIS-090.svg" , 
+      warn : ["papacy"] ,
       name : "Printing Press" ,
       ops : 5 ,
       turn : 1 ,
@@ -7273,6 +7285,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['092'] = { 
       img : "cards/HIS-092.svg" , 
+      warn : ["ottoman"] ,
       name : "Revolt in Egypt" ,
       ops : 3 ,
       turn : 1 ,
@@ -7346,6 +7359,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     deck['093'] = { 
       img : "cards/HIS-093.svg" , 
       name : "Revolt in Ireland" ,
+      warn : ["england"] ,
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
@@ -7556,6 +7570,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['095'] = { 
       img : "cards/HIS-095.svg" , 
+      warn : ["papacy"] ,
       name : "Sack of Rome" ,
       ops : 5 ,
       turn : 1 ,
@@ -8284,6 +8299,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
     deck['110'] = { 
       img : "cards/HIS-110.svg" , 
       name : "War in Persia" ,
+      warn : ["ottoman"] ,
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
@@ -8502,6 +8518,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
+      if (!deck[key].warn) { deck[key].warn = []; }
     }
 
 

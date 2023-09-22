@@ -1122,14 +1122,27 @@ if (limit === "build") {
       cards.push("pass");
     }
 
-    this.updateStatusAndListCards("Select a Card: ", cards);
-    this.attachCardboxEvents((card) => {
-      try {
-        $('.card').off();
-        $('.card img').off();
-      } catch (err) {}
-      this.playerPlayCard(card, this.game.player, faction);
-    });  
+    let pick_card_function = () => {
+      this.updateStatusAndListCards("Select a Card: ", cards);
+      this.attachCardboxEvents((card) => {
+
+console.log("WARN: " + this.game.deck[0].cards[card].warn);
+
+        if (this.game.deck[0].cards[card].warn.includes(faction)) {
+	  let c = confirm("Unorthodox! Are you sure you want to event this card?");
+	  if (!c) {
+	    pick_card_function();
+	    return;
+	  }
+	}
+        try {
+          $('.card').off();
+          $('.card img').off();
+        } catch (err) {}
+        this.playerPlayCard(card, this.game.player, faction);
+      });  
+    }
+    pick_card_function();
 
   }
 
@@ -1430,7 +1443,7 @@ if (limit === "build") {
 	        let ops_remaining = ops - ops_to_spend;
 
                 if (ops_remaining > 0) {
-  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
                 }
                 menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
                 return;
@@ -1507,7 +1520,7 @@ if (limit === "build") {
 	    let ops_remaining = ops - ops_to_spend;
 
             if (ops_remaining > 0) {
-  	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining);
+  	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
             }
             menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
             return;
@@ -1523,7 +1536,7 @@ if (limit === "build") {
           }
 
           if (ops > 0) {
-  	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+  	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
           }
           menu[user_choice].fnct(this, this.game.player, faction);
           return;
@@ -2695,7 +2708,7 @@ return;
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
-      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 
