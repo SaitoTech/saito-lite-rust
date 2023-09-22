@@ -375,9 +375,11 @@ class Stun extends ModTemplate {
     // onchain
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-    if (recipients) {
+    if (recipients && recipients.length > 0) {
       recipients.forEach((recipient) => {
-        newtx.addTo(recipient);
+        if(recipient) {
+          newtx.addTo(recipient);
+        }
       });
     }
 
