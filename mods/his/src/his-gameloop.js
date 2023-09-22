@@ -657,7 +657,7 @@ if (this.game.state.scenario == "is_testing") {
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
 
-   	  this.addCard("protestant", "027");
+   	  this.addCard("papacy", "065");
 
 	  this.controlSpace("papacy", "siena");
 	  this.addMercenary("papacy", "siena", 1);
@@ -6200,7 +6200,6 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
           this.game.queue.push("SHUFFLE\t1");
           this.game.queue.push("DECKRESTORE\t1");
 
-
 	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
 	  }
@@ -6227,19 +6226,23 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
 	  // our deck for re-shuffling
 	  //
 	  let reshuffle_cards = {};
-	  for (let key in discards) { reshuffle_cards[key] = discards[key]; }
+	  for (let key in discards) {
+	    if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+	      reshuffle_cards[key] = discards[key];
+	    }
+	  }
 
 	  //
 	  // remove home cards 
 	  //
-	  if (this.game.deck[0]['001']) { delete this.game.deck[0]['001']; }
-	  if (this.game.deck[0]['002']) { delete this.game.deck[0]['002']; }
-	  if (this.game.deck[0]['003']) { delete this.game.deck[0]['003']; }
-	  if (this.game.deck[0]['004']) { delete this.game.deck[0]['004']; }
-	  if (this.game.deck[0]['005']) { delete this.game.deck[0]['005']; }
-	  if (this.game.deck[0]['006']) { delete this.game.deck[0]['006']; }
-	  if (this.game.deck[0]['007']) { delete this.game.deck[0]['007']; }
-	  if (this.game.deck[0]['008']) { delete this.game.deck[0]['008']; }
+	  if (this.game.deck[0].cards['001']) { delete this.game.deck[0].cards['001']; }
+	  if (this.game.deck[0].cards['002']) { delete this.game.deck[0].cards['002']; }
+	  if (this.game.deck[0].cards['003']) { delete this.game.deck[0].cards['003']; }
+	  if (this.game.deck[0].cards['004']) { delete this.game.deck[0].cards['004']; }
+	  if (this.game.deck[0].cards['005']) { delete this.game.deck[0].cards['005']; }
+	  if (this.game.deck[0].cards['006']) { delete this.game.deck[0].cards['006']; }
+	  if (this.game.deck[0].cards['007']) { delete this.game.deck[0].cards['007']; }
+	  if (this.game.deck[0].cards['008']) { delete this.game.deck[0].cards['008']; }
 
 	  let deck_to_deal = new_cards;
 	  for (let key in deck_to_deal) { 
