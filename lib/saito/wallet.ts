@@ -62,7 +62,7 @@ export default class Wallet extends SaitoWallet {
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
     this.publicKey = publicKey;
-    console.log("public key = " + publicKey);
+    console.log("public key = " + publicKey, " / private key ? " + (privateKey !== ""));
 
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
@@ -167,7 +167,6 @@ export default class Wallet extends SaitoWallet {
 
     this.saitoCrypto = new SaitoCrypto(this.app);
 
-    // if (privateKey === "") {
     if (this.app.options.wallet != null) {
       /////////////
       // upgrade //
@@ -282,11 +281,10 @@ export default class Wallet extends SaitoWallet {
 
       // this.instance = Object.assign(this.instance, this.app.options.wallet);
     }
-    // }
     ////////////////
     // new wallet //
     ////////////////
-    if ((await this.getPrivateKey()) === "") {
+    if (!privateKey || !publicKey) {
       await this.resetWallet();
     }
   }
