@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Saito Network">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="David Lancashire">
+
+    <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Saito Chat">
+    <meta name="apple-mobile-web-app-title" content="Saito Chat">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="msapplication-navbutton-color" content="#FFFFFF">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-starturl" content="/index.html">
+
+    <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png">
+    <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png">
+
+    <title>Saito Mainnet: Token Transfers</title>
+    <link rel="stylesheet" href="/saito/style.css">
+    
+    <style>
+      .tool-container {
+        width: fit-content;
+        margin: auto;
+        margin-top: 10rem;
+        text-align: center;
+      }
+
+      .loop-dot {
+        height: 2rem;
+        width: 2rem;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+      }
+    </style>
+
+  </head>
+
+<body>
+
+
+  <div class="tool-container">
+
+    <h1>Spam TX Generator</h1>
+
+
+    <b><p>Status:</p></b>
+    <span class="loop-dot"></span>
+    <b><p>TX count:</p></b>
+    <div class="loop-count">0</div>
+    <br >
+
+
+    <b><p>TXs per second:</p></b>
+    <input type="text" name="frequency" id="frequency" value="1">
+
+    <br ><br >
+
+    <button class="start" class="saito-button-primary">Start</button>
+    <button class="stop" class="saito-button-primary">Stop</button>
+    <button class="reset" class="saito-button-primary">Reset</button>
+
+  </div>
+
+  <script type="text/javascript" src="/saito/saito.js" id="saito"></script>
+
+</body>
+</html>
