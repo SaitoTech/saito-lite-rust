@@ -183,38 +183,21 @@ class SettlersDisplay {
 
   displayCardfan(deck = "") {
     try {
-      let usingDev = false;
       let cards = "";
-      if (deck == "resource" || deck == "") {
-        for (let r of this.game.state.players[this.game.player - 1].resources) {
-          //Show all cards
-          cards += `<div class="card"><img src="${this.returnCardImage(r)}">
-                    </div>`;
-        }
-      }
-      if (deck == "cards" || cards == "") {
-        //Dev Cards
-        usingDev = true;
-        for (let x = 0; x < this.game.deck[0].hand.length; x++) {
-          let card = this.game.deck[0].cards[this.game.deck[0].hand[x]];
-          console.log("card ////////////////");
-          console.log(card);
-          cards += `<div class="card"><img src="${card.img}" />
-                    <div class="cardtitle">${card.card}</div>
-                    <div class="cardrules">${this.rules[card.action]}</div>
-                    <div class="tiptext">${card.card}: ${this.rules[card.action]}</div>
-                    </div>`;
-        }
-      }
-      this.cardfan.render(cards);
 
-      if (usingDev) {
-        this.cardfan.addClass("staggered-hand");
-        this.cardfan.removeClass("bighand");
-      } else {
-        this.cardfan.addClass("bighand");
-        this.cardfan.removeClass("staggered-hand");
+      for (let r of this.game.state.players[this.game.player - 1].resources) {
+        //Show all cards
+        cards += `<div class="card"><img src="${this.returnCardImage(r)}">
+                  </div>`;
       }
+
+      if (cards){
+        this.cardfan.render(cards);  
+      }else{
+        this.cardfan.hide();
+      }
+
+      this.cardfan.addClass("bighand");
     } catch (err) {
       //console.log(err);
     }
@@ -251,9 +234,8 @@ class SettlersDisplay {
         //
         // PLAYERBOX HEAD - graphics box
         //
-        let statshtml = `<div class="achievements">`;
+        let statshtml = `<div class="victory_point_cards">`;
         //Victory Point Card Tokens -- should move to VP track
-        statshtml += `<div class="victory_point_cards">`;
         for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
           statshtml += `<div class="victory_point_card">${this.vp.img}</div>`;
         }
@@ -281,7 +263,6 @@ class SettlersDisplay {
           statshtml += `<div class="army_knights vproundel">2</div>`;
           statshtml += `</div>`;
         }
-        statshtml += `</div>`;
 
         //
         // PLAYERBOX HEAD
@@ -385,7 +366,6 @@ class SettlersDisplay {
 
       //Show player cards and add events (Doesn't need to be in for loop!)
       this.displayCardfan();
-      this.addEventsToHand();
     } catch (e) {
       console.log("error in displayPlayers(): " + e);
     }

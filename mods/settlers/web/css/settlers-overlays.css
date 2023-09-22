@@ -20,109 +20,6 @@
   max-width: 80vw;
 }
 
-.trade_area {
-    position: relative;
-    height: 22vh;
-    width: calc(22vh * 0.72);
-    padding-left: 3vh;
-    padding-top: 1vh;
-    color: white;
-    font-size: bold;
-    font-size: 9rem;
-    -webkit-text-stroke: 2px black;
-    margin-left: 1rem;
-    margin-right: 1rem;
-}
-
-
-
-.trade_count_number {
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  transform: translate(-50%, -50%);
-  transition: all 0.2s ease-in-out;
-}
-
-.trade_count_arrow {
-  content: "";
-  width: 100%;
-  height: 5rem;
-  position: absolute;
-  left: 0px;
-  z-index: 3;
-  background: #331800;
-  opacity: 0;
-  cursor: pointer;
-  pointer-events: none;
-  transition: all 0.2s ease-in-out;
-  
-}
-
-.trade_area:hover .trade_count_arrow.can_select {
-  opacity: 0.7;
-  pointer-events: unset;
-}
-
-
-.trade_count_up {
-  top: 0px;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-}
-
-.trade_count_up::before  {
-  content: "⌃";
-  font-size: 5rem;
-  color: #fff !important;
-  position: absolute;
-  left: 50%;
-  top: 80%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  -webkit-text-stroke: #fff;
-}
-
-.trade_count_down::after {
-  content: "⌄";
-  font-size: 5rem;
-  color: #fff !important;
-  position: absolute;
-  left: 50%;
-  top: 20%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  -webkit-text-stroke: #fff;
-}
-
-.trade_count_down {
-  top: 16vh;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-}
-
-/* Disable trade submit button in overlays */
-.trade_overlay_button.noselect {
-  opacity: 50%;
-  pointer-events: none;
-}
-
-.trade_overlay_button {
-  padding: 0.5rem 1rem;
-  line-height: 4rem;
-  border: 4px solid #424143;
-  border-radius: 1.5rem;
-  min-width: 16rem;
-  max-width: 250px;
-  text-align: center;
-}
-
-.trade_overlay_button.valid_trade:hover {
-  background-color: #b79e76; 
-  font-size: 18px;
-  cursor: pointer;
-}
-
 
 
 .brick {
@@ -310,13 +207,7 @@ stats overlay
  * ********/
 
 .trade-overlay {
-  padding: 2rem 5rem !important;
-  font-size: 1.25em;
   width: min(1000px, 90vw);
-}
-
-.trade-overlay>div {
-  width: 100%;
 }
 
 .trade_overlay_title {
@@ -327,6 +218,8 @@ stats overlay
   display: grid;
   width: 100%;
   grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin: auto;
 }
 
 .trade_overlay_buttons {
@@ -335,28 +228,114 @@ stats overlay
   align-items: center;
   justify-content: space-evenly;
   margin: 1em 0px;
+  font-size: 18px;
 }
 
-.trade_overlay_buttons .notice {
-  font-style: italic;
+
+.trade_area {
+    position: relative;
+    height: min(22vh, 20vw);
+    width: calc(min(22vh, 20vw) * 0.72);
+    color: white;
+    font-size: bold;
+    font-size: 9rem;
+    -webkit-text-stroke: 2px black;
+
 }
 
-.trade-overlay .icon {
-  width: 50px;
-  margin: 2px 25px 0;
-  border: 2px solid transparent;
+
+
+.trade_count_number {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease-in-out;
+  z-index: 2;
+}
+
+.trade_count_arrow {
+  content: "";
+  width: 100%;
+  height: min(5rem,50%);
+  position: absolute;
+  left: 0px;
+  z-index: 3;
+  background: #331800;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+  
+}
+
+.trade_area:hover .trade_count_arrow.can_select {
+  opacity: 0.7;
+  pointer-events: unset;
+}
+
+
+.trade_count_up {
+  top: 0px;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.trade_count_up::before  {
+  content: "⌃";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down::after {
+  content: "⌄";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down {
+  bottom: 0;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+/* Disable trade submit button in overlays */
+.trade_overlay_button.noselect {
+  opacity: 50%;
+  pointer-events: none;
+}
+
+.trade_overlay_button {
+  padding: 0.5rem 1rem;
+  line-height: 4rem;
+  border: 4px solid #424143;
+  border-radius: 1.5rem;
+  min-width: 16rem;
+  max-width: 250px;
+  text-align: center;
+}
+
+.trade_overlay_button.valid_trade:hover {
+  background-color: #b79e76; 
+  font-size: 18px;
   cursor: pointer;
 }
 
-.trade-overlay .icon:hover {
-  border-color: whitesmoke;
-}
 
-.trade-overlay .selected .icon {
-  margin: 0 23px;
-  border-color: whitesmoke;
-  filter: drop-shadow(5px 5px 4px);
-}
+
+
 
 
 .rules-overlay {

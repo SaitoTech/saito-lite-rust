@@ -326,7 +326,7 @@ class SettlersPlayer {
     let settlers_self = this;
     let can_do_something = false;
 
-    let html = "<ul>";
+    let html = "<ul class='hide-scrollbar'>";
 
     if (settlers_self.canPlayerTradeWithBank()) {
       html += '<li class="option" id="bank">bank</li>';

@@ -237,7 +237,7 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
-.dev-card-overlay .settlers-cards-container img {
+.dev-card-overlay .settlers-items-container .settlers-cards-container img {
   height: 20rem;
 }
 
@@ -310,7 +310,7 @@
   }
 
   .settlers-item-column {
-    margin: 0.1rem;
+    margin: 0.3rem;
     padding: 0;
   }
 
@@ -352,8 +352,8 @@
     left: -4.5rem;
   }
   .build-overlay .settlers-item-row > .settlers-item-column {
-    max-width: 4rem;
-    min-width: 4rem;
+    max-width: 4.5rem;
+    min-width: 4.5rem;
   }
 
   .bank-overlay .settlers-items-container .settlers-cards-container img {
