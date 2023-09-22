@@ -1,22 +1,4 @@
 
-.saito-multi-select_btn_options button {
-    background: transparent;
-    margin: 0rem;
-    padding: 0rem;
-    width: 101%;
-    display: block;
-    margin-bottom: 0.2rem;
-    border: 1px solid var(--saito-primary);
-}
-
-.saito-multi-select_btn_options button {
-    border-radius: 0;
-    min-height: 4.8rem;
-    margin-bottom: 0.2rem;
-    font-size: 2rem;
-}
-
-
 #advanced-options-overlay-container {
   color: var(--saito-font-color-dark-modal);
   background: #181818;
@@ -245,70 +227,6 @@ input[type="text"], textarea {
   margin: 0.4rem;
 }
 
-.saito-multi-select_btn {
-  overflow: hidden;
-}
-
-.saito-multi-select_btn.saito-select {
-  border-bottom: unset;
-  height: 4.8rem;
-  width: 100%;
-  position: relative;
-  display: flex;
-  line-height: 3;
-  margin-top: 0px;
-}
-
-.saito-multi-select_btn_options {
-  width: calc(100% - 5rem - 4px);
-  padding: 0;
-  border: none;
-}
-
-.saito-multi-select_btn_options {
-  background: none;
-}
-
-.saito-multi-select_btn_options button {
-  border-radius: 0;
-  min-height: 4.8rem;
-  margin-bottom: 0.2rem;
-  font-size: 2rem;
-}
-
-.saito-multi-select_btn.showAll {
-  overflow: visible;
-}
-
-.saito-multi-select_btn {
-  background: none;
-}
-
-.saito-multi-select_btn_options button {
-  background: transparent;
-  margin: 0rem;
-  padding: 0rem;
-  width: 101%;
-  display: block;
-  margin-bottom: 0.2rem;
-  border: 1px solid var(--saito-primary);
-}
-
-.saito-multi-select_btn.showAll>.saito-multi-select_btn_options button {
-  background-color: var(--saito-primary);
-  color: #fff;
-}
-
-.saito-multi-btn {
-  width: 100%;
-  min-height: 4.8rem;
-  margin: 0.1rem;
-  color: var(--saito-white);
-}
-
-.saito-multi-btn:hover {
-  background: var(--saito-button-background);
-}
 
 .game-wizard-form {
   display: grid;

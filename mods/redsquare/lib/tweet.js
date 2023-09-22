@@ -554,6 +554,7 @@ class Tweet {
       document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`
       ).onclick = (e) => {
+
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -628,6 +629,7 @@ class Tweet {
       heartIcon.onclick = async (e) => {
         if (!heartIcon.classList.contains("liked")) {
           heartIcon.classList.add("liked");
+	  this.mod.likeTweet(this.tx.signature);
         } else {
           setTimeout(() => {
             heartIcon.classList.remove("liked");
@@ -653,6 +655,7 @@ class Tweet {
         );
         if (obj) {
           obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (!obj.classList.contains("liked")) { obj.classList.add("liked"); }
         }
       };
 

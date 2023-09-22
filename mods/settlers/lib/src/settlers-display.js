@@ -141,7 +141,6 @@ class SettlersDisplay {
   }
 
   displayScore() {
-    let track_vp = [];
     for (let i = 0; i < this.game.state.players.length; i++) {
       let score = 0;
       //Count towns and cities
@@ -163,10 +162,6 @@ class SettlersDisplay {
       //Count (played) Victory Points
       score += this.game.state.players[i].vpc;
 
-      //
-      // and render to screen
-      //
-      track_vp.push(this.game.state.players[i].vp);
 
       //Save Score
       this.game.state.players[i].vp = score;
@@ -178,47 +173,31 @@ class SettlersDisplay {
     }
 
     for (let i = 0; i < this.game.state.players.length; i++) {
-      if (this.game.state.players[i].vp > track_vp[i]) {
-        this.scoreboard.render();
-        this.scoreboard.lock();
+      if (this.game.state.players[i].vp > this.racetrack.players[i].score) {
+        this.racetrack.players[i].score = this.game.state.players[i].vp;
+        this.racetrack.render();
+        this.racetrack.lock();
       }
     }
   }
 
   displayCardfan(deck = "") {
     try {
-      let usingDev = false;
       let cards = "";
-      if (deck == "resource" || deck == "") {
-        for (let r of this.game.state.players[this.game.player - 1].resources) {
-          //Show all cards
-          cards += `<div class="card"><img src="${this.returnCardImage(r)}">
-                    </div>`;
-        }
-      }
-      if (deck == "cards" || cards == "") {
-        //Dev Cards
-        usingDev = true;
-        for (let x = 0; x < this.game.deck[0].hand.length; x++) {
-          let card = this.game.deck[0].cards[this.game.deck[0].hand[x]];
-          console.log("card ////////////////");
-          console.log(card);
-          cards += `<div class="card"><img src="${card.img}" />
-                    <div class="cardtitle">${card.card}</div>
-                    <div class="cardrules">${this.rules[card.action]}</div>
-                    <div class="tiptext">${card.card}: ${this.rules[card.action]}</div>
-                    </div>`;
-        }
-      }
-      this.cardfan.render(cards);
 
-      if (usingDev) {
-        this.cardfan.addClass("staggered-hand");
-        this.cardfan.removeClass("bighand");
-      } else {
-        this.cardfan.addClass("bighand");
-        this.cardfan.removeClass("staggered-hand");
+      for (let r of this.game.state.players[this.game.player - 1].resources) {
+        //Show all cards
+        cards += `<div class="card"><img src="${this.returnCardImage(r)}">
+                  </div>`;
       }
+
+      if (cards){
+        this.cardfan.render(cards);  
+      }else{
+        this.cardfan.hide();
+      }
+
+      this.cardfan.addClass("bighand");
     } catch (err) {
       //console.log(err);
     }
@@ -255,9 +234,8 @@ class SettlersDisplay {
         //
         // PLAYERBOX HEAD - graphics box
         //
-        let statshtml = `<div class="achievements">`;
+        let statshtml = `<div class="victory_point_cards">`;
         //Victory Point Card Tokens -- should move to VP track
-        statshtml += `<div class="victory_point_cards">`;
         for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
           statshtml += `<div class="victory_point_card">${this.vp.img}</div>`;
         }
@@ -285,7 +263,6 @@ class SettlersDisplay {
           statshtml += `<div class="army_knights vproundel">2</div>`;
           statshtml += `</div>`;
         }
-        statshtml += `</div>`;
 
         //
         // PLAYERBOX HEAD
@@ -353,8 +330,7 @@ class SettlersDisplay {
                 settlers_self.showTradeOverlay(
                   i,
                   settlers_self.game.state.ads[i - 1].ask,
-                  settlers_self.game.state.ads[i - 1].offer,
-                  i
+                  settlers_self.game.state.ads[i - 1].offer
                 );
               });
             } else {
@@ -369,6 +345,7 @@ class SettlersDisplay {
           }
         } else {
           this.playerbox.onclick(() => {
+            console.log("Playerbox click");
             this.showTradeOverlay();
           });
         }
@@ -384,25 +361,11 @@ class SettlersDisplay {
       $("#cleartrade").on("click", function () {
         settlers_self.clearAdvert();
       });
-      $(".player-box.me").off();
-      $(".player-box.me").on("click", function () {
-        settlers_self.showResourceOverlay();
-      });
-      //$("#tradenow").off();
-      //$("#tradenow").on("click", function(){
-      //  settlers_self.showResourceOverlay();
-      //});
 
       this.cardbox.attachCardEvents();
 
       //Show player cards and add events (Doesn't need to be in for loop!)
-      if (this.boughtCard) {
-        this.displayCardfan("cards"); //Only shows this player's
-        this.boughtCard = false;
-      } else {
-        this.displayCardfan();
-      }
-      this.addEventsToHand();
+      this.displayCardfan();
     } catch (e) {
       console.log("error in displayPlayers(): " + e);
     }
@@ -415,33 +378,31 @@ class SettlersDisplay {
   @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
   */
   showTradeOverlay(
-    tradeType = -1,
+    offering_player = -1,
     i_should_give = null,
-    i_should_accept = null,
-    offering_player = null
-  ) {
-    let settlers_self = this;
+    i_should_accept = null) {
 
     if (i_should_accept) {
-      settlers_self.trade_overlay.get = i_should_accept;
+      this.trade_overlay.get = i_should_accept;
     }
     if (i_should_give) {
-      settlers_self.trade_overlay.give = i_should_give;
+      this.trade_overlay.give = i_should_give;
     }
     if (offering_player) {
-      settlers_self.trade_overlay.offering_player = offering_player;
+      this.trade_overlay.offering_player = offering_player;
     }
-    settlers_self.trade_overlay.render(tradeType, false); // don't reset, we want to start with this trade
-    return;
+
+    if (i_should_give || i_should_accept){
+      console.log("Consider trade offer");
+      console.log(i_should_give, i_should_accept);
+      this.trade_overlay.accepting_trade = 1;
+      this.trade_overlay.render(false); // don't reset, we want to start with this trade  
+    }else{
+      this.trade_overlay.render();
+    }
+    
   }
 
-  /*
-  Alternate UI for advertizing your wants and needs
-  */
-  showResourceOverlay() {
-    this.trade_overlay.render();
-    return;
-  }
 
   /***********
    *
@@ -563,6 +524,11 @@ class SettlersDisplay {
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
         if (this.game.players.includes(this.publicKey)) {
+
+          if (!str.includes("<")){
+            console.log("Settlers: Wrap status message --", str);
+            str = `<div class="player-notice">${str}</div>`;
+          }
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }
@@ -580,11 +546,12 @@ class SettlersDisplay {
   // this affixes HUD to bottom of screen...
   //
   setHudHeight() {
+    console.log("Adjusting hud");
     let hud = document.querySelector(".hud");
     if (hud) {
-      hud.style.bottom = "24px";
-      hud.style.height = "auto";
-      hud.style.top = "unset";
+      //hud.style.bottom = "24px";
+      //hud.style.height = "auto";
+      //hud.style.top = "unset";
     }
   }
 }

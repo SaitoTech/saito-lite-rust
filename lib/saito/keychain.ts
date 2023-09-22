@@ -148,19 +148,19 @@ class Keychain {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publicKey === publicKey) {
         if (this.keys[x].aes_secret) {
+          console.log(encrypted_msg, "------>");
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg != null) {
+            console.log(tmpmsg);
             const tmpx = JSON.parse(tmpmsg);
             if (tmpx.module != null) {
               return tmpx;
             }
-          } else {
-      // we appear to have received a message we cannot decrypto
-    }
+          } 
         }
       }
     }
-
+    console.log("Key not found, cannot decrypt");
     // or return original
     return encrypted_msg;
   }
@@ -231,6 +231,7 @@ class Keychain {
         }
       }
     }
+    console.warn("Message not encrypted, missing key");
     return msg;
   }
 

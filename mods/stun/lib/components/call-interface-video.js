@@ -193,7 +193,9 @@ class CallInterfaceVideo {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.addEventListener("click", async (e) => {
         let chat_module = this.app.modules.returnModule("Chat");
-        await chat_module.deleteChatGroup(this.chat_group);
+        if (chat_module){
+          await chat_module.deleteChatGroup(this.chat_group);  
+        }
         this.disconnect();
         siteMessage("You have been disconnected", 3000);
       });

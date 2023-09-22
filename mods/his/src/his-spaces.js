@@ -596,7 +596,16 @@
   returnNearestFriendlyFortifiedSpaces(faction, space) {
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space.key]; }
+
+if (space.key === "agram") {
+  console.log(space.type + " -- " + space.fortified);
+}
+
+    if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space]; }
+
+if (faction == "venice") {
+  console.log("getting res for: " + space.key);
+}
 
     let original_spacekey = space.key;
     let his_self = this;
@@ -609,10 +618,13 @@
       // fortified spaces
       function(spacekey) {
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
+console.log(spacekey + " -- is fortified");
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
+console.log("and controlled");
 	    return 1;
 	  }
 	  if (his_self.isSpaceFriendly(spacekey, faction)) {
+console.log("and friendly");
 	    return 1;
 	  }
 	}
@@ -1988,7 +2000,7 @@
       religion: "catholic",
       neighbours: ["liege","metz","mainz"],
       language: "german",
-      type: "town"
+      type: "electorate"
     }
     spaces['strasburg'] = {
       top: 1070,

@@ -48,12 +48,12 @@ class Thirteen extends GameTemplate {
     this.strategies = this.returnStrategyCards();
   }
 
-  async initializeHTML(app) {
+  async render(app) {
     if (this.browser_active == 0) {
       return;
     }
 
-    await super.initializeHTML(app);
+    await super.render(app);
 
     this.log.render();
 
@@ -104,8 +104,7 @@ class Thirteen extends GameTemplate {
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.cardbox.skip_card_prompt = 0;
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render();
       } else {
         this.sizer.render();
         this.sizer.attachEvents(".gameboard");

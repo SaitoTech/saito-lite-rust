@@ -380,6 +380,10 @@ class SettlersActions {
       if (bestPath.length > longest.length) longest = bestPath;
     }
 
+    if (longest.length > this.game.state.players[player - 1].road){
+      this.game.state.players[player - 1].road = longest.length;
+    }
+    
     //Check if longest path is good enough to claim VP prize
     if (longest.length >= 5) {
       if (this.game.state.longestRoad.player > 0) {

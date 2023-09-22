@@ -83,9 +83,9 @@ class Encrypt extends ModTemplate {
     }
     let message = newtx.returnMessage();
 
-    //if (message.request.includes("diffie hellman")){
-    //  console.log(message);
-    //}
+    if (message.request.includes("diffie hellman")){
+      console.log(message);
+    }
 
     if (message.request === "diffie hellman key exchange") {
       let tx = new Transaction(undefined, message.data.tx);
@@ -100,7 +100,7 @@ class Encrypt extends ModTemplate {
       //
       if (txmsg.request == "key exchange request") {
         if (receiver == this.publicKey) {
-          console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
+          console.log("\n\n\nYou have accepted an encrypted channel request from " + sender);
           this.accept_key_exchange(tx, 1, peer);
         }
       }
@@ -205,7 +205,7 @@ class Encrypt extends ModTemplate {
       parties_to_exchange = 2;
     }
 
-    console.log("recipient is: " + recipient);
+    console.log("ENCRYPT: recipient is: " + recipient);
     if (!recipient) {
       return;
     }
@@ -263,7 +263,7 @@ class Encrypt extends ModTemplate {
   async accept_key_exchange(tx, offchain = 0, peer = null) {
     let txmsg = tx.returnMessage();
 
-    console.log("Accepting key exchange");
+    console.log("Encrypt: Accepting key exchange");
 
     let remote_address = tx.from[0].publicKey;
     let our_address = tx.to[0].publicKey;
@@ -294,7 +294,7 @@ class Encrypt extends ModTemplate {
       let data = {};
       data.module = "Encrypt";
       data.tx = newtx;
-      console.log("sending request on network");
+      console.log("Encrypt: sending response on network");
       this.app.network.sendPeerRequest("diffie hellman key response", data, peer);
     }
 
@@ -310,8 +310,7 @@ class Encrypt extends ModTemplate {
 
   async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
-      console.log("ENCRYPT ONCONF");
-      console.log(tx);
+      console.log("ENCRYPT ONCONF: ", tx);
 
       //if (tx.from[0].publicKey == this.publicKey) {
       //  this.sendEvent("encrypt-key-exchange-confirm", {
@@ -332,7 +331,7 @@ class Encrypt extends ModTemplate {
             console.log("\n\n\nYou have sent an encrypted channel request to " + receiver);
           }
           if (receiver == this.publicKey) {
-            console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
+            console.log("\n\n\nYou have accepted an encrypted channel request from " + sender);
             this.accept_key_exchange(tx);
           }
         }

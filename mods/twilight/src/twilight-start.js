@@ -181,11 +181,11 @@ class Twilight extends GameTemplate {
   }
 
 
-  render(app) {
+  async render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.render(app);
+    await super.render(app);
 
     //
     // check language preference
@@ -406,9 +406,7 @@ class Twilight extends GameTemplate {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hud.card_width = 110;
         this.cardbox.skip_card_prompt = 0;
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, '.gameboard');
-
+        this.hammer.render();
       } else {
         this.hud.card_width = 120; // hardcode max card size
         this.sizer.render();
@@ -1993,8 +1991,8 @@ console.log("DECK IS: " + this.game.options.deck);
         if (this.game.player == 1) {
           //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
-
           this.updateStatusAndListCards(user_message, uscards, function(action2) {
+            twilight_self.addMove("discard\tus\t"+action2);
             twilight_self.addMove("aldrich\tussr\t"+action2);
             twilight_self.endTurn();
           });
@@ -2816,7 +2814,6 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       let ac = this.returnAllCards();
 
       for (let key in cards) {
-console.log("restoring: " + key);
         if (ac[key]) {
 	  this.game.deck[0].cards[key] = ac[key];
         }
@@ -3159,9 +3156,10 @@ try {
 	    if (this.game.state.events.fidel != 1) {
 	      this.removeCardFromDeckNextDeal("cubanmissile", "Fidel not evented");
 	    }
-	    if (this.game.state.events.tsarbomba == 1 || this.game.state.events.cia_created != 1) {
+	    if (this.game.state.events.cia_created != 1) {
 	      this.removeCardFromDeckNextDeal("lonegunman", "CIA not evented");
 	    }
+
 
 	    //
 	    // dynamic cards removed, so refresh cardlist
@@ -3469,7 +3467,6 @@ try {
       return 0;
     }
 
-    /* */
     if (mv[0] === "showhand") {
       this.game.queue.splice(qe, 1);
       let whosehand = parseInt(mv[1]);
@@ -4847,6 +4844,8 @@ console.log("getPrivateKey(): " + privateKey);
 
         if (action2 == "realign") {
 
+          twilight_self.game.state.back_button_cancelled = 1;
+
           let alignment_rolls = ops;
           let header_msg = `Pick a target to realign (${alignment_rolls} rolls), or:`;
           let html = `<ul><li class="option" id="cancelrealign">end turn without rolling</li></ul>`;
@@ -4857,7 +4856,6 @@ console.log("getPrivateKey(): " + privateKey);
               return;
             }
           });
-
 
           $(".country").off();
           $(".country").on('click', async function() {
@@ -8709,6 +8707,12 @@ if (inc_optional == true) {
       $('#eventtile_tsarbomba').css('display','block');
     }
 
+
+    if (this.game.state.events.sudanese_civil_war) {
+      $('.civil_war_sudan').css('display','block');
+      $('.civil_war_sudan').show();
+    }
+
     if (!this.game.state.events.kissinger) {
       $('#eventtile_kissinger').css('display','none');
     } else {
@@ -8731,11 +8735,6 @@ if (inc_optional == true) {
       if (this.game.state.events.kissinger === "samerica") {
         $('.kissinger_colombia').css('display','block');
         $('.kissinger_colombia').show();
-      }
-
-      if (this.game.state.events.sudanese_civil_war) {
-        $('.kissinger_sudan').css('display','block');
-        $('.kissinger_sudan').show();
       }
 
       if (this.game.state.events.kissinger === "africa") {

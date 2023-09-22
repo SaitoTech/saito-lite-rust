@@ -1,8 +1,10 @@
 .hud {
   width: 60rem;
-  max-width: 70rem;
+  max-width: 98vw;
   z-index: 50 !important;
   padding-top: 3px !important;
+  margin-bottom: 2rem;
+  height: auto;
 }
 
 /* Wrapper for settlers status messages? */
@@ -12,7 +14,7 @@
 }
 
 .hud-body {
-  min-height: 11rem;
+  min-height: 17rem;
   width: calc(100% - 5rem);
   display: flex;
   flex-direction: column;
@@ -28,7 +30,6 @@
   box-shadow: none;
   padding: 0;
   width: 100%;
-  margin: 0 0 1rem;
   min-height: 4.5rem;
 }
 
@@ -100,16 +101,25 @@
 
 /* ul to buttons in settlers hud */
 
-.saitoa .status ul, .saitoa .controls ul  {
+.hud .status ul, .hud .controls ul  {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  gap: 2rem;
+  justify-content: space-evenly;
+  gap: 1rem;
+  width: 100%;
 }
 
 
 
-@media only screen and (max-width: 700px) and (orientation: portrait) {
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .saitoa {
+    padding: 0.5rem;
+  }
+
+  .hud-body{
+    width: calc(100% - 2rem);
+  }
+
   body .player-box {
     height: auto !important;
     width: 100% !important;
@@ -121,23 +131,7 @@
     margin-right: 5vw;
     margin-top: 5vw;
   }
-  .scoreboard {
-    display: none;
-    position: absolute;
-    width: 100% !important;
-    height: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    margin-top: auto !important;
-    margin-bottom: auto !important;
-    left: 0 !important;
-    top: 0 !important;
-    padding-top: 10vh !important;
-    background-color: black !important;
-    padding-left: 5vw !important;
-    padding-right: 5vw !important;
-    z-index: 5;
-  }
+
   .mobile-trading-container {
     display: none;
     position: absolute;
@@ -151,5 +145,29 @@
     overflow-y: scroll;
     max-height: 120vh;
     padding-bottom: 40vh;
+  }
+
+  .hud-body .controls ul {
+    gap: 0.5rem;
+  }
+
+  .hud-body .controls ul li, .options {
+    min-width: 10rem;
+    border-width: 2px;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+@media only screen and (max-height: 600px) and (orientation: landscape) {
+  .hud{
+    max-width: 50vw;
+    max-height: 50vh;
+    margin-bottom: 1rem;
+  }
+
+  .hud.hud-long {
+    left: unset;
+    transform: unset;
+    right: 2rem;
   }
 }
