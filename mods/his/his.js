@@ -5701,7 +5701,7 @@ if (this.game.players.length > 2) {
 	}
 
 	// protestant gets 2 roll bonus at start
-	his_self.game.state.tmp_protestant_reformation_bonus = 2;
+	his_self.game.state.tmp_protestant_reformation_bonus = 1;
 	his_self.game.state.tmp_protestant_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
 	his_self.game.state.tmp_catholic_reformation_bonus_spaces = [];
@@ -11934,14 +11934,14 @@ console.log("TESTING: " + JSON.stringify(space.units));
     while (ops_remaining > 1) {
       ops_remaining--;
       for (let i = 0; i < viable_navalspaces.length; i++) {
-	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i]].neighbours.length; z++) {
+	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i].key].neighbours.length; z++) {
           if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
 	    let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
 	    let already_included = 0;
 	    for (let z = 0; z < viable_navalspaces.length; z++) {
 	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
 	    }
-	    if (aready_included == 0) {
+	    if (already_included == 0) {
 	      viable_navalspaces.push({ key : ns , ops_remaining : ops_remaining });
 	    }
 	  }
@@ -14483,6 +14483,7 @@ console.log("and friendly");
 
 	let html = '<div class="space_view" id="">';
 
+	let home = obj.home;
 	let religion = obj.religion;
 	let political = obj.political;
 	let language = obj.language;
@@ -14492,8 +14493,9 @@ console.log("and friendly");
 	  <div class="space_name">${obj.name}</div>
 	  <div class="space_properties">
 	    <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(religion)}')"></div><div class="label">${religion} religion</div></div>
-	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnFactionLeaderImage(political)}')"></div><div class="label">${political} control</div></div>
+	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnControlImage(political)}')"></div><div class="label">${political} control</div></div>
 	    <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(language)}')"></div><div class="label">${language} language</div></div>
+	    <div class="home"><div class="${home}" style="background-image: url('${his_self.returnControlImage(home)}')"></div><div class="label">${home} home</div></div>
 	  </div>
 	  <div class="space_units">
 	`;
@@ -25070,27 +25072,14 @@ if (limit === "build") {
       cards.push("pass");
     }
 
-    let pick_card_function = () => {
-      this.updateStatusAndListCards("Select a Card: ", cards);
-      this.attachCardboxEvents((card) => {
-
-console.log("WARN: " + this.game.deck[0].cards[card].warn);
-
-        if (this.game.deck[0].cards[card].warn.includes(faction)) {
-	  let c = confirm("Unorthodox! Are you sure you want to event this card?");
-	  if (!c) {
-	    pick_card_function();
-	    return;
-	  }
-	}
-        try {
-          $('.card').off();
-          $('.card img').off();
-        } catch (err) {}
-        this.playerPlayCard(card, this.game.player, faction);
-      });  
-    }
-    pick_card_function();
+    this.updateStatusAndListCards("Select a Card: ", cards);
+    this.attachCardboxEvents((card) => {
+      try {
+        $('.card').off();
+        $('.card img').off();
+      } catch (err) {}
+      this.playerPlayCard(card, this.game.player, faction);
+    });  
 
   }
 
@@ -25227,23 +25216,36 @@ console.log("WARN: " + this.game.deck[0].cards[card].warn);
       }
       html    += `</ul>`;
 
-      this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
-      this.bindBackButtonFunction(() => {
-        this.playerTurn(faction);
-      });
-      this.attachCardboxEvents((user_choice) => {
-        if (user_choice === "ops") {
-          let ops = this.game.deck[0].cards[card].ops;
-          this.playerPlayOps(card, faction, ops);
-          return;
-        }
-        if (user_choice === "event") {
-          this.playerPlayEvent(card, faction);
-          return;
-        }
-        return;
-      });
+      let pick_card_function = () => {
+        this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
+        this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+        this.attachCardboxEvents((user_choice) => {
+          if (user_choice === "ops") {
+            let ops = this.game.deck[0].cards[card].ops;
+            this.playerPlayOps(card, faction, ops);
+            return;
+          }
+          if (user_choice === "event") {
+            if (this.game.deck[0].cards[card].warn.includes(faction)) {
+              let c = confirm("Unorthodox! Are you sure you want to event this card?");
+              if (!c) {
+                pick_card_function();
+               return;
+              }
+              this.playerPlayEvent(card, faction);
+              return;
+            } else {
+              this.playerPlayEvent(card, faction);
+              return;
+	    }
+            return;
+          }
+        });
+      }
+
+      pick_card_function();
     }
+
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
@@ -26834,7 +26836,7 @@ console.log("units length: " + space.units[defender].length);
 	i--;
       }
     }
-    
+
     if (spaces_with_infantry.length == 0) { return 0; }
 
     for (let i = 0; i < spaces_with_infantry.length; i++) {
@@ -26854,6 +26856,8 @@ console.log("units length: " + space.units[defender].length);
 	i--;
       }
     }
+
+console.log("SWI: " + JSON.stringify(spaces_with_infantry));
 
     let html = `<ul>`;
     for (let i = 0; i < spaces_with_infantry.length; i++) {
@@ -29141,52 +29145,36 @@ return;
 
 
 
-  returnLanguageImage(language) {
-    return "/his/img/tiles/leaders/Henry_II.svg";
-  }
 
   returnReligionImage(religion) {
-    if (religion === "protestant") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
-    if (religion === "catholic") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
-    return "/his/img/tiles/leaders/LutherReformer.svg";
+    if (religion === "protestant") { return "/his/img/tiles/abstract/protestant.png"; }
+    if (religion === "catholic") { return "/his/img/tiles/abstract/catholic.png"; }
+    return "/his/img/tiles/abstract/independent.svg";
   }
 
-  returnFactionLeaderImage(faction) {
+  returnLanguageImage(language) {
 
-    if (faction == "papacy") {
-      if (this.game.state.leaders.leo_x == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.clement_vii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.paul_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.julius_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    if (language == "english") { return "/his/img/tiles/abstract/english.png"; }
+    if (language == "french") { return "/his/img/tiles/abstract/french.png"; }
+    if (language == "spanish") { return "/his/img/tiles/abstract/spanish.png"; }
+    if (language == "italian") { return "/his/img/tiles/abstract/italian.png"; }
+    if (language == "german") { return "/his/img/tiles/abstract/german.png"; }
 
-    if (faction == "france") {
-      if (this.game.state.leaders.francis_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.henry_ii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    return "/his/img/tiles/abstract/other.png";
 
-    if (faction == "protestant") {
-      if (this.game.state.leaders.luther == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.calvin == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+  }
 
-    if (faction == "england") {
-      if (this.game.state.leaders.henry_viii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.mary_i == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.edward_vi == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.elizabeth_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+  returnControlImage(faction) {
 
-    if (faction == "ottoman") {
-      if (this.game.state.leaders.suleiman == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    if (faction == "papacy") { return "/his/img/tiles/abstract/papacy.svg"; }
+    if (faction == "protestant") { return "/his/img/tiles/abstract/protestant.svg"; }
+    if (faction == "england") { return "/his/img/tiles/abstract/england.svg"; }
+    if (faction == "france") { return "/his/img/tiles/abstract/france.svg"; }
+    if (faction == "ottoman") { return "/his/img/tiles/abstract/ottoman.svg"; }
+    if (faction == "hapsburg") { return "/his/img/tiles/abstract/hapsburg.svg"; }
 
-    if (faction == "hapsburg") {
-      if (this.game.state.leaders.charles_v == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    return "/his/img/tiles/abstract/independent.svg";   
 
-   return "/his/img/tiles/leaders/Henry_II.svg";
-   
   }
 
   displayWarBox() {

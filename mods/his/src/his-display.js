@@ -1,50 +1,34 @@
 
-  returnLanguageImage(language) {
-    return "/his/img/tiles/leaders/Henry_II.svg";
-  }
 
   returnReligionImage(religion) {
-    if (religion === "protestant") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
-    if (religion === "catholic") { return "/his/img/tiles/leaders/LutherReformer.svg"; }
-    return "/his/img/tiles/leaders/LutherReformer.svg";
+    if (religion === "protestant") { return "/his/img/tiles/abstract/protestant.png"; }
+    if (religion === "catholic") { return "/his/img/tiles/abstract/catholic.png"; }
+    return "/his/img/tiles/abstract/independent.svg";
   }
 
-  returnFactionLeaderImage(faction) {
+  returnLanguageImage(language) {
 
-    if (faction == "papacy") {
-      if (this.game.state.leaders.leo_x == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.clement_vii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.paul_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.julius_iii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    if (language == "english") { return "/his/img/tiles/abstract/english.png"; }
+    if (language == "french") { return "/his/img/tiles/abstract/french.png"; }
+    if (language == "spanish") { return "/his/img/tiles/abstract/spanish.png"; }
+    if (language == "italian") { return "/his/img/tiles/abstract/italian.png"; }
+    if (language == "german") { return "/his/img/tiles/abstract/german.png"; }
 
-    if (faction == "france") {
-      if (this.game.state.leaders.francis_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.henry_ii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    return "/his/img/tiles/abstract/other.png";
 
-    if (faction == "protestant") {
-      if (this.game.state.leaders.luther == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.calvin == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+  }
 
-    if (faction == "england") {
-      if (this.game.state.leaders.henry_viii == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.mary_i == 1) 		{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.edward_vi == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-      if (this.game.state.leaders.elizabeth_i == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+  returnControlImage(faction) {
 
-    if (faction == "ottoman") {
-      if (this.game.state.leaders.suleiman == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    if (faction == "papacy") { return "/his/img/tiles/abstract/papacy.svg"; }
+    if (faction == "protestant") { return "/his/img/tiles/abstract/protestant.svg"; }
+    if (faction == "england") { return "/his/img/tiles/abstract/england.svg"; }
+    if (faction == "france") { return "/his/img/tiles/abstract/france.svg"; }
+    if (faction == "ottoman") { return "/his/img/tiles/abstract/ottoman.svg"; }
+    if (faction == "hapsburg") { return "/his/img/tiles/abstract/hapsburg.svg"; }
 
-    if (faction == "hapsburg") {
-      if (this.game.state.leaders.charles_v == 1) 	{ return "/his/img/tiles/leaders/Henry_II.svg"; }
-    }
+    return "/his/img/tiles/abstract/independent.svg";   
 
-   return "/his/img/tiles/leaders/Henry_II.svg";
-   
   }
 
   displayWarBox() {

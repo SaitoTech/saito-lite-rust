@@ -464,14 +464,14 @@
     while (ops_remaining > 1) {
       ops_remaining--;
       for (let i = 0; i < viable_navalspaces.length; i++) {
-	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i]].neighbours.length; z++) {
+	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i].key].neighbours.length; z++) {
           if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
 	    let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
 	    let already_included = 0;
 	    for (let z = 0; z < viable_navalspaces.length; z++) {
 	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
 	    }
-	    if (aready_included == 0) {
+	    if (already_included == 0) {
 	      viable_navalspaces.push({ key : ns , ops_remaining : ops_remaining });
 	    }
 	  }
@@ -3013,6 +3013,7 @@ console.log("and friendly");
 
 	let html = '<div class="space_view" id="">';
 
+	let home = obj.home;
 	let religion = obj.religion;
 	let political = obj.political;
 	let language = obj.language;
@@ -3022,8 +3023,9 @@ console.log("and friendly");
 	  <div class="space_name">${obj.name}</div>
 	  <div class="space_properties">
 	    <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(religion)}')"></div><div class="label">${religion} religion</div></div>
-	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnFactionLeaderImage(political)}')"></div><div class="label">${political} control</div></div>
+	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnControlImage(political)}')"></div><div class="label">${political} control</div></div>
 	    <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(language)}')"></div><div class="label">${language} language</div></div>
+	    <div class="home"><div class="${home}" style="background-image: url('${his_self.returnControlImage(home)}')"></div><div class="label">${home} home</div></div>
 	  </div>
 	  <div class="space_units">
 	`;

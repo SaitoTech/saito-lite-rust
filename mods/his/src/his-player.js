@@ -1122,27 +1122,14 @@ if (limit === "build") {
       cards.push("pass");
     }
 
-    let pick_card_function = () => {
-      this.updateStatusAndListCards("Select a Card: ", cards);
-      this.attachCardboxEvents((card) => {
-
-console.log("WARN: " + this.game.deck[0].cards[card].warn);
-
-        if (this.game.deck[0].cards[card].warn.includes(faction)) {
-	  let c = confirm("Unorthodox! Are you sure you want to event this card?");
-	  if (!c) {
-	    pick_card_function();
-	    return;
-	  }
-	}
-        try {
-          $('.card').off();
-          $('.card img').off();
-        } catch (err) {}
-        this.playerPlayCard(card, this.game.player, faction);
-      });  
-    }
-    pick_card_function();
+    this.updateStatusAndListCards("Select a Card: ", cards);
+    this.attachCardboxEvents((card) => {
+      try {
+        $('.card').off();
+        $('.card img').off();
+      } catch (err) {}
+      this.playerPlayCard(card, this.game.player, faction);
+    });  
 
   }
 
@@ -1279,23 +1266,36 @@ console.log("WARN: " + this.game.deck[0].cards[card].warn);
       }
       html    += `</ul>`;
 
-      this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
-      this.bindBackButtonFunction(() => {
-        this.playerTurn(faction);
-      });
-      this.attachCardboxEvents((user_choice) => {
-        if (user_choice === "ops") {
-          let ops = this.game.deck[0].cards[card].ops;
-          this.playerPlayOps(card, faction, ops);
-          return;
-        }
-        if (user_choice === "event") {
-          this.playerPlayEvent(card, faction);
-          return;
-        }
-        return;
-      });
+      let pick_card_function = () => {
+        this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
+        this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+        this.attachCardboxEvents((user_choice) => {
+          if (user_choice === "ops") {
+            let ops = this.game.deck[0].cards[card].ops;
+            this.playerPlayOps(card, faction, ops);
+            return;
+          }
+          if (user_choice === "event") {
+            if (this.game.deck[0].cards[card].warn.includes(faction)) {
+              let c = confirm("Unorthodox! Are you sure you want to event this card?");
+              if (!c) {
+                pick_card_function();
+               return;
+              }
+              this.playerPlayEvent(card, faction);
+              return;
+            } else {
+              this.playerPlayEvent(card, faction);
+              return;
+	    }
+            return;
+          }
+        });
+      }
+
+      pick_card_function();
     }
+
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
@@ -2886,7 +2886,7 @@ console.log("units length: " + space.units[defender].length);
 	i--;
       }
     }
-    
+
     if (spaces_with_infantry.length == 0) { return 0; }
 
     for (let i = 0; i < spaces_with_infantry.length; i++) {
@@ -2906,6 +2906,8 @@ console.log("units length: " + space.units[defender].length);
 	i--;
       }
     }
+
+console.log("SWI: " + JSON.stringify(spaces_with_infantry));
 
     let html = `<ul>`;
     for (let i = 0; i < spaces_with_infantry.length; i++) {
