@@ -376,21 +376,9 @@ class SettlersState {
     }
 
 
-    //Allow this player to click buttons to display resource or dev cards in their cardfan
-    addEventsToHand() {
-        let settlers_self = this;
-
-        $(".cardselector").off(); //Previous events should be erased when the dom is rebuilt, but just in case...
-        $(".cardselector").on("click", function () {
-            console.log("settlers state cards ////");
-            settlers_self.displayCardfan($(this).attr("id"));
-        });
-    }
-
     removeEvents() {
         //console.trace("remove events");
         this.displayBoard();
-        $(".cardselector").off();
         $(".trade").off();
     }
 

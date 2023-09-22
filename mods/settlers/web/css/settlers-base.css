@@ -189,10 +189,6 @@ dt {
   background-color: #e7e7e7;
 }
 
-.cardselector:hover {
-  color: black;
-  background-color: #e7e7e7;
-}
 
 .status-message {
   box-shadow: unset !important;
@@ -772,13 +768,6 @@ ul.horizontal_list li.iconoption {
   min-width: 15rem;
 }
 
-.cardselector {
-  border: 1px solid whitesmoke;
-  cursor: pointer;
-  width: 45%;
-  text-align: center;
-  padding: 3px;
-}
 
 /*SVG token coloring*/
 
@@ -991,25 +980,19 @@ ul.horizontal_list li.iconoption {
 
 }
 
-.achievements {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  gap: 1rem;
-}
 
-.achievements .army img {
+.game-playerbox-icons .army img {
   width: 4rem;
   margin: 0 0 0 -2rem;
 }
 
-.achievements .army {
+.game-playerbox-icons .army {
   display: flex;
   flex-direction: row;
   padding: 0 0 0 2rem;
 }
 
-.achievements .longest-road img {
+.game-playerbox-icons .longest-road img {
   width: 4rem;
 }
 
@@ -1020,28 +1003,28 @@ ul.horizontal_list li.iconoption {
   align-items: center;
 }
 
-.achievements .victory_point_cards img {
+.game-playerbox-icons .victory_point_cards img {
   height: 3.5rem;
   margin: 0;
   display: block;
   transform: rotate(-5deg);
 }
 
-.achievements .victory_point_card {
+.game-playerbox-icons .victory_point_card {
   margin: 0 0 0 -2rem;
   display: flex;
   align-items: center;
 }
 
-.achievements .token img, .achievements .token svg {
+.game-playerbox-icons .token img, .game-playerbox-icons .token svg {
   transition: all ease-in-out 300ms;
   border-radius: 50%;
   border: 2px solid #fff8;
   background-color: #456;
 }
 
-.achievements .token img:hover, .achievements .token svg:hover {
-  transform: scale(1.8);
+.game-playerbox-icons .token img:hover, .game-playerbox-icons .token svg:hover {
+  transform: scale(1.3);
 }
 
 .token.largest.army, .longest-road, .victory_point_cards {

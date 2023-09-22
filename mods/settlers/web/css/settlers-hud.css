@@ -101,7 +101,7 @@
 
 /* ul to buttons in settlers hud */
 
-.saitoa .status ul, .saitoa .controls ul  {
+.hud .status ul, .hud .controls ul  {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -145,6 +145,16 @@
     overflow-y: scroll;
     max-height: 120vh;
     padding-bottom: 40vh;
+  }
+
+  .hud-body .controls ul {
+    gap: 0.5rem;
+  }
+
+  .hud-body .controls ul li, .options {
+    min-width: 10rem;
+    border-width: 2px;
+    padding: 0.25rem 0.5rem;
   }
 }
 
