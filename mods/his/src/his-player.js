@@ -1971,6 +1971,7 @@ return;
  	      }
    	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
+console.log("A");
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
 
@@ -2009,6 +2010,7 @@ return;
 		for (let i = 0; i < units_to_move.length; i++) {
 		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 		  if (unitno >= max_formation_size) { 
+console.log("B");
 		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	            if (unitno >= max_formation_size) { 
 	              alert("Maximum Formation Size: " + max_formation_size);
@@ -2054,10 +2056,12 @@ return;
   returnMaxFormationSize(units_to_move, faction = "", spacekey = "") {
 
     let utm = [];
-    if (faction == "") {
-      utm = units_to_move;
-    } else {
-      for (let i = 0; i < units_to_move.length; i++) { utm.push(this.game.spaces[spacekey].units[faction][units_to_move[i]]); }
+    if (units_to_move.length > 0) {
+      if (typeof units_to_move[0] != "number") {
+        utm = units_to_move;
+      } else {
+        for (let i = 0; i < units_to_move.length; i++) { utm.push(this.game.spaces[spacekey].units[faction][units_to_move[i]]); }
+      }
     }
 
     let command_value_one = 0;
@@ -2811,8 +2815,6 @@ return;
 
       let html = "<ul>";
 
-console.log("units length: " + space.units[defender].length);
-
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "sea" || space.units[defender][i].land_or_sea === "both") {
           if (units_to_move.includes(parseInt(i))) {
@@ -2906,8 +2908,6 @@ console.log("units length: " + space.units[defender].length);
 	i--;
       }
     }
-
-console.log("SWI: " + JSON.stringify(spaces_with_infantry));
 
     let html = `<ul>`;
     for (let i = 0; i < spaces_with_infantry.length; i++) {
@@ -3182,9 +3182,6 @@ console.log("SWI: " + JSON.stringify(spaces_with_infantry));
         if (id === "end") {
 	  let destinations = {};
 
-console.log("UNITS AVAILABLE: " + JSON.stringify(units_available));
-console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
-
 	  for (let i = 0; i < units_to_move.length; i++) {
 	    let unit = units_available[units_to_move[i]];
 	    if (!destinations[unit.destination]) {
@@ -3198,13 +3195,10 @@ console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 	  let entries_to_loop = units_to_move.length;	
 	  for (let z = 0; z < entries_to_loop; z++) {
 
-console.log("z: " + z);
-
 	    let highest_idx = 0;
 	    let highest_num = 0;
 
 	    for (let y = 0; y < units_to_move.length; y++) {
-console.log("y: " + y);
    	      let unit = units_available[units_to_move[y]];
 	      let max_num = unit.idx;
 	      let max_idx = y;
@@ -3214,14 +3208,9 @@ console.log("y: " + y);
 	      }
 	    }
 
-console.log("highest_idx: " + highest_idx);
-console.log("highest_num: " + highest_num);
-
 	    revised_units_to_move.unshift(JSON.parse(JSON.stringify(units_available[units_to_move[highest_idx]])));
 	    units_to_move.splice(highest_idx, 1);
 	  }
-
-console.log("revised: " + JSON.stringify(revised_units_to_move));
 
 	  //
 	  // revised units to move is
@@ -3236,8 +3225,6 @@ console.log("revised: " + JSON.stringify(revised_units_to_move));
 	  return;
 
 	}
-
-console.log("done 2");
 
 	//
 	// add unit to units available
@@ -3263,7 +3250,6 @@ console.log("done 2");
         }
       });
     }
-console.log("done 3");
 
     let selectDestinationInterface = function(his_self, unit_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
@@ -3272,11 +3258,7 @@ console.log("done 3");
       //
       let unit = units_available[unit_to_move[unit_to_move.length-1]];
 
-console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
-
       let destinations = his_self.returnNavalMoveOptions(unit.spacekey);
-
-      console.log("SELECT DESTINATION INTERFACE: " + JSON.stringify(destinations));
 
       let msg = "Select Destination";
       let html = "<ul>";
@@ -3422,11 +3404,31 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
 	  if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
-	    return 1;
+
+	    //
+	    // now check if there are squadrons in the port or sea protecting the town
+	    //
+	    let space = his_self.game.space[conquerable_spaces[i]];
+
+	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
+	    if (squadrons_protecting_space == 0) { return 1; }
+
+	    let attacker_squadrons_adjacent = 0;
+	    for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
+	      let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
+	      for (let z = 0; z < his_self.game.navalspaces[p].units[faction].length; z++) {
+		let u = his_self.game.navalspaces[p].units[faction][z];
+		if (u.type == "squadron") { attacker_squadron_adjacent++; }
+	      }
+	    }
+
+	    if (attacker_squadrons_adjacent > squadrons_protecting_space) { return 1; }
+
 	  }
 	}
       }
     }
+
     return 0;
   }
   async playerAssault(his_self, player, faction) {
@@ -3464,7 +3466,6 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   canPlayerRemoveUnrest(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-console.log("checking for unrest: " + spaces_in_unrest[i]);
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
       if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
     }

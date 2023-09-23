@@ -50,6 +50,7 @@
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
+    this.game.state.tmp_protestant_translation_bonus = 0;
     this.game.state.tmp_protestant_reformation_modifier = 0;
     this.game.state.tmp_protestant_reformation_bonus = 0;
     this.game.state.tmp_protestant_reformation_bonus_spaces = [];

@@ -84,12 +84,15 @@ console.log("\n\n\n\n");
           this.addRegular("hapsburg", "barcelona", 1);
           this.addRegular("hapsburg", "navarre", 1);
           this.addRegular("hapsburg", "tunis", 1);
+          this.controlSpace("hapsburg", "tunis", 1);
           this.addRegular("hapsburg", "naples", 2);
           this.addNavalSquadron("hapsburg", "naples", 2);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
           this.addRegular("hapsburg", "vienna", 4);
           this.addRegular("hapsburg", "antwerp", 3);
+	  this.addRegular("hapsburg", "valladolid");
+
 
 	  // ENGLAND
           this.addRegular("england", "london", 1);

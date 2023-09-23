@@ -305,6 +305,49 @@
     return false;
   }
 
+  // either in port or in adjacent sea
+  returnNumberOfSquadronsProtectingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let number_of_squadrons_in_port = 0;
+    let number_of_squadrons_at_sea = 0;
+
+    //
+    // in port
+    //
+    for (let f in space.units) {
+      for (let i = 0; i < space.units[f].length; i++) {
+        if (space.units[f][i].type == "squadron") {
+	  if (space.units[f][i].besieged != 0) { number_of_squadrons_in_port++; }
+	}
+      }
+    }
+
+console.log("SQUADRONS IN SPACE: " + number_of_squadrons_in_port);
+
+    //
+    // at sea
+    //
+    for (let p in space.ports) {
+      let sea = this.game.navalspaces[p];
+      for (let f in sea.units) {
+
+	// faction at sea is friendly to port space controller
+	if (this.isSpaceFriendly(space, f)) {
+	  for (let i = 0; i < sea.units[f].length; i++) {
+	    if (sea.units[f][i].type == "squadron") {
+	      number_of_squadrons_at_sea++;
+	    }
+	  }
+	}
+      }
+    }
+
+console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
+
+    return (number_of_squadrons_in_port + number_of_squadrons_at_sea);
+
+  }
   doesSpaceContainProtestantReformer(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units["protestant"].length; i++) {
@@ -1525,7 +1568,7 @@ console.log("and friendly");
       religion: "catholic",
       neighbours: ["shrewsbury","bristol"],
       language: "english",
-      type: "key"
+      type: "town"
 
     }
     spaces['shrewsbury'] = {
@@ -3032,12 +3075,9 @@ console.log("and friendly");
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
-
             for (let i = 0; i < this.units[f].length; i++) {
-
 	      let b = "";
 	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
-
 	      html += `<div class="space_unit">${f} - ${this.units[f][i].type} ${b}</div>`;
 	    }
 	  }

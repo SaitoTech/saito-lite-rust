@@ -4514,7 +4514,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
           his_self.game.queue.splice(qe, 1);
 
-	  his_self.displayModal("Protestants cancel event with the Warburg");
+	  his_self.displayModal("Protestants cancel event with the Wartburg");
 
 	  his_self.updateStatus(his_self.popup("037") + " triggered");
 	  his_self.game.state.events.wartburg = 1;
