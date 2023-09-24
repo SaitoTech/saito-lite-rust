@@ -59,6 +59,7 @@ class Mixin extends ModTemplate {
   }
 
   async initialize(app) {
+    await super.initialize(app);
     this.load();
     await this.loadCryptos();
   }
