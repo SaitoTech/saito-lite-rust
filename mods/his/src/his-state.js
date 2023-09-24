@@ -459,6 +459,8 @@
     state.events = {};
     state.removed = []; // removed cards
     state.spaces_assaulted_this_turn = [];
+    state.board_updated = new Date.getTime();
+    state.board = {}; // units on board
 
     state.diplomacy = this.returnDiplomacyAlliance();
 

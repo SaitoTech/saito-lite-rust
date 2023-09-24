@@ -551,5 +551,254 @@
     }
   }
 
+  //
+  // each faction has a limited number of physical tokens to use to 
+  // represent units that are available. the game will auto-reallocate
+  // these tokens to teh extent possible.
+  // 
+  returnOnBoardUnits(faction="") {
+
+    let my_spaces = {};
+    let available_units = {};
+        available_units['regular'] = {};
+    let deployed_units = {};
+
+    //
+    // each faction has a separate token mix
+    //
+    if (faction == "protestant") {
+      available_units['regular']['1'] = 8;    
+      available_units['regular']['2'] = 5;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 2;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "england") {
+      available_units['regular']['1'] = 9;    
+      available_units['regular']['2'] = 5;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 2;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+    if (faction == "ottoman") {
+      available_units['regular']['1'] = 11;    
+      available_units['regular']['2'] = 7;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 4;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+    if (faction == "france") {
+      available_units['regular']['1'] = 10;    
+      available_units['regular']['2'] = 5;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 3;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+    if (faction == "papacy") {
+      available_units['regular']['1'] = 7;    
+      available_units['regular']['2'] = 4;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 2;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "hapsburg") {
+      available_units['regular']['1'] = 12;    
+      available_units['regular']['2'] = 6;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 3;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+
+    if (faction == "scotland") {
+      available_units['regular']['1'] = 2;    
+      available_units['regular']['2'] = 1;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 0;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "genoa") {
+      available_units['regular']['1'] = 2;    
+      available_units['regular']['2'] = 2;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 0;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "venice") {
+      available_units['regular']['1'] = 4;    
+      available_units['regular']['2'] = 4;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 0;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "hungary") {
+      available_units['regular']['1'] = 3;    
+      available_units['regular']['2'] = 3;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 1;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "independent") {
+      available_units['regular']['1'] = 3;    
+      available_units['regular']['2'] = 3;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 3;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+
+    //
+    // find out what units I supposedly have deployed
+    //
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units) {
+        if (this.game.spaces[key].units[faction].length > 0) {
+          for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+      	    if (!my_spaces[key]) { my_spaces[key] = {}; }
+            if (!my_spaces[key][this.game.spaces[key].units[faction][i].type]) { my_spaces[key][this.game.spaces[key].units[faction][i].type] = 0; }
+            my_spaces[key][this.game.spaces[key].units[faction][i].type]++;
+          }
+        }
+      }
+    }
+
+    //
+    //
+    //
+    for (let key in my_spaces) {
+      deployed_units[key] = {};
+      deployed_units[key]['regular'] = {};
+      deployed_units[key]['regular']['1'] = 0;
+      deployed_units[key]['regular']['2'] = 0;
+      deployed_units[key]['regular']['3'] = 0;
+      deployed_units[key]['regular']['4'] = 0;
+      deployed_units[key]['regular']['5'] = 0;
+      deployed_units[key]['regular']['6'] = 0;
+      deployed_units[key]['mercenary'] = {};
+      deployed_units[key]['mercenary']['1'] = 0;
+      deployed_units[key]['mercenary']['2'] = 0;
+      deployed_units[key]['mercenary']['3'] = 0;
+      deployed_units[key]['mercenary']['4'] = 0;
+      deployed_units[key]['mercenary']['5'] = 0;
+      deployed_units[key]['mercenary']['6'] = 0;
+    }
+
+    //
+    // order spaces 
+    //
+    let continue_to_apportion = true;
+    while (continue_to_apportion == true) {
+
+      continue_to_apportion = false;
+      let changed_anything = false;
+
+      for (let key in my_spaces) {
+
+	if (my_spaces[key]['regular'] >= 6 && available_units['regular']['6'] > 0) { 
+	  my_spaces[key]['regular'] -= 6;
+	  available_units['regular']['6']--;
+	  deployed_units[key]['regular']['6']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 6 && available_units['regular']['6'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 6;
+	  available_units['regular']['6']--;
+	  deployed_units[key]['mercenary']['6']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+	// !5
+
+	if (my_spaces[key]['regular'] >= 4 && available_units['regular']['4'] > 0) { 
+	  my_spaces[key]['regular'] -= 4;
+	  available_units['regular']['4']--;
+	  deployed_units[key]['regular']['4']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 4 && available_units['regular']['4'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 4;
+	  available_units['regular']['4']--;
+	  deployed_units[key]['mercenary']['4']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+	// !3
+
+	if (my_spaces[key]['regular'] >= 2 && available_units['regular']['2'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['regular'] -= 2;
+	  available_units['regular']['2']--;
+	  deployed_units[key]['regular']['2']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 2 && available_units['regular']['2'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 2;
+	  available_units['regular']['2']--;
+	  deployed_units[key]['regular']['2']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+	if (my_spaces[key]['regular'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['regular'] -= 1;
+	  available_units['regular']['1']--;
+	  deployed_units[key]['regular']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 1;
+	  available_units['regular']['1']--;
+	  deployed_units[key]['regular']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+      }
+
+      if (changed_anything == true) {
+        continue_to_apportion = true;
+      }
+
+    }
+
+    let results = {};
+    results.deployed = deployed_units;
+    results.available = available_units;
+    results.missing = {};
+
+    //
+    // pieces we are having difficulty assigning
+    //
+    for (let key in my_spaces) {
+      if (my_spaces[key]['regular'] > 0) { 
+	if (!results.missing[key]) { results.missing[key] = {}; }
+	results.missing[key]['regular'] = my_spaces[key]['regular'];
+      }	
+      if (my_spaces[key]['mercenary'] > 0) { 
+	if (!results.missing[key]) { results.missing[key] = {}; }
+	results.missing[key]['mercenary'] = my_spaces[key]['mercenary'];
+      }	
+    }
+
+    this.game.state.board_updated = new Date().getTime();
+
+    return results;
+
+  }
+
 
 

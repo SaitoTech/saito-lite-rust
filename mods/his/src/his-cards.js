@@ -7130,7 +7130,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	  his_self.playerSelectOptions(res, spaces_to_select, false, (selected) => {
 	    for (let i = 0; i < selected.length; i++) {
-	      his_self.addMove("unrest\t"+selected[i]);
+	      his_self.addMove("unrest\t"+res[selected[i]]);
 	    }
 	    his_self.endTurn();
 	  });
