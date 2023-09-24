@@ -1,7 +1,6 @@
 const saito = require("./../../lib/saito/saito");
 const MixinModule = require("./lib/mixinmodule");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const MixinAppspace = require("./lib/appspace/main");
 const fetch = require("node-fetch");
 const forge = require("node-forge");
 const { v4: uuidv4 } = require("uuid");
@@ -10,10 +9,6 @@ const axios = require("axios");
 const { sharedKey: sharedKey } = require("curve25519-js");
 const LittleEndian = require("int64-buffer");
 const JSON = require("json-bigint");
-const MixinAppspaceSidebar = require("./lib/appspace-sidebar/main");
-//const Deposit = require('./../../lib/saito/ui/saito-crypto/overlays/deposit');
-//const Withdraw = require('./../../lib/saito/ui/saito-crypto/overlays/withdraw.js');
-//const History = require('./../../lib/saito/ui/saito-crypto/overlays/history');
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class Mixin extends ModTemplate {
@@ -26,8 +21,6 @@ class Mixin extends ModTemplate {
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
     this.icon = "fas fa-wallet";
-
-    this.stylesheets = ["/mixin/style.css"];
 
     this.mixin = {};
     this.mixin.app_id = "";
@@ -46,8 +39,6 @@ class Mixin extends ModTemplate {
     this.addresses = [];
     this.withdrawals = [];
     this.deposits = [];
-
-    //this.styles = ['/mixin/css/appspace.css'];
   }
 
   returnServices() {
@@ -68,32 +59,9 @@ class Mixin extends ModTemplate {
     return false;
   }
 
-  renderInto(qs) {
-    if (qs == ".saito-header") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        //this.renderIntos[qs].push(new Deposit(this.app, this));
-        //this.renderIntos[qs].push(new Withdraw(this.app, this));
-        //this.renderIntos[qs].push(new History(this.app, this));
-        this.attachStyleSheets();
-      }
-    }
-  }
+  renderInto(qs) {}
 
-  //
-  // flexible inter-module-communications
-  //
   respondTo(type = "") {
-    // if (type === 'saito-header') {
-    //   return [{
-    //     text: "Wallet",
-    //     icon: this.icon,
-    //     allowed_mods: ["redsquare"],
-    //     callback: function (app, id) {
-    //       window.location = "/redsquare#wallet";
-    //     }
-    //   }]
-    // }
     return null;
   }
 
@@ -145,7 +113,10 @@ class Mixin extends ModTemplate {
               }
             })
             .catch((err) => {
-              console.error("ERROR: Mixin error sending network request (mixin create account): " + err);
+              console.error(
+                "ERROR: Mixin error sending network request (mixin create account): " + err
+              );
+              console.log(res);
             });
         }
       }
@@ -251,6 +222,7 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (fetchDeposits): " + err);
+        console.log(res);
       });
   }
 
@@ -294,6 +266,7 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (fetch Addresses): " + err);
+        console.log(res);
       });
   }
 
@@ -330,6 +303,7 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (fetchSnapShots): " + err);
+        console.log(res);
         callback(false);
       });
   }
@@ -392,7 +366,10 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request (createWithdrawalAddress): " + err);
+        console.error(
+          "ERROR: Mixin error sending network request (createWithdrawalAddress): " + err
+        );
+        console.log(res);
       });
   }
 
@@ -417,24 +394,19 @@ class Mixin extends ModTemplate {
       memo: "",
     };
 
-    try {
-      let res = await this.request(appId, sessionId, privateKey, method, uri, body);
-      if (res?.data) {
-        this.withdrawals.push(res.data);
-      }
-      return res.data;
-    } catch (err) {
-      console.error("ERROR: Mixin", err);
-    }
+    this.request(appId, sessionId, privateKey, method, uri, body)
+      .then((res) => {
+        if (res?.data) {
+          this.withdrawals.push(res.data);
+        }
+        return res.data;
+      })
+      .catch((err) => {
+        console.error("ERROR: Mixin", err);
+        console.log(res);
+      });
 
-    return "";
-    /*.then((res) => {
-      let d = res.data;
-      this.withdrawals.push(d.data);
-      if (callback) {
-        callback(res.data);
-      }
-    });*/
+      return "";
   }
 
   sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash = "", callback = null) {
@@ -467,6 +439,7 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (sendWithdrawalRequest): " + err);
+        console.log(res);
       });
   }
 
@@ -500,6 +473,7 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (checkWithdrawalFee): " + err);
+        console.log(res);
       });
   }
 
@@ -552,6 +526,7 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (checkBalance): " + err);
+        console.log(res);
       });
   }
 
@@ -604,6 +579,7 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (updateUserPin): " + err);
+        console.log(res);
       });
   }
 
@@ -748,6 +724,7 @@ class Mixin extends ModTemplate {
           })
           .catch((err) => {
             console.error("ERROR: Mixin error sending network request (createAccount): " + err);
+            console.log(res);
           });
       }
 
