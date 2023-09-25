@@ -10,6 +10,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: min-content min-content min-content min-content;
+  overflow: auto;
 }
 
 .space_properties .religion .label , .space_properties .language .label , .space_properties .political .label , .space_properties .home .label {

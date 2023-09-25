@@ -694,8 +694,8 @@
     }
 
 
-if (faction == "papacy") {
-  console.log("HERE ARE PAPACY SPACES!");
+if (faction == "hapsburg") {
+  console.log("HERE ARE HAPSBURG SPACES!");
   console.log(JSON.stringify(my_spaces));
 }
 
@@ -709,7 +709,6 @@ if (faction == "papacy") {
       let changed_anything = false;
 
       for (let key in my_spaces) {
-
 
 	if (my_spaces[key]['regular'] >= 6 && available_units['regular']['6'] > 0) { 
 	  my_spaces[key]['regular'] -= 6;
@@ -782,6 +781,9 @@ if (faction == "papacy") {
       }
 
     }
+
+console.log("deployed: ");
+console.log(JSON.stringify(deployed_units));
 
     let results = {};
     results.deployed = deployed_units;
