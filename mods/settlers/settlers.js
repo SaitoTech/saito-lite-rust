@@ -232,7 +232,18 @@ class Settlers extends GameTemplate {
     document.querySelector(".hud-body .mobile .score").onclick = (e) => {
       this.stats_overlay.render();
     };
-    document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
+
+    let trade_btn = document.querySelector(".hud-body .mobile .trade");
+
+    if (!trade_btn) {
+      return;
+    }
+
+    if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+      trade_btn.innerHTML = "players";
+    }
+    
+    trade_btn.onclick = (e) => {
       if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
         if (document.querySelector(".game-playerbox-manager").style.display == "flex") {
           document.querySelector(".game-playerbox-manager").style.display = "none";
