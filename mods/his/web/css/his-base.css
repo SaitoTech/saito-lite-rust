@@ -264,12 +264,30 @@ img {
   display: block;
   position: absolute;
 }
-.occupying_army_tile {
+.occupying_army_tile:nth-child(1) {
   margin-left: -20px;
   margin-top: -20px;
   z-index: 999;
   position: absolute;
 }
+.occupying_army_tile:nth-child(2) {
+  margin-left: -10px;
+  margin-top: -30px;
+}
+.occupying_army_tile:nth-child(3) {
+  margin-left: -0px;
+  margin-top: -40px;
+}
+.occupying_army_tile:nth-child(4) {
+  margin-left: 10px;
+  margin-top: -50px;
+}
+.occupying_army_tile:nth-child(5) {
+  margin-left: 20px;
+  margin-top: -60px;
+}
+
+
 .army_tile {
   z-index: 20;
   position: absolute;

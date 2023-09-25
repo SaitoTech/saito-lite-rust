@@ -556,6 +556,7 @@
   // represent units that are available. the game will auto-reallocate
   // these tokens to teh extent possible.
   // 
+  updateOnBoardUnits() { this.game.state.board_updated = 0; } // setting to 0 forces update next displaySpace
   returnOnBoardUnits(faction="") {
 
     let my_spaces = {};
@@ -692,6 +693,12 @@
       deployed_units[key]['mercenary']['6'] = 0;
     }
 
+
+if (faction == "papacy") {
+  console.log("HERE ARE PAPACY SPACES!");
+  console.log(JSON.stringify(my_spaces));
+}
+
     //
     // order spaces 
     //
@@ -702,6 +709,7 @@
       let changed_anything = false;
 
       for (let key in my_spaces) {
+
 
 	if (my_spaces[key]['regular'] >= 6 && available_units['regular']['6'] > 0) { 
 	  my_spaces[key]['regular'] -= 6;
@@ -747,7 +755,7 @@
 	if (my_spaces[key]['mercenary'] >= 2 && available_units['regular']['2'] > 0 && continue_to_apportion == false) { 
 	  my_spaces[key]['mercenary'] -= 2;
 	  available_units['regular']['2']--;
-	  deployed_units[key]['regular']['2']++;
+	  deployed_units[key]['mercenary']['2']++;
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
@@ -762,7 +770,7 @@
 	if (my_spaces[key]['mercenary'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
 	  my_spaces[key]['mercenary'] -= 1;
 	  available_units['regular']['1']--;
-	  deployed_units[key]['regular']['1']++;
+	  deployed_units[key]['mercenary']['1']++;
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
@@ -800,5 +808,6 @@
 
   }
 
+  
 
 

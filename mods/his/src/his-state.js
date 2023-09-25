@@ -164,6 +164,7 @@
   addUnit(faction, space, type) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));
+    this.updateOnBoardUnits();
   }
 
   removeUnit(faction, space, type) {
@@ -173,6 +174,7 @@
       if (space.units[faction][i].type === type) {
         this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
+        this.updateOnBoardUnits();
 	return;
       }
     }
@@ -190,6 +192,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "regular"));
     }
+    this.updateOnBoardUnits();
   }
 
   addMercenary(faction, space, num=1) {
@@ -197,6 +200,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "mercenary"));
     }
+    this.updateOnBoardUnits();
   }
 
   addCavalry(faction, space, num=1) {
@@ -204,6 +208,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "cavalry"));
     }
+    this.updateOnBoardUnits();
   }
 
   addNavalSquadron(faction, space, num=1) {
@@ -211,6 +216,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }
+    this.updateOnBoardUnits();
   }
 
   addCorsair(faction, space, num=1) {
@@ -459,7 +465,7 @@
     state.events = {};
     state.removed = []; // removed cards
     state.spaces_assaulted_this_turn = [];
-    state.board_updated = new Date.getTime();
+    state.board_updated = new Date().getTime();
     state.board = {}; // units on board
 
     state.diplomacy = this.returnDiplomacyAlliance();

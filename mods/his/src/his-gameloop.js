@@ -6650,7 +6650,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  // update board display
-	  this.game.state.board[faction] = this.returnUnitsOnBoard(faction);
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 
           this.displayBoard();
 

@@ -3073,6 +3073,13 @@ console.log("and friendly");
 	  <div class="space_units">
 	`;
 
+        for (let key in obj.units) {
+	  html += his_self.returnArmyTiles(key, obj.key);
+	  html += his_self.returnMercenaryTiles(key, obj.key);
+	  html += his_self.returnPersonagesTiles(key, obj.key);
+	  html += his_self.returnNavalTiles(key, obj.key);
+        }
+
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
             for (let i = 0; i < this.units[f].length; i++) {
