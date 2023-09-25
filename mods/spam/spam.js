@@ -18,15 +18,17 @@ class Spam extends ModTemplate {
     this.interval = null;
     this.loop_count = 0;
   
-    this.styles = ['/spam/style.css'];
-
+    this.styles = ["/spam/style.css","/saito/saito.css", ];
+ 
     return this;
   }
 
 
   initialize(app) {
     super.initialize(app);
-    if (app.BROWSER == 1) { this.attachStyleSheets(); }
+    if (this.browser_active){
+      this.styles = ["/spam/style.css","/saito/saito.css", ];
+    }
   }
 
   async render() {
