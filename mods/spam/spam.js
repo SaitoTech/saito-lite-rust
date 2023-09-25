@@ -41,8 +41,8 @@ class Spam extends ModTemplate {
 
     	this_mod.frequency = document.querySelector("#frequency").value;
 
-    	document.querySelector(".loop-count").innerHTML = this_mod.loop_count;
-    	document.querySelector(".loop-dot").style.backgroundColor = "green";
+    	document.querySelector(".spam-loop-count").innerHTML = this_mod.loop_count;
+    	document.querySelector(".spam-loop-dot").style.backgroundColor = "green";
 
     	this_mod.loop_start = 1;
     	this_mod.changeLoopStatus();
@@ -52,7 +52,7 @@ class Spam extends ModTemplate {
     stop.onclick = (e) => {
 
     	this_mod.loop_start = 0;
-    	document.querySelector(".loop-dot").style.backgroundColor = "red";
+    	document.querySelector(".spam-loop-dot").style.backgroundColor = "red";
     	this_mod.changeLoopStatus();
     }
 
@@ -64,8 +64,8 @@ class Spam extends ModTemplate {
 	    this_mod.interval = null;
 	    this_mod.loop_count = 0;
 
-    	document.querySelector(".loop-count").innerHTML = "0";
-    	document.querySelector(".loop-dot").style.backgroundColor = "red";
+    	document.querySelector(".spam-loop-count").innerHTML = "0";
+    	document.querySelector(".spam-loop-dot").style.backgroundColor = "red";
     	document.querySelector("#frequency").value = 1;
     	this_mod.changeLoopStatus();
     }
@@ -77,10 +77,10 @@ class Spam extends ModTemplate {
   	if (this.loop_start == 1) {
 
   		console.log("starting loop ..");
-  		console.log("txs per second: " + Math.floor(1000/this_mod.frequency));
+  		console.log("txs per second: " + Math.ceil(1000/this_mod.frequency));
 
 			this.interval = setInterval(function(){
-				document.querySelector(".loop-count").innerHTML = this_mod.loop_count;
+				document.querySelector(".spam-loop-count").innerHTML = this_mod.loop_count;
 				this_mod.sendSpamTransaction(this_mod.app, this_mod.mod, {tx_num: this_mod.loop_count});
 				this_mod.loop_count++;
 			}, Math.floor(1000/this_mod.frequency));
