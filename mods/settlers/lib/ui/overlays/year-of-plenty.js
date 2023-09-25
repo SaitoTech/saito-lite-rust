@@ -13,8 +13,12 @@ class YearOfPlentyOverlay {
     this.remaining = 2;
   }
 
-  render() {
-    this.overlay.show(YearOfPlentyOverlayTemplate(this.app, this.mod, this));
+  render(card) {
+    this.overlay.show(YearOfPlentyOverlayTemplate(this.app, this.mod, this), ()=> {
+      //Allow to cancel by clicking out of overlay
+      this.mod.game.deck[0].hand.push(card);
+      this_dev_card.mod.game.state.canPlayCard = true;
+    });
     this.attachEvents();
   }
 

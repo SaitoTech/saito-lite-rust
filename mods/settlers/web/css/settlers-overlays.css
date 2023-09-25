@@ -530,3 +530,9 @@ stats overlay
   height: 58%;
   line-height: 5.3rem;
 }
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-info-overlay, .build-overlay {
+    max-height: 98vh;
+  }
+}

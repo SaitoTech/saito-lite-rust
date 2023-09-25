@@ -59,6 +59,7 @@ class Mixin extends ModTemplate {
   }
 
   async initialize(app) {
+    await super.initialize(app);
     this.load();
     await this.loadCryptos();
   }
@@ -115,12 +116,9 @@ class Mixin extends ModTemplate {
         if (typeof process.env.MIXIN != "undefined") {
           m = JSON.parse(process.env.MIXIN);
         } else {
-          m = {
-            appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
-            sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
-            privateKey:
-              "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
-          };
+          // to develop locally please request a mixin key and add it as an
+          // enviromnental variable 'MIXIN'
+          console.error("MIXIN ENV variable missing.");
         }
 
         if (m.appId) {
@@ -724,12 +722,9 @@ class Mixin extends ModTemplate {
         if (typeof process.env.MIXIN != "undefined") {
           m = JSON.parse(process.env.MIXIN);
         } else {
-          m = {
-            appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
-            sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
-            privateKey:
-              "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
-          };
+          // to develop locally please request a mixin key and add it as an
+          // enviromnental variable 'MIXIN'
+          console.error("MIXIN ENV variable missing.");
         }
 
         let appId = m.appId;
@@ -754,17 +749,6 @@ class Mixin extends ModTemplate {
       // users handle manually
       //
       if (!m.appId) {
-        m = {
-          appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
-          sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
-          privateKey:
-            "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
-        };
-
-        let appId = m.appId;
-        let sessionId = m.sessionId;
-        let privateKey = m.privateKey;
-
         let data = {
           saito_publickey: mixin_self.publicKey,
           mixin_publickey: user_public_key,

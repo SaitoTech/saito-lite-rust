@@ -253,37 +253,6 @@ class SettlersActions {
   }
 
   /*
-    Let player choose a resource, then issue selection to game queue
-  */
-  playMonopoly(player, cardname) {
-    if (this.game.player != player) return;
-    //Pick something to get
-    let settlers_self = this;
-    let resourceList = this.returnResources();
-
-    //Player recursively selects all the resources they want to get rid of
-    let html = `<div class='player-notice'>Select Desired Resource: <ul class="horizontal_list">`;
-    for (let i of resourceList) {
-      html += `<li id="${i}" class="iconoption option"><div class="tip"><img class="icon" src="${settlers_self.returnCardImage(
-        i
-      )}" /></div></li>`;
-    }
-    html += "</ul>";
-    html += "</div>";
-
-    settlers_self.updateStatus(html, 1);
-    settlers_self.displayCardfan();
-    $(".option").off();
-    $(".option").on("click", function () {
-      console.log("clicked on option 9");
-      let res = $(this).attr("id");
-      settlers_self.addMove(`monopoly\t${player}\t${cardname}\t${res}`);
-      settlers_self.endTurn();
-      return 0;
-    });
-  }
-
-  /*
     Every time a knight played, need to check if this makes a new largest army
   */
   checkLargestArmy(player) {
