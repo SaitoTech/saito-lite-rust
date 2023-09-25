@@ -264,28 +264,6 @@ img {
   display: block;
   position: absolute;
 }
-.occupying_army_tile:nth-child(1) {
-  margin-left: -20px;
-  margin-top: -20px;
-  z-index: 999;
-  position: absolute;
-}
-.occupying_army_tile:nth-child(2) {
-  margin-left: -10px;
-  margin-top: -30px;
-}
-.occupying_army_tile:nth-child(3) {
-  margin-left: -0px;
-  margin-top: -40px;
-}
-.occupying_army_tile:nth-child(4) {
-  margin-left: 10px;
-  margin-top: -50px;
-}
-.occupying_army_tile:nth-child(5) {
-  margin-left: 20px;
-  margin-top: -60px;
-}
 
 
 .army_tile {
@@ -349,6 +327,57 @@ img {
 .space_mercenaries img:nth-child(3) {
   top: -25px;
   left: -25px;
+}
+.army_tile {
+  position: absolute;
+  z-index: 999;
+}
+.army_tile:nth-child(1) {
+  margin-left: -20px;
+  margin-top: -20px;
+}
+.army_tile:nth-child(2) {
+  margin-left: -10px;
+  margin-top: -30px;
+}
+.army_tile:nth-child(3) {
+  margin-left: -0px;
+  margin-top: -40px;
+}
+.army_tile:nth-child(4) {
+  margin-left: 10px;
+  margin-top: -50px;
+}
+.army_tile:nth-child(5) {
+  margin-left: 20px;
+  margin-top: -60px;
+}
+.army_tile:nth-child(6) {
+  margin-left: 30px;
+  margin-top: -70px;
+}
+.army_tile:nth-child(7) {
+  margin-left: 40px;
+  margin-top: -80px;
+}
+.army_tile:nth-child(8) {
+  margin-left: 50px;
+  margin-top: -90px;
+}
+.army_tile:nth-child(9) {
+  margin-left: 60px;
+  margin-top: -100px;
+}
+.army_tile:nth-child(10) {
+  margin-left: 70px;
+  margin-top: -110px;
+}
+
+.space_view .space_units img {
+  margin-left: 0px;
+  margin-right: 0px;
+  position: relative;
+  padding: 0.25rem;
 }
 
 

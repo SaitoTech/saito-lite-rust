@@ -3147,10 +3147,12 @@ try {
 	    // remove
 	    //
 	    this.removeCardFromDeckNextDeal("summit", "Removed");
-            if (this.game.state.events.cia == 1) {
+            if (this.game.state.events.cia == 1 && this.game.state.events.tsarbomba_added == 1) {
+	      this.game.state.events.tsarbomba_added = 1; // avoid getting re-added later
               this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
 	    }
-	    if (this.game.state.events.iranianultimatum != 1) {
+	    if (this.game.state.events.iranianultimatum != 1 && iranianultimatum_removed != 1) {
+	      this.game.state.events.iranianultimatum_removed = 1;
 	      this.removeCardFromDeckNextDeal("iranianultimatum", "Removed");
 	    }
 	    if (this.game.state.events.fidel != 1) {
@@ -3194,7 +3196,7 @@ try {
 
         }
 
-	if (this.game.state.round == 5) {
+	if (this.game.state.round == 4) {
           if (this.game.options.deck === "saito") {
 	    if (this.game.state.events.bayofpigs_added != 1 && this.game.state.events.fidel == 1 && this.game.state.events.bayofpigs != 1 && this.game.state.events.cubanmissile != 1) {
 	      this.game.state.events.bayofpigs_added = 1;
@@ -9329,7 +9331,7 @@ if (inc_optional == true) {
     //
     // if USSR controls Cuba
     //
-    if (this.isControlled("ussr", "cuba") && this.game.state.events.bayofpigs_added != 1) {
+    if (this.isControlled("ussr", "cuba") && this.game.state.events.bayofpigs_added != 1 && this.game.state.round >= 4) {
       this.game.state.events.bagofpigs_added = 1;
       this.addCardToDeck("bayofpigs", "USSR controls Cuba");
     }

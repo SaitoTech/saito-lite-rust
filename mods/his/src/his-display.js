@@ -709,12 +709,16 @@
       // this data object.
       //
       if (this.game.state.board[z]) {
+        html += this.returnMercenaryTiles(z, spacekey);
         html += this.returnArmyTiles(z, spacekey);
 	tile = html;
       } else {
 
         new_units = false;
 
+	//
+	// AUTO - ARMIES
+	//
         let army = 0;
         for (let zz = 0; zz < space.units[z].length; zz++) {
   	  if (space.units[z][zz].type === "regular") {
@@ -895,11 +899,140 @@
 
         if (new_units == true) {
           if (controlling_faction != "" && controlling_faction !== z) {
-            html += `<img class="occupying_army_tile" src="${tile}" />`;
+            html += `<img class="occupying_army_tile army_tile" src="${tile}" />`;
   	  } else {
             html += `<img class="army_tile" src="${tile}" />`;
 	  }
-        } 
+        }
+
+
+
+
+        new_units = false;
+
+        army = 0;
+        for (let zz = 0; zz < space.units[z].length; zz++) {
+          if (space.units[z][zz].type === "mercenary") {
+  	    new_units = true;
+            army++;
+          }
+        }
+
+        while (army > 0) {
+          if (z != "") {
+            if (z === "hapsburg") {
+              tile = "/his/img/tiles/hapsburg/";	  
+	      if (army >= 4) {
+                tile += `HapsburgMerc-4.svg`;
+	        army -= 4;
+	      } else {
+	      if (army >= 2) {
+                tile += `HapsburgMerc-2.svg`;
+	        army -= 2;
+	      } else {
+	      if (army >= 1) {
+                tile += `HapsburgMerc-1.svg`;
+	        army -= 1;
+	      }
+	      }
+	      }
+            }
+            if (z === "england") {
+              tile = "/his/img/tiles/england/";	  
+	      if (army >= 4) {
+                tile += `EnglandMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `EnglandMerc-2.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 1) {
+                tile += `EnglandMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "france") {
+              tile = "/his/img/tiles/france/";	  
+	      if (army >= 4) {
+                tile += `FrenchMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `FrenchMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `FrenchMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "papacy") {
+              tile = "/his/img/tiles/papacy/";	  
+	      if (army >= 4) {
+                tile += `PapacyMerc-4.svg`;
+	        army -= 4;
+	      } else {
+	      if (army >= 2 && tile.indexOf("svg") == -1) {
+                tile += `PapacyMerc-2.svg`;
+	        army -= 2;
+	      } else {
+	      if (army >= 1 && tile.indexOf("svg") == -1) {
+                tile += `PapacyMerc-1.svg`;
+	        army -= 1;
+	      }
+	      }
+	      }
+            }
+            if (z === "protestant") {
+              tile = "/his/img/tiles/protestant/";	  
+	      if (army >= 4) {
+                tile += `ProtestantMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `ProtestantMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `ProtestantMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "ottoman") {
+              tile = "/his/img/tiles/ottoman/";	  
+	      if (army >= 4) {
+                tile += `OttomanMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `OttomanMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `OttomanMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+          }
+
+
+          if (new_units == true) {
+            if (controlling_faction != "" && controlling_faction !== z) {
+              html += `<img class="occupying_army_tile army_tile" src="${tile}" />`;
+  	    } else {
+              html += `<img class="army_tile" src="${tile}" />`;
+	    }
+          }
+        }
       }
     }
 
@@ -1309,7 +1442,6 @@
         obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
         obj.innerHTML += this.returnArmies(space);
         obj.innerHTML += this.returnNavies(space);
-        obj.innerHTML += this.returnMercenaries(space);
         obj.innerHTML += this.returnPersonages(space);
       }
 
