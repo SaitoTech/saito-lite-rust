@@ -474,9 +474,9 @@ class RedSquare extends ModTemplate {
         //console.log("RS onConfirmation: " + txmsg.request);
 
         if (txmsg.request === "create tweet") {
-//if (this.app.BROWSER) {
-//  alert("RECIEVED TWEET TRANSACTION: " + JSON.stringify(txmsg));
-//}
+if (this.app.BROWSER) {
+  console.log("RECIEVED TWEET TRANSACTION: " + JSON.stringify(txmsg));
+}
           await this.receiveTweetTransaction(blk, tx, conf);
         }
         if (txmsg.request === "like tweet") {

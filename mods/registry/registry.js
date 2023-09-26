@@ -68,8 +68,6 @@ class Registry extends ModTemplate {
 
       let unidentified_keys = [];
 
-      console.log("registry-fetch-identifiers-and-update-dom", keys);
-
       for (let i = 0; i < keys.length; i++) {
         if (this.cached_keys[keys[i]]) {
           this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
@@ -79,8 +77,6 @@ class Registry extends ModTemplate {
       }
 
       this.fetchManyIdentifiers(unidentified_keys, (answer) => {
-
-console.log("FETCHED REGISTRY IDENTIFIERS: " + JSON.stringify(answer));
 
         Object.entries(answer).forEach(([key, value]) => {
           if (value !== this.publicKey) {
@@ -190,7 +186,6 @@ console.log("FETCHED REGISTRY IDENTIFIERS: " + JSON.stringify(answer));
       }
       return;
     } else {
-      console.log("we are missing: " + JSON.stringify(missing_keys));
     }
 
 
@@ -292,7 +287,7 @@ console.log("FETCHED REGISTRY IDENTIFIERS: " + JSON.stringify(answer));
   async tryRegisterIdentifier(identifier, domain = "@saito") {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
     if (!newtx) {
-      console.log("NULL TX CREATED IN REGISTRY MODULE");
+      //console.log("NULL TX CREATED IN REGISTRY MODULE");
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
     }
 
@@ -382,8 +377,6 @@ console.log("FETCHED REGISTRY IDENTIFIERS: " + JSON.stringify(answer));
 
     if (txmsg.data.request === "registry query") {
       let keys = txmsg?.data?.keys;
-console.log("received remote request for keys");
-console.log("cached: " + JSON.stringify(this.cached_keys));
       this.fetchIdentifiersFromDatabase(keys, mycallback);
       return;
     }
@@ -414,7 +407,6 @@ console.log("cached: " + JSON.stringify(this.cached_keys));
         // REGISTRATION REQUESTS - main server //
         /////////////////////////////////////////
         if (tx.isTo(this.publicKey) && this.publicKey === this.registry_publickey) {
-          console.log("Process Registry TX");
           let identifier = txmsg.identifier;
           let publickey = tx.from[0].publicKey;
           let unixtime = new Date().getTime();
@@ -493,8 +485,6 @@ console.log("cached: " + JSON.stringify(this.cached_keys));
           await newtx.sign();
           await this.app.network.propagateTransaction(newtx);
 
-          console.log(newtx);
-
           return;
         }
       }
@@ -503,12 +493,8 @@ console.log("cached: " + JSON.stringify(this.cached_keys));
       // OTHER SERVERS - mirror central DNS //
       ////////////////////////////////////////
       if (!!txmsg && txmsg.module == "Email") {
-        console.log("Registry Response TX: ", txmsg);
-        console.log(tx.toJson());
 
         if (tx.from[0].publicKey == this.registry_publickey) {
-
-console.log("received message from publickey that should register!");
 
           try {
 
@@ -527,11 +513,7 @@ console.log("received message from publickey that should register!");
 
             if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
 
-console.log("and it verifies!");
-
 	      if (this.publicKey != this.registry_publickey) {
-
-console.log("and we are not that server!!!! so adding!");
 
 		if (!this.app.BROWSER) {
 
@@ -621,11 +603,9 @@ console.log("and we are not that server!!!! so adding!");
             //const { publickey, identifier, bid, bsh, lc } = rows[i];
 	    let publickey = rows[i].publickey;
 	    let identifier = rows[i].identifier;
-console.log("FOUND LOOKUP: " + JSON.stringify(rows[i]));
             if (identifier !== publickey) {
               found_keys[publickey] = identifier;
 	      // and add to the cache for faster responsiveness in future
-console.log("ADDED TO CACHE");
 	      this.cached_keys[publickey] = identifier;
             }
           }
@@ -644,23 +624,6 @@ console.log("ADDED TO CACHE");
 	missing_keys.push(keys[i]);
       }
     }
-
-    //
-    // return what we know about
-    //
-/**** potentially useful for debugging, sets cached version ot random first time fetched
-let count = 0;
-for (let key in found_keys) {
-  count++;
-}
-if (count == 0) {
-console.log("keys updating...");
-  for (let i = 0; i < keys.length; i++) {
-    found_keys[keys[i]] = Math.random();
-    this.cached_keys[keys[i]] = found_keys[keys[i]];
-  }
-}
-****/
 
     if (mycallback) { mycallback(found_keys); }
 

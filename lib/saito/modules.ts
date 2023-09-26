@@ -339,6 +339,9 @@ class Mods {
   }
 
   onNewBlock(blk, i_am_the_longest_chain) {
+console.log("#################");
+console.log("### New Block ### " + blk.id);
+console.log("#################");
     for (let iii = 0; iii < this.mods.length; iii++) {
       this.mods[iii].onNewBlock(blk, i_am_the_longest_chain);
     }
