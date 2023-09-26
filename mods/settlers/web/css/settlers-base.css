@@ -1,8 +1,8 @@
 :root {
-  --p1-color: #b3031f;
-  --p2-color: #004193;
-  --p3-color: #00833a;
-  --p4-color: #8a6200;
+  --p1-color: #BB233B; /* redish */
+  --p2-color: #004193; /* bluish */
+  --p3-color: #ADCE14; /* yellowish */
+  --p4-color: #644700; /* brown */
   --text-color: #331800;
 }
 

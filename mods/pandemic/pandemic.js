@@ -1960,7 +1960,7 @@ class Pandemic extends GameTemplate {
       }
 
       if (mv[0] === "infectcity") {
-        pandemic_self.game.halted = 1;
+        pandemic_self.halted = 1;
 
         pandemic_self.acknowledgeInfectionCard(mv[1], function () {
           console.log("Acknowledgeing...");

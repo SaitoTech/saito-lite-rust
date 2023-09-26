@@ -187,8 +187,16 @@ class Mods {
     //
     // initialize the modules
     //
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].initialize(this.app);
+    let module_name = "";
+
+    try {
+      for (let i = 0; i < this.mods.length; i++) {
+        module_name = this.mods[i].name;
+        await this.mods[i].initialize(this.app);
+      }
+    }catch(err){
+      console.error("Failing module: " + module_name);
+      throw new Error(err);
     }
 
     const onPeerHandshakeComplete = this.onPeerHandshakeComplete.bind(this);

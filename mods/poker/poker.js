@@ -287,10 +287,6 @@ class Poker extends GameTableTemplate {
       this.displayBoard();
     }
 
-    //
-    // if reloading, make sure we can refresh the queue operations
-    //
-    this.game.halted = 0;
   }
 
   //
@@ -545,7 +541,7 @@ class Poker extends GameTableTemplate {
         }
 
         if (removal) {
-          this.game.halted = 1;
+          this.halted = 1;
           //Save game with fewer players
           this.saveGame(this.game.id);
           //Reload game to rebuild the html
@@ -967,7 +963,7 @@ class Poker extends GameTableTemplate {
 
           $(".shim-notice").disableSelection();
 
-          this.game.halted = 1;
+          this.halted = 1;
         }
 
         this.settleLastRound();

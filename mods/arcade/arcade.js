@@ -1913,11 +1913,8 @@ class Arcade extends ModTemplate {
       game_mod.game.player = 0;
     }
 
-    game_mod.game.halted = 1; // Default to paused
-
     await this.observerDownloadNextMoves(game_mod, () => {
       if (watch_live) {
-        game_mod.game.halted = 0;
         game_mod.game.live = watch_live;
         game_mod.saveGame(game_id);
       }
