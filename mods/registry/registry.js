@@ -55,7 +55,6 @@ class Registry extends ModTemplate {
     // set true for testing locally
     //
     this.local_dev = false;
-    this.local_dev = true;
 
     //
     // EVENTS
