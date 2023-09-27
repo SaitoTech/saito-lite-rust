@@ -88,13 +88,11 @@ class SettlersActions {
     }
 
     if (this.animationSequence.length > 0){
-      this.runAnimationQueue(250);  
+      this.runAnimationQueue(250);
+      return 0;
     }else{
-      setTimeout(()=> {
-        this.restartQueue();
-      }, 50);
+      return 1;
     }
-    
   }
 
 
