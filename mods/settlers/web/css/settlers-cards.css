@@ -43,3 +43,6 @@
   pointer-events: none;
 }
 
+.card_holder img {
+  width: 100%;
+}

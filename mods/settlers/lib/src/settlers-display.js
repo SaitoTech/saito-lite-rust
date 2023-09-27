@@ -347,7 +347,7 @@ class SettlersDisplay {
           this.playerbox.onclick(() => {
             console.log("Playerbox click");
             this.showTradeOverlay();
-          });
+          }, i);
         }
       }
 
@@ -409,6 +409,39 @@ class SettlersDisplay {
    * Game animations
    *
    ***********/
+  animateHarvest(player, resource, tile = null) {
+    let destination;
+
+    if (player == this.game.player){
+      if (document.getElementById("cardfan")){
+        destination = "#cardfan";  
+      }else {
+        destination = "#hud";
+      }
+      
+    } else {
+      destination = "#game-playerbox-"+player;
+    }
+
+    if (tile) {
+      tile = "#sector_value_"+tile;
+    }
+
+    this.animationSequence.push({
+      callback: this.moveGameElement,
+      params: [this.createGameElement(`<div class="card_holder"><img src="${this.returnCardImage(resource)}"/></div>`, tile, tile), 
+                destination,
+                null, ()=> {
+                  $(".animated_elem").remove();
+                  this.restartQueue();
+                }]
+    });
+
+  }
+
+
+
+
   /*
   Briefly animate the longest road and update log if there is a change in ownership
   */

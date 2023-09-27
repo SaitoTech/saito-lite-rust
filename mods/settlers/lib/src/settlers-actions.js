@@ -25,7 +25,7 @@ class SettlersActions {
   //
   // Award resources for dice roll
   //
-  collectHarvest(value) {
+  collectHarvest(value, player_who_rolled) {
     let logMsg = "";
     let notice = "";
     let poor_harvest = true;
@@ -45,12 +45,19 @@ class SettlersActions {
             )}" /></div>`;
             poor_harvest = false;
           }
+
           this.game.state.players[player - 1].resources.push(resource);
           this.game.stats.production[resource][player - 1]++;
+          this.animateHarvest(player, resource, neighboringHex);
+
+          //
           //Double Resources for Upgraded City
+          //
           if (city.level == 2) {
             this.game.state.players[player - 1].resources.push(resource);
             this.game.stats.production[resource][player - 1]++;
+            this.animateHarvest(player, resource, neighboringHex);
+
             logMsg += " x2";
             if (this.game.player == player) {
               notice += `<div class="card tiny"><img src="${this.returnCardImage(
@@ -63,6 +70,9 @@ class SettlersActions {
       }
     }
 
+    let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
+    firstMsg += ` rolled a <span class='die_value'>${value}</span>`;
+
     logMsg = logMsg.substr(0, logMsg.length - 2);
     if (logMsg) {
       this.updateLog(logMsg);
@@ -70,12 +80,21 @@ class SettlersActions {
       this.updateLog("no-one collects any resources.");
     }
     if (poor_harvest) {
-      this.updateStatus(`<div class="persistent"><span>${value}: ${this.randomMsg()}</span></div>`);
+      this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
     } else {
       this.updateStatus(
-        `<div class="persistent alignme"><span>${value}! You acquired: </span>${notice}</div>`
+        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span>${notice}</div>`
       );
     }
+
+    if (this.animationSequence.length > 0){
+      this.runAnimationQueue(250);  
+    }else{
+      setTimeout(()=> {
+        this.restartQueue();
+      }, 50);
+    }
+    
   }
 
 

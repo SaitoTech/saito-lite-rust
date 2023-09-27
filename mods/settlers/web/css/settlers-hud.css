@@ -158,6 +158,12 @@
   }
 }
 
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .hud-body .mobile {
+    height: 3rem;
+  }
+}
+
 @media only screen and (max-height: 600px) and (orientation: landscape) {
   .hud{
     max-width: 50vw;

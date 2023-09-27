@@ -357,8 +357,8 @@ class SettlersPlayer {
     // auto-end my turn if I cannot do anything
     //
     if (can_do_something != true) {
+      this.addMove("end_turn\t" + settlers_self.game.player); //End turn deletes the previous move (player_actions)
       this.addMove("ACKNOWLEDGE\tYou cannot buy anything - end turn\t" + settlers_self.game.player);
-      this.addMove("end_turn\t" + settlers_self.game.player);
       this.endTurn();
       return;
     }

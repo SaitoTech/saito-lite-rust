@@ -330,11 +330,13 @@ class SettlersGameloop {
             logMsg += bounty + ", ";
             this.game.state.players[player - 1].resources.push(bounty);
             this.game.stats.production[bounty][player - 1]++; //Initial starting stats
+            this.animateHarvest(player, bounty, hextile);
           }
         }
+        this.runAnimationQueue();
         logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
         this.updateLog(logMsg);
-        return 1;
+        return 0;
       }
 
       //Allow other players to update board status
@@ -688,6 +690,8 @@ class SettlersGameloop {
 
             let choice = $(this).attr("id");
             if (choice === "rolldice") {
+              settlers_self.updateStatus('rolling...');
+              settlers_self.updateControls('');
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
             }
@@ -746,7 +750,8 @@ class SettlersGameloop {
             this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
         } else {
-          this.game.queue.push(`collect_harvest\t${roll}`);
+          this.collectHarvest(roll, player);
+          return 0;
         }
         return 1;
       }
@@ -757,16 +762,7 @@ class SettlersGameloop {
         return 1;
       }
 
-      //
-      // gain resources if dice are !7
-      //
-      if (mv[0] == "collect_harvest") {
-        let roll = parseInt(mv[1]);
-        this.game.queue.splice(qe, 1);
-        this.collectHarvest(roll);
-        return 1;
-      }
-
+  
       /*
       Each player checks if they are on the toGo list, and if so must discard cards
       Otherwise, they just hang out...
