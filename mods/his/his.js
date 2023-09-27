@@ -12,6 +12,7 @@ const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
+const UnitsOverlay = require('./lib/ui/overlays/units');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
 const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
@@ -67,6 +68,7 @@ class HereIStand extends GameTemplate {
     this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
+    this.units_overlay = new UnitsOverlay(this.app, this);
 
     //
     // this sets the ratio used for determining
@@ -2364,13 +2366,13 @@ console.log("\n\n\n\n");
 
 
 	  // TESTING
-          this.addReformer("protestant", "zurich", "zwingli-reformer");
-	  this.setAllies("venice", "papacy");
-	  this.controlSpace("papacy", "trent");
-	  this.addRegular("papacy", "trent", 4);
-	  this.addRegular("papacy", "trent", 2);
-	  this.addRegular("papacy", "augsburg", 2);
-	  this.addMercenary("papacy", "augsburg", 1);
+          //this.addReformer("protestant", "zurich", "zwingli-reformer");
+	  //this.setAllies("venice", "papacy");
+	  //this.controlSpace("papacy", "trent");
+	  //this.addRegular("papacy", "trent", 4);
+	  //this.addRegular("papacy", "trent", 2);
+	  //this.addRegular("papacy", "augsburg", 2);
+	  //this.addMercenary("papacy", "augsburg", 1);
 
 	} else {
 
@@ -2561,6 +2563,15 @@ console.log("\n\n\n\n");
       }
     });
     this.menu.addMenuOption("game-info", "Info");
+    this.menu.addSubMenuOption("game-info", {
+      text: "Units",
+      id: "game-units",
+      class: "game-units",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.units_overlay.render();
+      }
+    });
     this.menu.addSubMenuOption("game-info", {
       text: "Faction Cards",
       id: "game-faction-cards",
@@ -29345,7 +29356,7 @@ return;
       available_units['regular']['1'] = 3;    
       available_units['regular']['2'] = 3;    
       available_units['regular']['3'] = 0;    
-      available_units['regular']['4'] = 3;    
+      available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
     }
@@ -29474,9 +29485,6 @@ if (faction == "hapsburg") {
       }
 
     }
-
-console.log("deployed: ");
-console.log(JSON.stringify(deployed_units));
 
     let results = {};
     results.deployed = deployed_units;
