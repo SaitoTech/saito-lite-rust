@@ -39,6 +39,7 @@ class Settlers extends GameTemplate {
     this.game_length = 20; //Estimated number of minutes to complete a game
     this.is_sleeping = true;
     this.confirm_moves = true;
+    this.animationSpeed = 1200;
 
     //
     // UI components
@@ -86,15 +87,15 @@ class Settlers extends GameTemplate {
     this.back = "/settlers/img/cards/red_back.png"; //Hidden Resource cards
     this.card = { name: "development", back: "/settlers/img/cards/red_back.png" };
     this.deck = [
-    //  { card: "Knight", count: 14, img: "/settlers/img/cards/knight.png", action: 1 },
+      { card: "Knight", count: 14, img: "/settlers/img/cards/knight.png", action: 1 },
       { card: "Unexpected Bounty", count: 2, img: "/settlers/img/cards/treasure.png", action: 2 },
       { card: "Legal Monopoly", count: 2, img: "/settlers/img/cards/scroll.png", action: 3 },
-   //   { card: "Caravan", count: 2, img: "/settlers/img/cards/wagon.png", action: 4 },
-   //   { card: "Brewery", count: 1, img: "/settlers/img/cards/drinking.png", action: 0 },
-   //   { card: "Bazaar", count: 1, img: "/settlers/img/cards/shop.png", action: 0 },
-   //   { card: "Advanced Industry", count: 1, img: "/settlers/img/cards/windmill.png", action: 0 },
-   //   { card: "Cathedral", count: 1, img: "/settlers/img/cards/church.png", action: 0 },
-   //   { card: "Chemistry", count: 1, img: "/settlers/img/cards/potion.png", action: 0 },
+      { card: "Caravan", count: 2, img: "/settlers/img/cards/wagon.png", action: 4 },
+      { card: "Brewery", count: 1, img: "/settlers/img/cards/drinking.png", action: 0 },
+      { card: "Bazaar", count: 1, img: "/settlers/img/cards/shop.png", action: 0 },
+      { card: "Advanced Industry", count: 1, img: "/settlers/img/cards/windmill.png", action: 0 },
+      { card: "Cathedral", count: 1, img: "/settlers/img/cards/church.png", action: 0 },
+      { card: "Chemistry", count: 1, img: "/settlers/img/cards/potion.png", action: 0 },
     ];
     this.gametitle = "Settlers of Saitoa";
     this.winState = "elected governor";
@@ -254,11 +255,11 @@ class Settlers extends GameTemplate {
             //
             // load trade overlay on playerbox click
             //
-            for (let i = 0; i < this.game.players.length; i++) {
-              this.playerbox.onclick(() => {
-                this.trade_overlay.render();
-              }, i + 1);
-            }
+            //for (let i = 0; i < this.game.players.length; i++) {
+            //  this.playerbox.onclick(() => {
+            //    this.trade_overlay.render();
+            //  }, i + 1);
+            //}
 
             //
             // close playerboxen on back-click
