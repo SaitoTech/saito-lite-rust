@@ -749,11 +749,14 @@ class SettlersGameloop {
             this.game.queue.push("NOTIFY\tAll players have finished discarding");
             this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
+          return 1;
+
         } else {
-          this.collectHarvest(roll, player);
-          return 0;
+          //
+          // Will return 0 if there is an animation to display
+          //
+          return this.collectHarvest(roll, player);
         }
-        return 1;
       }
 
       if (mv[0] == "enable_trading") {
