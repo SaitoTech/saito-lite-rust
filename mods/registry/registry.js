@@ -54,7 +54,7 @@ class Registry extends ModTemplate {
     //
     // set true for testing locally
     //
-    this.local_dev = false;
+    this.local_dev = 0;
 
     //
     // EVENTS
@@ -354,6 +354,39 @@ class Registry extends ModTemplate {
       if (service.service === "registry") {
         this.registry_publickey = peer.publicKey;
       }
+    }
+
+    let myKey = app.keychain.returnKey(this.publicKey, true);
+    if (myKey?.identifier){
+
+      this.sendPeerDatabaseRequestWithFilter(
+          "Registry",
+          `SELECT * FROM records WHERE publickey = "${this.publicKey}"`,
+           (res) => {
+              let fail = true;
+
+              if (res.rows.length > 0) {
+                if (res.rows[0].identifier !== myKey.identifier){
+                  console.warn("Registry has a different name for our key");
+                  console.log(res.rows);
+                }else{
+                  return;
+                }
+              }else{
+                console.warn("Our identifier not visible in the Registry");
+              }
+
+              let identifier = myKey.identifier.split("@");
+              if (identifier.length !== 2){
+                console.warn("Invalid identifier");
+                console.log(myKey.identifier);
+                return;
+              }
+              this.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
+              console.log("Attempting to register our name again");
+           }
+      );
+
     }
 
   }
