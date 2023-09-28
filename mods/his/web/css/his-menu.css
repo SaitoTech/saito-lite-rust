@@ -43,14 +43,24 @@
   position: relative;
   cursor: pointer;
 }
+.menu-option-content-large {
+  position: absolute;
+  bottom: 0px;
+  padding: 1rem;
+  font-size: 2rem;
+  right: 0px;
+  background: #0009;
+  color: white;
+  border-top-left-radius: 0.5rem;
+}
 .menu-option-title-large {
-    background: #0009;
-    width: max-content;
-    padding: 1.5rem;
-    font-size: 3rem;
-    color: white;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
+  background: #0009;
+  width: max-content;
+  padding: 1.5rem;
+  font-size: 3rem;
+  color: white;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
 }
 .move-menu {
   background-image: url(/his/img/backgrounds/move/move_over_pass.jpg);

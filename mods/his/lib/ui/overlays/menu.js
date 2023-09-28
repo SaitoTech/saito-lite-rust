@@ -101,10 +101,6 @@ class MenuOverlay {
 	  }
         }
 
-console.log("BUILD: " + build.length);
-console.log("MOVE: " + move.length);
-console.log("OTHER: " + special.length);
-
         if (menu.length > 3) {
 
 	  document.querySelector(".menu").classList.add("menu-large");
@@ -116,6 +112,14 @@ console.log("OTHER: " + special.length);
 	  `;
 	  if (build.length > 0) {
             this.app.browser.addElementToSelector(build_html, `.menu`);
+	    let content = "";
+	    for (let z = 0; z < build.length; z++) {
+	      if (z > 0) { content += ", "; }
+	      content += menu[build[z].idx].name.toLowerCase();
+	    }
+	    if (content != "") {
+              this.app.browser.addElementToSelector(`<div class="menu-option-content-large">${content}</div>`, `.build-menu`);
+	    }
  	  }
 
           let move_html = `
@@ -125,6 +129,14 @@ console.log("OTHER: " + special.length);
 	  `;
 	  if (move.length > 0) {
             this.app.browser.addElementToSelector(move_html, `.menu`);
+	    let content = "";
+	    for (let z = 0; z < move.length; z++) {
+	      if (z > 0) { content += ", "; }
+	      content += menu[move[z].idx].name.toLowerCase();
+	    }
+	    if (content != "") {
+              this.app.browser.addElementToSelector(`<div class="menu-option-content-large">${content}</div>`, `.move-menu`);
+	    }
 	  }
 
           let special_html = `
@@ -134,6 +146,14 @@ console.log("OTHER: " + special.length);
 	  `;
 	  if (special.length > 0) {
             this.app.browser.addElementToSelector(special_html, `.menu`);
+	    let content = "";
+	    for (let z = 0; z < special.length; z++) {
+	      if (z > 0) { content += ", "; }
+	      content += menu[special[z].idx].name.toLowerCase();
+	    }
+	    if (content != "") {
+              this.app.browser.addElementToSelector(`<div class="menu-option-content-large">${content}</div>`, `.special-menu`);
+	    }
 	  }
 
 

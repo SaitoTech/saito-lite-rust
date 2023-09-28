@@ -22028,7 +22028,7 @@ defender_hits - attacker_hits;
 	        this.game.state.translations['full']['german']++;
 		if (this.game.state.translations['full']['german'] == 10) {
         	  his_self.game.queue.push("hide_overlay\ttheses");
-	          his_self.game.state.tmp_protestant_translation_bonus = 1;
+	          his_self.game.state.german_bible_translation_bonus = 1;
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
@@ -22043,7 +22043,6 @@ defender_hits - attacker_hits;
 	        this.updateLog("Protestants translate New Testament (german)");
 	        this.game.state.translations['new']['german']++;
 		if (this.game.state.translations['new']['german'] == 6) {
-	          his_self.game.state.tmp_protestant_translation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
@@ -22063,7 +22062,7 @@ defender_hits - attacker_hits;
 	        this.game.state.translations['full']['french']++;
 		if (this.game.state.translations['full']['french'] == 10) {
 		  // protestant gets 1 roll bonus at start
-	          his_self.game.state.tmp_protestant_translation_bonus = 1;
+	          his_self.game.state.french_bible_translation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
@@ -22080,7 +22079,6 @@ defender_hits - attacker_hits;
 	        this.game.state.translations['new']['french']++;
 		if (this.game.state.translations['full']['french'] == 6) {
 		  // protestant gets 1 roll bonus at start
-	          his_self.game.state.tmp_protestant_translation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
@@ -22100,7 +22098,7 @@ defender_hits - attacker_hits;
 	        this.game.state.translations['full']['english']++;
 		if (this.game.state.translations['full']['english'] == 10) {
 		  // protestant gets 1 roll bonus at start
-	          his_self.game.state.tmp_protestant_translation_bonus = 1;
+	          his_self.game.state.english_bible_translation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
@@ -22117,7 +22115,6 @@ defender_hits - attacker_hits;
 	        this.game.state.translations['new']['english']++;
 		if (this.game.state.translations['full']['english'] == 6) {
 		  // protestant gets 1 roll bonus at start
-	          his_self.game.state.tmp_protestant_translation_bonus = 1;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
@@ -23658,6 +23655,10 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	if (mv[0] === "remove_translation_bonus") {
 	  this.game.queue.splice(qe, 1);
 	  this.game.state.tmp_protestant_translation_bonus = 0;
+	  this.game.state.english_bible_translation_bonus = 0;
+	  this.game.state.french_bible_translation_bonus = 0;
+	  this.game.state.german_bible_translation_bonus = 0;
+	  this.game.state.tmp_protestant_translation_bonus = 0;
 	  return 1;
 	}
 
@@ -23757,7 +23758,7 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  //
 	  // temporary bonuses
 	  //
-	  if (this.game.state.tmp_protestant_translation_bonus > 0) {
+	  if (this.game.state.english_bible_translation_bonus == 1 || this.game.state.french_bible_translation_bonus == 1 || this.game.state.german_bible_translation_bonus == 1) {
 	    p_rolls++;
 	    p_roll_desc.push({ name : "Bonus" , desc : "translation completed"});
 	  }
