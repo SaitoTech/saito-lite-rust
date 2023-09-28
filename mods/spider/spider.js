@@ -912,7 +912,7 @@ class Spider extends OnePlayerGameTemplate {
           setTimeout(async () => {
             this.displayBoard();
             $(".animated_elem").remove();
-            this.game.halted = 0;
+            this.halted = 0;
             let temp = await this.revealCard(stackNum);
             if (temp) {
               this.prependMove(`flip\t${stackNum}\t${temp}`);

@@ -292,6 +292,7 @@ if (this.game.state.scenario == "is_testing") {
 	    }
 	  }
 
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -340,6 +341,7 @@ if (this.game.state.scenario == "is_testing") {
 	    }
 	  }
 
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -2112,6 +2114,7 @@ console.log("@");
 console.log("@");
 console.log("into counter or acknowledge...");
 console.log("@ " + JSON.stringify(this.game.confirms_needed));
+console.log("@ skip c_or_a: " + this.game.state.skip_counter_or_acknowledge);
 console.log("@");
 
 	  //
@@ -3687,6 +3690,7 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 	    }
 	  }
 
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
           this.game.queue.splice(qe, 1);
@@ -3705,6 +3709,7 @@ console.log("spacekey: " + spacekey);
 	    this.game.spaces[spacekey].units[faction].splice(unit_idx, 1);
 	  }
 
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
           this.game.queue.splice(qe, 1);
@@ -3735,6 +3740,9 @@ console.log("spacekey: " + spacekey);
 	  for (let i = 0; i < units_to_destroy.length; i++) {
 	    space.units[faction].splice(i, 1);
 	  }
+
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.displayBoard();
 
 	  return 1;
 
@@ -3767,6 +3775,9 @@ console.log("spacekey: " + spacekey);
 	  for (let i = 0; i < units_to_destroy.length; i++) {
 	    space.units[faction].splice(i, 1);
 	  }
+
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.displayBoard();
 
 	  return 1;
 
@@ -5561,9 +5572,9 @@ defender_hits - attacker_hits;
 	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      if ((total_spaces_to_convert+bonus_conversions) == 1) { 
-		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
+		this.game.queue.push("counter_or_acknowledge\t"+this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
-		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
+		this.game.queue.push("counter_or_acknowledge\t"+this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
               }
 	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
@@ -6637,6 +6648,10 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
+
+	  // update board display
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
+
           this.displayBoard();
 
 	  //

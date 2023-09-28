@@ -1,5 +1,5 @@
 
-.settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-info-overlay, .build-overlay {
+.settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -59,6 +59,7 @@ stats overlay
   justify-content: space-around;
   align-content: flex-end;
   flex-wrap: wrap-reverse;
+  margin-top: 1.5rem;
 }
 
 .settlers-dice-bar {
@@ -529,4 +530,20 @@ stats overlay
   width: 82%;
   height: 58%;
   line-height: 5.3rem;
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
+    max-height: 98vh;
+    gap: 0.5rem;
+
+  }
+
+  .trade-overlay {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+  }
+  .trade_overlay_buttons{
+    grid-column: 1 / span 2;
+  }
 }

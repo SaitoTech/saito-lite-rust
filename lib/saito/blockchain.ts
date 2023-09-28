@@ -60,7 +60,8 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   public async affixCallbacks(block: Block) {
-    // console.log("affixing callbacks for block : " + block.hash);
+    console.log(" --- AFFIX CALLBACK --- " + block.id);
+    console.log("affixing callbacks for block : " + block.hash);
     let callbacks = [];
     let callbackIndices = [];
     let txs: Transaction[] = block.transactions as Transaction[];

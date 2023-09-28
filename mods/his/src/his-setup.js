@@ -162,7 +162,10 @@ console.log("\n\n\n\n");
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
 	  //this.setAllies("venice", "papacy");
 	  //this.controlSpace("papacy", "trent");
-	  //this.addRegular("papacy", "trent", 1);
+	  //this.addRegular("papacy", "trent", 4);
+	  //this.addRegular("papacy", "trent", 2);
+	  //this.addRegular("papacy", "augsburg", 2);
+	  //this.addMercenary("papacy", "augsburg", 1);
 
 	} else {
 

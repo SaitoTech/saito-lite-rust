@@ -357,7 +357,7 @@ initializeGame(game_id) {
         }else{
           $(this.cardToHTML(card)).hide().appendTo(`#o${slot+1}`).slideDown(1500, ()=>{this.finishAnimation();});
         }
-        this.game.halted = 1;
+        this.halted = 1;
         return 0;
       }
 
@@ -378,7 +378,7 @@ initializeGame(game_id) {
       
       if (this.game.player !== player){
          $(this.cardToHTML(card)).hide().appendTo(`#discards`).slideDown(1500, ()=>{this.finishAnimation();});
-         this.game.halted = 1;
+         this.halted = 1;
         return 0;
       }          
       return 1;

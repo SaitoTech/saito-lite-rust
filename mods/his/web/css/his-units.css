@@ -1,0 +1,50 @@
+
+.units {
+  max-width: 80vw;
+  min-width: 80vw;
+  max-height: 80vh;
+  min-height: auto;
+  overflow: auto;
+}
+
+.units-title {
+  background: #0009;
+  width: 100%;
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 2.4rem;
+  max-width: 100%;
+  padding: 2rem;
+  line-height: 3.4rem;
+  text-align: center;
+}
+
+.units-table {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: auto;
+  margin-top: 4rem;
+  background: #0009;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  padding: 1rem;
+}
+
+.units-faction {
+  font-size: 2rem;
+  padding: 2rem;
+  color: white;
+}
+
+.units-faction-available {
+  margin-top: 3rem;
+}
+
+.units-faction-available .army_tile {
+  margin-left: 0px;
+  margin-right: 0px;
+  position: relative;
+}
+

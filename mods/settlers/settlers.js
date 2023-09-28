@@ -39,6 +39,7 @@ class Settlers extends GameTemplate {
     this.game_length = 20; //Estimated number of minutes to complete a game
     this.is_sleeping = true;
     this.confirm_moves = true;
+    this.animationSpeed = 1200;
 
     //
     // UI components
@@ -232,7 +233,18 @@ class Settlers extends GameTemplate {
     document.querySelector(".hud-body .mobile .score").onclick = (e) => {
       this.stats_overlay.render();
     };
-    document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
+
+    let trade_btn = document.querySelector(".hud-body .mobile .trade");
+
+    if (!trade_btn) {
+      return;
+    }
+
+    if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+      trade_btn.innerHTML = "players";
+    }
+    
+    trade_btn.onclick = (e) => {
       if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
         if (document.querySelector(".game-playerbox-manager").style.display == "flex") {
           document.querySelector(".game-playerbox-manager").style.display = "none";
@@ -243,11 +255,11 @@ class Settlers extends GameTemplate {
             //
             // load trade overlay on playerbox click
             //
-            for (let i = 0; i < this.game.players.length; i++) {
-              this.playerbox.onclick(() => {
-                this.trade_overlay.render();
-              }, i + 1);
-            }
+            //for (let i = 0; i < this.game.players.length; i++) {
+            //  this.playerbox.onclick(() => {
+            //    this.trade_overlay.render();
+            //  }, i + 1);
+            //}
 
             //
             // close playerboxen on back-click

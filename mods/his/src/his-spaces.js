@@ -3062,6 +3062,10 @@ console.log("and friendly");
 	let language = obj.language;
 	if (!political) { political = obj.home; }
 
+	if (political == "genoa" || political == "venice" || political == "scotland" || political == "hungary" || political == "independent") { his_self.game.state.board[political] = his_self.returnOnBoardUnits(political); } else {
+	  if (home == "genoa" || home == "venice" || home == "scotland" || home == "hungary" || home == "independent") { his_self.game.state.board[home] = his_self.returnOnBoardUnits(home); }
+	}
+
 	html += `
 	  <div class="space_name">${obj.name}</div>
 	  <div class="space_properties">
@@ -3072,6 +3076,13 @@ console.log("and friendly");
 	  </div>
 	  <div class="space_units">
 	`;
+
+        for (let key in obj.units) {
+	  html += his_self.returnArmyTiles(key, obj.key);
+	  html += his_self.returnMercenaryTiles(key, obj.key);
+	  html += his_self.returnPersonagesTiles(key, obj.key);
+	  html += his_self.returnNavalTiles(key, obj.key);
+        }
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {

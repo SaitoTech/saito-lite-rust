@@ -12,6 +12,7 @@ const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
+const UnitsOverlay = require('./lib/ui/overlays/units');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
 const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
@@ -67,6 +68,7 @@ class HereIStand extends GameTemplate {
     this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
+    this.units_overlay = new UnitsOverlay(this.app, this);
 
     //
     // this sets the ratio used for determining
@@ -2367,7 +2369,10 @@ console.log("\n\n\n\n");
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
 	  //this.setAllies("venice", "papacy");
 	  //this.controlSpace("papacy", "trent");
-	  //this.addRegular("papacy", "trent", 1);
+	  //this.addRegular("papacy", "trent", 4);
+	  //this.addRegular("papacy", "trent", 2);
+	  //this.addRegular("papacy", "augsburg", 2);
+	  //this.addMercenary("papacy", "augsburg", 1);
 
 	} else {
 
@@ -2558,6 +2563,15 @@ console.log("\n\n\n\n");
       }
     });
     this.menu.addMenuOption("game-info", "Info");
+    this.menu.addSubMenuOption("game-info", {
+      text: "Units",
+      id: "game-units",
+      class: "game-units",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.units_overlay.render();
+      }
+    });
     this.menu.addSubMenuOption("game-info", {
       text: "Faction Cards",
       id: "game-faction-cards",
@@ -10067,7 +10081,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	  his_self.playerSelectOptions(res, spaces_to_select, false, (selected) => {
 	    for (let i = 0; i < selected.length; i++) {
-	      his_self.addMove("unrest\t"+selected[i]);
+	      his_self.addMove("unrest\t"+res[selected[i]]);
 	    }
 	    his_self.endTurn();
 	  });
@@ -14535,6 +14549,10 @@ console.log("and friendly");
 	let language = obj.language;
 	if (!political) { political = obj.home; }
 
+	if (political == "genoa" || political == "venice" || political == "scotland" || political == "hungary" || political == "independent") { his_self.game.state.board[political] = his_self.returnOnBoardUnits(political); } else {
+	  if (home == "genoa" || home == "venice" || home == "scotland" || home == "hungary" || home == "independent") { his_self.game.state.board[home] = his_self.returnOnBoardUnits(home); }
+	}
+
 	html += `
 	  <div class="space_name">${obj.name}</div>
 	  <div class="space_properties">
@@ -14545,6 +14563,13 @@ console.log("and friendly");
 	  </div>
 	  <div class="space_units">
 	`;
+
+        for (let key in obj.units) {
+	  html += his_self.returnArmyTiles(key, obj.key);
+	  html += his_self.returnMercenaryTiles(key, obj.key);
+	  html += his_self.returnPersonagesTiles(key, obj.key);
+	  html += his_self.returnNavalTiles(key, obj.key);
+        }
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
@@ -15030,6 +15055,7 @@ console.log("and friendly");
   addUnit(faction, space, type) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));
+    this.updateOnBoardUnits();
   }
 
   removeUnit(faction, space, type) {
@@ -15039,6 +15065,7 @@ console.log("and friendly");
       if (space.units[faction][i].type === type) {
         this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
+        this.updateOnBoardUnits();
 	return;
       }
     }
@@ -15056,6 +15083,7 @@ console.log("and friendly");
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "regular"));
     }
+    this.updateOnBoardUnits();
   }
 
   addMercenary(faction, space, num=1) {
@@ -15063,6 +15091,7 @@ console.log("and friendly");
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "mercenary"));
     }
+    this.updateOnBoardUnits();
   }
 
   addCavalry(faction, space, num=1) {
@@ -15070,6 +15099,7 @@ console.log("and friendly");
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "cavalry"));
     }
+    this.updateOnBoardUnits();
   }
 
   addNavalSquadron(faction, space, num=1) {
@@ -15077,6 +15107,7 @@ console.log("and friendly");
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }
+    this.updateOnBoardUnits();
   }
 
   addCorsair(faction, space, num=1) {
@@ -15325,6 +15356,8 @@ console.log("and friendly");
     state.events = {};
     state.removed = []; // removed cards
     state.spaces_assaulted_this_turn = [];
+    state.board_updated = new Date().getTime();
+    state.board = {}; // units on board
 
     state.diplomacy = this.returnDiplomacyAlliance();
 
@@ -16661,6 +16694,7 @@ if (this.game.state.scenario == "is_testing") {
 	    }
 	  }
 
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -16709,6 +16743,7 @@ if (this.game.state.scenario == "is_testing") {
 	    }
 	  }
 
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -18481,6 +18516,7 @@ console.log("@");
 console.log("@");
 console.log("into counter or acknowledge...");
 console.log("@ " + JSON.stringify(this.game.confirms_needed));
+console.log("@ skip c_or_a: " + this.game.state.skip_counter_or_acknowledge);
 console.log("@");
 
 	  //
@@ -20056,6 +20092,7 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 	    }
 	  }
 
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
           this.game.queue.splice(qe, 1);
@@ -20074,6 +20111,7 @@ console.log("spacekey: " + spacekey);
 	    this.game.spaces[spacekey].units[faction].splice(unit_idx, 1);
 	  }
 
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
           this.game.queue.splice(qe, 1);
@@ -20104,6 +20142,9 @@ console.log("spacekey: " + spacekey);
 	  for (let i = 0; i < units_to_destroy.length; i++) {
 	    space.units[faction].splice(i, 1);
 	  }
+
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.displayBoard();
 
 	  return 1;
 
@@ -20136,6 +20177,9 @@ console.log("spacekey: " + spacekey);
 	  for (let i = 0; i < units_to_destroy.length; i++) {
 	    space.units[faction].splice(i, 1);
 	  }
+
+	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.displayBoard();
 
 	  return 1;
 
@@ -21930,9 +21974,9 @@ defender_hits - attacker_hits;
 	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      if ((total_spaces_to_convert+bonus_conversions) == 1) { 
-		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
+		this.game.queue.push("counter_or_acknowledge\t"+this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space`);
 	      } else {
-		this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
+		this.game.queue.push("counter_or_acknowledge\t"+this.returnFactionName(this.game.state.theological_debate.defender_faction) + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces`);
               }
 	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
@@ -23006,6 +23050,10 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
+
+	  // update board display
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
+
           this.displayBoard();
 
 	  //
@@ -29207,6 +29255,263 @@ return;
     }
   }
 
+  //
+  // each faction has a limited number of physical tokens to use to 
+  // represent units that are available. the game will auto-reallocate
+  // these tokens to teh extent possible.
+  // 
+  updateOnBoardUnits() { this.game.state.board_updated = 0; } // setting to 0 forces update next displaySpace
+  returnOnBoardUnits(faction="") {
+
+    let my_spaces = {};
+    let available_units = {};
+        available_units['regular'] = {};
+    let deployed_units = {};
+
+    //
+    // each faction has a separate token mix
+    //
+    if (faction == "protestant") {
+      available_units['regular']['1'] = 8;    
+      available_units['regular']['2'] = 5;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 2;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "england") {
+      available_units['regular']['1'] = 9;    
+      available_units['regular']['2'] = 5;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 2;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+    if (faction == "ottoman") {
+      available_units['regular']['1'] = 11;    
+      available_units['regular']['2'] = 7;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 4;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+    if (faction == "france") {
+      available_units['regular']['1'] = 10;    
+      available_units['regular']['2'] = 5;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 3;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+    if (faction == "papacy") {
+      available_units['regular']['1'] = 7;    
+      available_units['regular']['2'] = 4;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 2;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "hapsburg") {
+      available_units['regular']['1'] = 12;    
+      available_units['regular']['2'] = 6;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 3;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 1;    
+    }
+
+    if (faction == "scotland") {
+      available_units['regular']['1'] = 2;    
+      available_units['regular']['2'] = 1;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 0;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "genoa") {
+      available_units['regular']['1'] = 2;    
+      available_units['regular']['2'] = 2;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 0;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "venice") {
+      available_units['regular']['1'] = 4;    
+      available_units['regular']['2'] = 4;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 0;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "hungary") {
+      available_units['regular']['1'] = 3;    
+      available_units['regular']['2'] = 3;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 1;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+    if (faction == "independent") {
+      available_units['regular']['1'] = 3;    
+      available_units['regular']['2'] = 3;    
+      available_units['regular']['3'] = 0;    
+      available_units['regular']['4'] = 0;    
+      available_units['regular']['5'] = 0;    
+      available_units['regular']['6'] = 0;    
+    }
+
+    //
+    // find out what units I supposedly have deployed
+    //
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units) {
+        if (this.game.spaces[key].units[faction].length > 0) {
+          for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+      	    if (!my_spaces[key]) { my_spaces[key] = {}; }
+            if (!my_spaces[key][this.game.spaces[key].units[faction][i].type]) { my_spaces[key][this.game.spaces[key].units[faction][i].type] = 0; }
+            my_spaces[key][this.game.spaces[key].units[faction][i].type]++;
+          }
+        }
+      }
+    }
+
+    //
+    //
+    //
+    for (let key in my_spaces) {
+      deployed_units[key] = {};
+      deployed_units[key]['regular'] = {};
+      deployed_units[key]['regular']['1'] = 0;
+      deployed_units[key]['regular']['2'] = 0;
+      deployed_units[key]['regular']['3'] = 0;
+      deployed_units[key]['regular']['4'] = 0;
+      deployed_units[key]['regular']['5'] = 0;
+      deployed_units[key]['regular']['6'] = 0;
+      deployed_units[key]['mercenary'] = {};
+      deployed_units[key]['mercenary']['1'] = 0;
+      deployed_units[key]['mercenary']['2'] = 0;
+      deployed_units[key]['mercenary']['3'] = 0;
+      deployed_units[key]['mercenary']['4'] = 0;
+      deployed_units[key]['mercenary']['5'] = 0;
+      deployed_units[key]['mercenary']['6'] = 0;
+    }
+
+
+if (faction == "hapsburg") {
+  console.log("HERE ARE HAPSBURG SPACES!");
+  console.log(JSON.stringify(my_spaces));
+}
+
+    //
+    // order spaces 
+    //
+    let continue_to_apportion = true;
+    while (continue_to_apportion == true) {
+
+      continue_to_apportion = false;
+      let changed_anything = false;
+
+      for (let key in my_spaces) {
+
+	if (my_spaces[key]['regular'] >= 6 && available_units['regular']['6'] > 0) { 
+	  my_spaces[key]['regular'] -= 6;
+	  available_units['regular']['6']--;
+	  deployed_units[key]['regular']['6']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 6 && available_units['regular']['6'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 6;
+	  available_units['regular']['6']--;
+	  deployed_units[key]['mercenary']['6']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+	// !5
+
+	if (my_spaces[key]['regular'] >= 4 && available_units['regular']['4'] > 0) { 
+	  my_spaces[key]['regular'] -= 4;
+	  available_units['regular']['4']--;
+	  deployed_units[key]['regular']['4']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 4 && available_units['regular']['4'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 4;
+	  available_units['regular']['4']--;
+	  deployed_units[key]['mercenary']['4']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+	// !3
+
+	if (my_spaces[key]['regular'] >= 2 && available_units['regular']['2'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['regular'] -= 2;
+	  available_units['regular']['2']--;
+	  deployed_units[key]['regular']['2']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 2 && available_units['regular']['2'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 2;
+	  available_units['regular']['2']--;
+	  deployed_units[key]['mercenary']['2']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+	if (my_spaces[key]['regular'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['regular'] -= 1;
+	  available_units['regular']['1']--;
+	  deployed_units[key]['regular']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['mercenary'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['mercenary'] -= 1;
+	  available_units['regular']['1']--;
+	  deployed_units[key]['mercenary']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
+      }
+
+      if (changed_anything == true) {
+        continue_to_apportion = true;
+      }
+
+    }
+
+    let results = {};
+    results.deployed = deployed_units;
+    results.available = available_units;
+    results.missing = {};
+
+    //
+    // pieces we are having difficulty assigning
+    //
+    for (let key in my_spaces) {
+      if (my_spaces[key]['regular'] > 0) { 
+	if (!results.missing[key]) { results.missing[key] = {}; }
+	results.missing[key]['regular'] = my_spaces[key]['regular'];
+      }	
+      if (my_spaces[key]['mercenary'] > 0) { 
+	if (!results.missing[key]) { results.missing[key] = {}; }
+	results.missing[key]['mercenary'] = my_spaces[key]['mercenary'];
+      }	
+    }
+
+    this.game.state.board_updated = new Date().getTime();
+
+    return results;
+
+  }
+
+  
 
 
 
@@ -29653,13 +29958,11 @@ return;
 
   }
 
-  returnNavies(space) {
-
-    let html = '<div class="space_navy" id="">';
-    let tile = "";
-
-    for (let z in space.units) {
-
+  returnNavalTiles(faction, spacekey) {
+      let html = "";
+      let tile = "";
+      let space = this.game.spaces[spacekey];
+      let z = faction;
       let squadrons = 0;
       let corsairs = 0;
 
@@ -29748,7 +30051,548 @@ return;
         }
         html += `<img class="navy_tile" src="${tile}" />`;
       }
- 
+
+    return html;
+  }
+
+  returnNavies(space) {
+
+    let html = '<div class="space_navy" id="">';
+    let tile = "";
+
+    for (let z in space.units) {
+      html += this.returnNavalTiles(z, space.key);
+      tile = html;
+    }
+    html += '</div>';
+
+    if (tile === "") { return tile; }
+
+    return html;
+
+  }
+
+  returnArmyTiles(faction, spacekey) {
+    let z = faction;
+    let space = this.game.spaces[spacekey];
+    let html = "";
+
+    if (this.game.state.board[z]) {
+      if (this.game.state.board[z].deployed[spacekey]) {
+          if (z === "hapsburg") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-1.svg" />`;
+	    }
+	  }
+          if (z === "ottoman") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-1.svg" />`;
+	    }
+	  }
+          if (z === "papacy") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-1.svg" />`;
+	    }
+	  }
+          if (z === "england") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-1.svg" />`;
+	    }
+	  }
+          if (z === "france") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-1.svg" />`;
+	    }
+	  }
+          if (z === "protestant") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-1.svg" />`;
+	    }
+	  }
+          if (z === "venice") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/venice/VeniceReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/venice/VeniceReg-1.svg" />`;
+	    }
+	  }
+          if (z === "genoa") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/genoa/GenoaReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/genoa/GenoaReg-1.svg" />`;
+	    }
+	  }
+          if (z === "hungary") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hungary/HungaryReg-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hungary/HungaryReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hungary/HungaryReg-1.svg" />`;
+	    }
+	  }
+          if (z === "scotland") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScotlandReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScotlandReg-1.svg" />`;
+	    }
+	  }
+          if (z === "independent") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentReg-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentReg-1.svg" />`;
+	    }
+	  }
+
+      }
+    }
+
+    return html;
+  }
+
+  returnArmies(space) {
+
+    let html = '<div class="space_army" id="">';
+    let tile = "";
+    let spacekey = space.key;
+    let controlling_faction = "";
+    if (space.political != "") { controlling_faction = space.political; } else {
+      if (space.home != "") { controlling_faction = space.home; }
+    }
+
+    for (let z in space.units) {
+
+      //
+      // ideally our space is "pre-calculated" and we can display the correct
+      // mix of tiles. this should be saved in this.game.state.board["papacy"]
+      // etc. see his-units for the returnOnBoardUnits() function that organizes
+      // this data object.
+      //
+      if (this.game.state.board[z]) {
+        html += this.returnMercenaryTiles(z, spacekey);
+        html += this.returnArmyTiles(z, spacekey);
+	tile = html;
+      } else {
+
+        new_units = false;
+
+	//
+	// AUTO - ARMIES
+	//
+        let army = 0;
+        for (let zz = 0; zz < space.units[z].length; zz++) {
+  	  if (space.units[z][zz].type === "regular") {
+	    new_units = true;
+	    army++;
+	  }
+        }
+
+        while (army >= 1) {
+          if (z === "hapsburg") {
+            tile = "/his/img/tiles/hapsburg/";	  
+	    if (army >= 4) {
+              tile += `HapsburgReg-4.svg`;
+	      army -= 4;
+	    } else {
+	      if (army >= 2) {
+                tile += `HapsburgReg-2.svg`;
+	        army -= 2;
+	      } else {
+	        if (army >= 1) {
+                  tile += `HapsburgReg-1.svg`;
+	          army -= 1;
+	        }
+	      }
+            }
+	  }
+          if (z === "england") {
+            tile = "/his/img/tiles/england/";	  
+	    if (army >= 4) {
+              tile += `EnglandReg-4.svg`;
+	      army -= 4;
+            } else {
+	      if (army >= 2) {
+                tile += `EnglandReg-2.svg`;
+	        army -= 2;
+              } else {
+	        if (army >= 1) {
+                  tile += `EnglandReg-1.svg`;
+	          army -= 1;
+                }
+              }
+	    }
+          }
+          if (z === "france") {
+            tile = "/his/img/tiles/france/";	  
+	    if (army >= 4) {
+              tile += `FrenchReg-4.svg`;
+	      army -= 4;
+            } else {
+	      if (army >= 2) {
+                tile += `FrenchReg-2.svg`;
+	        army -= 2;
+              } else {
+	        if (army >= 1) {
+                  tile += `FrenchReg-1.svg`;
+	          army -= 1;
+                }
+	      }
+	    }
+          }
+          if (z === "papacy") {
+            tile = "/his/img/tiles/papacy/";	  
+            if (army >= 4) {
+              tile += `PapacyReg-4.svg`;
+              army -= 4;
+            } else {
+	      if (army >= 2) {
+                tile += `PapacyReg-2.svg`;
+	        army -= 2;
+	      } else {
+	        if (army >= 1) {
+                  tile += `PapacyReg-1.svg`;
+	          army -= 1;
+	        }
+	      }
+	    }
+          }
+          if (z === "protestant") {
+            tile = "/his/img/tiles/protestant/";	  
+	    if (army >= 4) {
+              tile += `ProtestantReg-4.svg`;
+	      army -= 4;
+            } else {
+	      if (army >= 2) {
+                tile += `ProtestantReg-2.svg`;
+	        army -= 2;
+               } else {
+	         if (army >= 1) {
+                   tile += `ProtestantReg-1.svg`;
+	           army -= 1;
+                 }
+	       }
+            }
+          }
+          if (z === "ottoman") {
+            tile = "/his/img/tiles/ottoman/";	  
+	    if (army >= 4) {
+              tile += `OttomanReg-4.svg`;
+	      army -= 4;
+            } else {
+	      if (army >= 2) {
+                tile += `OttomanReg-2.svg`;
+	        army -= 2;
+              } else {
+	        if (army >= 1) {
+                  tile += `OttomanReg-1.svg`;
+	          army -= 1;
+                }
+              }
+            }
+          }
+          if (z === "independent") {
+            tile = "/his/img/tiles/independent/";	  
+	    if (army >= 2) {
+              tile += `IndependentReg-2.svg`;
+	      army -= 2;
+            } else {
+	      if (army >= 1) {
+                tile += `IndependentReg-1.svg`;
+	        army -= 1;
+              } 
+	    }
+          }
+          if (z === "venice") {
+            tile = "/his/img/tiles/venice/";	  
+	    if (army >= 2) {
+              tile += `VeniceReg-2.svg`;
+	      army -= 2;
+            } else {
+	      if (army >= 1) {
+                tile += `VeniceReg-1.svg`;
+	        army -= 1;
+              }
+	    }
+          }
+          if (z === "hungary") {
+            tile = "/his/img/tiles/hungary/";	  
+	    if (army >= 4) {
+              tile += `HungaryReg-4.svg`;
+	      army -= 4;
+            } else {
+	      if (army >= 2) {
+                tile += `HungaryReg-2.svg`;
+	        army -= 2;
+              } else {
+	        if (army >= 1) {
+                  tile += `HungaryReg-1.svg`;
+	          army -= 1;
+                }
+              }
+            }
+          }
+          if (z === "genoa") {
+            tile = "/his/img/tiles/genoa/";	  
+	    if (army >= 2) {
+              tile += `GenoaReg-2.svg`;
+	      army -= 2;
+            } else {
+	      if (army >= 1) {
+                tile += `GenoaReg-1.svg`;
+	        army -= 1;
+              }
+            }
+          }
+          if (z === "scotland") {
+            tile = "/his/img/tiles/scotland/";	  
+	    if (army >= 2) {
+              tile += `ScottishReg-2.svg`;
+	      army -= 2;
+            } else {
+	      if (army >= 1) {
+                tile += `ScottishReg-1.svg`;
+	        army -= 1;
+              }
+            } 
+          }
+        }
+
+        if (new_units == true) {
+          if (controlling_faction != "" && controlling_faction !== z) {
+            html += `<img class="army_tile army_tile" src="${tile}" />`;
+  	  } else {
+            html += `<img class="army_tile" src="${tile}" />`;
+	  }
+        }
+
+
+
+
+        new_units = false;
+
+        army = 0;
+        for (let zz = 0; zz < space.units[z].length; zz++) {
+          if (space.units[z][zz].type === "mercenary") {
+  	    new_units = true;
+            army++;
+          }
+        }
+
+        while (army > 0) {
+          if (z != "") {
+            if (z === "hapsburg") {
+              tile = "/his/img/tiles/hapsburg/";	  
+	      if (army >= 4) {
+                tile += `HapsburgMerc-4.svg`;
+	        army -= 4;
+	      } else {
+	      if (army >= 2) {
+                tile += `HapsburgMerc-2.svg`;
+	        army -= 2;
+	      } else {
+	      if (army >= 1) {
+                tile += `HapsburgMerc-1.svg`;
+	        army -= 1;
+	      }
+	      }
+	      }
+            }
+            if (z === "england") {
+              tile = "/his/img/tiles/england/";	  
+	      if (army >= 4) {
+                tile += `EnglandMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `EnglandMerc-2.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 1) {
+                tile += `EnglandMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "france") {
+              tile = "/his/img/tiles/france/";	  
+	      if (army >= 4) {
+                tile += `FrenchMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `FrenchMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `FrenchMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "papacy") {
+              tile = "/his/img/tiles/papacy/";	  
+	      if (army >= 4) {
+                tile += `PapacyMerc-4.svg`;
+	        army -= 4;
+	      } else {
+	      if (army >= 2 && tile.indexOf("svg") == -1) {
+                tile += `PapacyMerc-2.svg`;
+	        army -= 2;
+	      } else {
+	      if (army >= 1 && tile.indexOf("svg") == -1) {
+                tile += `PapacyMerc-1.svg`;
+	        army -= 1;
+	      }
+	      }
+	      }
+            }
+            if (z === "protestant") {
+              tile = "/his/img/tiles/protestant/";	  
+	      if (army >= 4) {
+                tile += `ProtestantMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `ProtestantMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `ProtestantMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "ottoman") {
+              tile = "/his/img/tiles/ottoman/";	  
+	      if (army >= 4) {
+                tile += `OttomanMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `OttomanMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `OttomanMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+          }
+
+
+          if (new_units == true) {
+            if (controlling_faction != "" && controlling_faction !== z) {
+              html += `<img class="army_tile army_tile" src="${tile}" />`;
+  	    } else {
+              html += `<img class="army_tile" src="${tile}" />`;
+	    }
+          }
+        }
+      }
     }
 
     html += '</div>';
@@ -29759,210 +30603,138 @@ return;
 
   }
 
-  returnArmies(space) {
+  returnMercenaryTiles(faction, spacekey) {
 
-    let html = '<div class="space_army" id="">';
-    let tile = "";
-    let controlling_faction = "";
-    if (space.political != "") { controlling_faction = space.political; } else {
-      if (space.home != "") { controlling_faction = space.home; }
-    }
+    let z = faction;
+    let space = this.game.spaces[spacekey];
+    let html = "";
 
-    for (let z in space.units) {
+    if (this.game.state.board[z]) {
+      if (this.game.state.board[z].deployed[spacekey]) {
 
-      new_units = false;
-
-      let army = 0;
-      for (let zz = 0; zz < space.units[z].length; zz++) {
-	if (space.units[z][zz].type === "regular") {
-	  new_units = true;
-	  army++;
-	}
+	  let tile = "";
+          if (z === "hapsburg") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "ottoman") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "papacy") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "england") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "france") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "protestant") {
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-6.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-5.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-4.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-3.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-2.svg" />`;
+	    }
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-1.svg" />`;
+	    }
+	  }
       }
-
-      while (army >= 1) {
-        if (z === "hapsburg") {
-          tile = "/his/img/tiles/hapsburg/";	  
-	  if (army >= 4) {
-            tile += `HapsburgReg-4.svg`;
-	    army -= 4;
-	  } else {
-	    if (army >= 2) {
-              tile += `HapsburgReg-2.svg`;
-	      army -= 2;
-	    } else {
-	      if (army >= 1) {
-                tile += `HapsburgReg-1.svg`;
-	        army -= 1;
-	      }
-	    }
-          }
-	}
-        if (z === "england") {
-          tile = "/his/img/tiles/england/";	  
-	  if (army >= 4) {
-            tile += `EnglandReg-4.svg`;
-	    army -= 4;
-          } else {
-	    if (army >= 2) {
-              tile += `EnglandReg-2.svg`;
-	      army -= 2;
-            } else {
-	      if (army >= 1) {
-                tile += `EnglandReg-1.svg`;
-	        army -= 1;
-              }
-            }
-	  }
-        }
-        if (z === "france") {
-          tile = "/his/img/tiles/france/";	  
-	  if (army >= 4) {
-            tile += `FrenchReg-4.svg`;
-	    army -= 4;
-          } else {
-	    if (army >= 2) {
-              tile += `FrenchReg-2.svg`;
-	      army -= 2;
-            } else {
-	      if (army >= 1) {
-                tile += `FrenchReg-1.svg`;
-	        army -= 1;
-              }
-	    }
-	  }
-        }
-        if (z === "papacy") {
-          tile = "/his/img/tiles/papacy/";	  
-          if (army >= 4) {
-            tile += `PapacyReg-4.svg`;
-            army -= 4;
-          } else {
-	    if (army >= 2) {
-              tile += `PapacyReg-2.svg`;
-	      army -= 2;
-	    } else {
-	      if (army >= 1) {
-                tile += `PapacyReg-1.svg`;
-	        army -= 1;
-	      }
-	    }
-	  }
-        }
-        if (z === "protestant") {
-          tile = "/his/img/tiles/protestant/";	  
-	  if (army >= 4) {
-            tile += `ProtestantReg-4.svg`;
-	    army -= 4;
-          } else {
-	    if (army >= 2) {
-              tile += `ProtestantReg-2.svg`;
-	      army -= 2;
-            } else {
-	      if (army >= 1) {
-                tile += `ProtestantReg-1.svg`;
-	        army -= 1;
-              }
-	    }
-          }
-        }
-        if (z === "ottoman") {
-          tile = "/his/img/tiles/ottoman/";	  
-	  if (army >= 4) {
-            tile += `OttomanReg-4.svg`;
-	    army -= 4;
-          } else {
-	    if (army >= 2) {
-              tile += `OttomanReg-2.svg`;
-	      army -= 2;
-            } else {
-	      if (army >= 1) {
-                tile += `OttomanReg-1.svg`;
-	        army -= 1;
-              }
-            }
-          }
-        }
-        if (z === "independent") {
-          tile = "/his/img/tiles/independent/";	  
-	  if (army >= 2) {
-            tile += `IndependentReg-2.svg`;
-	    army -= 2;
-          } else {
-	    if (army >= 1) {
-              tile += `IndependentReg-1.svg`;
-	      army -= 1;
-            } 
-	  }
-        }
-        if (z === "venice") {
-          tile = "/his/img/tiles/venice/";	  
-	  if (army >= 2) {
-            tile += `VeniceReg-2.svg`;
-	    army -= 2;
-          } else {
-	    if (army >= 1) {
-              tile += `VeniceReg-1.svg`;
-	      army -= 1;
-            }
-	  }
-        }
-        if (z === "hungary") {
-          tile = "/his/img/tiles/hungary/";	  
-	  if (army >= 4) {
-            tile += `HungaryReg-4.svg`;
-	    army -= 4;
-          } else {
-	    if (army >= 2) {
-              tile += `HungaryReg-2.svg`;
-	      army -= 2;
-            } else {
-	      if (army >= 1) {
-                tile += `HungaryReg-1.svg`;
-	        army -= 1;
-              }
-            }
-          }
-        }
-        if (z === "genoa") {
-          tile = "/his/img/tiles/genoa/";	  
-	  if (army >= 2) {
-            tile += `GenoaReg-2.svg`;
-	    army -= 2;
-          } else {
-	    if (army >= 1) {
-              tile += `GenoaReg-1.svg`;
-	      army -= 1;
-            }
-          }
-        }
-        if (z === "scotland") {
-          tile = "/his/img/tiles/scotland/";	  
-	  if (army >= 2) {
-            tile += `ScottishReg-2.svg`;
-	    army -= 2;
-          } else {
-	    if (army >= 1) {
-              tile += `ScottishReg-1.svg`;
-	      army -= 1;
-            }
-          } 
-        }
-      }
-
-      if (new_units == true) {
-        if (controlling_faction != "" && controlling_faction !== z) {
-          html += `<img class="occupying_army_tile" src="${tile}" />`;
-	} else {
-          html += `<img class="army_tile" src="${tile}" />`;
-	}
-      } 
-
     }
-
-    html += '</div>';
-
-    if (tile === "") { return tile; }
 
     return html;
 
@@ -29973,125 +30745,138 @@ return;
 
     let html = '<div class="space_mercenaries" id="">';
     let tile = "";
+    let spacekey = space.key;
 
     for (let z in space.units) {
 
-      new_units = false;
+      //
+      // ideally our space is "pre-calculated" and we can display the correct
+      // mix of tiles. this should be saved in this.game.state.board["papacy"]
+      // etc. see his-units for the returnOnBoardUnits() function that organizes
+      // this data object.
+      //
+      if (this.game.state.board[z]) {
+        html += this.returnMercenaryTiles(z, spacekey);
+	tile = html;
+      } else {
 
-      let army = 0;
-      for (let zz = 0; zz < space.units[z].length; zz++) {
-        if (space.units[z][zz].type === "mercenary") {
-	  new_units = true;
-          army++;
-        }
-      }
+        new_units = false;
 
-      while (army > 0) {
-        if (z != "") {
-          if (z === "hapsburg") {
-            tile = "/his/img/tiles/hapsburg/";	  
-	    if (army >= 4) {
-              tile += `HapsburgMerc-4.svg`;
-	      army -= 4;
-	    } else {
-	    if (army >= 2) {
-              tile += `HapsburgMerc-2.svg`;
-	      army -= 2;
-	    } else {
-	    if (army >= 1) {
-              tile += `HapsburgMerc-1.svg`;
-	      army -= 1;
-	    }
-	    }
-	    }
-          }
-          if (z === "england") {
-            tile = "/his/img/tiles/england/";	  
-	    if (army >= 4) {
-              tile += `EnglandMerc-4.svg`;
-	      army -= 4;
-            } else {
-	    if (army >= 2) {
-              tile += `EnglandMerc-2.svg`;
-	      army -= 4;
-            } else {
-	    if (army >= 1) {
-              tile += `EnglandMerc-1.svg`;
-	      army -= 1;
-            }
-            }
-            }
-          }
-          if (z === "france") {
-            tile = "/his/img/tiles/france/";	  
-	    if (army >= 4) {
-              tile += `FrenchMerc-4.svg`;
-	      army -= 4;
-            } else {
-	    if (army >= 2) {
-              tile += `FrenchMerc-2.svg`;
-	      army -= 2;
-            } else {
-	    if (army >= 1) {
-              tile += `FrenchMerc-1.svg`;
-	      army -= 1;
-            }
-            }
-            }
-          }
-          if (z === "papacy") {
-            tile = "/his/img/tiles/papacy/";	  
-	    if (army >= 4) {
-              tile += `PapacyMerc-4.svg`;
-	      army -= 4;
-	    } else {
-	    if (army >= 2 && tile.indexOf("svg") == -1) {
-              tile += `PapacyMerc-2.svg`;
-	      army -= 2;
-	    } else {
-	    if (army >= 1 && tile.indexOf("svg") == -1) {
-              tile += `PapacyMerc-1.svg`;
-	      army -= 1;
-	    }
-	    }
-	    }
-          }
-          if (z === "protestant") {
-            tile = "/his/img/tiles/protestant/";	  
-	    if (army >= 4) {
-              tile += `ProtestantMerc-4.svg`;
-	      army -= 4;
-            } else {
-	    if (army >= 2) {
-              tile += `ProtestantMerc-2.svg`;
-	      army -= 2;
-            } else {
-	    if (army >= 1) {
-              tile += `ProtestantMerc-1.svg`;
-	      army -= 1;
-            }
-            }
-            }
-          }
-          if (z === "ottoman") {
-            tile = "/his/img/tiles/ottoman/";	  
-	    if (army >= 4) {
-              tile += `OttomanMerc-4.svg`;
-	      army -= 4;
-            } else {
-	    if (army >= 2) {
-              tile += `OttomanMerc-2.svg`;
-	      army -= 2;
-            } else {
-	    if (army >= 1) {
-              tile += `OttomanMerc-1.svg`;
-	      army -= 1;
-            }
-            }
-            }
+        let army = 0;
+        for (let zz = 0; zz < space.units[z].length; zz++) {
+          if (space.units[z][zz].type === "mercenary") {
+  	    new_units = true;
+            army++;
           }
         }
-        html += `<img class="mercenary_tile" src="${tile}" />`;
+
+        while (army > 0) {
+          if (z != "") {
+            if (z === "hapsburg") {
+              tile = "/his/img/tiles/hapsburg/";	  
+	      if (army >= 4) {
+                tile += `HapsburgMerc-4.svg`;
+	        army -= 4;
+	      } else {
+	      if (army >= 2) {
+                tile += `HapsburgMerc-2.svg`;
+	        army -= 2;
+	      } else {
+	      if (army >= 1) {
+                tile += `HapsburgMerc-1.svg`;
+	        army -= 1;
+	      }
+	      }
+	      }
+            }
+            if (z === "england") {
+              tile = "/his/img/tiles/england/";	  
+	      if (army >= 4) {
+                tile += `EnglandMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `EnglandMerc-2.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 1) {
+                tile += `EnglandMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "france") {
+              tile = "/his/img/tiles/france/";	  
+	      if (army >= 4) {
+                tile += `FrenchMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `FrenchMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `FrenchMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "papacy") {
+              tile = "/his/img/tiles/papacy/";	  
+	      if (army >= 4) {
+                tile += `PapacyMerc-4.svg`;
+	        army -= 4;
+	      } else {
+	      if (army >= 2 && tile.indexOf("svg") == -1) {
+                tile += `PapacyMerc-2.svg`;
+	        army -= 2;
+	      } else {
+	      if (army >= 1 && tile.indexOf("svg") == -1) {
+                tile += `PapacyMerc-1.svg`;
+	        army -= 1;
+	      }
+	      }
+	      }
+            }
+            if (z === "protestant") {
+              tile = "/his/img/tiles/protestant/";	  
+	      if (army >= 4) {
+                tile += `ProtestantMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `ProtestantMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `ProtestantMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+            if (z === "ottoman") {
+              tile = "/his/img/tiles/ottoman/";	  
+	      if (army >= 4) {
+                tile += `OttomanMerc-4.svg`;
+	        army -= 4;
+              } else {
+	      if (army >= 2) {
+                tile += `OttomanMerc-2.svg`;
+	        army -= 2;
+              } else {
+	      if (army >= 1) {
+                tile += `OttomanMerc-1.svg`;
+	        army -= 1;
+              }
+              }
+              }
+            }
+          }
+          html += `<img class="mercenary_tile" src="${tile}" />`;
+        }
       }
     }
 
@@ -30103,14 +30888,13 @@ return;
 
   }
 
-  returnPersonages(space) {
+  returnPersonagesTiles(faction, spacekey) {
 
-    let html = '<div class="figures_tile" id="">';
-    let owner = space.political;
-    if (owner == "") { owner = space.home; }
-    let tile = "";
+    let z = faction;
+    let space = this.game.spaces[spacekey];
 
-    for (let z in space.units) {
+    let html = "";
+
       for (let zz = 0; zz < space.units[z].length; zz++) {
 	if (space.units[z][zz].debater === true) {
           html += `<img src="/his/img/tiles/debater/${space.units[z][zz].img}" />`;
@@ -30130,9 +30914,21 @@ return;
 	      }
 	    }
 	  }
-	  tile = html;
 	}
       }
+    return html;
+  }
+
+  returnPersonages(space) {
+
+    let html = '<div class="figures_tile" id="">';
+    let owner = space.political;
+    if (owner == "") { owner = space.home; }
+    let tile = "";
+
+    for (let z in space.units) {
+      html = this.returnPersonagesTiles(z, space.key);
+      tile = html;
     }
 
     html += '</div>';
@@ -30144,6 +30940,16 @@ return;
   }
 
   displaySpace(key) {
+
+    let ts = new Date().getTime();
+    if (this.game.state.board_updated < ts + 20000) {
+      this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
+      this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
+      this.game.state.board["england"] = this.returnOnBoardUnits("england");
+      this.game.state.board["france"] = this.returnOnBoardUnits("france");
+      this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
+      this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
+    }
 
     if (!this.game.spaces[key]) { return; }
 
@@ -30195,7 +31001,6 @@ return;
         obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
         obj.innerHTML += this.returnArmies(space);
         obj.innerHTML += this.returnNavies(space);
-        obj.innerHTML += this.returnMercenaries(space);
         obj.innerHTML += this.returnPersonages(space);
       }
 
@@ -30271,14 +31076,23 @@ return;
     let his_self = this;
 
     //
+    // generate faction tile info
+    //
+    if (!this.game.state.board) {
+      this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
+      this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
+      this.game.state.board["england"] = this.returnOnBoardUnits("england");
+      this.game.state.board["france"] = this.returnOnBoardUnits("france");
+      this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
+      this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
+    }
+
+    //
     // add tiles
     //
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-//        document.getElementById(key).onclick = (e) => {
-//	  this.displaySpaceDetailedView(key);
-//        }
       }
     }
 
