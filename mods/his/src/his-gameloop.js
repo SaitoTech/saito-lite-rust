@@ -440,8 +440,8 @@ if (this.game.state.scenario == "is_testing") {
 		  if (space.besieged > 0) {
 		    space.besieged = 0;
 		    for (let key in this.game.spaces[i].units) {
-		      for (let i = 0; i < this.game.spaces[i].units[key].length; i++) {
-			this.game.spaces[i].units[key][i].besieged = 0;
+		      for (let ii = 0; ii < this.game.spaces[i].units[key].length; ii++) {
+			this.game.spaces[i].units[key][ii].besieged = 0;
 		      }
 		    }
 		  }

@@ -3425,7 +3425,7 @@ console.log("A");
 	    //
 	    // now check if there are squadrons in the port or sea protecting the town
 	    //
-	    let space = his_self.game.space[conquerable_spaces[i]];
+	    let space = his_self.game.spaces[conquerable_spaces[i]];
 
 	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	    if (squadrons_protecting_space == 0) { return 1; }
