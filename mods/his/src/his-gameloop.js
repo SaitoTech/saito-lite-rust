@@ -254,6 +254,23 @@ if (this.game.state.scenario == "is_testing") {
 
 	}
 
+	//
+	// passes through, but removes instructions that cannot remove themselves because of 
+	// ACKNOWLEDGE fussiness with skip_counter_or_acknowledge
+	//
+	if (mv[0] === "passthrough") {
+	  let lqe = qe - 1;
+	  if (lqe >= 0) {
+	    let lmv = this.game.queue[lqe].split("\t");
+	    if (lmv[0] === "protestant_reformation" || lmv[0] === "catholic_counter_reformation") {
+              this.game.queue.splice(qe, 1);
+	      qe--;
+	    }
+	  }
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
 	if (mv[0] === "pass") {
  
           let faction = mv[1];
@@ -2130,7 +2147,7 @@ console.log("@");
 	    let ack = 1;
 
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
-	      if (this.game.confirms_needed[i] == 1) { ack = 0; }
+	      if (this.game.confirms_needed[i] >= 1) { ack = 0; }
 	    }
 	    if (ack == 1) { this.game.queue.splice(qe, 1); }
 	    this.updateStatus("acknowledged");
@@ -2188,8 +2205,11 @@ console.log("attach menu events? " + attach_menu_events);
 	    if (attach_menu_events == 0) {
 	      // manually add, to avoid re-processing
 	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-	        his_self.game.confirms_needed[his_self.game.player-1] = 2;
+
+	        //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+		// add ghost -- so if we remove something it's the ghost
+                his_self.prependMove("passthrough");
 	        his_self.updateStatus("skipping acknowledge...");
                 his_self.endTurn();
 	      } else {

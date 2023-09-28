@@ -1364,10 +1364,12 @@ if (limit === "build") {
         html    += `<li class="card" id="end_turn">end turn</li>`;
         html    += `</ul>`;
 
-	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops);
+	let attachEventsToMenuOptions = () => {
 
         his_self.updateStatusWithOptions(`${his_self.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
+
+	  his_self.menu_overlay.hide();
 
           if (user_choice === "end_turn") {
             this.endTurn();
@@ -1467,6 +1469,13 @@ if (limit === "build") {
 	    }
 	  }
         });
+
+	} // function
+
+	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops, attachEventsToMenuOptions);
+
+	attachEventsToMenuOptions();
+
       });
     } else {
 
@@ -1490,10 +1499,12 @@ if (limit === "build") {
       html    += `<li class="card" id="end_turn">end turn</li>`;
       html    += `</ul>`;
 
-      this.menu_overlay.render(menu, this.game.player, faction, ops);
+      let attachEventsToMenuOptions = () => {
 
       this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
+
+	his_self.menu_overlay.hide();
 
         if (user_choice === "end_turn") {
           this.endTurn();
@@ -1543,6 +1554,13 @@ if (limit === "build") {
 
 	}
       });
+
+
+      } // attach events to menu options
+
+      this.menu_overlay.render(menu, this.game.player, faction, ops, attachEventsToMenuOptions);
+      attachEventsToMenuOptions();
+
 
     }
   }
@@ -2010,7 +2028,6 @@ console.log("A");
 		for (let i = 0; i < units_to_move.length; i++) {
 		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 		  if (unitno >= max_formation_size) { 
-console.log("B");
 		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	            if (unitno >= max_formation_size) { 
 	              alert("Maximum Formation Size: " + max_formation_size);

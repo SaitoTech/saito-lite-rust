@@ -5753,7 +5753,6 @@ if (this.game.players.length > 2) {
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
-          his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
 	    function(space) {
@@ -5781,6 +5780,7 @@ if (this.game.players.length > 2) {
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid counter-reformation targets"); 
 	    his_self.updateLog("No valid counter-reformation targets"); 
+	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -5818,6 +5818,7 @@ if (this.game.players.length > 2) {
 	      //
 	      function(spacekey) {
 	  	his_self.updateStatus("Counter-Reformation attempt: "+his_self.returnSpaceName(spacekey));
+		his_self.addMove("passthrough");
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
 		let name = his_self.game.spaces[spacekey].name;
 		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt: "+his_self.returnSpaceName(spacekey)+"\tcatholic_counter_reformation\t"+name);
@@ -5831,6 +5832,7 @@ if (this.game.players.length > 2) {
 
 	    );
 	    } else {
+	      his_self.addMove("passthrough");
 	      his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation - no valid targets");
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
@@ -5855,8 +5857,6 @@ console.log("#");
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
-
-          his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
 	    function(space) {
@@ -5886,6 +5886,7 @@ console.log("#");
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid reformation targets"); 
 	    his_self.updateLog("No valid reformation targets"); 
+	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -5929,6 +5930,7 @@ console.log("#");
 	        // launch reformation
 	        //
 	        function(spacekey) {
+	  	  his_self.addMove("passthrough");
 	  	  his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
 		  his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -5939,6 +5941,7 @@ console.log("#");
 	        1     // permit board clicks
 	      );
 	    } else {
+	      his_self.addMove("passthrough");
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.updateStatus("No Valid Targets");
@@ -16656,6 +16659,23 @@ if (this.game.state.scenario == "is_testing") {
 
 	}
 
+	//
+	// passes through, but removes instructions that cannot remove themselves because of 
+	// ACKNOWLEDGE fussiness with skip_counter_or_acknowledge
+	//
+	if (mv[0] === "passthrough") {
+	  let lqe = qe - 1;
+	  if (lqe >= 0) {
+	    let lmv = this.game.queue[lqe].split("\t");
+	    if (lmv[0] === "protestant_reformation" || lmv[0] === "catholic_counter_reformation") {
+              this.game.queue.splice(qe, 1);
+	      qe--;
+	    }
+	  }
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
 	if (mv[0] === "pass") {
  
           let faction = mv[1];
@@ -18532,7 +18552,7 @@ console.log("@");
 	    let ack = 1;
 
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
-	      if (this.game.confirms_needed[i] == 1) { ack = 0; }
+	      if (this.game.confirms_needed[i] >= 1) { ack = 0; }
 	    }
 	    if (ack == 1) { this.game.queue.splice(qe, 1); }
 	    this.updateStatus("acknowledged");
@@ -18590,8 +18610,11 @@ console.log("attach menu events? " + attach_menu_events);
 	    if (attach_menu_events == 0) {
 	      // manually add, to avoid re-processing
 	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-	        his_self.game.confirms_needed[his_self.game.player-1] = 2;
+
+	        //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
+		// add ghost -- so if we remove something it's the ghost
+                his_self.prependMove("passthrough");
 	        his_self.updateStatus("skipping acknowledge...");
                 his_self.endTurn();
 	      } else {
@@ -25426,10 +25449,12 @@ if (limit === "build") {
         html    += `<li class="card" id="end_turn">end turn</li>`;
         html    += `</ul>`;
 
-	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops);
+	let attachEventsToMenuOptions = () => {
 
         his_self.updateStatusWithOptions(`${his_self.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
+
+	  his_self.menu_overlay.hide();
 
           if (user_choice === "end_turn") {
             this.endTurn();
@@ -25529,6 +25554,13 @@ if (limit === "build") {
 	    }
 	  }
         });
+
+	} // function
+
+	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops, attachEventsToMenuOptions);
+
+	attachEventsToMenuOptions();
+
       });
     } else {
 
@@ -25552,10 +25584,12 @@ if (limit === "build") {
       html    += `<li class="card" id="end_turn">end turn</li>`;
       html    += `</ul>`;
 
-      this.menu_overlay.render(menu, this.game.player, faction, ops);
+      let attachEventsToMenuOptions = () => {
 
       this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
+
+	his_self.menu_overlay.hide();
 
         if (user_choice === "end_turn") {
           this.endTurn();
@@ -25605,6 +25639,13 @@ if (limit === "build") {
 
 	}
       });
+
+
+      } // attach events to menu options
+
+      this.menu_overlay.render(menu, this.game.player, faction, ops, attachEventsToMenuOptions);
+      attachEventsToMenuOptions();
+
 
     }
   }
@@ -26072,7 +26113,6 @@ console.log("A");
 		for (let i = 0; i < units_to_move.length; i++) {
 		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 		  if (unitno >= max_formation_size) { 
-console.log("B");
 		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	            if (unitno >= max_formation_size) { 
 	              alert("Maximum Formation Size: " + max_formation_size);
@@ -29397,11 +29437,6 @@ return;
       deployed_units[key]['mercenary']['6'] = 0;
     }
 
-
-if (faction == "hapsburg") {
-  console.log("HERE ARE HAPSBURG SPACES!");
-  console.log(JSON.stringify(my_spaces));
-}
 
     //
     // order spaces 

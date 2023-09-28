@@ -9484,10 +9484,6 @@ if (inc_optional == true) {
       }
     }
 
-console.log("SHUFFLING IN THESE CARDS: ");
-for (let key in shuffle_in_these_cards) { console.log(key); }
-
-
     //
     // shuffle in new cards
     //

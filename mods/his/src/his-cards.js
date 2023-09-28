@@ -2802,7 +2802,6 @@
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
-          his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
 	    function(space) {
@@ -2830,6 +2829,7 @@
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid counter-reformation targets"); 
 	    his_self.updateLog("No valid counter-reformation targets"); 
+	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -2867,6 +2867,7 @@
 	      //
 	      function(spacekey) {
 	  	his_self.updateStatus("Counter-Reformation attempt: "+his_self.returnSpaceName(spacekey));
+		his_self.addMove("passthrough");
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
 		let name = his_self.game.spaces[spacekey].name;
 		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt: "+his_self.returnSpaceName(spacekey)+"\tcatholic_counter_reformation\t"+name);
@@ -2880,6 +2881,7 @@
 
 	    );
 	    } else {
+	      his_self.addMove("passthrough");
 	      his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation - no valid targets");
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
@@ -2904,8 +2906,6 @@ console.log("#");
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
-
-          his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
 	    function(space) {
@@ -2935,6 +2935,7 @@ console.log("#");
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid reformation targets"); 
 	    his_self.updateLog("No valid reformation targets"); 
+	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -2978,6 +2979,7 @@ console.log("#");
 	        // launch reformation
 	        //
 	        function(spacekey) {
+	  	  his_self.addMove("passthrough");
 	  	  his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
 		  his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -2988,6 +2990,7 @@ console.log("#");
 	        1     // permit board clicks
 	      );
 	    } else {
+	      his_self.addMove("passthrough");
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.updateStatus("No Valid Targets");

@@ -22,6 +22,50 @@
   max-height: 181px;
 }
 
+.menu.menu-large {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  width: 90vw;
+  height: 85vh;
+  max-width: 1000px;
+  column-gap: 2rem;
+  overflow-y: auto;
+  background-color: transparent;
+  row-gap: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.menu-option-container-large {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--saito-border-color);
+  position: relative;
+  cursor: pointer;
+}
+.menu-option-title-large {
+    background: #0009;
+    width: max-content;
+    padding: 1.5rem;
+    font-size: 3rem;
+    color: white;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+}
+.move-menu {
+  background-image: url(/his/img/backgrounds/move/move_over_pass.jpg);
+  background-size: cover;
+}
+.build-menu {
+  background-image: url(/his/img/backgrounds/move/corsair.jpg);
+  background-size: cover;
+}
+.special-menu {
+  background-image: url(/his/img/backgrounds/move/colonize.jpg);
+  background-size: cover;
+}
+
+
 .menu-option-image {
   width: 100%;
   height: 100%;
