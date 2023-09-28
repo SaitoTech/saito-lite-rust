@@ -50,6 +50,8 @@ class Registry extends ModTemplate {
 
     //
     // set true for testing locally
+    // All it does is allows both main nodes and lite clients to update
+    // this.registry_publickey with the public key of the main node
     //
     this.local_dev = 0;
 
@@ -265,7 +267,7 @@ class Registry extends ModTemplate {
   // Throws errors for invalid identifier types
   //
   async tryRegisterIdentifier(identifier, domain = "@saito") {
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.registry_publickey);
     if (!newtx) {
       //console.log("NULL TX CREATED IN REGISTRY MODULE");
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
@@ -280,12 +282,12 @@ class Registry extends ModTemplate {
       newtx.msg.request = "register";
       newtx.msg.identifier = identifier + domain;
 
-      newtx.addTo(this.registry_publickey);
+      newtx.addTo(this.publicKey);
 
       await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
 
-      console.log(newtx);
+      console.log("REGISTRY tx: ", newtx);
 
       // sucessful send
       return true;
@@ -322,7 +324,6 @@ class Registry extends ModTemplate {
     }
 
     if (service.service === "registry") {
-      console.log("Registry connected:", peer.publicKey);
       this.peers.push(peer);
 
       //
@@ -334,6 +335,8 @@ class Registry extends ModTemplate {
       if (this.local_dev) {
         this.registry_publickey = peer.publicKey;
       }
+
+      console.log("Registry connected:", peer.publicKey, " and/but using: ", this.registry_publickey);
 
       let myKey = app.keychain.returnKey(this.publicKey, true);
       if (myKey?.identifier) {
