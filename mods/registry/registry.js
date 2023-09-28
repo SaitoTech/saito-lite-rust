@@ -2,11 +2,8 @@ const ModTemplate = require("./../../lib/templates/modtemplate");
 const RegisterUsernameOverlay = require("./lib/register-username");
 const PeerService = require("saito-js/lib/peer_service").default;
 
-
 class Registry extends ModTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
@@ -20,8 +17,8 @@ class Registry extends ModTemplate {
     this.registry_publickey = "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK";
 
     //
-    // if you are not this publickey, but you have a peer with this 
-    // publickey, the module will fire off a request to check whether it 
+    // if you are not this publickey, but you have a peer with this
+    // publickey, the module will fire off a request to check whether it
     // has any specific addresses if it is asked for information on an
     // address that it does not have
     //
@@ -38,34 +35,34 @@ class Registry extends ModTemplate {
     // to avoid the need for database hits on simple DNS queries.
     //
     // this set of cached keys is updated by the browser in fetchManyIdentifiers()
-    // after it gets a response from the server. It is updated by the server in 
+    // after it gets a response from the server. It is updated by the server in
     // handlePeerTransaction() when it fields a request from the browser.
     //
-    // servers will periodically remove content 
+    // servers will periodically remove content
     //
     this.cached_keys = {};
 
     //
-    // we keep a copy of our own publicKey for convenience. this is set in 
+    // we keep a copy of our own publicKey for convenience. this is set in
     // super.initialize(app).
     //
     this.publicKey = "";
 
     //
     // set true for testing locally
+    // All it does is allows both main nodes and lite clients to update
+    // this.registry_publickey with the public key of the main node
     //
-    this.local_dev = false;
-    this.local_dev = true;
+    this.local_dev = 0;
 
     //
     // EVENTS
     //
-    // Saito Registry module supports two main events, one that fetches identifiers from 
+    // Saito Registry module supports two main events, one that fetches identifiers from
     // the DNS service and then updates the DOM, and a second that starts the registration
     // process by showing a popup. The first is the entry point for most applications.
     //
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", async (keys) => {
-
       let unidentified_keys = [];
 
       for (let i = 0; i < keys.length; i++) {
@@ -77,15 +74,13 @@ class Registry extends ModTemplate {
       }
 
       this.fetchManyIdentifiers(unidentified_keys, (answer) => {
-
         Object.entries(answer).forEach(([key, value]) => {
           if (value !== this.publicKey) {
-
             this.cached_keys[key] = value;
 
             //
             // if this is a key that is stored in our keychain, then we want
-	    // to update the cached value that we have stored there as well
+            // to update the cached value that we have stored there as well
             //
             if (this.app.keychain.returnKey(key, true) && key !== value) {
               this.app.keychain.addKey({ publicKey: key, identifier: value });
@@ -123,18 +118,18 @@ class Registry extends ModTemplate {
     return this;
   }
 
-
   //
   // initialization
   //
   async initialize(app) {
-
     await super.initialize(app);
 
     if (this.app.BROWSER == 0) {
-      if (this.local_dev) { this.registry_publickey = this.publicKey; }
+      if (this.local_dev) {
+        this.registry_publickey = this.publicKey;
+        console.log("Registry public key: " + this.registry_publickey);
+      }
     }
-
   }
 
   //
@@ -142,26 +137,24 @@ class Registry extends ModTemplate {
   //
   returnServices() {
     let services = [];
-    if (this.app.BROWSER == 0) { services.push(new PeerService(null, "registry", "saito")); }
+    if (this.app.BROWSER == 0) {
+      services.push(new PeerService(null, "registry", "saito"));
+    }
     return services;
   }
-
-
-
 
   //
   // fetching identifiers
   //
   // this function is run on the browsers, triggered by the event that wants to re-write the DOM
-  // so it will query the first peer it sees that runs the registry module and ask it for the 
+  // so it will query the first peer it sees that runs the registry module and ask it for the
   // identifiers
   //
-  // this first checks the cache that browsers maintain in their own memory that maps keys to 
+  // this first checks the cache that browsers maintain in their own memory that maps keys to
   // identifiers and only fetches information from the server when that does not work or find
   // an address. this is intended to limit the load on the parent server.
   //
   fetchManyIdentifiers(publickeys = [], mycallback = null) {
-
     let registry_self = this;
 
     if (mycallback == null) {
@@ -188,21 +181,17 @@ class Registry extends ModTemplate {
     } else {
     }
 
-
     if (1) {
-
-      this.queryKeys(this.peers[0], missing_keys, function(identifiers) {
+      this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
         for (let key in identifiers) {
-	  registry_self.cached_keys[key] = identifiers[key];
-	  found_keys[key] = identifiers[key];;
-	}
-	mycallback(found_keys);
+          registry_self.cached_keys[key] = identifiers[key];
+          found_keys[key] = identifiers[key];
+        }
+        mycallback(found_keys);
       });
-
     } else {
-
       //
-      // 
+      //
       //
       const where_statement = `publickey in ("${missing_keys.join('","')}")`;
       const sql = `SELECT *
@@ -228,21 +217,14 @@ class Registry extends ModTemplate {
           }
         },
         (p) => {
-  	  if (p.hasService("registry")) { return 1; }
-	  return 0;
+          if (p.hasService("registry")) {
+            return 1;
+          }
+          return 0;
         }
       );
-
     }
   }
-
-
-
-
-
-
-
-
 
   respondTo(type = "") {
     if (type == "saito-return-key") {
@@ -285,7 +267,7 @@ class Registry extends ModTemplate {
   // Throws errors for invalid identifier types
   //
   async tryRegisterIdentifier(identifier, domain = "@saito") {
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.registry_publickey);
     if (!newtx) {
       //console.log("NULL TX CREATED IN REGISTRY MODULE");
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
@@ -300,12 +282,12 @@ class Registry extends ModTemplate {
       newtx.msg.request = "register";
       newtx.msg.identifier = identifier + domain;
 
-      newtx.addTo(this.registry_publickey);
+      newtx.addTo(this.publicKey);
 
       await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
 
-      console.log(newtx);
+      console.log("REGISTRY tx: ", newtx);
 
       // sucessful send
       return true;
@@ -314,12 +296,13 @@ class Registry extends ModTemplate {
     }
   }
 
-
-
   queryKeys(peer, keys, mycallback) {
-
-    if (!peer) { return; }
-    if (!peer.peerIndex) { return; }
+    if (!peer) {
+      return;
+    }
+    if (!peer.peerIndex) {
+      return;
+    }
 
     let data = {
       request: "registry query",
@@ -335,33 +318,65 @@ class Registry extends ModTemplate {
     );
   }
 
-
   onPeerServiceUp(app, peer, service = {}) {
-
     if (!app.BROWSER) {
       return;
     }
 
     if (service.service === "registry") {
       this.peers.push(peer);
-    }
 
-    //
-    // if we have instructed the server to run this application locally then we
-    // want browsers (connecting to the server) to update their registry publickey
-    // so the publickey of the server.
-    //
-    if (this.local_dev) {
-      if (service.service === "registry") {
+      //
+      // if we have instructed the server to run this application locally then we
+      // want browsers (connecting to the server) to update their registry publickey
+      // so the publickey of the server.
+      //
+
+      if (this.local_dev) {
         this.registry_publickey = peer.publicKey;
       }
+
+      console.log("Registry connected:", peer.publicKey, " and/but using: ", this.registry_publickey);
+
+      let myKey = app.keychain.returnKey(this.publicKey, true);
+      if (myKey?.identifier) {
+        this.sendPeerDatabaseRequestWithFilter(
+          "Registry",
+          `SELECT * FROM records WHERE publickey = "${this.publicKey}"`,
+          (res) => {
+            let fail = true;
+
+            if (res.rows.length > 0) {
+              if (res.rows[0].identifier !== myKey.identifier) {
+                console.warn("Registry has a different name for our key");
+                console.log(res.rows);
+              } else {
+                return;
+              }
+            } else {
+              console.warn("Our identifier not visible in the Registry");
+            }
+
+            let identifier = myKey.identifier.split("@");
+            if (identifier.length !== 2) {
+              console.warn("Invalid identifier");
+              console.log(myKey.identifier);
+              return;
+            }
+            this.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
+            console.log("Attempting to register our name again");
+          },
+          (p) => {
+          if (p.publicKey == peer.publicKey) {
+            return 1;
+          }
+          return 0;
+        }
+
+        );
+      }
     }
-
   }
-
-
-
-
 
   /////////////////////////////
   // HANDLE PEER TRANSACTION //
@@ -370,10 +385,13 @@ class Registry extends ModTemplate {
   // data queries hit here
   //
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
-
-    if (newtx == null) { return; }
+    if (newtx == null) {
+      return;
+    }
     let txmsg = newtx.returnMessage();
-    if (!txmsg?.data) { return; }
+    if (!txmsg?.data) {
+      return;
+    }
 
     if (txmsg.data.request === "registry query") {
       let keys = txmsg?.data?.keys;
@@ -382,17 +400,15 @@ class Registry extends ModTemplate {
     }
 
     await super.handlePeerTransaction(app, newtx, peer, mycallback);
-
   }
 
-
   //
-  // There are TWO types of requests that this module will process on-chain. The first is 
+  // There are TWO types of requests that this module will process on-chain. The first is
   // the request to REGISTER a @saito address. This will only be processed by the node that
   // is running the publickey identified in this module as the "registry_publickey".
   //
   // The second is a confirmation that the node running the domain broadcasts into the network
-  // with a proof-of-registration. All nodes that run the DNS service should listen for 
+  // with a proof-of-registration. All nodes that run the DNS service should listen for
   // these messages and add the records into their own copy of the database, along with the
   // signed proof-of-registration.
   //
@@ -400,9 +416,7 @@ class Registry extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-
       if (!!txmsg && txmsg.module === "Registry") {
-
         /////////////////////////////////////////
         // REGISTRATION REQUESTS - main server //
         /////////////////////////////////////////
@@ -493,30 +507,24 @@ class Registry extends ModTemplate {
       // OTHER SERVERS - mirror central DNS //
       ////////////////////////////////////////
       if (!!txmsg && txmsg.module == "Email") {
-
         if (tx.from[0].publicKey == this.registry_publickey) {
-
           try {
-
             //
             // am email? for us? from the DNS registrar?
             //
             let identifier = tx.msg.identifier;
             let signed_message = tx.msg.signed_message;
             let sig = tx.msg.signature;
-	    let bid = tx.msg.bid;
-	    let bsh = tx.msg.bsh;
-	    let unixtime = tx.msg.unixtime;
-	    let lock_block = tx.msg.lock_block;
-	    let signer = tx.msg.signer;
-	    let lc = 1;
+            let bid = tx.msg.bid;
+            let bsh = tx.msg.bsh;
+            let unixtime = tx.msg.unixtime;
+            let lock_block = tx.msg.lock_block;
+            let signer = tx.msg.signer;
+            let lc = 1;
 
             if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
-
-	      if (this.publicKey != this.registry_publickey) {
-
-		if (!this.app.BROWSER) {
-
+              if (this.publicKey != this.registry_publickey) {
+                if (!this.app.BROWSER) {
                   // servers update database
                   let res = await this.addRecord(
                     identifier,
@@ -529,11 +537,9 @@ class Registry extends ModTemplate {
                     signer,
                     1
                   );
-
-	        }
+                }
 
                 if (tx.to[0].publicKey == this.publicKey) {
-
                   this.app.keychain.addKey(tx.to[0].publicKey, {
                     identifier: identifier,
                     watched: true,
@@ -547,10 +553,9 @@ class Registry extends ModTemplate {
 
                   this.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
                   this.app.connection.emit("update_identifier", tx.to[0].publicKey);
-
-		}
-	      }
-	    }
+                }
+              }
+            }
           } catch (err) {
             console.error("ERROR verifying username registration message: ", err);
           }
@@ -559,30 +564,28 @@ class Registry extends ModTemplate {
     }
   }
 
-
-
-
   returnCachedIdentifier(key) {
     if (this.cached_keys[key]) {
       if (this.cached_keys[key] !== key) {
-	return this.cached_keys[key];
+        return this.cached_keys[key];
       }
     }
     return "";
   }
 
-  async fetchIdentifiersFromDatabase(keys, mycallback=null) {
-
+  async fetchIdentifiersFromDatabase(keys, mycallback = null) {
     let found_keys = {};
     let missing_keys = [];
 
-    let myregexp = new RegExp('^([a-zA-Z0-9])*$');
+    let myregexp = new RegExp("^([a-zA-Z0-9])*$");
     for (let i = 0; i < keys.length; i++) {
-      if (!myregexp.test(keys[i])) { return false; }
+      if (!myregexp.test(keys[i])) {
+        return false;
+      }
       if (this.returnCachedIdentifier(keys[i])) {
         found_keys[keys[i]] = this.returnCachedIdentifier(keys[i]);
         keys.splice(i, 1);
-	i--;
+        i--;
       }
     }
 
@@ -590,7 +593,6 @@ class Registry extends ModTemplate {
     // check database if needed
     //
     if (keys.length > 0) {
-
       const where_statement = `publickey in ("${keys.join('","')}")`;
       const sql = `SELECT * 
                    FROM records
@@ -601,46 +603,48 @@ class Registry extends ModTemplate {
         if (rows.length > 0) {
           for (let i = 0; i < rows.length; i++) {
             //const { publickey, identifier, bid, bsh, lc } = rows[i];
-	    let publickey = rows[i].publickey;
-	    let identifier = rows[i].identifier;
+            let publickey = rows[i].publickey;
+            let identifier = rows[i].identifier;
             if (identifier !== publickey) {
               found_keys[publickey] = identifier;
-	      // and add to the cache for faster responsiveness in future
-	      this.cached_keys[publickey] = identifier;
+              // and add to the cache for faster responsiveness in future
+              this.cached_keys[publickey] = identifier;
             }
           }
         }
       }
-
     }
 
     //
     // which keys are we missing ?
     //
     let found_check = [];
-    for (let key in found_keys) { found_check.push(key); }
+    for (let key in found_keys) {
+      found_check.push(key);
+    }
     for (let i = 0; i < keys.length; i++) {
       if (!found_check.includes(keys[i])) {
-	missing_keys.push(keys[i]);
+        missing_keys.push(keys[i]);
       }
     }
 
-    if (mycallback) { mycallback(found_keys); }
-
+    if (mycallback) {
+      mycallback(found_keys);
+    }
 
     //
     // if we were asked about any missing keys, ask our parent server
     //
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].publicKey == this.parent_publickey) {
-	// ask the parent for the missing values, cache results
-        this.queryKeys(this.peers[i], missing_keys, function(res) {
-	  for (let key in res) {
-	    if (res[key] != key) {
-	      this.cached_keys[key] = res[key];
-	    }
-	  }
-	});
+        // ask the parent for the missing values, cache results
+        this.queryKeys(this.peers[i], missing_keys, function (res) {
+          for (let key in res) {
+            if (res[key] != key) {
+              this.cached_keys[key] = res[key];
+            }
+          }
+        });
       }
     }
 
@@ -650,9 +654,7 @@ class Registry extends ModTemplate {
     if (Math.random() < 0.005) {
       this.cached_keys = {};
     }
-
   }
-
 
   async addRecord(
     identifier = "",

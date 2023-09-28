@@ -40,9 +40,12 @@
   scrollbar-width: none;
   overflow-y: auto;
   overflow-x: auto;
-  min-height: 4.5rem;
+  /*min-height: 4.5rem;*/
 }
 
+.hud-body .controls ul {
+  min-height: 4.5rem;
+}
 
 .hud-body .status ul li, .hud-body .controls ul li, .options {
   background-color: transparent;
@@ -155,6 +158,12 @@
     min-width: 10rem;
     border-width: 2px;
     padding: 0.25rem 0.5rem;
+  }
+}
+
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .hud-body .mobile {
+    height: 3rem;
   }
 }
 

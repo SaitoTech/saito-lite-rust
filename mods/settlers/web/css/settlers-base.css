@@ -46,6 +46,11 @@ p {
   font-size: 1.4rem;
 }
 
+.die_value {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 .tip {
   width: unset;
 }
