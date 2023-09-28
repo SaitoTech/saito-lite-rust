@@ -1,7 +1,7 @@
 module.exports = BuildOverlayTemplate = (app, mod, build) => {
 
   return `
-    <div class="saitoa settlers-info-overlay build-overlay">
+    <div class="saitoa build-overlay">
 
           
        <div class="settlers-items-container">

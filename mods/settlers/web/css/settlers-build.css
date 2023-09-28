@@ -111,7 +111,7 @@
 }
 
 .bank-overlay .settlers-items-container .settlers-cards-container img {
-  height: 15rem;
+  height: 16rem;
 }
 
 
@@ -135,9 +135,6 @@
   height: 15rem;
 }
 
-.year-of-plenty-overlay .settlers-item-info-text {
-  text-align: left;
-}
 
 
 .settlers-trade-resources.selected {
@@ -170,10 +167,6 @@
   position: relative;
 }
 
-.year-of-plenty-overlay .settlers-card-item-empty:hover:after {
-  display: none;
-  cursor: pointer;
-}
 
 .settlers-overlay-title {
   text-align: center;

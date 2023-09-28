@@ -40,9 +40,12 @@
   scrollbar-width: none;
   overflow-y: auto;
   overflow-x: auto;
-  min-height: 4.5rem;
+  /*min-height: 4.5rem;*/
 }
 
+.hud-body .controls ul {
+  min-height: 4.5rem;
+}
 
 .hud-body .status ul li, .hud-body .controls ul li, .options {
   background-color: transparent;

@@ -1,7 +1,7 @@
 module.exports = BankOverlayTemplate = (app, mod, bank) => {
   console.log(bank?.selected_resource)
   let html = `
-        <div class="saitoa settlers-info-overlay bank-overlay">
+        <div class="saitoa bank-overlay">
           <div class="settlers-items-container">
             <div class="settlers-item-info-text">Select resource to give bank:</div>
   `;

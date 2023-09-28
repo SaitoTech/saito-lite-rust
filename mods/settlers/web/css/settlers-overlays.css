@@ -1,5 +1,5 @@
 
-.settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-info-overlay, .build-overlay {
+.settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -533,7 +533,7 @@ stats overlay
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  .settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-info-overlay, .build-overlay {
+  .settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
     max-height: 98vh;
     gap: 0.5rem;
 
