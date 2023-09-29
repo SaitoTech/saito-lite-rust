@@ -519,9 +519,6 @@ if (faction === "venice" && spacekey == "agram") {
 
         if (id === "end") {
 
-console.log("UNITS AVAILABLE: " + JSON.stringify(units_available));
-console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
-
 	  //
 	  // moves prepended to last removed first
 	  //
@@ -2729,7 +2726,7 @@ console.log("A");
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
-      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, spacekey);
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, defender_spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 

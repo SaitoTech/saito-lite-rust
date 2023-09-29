@@ -2367,7 +2367,14 @@ console.log("\n\n\n\n");
 
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
-	  //this.setAllies("venice", "papacy");
+	  this.setAllies("venice", "papacy");
+	  this.setEnemies("france", "papacy");
+	  this.setActivatedPower("protestant", "france");
+	  this.addRegular("france", "milan", 1);
+	  this.addRegular("venice", "trent", 1);
+	  this.controlSpace("venice", "trent");
+
+
 	  //this.controlSpace("papacy", "trent");
 	  //this.addRegular("papacy", "trent", 4);
 	  //this.addRegular("papacy", "trent", 2);
@@ -17403,6 +17410,9 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    let space = this.game.spaces[destination];
 	    let anyone_else_here = 0;
 
+console.log("TESTING HERE: ");
+console.log(JSON.stringify(this.game.queue));
+
 	    let lqe = qe-1;
 	    if (lqe >= 0) {
 	      let lmv = this.game.queue[lqe].split("\t");
@@ -17986,12 +17996,14 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	      }
 	    }
 
-	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
-	      let ap = this.game.state.activated_powers[io[i]][zz];
+	    for (let zzz = 0; zzz < this.game.state.activated_powers[io[i]].length; zzz++) {
+	      let ap = this.game.state.activated_powers[io[i]][zzz];
 	      if (ap != faction) {
-	        let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[zz]);
-	        if (fluis > 0) {
-	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
+	        for (let zz = 0; zz < neighbours.length; zz++) {
+	          let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[zz]);
+	          if (fluis > 0) {
+	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
+	          }
 	        }
 	      }
 	    }
@@ -18091,7 +18103,12 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
-	  if (player_factions.includes(defender)) {
+	  let i_command_this_faction = false;
+	  for (let i = 0; i < player_factions.length; i++) {
+	    if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { i_command_this_faction = true; }
+	  }
+
+	  if (player_factions.includes(defender) || i_command_this_faction) {
 	    this.playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey);
 	  } else {
 	    this.updateStatus(this.returnFactionName(defender) + " considering interception from " + this.returnSpaceName(defender_spacekey));
@@ -18105,6 +18122,11 @@ console.log("RETREAT: " + JSON.stringify(source.units));
         if (mv[0] === "intercept") {
 
 	  this.game.queue.splice(qe, 1);
+
+	  //
+	  // in case we had it open to intercept
+	  //
+	  this.movement_overlay.hide();
 
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
@@ -18160,6 +18182,7 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	  this.updateLog("Interception roll #2: " + d2);
 
 	  // IS_TESTING
+this.updateLog("IS_TESTING - HITS ON 2");
 hits_on = 2;
 
 	  if (dsum >= hits_on) {
@@ -18179,13 +18202,12 @@ console.log("1. insert index: " + index_to_insert_moves);
 	    for (let i = this.game.queue.length-1; i >= 0; i--) {
 	      let lqe = this.game.queue[i];
 	      let lmv = lqe.split("\t");
-	      if (lmv[0] !== "player_evaluate_navel_interception_opportunity") {
+	      if (lmv[0] !== "player_evaluate_interception_opportunity") {
 	        index_to_insert_moves = i;
 		break;
 	      } else {
-	        if (lmv[3] !== defender) {
+	        if (lmv[4] !== defender) {
 		  this.game.queue.splice(i, 1); // remove 1 at i
-		  i--; // queue is 1 shorter
 		}
 	      }
 	    }
@@ -18195,7 +18217,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	    //
 	    // SUCCESS - move and continue to evaluate interception opportunities
 	    //
-
 	    for (let i = units_to_move_idx.length-1; i >= 0; i--) {
 	      let m = "move\t"+defender+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i]+"\t"+1; // 1 = skip avoid battle
 	      his_self.game.queue.splice((index_to_insert_moves+1), 0, m);
@@ -18931,6 +18952,20 @@ console.log("#");
 
 	if (mv[0] === "field_battle") {
 
+	  //
+	  // people are still moving stuff in
+	  //
+	  if (qe > 0) {
+	    let lmv = "";
+	    for (let i = qe-1; i > 0; i--) {
+	      lmv = this.game.queue[i].split("\t");
+	      if (lmv[0] === "field_battle" && lmv[1] == mv[1]) {
+          	this.game.queue.splice(qe, 1);
+		return 1;
+	      }
+	    }
+	  }
+ 
           this.game.queue.splice(qe, 1);
 
 	  //
@@ -24607,9 +24642,6 @@ if (faction === "venice" && spacekey == "agram") {
 
         if (id === "end") {
 
-console.log("UNITS AVAILABLE: " + JSON.stringify(units_available));
-console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
-
 	  //
 	  // moves prepended to last removed first
 	  //
@@ -26817,7 +26849,7 @@ console.log("A");
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
-      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, spacekey);
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, defender_spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 
