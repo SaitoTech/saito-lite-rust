@@ -677,7 +677,7 @@ class Spider extends OnePlayerGameTemplate {
     let spider_self = activated_card_stack.mod;
     let af = null;
 
-    this.removeEvents();
+    spider_self.removeEvents();
 
     if (!document.getElementById("helper")) {
       spider_self.app.browser.addElementToSelector(
