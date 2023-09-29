@@ -2367,12 +2367,12 @@ console.log("\n\n\n\n");
 
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
-	  this.setAllies("venice", "papacy");
-	  this.setEnemies("france", "papacy");
-	  this.setActivatedPower("protestant", "france");
-	  this.addRegular("france", "milan", 1);
-	  this.addRegular("venice", "trent", 1);
-	  this.controlSpace("venice", "trent");
+	  //this.setAllies("venice", "papacy");
+	  //this.setEnemies("france", "papacy");
+	  //this.setActivatedPower("protestant", "france");
+	  //this.addRegular("france", "milan", 1);
+	  //this.addRegular("venice", "trent", 1);
+	  //this.controlSpace("venice", "trent");
 
 
 	  //this.controlSpace("papacy", "trent");
