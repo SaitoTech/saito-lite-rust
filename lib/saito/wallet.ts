@@ -386,10 +386,11 @@ export default class Wallet extends SaitoWallet {
     throw "Module Not Found: " + ticker;
   }
 
-  async setPreferredCrypto(ticker, show_overlay = 0) {
+  setPreferredCrypto(ticker, show_overlay = 0) {
     let can_we_do_this = 0;
     const mods = this.returnInstalledCryptos();
     let cryptomod = null;
+
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
         cryptomod = mods[i];
@@ -401,17 +402,12 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    if (ticker == "SAITO") {
-      can_we_do_this = 1;
-    }
-
     if (can_we_do_this == 1) {
       this.preferred_crypto = ticker;
       console.log("Activating cryptomod: " + cryptomod.ticker);
       cryptomod.activate();
-      await this.saveWallet();
-      console.log("emitting set preferred crypto event");
-      this.app.connection.emit("set_preferred_crypto", ticker);
+      //cryptomod.returnBalance();
+      //await this.saveWallet();
     }
 
     console.log("done in setPreferredCrypto");
@@ -424,7 +420,7 @@ export default class Wallet extends SaitoWallet {
       return this.returnCryptoModuleByTicker(this.preferred_crypto);
     } catch (err) {
       if (err.startsWith("Module Not Found:")) {
-        await this.setPreferredCrypto("SAITO");
+        this.setPreferredCrypto("SAITO");
         return this.returnCryptoModuleByTicker(this.preferred_crypto);
       } else {
         throw err;

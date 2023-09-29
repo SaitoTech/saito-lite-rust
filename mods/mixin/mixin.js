@@ -81,6 +81,7 @@ class Mixin extends ModTemplate {
       let m = "";
 
       if (app.BROWSER == 0) {
+        console.log("Receive  request to create MIXIN account");
         if (typeof process.env.MIXIN != "undefined") {
           m = JSON.parse(process.env.MIXIN);
         } else {
@@ -89,7 +90,7 @@ class Mixin extends ModTemplate {
           console.error("MIXIN ENV variable missing.");
         }
 
-        if (m.appId) {
+        if (m.client_id) {
           let method = "POST";
           let uri = "/users";
           let body = {
@@ -97,9 +98,9 @@ class Mixin extends ModTemplate {
             full_name: `Saito User ${saito_publickey}`,
           };
 
-          let appId = m.appId;
-          let sessionId = m.sessionId;
-          let privateKey = m.privateKey;
+          let appId = m.client_id;
+          let sessionId = m.session_id;
+          let privateKey = m.private_key;
 
           this.request(appId, sessionId, privateKey, method, uri, body)
             .then((res) => {
@@ -113,7 +114,6 @@ class Mixin extends ModTemplate {
               console.error(
                 "ERROR: Mixin error sending network request (mixin create account): " + err
               );
-              console.log(res);
             });
         }
       }
@@ -125,10 +125,13 @@ class Mixin extends ModTemplate {
 
     let respondTo = this.app.modules.respondTo("mixin-crypto");
 
-    for (const module of respondTo) {
-      let crypto_module = new MixinModule(this.app, module.ticker, mixin_self, module.asset_id);
-      if (module.returnBalance) {
-        crypto_module.returnBalance = module.returnBalance;
+    for (const rtModule of respondTo) {
+      let crypto_module = new MixinModule(this.app, rtModule.ticker, mixin_self, rtModule.asset_id);
+      //
+      //Use the module's returnBalance function if provided
+      //
+      if (rtModule.returnBalance) {
+        crypto_module.returnBalance = rtModule.returnBalance;
       }
 
       await crypto_module.installModule(mixin_self.app);
@@ -136,9 +139,11 @@ class Mixin extends ModTemplate {
       this.app.modules.mods.push(crypto_module);
       let pc = await this.app.wallet.returnPreferredCryptoTicker();
       if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
-        this.checkBalance(crypto_module.asset_id, function (res) {});
-        this.fetchAddresses(crypto_module.asset_id, function (res) {});
-        this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function (res) {});
+        if (crypto_module.returnIsActivated()) {
+          this.checkBalance(crypto_module.asset_id);
+          this.fetchAddresses(crypto_module.asset_id, function (res) {});
+          this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function (res) {});
+        }
       }
     }
   }
@@ -219,7 +224,6 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (fetchDeposits): " + err);
-        console.log(res);
       });
   }
 
@@ -263,7 +267,6 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (fetch Addresses): " + err);
-        console.log(res);
       });
   }
 
@@ -300,7 +303,6 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (fetchSnapShots): " + err);
-        console.log(res);
         callback(false);
       });
   }
@@ -366,7 +368,6 @@ class Mixin extends ModTemplate {
         console.error(
           "ERROR: Mixin error sending network request (createWithdrawalAddress): " + err
         );
-        console.log(res);
       });
   }
 
@@ -400,10 +401,9 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin", err);
-        console.log(res);
       });
 
-      return "";
+    return "";
   }
 
   sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash = "", callback = null) {
@@ -436,7 +436,6 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (sendWithdrawalRequest): " + err);
-        console.log(res);
       });
   }
 
@@ -470,11 +469,10 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (checkWithdrawalFee): " + err);
-        console.log(res);
       });
   }
 
-  checkBalance(asset_id, callback = null) {
+  async checkBalance(asset_id) {
     //
     // CHECK BALANCE
     //
@@ -485,10 +483,16 @@ class Mixin extends ModTemplate {
     const method = "GET";
     const uri = `/assets/${asset_id}`;
 
-    this.request(appId, sessionId, privateKey, method, uri)
-      .then((res) => {
-        let d = res.data.data;
+    console.log("Check Balance on Mixin");
 
+    try {
+      let res = await this.request(appId, sessionId, privateKey, method, uri);
+
+      console.log(res?.data);
+
+      let d = res.data?.data;
+
+      if (d) {
         for (let i = 0; i < this.mods.length; i++) {
           if (this.mods[i].asset_id === asset_id) {
             let initial_balance = this.mods[i].balance;
@@ -509,22 +513,21 @@ class Mixin extends ModTemplate {
             this.mods[i].mixin_id = d.mixin_id;
             this.mods[i].confirmations = d.confirmations;
 
-            if (
-              initial_balance !== this.mods[i].balance ||
-              initial_address !== this.mods[i].destination
-            ) {
-              this.app.connection.emit("update_balance", this.app.wallet);
-            }
+            this.mods[i].save();
+
+            this.app.connection.emit("update_balance", this.app.wallet);
           }
         }
-        if (callback) {
-          callback(res.data);
-        }
-      })
-      .catch((err) => {
-        console.error("ERROR: Mixin error sending network request (checkBalance): " + err);
-        console.log(res);
-      });
+      } else if (res?.data?.error) {
+        console.error(
+          "ERROR 1: Mixin error sending network request (checkBalance): ",
+          res.data.error
+        );
+      }
+    } catch (err) {
+      console.error("ERROR 2: Mixin error sending network request (checkBalance): ", err);
+      console.log(err.response.data);
+    }
   }
 
   updateUserPin(new_pin, callback = null) {
@@ -576,12 +579,13 @@ class Mixin extends ModTemplate {
       })
       .catch((err) => {
         console.error("ERROR: Mixin error sending network request (updateUserPin): " + err);
-        console.log(res);
       });
   }
 
   createAccountCallback(res, callback = null) {
     let mixin_self = this;
+
+    this.account_created = 1;
 
     // check we do not already have an account
     if (this.app.options?.mixin?.user_id) {
@@ -598,27 +602,6 @@ class Mixin extends ModTemplate {
     mixin_self.mixin.pin_token_base64 = d.data.pin_token_base64;
 
     mixin_self.save();
-
-    //
-    // we may have activated a crypto to trigger this, in which
-    // case we need to update the balance and then emit an event
-    // to trigger UI re-render, including address
-    //
-    let pc = mixin_self.app.wallet.preferred_crypto;
-    for (let i = 0; i < mixin_self.mods.length; i++) {
-      if (mixin_self.mods[i].name === pc) {
-        mixin_self.checkBalance(mixin_self.mods[i].asset_id, () => {
-          //
-          // this may already have run elsewhere, we be run
-          // it again because of the potential delay here in
-          // fetching the balance of the module given the need
-          // for mixin account creation.
-          //
-          //  set_preferred_crypto is run previously saito-header.js attach events >> wallet.ts
-          mixin_self.app.connection.emit("set_preferred_crypto");
-        });
-      }
-    }
 
     //
     // and set our pin
@@ -640,61 +623,45 @@ class Mixin extends ModTemplate {
   async createAccount(callback = null) {
     let peers = await this.app.network.getPeers();
 
+    // we cannot create an account if the network is down
     if (peers.length == 0) {
+      console.warn("No peers");
       return;
     }
 
-    let mixin_peer = peers[0];
-    for (let i = 0; i < peers.length; i++) {
-      if (peers[i].hasService("mixin")) {
-        mixin_peer = peers[i];
-        i = peers.length + 1;
-      }
+    let mixin_self = this;
+
+    if (this.mixin.publickey !== "") {
+      console.warn("Mixin Account already created. Skipping");
+      return;
     }
 
-    // we cannot create an account if the network is down
-    try {
-      let mixin_self = this;
+    //
+    // CREATE ACCOUNT
+    //
+    // todo - ping us and we do this, so that we don't compromise the
+    // privatekey associated with account creation. for now we will
+    // have the module make the call directly for simplified
+    // development.
+    //
+    let user_keypair = forge.pki.ed25519.generateKeyPair();
+    let original_user_public_key = Buffer.from(user_keypair.publicKey).toString("base64");
+    let original_user_private_key = Buffer.from(user_keypair.privateKey).toString("base64");
+    let user_public_key = this.base64RawURLEncode(original_user_public_key);
+    let user_private_key = this.base64RawURLEncode(original_user_private_key);
 
-      if (this.mixin.publickey !== "") {
-        console.warn("Mixin Account already created. Skipping");
-        return;
-      }
+    this.mixin.publickey = original_user_public_key;
+    this.mixin.privatekey = original_user_private_key;
+    this.mixin.user_id = "";
+    this.mixin.session_id = "";
 
-      this.account_created = 1;
+    //
+    // process directly if ENV variable set
+    //
+    if (process.env.MIXIN) {
+      let m = null;
 
-      //
-      // CREATE ACCOUNT
-      //
-      // todo - ping us and we do this, so that we don't compromise the
-      // privatekey associated with account creation. for now we will
-      // have the module make the call directly for simplified
-      // development.
-      //
-      let user_keypair = forge.pki.ed25519.generateKeyPair();
-      let original_user_public_key = Buffer.from(user_keypair.publicKey).toString("base64");
-      let original_user_private_key = Buffer.from(user_keypair.privateKey).toString("base64");
-      let user_public_key = this.base64RawURLEncode(original_user_public_key);
-      let user_private_key = this.base64RawURLEncode(original_user_private_key);
-
-      let method = "POST";
-      let uri = "/users";
-      let body = {
-        session_secret: user_public_key,
-        full_name: `Saito User ${this.publicKey}`,
-      };
-
-      this.mixin.publickey = original_user_public_key;
-      this.mixin.privatekey = original_user_private_key;
-      this.mixin.user_id = "";
-      this.mixin.session_id = "";
-
-      let m = "";
-
-      //
-      // process directly if ENV variable set
-      //
-      if (process.env.MIXIN) {
+      try {
         if (typeof process.env.MIXIN != "undefined") {
           m = JSON.parse(process.env.MIXIN);
         } else {
@@ -702,10 +669,20 @@ class Mixin extends ModTemplate {
           // enviromnental variable 'MIXIN'
           console.error("MIXIN ENV variable missing.");
         }
+      } catch (err) {
+        console.error(err);
+      }
 
+      if (m?.appId) {
         let appId = m.appId;
         let sessionId = m.sessionId;
         let privateKey = m.privateKey;
+        let method = "POST";
+        let uri = "/users";
+        let body = {
+          session_secret: user_public_key,
+          full_name: `Saito User ${this.publicKey}`,
+        };
 
         //
         // if you have an application ID, you can create your account directly
@@ -718,48 +695,27 @@ class Mixin extends ModTemplate {
           })
           .catch((err) => {
             console.error("ERROR: Mixin error sending network request (createAccount): " + err);
-            console.log(res);
           });
+      } else {
+        console.warn("Unable to create Mixin account, bad Process Env");
       }
+    } else {
+      console.log("Requesting server to create account");
 
-      //
-      // users handle manually
-      //
-      if (!m.appId) {
-        let data = {
-          saito_publickey: mixin_self.publicKey,
-          mixin_publickey: user_public_key,
-        };
+      let data = {
+        saito_publickey: mixin_self.publicKey,
+        mixin_publickey: user_public_key,
+      };
 
-        console.log("mixin peer /////");
-        console.log(mixin_peer.peerIndex);
-
-        console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
-        console.log("HOW MANY peers: " + (await this.app.network.getPeers()).length);
-        // this.app.network.sendRequestAsTransaction(
-        //   "mixin create account",
-        //   data,
-        //   function (res) {
-        //     console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-        //     mixin_self.createAccountCallback(res, callback);
-        //   },
-        //   mixin_peer.peerIndex
-        // );
-
-        let peers = await mixin_self.app.network.getPeers();
-
-        mixin_self.app.network.sendRequestAsTransaction(
-          "mixin create account",
-          data,
-          function (res) {
-            //console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-            mixin_self.createAccountCallback(res, callback);
-          },
-          peers[0].peerIndex
-        );
-      }
-    } catch (err) {
-      console.error(err);
+      mixin_self.app.network.sendRequestAsTransaction(
+        "mixin create account",
+        data,
+        function (res) {
+          console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: ", res);
+          mixin_self.createAccountCallback(res, callback);
+        },
+        peers[0].peerIndex
+      );
     }
   }
 
@@ -812,7 +768,7 @@ class Mixin extends ModTemplate {
   }
 
   request(uid, sid, privateKey, method, path, data = null) {
-    const m = method;
+    console.log(uid, sid, privateKey);
     let accessToken = "";
     if (data == null) {
       accessToken = this.signAuthenticationToken(uid, sid, privateKey, method, path);
@@ -934,12 +890,11 @@ class Mixin extends ModTemplate {
   }
 
   load() {
-    console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
-
     if (this.app?.options?.mixin) {
       this.mixin = this.app.options.mixin;
+      console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
     }
-    if (this.mixin.publickey !== "") {
+    if (this.mixin.publickey) {
       this.account_created = 1;
     }
   }

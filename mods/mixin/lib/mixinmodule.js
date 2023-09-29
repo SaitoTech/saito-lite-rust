@@ -42,7 +42,7 @@ class MixinModule extends CryptoModule {
     this.icon_url = "";
     this.balance = "0.0";
     this.balance_timestamp_last_fetched = 0;
-    this.minimum_delay_between_balance_queries = 10000; // if it hasn't been 10 seconds since last fetch, fetch
+    this.minimum_delay_between_balance_queries = 20000; // if it hasn't been 10 seconds since last fetch, fetch
     this.deposit_entries = {};
     this.destination = "";
     this.tag = "";
@@ -86,10 +86,13 @@ class MixinModule extends CryptoModule {
   activate() {
     if (this.mixin.account_created == 0) {
       if (this.mixin.mixin.session_id === "") {
-        this.mixin.createAccount();
+        this.mixin.createAccount(()=> {
+          super.activate();      
+        });
       }
+    }else{
+      super.activate();
     }
-    super.activate();
   }
 
 
@@ -129,6 +132,23 @@ class MixinModule extends CryptoModule {
     return 0;
   }
 
+
+/**
+ * Abstract method which should get balance from underlying crypto endpoint
+ * @abstract
+ * @return {Number}
+ */
+async returnBalance() {
+  console.log("Query balance for " + this.ticker);
+  if ((new Date().getTime() - this.balance_timestamp_last_fetched) > this.minimum_delay_between_balance_queries) {
+    console.log("Return Balance: ", this.balance_timestamp_last_fetched);
+    this.balance_timestamp_last_fetched = new Date().getTime();
+    this.mixin.checkBalance(this.asset_id);
+  }
+  return this.balance;
+}
+
+
 }
 
 
@@ -164,21 +184,6 @@ MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptom
 };
 
 
-/**
- * Abstract method which should get balance from underlying crypto endpoint
- * @abstract
- * @return {Number}
- */
-MixinModule.prototype.returnBalance = async function() {
-  if ((new Date().getTime() - this.balance_timestamp_last_fetched) > this.minimum_delay_between_balance_queries) {
-    this.balance_timestamp_last_fetched = new Date().getTime();
-    let mixin_mod = this.app.modules.returnModule("Mixin");
-    if (mixin_mod) {
-      mixin_mod.checkBalance(this.asset_id);
-    }
-  }
-  return this.balance;
-};
 
 /**
  * Abstract method which should transfer tokens via the crypto endpoint
@@ -396,10 +401,6 @@ MixinModule.prototype.returnWithdrawalFeeForAddress = function(recipient = "", m
 
 MixinModule.prototype.returnHistory = function(asset_id="", records=20, callback=null) {
   return this.mixin.fetchSnapshots(asset_id, records, callback);
-};
-
-CryptoModule.prototype.fetchBalance = function(asset_id = "", callback=null) {
-  this.mixin.checkBalance(asset_id, callback);
 };
 
 
