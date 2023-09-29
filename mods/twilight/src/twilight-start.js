@@ -69,7 +69,9 @@ class Twilight extends GameTemplate {
     this.maxPlayers 	 = 2;
 
     this.hud.mode = 0;  // long-horizontal
-    this.hud.enable_mode_change = 1;
+    
+    // Temporarily block this because the alternate hud css was messed up by recent refactors
+    //this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
     this.roles = ["observer", "ussr", "us"];
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
