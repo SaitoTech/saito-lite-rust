@@ -16,6 +16,11 @@
 }
 
 
+.settlers-selection-overlay{
+  width: min(630px, 95vw);
+  align-items: center;
+}
+
 .mobile-trading-container .player-box {
   max-width: 80vw;
 }
@@ -244,7 +249,10 @@ stats overlay
 
 }
 
-
+.invalid_offer {
+  filter: grayscale(40%) brightness(0.5);
+  color: red;
+}
 
 .trade_count_number {
   position: absolute;

@@ -83,7 +83,7 @@ class SettlersGameloop {
         this.updateLog(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
         this.game.state.canTrade = false;
 
-        //this player will update their devcard count on next turn
+        //the player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards++; //Add card for display
         } else {
