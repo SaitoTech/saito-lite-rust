@@ -16772,7 +16772,7 @@ if (this.game.state.scenario == "is_testing") {
 	    }
 	  }
 
-	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -20152,7 +20152,7 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 	    }
 	  }
 
-	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
           this.game.queue.splice(qe, 1);
@@ -20171,7 +20171,7 @@ console.log("spacekey: " + spacekey);
 	    this.game.spaces[spacekey].units[faction].splice(unit_idx, 1);
 	  }
 
-	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
           this.game.queue.splice(qe, 1);
@@ -20203,7 +20203,7 @@ console.log("spacekey: " + spacekey);
 	    space.units[faction].splice(i, 1);
 	  }
 
-	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displayBoard();
 
 	  return 1;
@@ -20238,7 +20238,7 @@ console.log("spacekey: " + spacekey);
 	    space.units[faction].splice(i, 1);
 	  }
 
-	  this.game.state.board[faction] = this.removeOnBoardUnits(faction);
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displayBoard();
 
 	  return 1;
