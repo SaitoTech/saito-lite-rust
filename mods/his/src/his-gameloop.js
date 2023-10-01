@@ -255,23 +255,6 @@ if (this.game.state.scenario == "is_testing") {
 
 	}
 
-	//
-	// passes through, but removes instructions that cannot remove themselves because of 
-	// ACKNOWLEDGE fussiness with skip_counter_or_acknowledge
-	//
-	if (mv[0] === "passthrough") {
-	  let lqe = qe - 1;
-	  if (lqe >= 0) {
-	    let lmv = this.game.queue[lqe].split("\t");
-	    if (lmv[0] === "protestant_reformation" || lmv[0] === "catholic_counter_reformation") {
-              this.game.queue.splice(qe, 1);
-	      qe--;
-	    }
-	  }
-          this.game.queue.splice(qe, 1);
-	  return 1;
-	}
-
 	if (mv[0] === "pass") {
  
           let faction = mv[1];
@@ -678,6 +661,10 @@ if (this.game.state.scenario == "is_testing") {
     	  this.addRegular("venice", "agram", 4);
 
    	  this.addCard("papacy", "065");
+   	  this.addCard("protestant", "032");
+   	  this.addCard("papacy", "088");
+   	  this.addCard("protestant", "078");
+   	  this.addCard("protestant", "032");
 
 	  this.controlSpace("papacy", "siena");
 	  this.addMercenary("papacy", "siena", 1);
@@ -1661,9 +1648,11 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	  let defender = mv[3];
 	  let defender_spacekey = mv[4];
 
-	  let player_factions = this.returnPlayerFactions(this.game.player)
-
-	  if (player_factions.includes(defender)) {
+          let controller_of_defender = this.returnPlayerCommandingFaction(defender);
+                
+          if (controller_of_defender == 0) { return 1; }
+            
+          if (this.game.player == controller_of_defender) {
 	    this.playerEvaluateNavalInterceptionOpportunity(attacker, spacekey, defender, defender_spacekey);
 	  } else {
 	    this.updateStatus(this.returnFactionName(defender) + " considering naval interception from " + this.returnSpaceName(defender_spacekey));
@@ -1687,15 +1676,11 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	  let attacker_includes_cavalry = mv[3];
 	  let defender = mv[4];
 	  let defender_spacekey = mv[5];
+	  let controller_of_defender = this.returnPlayerCommandingFaction(defender);
 
-	  let player_factions = this.returnPlayerFactions(this.game.player)
+	  if (controller_of_defender == 0) { return 1; }
 
-	  let i_command_this_faction = false;
-	  for (let i = 0; i < player_factions.length; i++) {
-	    if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { i_command_this_faction = true; }
-	  }
-
-	  if (player_factions.includes(defender) || i_command_this_faction) {
+	  if (this.game.player == controller_of_defender) {
 	    this.playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey);
 	  } else {
 	    this.updateStatus(this.returnFactionName(defender) + " considering interception from " + this.returnSpaceName(defender_spacekey));
@@ -2081,8 +2066,8 @@ console.log("2. insert index: " + index_to_insert_moves);
 	    }
   	    this.game.queue.push("STATUS\tProtestants selecting towns to convert...\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
-  	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
-
+  	    this.game.queue.push("counter_or_acknowledge\tProtestants win Diet of Worms");
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  } else {
 	    if (protestant_hits < papacy_hits) {
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
@@ -2093,14 +2078,16 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      }
   	      this.game.queue.push("STATUS\tPapacy selecting towns to convert...\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
-  	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
+  	      this.game.queue.push("counter_or_acknowledge\tPapacy wins Diet of Worms");
+  	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    } else {
   	      //
               // report results
               //
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
-  	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
+  	      this.game.queue.push("counter_or_acknowledge\tDiet of Worms ends in a Stalemate");
+  	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    }
 	  }
 
@@ -2139,6 +2126,10 @@ console.log("2. insert index: " + index_to_insert_moves);
 	//
 	// this bit of code is complicated, because it stops and starts game-flow but selecively.
 	//
+	// exists to be removed by counter_or_acknowledge
+	if (mv[0] === "halted") {
+	  return 0;
+	}
 	if (mv[0] === "counter_or_acknowledge") {
 
 console.log("@");
@@ -2156,6 +2147,8 @@ console.log("@");
 
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
+	  // otherwise we will set ack to 0 and return 0 which halts execution. so we should never clear 
+	  // splice anything out except here...
 	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
 
@@ -2164,13 +2157,23 @@ console.log("@");
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
 	      if (this.game.confirms_needed[i] >= 1) { ack = 0; }
 	    }
-	    if (ack == 1) { this.game.queue.splice(qe, 1); }
+	    //
+	    // if everyone has returned, splice out counter_or_acknowledge
+ 	    // and continue to the 
+	    //
+	    if (ack == 1) { 
+	      this.game.queue.splice(qe, 1);
+	    }
+
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
 
-console.log(" - - - - - - - - - - - - - - ");
-console.log("into counter or acknowledge 2");
+	  //
+	  // if we get this far i have not confirmed and others may or may
+	  // not have confirmed, but we want at least to check to see wheter
+	  // i need to....
+	  //
 
 	  let msg = mv[1];
 	  let stage = mv[2];
@@ -2218,19 +2221,15 @@ console.log("attach menu events? " + attach_menu_events);
 	  //
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
 	    if (attach_menu_events == 0) {
-	      // manually add, to avoid re-processing
-	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-
-	        //his_self.game.confirms_needed[his_self.game.player-1] = 2;
-                his_self.prependMove("RESOLVE\t"+his_self.publicKey);
-		// add ghost -- so if we remove something it's the ghost
-                his_self.prependMove("passthrough");
-	        his_self.updateStatus("skipping acknowledge...");
-                his_self.endTurn();
-	      } else {
-	      }
+	      //
+	      // replaces so we do not sent 2x
+	      //
+	      his_self.game.queue[his_self.game.queue.length-1] = "halted";
+	      his_self.game.confirms_needed[his_self.game.player-1] = 1;
+              his_self.addMove("RESOLVE\t"+his_self.publicKey);
+              his_self.endTurn();
+	      his_self.updateStatus("skipping acknowledge...");
 	      return 0;
-	    } else {
 	    }
 	  }
 
@@ -2274,11 +2273,11 @@ console.log("attach menu events? " + attach_menu_events);
 		  his_self.updateStatus("acknowledged...");
 	          // manually add, to avoid re-processing
 	          if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-	            his_self.game.confirms_needed[his_self.game.player-1] = 2;
+	            //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                     his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 		    z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   }
-                  return;
+                  return 0;
                 }
               }
             }
@@ -2289,9 +2288,12 @@ console.log("attach menu events? " + attach_menu_events);
 	      //
 	      // manually add, to avoid re-processing
 	      if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-	        his_self.game.confirms_needed[his_self.game.player-1] = 2;
+	        //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 	        his_self.updateStatus("acknowledged");
+console.log("#");
+console.log("# sending resolve 2");
+console.log("#");
                 await his_self.endTurn();
               }
 	      return 0;
@@ -5900,8 +5902,18 @@ defender_hits - attacker_hits;
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
+	  if (this.game.state.round == 1 && this.game.state.events.schmalkaldic_league != 1) {
+this.updateLog("FORMING LEAGUE EARLY -- R2 for testing!");
+	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("event\tprotestant\t013");
+	  }
+	  //
+	  // form Schmalkaldic League if unformed by end of round 4
+	  //
 	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
-	    this.game.queue.push("ACKNOWLEDGE\tSchmalkaldic League Forms");
+	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 
@@ -6697,7 +6709,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
-
           this.displayBoard();
 
 	  //
@@ -6710,6 +6721,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    }
 	  }
 	  if (everyone_has_passed == true) {
+console.log("EVERYONE HAS PASSED!");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -6797,8 +6809,10 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	      this.playerPlayOps(card, faction, ops, limit);
 	    });
 	  } else {
+	    this.hideOverlays();
 	    this.updateStatusAndListCards("Opponent Turn", () => {});
 	  }
+
           return 0;
         }
 

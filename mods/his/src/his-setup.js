@@ -167,7 +167,6 @@ console.log("\n\n\n\n");
 	  //this.addRegular("venice", "trent", 1);
 	  //this.controlSpace("venice", "trent");
 
-
 	  //this.controlSpace("papacy", "trent");
 	  //this.addRegular("papacy", "trent", 4);
 	  //this.addRegular("papacy", "trent", 2);

@@ -189,3 +189,45 @@
 
   }
 
+
+  returnPlayerCommandingFaction(defender) {
+
+    //
+    // by default factions control themselves
+    //
+
+    //
+    // maybe this is a minor power controlled by a larger one
+    //
+    if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
+      defender = returnControllingPower(defender);
+    }         
+
+    //
+    // defender now controlling power or itself
+    //
+    for (let p = 0; p < this.game.players.length; p++) {
+
+      //
+      // does player command this faction
+      //
+      let player_factions = this.returnPlayerFactions((p+1));
+
+      let i_command_this_faction = false;
+      for (let i = 0; i < player_factions.length; i++) { 
+	if (player_factions[i] === defender) { return (p+1); }
+        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { i_command_this_faction = true; }
+        for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
+          if (this.game.state.activated_powers[player_factions[i]][z] === defender) { return (p+1); }
+        }
+      }   
+    }
+
+    //
+    // no-one controls this faction
+    //
+    return 0;
+
+  }
+
+

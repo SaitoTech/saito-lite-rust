@@ -92,7 +92,7 @@ class MenuOverlay {
 	      move.push({ idx : i , cost : cost , active : active_option });
 	    }
 	    if (menu[i].category == "attack") {
-	      and_attack = "and Attack";
+	      and_attack = " and Attack";
 	      move.push({ idx : i , cost : cost , active : active_option });
 	    }
 	    if (menu[i].category != "move" && menu[i].category != "build") {

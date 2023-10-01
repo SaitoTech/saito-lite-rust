@@ -1975,7 +1975,8 @@ return;
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
               }
-              his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+              his_self.addMove("RESETCONFIRMSNEEDED\tall");
               his_self.endTurn();
               return;
 
