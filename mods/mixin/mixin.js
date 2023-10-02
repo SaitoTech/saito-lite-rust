@@ -483,11 +483,11 @@ class Mixin extends ModTemplate {
     const method = "GET";
     const uri = `/assets/${asset_id}`;
 
-    console.log("Check Balance on Mixin");
 
     try {
       let res = await this.request(appId, sessionId, privateKey, method, uri);
 
+      console.log("Check Balance on Mixin");
       console.log(res?.data);
 
       let d = res.data?.data;
@@ -608,6 +608,7 @@ class Mixin extends ModTemplate {
     //
     let new_pin = new Date().getTime().toString().substr(-6);
     mixin_self.updateUserPin(new_pin, () => {});
+
     if (callback != null) {
       callback(res.data);
     }
@@ -893,9 +894,15 @@ class Mixin extends ModTemplate {
     if (this.app?.options?.mixin) {
       this.mixin = this.app.options.mixin;
       console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
-    }
-    if (this.mixin.publickey) {
-      this.account_created = 1;
+      if (this.mixin.publickey) {
+        this.account_created = 1;
+      }
+
+      // Fallback if we lost our pin...? maybe...
+      if (this.account_created && !this.mixin.pin) {
+        let new_pin = new Date().getTime().toString().substr(-6);
+        this.updateUserPin(new_pin, () => {});
+      }
     }
   }
 
