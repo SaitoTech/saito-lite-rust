@@ -48,12 +48,12 @@ class DevCardOverlay {
           case 2:
             this_dev_card.mod.year_of_plenty.player = this_dev_card.mod.game.player;
             this_dev_card.mod.year_of_plenty.cardname = cardobj.card; 
-            this_dev_card.mod.year_of_plenty.render(card);
+            this_dev_card.mod.year_of_plenty.render(this_dev_card.mod.game.deck[0].hand[card]);
             break;
           case 3:
             this_dev_card.mod.monopoly.player = this_dev_card.mod.game.player;
             this_dev_card.mod.monopoly.cardname = cardobj.card;
-            this_dev_card.mod.monopoly.render(card);
+            this_dev_card.mod.monopoly.render(this_dev_card.mod.game.deck[0].hand[card]);
             break;
           case 4:
             this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn

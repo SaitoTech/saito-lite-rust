@@ -652,7 +652,7 @@
       available_units['regular']['1'] = 3;    
       available_units['regular']['2'] = 3;    
       available_units['regular']['3'] = 0;    
-      available_units['regular']['4'] = 3;    
+      available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
     }
@@ -693,11 +693,6 @@
       deployed_units[key]['mercenary']['6'] = 0;
     }
 
-
-if (faction == "hapsburg") {
-  console.log("HERE ARE HAPSBURG SPACES!");
-  console.log(JSON.stringify(my_spaces));
-}
 
     //
     // order spaces 
@@ -781,9 +776,6 @@ if (faction == "hapsburg") {
       }
 
     }
-
-console.log("deployed: ");
-console.log(JSON.stringify(deployed_units));
 
     let results = {};
     results.deployed = deployed_units;

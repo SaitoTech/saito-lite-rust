@@ -4,7 +4,7 @@ module.exports = () => {
     <div class="schmalkaldic">
       <div class="title">Schmalkaldic League Formed</div>
       <div class="text">
-	A Military Alliance is formed among the Lutheran Princes in defense of the bourgeoning Protestant vision against the machinations of the Hapsburgs under Charles V. The Protestants may now:
+	A Military Alliance forms between the Lutheran Princes in Germany. Protestants may now:
 
 	<ul>
 	  <li>raise regulars, mercenaries</li>
@@ -13,7 +13,7 @@ module.exports = () => {
 	  <li>conduct sieges, assaults and field battles</li>
 	</ul>
 
-	All terrorities under Protestant religious influences are now Protestant Home Spaces under Protestant political control. Military units may be raised in these, and only these, spaces.
+	All terrorities under Protestant religious influences are now under Protestant political control.
 
       </div>
     </div>

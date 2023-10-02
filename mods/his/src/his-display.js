@@ -1,4 +1,25 @@
 
+  hideOverlays() {
+    this.debate_overlay.hide();
+    this.treatise_overlay.hide();
+    this.religious_overlay.hide();
+    this.faction_overlay.hide();
+    this.diet_of_worms_overlay.hide();
+    this.council_of_trent_overlay.hide();
+    this.theses_overlay.hide();
+    this.reformation_overlay.hide();
+    this.language_zone_overlay.hide();
+    this.debaters_overlay.hide();
+    this.schmalkaldic_overlay.hide();
+    this.assault_overlay.hide();
+    this.field_battle_overlay.hide();
+    this.movement_overlay.hide();
+    this.welcome_overlay.hide();
+    this.deck_overlay.hide();
+    this.menu_overlay.hide();
+    this.winter_overlay.hide();
+    this.units_overlay.hide();
+  }
 
   returnReligionImage(religion) {
     if (religion === "protestant") { return "/his/img/tiles/abstract/protestant.png"; }
@@ -443,9 +464,14 @@
   }
 
   returnNavalTiles(faction, spacekey) {
+
       let html = "";
       let tile = "";
-      let space = this.game.spaces[spacekey];
+      let space = this.game.navalspaces[spacekey];
+      if (!space) {
+	// might be at a port
+        space = this.game.spaces[spacekey];
+      }
       let z = faction;
       let squadrons = 0;
       let corsairs = 0;
@@ -1376,6 +1402,7 @@
 
     let z = faction;
     let space = this.game.spaces[spacekey];
+    if (!space || space == undefined) { space = this.game.navalspaces[spacekey]; }
 
     let html = "";
 
@@ -1409,6 +1436,7 @@
     let owner = space.political;
     if (owner == "") { owner = space.home; }
     let tile = "";
+
 
     for (let z in space.units) {
       html = this.returnPersonagesTiles(z, space.key);
@@ -1533,9 +1561,6 @@
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
-//        document.getElementById(key).onclick = (e) => {
-//	  this.displayNavalSpaceDetailedView(key);
-//        }
       }
     }
 

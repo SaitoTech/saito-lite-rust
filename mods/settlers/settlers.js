@@ -39,6 +39,7 @@ class Settlers extends GameTemplate {
     this.game_length = 20; //Estimated number of minutes to complete a game
     this.is_sleeping = true;
     this.confirm_moves = true;
+    this.animationSpeed = 1200;
 
     //
     // UI components
@@ -178,6 +179,15 @@ class Settlers extends GameTemplate {
 
       await this.playerbox.render();
 
+      //
+      // This adds a class in the playerbox to attach color
+      //
+
+      for (let i = 1; i <= this.game.players.length; i++){
+        this.playerbox.addClass(`p${this.game.colors[i-1]}-lite`, i, "game-playerbox-head");
+      }
+
+
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         console.log("mobile environment");
         this.hammer.render("#game-hexgrid");
@@ -235,14 +245,14 @@ class Settlers extends GameTemplate {
 
     let trade_btn = document.querySelector(".hud-body .mobile .trade");
 
-    if (!trade_btn) {
+    if (!trade_btn || this.game.over) {
       return;
     }
 
     if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
       trade_btn.innerHTML = "players";
     }
-    
+
     trade_btn.onclick = (e) => {
       if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
         if (document.querySelector(".game-playerbox-manager").style.display == "flex") {
@@ -254,11 +264,11 @@ class Settlers extends GameTemplate {
             //
             // load trade overlay on playerbox click
             //
-            for (let i = 0; i < this.game.players.length; i++) {
-              this.playerbox.onclick(() => {
-                this.trade_overlay.render();
-              }, i + 1);
-            }
+            //for (let i = 0; i < this.game.players.length; i++) {
+            //  this.playerbox.onclick(() => {
+            //    this.trade_overlay.render();
+            //  }, i + 1);
+            //}
 
             //
             // close playerboxen on back-click

@@ -21,8 +21,13 @@ module.exports = TradeOverlayTemplate = (tobj) => {
       <div class="h2">You ${tobj.accepting_trade ? "Give" : "Offer" }:</div>
       <div class="trade_overlay_offers">`;
 
+  let valid_trade = true;
+
   for (let r of tobj.resources){
-    html += `<div id="offer_${r}" class="trade_area select ${r}">
+    if (tobj.give[r] > tobj.mod.countResource(tobj.mod.game.player, r)){
+      valid_trade = false;
+    }
+    html += `<div id="offer_${r}" class="trade_area select ${r} ${(tobj.give[r] > tobj.mod.countResource(tobj.mod.game.player, r))?" invalid_offer":""}">
             <div class="trade_count_arrow trade_count_up ${(tobj.give[r] < tobj.mod.countResource(tobj.mod.game.player, r))?" can_select":""}"></div>  
             <div class="trade_count_number" data-count="${tobj.give[r]}">${(tobj.give[r] > 0) ? tobj.give[r] : ''}</div> 
             <div class="trade_count_arrow trade_count_down${tobj.give[r] > 0 ? " can_select" : "" }"></div>
@@ -34,7 +39,7 @@ module.exports = TradeOverlayTemplate = (tobj) => {
   html += `</div>
 
       <div class="trade_overlay_buttons">
-        <div id="trade_overlay_broadcast_button" class="trade_overlay_button ${num_cards_in_play>0? "valid_trade":"noselect"}">${tobj.accepting_trade ? "Accept" : "Broadcast" } Offer</div>
+        <div id="trade_overlay_broadcast_button" class="trade_overlay_button ${(valid_trade && num_cards_in_play > 0) ? "valid_trade":"noselect"}">${tobj.accepting_trade && valid_trade ? "Accept" : "Broadcast" } Offer</div>
       </div>
 
     </div>

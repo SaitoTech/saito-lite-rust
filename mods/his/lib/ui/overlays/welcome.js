@@ -71,8 +71,8 @@ class WelcomeOverlay {
       let his_self = this.mod;
 
       $('.welcome').on('click', function() {
-	if (document.querySelector("#confirmit")) {
-	  $('#confirmit').click();
+	if (document.querySelector(".option")) {
+	  $('.option').click();
         }
       });
 

@@ -3,7 +3,7 @@ module.exports = YearOfPlentyOverlayTemplate = (app, mod, year_of_plenty) => {
   let resourceList = mod.returnResources();
 
   let html = `
-      <div class="saitoa settlers-info-overlay year-of-plenty-overlay">
+      <div class="saitoa settlers-selection-overlay">
         <div class="settlers-items-container">
           <div class="settlers-item-row">
             <div class="settlers-item-info-text"> Select any 2 resources from bank (can be same or different): </div>

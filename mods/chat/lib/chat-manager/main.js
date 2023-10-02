@@ -65,7 +65,6 @@ class ChatManager {
         group = this.mod.returnCommunityChat();
       }
 
-      console.log("rendered group", group);
       if (group) {
         if (!this.popups[group.id]) {
           this.popups[group.id] = new ChatPopup(

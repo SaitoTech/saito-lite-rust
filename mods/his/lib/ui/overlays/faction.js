@@ -9,7 +9,9 @@ class FactionOverlay {
 	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
     }
-    
+
+    hide() { this.overlay.hide(); } 
+   
     render(faction="") {
 
       let his_self = this.mod;

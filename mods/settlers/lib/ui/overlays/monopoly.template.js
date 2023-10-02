@@ -2,7 +2,7 @@ module.exports = MonopolyOverlayTemplate = (app, mod, monopoly) => {
   let resourceList = mod.returnResources();
 
   let html = `
-      <div class="saitoa settlers-info-overlay bank-overlay">      
+      <div class="saitoa settlers-selection-overlay">      
 
         <div class="settlers-items-container">
 

@@ -1,7 +1,7 @@
 module.exports = DiscardOverlayTemplate = (app, mod, discard) => {
 
   let html = `
-    <div class="saitoa settlers-info-overlay discard-cards-overlay">
+    <div class="saitoa discard-cards-overlay">
       <div class="settlers-items-container">
         <div class="settlers-item-info-text"> Select ${discard.targetCt} cards to discard: </div> `;      
 
