@@ -20,8 +20,6 @@ class Tweet {
     }
 
     let txmsg = tx.returnMessage();
-    //let txmsg = tx.msg;
-    console.log("New Tweet constructor", txmsg);
 
     if (txmsg.module !== mod.name) {
       console.warn("Attempting to create Tweet from non-Redsquare tx");
@@ -44,6 +42,12 @@ class Tweet {
     //
     if (!this.tx.optional) {
       this.tx.optional = {};
+    }
+    if (this.tx.optional.parent_id) {
+      this.parent_id = this.tx.optional.parent_id;
+    }
+    if (this.tx.optional.thread_id) {
+      this.thread_id = this.tx.optional.thread_id;
     }
     if (!this.tx.optional.num_replies) {
       this.tx.optional.num_replies = 0;
@@ -75,10 +79,10 @@ class Tweet {
     //
     if (txmsg.data) {
       if (txmsg.data.parent_id) {
-        this.tx.optional.parent_id = txmsg.data.parent_id;
+        this.parent_id = this.tx.optional.parent_id = txmsg.data.parent_id;
       }
       if (txmsg.data.thread_id) {
-        this.tx.optional.thread_id = txmsg.data.thread_id;
+        this.thread_id = this.tx.optional.thread_id = txmsg.data.thread_id;
       }
     }
 
@@ -128,6 +132,9 @@ class Tweet {
     this.force_long_tweet = false;
     this.is_long_tweet = false;
     this.is_retweet = false;
+    this.parent_id = "";
+    this.thread_id = "";
+
 
     //
     // Read data from txmsg.data and tx.optional to populate this class
@@ -135,12 +142,12 @@ class Tweet {
     try {
       this.setKeys(txmsg.data);
     } catch (err) {
-      console.log("ERROR 1: " + err);
+      //console.log("ERROR 1: " + err);
     }
     try {
       this.setKeys(tx.optional);
     } catch (err) {
-      console.log("ERROR 2: " + err);
+      //console.log("ERROR 2: " + err);
     }
 
     //
@@ -171,7 +178,6 @@ class Tweet {
     //tweet.tx.msg.data.images
 
     if (this.images?.length > 0) {
-      console.log("Has Image");
       this.img_preview = new Image(
         this.app,
         this.mod,
@@ -241,9 +247,6 @@ class Tweet {
         has_reply_disconnected = true;
       }
 
-      //if (has_reply || has_reply_disconnected){
-      //  console.log(has_reply, has_reply_disconnected);
-      //}
       //
       // if prepend = true, remove existing element
       //
@@ -262,31 +265,9 @@ class Tweet {
     }
 
     //
-    // retweets displayed in container even if master exists elsewhere on page
-    //
-    //if (this.is_retweet) {
-    //  console.log("Is retweet");
-    //  myqs = this.container;
-    //  replace_existing_element = true;
-    //} else {
-    //
-    // this isn't retweet, but if the original exists, we want to ignore
-    // it unless it is parent-level (top thread).
-    //
-    //  if (obj?.parentElement?.classList.contains("tweet-main")) {
-    //    console.log("parent is a tweet");
-    //    replace_existing_element = false;
-    //  }
-    //}
-
-    //
     // retweets without commentary? pass-through and render subtweet
     //
-    //
-    // this is if i retweet my own tweet
-    //>>>>>>>>>>.
     if (this.retweet_tx && !this.text && !this.img_preview) {
-      console.log("Retweet without quote");
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
@@ -298,7 +279,6 @@ class Tweet {
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
-        console.log("saved tweet");
         (this.retweet.user.container =
           this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
           this.retweet.render(prepend);
@@ -388,12 +368,10 @@ class Tweet {
   }
 
   renderWithCriticalChild() {
-    //console.log("renderWithCriticalChild");
 
     this.render();
 
     if (this.critical_child) {
-      //console.log("Rendering child");
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
       this.critical_child.render();
 
@@ -412,7 +390,6 @@ class Tweet {
   }
 
   renderWithChildren() {
-    //console.log("Render thread");
     //
     // first render the tweet
     //
@@ -488,7 +465,6 @@ class Tweet {
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick = (e) => {
-          //console.log("Regular click event");
           //
           // if we have selected text, then we are trying to copy and paste and
           // the last thing we want is for the UI to update and prevent us from
@@ -714,6 +690,9 @@ class Tweet {
   }
 
   async addTweet(tweet, levels_deep = 0) {
+
+console.log("just in add tweet!");
+
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here
@@ -740,7 +719,7 @@ class Tweet {
     //
     for (let i = 0; i < this.unknown_children.length; i++) {
       if (this.unknown_children[i].parent_id === tweet.tx.signature) {
-        if (await this.isCriticalChild(this.unknown_children[i])) {
+        if (this.isCriticalChild(this.unknown_children[i])) {
           this.critical_child = this.unknown_children[i];
           //
           // April 14, 2023 - do not show critical children unless 2nd level
@@ -766,14 +745,22 @@ class Tweet {
       }
     }
 
+
+console.log("adding tweet under this tweet: " + tweet.tx.signature);
+console.log("adding tweet with this parent_id: " + tweet.parent_id);
+
     //
     // tweet is direct child
     //
     if (tweet.parent_id == this.tx.signature) {
+
+console.log("we are parent of this tweet!");
+
       //
       // already added?
       //
       if (this.children_sigs_hmap[tweet.tx.signature]) {
+console.log("ALREADY ADDED - returning ZERO");
         return 0;
       }
 
@@ -781,7 +768,7 @@ class Tweet {
       // make critical child if needed
       //
       if (
-        (await this.isCriticalChild(tweet)) ||
+        (this.isCriticalChild(tweet)) ||
         (tweet.tx.timestamp > this.updated_at && this.critical_child == null)
       ) {
         this.critical_child = tweet;
@@ -818,10 +805,15 @@ class Tweet {
       // tweet belongs to a child
       //
     } else {
+
+console.log("<--- maybe this is a sub-child");
+
       //
       // maybe it is a critical child
       //
-      if (await this.isCriticalChild(tweet)) {
+console.log(" --- about to await crit child...");
+      if (this.isCriticalChild(tweet)) {
+console.log("is critical child...");
         this.critical_child = tweet;
         //
         // April 14, 2023 - do not show critical children unless 2nd level
@@ -836,9 +828,15 @@ class Tweet {
         this.user.notice = "new reply on " + this.formatDate();
       }
 
+console.log("moving forward");
+console.log("is in children_sigs_hmap: " + this.children_sigs_hmap[tweet.parent_id]);
+
       if (this.children_sigs_hmap[tweet.parent_id]) {
+console.log("num children: " + this.children.length);
         for (let i = 0; i < this.children.length; i++) {
+console.log("adding child");
           if (this.children[i].addTweet(tweet, levels_deep + 1)) {
+console.log("added child!!!");
             this.removeUnknownChild(tweet);
             this.children_sigs_hmap[tweet.tx.signature] = 1;
             //
@@ -857,11 +855,27 @@ class Tweet {
           }
         }
       } else {
+console.log("x: tweet isn't in sigs hmap");
+console.log("levels deep: " + levels_deep);
         //
         // if still here, add to unknown children if top-level as we didn't add to any children
         //
-        if (levels_deep == 0) {
+	let inserted = false;
+	for (let z = 0; z < this.children.length; z++) {
+	  if (tweet.parent_id == this.children[z].tx.signature) {
+console.log("we have found the parent id!");
+	    if (this.children[z].addTweet(tweet) != 0) {
+console.log("child got it added!");
+              this.children_sigs_hmap[tweet.tx.signature] = 1;
+	      inserted = true;
+	    }
+	  }
+	}
+
+        if (levels_deep == 0 && inserted == false) {
+console.log("is tweet in unknown children sigs?");
           if (this.unknown_children_sigs_hmap[tweet.tx.signature] != 1) {
+console.log("is tweet in unknown children sigs?");
             this.unknown_children.push(tweet);
             this.unknown_children_sigs_hmap[tweet.tx.signature] = 1;
           }
@@ -869,7 +883,9 @@ class Tweet {
       }
     }
 
-    return 1; //? or 0?
+console.log("ok, returning 1");
+
+    return 1;
   }
 
   /////////////////////
@@ -910,7 +926,7 @@ class Tweet {
     }
   }
 
-  async isCriticalChild(tweet) {
+  isCriticalChild(tweet) {
     //
     // TODO -- changed comparison to !== March 13, right?
     //
