@@ -547,6 +547,7 @@ class Mixin extends ModTemplate {
     let old_pin = this.mixin.pin;
 
     let encrypted_old_pin = "";
+
     if (old_pin !== "") {
       encrypted_old_pin = this.signEd25519PIN(
         old_pin,
@@ -569,8 +570,13 @@ class Mixin extends ModTemplate {
       pin: encrypted_new_pin,
     };
 
+    console.log("Send Request to update PIN");
+
     this.request(user_id, session_id, privatekey, method, uri, body)
       .then((res) => {
+        
+        console.log(res.data);
+
         mixin_self.mixin.pin = new_pin;
         mixin_self.save();
         if (callback != null) {
@@ -898,6 +904,8 @@ class Mixin extends ModTemplate {
         this.account_created = 1;
       }
 
+      console.log("Mixin Load: ", this.account_created);
+      
       // Fallback if we lost our pin...? maybe...
       if (this.account_created && !this.mixin.pin) {
         let new_pin = new Date().getTime().toString().substr(-6);
