@@ -3950,6 +3950,8 @@ if (this.game.players.length > 2) {
 
             function(spacekey) {
 
+console.log("plague select space done: " + spacekey);
+
 	      let land_or_sea = "land";
 	      let space = null;
 
@@ -3986,9 +3988,12 @@ if (this.game.players.length > 2) {
    	      $('.option').off();
 	      $('.option').on('click', function () {
 
+console.log("in parent click function in plague...");
+
 	        let faction_to_destroy = $(this).attr("id");
    	        let msg = "Destroy Which Unit: ";
                 let unittypes = [];
+		let unit_destroyed = 0;
                 let html = '<ul>';
 		let du = -1;
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
@@ -4008,7 +4013,12 @@ if (this.game.players.length > 2) {
    	        $('.option').off();
 	        $('.option').on('click', function () {
 
+console.log("in click function from plague...");
+
+   	          $('.option').off();
 	          let unittype = $(this).attr("id");
+		  if (unit_destroyed == 1) { return; }	
+		  unit_destroyed = 1;
 
 		  if (unittype === "skip") {
           	    his_self.endTurn();
@@ -4021,6 +4031,11 @@ if (this.game.players.length > 2) {
 		    his_self.updateStatus("submitted");
 		    his_self.addMove("discard_random\t"+opponent_faction);
 		  }
+
+		  console.log("!!!");
+		  console.log("!!! plague unit removal");
+		  console.log("!!!");
+          	  console.log("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
@@ -4575,7 +4590,7 @@ if (this.game.players.length > 2) {
 
           his_self.playerSelectSpaceWithFilter(
 
-            "Select Ottoman-Controlled Port",
+            `Select Ottoman-Controlled Port for ${his_self.popup("216")}`,
 
             function(space) {
 	      if (his_self.isSpaceControlled(space, "ottoman") && space.ports.length > 0) { return 1; }
@@ -4597,7 +4612,12 @@ if (this.game.players.length > 2) {
               his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
               his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null,
+
+	    true 
+
           );
 
 	}
@@ -4625,7 +4645,7 @@ if (this.game.players.length > 2) {
 	  his_self.game.queue.push("secret_protestant_circle\titalian");
 	}
 
-        return 0;
+        return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -4688,7 +4708,7 @@ if (this.game.players.length > 2) {
 	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t2");
 	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
 
-        return 0;
+        return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -4702,13 +4722,14 @@ if (this.game.players.length > 2) {
 
 	  if (player == his_self.game.player) {
 
- 	    let msg = `Remove Unit ${num}:`;
+ 	    let msg = `${his_self.popup("218")}: remove unit #${num}:`;
             let html = '<ul>';
             html += '<li class="option" id="hapsburg">remove hapsburg unit</li>';
             html += '<li class="option" id="hungary">remove hungarian unit</li>';
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
+
 
    	    $('.option').off();
 	    $('.option').on('click', function () {
@@ -9774,6 +9795,8 @@ console.log("HITS: " + hits);
 
 	  let faction = mv[1];
   
+          his_self.game.queue.splice(qe, 1);
+
 	  let p = his_self.returnPlayerOfFaction(faction);
           let fhand_idx = his_self.returnFactionHandIdx(p, faction);
 	  let card = his_self.game.state.last_pulled_card;
@@ -9785,7 +9808,6 @@ console.log("HITS: " + hits);
 	  }
 
   	  his_self.game.queue.push("discard\t"+faction+"\t"+card);
-          his_self.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -10139,7 +10161,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       },
       onEvent : function(his_self, faction) {
 
-        his_self.game.state.tmp_protestant_reformation_bonus++;
         his_self.game.state.printing_press_active = 1;
 
 	let p = his_self.returnPlayerOfFaction(faction);
@@ -14714,6 +14735,16 @@ console.log("and friendly");
     try { this.game.state.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
 
+    //
+    // in the 2P game, Hapsburgs are an activated power for the Papacy
+    //
+    if (this.game.state.events.schmalkaldic_league == 1 && this.game.players.length == 2 && (faction1 == "papacy" || faction1 == "hapsburg") && (faction1 == "hapsburg" || faction2 == "papacy")) {
+      if (!this.game.state.activated_powers["papacy"].includes("hapsburg")) {
+        this.setActivatedPower("papacy", "hapsburg");
+      }
+    }
+
+
     if (amp == 1) {
       if (this.isMinorPower(faction1)) {
         if (!this.isMinorPower(faction2)) {
@@ -14828,6 +14859,10 @@ console.log("and friendly");
       defender = returnControllingPower(defender);
     }         
 
+console.log("defender: " + defender);
+console.log("ACTIVATED POWERS: ");
+console.log(JSON.stringify(this.game.state.activated_powers));
+
     //
     // defender now controlling power or itself
     //
@@ -14838,14 +14873,16 @@ console.log("and friendly");
       //
       let player_factions = this.returnPlayerFactions((p+1));
 
+console.log("player_factions : " + (p+1) + " -- " + JSON.stringify(player_factions));
+
       let i_command_this_faction = false;
       for (let i = 0; i < player_factions.length; i++) { 
 	if (player_factions[i] === defender) { return (p+1); }
-        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { i_command_this_faction = true; }
+        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { return (p+1); }
         for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
           if (this.game.state.activated_powers[player_factions[i]][z] === defender) { return (p+1); }
         }
-      }   
+      }
     }
 
     //
@@ -15008,7 +15045,7 @@ console.log("and friendly");
     //
     this.game.state.debater_committed_this_impulse = {};
     this.game.state.spaces_assaulted_this_turn = [];
-    
+    this.game.state.printing_press_active = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -17129,6 +17166,8 @@ if (this.game.state.scenario == "is_testing") {
     	  this.convertSpace("protestant", "nuremberg");
     	  this.convertSpace("protestant", "graz");
     	  this.controlSpace("protestant", "graz");
+    	  this.addRegular("protestant", "worms", 3);
+    	  this.convertSpace("protestant", "worms", 3);
     	  this.addRegular("protestant", "graz", 3);
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
@@ -17456,9 +17495,6 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    //
 	    let space = this.game.spaces[destination];
 	    let anyone_else_here = 0;
-
-console.log("TESTING HERE: ");
-console.log(JSON.stringify(this.game.queue));
 
 	    let lqe = qe-1;
 	    if (lqe >= 0) {
@@ -18029,6 +18065,8 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 
 	  let attacking_player = this.returnPlayerOfFaction(faction);
 
+	  let already_asked = [];
+
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
 	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
@@ -18037,7 +18075,10 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	        for (let zz = 0; zz < neighbours.length; zz++) {
 	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[zz]);
 	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
+		    if (!already_asked.includes((io[i]+neighbours[zz]))) {
+	              this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
+	  	      already_asked.push((io[i]+neighbours[zz]));
+		    }
 	          }
 	        }
 	      }
@@ -18045,11 +18086,14 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 
 	    for (let zzz = 0; zzz < this.game.state.activated_powers[io[i]].length; zzz++) {
 	      let ap = this.game.state.activated_powers[io[i]][zzz];
-	      if (ap != faction) {
+	      if (ap != faction && !already_asked.includes(ap)) {
 	        for (let zz = 0; zz < neighbours.length; zz++) {
 	          let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[zz]);
 	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
+		    if (!already_asked.includes((ap+neighbours[zz]))) {
+	              this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
+	  	      already_asked.push((ap+neighbours[zz]));
+	            }
 	          }
 	        }
 	      }
@@ -18151,6 +18195,10 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	  let defender_spacekey = mv[5];
 	  let controller_of_defender = this.returnPlayerCommandingFaction(defender);
 
+console.log("defender is: " + mv[4]);
+console.log("player controlling defender? " + controller_of_defender);
+console.log("i am player: " + this.game.player);
+
 	  if (controller_of_defender == 0) { return 1; }
 
 	  if (this.game.player == controller_of_defender) {
@@ -18238,8 +18286,6 @@ hits_on = 2;
 	    // insert at end of queue by default
 	    //
 	    let index_to_insert_moves = this.game.queue.length-1;
-
-console.log("1. insert index: " + index_to_insert_moves);
 
 	    //
 	    // BUT NO OTHER POWER CAN INTERCEPT, SO CLEAN OUT GAME QUEUE
@@ -19602,7 +19648,7 @@ console.log("#");
 	  }
 
 console.log("DEFENDING FACTIONS: " + defending_factions);
-console.log("FM: " + JSON.stringify(this.game.state.assault.faction_map));
+console.log("FM: " + JSON.stringify(this.game.state.field_battle.faction_map));
 
 	  //
 	  // otherwise assign hits directly
@@ -22373,10 +22419,9 @@ defender_hits - attacker_hits;
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
 	  //
-	  // form Schmalkaldic League if unformed by end of round 4
+	  // TESTING form Schmalkaldic League if unformed by end of round 4
 	  //
 	  if (this.game.state.round == 1 && this.game.state.events.schmalkaldic_league != 1) {
-this.updateLog("FORMING LEAGUE EARLY -- R2 for testing!");
 	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    this.game.queue.push("event\tprotestant\t013");
@@ -22897,6 +22942,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let faction_taking = mv[1];
 	  let faction_giving = mv[2];
+	  let home_card_permitted = 0;
+	  if (parseInt(mv[3]) > 0) { home_card_permitted = 1; }
 
 	  let p1 = this.returnPlayerOfFaction(faction_taking);
 	  let p2 = this.returnPlayerOfFaction(faction_giving);
@@ -22904,6 +22951,29 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  if (this.game.player == p2) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
 	    let roll = this.rollDice(this.game.deck[0].fhand[fhand_idx].length) - 1;
+
+            let is_this_home_card = 0;
+            let pulled = this.game.deck[0].fhand[fhand_idx][roll];
+            if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+              is_this_home_card = 1;
+            }
+
+            if (home_card_permitted == 0 && is_this_home_card == 1) {
+              while (roll > 0 && is_this_home_card == 1) {
+                is_this_home_card = 0;
+                roll--;
+                if (roll == -1) {
+                  this.addMove("NOTIFY\t"+this.returnFactionname(faction)+ " has no non-home cards to pull");
+                  this.endTurn();
+                  return 0;
+                }
+                let pulled = this.game.deck[0].fhand[fhand_idx][roll];
+                if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+                  is_this_home_card = 1;
+                }
+              }
+            }
+
 	    let card = this.game.deck[0].fhand[fhand_idx][roll];
 	    this.addMove("give_card\t"+faction_taking+"\t"+faction_giving+"\t"+card);
 	    this.endTurn();
@@ -22964,6 +23034,11 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction_taking = mv[1];
 	  let faction_giving = mv[2];
 	  let card = mv[3];
+
+	  if (card == "undefined") { 
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
 
 	  this.updateLog(this.returnFactionName(faction_taking) + " pulls " + this.popup(card));
 
@@ -23108,8 +23183,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	if (mv[0] === "discard_random") {
 
 	  let faction = mv[1];
-	  let home_cards_permitted = 0;
-	  if (parseInt(mv[2]) > 0) { home_cards_permitted = parseInt(mv[2]); }
+	  let home_card_permitted = 0;
+	  if (parseInt(mv[2]) > 0) { home_card_permitted = parseInt(mv[2]); }
 	  let num = 1;
 
 	  let player_of_faction = this.returnPlayerOfFaction(faction);
@@ -23136,7 +23211,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		is_this_home_card = 1;
 	      }
 
-	      if (home_cards_permitted == 0 && is_this_home_card == 1) {
+	      if (home_card_permitted == 0 && is_this_home_card == 1) {
 	        while (roll > 0 && is_this_home_card == 1) {
 		  is_this_home_card = 0;
 		  roll--;
@@ -23805,29 +23880,31 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  //
 	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
 
-	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
-	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-	      c_neighbours++;
-	    }
-	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
-	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-	      p_neighbours++;
-	    }
-	    if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
-	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-	      p_rolls++;
-	    }
-	    if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
-	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-	      c_rolls++;
-	    }
-	    if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
-	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
-	      p_rolls++;
-	    }
-	    if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
-	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
-	      c_rolls++;
+	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
+	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+	        c_neighbours++;
+	      }
+	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+	        p_neighbours++;
+	      }
+	      if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	        p_rolls++;
+	      }
+	      if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	        c_rolls++;
+	      }
+	      if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	        p_rolls++;
+	      }
+	      if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	        c_rolls++;
+	      }
 	    }
 	  }
 
@@ -23872,6 +23949,10 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  if (this.game.state.english_bible_translation_bonus == 1 || this.game.state.french_bible_translation_bonus == 1 || this.game.state.german_bible_translation_bonus == 1) {
 	    p_rolls++;
 	    p_roll_desc.push({ name : "Bonus" , desc : "translation completed"});
+	  }
+	  if (this.game.state.printing_press_active) {
+	    p_rolls++;
+	    p_roll_desc.push({ name : "Bonus" , desc : "printing press"});
 	  }
 	  if (this.game.state.tmp_protestant_reformation_bonus_spaces.length > 0) {
 	    if (!this.game.state.tmp_protestant_reformation_bonus_spaces.includes(space)) {
@@ -24018,6 +24099,7 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
           // neighbours
           //
           for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
             if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
               c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
               c_neighbours++;
@@ -24041,6 +24123,7 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
             if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
               c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
               c_rolls++;
+            }
             }
           }
 
@@ -25127,10 +25210,14 @@ if (limit === "build") {
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
-
+    let callback_run = false;
     let at_least_one_option = false;
     let html = '';
     html += '<ul class="hide-scrollbar">';
+
+    $('.option').off();
+    $('.hextile').off();
+    $('.space').off();
 
     this.theses_overlay.space_onclick_callback = mycallback;
 
@@ -25155,7 +25242,10 @@ if (limit === "build") {
 	      $('.hextile').off();
               his_self.theses_overlay.space_onclick_callback = null;
 	      his_self.removeSelectable();
-	      mycallback(key);
+    	      if (callback_run == false) {
+	        callback_run = true;
+	        mycallback(key);
+	      }
 	    }
 	  });
 	}
@@ -25214,8 +25304,14 @@ if (limit === "build") {
 
     let his_self = this;
     let at_least_one_option = false;
+    let callback_run = false;
 
     this.theses_overlay.space_onclick_callback = mycallback;
+
+    // remove any previous events
+    $('.option').off();
+    $('.hextile').off();
+    $('.space').off();
 
     let html = '';
     html += '<ul class="hide-scrollbar">';
@@ -25227,11 +25323,16 @@ if (limit === "build") {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
 	    $('.option').off();
+     	    $('.hextile').off();
+    	    $('.space').off();
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
-	    mycallback(key);
+    	    if (callback_run == false) {
+	      callback_run = true;
+	      mycallback(key);
+	    }
 	  }
 	}
       }
@@ -25392,7 +25493,7 @@ if (limit === "build") {
           return;
 	}
         
-	units_to_move.push(id);
+	units_to_move.push(parseInt(id));
 
         selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
 
@@ -25499,7 +25600,6 @@ if (limit === "build") {
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
     this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
-
 
     //
     // discard the card
@@ -26167,7 +26267,7 @@ return;
 	    let selectDestinationInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
 	      // MOVE THE UNITS
-              units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
@@ -26351,7 +26451,7 @@ console.log("A");
 
       	    function(destination_spacekey) {
 	
-	      units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
 	      let does_movement_include_cavalry = 0;
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -27251,7 +27351,7 @@ console.log("A");
 
       	    function(destination_spacekey) {
 	
-	      units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
 	      let does_movement_include_cavalry = 0;
 	      for (let i = 0; i < units_to_move.length; i++) {

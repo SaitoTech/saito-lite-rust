@@ -656,6 +656,8 @@ if (this.game.state.scenario == "is_testing") {
     	  this.convertSpace("protestant", "nuremberg");
     	  this.convertSpace("protestant", "graz");
     	  this.controlSpace("protestant", "graz");
+    	  this.addRegular("protestant", "worms", 3);
+    	  this.convertSpace("protestant", "worms", 3);
     	  this.addRegular("protestant", "graz", 3);
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
@@ -983,9 +985,6 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    //
 	    let space = this.game.spaces[destination];
 	    let anyone_else_here = 0;
-
-console.log("TESTING HERE: ");
-console.log(JSON.stringify(this.game.queue));
 
 	    let lqe = qe-1;
 	    if (lqe >= 0) {
@@ -1556,6 +1555,8 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 
 	  let attacking_player = this.returnPlayerOfFaction(faction);
 
+	  let already_asked = [];
+
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
 	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
@@ -1564,7 +1565,10 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	        for (let zz = 0; zz < neighbours.length; zz++) {
 	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[zz]);
 	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
+		    if (!already_asked.includes((io[i]+neighbours[zz]))) {
+	              this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
+	  	      already_asked.push((io[i]+neighbours[zz]));
+		    }
 	          }
 	        }
 	      }
@@ -1572,11 +1576,14 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 
 	    for (let zzz = 0; zzz < this.game.state.activated_powers[io[i]].length; zzz++) {
 	      let ap = this.game.state.activated_powers[io[i]][zzz];
-	      if (ap != faction) {
+	      if (ap != faction && !already_asked.includes(ap)) {
 	        for (let zz = 0; zz < neighbours.length; zz++) {
 	          let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[zz]);
 	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
+		    if (!already_asked.includes((ap+neighbours[zz]))) {
+	              this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
+	  	      already_asked.push((ap+neighbours[zz]));
+	            }
 	          }
 	        }
 	      }
@@ -1678,6 +1685,10 @@ console.log("RETREAT: " + JSON.stringify(source.units));
 	  let defender_spacekey = mv[5];
 	  let controller_of_defender = this.returnPlayerCommandingFaction(defender);
 
+console.log("defender is: " + mv[4]);
+console.log("player controlling defender? " + controller_of_defender);
+console.log("i am player: " + this.game.player);
+
 	  if (controller_of_defender == 0) { return 1; }
 
 	  if (this.game.player == controller_of_defender) {
@@ -1765,8 +1776,6 @@ hits_on = 2;
 	    // insert at end of queue by default
 	    //
 	    let index_to_insert_moves = this.game.queue.length-1;
-
-console.log("1. insert index: " + index_to_insert_moves);
 
 	    //
 	    // BUT NO OTHER POWER CAN INTERCEPT, SO CLEAN OUT GAME QUEUE
@@ -3129,7 +3138,7 @@ console.log("#");
 	  }
 
 console.log("DEFENDING FACTIONS: " + defending_factions);
-console.log("FM: " + JSON.stringify(this.game.state.assault.faction_map));
+console.log("FM: " + JSON.stringify(this.game.state.field_battle.faction_map));
 
 	  //
 	  // otherwise assign hits directly
@@ -5900,10 +5909,9 @@ defender_hits - attacker_hits;
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
 	  //
-	  // form Schmalkaldic League if unformed by end of round 4
+	  // TESTING form Schmalkaldic League if unformed by end of round 4
 	  //
 	  if (this.game.state.round == 1 && this.game.state.events.schmalkaldic_league != 1) {
-this.updateLog("FORMING LEAGUE EARLY -- R2 for testing!");
 	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    this.game.queue.push("event\tprotestant\t013");
@@ -6424,6 +6432,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let faction_taking = mv[1];
 	  let faction_giving = mv[2];
+	  let home_card_permitted = 0;
+	  if (parseInt(mv[3]) > 0) { home_card_permitted = 1; }
 
 	  let p1 = this.returnPlayerOfFaction(faction_taking);
 	  let p2 = this.returnPlayerOfFaction(faction_giving);
@@ -6431,6 +6441,29 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  if (this.game.player == p2) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
 	    let roll = this.rollDice(this.game.deck[0].fhand[fhand_idx].length) - 1;
+
+            let is_this_home_card = 0;
+            let pulled = this.game.deck[0].fhand[fhand_idx][roll];
+            if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+              is_this_home_card = 1;
+            }
+
+            if (home_card_permitted == 0 && is_this_home_card == 1) {
+              while (roll > 0 && is_this_home_card == 1) {
+                is_this_home_card = 0;
+                roll--;
+                if (roll == -1) {
+                  this.addMove("NOTIFY\t"+this.returnFactionname(faction)+ " has no non-home cards to pull");
+                  this.endTurn();
+                  return 0;
+                }
+                let pulled = this.game.deck[0].fhand[fhand_idx][roll];
+                if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+                  is_this_home_card = 1;
+                }
+              }
+            }
+
 	    let card = this.game.deck[0].fhand[fhand_idx][roll];
 	    this.addMove("give_card\t"+faction_taking+"\t"+faction_giving+"\t"+card);
 	    this.endTurn();
@@ -6491,6 +6524,11 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction_taking = mv[1];
 	  let faction_giving = mv[2];
 	  let card = mv[3];
+
+	  if (card == "undefined") { 
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
 
 	  this.updateLog(this.returnFactionName(faction_taking) + " pulls " + this.popup(card));
 
@@ -6635,8 +6673,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	if (mv[0] === "discard_random") {
 
 	  let faction = mv[1];
-	  let home_cards_permitted = 0;
-	  if (parseInt(mv[2]) > 0) { home_cards_permitted = parseInt(mv[2]); }
+	  let home_card_permitted = 0;
+	  if (parseInt(mv[2]) > 0) { home_card_permitted = parseInt(mv[2]); }
 	  let num = 1;
 
 	  let player_of_faction = this.returnPlayerOfFaction(faction);
@@ -6663,7 +6701,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		is_this_home_card = 1;
 	      }
 
-	      if (home_cards_permitted == 0 && is_this_home_card == 1) {
+	      if (home_card_permitted == 0 && is_this_home_card == 1) {
 	        while (roll > 0 && is_this_home_card == 1) {
 		  is_this_home_card = 0;
 		  roll--;
@@ -7332,29 +7370,31 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  //
 	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
 
-	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
-	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-	      c_neighbours++;
-	    }
-	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
-	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-	      p_neighbours++;
-	    }
-	    if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
-	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-	      p_rolls++;
-	    }
-	    if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
-	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-	      c_rolls++;
-	    }
-	    if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
-	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
-	      p_rolls++;
-	    }
-	    if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
-	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
-	      c_rolls++;
+	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
+	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+	        c_neighbours++;
+	      }
+	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+	        p_neighbours++;
+	      }
+	      if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	        p_rolls++;
+	      }
+	      if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	        c_rolls++;
+	      }
+	      if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	        p_rolls++;
+	      }
+	      if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	        c_rolls++;
+	      }
 	    }
 	  }
 
@@ -7399,6 +7439,10 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  if (this.game.state.english_bible_translation_bonus == 1 || this.game.state.french_bible_translation_bonus == 1 || this.game.state.german_bible_translation_bonus == 1) {
 	    p_rolls++;
 	    p_roll_desc.push({ name : "Bonus" , desc : "translation completed"});
+	  }
+	  if (this.game.state.printing_press_active) {
+	    p_rolls++;
+	    p_roll_desc.push({ name : "Bonus" , desc : "printing press"});
 	  }
 	  if (this.game.state.tmp_protestant_reformation_bonus_spaces.length > 0) {
 	    if (!this.game.state.tmp_protestant_reformation_bonus_spaces.includes(space)) {
@@ -7545,6 +7589,7 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
           // neighbours
           //
           for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
             if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
               c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
               c_neighbours++;
@@ -7568,6 +7613,7 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
             if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
               c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
               c_rolls++;
+            }
             }
           }
 

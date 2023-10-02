@@ -14,10 +14,34 @@ class MenuOverlay {
       this.overlay.hide();
     }
 
+    pullHudOverOverlay() {
+      //
+      // pull GAME HUD over overlay
+      //
+      let overlay_zindex = parseInt(this.overlay.zIndex);
+      if (document.querySelector(".hud")) {
+        document.querySelector(".hud").style.zIndex = overlay_zindex+1;
+        this.mod.hud.zIndex = overlay_zindex+1;
+      }
+    }
+    pushHudUnderOverlay() {
+      //
+      // push GAME HUD under overlay
+      //
+      let overlay_zindex = parseInt(this.overlay.zIndex);
+      if (document.querySelector(".hud")) {
+        document.querySelector(".hud").style.zIndex = overlay_zindex-2;
+        this.mod.hud.zIndex = overlay_zindex-2;
+      }
+    }
+
+
     render(menu, player, faction, ops, attachEventsToOptions=null) {
 
       let his_self = this.mod;
       this.overlay.show(MenuTemplate());
+
+      this.pushHudUnderOverlay();
 
       let sub_menu = (main_menu, sub_menu, options) => {
 

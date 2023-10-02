@@ -993,6 +993,8 @@
 
             function(spacekey) {
 
+console.log("plague select space done: " + spacekey);
+
 	      let land_or_sea = "land";
 	      let space = null;
 
@@ -1029,9 +1031,12 @@
    	      $('.option').off();
 	      $('.option').on('click', function () {
 
+console.log("in parent click function in plague...");
+
 	        let faction_to_destroy = $(this).attr("id");
    	        let msg = "Destroy Which Unit: ";
                 let unittypes = [];
+		let unit_destroyed = 0;
                 let html = '<ul>';
 		let du = -1;
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
@@ -1051,7 +1056,12 @@
    	        $('.option').off();
 	        $('.option').on('click', function () {
 
+console.log("in click function from plague...");
+
+   	          $('.option').off();
 	          let unittype = $(this).attr("id");
+		  if (unit_destroyed == 1) { return; }	
+		  unit_destroyed = 1;
 
 		  if (unittype === "skip") {
           	    his_self.endTurn();
@@ -1064,6 +1074,11 @@
 		    his_self.updateStatus("submitted");
 		    his_self.addMove("discard_random\t"+opponent_faction);
 		  }
+
+		  console.log("!!!");
+		  console.log("!!! plague unit removal");
+		  console.log("!!!");
+          	  console.log("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
@@ -1618,7 +1633,7 @@
 
           his_self.playerSelectSpaceWithFilter(
 
-            "Select Ottoman-Controlled Port",
+            `Select Ottoman-Controlled Port for ${his_self.popup("216")}`,
 
             function(space) {
 	      if (his_self.isSpaceControlled(space, "ottoman") && space.ports.length > 0) { return 1; }
@@ -1640,7 +1655,12 @@
               his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
               his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null,
+
+	    true 
+
           );
 
 	}
@@ -1668,7 +1688,7 @@
 	  his_self.game.queue.push("secret_protestant_circle\titalian");
 	}
 
-        return 0;
+        return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -1731,7 +1751,7 @@
 	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t2");
 	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
 
-        return 0;
+        return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -1745,13 +1765,14 @@
 
 	  if (player == his_self.game.player) {
 
- 	    let msg = `Remove Unit ${num}:`;
+ 	    let msg = `${his_self.popup("218")}: remove unit #${num}:`;
             let html = '<ul>';
             html += '<li class="option" id="hapsburg">remove hapsburg unit</li>';
             html += '<li class="option" id="hungary">remove hungarian unit</li>';
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
+
 
    	    $('.option').off();
 	    $('.option').on('click', function () {
@@ -6817,6 +6838,8 @@ console.log("HITS: " + hits);
 
 	  let faction = mv[1];
   
+          his_self.game.queue.splice(qe, 1);
+
 	  let p = his_self.returnPlayerOfFaction(faction);
           let fhand_idx = his_self.returnFactionHandIdx(p, faction);
 	  let card = his_self.game.state.last_pulled_card;
@@ -6828,7 +6851,6 @@ console.log("HITS: " + hits);
 	  }
 
   	  his_self.game.queue.push("discard\t"+faction+"\t"+card);
-          his_self.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -7182,7 +7204,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       },
       onEvent : function(his_self, faction) {
 
-        his_self.game.state.tmp_protestant_reformation_bonus++;
         his_self.game.state.printing_press_active = 1;
 
 	let p = his_self.returnPlayerOfFaction(faction);

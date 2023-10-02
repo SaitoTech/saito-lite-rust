@@ -930,10 +930,14 @@ if (limit === "build") {
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
-
+    let callback_run = false;
     let at_least_one_option = false;
     let html = '';
     html += '<ul class="hide-scrollbar">';
+
+    $('.option').off();
+    $('.hextile').off();
+    $('.space').off();
 
     this.theses_overlay.space_onclick_callback = mycallback;
 
@@ -958,7 +962,10 @@ if (limit === "build") {
 	      $('.hextile').off();
               his_self.theses_overlay.space_onclick_callback = null;
 	      his_self.removeSelectable();
-	      mycallback(key);
+    	      if (callback_run == false) {
+	        callback_run = true;
+	        mycallback(key);
+	      }
 	    }
 	  });
 	}
@@ -1017,8 +1024,14 @@ if (limit === "build") {
 
     let his_self = this;
     let at_least_one_option = false;
+    let callback_run = false;
 
     this.theses_overlay.space_onclick_callback = mycallback;
+
+    // remove any previous events
+    $('.option').off();
+    $('.hextile').off();
+    $('.space').off();
 
     let html = '';
     html += '<ul class="hide-scrollbar">';
@@ -1030,11 +1043,16 @@ if (limit === "build") {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
 	    $('.option').off();
+     	    $('.hextile').off();
+    	    $('.space').off();
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
-	    mycallback(key);
+    	    if (callback_run == false) {
+	      callback_run = true;
+	      mycallback(key);
+	    }
 	  }
 	}
       }
@@ -1195,7 +1213,7 @@ if (limit === "build") {
           return;
 	}
         
-	units_to_move.push(id);
+	units_to_move.push(parseInt(id));
 
         selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
 
@@ -1302,7 +1320,6 @@ if (limit === "build") {
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
     this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
-
 
     //
     // discard the card
@@ -1970,7 +1987,7 @@ return;
 	    let selectDestinationInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
 	      // MOVE THE UNITS
-              units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
@@ -2154,7 +2171,7 @@ console.log("A");
 
       	    function(destination_spacekey) {
 	
-	      units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
 	      let does_movement_include_cavalry = 0;
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -3054,7 +3071,7 @@ console.log("A");
 
       	    function(destination_spacekey) {
 	
-	      units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
 	      let does_movement_include_cavalry = 0;
 	      for (let i = 0; i < units_to_move.length; i++) {
