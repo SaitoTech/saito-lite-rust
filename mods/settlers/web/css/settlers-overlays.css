@@ -16,6 +16,11 @@
 }
 
 
+.settlers-selection-overlay{
+  width: min(630px, 95vw);
+  align-items: center;
+}
+
 .mobile-trading-container .player-box {
   max-width: 80vw;
 }
@@ -186,6 +191,9 @@ stats overlay
   text-shadow: 1px 1px 1px black;
   padding-left: 0.5rem;
   opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .no-vp {
@@ -244,7 +252,10 @@ stats overlay
 
 }
 
-
+.invalid_offer {
+  filter: grayscale(40%) brightness(0.5);
+  color: red;
+}
 
 .trade_count_number {
   position: absolute;
@@ -504,32 +515,53 @@ stats overlay
 }
 
 
+
+
 .settlers-state-container.combined-player-stats {
   flex-direction: row;
   gap: 6rem;
 }
 
-.settlers-state-container.vp-3p {
-  gap: 2.2rem;
+.vp-3p.settlers-stats-overlay {
+  width: min(760px, 98vw);
 }
 
-.settlers-stats-vp-row.vp-3p {
-    gap: 3rem;
+.combined-player-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 2rem;
 }
 
-.settlers-stats-resource-container.vp-3p {
-  gap: 2rem;
+.vp-3p .settlers-stats-vp-row, .vp-3p .settlers-stats-resource-container {
+  gap: 0.5rem;
 }
 
-.settlers-stats-resource-container.vp-3p .settlers-stats-card img {
-  width: 6.5rem;
+.vp-3p .settlers-stats-vp-row  {
+  height: min(6.5rem, 13vw);
 }
 
-.settlers-stats-resource-container.vp-3p .settlers-stats-card .settlers-stats-resource-count {
+.vp-3p .settlers-stats-vp-row img {
+  height: min(5.5rem, 8vw);
+}
+
+
+.vp-3p .settlers-stats-resource-container .settlers-stats-card .settlers-stats-resource-count {
   font-size: 3rem;
   width: 82%;
   height: 58%;
   line-height: 5.3rem;
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .combined-player-stats {
+    display: flex;
+    flex-direction: column;
+  }
+
+.vp-3p .settlers-stats-vp-row img {
+  height: min(6.5rem, 13vw);
+}
+
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {

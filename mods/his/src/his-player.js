@@ -519,9 +519,6 @@ if (faction === "venice" && spacekey == "agram") {
 
         if (id === "end") {
 
-console.log("UNITS AVAILABLE: " + JSON.stringify(units_available));
-console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
-
 	  //
 	  // moves prepended to last removed first
 	  //
@@ -933,10 +930,14 @@ if (limit === "build") {
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
-
+    let callback_run = false;
     let at_least_one_option = false;
     let html = '';
     html += '<ul class="hide-scrollbar">';
+
+    $('.option').off();
+    $('.hextile').off();
+    $('.space').off();
 
     this.theses_overlay.space_onclick_callback = mycallback;
 
@@ -961,7 +962,10 @@ if (limit === "build") {
 	      $('.hextile').off();
               his_self.theses_overlay.space_onclick_callback = null;
 	      his_self.removeSelectable();
-	      mycallback(key);
+    	      if (callback_run == false) {
+	        callback_run = true;
+	        mycallback(key);
+	      }
 	    }
 	  });
 	}
@@ -1020,8 +1024,14 @@ if (limit === "build") {
 
     let his_self = this;
     let at_least_one_option = false;
+    let callback_run = false;
 
     this.theses_overlay.space_onclick_callback = mycallback;
+
+    // remove any previous events
+    $('.option').off();
+    $('.hextile').off();
+    $('.space').off();
 
     let html = '';
     html += '<ul class="hide-scrollbar">';
@@ -1033,11 +1043,18 @@ if (limit === "build") {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
 	    $('.option').off();
+     	    $('.hextile').off();
+    	    $('.space').off();
+	    if (callback_run == true) { return; }
+	    callback_run = true;
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
-	    mycallback(key);
+    	    if (callback_run == false) {
+	      callback_run = true;
+	      mycallback(key);
+	    }
 	  }
 	}
       }
@@ -1049,12 +1066,20 @@ if (limit === "build") {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => { 
+console.log("clicked on id of key: " + key);
+	    document.getElementById(key).onclick = (e) => {};
 	    $('.option').off();
+     	    $('.hextile').off();
+    	    $('.space').off();
+	    if (callback_run == true) { return; }
+	    callback_run = true;
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
+console.log("and calling callback...");
 	    mycallback(key);
+	    return;
 	  }
 	}
       }
@@ -1198,7 +1223,7 @@ if (limit === "build") {
           return;
 	}
         
-	units_to_move.push(id);
+	units_to_move.push(parseInt(id));
 
         selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
 
@@ -1306,7 +1331,6 @@ if (limit === "build") {
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
     this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
 
-
     //
     // discard the card
     //
@@ -1328,6 +1352,11 @@ if (limit === "build") {
     if (ops == null) { ops = 2; }
     if (ops == 0) { console.log("OPS ARE ZERO!"); }
 
+    //
+    // "ACTIVATED POWERS" are those for whom players have the choice of moving.
+    // this can be triggered through alliance with a minor power, or through a 
+    // diplomacy card in the 2P game.
+    //
     if (this.game.state.activated_powers[faction].length > 0) {
 
       let html = `<ul>`;
@@ -1364,10 +1393,12 @@ if (limit === "build") {
         html    += `<li class="card" id="end_turn">end turn</li>`;
         html    += `</ul>`;
 
-	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops);
+	let attachEventsToMenuOptions = () => {
 
         his_self.updateStatusWithOptions(`${his_self.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
+
+	  his_self.menu_overlay.hide();
 
           if (user_choice === "end_turn") {
             this.endTurn();
@@ -1467,6 +1498,13 @@ if (limit === "build") {
 	    }
 	  }
         });
+
+	} // function
+
+	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops, attachEventsToMenuOptions);
+
+	attachEventsToMenuOptions();
+
       });
     } else {
 
@@ -1490,10 +1528,12 @@ if (limit === "build") {
       html    += `<li class="card" id="end_turn">end turn</li>`;
       html    += `</ul>`;
 
-      this.menu_overlay.render(menu, this.game.player, faction, ops);
+      let attachEventsToMenuOptions = () => {
 
       this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
+
+	his_self.menu_overlay.hide();
 
         if (user_choice === "end_turn") {
           this.endTurn();
@@ -1543,6 +1583,13 @@ if (limit === "build") {
 
 	}
       });
+
+
+      } // attach events to menu options
+
+      this.menu_overlay.render(menu, this.game.player, faction, ops, attachEventsToMenuOptions);
+      attachEventsToMenuOptions();
+
 
     }
   }
@@ -1950,12 +1997,13 @@ return;
 	    let selectDestinationInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
 	      // MOVE THE UNITS
-              units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
               }
-              his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+              his_self.addMove("RESETCONFIRMSNEEDED\tall");
               his_self.endTurn();
               return;
 
@@ -2010,7 +2058,6 @@ console.log("A");
 		for (let i = 0; i < units_to_move.length; i++) {
 		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
 		  if (unitno >= max_formation_size) { 
-console.log("B");
 		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	            if (unitno >= max_formation_size) { 
 	              alert("Maximum Formation Size: " + max_formation_size);
@@ -2134,7 +2181,7 @@ console.log("B");
 
       	    function(destination_spacekey) {
 	
-	      units_to_move.sort();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
 	      let does_movement_include_cavalry = 0;
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -2712,7 +2759,7 @@ console.log("B");
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
-      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, spacekey);
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, defender_spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 
@@ -3002,34 +3049,18 @@ console.log("B");
     }
     return 0;
   }
+
   async playerMoveFormationOverPass(his_self, player, faction) {
 
     let units_to_move = [];
+    let cancel_func = null;
+    let spacekey = "";
+    let space = null;
     let protestant_player = his_self.returnPlayerOfFaction("protestant");
 
-    his_self.playerSelectSpaceWithFilter(
-
-      "Select Town from Which to Move Units:",
-
-      // TODO - select only cities where I can move units
-      function(space) {
-	for (let z in space.units) {
-	  if (space.units[z].length > 0 && z === faction) {
-	    let any_unlocked_units = false;
-	    for (let i = 0; i < space.units[z].length; i++) {
-	      if (space.units[z][i].locked == false) { any_unlocked_units = true; }
-	    }
-	    if (any_unlocked_units) { return 1; }
-	    if (space.pass) { if (space.pass.length > 0) { return 1; } }
-          }
-	}
-	return 0;
-      },
-
-      function(spacekey) {
-
-        let space = his_self.game.spaces[spacekey];
-
+	//
+	// first define the functions that will be used internally
+	//
 	let selectDestinationInterface = function(his_self, units_to_move) {  
     	  his_self.playerSelectSpaceWithFilter(
 
@@ -3050,8 +3081,7 @@ console.log("B");
 
       	    function(destination_spacekey) {
 	
-	      units_to_move.sort();
-	      ////units_to_move.reverse();
+	      units_to_move.sort(function(a, b){return parseInt(a)-parseInt(b)});
 
 	      let does_movement_include_cavalry = 0;
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -3064,29 +3094,39 @@ console.log("B");
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
+              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
+	      his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
 
 	    },
 
-	    null, 
+	    cancel_func,
 
-  	    true
+	    true 
 
 	  );
 	}
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+          space = his_self.game.spaces[spacekey];
+
+	  let mobj = {
+	    space : space ,
+	    faction : faction ,
+   	    source : spacekey ,
+	    destination : "" ,
+ 	  }
+   	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+
 	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
-
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-              if (space.units[faction][i].locked == true || (his_self.game.state.events.foul_weather == 1 && space.units[faction][i].already_moved == 1)) {
-	      } else {
+	      if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
-	          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	          html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
 	        } else {
 	          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	        }
@@ -3104,8 +3144,24 @@ console.log("B");
             let id = $(this).attr("id");
 
 	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);    
+	      his_self.movement_overlay.hide();
+	      selectDestinationInterface(his_self, units_to_move);
 	      return;
+	    }
+
+	    //
+	    // check for max formation size
+	    //
+	    let unitno = 0;
+	    for (let i = 0; i < units_to_move.length; i++) {
+	      if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
+	      if (unitno >= max_formation_size) { 
+		max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	        if (unitno >= max_formation_size) { 
+	          alert("Maximum Formation Size: " + max_formation_size);
+	          return;
+		}
+	      }
 	    }
 
 	    if (units_to_move.includes(id)) {
@@ -3114,24 +3170,113 @@ console.log("B");
   		units_to_move.splice(idx, 1);
 	      }
 	    } else {
-	      units_to_move.push(parseInt(id));
+	      if (!units_to_move.includes(parseInt(id))) {
+	        units_to_move.push(parseInt(id));
+	      } else {
+		for (let i = 0; i < units_to_move.length; i++) {
+		  if (units_to_move[i] === parseInt(id)) {
+		    units_to_move.splice(i, 1);
+		    break;
+		  }
+		}
+	      }
 	    }
 
 	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	  });
 	}
-	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	
+	//
+	// end select units
+	//
+
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Town from which to Move Units:",
+
+      function(space) {
+	for (let z in space.units) {
+	  let fluis = his_self.returnFactionLandUnitsInSpace(z, space);
+	  if (space.pass.length > 0 && fluis > 0 && faction === z) {
+	    return 1;
+          }
+	}
+	return 0;
       },
 
-      null ,
+      function(skey) {
 
-      true
+	spacekey = skey;
+
+        let space = his_self.game.spaces[spacekey];
+
+	//
+	// is this a rapid move ?
+	//
+	let max_formation_size = his_self.returnMaxFormationSize(space.units[faction]);
+	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space);
+	let can_we_quick_move = false;
+	if (max_formation_size >= units_in_space) { can_we_quick_move = true; }
+
+	if (can_we_quick_move == true) {
+
+	  let msg = "Choose Movement Option: ";
+	  let html = "<ul>";
+	  html += `<li class="option" id="auto">move everything (auto)</li>`;
+	  html += `<li class="option" id="manual">select units (manual)</li>`;
+	  html += "</ul>";
+	  his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+
+	    $('.option').off();
+            let id = $(this).attr("id");
+
+	    if (id === "auto") {
+
+	      for (let i = 0; i < space.units[faction].length; i++) {
+		let u = space.units[faction][i];
+		if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.command_value > 0) {
+		  if (u.locked == false && (his_self.game.state.events.foul_weather != 1 || u.already_moved != 1)) { 
+		    units_to_move.push(i);
+		  } else {
+		    his_self.updateLog("Some units unable to auto-move because of Foul Weather");
+		  }
+		}
+	      }
+	      selectDestinationInterface(his_self, units_to_move);
+	      return;
+	    }
+
+	    if (id === "manual") {
+	      //
+	      // we have to move manually
+	      //
+	      selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	      return;
+	    }
+
+	  });
+
+	} else {
+
+	  //
+	  // we have to move manually
+	  //
+	  selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  return;
+
+	}
+      },
+
+      cancel_func,
+
+      true,
 
     );
 
   }
-
 
   canPlayerNavalMove(his_self, player, faction) {
 
@@ -3408,7 +3553,7 @@ console.log("B");
 	    //
 	    // now check if there are squadrons in the port or sea protecting the town
 	    //
-	    let space = his_self.game.space[conquerable_spaces[i]];
+	    let space = his_self.game.spaces[conquerable_spaces[i]];
 
 	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	    if (squadrons_protecting_space == 0) { return 1; }

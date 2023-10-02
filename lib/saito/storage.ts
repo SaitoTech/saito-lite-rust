@@ -222,11 +222,11 @@ class Storage {
         return;
       }
     }
-    //console.log("calling save options...");
+    // console.log("calling save options...");
 
     const saveOptionsForReal = () => {
       clearTimeout(this.timeout);
-      //console.log("Actually saving options");
+      // console.log("Actually saving options");
       try {
         localStorage.setItem("options", JSON.stringify(this.app.options));
       } catch (err) {

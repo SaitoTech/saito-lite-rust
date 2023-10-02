@@ -244,17 +244,14 @@ class TweetManager {
   //
   renderTweet(tweet) {
 
-    console.log("#");
-    console.log("# " + tweet.text);
-    console.log("#");
-    this.render("render single tweet");
+    this.render("single");
 
-    // show the basic tweet first
+    //Show the basic tweet first
     if (!tweet.parent_id) {
       tweet.renderWithChildren();
     }
 
-    // query the whole thread
+    //Query the whole thread
     let thread_id = tweet.thread_id || tweet.parent_id || tweet.tx.signature;
 
     this.mod.loadTweetThread(null, thread_id, () => {

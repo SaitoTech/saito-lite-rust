@@ -1462,6 +1462,7 @@ console.log("and friendly");
       seas[key].units['hungary'] = [];
       seas[key].units['scotland'] = [];
       seas[key].units['independent'] = [];
+      seas[key].key = key;
     }
 
     return seas;

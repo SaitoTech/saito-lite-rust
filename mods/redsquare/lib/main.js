@@ -63,7 +63,9 @@ class RedSquareMain {
         "",
         `/redsquare/?tweet_id=${tweet?.tx?.signature}`
       );
-
+      document.querySelectorAll('.saito-start-loader').forEach((e) => {
+        e.style.display = 'none';
+      });
       this.manager.renderTweet(tweet);
     });
 

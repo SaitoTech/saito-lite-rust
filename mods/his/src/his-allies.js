@@ -89,6 +89,16 @@
     try { this.game.state.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
 
+    //
+    // in the 2P game, Hapsburgs are an activated power for the Papacy
+    //
+    if (this.game.state.events.schmalkaldic_league == 1 && this.game.players.length == 2 && (faction1 == "papacy" || faction1 == "hapsburg") && (faction1 == "hapsburg" || faction2 == "papacy")) {
+      if (!this.game.state.activated_powers["papacy"].includes("hapsburg")) {
+        this.setActivatedPower("papacy", "hapsburg");
+      }
+    }
+
+
     if (amp == 1) {
       if (this.isMinorPower(faction1)) {
         if (!this.isMinorPower(faction2)) {
@@ -188,4 +198,52 @@
     this.displayWarBox();
 
   }
+
+
+  returnPlayerCommandingFaction(defender) {
+
+    //
+    // by default factions control themselves
+    //
+
+    //
+    // maybe this is a minor power controlled by a larger one
+    //
+    if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
+      defender = returnControllingPower(defender);
+    }         
+
+console.log("defender: " + defender);
+console.log("ACTIVATED POWERS: ");
+console.log(JSON.stringify(this.game.state.activated_powers));
+
+    //
+    // defender now controlling power or itself
+    //
+    for (let p = 0; p < this.game.players.length; p++) {
+
+      //
+      // does player command this faction
+      //
+      let player_factions = this.returnPlayerFactions((p+1));
+
+console.log("player_factions : " + (p+1) + " -- " + JSON.stringify(player_factions));
+
+      let i_command_this_faction = false;
+      for (let i = 0; i < player_factions.length; i++) { 
+	if (player_factions[i] === defender) { return (p+1); }
+        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { return (p+1); }
+        for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
+          if (this.game.state.activated_powers[player_factions[i]][z] === defender) { return (p+1); }
+        }
+      }
+    }
+
+    //
+    // no-one controls this faction
+    //
+    return 0;
+
+  }
+
 

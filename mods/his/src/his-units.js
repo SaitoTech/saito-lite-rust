@@ -694,11 +694,6 @@
     }
 
 
-if (faction == "hapsburg") {
-  console.log("HERE ARE HAPSBURG SPACES!");
-  console.log(JSON.stringify(my_spaces));
-}
-
     //
     // order spaces 
     //
