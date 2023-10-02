@@ -48,7 +48,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     //
     // ui components
@@ -2711,9 +2711,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["fiveyearplan", "cubanmissile","saltnegotiations","argo","antiapartheid", "teardown", "handshake", "kissinger", "opec", "awacs"];
+          this.game.deck[0].hand = ["fiveyearplan", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["fidel", "defectors", "defectors","defectors","defectors","defectors","china"];
+          this.game.deck[0].hand = ["fidel", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3650,7 +3650,7 @@ try {
     if (stage == "headline6") {
 
       this.updateLog("Moving into first headline card event");
-      console.log("headline6");
+
       //Only calculate once
       this.game.state.player_to_go = 2; //default to us (in ties) and update below
 
@@ -3713,8 +3713,6 @@ try {
     //
     if (stage == "headline7") {
 
-      console.log("headline7");
-
       //You don't have to recalculate if we store the first player_to_go in game.state
       this.game.state.player_to_go = 3 - this.game.state.player_to_go; //Other pleyer goes now
 
@@ -3724,8 +3722,7 @@ try {
      
         this.game.turn = []; 
 
-        this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}`);
-        this.updateLog(`${this.cardToText("defectors")} cancels USSR headline (${this.cardToText(ussrcard)}).`);
+        this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}, but it is cancelled by ${this.cardToText("defectors")}`);
 
         //
         // only one player should trigger next round
@@ -4473,8 +4470,10 @@ console.log("getPrivateKey(): " + privateKey);
         if (ac[card].player == opponent) { can_play_event = 0; }
 
 
-        announcement += '<li class="option" id="ops">play ops</li>';
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
+
+        announcement += '<li class="option" id="ops">play for ops</li>';
+
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
 
         //
@@ -11028,8 +11027,6 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
 
 if (card == "defectors") {
-
-  console.log("Defectors", this.game.state.headline);
 
   if (this.game.state.headline == 0) {
     if (player == "us") {

@@ -48,7 +48,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     //
     // ui components
@@ -2711,9 +2711,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["fiveyearplan", "cubanmissile","saltnegotiations","argo","antiapartheid", "teardown", "handshake", "kissinger", "opec", "awacs"];
+          this.game.deck[0].hand = ["fiveyearplan", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["fidel", "defectors", "defectors","defectors","defectors","defectors","china"];
+          this.game.deck[0].hand = ["fidel", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -4470,8 +4470,10 @@ console.log("getPrivateKey(): " + privateKey);
         if (ac[card].player == opponent) { can_play_event = 0; }
 
 
-        announcement += '<li class="option" id="ops">play ops</li>';
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
+
+        announcement += '<li class="option" id="ops">play for ops</li>';
+
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
 
         //

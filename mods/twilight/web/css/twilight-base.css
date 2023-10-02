@@ -25,10 +25,10 @@
 }
 
 .transparent-card-overlay {
-    width: 85vw;
-    height: 80vh;
+    max-width: 85vw;
+    max-height: 80vh;
     display: grid;
-    grid-template-columns: repeat(auto-fill, 200px);
+    grid-template-columns: repeat(auto-fit, 200px);
     grid-gap: 1rem;
     align-content: start;
     background-color: transparent;
