@@ -956,6 +956,8 @@
 
         if (mv[0] == "plague") {
 
+console.log("hitting plague in loop...");
+
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
 	  let player = his_self.returnPlayerOfFaction(faction);
@@ -969,6 +971,8 @@
 	  if (num == 1) { num = "1st"; }
 	  if (num == 2) { num = "2nd"; }
 	  if (num == 3) { num = "3rd"; }
+
+console.log("about to select space or naval space with filter...");
 
           his_self.playerSelectSpaceOrNavalSpaceWithFilter(
 
@@ -1025,6 +1029,8 @@ console.log("plague select space done: " + spacekey);
               if (space.units["genoa"].length) { u++; html += '<li class="option" id="genoa">genoa</li>'; }
               if (space.units["independent"].length) { u++; html += '<li class="option" id="independent">independent</li>'; }
     	      html += '</ul>';
+
+console.log("about to update status with options");
 
               his_self.updateStatusWithOptions(msg, html);
 
@@ -1084,12 +1090,20 @@ console.log("in click function from plague...");
 		});
 
 		// auto-submit if only 1 choice
-		if (du > -1) { $('.nonskip').click(); }
+		if (du > -1) { 
+
+console.log("du is > -1 so autoclick nonskip");
+
+$('.nonskip').click(); }
 
               });
 
 	      // auto-submit if only 1 choice
-	      if (u == 1) { $('.option').click(); }
+	      if (u == 1) {
+
+console.log("u is 1 so autoclick option");
+
+ $('.option').click(); }
 
 	    },
 

@@ -3913,6 +3913,8 @@ if (this.game.players.length > 2) {
 
         if (mv[0] == "plague") {
 
+console.log("hitting plague in loop...");
+
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
 	  let player = his_self.returnPlayerOfFaction(faction);
@@ -3926,6 +3928,8 @@ if (this.game.players.length > 2) {
 	  if (num == 1) { num = "1st"; }
 	  if (num == 2) { num = "2nd"; }
 	  if (num == 3) { num = "3rd"; }
+
+console.log("about to select space or naval space with filter...");
 
           his_self.playerSelectSpaceOrNavalSpaceWithFilter(
 
@@ -3982,6 +3986,8 @@ console.log("plague select space done: " + spacekey);
               if (space.units["genoa"].length) { u++; html += '<li class="option" id="genoa">genoa</li>'; }
               if (space.units["independent"].length) { u++; html += '<li class="option" id="independent">independent</li>'; }
     	      html += '</ul>';
+
+console.log("about to update status with options");
 
               his_self.updateStatusWithOptions(msg, html);
 
@@ -4041,12 +4047,20 @@ console.log("in click function from plague...");
 		});
 
 		// auto-submit if only 1 choice
-		if (du > -1) { $('.nonskip').click(); }
+		if (du > -1) { 
+
+console.log("du is > -1 so autoclick nonskip");
+
+$('.nonskip').click(); }
 
               });
 
 	      // auto-submit if only 1 choice
-	      if (u == 1) { $('.option').click(); }
+	      if (u == 1) {
+
+console.log("u is 1 so autoclick option");
+
+ $('.option').click(); }
 
 	    },
 
@@ -16583,7 +16597,9 @@ if (this.game.state.scenario == "is_testing") {
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
+if (this.game.state.scenario != "is_testing") {
 	    this.game.queue.push("event\tprotestant\t008");
+}
 
 	  } else {
 
@@ -17172,11 +17188,19 @@ if (this.game.state.scenario == "is_testing") {
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
 
-   	  this.addCard("papacy", "065");
-   	  this.addCard("protestant", "032");
-   	  this.addCard("papacy", "088");
-   	  this.addCard("protestant", "078");
-   	  this.addCard("protestant", "032");
+
+    	  this.convertSpace("protestant", "mainz");
+    	  this.convertSpace("protestant", "worms");
+    	  this.convertSpace("protestant", "kassel");
+    	  this.convertSpace("protestant", "regensberg");
+    	  this.convertSpace("protestant", "munster");
+
+
+//   	  this.addCard("papacy", "065");
+//   	  this.addCard("protestant", "032");
+//   	  this.addCard("papacy", "088");
+//   	  this.addCard("protestant", "078");
+//   	  this.addCard("protestant", "032");
 
 	  this.controlSpace("papacy", "siena");
 	  this.addMercenary("papacy", "siena", 1);
@@ -22419,13 +22443,15 @@ defender_hits - attacker_hits;
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
 	  //
-	  // TESTING form Schmalkaldic League if unformed by end of round 4
+	  // TESTING form Schmalkaldic League triggers end of round 1
 	  //
+if (this.game.state.scenario == "is_testing") {
 	  if (this.game.state.round == 1 && this.game.state.events.schmalkaldic_league != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
+}
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
@@ -25325,6 +25351,8 @@ if (limit === "build") {
 	    $('.option').off();
      	    $('.hextile').off();
     	    $('.space').off();
+	    if (callback_run == true) { return; }
+	    callback_run = true;
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
@@ -25344,12 +25372,20 @@ if (limit === "build") {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => { 
+console.log("clicked on id of key: " + key);
+	    document.getElementById(key).onclick = (e) => {};
 	    $('.option').off();
+     	    $('.hextile').off();
+    	    $('.space').off();
+	    if (callback_run == true) { return; }
+	    callback_run = true;
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
+console.log("and calling callback...");
 	    mycallback(key);
+	    return;
 	  }
 	}
       }

@@ -1045,6 +1045,8 @@ if (limit === "build") {
 	    $('.option').off();
      	    $('.hextile').off();
     	    $('.space').off();
+	    if (callback_run == true) { return; }
+	    callback_run = true;
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
@@ -1064,12 +1066,20 @@ if (limit === "build") {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => { 
+console.log("clicked on id of key: " + key);
+	    document.getElementById(key).onclick = (e) => {};
 	    $('.option').off();
+     	    $('.hextile').off();
+    	    $('.space').off();
+	    if (callback_run == true) { return; }
+	    callback_run = true;
 	    e.stopPropagation();
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
+console.log("and calling callback...");
 	    mycallback(key);
+	    return;
 	  }
 	}
       }
