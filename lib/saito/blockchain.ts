@@ -81,6 +81,7 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   public async onNewBlock(block: Block, lc: boolean) {
+    console.log("on new block : " + block.hash);
     await this.saveBlockchain();
     this.app.modules.onNewBlock(block, lc);
   }
