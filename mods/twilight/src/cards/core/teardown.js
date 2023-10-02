@@ -3,7 +3,7 @@
 
       // SAITO COMMUNITY
       if (this.game.options.deck === "saito") {
-	this.removeCardFromDeckNextDeal("willybrandt");
+	       this.removeCardFromDeckNextDeal("willybrandt");
       }
 
       this.game.state.events.teardown = 1;

@@ -2711,9 +2711,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["sudan", "cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
+          this.game.deck[0].hand = ["fiveyearplan", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["fidel", "asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
+          this.game.deck[0].hand = ["fidel", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3717,6 +3717,25 @@ try {
       this.game.state.player_to_go = 3 - this.game.state.player_to_go; //Other pleyer goes now
 
       let card_player = (this.game.state.player_to_go == 2)? "us" : "ussr";
+
+      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
+     
+        this.game.turn = []; 
+
+        this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}, but it is cancelled by ${this.cardToText("defectors")}`);
+
+        //
+        // only one player should trigger next round
+        if (this.game.player == 1) {
+          this.addMove("resolve\theadline");
+          this.addMove("discard\tussr\t"+my_card);
+          this.endTurn();
+        }
+
+        this.updateStatus(`>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...`);
+
+      } else {
+
       let statusMsg = "";
       if (this.game.state.player_to_go == 1){
         statusMsg = `Resolving USSR headline: ${this.cardToText(ussrcard)}`;
@@ -3732,6 +3751,7 @@ try {
         this.endTurn();
       }
       this.updateStatus(statusMsg);
+    }
       return 0;
     }
 
@@ -4450,8 +4470,10 @@ console.log("getPrivateKey(): " + privateKey);
         if (ac[card].player == opponent) { can_play_event = 0; }
 
 
-        announcement += '<li class="option" id="ops">play ops</li>';
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
+
+        announcement += '<li class="option" id="ops">play for ops</li>';
+
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
 
         //
@@ -4668,6 +4690,8 @@ console.log("getPrivateKey(): " + privateKey);
 	twilight_self.cancelBackButtonFunction();
 	bind_back_button_state = false;
       }
+
+      console.log(JSON.parse(JSON.stringify(this.game.state)));
 
       let html = '<ul>';
       if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
@@ -5916,15 +5940,15 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       //
       // Coup Restrictions
       //
-      if (twilight_self.game.state.limit_ignoredefcon == 0) {
-        if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
-          failureReason = "Invalid Region for this Coup";
+      if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
+        failureReason = "Invalid Region for this Coup";
+      }
 
-        }
+      if (twilight_self.game.state.limit_ignoredefcon == 0) {
         if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
           failureReason = "DEFCON prevents coups in Europe";
-
         }
+
         if ((twilight_self.countries[countryname].region == "asia" || twilight_self.countries[countryname].region == "seasia") && twilight_self.game.state.defcon < 4) {
           failureReason = "DEFCON prevents coups in Asia";
         }
@@ -11002,32 +11026,28 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
 
 
+if (card == "defectors") {
 
-  if (card == "defectors") {
-
-      if (this.game.state.headline == 0) {
-
-	if (player == "us"){
-          this.game.queue.push(`ACKNOWLEDGE\tUS events Defectors`);
-	  return 1;
-        }
-
-        this.game.state.vp += 1;
-        this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
-        this.updateVictoryPoints();
-      } else {
-
-        //
-        // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
-        // case it can only cancel the USSR headline if the USSR headline has not already gone.
-        // what an insanely great but complicated game dynamic at play here....
-        //
-        this.game.state.defectors_pulled_in_headline = 1;
-      }
-
+  if (this.game.state.headline == 0) {
+    if (player == "us") {
+      this.game.queue.push(`ACKNOWLEDGE\tUS events Defectors`);
       return 1;
     }
 
+    this.game.state.vp += 1;
+    this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
+    this.updateVictoryPoints();
+  } else {
+    //
+    // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
+    // case it can only cancel the USSR headline if the USSR headline has not already gone.
+    // what an insanely great but complicated game dynamic at play here....
+    //
+    this.game.state.defectors_pulled_in_headline = 1;
+  }
+
+  return 1;
+}
 
 
     ///////////////////////////
@@ -11357,13 +11377,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
             twilight_self.removeCardFromHand(card);
             if (ac[card].player == "us") {
-              //twilight_self.displayModal("You have rolled: " + card);
               twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR triggers "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tFive Year Plan triggers US event: "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             } else {
-              //twilight_self.displayModal("You have rolled: " + card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tUSSR discarded "+twilight_self.cardToText(card));
               twilight_self.endTurn();
@@ -14074,7 +14092,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
       // SAITO COMMUNITY
       if (this.game.options.deck === "saito") {
-	this.removeCardFromDeckNextDeal("willybrandt");
+	       this.removeCardFromDeckNextDeal("willybrandt");
       }
 
       this.game.state.events.teardown = 1;
