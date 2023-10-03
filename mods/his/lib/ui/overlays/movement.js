@@ -20,9 +20,8 @@ class MovementOverlay {
     let faction = mobj.faction;
     let source = mobj.source;
     let destination = mobj.destination;
-    let max_formation_size = this.mod.returnMaxFormationSize(units_to_move);
+    let max_formation_size = this.mod.returnMaxFormationSize(units_to_move, faction, source);
     let units = space.units[faction];
-    
 
     let from = this.mod.game.spaces[source].name;
     let to = "";

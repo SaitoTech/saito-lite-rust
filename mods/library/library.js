@@ -219,6 +219,8 @@ class Library extends ModTemplate {
     // asked to manage to our library, and initialize it with sensible default
     // values.
     //
+    await super.initialize(app);
+    
     for (const m of await app.modules.returnModulesRespondingTo("library-collection")) {
       this.addCollection(await m.respondTo("library-collection"), this.publicKey);
     }

@@ -63,11 +63,16 @@ class RedSquareMain {
         "",
         `/redsquare/?tweet_id=${tweet?.tx?.signature}`
       );
-
+      document.querySelectorAll('.saito-start-loader').forEach((e) => {
+        e.style.display = 'none';
+      });
       this.manager.renderTweet(tweet);
     });
 
     this.app.connection.on("redsquare-new-tweets-notification-request", async () => {
+      document.querySelectorAll('.saito-start-loader').forEach((e) => {
+        e.style.display = 'none';
+      });
       document.getElementById("show-new-tweets").style.display = "flex";
       document.getElementById("show-new-tweets").onclick = (e) => {
         e.currentTarget.onclick = null;

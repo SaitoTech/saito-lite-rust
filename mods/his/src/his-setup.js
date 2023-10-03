@@ -84,12 +84,15 @@ console.log("\n\n\n\n");
           this.addRegular("hapsburg", "barcelona", 1);
           this.addRegular("hapsburg", "navarre", 1);
           this.addRegular("hapsburg", "tunis", 1);
+          this.controlSpace("hapsburg", "tunis", 1);
           this.addRegular("hapsburg", "naples", 2);
           this.addNavalSquadron("hapsburg", "naples", 2);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
           this.addRegular("hapsburg", "vienna", 4);
           this.addRegular("hapsburg", "antwerp", 3);
+	  this.addRegular("hapsburg", "valladolid");
+
 
 	  // ENGLAND
           this.addRegular("england", "london", 1);
@@ -158,8 +161,17 @@ console.log("\n\n\n\n");
 	  // TESTING
           //this.addReformer("protestant", "zurich", "zwingli-reformer");
 	  //this.setAllies("venice", "papacy");
+	  //this.setEnemies("france", "papacy");
+	  //this.setActivatedPower("protestant", "france");
+	  //this.addRegular("france", "milan", 1);
+	  //this.addRegular("venice", "trent", 1);
+	  //this.controlSpace("venice", "trent");
+
 	  //this.controlSpace("papacy", "trent");
-	  //this.addRegular("papacy", "trent", 1);
+	  //this.addRegular("papacy", "trent", 4);
+	  //this.addRegular("papacy", "trent", 2);
+	  //this.addRegular("papacy", "augsburg", 2);
+	  //this.addMercenary("papacy", "augsburg", 1);
 
 	} else {
 

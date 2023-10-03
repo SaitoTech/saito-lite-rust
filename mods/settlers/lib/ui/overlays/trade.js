@@ -13,7 +13,7 @@ class TradeOverlay {
     this.offering_player = 0;
     this.accepting_trade = 0;
     this.resources = null;
-
+    this.should_clear_advert = false;
   }
 
   initialize() {
@@ -27,6 +27,7 @@ class TradeOverlay {
     }
 
     this.accepting_trade = 0;
+    this.should_clear_advert = false;
   }
 
   render(reset = true) {
@@ -38,6 +39,10 @@ class TradeOverlay {
       this.resources = this.mod.returnResources();
     }
 
+    // Since this.accepting_trade gets untoggled, if we change the offer
+    if (this.accepting_trade){
+      this.should_clear_advert = true;
+    }
     this.overlay.show(TradeOverlayTemplate(this));
 
     this.attachEvents();
@@ -49,7 +54,7 @@ class TradeOverlay {
 
     document.querySelectorAll(".trade_count_up").forEach((arrow) => {
       arrow.onclick = (e) => {
-        settlers_self.accepting_trade = 0;
+        trade_overlay.accepting_trade = 0;
         document.querySelector(".trade_overlay_button").innerHTML =
           "Broadcast Offer";
 
@@ -75,7 +80,7 @@ class TradeOverlay {
 
     document.querySelectorAll(".trade_count_down").forEach((arrow) => {
       arrow.onclick = (e) => {
-        settlers_self.accepting_trade = 0;
+        trade_overlay.accepting_trade = 0;
         document.querySelector(".trade_overlay_button").innerHTML =
           "Broadcast Offer";
 
@@ -100,7 +105,11 @@ class TradeOverlay {
     $("#trade_overlay_broadcast_button.valid_trade").on("click", function () {
       $("#trade_overlay_broadcast_button").off();
 
-      if (settlers_self.accepting_trade == 0) {
+      if (trade_overlay.should_clear_advert){
+        settlers_self.addMove(`clear_advert\t${trade_overlay.offering_player}`);  
+      }
+      
+      if (trade_overlay.accepting_trade == 0) {
         settlers_self.addMove(
           `offer\t${settlers_self.game.player}\t${trade_overlay.tradeType}\t${JSON.stringify(
             trade_overlay.give
@@ -109,7 +118,6 @@ class TradeOverlay {
         settlers_self.endTurn();
         trade_overlay.overlay.hide();
       } else {
-        settlers_self.addMove(`clear_advert\t${trade_overlay.offering_player}`);
         settlers_self.addMove(
           `accept_offer\t${trade_overlay.offering_player}\t${
             settlers_self.game.player

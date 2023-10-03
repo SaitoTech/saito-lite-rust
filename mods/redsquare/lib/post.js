@@ -232,15 +232,15 @@ class Post {
       if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
         rparent.num_retweets++;
-        //This should update the tweet stats?
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
       } else {
         rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;
-        rparent.tx.optional.num_replies++;
-        rparent.num_replies++;
+	// OCT 2 - debug
+        //rparent.tx.optional.num_replies++;
+        //rparent.num_replies++;
         rparent.renderWithCriticalChild();
       }
     } else {

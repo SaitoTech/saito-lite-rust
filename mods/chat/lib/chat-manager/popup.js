@@ -7,7 +7,6 @@ class ChatPopup {
     this.app = app;
     this.mod = mod;
 
-    console.log("Rendering chat popup into" + container);
     this.container = container;
     this.input = null; //new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
     this.manually_closed = false;
@@ -22,7 +21,6 @@ class ChatPopup {
 
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
-        console.log("Button remove request");
         this.no_older_messages = true;
         if (document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats")) {
           document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats").remove();
@@ -49,7 +47,6 @@ class ChatPopup {
   }
 
   render() {
-    console.log("Render Chat popup");
 
     //
     // exit if group unset
@@ -95,7 +92,6 @@ class ChatPopup {
 
     if (document.querySelector(popup_qs)) {
       am_i_on_page = 1;
-      console.log("Chat popup already exists", this.width, this.height);
       this.restorePopup(document.querySelector(popup_qs));
     }
 
@@ -112,20 +108,17 @@ class ChatPopup {
                     ${this.mod.returnChatBody(this.group.id)}
                   </div>`;
       this.app.browser.replaceElementBySelector(html, popup_qs + " .chat-body");
-      console.log("Replace body");
     } else {
       if (this.container && !document.querySelector(this.container)) {
         console.warn("Chat popup has non-existent specified container");
         this.container = "";
       }
       if (this.container && document.querySelector(".chat-static")) {
-        console.log("Replace static");
         this.app.browser.replaceElementBySelector(
           ChatPopupTemplate(this.app, this.mod, this.group, this.container),
           ".chat-static"
         );
       } else {
-        console.log("Append to screen");
         this.app.browser.addElementToSelectorOrDom(
           ChatPopupTemplate(this.app, this.mod, this.group, this.container),
           this.container
@@ -136,7 +129,6 @@ class ChatPopup {
       // now set left-position of popup
       //
       if (!this.container && popups_on_page > 0) {
-        console.log("Reposition secondary popup");
         let obj = document.querySelector(popup_qs);
         let x_pos = x_offset - obj.getBoundingClientRect().width - 10;
         x_pos = Math.max(0, x_pos);
@@ -327,7 +319,7 @@ class ChatPopup {
         };
       });
     } catch (err) {
-      console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
+      //console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
     }
   }
 

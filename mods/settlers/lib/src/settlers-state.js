@@ -223,18 +223,16 @@ class SettlersState {
         let hexobj = document.getElementById(selector);
         let svid = `sector_value_${hex}`;
 
+        //Create Sector_value
+        let sector_value_html = `
+            <div class="sector-container sc${sector_value}" id="${svid}">
+                <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
+            </div>
+        `;
+
         if (document.getElementById(svid)) {
-            //Update Sector Value
-            let temp = document.getElementById(svid);
-            temp.textContent = sector_value;
-            temp.classList.add("sv" + sector_value);
+            this.app.browser.replaceElementById(sector_value_html, svid);
         } else {
-            //Create Sector_value
-            let sector_value_html = `
-                <div class="sector-container sc${sector_value}" id="${svid}">
-                    <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
-                </div>
-            `;
             let sector_value_obj = this.app.browser.htmlToElement(sector_value_html);
             if (hexobj) {
                 hexobj.after(sector_value_obj);
@@ -377,9 +375,7 @@ class SettlersState {
 
 
     removeEvents() {
-        //console.trace("remove events");
-        this.displayBoard();
-        $(".trade").off();
+        $(".trade").off();        
     }
 
 

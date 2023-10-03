@@ -227,7 +227,6 @@ class Wordblocks extends GameTemplate {
         xhr.responseType = "json"; //only in async
         xhr.send();
         this.loadingDictionary = true; //flag that the game module is processing xhr
-        //this.game.halted = 1;
         xhr.onload = () => {
           if (xhr.status != 200) {
             salert(`Network issues downloading dictionary -- ${durl}`);

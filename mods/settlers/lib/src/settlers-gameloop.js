@@ -83,7 +83,7 @@ class SettlersGameloop {
         this.updateLog(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
         this.game.state.canTrade = false;
 
-        //this player will update their devcard count on next turn
+        //the player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards++; //Add card for display
         } else {
@@ -330,11 +330,13 @@ class SettlersGameloop {
             logMsg += bounty + ", ";
             this.game.state.players[player - 1].resources.push(bounty);
             this.game.stats.production[bounty][player - 1]++; //Initial starting stats
+            this.animateHarvest(player, bounty, hextile);
           }
         }
+        this.runAnimationQueue();
         logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
         this.updateLog(logMsg);
-        return 1;
+        return 0;
       }
 
       //Allow other players to update board status
@@ -688,6 +690,8 @@ class SettlersGameloop {
 
             let choice = $(this).attr("id");
             if (choice === "rolldice") {
+              settlers_self.updateStatus('rolling...');
+              settlers_self.updateControls('');
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
             }
@@ -745,10 +749,14 @@ class SettlersGameloop {
             this.game.queue.push("NOTIFY\tAll players have finished discarding");
             this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
+          return 1;
+
         } else {
-          this.game.queue.push(`collect_harvest\t${roll}`);
+          //
+          // Will return 0 if there is an animation to display
+          //
+          return this.collectHarvest(roll, player);
         }
-        return 1;
       }
 
       if (mv[0] == "enable_trading") {
@@ -757,16 +765,7 @@ class SettlersGameloop {
         return 1;
       }
 
-      //
-      // gain resources if dice are !7
-      //
-      if (mv[0] == "collect_harvest") {
-        let roll = parseInt(mv[1]);
-        this.game.queue.splice(qe, 1);
-        this.collectHarvest(roll);
-        return 1;
-      }
-
+  
       /*
       Each player checks if they are on the toGo list, and if so must discard cards
       Otherwise, they just hang out...

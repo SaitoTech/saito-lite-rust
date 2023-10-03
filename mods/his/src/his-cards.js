@@ -602,7 +602,7 @@
 
           let cards = JSON.parse(mv[1]);
 
- 	  let msg = "Papal Card is "+his_self.game.deck[1].cards[cards[0]];
+ 	  let msg = "Papal Card is "+his_self.popup(cards[0]);
           let html = '<ul>';
           html += `<li class="option" id="discard">discard ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
           html += `<li class="option" id="swap">swap ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
@@ -620,11 +620,13 @@
 	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
               his_self.addMove("discard_diplomacy_card\tpapacy\t"+cards[0]);
 	      his_self.addMove("NOTIFY\tProtestants discard "+his_self.popup(cards[0]));
+	      his_self.endTurn();
 	    }
 
 	    if (action === "swap") {
 	      his_self.addMove("diplomatic_pressure_swap_cards\t"+cards[0]+"\t"+his_self.game.deck[1].hand[0]);
 	      his_self.addMove("NOTIFY\tProtestants swap Diplomacy Cards");
+	      his_self.endTurn();
 	    }
 
 	  });
@@ -954,6 +956,8 @@
 
         if (mv[0] == "plague") {
 
+console.log("hitting plague in loop...");
+
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
 	  let player = his_self.returnPlayerOfFaction(faction);
@@ -967,6 +971,8 @@
 	  if (num == 1) { num = "1st"; }
 	  if (num == 2) { num = "2nd"; }
 	  if (num == 3) { num = "3rd"; }
+
+console.log("about to select space or naval space with filter...");
 
           his_self.playerSelectSpaceOrNavalSpaceWithFilter(
 
@@ -990,6 +996,8 @@
             },
 
             function(spacekey) {
+
+console.log("plague select space done: " + spacekey);
 
 	      let land_or_sea = "land";
 	      let space = null;
@@ -1022,21 +1030,26 @@
               if (space.units["independent"].length) { u++; html += '<li class="option" id="independent">independent</li>'; }
     	      html += '</ul>';
 
+console.log("about to update status with options");
+
               his_self.updateStatusWithOptions(msg, html);
 
    	      $('.option').off();
 	      $('.option').on('click', function () {
 
+console.log("in parent click function in plague...");
+
 	        let faction_to_destroy = $(this).attr("id");
    	        let msg = "Destroy Which Unit: ";
                 let unittypes = [];
+		let unit_destroyed = 0;
                 let html = '<ul>';
 		let du = -1;
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
                   if (space.units[faction_to_destroy][i].command_value == 0) {
 		    if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
 		      if (du == -1) { du = i; } else { du = -2; }
-  		      html += `<li class="option" id="${space.units[faction_to_destroy][i].type}">${space.units[faction_to_destroy][i].type}</li>`;
+  		      html += `<li class="option nonskip" id="${space.units[faction_to_destroy][i].type}">${space.units[faction_to_destroy][i].type}</li>`;
 		      unittypes.push(space.units[faction_to_destroy][i].unittype);
 		    }
 		  }
@@ -1049,7 +1062,12 @@
    	        $('.option').off();
 	        $('.option').on('click', function () {
 
+console.log("in click function from plague...");
+
+   	          $('.option').off();
 	          let unittype = $(this).attr("id");
+		  if (unit_destroyed == 1) { return; }	
+		  unit_destroyed = 1;
 
 		  if (unittype === "skip") {
           	    his_self.endTurn();
@@ -1062,17 +1080,30 @@
 		    his_self.updateStatus("submitted");
 		    his_self.addMove("discard_random\t"+opponent_faction);
 		  }
+
+		  console.log("!!!");
+		  console.log("!!! plague unit removal");
+		  console.log("!!!");
+          	  console.log("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
 
 		// auto-submit if only 1 choice
-		if (du > -1) { $('.option').click(); }
+		if (du > -1) { 
+
+console.log("du is > -1 so autoclick nonskip");
+
+$('.nonskip').click(); }
 
               });
 
 	      // auto-submit if only 1 choice
-	      if (u == 1) { $('.option').click(); }
+	      if (u == 1) {
+
+console.log("u is 1 so autoclick option");
+
+ $('.option').click(); }
 
 	    },
 
@@ -1616,7 +1647,7 @@
 
           his_self.playerSelectSpaceWithFilter(
 
-            "Select Ottoman-Controlled Port",
+            `Select Ottoman-Controlled Port for ${his_self.popup("216")}`,
 
             function(space) {
 	      if (his_self.isSpaceControlled(space, "ottoman") && space.ports.length > 0) { return 1; }
@@ -1638,7 +1669,12 @@
               his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
               his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null,
+
+	    true 
+
           );
 
 	}
@@ -1666,7 +1702,7 @@
 	  his_self.game.queue.push("secret_protestant_circle\titalian");
 	}
 
-        return 0;
+        return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -1729,7 +1765,7 @@
 	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t2");
 	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
 
-        return 0;
+        return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -1743,13 +1779,14 @@
 
 	  if (player == his_self.game.player) {
 
- 	    let msg = `Remove Unit ${num}:`;
+ 	    let msg = `${his_self.popup("218")}: remove unit #${num}:`;
             let html = '<ul>';
             html += '<li class="option" id="hapsburg">remove hapsburg unit</li>';
             html += '<li class="option" id="hungary">remove hungarian unit</li>';
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
+
 
    	    $('.option').off();
 	    $('.option').on('click', function () {
@@ -2646,6 +2683,7 @@
 
 	  his_self.updateLog("Protestants trigger " + his_self.popup("007"));
 	  his_self.game.queue.push("ACKNOWLEDGE\tProtestants swap Martin Luther into debate");
+	  his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 	  //
 	  // second option -- only possible if Wartburg not in-play
@@ -2767,7 +2805,7 @@
 	}
 
 	// protestant gets 2 roll bonus at start
-	his_self.game.state.tmp_protestant_reformation_bonus = 2;
+	his_self.game.state.tmp_protestant_reformation_bonus = 1;
 	his_self.game.state.tmp_protestant_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
 	his_self.game.state.tmp_catholic_reformation_bonus_spaces = [];
@@ -2775,7 +2813,8 @@
 	his_self.game.state.wittenberg_electoral_bonus = 1;
 
 	his_self.game.queue.push("hide_overlay\ttheses");
-        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
+        his_self.game.queue.push("counter_or_acknowledge\tThe Reformation has begun!");
+        his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
@@ -2802,7 +2841,8 @@
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
-          his_self.game.queue.splice(qe, 1);
+
+	  his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
 	    function(space) {
@@ -2830,6 +2870,7 @@
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid counter-reformation targets"); 
 	    his_self.updateLog("No valid counter-reformation targets"); 
+	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -2905,7 +2946,7 @@ console.log("#");
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
 
-          his_self.game.queue.splice(qe, 1);
+	  his_self.game.queue.splice(qe, 1);
 
 	  let target_spaces = his_self.countSpacesWithFilter(
 	    function(space) {
@@ -2935,6 +2976,7 @@ console.log("#");
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid reformation targets"); 
 	    his_self.updateLog("No valid reformation targets"); 
+	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -3138,6 +3180,16 @@ console.log("#");
           his_self.setEnemies("protestant","papacy");
           his_self.setEnemies("protestant","hapsburg");
           his_self.setAllies("papacy","hapsburg");
+	  // protestant home + political spaces
+	  for (let key in his_self.game.spaces) {
+	    s = his_self.game.spaces[key];
+	    if (s.language == "german") { 
+	      s.home = "protestant"; 
+	      if (s.religion == "protestant") {
+		s.political = "protestant";
+	      }
+	    }
+	  }
 	  for (let i = 0; i < his_self.game.state.activated_powers["protestant"].length; i++) {
 	    if (his_self.game.state.activated_powers["protestant"][i] === "hapsburg") {
 	      his_self.game.state.activated_powers["protestant"].splice(i, 1);
@@ -3145,6 +3197,7 @@ console.log("#");
 	    }
 	  }
           his_self.game.state.activated_powers["papacy"].push("hapsburg");
+	  his_self.displayBoard();
 	  return 1;
         }
       }
@@ -3162,6 +3215,17 @@ console.log("#");
           his_self.setAllies("papacy","hapsburg");
           his_self.game.state.events.schmalkaldic_league_round = his_self.game.state.round;
           his_self.game.state.events.schmalkaldic_league = 1;
+	  // protestant home + political spaces
+	  for (let key in his_self.game.spaces) {
+	    s = his_self.game.spaces[key];
+	    if (s.language == "german") { 
+	      s.home = "protestant"; 
+	      if (s.religion == "protestant") {
+		s.political = "protestant";
+	      }
+	    }
+	  }
+	  his_self.displayBoard();
 	  return 1;
         }
       }
@@ -4514,7 +4578,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
           his_self.game.queue.splice(qe, 1);
 
-	  his_self.displayModal("Protestants cancel event with the Warburg");
+	  his_self.displayModal("Protestants cancel event with the Wartburg");
 
 	  his_self.updateStatus(his_self.popup("037") + " triggered");
 	  his_self.game.state.events.wartburg = 1;
@@ -6617,28 +6681,25 @@ console.log("HITS: " + hits);
 	  }
 	}
 
-	let res  = [];
-	let res2 = [];
-	let res3 = [];
+	//
+	// protestants can convert german-language space closest to wittenberg
+	//
+	his_self.game.queue.push("frederick_the_wise\t2");
+	his_self.game.queue.push("frederick_the_wise\t1");
+	return 1;
 
-	res = his_self.returnNearestSpaceWithFilter(
-	  "wittenberg",
-	  function(spacekey) {
-	    if (his_self.game.spaces[spacekey].religion == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
-	    return 0;
-	  },
-	  function(propagation_filter) {
-	    return 1;
-	  },
-	  0,
-	  1,
-	);
+      },
+      handleGameLoop : function(his_self, qe, mv) {
 
-	if (res.length == 1) {
-	  res2 = his_self.returnNearestSpaceWithFilter(
+        if (mv[0] == "frederick_the_wise") {
+
+          his_self.game.queue.splice(qe, 1);
+	  let faction = "protestant";
+	  let num = mv[1];
+
+	  res = his_self.returnNearestSpaceWithFilter(
 	    "wittenberg",
 	    function(spacekey) {
-	      if (spacekey === res[0].key) { return 0; }
 	      if (his_self.game.spaces[spacekey].religion == "catholic" && his_self.game.spaces[spacekey].language == "german") { return 1; }
 	      return 0;
 	    },
@@ -6648,88 +6709,42 @@ console.log("HITS: " + hits);
 	    0,
 	    1,
 	  );
-	}
 
-	for (let i = 0; i < res.length; i++) {
-	  res3.push(res[i]);
-	}
-	for (let i = 0; i < res2.length; i++) {
-	  res3.push(res2[i]);
-	}
-
-	let fp = his_self.returnPlayerOfFaction(faction);
-	if (his_self.game.player == fp) {
-
-  	  let msg = "Select Towns to Convert Protestant: ";
-  	  let options_available = 0;
-          let html = '<ul>';
-          for (let i = 0; i < res3.length; i++) {
-	    options_available++;
-	    html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
-	  }
-          html += '</ul>';
-
-	  if (options_available == 0) {
-	    his_self.endTurn();
-	    return 0;
+	  //
+	  // if no options, skip
+	  //
+	  if (res.length <= 0) { 
+	    his_self.updateLog("No viable spaces for Frederick the Wise");
+	    return 1;
 	  }
 
-    	  his_self.updateStatusWithOptions(msg, html);
+	  //
+	  // otherwise pick closest space
+	  //
+	  if (his_self.game.player == his_self.returnPlayerOfFaction("protestant")) {
+ 	    his_self.playerSelectSpaceWithFilter(
+  	      "Select Towns to Convert Protestant: ",
+	      (space) => {
+	        for (let i = 0; i < res.length; i++) { if (space.key == res[i].key) { return 1; } }
+	        return 0;
+	      },
+	      (spacekey) => {
+	        his_self.addMove("convert" + "\t" + spacekey + "\t" + "protestant");
+	        his_self.endTurn();
+	      },
+	      null,
+	      true
+	    );
+	  } else {
+	    his_self.updateStatus(his_self.returnFactionName("protestant") + " playing " + his_self.popup("078"));
+	  }
 
-	  let total_picked = 0;
-	  let picked = [];
+	  return 0;
 
-	  $('.option').off();
-	  $('.option').on('click', function () {
-
-	    let action = $(this).attr("id");
-	    options_available = 0;
-
-	    $('.option').off();
-	    picked.push(action);
-	    total_picked++;
-
-  	    let msg = "Select Town to Convert Protestant: ";
-            let html = '<ul>';
-            for (let i = 0; i < res3.length; i++) {
-	      if (!picked.includes(res3[i].key)) {
-		options_available++;
-	        html += `<li class="option" id="${res3[i].key}">${res3[i].key}</li>`;
-	      }
-	    }
-            html += '</ul>';
-
-	    if (options_available == 0) {
-	      for (let i = 0; i < picked.length; i++) {
-	        his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
-	      }
-	      his_self.endTurn();
-	      return 0;
-	    }
-
-       	    his_self.updateStatusWithOptions(msg, html);
-
-	    $('.option').on('click', function () {
-
-	      $('option').off();
-	      let action = $(this).attr("id");
-
-	      picked.push(action);
-	      total_picked++;
-
-	      his_self.updateStatus("submitting");
-	      for (let i = 0; i < picked.length; i++) {
-	        his_self.addMove("convert" + "\t" + picked[i] + "\t" + "protestant");
-	      }
-	      his_self.endTurn();
-
-	    });
-	  });
-
-	} else {
-	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("078"));
 	}
-      },
+
+	return 1;
+      }
     }
     deck['079'] = { 
       img : "cards/HIS-079.svg" , 
@@ -6837,6 +6852,8 @@ console.log("HITS: " + hits);
 
 	  let faction = mv[1];
   
+          his_self.game.queue.splice(qe, 1);
+
 	  let p = his_self.returnPlayerOfFaction(faction);
           let fhand_idx = his_self.returnFactionHandIdx(p, faction);
 	  let card = his_self.game.state.last_pulled_card;
@@ -6848,7 +6865,6 @@ console.log("HITS: " + hits);
 	  }
 
   	  his_self.game.queue.push("discard\t"+faction+"\t"+card);
-          his_self.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -7127,17 +7143,59 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 
 	  let spaces_to_select = 5;
+	  if (res.length < 5) { spaces_to_select = res.length; }
+	  for (let i = 0; i < spaces_to_select; i++) {
+	    his_self.addMove("peasants_war\t"+faction+"\t"+(5-i));
+	  }
+	  his_self.endTurn();
 
-	  his_self.playerSelectOptions(res, spaces_to_select, false, (selected) => {
-	    for (let i = 0; i < selected.length; i++) {
-	      his_self.addMove("unrest\t"+selected[i]);
-	    }
-	    his_self.endTurn();
-	  });
 	}
 
 	return 0;
       },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "peasants_war") {
+
+          his_self.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+	  let num = mv[2];
+
+	  if (his_self.game.player == his_self.returnPlayerOfFaction(faction)) {
+
+	    //
+	    // pick unit on map with player land units and select one to remove
+	    //
+ 	    his_self.playerSelectSpaceWithFilter(
+
+	      `Select Space to Add Unrest / #${num}`,
+
+	      (space) => {
+	        if (his_self.isOccupied(space.key)) { return 0; }
+	        if (his_self.game.spaces[space.key].language == "german") { return 1; }
+	        return 0;
+	      },
+
+	      (spacekey) => {
+      		his_self.addMove("unrest\t"+spacekey);
+		his_self.endTurn();
+	      },
+
+	      null,
+
+	      true
+
+	    );
+	  } else {
+	    his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("088"));
+	  }
+  
+	  return 0;
+
+	}
+
+	return 1;
+      }
     }
     deck['089'] = { 
       img : "cards/HIS-089.svg" , 
@@ -7160,7 +7218,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       },
       onEvent : function(his_self, faction) {
 
-        his_self.game.state.tmp_protestant_reformation_bonus++;
         his_self.game.state.printing_press_active = 1;
 
 	let p = his_self.returnPlayerOfFaction(faction);

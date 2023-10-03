@@ -9,7 +9,9 @@ class FactionOverlay {
 	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
     }
-    
+
+    hide() { this.overlay.hide(); } 
+   
     render(faction="") {
 
       let his_self = this.mod;
@@ -92,9 +94,6 @@ class FactionOverlay {
       if (his_self.factions[faction].key === "papacy") {
         let total_keys = 7;
 	controlled_keys = his_self.returnNumberOfKeysControlledByFaction("papacy");
-
-console.log(JSON.stringify(his_self.game.state.saint_peters_cathedral));
-
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i < 12; i++) {
 	  if (his_self.game.state.saint_peters_cathedral['state'] == i) {
@@ -136,15 +135,15 @@ console.log(JSON.stringify(his_self.game.state.saint_peters_cathedral));
           }
           keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
         }
-        for (let i = 0; i <= 11; i++) {
+        for (let i = 1; i <= 12; i++) {
           let box_inserts = "";
-          if (his_self.game.state.translations['full']['german'] == i) {
+          if (his_self.game.state.translations['full']['german'] == (i-1)) {
             box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
           }
-          if (his_self.game.state.translations['full']['french'] == i) {
+          if (his_self.game.state.translations['full']['french'] == (i-1)) {
             box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
           }
-          if (his_self.game.state.translations['full']['english'] == i) {
+          if (his_self.game.state.translations['full']['english'] == (i-1)) {
             box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
           }
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}">${box_inserts}</div>`;

@@ -1,9 +1,15 @@
 :root {
-  --p1-color: #b3031f;
-  --p2-color: #004193;
-  --p3-color: #00833a;
-  --p4-color: #8a6200;
+  --p1-color: #BB233B; /* redish */
+  --p2-color: #004193; /* bluish */
+  --p3-color: #ADCE14; /* yellowish */
+  --p4-color: #644700; /* brown */
   --text-color: #331800;
+
+  --p1-color-lite: #BB233BE9; /* redish */
+  --p2-color-lite: #004193E9; /* bluish */
+  --p3-color-lite: #ADCE14E9; /* yellowish */
+  --p4-color-lite: #644700E9; /* brown */
+
 }
 
 .mobile-log-tab {
@@ -46,6 +52,11 @@ p {
   font-size: 1.4rem;
 }
 
+.die_value {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 .tip {
   width: unset;
 }
@@ -67,10 +78,6 @@ p {
   padding: 5px;
 }
 
-#cleartrade {
-  cursor: pointer;
-  font-size: 20px;
-}
 
 /* Building costs as cardbox overlay */
 
@@ -414,26 +421,40 @@ dt {
   min-width: 16rem;
 }
 
-.player-box-info {
-  padding: 0;
-}
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
-  background-color: var(--p1-color);
+  background-color: var(--p1-color) !important;
 }
 
 .p2 {
-  background-color: var(--p2-color);
+  background-color: var(--p2-color) !important;
 }
 
 .p3 {
-  background-color: var(--p3-color);
+  background-color: var(--p3-color) !important;
 }
 
 .p4 {
-  background-color: var(--p4-color);
+  background-color: var(--p4-color) !important;
+}
+
+
+.p1-lite {
+  background-color: var(--p1-color-lite) !important;
+}
+
+.p2-lite {
+  background-color: var(--p2-color-lite) !important;
+}
+
+.p3-lite {
+  background-color: var(--p3-color-lite) !important;
+}
+
+.p4-lite {
+  background-color: var(--p4-color-lite) !important;
 }
 
 .saito-userline {
@@ -1050,7 +1071,7 @@ ul.horizontal_list li.iconoption {
 }
 
 .flexline img.icon {
-  width: 2.5rem;
+  height: 3.5rem;
 }
 
 .flexline span {
@@ -1062,3 +1083,21 @@ ul.horizontal_list li.iconoption {
   flex-wrap: wrap;
   gap: 1rem;
 }
+
+
+#cleartrade {
+  cursor: pointer;
+  font-size: 24px;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all ease-in-out 250ms;
+}
+
+#cleartrade:hover {
+  transform: scale(1.3);
+}
+
+

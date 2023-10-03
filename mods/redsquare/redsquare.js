@@ -313,15 +313,16 @@ class RedSquare extends ModTemplate {
       if (tweet_id != "") {
         let sql = `SELECT *
                    FROM tweets
-                   WHERE sig = '${tweet_id}'
-                      OR parent_id = '${tweet_id}'
-                   ORDER BY created_at DESC`;
+		   WHERE thread_id = (SELECT thread_id FROM tweets WHERE sig = '${tweet_id}') 
+                   ORDER BY created_at ASC`;
         this.loadTweetsFromPeer(peer, sql, (txs) => {
           for (let z = 0; z < txs.length; z++) {
             this.addTweet(txs[z]);
           }
           let tweet = this.returnTweet(tweet_id);
-          this.app.connection.emit("redsquare-tweet-render-request", tweet);
+	  if (tweet) {
+            this.app.connection.emit("redsquare-tweet-render-request", tweet);
+	  }
         });
         return;
       }
@@ -471,12 +472,10 @@ class RedSquare extends ModTemplate {
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
-        //console.log("RS onConfirmation: " + txmsg.request);
-
         if (txmsg.request === "create tweet") {
-//if (this.app.BROWSER) {
-//  alert("RECIEVED TWEET TRANSACTION: " + JSON.stringify(txmsg));
-//}
+console.log("#");
+console.log("# RECEIVED TWEET TRANSACTION: " + JSON.stringify(txmsg));
+console.log("#");
           await this.receiveTweetTransaction(blk, tx, conf);
         }
         if (txmsg.request === "like tweet") {
@@ -684,8 +683,6 @@ class RedSquare extends ModTemplate {
     // TO us, but when we want to fetch our list of notifications, we want to fetch from our
     // archive nodes.
     //
-    //console.log("Load notifications after " + this.notifications_last_viewed_ts);
-
     for (let i = 0; i < this.peers.length; i++) {
       this.app.storage.loadTransactions(
         {
@@ -722,7 +719,9 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, tx);
-
+console.log("ADD TWEET: " + tweet.text);
+console.log("w/ sig: " + tx.signature);
+console.log("parent id: " + tweet.parent_id);
     //
     // skip duplicates
     //
@@ -771,9 +770,7 @@ if (tweet.tx.optional.num_likes) {
             }
             insertion_index++;
           }
-        } /* else {
-          insertion_index = 0;
-        }*/
+        }
 
         this.notifications.splice(insertion_index, 0, tweet);
         this.notifications_sigs_hmap[tx.signature] = 1;
@@ -807,7 +804,9 @@ if (tweet.tx.optional.num_likes) {
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.signature) {
 	  if (this.tweets[i].tx.optional.num_replies < tweet.tx.optional.num_replies) {
-console.log("we already have this weet, updating num replies...");
+console.log("~~~");
+console.log("~~~ already have tweet - updating num replies...: " + tweet.tx.optional.num_replies);
+console.log("~~~");
             this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
 	  }
 	  if (this.tweets[i].tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
@@ -825,11 +824,14 @@ console.log("we already have this weet, updating num replies...");
           break;
         }
       }
+
       // maybe this is a hidden child
       if (!updated) {
         let t = this.returnTweet(tweet.tx.signature);
 	if (t.tx.optional.num_replies < tweet.tx.optional.num_replies) {
-console.log("we already have child tweet... updating num replies");
+console.log("!!!");
+console.log("!!! updating num replies in child: " + tweet.tx.optional.num_replies);
+console.log("!!!");
           t.tx.optional.num_replies = tweet.tx.optional.num_replies;
 	}
 	if (t.tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
@@ -891,17 +893,21 @@ console.log("we already have child tweet... updating num replies");
     } else {
       let inserted = false;
 
+console.log("number of tweets already existing: " + this.tweets.length);
+
+console.log("looking for this thread: " + tweet.thread_id);
       for (let i = 0; i < this.tweets.length; i++) {
-        if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
-          if (this.tweets[i].addTweet(tweet) == 1) {
-            this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-            inserted = true;
-            break;
-          }
+        if (this.tweets[i].thread_id === tweet.thread_id) {
+          this.tweets[i].addTweet(tweet);
+          this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+          inserted = true;
+          break;
         }
       }
 
       if (inserted == false) {
+//alert("not inserted... unknown children: " + tweet.text);
+        this.tweets_sigs_hmap[tweet.tx.signature] = 1;
         this.unknown_children.push(tweet);
       }
     }
@@ -920,15 +926,20 @@ console.log("we already have child tweet... updating num replies");
       return null;
     }
     if (!this.tweets_sigs_hmap[tweet_sig]) {
+console.log("tweets not in sigs hmap!");
       return null;
     }
 
     //Performs a recursive search
+console.log("tweets length: " + this.tweets.length);
     for (let i = 0; i < this.tweets.length; i++) {
+console.log("checking... " + i);
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
+console.log("has child tweet...");
         return this.tweets[i].returnChildTweet(tweet_sig);
       }
     }
+console.log("returning null");
 
     return null;
   }
@@ -1012,16 +1023,18 @@ console.log("SAVING: updating num_replies on parent tweet: " + txmsg.data.parent
                 if (!tweet.tx.optional.num_replies) {
                   tweet.tx.optional.num_replies = 0;
                 }
-  
+ 
                 if (!tx.isFrom(this.publicKey)) {
-                  tweet.tx.optional.num_replies++;
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$ Incrementing NUM replies to " + tweet.tx.optional.num_replies);
-console.log("$");
-console.log("$");
-console.log("$");
+//                  tweet.tx.optional.num_replies++;
+console.log("existing tweet replies: " + tweet.tx.optional.num_replies); 
+console.log("existing tweet replies: " + tweet.tx.optional.num_replies); 
+//console.log("$");
+//console.log("$");
+//console.log("$");
+//console.log("$ Incrementing NUM replies to " + tweet.tx.optional.num_replies);
+//console.log("$");
+//console.log("$");
+//console.log("$");
                   tweet.renderReplies();
                 }
 
@@ -1217,6 +1230,13 @@ console.log("SAVING: retweets updating num_retweets 2");
         let params4 = {
           $sig: tweet.parent_id,
         };
+console.log("$$");
+console.log("$$");
+console.log("$$");
+console.log("$$ server incrementing NUM replies to " + tweet.parent_id);
+console.log("$$");
+console.log("$$");
+console.log("$$");
         await this.app.storage.executeDatabase(sql4, params4, "redsquare");
       }
 

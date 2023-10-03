@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.400;
+  version = 5.453;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -92,7 +92,7 @@ export default class Wallet extends SaitoWallet {
         }
       }
 
-      returnHistory(asset_id = "", records=20, callback=null){
+      returnHistory(asset_id = "", records = 20, callback = null) {
         // to be implemented in future
         // redirecting users to block explorer for now
       }
