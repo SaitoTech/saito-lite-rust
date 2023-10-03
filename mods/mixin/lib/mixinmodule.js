@@ -208,6 +208,8 @@ class MixinModule extends CryptoModule {
       }
     }
 
+    console.log("Possibly external transfer");
+
     //
     // external withdrawal to network
     //
@@ -226,6 +228,7 @@ class MixinModule extends CryptoModule {
     // existing withdrawal address
     //
     if (withdrawal_address_exists === 1) {
+
       this.mixin.sendWithdrawalRequest(
         this.asset_id,
         withdrawal_address_id,
@@ -241,21 +244,20 @@ class MixinModule extends CryptoModule {
       // create withdrawal address and save
       //
     } else {
-      let mm_self = this;
 
-      this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
+      this.mixin.createWithdrawalAddress(this.asset_id, destination, "", "", (d) => {
         let asset_id = d.data.asset_id;
         let withdrawal_address_id = d.data.address_id;
 
-        mm_self.mixin.sendWithdrawalRequest(
-          mm_self.asset_id,
+        this.mixin.sendWithdrawalRequest(
+          this.asset_id,
           withdrawal_address_id,
           destination,
           amount,
           unique_hash,
           (d) => {}
         );
-        mm_self.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
+        this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
       });
 
       return unique_hash;
@@ -272,6 +274,11 @@ class MixinModule extends CryptoModule {
       return "unknown address";
     }
     return this.destination + "|" + this.mixin.mixin.user_id + "|" + "mixin";
+  }
+
+
+  formatAddress(address){
+    return address; //+ "|" + this.mixin.mixin.user_id + "|" + "mixin";
   }
 
   /**

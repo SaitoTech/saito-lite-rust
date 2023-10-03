@@ -414,16 +414,21 @@ class Mixin extends ModTemplate {
     const method = "POST";
     const uri = "/withdrawals";
 
+    console.log(`Withdraw to : ${asset_id} | ${address_id} | ${address}`);
+
     const body = {
       address_id: address_id,
       amount: amount,
       trace_id: getUuid(unique_hash),
-      pin: this.signEd25519PIN(
+      pin_base64: this.mixin.pin_token_base64,
+      asset_id: asset_id,
+      destination: address
+      /*pin: this.signEd25519PIN(
         this.mixin.pin,
         this.mixin.pin_token,
         this.mixin.session_id,
         this.mixin.privatekey
-      ),
+      ),*/
     };
 
     this.request(appId, sessionId, privateKey, method, uri, body)
@@ -435,7 +440,7 @@ class Mixin extends ModTemplate {
         }
       })
       .catch((err) => {
-        console.error("ERROR: Mixin error sending network request (sendWithdrawalRequest): " + err);
+        console.error("ERROR: Mixin error sending network request (sendWithdrawalRequest): ", err);
       });
   }
 
@@ -772,7 +777,7 @@ class Mixin extends ModTemplate {
   }
 
   request(uid, sid, privateKey, method, path, data = null) {
-    console.log(uid, sid, privateKey);
+    console.log("Mixin Request: " + path);
     let accessToken = "";
     if (data == null) {
       accessToken = this.signAuthenticationToken(uid, sid, privateKey, method, path);
