@@ -439,7 +439,7 @@ class Mixin extends ModTemplate {
       });
   }
 
-  checkWithdrawalFee(asset_id, callback = null) {
+  async checkWithdrawalFee(asset_id) {
     //
     // CHECK BALANCE
     //
@@ -452,24 +452,23 @@ class Mixin extends ModTemplate {
 
     let fee = 1000000;
 
-    this.request(appId, sessionId, privateKey, method, uri)
-      .then((res) => {
-        let d = res.data.data;
-        for (let i = 0; i < this.mods.length; i++) {
-          if (this.mods[i].asset_id === asset_id) {
-            if (d.amount) {
-              if (callback) {
-                callback(d.amount);
-              }
-            }
+    try {
+      let res = await this.request(appId, sessionId, privateKey, method, uri);
 
-            return;
+      let d = res.data.data;
+      for (let i = 0; i < this.mods.length; i++) {
+        if (this.mods[i].asset_id === asset_id) {
+          if (d.amount) {
+            return d.amount;
           }
         }
-      })
-      .catch((err) => {
-        console.error("ERROR: Mixin error sending network request (checkWithdrawalFee): " + err);
-      });
+      }
+    } catch (err) {
+      console.error("ERROR: Mixin error sending network request (checkWithdrawalFee): " + err);
+    }
+
+    return fee;
+
   }
 
   async checkBalance(asset_id) {
@@ -482,7 +481,6 @@ class Mixin extends ModTemplate {
 
     const method = "GET";
     const uri = `/assets/${asset_id}`;
-
 
     try {
       let res = await this.request(appId, sessionId, privateKey, method, uri);
@@ -574,7 +572,6 @@ class Mixin extends ModTemplate {
 
     this.request(user_id, session_id, privatekey, method, uri, body)
       .then((res) => {
-        
         console.log(res.data);
 
         mixin_self.mixin.pin = new_pin;
@@ -905,7 +902,7 @@ class Mixin extends ModTemplate {
       }
 
       console.log("Mixin Load: ", this.account_created);
-      
+
       // Fallback if we lost our pin...? maybe...
       if (this.account_created && !this.mixin.pin) {
         let new_pin = new Date().getTime().toString().substr(-6);
