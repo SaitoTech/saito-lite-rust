@@ -906,7 +906,7 @@ console.log("looking for this thread: " + tweet.thread_id);
       }
 
       if (inserted == false) {
-alert("not inserted... unknown children: " + tweet.text);
+//alert("not inserted... unknown children: " + tweet.text);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
         this.unknown_children.push(tweet);
       }
