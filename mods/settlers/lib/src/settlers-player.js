@@ -334,8 +334,8 @@ class SettlersPlayer {
     }
 
     if (settlers_self.canPlayerPlayCard()) {
-      html += `<li class="option" id="playcard">play card</li>`;
-      can_do_something = true;
+    //  html += `<li class="option" id="playcard">play card</li>`;
+        can_do_something = true;
     }
 
     if (
@@ -380,10 +380,10 @@ class SettlersPlayer {
         //settlers_self.playerTradeWithBank();
         return;
       }
-      if (id === "playcard") {
-        settlers_self.dev_card.render();
-        return;
-      }
+      //if (id === "playcard") {
+      //  settlers_self.dev_card.render();
+      //  return;
+      //}
       if (id == "spend") {
         settlers_self.build.render();
         return;
@@ -525,6 +525,10 @@ class SettlersPlayer {
   }
 
   canPlayerPlayCard(onlyKnights = false) {
+    if (this.game.state.bandit) {
+      return false;
+    }
+    
     if (onlyKnights){
       for (let c of this.game.deck[0].hand){
         let card = this.game.deck[0].cards[c];

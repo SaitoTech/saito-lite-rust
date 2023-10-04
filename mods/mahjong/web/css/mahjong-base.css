@@ -41,10 +41,6 @@
   filter: none;
 }
 
-.slot.selected{
-  background-color: #0000ff;
-  box-shadow: -7px -9px 1px 5px #0000ff;
-}
 
 .slot.hint{
   background-color: #ffff00;
@@ -66,19 +62,24 @@
   cursor: pointer;
 }
 
-.slot.available img:hover{
-  filter: brightness(1.4);
+.slot.selected, .slot.available:hover{
+  background-color: #0000ff;
+  box-shadow: -6px -6px 1px 5px #0000ff;
+}
+
+.slot.available:hover img {
+  opacity: 0.75;
 }
 
 .slot.valid.available:hover{
   background-color: #00ff00;
-  box-shadow: -7px -9px 1px 5px #00ff00;
+  box-shadow: -6px -6px 1px 5px #00ff00;
 }
 
 
 .slot.invalid.available:hover {
   background-color: #ff0000;
-  box-shadow: -7px -9px 1px 5px #ff0000;
+  box-shadow: -6px -6px 1px 5px #ff0000;
 }
 
 .slot.valid.available:hover img, .slot.invalid.available:hover img {

@@ -1254,10 +1254,15 @@ class Chat extends ModTemplate {
     if (members == null) {
       return "";
     }
-    //So David + Richard == Richard + David
-    members.sort();
 
-    return this.app.crypto.hash(`${members.join("_")}`);
+    let clean_array = [];
+    for (let member of members){
+      clean_array.push(member);
+    }
+    //So David + Richard == Richard + David
+    clean_array.sort();
+
+    return this.app.crypto.hash(`${clean_array.join("_")}`);
   }
 
   //

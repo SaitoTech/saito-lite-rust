@@ -440,21 +440,26 @@ dt {
   background-color: var(--p4-color) !important;
 }
 
-
-.p1-lite {
-  background-color: var(--p1-color-lite) !important;
+.saito-identicon-box {
+  border: 5px solid;
+  width: 4rem;
+  height: 4rem;
 }
 
-.p2-lite {
-  background-color: var(--p2-color-lite) !important;
+.p1-lite .saito-identicon-box {
+  border-color: var(--p1-color-lite);
 }
 
-.p3-lite {
-  background-color: var(--p3-color-lite) !important;
+.p2-lite .saito-identicon-box {
+  border-color: var(--p2-color-lite);
 }
 
-.p4-lite {
-  background-color: var(--p4-color-lite) !important;
+.p3-lite .saito-identicon-box {
+  border-color: var(--p3-color-lite);
+}
+
+.p4-lite .saito-identicon-box {
+  border-color: var(--p4-color-lite);
 }
 
 .saito-userline {
