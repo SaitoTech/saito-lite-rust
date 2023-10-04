@@ -496,7 +496,6 @@ class Server {
           pkey = toBase58(pkey);
         }
       }
-      console.log(`lite block fetch : block  = ${req.params.bhash} key = ${pkey}`);
 
       const bsh = req.params.bhash;
       let keylist = [];
@@ -572,9 +571,13 @@ class Server {
         let blk = new Block();
         blk.deserialize(buffer);
         const newblk = blk.generateLiteBlock(keylist);
+        // console.log(
+        //   `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
+        // );
         console.log(
-          `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
+          `lite block fetch : block  = ${req.params.bhash} key = ${pkey} with txs : ${newblk.transactions.length}`
         );
+
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
@@ -626,6 +629,12 @@ class Server {
         if (req.params.keys) {
           keys = req.params.keys.split(";");
         }
+        keys = keys.map((key) => {
+          if (key.length === 66) {
+            return toBase58(key);
+          }
+          return key;
+        });
         console.log("fetching balance snapshot with keys : ", keys);
 
         const snapshot = await S.getInstance().getBalanceSnapshot(keys);
