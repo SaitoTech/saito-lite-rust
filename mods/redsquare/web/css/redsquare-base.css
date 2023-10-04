@@ -1,5 +1,5 @@
 .liked , .replied , .retweeted {
-  color: #c23939;
+  color: var(--saito-primary);;
 }
 
 .redsquare-home {

@@ -88,9 +88,13 @@ export default class Blockchain extends SaitoBlockchain {
       }
     }
     // console.log(`affixed callbacks for : ${validTxs} out of ${txs.length}`);
+console.log("set callbacks 1...");
     this.callbacks.set(block.hash, callbacks);
+console.log("set callback indices 2...");
     this.callbackIndices.set(block.hash, callbackIndices);
+console.log("set confirmations 3...");
     this.confirmations.set(block.hash, BigInt(-1));
+console.log("done affixing callbacks...");
   }
 
   public async onNewBlock(block: Block, lc: boolean) {
