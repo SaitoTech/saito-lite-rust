@@ -231,8 +231,10 @@ class Settlers extends GameTemplate {
     //
     // add extra controls to HUD
     //
+    console.log(this.game.deck[0].hand);
+
     this.app.browser.prependElementToSelector(
-      '<div class="mobile"><div class="score">score</div><div class="trade">trade</div></div>',
+      `<div class="mobile"><div class="trade">trade</div><div class="cards ${this.game.deck[0]?.hand?.length > 0 ? "": "hidden"}">cards</div><div class="score">score</div></div>`,
       ".hud-body"
     );
 
@@ -244,6 +246,10 @@ class Settlers extends GameTemplate {
     document.querySelector(".hud-body .mobile .score").onclick = (e) => {
       this.stats_overlay.render();
     };
+
+    document.querySelector(".hud-body .mobile .cards").onclick = (e) => {
+      this.dev_card.render();
+    }
 
     let trade_btn = document.querySelector(".hud-body .mobile .trade");
 
@@ -366,6 +372,8 @@ class Settlers extends GameTemplate {
     state.lastroll = [];
     state.placedCity = "hello world"; //a slight hack for game iniitalization
     state.welcome = 0;
+    state.hasRolled = false;
+    
     for (let i = 0; i < this.game.players.length; i++) {
       state.ads.push({});
 

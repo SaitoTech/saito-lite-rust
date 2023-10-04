@@ -140,7 +140,7 @@ class SettlersDisplay {
     }
 
     for (let i = 0; i < this.game.state.players.length; i++) {
-      if (this.game.state.players[i].vp > this.racetrack.players[i].score) {
+      if (this.game.state.players[i].vp !== this.racetrack.players[i].score) {
         this.racetrack.players[i].score = this.game.state.players[i].vp;
         this.racetrack.render();
         this.racetrack.lock();
@@ -280,6 +280,7 @@ class SettlersDisplay {
                 }
                 this.playerbox.updateBody(html, i);
                 id = "#" + id;
+                let settlers_self = this;
                 $(id).off();
                 $(id).on("click", function () {
                   //  Launch overlay window for private trade

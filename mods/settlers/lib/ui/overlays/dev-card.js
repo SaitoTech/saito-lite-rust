@@ -29,7 +29,7 @@ class DevCardOverlay {
         let target = e.currentTarget;
 
         if (target.classList.contains("settlers-card-disabled")){
-          salert("You just bought that card, cannot play now");
+          salert("You cannot play that card now");
           return;
         }
 
@@ -78,6 +78,10 @@ class DevCardOverlay {
         this_dev_card.mod.removeCardFromHand(this_dev_card.mod.game.deck[0].hand[card]);
         this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
 
+        if (this_dev_card.mod.game.deck[0].hand.length == 0){
+          document.querySelector(".hud-body .mobile .cards").classList.add("hidden");
+        }
+        
       };
     });
 

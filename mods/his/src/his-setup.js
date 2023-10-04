@@ -72,7 +72,7 @@ console.log("\n\n\n\n");
         if (this.game.players.length == 2) {
 
 	  // OTTOMAN
-          this.addRegular("ottoman", "istanbul", 7);
+          this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");
           this.addRegular("ottoman", "salonika", 1);
           this.addRegular("ottoman", "athens", 1);
@@ -156,22 +156,6 @@ console.log("\n\n\n\n");
 	  this.controlSpace("ottoman", "ragusa");
 
 	  this.setAllies("hungary", "hapsburg");
-
-
-	  // TESTING
-          //this.addReformer("protestant", "zurich", "zwingli-reformer");
-	  //this.setAllies("venice", "papacy");
-	  //this.setEnemies("france", "papacy");
-	  //this.setActivatedPower("protestant", "france");
-	  //this.addRegular("france", "milan", 1);
-	  //this.addRegular("venice", "trent", 1);
-	  //this.controlSpace("venice", "trent");
-
-	  //this.controlSpace("papacy", "trent");
-	  //this.addRegular("papacy", "trent", 4);
-	  //this.addRegular("papacy", "trent", 2);
-	  //this.addRegular("papacy", "augsburg", 2);
-	  //this.addMercenary("papacy", "augsburg", 1);
 
 	} else {
 

@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.453;
+  version = 5.457;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -174,6 +174,7 @@ export default class Wallet extends SaitoWallet {
       /////////////
       if (this.app.options.wallet.version < this.version) {
         if (this.app.BROWSER === 1) {
+          console.log("upgrading wallet version to : " + this.version);
           let tmpprivkey = this.app.options.wallet.privateKey;
           let tmppubkey = this.app.options.wallet.publicKey;
 
@@ -202,8 +203,6 @@ export default class Wallet extends SaitoWallet {
           // specify before reset to avoid archives reset problem
           await this.setPrivateKey(tmpprivkey);
           await this.setPublicKey(tmppubkey);
-          // this.instance.publickey = tmppubkey;
-          // this.instance.privatekey = tmpprivkey;
 
           // let modules purge stuff
           await this.app.modules.onWalletReset();
@@ -211,13 +210,12 @@ export default class Wallet extends SaitoWallet {
           // reset and save
           await this.app.storage.resetOptions();
           await this.instance.reset();
-          this.app.storage.saveOptions();
+          await this.app.blockchain.resetBlockchain();
+          // this.app.storage.saveOptions();
 
           // re-specify after reset
           await this.setPrivateKey(tmpprivkey);
           await this.setPublicKey(tmppubkey);
-          // this.publickey = tmppubkey;
-          // this.privatekey = tmpprivkey;
 
           // this.app.options.wallet = this.wallet;
           this.app.options.wallet.preferred_crypto = this.preferred_crypto;
@@ -251,6 +249,8 @@ export default class Wallet extends SaitoWallet {
           this.app.options.theme = theme;
 
           await this.saveWallet();
+
+          window.location.reload();
 
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
