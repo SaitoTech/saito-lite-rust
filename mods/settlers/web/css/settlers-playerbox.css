@@ -28,7 +28,7 @@
 }
 
 .game-playerbox > div {
-  background-color: #d3c38d;
+  /*background-color: #d3c38d;*/
   margin: 0.5rem;
 }
 
@@ -143,7 +143,7 @@
   min-height: 4.5rem;
   align-items: center;
   grid-template-rows: repeat(2, 2.25rem);
-  padding-left: 0.5rem;
+  padding-left: 0.25rem;
   column-gap: 0.5rem;
 
 }
