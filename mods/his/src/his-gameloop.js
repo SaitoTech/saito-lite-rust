@@ -630,16 +630,20 @@ if (this.game.state.scenario != "is_testing") {
 	if (mv[0] === "is_testing") {
 
 	  // moar debaters
-          this.addDebater("protestant", "bullinger-debater");
-          this.addDebater("protestant", "oekolampadius-debater");
-          this.addDebater("protestant", "zwingli-debater");
-          this.addDebater("papacy", "caraffa-debater");
-          this.addDebater("papacy", "gardiner-debater");
-          this.addDebater("papacy", "loyola-debater");
-          this.addDebater("papacy", "pole-debater");
-          this.addDebater("papacy", "canisius-debater");
-          this.addDebater("papacy", "contarini-debater");
-          this.addDebater("papacy", "faber-debater");
+          //this.addDebater("protestant", "bullinger-debater");
+          //this.addDebater("protestant", "oekolampadius-debater");
+          //this.addDebater("protestant", "zwingli-debater");
+          //this.addDebater("papacy", "caraffa-debater");
+          //this.addDebater("papacy", "gardiner-debater");
+          //this.addDebater("papacy", "loyola-debater");
+          //this.addDebater("papacy", "pole-debater");
+          //this.addDebater("papacy", "canisius-debater");
+          //this.addDebater("papacy", "contarini-debater");
+          //this.addDebater("papacy", "faber-debater");
+    	  //this.addDebater("papacy", "bucer-debater");
+    	  //this.addDebater("protestant", "aleander-debater");
+    	  //this.addDebater("protestant", "campeggio-debater");
+
    
 
           this.addMercenary("papacy", "siena", 4);
@@ -647,11 +651,6 @@ if (this.game.state.scenario != "is_testing") {
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
           this.addUnrest("graz");
-
-    	  this.addDebater("papacy", "bucer-debater");
-    	  this.addDebater("protestant", "aleander-debater");
-    	  this.addDebater("protestant", "bullinger-debater");
-    	  this.addDebater("protestant", "campeggio-debater");
 
     	  this.activateMinorPower("papacy", "venice");
 
@@ -664,25 +663,28 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
 
-
     	  this.convertSpace("protestant", "mainz");
     	  this.convertSpace("protestant", "worms");
     	  this.convertSpace("protestant", "kassel");
     	  this.convertSpace("protestant", "regensberg");
     	  this.convertSpace("protestant", "munster");
 
-
-//   	  this.addCard("papacy", "065");
-//   	  this.addCard("protestant", "032");
-//   	  this.addCard("papacy", "088");
-//   	  this.addCard("protestant", "078");
-//   	  this.addCard("protestant", "032");
-
 	  this.controlSpace("papacy", "siena");
 	  this.addMercenary("papacy", "siena", 1);
 	  this.addMercenary("papacy", "siena", 1);
 	  this.addMercenary("papacy", "siena", 1);
 	  this.addRegular("papacy", "siena", 1);
+
+	  this.setAllies("protestant", "france");
+	  this.setEnemies("papacy", "france");
+	  this.setActivatedPower("protestant", "france");
+	  this.addRegular("france","milan", 1);
+	  this.addRegular("france","milan", 1);
+	  this.addRegular("france","milan", 1);
+	  this.addRegular("france","milan", 1);
+	  this.addRegular("france","milan", 1);
+	  this.addRegular("france","milan", 1);
+	  this.addArmyLeader("france", "milan", "montmorency");
 
 
     	  this.game.spaces['graz'].type = 'key';
@@ -2732,6 +2734,8 @@ console.log("#");
 	  let defender_units_faction = [defender_faction];
 	  let attacker_highest_battle_ranking = 0;
 	  let defender_highest_battle_ranking = 0;
+	  let attacker_highest_battle_ranking_figure = "";
+	  let defender_highest_battle_ranking_figure = "";
 
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
@@ -2740,7 +2744,6 @@ console.log("#");
 	      attacker_rolls += x.rolls;
 	      attacker_units.push(...x.units);
 	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f); }
-
 	      if (calculate_highest_battle_ranking(f) > attacker_highest_battle_ranking) {
 		attacker_highest_battle_ranking = calculate_highest_battle_ranking(f);
 	      }
@@ -2758,6 +2761,23 @@ console.log("#");
 	    }
 	  }
 
+	  //
+	  // add rolls for highest battle ranking
+	  //
+	  for (let z = 0; z < attacker_highest_battle_ranking; z++) {
+	    attacker_rolls++;
+	  }
+	  for (let z = 0; z < defender_highest_battle_ranking; z++) {
+	    defender_rolls++;
+	  }
+
+console.log("ATTACKER HIGHEST BATTLE RANKING: " + attacker_highest_battle_ranking);
+console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_ranking);
+
+
+	  //
+	  // add bonus rolls
+	  //
 	  if (attacker_player.tmp_roll_bonus) {
   	    attacker_rolls += parseInt(attacker_player.tmp_roll_bonus);
 	  }
@@ -2843,6 +2863,9 @@ console.log("#");
 	  his_self.game.state.field_battle.defender_faction = defender_faction;
 	  his_self.game.state.field_battle.attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
 	  his_self.game.state.field_battle.defender_player = his_self.returnPlayerOfFaction(defender_faction);
+	  his_self.game.state.field_battle.attacker_highest_battle_ranking = attacker_highest_battle_ranking;
+	  his_self.game.state.field_battle.defender_highest_battle_ranking = defender_highest_battle_ranking;
+	  his_self.game.state.field_battle.defender_hits_first = 0;
 	  his_self.game.state.field_battle.attacker_hits_first = 0;
 	  his_self.game.state.field_battle.defender_hits_first = 0;
 	  his_self.game.state.field_battle.faction_map = faction_map;
@@ -2902,8 +2925,11 @@ console.log("#");
 	  //
 	  let his_self = this;
 	  let faction = mv[1];
-	  let player = this.returnPlayerOfFaction(faction);
+	  let player = this.returnPlayerCommandingFaction(faction);
 	  let space = this.game.spaces[this.game.state.field_battle.spacekey];
+
+console.log("field battle assign hits: player commanding faction is: " + player);
+
 
           this.game.queue.splice(qe, 1);
 
@@ -3149,14 +3175,17 @@ console.log("#");
 
 console.log("DEFENDING FACTIONS: " + defending_factions);
 console.log("FM: " + JSON.stringify(this.game.state.field_battle.faction_map));
+console.log("player: " + player + " -- " + this.game.player);
 
 	  //
 	  // otherwise assign hits directly
 	  //
 	  if (player == this.game.player) {
+console.log("going into render field battle!");
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
             his_self.field_battle_overlay.assignHits(his_self.game.state.field_battle, faction);
 	  } else {
+console.log("else!");
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
 	    his_self.updateStatus(this.returnFactionName(faction) + " Assigning Hits");
             his_self.field_battle_overlay.updateInstructions(this.returnFactionName(faction) + " Assigning Hits");
@@ -5921,13 +5950,12 @@ defender_hits - attacker_hits;
 	  //
 	  // TESTING form Schmalkaldic League triggers end of round 1
 	  //
-if (this.game.state.scenario == "is_testing") {
-	  if (this.game.state.round == 1 && this.game.state.events.schmalkaldic_league != 1) {
+	  if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
-}
+
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
