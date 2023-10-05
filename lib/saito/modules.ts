@@ -194,7 +194,7 @@ class Mods {
         module_name = this.mods[i].name;
         await this.mods[i].initialize(this.app);
       }
-    }catch(err){
+    } catch (err) {
       console.error("Failing module: " + module_name);
       throw new Error(err);
     }
@@ -347,9 +347,12 @@ class Mods {
   }
 
   onNewBlock(blk, i_am_the_longest_chain) {
-console.log("#################");
-console.log("### New Block ### " + blk.id);
-console.log("#################");
+    blk.transactions.forEach(transaction => {
+      console.log(transaction.toJson(), "new block")
+    })
+    console.log("#################");
+    console.log("### New Block ### " + blk.id);
+    console.log("#################");
     for (let iii = 0; iii < this.mods.length; iii++) {
       this.mods[iii].onNewBlock(blk, i_am_the_longest_chain);
     }
