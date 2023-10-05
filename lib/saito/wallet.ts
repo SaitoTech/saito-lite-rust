@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.458;
+  version = 5.461;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -250,11 +250,10 @@ export default class Wallet extends SaitoWallet {
 
           await this.saveWallet();
 
-          window.location.reload();
-
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           alert("Saito Upgrade: Wallet Reset");
+          // window.location.reload();
         } else {
           // purge old slips
           this.app.options.wallet.version = this.version;
