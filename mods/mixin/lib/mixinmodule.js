@@ -42,7 +42,6 @@ class MixinModule extends CryptoModule {
     this.balance_timestamp_last_fetched = 0;
     this.minimum_delay_between_balance_queries = 20000; // if it hasn't been 10 seconds since last fetch, fetch
     this.deposit_entries = {};
-    this.destination = "";
     this.tag = "";
     this.price_btc = 0;
     this.price_usd = 0;
@@ -83,6 +82,7 @@ class MixinModule extends CryptoModule {
   activate() {
     if (this.mixin.account_created == 0) {
       if (this.mixin.mixin.session_id === "") {
+        this.app.connection.emit("create-mixin-account");
         this.mixin.createAccount(() => {
           super.activate();
         });

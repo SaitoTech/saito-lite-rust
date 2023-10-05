@@ -72,6 +72,7 @@ export default class Wallet extends SaitoWallet {
         this.description = "Saito";
         this.balance = "0.0";
         this.publicKey = publicKey;
+        this.destination = publicKey;
       }
 
       async returnBalance() {
