@@ -6,6 +6,7 @@ const ScoringOverlay = require('./lib/overlays/scoring');
 const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
 const DeckOverlay = require('./lib/overlays/deck');
+const HeadlineOverlay = require('./lib/overlays/headline');
 
 const JSON = require('json-bigint');
 
@@ -57,6 +58,7 @@ class Twilight extends GameTemplate {
     this.stats_overlay = new StatsOverlay(this.app, this);
     this.war_overlay = new WarOverlay(this.app, this);
     this.deck_overlay = new DeckOverlay(this.app, this);
+    this.headline_overlay = new HeadlineOverlay(this.app, this);
 
     //
     // newbie mode
@@ -3417,13 +3419,18 @@ console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
     if (this.game.player == 1) {
       uscard = opponent_card;
       ussrcard = my_card;
-    }else{
+    } else {
       ussrcard = opponent_card;
       uscard = my_card;
     }
-      
+   
+   
 
     if (stage == "headline6") {
+
+console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
+
+      this.headline_overlay.render(uscard, ussrcard);
 
       this.updateLog("Moving into first headline card event");
       
