@@ -479,6 +479,9 @@ console.log("#");
           await this.receiveTweetTransaction(blk, tx, conf);
         }
         if (txmsg.request === "like tweet") {
+console.log("#");
+console.log("# RECEIVED LIKE TRANSACTION: " + JSON.stringify(txmsg));
+console.log("#");
           await this.receiveLikeTransaction(blk, tx, conf);
         }
         if (txmsg.request === "flag tweet") {
@@ -906,7 +909,7 @@ console.log("looking for this thread: " + tweet.thread_id);
       }
 
       if (inserted == false) {
-alert("not inserted... unknown children: " + tweet.text);
+//alert("not inserted... unknown children: " + tweet.text);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
         this.unknown_children.push(tweet);
       }
@@ -1276,6 +1279,7 @@ console.log("$$");
   }
 
   async receiveLikeTransaction(blk, tx, conf) {
+
     //
     // browsers
     //
@@ -1288,7 +1292,7 @@ console.log("$$");
 	//
 	// ignore if already added
 	//
-	if (this.tweets._sigs_hmap[tx.signature]) { 
+	if (this.tweets_sigs_hmap[tx.signature]) { 
 	  console.log("like tweet, but we have already processed / added");
 	  return;
 	}
@@ -1315,8 +1319,9 @@ console.log("$$");
           if (!liked_tx.optional.num_likes) {
             liked_tx.optional.num_likes = 0;
           }
+console.log("liked_tx has N optional likes: " + liked_tx.optional.num_likes);
           liked_tx.optional.num_likes++;
-          liked_tx.num_likes++;
+console.log("incrementing to: " + liked_tx.optional.num_likes);
           this.app.storage.updateTransaction(liked_tx, { owner: this.publicKey });
           tweet.renderLikes();
         }

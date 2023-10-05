@@ -88,6 +88,8 @@ class SettlersGameloop {
           this.game.state.players[player - 1].devcards++; //Add card for display
         } else {
 
+          document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
+
           let lastcard =
             this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
@@ -100,7 +102,7 @@ class SettlersGameloop {
             this.game.state.canPlayCard = true;
           }
 
-          this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
+          this.updateStatus(`<div class="persistent player-notice"><span>You bought a ${html}</span></div>`);
         }
         return 1;
       }
@@ -536,21 +538,21 @@ class SettlersGameloop {
         // let offering player know
         if (this.game.player == offering_player) {
           this.updateStatus(
-            `<div class='persistent'>${
+            `<div class='persistent player-notice'>${
               this.game.playerNames[accepting_player - 1]
             } accepted your offer</div>`
           );
         }
         if (this.game.player == accepting_player) {
           this.updateStatus(
-            `<div class='persistent'>You completed a trade with ${
+            `<div class='persistent player-notice'>You completed a trade with ${
               this.game.playerNames[offering_player - 1]
             }.</div>`
           );
         }
         if (this.game.player !== accepting_player && this.game.player !== offering_player) {
           this.updateStatus(
-            `<div class="persistent">${this.game.playerNames[offering_player - 1]} and ${
+            `<div class="persistent player-notice">${this.game.playerNames[offering_player - 1]} and ${
               this.game.playerNames[accepting_player - 1]
             } completed a trade.</div>`
           );
@@ -590,11 +592,11 @@ class SettlersGameloop {
 
         this.game.confirms_needed[refusing_player - 1] = 0; //Manually resolve
         if (this.game.player == offering_player) {
-          this.updateStatus("<div class='persistent'>Your offer has been rejected</div>");
+          this.updateStatus("<div class='persistent player-notice'>Your offer has been rejected</div>");
         }
         if (this.game.player == refusing_player) {
           this.updateStatus(
-            `<div class='persistent'>You reject ${
+            `<div class='persistent player-notice'>You reject ${
               this.game.playerNames[offering_player - 1]
             }'s trade.</div>`
           );
@@ -623,10 +625,10 @@ class SettlersGameloop {
 
         // let offering player know
         if (this.game.player == player) {
-          this.updateStatus("<div class='persistent'>Your trade is completed</div>");
+          this.updateStatus("<div class='persistent player-notice'>Your trade is completed</div>");
         } else {
           this.updateStatus(
-            `<div class='persistent'>${
+            `<div class='persistent player-notice'>${
               this.game.playerNames[player - 1]
             } traded with the bank</div>`
           );
@@ -664,13 +666,14 @@ class SettlersGameloop {
           //Messaging to User
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
           let controlshtml = `<ul>`;
-          if (settlers_self.canPlayerPlayCard(true)) {
-            controlshtml += `<li class="option" id="playcard">play card</li>`;
-          }
+          
+          //if (settlers_self.canPlayerPlayCard(true)) {
+          //  controlshtml += `<li class="option" id="playcard">play card</li>`;
+          //}
+          
           controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
           controlshtml += `</ul>`;
 
-          console.log("running UPDATE STATUS");
           this.updateStatus(statushtml);
           this.updateControls(controlshtml);
 
@@ -683,6 +686,10 @@ class SettlersGameloop {
             this.is_sleeping = false; //If player plays a knight first, we don't need to flash again when we bounce back to this state
           }
 
+          // **********************************************************
+          // > To DO rewrite this if we like the new dev card interface
+          // **********************************************************
+          
           //Or, choose menu option
           $(".option").off();
           $(".option").on("click", function () {
@@ -695,9 +702,9 @@ class SettlersGameloop {
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
             }
-            if (choice === "playcard") {
-              settlers_self.dev_card.render();
-            }
+            //if (choice === "playcard") {
+            //  settlers_self.dev_card.render();
+            // }
           });
         } else {
           this.updateStatus(
@@ -734,6 +741,7 @@ class SettlersGameloop {
 
         //Next Step depends on Dice outcome
         if (roll == 7) {
+          this.game.state.bandit = true;
           this.game.queue.push("roll_bandit\t" + player);
 
           //Manage discarding before bandit comes into play
@@ -761,7 +769,9 @@ class SettlersGameloop {
 
       if (mv[0] == "enable_trading") {
         this.game.queue.splice(qe, 1);
+        this.game.state.bandit = false;
         this.game.state.canTrade = true; //Toggles false when the player builds or buys
+        this.game.state.hasRolled = true;
         return 1;
       }
 
@@ -881,7 +891,7 @@ class SettlersGameloop {
         if (this.game.player === thief) {
           let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
           this.updateStatus(
-            `<div class="persistent"><span>You stole ${
+            `<div class="persistent player-notice"><span>You stole ${
               loot == "nothing" ? "nothing</span>" : "</span>" + x
             }</div>`
           );
@@ -890,13 +900,13 @@ class SettlersGameloop {
           let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
           if (loot == "nothing") {
             this.updateStatus(
-              `<div class="persistent"><span>${
+              `<div class="persistent player-notice"><span>${
                 this.game.playerNames[thief - 1]
               } stole nothing from you</span></div>`
             );
           } else {
             this.updateStatus(
-              `<div class="persistent"><span>${
+              `<div class="persistent player-notice"><span>${
                 this.game.playerNames[thief - 1]
               } stole your</span>${x}</div>`
             );
@@ -932,6 +942,7 @@ class SettlersGameloop {
         if (this.game.deck[0].hand.length > 0) {
           this.game.state.canPlayCard = true;
         }
+        this.game.state.hasRolled = false;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
         this.is_sleeping = true;

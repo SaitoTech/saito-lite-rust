@@ -106,7 +106,7 @@ class Wordblocks extends GameTemplate {
 
       $("#game-scoreboard").off();
       $("#game-scoreboard").on("click", function () {
-        $("#opponentbox").toggleClass("visible");
+        $(".game-playerbox-manager").toggleClass("visible");
       });
     } catch (err) {
       console.error(err);
@@ -567,7 +567,6 @@ class Wordblocks extends GameTemplate {
             </div>`;
 
           //Change this because stupid game-playerbox-manager not opponent box
-          //$("#opponentbox").append(html);
           $(".game-playerbox-manager").append(html);
 
           $(".action").off();

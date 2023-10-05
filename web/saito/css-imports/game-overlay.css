@@ -247,9 +247,10 @@ Useful declarations for game stats
   min-width: 600px;
   max-width: 90vw;
   background-color: #f5f5f5;
-  padding: 40px;
+  padding: 50px;
   border-radius: 5px;
   border: 2px solid var(--saito-black-faded);
+  box-shadow:  4px 4px 6px 4px black;
 }
 
 .solitaire-stats-overlay hr {
@@ -259,6 +260,10 @@ Useful declarations for game stats
 
 .solitaire-stats-overlay .saito-table-row {
   grid-template-columns: repeat(3, 1fr);
+}
+
+.solitaire-stats-overlay .saito-table-body {
+  font-size: 2rem;
 }
 
 .solitaire-stats-overlay .saito-table-label, .solitaire-stats-overlay .saito-table-header {

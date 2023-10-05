@@ -1407,24 +1407,23 @@
     let html = "";
 
       for (let zz = 0; zz < space.units[z].length; zz++) {
+	let added = 0;
 	if (space.units[z][zz].debater === true) {
           html += `<img src="/his/img/tiles/debater/${space.units[z][zz].img}" />`;
 	  tile = html;
+	  added = 1;
 	}
-	if (space.units[z][zz].personage === true) {
-	  if (space.units[z][zz].army_leader) {
-            html += `<img src="/his/img/tiles/army/${space.units[z][zz].img}" />`;
-	  } else {
-            if (space.units[z][zz].navy_leader) {
-	      html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
-	    } else {
-              if (space.units[z][zz].reformer) {
-	        html += `<img src="/his/img/tiles/reformers/${space.units[z][zz].img}" />`;
-	      } else {
-	        html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
-	      }
-	    }
-	  }
+	if (space.units[z][zz].army_leader && added == 0) {
+          html += `<img src="/his/img/tiles/army/${space.units[z][zz].img}" />`;
+	  added = 1;
+	}
+        if (space.units[z][zz].navy_leader && added == 0) {
+	  html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
+	  added = 1;
+	} 
+        if (space.units[z][zz].reformer && added == 0) {
+	  html += `<img src="/his/img/tiles/reformers/${space.units[z][zz].img}" />`;
+	  added = 1;
 	}
       }
     return html;
@@ -1437,9 +1436,8 @@
     if (owner == "") { owner = space.home; }
     let tile = "";
 
-
     for (let z in space.units) {
-      html = this.returnPersonagesTiles(z, space.key);
+      html += this.returnPersonagesTiles(z, space.key);
       tile = html;
     }
 
