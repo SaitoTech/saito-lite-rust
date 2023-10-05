@@ -126,7 +126,7 @@
 .logobox {
   position: absolute;
   font-size: 20px;
-  max-width: 200px;
+  max-width: 205px;
   margin: 60px 20px;
   display: flex;
   flex-direction: column;
@@ -270,10 +270,20 @@ div[id^="row21"] {
 
 
 /******* RULES ************/
+.rules-overlay {
+  background-color: #f5f5f5;
+  padding: 50px;
+  border-radius: 5px;
+  border: 2px solid var(--saito-black-faded);
+  box-shadow:  4px 4px 6px 4px black;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
 .rules-overlay, .solitaire-stats-overlay {
   font-family: papyrus;
-  border-radius: 5px;
-  border: 3px solid var(--saito-red);
+  min-width: 650px;
 }
 
 .rules-overlay h1 {
