@@ -23,6 +23,7 @@ class Storage {
   async loadOptions() {
     // if (typeof Storage !== "undefined") {
     const data = localStorage.getItem("options");
+
     if (data != "null" && data != null) {
       this.app.options = JSON.parse(data);
     } else {
@@ -222,11 +223,10 @@ class Storage {
         return;
       }
     }
-    // console.log("calling save options...");
 
     const saveOptionsForReal = () => {
       clearTimeout(this.timeout);
-      // console.log("Actually saving options");
+      this.timeout = null;
       try {
         localStorage.setItem("options", JSON.stringify(this.app.options));
       } catch (err) {
@@ -236,9 +236,16 @@ class Storage {
           console.log(localStorage.key(i), item.length, item, JSON.parse(item));
         }
       }
+      //console.log("Options saved");
     };
 
-    clearTimeout(this.timeout);
+    if (this.timeout){
+      clearTimeout(this.timeout);  
+      //console.log("Reset timer to save Options");
+    }else{
+      //console.log("Start timer to save options");
+    }
+    
     this.timeout = setTimeout(saveOptionsForReal, 250);
   }
 

@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.458;
+  version = 5.469;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -250,12 +250,18 @@ export default class Wallet extends SaitoWallet {
 
           await this.saveWallet();
 
-          window.location.reload();
-
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          alert("Saito Upgrade: Wallet Reset");
+          
+
+          setTimeout(async () => {
+            await alert("Saito Upgrade: Wallet Reset");
+            window.location.reload();
+          }, 400);
+          return;
+
         } else {
+          //Server CODE
           // purge old slips
           this.app.options.wallet.version = this.version;
           this.app.options.wallet.slips = [];
@@ -277,7 +283,7 @@ export default class Wallet extends SaitoWallet {
       }
 
       this.app.connection.on("wallet-updated", async () => {
-        await this.saveWallet();
+        this.saveWallet();
       });
 
       // this.instance = Object.assign(this.instance, this.app.options.wallet);
@@ -287,6 +293,7 @@ export default class Wallet extends SaitoWallet {
     // new wallet //
     ////////////////
     if ((await this.getPrivateKey()) === "") {
+      console.warn("No private key, make new wallet");
       await this.resetWallet();
     }
   }
@@ -350,8 +357,9 @@ export default class Wallet extends SaitoWallet {
 
     this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
-    await this.save();
     this.app.storage.saveOptions();
+    await this.save(); //Where is this defined?
+    
   }
 
   /////////////////////////
