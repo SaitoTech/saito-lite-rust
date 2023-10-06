@@ -1,30 +1,37 @@
 //const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
-
   let optional = tweet.tx.optional;
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
- 
+
   if (!text && !notice && tweet.retweet_tx) {
-    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
+    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
   }
 
-  let num_likes =  optional.num_likes ||  0;
-  let num_replies =  optional.num_replies ||  0;
+  let num_likes = optional.num_likes || 0;
+  let num_replies = optional.num_replies || 0;
   let num_retweets = optional.num_retweets || 0;
+
+  let is_liked_css = "";
+  let is_retweeted_css = "";
+  let is_replied_css ="";
+
+  if (mod.liked_tweets.includes(tweet.tx.signature)) { is_liked_css = "liked"; }
+  if (mod.retweeted_tweets.includes(tweet.tx.signature)) { is_retweeted_css = "retweeted"; }
+  if (mod.replied_tweets.includes(tweet.tx.signature)) { is_replied_css = "replied"; }
 
   let controls = `
               <div class="tweet-controls">
                 <div class="tweet-tool tweet-tool-comment">
-                  <span class="tweet-tool-comment-count">${num_replies}</span> <i class="far fa-comment"></i>
+                  <span class="tweet-tool-comment-count ${is_replied_css}">${num_replies}</span> <i class="far fa-comment ${is_replied_css}"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">${num_retweets}</span>
-                  <i class="fa fa-repeat"></i>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count ${is_retweeted_css}">${num_retweets}</span>
+                  <i class="fa fa-repeat ${is_retweeted_css}"></i>
                 </div>
                 <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count">${num_likes}</span> <div class="tweet-like-button">
                 <div class="heart-bg">
-                  <div class="heart-icon"></div>
+                  <div class="heart-icon ${is_liked_css}"></div>
                 </div>
               </div></div>
                     
@@ -34,7 +41,7 @@ module.exports = (app, mod, tweet) => {
               </div>`;
 
   let html = `
-        <div class="tweet tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
+        <div class="tweet tweet-${tweet.tx.signature}" data-id="${tweet.tx.signature}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">
@@ -46,10 +53,10 @@ module.exports = (app, mod, tweet) => {
   if (tweet.youtube_id != null && tweet.youtube_id != "null") {
     html += `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
   } else {
-    html += `<div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}"></div>`;
+    html += `<div class="tweet-preview tweet-preview-${tweet.tx.signature}"></div>`;
   }
 
-  if (tweet?.show_controls){
+  if (tweet?.show_controls) {
     html += controls;
   }
 
@@ -59,8 +66,4 @@ module.exports = (app, mod, tweet) => {
   `;
 
   return html;
-
-}
-
-
-
+};

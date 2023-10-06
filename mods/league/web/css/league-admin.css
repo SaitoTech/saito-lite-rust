@@ -313,6 +313,25 @@ i.link_icon.private {
   font-size: 2rem;
 }
 
+.email-box textarea{
+  margin-top: 2rem;
+}
+
+.email-box .title-box div {
+  margin: 0.5rem 0;
+}
+
+.email-box .warning {
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--saito-font-color-light);
+}
+
+.admin-name {
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
 .league-join-overlay-box .address {
   font-style: italic;
 }
@@ -359,12 +378,16 @@ i.link_icon.private {
   font-style: italic;
 }
 
-.league-join-controls {
+.league-join-controls, .league-email-controls {
   padding: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+.league-email-controls {
+  justify-content: center;
 }
 
 .league-join-info p {
@@ -519,18 +542,6 @@ i.link_icon.private {
 
 .saito-select:hover::after {
   color: var(--saito-white) !important;
-}
-
-.saito-select .saito-slct {
-  font-size: 2rem;
-}
-
-.saito-slct {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: var(--saito-white);
-  border-radius: 1rem;
-  padding: 0 1rem;
 }
 
 @media (max-width: 900px) {

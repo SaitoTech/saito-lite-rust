@@ -1,6 +1,8 @@
 
     if (card == "debtcrisis") {
-      
+ 
+      let ac = this.returnAllCards(true);
+     
       let twilight_self = this;
       if (this.game.player == 2) { 
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -12,7 +14,7 @@
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china") {
-            let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], "us", 0);
+            let avops = this.modifyOps(ac[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], "us", 0);
             if (avops >= 3) { 
               cards_to_discard.push(this.game.deck[0].hand[i]);
             }

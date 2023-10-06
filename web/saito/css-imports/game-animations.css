@@ -54,3 +54,7 @@
 .animated_elem{
   position: absolute;
 }
+
+.copied_elem {
+  visibility: hidden;
+}

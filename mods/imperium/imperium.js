@@ -1,6 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const JSON = require('json-bigint');
-const RulesOverlay = require('./lib/overlays/rules');
+//const RulesOverlay = require('./lib/overlays/rules');
 const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
 const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const StrategyCardSelectionOverlay = require('./lib/overlays/strategy-card-selection');
@@ -59,7 +59,7 @@ class Imperium extends GameTemplate {
     //
     // components and overlays
     //
-    this.rules_overlay = new RulesOverlay(this.app, this);
+    //this.rules_overlay = new RulesOverlay(this.app, this);
     this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
     this.strategy_card_selection_overlay = new StrategyCardSelectionOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
@@ -1448,814 +1448,1012 @@ class Imperium extends GameTemplate {
     });
 
 
+this.importFaction("faction8", {
+  id: "faction8",
+  name: "Emirates of Hacan",
+  nickname: "Hacan",
+  homeworld: "sector40",
+  space_units: ["carrier", "carrier", "cruiser", "fighter", "fighter"],
+  ground_units: ["infantry", "infantry", "infantry", "infantry", "spacedock"],
+  tech: [
+    "sarween-tools",
+    "antimass-deflectors",
+    "faction8-merchant-class",
+    "faction8-guild-ships",
+    "faction8-arbiters",
+    "faction8-flagship",
+  ],
+  background: "faction8.jpg",
+  promissary_notes: ["trade", "political", "ceasefire", "throne", "faction8-promissary"],
+  commodity_limit: 6,
+  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`,
+});
 
-    this.importFaction('faction8', {
-      id		:	"faction8" ,
-      name		: 	"Emirates of Hacan",
-      nickname		: 	"Hacan",
-      homeworld		: 	"sector40",
-      space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
-      ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
-      tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship"],
-      background	: 	'faction8.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne","faction8-promissary"],
-      commodity_limit	:	6,
-      intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`
-    });
-
-
-    this.importTech("faction8-flagship", {
-      name        	:       "Hacan Flagship" ,
-      faction     	:       "faction8",
-      type      	:       "ability" ,
-      text		:	"Spend 1 trade good to add +1 to any dice rolled in combat" ,
-      postShipsFireEventTriggers :    function(imperium_self, player, attacker, defender, sector, combat_info) {
-        if (player == attacker && combat_info.attacker == player) {
-          if (imperium_self.doesPlayerHaveTech(attacker, "faction8-flagship")) {
-            if (imperium_self.doesSectorContainPlayerUnit(attacker, sector, "flagship")) {
-	      let costs_per_hit = [];
-	      for (let i = 0; i < combat_info.modified_roll.length; i++) {
-	        if (combat_info.hits_or_misses[i] == 0) {
-	          costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
-	        }
-              }
-	      if (costs_per_hit.length > 0) {
-	        costs_per_hit.sort((a,b)=>a-b);
-	        if (imperium_self.game.state.players_info[attacker-1].goods >= costs_per_hit[0]) {
-	          return 1;
-	        }
-              }
+this.importTech("faction8-flagship", {
+  name: "Hacan Flagship",
+  faction: "faction8",
+  type: "ability",
+  text: "Spend 1 trade good to add +1 to any dice rolled in combat",
+  postShipsFireEventTriggers: function (
+    imperium_self,
+    player,
+    attacker,
+    defender,
+    sector,
+    combat_info
+  ) {
+    if (player == attacker && combat_info.attacker == player) {
+      if (imperium_self.doesPlayerHaveTech(attacker, "faction8-flagship")) {
+        if (imperium_self.doesSectorContainPlayerUnit(attacker, sector, "flagship")) {
+          let costs_per_hit = [];
+          for (let i = 0; i < combat_info.modified_roll.length; i++) {
+            if (combat_info.hits_or_misses[i] == 0) {
+              costs_per_hit.push(
+                2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i]))
+              );
             }
           }
-        }
-        if (player == defender && combat_info.attacker == player) {
-          if (imperium_self.doesPlayerHaveTech(defender, "faction8-flagship")) {
-            if (imperium_self.doesSectorContainPlayerUnit(defender, sector, "flagship")) {
-	      let costs_per_hit = [];
-	      for (let i = 0; i < combat_info.modified_roll.length; i++) {
-	        if (combat_info.hits_or_misses[i] == 0) {
-	          costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
-	        }
-              }
-	      if (costs_per_hit.length > 0) {
-	        costs_per_hit.sort((a,b)=>a-b);
-	        if (imperium_self.game.state.players_info[defender-1].goods >= costs_per_hit[0]) {
-	          return 1;
-	        }
-              }
-            }
-          }
-        }
-        return 0;
-      },
-      postShipsFireEvent :    function(imperium_self, player, attacker, defender, sector, combat_info) {
-	if (player != imperium_self.game.player) {
-	  imperium_self.updateStatus("Hacan considering using Flagship Ability to modify hits...");
-	  return 0;
-	} else {
-	  let costs_per_hit = [];
-	  for (let i = 0; i < combat_info.modified_roll.length; i++) {
-	    if (combat_info.hits_or_misses[i] == 0) {
-	      costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
-	    }
-	  }
-	  costs_per_hit.sort((a,b)=>a-b);
-          let html = '<div class="status-message">Do you wish to boost hits with Flagship Ability?</div><ul>';
-	  let cumulative_cost = 0;
-	  let available_trade_goods = imperium_self.game.state.players_info[player - 1].goods;
-	  for (let i = 0; i < costs_per_hit.length && cumulative_cost <= available_trade_goods; i++) {
-	    cumulative_cost += costs_per_hit[i];
-            html += '<li class="option" id="'+i+'">'+(i+1)+' extra hits - '+cumulative_cost+' trade goods</li>';
-	  }
-          html += '<li class="option" id="no">skip ability</li>';
-	  html += '</ul>';
-
-          imperium_self.updateStatus(html);
-
-          $('.option').off();
-          $('.option').on('click', function() {
-
-            let id = $(this).attr("id");
-            $(this).hide();
-
-            if (id == "no") {
-	      imperium_self.endTurn();
-	      return;
-	    }
-
-	    let at = attacker;
-	    let df = defender;
-
-	    if (player == defender) {
-	      at = defender;
-	      df = attacker;
-	    }
-
-	    let old_hits = 0;
-	    let last_move = imperium_self.game.queue[imperium_self.game.queue.length-1];
-	    let lmv = last_move.split("\t");
-	    if (lmv.length > 5) {
-	      if (lmv[0] === "assign_hits") {
-		  if (at == lmv[1]) {
-		  old_hits = parseInt(lmv[6]); 
-	          imperium_self.addMove("resolve\tassign_hits");
-	        }
-	      }
-	    }
-
-	    imperium_self.addMove("assign_hits\t"+at+"\t"+df+"\tspace\t"+sector+"\tspace\t"+(parseInt(id)+1+old_hits)+"\tspace_combat");
-	    for (let i = 0; i < costs_per_hit.length; i++) {
-	      cumulative_cost += costs_per_hit[i];
-	    }
-	    imperium_self.addMove("NOTIFY\tHacan Flagship: "+((parseInt(id)+1)*2)+" trade goods buys "+(parseInt(id)+1)+" extra hits");
-	    imperium_self.addMove("expend\t"+at+"\t"+"goods"+"\t"+((parseInt(id)+1)*2));
-	    imperium_self.endTurn();
-
-          });
-        }
-        return 0;
-      }
-    });
-	  
-
-
-    this.importTech('faction8-merchant-class', {
-
-      name        :       "Mercantile" ,
-      faction     :       "faction8",
-      type        :       "ability" ,
-      text	  : 	  "May refresh commodities for free when Trade is played" ,
-      initialize     :    function(imperium_self, player) {
-        if (imperium_self.faction8_merchant_class_swapped == undefined) {
-          imperium_self.faction8_merchant_class_swapped = 1;
-
-          imperium_self.faction8_merchant_class_original_event = imperium_self.strategy_cards['trade'].strategySecondaryEvent;
-          imperium_self.strategy_cards["trade"].strategySecondaryEvent = function(imperium_self, player, strategy_card_player) {
-
-            if (imperium_self.doesPlayerHaveTech(player, "faction8-merchant-class") && player != strategy_card_player && imperium_self.game.player == player) {
-
-	      //
-	      // skip if we are full commodities
-	      //
-	      if (imperium_self.game.state.players_info[player-1].commodities === imperium_self.game.state.players_info[player-1].commodity_limit) {
-                imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-                imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-                imperium_self.endTurn();
-                imperium_self.updateLog("Hacan already refreshed, do not need to play faction ability.");
-                return 0;
-	      }
-
-              let html = '<div class="status-message">Do you wish to refresh your commodities free-of-charge?</div><ul>';
-                  html += '<li class="option" id="yes">yes, of course</li>';
-                  html += '<li class="option" id="no">no, perhaps not</li>';
-	          html += '</ul>';
-
-              imperium_self.updateStatus(html);
-
-              $('.option').off();
-              $('.option').on('click', function() {
-                let id = $(this).attr("id");
-                $(this).hide();
-                if (id != "yes") {
-		  imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            	  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-                  imperium_self.addMove("purchase\t"+imperium_self.game.player+"\t"+"commodities"+"\t"+imperium_self.game.state.players_info[imperium_self.game.player-1].commodity_limit);
-		  imperium_self.endTurn();
-		  return;
-                } else {
-		  imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            	  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-                  imperium_self.endTurn();
-                }
-              });
-
-            } else {
-              imperium_self.faction8_merchant_class_original_event(imperium_self, player, strategy_card_player);
-            }
-          }
-        }
-      }
-    });
-
-
-    this.importTech('faction8-guild-ships', {
-
-      name        :       "Guild Ships" ,
-      faction     :       "faction8",
-      type        :       "ability" ,
-      text	  :	  "May trade with non-neighbours" ,
-      gainTechnology : function(imperium_self, gainer, tech) {
-        if (tech == "faction8-guild-ships") {
-          imperium_self.game.state.players_info[gainer-1].may_trade_with_non_neighbours = 1;
-        }
-      },
-    });
-
-
-    this.importTech('faction8-arbiters', {
-      name        :       "Arbitrage" ,
-      faction     :       "faction8",
-      type        :       "ability" ,
-      text	  :	  "May trade in action cards" ,
-      gainTechnology : function(imperium_self, gainer, tech) {
-        if (tech == "faction8-arbiters") {
-          imperium_self.game.state.players_info[gainer-1].may_trade_action_cards = 1;
-        }
-      },
-    });
-
-
-
-    this.importTech('faction8-production-biomes', {
-      name        :       "Production Biomes" ,
-      faction     :       "faction8",
-      type        :       "special" ,
-      color       : 	"green" ,
-      prereqs	:	["green","green"],
-      text	:	"Spend strategy token to gain 4 trade goods. Pick a player to earn 2 trade goods." ,
-      initialize  : function(imperium_self, player) {
-        if (imperium_self.game.state.players_info[player-1].production_biomes == undefined) {
-          imperium_self.game.state.players_info[player-1].production_biomes = 0;
-          imperium_self.game.state.players_info[player-1].production_biomes_exhausted = 0;
-        }
-      },
-      gainTechnology : function(imperium_self, gainer, tech) {
-        if (tech == "faction8-production-biomes") {
-          imperium_self.game.state.players_info[gainer-1].production_biomes = 1;
-          imperium_self.game.state.players_info[gainer-1].production_biomes_exhausted = 0;
-        }
-      },
-      onNewRound     :    function(imperium_self, player) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes")) {
-          imperium_self.game.state.players_info[player-1].production_biomes_exhausted = 0;
-        }
-      },
-      menuOption  :       function(imperium_self, menu, player) {
-        let x = {};
-        if (menu === "main") {
-	  if (imperium_self.game.state.players_info[player-1].production_biomes === 1) {
-            x.event = 'production_biomes';
-            x.html = '<li class="option" id="production_biomes">production biomes</li>';
-	  }
-        }
-        return x;
-      },
-      menuOptionTriggers:  function(imperium_self, menu, player) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes") && menu === "main") {
-          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-            if (imperium_self.game.state.active_player_moved == 0) {
+          if (costs_per_hit.length > 0) {
+            costs_per_hit.sort((a, b) => a - b);
+            if (imperium_self.game.state.players_info[attacker - 1].goods >= costs_per_hit[0]) {
               return 1;
             }
           }
         }
-        return 0;
-      },
-      menuOptionActivated:  function(imperium_self, menu, player) {
-
-        if (imperium_self.game.player == player) {
-
-          imperium_self.playerSelectPlayerWithFilter(
-            "You spend 1 strategy token. You gain 4 Trade Goods. Pick player to gain 2 Trade Goods: ",
-            function(player) { if (player.player !== imperium_self.game.player) { return 1; } return 0; },
-            function(pnum) {
-	      // player = player number here
-              imperium_self.addMove("resolve\tplay");
-              imperium_self.addMove("setvar\tstate\t0\tactive_player_moved\t" + "int" + "\t" + "0");
-              imperium_self.addMove("player_end_turn\t" + imperium_self.game.player);
-              imperium_self.addMove("purchase\t"+pnum+"\t"+"goods"+"\t"+"2");
-              imperium_self.addMove("purchase\t"+imperium_self.game.player+"\t"+"goods"+"\t"+"4");
-              imperium_self.addMove("expend\t"+imperium_self.game.player+"\t"+"strategy"+"\t"+"1");
-              imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " earns trade goods through production biomes");
-              imperium_self.endTurn();
-              return 0;
-            },
-            null
-          );
-          return 0;
-        };
       }
-
-    });
-
-
-    this.importTech('faction8-quantum-datahub-node', {
-      name        :       "Quantum Datahub Node" ,
-      faction     :       "faction8",
-      type        :       "special" ,
-      color       	: "yellow" ,
-      prereqs	:	["yellow","yellow", "yellow"],
-      text	:	"Spend strategy token to swap strategy cards with one player. Give them 3 trade goods." ,
-      initialize  : function(imperium_self, player) {
-        if (imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node == undefined) {
-          imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node = 0;
-          imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
-        }
-      },
-      gainTechnology : function(imperium_self, gainer, tech) {
-        if (tech == "faction8-quantum-datahub-node") {
-          imperium_self.game.state.players_info[gainer-1].faction8_quantum_datahub_node = 1;
-          imperium_self.game.state.players_info[gainer-1].faction8_quantum_datahub_node_exhausted = 0;
-        }
-      },
-      onNewRound     :    function(imperium_self, player) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node")) {
-          imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
-        }
-      },
-      menuOption  :       function(imperium_self, menu, player) {
-        let x = {};
-        if (menu === "main") {
-	  if (imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node === 1) {
-            x.event = 'quantum_datahub_node';
-            x.html = '<li class="option" id="quantum_datahub_node">quantum datahub node</li>';
-	  }
-        }
-        return x;
-      },
-      menuOptionTriggers:  function(imperium_self, menu, player) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node") && menu === "main") {
-          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-            if (imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node_exhausted == 0) {
-              if (imperium_self.game.state.active_player_moved == 0) {
-                 return 1;
-              }
+    }
+    if (player == defender && combat_info.attacker == player) {
+      if (imperium_self.doesPlayerHaveTech(defender, "faction8-flagship")) {
+        if (imperium_self.doesSectorContainPlayerUnit(defender, sector, "flagship")) {
+          let costs_per_hit = [];
+          for (let i = 0; i < combat_info.modified_roll.length; i++) {
+            if (combat_info.hits_or_misses[i] == 0) {
+              costs_per_hit.push(
+                2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i]))
+              );
+            }
+          }
+          if (costs_per_hit.length > 0) {
+            costs_per_hit.sort((a, b) => a - b);
+            if (imperium_self.game.state.players_info[defender - 1].goods >= costs_per_hit[0]) {
+              return 1;
             }
           }
         }
-        return 0;
-      },
-      menuOptionActivated:  function(imperium_self, menu, player) {
-
-        if (imperium_self.game.player == player) {
-
-          imperium_self.playerSelectPlayerWithFilter(
-            "Steal strategy card from whom? Return one of yours and 3 trade goods" ,
-            function(player) { if (player.player !== imperium_self.game.player) { return 1; } return 0; },
-            function(pnum) {
-
-	      let strategy_cards = imperium_self.returnStrategyCards();
-
-              let html = '<div>Select Strategy Card to Steal: </div><ul>"';
-	      for (let i = 0; i < imperium_self.game.state.players_info[pnum-1].strategy.length; i++) {
-		let s = imperium_self.game.state.players_info[pnum-1].strategy[i];
-                html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
-	      }
-              html += '<li class="option" id="skip">skip</li>';
-
-              imperium_self.updateStatus(html);
-
-              $('.option').off();
-              $('.option').on('click', function() {
-
-                let id = $(this).attr("id");
-                $(this).hide();
-
-		if (id == "skip") {
-		  imperium_self.updateLog("Hacan skips Quantum Datahub Node");
-                  imperium_self.endTurn();
-                  return;
-		}
-
-		let pull_strategy_card = imperium_self.game.state.players_info[pnum-1].strategy[id];
-		let pull_strategy_card_from = pnum;
-
-	        let html = '<div>Select Your Strategy Card to Return: </div><ul>"';
-	        for (let i = 0; i < imperium_self.game.state.players_info[imperium_self.game.player-1].strategy.length; i++) {
-	   	  let s = imperium_self.game.state.players_info[imperium_self.game.player-1].strategy[i];
-                  html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
-	        }
-                html += '<li class="option" id="skip">skip</li>';
-
-                imperium_self.updateStatus(html);
-
-                $('.option').off();
-                $('.option').on('click', function() {
-
-                  let id = parseInt($(this).attr("id"));
-                  $(this).hide();
-
-		  let push_strategy_card = imperium_self.game.state.players_info[imperium_self.game.player-1].strategy[id];
-
-	  	  if (id == "skip") {
-		    imperium_self.updateLog("Hacan skips Quantum Datahub Node");
-                    imperium_self.endTurn();
-                    return;
-	          }
-
-		  imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"faction8_quantum_datahub_node_exhausted"+"\t"+"int"+"\t"+"1");
-		  imperium_self.addMove("give"+"\t"+pull_strategy_card_from+"\t"+imperium_self.game.player+"\t"+"strategy"+"\t"+pull_strategy_card);
-		  imperium_self.addMove("give"+"\t"+imperium_self.game.player+"\t"+pull_strategy_card_from+"\t"+"strategy"+"\t"+push_strategy_card);
-		  imperium_self.addMove(`NOTIFY\tPlayers swap ${push_strategy_card} and ${pull_strategy_card}`);
-                  imperium_self.endTurn();
-                });
-              });
-	    }
-	  );
-
-          return 0;
-        };
-
-	return 0;
       }
-    });
+    }
+    return 0;
+  },
+  postShipsFireEvent: function (imperium_self, player, attacker, defender, sector, combat_info) {
+    if (player != imperium_self.game.player) {
+      imperium_self.updateStatus("Hacan considering using Flagship Ability to modify hits...");
+      return 0;
+    } else {
+      let costs_per_hit = [];
+      for (let i = 0; i < combat_info.modified_roll.length; i++) {
+        if (combat_info.hits_or_misses[i] == 0) {
+          costs_per_hit.push(
+            2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i]))
+          );
+        }
+      }
+      costs_per_hit.sort((a, b) => a - b);
+      let html =
+        '<div class="status-message">Do you wish to boost hits with Flagship Ability?</div><ul>';
+      let cumulative_cost = 0;
+      let available_trade_goods = imperium_self.game.state.players_info[player - 1].goods;
+      for (let i = 0; i < costs_per_hit.length && cumulative_cost <= available_trade_goods; i++) {
+        cumulative_cost += costs_per_hit[i];
+        html +=
+          '<li class="option" id="' +
+          i +
+          '">' +
+          (i + 1) +
+          " extra hits - " +
+          cumulative_cost +
+          " trade goods</li>";
+      }
+      html += '<li class="option" id="no">skip ability</li>';
+      html += "</ul>";
 
+      imperium_self.updateStatus(html);
 
+      $(".option").off();
+      $(".option").on("click", function () {
+        let id = $(this).attr("id");
+        $(this).hide();
 
+        if (id == "no") {
+          imperium_self.endTurn();
+          return;
+        }
 
+        let at = attacker;
+        let df = defender;
 
-    this.importPromissary("faction8-promissary", {
-      name        :       "Trade Convoys" ,
-      faction     :       -1,
-      text        :       "Holder may negotiate transactions with non-neighbours. Return if player activates system with Hacan units" ,
-      activateSystemTriggers : function(imperium_self, activating_player, player, sector) {
-        let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
-        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
-          if (imperium_self.doesSectorContainPlayerUnits(hacan_player, sector)) {
-            if (activating_player != hacan_player) { return 1; }
+        if (player == defender) {
+          at = defender;
+          df = attacker;
+        }
+
+        let old_hits = 0;
+        let last_move = imperium_self.game.queue[imperium_self.game.queue.length - 1];
+        let lmv = last_move.split("\t");
+        if (lmv.length > 5) {
+          if (lmv[0] === "assign_hits") {
+            if (at == lmv[1]) {
+              old_hits = parseInt(lmv[6]);
+              imperium_self.addMove("resolve\tassign_hits");
+            }
           }
         }
-        return 0;
-      },
-      activateSystemEvent : function(imperium_self, activating_player, player, sector) {
-        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
-          if (imperium_self.game.player == player) {
-	    let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
-            imperium_self.addMove("give" + "\t" + player + "\t" + hacan_player + "\t" + "promissary" + "\t"+"faction8-promissary");
-            imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(player) + " redeems Trade Convoys (Hacan Promissary)");
+
+        imperium_self.addMove(
+          "assign_hits\t" +
+            at +
+            "\t" +
+            df +
+            "\tspace\t" +
+            sector +
+            "\tspace\t" +
+            (parseInt(id) + 1 + old_hits) +
+            "\tspace_combat"
+        );
+        for (let i = 0; i < costs_per_hit.length; i++) {
+          cumulative_cost += costs_per_hit[i];
+        }
+        imperium_self.addMove(
+          "NOTIFY\tHacan Flagship: " +
+            (parseInt(id) + 1) * 2 +
+            " trade goods buys " +
+            (parseInt(id) + 1) +
+            " extra hits"
+        );
+        imperium_self.addMove("expend\t" + at + "\t" + "goods" + "\t" + (parseInt(id) + 1) * 2);
+        imperium_self.endTurn();
+      });
+    }
+    return 0;
+  },
+});
+
+this.importTech("faction8-merchant-class", {
+  name: "Mercantile",
+  faction: "faction8",
+  type: "ability",
+  text: "May refresh commodities for free when Trade is played",
+  initialize: function (imperium_self, player) {
+    if (imperium_self.faction8_merchant_class_swapped == undefined) {
+      imperium_self.faction8_merchant_class_swapped = 1;
+
+      imperium_self.faction8_merchant_class_original_event =
+        imperium_self.strategy_cards["trade"].strategySecondaryEvent;
+      imperium_self.strategy_cards["trade"].strategySecondaryEvent = async function (
+        imperium_self,
+        player,
+        strategy_card_player
+      ) {
+        if (
+          imperium_self.doesPlayerHaveTech(player, "faction8-merchant-class") &&
+          player != strategy_card_player &&
+          imperium_self.game.player == player
+        ) {
+          //
+          // skip if we are full commodities
+          //
+          if (
+            imperium_self.game.state.players_info[player - 1].commodities ===
+            imperium_self.game.state.players_info[player - 1].commodity_limit
+          ) {
+            imperium_self.addMove(
+              "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+            );
+            imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
             imperium_self.endTurn();
+            imperium_self.updateLog(
+              "Hacan already refreshed, do not need to play faction ability."
+            );
+            return 0;
+          }
+
+          let html =
+            '<div class="status-message">Do you wish to refresh your commodities free-of-charge?</div><ul>';
+          html += '<li class="option" id="yes">yes, of course</li>';
+          html += '<li class="option" id="no">no, perhaps not</li>';
+          html += "</ul>";
+
+          imperium_self.updateStatus(html);
+
+          $(".option").off();
+          $(".option").on("click", async function () {
+            let id = $(this).attr("id");
+            $(this).hide();
+            if (id != "yes") {
+              imperium_self.addMove(
+                "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+              );
+              imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove(
+                "purchase\t" +
+                  imperium_self.game.player +
+                  "\t" +
+                  "commodities" +
+                  "\t" +
+                  imperium_self.game.state.players_info[imperium_self.game.player - 1]
+                    .commodity_limit
+              );
+              imperium_self.endTurn();
+              return;
+            } else {
+              imperium_self.addMove(
+                "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+              );
+              imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.endTurn();
+            }
+          });
+        } else {
+          imperium_self.faction8_merchant_class_original_event(
+            imperium_self,
+            player,
+            strategy_card_player
+          );
+        }
+      };
+    }
+  },
+});
+
+this.importTech("faction8-guild-ships", {
+  name: "Guild Ships",
+  faction: "faction8",
+  type: "ability",
+  text: "May trade with non-neighbours",
+  gainTechnology: function (imperium_self, gainer, tech) {
+    if (tech == "faction8-guild-ships") {
+      imperium_self.game.state.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+    }
+  },
+});
+
+this.importTech("faction8-arbiters", {
+  name: "Arbitrage",
+  faction: "faction8",
+  type: "ability",
+  text: "May trade in action cards",
+  gainTechnology: function (imperium_self, gainer, tech) {
+    if (tech == "faction8-arbiters") {
+      imperium_self.game.state.players_info[gainer - 1].may_trade_action_cards = 1;
+    }
+  },
+});
+
+this.importTech("faction8-production-biomes", {
+  name: "Production Biomes",
+  faction: "faction8",
+  type: "special",
+  color: "green",
+  prereqs: ["green", "green"],
+  text: "Spend strategy token to gain 4 trade goods. Pick a player to earn 2 trade goods.",
+  initialize: function (imperium_self, player) {
+    if (imperium_self.game.state.players_info[player - 1].production_biomes == undefined) {
+      imperium_self.game.state.players_info[player - 1].production_biomes = 0;
+      imperium_self.game.state.players_info[player - 1].production_biomes_exhausted = 0;
+    }
+  },
+  gainTechnology: function (imperium_self, gainer, tech) {
+    if (tech == "faction8-production-biomes") {
+      imperium_self.game.state.players_info[gainer - 1].production_biomes = 1;
+      imperium_self.game.state.players_info[gainer - 1].production_biomes_exhausted = 0;
+    }
+  },
+  onNewRound: function (imperium_self, player) {
+    if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes")) {
+      imperium_self.game.state.players_info[player - 1].production_biomes_exhausted = 0;
+    }
+  },
+  menuOption: function (imperium_self, menu, player) {
+    let x = {};
+    if (menu === "main") {
+      if (imperium_self.game.state.players_info[player - 1].production_biomes === 1) {
+        x.event = "production_biomes";
+        x.html = '<li class="option" id="production_biomes">production biomes</li>';
+      }
+    }
+    return x;
+  },
+  menuOptionTriggers: function (imperium_self, menu, player) {
+    if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes") && menu === "main") {
+      if (imperium_self.game.state.players_info[player - 1].strategy_tokens > 0) {
+        if (imperium_self.game.state.active_player_moved == 0) {
+          return 1;
+        }
+      }
+    }
+    return 0;
+  },
+  menuOptionActivated: function (imperium_self, menu, player) {
+    if (imperium_self.game.player == player) {
+      imperium_self.playerSelectPlayerWithFilter(
+        "You spend 1 strategy token. You gain 4 Trade Goods. Pick player to gain 2 Trade Goods: ",
+        function (player) {
+          if (player.player !== imperium_self.game.player) {
+            return 1;
           }
           return 0;
-        }
-        return 1;
-      },
-      gainPromissary : function(imperium_self, gainer, promissary) {
-	if (promissary.indexOf("faction8-promissary") >= 0) {
-          if (imperium_self.doesPlayerHavePromissary(gainer, "faction8-promissary")) {
-            imperium_self.game.state.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
-	  }
-	}
-	return 1;
-      },
-      losePromissary : function(imperium_self, loser, promissary) {
-	if (promissary.indexOf("faction8-promissary") >= 0) {
-          if (!imperium_self.doesPlayerHavePromissary(loser, "faction8-promissary")) {
-	    if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
-              imperium_self.game.state.players_info[loser - 1].may_trade_with_non_neighbours = 0;
-	    }
-	  }
-	}
-	return 1;
-      },
-    });
+        },
+        function (pnum) {
+          // player = player number here
+          imperium_self.addMove("resolve\tplay");
+          imperium_self.addMove("setvar\tstate\t0\tactive_player_moved\t" + "int" + "\t" + "0");
+          imperium_self.addMove("player_end_turn\t" + imperium_self.game.player);
+          imperium_self.addMove("purchase\t" + pnum + "\t" + "goods" + "\t" + "2");
+          imperium_self.addMove(
+            "purchase\t" + imperium_self.game.player + "\t" + "goods" + "\t" + "4"
+          );
+          imperium_self.addMove(
+            "expend\t" + imperium_self.game.player + "\t" + "strategy" + "\t" + "1"
+          );
+          imperium_self.addMove(
+            "NOTIFY\t" +
+              imperium_self.returnFaction(imperium_self.game.player) +
+              " earns trade goods through production biomes"
+          );
+          imperium_self.endTurn();
+          return 0;
+        },
+        null
+      );
+      return 0;
+    }
+  },
+});
 
-
-
-
-    this.importFaction('faction2', {
-      id		:	"faction2" ,
-      name		: 	"Universities of Jol Nar",
-      nickname		: 	"Jol Nar",
-      homeworld		: 	"sector50",
-      space_units	: 	["carrier","carrier","dreadnaught","fighter"],
-      ground_units	: 	["infantry","infantry","pds","spacedock"],
-      // is_testing -- you can use this to preseed action cards and objectives
-      //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      action_cards	:	["intercept","courageous-to-the-end","maneuvering-jets1","shields-holding1","emergency-repairs","experimental-fighter-prototype"],
-      //objectives	:	["close-the-trap"],
-      tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
-      background	: 	'faction2.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne","faction2-promissary"],
-      commodity_limit	:	4,
-      intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`
-    });
-
-
-    this.importTech("faction2-flagship", {
-      name        	:       "XXCha Flagship" ,
-      faction     	:       "faction2",
-      type      	:       "ability" ,
-      text		:	"Extra hit on every roll of 9 or 10 before modifications" ,
-      modifyUnitHits 	: function(imperium_self, player, defender, attacker, combat_type, rerolling_unit, roll, total_hits) {
-        if (!imperium_self.doesPlayerHaveTech(attacker, "faction2-flagship")) { return total_hits; }
-	if (rerolling_unit.owner == attacker) {
-	  if (rerolling_unit.type == "flagship") {
-	    if (roll > 8) { 
-	      imperium_self.updateLog("Jol Nar flagship scores an additional hit through flagshup ability");
-	      total_hits++; 
-	      return total_hits;
-	    }
-	  }
-	}
-	return total_hits;
-      } ,
-    });
-
-
-
-
-    this.importTech('faction2-analytic', {
-
-      name        :       "Analytic" ,
-      faction     :       "faction2",
-      type        :       "ability" ,
-      text	  :	"Ignore 1 tech prerequisite on non-unit upgrades",
-      onNewRound     :    function(imperium_self, player) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction2-analytic")) {
-          imperium_self.game.state.players_info[player-1].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade = 1;
-        }
-      },
-
-    });
-
-
-    this.importTech('faction2-fragile', {
-
-      name        :       "Fragile" ,
-      faction     :       "faction2",
-      type        :       "ability" ,
-      text	  :	  "-1 on all combat rolls" ,
-      onNewRound     :    function(imperium_self, player) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction2-fragile")) {
-          imperium_self.game.state.players_info[player-1].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade = 1;
-        }
-      },
-      modifyCombatRoll :	  function(imperium_self, attacker, defender, player, combat_type, roll) {
-	if (combat_type == "space" || combat_type == "ground") {
-          if (imperium_self.doesPlayerHaveTech(attacker, "faction2-fragile")) {
-  	    imperium_self.updateLog("Jol Nar combat rolls -1 due to fragility");
-	    roll -= 1;
-	    if (roll < 1) { roll = 1; }
-	  }
-        }
-
-	return roll;
-      },
-    });
-    this.importTech('faction2-brilliant', {
-      name        :       "Brilliant" ,
-      faction     :       "faction2",
-      type        :       "ability" ,
-      text	  :	  "Tech primary is played when token spent to execute secondary" ,
-      initialize     :    function(imperium_self, player) {
-	if (imperium_self.faction2_brilliant_swapped == undefined) {
-	  imperium_self.faction2_brilliant_swapped = 1;
-
-	  imperium_self.brilliant_original_event = imperium_self.strategy_cards['technology'].strategySecondaryEvent;
-	  imperium_self.strategy_cards["technology"].strategySecondaryEvent = function(imperium_self, player, strategy_card_player) {
-
-	    if (imperium_self.doesPlayerHaveTech(player, "faction2-brilliant") && player != strategy_card_player && imperium_self.game.player == player) {
-
-	      imperium_self.game.state.players_info[player-1].cost_of_technology_secondary = 6;
-
-              imperium_self.playerAcknowledgeNotice("The Tech strategy card has been played. You may expend a strategy token to research a technology. You can then purchase a second for 6 resources:", function() {
-
-                let html = '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
-                    html += '<li class="option" id="yes">Yes</li>';
-                    html += '<li class="option" id="no">No</li>';
-                    html += '</ul>';
-
-                imperium_self.updateStatus(html);
-
-                $('.option').off();
-                $('.option').on('click', function() {
-
-	          let id = $(this).attr("id");
-
-		  if (id === "no") {
-                    imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-                    imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-		    imperium_self.endTurn();
-		    return 0;
-		  }
-
-                  imperium_self.playerResearchTechnology(function(tech) {
-
-                    imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-                    imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-                    imperium_self.addMove("purchase\t"+player+"\ttechnology\t"+tech);
-
-
-		    //
-		    // avoid double research of same tech by manually inserting
-		    //
-                    imperium_self.game.state.players_info[imperium_self.game.player-1].tech.push(tech);
-
-
-	  	    let resources_to_spend = 6;
-                    let html = '<div class="status-message">Do you wish to spend 6 resources to research a second technology? </div><ul>';
-
-  	            if (
-	      imperium_self.game.state.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
-	      imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
-	    ) {
-	      html = '<div class="status-message">Do you wish to research a second technology for free?</div><ul>';
-        	      resources_to_spend = 0;
-        	    }
-
-	            let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
-	            if (available_resources >= resources_to_spend) {
-	              html += '<li class="option" id="yes">Yes</li>';
-	            }
-	            html += '<li class="option" id="no">No</li>';
-	            html += '</ul>';
- 
-	            imperium_self.updateStatus(html);
-
-	            $('.option').off();
-	            $('.option').on('click', function() {
-
-	              let id = $(this).attr("id");
-
-	              if (id === "yes") {
-	                imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources = 0;
-	                imperium_self.playerSelectResources(resources_to_spend, function(success) {
-	                  if (success == 1) {
-	                    imperium_self.playerResearchTechnology(function(tech) {
-	                      imperium_self.addMove("purchase\t"+player+"\ttechnology\t"+tech);
-	                      imperium_self.endTurn();
-	                    });
-	                  } else {
-	                    imperium_self.endTurn();
-		    	    return 0;
-	                  }
-	                });
-	              }
-	              if (id === "no") {
-	                imperium_self.endTurn();
-	                return 0;
-	              }
-	            });
-		  });
-                });
-              });
-	    } else {
-	      imperium_self.brilliant_original_event(imperium_self, player, strategy_card_player);
-	    }
-	  }
-	}
+this.importTech("faction8-quantum-datahub-node", {
+  name: "Quantum Datahub Node",
+  faction: "faction8",
+  type: "special",
+  color: "yellow",
+  prereqs: ["yellow", "yellow", "yellow"],
+  text: "Spend strategy token to swap strategy cards with one player. Give them 3 trade goods.",
+  initialize: function (imperium_self, player) {
+    if (
+      imperium_self.game.state.players_info[player - 1].faction8_quantum_datahub_node == undefined
+    ) {
+      imperium_self.game.state.players_info[player - 1].faction8_quantum_datahub_node = 0;
+      imperium_self.game.state.players_info[player - 1].faction8_quantum_datahub_node_exhausted = 0;
+    }
+  },
+  gainTechnology: function (imperium_self, gainer, tech) {
+    if (tech == "faction8-quantum-datahub-node") {
+      imperium_self.game.state.players_info[gainer - 1].faction8_quantum_datahub_node = 1;
+      imperium_self.game.state.players_info[gainer - 1].faction8_quantum_datahub_node_exhausted = 0;
+    }
+  },
+  onNewRound: function (imperium_self, player) {
+    if (imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node")) {
+      imperium_self.game.state.players_info[player - 1].faction8_quantum_datahub_node_exhausted = 0;
+    }
+  },
+  menuOption: function (imperium_self, menu, player) {
+    let x = {};
+    if (menu === "main") {
+      if (imperium_self.game.state.players_info[player - 1].faction8_quantum_datahub_node === 1) {
+        x.event = "quantum_datahub_node";
+        x.html = '<li class="option" id="quantum_datahub_node">quantum datahub node</li>';
       }
-    });
-
-
-
-    this.importTech('faction2-eres-siphons', {
-      name        :       "E-Res Siphons" ,
-      faction     :       "faction2",
-      type        :       "special" ,
-      color       	: 	"yellow" ,
-      prereqs	:	["yellow","yellow"],
-      text	:	"Gain 4 trade goods when a sector with your ships is activated" ,
-      initialize  :	  function(imperium_self, player) {
-        if (imperium_self.game.state.players_info[player-1].eres_siphons == null) {
-          imperium_self.game.state.players_info[player-1].eres_siphons = 0;
-	}
-      },
-      gainTechnology : function(imperium_self, gainer, tech) {
-	if (tech == "faction2-eres-siphons") {
-          imperium_self.game.state.players_info[gainer-1].eres_siphons = 1;
+    }
+    return x;
+  },
+  menuOptionTriggers: function (imperium_self, menu, player) {
+    if (
+      imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node") &&
+      menu === "main"
+    ) {
+      if (imperium_self.game.state.players_info[player - 1].strategy_tokens > 0) {
+        if (
+          imperium_self.game.state.players_info[player - 1]
+            .faction8_quantum_datahub_node_exhausted == 0
+        ) {
+          if (imperium_self.game.state.active_player_moved == 0) {
+            return 1;
+          }
         }
-      },
-      activateSystemTriggers :    function(imperium_self, activating_player, player, sector) {
-	if (imperium_self.game.state.players_info[player-1].eres_siphons == 1 && activating_player != player) {
-          if (imperium_self.doesSectorContainPlayerShips(player, sector) == 1) { return 1; }
-	}
-        return 0;
-      },
-      activateSystemEvent :  function(imperium_self, activating_player, player, sector) {
-	if (imperium_self.game.state.players_info[player-1].eres_siphons == 1 && activating_player != player) {
-          if (imperium_self.doesSectorContainPlayerShips(player, sector) == 1) { 
-            imperium_self.game.state.players_info[player-1].goods += 4;
-	    imperium_self.displayFactionDashboard();
-	  }
-	}
-	return 1;
       }
-    });
+    }
+    return 0;
+  },
+  menuOptionActivated: function (imperium_self, menu, player) {
+    if (imperium_self.game.player == player) {
+      imperium_self.playerSelectPlayerWithFilter(
+        "Steal strategy card from whom? Return one of yours and 3 trade goods",
+        function (player) {
+          if (player.player !== imperium_self.game.player) {
+            return 1;
+          }
+          return 0;
+        },
+        function (pnum) {
+          let strategy_cards = imperium_self.returnStrategyCards();
 
+          let html = '<div>Select Strategy Card to Steal: </div><ul>"';
+          for (
+            let i = 0;
+            i < imperium_self.game.state.players_info[pnum - 1].strategy.length;
+            i++
+          ) {
+            let s = imperium_self.game.state.players_info[pnum - 1].strategy[i];
+            html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
+          }
+          html += '<li class="option" id="skip">skip</li>';
 
+          imperium_self.updateStatus(html);
 
-    this.importTech('faction2-deep-space-conduits', {
-      name        :       "Space Conduits" ,
-      faction     :       "faction2",
-      type        :       "special" ,
-      color       	: 	"blue" ,
-      prereqs	:	["blue","blue"],
-      text	:	"Exhaust after activating sector and all Jol Nar ships one hex distance" ,
-      initialize  :	  function(imperium_self, player) {
-        if (imperium_self.game.state.players_info[player-1].deep_space_conduits == null) {
-          imperium_self.game.state.players_info[player-1].deep_space_conduits = 0;
-          imperium_self.game.state.players_info[player-1].deep_space_conduits_exhausted = 0;
-	}
-      },
-      onNewRound : function(imperium_self, player) {
-        if (imperium_self.game.state.players_info[player-1].deep_space_conduits == 1) {
-          imperium_self.game.state.players_info[player-1].deep_space_conduits_exhausted = 0;
+          $(".option").off();
+          $(".option").on("click", function () {
+            let id = $(this).attr("id");
+            $(this).hide();
+
+            if (id == "skip") {
+              imperium_self.updateLog("Hacan skips Quantum Datahub Node");
+              imperium_self.endTurn();
+              return;
+            }
+
+            let pull_strategy_card = imperium_self.game.state.players_info[pnum - 1].strategy[id];
+            let pull_strategy_card_from = pnum;
+
+            let html = '<div>Select Your Strategy Card to Return: </div><ul>"';
+            for (
+              let i = 0;
+              i <
+              imperium_self.game.state.players_info[imperium_self.game.player - 1].strategy.length;
+              i++
+            ) {
+              let s =
+                imperium_self.game.state.players_info[imperium_self.game.player - 1].strategy[i];
+              html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
+            }
+            html += '<li class="option" id="skip">skip</li>';
+
+            imperium_self.updateStatus(html);
+
+            $(".option").off();
+            $(".option").on("click", function () {
+              let id = parseInt($(this).attr("id"));
+              $(this).hide();
+
+              let push_strategy_card =
+                imperium_self.game.state.players_info[imperium_self.game.player - 1].strategy[id];
+
+              if (id == "skip") {
+                imperium_self.updateLog("Hacan skips Quantum Datahub Node");
+                imperium_self.endTurn();
+                return;
+              }
+
+              imperium_self.addMove(
+                "setvar\tplayers\t" +
+                  imperium_self.game.player +
+                  "\t" +
+                  "faction8_quantum_datahub_node_exhausted" +
+                  "\t" +
+                  "int" +
+                  "\t" +
+                  "1"
+              );
+              imperium_self.addMove(
+                "give" +
+                  "\t" +
+                  pull_strategy_card_from +
+                  "\t" +
+                  imperium_self.game.player +
+                  "\t" +
+                  "strategy" +
+                  "\t" +
+                  pull_strategy_card
+              );
+              imperium_self.addMove(
+                "give" +
+                  "\t" +
+                  imperium_self.game.player +
+                  "\t" +
+                  pull_strategy_card_from +
+                  "\t" +
+                  "strategy" +
+                  "\t" +
+                  push_strategy_card
+              );
+              imperium_self.addMove(
+                `NOTIFY\tPlayers swap ${push_strategy_card} and ${pull_strategy_card}`
+              );
+              imperium_self.endTurn();
+            });
+          });
         }
-      },
-      gainTechnology : function(imperium_self, gainer, tech) {
-	if (tech == "faction2-deep-space-conduits") {
-          imperium_self.game.state.players_info[gainer-1].deep_space_conduits = 1;
-          imperium_self.game.state.players_info[gainer-1].deep_space_conduits_exhausted = 0;
+      );
+
+      return 0;
+    }
+    return 0;
+  },
+});
+
+this.importPromissary("faction8-promissary", {
+  name: "Trade Convoys",
+  faction: -1,
+  text: "Holder may negotiate transactions with non-neighbours. Return if player activates system with Hacan units",
+  activateSystemTriggers: function (imperium_self, activating_player, player, sector) {
+    let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+    if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+      if (imperium_self.doesSectorContainPlayerUnits(hacan_player, sector)) {
+        if (activating_player != hacan_player) {
+          return 1;
         }
-      },
-      activateSystemTriggers : function(imperium_self, activating_player, player, sector) { 
-	if (player == imperium_self.game.player && activating_player == player) {
-	  if (imperium_self.game.state.players_info[activating_player-1].deep_space_conduits == 1 && imperium_self.game.state.players_info[activating_player-1].deep_space_conduits_exhausted == 0) {
-	    if (imperium_self.doesSectorContainPlayerUnits(activating_player, sector)) {
-	      return 1;
-	    }
-	  }
-	}
-	return 0;
-      },
-      activateSystemEvent : function(imperium_self, activating_player, player, sector) { 
-
-	let html = 'Do you wish to activate Deep Space Conduits: <ul>';
-	html    += '<li class="textchoice" id="yes">activate</li>';
-	html    += '<li class="textchoice" id="no">skip</li>';
-	html    += '</ul>';
-
-	imperium_self.updateStatus(html);
-
-	$('.textchoice').off();
-	$('.textchoice').on('click', function() {
-
-	  let action = $(this).attr("id");
-
-	  if (action == "yes") {
-	    let sectors = imperium_self.returnSectorsWithPlayerUnits(activating_player);
-	    imperium_self.game.state.players_info[activating_player-1].deep_space_conduits_exhausted = 1;
-            imperium_self.addMove("setvar\tplayers\t"+player+"\t"+"deep_space_conduits_exhausted"+"\t"+"int"+"\t"+"1");
-	    for (let i = 0; i < sectors.length; i++) {
-	      imperium_self.addMove("adjacency\ttemporary\t"+sectors[i]+"\t"+sector);
-	    }
-	    imperium_self.endTurn();
-	  }
-
-	  if (action == "no") {
-	    imperium_self.updateStatus();
-	    imperium_self.endTurn();
-	  }
-
-	});
-
-	return 0;
       }
-    });
+    }
+    return 0;
+  },
+  activateSystemEvent: function (imperium_self, activating_player, player, sector) {
+    if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+      if (imperium_self.game.player == player) {
+        let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+        imperium_self.addMove(
+          "give" +
+            "\t" +
+            player +
+            "\t" +
+            hacan_player +
+            "\t" +
+            "promissary" +
+            "\t" +
+            "faction8-promissary"
+        );
+        imperium_self.addMove(
+          "NOTIFY\t" +
+            imperium_self.returnFaction(player) +
+            " redeems Trade Convoys (Hacan Promissary)"
+        );
+        imperium_self.endTurn();
+      }
+      return 0;
+    }
+    return 1;
+  },
+  gainPromissary: function (imperium_self, gainer, promissary) {
+    if (promissary.indexOf("faction8-promissary") >= 0) {
+      if (imperium_self.doesPlayerHavePromissary(gainer, "faction8-promissary")) {
+        imperium_self.game.state.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+      }
+    }
+    return 1;
+  },
+  losePromissary: function (imperium_self, loser, promissary) {
+    if (promissary.indexOf("faction8-promissary") >= 0) {
+      if (!imperium_self.doesPlayerHavePromissary(loser, "faction8-promissary")) {
+        if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
+          imperium_self.game.state.players_info[loser - 1].may_trade_with_non_neighbours = 0;
+        }
+      }
+    }
+    return 1;
+  },
+});
+this.importFaction("faction2", {
+  id: "faction2",
+  name: "Universities of Jol Nar",
+  nickname: "Jol Nar",
+  homeworld: "sector50",
+  space_units: ["carrier", "carrier", "dreadnaught", "fighter"],
+  ground_units: ["infantry", "infantry", "pds", "spacedock"],
+  // is_testing -- you can use this to preseed action cards and objectives
+  //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
+  action_cards: [
+    "intercept",
+    "courageous-to-the-end",
+    "maneuvering-jets1",
+    "shields-holding1",
+    "emergency-repairs",
+    "experimental-fighter-prototype",
+  ],
+  //objectives	:	["close-the-trap"],
+  tech: [
+    "sarween-tools",
+    "neural-motivator",
+    "plasma-scoring",
+    "antimass-deflectors",
+    "faction2-analytic",
+    "faction2-brilliant",
+    "faction2-fragile",
+    "faction2-flagship",
+  ],
+  background: "faction2.jpg",
+  promissary_notes: ["trade", "political", "ceasefire", "throne", "faction2-promissary"],
+  commodity_limit: 4,
+  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`,
+});
 
+this.importTech("faction2-flagship", {
+  name: "XXCha Flagship",
+  faction: "faction2",
+  type: "ability",
+  text: "Extra hit on every roll of 9 or 10 before modifications",
+  modifyUnitHits: function (
+    imperium_self,
+    player,
+    defender,
+    attacker,
+    combat_type,
+    rerolling_unit,
+    roll,
+    total_hits
+  ) {
+    if (!imperium_self.doesPlayerHaveTech(attacker, "faction2-flagship")) {
+      return total_hits;
+    }
+    if (rerolling_unit.owner == attacker) {
+      if (rerolling_unit.type == "flagship") {
+        if (roll > 8) {
+          imperium_self.updateLog(
+            "Jol Nar flagship scores an additional hit through flagshup ability"
+          );
+          total_hits++;
+          return total_hits;
+        }
+      }
+    }
+    return total_hits;
+  },
+});
 
+this.importTech("faction2-analytic", {
+  name: "Analytic",
+  faction: "faction2",
+  type: "ability",
+  text: "Ignore 1 tech prerequisite on non-unit upgrades",
+  onNewRound: function (imperium_self, player) {
+    if (imperium_self.doesPlayerHaveTech(player, "faction2-analytic")) {
+      imperium_self.game.state.players_info[
+        player - 1
+      ].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade = 1;
+    }
+  },
+});
 
+this.importTech("faction2-fragile", {
+  name: "Fragile",
+  faction: "faction2",
+  type: "ability",
+  text: "-1 on all combat rolls",
+  onNewRound: function (imperium_self, player) {
+    if (imperium_self.doesPlayerHaveTech(player, "faction2-fragile")) {
+      imperium_self.game.state.players_info[
+        player - 1
+      ].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade = 1;
+    }
+  },
+  modifyCombatRoll: function (imperium_self, attacker, defender, player, combat_type, roll) {
+    if (combat_type == "space" || combat_type == "ground") {
+      if (imperium_self.doesPlayerHaveTech(attacker, "faction2-fragile")) {
+        imperium_self.updateLog("Jol Nar combat rolls -1 due to fragility");
+        roll -= 1;
+        if (roll < 1) {
+          roll = 1;
+        }
+      }
+    }
 
+    return roll;
+  },
+});
+this.importTech("faction2-brilliant", {
+  name: "Brilliant",
+  faction: "faction2",
+  type: "ability",
+  text: "Tech primary is played when token spent to execute secondary",
+  initialize: function (imperium_self, player) {
+    if (imperium_self.faction2_brilliant_swapped == undefined) {
+      imperium_self.faction2_brilliant_swapped = 1;
 
-    this.importPromissary("faction2-promissary", {
-      name        :       "Research Agreement" ,
-      faction     :       -1,
-      text        :       "After owner researches a technology, holder may gain that technology and return card to owner." ,
-      researchTechnologyEventTriggers : function(imperium_self, researcher, player, tech) {
-	if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
-	  if (imperium_self.returnPlayerOfFaction("faction2") == researcher) {
-	    if (researcher != player) {
-	      return 1;
-	    }
-	  }
-	}
-	return 0;
-      },
-      researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
-	if (imperium_self.game.player === player) {
+      imperium_self.brilliant_original_event =
+        imperium_self.strategy_cards["technology"].strategySecondaryEvent;
+      imperium_self.strategy_cards["technology"].strategySecondaryEvent = function (
+        imperium_self,
+        player,
+        strategy_card_player
+      ) {
+        if (
+          imperium_self.doesPlayerHaveTech(player, "faction2-brilliant") &&
+          player != strategy_card_player &&
+          imperium_self.game.player == player
+        ) {
+          imperium_self.game.state.players_info[player - 1].cost_of_technology_secondary = 6;
 
-              let html = `<div class="status-message">Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </div><ul>`;
-                    html += '<li class="option" id="yes">Yes</li>';
-                    html += '<li class="option" id="no">No</li>';
-                    html += '</ul>';
+          imperium_self.playerAcknowledgeNotice(
+            "The Tech strategy card has been played. You may expend a strategy token to research a technology. You can then purchase a second for 6 resources:",
+            function () {
+              let html =
+                '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
+              html += '<li class="option" id="yes">Yes</li>';
+              html += '<li class="option" id="no">No</li>';
+              html += "</ul>";
 
               imperium_self.updateStatus(html);
 
-              $('.option').off();
-              $('.option').on('click', function() {
-
+              $(".option").off();
+              $(".option").on("click", function () {
                 let id = $(this).attr("id");
 
                 if (id === "no") {
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
                   imperium_self.endTurn();
                   return 0;
                 }
 
-                if (id === "yes") {
-		  let jolnar_player = imperium_self.returnPlayerOfFaction("faction2");
-	          imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
-                  imperium_self.addMove("give" + "\t" + player + "\t" + jolnar_player + "\t" + "promissary" + "\t"+"faction2-promissary");
-                  imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
-                  imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Research Agreement promissary");
-		  imperium_self.endTurn();
-                  return 0;
-                }
+                imperium_self.playerResearchTechnology(function (tech) {
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
+                  imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
 
-	      });
-	}
-	return 0;
+                  //
+                  // avoid double research of same tech by manually inserting
+                  //
+                  imperium_self.game.state.players_info[imperium_self.game.player - 1].tech.push(
+                    tech
+                  );
+
+                  let resources_to_spend = 6;
+                  let html =
+                    '<div class="status-message">Do you wish to spend 6 resources to research a second technology? </div><ul>';
+
+                  if (
+                    imperium_self.game.state.players_info[player - 1]
+                      .permanent_research_technology_card_must_not_spend_resources == 1 ||
+                    imperium_self.game.state.players_info[player - 1]
+                      .temporary_research_technology_card_must_not_spend_resources == 1
+                  ) {
+                    html =
+                      '<div class="status-message">Do you wish to research a second technology for free?</div><ul>';
+                    resources_to_spend = 0;
+                  }
+
+                  let available_resources = imperium_self.returnAvailableResources(
+                    imperium_self.game.player
+                  );
+                  if (available_resources >= resources_to_spend) {
+                    html += '<li class="option" id="yes">Yes</li>';
+                  }
+                  html += '<li class="option" id="no">No</li>';
+                  html += "</ul>";
+
+                  imperium_self.updateStatus(html);
+
+                  $(".option").off();
+                  $(".option").on("click", function () {
+                    let id = $(this).attr("id");
+
+                    if (id === "yes") {
+                      imperium_self.game.state.players_info[
+                        player - 1
+                      ].temporary_research_technology_card_must_not_spend_resources = 0;
+                      imperium_self.playerSelectResources(resources_to_spend, function (success) {
+                        if (success == 1) {
+                          imperium_self.playerResearchTechnology(function (tech) {
+                            imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
+                            imperium_self.endTurn();
+                          });
+                        } else {
+                          imperium_self.endTurn();
+                          return 0;
+                        }
+                      });
+                    }
+                    if (id === "no") {
+                      imperium_self.endTurn();
+                      return 0;
+                    }
+                  });
+                });
+              });
+            }
+          );
+        } else {
+          imperium_self.brilliant_original_event(imperium_self, player, strategy_card_player);
+        }
+      };
+    }
+  },
+});
+
+this.importTech("faction2-eres-siphons", {
+  name: "E-Res Siphons",
+  faction: "faction2",
+  type: "special",
+  color: "yellow",
+  prereqs: ["yellow", "yellow"],
+  text: "Gain 4 trade goods when a sector with your ships is activated",
+  initialize: function (imperium_self, player) {
+    if (imperium_self.game.state.players_info[player - 1].eres_siphons == null) {
+      imperium_self.game.state.players_info[player - 1].eres_siphons = 0;
+    }
+  },
+  gainTechnology: function (imperium_self, gainer, tech) {
+    if (tech == "faction2-eres-siphons") {
+      imperium_self.game.state.players_info[gainer - 1].eres_siphons = 1;
+    }
+  },
+  activateSystemTriggers: function (imperium_self, activating_player, player, sector) {
+    if (
+      imperium_self.game.state.players_info[player - 1].eres_siphons == 1 &&
+      activating_player != player
+    ) {
+      if (imperium_self.doesSectorContainPlayerShips(player, sector) == 1) {
+        return 1;
+      }
+    }
+    return 0;
+  },
+  activateSystemEvent: function (imperium_self, activating_player, player, sector) {
+    if (
+      imperium_self.game.state.players_info[player - 1].eres_siphons == 1 &&
+      activating_player != player
+    ) {
+      if (imperium_self.doesSectorContainPlayerShips(player, sector) == 1) {
+        imperium_self.game.state.players_info[player - 1].goods += 4;
+        imperium_self.displayFactionDashboard();
+      }
+    }
+    return 1;
+  },
+});
+
+this.importTech("faction2-deep-space-conduits", {
+  name: "Space Conduits",
+  faction: "faction2",
+  type: "special",
+  color: "blue",
+  prereqs: ["blue", "blue"],
+  text: "Exhaust after activating sector and all Jol Nar ships one hex distance",
+  initialize: function (imperium_self, player) {
+    if (imperium_self.game.state.players_info[player - 1].deep_space_conduits == null) {
+      imperium_self.game.state.players_info[player - 1].deep_space_conduits = 0;
+      imperium_self.game.state.players_info[player - 1].deep_space_conduits_exhausted = 0;
+    }
+  },
+  onNewRound: function (imperium_self, player) {
+    if (imperium_self.game.state.players_info[player - 1].deep_space_conduits == 1) {
+      imperium_self.game.state.players_info[player - 1].deep_space_conduits_exhausted = 0;
+    }
+  },
+  gainTechnology: function (imperium_self, gainer, tech) {
+    if (tech == "faction2-deep-space-conduits") {
+      imperium_self.game.state.players_info[gainer - 1].deep_space_conduits = 1;
+      imperium_self.game.state.players_info[gainer - 1].deep_space_conduits_exhausted = 0;
+    }
+  },
+  activateSystemTriggers: function (imperium_self, activating_player, player, sector) {
+    if (player == imperium_self.game.player && activating_player == player) {
+      if (
+        imperium_self.game.state.players_info[activating_player - 1].deep_space_conduits == 1 &&
+        imperium_self.game.state.players_info[activating_player - 1]
+          .deep_space_conduits_exhausted == 0
+      ) {
+        if (imperium_self.doesSectorContainPlayerUnits(activating_player, sector)) {
+          return 1;
+        }
+      }
+    }
+    return 0;
+  },
+  activateSystemEvent: function (imperium_self, activating_player, player, sector) {
+    let html = "Do you wish to activate Deep Space Conduits: <ul>";
+    html += '<li class="textchoice" id="yes">activate</li>';
+    html += '<li class="textchoice" id="no">skip</li>';
+    html += "</ul>";
+
+    imperium_self.updateStatus(html);
+
+    $(".textchoice").off();
+    $(".textchoice").on("click", function () {
+      let action = $(this).attr("id");
+
+      if (action == "yes") {
+        let sectors = imperium_self.returnSectorsWithPlayerUnits(activating_player);
+        imperium_self.game.state.players_info[
+          activating_player - 1
+        ].deep_space_conduits_exhausted = 1;
+        imperium_self.addMove(
+          "setvar\tplayers\t" +
+            player +
+            "\t" +
+            "deep_space_conduits_exhausted" +
+            "\t" +
+            "int" +
+            "\t" +
+            "1"
+        );
+        for (let i = 0; i < sectors.length; i++) {
+          imperium_self.addMove("adjacency\ttemporary\t" + sectors[i] + "\t" + sector);
+        }
+        imperium_self.endTurn();
+      }
+
+      if (action == "no") {
+        imperium_self.updateStatus();
+        imperium_self.endTurn();
       }
     });
+
+    return 0;
+  },
+});
+
+this.importPromissary("faction2-promissary", {
+  name: "Research Agreement",
+  faction: -1,
+  text: "After owner researches a technology, holder may gain that technology and return card to owner.",
+  researchTechnologyEventTriggers: function (imperium_self, researcher, player, tech) {
+    if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
+      if (imperium_self.returnPlayerOfFaction("faction2") == researcher) {
+        if (researcher != player) {
+          return 1;
+        }
+      }
+    }
+    return 0;
+  },
+  researchTechnologyEvent: function (imperium_self, researcher, player, tech) {
+    if (imperium_self.game.player === player) {
+      let html = `<div class="status-message">Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </div><ul>`;
+      html += '<li class="option" id="yes">Yes</li>';
+      html += '<li class="option" id="no">No</li>';
+      html += "</ul>";
+
+      imperium_self.updateStatus(html);
+
+      $(".option").off();
+      $(".option").on("click", function () {
+        let id = $(this).attr("id");
+
+        if (id === "no") {
+          imperium_self.endTurn();
+          return 0;
+        }
+
+        if (id === "yes") {
+          let jolnar_player = imperium_self.returnPlayerOfFaction("faction2");
+          imperium_self.addMove("purchase\t" + imperium_self.game.player + "\ttech\t" + tech);
+          imperium_self.addMove(
+            "give" +
+              "\t" +
+              player +
+              "\t" +
+              jolnar_player +
+              "\t" +
+              "promissary" +
+              "\t" +
+              "faction2-promissary"
+          );
+          imperium_self.addMove(
+            "NOTIFY\t" +
+              imperium_self.returnFaction(imperium_self.game.player) +
+              " researches " +
+              imperium_self.tech[tech].name
+          );
+          imperium_self.addMove(
+            "NOTIFY\t" +
+              imperium_self.returnFaction(imperium_self.game.player) +
+              " redeems Research Agreement promissary"
+          );
+          imperium_self.endTurn();
+          return 0;
+        }
+      });
+    }
+    return 0;
+  },
+});
 
 
 
@@ -4615,492 +4813,538 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
     });
 
 
+this.importStrategyCard("diplomacy", {
+  name: "Diplomacy",
+  rank: 2,
+  img: "/strategy/2_DIPLOMACY.png",
+  text: "<b>Player</b> chooses non-Byzantium sector and refreshes two planets. All others activate sector.<hr /><b>Others</b> may spend strategy token to refresh two planets.",
+  strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
 
-    this.importStrategyCard("diplomacy", {
-      name     			:       "Diplomacy",
-      rank			:	2,
-      img			:	"/strategy/2_DIPLOMACY.png",
-      text			:	"<b>Player</b> chooses non-Byzantium sector and refreshes two planets. All others activate sector.<hr /><b>Others</b> may spend strategy token to refresh two planets." ,
-      strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
+    if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
 
-        if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
+      imperium_self.updateStatus('Select sector to quagmire in diplomatic negotiations, and refresh any planets in that system: ');
+      imperium_self.playerSelectSector(function(sector) {
 
-          imperium_self.updateStatus('Select sector to quagmire in diplomatic negotiations, and refresh any planets in that system: ');
-          imperium_self.playerSelectSector(function(sector) {
-
-	      if (sector.indexOf("_") > -1) { sector = imperium_self.game.board[sector].tile; }
-
-              imperium_self.addMove("resolve\tstrategy");
-              imperium_self.addMove("strategy\t"+"diplomacy"+"\t"+strategy_card_player+"\t2");
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-              imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player)+" uses Diplomacy to activate "+imperium_self.game.sectors[sector].name);
-
-              for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
-                imperium_self.addMove("activate\t"+(i+1)+"\t"+sector);
-              }
-
-              //
-              // re-activate any planets in that system
-              //
-              let sys = imperium_self.returnSectorAndPlanets(sector);
-	      if (sys.p) {
-                for (let i = 0; i < sys.p.length; i++) {
-                  if (sys.p[i].owner == imperium_self.game.player) {
-		    for (let p in imperium_self.game.planets) {
-		      if (sys.p[i] == imperium_self.game.planets[p]) {
-                        imperium_self.addMove("unexhaust\t"+imperium_self.game.player+"\t"+"planet"+"\t"+p);
-		      }
-		    }
-                  }
-                }
-	      }
-              imperium_self.saveSystemAndPlanets(sys);
-              imperium_self.endTurn();
-
-
-          });
-        }
-	return 0;
-
-      },
-
-      strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
-
-          let html = '<div class="status-message">Do you wish to spend 1 strategy token to unexhaust two planet cards? </div><ul>';
-	  if (imperium_self.game.state.round == 1) {
-            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.state.players_info[player-1].strategy_tokens} strategy tokens.</div><ul>`;
-          }
-          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-	    html += '<li class="option" id="yes">Yes</li>';
-	  }
-          html += '<li class="option" id="no">No</li>';
-          html += '</ul>';
-          imperium_self.updateStatus(html);
-
-          $('.option').off();
-          $('.option').on('click', function() {
-
-            let id = $(this).attr("id");
-
-            if (id == "yes") {
-
-              let array_of_cards = imperium_self.returnPlayerExhaustedPlanetCards(imperium_self.game.player); // unexhausted
-
-              let choices_selected = 0;
-              let max_choices = 0;
-
-              let html  = '<div class="status-message">Select planets to unexhaust: </div><ul>';
-              let divname = ".cardchoice";
-              for (let z = 0; z < array_of_cards.length; z++) {
-                max_choices++;
-                html += '<li class="cardchoice" id="cardchoice_'+array_of_cards[z]+'">' + imperium_self.returnPlanetCard(array_of_cards[z]) + '</li>';
-              }
-              if (max_choices == 0) {
-                html += '<li class="textchoice" id="cancel">cancel (no options)</li>';
-                divname = ".textchoice";
-              }
-              html += '</ul>';
-              if (max_choices >= 2) { max_choices = 2; }
-
-              imperium_self.updateStatus(html);
-
-              $(divname).off();
-              $(divname).on('click', function() {
-
-                let action2 = $(this).attr("id");
-
-                if (action2 === "cancel") {
-                  imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-	          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-                  imperium_self.endTurn();
-                  return;
-                }
-
-                let tmpx = action2.split("_");
-                let divid = "#"+action2;
-                let y = tmpx[1];
-                let idx = 0;
-                for (let i = 0; i < array_of_cards.length; i++) {
-                  if (array_of_cards[i] === y) {
-                    idx = i;
-                  }
-                }
-
-                choices_selected++;
-                imperium_self.addMove("unexhaust\t"+imperium_self.game.player+"\tplanet\t"+array_of_cards[idx]);
-
-                $(divid).off();
-                $(divid).css('opacity','0.2');
-
-                if (choices_selected >= max_choices) {
-                  imperium_self.prependMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-	          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-                  imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
-                  imperium_self.endTurn();
-                }
-
-              });
-            }
-
-            if (id == "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-	      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.endTurn();
-              return 0;
-            }
-
-          });
-
+        if (sector.indexOf("_") > -1) {
+          sector = imperium_self.game.board[sector].tile;
         }
 
-      },
-    });
+        imperium_self.addMove("resolve\tstrategy");
+        imperium_self.addMove("strategy\t" + "diplomacy" + "\t" + strategy_card_player + "\t2");
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
+        imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " uses Diplomacy to activate " + imperium_self.game.sectors[sector].name);
 
-
-
-
-    this.importStrategyCard("politics", {
-      name     			:       "Politics",
-      rank			:	3,
-      img			:	"/strategy/3_POLITICS.png",
-      text			:	"<b>Player</b> picks new Speaker and gains 2 action cards.<hr /><b>Others</b> may spend strategy token for two action cards.",
-      strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
+        for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+          imperium_self.addMove("activate\t" + (i + 1) + "\t" + sector);
+        }
 
         //
-        // card player goes for primary
+        // re-activate any planets in that system
         //
-        if (imperium_self.game.player === strategy_card_player && player == strategy_card_player) {
+        let sys = imperium_self.returnSectorAndPlanets(sector);
+        if (sys.p) {
+          for (let i = 0; i < sys.p.length; i++) {
+            if (sys.p[i].owner == imperium_self.game.player) {
+              for (let p in imperium_self.game.planets) {
+                if (sys.p[i] == imperium_self.game.planets[p]) {
+                  imperium_self.addMove("unexhaust\t" + imperium_self.game.player + "\t" + "planet" + "\t" + p);
+                }
+              }
+            }
+          }
+        }
+        imperium_self.saveSystemAndPlanets(sys);
+        imperium_self.endTurn();
 
-          //
-          // two action cards
-          //
-          imperium_self.addMove("resolve\tstrategy");
-          imperium_self.addMove("gain\t"+imperium_self.game.player+"\taction_cards"+"\t"+2);
-          imperium_self.addMove("DEAL\t2\t"+imperium_self.game.player+"\t2");
-          imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(player) + " gains action cards");
-          imperium_self.addMove("strategy\t"+"politics"+"\t"+strategy_card_player+"\t2");
-          imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
 
-          //
-          // pick the speaker
-          //
-          let factions = imperium_self.returnFactions();
-          let html = 'Make which player the speaker? <ul>';
-          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
-            html += '<li class="option" id="'+i+'">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
+      });
+    }
+    return 0;
+
+  },
+
+  strategySecondaryEvent: function(imperium_self, player, strategy_card_player) {
+
+    if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
+
+      let html = '<div class="status-message">Do you wish to spend 1 strategy token to unexhaust two planet cards? </div><ul>';
+      if (imperium_self.game.state.round == 1) {
+        html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.state.players_info[player - 1].strategy_tokens} strategy tokens.</div><ul>`;
+      }
+      if (imperium_self.game.state.players_info[player - 1].strategy_tokens > 0) {
+        html += '<li class="option" id="yes">Yes</li>';
+      }
+      html += '<li class="option" id="no">No</li>';
+      html += '</ul>';
+      imperium_self.updateStatus(html);
+
+      $('.option').off();
+      $('.option').on('click', function() {
+
+        let id = $(this).attr("id");
+
+        if (id == "yes") {
+
+          let array_of_cards = imperium_self.returnPlayerExhaustedPlanetCards(imperium_self.game.player); // unexhausted
+
+          let choices_selected = 0;
+          let max_choices = 0;
+
+          let html = '<div class="status-message">Select planets to unexhaust: </div><ul>';
+          let divname = ".cardchoice";
+          for (let z = 0; z < array_of_cards.length; z++) {
+            max_choices++;
+            html += '<li class="cardchoice" id="cardchoice_' + array_of_cards[z] + '">' + imperium_self.returnPlanetCard(array_of_cards[z]) + '</li>';
+          }
+          if (max_choices == 0) {
+            html += '<li class="textchoice" id="cancel">cancel (no options)</li>';
+            divname = ".textchoice";
           }
           html += '</ul>';
+          if (max_choices >= 2) {
+            max_choices = 2;
+          }
+
           imperium_self.updateStatus(html);
+          imperium_self.lockInterface();
 
-          let chancellor = imperium_self.game.player;
-          let selected_agendas = [];
+          $(divname).off();
+          $(divname).on('click', function() {
 
-          $('.option').off();
-          $('.option').on('click', function() {
+            if (!imperium_self.mayUnlockInterface()) {
+              salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+              return;
+            }
+            imperium_self.unlockInterface();
 
-            let chancellor = (parseInt($(this).attr("id")) + 1);
-            let laws = imperium_self.returnAgendaCards();
-            let laws_selected = 0;
+            let action2 = $(this).attr("id");
 
-	    //
-	    // if New Byzantium is unoccupied, we skip the voting stage
-	    //
-	    imperium_self.playerAcknowledgeNotice("You will receive two action cards once other players have decided whether to purchase action cards.", function() {
-              imperium_self.addMove("change_speaker\t"+chancellor);
-	      imperium_self.endTurn();
-	    });
-	    return 0;
+            if (action2 === "cancel") {
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.endTurn();
+              return;
+            }
+
+            let tmpx = action2.split("_");
+            let divid = "#" + action2;
+            let y = tmpx[1];
+            let idx = 0;
+            for (let i = 0; i < array_of_cards.length; i++) {
+              if (array_of_cards[i] === y) {
+                idx = i;
+              }
+            }
+
+            choices_selected++;
+            imperium_self.addMove("unexhaust\t" + imperium_self.game.player + "\tplanet\t" + array_of_cards[idx]);
+
+            $(divid).off();
+            $(divid).css('opacity', '0.2');
+
+            if (choices_selected >= max_choices) {
+              imperium_self.prependMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
+              imperium_self.endTurn();
+            }
 
           });
         }
-      },
 
-      strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        if (imperium_self.game.player == player) {
-          if (imperium_self.game.player != strategy_card_player && imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-            imperium_self.playerBuyActionCards(2);
-          } else {
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-            imperium_self.endTurn();
-          }
+        if (id == "no") {
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.endTurn();
+          return 0;
         }
-      },
 
-      strategyTertiaryEvent 	:	function(imperium_self, player, strategy_card_player) {
+      });
 
-        let selected_agendas = [];
+    }
+
+  },
+});
+
+
+this.importStrategyCard("politics", {
+  name: "Politics",
+  rank: 3,
+  img: "/strategy/3_POLITICS.png",
+  text: "<b>Player</b> picks new Speaker and gains 2 action cards.<hr /><b>Others</b> may spend strategy token for two action cards.",
+  strategyPrimaryEvent: function (imperium_self, player, strategy_card_player) {
+    //
+    // card player goes for primary
+    //
+    if (imperium_self.game.player === strategy_card_player && player == strategy_card_player) {
+      //
+      // two action cards
+      //
+      imperium_self.addMove("resolve\tstrategy");
+      imperium_self.addMove("gain\t" + imperium_self.game.player + "\taction_cards" + "\t" + 2);
+      imperium_self.addMove("DEAL\t2\t" + imperium_self.game.player + "\t2");
+      imperium_self.addMove(
+        "NOTIFY\t" + imperium_self.returnFaction(player) + " gains action cards"
+      );
+      imperium_self.addMove("strategy\t" + "politics" + "\t" + strategy_card_player + "\t2");
+      imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
+
+      //
+      // pick the speaker
+      //
+      let factions = imperium_self.returnFactions();
+      let html = "Make which player the speaker? <ul>";
+      for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+        html +=
+          '<li class="option" id="' +
+          i +
+          '">' +
+          factions[imperium_self.game.state.players_info[i].faction].name +
+          "</li>";
+      }
+      html += "</ul>";
+      imperium_self.updateStatus(html);
+
+      let chancellor = imperium_self.game.player;
+      let selected_agendas = [];
+
+      $(".option").off();
+      $(".option").on("click", function () {
+        let chancellor = parseInt($(this).attr("id")) + 1;
         let laws = imperium_self.returnAgendaCards();
         let laws_selected = 0;
 
-        if (imperium_self.game.player === imperium_self.game.state.speaker) {
-
-            let html = '';
-            if (imperium_self.game.state.agendas_per_round == 1) {
-              html += 'Select one agenda to advance for consideration in the Galactic Senate.<ul>';
-            }
-            if (imperium_self.game.state.agendas_per_round == 2) {
-              html += 'Select two agendas to advance for consideration in the Galactic Senate.<ul>';
-            }
-            if (imperium_self.game.state.agendas_per_round == 3) {
-              html += 'Select three agendas to advance for consideration in the Galactic Senate.<ul>';
-            }
-
-            for (i = 0; i < 3 && i < imperium_self.game.state.agendas.length; i++) {
-              html += '<li class="option" id="'+imperium_self.game.state.agendas[i]+'">' + laws[imperium_self.game.state.agendas[i]].name + '</li>';
-            }
-            html += '</ul>';
-
-            imperium_self.updateStatus(html);
-
-	    let card_removal_function = function(cardkey) {
-              laws_selected--;
-	      for (let z = 0; z < selected_agendas.length; z++) {
-		if (selected_agendas[z] === cardkey) { selected_agendas.splice(z, 1); }
-	      }
-	    }
-
-	    let card_selection_function = function(cardkey) {
-
-              laws_selected++;
-
-              selected_agendas.push(cardkey);
-
-              if (laws_selected >= imperium_self.game.state.agendas_per_round) {
-
-                $(this).hide();
-                imperium_self.hideAgendaCard(selected_agendas[selected_agendas.length-1]);
-		imperium_self.agenda_selection_overlay.hide();
-
-                for (i = 1; i >= 0; i--) {
-if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
-                  imperium_self.addMove("resolve_agenda\t"+selected_agendas[i]);
-                  imperium_self.addMove("post_agenda_stage_post\t"+selected_agendas[i]);
-                  imperium_self.addMove("post_agenda_stage\t"+selected_agendas[i]);
-                  imperium_self.addMove("simultaneous_agenda\t"+selected_agendas[i]+"\t"+i);
-                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-                  imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
-                  imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
-                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-} else {
-                  imperium_self.addMove("resolve_agenda\t"+selected_agendas[i]);
-                  imperium_self.addMove("post_agenda_stage_post\t"+selected_agendas[i]);
-                  imperium_self.addMove("post_agenda_stage\t"+selected_agendas[i]);
-                  imperium_self.addMove("agenda\t"+selected_agendas[i]+"\t"+i);
-                  imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
-                  imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
-                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-}
-                }
-                imperium_self.addMove("resetagenda");
-                imperium_self.endTurn();
-	      }
-
-	    };
-
-console.log("SELECTED AGENDAS: " + JSON.stringify(selected_agendas));
-console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.agendas));
-
-	    imperium_self.agenda_selection_overlay.render(imperium_self.game.state.agendas, selected_agendas, imperium_self.game.state.agendas_per_round, function(cardkey) {
-	      card_selection_function(cardkey);
-	    }, card_removal_function);
-
-            // this doesn't trigger overlays, as those are divs not li
-            $('li.option').off();
-            $('li.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
-            $('li.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
-            $('li.option').on('click', function() {
-
-	      $('.option').off();
-	      let cardkey = $(this).attr("id");
-	      card_selection_function(cardkey);
-            });
-        } else {
-
-	  imperium_self.updateStatus("Speaker selecting Agendas for consideration by Senate");
-
-	}
-      },
-
-    });
-
-
-
-
-
-    this.importStrategyCard("construction", {
-      name     			:       "Construction",
-      rank			:	4,
-      img			:	"/strategy/4_CONSTRUCTION.png",
-
-      text			:	"<b>Player</b> builds Space Dock and PDS or two PDS units.<hr /><b>Others</b> may spend strategy token and activate sector to build PDS or Space Dock." ,
-      strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
-          imperium_self.addMove("resolve\tstrategy");
-          imperium_self.addMove("strategy\t"+"construction"+"\t"+strategy_card_player+"\t2");
-          imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-          imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-	  imperium_self.playerAcknowledgeNotice("You have played Construction. First you will have the option of producing a PDS or Space Dock. Then you will have the option of producing an additional PDS if you so choose.", function() {
-            imperium_self.playerBuildInfrastructure((sector) => {
-              imperium_self.playerBuildInfrastructure((sector) => {
-		imperium_self.updateSectorGraphics(sector);
-                imperium_self.endTurn();
-              }, 2);
-            }, 1);
-          });
-        }
-
-      },
-
-
-      strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
-
-          let html = '<div class="status-message">Construction has been played. Do you wish to spend 1 strategy token to build a PDS or Space Dock? This will activate the sector (if unactivated): </div><ul>';
-          if (imperium_self.game.state.round == 1) { 
-	    html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Construction strategy card. You may spend 1 strategy token to build a PDS or Space Dock on a planet you control (this will activate the sector). You have ${imperium_self.game.state.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
-	  }
-          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-            html += '<li class="option" id="yes">Yes</li>';
-          }
-	  html += '<li class="option" id="no">No</li>';
-          html += '</ul>';
- 
-          imperium_self.updateStatus(html);
-
-          $('.option').off();
-          $('.option').on('click', function() {
-
-            let id = $(this).attr("id");
- 
-            if (id == "yes") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
-              imperium_self.playerBuildInfrastructure((sector) => {
-                imperium_self.addMove("activate\t"+imperium_self.game.player+"\t"+sector);
-		imperium_self.updateSectorGraphics(sector);
-                imperium_self.endTurn();
-              }, 1);
-            }
-            if (id == "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.endTurn();
-              return 0;
-            }
-          });
-        }
-      },
-    });
-
-
-
-
-    this.importStrategyCard("trade", {
-      name     			:       "Trade",
-      rank			:	5,
-      img			:	"/strategy/5_TRADE.png",
-      text			:	"<b>Player</b> gains 3 trade goods, may refresh any player's commodities.<hr /><b>Others</b> may spend strategy token to refresh their commodities." ,
-      strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
-
-          imperium_self.addMove("resolve\tstrategy");
-          imperium_self.addMove("strategy\t"+"trade"+"\t"+strategy_card_player+"\t2");
-          imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-          imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-          imperium_self.addMove("purchase\t"+imperium_self.game.player+"\tgoods\t3");
-          imperium_self.addMove("purchase\t"+imperium_self.game.player+"\tcommodities\t"+imperium_self.game.state.players_info[imperium_self.game.player-1].commodity_limit);
- 
-          let factions = imperium_self.returnFactions();
-          let html = '<p>You will receive 3 trade goods and '+imperium_self.game.state.players_info[imperium_self.game.player-1].commodity_limit+' commodities. You may choose to replenish the commodities of any other players: </p><ul>';
-          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
-            if (i != imperium_self.game.player-1) {
-              html += '<li class="option" id="'+i+'">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
-            }
-          }
-          html += '<li class="option" id="finish">done</li>';
- 
-          imperium_self.updateStatus(html);
- 
-          $('.option').off();
-          $('.option').on('click', function() {
-            let id = $(this).attr("id");
-            if (id != "finish") {
-              imperium_self.addMove("purchase\t"+(parseInt(id)+1)+"\tcommodities\t"+imperium_self.game.state.players_info[id].commodity_limit);
-              $(this).hide();
-            } else {
-              imperium_self.endTurn();
-            }
-          });
-
-        }
-
-      },
-      strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) {
-
-	  if (imperium_self.game.state.players_info[player-1].commodities == imperium_self.game.state.players_info[player-1].commodity_limit) { 
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-	    imperium_self.updateLog(imperium_self.returnFaction(player) + " skips the Trade secondary as they have already refreshed commodities");
+        //
+        // if New Byzantium is unoccupied, we skip the voting stage
+        //
+        imperium_self.playerAcknowledgeNotice(
+          "You will receive two action cards once other players have decided whether to purchase action cards.",
+          function () {
+            imperium_self.addMove("change_speaker\t" + chancellor);
             imperium_self.endTurn();
-	    return 1;
-	  }
-
-          let html = '<p>Trade has been played. Do you wish to spend 1 strategy token to refresh your commodities? </p><ul>';
-          if (imperium_self.game.state.round == 1) {
-            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Trade strategy card. You may spend 1 strategy token to refresh your faction commodities, which may be exchanged with your neighbours on the board for trade goods. You have ${imperium_self.game.state.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
           }
-          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-            html += '<li class="option" id="yes">Yes</li>';
+        );
+        return 0;
+      });
+    }
+  },
+
+  strategySecondaryEvent: function (imperium_self, player, strategy_card_player) {
+    if (imperium_self.game.player == player) {
+      if (
+        imperium_self.game.player != strategy_card_player &&
+        imperium_self.game.state.players_info[player - 1].strategy_tokens > 0
+      ) {
+        imperium_self.playerBuyActionCards(2);
+      } else {
+        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+        imperium_self.addPublickeyConfirm(this.publicKey, 1);
+        imperium_self.endTurn();
+      }
+    }
+  },
+
+  strategyTertiaryEvent: function (imperium_self, player, strategy_card_player) {
+    let selected_agendas = [];
+    let laws = imperium_self.returnAgendaCards();
+    let laws_selected = 0;
+
+    if (imperium_self.game.player === imperium_self.game.state.speaker) {
+      let html = "";
+      if (imperium_self.game.state.agendas_per_round == 1) {
+        html += "Select one agenda to advance for consideration in the Galactic Senate.<ul>";
+      }
+      if (imperium_self.game.state.agendas_per_round == 2) {
+        html += "Select two agendas to advance for consideration in the Galactic Senate.<ul>";
+      }
+      if (imperium_self.game.state.agendas_per_round == 3) {
+        html += "Select three agendas to advance for consideration in the Galactic Senate.<ul>";
+      }
+
+      for (i = 0; i < 3 && i < imperium_self.game.state.agendas.length; i++) {
+        html +=
+          '<li class="option" id="' +
+          imperium_self.game.state.agendas[i] +
+          '">' +
+          laws[imperium_self.game.state.agendas[i]].name +
+          "</li>";
+      }
+      html += "</ul>";
+
+      imperium_self.updateStatus(html);
+
+      let card_removal_function = function (cardkey) {
+        laws_selected--;
+        for (let z = 0; z < selected_agendas.length; z++) {
+          if (selected_agendas[z] === cardkey) {
+            selected_agendas.splice(z, 1);
           }
-          html += '<li class="option" id="no">No</li>';
-	  html += '</ul>';
-
-
-	  if (imperium_self.game.state.players_info[imperium_self.game.player-1].commodities == imperium_self.game.state.players_info[imperium_self.game.player-1].commodity_limit) {
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-	    imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " already has commodities and skips trade secondary");
-	    imperium_self.endTurn();
-	    return 0;
-	  }
-
-
-          imperium_self.updateStatus(html);
-
-          $('.option').off();
-          $('.option').on('click', function() {
- 
-            $('.option').off();
-            let id = $(this).attr("id");
-
-            if (id == "yes") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.addMove("purchase\t"+imperium_self.game.player+"\tcommodities\t"+imperium_self.game.state.players_info[imperium_self.game.player-1].commodity_limit);
-              imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
-	      imperium_self.endTurn();
-            }
-            if (id == "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.endTurn();
-              return 0;
-            }
- 
-          });
         }
-      },
-    });
+      };
+
+      let card_selection_function = function (cardkey) {
+        laws_selected++;
+
+        selected_agendas.push(cardkey);
+
+        if (laws_selected >= imperium_self.game.state.agendas_per_round) {
+          $(this).hide();
+          imperium_self.hideAgendaCard(selected_agendas[selected_agendas.length - 1]);
+          imperium_self.agenda_selection_overlay.hide();
+
+          for (i = 1; i >= 0; i--) {
+            if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
+              imperium_self.addMove("resolve_agenda\t" + selected_agendas[i]);
+              imperium_self.addMove("post_agenda_stage_post\t" + selected_agendas[i]);
+              imperium_self.addMove("post_agenda_stage\t" + selected_agendas[i]);
+              imperium_self.addMove("simultaneous_agenda\t" + selected_agendas[i] + "\t" + i);
+              imperium_self.addMove(
+                "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
+              );
+              imperium_self.addMove("pre_agenda_stage_post\t" + selected_agendas[i]);
+              imperium_self.addMove("pre_agenda_stage\t" + selected_agendas[i]);
+              imperium_self.addMove(
+                "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
+              );
+            } else {
+              imperium_self.addMove("resolve_agenda\t" + selected_agendas[i]);
+              imperium_self.addMove("post_agenda_stage_post\t" + selected_agendas[i]);
+              imperium_self.addMove("post_agenda_stage\t" + selected_agendas[i]);
+              imperium_self.addMove("agenda\t" + selected_agendas[i] + "\t" + i);
+              imperium_self.addMove("pre_agenda_stage_post\t" + selected_agendas[i]);
+              imperium_self.addMove("pre_agenda_stage\t" + selected_agendas[i]);
+              imperium_self.addMove(
+                "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
+              );
+            }
+          }
+          imperium_self.addMove("resetagenda");
+          imperium_self.endTurn();
+        }
+      };
+
+      console.log("SELECTED AGENDAS: " + JSON.stringify(selected_agendas));
+      console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.agendas));
+
+      imperium_self.agenda_selection_overlay.render(
+        imperium_self.game.state.agendas,
+        selected_agendas,
+        imperium_self.game.state.agendas_per_round,
+        function (cardkey) {
+          card_selection_function(cardkey);
+        },
+        card_removal_function
+      );
+
+      // this doesn't trigger overlays, as those are divs not li
+      $("li.option").off();
+      $("li.option").on("mouseenter", function () {
+        let s = $(this).attr("id");
+        imperium_self.showAgendaCard(s);
+      });
+      $("li.option").on("mouseleave", function () {
+        let s = $(this).attr("id");
+        imperium_self.hideAgendaCard(s);
+      });
+      $("li.option").on("click", function () {
+        $(".option").off();
+        let cardkey = $(this).attr("id");
+        card_selection_function(cardkey);
+      });
+    } else {
+      imperium_self.updateStatus("Speaker selecting Agendas for consideration by Senate");
+    }
+  },
+});
+
+
+
+this.importStrategyCard("construction", {
+  name: "Construction",
+  rank: 4,
+  img: "/strategy/4_CONSTRUCTION.png",
+
+  text: "<b>Player</b> builds Space Dock and PDS or two PDS units.<hr /><b>Others</b> may spend strategy token and activate sector to build PDS or Space Dock.",
+  strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
+
+    if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
+      imperium_self.addMove("resolve\tstrategy");
+      imperium_self.addMove("strategy\t" + "construction" + "\t" + strategy_card_player + "\t2");
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
+      imperium_self.playerAcknowledgeNotice("You have played Construction. First you will have the option of producing a PDS or Space Dock. Then you will have the option of producing an additional PDS if you so choose.", function() {
+        imperium_self.playerBuildInfrastructure((sector) => {
+          imperium_self.playerBuildInfrastructure((sector) => {
+            imperium_self.updateSectorGraphics(sector);
+            imperium_self.endTurn();
+          }, 2);
+        }, 1);
+      });
+    }
+
+  },
+
+
+  strategySecondaryEvent: function(imperium_self, player, strategy_card_player) {
+
+    if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
+
+      let html = '<div class="status-message">Construction has been played. Do you wish to spend 1 strategy token to build a PDS or Space Dock? This will activate the sector (if unactivated): </div><ul>';
+      if (imperium_self.game.state.round == 1) {
+        html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Construction strategy card. You may spend 1 strategy token to build a PDS or Space Dock on a planet you control (this will activate the sector). You have ${imperium_self.game.state.players_info[player - 1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
+      }
+      if (imperium_self.game.state.players_info[player - 1].strategy_tokens > 0) {
+        html += '<li class="option" id="yes">Yes</li>';
+      }
+      html += '<li class="option" id="no">No</li>';
+      html += '</ul>';
+
+      imperium_self.updateStatus(html);
+
+      imperium_self.lockInterface();
+
+      $('.option').off();
+      $('.option').on('click', function() {
+
+        if (!imperium_self.mayUnlockInterface()) {
+          salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+          return;
+        }
+        imperium_self.unlockInterface();
+
+
+        let id = $(this).attr("id");
+
+        if (id == "yes") {
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
+          imperium_self.playerBuildInfrastructure((sector) => {
+            imperium_self.addMove("activate\t" + imperium_self.game.player + "\t" + sector);
+            imperium_self.updateSectorGraphics(sector);
+            imperium_self.endTurn();
+          }, 1);
+        }
+        if (id == "no") {
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.endTurn();
+          return 0;
+        }
+      });
+    }
+  },
+});
+
+
+
+this.importStrategyCard("trade", {
+  name: "Trade",
+  rank: 5,
+  img: "/strategy/5_TRADE.png",
+  text: "<b>Player</b> gains 3 trade goods, may refresh any player's commodities.<hr /><b>Others</b> may spend strategy token to refresh their commodities.",
+  strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
+
+    if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
+
+      imperium_self.addMove("resolve\tstrategy");
+      imperium_self.addMove("strategy\t" + "trade" + "\t" + strategy_card_player + "\t2");
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
+      imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tgoods\t3");
+      imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
+
+      let factions = imperium_self.returnFactions();
+      let html = '<p>You will receive 3 trade goods and ' + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit + ' commodities. You may choose to replenish the commodities of any other players: </p><ul>';
+      for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+        if (i != imperium_self.game.player - 1) {
+          html += '<li class="option" id="' + i + '">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
+        }
+      }
+      html += '<li class="option" id="finish">done</li>';
+
+      imperium_self.updateStatus(html);
+
+      $('.option').off();
+      $('.option').on('click', function() {
+        let id = $(this).attr("id");
+        if (id != "finish") {
+          imperium_self.addMove("purchase\t" + (parseInt(id) + 1) + "\tcommodities\t" + imperium_self.game.state.players_info[id].commodity_limit);
+          $(this).hide();
+        } else {
+          imperium_self.endTurn();
+        }
+      });
+
+    }
+
+  },
+  strategySecondaryEvent: function(imperium_self, player, strategy_card_player) {
+
+    if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) {
+
+      if (imperium_self.game.state.players_info[player - 1].commodities == imperium_self.game.state.players_info[player - 1].commodity_limit) {
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.updateLog(imperium_self.returnFaction(player) + " skips the Trade secondary as they have already refreshed commodities");
+        imperium_self.endTurn();
+        return 1;
+      }
+
+      let html = '<p>Trade has been played. Do you wish to spend 1 strategy token to refresh your commodities? </p><ul>';
+      if (imperium_self.game.state.round == 1) {
+        html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Trade strategy card. You may spend 1 strategy token to refresh your faction commodities, which may be exchanged with your neighbours on the board for trade goods. You have ${imperium_self.game.state.players_info[player - 1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
+      }
+      if (imperium_self.game.state.players_info[player - 1].strategy_tokens > 0) {
+        html += '<li class="option" id="yes">Yes</li>';
+      }
+      html += '<li class="option" id="no">No</li>';
+      html += '</ul>';
+
+
+      if (imperium_self.game.state.players_info[imperium_self.game.player - 1].commodities == imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit) {
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " already has commodities and skips trade secondary");
+        imperium_self.endTurn();
+        return 0;
+      }
+
+
+      imperium_self.updateStatus(html);
+
+      imperium_self.lockInterface();
+
+      $('.option').off();
+      $('.option').on('click', function() {
+
+        if (!imperium_self.mayUnlockInterface()) {
+          salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+          return;
+        }
+        imperium_self.unlockInterface();
+
+        $('.option').off();
+        let id = $(this).attr("id");
+
+        if (id == "yes") {
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
+          imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
+          imperium_self.endTurn();
+        }
+        if (id == "no") {
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.endTurn();
+          return 0;
+        }
+
+      });
+    }
+  },
+});
 
 
     this.importStrategyCard("warfare", {
@@ -5119,7 +5363,7 @@ console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.ag
 
             imperium_self.addMove("resolve\tstrategy");
             imperium_self.addMove("strategy\t"+"warfare"+"\t"+strategy_card_player+"\t2");
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
             imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
             imperium_self.addMove("rearrange_tokens\t"+strategy_card_player);
             imperium_self.addMove("deactivate\t"+strategy_card_player+"\t"+sector);
@@ -5139,8 +5383,8 @@ console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.ag
 	  //
 	  if (imperium_self.game.state.players_info[player-1].strategy_tokens == 0 || (imperium_self.returnAvailableResources(player) == 0 && imperium_self.game.state.players_info[player-1].goods == 0 && imperium_self.game.state.players_info[player-1].sarween_tools != 1)) {
 	    imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Warfare secondary"); 
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
             imperium_self.endTurn();
 	    return 0;
 	  }
@@ -5166,8 +5410,8 @@ console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.ag
               imperium_self.playerProduceUnits(imperium_self.game.state.players_info[imperium_self.game.player-1].homeworld, 0, 0, 2, 1); // final is warfare card
             }
             if (id == "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -5177,424 +5421,565 @@ console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.ag
       },
     });
 
-
-    this.importStrategyCard("technology", {
-      name     			:       "Technology",
-      rank			:	7,
-      img			:	"/strategy/7_TECHNOLOGY.png",
-      text			:	"<b>Player</b> researches a tech and may spend 6 resources for a second.<hr /><b>Others</b> may research for strategy token and 4 resources" ,
-      strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-        if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
-          imperium_self.playerAcknowledgeNotice("You will first have the option of researching a free-technology, and then invited to purchase an additional tech for 6 resources:", function() {
-            imperium_self.playerResearchTechnology(function(tech) {
-	      imperium_self.game.state.players_info[imperium_self.game.player-1].tech.push(tech);
-              imperium_self.addMove("resolve\tstrategy");
-              imperium_self.addMove("strategy\t"+"technology"+"\t"+strategy_card_player+"\t2");
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-              imperium_self.addMove("purchase\t"+player+"\ttechnology\t"+tech);
-              imperium_self.endTurn();
-            });
-          });
-        }
-      },
-      strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-	let html = "";
-	let resources_to_spend = 0;
-
-        if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) {
- 
-	  resources_to_spend = imperium_self.game.state.players_info[imperium_self.game.player-1].cost_of_technology_secondary;
-;
-          //
-          // auto-submit response if we lack resources and tokens to produce (speed up game);
-          //
-          if (imperium_self.game.state.players_info[player-1].strategy_tokens == 0 || ( (imperium_self.game.state.players_info[player-1].goods + imperium_self.returnAvailableResources(player)) < 4 && imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources != 1 && imperium_self.game.state.players_info[player-1].permanent_research_technology_card_must_not_spend_resources != 1)) {
-            imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Technology secondary");
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+this.importStrategyCard("technology", {
+  name: "Technology",
+  rank: 7,
+  img: "/strategy/7_TECHNOLOGY.png",
+  text: "<b>Player</b> researches a tech and may spend 6 resources for a second.<hr /><b>Others</b> may research for strategy token and 4 resources",
+  strategyPrimaryEvent: function (imperium_self, player, strategy_card_player) {
+    if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
+      imperium_self.playerAcknowledgeNotice(
+        "You will first have the option of researching a free-technology, and then invited to purchase an additional tech for 6 resources:",
+        function () {
+          imperium_self.playerResearchTechnology(function (tech) {
+            imperium_self.game.state.players_info[imperium_self.game.player - 1].tech.push(tech);
+            imperium_self.addMove("resolve\tstrategy");
+            imperium_self.addMove(
+              "strategy\t" + "technology" + "\t" + strategy_card_player + "\t2"
+            );
+            imperium_self.addMove(
+              "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
+            );
+            imperium_self.addMove(
+              "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
+            );
+            imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
             imperium_self.endTurn();
-            return 0;
-	  }
+          });
+        }
+      );
+    }
+  },
+  strategySecondaryEvent: async function (imperium_self, player, strategy_card_player) {
+    let html = "";
+    let resources_to_spend = 0;
 
-          html = '<div class="status-message">Technology has been played. Do you wish to spend 4 resources and a strategy token to research a technology? </div><ul>';
-          if (imperium_self.game.state.round == 1) {
-            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.state.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</div><ul>`;
-          }
+    if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) {
+      resources_to_spend =
+        imperium_self.game.state.players_info[imperium_self.game.player - 1]
+          .cost_of_technology_secondary;
+      //
+      // auto-submit response if we lack resources and tokens to produce (speed up game);
+      //
+      if (
+        imperium_self.game.state.players_info[player - 1].strategy_tokens == 0 ||
+        (imperium_self.game.state.players_info[player - 1].goods +
+          imperium_self.returnAvailableResources(player) <
+          4 &&
+          imperium_self.game.state.players_info[player - 1]
+            .temporary_research_technology_card_must_not_spend_resources != 1 &&
+          imperium_self.game.state.players_info[player - 1]
+            .permanent_research_technology_card_must_not_spend_resources != 1)
+      ) {
+        imperium_self.updateLog(
+          imperium_self.returnFactionName(imperium_self, player) +
+            " unable to play Technology secondary"
+        );
+        imperium_self.addMove(
+          "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+        );
+        imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.endTurn();
+        return 0;
+      }
 
-	  if (
-	    imperium_self.game.state.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
-	    imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
-	  ) { 
-            html = '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
-	    resources_to_spend = 0;
-	  }
+      html =
+        '<div class="status-message">Technology has been played. Do you wish to spend 4 resources and a strategy token to research a technology? </div><ul>';
+      if (imperium_self.game.state.round == 1) {
+        html = `<div class="status-message doublespace">${imperium_self.returnFaction(
+          strategy_card_player
+        )} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${
+          imperium_self.game.state.players_info[player - 1].strategy_tokens
+        } strategy tokens. Use this ability?</div><ul>`;
+      }
 
-	  let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
-	  if (available_resources >= resources_to_spend && imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-            html += '<li class="option" id="yes">Yes</li>';
-          }
-	  html += '<li class="option" id="no">No</li>';
-          html += '</ul>';
- 
-          imperium_self.updateStatus(html);
+      if (
+        imperium_self.game.state.players_info[player - 1]
+          .permanent_research_technology_card_must_not_spend_resources == 1 ||
+        imperium_self.game.state.players_info[player - 1]
+          .temporary_research_technology_card_must_not_spend_resources == 1
+      ) {
+        html =
+          '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
+        resources_to_spend = 0;
+      }
 
-          $('.option').off();
-          $('.option').on('click', function() {
- 
-            let id = $(this).attr("id");
+      let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
+      if (
+        available_resources >= resources_to_spend &&
+        imperium_self.game.state.players_info[player - 1].strategy_tokens > 0
+      ) {
+        html += '<li class="option" id="yes">Yes</li>';
+      }
+      html += '<li class="option" id="no">No</li>';
+      html += "</ul>";
 
-            if (id === "yes") {
+      imperium_self.updateStatus(html);
 
-	      imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources = 0;
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.playerSelectResources(resources_to_spend, function(success) {
-                if (success == 1) {
-                  imperium_self.playerResearchTechnology(function(tech) {
-                    imperium_self.addMove("purchase\t"+player+"\ttechnology\t"+tech);
-                    imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
-                    imperium_self.endTurn();
-                  });
-                } else {
-                  imperium_self.endTurn();
-                }
+      $(".option").off();
+      $(".option").on("click", async function () {
+        let id = $(this).attr("id");
+
+        if (id === "yes") {
+          imperium_self.game.state.players_info[
+            player - 1
+          ].temporary_research_technology_card_must_not_spend_resources = 0;
+          imperium_self.addMove(
+            "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+          );
+          imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.playerSelectResources(resources_to_spend, function (success) {
+            if (success == 1) {
+              imperium_self.playerResearchTechnology(function (tech) {
+                imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
+                imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
+                imperium_self.endTurn();
               });
-            }
-            if (id === "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            } else {
               imperium_self.endTurn();
-              return 0;
             }
           });
+        }
+        if (id === "no") {
+          imperium_self.addMove(
+            "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+          );
+          imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.endTurn();
+          return 0;
+        }
+      });
 
-	  return 0;
+      return 0;
+    } else {
+      if (imperium_self.game.player != strategy_card_player) {
+        return 0;
+      }
 
-        } else {
+      resources_to_spend =
+        imperium_self.game.state.players_info[imperium_self.game.player - 1]
+          .cost_of_technology_primary;
 
-          if (imperium_self.game.player != strategy_card_player) { return 0; }
+      html =
+        '<div class="status-message">Do you wish to spend ' +
+        resources_to_spend +
+        " resources to research an additional technology? </div><ul>";
 
-	  resources_to_spend = imperium_self.game.state.players_info[imperium_self.game.player-1].cost_of_technology_primary;
+      if (
+        imperium_self.game.state.players_info[imperium_self.game.player - 1]
+          .permanent_research_technology_card_must_not_spend_resources == 1 ||
+        imperium_self.game.state.players_info[imperium_self.game.player - 1]
+          .temporary_research_technology_card_must_not_spend_resources == 1
+      ) {
+        html =
+          '<div class="status-message">Do you wish to research an additional technology? </div><ul>';
+        resources_to_spend = 0;
+      }
 
-          html = '<div class="status-message">Do you wish to spend '+resources_to_spend+' resources to research an additional technology? </div><ul>';
+      let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
+      if (available_resources >= resources_to_spend) {
+        html += '<li class="option" id="yes">Yes</li>';
+      }
+      html += '<li class="option" id="no">No</li>';
+      html += "</ul>";
 
-	  if (
-	    imperium_self.game.state.players_info[imperium_self.game.player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
-	    imperium_self.game.state.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 1
-	  ) { 
-            html = '<div class="status-message">Do you wish to research an additional technology? </div><ul>';
-	    resources_to_spend = 0;
-	  }
+      imperium_self.updateStatus(html);
 
-	  let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
-	  if (available_resources >= resources_to_spend) {
-            html += '<li class="option" id="yes">Yes</li>';
-	  }
-          html += '<li class="option" id="no">No</li>';
-          html += '</ul>';
+      $(".option").off();
+      $(".option").on("click", function () {
+        let id = $(this).attr("id");
 
-          imperium_self.updateStatus(html);
-
-          $('.option').off();
-          $('.option').on('click', function() {
-
-            let id = $(this).attr("id");
-
-            if (id == "yes") {
-	      imperium_self.game.state.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 0;
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.playerSelectResources(resources_to_spend, function(success) {
-                if (success == 1) {
-                  imperium_self.playerResearchTechnology(function(tech) {
-                    imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttechnology\t"+tech);
-                    imperium_self.endTurn();
-                  });
-                } else {
-                }
+        if (id == "yes") {
+          imperium_self.game.state.players_info[imperium_self.game.player - 1]
+            .temporary_research_technology_card_must_not_spend_resources == 0;
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.playerSelectResources(resources_to_spend, function (success) {
+            if (success == 1) {
+              imperium_self.playerResearchTechnology(function (tech) {
+                imperium_self.addMove(
+                  "purchase\t" + imperium_self.game.player + "\ttechnology\t" + tech
+                );
+                imperium_self.endTurn();
               });
-            }
-            if (id == "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-              imperium_self.endTurn();
-              return 0;
+            } else {
             }
           });
-
-	  return 0;
-
         }
-      },
-    });
-
-
-
-
-
-
-
-
-
-    this.importAgendaCard('minister-of-technology', {
-        name : "Minister of Technology" ,
-        type : "Law" ,
-        text : "Elect a player. They do not need to spend resources to research technology when the technology card is played" ,
-	initialize : function(imperium_self) {
-         if (!imperium_self.game.state.ministery_of_technology) {
-	    imperium_self.game.state.minster_of_technology = null;
-	    imperium_self.game.state.minster_of_technology_player = null;
-	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
-	      if (!imperium_self.game.state.players_info[i].temporary_research_technology_card_must_not_spend_resources) {
-	        imperium_self.game.state.players_info[i].temporary_research_technology_card_must_not_spend_resources = 0;
-	        imperium_self.game.state.players_info[i].permanent_research_technology_card_must_not_spend_resources = 0;
-	      }
-	    }
-	  }
-	},
-        returnAgendaOptions : function(imperium_self) {
-          let options = [];
-          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
-            options.push(imperium_self.returnFaction(i+1));
-          }
-          return options;
-        },
-        onPass : function(imperium_self, winning_choice) {
-	  let player_number = 0;
-	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
-	    if (imperium_self.returnFaction(i+1) == winning_choice) { player_number = i; }
-	  }
-          imperium_self.game.state.minister_of_technology = 1;
-          imperium_self.game.state.minister_of_technology_player = player_number+1;
-          imperium_self.game.state.players_info[player_number].permanent_research_technology_card_must_not_spend_resources = 1;
-
-	  imperium_self.game.state.laws.push({ agenda : "minister-of-technology" , option : winning_choice });
-
+        if (id == "no") {
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.endTurn();
+          return 0;
         }
-  });
+      });
 
+      return 0;
+    }
+  },
+});
 
-
-
-
-    this.importActionCard('breakthrough', {
-        name : "Breakthrough" ,
-        type : "action" ,
-        text : "Do not spend resources to research technology the next time the Technology card is played" ,
-        playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.state.players_info[action_card_player-1].temporary_research_technology_card_must_not_spend_resources = 1;
-          return 1;
-        }
-    });
-
-
-
-
-
-
-    this.importStrategyCard("imperial", {
-      name     			:       "Imperial",
-      rank			:	8,
-      img			:	"/strategy/8_IMPERIAL.png",
-      text			:	"<b>Player</b> may score a public objective. 1 VP for New Byzantium or secret objective otherwise.<hr /><b>Others</b> may spend strategy token to buy secret objective" ,
-      strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
-
-	  let supplementary_scoring = function() {
-
-  	    imperium_self.playerAcknowledgeNotice("You will first be asked to score your public objective. The game will then allow other players to purchase secret objectives.", function() {
-
-              imperium_self.addMove("resolve\tstrategy");
-              imperium_self.addMove("strategy\t"+"imperial"+"\t"+strategy_card_player+"\t2");
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-
-              imperium_self.playerScoreVictoryPoints(imperium_self, function(imperium_self, vp, objective) {
-
-                if (vp > 0 && (imperium_self.stage_i_objectives[objective] != undefined || imperium_self.stage_ii_objectives[objective] != undefined)) {
-
-                  if (imperium_self.stage_i_objectives[objective] != undefined) {
-                    imperium_self.stage_i_objectives[objective].scoreObjective(imperium_self, player, function() {
-                      imperium_self.addMove("score\t"+imperium_self.game.player+"\t"+"1"+"\t"+"new-byzantium");
-	              imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective); 
-	  	      imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-	  	      imperium_self.updateStatus("scoring completed");
-                      imperium_self.endTurn();
-		    });
-		  } else {
-                    imperium_self.stage_ii_objectives[objective].scoreObjective(imperium_self, player, function() {
-                      imperium_self.addMove("score\t"+imperium_self.game.player+"\t"+"1"+"\t"+"new-byzantium");
-	              imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective); 
-	  	      imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-	  	      imperium_self.updateStatus("scoring completed");
-                      imperium_self.endTurn();
-		    });
-		  }
-		} else {
-                  imperium_self.addMove("score\t"+imperium_self.game.player+"\t"+"1"+"\t"+"new-byzantium");
-		  imperium_self.updateStatus("scoring completed");
-                  imperium_self.endTurn();
-		}
-              }, 1);
-            });
-	  };
-
-
-
-
-	  let supplementary_secret = function() {
-  	    imperium_self.playerAcknowledgeNotice("You will next be asked to score a public objective. The game will then allow other players to purchase secret objectives.", function() {
-
-              imperium_self.addMove("resolve\tstrategy");
-              imperium_self.addMove("strategy\t"+"imperial"+"\t"+strategy_card_player+"\t2");
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
-
-              imperium_self.playerScoreVictoryPoints(imperium_self, function(imperium_self, vp, objective) {
-
-                if (vp > 0 && (imperium_self.stage_i_objectives[objective] != undefined || imperium_self.stage_ii_objectives[objective] != undefined)) {
-
-                  if (imperium_self.stage_i_objectives[objective] != undefined) {
-                    imperium_self.stage_i_objectives[objective].scoreObjective(imperium_self, player, function() {
-	              imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective); 
-	  	      imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-	  	      imperium_self.updateStatus("scoring completed");
-                      imperium_self.addMove("gain\t"+strategy_card_player+"\t"+"secret_objective"+"\t"+"1");
-                      imperium_self.addMove("DEAL\t6\t"+strategy_card_player+"\t1");
-                      imperium_self.endTurn();
-		    });
-		  } else {
-                    imperium_self.stage_ii_objectives[objective].scoreObjective(imperium_self, player, function() {
-	              imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective); 
-	  	      imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-	  	      imperium_self.updateStatus("scoring completed");
-                      imperium_self.addMove("gain\t"+strategy_card_player+"\t"+"secret_objective"+"\t"+"1");
-                      imperium_self.addMove("DEAL\t6\t"+strategy_card_player+"\t1");
-                      imperium_self.endTurn();
-		    });
-		  }
-		} else {
-                  imperium_self.addMove("gain\t"+strategy_card_player+"\t"+"secret_objective"+"\t"+"1");
-                  imperium_self.addMove("DEAL\t6\t"+strategy_card_player+"\t1");
-                  imperium_self.endTurn();
-		}
-              }, 1);
-            });
-	  };
-
-	  if (imperium_self.game.planets['new-byzantium'].owner == strategy_card_player) {
-	    imperium_self.playerAcknowledgeNotice("You are granted an additional Victory Point for controlling New Byzantium during Imperial Scoring", supplementary_scoring);
-	  } else {
-	    imperium_self.playerAcknowledgeNotice("As you do not control New Byzantium during Imperial Scoring, you will be issued an additional Secret Objective", supplementary_secret);
-	  }
-        }
-
-	return 0;
-      },
-      strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        imperium_self.game.state.playing_strategy_card_secondary = 1;
-
-        if (imperium_self.game.player == player) {
-          if (imperium_self.game.player != strategy_card_player && imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
-            imperium_self.playerBuySecretObjective(2);
-          } else {
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-            imperium_self.endTurn();
-          }
-        }
-
-  	return 0;
-      },
-      strategyTertiaryEvent 	:	function(imperium_self, player, strategy_card_player) {
-
-        imperium_self.game.state.playing_strategy_card_secondary = 1;
-        imperium_self.game.state.round_scoring = 1;
-
-	if (player == imperium_self.game.player) {
-
-	  let my_secret_objective = "";
-	  let my_secret_vp = "";
-
-          imperium_self.game.state.round_scoring = 2;
-
-          imperium_self.playerScoreSecretObjective(imperium_self, function(x, vp, objective) {
-
-	    my_secret_vp = vp;
-	    my_secret_objective = objective;
-
-            imperium_self.playerScoreVictoryPoints(imperium_self, function(x, vp, objective) {
-
-	      imperium_self.updateStatus("scoring completed");
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-
-              if (my_secret_vp > 0) { 
-		
-                if (imperium_self.secret_objectives[my_secret_objective] != undefined) {
-                  imperium_self.secret_objectives[my_secret_objective].scoreObjective(imperium_self, player, function() {
-
-		    imperium_self.addMove("score\t"+player+"\t"+my_secret_vp+"\t"+my_secret_objective); 
-
-              	    if (vp > 0) {
-
-        	      if (imperium_self.stage_i_objectives[objective] != undefined) {
-        		imperium_self.stage_i_objectives[objective].scoreObjective(imperium_self, player, function() {
-			  imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective);
-	    		  imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(my_secret_objective);
-	      		  imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-			  imperium_self.endTurn();
-			});
-        	      }
-        	      if (imperium_self.stage_ii_objectives[objective] != undefined) {
-        		imperium_self.stage_ii_objectives[objective].scoreObjective(imperium_self, player, function() {
-			  imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective);
-	    		  imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(my_secret_objective);
-	      		  imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-			  imperium_self.endTurn();
-			});
-        	      } 
-
-		    } else {
-
-	    	      imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(my_secret_objective);
-		      imperium_self.endTurn();
-
-		    }
-		  });
-                }
-		return 0;
-	      }
-
-              if (vp > 0) {
-        	if (imperium_self.stage_i_objectives[objective] != undefined) {
-        	  imperium_self.stage_i_objectives[objective].scoreObjective(imperium_self, player, function() {
-		    imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective);
-	            imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-		    imperium_self.endTurn();
-		  });
-        	}
-        	if (imperium_self.stage_ii_objectives[objective] != undefined) {
-        	  imperium_self.stage_ii_objectives[objective].scoreObjective(imperium_self, player, function() {
-		    imperium_self.addMove("score\t"+player+"\t"+vp+"\t"+objective);
-	            imperium_self.game.state.players_info[imperium_self.game.player-1].objectives_scored_this_round.push(objective);
-		    imperium_self.endTurn();
-		  });
-        	}
-	      } else {
-
-	        imperium_self.endTurn();
-
-	      }
-            }, 2);
-
-          });
-  	  return 0;
+this.importAgendaCard("minister-of-technology", {
+  name: "Minister of Technology",
+  type: "Law",
+  text: "Elect a player. They do not need to spend resources to research technology when the technology card is played",
+  initialize: function (imperium_self) {
+    if (!imperium_self.game.state.ministery_of_technology) {
+      imperium_self.game.state.minster_of_technology = null;
+      imperium_self.game.state.minster_of_technology_player = null;
+      for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+        if (
+          !imperium_self.game.state.players_info[i]
+            .temporary_research_technology_card_must_not_spend_resources
+        ) {
+          imperium_self.game.state.players_info[
+            i
+          ].temporary_research_technology_card_must_not_spend_resources = 0;
+          imperium_self.game.state.players_info[
+            i
+          ].permanent_research_technology_card_must_not_spend_resources = 0;
         }
       }
+    }
+  },
+  returnAgendaOptions: function (imperium_self) {
+    let options = [];
+    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+      options.push(imperium_self.returnFaction(i + 1));
+    }
+    return options;
+  },
+  onPass: function (imperium_self, winning_choice) {
+    let player_number = 0;
+    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+      if (imperium_self.returnFaction(i + 1) == winning_choice) {
+        player_number = i;
+      }
+    }
+    imperium_self.game.state.minister_of_technology = 1;
+    imperium_self.game.state.minister_of_technology_player = player_number + 1;
+    imperium_self.game.state.players_info[
+      player_number
+    ].permanent_research_technology_card_must_not_spend_resources = 1;
+
+    imperium_self.game.state.laws.push({
+      agenda: "minister-of-technology",
+      option: winning_choice,
     });
+  },
+});
+
+this.importActionCard("breakthrough", {
+  name: "Breakthrough",
+  type: "action",
+  text: "Do not spend resources to research technology the next time the Technology card is played",
+  playActionCard: function (imperium_self, player, action_card_player, card) {
+    imperium_self.game.state.players_info[
+      action_card_player - 1
+    ].temporary_research_technology_card_must_not_spend_resources = 1;
+    return 1;
+  },
+});
+this.importStrategyCard("imperial", {
+  name: "Imperial",
+  rank: 8,
+  img: "/strategy/8_IMPERIAL.png",
+  text: "<b>Player</b> may score a public objective. 1 VP for New Byzantium or secret objective otherwise.<hr /><b>Others</b> may spend strategy token to buy secret objective",
+  strategyPrimaryEvent: function (imperium_self, player, strategy_card_player) {
+    if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
+      let supplementary_scoring = function () {
+        imperium_self.playerAcknowledgeNotice(
+          "You will first be asked to score your public objective. The game will then allow other players to purchase secret objectives.",
+          function () {
+            imperium_self.addMove("resolve\tstrategy");
+            imperium_self.addMove("strategy\t" + "imperial" + "\t" + strategy_card_player + "\t2");
+            imperium_self.addMove(
+              "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
+            );
+
+            imperium_self.playerScoreVictoryPoints(
+              imperium_self,
+              function (imperium_self, vp, objective) {
+                if (
+                  vp > 0 &&
+                  (imperium_self.stage_i_objectives[objective] != undefined ||
+                    imperium_self.stage_ii_objectives[objective] != undefined)
+                ) {
+                  if (imperium_self.stage_i_objectives[objective] != undefined) {
+                    imperium_self.stage_i_objectives[objective].scoreObjective(
+                      imperium_self,
+                      player,
+                      function () {
+                        imperium_self.addMove(
+                          "score\t" +
+                            imperium_self.game.player +
+                            "\t" +
+                            "1" +
+                            "\t" +
+                            "new-byzantium"
+                        );
+                        imperium_self.addMove("score\t" + player + "\t" + vp + "\t" + objective);
+                        imperium_self.game.state.players_info[
+                          imperium_self.game.player - 1
+                        ].objectives_scored_this_round.push(objective);
+                        imperium_self.updateStatus("scoring completed");
+                        imperium_self.endTurn();
+                      }
+                    );
+                  } else {
+                    imperium_self.stage_ii_objectives[objective].scoreObjective(
+                      imperium_self,
+                      player,
+                      function () {
+                        imperium_self.addMove(
+                          "score\t" +
+                            imperium_self.game.player +
+                            "\t" +
+                            "1" +
+                            "\t" +
+                            "new-byzantium"
+                        );
+                        imperium_self.addMove("score\t" + player + "\t" + vp + "\t" + objective);
+                        imperium_self.game.state.players_info[
+                          imperium_self.game.player - 1
+                        ].objectives_scored_this_round.push(objective);
+                        imperium_self.updateStatus("scoring completed");
+                        imperium_self.endTurn();
+                      }
+                    );
+                  }
+                } else {
+                  imperium_self.addMove(
+                    "score\t" + imperium_self.game.player + "\t" + "1" + "\t" + "new-byzantium"
+                  );
+                  imperium_self.updateStatus("scoring completed");
+                  imperium_self.endTurn();
+                }
+              },
+              1
+            );
+          }
+        );
+      };
+
+      let supplementary_secret = function () {
+        imperium_self.playerAcknowledgeNotice(
+          "You will next be asked to score a public objective. The game will then allow other players to purchase secret objectives.",
+          function () {
+            imperium_self.addMove("resolve\tstrategy");
+            imperium_self.addMove("strategy\t" + "imperial" + "\t" + strategy_card_player + "\t2");
+            imperium_self.addMove(
+              "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
+            );
+
+            imperium_self.playerScoreVictoryPoints(
+              imperium_self,
+              function (imperium_self, vp, objective) {
+                if (
+                  vp > 0 &&
+                  (imperium_self.stage_i_objectives[objective] != undefined ||
+                    imperium_self.stage_ii_objectives[objective] != undefined)
+                ) {
+                  if (imperium_self.stage_i_objectives[objective] != undefined) {
+                    imperium_self.stage_i_objectives[objective].scoreObjective(
+                      imperium_self,
+                      player,
+                      function () {
+                        imperium_self.addMove("score\t" + player + "\t" + vp + "\t" + objective);
+                        imperium_self.game.state.players_info[
+                          imperium_self.game.player - 1
+                        ].objectives_scored_this_round.push(objective);
+                        imperium_self.updateStatus("scoring completed");
+                        imperium_self.addMove(
+                          "gain\t" + strategy_card_player + "\t" + "secret_objective" + "\t" + "1"
+                        );
+                        imperium_self.addMove("DEAL\t6\t" + strategy_card_player + "\t1");
+                        imperium_self.endTurn();
+                      }
+                    );
+                  } else {
+                    imperium_self.stage_ii_objectives[objective].scoreObjective(
+                      imperium_self,
+                      player,
+                      function () {
+                        imperium_self.addMove("score\t" + player + "\t" + vp + "\t" + objective);
+                        imperium_self.game.state.players_info[
+                          imperium_self.game.player - 1
+                        ].objectives_scored_this_round.push(objective);
+                        imperium_self.updateStatus("scoring completed");
+                        imperium_self.addMove(
+                          "gain\t" + strategy_card_player + "\t" + "secret_objective" + "\t" + "1"
+                        );
+                        imperium_self.addMove("DEAL\t6\t" + strategy_card_player + "\t1");
+                        imperium_self.endTurn();
+                      }
+                    );
+                  }
+                } else {
+                  imperium_self.addMove(
+                    "gain\t" + strategy_card_player + "\t" + "secret_objective" + "\t" + "1"
+                  );
+                  imperium_self.addMove("DEAL\t6\t" + strategy_card_player + "\t1");
+                  imperium_self.endTurn();
+                }
+              },
+              1
+            );
+          }
+        );
+      };
+
+      if (imperium_self.game.planets["new-byzantium"].owner == strategy_card_player) {
+        imperium_self.playerAcknowledgeNotice(
+          "You are granted an additional Victory Point for controlling New Byzantium during Imperial Scoring",
+          supplementary_scoring
+        );
+      } else {
+        imperium_self.playerAcknowledgeNotice(
+          "As you do not control New Byzantium during Imperial Scoring, you will be issued an additional Secret Objective",
+          supplementary_secret
+        );
+      }
+    }
+
+    return 0;
+  },
+  strategySecondaryEvent: function (imperium_self, player, strategy_card_player) {
+    imperium_self.game.state.playing_strategy_card_secondary = 1;
+
+    if (imperium_self.game.player == player) {
+      if (
+        imperium_self.game.player != strategy_card_player &&
+        imperium_self.game.state.players_info[player - 1].strategy_tokens > 0
+      ) {
+        imperium_self.playerBuySecretObjective(2);
+      } else {
+        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+        imperium_self.addPublickeyConfirm(this.publicKey, 1);
+        imperium_self.endTurn();
+      }
+    }
+
+    return 0;
+  },
+  strategyTertiaryEvent: function (imperium_self, player, strategy_card_player) {
+    imperium_self.game.state.playing_strategy_card_secondary = 1;
+    imperium_self.game.state.round_scoring = 1;
+
+    if (player == imperium_self.game.player) {
+      let my_secret_objective = "";
+      let my_secret_vp = "";
+
+      imperium_self.game.state.round_scoring = 2;
+
+      imperium_self.playerScoreSecretObjective(imperium_self, function (x, vp, objective) {
+        my_secret_vp = vp;
+        my_secret_objective = objective;
+
+        imperium_self.playerScoreVictoryPoints(
+          imperium_self,
+          function (x, vp, objective) {
+            imperium_self.updateStatus("scoring completed");
+            imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+            imperium_self.addPublickeyConfirm(this.publicKey, 1);
+
+            if (my_secret_vp > 0) {
+              if (imperium_self.secret_objectives[my_secret_objective] != undefined) {
+                imperium_self.secret_objectives[my_secret_objective].scoreObjective(
+                  imperium_self,
+                  player,
+                  function () {
+                    imperium_self.addMove(
+                      "score\t" + player + "\t" + my_secret_vp + "\t" + my_secret_objective
+                    );
+
+                    if (vp > 0) {
+                      if (imperium_self.stage_i_objectives[objective] != undefined) {
+                        imperium_self.stage_i_objectives[objective].scoreObjective(
+                          imperium_self,
+                          player,
+                          function () {
+                            imperium_self.addMove(
+                              "score\t" + player + "\t" + vp + "\t" + objective
+                            );
+                            imperium_self.game.state.players_info[
+                              imperium_self.game.player - 1
+                            ].objectives_scored_this_round.push(my_secret_objective);
+                            imperium_self.game.state.players_info[
+                              imperium_self.game.player - 1
+                            ].objectives_scored_this_round.push(objective);
+                            imperium_self.endTurn();
+                          }
+                        );
+                      }
+                      if (imperium_self.stage_ii_objectives[objective] != undefined) {
+                        imperium_self.stage_ii_objectives[objective].scoreObjective(
+                          imperium_self,
+                          player,
+                          function () {
+                            imperium_self.addMove(
+                              "score\t" + player + "\t" + vp + "\t" + objective
+                            );
+                            imperium_self.game.state.players_info[
+                              imperium_self.game.player - 1
+                            ].objectives_scored_this_round.push(my_secret_objective);
+                            imperium_self.game.state.players_info[
+                              imperium_self.game.player - 1
+                            ].objectives_scored_this_round.push(objective);
+                            imperium_self.endTurn();
+                          }
+                        );
+                      }
+                    } else {
+                      imperium_self.game.state.players_info[
+                        imperium_self.game.player - 1
+                      ].objectives_scored_this_round.push(my_secret_objective);
+                      imperium_self.endTurn();
+                    }
+                  }
+                );
+              }
+              return 0;
+            }
+
+            if (vp > 0) {
+              if (imperium_self.stage_i_objectives[objective] != undefined) {
+                imperium_self.stage_i_objectives[objective].scoreObjective(
+                  imperium_self,
+                  player,
+                  function () {
+                    imperium_self.addMove("score\t" + player + "\t" + vp + "\t" + objective);
+                    imperium_self.game.state.players_info[
+                      imperium_self.game.player - 1
+                    ].objectives_scored_this_round.push(objective);
+                    imperium_self.endTurn();
+                  }
+                );
+              }
+              if (imperium_self.stage_ii_objectives[objective] != undefined) {
+                imperium_self.stage_ii_objectives[objective].scoreObjective(
+                  imperium_self,
+                  player,
+                  function () {
+                    imperium_self.addMove("score\t" + player + "\t" + vp + "\t" + objective);
+                    imperium_self.game.state.players_info[
+                      imperium_self.game.player - 1
+                    ].objectives_scored_this_round.push(objective);
+                    imperium_self.endTurn();
+                  }
+                );
+              }
+            } else {
+              imperium_self.endTurn();
+            }
+          },
+          2
+        );
+      });
+      return 0;
+    }
+  },
+});
 
 
 
@@ -11648,14 +12033,14 @@ console.log("qe: " + qe);
 
 
 
-  render(app) {
+  async render(app) {
 
     if (!this.browser_active) { return; }
 
 
     let imperium_self = this;
 
-    super.render(app);
+    await super.render(app);
 
     try {
 
@@ -11902,15 +12287,10 @@ console.log("qe: " + qe);
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, '#hexGrid');
-
+        this.hammer.render('#hexGrid');
       } else {
-
         this.sizer.render();
         this.sizer.attachEvents('#hexGrid'); // gameboard is hexgrid
-
       }
     } catch (err) {}
 
@@ -13800,16 +14180,16 @@ handleSystemsMenuItem() {
 
 
 
-  
+
   /////////////////////
   // Core Game Logic //
   /////////////////////
   handleGameLoop(msg=null) {
- 
+
     //
-    // set to 1 to speed-up game init for testing 
+    // set to 1 to speed-up game init for testing
     //
-    let debugging = 0; 
+    let debugging = 0;
 
     let imperium_self = this;
     let z = imperium_self.returnEventObjects();
@@ -13817,7 +14197,7 @@ handleSystemsMenuItem() {
     if (this.game.queue.length > 0) {
 
       imperium_self.saveGame(imperium_self.game.id);
-  
+
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
@@ -13830,10 +14210,10 @@ handleSystemsMenuItem() {
   	imperium_self.saveGame(imperium_self.game.id);
   	return;
       }
-  
 
 
-      if (mv[0] === "setvar") { 
+
+      if (mv[0] === "setvar") {
 
 	let type = mv[1]; // state or players
 	let num = parseInt(mv[2]); // 0 if state, player_number if players
@@ -13855,7 +14235,7 @@ handleSystemsMenuItem() {
   	return 1;
 
       }
-  
+
       //
       //
       //
@@ -13916,7 +14296,7 @@ handleSystemsMenuItem() {
 	if (lmv[1] != undefined) {
 	  if (lmv[1] === "tokenallocation") {
 	    if (lmv[2] != undefined) {
-	      if (lmv[2] === this.app.wallet.returnPublicKey()) {
+	      if (lmv[2] === await this.app.wallet.getPublicKey()) {
 		this.playing_token_allocation = 0;
 	      }
 	    }
@@ -13928,7 +14308,7 @@ handleSystemsMenuItem() {
 	//
 	if (mv[1] === "strategy") {
 	  if (mv[3]) {
-	    if (mv[3] === this.app.wallet.returnPublicKey()) {
+	    if (mv[3] === await this.app.wallet.getPublicKey()) {
               this.game.state.playing_strategy_card_secondary = 0;
 	    }
 	  }
@@ -13939,7 +14319,7 @@ handleSystemsMenuItem() {
 	// if we are playing the sceondary, we don't want to udpate status
 	//
 	if (this.game.state.playing_strategy_card_secondary == 0 && this.playing_token_allocation == 0) {
-          this.updateStatus("Waiting for Opponent Move..."); 
+          this.updateStatus("Waiting for Opponent Move...");
 	}
 
 	if (mv[1] == lmv[0]) {
@@ -13947,12 +14327,12 @@ handleSystemsMenuItem() {
 
 	    if (this.game.confirms_received == undefined || this.game.confirms_received == null) {
 	      if (mv[2] != -1) {
-		this.resetConfirmsNeeded(this.game.state.players_info.length); 
+		this.resetConfirmsNeeded(this.game.state.players_info.length);
 	      } else {
 
 		//
 		// aggressively resolve, or we hit an error in some
-		// situations which cause looping of the strategy 
+		// situations which cause looping of the strategy
 		// card.
 		//
 	        this.resetConfirmsNeeded(0);
@@ -14000,7 +14380,7 @@ console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
-		  if (this.game.players[z] === this.app.wallet.returnPublicKey()) { am_i_still_to_move = 1; }
+		  if (this.game.players[z] === await this.app.wallet.getPublicKey()) { am_i_still_to_move = 1; }
 console.log("WHO - IDX " + z);
 console.log("WHO - PLAYER " + (z+1));
 console.log("WHO: " + this.game.players[z]);
@@ -14026,11 +14406,11 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      //
 	      // we are waiting for a set number of confirmations
 	      // but maybe we reloaded and still need to move
-	      // in which case the instruction we need to run is 
-	      // the last one.... 
+	      // in which case the instruction we need to run is
+	      // the last one....
 	      //
 	      if (mv[3] != undefined) {
-	        if (!this.game.confirms_players.includes(this.app.wallet.returnPublicKey())) {
+	        if (!this.game.confirms_players.includes(await this.app.wallet.getPublicKey())) {
 	  	  return 1;
 	        }
                 if (mv[1] == "agenda") {
@@ -14040,9 +14420,9 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      if (this.game.confirms_needed < this.game.confirms_received) { return 1; }
   	      return 0;
             }
-  
+
             return 0;
-  
+
   	  } else {
     	    this.game.queue.splice(qe-1, 2);
   	    return 1;
@@ -14068,23 +14448,23 @@ console.log("WHO: " + this.returnFaction(z+1));
             }
           }
 	}
-      } 
- 
+      }
+
 
 
 
       if (mv[0] === "rider") {
-  
+
 	let x = {};
 	    x.player 	= mv[1];
 	    x.rider 	= mv[2];
 	    x.choice 	= mv[3];
 
-	this.game.state.riders.push(x);  
+	this.game.state.riders.push(x);
 
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
@@ -14215,7 +14595,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 
       if (mv[0] === "retreat") {
-  
+
 	let player = parseInt(mv[1]);
 	let opponent = parseInt(mv[2]);
         let from = mv[3];
@@ -14224,7 +14604,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	if (this.game.state.retreat_cancelled == 1 || this.game.state.players_info[opponent-1].temporary_opponent_cannot_retreat == 1 || this.game.state.players_info[opponent-1].permanent_opponent_cannot_retreat == 1) {
 	  this.updateLog("With retreat impossible, the fleets turns to battle...");
-	  return 1; 
+	  return 1;
 	}
 
 	let sys_from = this.returnSectorAndPlanets(from);
@@ -14245,7 +14625,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	imperium_self.updateLog(this.returnFactionNickname(player) + " retreats to " + sys_to.s.name);
 
   	return 1;
-  
+
       }
 
 
@@ -14254,7 +14634,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 
 
-      if (mv[0] === "repair") {  
+      if (mv[0] === "repair") {
 
   	let player       = parseInt(mv[1]);
         let type         = mv[2];
@@ -14262,20 +14642,20 @@ console.log("WHO: " + this.returnFaction(z+1));
         let planet_idx   = parseInt(mv[4]);
         let unit_idx     = parseInt(mv[5]);
 
-	let sys = this.returnSectorAndPlanets(sector);  
+	let sys = this.returnSectorAndPlanets(sector);
 
   	if (type == "space") {
 	  sys.s.units[player-1][unit_idx].strength = sys.s.units[player-1][unit_idx].max_strength;
   	} else {
 	  sys.p[planet_idx].units[player-1][unit_idx].strength = sys.p[planet_idx].units[player-1][unit_idx].max_strength;
         }
-  
+
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
-      if (mv[0] === "check_fleet_supply") {  
+      if (mv[0] === "check_fleet_supply") {
 
   	let player = parseInt(mv[1]);
   	let sector = mv[2];
@@ -14287,7 +14667,7 @@ console.log("WHO: " + this.returnFaction(z+1));
       }
 
 
-      if (mv[0] === "continue") {  
+      if (mv[0] === "continue") {
 
   	let player = mv[1];
   	let sector = mv[2];
@@ -14354,7 +14734,7 @@ console.log("WHO: " + this.returnFaction(z+1));
             z[k].postProduction(imperium_self, player, sector, stuff);
           }
         }
-	
+
 	return 1;
 
       }
@@ -14363,7 +14743,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 
       if (mv[0] === "produce") {
-  
+
   	let player       = mv[1];
         let player_moves = parseInt(mv[2]);
         let planet_idx   = parseInt(mv[3]); // planet to build on
@@ -14411,7 +14791,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	}
 
   	return 1;
-  
+
       }
 
 
@@ -14424,8 +14804,8 @@ console.log("WHO: " + this.returnFaction(z+1));
 
     	let player = mv[1];
     	let contplay = 0;
-	if (this.game.state.active_player_turn == player) { 
-	  contplay = 1; 
+	if (this.game.state.active_player_turn == player) {
+	  contplay = 1;
 	} else {
 
 	  //
@@ -14478,7 +14858,7 @@ console.log("WHO: " + this.returnFaction(z+1));
   	  this.updateStatus("<div class=\"status-header-text\">" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
-  
+
   	return 0;
       }
 
@@ -14491,10 +14871,10 @@ console.log("WHO: " + this.returnFaction(z+1));
 
   	let card = mv[1];
   	let strategy_card_player = parseInt(mv[2]);
-  	let stage = parseInt(mv[3]);  
+  	let stage = parseInt(mv[3]);
 
 	if (this.game.state.playing_strategy_card_secondary == 1) {
-	  if (this.game.confirms_players.includes(this.app.wallet.returnPublicKey()) || this.game.tmp_confirms_players.includes(this.app.wallet.returnPublicKey())) {
+	  if (this.game.confirms_players.includes(this.app.wallet.getPublicKey()) || this.game.tmp_confirms_players.includes(this.app.wallet.getPublicKey())) {
 	    return 0;
 	  } else {
 	    //
@@ -14534,7 +14914,7 @@ console.log("WHO: " + this.returnFaction(z+1));
   	  this.playStrategyCardTertiary(strategy_card_player, card);
 	  return 0;
   	}
-  
+
   	return 0;
 
       }
@@ -14563,7 +14943,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
       }
       if (mv[0] === "strategy_card_before_event") {
-  
+
   	let card = mv[1];
   	let player = parseInt(mv[2]);
   	let strategy_card_player = parseInt(mv[3]);
@@ -14575,9 +14955,9 @@ console.log("WHO: " + this.returnFaction(z+1));
         return z[z_index].strategyCardBeforeEvent(this, player, strategy_card_player, card);
 
       }
-  
+
       if (mv[0] === "strategy_card_after") {
-  
+
   	let card = mv[1];
   	let player = parseInt(mv[2]);
         let z = this.returnEventObjects();
@@ -14602,7 +14982,7 @@ console.log("WHO: " + this.returnFaction(z+1));
         return 1;
       }
       if (mv[0] === "strategy_card_after_event") {
-  
+
   	let card = mv[1];
   	let player = parseInt(mv[2]);
   	let strategy_card_player = parseInt(mv[3]);
@@ -14614,10 +14994,10 @@ console.log("WHO: " + this.returnFaction(z+1));
         return z[z_index].strategyCardAfterEvent(this, player, strategy_card_player, card);
 
       }
-  
+
 
       if (mv[0] === "playerschoosestrategycards_before") {
-  
+
   	let card = mv[1];
   	let player = parseInt(mv[2]);
   	let strategy_card_player = parseInt(mv[3]);
@@ -14637,7 +15017,7 @@ console.log("WHO: " + this.returnFaction(z+1));
         return 1;
       }
       if (mv[0] === "playerschoosestrategycards_before_event") {
-  
+
   	let player = parseInt(mv[1]);
   	let z_index = parseInt(mv[2]);
         let z = this.returnEventObjects();
@@ -14648,7 +15028,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
       }
       if (mv[0] === "playerschoosestrategycards_after") {
-  
+
   	let card = mv[1];
   	let player = parseInt(mv[2]);
   	let strategy_card_player = parseInt(mv[3]);
@@ -14677,12 +15057,12 @@ console.log("WHO: " + this.returnFaction(z+1));
         return z[z_index].playersChooseStrategyCardsAfterEvent(this, player);
 
       }
-  
+
 
 
 
       if (mv[0] === "turn") {
-  
+
   	this.game.state.turn++;
 
         this.game.state.active_player_moved = 0;
@@ -14692,7 +15072,7 @@ console.log("WHO: " + this.returnFaction(z+1));
         for (let i = 0; i < this.game.state.players_info.length; i++) {
   	  if (this.game.state.players_info[i].passed == 0) { new_round = 0; }
         }
-  
+
   	//
   	// NEW TURN
   	//
@@ -14702,10 +15082,10 @@ console.log("WHO: " + this.returnFaction(z+1));
   	} else {
   	  this.game.queue.push("setinitiativeorder");
   	}
-  
+
   	this.updateLeaderboard();
 	return 1;
-  
+
       }
 
 
@@ -14716,7 +15096,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	let target   = mv[2];
 	let choice   = mv[3];
   	this.game.queue.splice(qe, 1);
- 
+
 	if (target == "agenda") {
           for (let z = 0; z < this.game.state.agendas.length; z++) {
 	    if (this.game.state.agendas[z] == choice) {
@@ -14725,9 +15105,9 @@ console.log("WHO: " + this.returnFaction(z+1));
 	    }
 	  }
 	}
-	return 1; 
+	return 1;
       }
-     
+
 
       if (mv[0] === "quash") {
 
@@ -14773,7 +15153,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	// speaker breaks ties
 	//
 	if (mv[2] === "speaker") {
-	  // resolve_agenda	speaker	    winning_choice	
+	  // resolve_agenda	speaker	    winning_choice
 	  let winner = mv[3];
 	  for (let i = 0; i < this.game.state.choices.length; i++) {
 	    if (this.game.state.choices[i] === winner) {
@@ -14798,11 +15178,11 @@ console.log("WHO: " + this.returnFaction(z+1));
 	    let is_player = 0;
 	    let is_sector = 0;
 
-	    if (this.agenda_cards[agenda].elect == "planet") { 
+	    if (this.agenda_cards[agenda].elect == "planet") {
 	      is_planet = 1;
               this.updateLog("Agenda Outcome: " + this.game.planets[this.game.state.choices[i]].name + " receives " + winning_options[i] + " votes");
 	    }
-	    if (this.agenda_cards[agenda].elect == "player") { 
+	    if (this.agenda_cards[agenda].elect == "player") {
 	      is_player = 1;
               if (this.returnFactionNickname(this.game.state.choices[i]) !== "Unknown") {
                 this.updateLog("Agenda Outcome: " + this.returnFactionNickname(this.game.state.choices[i]) + " receives " + winning_options[i] + " votes");
@@ -14810,7 +15190,7 @@ console.log("WHO: " + this.returnFaction(z+1));
                 this.updateLog("Agenda Outcome: " + this.game.state.choices[i] + " receives " + winning_options[i] + " votes");
 	      }
 	    }
-	    if (this.agenda_cards[agenda].elect == "sector") { 
+	    if (this.agenda_cards[agenda].elect == "sector") {
 	      is_sector = 1;
               this.updateLog("Agenda Outcome: " + this.game.sectors[this.game.state.choices[i]].name + " receives " + winning_options[i] + " votes");
 	    }
@@ -14825,7 +15205,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	let tied_choices = [];
         for (let i = 0; i < winning_options.length; i++) {
           if (winning_options[i] == max_votes_options) {
-	    total_options_at_winning_strength++; 
+	    total_options_at_winning_strength++;
 	    tied_choices.push(this.game.state.choices[i]);
 	  }
         }
@@ -14845,8 +15225,8 @@ console.log("WHO: " + this.returnFaction(z+1));
 	//
 	//
 	//
-	if (tied_choices.length == 1) { 
-	  winning_choice = tied_choices[0]; 
+	if (tied_choices.length == 1) {
+	  winning_choice = tied_choices[0];
 	}
 
 	//
@@ -14960,7 +15340,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  let players_opposed = [];
 
 	  let winning_options = [];
-	  for (let i = 0; i < this.game.state.choices.length; i++) { 
+	  for (let i = 0; i < this.game.state.choices.length; i++) {
 	    winning_options.push(0);
 	  }
 	  for (let i = 0; i < this.game.players.length; i++) {
@@ -14981,12 +15361,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      this.updateLog(this.game.state.choices[i] + " receives " + winning_options[i] + " votes");
 	    }
 	  }
-	  
+
 	  let total_options_at_winning_strength = 0;
 	  for (let i = 0; i < winning_options.length; i++) {
 	    if (winning_options[i] == max_votes_options) { total_options_at_winning_strength++; }
 	  }
-	
+
 	}
 
   	this.game.queue.splice(qe, 1);
@@ -15026,11 +15406,11 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 
 	for (let i = 0; i < speaker_order.length; i++) {
-	  if (this.game.state.voted_on_agenda[speaker_order[i]-1][agenda_num] == 0) { 
+	  if (this.game.state.voted_on_agenda[speaker_order[i]-1][agenda_num] == 0) {
 	    // FEB 1
 	    //who_is_next = i+1;
 	    who_is_next = speaker_order[i];
-	    i = this.game.state.players_info.length; 
+	    i = this.game.state.players_info.length;
 	  }
         }
 
@@ -15058,7 +15438,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  // if the player has a rider, we skip the interactive voting and submit an abstention
 	  //
 	  if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	    imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+"abstain"+"\t"+"0");
 	    imperium_self.endTurn();
 	    return 0;
@@ -15122,11 +15502,11 @@ console.log("WHO: " + this.returnFaction(z+1));
 	    if (is_planet == 1 && vote != "abstain") {
   	      imperium_self.hidePlanetCard(imperium_self.game.planets[imperium_self.game.state.choices[vote]].tile, imperium_self.game.planets[imperium_self.game.state.choices[vote]].idx);
   	      imperium_self.hideSectorHighlight(imperium_self.game.planets[imperium_self.game.state.choices[vote]].tile);
-	    }	
+	    }
 
 	    if (vote == "abstain") {
 
-	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -15147,8 +15527,8 @@ console.log("WHO: " + this.returnFaction(z+1));
             $('.option').on('click', function() {
 
               votes = $(this).attr("id");
- 
-  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+
+  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -15204,7 +15584,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	//
 	// voting happens simultaneously
 	//
-	if (this.game.state.voted_on_agenda[this.game.player-1][agenda_num] == 1) { 
+	if (this.game.state.voted_on_agenda[this.game.player-1][agenda_num] == 1) {
 
           let html  = '<div class="agenda_instructions">Waiting for Voting Results:</div>';
   	      html += '<div class="agenda_name">' + imperium_self.agenda_cards[agenda].name + '</div>';
@@ -15225,7 +15605,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  // if the player has a rider, we skip the interactive voting and submit an abstention
 	  //
 	  if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	    imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+"abstain"+"\t"+"0");
 	    imperium_self.endTurn();
 	    return 0;
@@ -15290,11 +15670,11 @@ console.log("WHO: " + this.returnFaction(z+1));
 	    if (is_planet == 1 && vote != "abstain") {
   	      imperium_self.hidePlanetCard(imperium_self.game.planets[imperium_self.game.state.choices[vote]].tile, imperium_self.game.planets[imperium_self.game.state.choices[vote]].idx);
   	      imperium_self.hideSectorHighlight(imperium_self.game.planets[imperium_self.game.state.choices[vote]].tile);
-	    }	
+	    }
 
 	    if (vote == "abstain") {
 
-	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -15321,8 +15701,8 @@ console.log("WHO: " + this.returnFaction(z+1));
             $('.option').on('click', function() {
 
               votes = $(this).attr("id");
- 
-  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+
+  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -15337,12 +15717,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 
       if (mv[0] == "change_speaker") {
-  
+
   	this.game.state.speaker = parseInt(mv[1]);
 	this.displayFactionDashboard();
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
@@ -15357,11 +15737,11 @@ console.log("WHO: " + this.returnFaction(z+1));
   	    this.game.queue.push("play\t"+initiative_order[i]);
   	  }
   	}
- 
+
   	return 1;
-  
+
       }
-  
+
       //
       // resetconfirmsneeded [confirms_before_continuing] [array \t of \t pkeys]
       //
@@ -15382,17 +15762,17 @@ console.log("WHO: " + this.returnFaction(z+1));
 	// we undo this when we receive our own token allocation onchain
 	//
 	if (this.playing_token_allocation == 1) { return; }
-	this.playing_token_allocation = 1; 
+	this.playing_token_allocation = 1;
 
 	if (parseInt(mv[2])) {
  	  this.playerAllocateNewTokens(parseInt(mv[1]), parseInt(mv[2]), 1, 3);
-	} else { 
+	} else {
  	  this.playerAllocateNewTokens(this.game.player, (this.game.state.players_info[this.game.player-1].new_tokens_per_round+this.game.state.players_info[this.game.player-1].new_token_bonus_when_issued), 1, 3);
         }
   	return 0;
       }
-  
-  
+
+
       if (mv[0] === "newround") {
 
 	//
@@ -15477,7 +15857,7 @@ console.log("WHO: " + this.returnFaction(z+1));
   	//
   	this.repairUnits();
 
-  
+
   	//
   	// SET INITIATIVE ORDER
   	//
@@ -15540,10 +15920,10 @@ if (debugging == 0) {
 }
 
 
-  
+
   	//
   	// READY (arcade can let us in!)
-  	//	  
+  	//
   	if (this.game.initializing == 1) {
           this.game.queue.push("READY");
   	} else {
@@ -15564,7 +15944,7 @@ if (debugging == 0) {
             this.game.queue.push("DEAL\t2\t"+i+'\t'+(this.game.state.players_info[i-1].action_cards_per_round+this.game.state.players_info[i-1].action_cards_bonus_when_issued));
   	  }
   	}
-  
+
 
   	//
   	// FLIP NEW AGENDA CARDS
@@ -15579,7 +15959,7 @@ if (debugging == 0) {
 	// DE-ACTIVATE SYSTEMS
 	//
         this.deactivateSectors();
-        this.unhighlightSectors();	
+        this.unhighlightSectors();
 
 
   	//
@@ -15610,7 +15990,7 @@ if (debugging == 0) {
 	}
     	return 1;
       }
- 
+
 
       if (mv[0] === "revealagendas") {
 
@@ -15624,10 +16004,10 @@ if (debugging == 0) {
     	  this.game.state.agendas_voting_information = [];
         }
         for (i = 0; i < this.game.pool[0].hand.length; i++) {
-          this.game.state.agendas.push(this.game.pool[0].hand[i]);	
+          this.game.state.agendas.push(this.game.pool[0].hand[i]);
           this.game.state.agendas_voting_information.push({});
   	}
-  
+
   	//
   	// reset pool
   	//
@@ -15637,7 +16017,7 @@ if (debugging == 0) {
 
   	return 1;
       }
-  
+
       if (mv[0] === "shownewobjectives") {
 
 	let game_mod = this;
@@ -15655,16 +16035,16 @@ if (debugging == 0) {
 	  if (this.game.state.new_objectives[i].type == "stage2") {
 	    cards.push(this.stage_ii_objectives[this.game.state.new_objectives[i].card]);
 	  }
-	}  
+	}
 
         this.objectives_overlay.render(cards);
 
 /*****
   	if (this.game.state.round > 1) {
-  	  title = "New Objectives"; 
+  	  title = "New Objectives";
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
-       
+
         this.overlay.showCardSelectionOverlay(this.app, this, cards, {
 
 	  title : title,
@@ -15722,7 +16102,7 @@ if (debugging == 0) {
 	if (this.game.pool.length > 1) {
           for (i = 0; i < this.game.pool[1].hand.length; i++) {
   	    if (!this.game.state.stage_i_objectives.includes(this.game.pool[1].hand[i])) {
-              this.game.state.stage_i_objectives.push(this.game.pool[1].hand[i]);	
+              this.game.state.stage_i_objectives.push(this.game.pool[1].hand[i]);
 	      this.game.state.new_objectives.push({ type : "stage1" , card : this.game.pool[1].hand[i]});
 	    }
   	  }
@@ -15730,7 +16110,7 @@ if (debugging == 0) {
 	if (this.game.pool.length > 2) {
           for (i = 0; i < this.game.pool[2].hand.length; i++) {
 	    if (!this.game.state.stage_ii_objectives.includes(this.game.pool[2].hand[i])) {
-              this.game.state.stage_ii_objectives.push(this.game.pool[2].hand[i]);	
+              this.game.state.stage_ii_objectives.push(this.game.pool[2].hand[i]);
 	      this.game.state.new_objectives.push({ type : "stage2" , card : this.game.pool[2].hand[i]});
   	    }
   	  }
@@ -15742,7 +16122,7 @@ if (debugging == 0) {
 
 
       if (mv[0] === "is_testing") {
- 
+
 	//
 	// allows specifying objectives and action cards R1
 	//
@@ -15808,16 +16188,16 @@ if (debugging == 0) {
 	}
 
         if (this.secret_objectives[objective] != null) {
-	  objective_name = this.secret_objectives[objective].name; 
-	  objective_text = this.secret_objectives[objective].text; 
+	  objective_name = this.secret_objectives[objective].name;
+	  objective_text = this.secret_objectives[objective].text;
 	}
-        if (this.stage_i_objectives[objective] != null) { 
+        if (this.stage_i_objectives[objective] != null) {
 	  objective_name = this.stage_i_objectives[objective].name;
-	  objective_text = this.stage_i_objectives[objective].text; 
+	  objective_text = this.stage_i_objectives[objective].text;
 	}
         if (this.stage_ii_objectives[objective] != null) {
 	  objective_name = this.stage_ii_objectives[objective].name;
-	  objective_text = this.stage_ii_objectives[objective].text; 
+	  objective_text = this.stage_ii_objectives[objective].text;
 	}
 
 	if (objective_text == "") {
@@ -15848,10 +16228,10 @@ if (debugging == 0) {
   	return 1;
 
       }
-  
-  
+
+
       if (mv[0] === "playerschoosestrategycards") {
-  
+
   	this.updateStatus("Players selecting strategy cards, starting from " + this.returnSpeaker());
 
 	let cards_issued = [];
@@ -15872,7 +16252,7 @@ if (debugging == 0) {
   	// all strategy cards on table again
   	//
   	let x = this.returnStrategyCards();
-  
+
   	for (let z in x) {
     	  if (!this.game.state.strategy_cards.includes(z)) {
 	    let include_me = 1;
@@ -15883,12 +16263,12 @@ if (debugging == 0) {
             }
           }
   	}
-  
+
   	if (this.game.player == this.game.state.speaker) {
-  
+
   	  this.addMove("resolve\tplayerschoosestrategycards");
   	  this.addMove("addbonustounselectedstrategycards");
-  
+
   	  let cards_to_select = 1;
   	  if (this.game.state.players_info.length == 2) { cards_to_select = 3; }
   	  if (this.game.state.players_info.length == 3) { cards_to_select = 2; }
@@ -15909,22 +16289,22 @@ if (debugging == 0) {
               }
             }
   	  }
-  
+
   	  this.endTurn();
   	}
 
  	return 0;
       }
-  
+
       if (mv[0] === "addbonustounselectedstrategycards") {
-  
+
         for (let i = 0; i < this.game.state.strategy_cards.length; i++) {
           this.game.state.strategy_cards_bonus[i] += 1;
   	}
-  
+
         this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
@@ -15943,7 +16323,7 @@ if (debugging == 0) {
 	    this.updateStatus(this.returnFactionName(this, player) + " is selecting planets to exhaust.");
 	    return 0;
 	  } else {
-	
+
             this.playerSelectPlanetWithFilter(
 
       	      "Select a planet to exhaust at start of turn: ",
@@ -15974,7 +16354,7 @@ if (debugging == 0) {
 	    }
 	  }
 	}
-	if (type == "industrial") {	
+	if (type == "industrial") {
 	  for (let i in this.game.planets) {
 	    if (this.game.planets[i].type == "industrial" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
@@ -16014,7 +16394,7 @@ if (debugging == 0) {
 
 
       if (mv[0] === "pickstrategy") {
-  
+
   	let player       = parseInt(mv[1]);
   	let selection    = parseInt(mv[2]);
 
@@ -16057,7 +16437,7 @@ if (debugging == 0) {
   	}
   	return 0;
       }
-  
+
 
       if (mv[0] === "land") {
 
@@ -16089,13 +16469,13 @@ if (debugging == 0) {
         if (this.game.queue.length > 1) {
 	  if (this.game.queue[this.game.queue.length-2].indexOf("land") != 0) {
             let player_forces = this.returnNumberOfGroundForcesOnPlanet(player, sector, planet_idx);
-	    this.updateLog(this.returnFactionNickname(player) + " lands " + player_forces + " infantry on " + sys.p[parseInt(planet_idx)].name);  
+	    this.updateLog(this.returnFactionNickname(player) + " lands " + player_forces + " infantry on " + sys.p[parseInt(planet_idx)].name);
 	  } else {
 	    let lmv = this.game.queue[this.game.queue.length-2].split("\t");
 	    let lplanet_idx = lmv[6];
 	    if (lplanet_idx != planet_idx) {
               let player_forces = this.returnNumberOfGroundForcesOnPlanet(player, sector, planet_idx);
-	      this.updateLog(this.returnFactionNickname(player) + " lands " + player_forces + " infantry on " + sys.p[parseInt(planet_idx)].name);  
+	      this.updateLog(this.returnFactionNickname(player) + " lands " + player_forces + " infantry on " + sys.p[parseInt(planet_idx)].name);
 	    }
 	  }
 	}
@@ -16104,7 +16484,7 @@ if (debugging == 0) {
         this.updateSectorGraphics(sector);
         this.game.queue.splice(qe, 1);
         return 1;
-  
+
       }
 
 
@@ -16149,7 +16529,7 @@ if (debugging == 0) {
 
 
       if (mv[0] === "load") {
-  
+
   	let player       = mv[1];
   	let player_moves = mv[2];
         let sector       = mv[3];
@@ -16180,13 +16560,13 @@ if (debugging == 0) {
         this.updateSectorGraphics(sector);
         this.game.queue.splice(qe, 1);
         return 1;
-  
+
       }
 
 
 
       if (mv[0] === "annex") {
-  
+
   	let player 	= parseInt(mv[1]);
   	let sector	= mv[2];
   	let planet_idx	= parseInt(mv[3]);
@@ -16209,12 +16589,12 @@ if (debugging == 0) {
         this.updateSectorGraphics(sector);
 
   	return 1;
-  
+
       }
 
 
       if (mv[0] === "give") {
-  
+
   	let giver       = parseInt(mv[1]);
         let recipient    = parseInt(mv[2]);
         let type         = mv[3];
@@ -16256,8 +16636,8 @@ if (debugging == 0) {
 	  }
 	  return 0;
         }
-  
-	
+
+
 	if (type == "promissary") {
 	  this.givePromissary(giver, recipient, details);
 	  let z = this.returnEventObjects();
@@ -16273,7 +16653,7 @@ if (debugging == 0) {
 
 
       if (mv[0] === "adjacency") {
-  
+
   	let type       	= mv[1];
   	let sector1	= mv[2];
   	let sector2	= mv[3];
@@ -16286,7 +16666,7 @@ if (debugging == 0) {
 
 
       if (mv[0] === "pull") {
-  
+
   	let puller       = parseInt(mv[1]);
         let pullee       = parseInt(mv[2]);
         let type         = mv[3];
@@ -16345,91 +16725,91 @@ if (debugging == 0) {
 
 	  }
   	}
-  
-  	return 0;  
+
+  	return 0;
 
       }
 
 
       if (mv[0] === "expend") {
-  
+
   	let player       = parseInt(mv[1]);
         let type         = mv[2];
         let details      = mv[3];
-  
+
         if (type == "command") {
   	  this.game.state.players_info[player-1].command_tokens -= parseInt(details);
-  	  if (this.game.state.players_info[player-1].command_tokens < 0) { 
+  	  if (this.game.state.players_info[player-1].command_tokens < 0) {
   	    this.game.state.players_info[player-1].command_tokens = 0;
 	  };
   	}
         if (type == "strategy") {
   	  this.game.state.players_info[player-1].strategy_tokens -= parseInt(details);
-  	  if (this.game.state.players_info[player-1].strategy_tokens < 0) { 
+  	  if (this.game.state.players_info[player-1].strategy_tokens < 0) {
   	    this.game.state.players_info[player-1].strategy_tokens = 0;
 	  };
   	}
         if (type == "fleet") {
   	  this.game.state.players_info[player-1].fleet_supply -= parseInt(details);
-  	  if (this.game.state.players_info[player-1].fleet_supply < 0) { 
+  	  if (this.game.state.players_info[player-1].fleet_supply < 0) {
   	    this.game.state.players_info[player-1].fleet_supply = 0;
 	  };
   	}
         if (type == "goods") {
   	  this.game.state.players_info[player-1].goods -= parseInt(details);
-  	  if (this.game.state.players_info[player-1].goods < 0) { 
+  	  if (this.game.state.players_info[player-1].goods < 0) {
   	    this.game.state.players_info[player-1].goods = 0;
 	  };
   	}
         if (type == "trade") {
   	  this.game.state.players_info[player-1].goods -= parseInt(details);
-  	  if (this.game.state.players_info[player-1].goods < 0) { 
+  	  if (this.game.state.players_info[player-1].goods < 0) {
   	    this.game.state.players_info[player-1].goods = 0;
 	  };
   	}
         if (type == "planet") {
   	  this.game.planets[details].exhausted = 1;
   	}
-  
+
 	this.updateTokenDisplay();
 	this.updateLeaderboard();
 	this.displayFactionDashboard();
- 
+
 
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
 
       if (mv[0] === "exhaust") {
-  
+
   	let player       = parseInt(mv[1]);
         let type	 = mv[2];
         let name	 = mv[3];
-  
+
   	if (type == "planet") { this.exhaustPlanet(name); }
 	this.displayFactionDashboard();
 
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
       if (mv[0] === "unexhaust") {
-  
+
   	let player       = parseInt(mv[1]);
         let type	 = mv[2];
         let name	 = mv[3];
-  
+
   	if (type == "planet") { this.unexhaustPlanet(name); }
-  
+
 	this.displayFactionDashboard();
 
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
       if (mv[0] === "offer") {
@@ -16544,7 +16924,7 @@ if (debugging == 0) {
 
         return 0;
       }
-      
+
 
 
       if (mv[0] === "refuse_offer") {
@@ -16567,11 +16947,11 @@ if (debugging == 0) {
         return 1;
 
       }
-      
+
 
 
       if (mv[0] === "trade") {
-  
+
   	let offering_faction      = parseInt(mv[1]);
   	let faction_responding    = parseInt(mv[2]);
         let offer	 	  = JSON.parse(mv[3]);
@@ -16582,7 +16962,7 @@ if (debugging == 0) {
 	if (offering_faction == this.game.player) {
 	  this.game.queue.push("ACKNOWLEDGE\tYour trade offer has been accepted by "+this.returnFaction(faction_responding));
 	}
-        
+
 	this.updateLog(this.returnFactionNickname(faction_responding) + " accepts trade offer");
 
         this.game.state.players_info[offering_faction-1].traded_this_turn = 1;
@@ -16624,12 +17004,12 @@ if (debugging == 0) {
 
 	this.displayFactionDashboard();
   	return 1;
-  	
+
       }
 
 
 
-      
+
       //
       // can be used for passive activation that does not spend
       // tokens or trigger events, like activating in diplomacy
@@ -16655,7 +17035,7 @@ if (debugging == 0) {
 
 
       if (mv[0] === "deactivate") {
-  
+
   	let player       = parseInt(mv[1]);
         let sector	 = mv[2];
 
@@ -16665,7 +17045,7 @@ if (debugging == 0) {
         this.updateSectorGraphics(sector);
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
@@ -16713,7 +17093,7 @@ if (debugging == 0) {
 
           if (this.game.player == player && this.browser_active == 1) {
 
-	    // maybe we are already looking at an action card overlay? 
+	    // maybe we are already looking at an action card overlay?
 	    let bonus_buff = 0;
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
@@ -16758,10 +17138,10 @@ if (debugging == 0) {
 	return this.handleActionCardLimit(player);
 
       }
-  
+
 
       if (mv[0] === "purchase") {
-  
+
   	let player       = parseInt(mv[1]);
         let item         = mv[2];
         let amount       = parseInt(mv[3]);
@@ -16771,7 +17151,7 @@ if (debugging == 0) {
 
   	  this.updateLog(this.returnFactionNickname(player) + " takes " + this.strategy_cards[mv[3]].name);
 
-	  let strategy_card = mv[3];  
+	  let strategy_card = mv[3];
 	  for (let z_index in z) {
             strategy_card = z[z_index].gainStrategyCard(imperium_self, player, strategy_card);
           }
@@ -16870,14 +17250,14 @@ if (debugging == 0) {
   	    this.updateLog(this.returnFactionNickname(player) + " increases fleet supply to " + this.game.state.players_info[player-1].fleet_supply);
   	  }
   	}
-  
+
 	this.updateTokenDisplay();
 	this.updateLeaderboard();
 	this.displayFactionDashboard();
 
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
@@ -16886,38 +17266,38 @@ if (debugging == 0) {
   	this.game.state.players_info[player-1].passed = 1;
   	this.updateLog(this.returnFactionNickname(player) + " has passed");
   	this.game.queue.splice(qe, 1);
-  	return 1;  
+  	return 1;
       }
 
 
       if (mv[0] === "add_infantry_to_planet") {
- 
+
   	let player       = mv[1];
         let planet       = mv[2];
         let player_moves = parseInt(mv[3]);
-  
+
  	if (player_moves == 0 && this.game.player == player) {
 	}
 	else {
-	  this.game.planets[planet].units[player-1].push(this.returnUnit("infantry", player)); 
+	  this.game.planets[planet].units[player-1].push(this.returnUnit("infantry", player));
 	}
 
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
       if (mv[0] === "remove_infantry_from_planet") {
- 
+
   	let player       = mv[1];
         let planet_n       = mv[2];
-        let player_moves = parseInt(mv[3]); 
- 
+        let player_moves = parseInt(mv[3]);
+
  	if (player_moves == 0 && this.game.player == player) {
 	}
 	else {
-	
+
 	  let planet = this.game.planets[planet_n];
 	  let planetunits = planet.units[player-1].length;
 
@@ -16933,12 +17313,12 @@ if (debugging == 0) {
 
   	this.game.queue.splice(qe, 1);
   	return 1;
-  
+
       }
 
 
       if (mv[0] === "move") {
- 
+
   	let player       = mv[1];
         let player_moves = parseInt(mv[2]);
         let sector_from  = mv[3];
@@ -16957,7 +17337,7 @@ if (debugging == 0) {
 
         //
 	// deal with rift loss-probability
-	// 
+	//
 	if (hazard === "rift") {
 
 	  let obj = JSON.parse(shipjson);
@@ -16996,7 +17376,7 @@ if (debugging == 0) {
 	  if (next_move != "move") { this.updateLog(this.returnFactionNickname(player) + " moves " + this.returnPlayerFleetInSector(player, sector_to) + " into " + sys2.s.name); }
 
   	}
-  
+
   	this.updateSectorGraphics(sector_to);
   	this.updateSectorGraphics(sector_from);
   	this.game.queue.splice(qe, 1);
@@ -17020,7 +17400,7 @@ if (debugging == 0) {
         }
 
   	return 1;
-  
+
       }
 
 
@@ -17052,7 +17432,7 @@ if (debugging == 0) {
 	}
   	return 1;
       }
-      if (mv[0] === "player_end_turn_event") {  
+      if (mv[0] === "player_end_turn_event") {
   	let player = parseInt(mv[1]);
   	let z_index = parseInt(mv[2]);
 	let z = this.returnEventObjects();
@@ -17067,10 +17447,10 @@ if (debugging == 0) {
       // ACTIVATE SYSTEM //
       /////////////////////
       if (mv[0] === "activate_system") {
-  
+
   	let activating_player       = parseInt(mv[1]);
         let sector	 = mv[2];
-	let player_to_continue = mv[3];  
+	let player_to_continue = mv[3];
         let z = this.returnEventObjects();
 
         sys = this.returnSectorAndPlanets(sector);
@@ -17121,7 +17501,7 @@ console.log("K: " + z[k].name);
         this.updateSectorGraphics(sector);
 	// control returns to original player
         if (this.game.player == player) {
-	  this.playerPostActivateSystem(sector); 
+	  this.playerPostActivateSystem(sector);
 	} else {
           let sys = imperium_self.returnSectorAndPlanets(sector);
 	  this.updateStatus(this.returnFactionName(this, player) + " continues after activating " + sys.s.name);
@@ -17136,7 +17516,7 @@ console.log("K: " + z[k].name);
       // AGENDA VOTING //
       ///////////////////
       if (mv[0] === "pre_agenda_stage") {
-  
+
         let z = this.returnEventObjects();
 	let agenda = mv[1];
 
@@ -17189,7 +17569,7 @@ console.log("K: " + z[k].name);
         let agenda       = mv[2];
         this.game.queue.splice(qe, 1);
 	if (this.game.player == player) {
-          this.playerPlayPreAgendaStage(player, agenda);        
+          this.playerPlayPreAgendaStage(player, agenda);
 	}
         return 0;
       }
@@ -17312,12 +17692,12 @@ console.log("K: " + z[k].name);
 	  let tied_choices = [];
           for (let i = 0; i < winning_options.length; i++) {
             if (winning_options[i] == max_votes_options) {
-	      total_options_at_winning_strength++; 
+	      total_options_at_winning_strength++;
 	      tied_choices.push(this.game.state.choices[i]);
 	    }
           }
 
-          this.playerPlayPostAgendaStage(player, agenda, tied_choices); 
+          this.playerPlayPostAgendaStage(player, agenda, tied_choices);
 	}
         return 0;
       }
@@ -17327,7 +17707,7 @@ console.log("K: " + z[k].name);
       //////////////////////
       // PDS SPACE ATTACK //
       //////////////////////
-      if (mv[0] === "pds_space_attack") {  
+      if (mv[0] === "pds_space_attack") {
 
   	let attacker     = mv[1];
         let sector       = mv[2];
@@ -17338,7 +17718,7 @@ console.log("K: " + z[k].name);
         let speaker_order = this.returnSpeakerOrder();
 
 	//
-	// reset 
+	// reset
 	//
 	this.resetTargetUnits();
 
@@ -17355,7 +17735,7 @@ console.log("K: " + z[k].name);
 
 
       if (mv[0] === "pds_space_attack_event") {
-  
+
         let z 	 	 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
   	let attacker       = parseInt(mv[2]);
@@ -17378,7 +17758,7 @@ console.log("K: " + z[k].name);
   	this.game.queue.splice(qe, 1);
 
         this.updateSectorGraphics(sector);
-	
+
 	let opponent = this.returnOpponentInSector(attacker, sector);
 
 	if (opponent == -1) { return 1; }
@@ -17421,7 +17801,7 @@ console.log("K: " + z[k].name);
 
 
 	if (this.game.player == player) {
-          this.playerPlayPDSAttack(player, attacker, sector);        
+          this.playerPlayPDSAttack(player, attacker, sector);
 	}
 
         return 0;
@@ -17436,7 +17816,7 @@ console.log("K: " + z[k].name);
       // PDS SPACE DEFENSE //
       ///////////////////////
       if (mv[0] === "pds_space_defense") {
-  
+
   	let attacker       = mv[1];
         let sector       = mv[2];
 	let z		 = this.returnEventObjects();
@@ -17446,7 +17826,7 @@ console.log("K: " + z[k].name);
         let speaker_order = this.returnSpeakerOrder();
 
 	//
-	// reset 
+	// reset
 	//
 	this.resetTargetUnits();
 
@@ -17462,7 +17842,7 @@ console.log("K: " + z[k].name);
 
 
       if (mv[0] === "pds_space_defense_event") {
-  
+
         let z 	 	 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
   	let attacker       = parseInt(mv[2]);
@@ -17488,7 +17868,7 @@ console.log("K: " + z[k].name);
 
 	//
 	// all pds units have been identified and have chosen to fire at this point
-        // this is taken care of by the event above. so we should calculate hits and 
+        // this is taken care of by the event above. so we should calculate hits and
 	// process re-rolls.
 	//
         let speaker_order = this.returnSpeakerOrder();
@@ -17517,7 +17897,7 @@ console.log("K: " + z[k].name);
 	this.updateLog(this.returnFactionNickname(player) + " preparing to fire PDS");
 
 	if (this.game.player == player) {
-          this.playerPlayPDSDefense(player, attacker, sector);        
+          this.playerPlayPDSDefense(player, attacker, sector);
 	}
 
         return 0;
@@ -17630,7 +18010,7 @@ console.log("K: " + z[k].name);
 
    	          for (let z_index in z) {
 	            planet.units[i][ii] = z[z_index].unitDestroyed(imperium_self, attacker, planet.units[i][ii]);
-	          } 
+	          }
 
 	          //
 	          // record units destroyed this round
@@ -17690,7 +18070,7 @@ console.log("K: " + z[k].name);
 	      sys.s.units[defender-1][unit_idx].destroyed = 1;
 	      for (let z_index in z) {
 	        sys.s.units[defender-1][unit_idx] = z[z_index].unitDestroyed(imperium_self, attacker, sys.s.units[defender-1][unit_idx]);
-	      } 
+	      }
 
 	      //
 	      // record units destroyed this round
@@ -18008,7 +18388,7 @@ console.log("K: " + z[k].name);
 
 	if (total == 1) {
   	  this.updateStatus(this.returnFaction(player) + " is destroying "+total+" unit");
-	} else { 
+	} else {
   	  this.updateStatus(this.returnFaction(player) + " is destroying "+total+" units");
 	}
 
@@ -18046,7 +18426,7 @@ console.log("K: " + z[k].name);
 
 	if (total == 1) {
   	  this.updateStatus(this.returnFaction(player) + " is destroying "+total+" ship");
-	} else { 
+	} else {
   	  this.updateStatus(this.returnFaction(player) + " is destroying "+total+" ships");
 	}
 
@@ -18072,7 +18452,7 @@ console.log("K: " + z[k].name);
 	//
 	// sanity check
 	//
-	if (this.doesPlayerHavePDSUnitsWithinRange(attacker, player, sector) == 1) {	  
+	if (this.doesPlayerHavePDSUnitsWithinRange(attacker, player, sector) == 1) {
 
           //
           // get pds units within range
@@ -18184,11 +18564,11 @@ console.log("K: " + z[k].name);
 		  lowest_combat_hit = hits_on[n];
 		}
 	      }
-	     
+
 	      let roll = this.rollDice(10);
 
-	      reroll[lowest_combat_idx] = 1; 
-	      unmodified_roll[lowest_combat_idx] = roll; 
+	      reroll[lowest_combat_idx] = 1;
+	      unmodified_roll[lowest_combat_idx] = roll;
 
 	      for (let z_index in z) {
 	        roll =  z[z_index].modifyCombatRerolls(this, player, attacker, player, "pds", roll);
@@ -18198,7 +18578,7 @@ console.log("K: " + z[k].name);
 	      roll += this.game.state.players_info[player-1].pds_combat_roll_modifier;
 	      roll += this.game.state.players_info[player-1].temporary_pds_combat_roll_modifier;
 	      modified_roll[lowest_combat_idx] = roll;
- 
+
 	      if (roll >= hits_on[lowest_combat_idx]) {
 	        total_hits++;
 		hits_or_misses[lowest_combat_idx] = 1;
@@ -18266,7 +18646,7 @@ console.log("K: " + z[k].name);
 	//
 	// sanity check
 	//
-	if (this.doesPlayerHaveShipsInSector(attacker, sector) == 1) {	  
+	if (this.doesPlayerHaveShipsInSector(attacker, sector) == 1) {
 
 	  let sys = this.returnSectorAndPlanets(sector);
 	  let defender = sys.p[planet_idx].owner;
@@ -18325,7 +18705,7 @@ console.log("6 roll: " + roll);
 
 	  bonus_shots += this.game.state.players_info[attacker-1].bombardment_combat_roll_bonus_shots;
 	  for (let i = hits_or_misses.length; i < hits_or_misses.length+bonus_shots; i++) {
-	 
+
 	    let roll = this.rollDice(10);
       	    for (z_index in z) { roll = z[z_index].modifyCombatRoll(imperium_self, attacker, sys.p[planet_idx].owner, this.game.player, "bombardment", roll); }
 
@@ -18379,9 +18759,9 @@ console.log("6 roll: " + roll);
 		  lowest_combat_hit = hits_on[n];
 		}
 	      }
-	     
+
 	      let roll = this.rollDice(10);
- 
+
 	      for (let z_index in z) {
 	        roll =  z[z_index].modifyCombatRerolls(this, player, attacker, player, "space", roll);
 	        imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.state.players_info[defender-1].target_units);
@@ -18408,7 +18788,7 @@ console.log("6 roll: " + roll);
 	    this.updateLog("Bombardment produces " + hits_to_assign + " hits");
 	  }
 
-        
+
           //
           // create an object with all this information to update our LOG
           //
@@ -18429,7 +18809,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
           if (this.space_combat_overlay.visible) {
             this.space_combat_overlay.hide();
           }
-          
+
 	  //
 	  // and show bombardment overlay
 	  //
@@ -18483,7 +18863,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	//
 	// sanity check
 	//
-	if (this.doesPlayerHaveShipsInSector(attacker, sector) == 1) {	  
+	if (this.doesPlayerHaveShipsInSector(attacker, sector) == 1) {
 
 	  let total_shots = 0;
 	  let total_hits = 0;
@@ -18576,7 +18956,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	          rerolling_unit = units_firing[n];;
 		}
 	      }
-	     
+
 	      let roll = this.rollDice(10);
 
 	      unmodified_roll[lowest_combat_idx] = roll;
@@ -18666,7 +19046,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	//
 	// we need to permit both sides to play action cards before they fire and start destroying units
 	// so we check to make sure that "ground_combat_player_menu" does not immediately precede us... if
-	// it does we swap out the instructions, so that both players can play action cards before the 
+	// it does we swap out the instructions, so that both players can play action cards before the
 	// shooting starts...
 	//
         let le = this.game.queue.length-2;
@@ -18679,7 +19059,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	    this.game.queue[le]   = tmple1;
 	    this.game.queue[le+1] = tmple;
 	    //
-	    // 
+	    //
 	    //
 	    return 1;
 	  }
@@ -18699,7 +19079,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	//
 	// sanity check
 	//
-	if (this.doesPlayerHaveInfantryOnPlanet(attacker, sector, planet_idx) == 1) {	  
+	if (this.doesPlayerHaveInfantryOnPlanet(attacker, sector, planet_idx) == 1) {
 
 	  let total_shots = 0;
 	  let total_hits = 0;
@@ -18783,7 +19163,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 		  lowest_combat_hit = hits_on[n];
 		}
 	      }
-	     
+
 	      let roll = this.rollDice(10);
 
 	      unmodified_roll[lowest_combat_idx] = roll;
@@ -18861,7 +19241,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
       // SPACE COMBAT //
       //////////////////
       if (mv[0] === "space_invasion") {
-  
+
   	let player = mv[1];
   	let sector = mv[2];
         this.game.queue.splice(qe, 1);
@@ -18874,12 +19254,12 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	this.unloadStoredShipsIntoSector(player, sector);
 
 	//
-	// initialize variables for 
+	// initialize variables for
 	//
 	this.game.state.space_combat_round = 0;
 	this.game.state.space_combat_ships_destroyed_attacker = 0;
 	this.game.state.space_combat_ships_destroyed_defender = 0;
-	
+
 
   	if (player == this.game.player) {
 	  this.addMove("continue\t"+player+"\t"+sector);
@@ -18909,7 +19289,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
   	this.game.queue.splice(qe, 1);
 
 	//
-	// reset 
+	// reset
 	//
 	this.resetTargetUnits();
         this.game.state.space_combat_attacker = -1;
@@ -18980,7 +19360,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
   	return 1;
       }
       if (mv[0] === "space_combat") {
-  
+
   	let player       = mv[1];
         let sector       = mv[2];
 	let z 		 = this.returnEventObjects();
@@ -18999,7 +19379,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
   	return 1;
       }
       if (mv[0] === "space_combat_event") {
-  
+
         let z		 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
         let sector	 = mv[2];
@@ -19135,7 +19515,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
       }
 
       if (mv[0] === "anti_fighter_barrage_event") {
-  
+
   	let player       = parseInt(mv[1]);
         let attacker	 = mv[2];
         let defender	 = mv[3];
@@ -19159,9 +19539,9 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	//
 	// sanity check
 	//
-	if (this.doesPlayerHaveShipsInSector(attacker, sector) == 1) {	 	
-	if (this.doesPlayerHaveAntiFighterBarrageInSector(attacker, sector) == 1) {	   
-	
+	if (this.doesPlayerHaveShipsInSector(attacker, sector) == 1) {
+	if (this.doesPlayerHaveAntiFighterBarrageInSector(attacker, sector) == 1) {
+
 	  //
 	  // update log
 	  //
@@ -19252,7 +19632,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 	            rerolling_unit = units_firing[n];;
 		  }
 	        }
-	     
+
 	        let roll = this.rollDice(10);
 
 	        unmodified_roll[lowest_combat_idx] = roll;
@@ -19350,9 +19730,9 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
         this.updateSectorGraphics(sector);
 
 	if (this.game.player == attacker) {
-          this.playerPlaySpaceCombat(attacker, defender, sector);        
+          this.playerPlaySpaceCombat(attacker, defender, sector);
 	} else {
-          this.space_combat_overlay.render(attacker, defender, sector, "Space Cobat");        
+          this.space_combat_overlay.render(attacker, defender, sector, "Space Cobat");
 	}
 
         return 0;
@@ -19428,7 +19808,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
   	return 1;
       }
       if (mv[0] === "bombardment_event") {
-  
+
         let z		 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
   	let bombarding_player = parseInt(mv[2]);
@@ -19482,7 +19862,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
       // PLANETARY DEFENSE //
       ///////////////////////
       if (mv[0] === "planetary_defense") {
-  
+
   	let player       = mv[1];
         let sector       = mv[2];
         let planet_idx   = mv[3];
@@ -19502,7 +19882,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
   	return 1;
       }
       if (mv[0] === "planetary_defense_event") {
-  
+
         let z		 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
         let sector	 = mv[2];
@@ -19598,7 +19978,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
             this.updateLog(this.returnFactionNickname(player) + " conquers " + sys.p[planet_idx].name + " (" + attacker_survivors + " infantry)");
 
 	    let attacker = player;
-	    let defender = this.game.state.ground_combat_defender; 
+	    let defender = this.game.state.ground_combat_defender;
 
             //
             // unless we are infiltrating and get to keep them...
@@ -19642,7 +20022,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
   	return 1;
       }
       if (mv[0] === "ground_combat") {
-  
+
   	let player       = mv[1];
         let sector       = mv[2];
         let planet_idx   = mv[3];
@@ -19663,7 +20043,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
   	return 1;
       }
       if (mv[0] === "ground_combat_event") {
-  
+
         let z		 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
         let sector	 = mv[2];
@@ -19758,7 +20138,7 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
       // ACTION CARD //
       /////////////////
       if (mv[0] === "action_card") {
- 
+
   	let player = parseInt(mv[1]);
   	let card = mv[2];
 	let z = this.returnEventObjects();
@@ -19821,7 +20201,7 @@ console.log("HIDING SPACE COMBAT OVERLAY!");
 	return 1;
 
       }
-      if (mv[0] === "simultaneous_action_card_player_menu") { 
+      if (mv[0] === "simultaneous_action_card_player_menu") {
 
 	let action_card_player = parseInt(mv[1]);
 	let action_card = mv[2];
@@ -19832,36 +20212,36 @@ console.log("HIDING SPACE COMBAT OVERLAY!");
 	if (this.game.player == action_card_player) {
     	  //this.game.queue.splice(qe, 1);
 	  this.updateStatus("Your opponents are being notified you have played " + this.action_cards[action_card].name);
-	  if (this.hasPlayerConfirmed(this.app.wallet.returnPublicKey())) {
+	  if (this.hasPlayerConfirmed(this.app.wallet.getPublicKey())) {
 	    if (action_card.indexOf("sabotage") != 0) {
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
               imperium_self.endTurn();
 	    } else {
 	      // sabotage doesn't need resolve, it happily resolves itself
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
               imperium_self.endTurn();
             }
           } else {
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
               imperium_self.endTurn();
 	  }
 	  return 0;
 	} else {
 	  // sabotage is a special case where we want to show the menu even if we have already confirmed
-	  if (this.hasPlayerConfirmed(this.app.wallet.returnPublicKey()) && action_card.indexOf("sabotage") != 0) {
+	  if (this.hasPlayerConfirmed(this.app.wallet.getPublicKey()) && action_card.indexOf("sabotage") != 0) {
   	    this.updateStatus("Waiting for players to respond to "+this.action_cards[action_card].name);
 	  } else {
     	    //this.game.queue.splice(qe, 1);
 	    this.playerPlayActionCardMenu(action_card_player, action_card);
-	  } 
-	} 
+	  }
+	}
 	return 0;
 
-      } 
-      if (mv[0] === "action_card_player_menu") { 
+      }
+      if (mv[0] === "action_card_player_menu") {
 
 	let player = parseInt(mv[1]);
 	let action_card_player = parseInt(mv[2]);
@@ -19883,22 +20263,22 @@ console.log("HIDING SPACE COMBAT OVERLAY!");
 	}
 	return 0;
 
-      } 
-      if (mv[0] === "action_card_event") {  
-    
+      }
+      if (mv[0] === "action_card_event") {
+
 	let z = this.returnEventObjects();
 
         let player       = parseInt(mv[1]);
         let action_card_player = mv[2];
         let card   	 = mv[3];
         let z_index	= parseInt(mv[4]);
-        
+
   	this.game.queue.splice(qe, 1);
 
-        return z[z_index].playActionCardEvent(this, player, action_card_player, card); 
+        return z[z_index].playActionCardEvent(this, player, action_card_player, card);
 
       }
-      if (mv[0] === "action_card_post") {  
+      if (mv[0] === "action_card_post") {
 
   	let action_card_player = parseInt(mv[1]);
   	let card = mv[2];
@@ -19924,13 +20304,13 @@ console.log("HGL 1: " + z[i].name);
       //
       if (shd_continue == 0) {
         return 0;
-      }  
+      }
     }
-  
+
     return 1;
-  
+
   }
-  
+
 
 
 
@@ -20005,10 +20385,6 @@ console.log("HGL 1: " + z[i].name);
   ///////////////////////
   // Imperium Specific //
   ///////////////////////
-  prependMove(mv) {
-    this.moves.unshift(mv);
-  };
-  
   endTurn(nextTarget = 0) {
 
     for (let i = this.rmoves.length - 1; i >= 0; i--) {
@@ -20022,14 +20398,14 @@ console.log("HGL 1: " + z[i].name);
     this.game.turn = this.moves;
     this.moves = [];
     this.rmoves = [];
-    this.sendMessage("game", {});
+    this.sendGameMoveTransaction("game", {});
 
     this.updateStatus("Waiting for information from peers....");
   
   };
 
   
-  endGame(winner, method) {
+  sendGameOverTransaction(winner, method) {
     this.game.over = 1;
   
     if (this.active_browser == 1) {
@@ -20713,8 +21089,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 //    if (tech_attach_menu_events == 0 && ac.length == 0) {
 //      if (imperium_self.game.state.action_card_order === "simultaneous") {
 //console.log("BROADCASTING MOVES 1: " + JSON.stringify(this.moves));
-//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-//        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+//        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
 //      }
 //      imperium_self.endTurn();
 //      return;
@@ -20762,8 +21138,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
         // resolve action card simultaneous
         //
         if (imperium_self.game.state.action_card_order === "simultaneous") {
-          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
         }
         imperium_self.endTurn();
       }
@@ -20780,8 +21156,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
     this.playerAcknowledgeNotice(notice, function () { 
       if (imperium_self.game.state.action_card_order === "simultaneous") {
-        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       }
       imperium_self.endTurn(); 
     });
@@ -22673,7 +23049,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
     this.updateLog("You skip the initiative secondary, as you lack adequate influence...");
     this.updateStatus("Skipping purchase of tokens as insufficient influence...");
     if (resolve == 1) {
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
     }
     this.endTurn();
     return 0;
@@ -22712,7 +23088,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "skip") {
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
       }
       imperium_self.endTurn();
       return;
@@ -22723,8 +23099,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
       total_cost = 3 * (fleet_supply + command_tokens + strategy_tokens);
 
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       }
 
       imperium_self.playerSelectInfluence(total_cost, function (success) {
@@ -22804,8 +23180,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " gets action cards");
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\taction_cards\t2");
       imperium_self.addMove("DEAL\t2\t" + imperium_self.game.player + "\t2");
@@ -22816,8 +23192,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -22854,8 +23230,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\tsecret_objective\t1");
       imperium_self.addMove("DEAL\t6\t" + imperium_self.game.player + "\t1");
       imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
@@ -22865,8 +23241,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -23441,8 +23817,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
         imperium_self.addMove("resolve\tplay");
         imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
       }
 
@@ -26365,7 +26741,7 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
         if (obj.new_tokens == 0) {
           if (resolve_needed == 1) {
             if (imperium_self.game.confirms_needed > 0 && leadership_primary == 0) {
-              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.returnPublicKey());
+              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.getPublicKey());
             } else {
               imperium_self.addMove("resolve\ttokenallocation");
             }

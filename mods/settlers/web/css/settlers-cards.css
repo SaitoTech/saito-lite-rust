@@ -4,7 +4,8 @@
   width: min(17.5vh,20vw);
   height: auto;
 }
-.card.tinycard , .card.tiny {
+
+.card.tiny {
   height: calc(4rem * 1.4);
   width: 4rem;
 }
@@ -12,7 +13,7 @@
 .player-notice .card.tiny {
   width: 3rem;
   height: calc(3rem * 1.4);
-  margin: 1px 0.5rem;
+  margin-left: 1rem;
   transform: rotate(5deg);
 }
 
@@ -42,3 +43,6 @@
   pointer-events: none;
 }
 
+.card_holder img {
+  width: 100%;
+}

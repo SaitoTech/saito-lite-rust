@@ -68,21 +68,25 @@ class DebatersOverlay {
         let tile_f = "/his/img/tiles/debaters/" + his_self.game.state.debaters[i].img;
         let tile_b = tile_f.replace('.svg', '_back.svg');
 
-        $(divsq).click(function() {
-
-          let key = $(this).attr("data-key");
-
-          if (his_self.game.state.debaters[i].committed == 0 && his_self.canPlayerCommitDebater(faction, key)) {
-	    alert("Commiting Debater for Bonus");
-	    his_self.commitDebater(faction, key, 1);
-            his_self.addMove("commit\t"+faction+"\t"+key);
-            his_self.endTurn();
-            $(this).css('background-image', `url('${tile_b}')`);
-	    overlay_self.render();
-          } else {
-	    alert("cannot commit debater now");
-	  }
-        });
+	//
+	//
+	//
+        //$(divsq).click(function() {
+	//
+        // let key = $(this).attr("data-key");
+	//
+        //  if (his_self.game.state.debaters[i].committed == 0 && his_self.canPlayerCommitDebater(faction, key)) {
+	//    alert("Commiting Debater for Bonus");
+	//    his_self.commitDebater(faction, key, 1);
+        //    his_self.addMove("commit\t"+faction+"\t"+key);
+        //    his_self.endTurn();
+        //    $(this).css('background-image', `url('${tile_b}')`);
+	//    overlay_self.render();
+        //  } else {
+	//    alert("cannot commit debater now");
+	//  }
+        //});
+	//
 
       }
     }

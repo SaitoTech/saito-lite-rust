@@ -3,11 +3,16 @@
     ///////////
     if (card == "fidel") {
 
+      this.game.state.events.fidel = 1;
+
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
-      this.cancelEvent("unitedfruit");
+      if (!this.game.state.events.unitedfruit_removed) {
+        this.game.state.events.unitedfruit_removed = 1;
+        this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
+        this.cancelEvent("unitedfruit");
+      }
 
 
       let usinf = parseInt(this.countries['cuba'].us);

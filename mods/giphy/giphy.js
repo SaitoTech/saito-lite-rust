@@ -1,4 +1,4 @@
-/* 
+/*
 
 This module requires a gifphy API key to be set as an environmental variable:
 GIPHY_KEY
@@ -8,92 +8,38 @@ Modules must provide an input id to attach the gif selector to.
 Modules can also provide a callback to determine how the image (url) is processed.
 
 */
-const ModTemplate = require("../../lib/templates/modtemplate");
 const { GiphyFetch } = require("@giphy/js-fetch-api");
 const { renderGif, renderGrid } = require("@giphy/js-components");
 const SaitoOverlay = require("./../../lib/saito/ui/saito-overlay/saito-overlay");
 const saitoGifTemplate = require("./lib/giphy.template");
-
-/*
-    I'm not sure this is really working with the giphy library stuff... 
-    Certainly don't see it pop up when waiting for the giphy server response
-*/
-//const SaitoLoader = require("./../../lib/saito/ui/saito-loader/saito-loader");
+const SaitoLoader = require("./../../lib/saito/ui/saito-loader/saito-loader");
+const ModTemplate = require("../../lib/templates/modtemplate");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 class Giphy extends ModTemplate {
-  constructor(app, mod, parent_callback = null) {
+  constructor(app, mod, input_id, parent_callback = null) {
     super(app);
     this.app = app;
     this.mod = mod;
     this.name = "Giphy";
 
+    this.input_id = input_id;
     this.parent_callback = parent_callback;
     this.overlay = new SaitoOverlay(app, mod);
-    //this.loader = new SaitoLoader(app, mod);
+    this.loader = new SaitoLoader(app, mod);
     this.auth = null;
-    this.gf = null;
+
+   this.gf = null;
 
     this.styles = ["/giphy/style.css"];
 
-    this.initialize(app);
   }
 
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
   }
 
-  returnServices() {
-    let services = [];
-    if (this.app.BROWSER == 0) {
-      services.push({ service: "giphy" });
-    }
-    return services;
-  }
-
-  onPeerServiceUp(app, peer, service = {}) {
-    let gif_self = this;
-
-    if (service.service === "giphy") {
-      app.network.sendRequestAsTransactionWithCallback("get giphy auth", {}, function (res) {
-        gif_self.auth = res;
-      });
-    }
-  }
-
-  respondTo(type, obj = null) {
-    let giphy_self = this;
-    if (type === "giphy") {
-      this.attachStyleSheets();
-      return {
-        renderInto: (container, callback) => {
-          giphy_self.container = container;
-          giphy_self.parent_callback = callback;
-          giphy_self.render();
-          giphy_self.attachEvents();
-        },
-      };
-    }
-
-    return super.respondTo(type, obj);
-  }
-
-  ////////
-  //Wait, is this even used????
-  ////////
-  toDataURL = (url) =>
-    fetch(url)
-      .then((response) => response.blob())
-      .then(
-        (blob) =>
-          new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          })
-      );
-
-  render() {
+  async render() {
     let giphy_self = this;
 
     //
@@ -157,7 +103,63 @@ class Giphy extends ModTemplate {
 
   }
 
-  attachEvents(){
+
+  returnServices() {
+    let services = [];
+    if (this.app.BROWSER == 0) {
+      services.push(new PeerService(null, "giphy"));
+    }
+
+    return services;
+  }
+
+  onPeerServiceUp(app, peer, service = {}) {
+    let gif_self = this;
+
+    if (service.service === "giphy") {
+      app.network.sendRequestAsTransaction("get giphy auth", {}, function (res) {
+        gif_self.auth = res;
+      });
+    }
+  }
+
+  respondTo(type, obj = null) {
+    let giphy_self = this;
+    if (type === "giphy") {
+      this.attachStyleSheets();
+      return {
+        renderInto: (container, callback) => {
+          giphy_self.container = container;
+          giphy_self.parent_callback = callback;
+          giphy_self.render();
+          giphy_self.attachEvents();
+        },
+      };
+    }
+
+    return super.respondTo(type, obj);
+  }
+
+
+
+  toDataURL = (url) =>
+    fetch(url)
+      .then((response) => response.blob())
+      .then(
+        (blob) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          })
+      )
+      .catch((err) => {
+        console.error("Error fetching content: " + err);
+        return "";
+      });
+
+  attachEvents(auth) {
     let giphy_self = this;
     let gif_search_icon = document.querySelector(".saito-gif-search i");
     let gif_input_search = document.querySelector(".saito-gif-search input");
@@ -204,7 +206,7 @@ class Giphy extends ModTemplate {
       try {
         api_key = process.env.GIPHY_KEY;
         if (mycallback) {
-          mycallback(api_key);
+          await mycallback(api_key);
         }
       } catch (err) {
         console.log("Failed to find key with error: " + err);

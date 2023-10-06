@@ -224,12 +224,12 @@ initializeGame(game_id) {
           if (this.game.player == 2) { 
             i_won = true; 
          }
-          this.endGame(this.game.players[1], "Second Player wins tie");
+          this.sendGameOverTransaction(this.game.players[1], "Second Player wins tie");
         }if (this.game.state.gold[0] > this.game.state.gold[1]){
           i_won = true;
-          this.endGame(this.game.players[this.game.player-1], "High Score");
+          this.sendGameOverTransaction(this.game.players[this.game.player-1], "High Score");
         }else{
-          this.endGame(this.game.players[2-this.game.player], "High Score");
+          this.sendGameOverTransaction(this.game.players[2-this.game.player], "High Score");
         }
         this.updateLog(`The Game is over and I ${i_won ? "won":"lost"}!`);
         return 0;
@@ -357,7 +357,7 @@ initializeGame(game_id) {
         }else{
           $(this.cardToHTML(card)).hide().appendTo(`#o${slot+1}`).slideDown(1500, ()=>{this.finishAnimation();});
         }
-        this.game.halted = 1;
+        this.halted = 1;
         return 0;
       }
 
@@ -378,7 +378,7 @@ initializeGame(game_id) {
       
       if (this.game.player !== player){
          $(this.cardToHTML(card)).hide().appendTo(`#discards`).slideDown(1500, ()=>{this.finishAnimation();});
-         this.game.halted = 1;
+         this.halted = 1;
         return 0;
       }          
       return 1;

@@ -4,19 +4,25 @@
   font-size: 3rem;
 }
 
+.stun-overlay-container{
+  position: fixed;
+  z-index: 100;
+}
+
+.stun-overlay-container + .chat-container{
+  z-index: 101;
+}
+
 .stun-chatbox {
   top: 0;
   left: 0;
   width: 100vw;
-  background-color: var(--saito-white) fff;
-  position: fixed;
-  z-index: 100;
-  transition: all 0.2s;
   height: 100vh;
   height: calc(100 * var(--saito-vh));
-  width: 100vw;
+  position: fixed;
+  background-color: var(--saito-white) fff;
+  transition: all 0.2s;
 }
-
 
 .stun-chatbox .minimizer {
   position: absolute;
@@ -217,9 +223,9 @@
 }
 
 .stun-chatbox .side-videos {
-  display: grid;
-  grid-gap: 1rem;
-  grid-template-rows: repeat(auto-fit, minmax(100px, auto));
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
   width: 25%;
   height: 100%;
   flex: 1;
@@ -283,11 +289,11 @@
 }
 
 /*  video box */
-.presentation, .expanded-video {
+.presentation,
+.expanded-video {
   resize: both;
   overflow: auto;
 }
-
 
 .video-box-container-large {
   background-color: black;
@@ -307,6 +313,7 @@
 /* So for some reason we think it is better to inline style these through the template file */
 .video-box-container-large video {
   width: 100%;
+  height: 100%;
   max-height: 100%;
   z-index: 2;
   border-radius: 0.1rem;
@@ -836,7 +843,6 @@
   .chat-settings-preview {
     width: 50rem;
   }
-
 }
 
 @media screen and (max-width: 767px) {
@@ -854,7 +860,7 @@
     margin-bottom: unset;
     padding: 0.5rem;
   }
-  
+
   .video-container-large {
     flex-direction: column;
   }
@@ -888,17 +894,41 @@
   }
 }
 
-
 /* --chat in video calls -- */
 .stun-chatbox .chat-static {
   border-radius: 2px solid var(--saito-border-color-dark);
   border-radius: 0.5rem;
+  color: var(--saito-white);
 }
 
-.stun-chatbox .chat-header, .stun-chatbox .chat-header .saito-address {
+/* .stun-chatbox .chat-static {
+  color: var(--saito-white);
+} */
+
+.stun-chatbox .saito-user:hover .saito-userline-reply {
+  background-color: var(--saito-black);
+}
+
+.stun-chatbox .saito-user:hover .saito-userline-reply i {
+  border: 1px solid var(--saito-grey);
+}
+
+.stun-chatbox .saito-address {
+  color: var(--saito-grey);
+}
+
+.stun-chatbox .chat-header,
+.stun-chatbox .chat-header .saito-address {
   cursor: default;
 }
 .stun-chatbox.minimize .chat-static {
   display: none;
 }
 
+.stun-chatbox .chat-header .saito-address {
+  cursor: default;
+}
+
+.stun-chatbox.minimize .chat-static {
+  display: none;
+}

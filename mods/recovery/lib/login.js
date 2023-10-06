@@ -1,16 +1,22 @@
 const LoginTemplate = require('./login.template');
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
+const LoginSuccessTemplate = require("./login-success.template");
 
 class Login {
 
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.success_callback = null;
 
     this.modal_overlay = new SaitoOverlay(this.app, this.mod);
     this.loader = new SaitoLoader(this.app, this.mod, "#login-template .saito-overlay-form");
+
+    app.connection.on("recovery-login-overlay-render-request", () => {
+      console.debug("Received recovery-login-overlay-render-request");
+      this.render();
+    });
+
   }
 
   render() {
@@ -44,15 +50,20 @@ class Login {
     }
   }
 
-  success(){
-    this.loader.hide();
-    if (this.success_callback){
-      this.success_callback();
-    }else{
-      if (this.app.BROWSER){
-        window.location.reload();
-      }
+  async success(){
+    if (!this.app.BROWSER){
+      return;
     }
+
+    this.modal_overlay.closebox = false;
+    this.modal_overlay.show(LoginSuccessTemplate());
+
+    document.querySelector('.saito-overlay-login-submit').onclick = (e) => {    
+      window.location.reload();
+    }
+
+    this.modal_overlay.blockClose();
+    
   }
 
   failure(){

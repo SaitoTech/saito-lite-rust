@@ -10,11 +10,11 @@ class HeadlineOverlay {
         this.cards = null;
         this.title = null;
 
-        this.overlay = new SaitoOverlay(app, mod);
+        this.overlay = new SaitoOverlay(app, mod, true, false, true);
     }
     
-    render() {
-      this.overlay.show(HeadlineTemplate());
+    render(uscard, ussrcard) {
+      this.overlay.show(HeadlineTemplate(this.mod.returnCardImage(uscard), this.mod.returnCardImage(ussrcard)));
       this.attachEvents();
     }
 

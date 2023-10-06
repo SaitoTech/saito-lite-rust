@@ -1,6 +1,40 @@
 
 class SettlersState {
 
+  /*
+    Every player should have in deck[2] and deck[3] the board tiles and tokens in the same order
+    */
+  generateMap() {
+    console.log("GENERATING MAP");
+    console.log(JSON.stringify(this.game.deck));
+    let tileCt = 0;
+    let tokenCt = 0;
+    let tile, resourceName, token;
+    console.log("POOL 1");
+    for (let hex of this.hexgrid.hexes) {
+      tile = this.game.pool[0].hand[tileCt++];
+      resourceName = this.game.deck[1].cards[tile].resource;
+      console.log("res: " + resourceName);
+      if (resourceName != this.returnNullResource()) {
+        let temp = this.game.pool[1].hand[tokenCt++];
+        token = this.game.deck[2].cards[temp].value;
+      } else {
+        token = 0;
+      }
+      this.game.state.hexes[hex] = {
+        resource: resourceName,
+        value: token,
+        img: this.game.deck[1].cards[tile].img,
+        neighbours: [],
+        robber: false,
+      };
+      if (resourceName == this.returnNullResource()) this.game.state.hexes[hex].robber = true;
+      if (token) this.addSectorValueToGameboard(hex, token);
+    }
+    console.log("DONE GENERATING MAP");
+  }
+
+
 
   /*
     Given a resource cost and player, check if they meet the minimum
@@ -16,127 +50,120 @@ class SettlersState {
     return true;
   }
 
-  hasVPCards() {
-    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
-      if (!this.isActionCard(cardname)) { return true; }
+
+
+
+    returnResources() {
+        let newArray = [];
+        for (let i of this.resources){
+            if (i.count>1)
+                newArray.push(i.name);
+        }
+        return newArray;
     }
-    return false;
-  }
+
+
+    //
+    // this should be returnCardImage, and the other function should be renamed somehow -- return resource image?
+    //
+    returnResourceHTML(resource){
+            return `<div class="tip"><img class="icon" src="${this.returnCardImage(resource)}" /></div>`;
+    }
 
 
 
-	returnResources() {
-		let newArray = [];
-		for (let i of this.resources){
-			if (i.count>1)
-				newArray.push(i.name);
-		}
-		return newArray;
-	}
+    returnCardImage(res) {
+        for (let i of this.resources){
+            if (i.name == res){
+                if (i.card) {
+                  return i.card;
+                } else {
+                  return `${this.cardDir}${res}.png`;
+                }
+            }
+
+        }
+        return null;    
+    }
 
 
-	//
-	// this should be returnCardImage, and the other function should be renamed somehow -- return resource image?
-	//
-  	returnResourceHTML(resource){
-    		return `<div class="tip"><img class="icon" src="${this.returnCardImage(resource)}" /></div>`;
-  	}
+    returnHexes() {
+        let hexes = [];
+            for (let i of this.resources){
+                for (let j = 0; j < i.count; j++){
+                    if (i.tile) hexes.push({resource:i.name,img: i.tile});
+                    else hexes.push({resource:i.name, img: this.randomizeTileImage(i)});
+                }
+
+            }
+            return hexes;
+    }
+
+    returnDevelopmentCards(option){
+        let deck = [];
+        for (let i of this.deck){
+                for (let j = 0; j < i.count; j++){
+                    deck.push(i);
+                }
+        }
+        return deck;
+    }
 
 
-
-	returnCardImage(res) {
-		for (let i of this.resources){
-			if (i.name == res){
-				if (i.card) {
-				  return i.card;
-				} else {
-				  return `${this.cardDir}${res}.png`;
-				}
-			}
-
-		}
-		return null;	
-	}
-
-
-	returnHexes() {
-		let hexes = [];
-    		for (let i of this.resources){
-    			for (let j = 0; j < i.count; j++){
-    				if (i.tile) hexes.push({resource:i.name,img: i.tile});
-    				else hexes.push({resource:i.name, img: this.randomizeTileImage(i)});
-    			}
-
-    		}
-	    	return hexes;
-	}
-
-	returnDevelopmentCards(option){
-		let deck = [];
-		for (let i of this.deck){
-    			for (let j = 0; j < i.count; j++){
-    				deck.push(i);
-    			}
-	 	}
-		return deck;
-	}
+    returnPortIcon(res){
+        if (res === "any"){
+            return `<img class="icon" src="/settlers/img/icons/any-port.png">`;
+        }
+        for (let i of this.resources){
+            if (i.name == res){
+                if (i.icon){
+                    return `<img class="icon" src="${i.icon.replace('-icon','-port')}">`;
+                }
+            }
+        }
+        return `2:1 ${this.resourceIcon(res)}`; 
+    }
 
 
-	returnPortIcon(res){
-		if (res === "any"){
-			return `<img class="icon" src="/settlers/img/icons/any-port.png">`;
-		}
-		for (let i of this.resources){
-			if (i.name == res){
-				if (i.icon){
-					return `<img class="icon" src="${i.icon.replace('-icon','-port')}">`;
-				}
-			}
-		}
-		return `2:1 ${this.resourceIcon(res)}`;	
-	}
+    returnNullResource(){
+        for (let i of this.resources) {
+            if (i.count==1) {
+                return i.name;
+            }
+        }
+    }
 
-
-	returnNullResource(){
-	   	for (let i of this.resources) {
-	   		if (i.count==1) {
-	   			return i.name;
-	   		}
-	   	}
-	}
-
-	isActionCard(cardname){
-		for (let c of this.deck){
-			if (cardname == c.card && c.action > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
+    isActionCard(cardname){
+        for (let c of this.deck){
+            if (cardname == c.card && c.action > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 
-	randomizeTileImage(resObj){
-		let tileDir = "/settlers/img/sectors/";
-		let x = Math.ceil(Math.random()*resObj.ict); 
-		return tileDir+resObj.name+x+".png";
-	}
+    randomizeTileImage(resObj){
+        let tileDir = "/settlers/img/sectors/";
+        let x = Math.ceil(Math.random()*resObj.ict); 
+        return tileDir+resObj.name+x+".png";
+    }
 
 
 
-  	returnDiceTokens() {
-    		let dice = [];
-    		dice.push({ value: 2 });
-    		dice.push({ value: 12 });
-    		for (let i = 3; i < 7; i++) {
-    		    dice.push({ value: i });
-    		    dice.push({ value: i });
-    		    dice.push({ value: i + 5 });
-    		    dice.push({ value: i + 5 });
-    		}
-    		return dice;
-  	}
+    returnDiceTokens() {
+            let dice = [];
+            dice.push({ value: 2 });
+            dice.push({ value: 12 });
+            for (let i = 3; i < 7; i++) {
+                dice.push({ value: i });
+                dice.push({ value: i });
+                dice.push({ value: i + 5 });
+                dice.push({ value: i + 5 });
+            }
+            return dice;
+    }
 
 
 
@@ -196,18 +223,16 @@ class SettlersState {
         let hexobj = document.getElementById(selector);
         let svid = `sector_value_${hex}`;
 
+        //Create Sector_value
+        let sector_value_html = `
+            <div class="sector-container sc${sector_value}" id="${svid}">
+                <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
+            </div>
+        `;
+
         if (document.getElementById(svid)) {
-            //Update Sector Value
-            let temp = document.getElementById(svid);
-            temp.textContent = sector_value;
-            temp.classList.add("sv" + sector_value);
+            this.app.browser.replaceElementById(sector_value_html, svid);
         } else {
-            //Create Sector_value
-            let sector_value_html = `
-                <div class="sector-container sc${sector_value}" id="${svid}">
-                    <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
-                </div>
-            `;
             let sector_value_obj = this.app.browser.htmlToElement(sector_value_html);
             if (hexobj) {
                 hexobj.after(sector_value_obj);
@@ -349,23 +374,16 @@ class SettlersState {
     }
 
 
-    //Allow this player to click buttons to display resource or dev cards in their cardfan
-    addEventsToHand() {
-        let settlers_self = this;
-
-        $(".cardselector").off(); //Previous events should be erased when the dom is rebuilt, but just in case...
-        $(".cardselector").on("click", function () {
-            settlers_self.displayCardfan($(this).attr("id"));
-        });
-    }
-
     removeEvents() {
-        //console.trace("remove events");
-        this.displayBoard();
-        $(".cardselector").off();
-        $(".trade").off();
+        $(".trade").off();        
     }
 
+
+    randomMsg(){
+        let choices = ["You get nothing", "No soup for you", "A poor harvest", "Tough luck", "Sucks to be you", "Better luck next time"];
+        let die = Math.floor(Math.random()*choices.length);
+        return choices[die];
+    }
 }
 
 module.exports = SettlersState;

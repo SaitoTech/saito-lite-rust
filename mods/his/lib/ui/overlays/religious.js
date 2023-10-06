@@ -9,7 +9,9 @@ class ReligiousOverlay {
     this.visible = false;
     this.overlay = new SaitoOverlay(app, mod);
   }
-    
+
+  hide() { this.overlay.hide(); } 
+   
   render() {
 
     let his_self = this.mod;

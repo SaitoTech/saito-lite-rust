@@ -15,12 +15,11 @@ class Backup {
   }
 
   render() {
-    let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+    let key = this.app.keychain.returnKey(this.mod.publicKey);
     let identifier = key?.identifier || "";
     let newIdentifier = key?.has_registered_username && identifier === "";
     identifier = this.desired_identifier || identifier;
 
-    console.log("Render backup overlay");
     this.modal_overlay.show(BackupTemplate(identifier, newIdentifier));
     this.attachEvents();
   }
@@ -40,6 +39,7 @@ class Backup {
       let password = document.querySelector("#backup-template .saito-overlay-form-password").value;
 
       if (!email || !password){
+        console.warn("No email or password provided!");
         return;
       }
       
@@ -73,18 +73,11 @@ class Backup {
     }
   }
 
-  //Don't actually care about receiving a transaction
+  //
+  // This is called when we receive the backup wallet tx that we sent
+  //
   success(){
-    /*let div = document.querySelector("#backup-template .saito-overlay-form-submit");
-    if (div){
-      this.loader.remove();
-      div.innerHTML = `Success`;
-      div.onclick = ()=> { this.modal_overlay.remove(); }
-    }
-
-    if (this.success_callback){
-      this.success_callback();
-    }*/
+    siteMessage("Wallet backed up on blockchain", 4000);
   }
 
 }

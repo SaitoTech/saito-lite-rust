@@ -19,7 +19,7 @@ class ETH extends ModTemplate {
 
 
   }
-  
+
   respondTo(type = "") {
     if (type == "mixin-crypto") {
       return {

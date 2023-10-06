@@ -1,25 +1,26 @@
-const saito = require('../../lib/saito/saito');
-const ModTemplate = require('../../lib/templates/modtemplate');
+const saito = require("../../lib/saito/saito");
+const ModTemplate = require("../../lib/templates/modtemplate");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 //
 // Library module is used to index material that I have saved in my own transaction
 // archives for curation, personal use and lending as legally permitted. It queries
-// my peers for items they have indexed in the same collections, and fetches those 
+// my peers for items they have indexed in the same collections, and fetches those
 // records on load.
 //
 // Modules that wish to manage distributed and curated content should respondTo() the
-// the "library-collection" to tell it what class of material it should index for 
-// personal or distributed use. The library will then start indexing those materials 
+// the "library-collection" to tell it what class of material it should index for
+// personal or distributed use. The library will then start indexing those materials
 // and serve entries to peers on request.
 //
 // Library indexes are stored in the wallet - backup wallet to save.
 //
 // library['collection'] = [
-//    { 
-//	id : "", 
-//	title : "" , 
-//	description : "" , 
-//	num : 1 , 
+//    {
+//	id : "",
+//	title : "" ,
+//	description : "" ,
+//	num : 1 ,
 //	available : 1,
 //	checkout : [],
 //	sig : ""
@@ -27,14 +28,13 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 // }
 //
 class Library extends ModTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
     this.name = "Library";
-    this.description = "Adds digital rights management (DRM) and curation and lending functionality, permitting users to create curated collections of content and share it in rights-permitting fashion.";
+    this.description =
+      "Adds digital rights management (DRM) and curation and lending functionality, permitting users to create curated collections of content and share it in rights-permitting fashion.";
     this.categories = "Core Utilities DRM";
 
     //
@@ -51,7 +51,7 @@ class Library extends ModTemplate {
     // the information stored will look like this
     //
     //    module 	: "Nwasm" ,
-    //    mod 		: this ,     
+    //    mod 		: this ,
     //    collection 	: "Nwasm" ,
     //    key 		: this.nwasm.random ,
     //    shouldArchive : (tx) => { return false; } // true or false
@@ -63,61 +63,55 @@ class Library extends ModTemplate {
     //
     this.load();
 
-
     //
     // index transactions that are saved
     //
     app.connection.on("saito-save-transaction", (tx) => {
-
-//console.log("---------------------");
-//console.log("---------------------");
-//console.log("IN LIBRARY ON SAVE TX");
-//console.log("---------------------");
-//console.log("---------------------");
+      //console.log("---------------------");
+      //console.log("---------------------");
+      //console.log("IN LIBRARY ON SAVE TX");
+      //console.log("---------------------");
+      //console.log("---------------------");
 
       //
       // fetch information for index
       //
-      let txmsg 	= tx.returnMessage();
-      let id 		= txmsg.id;
-      let title 	= txmsg.title;
-      let module 	= txmsg.module;
-      let request 	= txmsg.request || "";
-      let sig 		= tx.transaction.sig;
+      let txmsg = tx.returnMessage();
+      let id = txmsg.id;
+      let title = txmsg.title;
+      let module = txmsg.module;
+      let request = txmsg.request || "";
+      let sig = tx.signature;
 
       //
       // sanity check
       //
-      let does_item_exist_in_collection = this.isItemInCollection({ id : id }, module);
+      let does_item_exist_in_collection = this.isItemInCollection({ id: id }, module);
       if (does_item_exist_in_collection) {
         try {
           let c = confirm("Your library already contains a copy of this item. Is this a new copy?");
           if (c) {
+            let idx = -1;
+            for (let i = 0; i < this.library[module].peers[this.publicKey], length; i++) {
+              if (this.library[module].peers[this.publicKey][i].id == id) {
+                idx = i;
+                break;
+              }
+            }
 
-	    let idx = -1;
-	    for (let i = 0; i < this.library[module].peers[this.app.wallet.returnPublicKey()],length; i++) {
-	      if (this.library[module].peers[this.app.wallet.returnPublicKey()][i].id == id) {
-		idx = i;
-		break;
-	      }
-	    }
-
-	    if (idx == -1) {
-	      alert("ERROR: cannot find item which supposedly exists");
-	    } else {
-              this.library[module].peers[this.app.wallet.returnPublicKey()][idx].num++;
-              this.library[module].peers[this.app.wallet.returnPublicKey()][idx].available++;
+            if (idx == -1) {
+              alert("ERROR: cannot find item which supposedly exists");
+            } else {
+              this.library[module].peers[this.publicKey][idx].num++;
+              this.library[module].peers[this.publicKey][idx].available++;
               this.save();
-	    }
+            }
 
-	    return;
-
+            return;
           } else {
-
-	    alert("Not Saving");
-	    return;
-
-	  }
+            alert("Not Saving");
+            return;
+          }
         } catch (err) {}
       }
 
@@ -125,28 +119,27 @@ class Library extends ModTemplate {
       // add item to library
       //
       for (let i = 0; i < this.collections.length; i++) {
-
         if (this.collections[i].shouldArchive(tx)) {
-	  let item = {
-  		id 		: id ,
-		title 		: txmsg.title ,
-		description 	: "" ,
-		num 		: 1 ,			// total
-		available 	: 1 ,		// total available
-		checkout 	: [] ,
-		sig 		: sig
-	  };
-	  this.addItemToCollection(item, this.collections[i], this.app.wallet.returnPublicKey());
-	  this.save();
-	}
+          let item = {
+            id: id,
+            title: txmsg.title,
+            description: "",
+            num: 1, // total
+            available: 1, // total available
+            checkout: [],
+            sig: sig,
+          };
+          this.addItemToCollection(item, this.collections[i], this.publicKey);
+          this.save();
+        }
       }
     });
-  } 
+  }
 
-
-  addCollection(collection, peer="localhost") {
-
-    if (peer === "localhost") { peer = this.app.wallet.returnPublicKey(); }
+  addCollection(collection, peer = "localhost") {
+    if (peer === "localhost") {
+      peer = this.publicKey;
+    }
 
     this.collections.push(collection);
 
@@ -168,27 +161,29 @@ class Library extends ModTemplate {
     }
 
     this.save();
-
   }
 
-
-  isItemInCollection(item, collection, peer="localhost") {
-    if (peer === "localhost") { peer = this.app.wallet.returnPublicKey(); }
+  isItemInCollection(item, collection, peer = "localhost") {
+    if (peer === "localhost") {
+      peer = this.publicKey;
+    }
     if (this.library[collection]) {
       let idx = -1;
       let contains_item = false;
-      for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
-        let item = this.library[collection].peers[this.app.wallet.returnPublicKey()][i];
-	if (item.id == this.library[collection].peers[this.app.wallet.returnPublicKey()].id) { return true; }
+      for (let i = 0; i < this.library[collection].peers[this.publicKey].length; i++) {
+        let item = this.library[collection].peers[this.publicKey][i];
+        if (item.id == this.library[collection].peers[this.publicKey].id) {
+          return true;
+        }
       }
     }
     return false;
   }
 
-
-  addItemToCollection(item, collection, peer="localhost") {
-
-    if (peer === "localhost") { peer = this.app.wallet.returnPublicKey(); }
+  addItemToCollection(item, collection, peer = "localhost") {
+    if (peer === "localhost") {
+      peer = this.publicKey;
+    }
 
     if (!this.library[collection.name]) {
       this.addCollection(collection);
@@ -215,92 +210,96 @@ class Library extends ModTemplate {
     if (!does_item_exist_in_collection) {
       this.library[collection.name].peers[peer].push(item);
     }
-
   }
 
-
-  initialize(app) {
-
+  async initialize(app) {
     //
-    // modules respondTo("library-collection") if they want the library to be 
-    // indexing content for them. we add each of the collections we are being 
+    // modules respondTo("library-collection") if they want the library to be
+    // indexing content for them. we add each of the collections we are being
     // asked to manage to our library, and initialize it with sensible default
     // values.
     //
-    app.modules.returnModulesRespondingTo("library-collection").forEach((m) => {
-      this.addCollection(m.respondTo("library-collection"), this.app.wallet.returnPublicKey());
-    });
-
-
+    await super.initialize(app);
+    
+    for (const m of await app.modules.returnModulesRespondingTo("library-collection")) {
+      this.addCollection(await m.respondTo("library-collection"), this.publicKey);
+    }
   }
-
 
   returnServices() {
     let services = [];
-    if (this.app.BROWSER == 0) { services.push({ service: "library", name: "Library" }); }
+    if (this.app.BROWSER == 0) {
+      services.push(new PeerService(null, "library", "Library"));
+    }
     return services;
   }
- 
 
- 
   //
   // runs when peer with library service connects
   //
   async onPeerServiceUp(app, peer, service = {}) {
-
-    let library_self = app.modules.returnModule("Library"); 
+    let library_self = app.modules.returnModule("Library");
 
     //
     // remote peer runs a library
     //
     if (service.service === "library") {
-
       //
       // fetch content for collections we are tracking
       //
       for (let m of library_self.collections) {
-
-	//
-	// we want to know what content is indexed for collection with specified name
-	//
+        //
+        // we want to know what content is indexed for collection with specified name
+        //
         let message = {};
-            message.request = "library collection";
-            message.data = {};
-            message.data.collection = m.name;
+        message.request = "library collection";
+        message.data = {};
+        message.data.collection = m.name;
 
-	//
-	// send the request and fetch the peer collection
-	//
-        app.network.sendRequestAsTransactionWithCallback(message.request, message.data, (res) => {
-          if (res.length > 0) {
-	    library_self.library[m.collection].peers[peer.returnPublicKey()] = res;  // res = collection
-	  }
-        }, peer);
+        //
+        // send the request and fetch the peer collection
+        //
+        app.network.sendRequestAsTransaction(
+          message.request,
+          message.data,
+          (res) => {
+            if (res.length > 0) {
+              library_self.library[m.collection].peers[peer.publicKey] = res; // res = collection
+            }
+          },
+          peer.peerIndex
+        );
       }
     }
   }
 
-
-
-  async handlePeerTransaction(app, tx=null, peer, mycallback) {
-
-    if (tx == null) { return; }
+  async handlePeerTransaction(app, tx = null, peer, mycallback) {
+    if (tx == null) {
+      return;
+    }
     let message = tx.returnMessage();
 
     //
     // respond to requests for our local collection
     //
     if (message.request === "library collection") {
-      if (!message.data) { return; }
-      if (!message.data.collection) { return; }
-      if (!this.library[message.data.collection].peers[this.app.wallet.returnPublicKey()]) {return; }
-      if (mycallback) { mycallback(this.library[message.data.collection].peers[this.app.wallet.returnPublicKey()]); }
+      if (!message.data) {
+        return;
+      }
+      if (!message.data.collection) {
+        return;
+      }
+      if (!this.library[message.data.collection].peers[this.publicKey]) {
+        return;
+      }
+      if (mycallback) {
+        mycallback(this.library[message.data.collection].peers[this.publicKey]);
+      }
       return;
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
-
 
   load() {
     if (this.app.options.library) {
@@ -316,26 +315,23 @@ class Library extends ModTemplate {
     this.app.storage.saveOptions();
   }
 
-
-  returnItem(collection, publickey, sig, mycallback) {
-
+  returnItem(collection, publicKey, sig, mycallback) {
     //
     // get index of item
     //
     let idx = -1;
-    for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
-      if (this.library[collection].peers[this.app.wallet.returnPublicKey()][i].sig === sig) {
+    for (let i = 0; i < this.library[collection].peers[this.publicKey].length; i++) {
+      if (this.library[collection].peers[this.publicKey][i].signature === sig) {
         idx = i;
         break;
       }
     }
 
     if (idx != -1) {
-
       //
       // find the item
       //
-      let item = this.library[collection].peers[publickey][idx];
+      let item = this.library[collection].peers[publicKey][idx];
 
       //
       // is it checked out ?
@@ -343,16 +339,16 @@ class Library extends ModTemplate {
       let is_already_borrowed = 0;
       let is_already_borrowed_idx = -1;
       for (let i = 0; i < item.checkout.length; i++) {
-        if (item.checkout[i].publickey === publickey) {
-	  item.checkout[i].ts = new Date().getTime();
+        if (item.checkout[i].publicKey === publicKey) {
+          item.checkout[i].timestamp = new Date().getTime();
           is_already_borrowed_idx = i;
-	}
+        }
       }
 
       //
-      // the one condition we permit re-borrowing is if this user is the 
+      // the one condition we permit re-borrowing is if this user is the
       // one who has borrowed the item previously and has it in their
-      // possession. in that case they have simply rebooted their 
+      // possession. in that case they have simply rebooted their
       // machine and should be provided with the data under the previous
       // loan.
       //
@@ -362,35 +358,35 @@ class Library extends ModTemplate {
       //
       if (is_already_borrowed) {
         for (let i = 0; i < item.checkout.length; i++) {
-          if (item.checkout[i].publickey === publickey) {
-	    item.checkout.splice(i, 1);
-	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
-	    // be careful that item.available //
-	    // is not removed below for legal //
-	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
-	    item.available++;
+          if (item.checkout[i].publicKey === publicKey) {
+            item.checkout.splice(i, 1);
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+            // be careful that item.available //
+            // is not removed below for legal //
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+            item.available++;
             this.save();
             is_already_borrowed = 0;
-	  }	
+          }
         }
       }
     }
   }
 
-
-  checkoutItem(collection, publickey, sig, mycallback) {
-
+  checkoutItem(collection, publicKey, sig, mycallback) {
     //
     // if the collection doesn't exist, we cannot lend
     //
-    if (!this.library[collection]) { return; }
+    if (!this.library[collection]) {
+      return;
+    }
 
     //
     // get index of item
     //
     let idx = -1;
-    for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
-      if (this.library[collection].peers[this.app.wallet.returnPublicKey()][i].sig === sig) {
+    for (let i = 0; i < this.library[collection].peers[this.publicKey].length; i++) {
+      if (this.library[collection].peers[this.publicKey][i].signature === sig) {
         idx = i;
         break;
       }
@@ -400,11 +396,10 @@ class Library extends ModTemplate {
     // if the item exists
     //
     if (idx != -1) {
-
       //
       // grab the item
       //
-      let item = this.library[collection].peers[publickey][idx];
+      let item = this.library[collection].peers[publicKey][idx];
 
       //
       // is it checked out ?
@@ -412,16 +407,16 @@ class Library extends ModTemplate {
       let is_already_borrowed = 0;
       let is_already_borrowed_idx = -1;
       for (let i = 0; i < item.checkout.length; i++) {
-        if (item.checkout[i].publickey === publickey) {
-	  item.checkout[i].ts = new Date().getTime();
+        if (item.checkout[i].publicKey === publicKey) {
+          item.checkout[i].timestamp = new Date().getTime();
           is_already_borrowed_idx = i;
-	}
+        }
       }
 
       //
-      // the one condition we permit re-borrowing is if this user is the 
+      // the one condition we permit re-borrowing is if this user is the
       // one who has borrowed the item previously and has it in their
-      // possession. in that case they have simply rebooted their 
+      // possession. in that case they have simply rebooted their
       // machine and should be provided with the data under the previous
       // loan.
       //
@@ -431,16 +426,16 @@ class Library extends ModTemplate {
       //
       if (is_already_borrowed) {
         for (let i = 0; i < item.checkout.length; i++) {
-          if (item.checkout[i].publickey === publickey) {
-	    item.checkout.splice(i, 1);
-	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
-	    // be careful that item.available //
-	    // is not removed below for legal //
-	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
-	    item.available++;
+          if (item.checkout[i].publicKey === publicKey) {
+            item.checkout.splice(i, 1);
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+            // be careful that item.available //
+            // is not removed below for legal //
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+            item.available++;
             this.save();
             is_already_borrowed = 0;
-	  }	
+          }
         }
       }
 
@@ -448,25 +443,26 @@ class Library extends ModTemplate {
       // now we can permit the checkout
       //
       if (!is_already_borrowed) {
-
-        if (item.available < 1) { return; }
-        if (item.checkout.length > item.num) { return; }
+        if (item.available < 1) {
+          return;
+        }
+        if (item.checkout.length > item.num) {
+          return;
+        }
         //
         // record the checkout
         //
-        item.checkout.push({ publickey : publickey , ts : new Date().getTime() });
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
-	// be careful that item.available //
-	// is not removed above for legal //
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+        item.checkout.push({ publicKey: publicKey, ts: new Date().getTime() });
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+        // be careful that item.available //
+        // is not removed above for legal //
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         item.available--;
         this.save();
-        this.app.storage.loadTransactions({ sig : sig }, mycallback);
+        this.app.storage.loadTransactions({ sig: sig }, mycallback);
       }
     }
   }
-
 }
 
 module.exports = Library;
-

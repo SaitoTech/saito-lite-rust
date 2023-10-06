@@ -15,35 +15,33 @@ class DeckOverlay {
     
     render() {
 
+	if (this.mod.game.options.deck !== "saito") { return; }
+
         this.overlay.show(DeckTemplate());
 
-	if (this.mod.game.saito_cards_added.length > 0) {
-	  this.app.browser.addElementToSelector(`<h1>deck updates: round ${this.mod.game.state.round}</h1>`,'.deck-overlay');
-	  this.app.browser.addElementToSelector(`
-		<div class="cardlist-container cards_added">${this.mod.returnCardList(this.mod.game.saito_cards_added)}</div>
-	  `, '.deck-overlay');
-	}
+	let cardlist = "";
+	if (this.mod.game.saito_cards_added.length > 0) { cardlist += this.mod.returnCardList(this.mod.game.saito_cards_added); }
+	if (this.mod.game.saito_cards_removed.length > 0) { cardlist += this.mod.returnCardList(this.mod.game.saito_cards_removed); }
 
-	if (this.mod.game.saito_cards_removed.length > 0) {
-	  this.app.browser.addElementToSelector(`
-		<div class="cardlist-container cards_removed">${this.mod.returnCardList(this.mod.game.saito_cards_removed)}</div>
-	  `, '.deck-overlay');
-	}
+	this.app.browser.addElementToSelector(`<h1>deck updates: round ${this.mod.game.state.round}</h1>`,'.deck-overlay');
+	this.app.browser.addElementToSelector(`<div class="cardlist-container">${cardlist}</div>`, '.deck-overlay');
+
+	let child = 0;
 
 	for (let i = 0; i < this.mod.game.saito_cards_added.length; i++) {
-	  let qs = `.deck-overlay .cards_added .card:nth-child(${i+1})`;
+	  child++;
+	  let qs = `.deck-overlay .cardlist-container .card:nth-child(${child})`;
 	  if (this.mod.game.saito_cards_added_reason.length > i) {
-	    this.app.browser.addElementToSelector(`
-	      <div class="desc">${this.mod.game.saito_cards_added_reason[i]}</div> 
-	    `, qs);
+	    document.querySelector(qs).classList.add("card_added");
+	    this.app.browser.addElementToSelector(`<div class="desc">${this.mod.game.saito_cards_added_reason[i]}</div>`, qs);
           }
         }
 	for (let i = 0; i < this.mod.game.saito_cards_removed.length; i++) {
-	  let qs = `.deck-overlay .cards_removed .card:nth-child(${i+1})`;
+	  child++;
+	  let qs = `.deck-overlay .cardlist-container .card:nth-child(${child})`;
 	  if (this.mod.game.saito_cards_removed_reason.length > i) {
-	    this.app.browser.addElementToSelector(`
-	      <div class="desc">${this.mod.game.saito_cards_removed_reason[i]}</div> 
-	    `, qs);
+	    document.querySelector(qs).classList.add("card_removed");
+	    this.app.browser.addElementToSelector(`<div class="desc">${this.mod.game.saito_cards_removed_reason[i]}</div>`, qs);
           }
         }
 
@@ -53,7 +51,11 @@ class DeckOverlay {
     attachEvents(){
 
       document.querySelectorAll(".cardlist-container .card").forEach((el) => {
-console.log("adding noclick");
+
+	if (el.children.length < 4) {
+	  el.classList.add("custom_card_resize");
+	};
+
 	el.classList.add("noclick");
 	el.onclick = (e) => {};
       });;

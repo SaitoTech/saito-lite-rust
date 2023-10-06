@@ -1,18 +1,17 @@
-const SaitoModule = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
+const SaitoModule = require("./../../../../lib/saito/new-ui/templates/saito-module.template");
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
-
   var unixtime = new Date(module.unixtime);
 
   let html = `<div class="saito-module-box">`;
 
-   if (module.image) {
-     html += SaitoModuleTemplate(module.name, module.description, module.image, "", "large");
-   } else {
-     html += SaitoModuleTemplate(module.name, module.description, "", "", "large");
-   }
+  if (module.image) {
+    html += SaitoModuleTemplate(module.name, module.description, module.image, "", "large");
+  } else {
+    html += SaitoModuleTemplate(module.name, module.description, "", "", "large");
+  }
 
-   html += `
+  html += `
 
     <div class="appstore-appbox-details">
       <div class="saito-table">
@@ -22,7 +21,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
         </div>
         <div class="saito-table-row">
 	  <div>publisher</div>
-	  <div>${module.publickey}</div>
+	  <div>${module.publicKey}</div>
         </div>
         <div class="saito-table-row odd">
 	  <div>version</div>
@@ -40,7 +39,5 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
   </div>
   `;
 
-
   return html;
-
-}
+};

@@ -1,74 +1,90 @@
-const saito = require('./../../lib/saito/saito');
-const ModTemplate = require('../../lib/templates/modtemplate');
-const CryptoSelectAmount = require('./lib/overlays/select-amount');
-
+const saito = require("./../../lib/saito/saito");
+const ModTemplate = require("../../lib/templates/modtemplate");
+const CryptoSelectAmount = require("./lib/overlays/select-amount");
+const CryptoInadequate = require("./lib/overlays/inadequate");
 
 class Crypto extends ModTemplate {
-
   constructor(app, mod) {
-
     super(app);
 
     this.app = app;
     this.mod = mod;
     this.ticker = "";
 
-    this.styles = ['/crypto/css/crypto-base.css'];
+    this.styles = ["/crypto/css/crypto-base.css"];
 
     this.appname = "Crypto";
     this.name = "Crypto";
-    this.description = "Modifies the Game-Menu to add an option for managing in-game crypto";
+    this.description = "Enable crypto gaming";
     this.categories = "Utility Entertainment";
+    this.min_balance = 0.0;
     this.overlay = new CryptoSelectAmount(app, this);
-
+    this.overlay_inadequate = new CryptoInadequate(app, this);
   }
-  
-
-  
 
   respondTo(type = "") {
     if (type == "game-menu") {
-
       //
-      // only show if games are winable
+      // This should be a game module
       //
       let gm = this.app.modules.returnActiveModule();
-      if (!gm.can_bet) { return null; }
 
-      let ac = this.app.wallet.returnActivatedCryptos();
-      let cm = this;
-      let menu = { id: "game-crypto",
-                   text: "Crypto",
-                   submenus: []};
+      //
+      // If it isn't a game module or a bettable game
+      //
+      if (!gm?.game?.cryptos) {
+        return null;
+      }
 
-      for (let i = 0; i < ac.length; i++) {
-      	menu.submenus.push({
-          text : ac[i].ticker,
-          id : "game-crypto-"+ac[i].ticker,
-          class : "game-crypto-ticker",
-          callback : async (app, game_mod) => {
-	    this.attachStyleSheets();
-	    this.ticker = ac[i].ticker;
-	    this.overlay.render(async (amount) => {
+      //
+      // Returns an object of CRYPTO(string): MAX_BET(float)
+      //
+      let ac = this.calculateAvailableCryptos(gm.game.cryptos);
+
+      let menu = {
+        id: "game-crypto",
+        text: "Crypto",
+        submenus: [],
+      };
+
+      for (let ticker in ac) {
+        menu.submenus.push({
+          text: ticker,
+          id: "game-crypto-" + ticker,
+          class: "game-crypto-ticker",
+          callback: async (app, game_mod) => {
+            this.attachStyleSheets();
+            this.ticker = ticker;
+
+            this.min_balance = 0.0;
+            this.max_balance = ac[ticker];
+
+            console.log(game_mod.game.crypto);
+            if (game_mod.game.crypto && game_mod.game.crypto != "CHIPS") {
+              salert(`Exiting: ${game_mod.game.crypto} already enabled for this game!`);
+              return;
+            }
+
+            this.overlay.render((amount) => {
               game_mod.menu.hideSubMenus();
+              game_mod.proposeGameStake(ticker, amount);
+            });
+          },
+        });
+      }
 
-    	      let ticker = ac[i].ticker;
-	      let cryptomod = game_mod.app.wallet.returnCryptoModuleByTicker(ticker);
-	      let current_balance = await cryptomod.returnBalance();
-
-	      //
-	      // if proposing, you should be ready
-	      //
-	      if (Number(current_balance) < Number(amount)) {
-		alert("You do not have this amount of "+ticker+" available yourself. Please deposit before inviting others to a peer-to-peer crypto game.");
-		return;
-	      }
-
-      	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
-	    });
+      if (Object.keys(ac).length == 0){
+        menu.submenus.push({
+          text: "No Cryptos Available",
+          id: "game-crypto-none",
+          class: "game-crypto-none",
+          callback: (app, game_mod) => {
+            game_mod.menu.hideSubMenus();
+            salert("The players do not have any common crypto available to play with");
           }
         });
       }
+
       return menu;
     }
 
@@ -76,28 +92,78 @@ class Crypto extends ModTemplate {
   }
 
 
-  enableCrypto(game_mod, game_id, ticker, amount) {
+  /**
+   * We have a list of each players available cryptos and balances, so
+   * we want to calculate an intersection and minimum operation
+   */ 
+  calculateAvailableCryptos(crypto_array) {
+    let union = [];
 
-    if (game_mod.game.crypto != "" && game_mod.game.crypto != "CHIPS") {
-      alert("Exiting: crypto already enabled for this game!");
-      return;
+    for (let player in crypto_array){
+      for (let c in crypto_array[player]){
+        if (!union.includes(c)){
+          union.push(c);
+        }
+      }
     }
 
-    //
-    // restore original pre-move state
-    //
-    // this ensures if we are halfway through a move that we will
-    // return to the game in a clean state after we send the request
-    // to our opponent for shifting game modes.
-    //
-    game_mod.game = game_mod.game_state_pre_move;
-    game_mod.game.turn = [];
-    game_mod.moves = [];
-    game_mod.proposeGameStake(ticker, amount);
+    let intersection = {};
 
+    for (let c of union){
+      let min = 0;
+      for (let player in crypto_array){
+        if (crypto_array[player][c]){
+          let value = parseFloat(crypto_array[player][c].balance);
+          if (min) {
+            min = Math.min(min, value);
+          }else {
+            min = value;
+          }
+        }else {
+          min = -1;
+          break;
+        }
+      }
+
+      if (min > 0){
+        intersection[c] = min;
+      }
+    }
+
+    return intersection;
+  }
+
+
+  returnCryptoOptionsHTML(values = null) {
+    values = values || [0.001, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000];
+    let html = `
+        <div class="overlay-input">
+          <label for="crypto">Crypto:</label>
+          <select id="crypto" name="crypto">
+            <option value="" selected>none</option>`;
+
+    let listed = [];
+    for (let i = 0; i < this.app.modules.mods.length; i++) {
+      if (this.app.modules.mods[i].ticker && !listed.includes(this.app.modules.mods[i].ticker)) {
+        html += `<option value="${this.app.modules.mods[i].ticker}">${this.app.modules.mods[i].ticker}</option>`;
+        listed.push(this.app.modules.mods[i].ticker);
+      }
+    }
+
+    html += `</select></div>`;
+
+    html += `<div id="stake_input" class="overlay-input" style="display:none;">
+                <label for="stake">Stake:</label>
+                <select id="stake" name="stake">`;
+
+    for (let i = 1; i < values.length; i++) {
+      html += `<option value="${values[i]}" >${values[i]}</option>`;
+    }
+    html += `</select></div>`;
+
+    return html;
   }
 
 }
 
 module.exports = Crypto;
-

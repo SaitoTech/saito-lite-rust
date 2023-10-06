@@ -1,10 +1,9 @@
 module.exports = (app, mod) => {
-
   return `
     
 
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="utf-8" />
@@ -53,21 +52,71 @@ module.exports = (app, mod) => {
 
 
 </body>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.0.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.1.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.2.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.3.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.4.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.5.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.6.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.7.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.8.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.9.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.0.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.1.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.2.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.3.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.4.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.5.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.6.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito7" type="text/javascript" src="/redsquare/tweets.7.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.8.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.9.js?x=${new Date().setHours(
+    0,
+    0,
+    0,
+    0
+  )}"></script>
+
 
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 <style></style>
 </html>
 
 `;
-
-}
+};

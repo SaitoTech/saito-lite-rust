@@ -1,4 +1,4 @@
-const OnePlayerGameTemplate = require('./../../lib/templates/oneplayergametemplate');
+const OnePlayerGameTemplate = require("./../../lib/templates/oneplayer-gametemplate");
 const SaitoRunRulesTemplate = require("./lib/saitorun-rules.template");
 
 //////////////////
@@ -24,7 +24,7 @@ class SaitoRun extends OnePlayerGameTemplate {
   }
 
   // Create a high score league by default
-  respondTo(type){
+  respondTo(type) {
     if (type == "default-league") {
       let obj = super.respondTo(type);
       obj.ranking_algorithm = "HSC";
@@ -32,7 +32,6 @@ class SaitoRun extends OnePlayerGameTemplate {
     }
     return super.respondTo(type);
   }
-
 
   initializeGame(game_id) {
     if (!this.game.state) {
@@ -185,9 +184,7 @@ class SaitoRun extends OnePlayerGameTemplate {
       this.game.state.lifetime.total_points += parseInt(scores[2]);
 
       this.addMove(
-        `ROUNDOVER\t${JSON.stringify([
-          this.app.wallet.returnPublicKey(),
-        ])}\t${score}\t${JSON.stringify([])}`
+        `ROUNDOVER\t${JSON.stringify([this.publicKey])}\t${score}\t${JSON.stringify([])}`
       );
       this.endTurn();
       return 1;

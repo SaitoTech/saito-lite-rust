@@ -145,7 +145,7 @@
   display: grid;
   max-height: 95vh;
   height: min-content;
-  width: 60vw;
+  width: min(900px, 85vw);
   overflow-y: auto;
   grid-template-rows: min-content auto;
   background: var(--saito-arcade-overlay-background);
@@ -327,8 +327,7 @@
 }
 
 .saito-multi-btn:hover {
-  background: var(--saito-background-color);
-  color: var(--saito-primary);
+  background: transparent;
 }
 
 .game-wizard-form {
@@ -401,9 +400,6 @@
 }
 
 @media screen and (max-width: 1000px) {
-  .arcade-wizard-overlay {
-    width: 90vw;
-  }
   .game-wizard-advanced-box ul li {
     width: 15rem;
   }  

@@ -1,52 +1,174 @@
-import crypto from "crypto-browserify";
+import { randomBytes } from "crypto";
+import Saito from "saito-js/saito";
 import node_cryptojs from "node-cryptojs-aes";
-import { generateKeyPairSync, randomBytes } from "crypto";
-import * as secp256k1 from "secp256k1";
+import crypto from "crypto-browserify";
 import * as Base58 from "base-58";
-import stringify from "fastest-stable-stringify";
-import { Saito } from "../../apps/core";
 
 const CryptoJS = node_cryptojs.CryptoJS;
 const JsonFormatter = node_cryptojs.JsonFormatter;
 
-/**
- * Crypto Constructor
- */
-class Crypto {
-  public app: Saito;
+export default class Crypto {
+  public hash(buffer: Uint8Array | string): string {
+    // buffer = buffer || "";
+    if (typeof buffer === "string") {
+      return Saito.getInstance().hash(Buffer.from(buffer));
+    }
+    // 64-bit hash
+    return Saito.getInstance().hash(buffer);
+  }
 
-  constructor(app: Saito) {
-    this.app = app;
+  public signBuffer(buffer: Uint8Array, privateKey: string): string {
+    return Saito.getInstance().signBuffer(buffer, privateKey);
+  }
+
+  public verifySignature(buffer: Uint8Array, sig: string, publicKey: string): boolean {
+    return Saito.getInstance().verifySignature(buffer, sig, publicKey);
+  }
+
+  public signMessage(msg: string, privateKey: string): string {
+    return this.signBuffer(Buffer.from(msg, "utf-8"), privateKey);
+  }
+
+  public verifyMessage(msg: string, sig: string, publicKey: string): boolean {
+    return this.verifySignature(Buffer.from(msg, "utf-8"), sig, publicKey);
+  }
+
+  ////////////////////////////////
+  // AES SYMMETRICAL ENCRYPTION //
+  ////////////////////////////////
+  //
+  // once we have a shared secret (possibly generated through the
+  // Diffie-Hellman method above), we can use it to encrypt and
+  // decrypt communications using a symmetrical encryption method
+  // like AES.
+  //
+
+  /**
+   * Encrypts with AES
+   * @param {string} msg msg to encrypt
+   * @param {string} secret shared secret
+   * @returns {string} json object
+   */
+  aesEncrypt(msg, secret) {
+    const rp = secret.toString("hex");
+    const en = CryptoJS.AES.encrypt(msg, rp, { format: JsonFormatter });
+    return en.toString();
+  }
+
+  /**
+   * Decrypt with AES
+   * @param {string} msg encrypted json object from aesEncrypt
+   * @param {string} secret shared secret
+   * @returns {string} unencrypted string
+   */
+  aesDecrypt(msg, secret) {
+    const rp = secret.toString("hex");
+    const de = CryptoJS.AES.decrypt(msg, rp, { format: JsonFormatter });
+    return CryptoJS.enc.Utf8.stringify(de);
+  }
+
+  ////////////////////
+  // DIFFIE HELLMAN //
+  ////////////////////
+  //
+  // The DiffieHellman process allows two people to generate a shared
+  // secret in an environment where all information exchanged between
+  // the two can be observed by others.
+  //
+  // It is used by our encryption module to generate shared secrets,
+  // but is generally useful enough that we include it in our core
+  // cryptography class
+  //
+  // see the "encryption" module for an example of how to generate
+  // a shared secret using these functions
+  //
+
+  /**
+   * Creates DiffieHellman object
+   * @param {string} pubkey public key
+   * @param {string} privkey private key
+   * @returns {DiffieHellman object} ecdh
+   */
+  createDiffieHellman(pubkey = "", privkey = "") {
+    const ecdh = crypto.createECDH("secp256k1");
+    ecdh.generateKeys();
+    if (pubkey != "") {
+      ecdh.setPublicKey(pubkey);
+    }
+    if (privkey != "") {
+      ecdh.setPrivateKey(privkey);
+    }
+    return ecdh;
+  }
+
+  generateKeys(): string {
+    return Saito.getInstance().generatePrivateKey();
+  }
+
+  generatePublicKey(privateKey: string): string {
+    return Saito.getInstance().generatePublicKey(privateKey);
+  }
+
+  /**
+   * Creates a random number, but not a privatekey. used for
+   * XOR encryption in the game engine among other uses. public/private keypair. returns the string
+   * @returns {string} private key
+   */
+  generateRandomNumber() {
+    const randomNumber = randomBytes(32);
+    return randomNumber.toString("hex");
   }
 
   ///////////////////////////////////
-  // BASIC CRYPTOGRAPHIC FUNCTIONS //
+  // ELLIPTICAL CURVE CRYPTOGRAPHY //
   ///////////////////////////////////
+  /**
+   * Compresses public key
+   *
+   * @param {string} pubkey
+   * @returns {string} compressed publickey
+   */
+  compressPublicKey(pubkey) {
+    // prettier-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.toBase58(secp256k1.publicKeyConvert(Buffer.from(pubkey, "hex"), true).toString("hex"));
+  }
 
   /**
-   * Hashes a string using blake3
+   * Converts base58 string to hex string
    *
-   * over-written on init with library-specific function
-   *
-   * server is fast, client is slow
-   *
-   * @param {string} data string data
-   * @returns {string} blake3 hash
-   *
-   * NOTE: we use different libraries for the server and in-browser clients
-   * and these are initialized in /apps/core/index.js as opposed to here in
-   * order to avoid compilation errors that come from the structure of the
-   * libraries we are using. There may be a way to improve this, but for now
-   * means that the hashing algorithm is dynamically added to the app obj on
-   * initialization.
+   * @param {string} t string to convertches
+   * @returns {string} converted string
    */
+  fromBase58(t: string): string {
+    return Buffer.from(Base58.decode(t)).toString("hex");
+  }
 
-  hash(data: string | Uint8Array) {
-    if (typeof data === "string") {
-      return this.app.hash(Buffer.from(data));
-    }
-    // 64-bit hash
-    return this.app.hash(data);
+  /**
+   * Converts hex string to base58 string
+   *
+   * @param {string} t string to convert
+   * @returns {string} converted string
+   */
+  toBase58(t: string): string {
+    return Base58.encode(Buffer.from(t, "hex"));
+  }
+
+  stringToBase64(str: string): string {
+    return Buffer.from(str, "utf-8").toString("base64");
+  }
+
+  base64ToString(str: string): string {
+    return Buffer.from(str, "base64").toString("utf-8");
+  }
+
+  stringToHex(str) {
+    return Buffer.from(str, "utf-8").toString("hex");
+  }
+
+  hexToString(hex) {
+    return Buffer.from(hex, "hex").toString("utf-8");
   }
 
   //////////////////////////
@@ -96,320 +218,16 @@ class Crypto {
     return this.xor(Buffer.from(str, "hex"), Buffer.from(key, "hex")).toString("hex");
   }
 
-  toSizedArray(value, size) {
-    let value_buffer: Buffer;
-    if (value.toString() !== "0") {
-      value_buffer = Buffer.from(value.toString(), "hex");
-    } else {
-      value_buffer = Buffer.from("");
-    }
-    const new_buffer = Buffer.alloc(size);
-    console.assert(size >= value_buffer.length, "unhandled value ranges found");
-    value_buffer.copy(new_buffer, size - value_buffer.length);
-    return new_buffer;
-  }
-
-  stringToHex(str) {
-    return Buffer.from(str, "utf-8").toString("hex");
-  }
-
-  hexToString(hex) {
-    return Buffer.from(hex, "hex").toString("utf-8");
-  }
-
-  stringToBase64(str) {
-    return Buffer.from(str, "utf-8").toString("base64");
-  }
-
-  base64ToString(str) {
-    return Buffer.from(str, "base64").toString("utf-8");
-  }
-
-  ///////////////////////////////////
-  // ELLIPTICAL CURVE CRYPTOGRAPHY //
-  ///////////////////////////////////
   /**
-   * Compresses public key
-   *
-   * @param {string} pubkey
-   * @returns {string} compressed publickey
-   */
-  compressPublicKey(pubkey) {
-    // prettier-ignore
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return this.toBase58(secp256k1.publicKeyConvert(Buffer.from(pubkey, "hex"), true).toString("hex"));
-  }
-
-  /**
-   * Converts base58 string to hex string
-   *
-   * @param {string} t string to convertches
-   * @returns {string} converted string
-   */
-  fromBase58(t: string): string {
-    return Buffer.from(Base58.decode(t)).toString("hex");
-  }
-
-  /**
-   * Converts hex string to base58 string
-   *
-   * @param {string} t string to convert
-   * @returns {string} converted string
-   */
-  toBase58(t: string): string {
-    return Base58.encode(Buffer.from(t, "hex"));
-  }
-
-  /**
-   * Creates a public/private keypair. returns the string
-   * of the private key from which the public key can be
-   * re-generated.
-   * @returns {string} private key
-   */
-  generateKeys() {
-    let privateKey;
-    do {
-      privateKey = randomBytes(32);
-    } while (!secp256k1.privateKeyVerify(privateKey));
-    return privateKey.toString("hex");
-  }
-
-  /**
-   * Creates a random number, but not a privatekey. used for
-   * XOR encryption in the game engine among other uses. public/private keypair. returns the string
-   * @returns {string} private key
-   */
-  generateRandomNumber() {
-    const randomNumber = randomBytes(32);
-    return randomNumber.toString("hex");
-  }
-
-  /**
-   * Returns the public key associated with a private key
-   * @param {string} privkey private key (hex)
-   * @returns {string} public key (hex)
-   */
-  returnPublicKey(privkey) {
-    // prettier-ignore
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return this.compressPublicKey(secp256k1.publicKeyCreate(Buffer.from(privkey, "hex"), false).toString("hex"));
-  }
-
-  /**
-   * Signs a message with a private key, and returns the message
-   * @param {string} msg message to sign
-   * @param privatekey
-   * @returns {string} hex signed message
-   */
-  signMessage(msg: string, privatekey: string): string {
-    return this.signBuffer(Buffer.from(msg, "utf-8"), privatekey);
-  }
-
-  /**
-   * Signs a message buffer after generating a hash value of the buffer
-   * @param {Buffer} buffer
-   * @param {String} privatekey
-   * @returns {string}
-   */
-  signBuffer(buffer: Buffer, privatekey: string) {
-    // prettier-ignore
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return secp256k1.sign(Buffer.from(this.hash(buffer), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
-  }
-
-  /**
-   * Confirms that a message was signed by the private
-   * key associated with a provided public key
-   * @param hash
-   * @param {string} sig
-   * @param {string} pubkey
-   * @returns {boolean} is signature valid?
-   */
-  verifyHash(buffer: Buffer, sig: string, pubkey: string) {
-    try {
-      let hash = this.hash(buffer);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return secp256k1.verify(
-        Buffer.from(hash, "hex"),
-        Buffer.from(sig, "hex"),
-        Buffer.from(this.fromBase58(pubkey), "hex")
-      );
-    } catch (err) {
-      console.log("sig : ", sig);
-      console.log("key : ", pubkey);
-      console.error(err);
-      return false;
-    }
-  }
-
-  /**
-   * Confirms that a message was signed by the private
-   * key associated with a providded public key
-   * @param {string} msg as a string instead of a hash
-   * @param {string} sig
-   * @param {string} pubkey
-   * @returns {boolean} is signature valid?
-   */
-  verifyMessage(msg: string, sig: string, pubkey: string) {
-    try {
-      // const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
-      return this.verifyHash(Buffer.from(msg, "utf-8"), sig, pubkey);
-    } catch (err) {
-      console.log("msg : ", msg);
-      console.log("sig : ", sig);
-      console.log("key : ", pubkey);
-      console.log(err);
-      return false;
-    }
-  }
-
-  /**
-   * Returns an uncompressed public key from publickey
-   * @param {string} pubkey public key (base-58)
-   * @returns {string} public key (hex)
-   */
-  uncompressPublicKey(pubkey: string) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return secp256k1
-      .publicKeyConvert(Buffer.from(this.fromBase58(pubkey), "hex"), false)
-      .toString();
-  }
-
-  /**
-   * Checks if a publickey passed into a function
-   * fits the criteria for a publickey
-   * @param {string} publickey
-   * @returns {boolean} does publickey fit the criteria?
-   */
-  isPublicKey(publickey: string) {
-    if (publickey.length == 44 || publickey.length == 45) {
-      if (publickey.indexOf("@") <= 0) {
-	if (this.isBase58(publickey)) {
-          return 1;
-	}
-      }
-    }
-    return 0;
-  }
-
-  isBase58(t: string) { 
-    return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);
-  }
-
- 
-
-  //////////////////
-  // MERKLE TREES //
-  //////////////////
-  //
-  // now handled in block.js
-  //
-  ////////////////////
-  // DIFFIE HELLMAN //
-  ////////////////////
-  //
-  // The DiffieHellman process allows two people to generate a shared
-  // secret in an environment where all information exchanged between
-  // the two can be observed by others.
-  //
-  // It is used by our encryption module to generate shared secrets,
-  // but is generally useful enough that we include it in our core
-  // cryptography class
-  //
-  // see the "encryption" module for an example of how to generate
-  // a shared secret using these functions
-  //
-
-  /**
-   * Creates DiffieHellman object
-   * @param {string} pubkey public key
-   * @param {string} privkey private key
-   * @returns {DiffieHellman object} ecdh
-   */
-  createDiffieHellman(pubkey = "", privkey = "") {
-    const ecdh = crypto.createECDH("secp256k1");
-    ecdh.generateKeys();
-    if (pubkey != "") {
-      ecdh.setPublicKey(pubkey);
-    }
-    if (privkey != "") {
-      ecdh.setPrivateKey(privkey);
-    }
-    return ecdh;
-  }
-
-  /**
-   * Given a Diffie-Hellman object, fetch the keys
-   * @param {DiffieHellman object} dh Diffie-Hellamn object
-   * @returns {object} object with keys
-   */
-  returnDiffieHellmanKeys(dh) {
-    const keys: any = {};
-    keys.pubkey = dh.getPublicKey(null, "compressed");
-    keys.privkey = dh.getPrivateKey(null, "compressed");
-    return keys;
-  }
-
-  /**
-   * Given your private key and your counterparty's public
-   * key and an extra piece of information, you can generate
-   * a shared secret.
-   *
-   * @param {DiffieHellman object} counterparty DH
-   * @param {string} my_publickey
-   * @return {{pubkey:"", privkey:""}} object with keys
-   */
-  createDiffieHellmanSecret(a_dh, b_pubkey) {
-    return a_dh.computeSecret(b_pubkey);
-  }
-
-  ////////////////////////////////
-  // AES SYMMETRICAL ENCRYPTION //
-  ////////////////////////////////
-  //
-  // once we have a shared secret (possibly generated through the
-  // Diffie-Hellman method above), we can use it to encrypt and
-  // decrypt communications using a symmetrical encryption method
-  // like AES.
-  //
-
-  /**
-   * Encrypts with AES
-   * @param {string} msg msg to encrypt
-   * @param {string} secret shared secret
-   * @returns {string} json object
-   */
-  aesEncrypt(msg, secret) {
-    const rp = secret.toString("hex");
-    const en = CryptoJS.AES.encrypt(msg, rp, { format: JsonFormatter });
-    return en.toString();
-  }
-
-  /**
-   * Decrypt with AES
-   * @param {string} msg encrypted json object from aesEncrypt
-   * @param {string} secret shared secret
-   * @returns {string} unencrypted string
-   */
-  aesDecrypt(msg, secret) {
-    const rp = secret.toString("hex");
-    const de = CryptoJS.AES.decrypt(msg, rp, { format: JsonFormatter });
-    return CryptoJS.enc.Utf8.stringify(de);
-  }
-
-  /**
-   * returns true if this is an AES encrypted message as opposed to 
+   * returns true if this is an AES encrypted message as opposed to
    * a plaintext-containing javascript object.
-  **/
+   **/
   isAesEncrypted(msg) {
     try {
       let msg2 = JSON.parse(msg);
-      if (msg2.ct) { return true; }
+      if (msg2.ct) {
+        return true;
+      }
     } catch (err) {
       return false;
     }
@@ -425,14 +243,47 @@ class Crypto {
   //
   fastSerialize(jsobj) {
     return JSON.stringify(jsobj);
-//    return stringify(jsobj);
+    //    return stringify(jsobj);
   }
 
-  convertStringToDecimalPrecision(stringx, p=8) {
+  convertStringToDecimalPrecision(stringx, p = 8) {
     stringx = parseFloat(stringx);
-    return stringx.toFixed(p).replace(/0+$/,'').replace(/\.$/,'\.0').replace(/\.0$/, '');
+    return stringx.toFixed(p).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, "");
   }
 
-}
+  convertFloatToSmartPrecision(num, max_precision = 8, min_precision = 0) {
+    let stringx = num.toFixed(max_precision).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, ""); 
+    if (min_precision) {
+      let split_string = stringx.split(".");
+      let fraction = split_string[1] || "";
+      if (fraction.length < min_precision){
+        fraction = fraction.padEnd(min_precision, "0");
+      }
+      stringx = split_string[0] + "." + fraction;
+    }
 
-export default Crypto;
+    return stringx
+  }
+
+  /**
+   * Checks if a publickey passed into a function
+   * fits the criteria for a publickey
+   * @param {string} publickey
+   * @returns {boolean} does publickey fit the criteria?
+   */
+  isPublicKey(publicKey: string) {
+    // if (publicKey.length == 65 || publicKey.length == 66) {
+    //   return 1;
+    if (publicKey.indexOf("@") <= 0) {
+      if (this.isBase58(publicKey)) {
+        return 1;
+      }
+    }
+    // }
+    return 0;
+  }
+
+  isBase58(t: string) {
+    return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);
+  }
+}

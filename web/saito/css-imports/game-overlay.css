@@ -106,25 +106,46 @@
 
 .shim-notice {
   font-size: 20px;
-  background: #222b;
+  background: #000c;
   color: #fff;
   padding: min(5vh,5vw);
-  min-width: min(500px,85vw);
-  max-width: 95vw;
+  width: min(800px,95vw);
   overflow-y: auto;
+  border-radius: 2%;
+  border: 2px solid var(--saito-gray);
+  cursor: grab;
+}
+
+.shim-notice .player-result{
+  display: grid;
+  width: 100%;
+  max-width: 750px;
+  margin: auto;
+  grid-template-columns: 2fr 5fr;
+  grid-column-gap: 2rem;
 }
 
 .shim-notice  .htmlCards{
   display: flex;
-  margin-right: 3rem;
+  width: 100%;
+  max-width: 500px;
+  justify-content: space-between;
 }
 
 .shim-notice .card {
-  width: 10vw;
-  height: calc(10vw, 1.55);
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+  max-width: 100px;
+  height: auto;
+  margin-left: 3px;
 }
+
+.shim-notice .htmlCards.pocket .card{
+  width: 50%;
+}
+
+.shim-notice .htmlCards.pool .card{
+  width: 20%;
+}
+
 
 .game_warning_overlay{
   background: #222b;
@@ -171,12 +192,12 @@
 /*******************/
 .splash_overlay {
   padding: 2px;
-  width: auto;
+  width: min(800px, 110vh);
   height: auto;
   max-height: 90vh;
   max-width: 95%;
-  min-width: 800px;
 }
+
 .splash_overlay img{
     width: 100%;
     height: auto;
@@ -226,9 +247,10 @@ Useful declarations for game stats
   min-width: 600px;
   max-width: 90vw;
   background-color: #f5f5f5;
-  padding: 40px;
+  padding: 50px;
   border-radius: 5px;
   border: 2px solid var(--saito-black-faded);
+  box-shadow:  4px 4px 6px 4px black;
 }
 
 .solitaire-stats-overlay hr {
@@ -238,6 +260,10 @@ Useful declarations for game stats
 
 .solitaire-stats-overlay .saito-table-row {
   grid-template-columns: repeat(3, 1fr);
+}
+
+.solitaire-stats-overlay .saito-table-body {
+  font-size: 2rem;
 }
 
 .solitaire-stats-overlay .saito-table-label, .solitaire-stats-overlay .saito-table-header {

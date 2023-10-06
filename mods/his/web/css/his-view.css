@@ -1,0 +1,53 @@
+
+.space_view {
+  height: 60vh;
+  width: calc(60vh * 0.74);
+  min-width: 580px;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  font-size: 2em;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: min-content min-content min-content min-content;
+  overflow: auto;
+}
+
+.space_properties .religion .label , .space_properties .language .label , .space_properties .political .label , .space_properties .home .label {
+  font-size: 2rem;
+  text-align: center;
+  max-height: 70px;
+}
+
+.space_properties div {
+  width: 140px;
+  height: 140px;
+}
+
+.space_name {
+  width; 100%;
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.space_properties {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: min-content;
+  height: 180px;
+}
+
+.space_properties .religion > div , .space_properties .political > div , .space_properties .language > div , .space_properties .home > div {
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.space_units {
+  font-size: 2rem;
+  margin-top: 2rem;
+}
+
+

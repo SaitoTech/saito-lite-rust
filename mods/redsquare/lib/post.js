@@ -14,18 +14,17 @@ class Post {
     this.images = [];
     this.tweet = tweet; //For reply or Retweet
 
-    this.render_after_submit = 0;
-    this.file_event_added = false;
-    this.publickey = app.wallet.returnPublicKey();
-    this.source = "Tweet";
-
     this.user = new SaitoUser(
       this.app,
       this.mod,
       `.tweet-overlay-header`,
-      this.publickey,
+      this.mod.publicKey,
       "create a text-tweet or drag-and-drop images..."
     );
+
+    this.render_after_submit = 0;
+    this.file_event_added = false;
+    this.source = "Tweet";
   }
 
   render() {
@@ -137,7 +136,7 @@ class Post {
     });
   }
 
-  postTweet() {
+  async postTweet() {
     let post_self = this;
     let text = document.getElementById("post-tweet-textarea").value;
     let parent_id = document.getElementById("parent_id").value;
@@ -173,10 +172,10 @@ class Post {
     //
     // any previous recipients get added to "to"
     //
-    if (post_self?.tweet?.tx?.transaction) {
-      for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-          keys.push(post_self.tweet.tx.transaction.to[i].add);
+    if (post_self?.tweet?.tx) {
+      for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
+        if (!keys.includes(post_self.tweet.tx.to[i].publicKey)) {
+          keys.push(post_self.tweet.tx.to[i].publicKey);
         }
       }
     }
@@ -192,22 +191,26 @@ class Post {
     // tweet data
     //
     let data = { text: text };
+    let is_reply = false;
+    let is_retweet = false;
 
     //Replies
     if (parent_id !== "") {
-      data = { text: text, parent_id: parent_id, thread_id: thread_id, sig: parent_id };
+      is_reply = true;
+      data = { text: text, parent_id: parent_id, thread_id: thread_id, signature: parent_id };
     }
     //Retweets
     if (source == "Retweet") {
+      is_retweet = true;
       data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
-      data.sig = post_self.tweet.tx.transaction.sig;
+      data.signature = post_self.tweet.tx.signature;
     }
 
     if (post_self.images.length > 0) {
       data["images"] = post_self.images;
     }
 
-    let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
+    let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     //
     // This makes no sense. If you require at the top of the file, it fails with a
@@ -215,41 +218,33 @@ class Post {
     //
     const Tweet = require("./tweet");
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
-    //console.log("New tweet:" , posted_tweet);
+    //console.log("New tweet:", posted_tweet);
+
+    if (is_reply) {
+      this.mod.replyTweet(data.signature);
+    }
+    if (is_retweet) {
+      this.mod.retweetTweet(data.signature);
+    }
 
     let rparent = this.tweet;
     if (rparent) {
-      //console.log(rparent)
-
-      //
-      // loop to remove anything we will hide
-      //
-      let rparent2 = rparent;
-      while (this.mod.returnTweet(rparent2.parent_id)) {
-        let x = this.mod.returnTweet(rparent2.parent_id);
-        let qs = ".tweet-" + x.tx.transaction.sig;
-        if (document.querySelector(qs)) {
-          //console.log(qs);
-          document.querySelector(qs).remove();
-        }
-        rparent2 = x;
-      }
-
-
       if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
         rparent.num_retweets++;
         rparent.render();
+        this.mod.addTweet(newtx, true);
+        posted_tweet.render(true);
       } else {
         rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;
-        rparent.tx.optional.num_replies++;
-        rparent.num_replies++;
+	// OCT 2 - debug
+        //rparent.tx.optional.num_replies++;
+        //rparent.num_replies++;
         rparent.renderWithCriticalChild();
       }
-
     } else {
-      this.mod.addTweet(posted_tweet.tx, true);
+      this.mod.addTweet(newtx, true);
       posted_tweet.render(true);
     }
 

@@ -35,17 +35,19 @@ class Wordblocks extends GameTemplate {
 
     this.defaultMsg = `Click on the board to enter a word from that square, click a tile to select it for play, or <span class="link tosstiles" title="Double click tiles to select them for deletion">discard tiles</span> if you cannot move.`;
 
+    this.can_bet = 1;
+
     return this;
   }
 
-  render(app) {
+  async render(app) {
     if (!this.browser_active) {
       return;
     }
 
     if (this.initialize_game_run) { return; }
 
-    super.render(app);
+    await super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
 
@@ -104,7 +106,7 @@ class Wordblocks extends GameTemplate {
 
       $("#game-scoreboard").off();
       $("#game-scoreboard").on("click", function () {
-        $("#opponentbox").toggleClass("visible");
+        $(".game-playerbox-manager").toggleClass("visible");
       });
     } catch (err) {
       console.error(err);
@@ -112,8 +114,7 @@ class Wordblocks extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render();
       } else {
         this.sizer.render();
         this.sizer.attachEvents(".gameboard");
@@ -226,7 +227,6 @@ class Wordblocks extends GameTemplate {
         xhr.responseType = "json"; //only in async
         xhr.send();
         this.loadingDictionary = true; //flag that the game module is processing xhr
-        //this.game.halted = 1;
         xhr.onload = () => {
           if (xhr.status != 200) {
             salert(`Network issues downloading dictionary -- ${durl}`);
@@ -567,7 +567,6 @@ class Wordblocks extends GameTemplate {
             </div>`;
 
           //Change this because stupid game-playerbox-manager not opponent box
-          //$("#opponentbox").append(html);
           $(".game-playerbox-manager").append(html);
 
           $(".action").off();
@@ -2129,7 +2128,7 @@ class Wordblocks extends GameTemplate {
           }
         }
         if (idx < 0) {
-          this.endGame([], "no winners");
+          this.sendGameOverTransaction([], "no winners");
         }
         let winners = [this.game.players[idx]];
 
@@ -2141,9 +2140,9 @@ class Wordblocks extends GameTemplate {
         }
 
         if (winners.length == this.game.players.length) {
-          this.tieGame();
+          this.sendGameOverTransaction(this.game.players, "tie");
         } else {
-          this.endGame(winners, "high score");
+          this.sendGameOverTransaction(winners, "high score");
         }
 
         return 0;
@@ -2336,14 +2335,7 @@ class Wordblocks extends GameTemplate {
 
   endTurn() {
     this.updateStatusWithTiles("Waiting for information from peers....");
-
-    //Deprecated code, no one uses extra info
-    let extra = {};
-    //extra.target = this.returnNextPlayer(this.game.player);
-
-    this.game.turn = this.moves;
-    this.moves = [];
-    this.sendMessage("game", extra);
+    super.endTurn();
   }
 
   returnAdvancedOptions() {

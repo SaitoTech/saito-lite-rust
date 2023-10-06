@@ -1,5 +1,5 @@
 const saito = require("../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
+const ModTemplate = require("./../../lib/templates/modtemplate");
 const StunLauncher = require("./lib/appspace/call-launch");
 const CallInterfaceVideo = require("./lib/components/call-interface-video");
 const CallInterfaceAudio = require("./lib/components/call-interface-audio");
@@ -8,6 +8,8 @@ const PeerManager = require("./lib/appspace/PeerManager");
 //Do these do anything???
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
+const { default: Transaction } = require("../../lib/saito/transaction");
+const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
   constructor(app) {
@@ -49,7 +51,7 @@ class Stun extends ModTemplate {
       },
     ];
 
-    this.styles = ["/saito/saito.css", "/videocall/style.css"];
+    this.styles = ["/saito/saito.css", "/videocall/style.css"];  
 
     //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
@@ -75,11 +77,15 @@ class Stun extends ModTemplate {
     });
   }
 
+  // Just use inherited initialize, which sets this.publicKey
+  // async initialize(app) 
+
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER !== 1) {
       return;
     }
 
+    this.ring_sound = new Audio("/videocall/audio/ring.mp3");
     if (app.browser.returnURLParameter("stun_video_chat")) {
       let room_obj = JSON.parse(
         app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
@@ -141,8 +147,37 @@ class Stun extends ModTemplate {
     }
   }
 
-  respondTo(type, obj) {
+  startRing() {
+    this.ring_sound.play();
+  }
+  stopRing() {
+    this.ring_sound.pause();
+  }
+
+  respondTo(type = "") {
+    // console.log(type, obj);
     let stun_self = this;
+    let obj = arguments[1];
+    if (type === "user-menu") {
+      if (obj?.publicKey) {
+        if (obj.publicKey !== this.app.wallet.publicKey) {
+          this.attachStyleSheets();
+          super.render(this.app, this);
+          return [
+            {
+              text: "Video/Audio Call",
+              icon: "fas fa-video",
+              callback: function (app, public_key) {
+                //stun_self.renderInto(".saito-overlay");
+                //salert("You still need to send an invitation link to the call (after you start it)");
+                stun_self.startRing();
+                stun_self.establishStunCallWithPeers("large", [public_key]);
+              },
+            },
+          ];
+        }
+      }
+    }
 
     if (type === "invite") {
       this.attachStyleSheets();
@@ -189,24 +224,8 @@ class Stun extends ModTemplate {
       }
     }
 
-    if (type === "user-menu") {
-      if (obj?.publickey) {
-        if (obj.publickey !== this.app.wallet.returnPublicKey()) {
-          this.attachStyleSheets();
-          super.render(this.app, this);
-          return [
-            {
-              text: "Video/Audio Call",
-              icon: "fas fa-video",
-              callback: function (app, public_key) {
-                //stun_self.renderInto(".saito-overlay");
-                //salert("You still need to send an invitation link to the call (after you start it)");
-                stun_self.establishStunCallWithPeers("large", [public_key]);
-              },
-            },
-          ];
-        }
-      }
+    if (type === "chat-popup") {
+      console.log("chat popup");
     }
 
     return null;
@@ -265,24 +284,27 @@ class Stun extends ModTemplate {
   }
 
   async sendCreateRoomTransaction() {
-    let room_code = this.app.crypto.generateRandomNumber().substring(0, 6);
+    let room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
 
     // offchain data
     let _data = {
-      public_key: this.app.wallet.returnPublicKey(),
+      public_key: this.publicKey,
       room_code,
     };
 
     //Are we sure this will always be the stun server?
     // Shouldn't this be set by onPeerServiceUp
-    let server = this.app.network.peers[0];
+    let server = (await this.app.network.getPeers())[0];
 
     let data = {
-      request: "stun command transmission request",
+      recipient: server.publicKey,
+      request: "stun-create-room-transaction",
       data: _data,
     };
 
-    server.sendRequestAsTransaction("stun-create-room-transaction", data);
+    // server.sendRequestAsTransaction("stun-create-room-transaction", data);
+
+    this.app.connection.emit("relay-send-message", data);
 
     return room_code;
   }
@@ -290,32 +312,37 @@ class Stun extends ModTemplate {
   // server receives this
   async receiveCreateRoomTransaction(app, tx) {
     let txmsg = tx.returnMessage();
-    this.addKeyToRoom(txmsg.data.data.room_code, txmsg.data.data.public_key);
+    this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
   }
 
   async sendStunMessageToServerTransaction(_data) {
     let request = "stun-send-message-to-server";
-    let server = this.app.network.peers[0];
+    let server = (await this.app.network.getPeers())[0];
 
+    // console.log("server", this.server);
     // offchain data
+
     let data = {
+      recipient: server.publicKey,
       request,
       data: _data,
     };
 
-    server.sendRequestAsTransaction("stun-send-message-to-server", data);
+    this.app.connection.emit("relay-send-message", data);
   }
 
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx, peer) {
     let txmsg = tx.returnMessage();
 
-    let room_code = txmsg.data.data.room_code;
-    let type = txmsg.data.data.type;
-    let public_key = peer.peer.publickey;
+    let room_code = txmsg.data.room_code;
+    let type = txmsg.data.type;
+    // console.log("peer public key: ", peer.publicKey);
+    let public_key = peer.publicKey;
 
     if (type === "peer-joined") {
       this.addKeyToRoom(room_code, public_key);
+      // console.log(this.rooms, "this.rooms", room_code, "room_code", public_key, "public_key");
     }
 
     if (type === "peer-left") {
@@ -324,14 +351,14 @@ class Stun extends ModTemplate {
 
     // public keys in the room and relay;
     let recipients = [];
-    if (txmsg.data.data.targetPeerId) {
-      recipients.push(txmsg.data.data.targetPeerId);
+    if (txmsg.data.targetPeerId) {
+      recipients.push(txmsg.data.targetPeerId);
     } else {
-      recipients = this.rooms.get(room_code)?.filter((p) => p !== public_key);
+      recipients = this.rooms.get(room_code)?.filter((p) => p && p !== public_key);
     }
 
     let data = {
-      ...txmsg.data.data,
+      ...txmsg.data,
       public_key,
     };
 
@@ -339,68 +366,110 @@ class Stun extends ModTemplate {
     this.sendStunMessageToPeersTransaction(data, recipients);
   }
 
-  sendStunMessageToPeersTransaction(_data, recipients) {
+  async sendStunMessageToPeersTransaction(_data, recipients) {
     let request = "stun-send-message-to-peers";
 
     // onchain
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
     if (recipients) {
       recipients.forEach((recipient) => {
-        newtx.transaction.to.push(new saito.default.slip(recipient));
+        if (recipient) {
+          newtx.addTo(recipient);  
+        }
       });
     }
 
+    // let _data = { ..._data, recipients };
+
     newtx.msg.module = "Stun";
-    newtx.msg.request = "send-message-to-peers";
+    newtx.msg.request = "stun-send-message-to-peers";
     newtx.msg.data = _data;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     // offchain data
+
     let data = {
       recipient: recipients,
       request,
       data: _data,
     };
 
-    this.app.connection.emit("relay-send-message", data);
+    if (recipients){
+      recipients.forEach((recipient) => {
+        let data = {
+          recipient: [recipient],
+          request,
+          data: _data,
+        };
+        this.app.connection.emit("relay-send-message", data);
+      });
+    }
 
-    setTimeout(() => {
+    setTimeout(async () => {
       //This is the only proper onChain TX... ?
-      this.app.network.propagateTransaction(newtx);
+      // await this.app.network.propagateTransaction(newtx);
     }, 2000);
   }
 
   receiveStunMessageToPeersTransaction(app, tx) {
-    let txmsg = tx.returnMessage();
     let data = tx.msg.data;
     app.connection.emit("stun-event-message", data);
+    // this.peerManager.handleStunEventMessage(data);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
-    salert("Establishing a connection with your peers...");
-
-    // init peer manager and chat manager through self event
-    this.app.connection.emit("stun-init-peer-manager", ui_type);
+    // salert("Establishing a connection with your peers...");
 
     // create a room
     let room_code = await this.sendCreateRoomTransaction();
 
     //Store room_code in PeerManager
-    this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
+    // this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
 
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
-      return player !== this.app.wallet.returnPublicKey();
+      return player !== this.publicKey;
     });
 
     let data = {
       type: "connection-request",
       room_code,
       ui: ui_type,
-      sender: this.app.wallet.returnPublicKey(),
+      sender: this.publicKey,
     };
 
     this.sendStunCallMessageToPeers(this.app, data, recipients);
+
+    setTimeout(() => {
+      // cancel the call after 30seconds
+      let data = {
+        type: "cancel-connection-request",
+        room_code,
+        ui: ui_type,
+        sender: this.publicKey,
+      };
+      this.sendStunCallMessageToPeers(this.app, data, recipients);
+      this.stopRing();
+      if (document.getElementById("saito-alert")) {
+        document
+          .getElementById("saito-alert")
+          .parentElement.removeChild(document.getElementById("saito-alert"));
+      }
+    }, 30000);
+
+    const result = await sconfirm("establishing connection with peers");
+    if (!result) {
+      // cancel the call
+      let data = {
+        type: "cancel-connection-request",
+        room_code,
+        ui: ui_type,
+        sender: this.publicKey,
+      };
+      this.stopRing();
+      this.sendStunCallMessageToPeers(this.app, data, recipients);
+    }
   }
 
   sendStunCallMessageToPeers(app, _data, recipients) {
@@ -410,31 +479,27 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    console.log("sending to", recipients);
     this.app.connection.emit("relay-send-message", data);
-
-    //Relay only...
   }
 
   async receiveGameCallMessageToPeers(app, tx) {
     let txmsg = tx.returnMessage();
     let data = tx.msg.data;
-    console.log(data, "data");
 
     switch (data.type) {
       case "connection-request":
         let call_type = data.ui == "voice" ? "Voice" : "Video";
-        let result = await sconfirm(`Accept Saito ${call_type} Call`);
+        this.startRing();
+        let result = await sconfirm(`Accept Saito ${call_type} Call from ${data.sender}`);
+
         if (result === true) {
           // connect
           // send to sender and inform
           let _data = {
             type: "connection-accepted",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
-
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
 
           // init peer manager
           app.connection.emit("stun-init-peer-manager", data.ui);
@@ -443,26 +508,60 @@ class Stun extends ModTemplate {
           // send the information to the other peers and ask them to join the call
           // show-call-interface
           app.connection.emit("start-stun-call");
-        } else if (result == false) {
+          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
+        } else {
           //send to sender to stop connection
           let _data = {
             type: "connection-rejected",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
         }
-        console.log(result);
+        this.stopRing();
+        // console.log(result);
         break;
 
       case "connection-accepted":
         console.log("connection accepted");
+        this.stopRing();
+        if (document.getElementById("saito-alert")) {
+          document
+            .getElementById("saito-alert")
+            .parentElement.removeChild(document.getElementById("saito-alert"));
+        }
+
         salert(`Call accepted by ${data.sender}`);
-        app.connection.emit("start-stun-call");
+
+        setTimeout(() => {
+          // init peer manager and chat manager through self event
+          this.app.connection.emit("stun-init-peer-manager", data.ui);
+          app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
+          app.connection.emit("start-stun-call");
+        }, 4000);
+
         break;
       case "connection-rejected":
         console.log("connection rejected");
+        this.stopRing();
+        if (document.getElementById("saito-alert")) {
+          document
+            .getElementById("saito-alert")
+            .parentElement.removeChild(document.getElementById("saito-alert"));
+        }
+
         salert(`Call rejected by ${data.sender}`);
+        break;
+      case "cancel-connection-request":
+        // console.log("connection rejected");
+        this.stopRing();
+        if (document.getElementById("saito-alert")) {
+          document
+            .getElementById("saito-alert")
+            .parentElement.removeChild(document.getElementById("saito-alert"));
+        }
+
+        // salert(`Call cancelled by ${data.sender}`);
         break;
 
       default:

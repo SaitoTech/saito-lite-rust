@@ -5,6 +5,7 @@
     if (card == "aldrichames") {
 
       this.game.state.events.aldrich = 1;
+      let ac = this.returnAllCards(true);
 
       if (this.game.player == 2) {
 
@@ -25,7 +26,7 @@
           if (this.game.deck[0].hand[i] != "aldrichames" && this.game.deck[0].hand[i] !== "china" && this.game.deck[0].hand[i] !== this.game.state.headline_opponent_card && this.game.deck[0].hand[i] !== this.game.state.headline_card) {
            cards_to_reveal++; 
            if (revealed != "") { revealed += ", "; }
-            revealed += this.game.deck[0].cards[this.game.deck[0].hand[i]].name;
+            revealed += ac[this.game.deck[0].hand[i]].name;
             this.addMove(this.game.deck[0].hand[i]);
           }
         }

@@ -2,6 +2,7 @@ module.exports = MovementOverlayTemplate = (obj) => {
 
 //    obj = {
 //      faction : faction ,
+//      space : space ,
 //      has_regulars : has_regulars,
 //      has_mercenaries : has_mercenaries ,
 //      has_cavalry : has_cavalry ,
@@ -126,21 +127,20 @@ module.exports = MovementOverlayTemplate = (obj) => {
      html += `</div>`;
    }
 
-
    if (obj.commanders.length > 0) {
      html += `
 	<div class="movement-commanders">
      `;
      for (let i = 0; i < obj.commanders.length; i++) {
-       let army_leader_img = spaces.units[faction][obj.commanders[i]].img;
-       let css2add = `style="background-image: url('/his/tiles/army/${army_leader_img}'); background-size: cover;"`;
+       let army_leader_img = obj.space.units[obj.faction][obj.commanders[i]].img;
+       let css2add = `style="background-image: url('/his/img/tiles/army/${army_leader_img}'); background-size: cover;"`;
        if (obj.units_to_move.includes(obj.commanders[i])) {
          html += `
-            <div class="movement-commander dispatched" ${css2add}></div>
+            <div id="${obj.commanders[i]}" class="option movement-commander dispatched" ${css2add}></div>
          `;
        } else {
          html += `
-            <div class="movement-commander" ${css2add}></div>
+            <div id="${obj.commanders[i]}" class="option movement-commander" ${css2add}></div>
          `;
        }
      html += `

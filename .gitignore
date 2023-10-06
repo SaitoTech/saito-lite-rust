@@ -43,6 +43,9 @@ bundler/*
 built
 built/*
 
+saito-issuance
+saito-issuance/*
+
 lib/saito/*.swp
 lib/saito/web/browser.js
 lib/saito/web/client.options

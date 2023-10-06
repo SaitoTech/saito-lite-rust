@@ -1,9 +1,11 @@
 
     if (card == "fischerspassky") {
 
-      if (this.game.player == 1) {
+      if (!i_played_the_card) {
+        this.updateStatus("Opponent playing Fischer-Spassky");
         return 0;
       }
+
       this.startClock();
 
       let html = `<ul>

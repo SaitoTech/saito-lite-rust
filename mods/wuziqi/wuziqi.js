@@ -30,18 +30,21 @@ class Wuziqi extends GameTemplate {
         this.app   = app;
 
         this.roles = ["observer", "black", "white"];
+        this.acknowledge_text = "next round..."; // not "i understand..."
+
+        this.can_bet = 1;
 
         return this;
     }
 
 
-    render(app) {
+    async render(app) {
 
         if (!this.browser_active) { return; }
         if (this.initialize_game_run) { return 0; }
 
         // Don't completly Override the game template render function
-        super.render(app);
+        await super.render(app);
 
         this.menu.addMenuOption("game-game", "Game");
 
@@ -56,33 +59,26 @@ class Wuziqi extends GameTemplate {
         });
 
         // Add Chat Features to Menu
-        this.menu.addChatMenu(this.roles.slice(1));
+        await this.menu.addChatMenu(this.roles.slice(1));
         
         // Render menu and attach events
-        this.menu.render();
+        await this.menu.render();
 
-        // Initialize our game
-        this.game.score = [0, 0];
-
-        // Set the game board to the size set in the options
-        this.game.size = this.game.options.board_size;
-
-        // Create the game board object if it does not exist.
-        if (!this.game.board || this.game.board.length < 1) {
-            this.generateBoard(this.game.size);
-        }
 
         if (this.game.player > 0) {
             this.hud.render();    
             let hh = document.querySelector(".hud-header");
             if (hh){
                 hh.classList.add(this.roles[this.game.player]);
-            }  
+            }
+
+            document.querySelector(".main").classList.add(this.roles[this.game.player]);  
         }
         
       
         this.racetrack.win = Math.ceil(this.game.options.best_of/2);
         this.racetrack.title = "Best of " + this.game.options.best_of;
+        this.racetrack.icon = `<i class="fa-solid fa-trophy"></i>`;
         for (let i = 0; i < this.game.players.length; i++){
             let player = {
                 name: this.roles[i+1].toUpperCase(),
@@ -92,29 +88,6 @@ class Wuziqi extends GameTemplate {
             this.racetrack.players.push(player);
         }
         this.racetrack.render();
-
-        // Render board and set up values.
-        try {
-            // Check if anyone has played yet (black goes first)
-            let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
-            this.drawBoard(this.game.board);
-
-            // If no one has played set up the board
-            if (blackplayedyet < 0) {
-                // If you are black, you are up.
-                if (this.game.player == 1) {
-                    this.addEvents(this.game.board);
-                    this.updateStatus("Your move, "+this.formatPlayer());
-                } else {
-                    this.updateStatus("Waiting on <span class='playertitle'>Black</span> to start");
-                }
-
-            }
-
-        } catch (err) {
-            console.log(err);
-        }
-
 
     }
 
@@ -135,9 +108,17 @@ class Wuziqi extends GameTemplate {
     initializeGame(game_id) {
 
         if (this.game.initializing) {
+            console.log("Initialize WuZiQi");
+            // Initialize our game
+            this.game.score = [0, 0];
+
+            // Set the game board to the size set in the options
+            this.game.size = this.game.options.board_size;
+            this.generateBoard(this.game.options.board_size);
+
             // Send 'let's get started' message.
+            this.game.queue.push("clearboard\t1");
             this.game.queue.push("READY");
-            return;
         } 
 
     }
@@ -304,21 +285,11 @@ class Wuziqi extends GameTemplate {
         this.drawBoard(this.game.board);
     }
     
-    // Bundle moves and send them off.
-    endTurn() {
-        let extra = {};
-        extra.target = (this.game.player + 1) % 2;
-        this.game.turn = this.moves;
-        this.moves = [];
-        this.sendMessage("game", extra);
-    }
-
-
 
     //
     // Core Game Logic
     //
-    handleGameLoop(msg = null) {
+    async handleGameLoop(msg = null) {
 
         // The Game Loop hands us back moves from the end of the stack (the reverse order they were added)
 
@@ -338,14 +309,12 @@ class Wuziqi extends GameTemplate {
                 // Remove this item from the queue.
                 this.game.queue = [];
 
-                //console.log(this.game.options);
-                //console.log(this.game.crypto);
-
-                this.endGame(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
+                await this.sendGameOverTransaction(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
                 return 0; //end queue cycling
             }
 
             if (mv[0] === "clearboard"){
+
                 let first_player = parseInt(mv[1]);
                 this.generateBoard(this.game.options.board_size);
                 this.drawBoard(this.game.board);
@@ -355,8 +324,10 @@ class Wuziqi extends GameTemplate {
                 if (this.game.player == first_player) {
                     this.addEvents(this.game.board);
                     this.updateStatus("You go first");
+                }else{
+                    this.updateStatus(`Waiting for <span class="playertitle">${this.roles[first_player]}</span> to start`);
                 }
-                return 1;
+                return 0;
             }
 
             if (mv[0] == "draw"){
@@ -426,7 +397,10 @@ class Wuziqi extends GameTemplate {
                 if (this.game.player !== player && this.game.player !== 0){
                     //Let player make their move
                     this.addEvents(this.game.board);
-                    this.updateStatus("Your move");
+                    this.updateStatus(`Your move <span class="replay">Replay Last</span>`);
+                    document.querySelector(".replay").onclick = (e) => {
+                        this.animatePlay(cell);
+                    }
                 }else{
                     this.updateStatus("Waiting on <span class='playertitle'>" + this.roles[3-player] + "</span>");
                 }
@@ -444,9 +418,9 @@ class Wuziqi extends GameTemplate {
         if (this.game.player == 0 ) { return; }
 
         let game_self = this;
-        this.playerAcknowledgeNotice(notice, function () {
-            game_self.addMove("clearboard\t"+game_self.game.player);
-            game_self.endTurn();
+        this.playerAcknowledgeNotice(notice, async function () {
+            await game_self.addMove("clearboard\t"+game_self.game.player);
+            await game_self.endTurn();
         });
 
     }

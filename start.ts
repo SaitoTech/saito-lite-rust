@@ -1,17 +1,21 @@
-// import "source-map-support/register";
-
-import Server from "./lib/saito/core/server";
+import Server, { NodeSharedMethods } from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
-
+import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config";
+import process from "process";
+import Factory from "./lib/saito/factory";
+import Wallet from "./lib/saito/wallet";
+import Blockchain from "./lib/saito/blockchain";
+import { LogLevel } from "saito-js/saito";
+
+// import Config from "saito-js/lib/config";
 
 async function initSaito() {
   const app = new Saito({
     mod_paths: mods_config.core,
   });
 
-  app.server = new Server(app);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
@@ -19,12 +23,31 @@ async function initSaito() {
   app.BROWSER = 0;
   app.SPVMODE = 0;
 
-  //
   // set basedir
-  //
   global.__webdir = __dirname + "/lib/saito/web/";
 
+  await app.storage.initialize();
+
+  let privateKey = app.options.wallet?.privateKey || "";
+  await initS(
+    app.options,
+    new NodeSharedMethods(app),
+    new Factory(),
+    privateKey,
+    LogLevel.Info
+  ).then(() => {
+    console.log("saito wasm lib initialized");
+  });
+
+  app.wallet = (await S.getInstance().getWallet()) as Wallet;
+  app.wallet.app = app;
+  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  app.blockchain.app = app;
+  app.server = new Server(app);
+
   await app.init();
+
+  S.getInstance().start();
 
   const { protocol, host, port } = app.options.server;
 
@@ -66,8 +89,8 @@ async function initSaito() {
 
     Welcome to Saito
 
-    address: ${app.wallet.returnPublicKey()}
-    balance: ${app.wallet.returnBalance()}
+    address: ${await app.wallet.getPublicKey()}
+    balance: ${await app.wallet.getBalance()}
     local module server: ${localServer}
 
     ################################################################

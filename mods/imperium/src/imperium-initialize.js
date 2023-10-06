@@ -3,14 +3,14 @@
 
 
 
-  render(app) {
+  async render(app) {
 
     if (!this.browser_active) { return; }
 
 
     let imperium_self = this;
 
-    super.render(app);
+    await super.render(app);
 
     try {
 
@@ -257,15 +257,10 @@
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, '#hexGrid');
-
+        this.hammer.render('#hexGrid');
       } else {
-
         this.sizer.render();
         this.sizer.attachEvents('#hexGrid'); // gameboard is hexgrid
-
       }
     } catch (err) {}
 

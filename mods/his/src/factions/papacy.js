@@ -70,8 +70,18 @@
 	// protestant spaces track
 	let base = game_mod.returnProtestantSpacesTrackVictoryPoints().papacy;
 
+        // burned protestant debaters
+        for (let i = 0; i < game_mod.game.state.burned.length; i++) {
+          let bd = game_mod.game.state.burned[i];
+          if (game_mod.debaters[bd]) {
+            if (game_mod.debaters[bd].faction == "papacy") {
+              base += game_mod.debaters[bd].power;
+            }
+          }
+        }
+
 	// saint peters cathedral
- 	base += game_mod.game.state.saint_peters_cathedral['vp'] = 0;
+ 	base += game_mod.game.state.saint_peters_cathedral['vp'];
 
         return base;
 

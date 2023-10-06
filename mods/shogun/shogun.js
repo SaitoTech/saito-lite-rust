@@ -386,9 +386,9 @@ return;
           }
         }
         if (winner.length == 1){
-          this.endGame(this.game.players[winner[0]-1], reason);
+          this.sendGameOverTransaction(this.game.players[winner[0]-1], reason);
         }else{
-          this.endGame(winner.map(x=>this.game.players[x-1]), reason);  
+          this.sendGameOverTransaction(winner.map(x=>this.game.players[x-1]), reason);  
         }
         
         return 0;
@@ -421,7 +421,7 @@ return;
           let did = this.game.player - 1;
 
           //Make sure incoming moves from opponent are queued until the animation finishes
-          this.game.halted = 1;
+          this.halted = 1;
 
 	  this.board.render();
 

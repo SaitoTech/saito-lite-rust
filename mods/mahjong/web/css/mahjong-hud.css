@@ -6,10 +6,34 @@
 
 .controls {
     overflow-y: none;
+    min-height: 140px;
+    width: 100%;
 }
 .controls ul {
     border-radius: 0.5rem;
 }
 
+.controls ul li , .options {
+    height: 7rem;
+}
 
 
+
+@media screen and (orientation: landscape) and (max-height: 700px) {
+    .controls {
+        min-height: 120px;
+    }
+    
+    .controls ul li , .options {
+        height: 6rem;
+    }
+
+}
+
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+
+    .controls ul {
+        flex-direction: row;
+    }
+}

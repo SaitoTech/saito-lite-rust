@@ -18,7 +18,7 @@ class DietOfWormsOverlay {
     render() {
 
 	this.visible = true;
-        this.overlay.show(DietOfWormsTemplate());
+        this.overlay.show(DietOfWormsTemplate(this.mod, this.mod.game.players.length));
 
 	//
 	// pull GAME HUD over overlay

@@ -11,15 +11,19 @@ class MonopolyOverlay {
     this.cardname = null;
   }
 
-  render() {
+  render(card) {
 
-    this.overlay.show(MonopolyOverlayTemplate(this.app, this.mod, this));
+    this.overlay.show(MonopolyOverlayTemplate(this.app, this.mod, this), ()=> {
+      //Allow to cancel by clicking out of overlay
+      this.mod.game.deck[0].hand.push(card);
+      this_dev_card.mod.game.state.canPlayCard = true; 
+    });
     this.attachEvents();
   }
 
   attachEvents() {
     this_self = this;
-    document.querySelectorAll(".monopoly .settlers-desired-resources img").forEach((card) => {
+    document.querySelectorAll(".settlers-selection-overlay .settlers-desired-resources img").forEach((card) => {
       card.onclick = (e) => {
 
         let target = e.currentTarget;

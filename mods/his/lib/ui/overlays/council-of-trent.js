@@ -23,9 +23,6 @@ class CouncilOfTrentOverlay {
 	let papacy_player = this.mod.returnPlayerOfFaction("papacy");
 	let protestants_player = this.mod.returnPlayerOfFaction("protestant");
 
-console.log("I AM: " + this.mod.game.player);
-console.log("protestants = " + protestants_player);
-
 	this.visible = true;
         this.overlay.show(CouncilOfTrentTemplate());
 
@@ -40,8 +37,8 @@ console.log("protestants = " + protestants_player);
 	    document.querySelector(".council-of-trent-overlay .help").innerHTML = `Papacy select up to 4 Debaters. (<span class="finish-selecting-debaters">click when done</span>)`;
 	  }
 	}
-	if (stage == "protestants") {
-	  let debaters = this.mod.returnDebaters("protestants", "uncommitted");
+	if (stage == "protestant") {
+	  let debaters = this.mod.returnDebaters("protestant", "uncommitted");
 	  for (let i = 0; i < debaters.length; i++) {
 	    this.app.browser.addElementToSelector(this.mod.returnCardImage(debaters[i].type), ".council-of-trent-overlay .debaters");
 	  }
@@ -59,8 +56,6 @@ console.log("protestants = " + protestants_player);
 	  let protestants_rolls = [];
 	  let papacy_hits = 0;
 	  let protestants_hits = 0;
-
-alert(this.mod.game.state.council_of_trent.papacy.debaters.length + " -- " + this.mod.game.state.council_of_trent.protestants.debaters.length);
 
 	  for (let i = 0; i < this.mod.game.state.council_of_trent.papacy.debaters.length; i++) {
 	    let d = this.mod.debaters[this.mod.game.state.council_of_trent.papacy.debaters[i]];
@@ -133,16 +128,11 @@ alert(this.mod.game.state.council_of_trent.papacy.debaters.length + " -- " + thi
             this.overlay.remove();
 	  });
 
-
         }
 
 	if (stage == "results") {
-
-	  
           this.attachEvents(stage);
         }
-
-
 
         if ((this.mod.game.player == papacy_player && stage == "papacy") || (this.mod.game.player == protestants_player && stage == "protestants")) {
           this.attachEvents(stage);
@@ -154,9 +144,6 @@ alert(this.mod.game.state.council_of_trent.papacy.debaters.length + " -- " + thi
 
       let papacy_player = this.mod.returnPlayerOfFaction("papacy");
       let protestants_player = this.mod.returnPlayerOfFaction("protestant");
-
-
-
 
       try {
       document.querySelector(".finish-selecting-debaters").onclick = (e) => {
