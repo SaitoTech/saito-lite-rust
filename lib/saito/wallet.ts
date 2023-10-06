@@ -410,8 +410,6 @@ export default class Wallet extends SaitoWallet {
       //await this.saveWallet();
     }
 
-    console.log("done in setPreferredCrypto");
-
     return;
   }
 
