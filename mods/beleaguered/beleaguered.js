@@ -469,12 +469,19 @@ class Beleaguered extends OnePlayerGameTemplate {
       Any card can be placed on the empty side stack.</div>
       <div class="controls">`;
 
+    html += `<div class="new_game status_option">Start New Game</div></div>`;  
+
     if (this.moves.length > 0){
       html += `<div class="undo_last status_option">Undo</div>`;
     }
     html += `<div class="auto_solve status_option">Auto Complete</div></div>`;
 
     this.updateStatus(html);
+
+    $(".new_game").on("click", ()=> {
+        this.prependMove("lose");
+        this.endTurn();
+    });
 
     $(".undo_last").on("click", () => {
       this.undoMove();

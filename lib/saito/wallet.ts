@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.458;
+  version = 5.465;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -62,7 +62,7 @@ export default class Wallet extends SaitoWallet {
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
     this.publicKey = publicKey;
-    console.log("public key = " + publicKey);
+    console.log("public key = " + publicKey, " / private key ? " + (privateKey !== ""));
 
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
@@ -72,6 +72,7 @@ export default class Wallet extends SaitoWallet {
         this.description = "Saito";
         this.balance = "0.0";
         this.publicKey = publicKey;
+        this.destination = publicKey;
       }
 
       async returnBalance() {
@@ -167,7 +168,6 @@ export default class Wallet extends SaitoWallet {
 
     this.saitoCrypto = new SaitoCrypto(this.app);
 
-    // if (privateKey === "") {
     if (this.app.options.wallet != null) {
       /////////////
       // upgrade //
@@ -250,11 +250,10 @@ export default class Wallet extends SaitoWallet {
 
           await this.saveWallet();
 
-          window.location.reload();
-
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           alert("Saito Upgrade: Wallet Reset");
+          // window.location.reload();
         } else {
           // purge old slips
           this.app.options.wallet.version = this.version;
@@ -282,11 +281,10 @@ export default class Wallet extends SaitoWallet {
 
       // this.instance = Object.assign(this.instance, this.app.options.wallet);
     }
-    // }
     ////////////////
     // new wallet //
     ////////////////
-    if ((await this.getPrivateKey()) === "") {
+    if (!privateKey || !publicKey) {
       await this.resetWallet();
     }
   }
@@ -388,10 +386,11 @@ export default class Wallet extends SaitoWallet {
     throw "Module Not Found: " + ticker;
   }
 
-  async setPreferredCrypto(ticker, show_overlay = 0) {
+  setPreferredCrypto(ticker, show_overlay = 0) {
     let can_we_do_this = 0;
     const mods = this.returnInstalledCryptos();
     let cryptomod = null;
+
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
         cryptomod = mods[i];
@@ -403,20 +402,13 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    if (ticker == "SAITO") {
-      can_we_do_this = 1;
-    }
-
     if (can_we_do_this == 1) {
       this.preferred_crypto = ticker;
       console.log("Activating cryptomod: " + cryptomod.ticker);
       cryptomod.activate();
-      await this.saveWallet();
-      console.log("emitting set preferred crypto event");
-      this.app.connection.emit("set_preferred_crypto", ticker);
+      //cryptomod.returnBalance();
+      //await this.saveWallet();
     }
-
-    console.log("done in setPreferredCrypto");
 
     return;
   }
@@ -426,7 +418,7 @@ export default class Wallet extends SaitoWallet {
       return this.returnCryptoModuleByTicker(this.preferred_crypto);
     } catch (err) {
       if (err.startsWith("Module Not Found:")) {
-        await this.setPreferredCrypto("SAITO");
+        this.setPreferredCrypto("SAITO");
         return this.returnCryptoModuleByTicker(this.preferred_crypto);
       } else {
         throw err;
@@ -464,20 +456,26 @@ export default class Wallet extends SaitoWallet {
 
   async returnAvailableCryptosAssociativeArray() {
     let cryptos = {};
-    let mods = this.returnActivatedCryptos();
-    for (let i = 0; i < mods.length; i++) {
-      let ticker = mods[i].ticker;
-      let address = mods[i].returnAddress();
-      let balance = await mods[i].returnBalance();
-      if (!cryptos[ticker]) {
-        cryptos[ticker] = { address, balance };
-      }
 
-      if (parseFloat(balance) > 0) {
-        mods[i].save();
+    let ticker;
+    try {
+      let mods = this.returnActivatedCryptos();
+      for (let i = 0; i < mods.length; i++) {
+        ticker = mods[i].ticker;
+        let address = mods[i].returnAddress();
+        let balance = await mods[i].returnBalance();
+        if (!cryptos[ticker]) {
+          cryptos[ticker] = { address, balance };
+        }
+
+        if (parseFloat(balance) > 0) {
+          mods[i].save();
+        }
       }
+    } catch (err) {
+      console.error(err);
+      console.log(ticker);
     }
-
     return cryptos;
   }
 

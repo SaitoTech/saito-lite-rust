@@ -1513,8 +1513,6 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];
 
-console.log("RETREAT: " + JSON.stringify(source.units));
-
 	  for (let i = 0; i < source.units[faction].length; i++) {
 	    source.units[faction][i].locked = true;
 	    destination.units[faction].push(source.units[faction][i]);
@@ -2359,16 +2357,16 @@ console.log("#");
 	  //
 	  // calculate highest battle ranking
 	  //
-          let calculate_highest_battle_ranking = function(faction) {
-	    let highest_battle_ranking = 0;
+          let calculate_highest_battle_rating = function(faction) {
+	    let highest_battle_rating = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].battle_ranking > 0) {
-	        if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
-		  highest_battle_ranking = space.units[faction][i].battle_ranking;
+	      if (space.units[faction][i].battle_rating > 0) {
+	        if (highest_battle_rating < space.units[faction][i].battle_rating) {
+		  highest_battle_rating = space.units[faction][i].battle_rating;
 		}
 	      }
 	    }
-	    return highest_battle_ranking;
+	    return highest_battle_rating;
           }
 
 	  //
@@ -2463,22 +2461,22 @@ console.log("2: " + f);
 	  let defender_port_bonus = 0;
 	  if (this.game.spaces[mv[1]]) { defender_port_bonus++; defender_rolls++; }
 
-	  let attacker_highest_battle_ranking = 0;
-	  let defender_highest_battle_ranking = 0;
+	  let attacker_highest_battle_rating = 0;
+	  let defender_highest_battle_rating = 0;
 
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
 	      attacker_units += calculate_units(f);
 	      attacker_rolls += calculate_rolls(f);
-	      if (calculate_highest_battle_ranking(f) > attacker_highest_battle_ranking) {
-		attacker_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
+		attacker_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
 	    }
 	    if (faction_map[f] === defender_faction) {
 	      defender_units += calculate_units(f);
 	      defender_rolls += calculate_rolls(f);
-	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
-		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      if (calculate_highest_battle_rating(f) > defender_highest_battle_rating) {
+		defender_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
 	    }
 	  }
@@ -2602,16 +2600,16 @@ console.log("#");
 	  //
 	  // calculate highest battle ranking
 	  //
-          let calculate_highest_battle_ranking = function(faction) {
-	    let highest_battle_ranking = 0;
+          let calculate_highest_battle_rating = function(faction) {
+	    let highest_battle_rating = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].battle_ranking > 0) {
-	        if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
-		  highest_battle_ranking = space.units[faction][i].battle_ranking;
+	      if (space.units[faction][i].battle_rating > 0) {
+	        if (highest_battle_rating < space.units[faction][i].battle_rating) {
+		  highest_battle_rating = space.units[faction][i].battle_rating;
 		}
 	      }
 	    }
-	    return highest_battle_ranking;
+	    return highest_battle_rating;
           }
           let modify_rolls = function(player, roll_array) {
 	    let modified_rolls = [];
@@ -2732,10 +2730,10 @@ console.log("#");
 	  let defender_units = ['defender'];
 	  let attacker_units_faction = [];
 	  let defender_units_faction = [defender_faction];
-	  let attacker_highest_battle_ranking = 0;
-	  let defender_highest_battle_ranking = 0;
-	  let attacker_highest_battle_ranking_figure = "";
-	  let defender_highest_battle_ranking_figure = "";
+	  let attacker_highest_battle_rating = 0;
+	  let defender_highest_battle_rating = 0;
+	  let attacker_highest_battle_rating_figure = "";
+	  let defender_highest_battle_rating_figure = "";
 
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
@@ -2744,8 +2742,8 @@ console.log("#");
 	      attacker_rolls += x.rolls;
 	      attacker_units.push(...x.units);
 	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f); }
-	      if (calculate_highest_battle_ranking(f) > attacker_highest_battle_ranking) {
-		attacker_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
+		attacker_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
 	    }
 	    if (faction_map[f] === defender_faction) {
@@ -2755,8 +2753,8 @@ console.log("#");
 	      defender_units.push(...x.units);
 	      for (let i = 0; i < x.rolls; i++) { defender_units_faction.push(f); }
 
-	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
-		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      if (calculate_highest_battle_rating(f) > defender_highest_battle_rating) {
+		defender_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
 	    }
 	  }
@@ -2764,15 +2762,15 @@ console.log("#");
 	  //
 	  // add rolls for highest battle ranking
 	  //
-	  for (let z = 0; z < attacker_highest_battle_ranking; z++) {
+	  for (let z = 0; z < attacker_highest_battle_rating; z++) {
 	    attacker_rolls++;
 	  }
-	  for (let z = 0; z < defender_highest_battle_ranking; z++) {
+	  for (let z = 0; z < defender_highest_battle_rating; z++) {
 	    defender_rolls++;
 	  }
 
-console.log("ATTACKER HIGHEST BATTLE RANKING: " + attacker_highest_battle_ranking);
-console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_ranking);
+console.log("ATTACKER HIGHEST BATTLE RANKING: " + attacker_highest_battle_rating);
+console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_rating);
 
 
 	  //
@@ -2863,8 +2861,8 @@ console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_rankin
 	  his_self.game.state.field_battle.defender_faction = defender_faction;
 	  his_self.game.state.field_battle.attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
 	  his_self.game.state.field_battle.defender_player = his_self.returnPlayerOfFaction(defender_faction);
-	  his_self.game.state.field_battle.attacker_highest_battle_ranking = attacker_highest_battle_ranking;
-	  his_self.game.state.field_battle.defender_highest_battle_ranking = defender_highest_battle_ranking;
+	  his_self.game.state.field_battle.attacker_highest_battle_rating = attacker_highest_battle_rating;
+	  his_self.game.state.field_battle.defender_highest_battle_rating = defender_highest_battle_rating;
 	  his_self.game.state.field_battle.defender_hits_first = 0;
 	  his_self.game.state.field_battle.attacker_hits_first = 0;
 	  his_self.game.state.field_battle.defender_hits_first = 0;
@@ -4213,18 +4211,18 @@ console.log("!");
 	  //
 	  // calculate highest battle ranking
 	  //
-          let calculate_highest_battle_ranking = function(faction) {
-	    let highest_battle_ranking = 0;
+          let calculate_highest_battle_rating = function(faction) {
+	    let highest_battle_rating = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].battle_ranking > 0) {
+	      if (space.units[faction][i].battle_rating > 0) {
 	        if (space.units[faction][i].gout != true) {
-	          if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
-		    highest_battle_ranking = space.units[faction][i].battle_ranking;
+	          if (highest_battle_rating < space.units[faction][i].battle_rating) {
+		    highest_battle_rating = space.units[faction][i].battle_rating;
 		  }
 		}
 	      }
 	    }
-	    return highest_battle_ranking;
+	    return highest_battle_rating;
           }
 
 
@@ -4319,8 +4317,8 @@ console.log("!");
           let defender_units_units = [];
           let attacker_units_faction = [];
           let defender_units_faction = [defender_faction];
-	  let attacker_highest_battle_ranking = 0;
-	  let defender_highest_battle_ranking = 0;
+	  let attacker_highest_battle_rating = 0;
+	  let defender_highest_battle_rating = 0;
 
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
@@ -4332,8 +4330,8 @@ console.log("!");
 	        }
 	      }
 	      for (let i = 0; i < x; i++) { attacker_units_faction.push(f); }
-	      if (calculate_highest_battle_ranking(f) > attacker_highest_battle_ranking) {
-		attacker_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
+		attacker_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
 	    }
 	    if (faction_map[f] === defender_faction) {
@@ -4345,8 +4343,8 @@ console.log("!");
 	        }
 	      }
 	      for (let i = 0; i < x; i++) { defender_units_faction.push(f); }
-	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
-		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      if (calculate_highest_battle_rating(f) > defender_highest_battle_rating) {
+		defender_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
 	    }
 	  }
@@ -4356,14 +4354,14 @@ console.log("!");
 	  //
 	  if (defender_units == 0) {
 	    attacker_rolls = attacker_units;
-	    attacker_rolls += attacker_highest_battle_ranking;
-	    defender_rolls = 1 + defender_highest_battle_ranking;
+	    attacker_rolls += attacker_highest_battle_rating;
+	    defender_rolls = 1 + defender_highest_battle_rating;
 	  } else {
 	    for (let i = 0; i < attacker_units; i++) {
 	      if (i%2 === 1) { attacker_rolls++; }
-	      attacker_rolls += attacker_highest_battle_ranking;
+	      attacker_rolls += attacker_highest_battle_rating;
 	    }
-	    defender_rolls = 1 + defender_units + defender_highest_battle_ranking;
+	    defender_rolls = 1 + defender_units + defender_highest_battle_rating;
 	  }
 
 	  if (attacker_player > 0) {
