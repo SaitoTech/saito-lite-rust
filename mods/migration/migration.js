@@ -51,38 +51,19 @@ class Migration extends ModTemplate {
 	  }
 
 	  let emailtext = `
-
-	  Dear Saitozen,
-
-	  Token withdrawal requested:
-
-	  <p></p>
-
-	  From: ${erc20}
-
-	  <p></p>
-
-	  To: ${pk}
-
-	  <p></p>
-
-	  Email: ${email}
-
-	  <p></p>
-
-	  Token transfer should be recorded at:
-
-	  <p></p>
-
-	  0x24F10EA2827717770270e3cc97F015Ba58fcB9b6
-
-	  <p></p>
-
- 	  -- Saito Migration Transfer Service
-
+      <div>
+	    <p>Dear Saitozen,</p>
+     	<p>Token withdrawal requested:</p>
+		<p>From: ${erc20}</p>
+		<p>To: ${pk}</p>
+		<p>Email: ${email}</p>
+		<p>Token transfer should be recorded at:</p>
+		<p>0x24F10EA2827717770270e3cc97F015Ba58fcB9b6</p>
+ 	    <p>-- Saito Migration Transfer Service</p>
 	  `;
 
-	  mailrelay_mod.sendMailRelayTransaction(email, "info@saito.tech", "Saito Token Withdrawal Request (action required)", emailtext, true, "", "migration@saito.io");
+	  mailrelay_mod.sendMailRelayTransaction(email, "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal Request (action required)", emailtext, true, "", "migration@saito.io");
+	  mailrelay_mod.sendMailRelayTransaction("migration@saito.tech", "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal Request (action required)", emailtext, true, "", "migration@saito.io");
 
 	  document.querySelector(".withdraw-intro").innerHTML = "Your request is now processing. Please contact us by email if you do not receive confirmation of token issuance within 24 hours.";
 	  document.querySelector(".withdraw-outtro").style.display = "none";
@@ -125,49 +106,24 @@ class Migration extends ModTemplate {
 
 	let emailtext = `
 
-	  Dear Saitozen,
-
-	  You have provided the following ERC20 address:
-
-	  <p></p>
-
-	  ${erc20}
-
-	  <p></p>
-
-	  And the following Saito address / publickey:
-
-	  <p></p>
-
-	  ${publickey}
-
-	  <p></p>
-
-	  If this information is correct, complete your withdrawal by sending your ERC20 tokens to our monitored multisig address:
-
-	  <p></p>
-
-	  0x24F10EA2827717770270e3cc97F015Ba58fcB9b6
-
-	  <p></p>
-
-	  Once the transfer is complete, please click on the following link and confirm the submission - our team will complete the transfer within 24 hours:
-
-	  <p></p>
-
-	  http://saito.io/migration?publickey=${publickey}&erc20=${erc20}&email=${email}
-
-	  <p></p>
-
-	  Please reach out by email if you do not hear from us in a day.
-
-	  <p></p>
-
- 	  -- The Saito Team
+	<div>
+      <p>Dear Saitozen,</p>
+      <p>You have provided the following ERC20 address:</p>
+      <p>${erc20}</p>
+      <p>And the following Saito address / publickey:</p>
+      <p>${publickey}</p>
+      <p>If this information is correct, complete your withdrawal by sending your ERC20 tokens to our monitored multisig address:</p>
+      <p>0x24F10EA2827717770270e3cc97F015Ba58fcB9b6</p>
+      <p>Once the transfer is complete, please click on the following link and confirm the submission - our team will complete the transfer within 24 hours:</p>
+      <p>http://saito.io/migration?publickey=${publickey}&erc20=${erc20}&email=${email}</p>
+      <p>Please reach out by email if you do not hear from us in a day.</p>
+      <p>-- The Saito Team</p> 
+    </div>
 
 	`;
 
-	mailrelay_mod.sendMailRelayTransaction("migration@saito.io", "info@saito.tech", "Saito Token Withdrawal (migration)", emailtext, true);
+	mailrelay_mod.sendMailRelayTransaction(email, "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal (migration)", emailtext, true);
+	mailrelay_mod.sendMailRelayTransaction("migration@saito.io", "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal (migration)", emailtext, true);
 
 	document.querySelector(".withdraw-outtro").style.display = "none";
 	document.querySelector(".withdraw-title").innerHTML = "Email Sent";
