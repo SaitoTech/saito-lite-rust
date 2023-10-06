@@ -5490,7 +5490,6 @@ console.log("u is 1 so autoclick option");
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (his_self.isCommitted("luther-debater")) { return 0; }
 	if (his_self.game.state.leaders.luther == 1) { return 1; }
 	if (Object.keys(his_self.game.deck[0].discards).length > 0) { return 1; }
 	return 0;
@@ -21384,6 +21383,7 @@ console.log("!");
           //
           // redisplay
           //
+	  his_self.refreshBoardUnits();
           his_self.displaySpace(space.key);
 
           return 1;
@@ -22666,7 +22666,7 @@ defender_hits - attacker_hits;
 	  //
           let is_papacy_at_war = false;
           let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
-          for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); is_papacy_at_war = true; } }
+          for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { is_papacy_at_war = true; } }
           if (is_papacy_at_war == true) {
             this.game.queue.push("papacy_diplomacy_phase_special_turn");
             this.game.queue.push("counter_or_acknowledge\tPapacy Special Diplomacy Phase");
@@ -26649,25 +26649,16 @@ console.log("A");
             let id = $(this).attr("id");
 
 	    if (id === "auto") {
-
-console.log("UNITS IN SPACE: " + JSON.stringify(space.units[faction]));
-
 	      for (let i = 0; i < space.units[faction].length; i++) {
 		let u = space.units[faction][i];
 		if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.command_value > 0 || u.battle_rating > 0) {
-console.log("UNIT: " + JSON.stringify(u));
 		  if (u.locked != true && (his_self.game.state.events.foul_weather != 1 || u.already_moved != 1)) { 
-console.log("GOOD!");
 		    units_to_move.push(i);
 		  } else {
-console.log("FAILED: ");
 		    his_self.updateLog("Some units unable to auto-move because of Foul Weather");
 		  }
-		} else {
-console.log("cannot move unit: " + JSON.stringify(u));
 		}
 	      }
-console.log("trying to auto-mode: " + units_to_move);
 	      selectDestinationInterface(his_self, units_to_move);
 	      return;
 	    }
@@ -31367,16 +31358,26 @@ return;
 
   }
 
+  refreshBoardUnits() {
+    this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
+    this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
+    this.game.state.board["england"] = this.returnOnBoardUnits("england");
+    this.game.state.board["france"] = this.returnOnBoardUnits("france");
+    this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
+    this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
+    this.game.state.board["independent"] = this.returnOnBoardUnits("independent");
+    this.game.state.board["venice"] = this.returnOnBoardUnits("venice");
+    this.game.state.board["genoa"] = this.returnOnBoardUnits("genoa");
+    this.game.state.board["scotland"] = this.returnOnBoardUnits("scotland");
+    this.game.state.board["hungary"] = this.returnOnBoardUnits("hungary");
+  }
+
+
   displaySpace(key) {
 
     let ts = new Date().getTime();
     if (this.game.state.board_updated < ts + 20000) {
-      this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
-      this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
-      this.game.state.board["england"] = this.returnOnBoardUnits("england");
-      this.game.state.board["france"] = this.returnOnBoardUnits("france");
-      this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
-      this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
+      this.refreshBoardUnits();
     }
 
     if (!this.game.spaces[key]) { return; }

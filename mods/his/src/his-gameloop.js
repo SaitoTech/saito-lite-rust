@@ -4876,6 +4876,7 @@ console.log("!");
           //
           // redisplay
           //
+	  his_self.refreshBoardUnits();
           his_self.displaySpace(space.key);
 
           return 1;
@@ -6158,7 +6159,7 @@ defender_hits - attacker_hits;
 	  //
           let is_papacy_at_war = false;
           let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
-          for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); is_papacy_at_war = true; } }
+          for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { is_papacy_at_war = true; } }
           if (is_papacy_at_war == true) {
             this.game.queue.push("papacy_diplomacy_phase_special_turn");
             this.game.queue.push("counter_or_acknowledge\tPapacy Special Diplomacy Phase");
