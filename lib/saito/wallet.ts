@@ -463,20 +463,26 @@ export default class Wallet extends SaitoWallet {
 
   async returnAvailableCryptosAssociativeArray() {
     let cryptos = {};
-    let mods = this.returnActivatedCryptos();
-    for (let i = 0; i < mods.length; i++) {
-      let ticker = mods[i].ticker;
-      let address = mods[i].returnAddress();
-      let balance = await mods[i].returnBalance();
-      if (!cryptos[ticker]) {
-        cryptos[ticker] = { address, balance };
-      }
 
-      if (parseFloat(balance) > 0) {
-        mods[i].save();
+    let ticker;
+    try {
+      let mods = this.returnActivatedCryptos();
+      for (let i = 0; i < mods.length; i++) {
+        ticker = mods[i].ticker;
+        let address = mods[i].returnAddress();
+        let balance = await mods[i].returnBalance();
+        if (!cryptos[ticker]) {
+          cryptos[ticker] = { address, balance };
+        }
+
+        if (parseFloat(balance) > 0) {
+          mods[i].save();
+        }
       }
+    } catch (err) {
+      console.error(err);
+      console.log(ticker);
     }
-
     return cryptos;
   }
 
