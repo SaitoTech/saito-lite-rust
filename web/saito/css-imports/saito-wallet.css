@@ -334,6 +334,10 @@
   font-size: 2rem;
 }
 
+.pagination-button.disabled {
+  visibility: hidden;
+}
+
 .pagination-button:hover {
   transition: all 0.2s ease-in-out;
   transform: scale(1.5);
@@ -350,12 +354,13 @@
 
 
 .deposit {
-  color: #005900;
-  font-weight: 800;
+  color: #00ae00;
+  font-weight: bold;
 }
 
 .withdrawal {
   color: #e34927;
+  font-weight: bold;
 }
 
 #mixin-balance-container .mixin-item {
