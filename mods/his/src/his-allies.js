@@ -210,7 +210,7 @@
     // maybe this is a minor power controlled by a larger one
     //
     if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
-      defender = returnControllingPower(defender);
+      defender = this.returnControllingPower(defender);
     }         
 
 console.log("defender: " + defender);

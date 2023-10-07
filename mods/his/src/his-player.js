@@ -1042,6 +1042,7 @@ if (limit === "build") {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
+console.log("playerSelectNavalSapceWithFilter -- before events off...");
 	    $('.option').off();
      	    $('.hextile').off();
     	    $('.space').off();
@@ -1053,6 +1054,8 @@ if (limit === "build") {
             his_self.theses_overlay.space_onclick_callback = null;
     	    if (callback_run == false) {
 	      callback_run = true;
+    	      his_self.updateStatus("selected...");
+console.log("playerSelectNavalSapceWithFilter -- sending into callback");
 	      mycallback(key);
 	    }
 	  }
@@ -1078,6 +1081,7 @@ console.log("clicked on id of key: " + key);
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
 console.log("and calling callback...");
+    	    his_self.updateStatus("selected...");
 	    mycallback(key);
 	    return;
 	  }
@@ -3279,7 +3283,7 @@ console.log("A");
 
   canPlayerNavalMove(his_self, player, faction) {
 
-    if (his_self.game.state.events.foul_weather) { return 0; }
+    if (his_self.game.state.events.foul_weather) { console.log("Foul Weather - cannot naval move"); return 0; }
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }

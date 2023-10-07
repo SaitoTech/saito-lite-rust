@@ -36,7 +36,9 @@ this.updateLog(`###############`);
 	  this.onNewRound();
 	  this.restoreReformers();
 	  this.restoreMilitaryLeaders();
+console.log("unexcommunicating Reformers");
 	  this.unexcommunicateReformers();
+console.log("done unexcommunicating!");
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
@@ -1774,9 +1776,11 @@ console.log("i am player: " + this.game.player);
 	  this.updateLog("Interception roll #1: " + d1);
 	  this.updateLog("Interception roll #2: " + d2);
 
-	  // IS_TESTING
-this.updateLog("IS_TESTING - HITS ON 2");
-hits_on = 2;
+//
+// IS_TESTING
+//
+//this.updateLog("IS_TESTING - HITS ON 2");
+//hits_on = 2;
 
 	  if (dsum >= hits_on) {
 
@@ -5949,12 +5953,12 @@ defender_hits - attacker_hits;
 	  //
 	  // TESTING form Schmalkaldic League triggers end of round 1
 	  //
-	  if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
-	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
-	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-	    this.game.queue.push("event\tprotestant\t013");
-	  }
-
+	  //if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
+	  //  this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
+	  //  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  //  this.game.queue.push("event\tprotestant\t013");
+	  //}
+	  //
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //

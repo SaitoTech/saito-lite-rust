@@ -56,6 +56,10 @@
     padding: 1.5rem;
     text-align: center;
     font-size: 2rem;
+    bottom: 0px;
+    display: block;
+    position: absolute;
+    width: 100%;
 }
 
 

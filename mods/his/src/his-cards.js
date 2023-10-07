@@ -1038,6 +1038,7 @@ console.log("about to update status with options");
 	      $('.option').on('click', function () {
 
 console.log("in parent click function in plague...");
+   	        $('.option').off();
 
 	        let faction_to_destroy = $(this).attr("id");
    	        let msg = "Destroy Which Unit: ";
@@ -1103,7 +1104,10 @@ $('.nonskip').click(); }
 
 console.log("u is 1 so autoclick option");
 
- $('.option').click(); }
+ $('.option').click(); 
+
+console.log("done u=1 autoclick");
+}
 
 	    },
 
@@ -2571,6 +2575,14 @@ console.log("u is 1 so autoclick option");
     	  his_self.updateStatusWithOptions(msg, html);
 
 	  $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            his_self.cardbox.show(action2);
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            his_self.cardbox.hide(action2);
+          });
 	  $('.option').on('click', function () {
 
 	    $('.option').off();
@@ -2592,8 +2604,8 @@ console.log("u is 1 so autoclick option");
 
 	      if (action == "play") {
 
+		his_self.addMove("card\tprotestant\t"+action);
 		his_self.addMove("discard\tprotestant\t007");
-		his_self.addMove("here_i_stand_event\t"+card);
 		his_self.endTurn();
 
 	      } else {

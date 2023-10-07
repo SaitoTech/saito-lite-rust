@@ -3979,6 +3979,7 @@ console.log("about to update status with options");
 	      $('.option').on('click', function () {
 
 console.log("in parent click function in plague...");
+   	        $('.option').off();
 
 	        let faction_to_destroy = $(this).attr("id");
    	        let msg = "Destroy Which Unit: ";
@@ -4044,7 +4045,10 @@ $('.nonskip').click(); }
 
 console.log("u is 1 so autoclick option");
 
- $('.option').click(); }
+ $('.option').click(); 
+
+console.log("done u=1 autoclick");
+}
 
 	    },
 
@@ -5512,6 +5516,14 @@ console.log("u is 1 so autoclick option");
     	  his_self.updateStatusWithOptions(msg, html);
 
 	  $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            his_self.cardbox.show(action2);
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            his_self.cardbox.hide(action2);
+          });
 	  $('.option').on('click', function () {
 
 	    $('.option').off();
@@ -5533,8 +5545,8 @@ console.log("u is 1 so autoclick option");
 
 	      if (action == "play") {
 
+		his_self.addMove("card\tprotestant\t"+action);
 		his_self.addMove("discard\tprotestant\t007");
-		his_self.addMove("here_i_stand_event\t"+card);
 		his_self.endTurn();
 
 	      } else {
@@ -14853,7 +14865,7 @@ console.log("and friendly");
     // maybe this is a minor power controlled by a larger one
     //
     if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
-      defender = returnControllingPower(defender);
+      defender = this.returnControllingPower(defender);
     }         
 
 console.log("defender: " + defender);
@@ -15707,6 +15719,9 @@ console.log("player_factions : " + (p+1) + " -- " + JSON.stringify(player_factio
   unexcommunicateReformers() {
 
     for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+
+      let obj = this.game.state.excommunicated[i];
+
       if (obj.reformer) {
 
         let reformer = obj.reformer;
@@ -15725,6 +15740,11 @@ console.log("player_factions : " + (p+1) + " -- " + JSON.stringify(player_factio
 	if (debater) {
 	  this.game.state.debaters.push(debater);
 	}
+
+	this.displaySpace(s);
+
+        this.game.state.excommunicated.splice(i, 1);
+        i--;
 
       }
     }
@@ -16543,7 +16563,9 @@ this.updateLog(`###############`);
 	  this.onNewRound();
 	  this.restoreReformers();
 	  this.restoreMilitaryLeaders();
+console.log("unexcommunicating Reformers");
 	  this.unexcommunicateReformers();
+console.log("done unexcommunicating!");
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
@@ -18281,9 +18303,11 @@ console.log("i am player: " + this.game.player);
 	  this.updateLog("Interception roll #1: " + d1);
 	  this.updateLog("Interception roll #2: " + d2);
 
-	  // IS_TESTING
-this.updateLog("IS_TESTING - HITS ON 2");
-hits_on = 2;
+//
+// IS_TESTING
+//
+//this.updateLog("IS_TESTING - HITS ON 2");
+//hits_on = 2;
 
 	  if (dsum >= hits_on) {
 
@@ -22456,12 +22480,12 @@ defender_hits - attacker_hits;
 	  //
 	  // TESTING form Schmalkaldic League triggers end of round 1
 	  //
-	  if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
-	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
-	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-	    this.game.queue.push("event\tprotestant\t013");
-	  }
-
+	  //if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
+	  //  this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
+	  //  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  //  this.game.queue.push("event\tprotestant\t013");
+	  //}
+	  //
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
@@ -25358,6 +25382,7 @@ if (limit === "build") {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
+console.log("playerSelectNavalSapceWithFilter -- before events off...");
 	    $('.option').off();
      	    $('.hextile').off();
     	    $('.space').off();
@@ -25369,6 +25394,8 @@ if (limit === "build") {
             his_self.theses_overlay.space_onclick_callback = null;
     	    if (callback_run == false) {
 	      callback_run = true;
+    	      his_self.updateStatus("selected...");
+console.log("playerSelectNavalSapceWithFilter -- sending into callback");
 	      mycallback(key);
 	    }
 	  }
@@ -25394,6 +25421,7 @@ console.log("clicked on id of key: " + key);
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
 console.log("and calling callback...");
+    	    his_self.updateStatus("selected...");
 	    mycallback(key);
 	    return;
 	  }
@@ -27595,7 +27623,7 @@ console.log("A");
 
   canPlayerNavalMove(his_self, player, faction) {
 
-    if (his_self.game.state.events.foul_weather) { return 0; }
+    if (his_self.game.state.events.foul_weather) { console.log("Foul Weather - cannot naval move"); return 0; }
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }

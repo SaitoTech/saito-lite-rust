@@ -711,6 +711,9 @@
   unexcommunicateReformers() {
 
     for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+
+      let obj = this.game.state.excommunicated[i];
+
       if (obj.reformer) {
 
         let reformer = obj.reformer;
@@ -729,6 +732,11 @@
 	if (debater) {
 	  this.game.state.debaters.push(debater);
 	}
+
+	this.displaySpace(s);
+
+        this.game.state.excommunicated.splice(i, 1);
+        i--;
 
       }
     }
