@@ -326,10 +326,16 @@
 console.log("SQUADRONS IN SPACE: " + number_of_squadrons_in_port);
 
     //
-    // at sea
+    // adjacent sea
     //
-    for (let p in space.ports) {
-      let sea = this.game.navalspaces[p];
+console.log("SPACE PORTS: " + JSON.stringify(space.ports));
+
+    for (let p = 0; p < space.ports.length; p++) {
+
+      let sea = this.game.navalspaces[space.ports[p]];
+
+console.log("SEA: " + JSON.stringify(sea));
+
       for (let f in sea.units) {
 
 	// faction at sea is friendly to port space controller

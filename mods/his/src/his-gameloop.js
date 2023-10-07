@@ -665,6 +665,18 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
 
+    	  this.addRegular("venice", "venice", 1);
+    	  this.addNavalSquadron("venice", "venice", 1);
+    	  this.addNavalSquadron("papacy", "rome", 1);
+
+	  this.addRegular("hapsburg", "naples", 4);
+	  this.addNavalSquadron("hapsburg", "naples", 2);
+	
+
+	  this.controlSpace("france", "ragusa");
+	  this.addRegular("france", "ragusa", 1);
+	  this.addNavalSquadron("france", "ragusa", 4); 
+
     	  this.convertSpace("protestant", "mainz");
     	  this.convertSpace("protestant", "worms");
     	  this.convertSpace("protestant", "kassel");
@@ -1289,17 +1301,20 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 
-	  for (let i = this.game.queue.length-1; i >= 0; i--) {
-	    let lmv = this.game.queue[i].split("\t");
+	  // OCT 7 -- removing as this causes problems
+	  // queue is just emptied totally when France invades Venice
+	  // in testing.
+	  //for (let i = this.game.queue.length-1; i >= 0; i--) {
+	  //  let lmv = this.game.queue[i].split("\t");
 	    //
 	    // remove everything before field_battle
 	    //
-	    if (lmv[0] !== "field_battle") {
-	      this.game.queue.splice(i, 1);
-	    } else {
-	      break;
-	    }
-	  }
+	  //  if (lmv[0] !== "field_battle") {
+	  //    this.game.queue.splice(i, 1);
+	  //  } else {
+	  //    break;
+	  //  }
+	  //}
 
 	  if (this.game.player === player) {
 	    this.playerFortifySpace(faction, attacker, spacekey);
@@ -1438,7 +1453,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
-	  if (player_factions.includes(attacker)) {
+	  if (player_factions.includes(attacker) || this.returnPlayerCommandingFaction(attacker) == this.game.player) {
 	    this.playerEvaluateBreakSiegeRetreatOpportunity(attacker, spacekey);
 	  } else {
 	    this.updateStatus(this.returnFactionName(attacker) + " considering retreat");
@@ -1461,7 +1476,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
-	  if (player_factions.includes(defender)) {
+	  if (player_factions.includes(defender) || this.returnPlayerCommandingFaction(defender) == this.game.player) {
 	    this.playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
 	  } else {
 	    this.updateStatus(this.returnFactionName(defender) + " considering retreat");
@@ -5996,6 +6011,7 @@ defender_hits - attacker_hits;
 	      let faction = this.game.state.players_info[i].factions[z];
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
 		if (!this.game.state.skip_next_impulse.includes(this.game.state.players_info[i].factions[z])) {
+console.log("1 pushing: " + this.game.state.players_info[i].factions[z]);
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 		} else {
 		  for (let ii = 0; ii < this.game.state.skip_next_impulse.length; ii++) {
@@ -6009,6 +6025,7 @@ defender_hits - attacker_hits;
 		// they passed but maybe they have more cards left than their admin rating?
 		let far = this.factions[faction].returnAdminRating();
 	        if (far < this.game.state.cards_left[faction]) {
+console.log("2 pushing: " + this.game.state.players_info[i].factions[z]);
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 	        }
 	      }
@@ -6023,12 +6040,24 @@ defender_hits - attacker_hits;
 	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	        let f = this.game.state.players_info[i].factions[z];
 	        if (!factions_in_play.includes(f) && !factions_force_pass.includes(f)) {
-	    	  factions_in_play.push(f);
+
+		  let is_activated_power = false;
+	          let io = this.returnImpulseOrder();
+		  for (let y = 0; y < io.length; y++) {
+		    if (this.game.state.activated_powers[io[y]].includes(f)) { is_activated_power = true; }
+		  }
+console.log("is activated: " + is_activated_power);
+		  if (!is_activated_power) {
+console.log("3 pushing: " + f);
+	    	    factions_in_play.push(f);
+		  }
 	        }
 	      }
 	    }
 	  }
 
+
+console.log("FIP: " + JSON.stringify(factions_in_play));
 
 	  //
 	  // players still to go...

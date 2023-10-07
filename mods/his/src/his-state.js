@@ -489,6 +489,12 @@
     state.activated_powers['england'] = [];
     state.activated_powers['papacy'] = [];
     state.activated_powers['protestant'] = [];
+    // following for safety
+    state.activated_powers['venice'] = [];
+    state.activated_powers['scotland'] = [];
+    state.activated_powers['genoa'] = [];
+    state.activated_powers['hungary'] = [];
+    state.activated_powers['independent'] = [];
 
     state.translations = {};
     state.translations['new'] = {};

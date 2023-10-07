@@ -206,6 +206,8 @@
     // by default factions control themselves
     //
 
+console.log("in as: " + defender);
+
     //
     // maybe this is a minor power controlled by a larger one
     //
