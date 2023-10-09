@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.465;
+  version = 5.467;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -162,9 +162,6 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    //
-    // this.publickey = await S.getInstance().getPublicKey();
-    // this.privatekey = await S.getInstance().getPrivateKey();
 
     this.saitoCrypto = new SaitoCrypto(this.app);
 
@@ -178,6 +175,10 @@ export default class Wallet extends SaitoWallet {
           let tmpprivkey = this.app.options.wallet.privateKey;
           let tmppubkey = this.app.options.wallet.publicKey;
 
+          //
+          // Note: since WASM switch over, we use camelCasing for the keys
+          // These are two checks to make sure outdated wallets are still compatible
+          //
           if (this.app.options.wallet.privatekey) {
             tmpprivkey = this.app.options.wallet.privatekey;
           }
