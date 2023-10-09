@@ -257,17 +257,6 @@ class Keychain {
     return false;
   }
 
-  //
-  // used in the encrypt module, provided here for convenience of generating DHKE
-  // in other ways.
-  //
-  initializeKeyExchange(publicKey: string) {
-    const alice = this.app.crypto.createDiffieHellman();
-    const alice_publicKey = alice.getPublicKey(null, "compressed").toString("hex");
-    const alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
-    this.updateCryptoByPublicKey(publicKey, alice_publicKey, alice_privatekey, "");
-    return alice_publicKey;
-  }
 
   removeKey(publicKey = null) {
     if (publicKey == null) {
@@ -496,8 +485,8 @@ class Keychain {
     this.app.network.updatePeersWithWatchedPublicKeys();
   }
 
-  updateCryptoByPublicKey(publicKey:string, aes_publicKey = "", aes_privatekey = "", shared_secret = "") {
-    if (publicKey == "") {
+  updateEncryptionByPublicKey(publicKey:string, aes_publicKey = "", aes_privatekey = "", shared_secret = "") {
+    if (!publicKey) {
       return;
     }
     this.addKey(publicKey, {
