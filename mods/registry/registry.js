@@ -101,6 +101,7 @@ class Registry extends ModTemplate {
         }
       });
     });
+
     this.app.connection.on("register-username-or-login", (obj) => {
       let key = this.app.keychain.returnKey(this.publicKey);
       if (key?.has_registered_username) {
@@ -174,56 +175,17 @@ class Registry extends ModTemplate {
     });
 
     if (missing_keys.length == 0) {
-      if (mycallback) {
-        mycallback(found_keys);
-      }
+      mycallback(found_keys);
       return;
-    } else {
     }
 
-    if (1) {
-      this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
-        for (let key in identifiers) {
-          registry_self.cached_keys[key] = identifiers[key];
-          found_keys[key] = identifiers[key];
-        }
-        mycallback(found_keys);
-      });
-    } else {
-      //
-      //
-      //
-      const where_statement = `publickey in ("${missing_keys.join('","')}")`;
-      const sql = `SELECT *
-                   FROM records
-                   WHERE ${where_statement}`;
-
-      this.sendPeerDatabaseRequestWithFilter(
-        "Registry",
-        sql,
-        (res) => {
-          try {
-            if (!res.err) {
-              if (res?.rows?.length > 0) {
-                res.rows.forEach((row) => {
-                  const { publickey, identifier, bid, bsh, lc } = row;
-                  found_keys[publickey] = identifier;
-                });
-              }
-            }
-            mycallback(found_keys);
-          } catch (err) {
-            console.error(err);
-          }
-        },
-        (p) => {
-          if (p.hasService("registry")) {
-            return 1;
-          }
-          return 0;
-        }
-      );
-    }
+    this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
+      for (let key in identifiers) {
+        registry_self.cached_keys[key] = identifiers[key];
+        found_keys[key] = identifiers[key];
+      }
+      mycallback(found_keys);
+    });
   }
 
   respondTo(type = "") {
@@ -267,7 +229,9 @@ class Registry extends ModTemplate {
   // Throws errors for invalid identifier types
   //
   async tryRegisterIdentifier(identifier, domain = "@saito") {
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.registry_publickey);
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+      this.registry_publickey
+    );
     if (!newtx) {
       //console.log("NULL TX CREATED IN REGISTRY MODULE");
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
@@ -297,10 +261,7 @@ class Registry extends ModTemplate {
   }
 
   queryKeys(peer, keys, mycallback) {
-    if (!peer) {
-      return;
-    }
-    if (!peer.peerIndex) {
+    if (!peer?.peerIndex) {
       return;
     }
 
@@ -308,14 +269,8 @@ class Registry extends ModTemplate {
       request: "registry query",
       keys: keys,
     };
-    this.app.network.sendRequestAsTransaction(
-      "registry query",
-      data,
-      function (res) {
-        mycallback(res);
-      },
-      peer.peerIndex
-    );
+
+    this.app.network.sendRequestAsTransaction("registry query", data, mycallback, peer.peerIndex);
   }
 
   onPeerServiceUp(app, peer, service = {}) {
@@ -336,44 +291,41 @@ class Registry extends ModTemplate {
         this.registry_publickey = peer.publicKey;
       }
 
-      console.log("Registry connected:", peer.publicKey, " and/but using: ", this.registry_publickey);
+      console.log(
+        "Registry connected:",
+        peer.publicKey,
+        " and/but using: ",
+        this.registry_publickey
+      );
 
       let myKey = app.keychain.returnKey(this.publicKey, true);
       if (myKey?.identifier) {
-        this.sendPeerDatabaseRequestWithFilter(
-          "Registry",
-          `SELECT * FROM records WHERE publickey = "${this.publicKey}"`,
-          (res) => {
-            let fail = true;
+        let registry_self = this;
 
-            if (res.rows.length > 0) {
-              if (res.rows[0].identifier !== myKey.identifier) {
-                console.warn("Registry has a different name for our key");
-                console.log(res.rows);
+        this.queryKeys(peer, [this.publicKey], function (identifiers) {
+          
+          for (let key in identifiers) {
+            if (key == registry_self.publicKey) {
+              if (identifiers[key] !== myKey.identifier) {
+                console.log("REGISTRY: Identifier mismatch...");
+                console.log(`REGISTRY: Expecting ${myKey.identifier}, but Registry has ${identifiers[key]}`);
+                //Maybe we do an update here???
               } else {
-                return;
+                console.log("REGISTRY: Identifier checks out")
+                //Identifier checks out!
               }
-            } else {
-              console.warn("Our identifier not visible in the Registry");
-            }
-
-            let identifier = myKey.identifier.split("@");
-            if (identifier.length !== 2) {
-              console.warn("Invalid identifier");
-              console.log(myKey.identifier);
               return;
             }
-            this.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
-            console.log("Attempting to register our name again");
-          },
-          (p) => {
-          if (p.publicKey == peer.publicKey) {
-            return 1;
           }
-          return 0;
-        }
 
-        );
+          let identifier = myKey.identifier.split("@");
+          if (identifier.length !== 2) {
+            console.log("REGISTRY: Invalid identifier", myKey.identifier);
+            return;
+          }
+          registry_self.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
+          console.log("REGISTRY: Attempting to register our name again");
+        });
       }
     }
   }
@@ -458,7 +410,7 @@ class Registry extends ModTemplate {
 
           // send message
           if (res == 1) {
-            console.log("Identifier successfully registered");
+            console.log("REGISTRY: Identifier successfully registered");
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
@@ -477,7 +429,7 @@ class Registry extends ModTemplate {
             newtx.msg.signed_message = signed_message;
             newtx.msg.signature = sig;
           } else {
-            console.log("Identifier registration failed");
+            console.log("REGISTRY: Identifier registration failed");
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
             newtx.msg.message =
@@ -618,13 +570,11 @@ class Registry extends ModTemplate {
     //
     // which keys are we missing ?
     //
-    let found_check = [];
-    for (let key in found_keys) {
-      found_check.push(key);
-    }
-    for (let i = 0; i < keys.length; i++) {
-      if (!found_check.includes(keys[i])) {
-        missing_keys.push(keys[i]);
+    let found_check = Object.keys(found_keys);
+
+    for (let key of keys) {
+      if (!found_check.includes(key)) {
+        missing_keys.push(key);
       }
     }
 
@@ -632,19 +582,26 @@ class Registry extends ModTemplate {
       mycallback(found_keys);
     }
 
-    //
-    // if we were asked about any missing keys, ask our parent server
-    //
-    for (let i = 0; i < this.peers.length; i++) {
-      if (this.peers[i].publicKey == this.parent_publickey) {
-        // ask the parent for the missing values, cache results
-        this.queryKeys(this.peers[i], missing_keys, function (res) {
-          for (let key in res) {
-            if (res[key] != key) {
-              this.cached_keys[key] = res[key];
+    if (missing_keys.length > 0) {
+      //
+      // if we were asked about any missing keys, ask our parent server
+      //
+      for (let i = 0; i < this.peers.length; i++) {
+        if (this.peers[i].publicKey == this.parent_publickey) {
+          // ask the parent for the missing values, cache results
+          this.queryKeys(this.peers[i], missing_keys, function (res) {
+            let more_keys = {};
+            for (let key in res) {
+              if (res[key] != key) {
+                this.cached_keys[key] = res[key];
+                more_keys[key] = res[key];
+              }
             }
-          }
-        });
+            if (mycallback) {
+              mycallback(more_keys);
+            }
+          });
+        }
       }
     }
 
