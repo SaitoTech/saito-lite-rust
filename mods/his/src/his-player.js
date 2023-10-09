@@ -580,13 +580,9 @@ if (faction === "venice" && spacekey == "agram") {
 
   returnActionMenuOptions(player=null, faction=null, limit="") {
 
-console.log("returning menu options for: " + faction);
-
     let menu = [];
 
 if (limit === "build") {
-
-console.log("limit to build: " + faction);
 
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
@@ -663,7 +659,6 @@ console.log("limit to build: " + faction);
       category : "move" ,
       img : '/his/img/backgrounds/move/move_transport.jpg',
     });
-console.log("push move ships!");
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1],
@@ -857,25 +852,15 @@ console.log("push move ships!");
       }
     } 
 
-
     if (player == null) { return menu; }
-
-    let pfactions = this.returnPlayerFactions(player);
-    if (!pfactions.includes(faction)) { pfactions.push(faction); }
 
     let fmenu = [];
 
     for (let i = 0; i < menu.length; i++) {
-      for (let z = 0; z < pfactions.length; z++) {
-        if (menu[i].factions.includes(pfactions[z])) {
-          fmenu.push(menu[i]);
-	  z = pfactions.length+1;
-        }
+      if (menu[i].factions.includes(faction)) {
+        fmenu.push(menu[i]);
       }
     }
-
-console.log("returning faction menu: " +JSON.stringify(fmenu));
-
 
     return fmenu;
 
@@ -1501,7 +1486,7 @@ console.log("and calling callback...");
 	    } else {
 
               for (let z = 0; z < menu[user_choice].factions.length; z++) {
-                if (pfactions.includes(menu[user_choice].factions[z])) {
+                if (menu[user_choice].factions[z] === selected_faction) {
                   ops -= menu[user_choice].cost[z];
 	          z = menu[user_choice].factions.length+1;
                 }
@@ -3582,7 +3567,7 @@ console.log("A");
 	      let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
 	      for (let z = 0; z < his_self.game.navalspaces[p].units[faction].length; z++) {
 		let u = his_self.game.navalspaces[p].units[faction][z];
-		if (u.type == "squadron") { attacker_squadron_adjacent++; }
+		if (u.type == "squadron") { attacker_squadrons_adjacent++; }
 	      }
 	    }
 

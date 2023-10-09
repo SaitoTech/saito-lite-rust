@@ -206,18 +206,12 @@
     // by default factions control themselves
     //
 
-console.log("in as: " + defender);
-
     //
     // maybe this is a minor power controlled by a larger one
     //
     if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
       defender = this.returnControllingPower(defender);
     }         
-
-console.log("defender: " + defender);
-console.log("ACTIVATED POWERS: ");
-console.log(JSON.stringify(this.game.state.activated_powers));
 
     //
     // defender now controlling power or itself
@@ -228,9 +222,6 @@ console.log(JSON.stringify(this.game.state.activated_powers));
       // does player command this faction
       //
       let player_factions = this.returnPlayerFactions((p+1));
-
-console.log("player_factions : " + (p+1) + " -- " + JSON.stringify(player_factions));
-
       let i_command_this_faction = false;
       for (let i = 0; i < player_factions.length; i++) { 
 	if (player_factions[i] === defender) { return (p+1); }
