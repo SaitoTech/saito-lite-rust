@@ -1,0 +1,16 @@
+.flex-button-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.flex-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+.flex-button:hover {
+  background-color: #555;
+}

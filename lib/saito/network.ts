@@ -105,7 +105,7 @@ export default class Network {
     return S.getInstance().sendRequest(message, data, callback, peerIndex);
   }
 
-  public close() {}
+  public close() { }
 
   addStunPeer() {
     throw new Error("not implemented");
@@ -115,9 +115,9 @@ export default class Network {
     throw new Error("not implemented");
   }
 
-  returnPeersWithService() {}
+  returnPeersWithService() { }
 
-  updatePeersWithWatchedPublicKeys() {}
+  updatePeersWithWatchedPublicKeys() { }
 
   // public async propagateServices(peerIndex: bigint) {
   //   let my_services = [];

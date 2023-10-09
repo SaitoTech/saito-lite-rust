@@ -286,7 +286,7 @@ class Server {
       socket.on("message", (buffer: any) => {
         S.getLibInstance()
           .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-          .then(() => {});
+          .then(() => { });
       });
       socket.on("close", () => {
         S.getLibInstance().process_peer_disconnection(index);
@@ -490,6 +490,7 @@ class Server {
         return;
       }
       let pkey = await server_self.app.wallet.getPublicKey();
+      console.log('server public key', pkey)
       if (req.params.pkey != null) {
         pkey = req.params.pkey;
         if (pkey.length == 66) {
