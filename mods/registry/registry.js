@@ -17,14 +17,6 @@ class Registry extends ModTemplate {
     this.registry_publickey = "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK";
 
     //
-    // if you are not this publickey, but you have a peer with this
-    // publickey, the module will fire off a request to check whether it
-    // has any specific addresses if it is asked for information on an
-    // address that it does not have
-    //
-    this.parent_publickey = "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK";
-
-    //
     // peers
     //
     this.peers = [];
@@ -138,6 +130,11 @@ class Registry extends ModTemplate {
   //
   returnServices() {
     let services = [];
+
+    // 
+    // So all full nodes can act as a registry of sorts 
+    // (or at leastreroute requests to the actual registry)
+    // 
     if (this.app.BROWSER == 0) {
       services.push(new PeerService(null, "registry", "saito"));
     }
@@ -260,6 +257,10 @@ class Registry extends ModTemplate {
     }
   }
 
+  /**
+  * QueryKeys is a cross network database search for a set of public keys
+  * Typically we call it from the browser on the first peer claiming to have a registry service
+  */
   queryKeys(peer, keys, mycallback) {
     if (!peer?.peerIndex) {
       return;
@@ -414,10 +415,6 @@ class Registry extends ModTemplate {
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
-            newtx.msg.message =
-              "<p>You have successfully registered the identifier: <span class='boldred'>" +
-              identifier +
-              "</span></p>";
             newtx.msg.identifier = identifier;
             newtx.msg.publickey = publickey;
             newtx.msg.unixtime = unixtime;
@@ -432,10 +429,6 @@ class Registry extends ModTemplate {
             console.log("REGISTRY: Identifier registration failed");
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
-            newtx.msg.message =
-              "<p>The identifier you requested (<span class='boldred'>" +
-              identifier +
-              "</span>) has already been registered.</p>";
             newtx.msg.identifier = identifier;
             newtx.msg.publickey = publickey;
             newtx.msg.unixtime = unixtime;
@@ -459,6 +452,9 @@ class Registry extends ModTemplate {
       // OTHER SERVERS - mirror central DNS //
       ////////////////////////////////////////
       if (!!txmsg && txmsg.module == "Email") {
+        
+        console.log(txmsg.title);
+
         if (tx.from[0].publicKey == this.registry_publickey) {
           try {
             //
@@ -476,8 +472,8 @@ class Registry extends ModTemplate {
 
             if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
               if (this.publicKey != this.registry_publickey) {
+                // servers update database
                 if (!this.app.BROWSER) {
-                  // servers update database
                   let res = await this.addRecord(
                     identifier,
                     publickey,
@@ -491,7 +487,7 @@ class Registry extends ModTemplate {
                   );
                 }
 
-                if (tx.to[0].publicKey == this.publicKey) {
+                if (tx.isTo(this.publicKey)) {
                   this.app.keychain.addKey(tx.to[0].publicKey, {
                     identifier: identifier,
                     watched: true,
@@ -525,6 +521,11 @@ class Registry extends ModTemplate {
     return "";
   }
 
+  /*
+  * Lightly recursive, server side code to look up keys in the registry database
+  * Invoked through a peer request.
+  * Any requested keys not found are passed on to any peers with the DNS publickey
+  */
   async fetchIdentifiersFromDatabase(keys, mycallback = null) {
     let found_keys = {};
     let missing_keys = [];
@@ -582,12 +583,15 @@ class Registry extends ModTemplate {
       mycallback(found_keys);
     }
 
-    if (missing_keys.length > 0) {
+    //
+    // Fallback because browsers don't automatically have DNS as a peer
+    //
+    if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
       //
       // if we were asked about any missing keys, ask our parent server
       //
       for (let i = 0; i < this.peers.length; i++) {
-        if (this.peers[i].publicKey == this.parent_publickey) {
+        if (this.peers[i].publicKey == this.registry_publickey) {
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, function (res) {
             let more_keys = {};
