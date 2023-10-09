@@ -327,6 +327,10 @@ class Registry extends ModTemplate {
           registry_self.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
           console.log("REGISTRY: Attempting to register our name again");
         });
+      }else if (myKey.has_registered_username){
+        console.log("REGISTRY: unset registering... status");
+        this.app.keychain.addKey(this.publicKey, {has_registered_username: false});
+        this.app.connection.emit("update_identifier", this.publicKey);
       }
     }
   }
