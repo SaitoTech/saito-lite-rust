@@ -489,6 +489,12 @@
     state.activated_powers['england'] = [];
     state.activated_powers['papacy'] = [];
     state.activated_powers['protestant'] = [];
+    // following for safety
+    state.activated_powers['venice'] = [];
+    state.activated_powers['scotland'] = [];
+    state.activated_powers['genoa'] = [];
+    state.activated_powers['hungary'] = [];
+    state.activated_powers['independent'] = [];
 
     state.translations = {};
     state.translations['new'] = {};
@@ -711,6 +717,9 @@
   unexcommunicateReformers() {
 
     for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+
+      let obj = this.game.state.excommunicated[i];
+
       if (obj.reformer) {
 
         let reformer = obj.reformer;
@@ -729,6 +738,11 @@
 	if (debater) {
 	  this.game.state.debaters.push(debater);
 	}
+
+	this.displaySpace(s);
+
+        this.game.state.excommunicated.splice(i, 1);
+        i--;
 
       }
     }

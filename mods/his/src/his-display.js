@@ -1449,16 +1449,26 @@
 
   }
 
+  refreshBoardUnits() {
+    this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
+    this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
+    this.game.state.board["england"] = this.returnOnBoardUnits("england");
+    this.game.state.board["france"] = this.returnOnBoardUnits("france");
+    this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
+    this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
+    this.game.state.board["independent"] = this.returnOnBoardUnits("independent");
+    this.game.state.board["venice"] = this.returnOnBoardUnits("venice");
+    this.game.state.board["genoa"] = this.returnOnBoardUnits("genoa");
+    this.game.state.board["scotland"] = this.returnOnBoardUnits("scotland");
+    this.game.state.board["hungary"] = this.returnOnBoardUnits("hungary");
+  }
+
+
   displaySpace(key) {
 
     let ts = new Date().getTime();
     if (this.game.state.board_updated < ts + 20000) {
-      this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
-      this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
-      this.game.state.board["england"] = this.returnOnBoardUnits("england");
-      this.game.state.board["france"] = this.returnOnBoardUnits("france");
-      this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
-      this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
+      this.refreshBoardUnits();
     }
 
     if (!this.game.spaces[key]) { return; }

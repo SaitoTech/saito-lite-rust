@@ -36,7 +36,9 @@ this.updateLog(`###############`);
 	  this.onNewRound();
 	  this.restoreReformers();
 	  this.restoreMilitaryLeaders();
+console.log("unexcommunicating Reformers");
 	  this.unexcommunicateReformers();
+console.log("done unexcommunicating!");
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
@@ -663,6 +665,18 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addRegular("venice", "trieste", 4);
     	  this.addRegular("venice", "agram", 4);
 
+    	  this.addRegular("venice", "venice", 1);
+    	  this.addNavalSquadron("venice", "venice", 1);
+    	  this.addNavalSquadron("papacy", "rome", 1);
+
+	  this.addRegular("hapsburg", "naples", 4);
+	  this.addNavalSquadron("hapsburg", "naples", 2);
+	
+
+	  this.controlSpace("france", "ragusa");
+	  this.addRegular("france", "ragusa", 1);
+	  this.addNavalSquadron("france", "ragusa", 4); 
+
     	  this.convertSpace("protestant", "mainz");
     	  this.convertSpace("protestant", "worms");
     	  this.convertSpace("protestant", "kassel");
@@ -1287,17 +1301,20 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 
-	  for (let i = this.game.queue.length-1; i >= 0; i--) {
-	    let lmv = this.game.queue[i].split("\t");
+	  // OCT 7 -- removing as this causes problems
+	  // queue is just emptied totally when France invades Venice
+	  // in testing.
+	  //for (let i = this.game.queue.length-1; i >= 0; i--) {
+	  //  let lmv = this.game.queue[i].split("\t");
 	    //
 	    // remove everything before field_battle
 	    //
-	    if (lmv[0] !== "field_battle") {
-	      this.game.queue.splice(i, 1);
-	    } else {
-	      break;
-	    }
-	  }
+	  //  if (lmv[0] !== "field_battle") {
+	  //    this.game.queue.splice(i, 1);
+	  //  } else {
+	  //    break;
+	  //  }
+	  //}
 
 	  if (this.game.player === player) {
 	    this.playerFortifySpace(faction, attacker, spacekey);
@@ -1436,7 +1453,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
-	  if (player_factions.includes(attacker)) {
+	  if (player_factions.includes(attacker) || this.returnPlayerCommandingFaction(attacker) == this.game.player) {
 	    this.playerEvaluateBreakSiegeRetreatOpportunity(attacker, spacekey);
 	  } else {
 	    this.updateStatus(this.returnFactionName(attacker) + " considering retreat");
@@ -1459,7 +1476,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
-	  if (player_factions.includes(defender)) {
+	  if (player_factions.includes(defender) || this.returnPlayerCommandingFaction(defender) == this.game.player) {
 	    this.playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
 	  } else {
 	    this.updateStatus(this.returnFactionName(defender) + " considering retreat");
@@ -1774,9 +1791,11 @@ console.log("i am player: " + this.game.player);
 	  this.updateLog("Interception roll #1: " + d1);
 	  this.updateLog("Interception roll #2: " + d2);
 
-	  // IS_TESTING
-this.updateLog("IS_TESTING - HITS ON 2");
-hits_on = 2;
+//
+// IS_TESTING
+//
+//this.updateLog("IS_TESTING - HITS ON 2");
+//hits_on = 2;
 
 	  if (dsum >= hits_on) {
 
@@ -4876,6 +4895,7 @@ console.log("!");
           //
           // redisplay
           //
+	  his_self.refreshBoardUnits();
           his_self.displaySpace(space.key);
 
           return 1;
@@ -5948,12 +5968,12 @@ defender_hits - attacker_hits;
 	  //
 	  // TESTING form Schmalkaldic League triggers end of round 1
 	  //
-	  if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
-	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
-	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-	    this.game.queue.push("event\tprotestant\t013");
-	  }
-
+	  //if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
+	  //  this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
+	  //  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  //  this.game.queue.push("event\tprotestant\t013");
+	  //}
+	  //
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
@@ -5991,6 +6011,7 @@ defender_hits - attacker_hits;
 	      let faction = this.game.state.players_info[i].factions[z];
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
 		if (!this.game.state.skip_next_impulse.includes(this.game.state.players_info[i].factions[z])) {
+console.log("1 pushing: " + this.game.state.players_info[i].factions[z]);
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 		} else {
 		  for (let ii = 0; ii < this.game.state.skip_next_impulse.length; ii++) {
@@ -6004,6 +6025,7 @@ defender_hits - attacker_hits;
 		// they passed but maybe they have more cards left than their admin rating?
 		let far = this.factions[faction].returnAdminRating();
 	        if (far < this.game.state.cards_left[faction]) {
+console.log("2 pushing: " + this.game.state.players_info[i].factions[z]);
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 	        }
 	      }
@@ -6018,12 +6040,24 @@ defender_hits - attacker_hits;
 	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	        let f = this.game.state.players_info[i].factions[z];
 	        if (!factions_in_play.includes(f) && !factions_force_pass.includes(f)) {
-	    	  factions_in_play.push(f);
+
+		  let is_activated_power = false;
+	          let io = this.returnImpulseOrder();
+		  for (let y = 0; y < io.length; y++) {
+		    if (this.game.state.activated_powers[io[y]].includes(f)) { is_activated_power = true; }
+		  }
+console.log("is activated: " + is_activated_power);
+		  if (!is_activated_power) {
+console.log("3 pushing: " + f);
+	    	    factions_in_play.push(f);
+		  }
 	        }
 	      }
 	    }
 	  }
 
+
+console.log("FIP: " + JSON.stringify(factions_in_play));
 
 	  //
 	  // players still to go...
@@ -6158,7 +6192,7 @@ defender_hits - attacker_hits;
 	  //
           let is_papacy_at_war = false;
           let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
-          for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); is_papacy_at_war = true; } }
+          for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { is_papacy_at_war = true; } }
           if (is_papacy_at_war == true) {
             this.game.queue.push("papacy_diplomacy_phase_special_turn");
             this.game.queue.push("counter_or_acknowledge\tPapacy Special Diplomacy Phase");

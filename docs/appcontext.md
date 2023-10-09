@@ -144,8 +144,6 @@ hasSharedSecret(publickey)
 
 isWatched(publickey)
 
-initializeKeyExchange(publickey)
-
 isTagged(publickey, tag)
 
 saveKeys()

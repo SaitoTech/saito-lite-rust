@@ -580,9 +580,13 @@ if (faction === "venice" && spacekey == "agram") {
 
   returnActionMenuOptions(player=null, faction=null, limit="") {
 
+console.log("returning menu options for: " + faction);
+
     let menu = [];
 
 if (limit === "build") {
+
+console.log("limit to build: " + faction);
 
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
@@ -659,6 +663,7 @@ if (limit === "build") {
       category : "move" ,
       img : '/his/img/backgrounds/move/move_transport.jpg',
     });
+console.log("push move ships!");
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1],
@@ -844,9 +849,11 @@ if (limit === "build") {
     //
     if (this.game.players.length == 2 && (faction === "hapsburg" || faction === "england" || faction === "france" || faction == "ottoman")) {
       for (let i = menu.length-1; i >= 0; i--) {
-	if (menu[i].category == "build") { menu.splice(i, 1); }
-	if (menu[i].category == "special") { menu.splice(i, 1); }
-	if (menu[i].name === "Move across Sea") { menu.splice(i, 1); }
+	if (menu[i].category == "build") { menu.splice(i, 1); } else {
+	  if (menu[i].category == "special") { menu.splice(i, 1); } else {
+  	    if (menu[i].name === "Move across Sea") { menu.splice(i, 1); }
+          }
+        }
       }
     } 
 
@@ -854,6 +861,8 @@ if (limit === "build") {
     if (player == null) { return menu; }
 
     let pfactions = this.returnPlayerFactions(player);
+    if (!pfactions.includes(faction)) { pfactions.push(faction); }
+
     let fmenu = [];
 
     for (let i = 0; i < menu.length; i++) {
@@ -864,6 +873,9 @@ if (limit === "build") {
         }
       }
     }
+
+console.log("returning faction menu: " +JSON.stringify(fmenu));
+
 
     return fmenu;
 
@@ -1042,6 +1054,7 @@ if (limit === "build") {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
+console.log("playerSelectNavalSapceWithFilter -- before events off...");
 	    $('.option').off();
      	    $('.hextile').off();
     	    $('.space').off();
@@ -1053,6 +1066,8 @@ if (limit === "build") {
             his_self.theses_overlay.space_onclick_callback = null;
     	    if (callback_run == false) {
 	      callback_run = true;
+    	      his_self.updateStatus("selected...");
+console.log("playerSelectNavalSapceWithFilter -- sending into callback");
 	      mycallback(key);
 	    }
 	  }
@@ -1078,6 +1093,7 @@ console.log("clicked on id of key: " + key);
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
 console.log("and calling callback...");
+    	    his_self.updateStatus("selected...");
 	    mycallback(key);
 	    return;
 	  }
@@ -1372,6 +1388,8 @@ console.log("and calling callback...");
       this.updateStatusWithOptions(`Which Faction: ${ops_text}`, html);
       this.attachCardboxEvents(function(selected_faction) {
 
+        menu = this.returnActionMenuOptions(this.game.player, selected_faction, limit);
+
 	//
 	// duplicates code below
 	//
@@ -1395,7 +1413,7 @@ console.log("and calling callback...");
 
 	let attachEventsToMenuOptions = () => {
 
-        his_self.updateStatusWithOptions(`${his_self.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
+        his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
 
 	  his_self.menu_overlay.hide();
@@ -3279,21 +3297,23 @@ console.log("A");
 
   canPlayerNavalMove(his_self, player, faction) {
 
-    if (his_self.game.state.events.foul_weather) { return 0; }
+    if (his_self.game.state.events.foul_weather) { console.log("Foul Weather - cannot naval move"); return 0; }
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     // 2P game, papacy+protestant can move minor + allied naval units during their own turn
     if (his_self.game.players.length == 2) {
-      let allies = his_self.returnAllies(faction);
-      for (let i = 0; i < allies.length; i++) {
-        if (his_self.doesFactionHaveNavalUnitsOnBoard(allies[i])) { return 1; }
+      if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) {
+	if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
+	  return 1;
+	}
       }
     }
 
     if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
     return 0;
+
   }
   async playerNavalMove(his_self, player, faction) {
 
