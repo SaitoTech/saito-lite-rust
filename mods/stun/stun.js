@@ -604,6 +604,8 @@ class Stun extends ModTemplate {
   addKeyToRoom(room_code, public_key = "") {
     let public_keys = this.rooms.has(room_code) ? this.rooms.get(room_code) : [];
 
+    console.log("public keys in the room", public_keys);
+    console.log("public key that wants to join ", public_key);
     if (!public_keys.includes(public_key)) {
       public_keys.push(public_key);
     }
