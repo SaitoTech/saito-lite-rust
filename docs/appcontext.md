@@ -172,8 +172,6 @@ returnIdenticonColor(publickey)
 
 fetchIdentifierPromise(publickey)
 
-fetchManyIdentifiersPromise(publickeys)
-
 fetchIdentifier(publickey = "", mycallback) 
 
 fetchManyIdentifiers(publickeys = [], mycallback) 

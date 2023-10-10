@@ -131,9 +131,18 @@ class SettingsAppspace {
           "This will reset/nuke your account, do you wish to proceed?"
         );
         if (confirmation) {
-          app.options.keys = [];
-          app.options.groups = [];
-          await app.wallet.resetWallet();
+          app.keychain.keys = [];
+          app.keychain.groups = [];
+          localforage
+            .clear()
+            .then(function () {
+              console.log("DB Reset Success");
+              return app.wallet.resetWallet();
+            })
+            .catch(function (err) {
+              console.error(err);
+              return app.wallet.resetWallet();
+            });              
         }
       };
 

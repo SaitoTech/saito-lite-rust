@@ -28,6 +28,10 @@
   right: 0;
 }
 
+.log * {
+  text-indent: 0;
+}
+
 .log > div{
   padding-left: 21px;
   text-indent: -20px;

@@ -440,6 +440,34 @@ dt {
   background-color: var(--p4-color) !important;
 }
 
+.display-name {
+  /*text-shadow: 0px 0px 1px ghostwhite, 1px 1px 0 ghostwhite, 1px 0px 0 ghostwhite;*/
+  font-weight: bold;
+  margin-right: 3rem;
+}
+
+.display-name.p1-lite {
+  color: var(--p1-color);
+  background-color: unset;
+}
+
+.display-name.p2-lite {
+  color: var(--p2-color);
+  background-color: unset;
+}
+
+.display-name.p3-lite {
+  color: var(--p3-color);
+  background-color: unset;
+}
+
+.display-name.p4-lite {
+  color: var(--p4-color);
+  background-color: unset;
+}
+
+
+
 .saito-identicon-box {
   border: 5px solid;
   width: 4rem;
@@ -733,8 +761,18 @@ ul.horizontal_list li.iconoption {
   flex-direction: column;
 }
 
-.die {
-  width: min(4vw, 40px);
+.log > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.log .die {
+  width: min(2.5vw, 25px);
+  display: inline-block;
+  text-indent: 0;
+  margin: 2px;
+  padding-left: unset;
 }
 
 /*.notme .diceroll{

@@ -26,9 +26,12 @@ class SettlersActions {
   // Award resources for dice roll
   //
   collectHarvest(value, player_who_rolled) {
-    let logMsg = "";
+
     let notice = "";
     let poor_harvest = true;
+
+    let collection = {};
+
     for (let city of this.game.state.cities) {
       let player = city.player;
 
@@ -38,11 +41,15 @@ class SettlersActions {
           !this.game.state.hexes[neighboringHex].robber
         ) {
           let resource = this.game.state.hexes[neighboringHex].resource;
-          logMsg += `${this.game.playerNames[player - 1]} gains ${resource}`;
+
+          if (!collection[player]){
+            collection[player] = [];
+          }
+
+          collection[player].push(resource);
+
           if (this.game.player == player) {
-            notice += `<div class="card tiny"><img src="${this.returnCardImage(
-              resource
-            )}" /></div>`;
+            notice += this.formatResource(resource);
             poor_harvest = false;
           }
 
@@ -58,14 +65,12 @@ class SettlersActions {
             this.game.stats.production[resource][player - 1]++;
             this.animateHarvest(player, resource, neighboringHex);
 
-            logMsg += " x2";
+            collection[player].push(resource);
+
             if (this.game.player == player) {
-              notice += `<div class="card tiny"><img src="${this.returnCardImage(
-                resource
-              )}" /></div>`;
+              notice += this.formatResource(resource);
             }
           }
-          logMsg += "; ";
         }
       }
     }
@@ -73,12 +78,19 @@ class SettlersActions {
     let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
     firstMsg += ` rolled a <span class='die_value'>${value}</span>`;
 
-    logMsg = logMsg.substr(0, logMsg.length - 2);
-    if (logMsg) {
+    for (let player in collection){
+      let logMsg = `${this.formatPlayer(player)} gains`;
+      collection[player].sort();
+      for (let resource of collection[player]){
+        logMsg += this.formatResource(resource);
+      }
       this.updateLog(logMsg);
-    } else {
+    }
+
+    if (Object.keys(collection).length == 0) {
       this.updateLog("no-one collects any resources.");
     }
+
     if (poor_harvest) {
       this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
     } else {
@@ -392,7 +404,7 @@ class SettlersActions {
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
             this.updateLog(
-              `${this.game.playerNames[player - 1]} extended the ${this.longest.name} to ${
+              `${this.formatPlayer(player)} extended the ${this.longest.name} to ${
                 longest.length
               } segments.`
             );
