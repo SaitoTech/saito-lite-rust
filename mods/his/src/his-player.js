@@ -2148,6 +2148,7 @@ console.log("A");
 
   async playerMoveFormationInClear(his_self, player, faction) {
 
+    let parent_faction = faction;
     let units_to_move = [];
     let cancel_func = null;
     let spacekey = "";
