@@ -99,7 +99,6 @@ class Registry extends ModTemplate {
           }
         }
       });
-
     });
 
     this.app.connection.on("register-username-or-login", (obj) => {
@@ -139,10 +138,10 @@ class Registry extends ModTemplate {
   returnServices() {
     let services = [];
 
-    // 
-    // So all full nodes can act as a registry of sorts 
+    //
+    // So all full nodes can act as a registry of sorts
     // (or at leastreroute requests to the actual registry)
-    // 
+    //
     if (this.app.BROWSER == 0) {
       services.push(new PeerService(null, "registry", "saito"));
     }
@@ -181,14 +180,14 @@ class Registry extends ModTemplate {
       }
     });
 
-    console.log("REGISTRY Found: ", found_keys);
+    //console.log("REGISTRY Found: ", found_keys);
 
     if (missing_keys.length == 0) {
       mycallback(found_keys);
       return;
     }
 
-    console.log("REGISTRY Missing: ", missing_keys);
+    //console.log("REGISTRY Missing: ", missing_keys);
 
     this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
       for (let key in identifiers) {
@@ -244,7 +243,6 @@ class Registry extends ModTemplate {
       this.registry_publickey
     );
     if (!newtx) {
-      //console.log("NULL TX CREATED IN REGISTRY MODULE");
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
     }
 
@@ -272,9 +270,9 @@ class Registry extends ModTemplate {
   }
 
   /**
-  * QueryKeys is a cross network database search for a set of public keys
-  * Typically we call it from the browser on the first peer claiming to have a registry service
-  */
+   * QueryKeys is a cross network database search for a set of public keys
+   * Typically we call it from the browser on the first peer claiming to have a registry service
+   */
   queryKeys(peer, keys, mycallback) {
     if (!peer?.peerIndex) {
       return;
@@ -285,7 +283,7 @@ class Registry extends ModTemplate {
       keys: keys,
     };
 
-    console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
+    //console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
     this.app.network.sendRequestAsTransaction("registry query", data, mycallback, peer.peerIndex);
   }
 
@@ -293,8 +291,11 @@ class Registry extends ModTemplate {
     if (service.service === "registry") {
       this.peers.push(peer);
 
+      //
+      // We want to allow service nodes to connect to each other as registry peers
+      // but don't need to do any of the other processing
+      //
       if (!app.BROWSER) {
-        console.log("Adding peer service to service node: " + peer.publicKey);
         return;
       }
 
@@ -309,10 +310,7 @@ class Registry extends ModTemplate {
       }
 
       console.log(
-        "Registry connected:",
-        peer.publicKey,
-        " and/but using: ",
-        this.registry_publickey
+        `Registry connected: ${peer.publicKey} and/but using: ${this.registry_publickey}`
       );
 
       let myKey = app.keychain.returnKey(this.publicKey, true);
@@ -320,16 +318,20 @@ class Registry extends ModTemplate {
         let registry_self = this;
 
         this.queryKeys(peer, [this.publicKey], function (identifiers) {
-          
-          console.log("REGISTRY lookup: " + this.publicKey + " in " + peer.publicKey, identifiers);
+          console.log(
+            "REGISTRY lookup: " + registry_self.publicKey + " in " + peer.publicKey,
+            identifiers
+          );
           for (let key in identifiers) {
             if (key == registry_self.publicKey) {
               if (identifiers[key] !== myKey.identifier) {
                 console.log("REGISTRY: Identifier mismatch...");
-                console.log(`REGISTRY: Expecting ${myKey.identifier}, but Registry has ${identifiers[key]}`);
+                console.log(
+                  `REGISTRY: Expecting ${myKey.identifier}, but Registry has ${identifiers[key]}`
+                );
                 //Maybe we do an update here???
               } else {
-                console.log("REGISTRY: Identifier checks out")
+                console.log("REGISTRY: Identifier checks out");
                 //Identifier checks out!
               }
               return;
@@ -344,9 +346,9 @@ class Registry extends ModTemplate {
           registry_self.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
           console.log("REGISTRY: Attempting to register our name again");
         });
-      }else if (myKey.has_registered_username){
+      } else if (myKey.has_registered_username) {
         console.log("REGISTRY: unset registering... status");
-        this.app.keychain.addKey(this.publicKey, {has_registered_username: false});
+        this.app.keychain.addKey(this.publicKey, { has_registered_username: false });
         this.app.connection.emit("update_identifier", this.publicKey);
       }
     }
@@ -370,6 +372,12 @@ class Registry extends ModTemplate {
     if (txmsg.data.request === "registry query") {
       let keys = txmsg?.data?.keys;
       this.fetchIdentifiersFromDatabase(keys, mycallback);
+      return;
+    }
+
+    if (txmsg.data.request === "registry namecheck") {
+      let identifier = txmsg?.data?.identifier;
+      this.checkIdentifierInDatabase(identifier, mycallback);
       return;
     }
 
@@ -432,7 +440,6 @@ class Registry extends ModTemplate {
 
           // send message
           if (res == 1) {
-            console.log("REGISTRY: Identifier successfully registered");
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
@@ -447,7 +454,6 @@ class Registry extends ModTemplate {
             newtx.msg.signed_message = signed_message;
             newtx.msg.signature = sig;
           } else {
-            console.log("REGISTRY: Identifier registration failed");
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
             newtx.msg.identifier = identifier;
@@ -473,7 +479,6 @@ class Registry extends ModTemplate {
       // OTHER SERVERS - mirror central DNS //
       ////////////////////////////////////////
       if (!!txmsg && txmsg.module == "Email") {
-        
         console.log("REGISTRY: " + txmsg.title);
 
         if (tx.from[0].publicKey == this.registry_publickey) {
@@ -543,16 +548,16 @@ class Registry extends ModTemplate {
   }
 
   /*
-  * Lightly recursive, server side code to look up keys in the registry database
-  * Invoked through a peer request.
-  * Any requested keys not found are passed on to any peers with the DNS publickey
-  */
+   * Lightly recursive, server side code to look up keys in the registry database
+   * Invoked through a peer request.
+   * Any requested keys not found are passed on to any peers with the DNS publickey
+   */
   async fetchIdentifiersFromDatabase(keys, mycallback = null) {
     let found_keys = {};
     let missing_keys = [];
 
     let myregexp = new RegExp("^([a-zA-Z0-9])*$");
-    for (let i = keys.length - 1; i >=0 ; i--) {
+    for (let i = keys.length - 1; i >= 0; i--) {
       if (!myregexp.test(keys[i])) {
         keys.splice(i, 1);
         continue;
@@ -563,7 +568,6 @@ class Registry extends ModTemplate {
       }
     }
 
-    console.log("REGISTRY DB query for: ", keys);
     //
     // check database if needed
     //
@@ -595,28 +599,25 @@ class Registry extends ModTemplate {
     //
     let found_check = Object.keys(found_keys);
 
-    console.log(this.publicKey + " found ", found_check);
-
     for (let key of keys) {
       if (!found_check.includes(key)) {
         missing_keys.push(key);
       }
     }
 
+    if (mycallback) {
+      mycallback(found_keys);
+    }
 
     //
     // Fallback because browsers don't automatically have DNS as a peer
     //
     if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
-      console.log("REGISTRY: still missing ", missing_keys, "check with ", this.registry_publickey);
-      console.log(this.peers)
-
       //
       // if we were asked about any missing keys, ask our parent server
       //
       for (let i = 0; i < this.peers.length; i++) {
         if (this.peers[i].publicKey == this.registry_publickey) {
-          console.log("REGISTRY is my peer");
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, (res) => {
             let more_keys = {};
@@ -633,10 +634,43 @@ class Registry extends ModTemplate {
           return;
         }
       }
-    }else{
-      if (mycallback) {
-        mycallback(found_keys);
-      }
+    }
+  }
+
+  async checkIdentifierInDatabase(identifier, mycallback = null) {
+    console.log("REGISTRY: Check if name available");
+
+    if (!mycallback) {
+      console.warn("No callback");
+      return;
+    }
+
+    if (this.publicKey == this.registry_publickey) {
+      const sql = `SELECT * FROM records WHERE identifier = ?`;
+
+      let rows = await this.app.storage.queryDatabase(sql, [identifier], "registry");
+
+      mycallback(rows);
+
+    } else {
+      
+      console.log("Pass on registry lookup...");
+
+      await this.sendPeerDatabaseRequestWithFilter(
+        "Registry",
+        `SELECT * FROM records WHERE identifier = "${identifier}"`,
+        (res) => {
+          mycallback(res?.rows);
+        },
+      
+        (p) => {
+          if (p.publicKey == this.registry_publickey) {
+            return 1;
+          }
+          return 0;
+        }
+      );
+
     }
 
   }
