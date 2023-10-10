@@ -618,7 +618,7 @@ class Registry extends ModTemplate {
         if (this.peers[i].publicKey == this.registry_publickey) {
           console.log("REGISTRY is my peer");
           // ask the parent for the missing values, cache results
-          this.queryKeys(this.peers[i], missing_keys, function (res) {
+          this.queryKeys(this.peers[i], missing_keys, (res) => {
             let more_keys = {};
             for (let key in res) {
               if (res[key] != key) {
