@@ -290,12 +290,13 @@ class Registry extends ModTemplate {
   }
 
   onPeerServiceUp(app, peer, service = {}) {
-    if (!app.BROWSER) {
-      return;
-    }
-
     if (service.service === "registry") {
       this.peers.push(peer);
+
+      if (!app.BROWSER) {
+        console.log("Adding peer service to service node: " + peer.publicKey);
+        return;
+      }
 
       //
       // if we have instructed the server to run this application locally then we
@@ -608,6 +609,7 @@ class Registry extends ModTemplate {
     //
     if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
       console.log("REGISTRY: still missing ", missing_keys, "check with ", this.registry_publickey);
+      console.log(this.peers)
 
       //
       // if we were asked about any missing keys, ask our parent server
