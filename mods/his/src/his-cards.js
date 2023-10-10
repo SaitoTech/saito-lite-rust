@@ -2553,6 +2553,11 @@ console.log("done u=1 autoclick");
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+       
+	let cards_available = 0;
+        for (let key in his_self.game.deck[0].discards) { cards_available++; }
+        if (cards_available == 0) { return 0; }
+
 	if (his_self.game.state.leaders.luther == 1) { return 1; }
 	if (Object.keys(his_self.game.deck[0].discards).length > 0) { return 1; }
 	return 0;

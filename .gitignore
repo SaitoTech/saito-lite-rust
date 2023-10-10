@@ -37,8 +37,7 @@ data/blocks/empty
 data/shashmaps/*.smap
 data/backup/*
 data/backup
-data/issuance
-data/issuance/*
+data/issuance/issuance
 
 bundler
 bundler/*
