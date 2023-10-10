@@ -94,6 +94,7 @@ class Tweet {
     this.text = "";
     this.youtube_id = null;
     this.created_at = this.tx.timestamp;
+    // updated by tx.optional.updated_at if exists
     this.updated_at = this.tx.timestamp;
 
     //
@@ -466,6 +467,9 @@ class Tweet {
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick = (e) => {
+
+alert("clicked on tweet!");
+
           //
           // if we have selected text, then we are trying to copy and paste and
           // the last thing we want is for the UI to update and prevent us from
@@ -499,7 +503,7 @@ class Tweet {
           //
           if (e.target.tagName != "IMG") {
             //window.location.href = `/redsquare/?tweet_id=${this.thread_id}`;
-            app.connection.emit("redsquare-tweet-render-request", this);
+            app.connection.emit("redsquare-home-tweet-render-request", this);
           }
         };
       }
@@ -515,11 +519,11 @@ class Tweet {
             //window.location.href = `/redsquare/?tweet_id=${sig}`;
             let t = this.mod.returnTweet(sig);
             if (t) {
-              app.connection.emit("redsquare-tweet-render-request", t);
+              app.connection.emit("redsquare-home-tweet-render-request", t);
             } else {
               console.warn("This is going to screw up the feed");
               this.retweet.container = ".tweet-manager";
-              app.connection.emit("redsquare-tweet-render-request", this.retweet);
+              app.connection.emit("redsquare-home-tweet-render-request", this.retweet);
             }
           }
         });

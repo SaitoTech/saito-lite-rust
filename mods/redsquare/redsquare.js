@@ -639,6 +639,22 @@ class RedSquare extends ModTemplate {
   // to upgrade them quickly. we prefer to use the Archive module to fetch and load transactions
   // rather than falling back to SQL commands....
   //
+  // nonetheless, when we have more complex requests for thread display or tweet ordering, we fall
+  // back to asking a peer that indexes them in a database.
+  //
+  loadTweetThread(peer, sig, mycallback = null) {
+    let sql = `SELECT *
+               FROM tweets
+               WHERE thread_id = '${sig}'
+               ORDER BY created_at DESC`;
+
+    for (let i = 0; i < this.peers.length; i++) {
+      let peer = this.peers[i].peer;
+      this.loadTweetsFromPeer(peer, sql, mycallback);
+    }
+  }
+
+
   loadTweetChildren(peer, sig, mycallback = null) {
     if (this.peers.length == 0) {
       return;
