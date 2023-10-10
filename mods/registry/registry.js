@@ -57,6 +57,13 @@ class Registry extends ModTemplate {
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", async (keys) => {
       let unidentified_keys = [];
 
+      //
+      // every 1 in 500 times, clear cache
+      //
+      if (Math.random() < 0.005) {
+        this.cached_keys = {};
+      }
+
       for (let i = 0; i < keys.length; i++) {
         if (this.cached_keys[keys[i]]) {
           this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
@@ -92,6 +99,7 @@ class Registry extends ModTemplate {
           }
         }
       });
+
     });
 
     this.app.connection.on("register-username-or-login", (obj) => {
@@ -164,17 +172,23 @@ class Registry extends ModTemplate {
 
     publickeys.forEach((publickey) => {
       const identifier = this.app.keychain.returnIdentifierByPublicKey(publickey);
-      if (identifier.length > 0) {
+
+      //returns "" if not found
+      if (identifier) {
         found_keys[publickey] = identifier;
       } else {
-        missing_keys.push(`${publickey}`);
+        missing_keys.push(publickey);
       }
     });
+
+    console.log("REGISTRY Found: ", found_keys);
 
     if (missing_keys.length == 0) {
       mycallback(found_keys);
       return;
     }
+
+    console.log("REGISTRY Missing: ", missing_keys);
 
     this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
       for (let key in identifiers) {
@@ -271,6 +285,7 @@ class Registry extends ModTemplate {
       keys: keys,
     };
 
+    console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
     this.app.network.sendRequestAsTransaction("registry query", data, mycallback, peer.peerIndex);
   }
 
@@ -535,17 +550,18 @@ class Registry extends ModTemplate {
     let missing_keys = [];
 
     let myregexp = new RegExp("^([a-zA-Z0-9])*$");
-    for (let i = 0; i < keys.length; i++) {
+    for (let i = keys.length - 1; i >=0 ; i--) {
       if (!myregexp.test(keys[i])) {
-        return false;
+        keys.splice(i, 1);
+        continue;
       }
       if (this.returnCachedIdentifier(keys[i])) {
         found_keys[keys[i]] = this.returnCachedIdentifier(keys[i]);
         keys.splice(i, 1);
-        i--;
       }
     }
 
+    console.log("REGISTRY DB query for: ", keys);
     //
     // check database if needed
     //
@@ -613,12 +629,6 @@ class Registry extends ModTemplate {
       }
     }
 
-    //
-    // every 1 in 500 times, clear cache
-    //
-    if (Math.random() < 0.005) {
-      this.cached_keys = {};
-    }
   }
 
   async addRecord(
