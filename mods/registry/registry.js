@@ -638,7 +638,6 @@ class Registry extends ModTemplate {
   }
 
   async checkIdentifierInDatabase(identifier, mycallback = null) {
-    console.log("REGISTRY: Check if name available");
 
     if (!mycallback) {
       console.warn("No callback");
@@ -654,8 +653,6 @@ class Registry extends ModTemplate {
 
     } else {
       
-      console.log("Pass on registry lookup...");
-
       await this.sendPeerDatabaseRequestWithFilter(
         "Registry",
         `SELECT * FROM records WHERE identifier = "${identifier}"`,
