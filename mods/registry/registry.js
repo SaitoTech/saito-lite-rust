@@ -320,6 +320,7 @@ class Registry extends ModTemplate {
 
         this.queryKeys(peer, [this.publicKey], function (identifiers) {
           
+          console.log("REGISTRY lookup: " + this.publicKey + " in " + peer.publicKey, identifiers);
           for (let key in identifiers) {
             if (key == registry_self.publicKey) {
               if (identifiers[key] !== myKey.identifier) {
@@ -472,7 +473,7 @@ class Registry extends ModTemplate {
       ////////////////////////////////////////
       if (!!txmsg && txmsg.module == "Email") {
         
-        console.log(txmsg.title);
+        console.log("REGISTRY: " + txmsg.title);
 
         if (tx.from[0].publicKey == this.registry_publickey) {
           try {
@@ -593,25 +594,27 @@ class Registry extends ModTemplate {
     //
     let found_check = Object.keys(found_keys);
 
+    console.log(this.publicKey + " found ", found_check);
+
     for (let key of keys) {
       if (!found_check.includes(key)) {
         missing_keys.push(key);
       }
     }
 
-    if (mycallback) {
-      mycallback(found_keys);
-    }
 
     //
     // Fallback because browsers don't automatically have DNS as a peer
     //
     if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
+      console.log("REGISTRY: still missing ", missing_keys, "check with ", this.registry_publickey);
+
       //
       // if we were asked about any missing keys, ask our parent server
       //
       for (let i = 0; i < this.peers.length; i++) {
         if (this.peers[i].publicKey == this.registry_publickey) {
+          console.log("REGISTRY is my peer");
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, function (res) {
             let more_keys = {};
@@ -625,7 +628,12 @@ class Registry extends ModTemplate {
               mycallback(more_keys);
             }
           });
+          return;
         }
+      }
+    }else{
+      if (mycallback) {
+        mycallback(found_keys);
       }
     }
 
