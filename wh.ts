@@ -36,21 +36,21 @@ async function initCLI() {
 
   let privateKey = app.options.wallet?.privateKey || "";
 
-/*
-  await initS(
-    app.options,
-    new NodeSharedMethods(app),
-    new Factory(),
-    privateKey,
-    LogLevel.Info
-  ).then(() => {
-    console.log("saito wasm lib initialized");
-  });
-  app.wallet = (await S.getInstance().getWallet()) as Wallet;
-  app.wallet.app = app;
-  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
-  app.blockchain.app = app;
-*/
+  /*
+    await initS(
+      app.options,
+      new NodeSharedMethods(app),
+      new Factory(),
+      privateKey,
+      LogLevel.Info
+    ).then(() => {
+      console.log("saito wasm lib initialized");
+    });
+    app.wallet = (await S.getInstance().getWallet()) as Wallet;
+    app.wallet.app = app;
+    app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+    app.blockchain.app = app;
+  */
   // await app.init();
   //
   // S.getInstance().start();
@@ -84,7 +84,7 @@ async function initCLI() {
   }
 
   function processBlocks() {
-    if(processing_started && work_queue.length > 0) {
+    if (processing_started && work_queue.length > 0) {
       app.storage.loadBlockByFilename(work_queue[0]).then((blk) => {
         addTransactionsToDatabase(blk);
       });
@@ -92,7 +92,7 @@ async function initCLI() {
       setInterval(processBlocks, 1000);
     } else {
       console.info("Processing Complete");
-    } 
+    }
   }
 
   function loadTxToDatabase(dir) {
@@ -112,7 +112,7 @@ async function initCLI() {
     });
     console.info(total + " blocks added queue (" + work_queue.length + ")");
     processing_started = true;
-    console.info("Processing Sarted");  
+    console.info("Processing Sarted");
     processBlocks();
   }
 

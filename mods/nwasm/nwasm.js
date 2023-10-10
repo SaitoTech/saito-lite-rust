@@ -48,10 +48,11 @@ class Nwasm extends OnePlayerGameTemplate {
   }
 
   async initialize(app) {
+    await super.initialize(app);
+
     if (app.BROWSER == 0) {
       return;
     }
-    await super.initialize(app);
 
     //
     // monitor log if browser

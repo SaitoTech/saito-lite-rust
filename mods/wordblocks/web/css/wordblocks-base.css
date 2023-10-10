@@ -60,35 +60,31 @@
 }
 
 
-.stats-overlay {
-  min-width: 300px;
+
+.score-overlay, .stats-overlay {
+  width: min(500px, 90vw);
   min-height: 200px;
   max-height: 65vh;
-  max-width: max(50vw,600px);
+  border-radius: 30px;
+  background: rgb(43,29,14);
   overflow-y: auto;
   overflow-x: auto;
-  background-color: whitesmoke;
-  border-radius: 10px;
+  color: rgb(250,244,239);
+  box-shadow: -5px 3px 4px black;
+  border: 1px solid rgb(230,206,180);
+
 }
 
-.stats-overlay table {
+.stats-overlay table, .score-overlay table{
   margin: auto;
-  padding: 1em;
-  border-spacing: 1em;
-}
-
-.score-overlay{
-  min-width: 120px;
-  min-height: 200px;
-  background-color: whitesmoke;
-  border-radius: 10px; 
-}
-
-.score-overlay table{
   width:  100%;
   border-spacing: 1em;
   padding: 1em;
+  color: rgb(250,244,239);
+}
 
+.score-overlay td, .stats-overlay td {
+  text-align: center;
 }
 
 thead,  tfoot{
@@ -396,48 +392,6 @@ thead,  tfoot{
   cursor: pointer;
 }
 
-.hud {
-  display: block;
-  width: 600px;
-  max-height: initial;
-  height: fit-content;
-  height: -moz-fit-content;
-  /*background: rgb(68, 68, 68);
-  border: 1px solid rgb(136, 136, 136);
-  color: rgb(239, 239, 239);*/
-  background: rgb(43,29,14);
-  border: 2px solid rgb(230,206,180);
-  border-radius: 5px;
-  color: rgb(250,244,239);
-  padding: 0;
-  cursor: default;
-}
-
-.hud-body {
-  min-height: fit-content;
-  height: fit-content;
-  height: -moz-fit-content;
-  overflow-y: visible;
-  padding: 0 16px;
-}
-
-.hud-header {
-  width: initial;
-  margin: 0;
-  background: linear-gradient( 45deg, black, #999);
-}
-
-
-.user_dragged .hud-body .status{
-  align-items: center; 
-}
-
-.hud-status-update-message, .subrack {
-  width: 100%;
-}
-.hud-status-update-message {
-  padding: 5px;
-}
 
 /*Rearrange HUD/Playerbox elements for portrait layout  */
 @media  (orientation: portrait){

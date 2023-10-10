@@ -6,6 +6,7 @@ const ScoringOverlay = require('./lib/overlays/scoring');
 const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
 const DeckOverlay = require('./lib/overlays/deck');
+const HeadlineOverlay = require('./lib/overlays/headline');
 
 const JSON = require('json-bigint');
 
@@ -57,6 +58,7 @@ class Twilight extends GameTemplate {
     this.stats_overlay = new StatsOverlay(this.app, this);
     this.war_overlay = new WarOverlay(this.app, this);
     this.deck_overlay = new DeckOverlay(this.app, this);
+    this.headline_overlay = new HeadlineOverlay(this.app, this);
 
     //
     // newbie mode
@@ -69,7 +71,9 @@ class Twilight extends GameTemplate {
     this.maxPlayers 	 = 2;
 
     this.hud.mode = 0;  // long-horizontal
-    this.hud.enable_mode_change = 1;
+    
+    // Temporarily block this because the alternate hud css was messed up by recent refactors
+    //this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
     this.roles = ["observer", "ussr", "us"];
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
@@ -181,11 +185,11 @@ class Twilight extends GameTemplate {
   }
 
 
-  render(app) {
+  async render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.render(app);
+    await super.render(app);
 
     //
     // check language preference
@@ -406,9 +410,7 @@ class Twilight extends GameTemplate {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hud.card_width = 110;
         this.cardbox.skip_card_prompt = 0;
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, '.gameboard');
-
+        this.hammer.render();
       } else {
         this.hud.card_width = 120; // hardcode max card size
         this.sizer.render();
@@ -2711,9 +2713,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["sudan", "cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
+          this.game.deck[0].hand = ["fiveyearplan", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["fidel", "asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
+          this.game.deck[0].hand = ["fidel", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3149,10 +3151,12 @@ try {
 	    // remove
 	    //
 	    this.removeCardFromDeckNextDeal("summit", "Removed");
-            if (this.game.state.events.cia == 1) {
+            if (this.game.state.events.cia == 1 && this.game.state.events.tsarbomba_added == 1) {
+	      this.game.state.events.tsarbomba_added = 1; // avoid getting re-added later
               this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
 	    }
-	    if (this.game.state.events.iranianultimatum != 1) {
+	    if (this.game.state.events.iranianultimatum != 1 && iranianultimatum_removed != 1) {
+	      this.game.state.events.iranianultimatum_removed = 1;
 	      this.removeCardFromDeckNextDeal("iranianultimatum", "Removed");
 	    }
 	    if (this.game.state.events.fidel != 1) {
@@ -3196,7 +3200,7 @@ try {
 
         }
 
-	if (this.game.state.round == 5) {
+	if (this.game.state.round == 4) {
           if (this.game.options.deck === "saito") {
 	    if (this.game.state.events.bayofpigs_added != 1 && this.game.state.events.fidel == 1 && this.game.state.events.bayofpigs != 1 && this.game.state.events.cubanmissile != 1) {
 	      this.game.state.events.bayofpigs_added = 1;
@@ -3639,13 +3643,18 @@ try {
     if (this.game.player == 1) {
       uscard = opponent_card;
       ussrcard = my_card;
-    }else{
+    } else {
       ussrcard = opponent_card;
       uscard = my_card;
     }
-
+   
+   
 
     if (stage == "headline6") {
+
+console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
+
+      this.headline_overlay.render(uscard, ussrcard);
 
       this.updateLog("Moving into first headline card event");
 
@@ -3715,6 +3724,25 @@ try {
       this.game.state.player_to_go = 3 - this.game.state.player_to_go; //Other pleyer goes now
 
       let card_player = (this.game.state.player_to_go == 2)? "us" : "ussr";
+
+      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
+     
+        this.game.turn = []; 
+
+        this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}, but it is cancelled by ${this.cardToText("defectors")}`);
+
+        //
+        // only one player should trigger next round
+        if (this.game.player == 1) {
+          this.addMove("resolve\theadline");
+          this.addMove("discard\tussr\t"+my_card);
+          this.endTurn();
+        }
+
+        this.updateStatus(`>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...`);
+
+      } else {
+
       let statusMsg = "";
       if (this.game.state.player_to_go == 1){
         statusMsg = `Resolving USSR headline: ${this.cardToText(ussrcard)}`;
@@ -3730,6 +3758,7 @@ try {
         this.endTurn();
       }
       this.updateStatus(statusMsg);
+    }
       return 0;
     }
 
@@ -4448,8 +4477,10 @@ console.log("getPrivateKey(): " + privateKey);
         if (ac[card].player == opponent) { can_play_event = 0; }
 
 
-        announcement += '<li class="option" id="ops">play ops</li>';
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
+
+        announcement += '<li class="option" id="ops">play for ops</li>';
+
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
 
         //
@@ -4667,6 +4698,8 @@ console.log("getPrivateKey(): " + privateKey);
 	bind_back_button_state = false;
       }
 
+      console.log(JSON.parse(JSON.stringify(this.game.state)));
+
       let html = '<ul>';
       if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
       if (this.game.state.limit_coups == 0) { html += '<li class="option" id="coup">launch coup</li>'; }
@@ -4846,6 +4879,8 @@ console.log("getPrivateKey(): " + privateKey);
 
         if (action2 == "realign") {
 
+          twilight_self.game.state.back_button_cancelled = 1;
+
           let alignment_rolls = ops;
           let header_msg = `Pick a target to realign (${alignment_rolls} rolls), or:`;
           let html = `<ul><li class="option" id="cancelrealign">end turn without rolling</li></ul>`;
@@ -4856,7 +4891,6 @@ console.log("getPrivateKey(): " + privateKey);
               return;
             }
           });
-
 
           $(".country").off();
           $(".country").on('click', async function() {
@@ -5913,15 +5947,15 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       //
       // Coup Restrictions
       //
-      if (twilight_self.game.state.limit_ignoredefcon == 0) {
-        if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
-          failureReason = "Invalid Region for this Coup";
+      if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
+        failureReason = "Invalid Region for this Coup";
+      }
 
-        }
+      if (twilight_self.game.state.limit_ignoredefcon == 0) {
         if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
           failureReason = "DEFCON prevents coups in Europe";
-
         }
+
         if ((twilight_self.countries[countryname].region == "asia" || twilight_self.countries[countryname].region == "seasia") && twilight_self.game.state.defcon < 4) {
           failureReason = "DEFCON prevents coups in Asia";
         }
@@ -6018,6 +6052,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       this.sendGameOverTransaction(this.game.players[0], "Cuban Missile Crisis");
       return;
     }
+
 
     //
     // Yuri and Samantha
@@ -9329,7 +9364,7 @@ if (inc_optional == true) {
     //
     // if USSR controls Cuba
     //
-    if (this.isControlled("ussr", "cuba") && this.game.state.events.bayofpigs_added != 1) {
+    if (this.isControlled("ussr", "cuba") && this.game.state.events.bayofpigs_added != 1 && this.game.state.round >= 4) {
       this.game.state.events.bagofpigs_added = 1;
       this.addCardToDeck("bayofpigs", "USSR controls Cuba");
     }
@@ -10998,32 +11033,28 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
 
 
+if (card == "defectors") {
 
-  if (card == "defectors") {
-
-      if (this.game.state.headline == 0) {
-
-	if (player == "us"){
-          this.game.queue.push(`ACKNOWLEDGE\tUS events Defectors`);
-	  return 1;
-        }
-
-        this.game.state.vp += 1;
-        this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
-        this.updateVictoryPoints();
-      } else {
-
-        //
-        // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
-        // case it can only cancel the USSR headline if the USSR headline has not already gone.
-        // what an insanely great but complicated game dynamic at play here....
-        //
-        this.game.state.defectors_pulled_in_headline = 1;
-      }
-
+  if (this.game.state.headline == 0) {
+    if (player == "us") {
+      this.game.queue.push(`ACKNOWLEDGE\tUS events Defectors`);
       return 1;
     }
 
+    this.game.state.vp += 1;
+    this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
+    this.updateVictoryPoints();
+  } else {
+    //
+    // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
+    // case it can only cancel the USSR headline if the USSR headline has not already gone.
+    // what an insanely great but complicated game dynamic at play here....
+    //
+    this.game.state.defectors_pulled_in_headline = 1;
+  }
+
+  return 1;
+}
 
 
     ///////////////////////////
@@ -11353,13 +11384,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
             twilight_self.removeCardFromHand(card);
             if (ac[card].player == "us") {
-              //twilight_self.displayModal("You have rolled: " + card);
               twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR triggers "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tFive Year Plan triggers US event: "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             } else {
-              //twilight_self.displayModal("You have rolled: " + card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tUSSR discarded "+twilight_self.cardToText(card));
               twilight_self.endTurn();
@@ -14070,7 +14099,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
       // SAITO COMMUNITY
       if (this.game.options.deck === "saito") {
-	this.removeCardFromDeckNextDeal("willybrandt");
+	       this.removeCardFromDeckNextDeal("willybrandt");
       }
 
       this.game.state.events.teardown = 1;
@@ -15241,9 +15270,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
     if (card == "fischerspassky") {
 
-      if (this.game.player == 1) {
+      if (!i_played_the_card) {
+        this.updateStatus("Opponent playing Fischer-Spassky");
         return 0;
       }
+
       this.startClock();
 
       let html = `<ul>

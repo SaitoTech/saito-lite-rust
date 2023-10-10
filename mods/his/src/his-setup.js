@@ -72,7 +72,7 @@ console.log("\n\n\n\n");
         if (this.game.players.length == 2) {
 
 	  // OTTOMAN
-          this.addRegular("ottoman", "istanbul", 7);
+          this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");
           this.addRegular("ottoman", "salonika", 1);
           this.addRegular("ottoman", "athens", 1);
@@ -84,12 +84,15 @@ console.log("\n\n\n\n");
           this.addRegular("hapsburg", "barcelona", 1);
           this.addRegular("hapsburg", "navarre", 1);
           this.addRegular("hapsburg", "tunis", 1);
+          this.controlSpace("hapsburg", "tunis", 1);
           this.addRegular("hapsburg", "naples", 2);
           this.addNavalSquadron("hapsburg", "naples", 2);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
           this.addRegular("hapsburg", "vienna", 4);
           this.addRegular("hapsburg", "antwerp", 3);
+	  this.addRegular("hapsburg", "valladolid");
+
 
 	  // ENGLAND
           this.addRegular("england", "london", 1);
@@ -153,13 +156,6 @@ console.log("\n\n\n\n");
 	  this.controlSpace("ottoman", "ragusa");
 
 	  this.setAllies("hungary", "hapsburg");
-
-
-	  // TESTING
-          //this.addReformer("protestant", "zurich", "zwingli-reformer");
-	  //this.setAllies("venice", "papacy");
-	  this.controlSpace("papacy", "trent");
-	  this.addRegular("papacy", "trent", 1);
 
 	} else {
 

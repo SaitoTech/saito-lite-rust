@@ -153,6 +153,8 @@ export default class Transaction extends SaitoTransaction {
       }
     }
 
+    console.log("Decrypt message from: " + counter_party_key);
+
     try {
       let dmsg = app.keychain.decryptMessage(counter_party_key, parsed_msg);
       if (dmsg !== parsed_msg) {

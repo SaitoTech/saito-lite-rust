@@ -46,10 +46,11 @@
     //
     this.game.state.debater_committed_this_impulse = {};
     this.game.state.spaces_assaulted_this_turn = [];
-    
+    this.game.state.printing_press_active = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
+    this.game.state.tmp_protestant_translation_bonus = 0;
     this.game.state.tmp_protestant_reformation_modifier = 0;
     this.game.state.tmp_protestant_reformation_bonus = 0;
     this.game.state.tmp_protestant_reformation_bonus_spaces = [];
@@ -163,6 +164,7 @@
   addUnit(faction, space, type) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));
+    this.updateOnBoardUnits();
   }
 
   removeUnit(faction, space, type) {
@@ -172,6 +174,7 @@
       if (space.units[faction][i].type === type) {
         this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
+        this.updateOnBoardUnits();
 	return;
       }
     }
@@ -189,6 +192,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "regular"));
     }
+    this.updateOnBoardUnits();
   }
 
   addMercenary(faction, space, num=1) {
@@ -196,6 +200,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "mercenary"));
     }
+    this.updateOnBoardUnits();
   }
 
   addCavalry(faction, space, num=1) {
@@ -203,6 +208,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "cavalry"));
     }
+    this.updateOnBoardUnits();
   }
 
   addNavalSquadron(faction, space, num=1) {
@@ -210,6 +216,7 @@
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }
+    this.updateOnBoardUnits();
   }
 
   addCorsair(faction, space, num=1) {
@@ -458,6 +465,8 @@
     state.events = {};
     state.removed = []; // removed cards
     state.spaces_assaulted_this_turn = [];
+    state.board_updated = new Date().getTime();
+    state.board = {}; // units on board
 
     state.diplomacy = this.returnDiplomacyAlliance();
 
@@ -480,6 +489,12 @@
     state.activated_powers['england'] = [];
     state.activated_powers['papacy'] = [];
     state.activated_powers['protestant'] = [];
+    // following for safety
+    state.activated_powers['venice'] = [];
+    state.activated_powers['scotland'] = [];
+    state.activated_powers['genoa'] = [];
+    state.activated_powers['hungary'] = [];
+    state.activated_powers['independent'] = [];
 
     state.translations = {};
     state.translations['new'] = {};
@@ -702,6 +717,9 @@
   unexcommunicateReformers() {
 
     for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+
+      let obj = this.game.state.excommunicated[i];
+
       if (obj.reformer) {
 
         let reformer = obj.reformer;
@@ -720,6 +738,11 @@
 	if (debater) {
 	  this.game.state.debaters.push(debater);
 	}
+
+	this.displaySpace(s);
+
+        this.game.state.excommunicated.splice(i, 1);
+        i--;
 
       }
     }
@@ -967,7 +990,7 @@
     }
     track['16'] = {
       top : 3026,
-      left : 1530
+      left : 1569
     }
     track['17'] = {
       top : 3026,

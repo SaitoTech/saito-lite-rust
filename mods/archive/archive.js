@@ -45,6 +45,7 @@ class Archive extends ModTemplate {
   }
 
   async initialize(app) {
+    await super.initialize(app);
     this.load();
 
     if (app.BROWSER) {

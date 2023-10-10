@@ -191,13 +191,17 @@ class Post {
     // tweet data
     //
     let data = { text: text };
+    let is_reply = false;
+    let is_retweet = false;
 
     //Replies
     if (parent_id !== "") {
+      is_reply = true;
       data = { text: text, parent_id: parent_id, thread_id: thread_id, signature: parent_id };
     }
     //Retweets
     if (source == "Retweet") {
+      is_retweet = true;
       data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
       data.signature = post_self.tweet.tx.signature;
     }
@@ -216,36 +220,27 @@ class Post {
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
     //console.log("New tweet:", posted_tweet);
 
+    if (is_reply) {
+      this.mod.replyTweet(data.signature);
+    }
+    if (is_retweet) {
+      this.mod.retweetTweet(data.signature);
+    }
+
     let rparent = this.tweet;
     if (rparent) {
-      //console.log(rparent);
-
-      //
-      // loop to remove anything we will hide
-      /*
-      let rparent2 = rparent;
-      while (this.mod.returnTweet(rparent2.parent_id)) {
-        let x = this.mod.returnTweet(rparent2.parent_id);
-        let qs = ".tweet-" + x.tx.signature;
-        if (document.querySelector(qs)) {
-          console.log("Delete: " + qs);
-          document.querySelector(qs).remove();
-        }
-        rparent2 = x;
-      }*/
-
       if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
         rparent.num_retweets++;
-        //This should update the tweet stats?
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
       } else {
         rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;
-        rparent.tx.optional.num_replies++;
-        rparent.num_replies++;
+	// OCT 2 - debug
+        //rparent.tx.optional.num_replies++;
+        //rparent.num_replies++;
         rparent.renderWithCriticalChild();
       }
     } else {

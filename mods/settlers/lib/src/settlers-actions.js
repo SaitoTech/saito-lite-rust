@@ -25,10 +25,13 @@ class SettlersActions {
   //
   // Award resources for dice roll
   //
-  collectHarvest(value) {
-    let logMsg = "";
+  collectHarvest(value, player_who_rolled) {
+
     let notice = "";
     let poor_harvest = true;
+
+    let collection = {};
+
     for (let city of this.game.state.cities) {
       let player = city.player;
 
@@ -38,43 +41,69 @@ class SettlersActions {
           !this.game.state.hexes[neighboringHex].robber
         ) {
           let resource = this.game.state.hexes[neighboringHex].resource;
-          logMsg += `${this.game.playerNames[player - 1]} gains ${resource}`;
+
+          if (!collection[player]){
+            collection[player] = [];
+          }
+
+          collection[player].push(resource);
+
           if (this.game.player == player) {
-            notice += `<div class="card tiny"><img src="${this.returnCardImage(
-              resource
-            )}" /></div>`;
+            notice += this.formatResource(resource);
             poor_harvest = false;
           }
+
           this.game.state.players[player - 1].resources.push(resource);
           this.game.stats.production[resource][player - 1]++;
+          this.animateHarvest(player, resource, neighboringHex);
+
+          //
           //Double Resources for Upgraded City
+          //
           if (city.level == 2) {
             this.game.state.players[player - 1].resources.push(resource);
             this.game.stats.production[resource][player - 1]++;
-            logMsg += " x2";
+            this.animateHarvest(player, resource, neighboringHex);
+
+            collection[player].push(resource);
+
             if (this.game.player == player) {
-              notice += `<div class="card tiny"><img src="${this.returnCardImage(
-                resource
-              )}" /></div>`;
+              notice += this.formatResource(resource);
             }
           }
-          logMsg += "; ";
         }
       }
     }
 
-    logMsg = logMsg.substr(0, logMsg.length - 2);
-    if (logMsg) {
+    let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
+    firstMsg += ` rolled a <span class='die_value'>${value}</span>`;
+
+    for (let player in collection){
+      let logMsg = `${this.formatPlayer(player)} gains`;
+      collection[player].sort();
+      for (let resource of collection[player]){
+        logMsg += this.formatResource(resource);
+      }
       this.updateLog(logMsg);
-    } else {
+    }
+
+    if (Object.keys(collection).length == 0) {
       this.updateLog("no-one collects any resources.");
     }
+
     if (poor_harvest) {
-      this.updateStatus(`<div class="persistent"><span>${value}: ${this.randomMsg()}</span></div>`);
+      this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
     } else {
       this.updateStatus(
-        `<div class="persistent alignme"><span>${value}! You acquired: </span>${notice}</div>`
+        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span>${notice}</div>`
       );
+    }
+
+    if (this.animationSequence.length > 0){
+      this.runAnimationQueue(250);
+      return 0;
+    }else{
+      return 1;
     }
   }
 
@@ -253,37 +282,6 @@ class SettlersActions {
   }
 
   /*
-    Let player choose a resource, then issue selection to game queue
-  */
-  playMonopoly(player, cardname) {
-    if (this.game.player != player) return;
-    //Pick something to get
-    let settlers_self = this;
-    let resourceList = this.returnResources();
-
-    //Player recursively selects all the resources they want to get rid of
-    let html = `<div class='player-notice'>Select Desired Resource: <ul class="horizontal_list">`;
-    for (let i of resourceList) {
-      html += `<li id="${i}" class="iconoption option"><div class="tip"><img class="icon" src="${settlers_self.returnCardImage(
-        i
-      )}" /></div></li>`;
-    }
-    html += "</ul>";
-    html += "</div>";
-
-    settlers_self.updateStatus(html, 1);
-    settlers_self.displayCardfan();
-    $(".option").off();
-    $(".option").on("click", function () {
-      console.log("clicked on option 9");
-      let res = $(this).attr("id");
-      settlers_self.addMove(`monopoly\t${player}\t${cardname}\t${res}`);
-      settlers_self.endTurn();
-      return 0;
-    });
-  }
-
-  /*
     Every time a knight played, need to check if this makes a new largest army
   */
   checkLargestArmy(player) {
@@ -380,6 +378,10 @@ class SettlersActions {
       if (bestPath.length > longest.length) longest = bestPath;
     }
 
+    if (longest.length > this.game.state.players[player - 1].road){
+      this.game.state.players[player - 1].road = longest.length;
+    }
+    
     //Check if longest path is good enough to claim VP prize
     if (longest.length >= 5) {
       if (this.game.state.longestRoad.player > 0) {
@@ -402,7 +404,7 @@ class SettlersActions {
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
             this.updateLog(
-              `${this.game.playerNames[player - 1]} extended the ${this.longest.name} to ${
+              `${this.formatPlayer(player)} extended the ${this.longest.name} to ${
                 longest.length
               } segments.`
             );

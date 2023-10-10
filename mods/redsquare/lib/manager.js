@@ -258,14 +258,18 @@ console.log("no notifications to render");
   // as they appear...
   //
   renderTweet(tweet) {
-    this.render("single");
 
-    //Show the basic tweet first
+    console.log("#");
+    console.log("# " + tweet.text);
+    console.log("#");
+    this.render("render single tweet");
+
+    // show the basic tweet first
     if (!tweet.parent_id) {
       tweet.renderWithChildren();
     }
 
-    //Query the whole thread
+    // query the whole thread
     let thread_id = tweet.thread_id || tweet.parent_id || tweet.tx.signature;
 
     this.mod.loadTweetThread(null, thread_id, () => {

@@ -125,8 +125,8 @@ class Pandemic extends GameTemplate {
     this.grace_window = this.game.players.length * 4;
   }
 
-  render(app) {
-    super.render(app);
+  async render(app) {
+    await super.render(app);
 
     if (!this.skin) {
       switch (this.game.options.theme) {
@@ -322,8 +322,7 @@ class Pandemic extends GameTemplate {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hud.card_width = 100; //Smaller cards
         this.cardbox.skip_card_prompt = 0;
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render();
       } else {
         this.cardbox.skip_card_prompt = 1; //no Confirming
         this.sizer.render();
@@ -1961,7 +1960,7 @@ class Pandemic extends GameTemplate {
       }
 
       if (mv[0] === "infectcity") {
-        pandemic_self.game.halted = 1;
+        pandemic_self.halted = 1;
 
         pandemic_self.acknowledgeInfectionCard(mv[1], function () {
           console.log("Acknowledgeing...");

@@ -33,10 +33,9 @@ class Encrypt extends ModTemplate {
 
     this.app = app;
     this.name = "Encrypt";
-    this.encrypt = this.loadEncrypt(app);
 
     this.description = "A Diffie-Hellman encryption tool for Saito";
-    this.categories = "Crypto Utilities";
+    this.categories = "Encryption Utilities";
 
     app.connection.on("encrypt-key-exchange", (publicKey) => {
       console.log("initiating key exchange...");
@@ -77,77 +76,78 @@ class Encrypt extends ModTemplate {
     return super.respondTo(type);
   }
 
+  async onConfirmation(blk, tx, conf) {
+    if (conf == 0) {
+      console.log("ENCRYPT ONCONF: ", tx);
+
+      if (tx.isTo(this.publicKey)) {
+        let sender = tx.from[0].publicKey;
+        let receiver = tx.to[0].publicKey;
+        let txmsg = tx.returnMessage();
+        let request = txmsg.request; // "request"
+
+        //
+        // key exchange requests
+        //
+        if (txmsg.request == "key exchange request") {
+          if (sender == this.publicKey) {
+            console.log("ENCRYPT: You have sent an encrypted channel request to " + receiver);
+          }
+          if (receiver == this.publicKey) {
+            console.log("ENCRYPT: You have received an encrypted channel request from " + sender);
+            this.accept_key_exchange(tx);
+          }
+        }
+
+        //
+        // key confirm requests
+        //
+        if (txmsg.request == "key exchange confirm") {
+          if (sender !== this.publicKey){
+            console.log(`ENCRYPT: ${sender} has accepted your encrypted channel request`);
+            this.confirm_key_exchange(txmsg.bob, sender);  
+          }else{
+            console.log("ENCRYPT: You have accepted an encrypted channel request from " + sender);
+          }          
+        }
+      }
+    }
+  }
+
+
   async handlePeerTransaction(app, newtx = null, peer, mycallback) {
     if (newtx == null) {
       return;
     }
     let message = newtx.returnMessage();
 
-    //if (message.request.includes("diffie hellman")){
-    //  console.log(message);
-    //}
+    if (!message.request.includes("diffie hellman")) {
+      return;
+    }
+
+    console.log(message);
+    let tx = new Transaction(undefined, message.data);
+    let sender = tx.from[0].publicKey;
+    let receiver = tx.to[0].publicKey;
+    let txmsg = tx.returnMessage();
+
 
     if (message.request === "diffie hellman key exchange") {
-      let tx = new Transaction(undefined, message.data.tx);
-
-      let sender = tx.from[0].publicKey;
-      let receiver = tx.to[0].publicKey;
-      let txmsg = tx.returnMessage();
-      let request = txmsg.request; // "request"
 
       //
       // key exchange requests
       //
       if (txmsg.request == "key exchange request") {
         if (receiver == this.publicKey) {
-          console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
+          console.log("\n\n\nYou have accepted an encrypted channel request from " + sender);
           this.accept_key_exchange(tx, 1, peer);
         }
       }
     }
 
     if (message.request === "diffie hellman key response") {
-      let tx = new Transaction(undefined, message.data.tx);
 
-      let sender = tx.from[0].publicKey;
-      let receiver = tx.to[0].publicKey;
-      let txmsg = tx.returnMessage();
-      let request = txmsg.request; // "request"
-
-      //
-      // copied from onConfirmation
-      //
-      let bob_publicKey = Buffer.from(txmsg.bob, "hex");
-
-      var senderkeydata = app.keychain.returnKey(sender);
-
-      if (senderkeydata == null) {
-        if (app.BROWSER == 1) {
-          alert("Cannot find original diffie-hellman keys for key-exchange");
-          return;
-        }
-      }
-
-      let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
-      let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
-      let alice = app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);
-      let alice_secret = alice.computeSecret(bob_publicKey);
-      //app.crypto.createDiffieHellmanSecret(alice, bob_publicKey);
-
-      app.keychain.updateCryptoByPublicKey(
-        sender,
-        alice_publicKey.toString("hex"),
-        alice_privatekey.toString("hex"),
-        alice_secret.toString("hex")
-      );
-
-      //
-      //
-      //
-      this.sendEvent("encrypt-key-exchange-confirm", {
-        members: [sender, this.publicKey],
-      });
-      this.saveEncrypt();
+      this.confirm_key_exchange(txmsg.bob, sender);
     }
   }
 
@@ -157,25 +157,15 @@ class Encrypt extends ModTemplate {
     }
 
     //
-    // try to connect with friends in pending list
+    // Try again for partial key exchanges!
     //
-    if (this.encrypt) {
-      if (this.encrypt.pending) {
-        for (let i = 0; i < this.encrypt.pending.length; i++) {
-          this.initiate_key_exchange(this.encrypt.pending[i]);
-        }
-        this.encrypt.pending = [];
-        this.saveEncrypt();
-      }
-      //
-      // Try again for partial key exchanges!
-      //
-      for (let key of this.app.keychain.returnKeys()) {
-        if ((key.aes_privatekey || key.aes_publicKey) && !key.aes_secret) {
-          this.initiate_key_exchange(key.publicKey);
-        }
+    for (let key of this.app.keychain.returnKeys()) {
+      if ((key.aes_privatekey || key.aes_publicKey) && !key.aes_secret) {
+        console.log("ENCRYPT: attempt key exchange again for: " + key.publicKey);
+        this.initiate_key_exchange(key.publicKey, 1);
       }
     }
+
 
     //
     // check if we have a diffie-key-exchange with peer
@@ -187,9 +177,12 @@ class Encrypt extends ModTemplate {
     //}
   }
 
-  //
-  // recipients can be a string (single address) or an array (multiple addresses)
-  //
+  /**
+  *
+  *  Step 1 -- request a key exchange
+  * 
+  *  recipients can be a string (single address) or an array (multiple addresses)
+  */
   async initiate_key_exchange(recipients, offchain = 0, peer = null) {
     let recipient = "";
     let parties_to_exchange = 2;
@@ -205,7 +198,6 @@ class Encrypt extends ModTemplate {
       parties_to_exchange = 2;
     }
 
-    console.log("recipient is: " + recipient);
     if (!recipient) {
       return;
     }
@@ -229,9 +221,15 @@ class Encrypt extends ModTemplate {
       tx = await this.app.wallet.createUnsignedTransaction(recipient, BigInt(0), BigInt(0));
     }
 
+  
+    const alice = this.app.crypto.createDiffieHellman();
+    const alice_publicKey = alice.getPublicKey(null, "compressed").toString("hex");
+    const alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
+    this.app.keychain.updateEncryptionByPublicKey(recipient, alice_publicKey, alice_privatekey, "");
+
     tx.msg.module = this.name;
     tx.msg.request = "key exchange request";
-    tx.msg.alice_publicKey = this.app.keychain.initializeKeyExchange(recipient);
+    tx.msg.alice_publicKey = alice_publicKey;
     tx.addTo(this.publicKey);
 
     //
@@ -251,19 +249,28 @@ class Encrypt extends ModTemplate {
     if (offchain == 0) {
       await this.app.network.propagateTransaction(tx);
     } else {
-      let data = {};
-      data.module = "Encrypt";
-      data.tx = tx;
-      this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
+      //let data = {};
+      //data.module = "Encrypt";
+      //data.tx = tx;
+      //this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
+
+      this.app.connection.emit("relay-send-message", {
+      recipient: recipients,
+      request: "diffie hellman key exchange",
+      data: tx.toJson(),
+    });
+
     }
 
-    this.saveEncrypt();
   }
 
+  /**
+   * Step 2 -- We have been asked to exchange keys
+   */ 
   async accept_key_exchange(tx, offchain = 0, peer = null) {
     let txmsg = tx.returnMessage();
 
-    console.log("Accepting key exchange");
+    console.log("Encrypt: Accepting key exchange");
 
     let remote_address = tx.from[0].publicKey;
     let our_address = tx.to[0].publicKey;
@@ -277,7 +284,11 @@ class Encrypt extends ModTemplate {
     let bob_secret = bob.computeSecret(Buffer.from(alice_publicKey, "hex"));
     //this.app.crypto.createDiffieHellmanSecret(bob, Buffer.from(alice_publicKey, "hex"));
 
-    var newtx = await this.app.wallet.createUnsignedTransaction(remote_address, BigInt(0), BigInt(fee));
+    var newtx = await this.app.wallet.createUnsignedTransaction(
+      remote_address,
+      BigInt(0),
+      BigInt(fee)
+    );
     if (newtx == null) {
       return;
     }
@@ -291,105 +302,67 @@ class Encrypt extends ModTemplate {
     if (offchain == 0) {
       await this.app.network.propagateTransaction(newtx);
     } else {
-      let data = {};
-      data.module = "Encrypt";
-      data.tx = newtx;
-      console.log("sending request on network");
-      this.app.network.sendPeerRequest("diffie hellman key response", data, peer);
+      //let data = {};
+      //data.module = "Encrypt";
+      //data.tx = newtx;
+      //this.app.network.sendPeerRequest("diffie hellman key response", data, peer);
+      console.log("Encrypt: sending response on network");
+
+      this.app.connection.emit("relay-send-message", {
+        recipient: remote_address,
+        request: "diffie hellman key response",
+        data: newtx.toJson(),
+      });
+
     }
 
-    this.app.keychain.updateCryptoByPublicKey(
+    this.app.keychain.updateEncryptionByPublicKey(
       remote_address,
       bob_publicKey.toString("hex"),
       bob_privatekey.toString("hex"),
       bob_secret.toString("hex")
     );
     this.sendEvent("encrypt-key-exchange-confirm", { members: [remote_address, our_address] });
-    this.saveEncrypt();
+    
   }
 
-  async onConfirmation(blk, tx, conf) {
-    if (conf == 0) {
-      console.log("ENCRYPT ONCONF");
-      console.log(tx);
 
-      //if (tx.from[0].publicKey == this.publicKey) {
-      //  this.sendEvent("encrypt-key-exchange-confirm", {
-      //    members: [tx.to[0].publicKey, tx.from[0].publicKey],
-      //  });
-      //}
-      if (tx.isTo(this.publicKey)) {
-        let sender = tx.from[0].publicKey;
-        let receiver = tx.to[0].publicKey;
-        let txmsg = tx.returnMessage();
-        let request = txmsg.request; // "request"
+  /**
+   * Step 3
+   * Process the returned key from the counterparty
+   */ 
+  async confirm_key_exchange(bob, sender) {
+    let bob_publicKey = Buffer.from(bob, "hex");
 
-        //
-        // key exchange requests
-        //
-        if (txmsg.request == "key exchange request") {
-          if (sender == this.publicKey) {
-            console.log("\n\n\nYou have sent an encrypted channel request to " + receiver);
-          }
-          if (receiver == this.publicKey) {
-            console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
-            this.accept_key_exchange(tx);
-          }
-        }
-
-        //
-        // key confirm requests
-        //
-        if (txmsg.request == "key exchange confirm") {
-          let bob_publicKey = Buffer.from(txmsg.bob, "hex");
-
-          var senderkeydata = this.app.keychain.returnKey(sender);
-          if (senderkeydata == null) {
-            if (this.app.BROWSER == 1) {
-              alert("Cannot find original diffie-hellman keys for key-exchange");
-              return;
-            }
-          }
-          let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
-          let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
-          let alice = this.app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);
-          let alice_secret = alice.computeSecret(bob_publicKey);
-          //this.app.crypto.createDiffieHellmanSecret(alice, bob_publicKey);
-
-          this.app.keychain.updateCryptoByPublicKey(
-            sender,
-            alice_publicKey.toString("hex"),
-            alice_privatekey.toString("hex"),
-            alice_secret.toString("hex")
-          );
-
-          //
-          //
-          //
-          this.sendEvent("encrypt-key-exchange-confirm", {
-            members: [sender, this.publicKey],
-          });
-          this.saveEncrypt();
-        }
+    var senderkeydata = this.app.keychain.returnKey(sender, true);
+    if (senderkeydata == null) {
+      if (this.app.BROWSER == 1) {
+        alert("Cannot find original diffie-hellman keys for key-exchange");
+        return;
       }
     }
+    let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
+    let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
+    let alice = this.app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);
+    let alice_secret = alice.computeSecret(bob_publicKey);
+    //this.app.crypto.createDiffieHellmanSecret(alice, bob_publicKey);
+
+    this.app.keychain.updateEncryptionByPublicKey(
+      sender,
+      alice_publicKey.toString("hex"),
+      alice_privatekey.toString("hex"),
+      alice_secret.toString("hex")
+    );
+
+    //
+    //
+    // Create chat group contact
+    this.sendEvent("encrypt-key-exchange-confirm", {
+      members: [sender, this.publicKey],
+    });
+
   }
 
-  saveEncrypt() {
-    this.app.options.encrypt = this.encrypt;
-    this.app.storage.saveOptions();
-  }
-
-  loadEncrypt() {
-    if (this.app.options.encrypt) {
-      this.encrypt = this.app.options.encrypt;
-    } else {
-      this.encrypt = {};
-      this.encrypt.pending = [];
-    }
-
-    return this.encrypt;
-  }
 }
 
 module.exports = Encrypt;

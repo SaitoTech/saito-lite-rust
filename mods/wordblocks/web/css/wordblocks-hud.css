@@ -1,8 +1,49 @@
+.hud {
+  display: block;
+  width: 600px;
+  max-height: initial;
+  height: fit-content;
+  height: -moz-fit-content;
+  /*background: rgb(68, 68, 68);
+  border: 1px solid rgb(136, 136, 136);
+  color: rgb(239, 239, 239);*/
+  border: 2px solid rgb(230,206,180);
+  border-radius: 5px;
+  background: rgb(43,29,14);
+  color: rgb(250,244,239);
+  padding: 0;
+  cursor: default;
+}
+
+.hud-body {
+  min-height: fit-content;
+  height: fit-content;
+  height: -moz-fit-content;
+  overflow-y: visible;
+  padding: 0 16px;
+  width: 611px;
+}
+
+.hud-header {
+  width: initial;
+  margin: 0;
+  background: linear-gradient( 45deg, black, #999);
+}
+
+
+.user_dragged .hud-body .status{
+  align-items: center; 
+}
+
+.hud-status-update-message, .subrack {
+  width: 100%;
+}
+.hud-status-update-message {
+  padding: 5px;
+}
+
 
 .hud-body .status {
   background-color: transparent;
 }
 
-.hud-body {
-  width: 611px;
-}

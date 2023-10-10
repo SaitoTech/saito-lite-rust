@@ -51,7 +51,7 @@ class Stun extends ModTemplate {
       },
     ];
 
-    this.styles = ["/saito/saito.css", "/videocall/style.css"];
+    this.styles = ["/saito/saito.css", "/videocall/style.css"];  
 
     //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
@@ -76,6 +76,9 @@ class Stun extends ModTemplate {
       }
     });
   }
+
+  // Just use inherited initialize, which sets this.publicKey
+  // async initialize(app) 
 
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER !== 1) {
@@ -351,7 +354,7 @@ class Stun extends ModTemplate {
     if (txmsg.data.targetPeerId) {
       recipients.push(txmsg.data.targetPeerId);
     } else {
-      recipients = this.rooms.get(room_code)?.filter((p) => p !== public_key);
+      recipients = this.rooms.get(room_code)?.filter((p) => p && p !== public_key);
     }
 
     let data = {
@@ -371,7 +374,9 @@ class Stun extends ModTemplate {
 
     if (recipients) {
       recipients.forEach((recipient) => {
-        newtx.addTo(recipient);
+        if (recipient) {
+          newtx.addTo(recipient);  
+        }
       });
     }
 
@@ -390,14 +395,16 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    recipients.forEach((recipient) => {
-      let data = {
-        recipient: [recipient],
-        request,
-        data: _data,
-      };
-      this.app.connection.emit("relay-send-message", data);
-    });
+    if (recipients){
+      recipients.forEach((recipient) => {
+        let data = {
+          recipient: [recipient],
+          request,
+          data: _data,
+        };
+        this.app.connection.emit("relay-send-message", data);
+      });
+    }
 
     setTimeout(async () => {
       //This is the only proper onChain TX... ?

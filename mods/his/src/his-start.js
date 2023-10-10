@@ -71,6 +71,15 @@
     });
     this.menu.addMenuOption("game-info", "Info");
     this.menu.addSubMenuOption("game-info", {
+      text: "Units",
+      id: "game-units",
+      class: "game-units",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.units_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-info", {
       text: "Faction Cards",
       id: "game-faction-cards",
       class: "game-faction-cards",
@@ -420,8 +429,7 @@ if (this.game.players.length > 2) {
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        //this.hammer.render(this.app, this);
-        //this.hammer.attachEvents(this.app, this, '.gameboard');
+        //this.hammer.render();
       } else {
 	let his_self = this;
         this.sizer.render();

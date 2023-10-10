@@ -179,21 +179,24 @@ class Chat extends ModTemplate {
   }
 
   async render() {
-    if (this.app.BROWSER == 1) {
-      if (this.app.options.theme) {
-        let theme = this.app.options.theme[this.slug];
-
-        if (theme != null) {
-          this.app.browser.switchTheme(theme);
-        }
-      }
+    if (!this.app.BROWSER) {
+      return;
     }
 
+    if (this.app.options.theme) {
+      let theme = this.app.options.theme[this.slug];
+
+      if (theme != null) {
+        this.app.browser.switchTheme(theme);
+      }
+    }
+    
     if (this.main == null) {
-      this.main = new ChatMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
       await this.header.initialize(this.app);
       this.addComponent(this.header);
+
+      this.main = new ChatMain(this.app, this);
       this.addComponent(this.main);
     }
 
@@ -202,10 +205,14 @@ class Chat extends ModTemplate {
       this.addComponent(this.chat_manager);
     }
     this.chat_manager.container = ".saito-sidebar.left";
-    this.chat_manager.chat_popup_container = ".saito-main";
+    
+    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 500){
+      this.chat_manager.chat_popup_container = ".saito-main";  
+      //Main Chat Application doesn't use popups as such...
+      this.chat_manager.render_popups_to_screen = 0;
+    }
+    
     this.chat_manager.render_manager_to_screen = 1;
-    //Main Chat Application doesn't use popups as such...
-    this.chat_manager.render_popups_to_screen = 0;
 
     await super.render();
   }
@@ -527,9 +534,6 @@ class Chat extends ModTemplate {
         await mycallback({ payload: "success", error: {} });
       }
     } else if (txmsg.request === "chat message broadcast") {
-      //
-      // This whole block is duplicating the functional logic of the Relay module....
-      //
 
       let inner_tx = new Transaction(undefined, txmsg.data);
 
@@ -960,6 +964,7 @@ class Chat extends ModTemplate {
     } else {
       await newtx.sign();
     }
+
     return newtx;
   }
 
@@ -1256,10 +1261,15 @@ class Chat extends ModTemplate {
     if (members == null) {
       return "";
     }
-    //So David + Richard == Richard + David
-    members.sort();
 
-    return this.app.crypto.hash(`${members.join("_")}`);
+    let clean_array = [];
+    for (let member of members){
+      clean_array.push(member);
+    }
+    //So David + Richard == Richard + David
+    clean_array.sort();
+
+    return this.app.crypto.hash(`${clean_array.join("_")}`);
   }
 
   //

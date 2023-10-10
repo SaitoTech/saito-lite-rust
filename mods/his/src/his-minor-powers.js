@@ -19,11 +19,11 @@
   }
 
   returnControllingPower(power) {
-    this.returnAllyOfMinorPower(power);
+    return this.returnAllyOfMinorPower(power);
   }
 
   returnAllyOfMinorPower(power) {
-    if (!this.game.state.minor_activated_powers.includes(power)) { return ""; }
+    if (!this.game.state.minor_activated_powers.includes(power)) { return power; }
     for (let key in this.game.state.activated_powers) {
       if (this.game.state.activated_powers[key].includes(power)) {
 	return key;

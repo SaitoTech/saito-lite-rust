@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.373;
+  version = 5.468;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -62,7 +62,7 @@ export default class Wallet extends SaitoWallet {
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
     this.publicKey = publicKey;
-    console.log("public key = " + publicKey);
+    console.log("public key = " + publicKey, " / private key ? " + (privateKey !== ""));
 
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
@@ -72,6 +72,7 @@ export default class Wallet extends SaitoWallet {
         this.description = "Saito";
         this.balance = "0.0";
         this.publicKey = publicKey;
+        this.destination = publicKey;
       }
 
       async returnBalance() {
@@ -90,6 +91,11 @@ export default class Wallet extends SaitoWallet {
         if (mycallback) {
           mycallback(0);
         }
+      }
+
+      returnHistory(asset_id = "", records = 20, callback = null) {
+        // to be implemented in future
+        // redirecting users to block explorer for now
       }
 
       async sendPayment(amount, to_address, unique_hash = "") {
@@ -156,22 +162,23 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    //
-    // this.publickey = await S.getInstance().getPublicKey();
-    // this.privatekey = await S.getInstance().getPrivateKey();
 
     this.saitoCrypto = new SaitoCrypto(this.app);
 
-    // if (privateKey === "") {
     if (this.app.options.wallet != null) {
       /////////////
       // upgrade //
       /////////////
       if (this.app.options.wallet.version < this.version) {
         if (this.app.BROWSER === 1) {
+          console.log("upgrading wallet version to : " + this.version);
           let tmpprivkey = this.app.options.wallet.privateKey;
           let tmppubkey = this.app.options.wallet.publicKey;
 
+          //
+          // Note: since WASM switch over, we use camelCasing for the keys
+          // These are two checks to make sure outdated wallets are still compatible
+          //
           if (this.app.options.wallet.privatekey) {
             tmpprivkey = this.app.options.wallet.privatekey;
           }
@@ -197,8 +204,6 @@ export default class Wallet extends SaitoWallet {
           // specify before reset to avoid archives reset problem
           await this.setPrivateKey(tmpprivkey);
           await this.setPublicKey(tmppubkey);
-          // this.instance.publickey = tmppubkey;
-          // this.instance.privatekey = tmpprivkey;
 
           // let modules purge stuff
           await this.app.modules.onWalletReset();
@@ -206,13 +211,12 @@ export default class Wallet extends SaitoWallet {
           // reset and save
           await this.app.storage.resetOptions();
           await this.instance.reset();
-          this.app.storage.saveOptions();
+          await this.app.blockchain.resetBlockchain();
+          // this.app.storage.saveOptions();
 
           // re-specify after reset
           await this.setPrivateKey(tmpprivkey);
           await this.setPublicKey(tmppubkey);
-          // this.publickey = tmppubkey;
-          // this.privatekey = tmpprivkey;
 
           // this.app.options.wallet = this.wallet;
           this.app.options.wallet.preferred_crypto = this.preferred_crypto;
@@ -233,14 +237,6 @@ export default class Wallet extends SaitoWallet {
           this.app.options.games = [];
           this.app.options.gameprefs = gameprefs;
 
-          // delete inputs and outputs
-          // this.app.options.wallet.inputs = [];
-          // this.app.options.wallet.outputs = [];
-          // this.app.options.wallet.spends = [];
-          // this.app.options.wallet.pending = [];
-          // this.app.options.wallet.balance = "0.0";
-          // this.app.options.wallet.version = this.version;
-
           // keep mixin
           this.app.options.mixin = mixin;
           this.app.options.crypto = crypto;
@@ -258,17 +254,11 @@ export default class Wallet extends SaitoWallet {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           alert("Saito Upgrade: Wallet Reset");
+          // window.location.reload();
         } else {
-          //
           // purge old slips
-          //
           this.app.options.wallet.version = this.version;
           this.app.options.wallet.slips = [];
-
-          // this.app.options.wallet.inputs = [];
-          // this.app.options.wallet.outputs = [];
-          // this.app.options.wallet.pending = [];
-          // this.app.options.wallet.balance = "0.0";
 
           this.app.storage.saveOptions();
         }
@@ -277,25 +267,25 @@ export default class Wallet extends SaitoWallet {
           this.preferred_crypto = this.app.options.wallet.preferred_crypto;
         }
         if (this.app.options.wallet.slips) {
-          // for (let slip of this.app.options.wallet.slips) {
-          //   console.log("222 : ", slip);
           let slips = this.app.options.wallet.slips.map((json: any) => {
             let slip = new WalletSlip();
             slip.copyFrom(json);
             return slip;
           });
           await this.addSlips(slips);
-          // }
         }
       }
 
+      this.app.connection.on("wallet-updated", async () => {
+        await this.saveWallet();
+      });
+
       // this.instance = Object.assign(this.instance, this.app.options.wallet);
     }
-    // }
     ////////////////
     // new wallet //
     ////////////////
-    if ((await this.getPrivateKey()) === "") {
+    if (!privateKey || !publicKey) {
       await this.resetWallet();
     }
   }
@@ -303,83 +293,10 @@ export default class Wallet extends SaitoWallet {
   constructor(wallet: any) {
     super(wallet);
 
-    // this.inputs_hmap = new Map<string, boolean>();
-    //
-    // this.inputs_hmap_counter = 0;
-    // this.inputs_hmap_counter_limit = 10000;
-    // this.outputs_hmap = new Map<string, boolean>();
-    // this.outputs_hmap_counter = 0;
-    // this.outputs_hmap_counter_limit = 10000;
-    // this.outputs_prune_limit = 100;
-
     this.saitoCrypto = null;
 
     // this.recreate_pending_transactions = 0;
   }
-
-  // returnAdequateInputs(amt: bigint) {
-  //   const utxiset = new Array<Slip>();
-  //   let value = BigInt(0);
-  //   const bigamt = BigInt(amt) * BigInt(100_000_000);
-  //
-  //   //
-  //   // this adds a 1 block buffer so that inputs are valid in the future block included
-  //   //
-  //   const lowest_block: bigint =
-  //     BigInt(this.app.blockchain.blockchain.last_block_id) -
-  //     BigInt(this.app.blockchain.returnGenesisPeriod()) +
-  //     BigInt(2);
-  //
-  //   //
-  //   // check pending txs to avoid slip reuse if necessary
-  //   //
-  //   if (this.wallet.pending.length > 0) {
-  //     for (let i = 0; i < this.wallet.pending.length; i++) {
-  //       let pendingtx = new Transaction(undefined, this.wallet.pending[i]);
-  //       // pendingtx.deserialize_from_web(this.app, this.wallet.pending[i]);
-  //       for (let k = 0; k < pendingtx.from.length; k++) {
-  //         const slipIndex = pendingtx.from[k].returnKey();
-  //         for (let m = 0; m < this.inputs.length; m++) {
-  //           const thisSlipIndex = this.wallet.inputs[m].returnKey();
-  //           // if the input in the wallet is already in a pending tx...
-  //           // then set spends[m] to 1
-  //           if (thisSlipIndex === slipIndex) {
-  //             while (this.wallet.spends.length < m) {
-  //               this.wallet.spends.push(0);
-  //             }
-  //             this.wallet.spends[m] = 1;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   let hasAdequateInputs = false;
-  //   const slipIndexes = [];
-  //   for (let i = 0; i < this.wallet.inputs.length; i++) {
-  //     if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
-  //       const slip = this.wallet.inputs[i];
-  //       if (slip.lc && slip.block_id >= lowest_block) {
-  //         if (this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) != 1) {
-  //           slipIndexes.push(i);
-  //           utxiset.push(slip);
-  //           value += slip.returnAmount();
-  //           if (value >= bigamt) {
-  //             hasAdequateInputs = true;
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   if (hasAdequateInputs) {
-  //     for (let i = 0; i < slipIndexes.length; i++) {
-  //       this.wallet.spends[slipIndexes[i]] = 1;
-  //     }
-  //     return utxiset;
-  //   } else {
-  //     return null;
-  //   }
-  // }
 
   /**
    * Generates a new keypair for the user, resets all stored wallet info, and saves
@@ -391,12 +308,6 @@ export default class Wallet extends SaitoWallet {
     await this.app.storage.resetOptions();
 
     await this.reset();
-    // let privateKey = S.getInstance().generatePrivateKey();
-    // let publicKey = S.getInstance().generatePublicKey(privateKey);
-    // await this.setPrivateKey(privateKey);
-    // await this.setPublicKey(publicKey);
-    // this.instance.privatekey = await S.getInstance().getPrivateKey();
-    // this.instance.publickey = await S.getInstance().getPublicKey();
 
     if (this.app.options.blockchain) {
       await this.app.blockchain.resetBlockchain();
@@ -427,7 +338,6 @@ export default class Wallet extends SaitoWallet {
    * Saves the current wallet state to local storage.
    */
   async saveWallet() {
-    console.log("saving wallet...");
     if (!this.app.options.wallet) {
       this.app.options.wallet = {};
     }
@@ -439,17 +349,6 @@ export default class Wallet extends SaitoWallet {
 
     this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
-    // this.app.options.wallet = this.instance;
-    // for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
-    //   this.app.options.wallets.inputs[i].amount =
-    //     this.app.options.wallets.inputs[i].amount.toString();
-    // }
-    // for (let i = 0; i < this.app.options.wallet.outputs.length; i++) {
-    //   this.app.options.wallets.outputs[i].amount =
-    //     this.app.options.wallets.outputs[i].amount.toString();
-    // }
-    // let wallet = await S.getInstance().getWallet();
-    // await wallet.save();
     await this.save();
     this.app.storage.saveOptions();
   }
@@ -488,10 +387,11 @@ export default class Wallet extends SaitoWallet {
     throw "Module Not Found: " + ticker;
   }
 
-  async setPreferredCrypto(ticker, show_overlay = 0) {
+  setPreferredCrypto(ticker, show_overlay = 0) {
     let can_we_do_this = 0;
     const mods = this.returnInstalledCryptos();
     let cryptomod = null;
+
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
         cryptomod = mods[i];
@@ -503,28 +403,13 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    if (ticker == "SAITO") {
-      can_we_do_this = 1;
-    }
-
     if (can_we_do_this == 1) {
       this.preferred_crypto = ticker;
       console.log("Activating cryptomod: " + cryptomod.ticker);
       cryptomod.activate();
-      await this.saveWallet();
-      console.log("emitting set preferred crypto event");
-      this.app.connection.emit("set_preferred_crypto", ticker);
+      //cryptomod.returnBalance();
+      //await this.saveWallet();
     }
-
-    // if (cryptomod && show_overlay === 1) {
-    //   if (cryptomod.renderModalSelectCrypto() != null) {
-    //     const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
-    //     modal_select_crypto.render(this.app, null, cryptomod);
-    //     modal_select_crypto.attachEvents(this.app, null, cryptomod);
-    //   }
-    // }
-
-    console.log("done in setPreferredCrypto");
 
     return;
   }
@@ -534,7 +419,7 @@ export default class Wallet extends SaitoWallet {
       return this.returnCryptoModuleByTicker(this.preferred_crypto);
     } catch (err) {
       if (err.startsWith("Module Not Found:")) {
-        await this.setPreferredCrypto("SAITO");
+        this.setPreferredCrypto("SAITO");
         return this.returnCryptoModuleByTicker(this.preferred_crypto);
       } else {
         throw err;
@@ -572,20 +457,26 @@ export default class Wallet extends SaitoWallet {
 
   async returnAvailableCryptosAssociativeArray() {
     let cryptos = {};
-    let mods = this.returnActivatedCryptos();
-    for (let i = 0; i < mods.length; i++) {
-      let ticker = mods[i].ticker;
-      let address = mods[i].returnAddress();
-      let balance = await mods[i].returnBalance();
-      if (!cryptos[ticker]) {
-        cryptos[ticker] = { address, balance };
-      }
 
-      if (parseFloat(balance) > 0) {
-        mods[i].save();
+    let ticker;
+    try {
+      let mods = this.returnActivatedCryptos();
+      for (let i = 0; i < mods.length; i++) {
+        ticker = mods[i].ticker;
+        let address = mods[i].returnAddress();
+        let balance = await mods[i].returnBalance();
+        if (!cryptos[ticker]) {
+          cryptos[ticker] = { address, balance };
+        }
+
+        if (parseFloat(balance) > 0) {
+          mods[i].save();
+        }
       }
+    } catch (err) {
+      console.error(err);
+      console.log(ticker);
     }
-
     return cryptos;
   }
 
@@ -610,16 +501,12 @@ export default class Wallet extends SaitoWallet {
   }
 
   savePreferredCryptoBalance(ticker, address, balance) {
-    //
     // if this is my address...
-    //
     let cryptomods = this.returnInstalledCryptos();
     for (let i = 0; i < cryptomods.length; i++) {
       if (cryptomods[i].ticker === ticker) {
         if (cryptomods[i].returnAddress() === address) {
-          //
           // cache the results, so i know if payments are new
-          //
           cryptomods[i].balance = balance;
           this.app.wallet.cryptos[ticker] = { address: address, balance: balance };
         }

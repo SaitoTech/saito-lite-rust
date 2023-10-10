@@ -194,7 +194,7 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnStatsHTML("Spider Stats"));
+        game_mod.overlay.show(game_mod.returnStatsHTML());
       },
     });
 
@@ -677,7 +677,7 @@ class Spider extends OnePlayerGameTemplate {
     let spider_self = activated_card_stack.mod;
     let af = null;
 
-    this.removeEvents();
+    spider_self.removeEvents();
 
     if (!document.getElementById("helper")) {
       spider_self.app.browser.addElementToSelector(
@@ -912,7 +912,7 @@ class Spider extends OnePlayerGameTemplate {
           setTimeout(async () => {
             this.displayBoard();
             $(".animated_elem").remove();
-            this.game.halted = 0;
+            this.halted = 0;
             let temp = await this.revealCard(stackNum);
             if (temp) {
               this.prependMove(`flip\t${stackNum}\t${temp}`);

@@ -72,8 +72,8 @@ class AssaultOverlay {
       let am_i_attacker = false;
       let am_i_defender = false;
 
-      if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.attacker_faction)) { am_i_attacker = true; }
-      if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.defender_faction)) { am_i_defender = true; }
+      if (this.mod.game.player == this.mod.returnPlayerCommandingFaction(res.attacker_faction)) { am_i_attacker = true; }
+      if (this.mod.game.player == this.mod.returnPlayerCommandingFaction(res.defender_faction)) { am_i_defender = true; }
 
       this.pushHudUnderOverlay();
 
@@ -134,7 +134,7 @@ class AssaultOverlay {
                         <div class="siege-roll ${rrclass}">${roll}</div>
                 </div>
               `;
-              this.app.browser.addElementToSelector(html, ".siege-grid .attacker");
+              this.app.browser.addElementToSelector(html, ".siege-grid .defender");
           }
       }
 

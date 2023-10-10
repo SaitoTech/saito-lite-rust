@@ -47,7 +47,7 @@ class Arcade extends ModTemplate {
 
     this.icon_fa = "fas fa-gamepad";
 
-    this.styles = ["/saito/saito.css", "/arcade/style.css"];
+    this.styles = ["/arcade/style.css"];
 
     this.affix_callbacks_to = [];
     this.services = [new PeerService(null, "arcade", "", "saito")];
@@ -72,6 +72,10 @@ class Arcade extends ModTemplate {
   //
   async initialize(app) {
     await super.initialize(app);
+
+    if (this.browser_active){
+      this.styles = ["/saito/saito.css", "/arcade/style.css"];
+    }
 
     //
     // compile list of arcade games
@@ -1909,11 +1913,8 @@ class Arcade extends ModTemplate {
       game_mod.game.player = 0;
     }
 
-    game_mod.game.halted = 1; // Default to paused
-
     await this.observerDownloadNextMoves(game_mod, () => {
       if (watch_live) {
-        game_mod.game.halted = 0;
         game_mod.game.live = watch_live;
         game_mod.saveGame(game_id);
       }

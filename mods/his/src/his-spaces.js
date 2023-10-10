@@ -305,6 +305,55 @@
     return false;
   }
 
+  // either in port or in adjacent sea
+  returnNumberOfSquadronsProtectingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let number_of_squadrons_in_port = 0;
+    let number_of_squadrons_at_sea = 0;
+
+    //
+    // in port
+    //
+    for (let f in space.units) {
+      for (let i = 0; i < space.units[f].length; i++) {
+        if (space.units[f][i].type == "squadron") {
+	  if (space.units[f][i].besieged != 0) { number_of_squadrons_in_port++; }
+	}
+      }
+    }
+
+console.log("SQUADRONS IN SPACE: " + number_of_squadrons_in_port);
+
+    //
+    // adjacent sea
+    //
+console.log("SPACE PORTS: " + JSON.stringify(space.ports));
+
+    for (let p = 0; p < space.ports.length; p++) {
+
+      let sea = this.game.navalspaces[space.ports[p]];
+
+console.log("SEA: " + JSON.stringify(sea));
+
+      for (let f in sea.units) {
+
+	// faction at sea is friendly to port space controller
+	if (this.isSpaceFriendly(space, f)) {
+	  for (let i = 0; i < sea.units[f].length; i++) {
+	    if (sea.units[f][i].type == "squadron") {
+	      number_of_squadrons_at_sea++;
+	    }
+	  }
+	}
+      }
+    }
+
+console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
+
+    return (number_of_squadrons_in_port + number_of_squadrons_at_sea);
+
+  }
   doesSpaceContainProtestantReformer(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units["protestant"].length; i++) {
@@ -464,14 +513,14 @@
     while (ops_remaining > 1) {
       ops_remaining--;
       for (let i = 0; i < viable_navalspaces.length; i++) {
-	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i]].neighbours.length; z++) {
+	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i].key].neighbours.length; z++) {
           if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
 	    let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
 	    let already_included = 0;
 	    for (let z = 0; z < viable_navalspaces.length; z++) {
 	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
 	    }
-	    if (aready_included == 0) {
+	    if (already_included == 0) {
 	      viable_navalspaces.push({ key : ns , ops_remaining : ops_remaining });
 	    }
 	  }
@@ -1419,6 +1468,7 @@ console.log("and friendly");
       seas[key].units['hungary'] = [];
       seas[key].units['scotland'] = [];
       seas[key].units['independent'] = [];
+      seas[key].key = key;
     }
 
     return seas;
@@ -1525,7 +1575,7 @@ console.log("and friendly");
       religion: "catholic",
       neighbours: ["shrewsbury","bristol"],
       language: "english",
-      type: "key"
+      type: "town"
 
     }
     spaces['shrewsbury'] = {
@@ -2000,7 +2050,7 @@ console.log("and friendly");
       religion: "catholic",
       neighbours: ["liege","metz","mainz"],
       language: "german",
-      type: "town"
+      type: "electorate"
     }
     spaces['strasburg'] = {
       top: 1070,
@@ -3013,29 +3063,39 @@ console.log("and friendly");
 
 	let html = '<div class="space_view" id="">';
 
+	let home = obj.home;
 	let religion = obj.religion;
 	let political = obj.political;
 	let language = obj.language;
 	if (!political) { political = obj.home; }
 
+	if (political == "genoa" || political == "venice" || political == "scotland" || political == "hungary" || political == "independent") { his_self.game.state.board[political] = his_self.returnOnBoardUnits(political); } else {
+	  if (home == "genoa" || home == "venice" || home == "scotland" || home == "hungary" || home == "independent") { his_self.game.state.board[home] = his_self.returnOnBoardUnits(home); }
+	}
+
 	html += `
 	  <div class="space_name">${obj.name}</div>
 	  <div class="space_properties">
 	    <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(religion)}')"></div><div class="label">${religion} religion</div></div>
-	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnFactionLeaderImage(political)}')"></div><div class="label">${political} control</div></div>
+	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnControlImage(political)}')"></div><div class="label">${political} control</div></div>
 	    <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(language)}')"></div><div class="label">${language} language</div></div>
+	    <div class="home"><div class="${home}" style="background-image: url('${his_self.returnControlImage(home)}')"></div><div class="label">${home} home</div></div>
 	  </div>
 	  <div class="space_units">
 	`;
 
+        for (let key in obj.units) {
+	  html += his_self.returnArmyTiles(key, obj.key);
+	  html += his_self.returnMercenaryTiles(key, obj.key);
+	  html += his_self.returnPersonagesTiles(key, obj.key);
+	  html += his_self.returnNavalTiles(key, obj.key);
+        }
+
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
-
             for (let i = 0; i < this.units[f].length; i++) {
-
 	      let b = "";
 	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
-
 	      html += `<div class="space_unit">${f} - ${this.units[f][i].type} ${b}</div>`;
 	    }
 	  }

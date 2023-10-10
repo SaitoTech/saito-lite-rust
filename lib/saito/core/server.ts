@@ -146,11 +146,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
     console.log("fetching block from peer: " + url);
     return fetch(url)
       .then((res: any) => {
-        console.log("block data fetched for " + url);
         return res.arrayBuffer();
       })
       .then((buffer: ArrayBuffer) => {
-        console.log("buffer fetched for block : " + buffer.byteLength);
+        // console.log("block data fetched for " + url + " with size : " + buffer.byteLength);
         return new Uint8Array(buffer);
       })
       .catch((err) => {
@@ -190,6 +189,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
   sendBlockSuccess(hash: string, blockId: bigint) {
     this.app.connection.emit("add-block-success", { hash, blockId });
+  }
+
+  sendWalletUpdate() {
+    this.app.connection.emit("wallet-updated");
   }
 
   async saveWallet(): Promise<void> {
@@ -265,7 +268,7 @@ class Server {
       path: "/wsopen",
     });
     webserver.on("upgrade", (request: any, socket: any, head: any) => {
-      console.log("connection upgrade ----> " + request.url);
+      // console.debug("connection upgrade ----> " + request.url);
       const { pathname } = parse(request.url);
       if (pathname === "/wsopen") {
         wss.handleUpgrade(request, socket, head, (websocket: any) => {
@@ -479,6 +482,8 @@ class Server {
     //   }
     // });
 
+
+
     /////////////////
     // lite-blocks //
     /////////////////
@@ -493,7 +498,6 @@ class Server {
           pkey = toBase58(pkey);
         }
       }
-      console.log(`lite block fetch : block  = ${req.params.bhash} key = ${pkey}`);
 
       const bsh = req.params.bhash;
       let keylist = [];
@@ -509,7 +513,6 @@ class Server {
           console.error(error);
         }
       }
-
       if (peer == null) {
         keylist.push(pkey);
       } else {
@@ -537,64 +540,68 @@ class Server {
         res.sendStatus(404);
         return;
       }
-      if (!block.hasKeylistTxs(keylist)) {
-        console.info("### write from server.ts:535");
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-          "Content-Transfer-Encoding": "utf8",
-        });
-        const liteblock = block.generateLiteBlock(keylist);
-        const buffer = Buffer.from(liteblock.serialize());
-        res.end(buffer, "utf8");
-        return;
-      }
+      // if (!block.hasKeylistTxs(keylist)) {
+      //   res.writeHead(200, {
+      //     "Content-Type": "text/plain",
+      //     "Content-Transfer-Encoding": "utf8",
+      //   });
+      //   const liteblock = block.generateLiteBlock(keylist);
+      //   console.log(
+      //     `111 : lite block : ${liteblock.hash} generated with txs : ${liteblock.transactions.length}`
+      //   );
+      //   const buffer = Buffer.from(liteblock.serialize());
+      //   res.end(buffer, "utf8");
+      //   return;
+      // }
 
       let methods = new NodeSharedMethods(this.app);
       // TODO - load from disk to ensure we have txs -- slow.
-      let buffer;
       try {
+        let buffer = new Uint8Array();
         let list = methods.loadBlockFileList();
-        // console.log("file list : ", list);
         for (let filename of list) {
           if (filename.includes(bsh)) {
             buffer = methods.readValue("./data/blocks/" + filename);
             break;
           }
         }
-      } catch (error) {
-        console.error(error);
-      }
-      // const blk = await this.app.storage.loadBlockByHash(bsh);
-
-      if (!buffer) { 
-        res.sendStatus(404);
-      }
-      if (!buffer.byteLength) {
-        res.sendStatus(404);
-      }
-      if (buffer.byteLength == 0) {
-        res.sendStatus(404);
-      } else {
+        if (buffer.byteLength == 0) {
+          res.sendStatus(404);
+          return;
+        }
         let blk = new Block();
         blk.deserialize(buffer);
         const newblk = blk.generateLiteBlock(keylist);
+        // console.log(
+        //   `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
+        // );
+        console.log(
+          `lite block fetch : block  = ${req.params.bhash} key = ${pkey} with txs : ${newblk.transactions.length}`
+        );
 
-        // console.info("### write from line 333 of server.ts.");
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        // const liteblock = block.generateLiteBlock(keylist);
-        console.info("### write from server.ts:576");
-        const buffer2 = Buffer.from(newblk.serialize()); //, "binary").toString("base64");
+        const buffer2 = Buffer.from(newblk.serialize());
         res.end(buffer2);
+        return;
+      } catch (error) {
+        console.log("failed serving lite block : " + bsh);
+        console.error(error);
+      }
+      try {
+        res.sendStatus(400);
+      } catch (error) {
+        console.error(error);
       }
     });
+
 
     expressApp.get("/block/:hash", async (req, res) => {
       try {
         const hash = req.params.hash;
-        console.debug("server giving out block : " + hash);
+        // console.debug("server giving out block : " + hash);
         if (!hash) {
           console.warn("hash not provided");
           return res.sendStatus(400); // Bad request
@@ -609,8 +616,8 @@ class Server {
         // let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
-        console.info("### write from server.ts:600");
-        console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
+        // console.info("### write from server.ts:600");
+        // console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
@@ -624,6 +631,12 @@ class Server {
         if (req.params.keys) {
           keys = req.params.keys.split(";");
         }
+        keys = keys.map((key) => {
+          if (key.length === 66) {
+            return toBase58(key);
+          }
+          return key;
+        });
         console.log("fetching balance snapshot with keys : ", keys);
 
         const snapshot = await S.getInstance().getBalanceSnapshot(keys);

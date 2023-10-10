@@ -7,7 +7,6 @@ class ChatPopup {
     this.app = app;
     this.mod = mod;
 
-    console.log("Rendering chat popup into" + container);
     this.container = container;
     this.input = null; //new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
     this.manually_closed = false;
@@ -22,7 +21,6 @@ class ChatPopup {
 
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
-        console.log("Button remove request");
         this.no_older_messages = true;
         if (document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats")) {
           document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats").remove();
@@ -49,6 +47,7 @@ class ChatPopup {
   }
 
   render() {
+
     //
     // exit if group unset
     //
@@ -130,7 +129,6 @@ class ChatPopup {
       // now set left-position of popup
       //
       if (!this.container && popups_on_page > 0) {
-        console.log("Reposition secondary popup");
         let obj = document.querySelector(popup_qs);
         let x_pos = x_offset - obj.getBoundingClientRect().width - 10;
         x_pos = Math.max(0, x_pos);
@@ -321,15 +319,19 @@ class ChatPopup {
         };
       });
     } catch (err) {
-      console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
+      //console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
     }
   }
 
   restorePopup(chatPopup) {
     chatPopup.classList.remove("minimized");
     chatPopup.classList.add("active");
-    chatPopup.style.width = this.width;
-    chatPopup.style.height = this.height;
+    if (this.width) {
+      chatPopup.style.width = this.width;  
+    }
+    if (this.height) {
+      chatPopup.style.height = this.height;  
+    }
   }
 }
 

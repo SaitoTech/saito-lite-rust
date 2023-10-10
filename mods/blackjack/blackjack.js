@@ -160,7 +160,7 @@ class Blackjack extends GameTableTemplate {
     }
 
     //If reloading, make sure we can refresh the queue operations
-    this.game.halted = 0;
+    this.halted = 0;
   }
 
   /*
@@ -1316,7 +1316,7 @@ class Blackjack extends GameTableTemplate {
       this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, async () => {
         await this.restartQueue();
       });
-      this.game.halted = 1;
+      this.halted = 1;
       return 0;
     } else {
       this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);

@@ -1,20 +1,17 @@
 const { ModuleResolutionKind } = require("typescript");
 
 class SettlersGameloop {
-
   /*
    * Core Game Logic
    * Commands: init, generate_map, winner
    */
   async handleGameLoop() {
-
     let settlers_self = this;
-    
+
     ///////////
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-
       //
       // catch win condition
       //
@@ -25,27 +22,26 @@ class SettlersGameloop {
 
       //console.log("QUEUE: " + this.game.queue);
 
-      
       if (mv[0] == "init") {
         this.game.queue.splice(qe, 1);
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
         this.game.state.lastroll = [0, 0];
         this.game.queue.push("round");
-  //
-  // what does this do and why is it not in an init function?
-  //
-  // initX()
-  //
+        //
+        // what does this do and why is it not in an init function?
+        //
+        // initX()
+        //
         $(".dark").css("background-color", "unset");
         return 1;
       }
 
       if (mv[0] == "round") {
-        for (let i = this.game.players.length; i > 0; i--) { this.game.queue.push(`play\t${i}`); }
+        for (let i = this.game.players.length; i > 0; i--) {
+          this.game.queue.push(`play\t${i}`);
+        }
         return 1;
       }
-
-
 
       if (mv[0] == "generate_map") {
         console.log("Building the map");
@@ -55,24 +51,23 @@ class SettlersGameloop {
         if (this.browser_active && this.game.player == 0) {
           this.displayBoard();
         }
-  //
-  // we should not be running this ahead of READY
-  // because it creates information in generateMap
-  // that disappears, 
-  //
-  this.saveGame(this.game.id);
+        //
+        // we should not be running this ahead of READY
+        // because it creates information in generateMap
+        // that disappears,
+        //
+        this.saveGame(this.game.id);
         return 1;
       }
 
       if (mv[0] == "winner") {
-
         let winner = parseInt(mv[1]);
         this.game.queue = [];
 
         this.updateLog(`${this.game.playerNames[winner]} wins!`);
 
         this.stats_overlay.render();
-        $(".rules-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
+        $(".settlers-stats-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
 
         this.sendGameOverTransaction(this.game.players[winner]);
 
@@ -82,27 +77,32 @@ class SettlersGameloop {
       /* Development Cards */
 
       if (mv[0] == "buy_card") {
-
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
-        this.updateLog(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
+        this.updateLog(`${this.formatPlayer(player)} bought a ${this.card.name} card`);
         this.game.state.canTrade = false;
 
-        //this player will update their devcard count on next turn
+        //the player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards++; //Add card for display
         } else {
-          this.boughtCard = true; //So we display dev cards on next refresh
 
-          let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
+          document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
+
+          let lastcard =
+            this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
           let html = `<span class="tip">${lastcard.card}
                         <div class="tiptext">${this.rules[lastcard.action]}</div>
                       </span>`;
 
-          this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
+          console.log("Current status: " + this.game.state.canPlayCard);
+          if (lastcard.action == 0 && this.game.state.canPlayCard == null){
+            this.game.state.canPlayCard = true;
+          }
 
+          this.updateStatus(`<div class="persistent player-notice"><span>You bought a ${html}</span></div>`);
         }
         return 1;
       }
@@ -118,7 +118,7 @@ class SettlersGameloop {
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
 
         this.updateLog(
-          `${this.game.playerNames[player - 1]} played ${cardname} to gain 1 victory point`
+          `${this.formatPlayer(player)} played ${cardname} to gain 1 victory point`
         );
         return 1;
       }
@@ -130,7 +130,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
-        this.updateLog(`${this.game.playerNames[player - 1]} played ${cardname}`);
+        this.updateLog(`${this.formatPlayer(player)} played ${cardname}`);
         return 1;
       }
 
@@ -140,7 +140,7 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-        this.updateLog(`${this.game.playerNames[player - 1]} played a ${cardname}!`);
+        this.updateLog(`${this.formatPlayer(player)} played a ${cardname}!`);
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
         //Update Army!
         this.game.state.players[player - 1].knights++;
@@ -151,7 +151,9 @@ class SettlersGameloop {
           this.playerPlayBandit();
         } else {
           this.updateStatus(
-            `<div class="player-notice">Waiting for ${this.game.playerNames[player - 1]} to move the ${this.b.name}...</div>`
+            `<div class="player-notice">Waiting for ${
+              this.game.playerNames[player - 1]
+            } to move the ${this.b.name}...</div>`
           );
         }
         return 0;
@@ -170,7 +172,7 @@ class SettlersGameloop {
         }
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
-        this.updateLog(`${this.game.playerNames[player - 1]} played ${cardname}.`);
+        this.updateLog(`${this.formatPlayer(player)} played ${cardname}.`);
         return 1;
       }
 
@@ -193,7 +195,10 @@ class SettlersGameloop {
               }
             }
             if (am_i_a_victim && this.game.player == i + 1) {
-              this.displayModal(cardname, `${this.game.playerNames[player - 1]} stole all your ${resource}`);
+              this.displayModal(
+                cardname,
+                `${this.game.playerNames[player - 1]} stole all your ${resource}`
+              );
             }
           }
         }
@@ -203,7 +208,9 @@ class SettlersGameloop {
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
         this.updateLog(
-          `${this.game.playerNames[player - 1]} played ${cardname} for ${resource}, collecting ${lootCt}.`
+          `${
+            this.formatPlayer(player)
+          } played ${cardname} for ${resource}, collecting ${lootCt}.`
         );
         return 1;
       }
@@ -225,16 +232,11 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
         let resource = mv[2]; //string name: "ore", "brick", etc
 
-        let target =
-          this.game.state.players[player - 1].resources.indexOf(resource);
+        let target = this.game.state.players[player - 1].resources.indexOf(resource);
         if (target >= 0) {
           this.game.state.players[player - 1].resources.splice(target, 1);
         } else {
-          console.log(
-            "Resource not found...",
-            resource,
-            this.game.state.players[player - 1]
-          );
+          console.log("Resource not found...", resource, this.game.state.players[player - 1]);
         }
         this.game.queue.splice(qe, 1);
 
@@ -243,16 +245,16 @@ class SettlersGameloop {
 
       // Build a road, let player pick where to build a road
       if (mv[0] == "player_build_road") {
-
         let player = parseInt(mv[1]);
 
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = false;
         if (this.game.player == player) {
-
           if (mv[2] == 1) {
             console.log("Last Placed City: " + this.game.state.last_city);
-            let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
+            let newRoads = this.hexgrid.edgesFromVertex(
+              this.game.state.last_city.replace("city_", "")
+            );
             for (let road of newRoads) {
               console.log("road: ", road);
               this.addRoadToGameboard(road.substring(2), road[0]);
@@ -261,10 +263,11 @@ class SettlersGameloop {
 
           let canbackup = parseInt(mv[3]) || 0;
           this.playerBuildRoad(mv[1], canbackup);
-
         } else {
           this.updateStatus(
-            `<div class="player-notice">${this.game.playerNames[player - 1]} is building a ${this.r.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} is building a ${
+              this.r.name
+            }...</div>`
           );
         }
         return 0;
@@ -277,7 +280,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.buildRoad(player, slot);
-        this.updateLog(`${this.game.playerNames[player - 1]} builds ${this.r.name}`);
+        this.updateLog(`${this.formatPlayer(player)} builds a ${this.r.name}`);
         if (this.checkLongestRoad(player)) {
           console.log("Longest Road:", this.game.state.longestRoad.path);
         }
@@ -287,7 +290,6 @@ class SettlersGameloop {
       // Build a town
       // Let player make selection, other players wait
       if (mv[0] == "player_build_city") {
-
         let player = parseInt(mv[1]);
 
         this.currently_active_player = player;
@@ -299,7 +301,7 @@ class SettlersGameloop {
         if (this.game.state.welcome == 0 && this.browser_active) {
           try {
             this.welcome_overlay.render();
-          } catch (err) { }
+          } catch (err) {}
           this.game.state.welcome = 1;
         }
 
@@ -307,7 +309,9 @@ class SettlersGameloop {
           this.playerBuildTown(mv[1], parseInt(mv[2]));
         } else {
           this.updateStatus(
-            `<div class="player-notice">${this.game.playerNames[player - 1]} is building a ${this.c1.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} is building a ${
+              this.c1.name
+            }...</div>`
           );
         }
 
@@ -320,18 +324,21 @@ class SettlersGameloop {
         let city = mv[2];
         this.game.queue.splice(qe, 1);
 
-        let logMsg = `${this.game.playerNames[player - 1]} gains `;
+        let logMsg = `${this.formatPlayer(player)} gains `;
         for (let hextile of this.hexgrid.hexesFromVertex(city)) {
           let bounty = this.game.state.hexes[hextile].resource;
-          if (bounty !== this.returnNullResource()) { //DESERT ATTACK
+          if (bounty !== this.returnNullResource()) {
+            //DESERT ATTACK
             logMsg += bounty + ", ";
             this.game.state.players[player - 1].resources.push(bounty);
-            this.game.stats.production[bounty][player - 1]++; //Initial starting stats  
+            this.game.stats.production[bounty][player - 1]++; //Initial starting stats
+            this.animateHarvest(player, bounty, hextile);
           }
         }
+        this.runAnimationQueue();
         logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
         this.updateLog(logMsg);
-        return 1;
+        return 0;
       }
 
       //Allow other players to update board status
@@ -347,7 +354,7 @@ class SettlersGameloop {
           this.game.state.last_city = slot;
         }
 
-        this.updateLog(`${this.game.playerNames[player - 1]} builds ${this.c1.name}`);
+        this.updateLog(`${this.formatPlayer(player)} builds a ${this.c1.name}`);
 
         //Check for edge case where the new city splits a (longest) road
         let adj_road_owners = {};
@@ -371,8 +378,14 @@ class SettlersGameloop {
         if (bisect == 1) {
           for (let owner in adj_road_owners) {
             //If new town borders a road of the player with the longest road, recheck board to find longest road
-            if (adj_road_owners[owner] > 1 && owner != player && owner == this.game.state.longestRoad.player) {
-              this.updateLog(`New ${this.c1.name} bisects longest road, recalculating next longest road`);
+            if (
+              adj_road_owners[owner] > 1 &&
+              owner != player &&
+              owner == this.game.state.longestRoad.player
+            ) {
+              this.updateLog(
+                `New ${this.c1.name} bisects longest road, recalculating next longest road`
+              );
               this.game.state.longestRoad.player = 0; //unset longest road
               //Check the person who had the longest road first so they have priority (in event of ties)
               this.checkLongestRoad(owner);
@@ -385,7 +398,6 @@ class SettlersGameloop {
             }
           }
         }
-
 
         return 1;
       }
@@ -402,7 +414,9 @@ class SettlersGameloop {
           this.playerBuildCity(player, 1);
         } else {
           this.updateStatus(
-            `<div class="player-notice">${this.game.playerNames[player - 1]} is upgrading to a ${this.c2.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} is upgrading to a ${
+              this.c2.name
+            }...</div>`
           );
         }
 
@@ -418,7 +432,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.updateLog(
-          `${this.game.playerNames[player - 1]} upgraded a ${this.c1.name} to a ${this.c2.name}`
+          `${this.formatPlayer(player)} upgraded a ${this.c1.name} to a ${this.c2.name}`
         );
         for (let i = 0; i < this.game.state.cities.length; i++) {
           if (this.game.state.cities[i].slot === slot) {
@@ -452,60 +466,62 @@ class SettlersGameloop {
         this.game.state.ads[offering_player - 1].ask = stuff_in_return;
         this.game.state.ads[offering_player - 1].ad = true;
         this.displayPlayers();
-
       }
 
       if (mv[0] == "clear_advert") {
-
-
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
-console.log("CLEAR ADVERT for player:" + player);
+        console.log("CLEAR ADVERT for player:" + player);
 
         this.game.state.ads[player - 1].offer = null;
         this.game.state.ads[player - 1].ask = null;
         this.displayPlayers();
-
       }
       //
       // Player A has offered another player a trade
       //
       if (mv[0] === "offer") {
-
         let offering_player = parseInt(mv[1]);
         let receiving_player = parseInt(mv[2]);
         let stuff_on_offer = JSON.parse(mv[3]);
         let stuff_in_return = JSON.parse(mv[4]);
         this.game.queue.splice(qe, 1);
 
-  if (stuff_on_offer == null) { return; } 
-  if (stuff_in_return == null) { return; } 
+        if (stuff_on_offer == null) {
+          return;
+        }
+        if (stuff_in_return == null) {
+          return;
+        }
 
-console.log("RECEIVED OFFER: ");
-console.log("RECEIVED OFFER: " + JSON.stringify(stuff_on_offer));
-console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
+        console.log("RECEIVED OFFER: ");
+        console.log("RECEIVED OFFER: " + JSON.stringify(stuff_on_offer));
+        console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         if (this.game.player == receiving_player) {
           this.game.state.ads[offering_player - 1].offer = stuff_on_offer;
           this.game.state.ads[offering_player - 1].ask = stuff_in_return;
           this.game.state.ads[offering_player - 1].ad = false;
-          this.updateLog(`${this.game.playerNames[offering_player - 1]} sent a trade offer to ${this.game.playerNames[receiving_player - 1]}.`);
+          this.updateLog(
+            `${this.game.playerNames[offering_player - 1]} sent a trade offer to ${
+              this.game.playerNames[receiving_player - 1]
+            }.`
+          );
           this.displayPlayers();
         } else {
           this.game.state.ads[offering_player - 1].offer = stuff_on_offer;
           this.game.state.ads[offering_player - 1].ask = stuff_in_return;
           this.game.state.ads[offering_player - 1].ad = true;
-          this.updateLog(`${this.game.playerNames[offering_player - 1]} sent a public trade offer.`);
-  }
+          this.updateLog(
+            `${this.game.playerNames[offering_player - 1]} sent a public trade offer.`
+          );
+        }
 
-  this.displayPlayers();
+        this.displayPlayers();
 
-  return 1;
-
+        return 1;
       }
-
-
 
       /*
         * Because we add and subtract resources through different methods, there is a lag in the UI where it looks like you only gained,
@@ -522,20 +538,23 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         // let offering player know
         if (this.game.player == offering_player) {
           this.updateStatus(
-            `<div class='persistent'>${this.game.playerNames[accepting_player - 1]} accepted your offer</div>`
+            `<div class='persistent player-notice'>${
+              this.game.playerNames[accepting_player - 1]
+            } accepted your offer</div>`
           );
         }
         if (this.game.player == accepting_player) {
           this.updateStatus(
-            `<div class='persistent'>You completed a trade with ${this.game.playerNames[offering_player - 1]}.</div>`
+            `<div class='persistent player-notice'>You completed a trade with ${
+              this.game.playerNames[offering_player - 1]
+            }.</div>`
           );
         }
-        if (
-          this.game.player !== accepting_player &&
-          this.game.player !== offering_player
-        ) {
+        if (this.game.player !== accepting_player && this.game.player !== offering_player) {
           this.updateStatus(
-            `<div class="persistent">${this.game.playerNames[offering_player - 1]} and ${this.game.playerNames[accepting_player - 1]} completed a trade.</div>`
+            `<div class="persistent player-notice">${this.game.playerNames[offering_player - 1]} and ${
+              this.game.playerNames[accepting_player - 1]
+            } completed a trade.</div>`
           );
         }
 
@@ -544,29 +563,26 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           //i is resource name, offer[i]
           for (let j = 0; j < tradeOut[i]; j++) {
             //Ignores zeros
-            this.game.queue.push(
-              "spend_resource\t" + offering_player + "\t" + i
-            ); //Just easier to do this in the queue
+            this.game.queue.push("spend_resource\t" + offering_player + "\t" + i); //Just easier to do this in the queue
             this.game.state.players[accepting_player - 1].resources.push(i);
           }
         }
         for (let i in tradeIn) {
           //i is resource name, offer[i]
           for (let j = 0; j < tradeIn[i]; j++) {
-            this.game.queue.push(
-              "spend_resource\t" + accepting_player + "\t" + i
-            ); //Just easier to do this in the queue
+            this.game.queue.push("spend_resource\t" + accepting_player + "\t" + i); //Just easier to do this in the queue
             this.game.state.players[offering_player - 1].resources.push(i);
           }
         }
         this.updateLog(
-          `${this.game.playerNames[offering_player - 1]} and ${this.game.playerNames[accepting_player - 1]} completed a trade.`
+          `${this.game.playerNames[offering_player - 1]} and ${
+            this.game.playerNames[accepting_player - 1]
+          } completed a trade.`
         );
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
-  return 1;
-
+        return 1;
       }
 
       if (mv[0] === "reject_offer") {
@@ -576,23 +592,24 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         this.game.confirms_needed[refusing_player - 1] = 0; //Manually resolve
         if (this.game.player == offering_player) {
-          this.updateStatus(
-            "<div class='persistent'>Your offer has been rejected</div>"
-          );
+          this.updateStatus("<div class='persistent player-notice'>Your offer has been rejected</div>");
         }
         if (this.game.player == refusing_player) {
           this.updateStatus(
-            `<div class='persistent'>You reject ${this.game.playerNames[offering_player - 1]}'s trade.</div>`
+            `<div class='persistent player-notice'>You reject ${
+              this.game.playerNames[offering_player - 1]
+            }'s trade.</div>`
           );
         }
         this.updateLog(
-          `${this.game.playerNames[refusing_player - 1]} turned down a trade offer from ${this.game.playerNames[offering_player - 1]}.`
+          `${this.game.playerNames[refusing_player - 1]} turned down a trade offer from ${
+            this.game.playerNames[offering_player - 1]
+          }.`
         );
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
-  return 1;
-
+        return 1;
       }
 
       /*
@@ -608,24 +625,22 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         // let offering player know
         if (this.game.player == player) {
-          this.updateStatus(
-            "<div class='persistent'>Your trade is completed</div>"
-          );
+          this.updateStatus("<div class='persistent player-notice'>Your trade is completed</div>");
         } else {
           this.updateStatus(
-            `<div class='persistent'>${this.game.playerNames[player - 1]} traded with the bank</div>`
+            `<div class='persistent player-notice'>${
+              this.game.playerNames[player - 1]
+            } traded with the bank</div>`
           );
         }
         for (let i = 0; i < outCount; i++) {
-          this.game.queue.push(
-            "spend_resource\t" + player + "\t" + outResource
-          );
+          this.game.queue.push("spend_resource\t" + player + "\t" + outResource);
         }
         for (let j = 0; j < inCount; j++) {
           //Should always be 1
           this.game.state.players[player - 1].resources.push(inResource);
         }
-        this.updateLog(`${this.game.playerNames[player - 1]} traded with the bank.`);
+        this.updateLog(`${this.formatPlayer(player)} traded ${outCount}x${this.formatResource(outResource)}<span> with the bank for </span>${this.formatResource(inResource)}.`);
 
         return 1;
       }
@@ -642,26 +657,25 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         this.game.state.playerTurn = player;
 
         if (this.game.player == player) {
-
           /*
           We put a lag in passing the length of the hand to the state.devcards
           so that we can know that the last card in the hand is "new" and unable to be played until their next turn 
           */
-          this.game.state.players[player - 1].devcards =
-            this.game.deck[0].hand.length;
+          this.game.state.players[player - 1].devcards = this.game.deck[0].hand.length;
 
           //Messaging to User
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
           let controlshtml = `<ul>`;
+          
+          //if (settlers_self.canPlayerPlayCard(true)) {
+          //  controlshtml += `<li class="option" id="playcard">play card</li>`;
+          //}
+          
           controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
-          if (settlers_self.canPlayerPlayCard()) {
-            controlshtml += `<li class="option" id="playcard">play card</li>`;
-          }
           controlshtml += `</ul>`;
 
-          console.log("running UPDATE STATUS");
           this.updateStatus(statushtml);
-          this.updateControls(controlshtml)
+          this.updateControls(controlshtml);
 
           //
           // Flash to be like "hey it's your move"
@@ -669,24 +683,28 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           if (this.is_sleeping) {
             this.currently_active_player = player;
             $(".flashme").addClass("flash");
-            this.is_sleeping = false; //If player plays a knight first, we don't need to flash again when we bounce back to this state  
+            this.is_sleeping = false; //If player plays a knight first, we don't need to flash again when we bounce back to this state
           }
 
+          // **********************************************************
+          // > To DO rewrite this if we like the new dev card interface
+          // **********************************************************
+          
           //Or, choose menu option
           $(".option").off();
           $(".option").on("click", function () {
-
             $(this).addClass("disabled");
 
             let choice = $(this).attr("id");
             if (choice === "rolldice") {
+              settlers_self.updateStatus('rolling...');
+              settlers_self.updateControls('');
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
             }
-            if (choice === "playcard") {
-                settlers_self.dev_card.render();
- //             settlers_self.playerPlayCard();
-            }
+            //if (choice === "playcard") {
+            //  settlers_self.dev_card.render();
+            // }
           });
         } else {
           this.updateStatus(
@@ -704,19 +722,19 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe - 1, 2);
 
-
         // everyone rolls the dice
         let d1 = this.rollDice(6);
         let d2 = this.rollDice(6);
         this.game.state.lastroll = [d1, d2];
+        this.game.state.lastroll.sort();
         let roll = d1 + d2;
-        this.updateLog(`${this.game.playerNames[player - 1]} rolled: ${roll}`);
+        this.updateLog(`${this.formatPlayer(player)} rolled: ${this.returnDiceImage(this.game.state.lastroll[1])}${this.returnDiceImage(this.game.state.lastroll[0])}`);
         this.game.stats.dice[roll]++; //Keep count of the rolls
 
         // board animation
         this.animateDiceRoll(roll);
 
-        this.updateControls("");
+        //this.updateControls("");
 
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
@@ -724,6 +742,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         //Next Step depends on Dice outcome
         if (roll == 7) {
+          this.game.state.bandit = true;
           this.game.queue.push("roll_bandit\t" + player);
 
           //Manage discarding before bandit comes into play
@@ -736,35 +755,28 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
           if (playersToDiscard.length > 0) {
             this.resetConfirmsNeeded(playersToDiscard);
-            this.game.queue.push(
-              "NOTIFY\tAll players have finished discarding"
-            );
-            this.game.queue.push(
-              "discard\t" + JSON.stringify(playersToDiscard)
-            ); //One queue move all the players
+            this.game.queue.push("NOTIFY\tAll players have finished discarding");
+            this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
+          return 1;
+
         } else {
-          this.game.queue.push(`collect_harvest\t${roll}`);
+          //
+          // Will return 0 if there is an animation to display
+          //
+          return this.collectHarvest(roll, player);
         }
-        return 1;
       }
 
       if (mv[0] == "enable_trading") {
         this.game.queue.splice(qe, 1);
+        this.game.state.bandit = false;
         this.game.state.canTrade = true; //Toggles false when the player builds or buys
+        this.game.state.hasRolled = true;
         return 1;
       }
 
-      //
-      // gain resources if dice are !7
-      //
-      if (mv[0] == "collect_harvest") {
-        let roll = parseInt(mv[1]);
-        this.game.queue.splice(qe, 1);
-        this.collectHarvest(roll);
-        return 1;
-      }
-
+  
       /*
       Each player checks if they are on the toGo list, and if so must discard cards
       Otherwise, they just hang out...
@@ -777,14 +789,17 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         let confirmsNeeded = 0;
         let amIPlaying = false;
 
-  let idx = 0;
+        let idx = 0;
         for (let i of playersToGo) {
-    idx++;
+          i = parseInt(i);
+          idx++;
           if (this.game.confirms_needed[i - 1] == 1) {
-            if (idx > 1) { discardString += ", "; }
+            if (idx > 1) {
+              discardString += ", ";
+            }
             discardString += `${this.game.playerNames[i - 1]}`;
             confirmsNeeded++;
-            if (this.game.player == parseInt(i)) {
+            if (this.game.player == i) {
               this.addMove("RESOLVE\t" + this.publicKey);
               this.discard.discardString = discardString;
               this.discard.render();
@@ -793,15 +808,13 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           }
         }
 
-        this.game.queue.push(
-          `NOTIFY\t${discardString} must discard half their hand.`
-        );
+        this.game.queue.push(`NOTIFY\t${discardString} must discard half their hand.`);
 
-        // if (!amIPlaying) {
-        //   this.updateStatus(
-        //     `waiting for ${discardString} to discard`
-        //   );
-        // }
+        if (!amIPlaying) {
+         this.updateStatus(
+           `waiting for ${discardString} to discard`
+         );
+        }
 
         if (confirmsNeeded == 0) {
           this.game.queue.splice(qe, 1);
@@ -820,7 +833,9 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           this.playerPlayBandit();
         } else {
           this.updateStatus(
-            `<div class="player-notice">${this.game.playerNames[player - 1]} moving the ${this.b.name}...</div>`
+            `<div class="player-notice">${this.game.playerNames[player - 1]} moving the ${
+              this.b.name
+            }...</div>`
           );
         }
         return 0;
@@ -843,18 +858,18 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           this.game.state.hexes[h].robber = h === hexId;
         }
         let hexName =
-          this.game.state.hexes[hexId].value +
-          "->" +
-          this.game.state.hexes[hexId].resource;
+          this.game.state.hexes[hexId].value + "->" + this.game.state.hexes[hexId].resource;
         this.updateLog(
-          `${this.game.playerNames[player - 1]} moved the ${this.b.name} to ${hexName}`
+          `${this.formatPlayer(player)} moved the ${this.b.name} to ${hexName}`
         );
 
         if (this.game.player === player) {
           this.playerMoveBandit(player, hexId);
         } else {
           this.updateStatus(
-            `<div class="player-notice">Waiting for ${this.game.playerNames[player - 1]} to choose the ${this.b.name}'s victim...</div>`
+            `<div class="player-notice">Waiting for ${
+              this.game.playerNames[player - 1]
+            } to choose the ${this.b.name}'s victim...</div>`
           );
         }
 
@@ -868,27 +883,37 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         let loot = mv[3];
         this.game.queue.splice(qe, 1);
 
-        if (victim > 0 && loot != "nothing") { //victim 0 means nobody
+        if (victim > 0 && loot != "nothing") {
+          //victim 0 means nobody
           this.game.queue.push("spend_resource\t" + victim + "\t" + loot);
           this.game.state.players[thief - 1].resources.push(loot);
         }
 
+        let x = (loot == "nothing") ? "nothing" : this.formatResource(loot);
+
         if (this.game.player === thief) {
-          let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
-          this.updateStatus(`<div class="persistent"><span>You stole ${(loot == "nothing") ? "nothing</span>" : "</span>" + x }</div>`);
+          this.updateStatus(
+            `<div class="persistent player-notice">You stole ${x}</div>`
+          );
         }
         if (this.game.player === victim) {
-          let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
-          if (loot == "nothing"){
-            this.updateStatus(`<div class="persistent"><span>${this.game.playerNames[thief - 1]} stole nothing from you</span></div>`);
-          }else{
-            this.updateStatus(`<div class="persistent"><span>${this.game.playerNames[thief - 1]} stole your</span>${x}</div>`);
+          if (loot == "nothing") {
+            this.updateStatus(
+              `<div class="persistent player-notice"><span>${
+                this.game.playerNames[thief - 1]
+              } stole nothing from you</span></div>`
+            );
+          } else {
+            this.updateStatus(
+              `<div class="persistent player-notice"><span>${
+                this.game.playerNames[thief - 1]
+              } stole your</span>${this.formatResource(loot)}</div>`
+            );
           }
-          
         }
 
-        let victim_name = (victim > 0) ? `${this.game.playerNames[victim - 1]}` : "nobody";
-        this.updateLog(`${this.game.playerNames[thief - 1]} stole ${loot} from ${victim_name}`);
+        let victim_name = victim > 0 ? `${this.formatPlayer(victim)}` : "nobody";
+        this.updateLog(`${this.formatPlayer(thief)} stole ${x}<span> from </span>${victim_name}`);
         return 1;
       }
 
@@ -903,14 +928,20 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         } else {
           this.updateStatus(
             this.getLastNotice() +
-            `<div class="player-notice">${this.game.playerNames[player - 1]} is taking their turn.</div>`
+              `<div class="player-notice">${
+                this.game.playerNames[player - 1]
+              } is taking their turn.</div>`
           );
         }
         return 0;
       }
 
       if (mv[0] == "end_turn") {
-        this.game.state.canPlayCard = this.game.deck[0].hand.length > 0;
+        this.game.state.canPlayCard = null;
+        if (this.game.deck[0].hand.length > 0) {
+          this.game.state.canPlayCard = true;
+        }
+        this.game.state.hasRolled = false;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
         this.is_sleeping = true;
@@ -922,8 +953,6 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
     }
     return 1;
   }
-
-
 }
 
 module.exports = SettlersGameloop;

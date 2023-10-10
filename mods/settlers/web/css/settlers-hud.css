@@ -1,8 +1,10 @@
 .hud {
   width: 60rem;
-  max-width: 70rem;
+  max-width: 98vw;
   z-index: 50 !important;
   padding-top: 3px !important;
+  margin-bottom: 2rem;
+  height: auto;
 }
 
 /* Wrapper for settlers status messages? */
@@ -12,7 +14,7 @@
 }
 
 .hud-body {
-  min-height: 11rem;
+  min-height: 17rem;
   width: calc(100% - 5rem);
   display: flex;
   flex-direction: column;
@@ -28,7 +30,6 @@
   box-shadow: none;
   padding: 0;
   width: 100%;
-  margin: 0 0 1rem;
   min-height: 4.5rem;
 }
 
@@ -39,9 +40,12 @@
   scrollbar-width: none;
   overflow-y: auto;
   overflow-x: auto;
-  min-height: 4.5rem;
+  /*min-height: 4.5rem;*/
 }
 
+.hud-body .controls ul {
+  min-height: 4.5rem;
+}
 
 .hud-body .status ul li, .hud-body .controls ul li, .options {
   background-color: transparent;
@@ -66,32 +70,25 @@
 }
 
 .hud-body .mobile {
-  display: inline-block;
+  display: flex;
   position: relative;
   width: 100%;
-  top: 0rem;
+  top: 6px;
   z-index: 5;
+  justify-content: space-between;
 }
 
 .hud-body .mobile > div {
-  position: absolute;
-  top: 6px;
   font-size: 1.7rem;
   cursor: pointer;
   border-bottom: 1px dashed #0008;
+  width: fit-content;
 }
 
 .hud-body .mobile > div:hover {
   font-weight: bold;
 }
 
-.hud-body .mobile div.score {
-  right: 0rem;
-}
-
-.hud-body .mobile div.trade {
-  left: 0rem;
-}
 
 .mobile-trading-container {
   z-index: 0;
@@ -100,16 +97,25 @@
 
 /* ul to buttons in settlers hud */
 
-.saitoa .status ul, .saitoa .controls ul  {
+.hud .status ul, .hud .controls ul  {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  gap: 2rem;
+  justify-content: space-evenly;
+  gap: 1rem;
+  width: 100%;
 }
 
 
 
-@media only screen and (max-width: 700px) and (orientation: portrait) {
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .saitoa {
+    padding: 0.5rem;
+  }
+
+  .hud-body{
+    width: calc(100% - 2rem);
+  }
+
   body .player-box {
     height: auto !important;
     width: 100% !important;
@@ -121,23 +127,7 @@
     margin-right: 5vw;
     margin-top: 5vw;
   }
-  .scoreboard {
-    display: none;
-    position: absolute;
-    width: 100% !important;
-    height: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    margin-top: auto !important;
-    margin-bottom: auto !important;
-    left: 0 !important;
-    top: 0 !important;
-    padding-top: 10vh !important;
-    background-color: black !important;
-    padding-left: 5vw !important;
-    padding-right: 5vw !important;
-    z-index: 5;
-  }
+
   .mobile-trading-container {
     display: none;
     position: absolute;
@@ -151,5 +141,35 @@
     overflow-y: scroll;
     max-height: 120vh;
     padding-bottom: 40vh;
+  }
+
+  .hud-body .controls ul {
+    gap: 0.5rem;
+  }
+
+  .hud-body .controls ul li, .options {
+    min-width: 10rem;
+    border-width: 2px;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .hud-body .mobile {
+    height: 3rem;
+  }
+}
+
+@media only screen and (max-height: 600px) and (orientation: landscape) {
+  .hud{
+    max-width: 50vw;
+    max-height: 50vh;
+    margin-bottom: 1rem;
+  }
+
+  .hud.hud-long {
+    left: unset;
+    transform: unset;
+    right: 2rem;
   }
 }
