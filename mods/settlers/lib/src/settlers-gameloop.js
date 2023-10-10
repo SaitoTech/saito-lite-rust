@@ -80,7 +80,7 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
-        this.updateLog(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
+        this.updateLog(`${this.formatPlayer(player)} bought a ${this.card.name} card`);
         this.game.state.canTrade = false;
 
         //the player will update their devcard count on next turn
@@ -118,7 +118,7 @@ class SettlersGameloop {
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
 
         this.updateLog(
-          `${this.game.playerNames[player - 1]} played ${cardname} to gain 1 victory point`
+          `${this.formatPlayer(player)} played ${cardname} to gain 1 victory point`
         );
         return 1;
       }
@@ -130,7 +130,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
-        this.updateLog(`${this.game.playerNames[player - 1]} played ${cardname}`);
+        this.updateLog(`${this.formatPlayer(player)} played ${cardname}`);
         return 1;
       }
 
@@ -140,7 +140,7 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-        this.updateLog(`${this.game.playerNames[player - 1]} played a ${cardname}!`);
+        this.updateLog(`${this.formatPlayer(player)} played a ${cardname}!`);
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
         //Update Army!
         this.game.state.players[player - 1].knights++;
@@ -172,7 +172,7 @@ class SettlersGameloop {
         }
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
-        this.updateLog(`${this.game.playerNames[player - 1]} played ${cardname}.`);
+        this.updateLog(`${this.formatPlayer(player)} played ${cardname}.`);
         return 1;
       }
 
@@ -209,7 +209,7 @@ class SettlersGameloop {
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
         this.updateLog(
           `${
-            this.game.playerNames[player - 1]
+            this.formatPlayer(player)
           } played ${cardname} for ${resource}, collecting ${lootCt}.`
         );
         return 1;
@@ -280,7 +280,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.buildRoad(player, slot);
-        this.updateLog(`${this.game.playerNames[player - 1]} builds ${this.r.name}`);
+        this.updateLog(`${this.formatPlayer(player)} builds a ${this.r.name}`);
         if (this.checkLongestRoad(player)) {
           console.log("Longest Road:", this.game.state.longestRoad.path);
         }
@@ -324,7 +324,7 @@ class SettlersGameloop {
         let city = mv[2];
         this.game.queue.splice(qe, 1);
 
-        let logMsg = `${this.game.playerNames[player - 1]} gains `;
+        let logMsg = `${this.formatPlayer(player)} gains `;
         for (let hextile of this.hexgrid.hexesFromVertex(city)) {
           let bounty = this.game.state.hexes[hextile].resource;
           if (bounty !== this.returnNullResource()) {
@@ -354,7 +354,7 @@ class SettlersGameloop {
           this.game.state.last_city = slot;
         }
 
-        this.updateLog(`${this.game.playerNames[player - 1]} builds ${this.c1.name}`);
+        this.updateLog(`${this.formatPlayer(player)} builds a ${this.c1.name}`);
 
         //Check for edge case where the new city splits a (longest) road
         let adj_road_owners = {};
@@ -432,7 +432,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.updateLog(
-          `${this.game.playerNames[player - 1]} upgraded a ${this.c1.name} to a ${this.c2.name}`
+          `${this.formatPlayer(player)} upgraded a ${this.c1.name} to a ${this.c2.name}`
         );
         for (let i = 0; i < this.game.state.cities.length; i++) {
           if (this.game.state.cities[i].slot === slot) {
@@ -640,7 +640,7 @@ class SettlersGameloop {
           //Should always be 1
           this.game.state.players[player - 1].resources.push(inResource);
         }
-        this.updateLog(`${this.game.playerNames[player - 1]} traded with the bank.`);
+        this.updateLog(`${this.formatPlayer(player)} traded ${outCount}x${this.formatResource(outResource)}<span> with the bank for </span>${this.formatResource(inResource)}.`);
 
         return 1;
       }
@@ -726,8 +726,9 @@ class SettlersGameloop {
         let d1 = this.rollDice(6);
         let d2 = this.rollDice(6);
         this.game.state.lastroll = [d1, d2];
+        this.game.state.lastroll.sort();
         let roll = d1 + d2;
-        this.updateLog(`${this.game.playerNames[player - 1]} rolled: ${roll}`);
+        this.updateLog(`${this.formatPlayer(player)} rolled: ${this.returnDiceImage(this.game.state.lastroll[1])}${this.returnDiceImage(this.game.state.lastroll[0])}`);
         this.game.stats.dice[roll]++; //Keep count of the rolls
 
         // board animation
@@ -859,7 +860,7 @@ class SettlersGameloop {
         let hexName =
           this.game.state.hexes[hexId].value + "->" + this.game.state.hexes[hexId].resource;
         this.updateLog(
-          `${this.game.playerNames[player - 1]} moved the ${this.b.name} to ${hexName}`
+          `${this.formatPlayer(player)} moved the ${this.b.name} to ${hexName}`
         );
 
         if (this.game.player === player) {
@@ -888,16 +889,14 @@ class SettlersGameloop {
           this.game.state.players[thief - 1].resources.push(loot);
         }
 
+        let x = (loot == "nothing") ? "nothing" : this.formatResource(loot);
+
         if (this.game.player === thief) {
-          let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
           this.updateStatus(
-            `<div class="persistent player-notice"><span>You stole ${
-              loot == "nothing" ? "nothing</span>" : "</span>" + x
-            }</div>`
+            `<div class="persistent player-notice">You stole ${x}</div>`
           );
         }
         if (this.game.player === victim) {
-          let x = `<div class="card tiny"><img src="${this.returnCardImage(loot)}" /></div>`;
           if (loot == "nothing") {
             this.updateStatus(
               `<div class="persistent player-notice"><span>${
@@ -908,13 +907,13 @@ class SettlersGameloop {
             this.updateStatus(
               `<div class="persistent player-notice"><span>${
                 this.game.playerNames[thief - 1]
-              } stole your</span>${x}</div>`
+              } stole your</span>${this.formatResource(loot)}</div>`
             );
           }
         }
 
-        let victim_name = victim > 0 ? `${this.game.playerNames[victim - 1]}` : "nobody";
-        this.updateLog(`${this.game.playerNames[thief - 1]} stole ${loot} from ${victim_name}`);
+        let victim_name = victim > 0 ? `${this.formatPlayer(victim)}` : "nobody";
+        this.updateLog(`${this.formatPlayer(thief)} stole ${x}<span> from </span>${victim_name}`);
         return 1;
       }
 

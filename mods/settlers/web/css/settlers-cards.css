@@ -17,6 +17,15 @@
   transform: rotate(5deg);
 }
 
+.log .card.tiny {
+  width: 2.5rem;
+  height: calc(2.5rem * 1.4);
+  margin: 0.25rem;
+  transform: rotate(5deg);
+  text-indent: 0;
+  padding-left: unset;
+}
+
   
 /*
   unsure if still used

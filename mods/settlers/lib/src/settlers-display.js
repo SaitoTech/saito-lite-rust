@@ -187,6 +187,14 @@ class SettlersDisplay {
     }
   }
 
+  formatPlayer(playerNumber){
+    return `<span class="p${this.game.colors[playerNumber - 1]}-lite display-name">${this.game.playerNames[playerNumber - 1]}</span>`;
+  }
+
+  formatResource(resource) {
+    return `<div class="card tiny"><img src="${this.returnCardImage(resource)}" /></div>`;
+  }
+
   displayPlayers() {
     try {
       this.displayScore();
@@ -415,7 +423,7 @@ class SettlersDisplay {
   Briefly animate the longest road and update log if there is a change in ownership
   */
   highlightRoad(player, road, msg) {
-    this.updateLog(`${this.game.playerNames[player - 1]} ${msg}`);
+    this.updateLog(`${this.formatPlayer(player)} ${msg}`);
     for (let segment of road) {
       let selector = "#road_" + segment;
       let div = document.querySelector(selector);
