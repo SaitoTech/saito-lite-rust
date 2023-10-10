@@ -323,7 +323,7 @@ class Registry extends ModTemplate {
             identifiers
           );
           for (let key in identifiers) {
-            if (key == registry_self.publicKey) {
+            if (key == myKey.publicKey) {
               if (identifiers[key] !== myKey.identifier) {
                 console.log("REGISTRY: Identifier mismatch...");
                 console.log(
@@ -338,13 +338,18 @@ class Registry extends ModTemplate {
             }
           }
 
-          let identifier = myKey.identifier.split("@");
-          if (identifier.length !== 2) {
-            console.log("REGISTRY: Invalid identifier", myKey.identifier);
-            return;
+          //
+          //Make sure that we actually checked the right source
+          //
+          if (peer.publicKey == registry_publickey.registry_publickey){
+            let identifier = myKey.identifier.split("@");
+            if (identifier.length !== 2) {
+              console.log("REGISTRY: Invalid identifier", myKey.identifier);
+              return;
+            }
+            registry_self.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
+            console.log("REGISTRY: Attempting to register our name again");
           }
-          registry_self.tryRegisterIdentifier(identifier[0], "@" + identifier[1]);
-          console.log("REGISTRY: Attempting to register our name again");
         });
       } else if (myKey.has_registered_username) {
         console.log("REGISTRY: unset registering... status");
