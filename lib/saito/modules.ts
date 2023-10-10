@@ -348,7 +348,7 @@ class Mods {
 
   onNewBlock(blk, i_am_the_longest_chain) {
     blk.transactions.forEach(transaction => {
-      console.log(transaction.toJson(), "new block")
+      console.log(transaction.toJson(), transaction.returnMessage(), "new transaction")
     })
     console.log("#################");
     console.log("### New Block ### " + blk.id);
