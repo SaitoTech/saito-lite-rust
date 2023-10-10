@@ -51,7 +51,7 @@ class Stun extends ModTemplate {
       },
     ];
 
-    this.styles = ["/saito/saito.css", "/videocall/style.css"];  
+    this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
     //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
@@ -78,7 +78,7 @@ class Stun extends ModTemplate {
   }
 
   // Just use inherited initialize, which sets this.publicKey
-  // async initialize(app) 
+  // async initialize(app)
 
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER !== 1) {
@@ -256,50 +256,57 @@ class Stun extends ModTemplate {
     }
     let txmsg = tx.returnMessage();
 
-    if (app.BROWSER === 0) {
+    if (txmsg.request === "stun-message-broadcast") {
+      let inner_tx = new Transaction(undefined, txmsg.data);
+      let message = inner_tx.returnMessage();
       try {
-        //Let's not kill the server with bad data
-        if (txmsg.request === "stun-create-room-transaction") {
-          this.receiveCreateRoomTransaction(app, tx);
+        if (message.request === "stun-create-room-transaction") {
+          this.receiveCreateRoomTransaction(app, inner_tx);
         }
-        if (txmsg.request === "stun-send-message-to-server") {
-          this.receiveStunMessageToServerTransaction(app, tx, peer);
+        if (message.request === "stun-send-message-to-server") {
+          this.receiveStunMessageToServerTransaction(app, inner_tx, peer);
+        }
+
+        if (message.request === "stun-send-message-to-peers") {
+          console.log("HPT: stun-send-message-to-peers");
+          this.receiveStunMessageToPeersTransaction(app, inner_tx);
+        }
+        if (message.request === "stun-send-game-call-message") {
+          console.log("HPT: stun-send-game-call-message");
+          this.receiveGameCallMessageToPeers(app, inner_tx);
         }
       } catch (err) {
         console.error("Stun Error:", err);
       }
     }
 
-    if (app.BROWSER === 1) {
-      if (txmsg.request === "stun-send-message-to-peers") {
-        console.log("HPT: stun-send-message-to-peers");
-        this.receiveStunMessageToPeersTransaction(app, tx);
-      }
-      if (txmsg.request === "stun-send-game-call-message") {
-        console.log("HPT: stun-send-game-call-message");
-        this.receiveGameCallMessageToPeers(app, tx);
-      }
-    }
     super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async sendCreateRoomTransaction() {
     let room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
 
-    // offchain data
     let _data = {
       public_key: this.publicKey,
       room_code,
     };
 
+    // onchain
     //Are we sure this will always be the stun server?
     // Shouldn't this be set by onPeerServiceUp
     let server = (await this.app.network.getPeers())[0];
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    newtx.addTo(server.publicKey);
+    newtx.msg.module = "Stun";
+    newtx.msg.request = "stun-create-room-transaction";
+    newtx.msg.data = _data;
+    await newtx.sign();
 
     let data = {
       recipient: server.publicKey,
-      request: "stun-create-room-transaction",
-      data: _data,
+      request: "stun-message-broadcast",
+      data: newtx.toJson(),
     };
 
     // server.sendRequestAsTransaction("stun-create-room-transaction", data);
@@ -319,13 +326,19 @@ class Stun extends ModTemplate {
     let request = "stun-send-message-to-server";
     let server = (await this.app.network.getPeers())[0];
 
-    // console.log("server", this.server);
-    // offchain data
+    // onchain
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    newtx.addTo(server.publicKey);
+    newtx.msg.module = "Stun";
+    newtx.msg.request = request;
+    newtx.msg.data = _data;
+    await newtx.sign();
 
     let data = {
       recipient: server.publicKey,
-      request,
-      data: _data,
+      request: "stun-message-broadcast",
+      data: newtx.toJson(),
     };
 
     this.app.connection.emit("relay-send-message", data);
@@ -375,7 +388,7 @@ class Stun extends ModTemplate {
     if (recipients) {
       recipients.forEach((recipient) => {
         if (recipient) {
-          newtx.addTo(recipient);  
+          newtx.addTo(recipient);
         }
       });
     }
@@ -395,12 +408,12 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    if (recipients){
+    if (recipients) {
       recipients.forEach((recipient) => {
         let data = {
           recipient: [recipient],
-          request,
-          data: _data,
+          request: "stun-message-broadcast",
+          data: newtx.toJson(),
         };
         this.app.connection.emit("relay-send-message", data);
       });
@@ -472,14 +485,30 @@ class Stun extends ModTemplate {
     }
   }
 
-  sendStunCallMessageToPeers(app, _data, recipients) {
-    let data = {
-      recipient: recipients,
-      request: "stun-send-game-call-message",
-      data: _data,
-    };
+  async sendStunCallMessageToPeers(app, _data, recipients) {
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-    this.app.connection.emit("relay-send-message", data);
+    if (recipients) {
+      recipients.forEach((recipient) => {
+        if (recipient) {
+          newtx.addTo(recipient);
+        }
+      });
+    }
+
+    newtx.msg.module = "Stun";
+    newtx.msg.request = "stun-send-game-call-message";
+    newtx.msg.data = _data;
+    await newtx.sign();
+
+    recipients.forEach((recipient) => {
+      let data = {
+        recipient: recipient,
+        request: "stun-message-broadcast",
+        data: newtx.toJson(),
+      };
+      this.app.connection.emit("relay-send-message", data);
+    });
   }
 
   async receiveGameCallMessageToPeers(app, tx) {
