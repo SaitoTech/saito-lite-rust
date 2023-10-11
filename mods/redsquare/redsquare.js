@@ -1218,7 +1218,7 @@ console.log("SERVER UPLOADING TX: " + JSON.stringify(tx.returnMessage()));
 console.log("SAVING TRANSACTION!");
 console.log("owner is: " + this.publicKey);
 
-          this.app.storage.saveTransaction(tx, {
+          await this.app.storage.saveTransaction(tx, {
             owner: this.publicKey,
             field1: "RedSquare",
             field3: this.publicKey,
@@ -1315,7 +1315,7 @@ console.log("owner is: " + this.publicKey);
       // can deliver it to users who want to fetch RedSquare transactions from the archives instead of just through the
       // sql database -- this is done by specifying that I -- "localhost" am the peer required.
       //
-      this.app.storage.saveTransaction(tx, { owner: this.publicKey }, "localhost");
+      await this.app.storage.saveTransaction(tx, { owner: this.publicKey }, "localhost");
 
       //
       // servers
