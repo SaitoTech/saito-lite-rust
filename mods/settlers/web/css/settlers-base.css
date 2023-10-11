@@ -443,7 +443,7 @@ dt {
 .display-name {
   /*text-shadow: 0px 0px 1px ghostwhite, 1px 1px 0 ghostwhite, 1px 0px 0 ghostwhite;*/
   font-weight: bold;
-  margin-right: 3rem;
+  margin-right: 2rem;
 }
 
 .display-name.p1-lite {
@@ -765,13 +765,14 @@ ul.horizontal_list li.iconoption {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .log .die {
   width: min(2.5vw, 25px);
   display: inline-block;
   text-indent: 0;
-  margin: 2px;
+  margin: 1px;
   padding-left: unset;
 }
 

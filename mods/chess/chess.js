@@ -55,9 +55,7 @@ class Chessgame extends GameTemplate {
     this.menu.addMenuOption("game-game", "Game");
 
     if (this.game.player > 0) {
-      console.log(this.game.draw_offered, this.game.player);
-
-      if (!this.game.draw_offered) {
+      if (!this.game?.draw_offered) {
         this.menu.addSubMenuOption("game-game", {
           text: "Offer Draw",
           id: "game-draw",
@@ -75,7 +73,7 @@ class Chessgame extends GameTemplate {
         });
       }
 
-      if (this.game.player == this.game.draw_offered) {
+      if (this.game.player == this.game?.draw_offered) {
         this.menu.addSubMenuOption("game-game", {
           text: "Accept Draw",
           id: "game-draw",

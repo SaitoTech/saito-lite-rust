@@ -81,10 +81,7 @@ class Chat extends ModTemplate {
       await this.sendChatTransaction(this.app, newtx);
 
       siteMessage("Message sent through chat", 2500);
-      
     });
-
-
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
@@ -190,7 +187,7 @@ class Chat extends ModTemplate {
         this.app.browser.switchTheme(theme);
       }
     }
-    
+
     if (this.main == null) {
       this.header = new SaitoHeader(this.app, this);
       await this.header.initialize(this.app);
@@ -205,13 +202,13 @@ class Chat extends ModTemplate {
       this.addComponent(this.chat_manager);
     }
     this.chat_manager.container = ".saito-sidebar.left";
-    
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 500){
-      this.chat_manager.chat_popup_container = ".saito-main";  
+
+    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 500) {
+      this.chat_manager.chat_popup_container = ".saito-main";
       //Main Chat Application doesn't use popups as such...
       this.chat_manager.render_popups_to_screen = 0;
     }
-    
+
     this.chat_manager.render_manager_to_screen = 1;
 
     await super.render();
@@ -534,7 +531,6 @@ class Chat extends ModTemplate {
         await mycallback({ payload: "success", error: {} });
       }
     } else if (txmsg.request === "chat message broadcast") {
-
       let inner_tx = new Transaction(undefined, txmsg.data);
 
       // console.log(inner_tx);
@@ -1263,7 +1259,7 @@ class Chat extends ModTemplate {
     }
 
     let clean_array = [];
-    for (let member of members){
+    for (let member of members) {
       clean_array.push(member);
     }
     //So David + Richard == Richard + David

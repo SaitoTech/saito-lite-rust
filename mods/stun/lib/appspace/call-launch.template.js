@@ -1,5 +1,4 @@
 module.exports = StunLaunchTemplate = () => {
-
   return `
       <div class="stun-appspace"> 
         <div class="stun-appspace-content">
@@ -8,7 +7,7 @@ module.exports = StunLaunchTemplate = () => {
               <p>peer-to-peer video chat</p>
             <div class="stunx-appspace-actions">
               <div class="stunx-appspace-create">
-                <div class="saito-button-primary" id="createRoom">Start Call</div>
+              
               </div>
             </div>
             <div class="my-stun-container-info">
@@ -30,6 +29,4 @@ module.exports = StunLaunchTemplate = () => {
       </div>
 
     `;
-
-}
-
+};

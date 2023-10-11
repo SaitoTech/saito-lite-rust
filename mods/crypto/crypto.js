@@ -49,6 +49,7 @@ class Crypto extends ModTemplate {
 
       for (let ticker in ac) {
         menu.submenus.push({
+          parent: "game-crypto",
           text: ticker,
           id: "game-crypto-" + ticker,
           class: "game-crypto-ticker",
