@@ -12,6 +12,7 @@ import { LogLevel } from "saito-js/saito";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
 import Block from "./lib/saito/block";
+import json from "body-parser/lib/types/json";
 
 let processing_started = false;
 let work_queue: any[] = [];
@@ -143,8 +144,8 @@ async function initCLI() {
 
   function inflateBlockforDatabase(blk) {
     // console.log('warehouse - on new block');
-    console.info("blk");
     let json_block = JSON.parse(blk.toJson());
+    console.info(json_block);
     let txwmsgs = [];
     try {
       blk.transactions.forEach((transaction) => {
@@ -157,13 +158,12 @@ async function initCLI() {
     }
     if (txwmsgs.length > 0) {
       json_block.transactions = txwmsgs;
-      this.addTransactionsToDatabase(json_block);
+      addTransactionsToDatabase(json_block);
     }
   }
 
-  async function addTransactionsToDatabase(block) {
+  async function addTransactionsToDatabase(blk) {
     try {
-      let blk = this.inflateBlock(block);
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
