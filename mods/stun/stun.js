@@ -23,7 +23,7 @@ class Stun extends ModTemplate {
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
-
+    this.isRelayConnected = false;
     this.servers = [
       {
         urls: "stun:stun-sf.saito.io:3478",
@@ -80,27 +80,7 @@ class Stun extends ModTemplate {
   // Just use inherited initialize, which sets this.publicKey
   // async initialize(app)
 
-  onPeerHandshakeComplete(app, peer) {
-    if (app.BROWSER !== 1) {
-      return;
-    }
-
-    this.ring_sound = new Audio("/videocall/audio/ring.mp3");
-    if (app.browser.returnURLParameter("stun_video_chat")) {
-      let room_obj = JSON.parse(
-        app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
-      );
-
-      // JOIN THE ROOM
-      if (this.browser_active) {
-        this.renderInto("body");
-      } else {
-        this.renderInto(".saito-overlay");
-      }
-
-      app.connection.emit("stun-to-join-room", room_obj.room_code);
-    }
-  }
+  onPeerHandshakeComplete(app, peer) {}
 
   /**
    * Stun will be rendered on
@@ -111,6 +91,35 @@ class Stun extends ModTemplate {
    *
    * This will trigger a "stun-init-peer-manager" event that leads to the creation of PeerManager
    */
+
+  async onPeerServiceUp(app, peer, service) {
+    if (app.BROWSER !== 1) {
+      return;
+    }
+
+    if (service.service === "relay") {
+      if (app.BROWSER !== 1) {
+        return;
+      }
+
+      this.isRelayConnected = true;
+      this.ring_sound = new Audio("/videocall/audio/ring.mp3");
+      if (app.browser.returnURLParameter("stun_video_chat")) {
+        let room_obj = JSON.parse(
+          app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
+        );
+
+        // JOIN THE ROOM
+        if (this.browser_active) {
+          this.renderInto("body");
+        } else {
+          this.renderInto(".saito-overlay");
+        }
+
+        app.connection.emit("stun-to-join-room", room_obj.room_code);
+      }
+    }
+  }
   render() {
     this.renderInto("body");
   }
@@ -628,13 +637,11 @@ class Stun extends ModTemplate {
   */
   addKeyToRoom(room_code, public_key = "") {
     let public_keys = this.rooms.has(room_code) ? this.rooms.get(room_code) : [];
-
     console.log("public keys in the room", public_keys);
     console.log("public key that wants to join ", public_key);
     if (!public_keys.includes(public_key)) {
       public_keys.push(public_key);
     }
-
     this.rooms.set(room_code, public_keys);
   }
 
