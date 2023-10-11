@@ -12966,7 +12966,7 @@ console.log("and friendly");
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
-      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "caliari" , "messina" ] ,
+      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "cagliari" , "messina" ] ,
       neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {
@@ -18197,6 +18197,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	      if (player_of_faction != attacking_player && player_of_faction != 0) {
   	        if (io[i] !== faction) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
+console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz]);
 	            if (fluis > 0) {
 	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[zz]);
@@ -26576,6 +26577,7 @@ console.log("A");
 
   async playerMoveFormationInClear(his_self, player, faction) {
 
+    let parent_faction = faction;
     let units_to_move = [];
     let cancel_func = null;
     let spacekey = "";
