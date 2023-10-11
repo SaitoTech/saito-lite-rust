@@ -13,8 +13,8 @@ import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
 import Block from "./lib/saito/block";
 
-var processing_started = false;
-var work_queue: any[] = [];
+let processing_started = false;
+let work_queue: any[] = [];
 
 async function initCLI() {
   const app = new Saito({
@@ -36,21 +36,19 @@ async function initCLI() {
 
   let privateKey = app.options.wallet?.privateKey || "";
 
-  /*
-    await initS(
-      app.options,
-      new NodeSharedMethods(app),
-      new Factory(),
-      privateKey,
-      LogLevel.Info
-    ).then(() => {
-      console.log("saito wasm lib initialized");
-    });
-    app.wallet = (await S.getInstance().getWallet()) as Wallet;
-    app.wallet.app = app;
-    app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
-    app.blockchain.app = app;
-  */
+  await initS(
+    app.options,
+    new NodeSharedMethods(app),
+    new Factory(),
+    privateKey,
+    LogLevel.Info
+  ).then(() => {
+    console.log("saito wasm lib initialized");
+  });
+  app.wallet = (await S.getInstance().getWallet()) as Wallet;
+  app.wallet.app = app;
+  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  app.blockchain.app = app;
   // await app.init();
   //
   // S.getInstance().start();
@@ -88,7 +86,9 @@ async function initCLI() {
       app.storage.loadBlockByFilename(work_queue[0]).then((blk) => {
         inflateBlockforDatabase(blk);
       });
-      console.info(work_queue.shift() + " added to DB, " + work_queue.length + " remaining in queue.");
+      console.info(
+        work_queue.shift() + " added to DB, " + work_queue.length + " remaining in queue."
+      );
       setInterval(processBlocks, 1000);
     } else {
       console.info("Processing Complete");
@@ -104,7 +104,7 @@ async function initCLI() {
       console.log("Adding block " + count + " of " + total + " to queue.");
       try {
         if (file !== "empty") {
-          queue(dir + file);
+          queue(dir + "/" + file);
         }
       } catch (err) {
         console.error(err);
@@ -126,7 +126,7 @@ async function initCLI() {
       files.forEach((file) => {
         try {
           if (file !== "empty") {
-            app.storage.loadBlockByFilename(dir + file).then((blk) => {
+            app.storage.loadBlockByFilename(dir + "/" + file).then((blk) => {
               x += blk.transactions.length;
               console.log("another: " + blk.transactions.length + " for " + x + " total.");
               if (file == files[files.length - 1]) {
@@ -141,22 +141,21 @@ async function initCLI() {
     }
   }
 
-
   function inflateBlockforDatabase(blk) {
     // console.log('warehouse - on new block');
-    console.info('blk');
-    var json_block = JSON.parse(blk.toJson());
-    var txwmsgs = []
+    console.info("blk");
+    let json_block = JSON.parse(blk.toJson());
+    let txwmsgs = [];
     try {
-      blk.transactions.forEach(transaction => {
+      blk.transactions.forEach((transaction) => {
         let tx = transaction.toJson();
         tx.msg = transaction.returnMessage();
-        txwmsgs.push(tx);          
+        txwmsgs.push(tx);
       });
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
-    if(txwmsgs.length > 0) {
+    if (txwmsgs.length > 0) {
       json_block.transactions = txwmsgs;
       this.addTransactionsToDatabase(json_block);
     }
@@ -164,7 +163,7 @@ async function initCLI() {
 
   async function addTransactionsToDatabase(block) {
     try {
-      let blk = this.inflateBlock(block)
+      let blk = this.inflateBlock(block);
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
