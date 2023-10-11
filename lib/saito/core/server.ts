@@ -153,8 +153,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
         return new Uint8Array(buffer);
       })
       .catch((err) => {
-        console.error("Error fetching block: " + err);
-        return err;
+        console.error("Error fetching block: ", err);
+        throw err;
       });
   }
 
