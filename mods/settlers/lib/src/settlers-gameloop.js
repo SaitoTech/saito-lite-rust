@@ -61,10 +61,11 @@ class SettlersGameloop {
       }
 
       if (mv[0] == "winner") {
+        // 0-index
         let winner = parseInt(mv[1]);
         this.game.queue = [];
 
-        this.updateLog(`${this.formatPlayer(winner)} is ${this.winState} and wins the game!`);
+        this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState} and wins the game!`);
 
         this.stats_overlay.render();
         $(".settlers-stats-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
@@ -77,6 +78,7 @@ class SettlersGameloop {
       /* Development Cards */
 
       if (mv[0] == "buy_card") {
+        // 1-index
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
