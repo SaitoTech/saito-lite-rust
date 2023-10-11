@@ -33,6 +33,7 @@ class RedSquareMain {
       this.manager.renderTweet(tweet);
     });
     this.app.connection.on("redsquare-notifications-render-request", () => {
+      document.querySelector(".saito-main").innerHTML = "";
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
       this.mod.save();
