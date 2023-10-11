@@ -64,7 +64,7 @@ class SettlersGameloop {
         let winner = parseInt(mv[1]);
         this.game.queue = [];
 
-        this.updateLog(`${this.game.playerNames[winner]} wins!`);
+        this.updateLog(`${this.formatPlayer(winner)} is ${this.winState} and wins the game!`);
 
         this.stats_overlay.render();
         $(".settlers-stats-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
@@ -195,10 +195,7 @@ class SettlersGameloop {
               }
             }
             if (am_i_a_victim && this.game.player == i + 1) {
-              this.displayModal(
-                cardname,
-                `${this.game.playerNames[player - 1]} stole all your ${resource}`
-              );
+              this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} stole all your ${resource}`);
             }
           }
         }
@@ -206,11 +203,16 @@ class SettlersGameloop {
         for (let i = 0; i < lootCt; i++)
           this.game.state.players[player - 1].resources.push(resource);
 
+        if (this.game.player == player){
+          this.updateStatus(`<div class="persistent player-notice">You collected ${lootCt} ${this.formatResource(resource)}</div>`);  
+        }
+        
+
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
         this.updateLog(
           `${
             this.formatPlayer(player)
-          } played ${cardname} for ${resource}, collecting ${lootCt}.`
+          } played ${cardname} for ${this.formatResource(resource)}, collecting ${lootCt}.`
         );
         return 1;
       }
@@ -280,7 +282,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.buildRoad(player, slot);
-        this.updateLog(`${this.formatPlayer(player)} builds a ${this.r.name}`);
+        this.updateLog(`${this.formatPlayer(player)} built a ${this.r.name}`);
         if (this.checkLongestRoad(player)) {
           console.log("Longest Road:", this.game.state.longestRoad.path);
         }
@@ -329,14 +331,13 @@ class SettlersGameloop {
           let bounty = this.game.state.hexes[hextile].resource;
           if (bounty !== this.returnNullResource()) {
             //DESERT ATTACK
-            logMsg += bounty + ", ";
+            logMsg += this.formatResource(bounty);
             this.game.state.players[player - 1].resources.push(bounty);
             this.game.stats.production[bounty][player - 1]++; //Initial starting stats
             this.animateHarvest(player, bounty, hextile);
           }
         }
         this.runAnimationQueue();
-        logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
         this.updateLog(logMsg);
         return 0;
       }
@@ -354,7 +355,7 @@ class SettlersGameloop {
           this.game.state.last_city = slot;
         }
 
-        this.updateLog(`${this.formatPlayer(player)} builds a ${this.c1.name}`);
+        this.updateLog(`${this.formatPlayer(player)} built a ${this.c1.name}`);
 
         //Check for edge case where the new city splits a (longest) road
         let adj_road_owners = {};
@@ -503,18 +504,14 @@ class SettlersGameloop {
           this.game.state.ads[offering_player - 1].offer = stuff_on_offer;
           this.game.state.ads[offering_player - 1].ask = stuff_in_return;
           this.game.state.ads[offering_player - 1].ad = false;
-          this.updateLog(
-            `${this.game.playerNames[offering_player - 1]} sent a trade offer to ${
-              this.game.playerNames[receiving_player - 1]
-            }.`
-          );
+          this.updateLog(`${this.formatPlayer(offering_player)} sent a trade offer to ${this.formatPlayer(receiving_player)}.`);
           this.displayPlayers();
         } else {
           this.game.state.ads[offering_player - 1].offer = stuff_on_offer;
           this.game.state.ads[offering_player - 1].ask = stuff_in_return;
           this.game.state.ads[offering_player - 1].ad = true;
           this.updateLog(
-            `${this.game.playerNames[offering_player - 1]} sent a public trade offer.`
+            `${this.formatPlayer(offering_player)} sent a public trade offer.`
           );
         }
 
@@ -574,11 +571,7 @@ class SettlersGameloop {
             this.game.state.players[offering_player - 1].resources.push(i);
           }
         }
-        this.updateLog(
-          `${this.game.playerNames[offering_player - 1]} and ${
-            this.game.playerNames[accepting_player - 1]
-          } completed a trade.`
-        );
+        this.updateLog(`${this.formatPlayer(offering_player)} and ${this.formatPlayer(accepting_player)} completed a trade.`);
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
@@ -602,10 +595,8 @@ class SettlersGameloop {
           );
         }
         this.updateLog(
-          `${this.game.playerNames[refusing_player - 1]} turned down a trade offer from ${
-            this.game.playerNames[offering_player - 1]
-          }.`
-        );
+          `${this.formatPlayer(refusing_player)} turned down a trade offer from ${
+            this.formatPlayer(offering_player)}.`);
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
@@ -730,6 +721,7 @@ class SettlersGameloop {
         let roll = d1 + d2;
         this.updateLog(`${this.formatPlayer(player)} rolled: ${this.returnDiceImage(this.game.state.lastroll[1])}${this.returnDiceImage(this.game.state.lastroll[0])}`);
         this.game.stats.dice[roll]++; //Keep count of the rolls
+        this.game.stats.dicePlayer[roll][player-1]++;
 
         // board animation
         this.animateDiceRoll(roll);

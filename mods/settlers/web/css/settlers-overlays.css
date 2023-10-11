@@ -68,12 +68,24 @@ stats overlay
 }
 
 .settlers-dice-bar {
-  border: 1px solid #000;
   width: calc(100%/14);
-  height: 10rem;
+  height: 0;
   background: #ab815f73;
   border-bottom: none;
   position: relative;
+}
+
+.settlers-dice-bar.has_been_rolled {
+  border: 1px solid #000;
+  box-sizing: content-box;
+}
+
+.settlers-dice-bar.never_rolled {
+  border: none;
+}
+
+.settlers-dice-bar.never_rolled .settlers-dice-count{
+  display: none;
 }
 
 .settlers-dice-count {

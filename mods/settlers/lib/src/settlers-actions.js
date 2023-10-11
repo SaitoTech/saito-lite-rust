@@ -88,7 +88,7 @@ class SettlersActions {
     }
 
     if (Object.keys(collection).length == 0) {
-      this.updateLog("no-one collects any resources.");
+      this.updateLog("nobody collects any resources.");
     }
 
     if (poor_harvest) {
