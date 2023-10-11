@@ -1416,7 +1416,7 @@ console.log("and friendly");
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
-      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "caliari" , "messina" ] ,
+      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "cagliari" , "messina" ] ,
       neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {

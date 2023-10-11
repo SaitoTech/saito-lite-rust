@@ -1662,6 +1662,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	      if (player_of_faction != attacking_player && player_of_faction != 0) {
   	        if (io[i] !== faction) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
+console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz]);
 	            if (fluis > 0) {
 	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[zz]);
