@@ -86,7 +86,7 @@ async function initCLI() {
   function processBlocks() {
     if (processing_started && work_queue.length > 0) {
       app.storage.loadBlockByFilename(work_queue[0]).then((blk) => {
-        addTransactionsToDatabase(blk);
+        inflateBlockforDatabase(blk);
       });
       console.info(work_queue.shift() + " added to DB, " + work_queue.length + " remaining in queue.");
       setInterval(processBlocks, 1000);
@@ -141,8 +141,30 @@ async function initCLI() {
     }
   }
 
-  async function addTransactionsToDatabase(blk) {
+
+  function inflateBlockforDatabase(blk) {
+    // console.log('warehouse - on new block');
+    console.info('blk');
+    var json_block = JSON.parse(blk.toJson());
+    var txwmsgs = []
     try {
+      blk.transactions.forEach(transaction => {
+        let tx = transaction.toJson();
+        tx.msg = transaction.returnMessage();
+        txwmsgs.push(tx);          
+      });
+    } catch(err) {
+      console.error(err);
+    }
+    if(txwmsgs.length > 0) {
+      json_block.transactions = txwmsgs;
+      this.addTransactionsToDatabase(json_block);
+    }
+  }
+
+  async function addTransactionsToDatabase(block) {
+    try {
+      let blk = this.inflateBlock(block)
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
