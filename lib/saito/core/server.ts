@@ -154,7 +154,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
       })
       .catch((err) => {
         console.error("Error fetching block: " + err);
-        return "";
+        return err;
       });
   }
 
