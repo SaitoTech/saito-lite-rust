@@ -26,9 +26,19 @@ class ChatMenu {
   attachEvents() {
     let thisobj = this;
 
+    let suggestedName = this.chat_group.name;
+
+    if (this.chat_group.members.length == 2){
+      for (let m of this.chat_group.members){
+        if (m !== this.mod.publicKey){
+          suggestedName = m;
+        }
+      }
+    }
+
     if (document.getElementById("rename")) {
       document.getElementById("rename").onclick = async (e) => {
-        let name = await sprompt("What do you want to call the chat group?");
+        let name = await sprompt("What do you want to call the chat group?", suggestedName);
         if (name) {
           thisobj.chat_group.name = sanitize(name);
 
