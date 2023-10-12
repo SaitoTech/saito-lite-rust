@@ -252,24 +252,48 @@ class Stun extends ModTemplate {
     return null;
   }
 
-  onConfirmation(blk, tx, conf, app) {
-    let txmsg = tx.returnMessage();
+  // onConfirmation(blk, tx, conf, app) {
+  //   if (tx == null) {
+  //     return;
+  //   }
+  //   let txmsg = tx.returnMessage();
 
-    if (conf === 0) {
-      if (txmsg.module === "Stun") {
-        //
-        // Do we even need/want to send messages on chain?
-        // There are problems with double processing events...
-        //
-        if (app.BROWSER === 1) {
-          if (txmsg.request === "stun-send-message-to-peers") {
-            console.log("onConf: stun-send-message-to-peers");
-            this.receiveStunMessageToPeersTransaction(app, tx);
-          }
-        }
-      }
-    }
-  }
+  //   if (conf === 0) {
+  //     if (txmsg.module === "Stun") {
+  //       //
+  //       // Do we even need/want to send messages on chain?
+  //       // There are problems with double processing events...
+  //       //
+  //       if (txmsg.request === "stun-message-broadcast") {
+  //         let inner_tx = new Transaction(undefined, txmsg.data);
+  //         let message = inner_tx.returnMessage();
+  //         try {
+  //           if (message.request === "stun-create-room-transaction") {
+  //             this.receiveCreateRoomTransaction(app, inner_tx);
+  //           }
+  //           if (message.request === "stun-send-message-to-server") {
+  //             this.receiveStunMessageToServerTransaction(app, inner_tx, peer);
+  //           }
+
+  //           if (message.request === "stun-send-message-to-peers") {
+  //             console.log("HPT: stun-send-message-to-peers");
+  //             this.receiveStunMessageToPeersTransaction(app, inner_tx);
+  //           }
+  //           if (message.request === "stun-send-game-call-message") {
+  //             console.log("HPT: stun-send-game-call-message");
+  //             this.receiveGameCallMessageToPeers(app, inner_tx);
+  //           }
+  //           if (message.request === "stun-room-created-notification-transaction") {
+  //             console.log("HPT:stun-room-created-notification-transaction");
+  //             this.receiveRoomCreatedNotificationTransaction(app, inner_tx);
+  //           }
+  //         } catch (err) {
+  //           console.error("Stun Error:", err);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
@@ -339,6 +363,7 @@ class Stun extends ModTemplate {
 
     // server.sendRequestAsTransaction("stun-create-room-transaction", data);
 
+    this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
 
     return room_code;
@@ -375,7 +400,7 @@ class Stun extends ModTemplate {
 
     // server.sendRequestAsTransaction("stun-create-room-transaction", data);
 
-    console.log("sending to davik");
+    this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
   }
 
@@ -407,6 +432,7 @@ class Stun extends ModTemplate {
       data: newtx.toJson(),
     };
 
+    this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
   }
 
@@ -474,6 +500,7 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
+    this.app.network.propagateTransaction(newtx);
     if (recipients) {
       recipients.forEach((recipient) => {
         let data = {
@@ -577,6 +604,8 @@ class Stun extends ModTemplate {
       };
       this.app.connection.emit("relay-send-message", data);
     });
+
+    this.app.network.propagateTransaction(newtx);
   }
 
   async receiveGameCallMessageToPeers(app, tx) {

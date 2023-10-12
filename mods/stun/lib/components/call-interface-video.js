@@ -3,6 +3,7 @@ const CallInterfaceVideoTemplate = require("./call-interface-video.template");
 
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
+const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 
 class CallInterfaceVideo {
   constructor(app, mod) {
@@ -22,9 +23,12 @@ class CallInterfaceVideo {
     this.remote_streams = new Map();
     this.current_speaker = null;
     this.speaker_candidate = null;
+    this.loader = new SaitoLoader(app, mod);
 
     this.app.connection.on("show-call-interface", async (room_code, videoEnabled, audioEnabled) => {
       this.room_code = room_code;
+
+      this.loader.render(true);
 
       console.log("Render Video Call Interface");
       //This will render the (full-screen) component
@@ -66,6 +70,7 @@ class CallInterfaceVideo {
 
       this.createVideoBox(peer_id, container);
       if (status === "connecting") {
+        this.loader.remove();
         this.video_boxes[peer_id].video_box.renderPlaceholder("connecting");
       } else if (status === "connected") {
         this.video_boxes[peer_id].video_box.removeConnectionMessage();
@@ -159,7 +164,7 @@ class CallInterfaceVideo {
       unread: 0,
       //
       // USE A TARGET Container if the chat box is supposed to show up embedded within the UI
-      // Don't include if you want it to be just a chat popup.... 
+      // Don't include if you want it to be just a chat popup....
       //
       //target_container: `.stun-chatbox .${this.remote_container}`,
     };
@@ -181,7 +186,7 @@ class CallInterfaceVideo {
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
       //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
-      this.app.connection.emit("open-chat-with", { id: this.chat_group.id});
+      this.app.connection.emit("open-chat-with", { id: this.chat_group.id });
     });
 
     if (document.querySelector(".effects-control")) {
@@ -193,8 +198,8 @@ class CallInterfaceVideo {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.addEventListener("click", async (e) => {
         let chat_module = this.app.modules.returnModule("Chat");
-        if (chat_module){
-          await chat_module.deleteChatGroup(this.chat_group);  
+        if (chat_module) {
+          await chat_module.deleteChatGroup(this.chat_group);
         }
         this.disconnect();
         siteMessage("You have been disconnected", 3000);
