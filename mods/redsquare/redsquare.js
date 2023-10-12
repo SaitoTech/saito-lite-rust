@@ -1168,7 +1168,6 @@ class RedSquare extends ModTemplate {
         tx.optional.num_likes = 0;
       }
       tx.optional.num_likes++;
-console.log("SERVER UPLOADING TX: " + JSON.stringify(tx.returnMessage()));
       this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
     }, "localhost");
 
