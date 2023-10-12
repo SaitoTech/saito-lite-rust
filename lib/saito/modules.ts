@@ -267,10 +267,9 @@ class Mods {
   }
 
   returnModulesRespondingTo(request, obj = null) {
-
     let m = [];
     for (let mod of this.mods) {
-      if ((mod.respondTo(request, obj)) != null) {
+      if (mod.respondTo(request, obj) != null) {
         m.push(mod);
       }
     }
@@ -278,10 +277,9 @@ class Mods {
   }
 
   respondTo(request, obj = null) {
-
     let m = [];
     for (let mod of this.mods) {
-      if ((mod.respondTo(request, obj)) != null) {
+      if (mod.respondTo(request, obj) != null) {
         m.push(mod);
       }
     }
@@ -347,9 +345,9 @@ class Mods {
   }
 
   onNewBlock(blk, i_am_the_longest_chain) {
-    blk.transactions.forEach(transaction => {
-      console.log(transaction.toJson(), transaction.returnMessage(), "new transaction")
-    })
+    // blk.transactions.forEach(transaction => {
+    //   console.log(transaction.toJson(), transaction.returnMessage(), "new transaction")
+    // })
     console.log("#################");
     console.log("### New Block ### " + blk.id);
     console.log("#################");
