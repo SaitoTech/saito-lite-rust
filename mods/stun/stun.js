@@ -409,8 +409,8 @@ class Stun extends ModTemplate {
     // this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
     this.app.connection.emit("stun-remove-loader");
     this.app.connection.emit("stun-peer-manager-update-room-code", txmsg.data.room_code);
-    this.app.connection.emit("close-preview-window");
     this.app.connection.emit("start-stun-call");
+    this.app.connection.emit("close-preview-window");
   }
 
   async sendStunMessageToServerTransaction(_data) {
