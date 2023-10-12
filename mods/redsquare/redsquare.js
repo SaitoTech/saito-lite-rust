@@ -61,7 +61,6 @@ class RedSquare extends ModTemplate {
     this.retweeted_tweets = [];
     this.replied_tweets = [];
 
-
     this.social = {
       twitter_card: "summary",
       twitter_site: "@SaitoOfficial",
@@ -223,8 +222,8 @@ class RedSquare extends ModTemplate {
   async initialize(app) {
     await super.initialize(app);
 
-    if (this.browser_active){
-      this.styles = ["/saito/saito.css", "/redsquare/style.css"];  
+    if (this.browser_active) {
+      this.styles = ["/saito/saito.css", "/redsquare/style.css"];
     }
 
     //
@@ -309,7 +308,9 @@ class RedSquare extends ModTemplate {
       // render tweet + children
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
-      if (tweet_id === "undefined") { tweet_id = ""; }
+      if (tweet_id === "undefined") {
+        tweet_id = "";
+      }
       if (tweet_id != "") {
         let sql = `SELECT *
                    FROM tweets
@@ -320,9 +321,9 @@ class RedSquare extends ModTemplate {
             this.addTweet(txs[z]);
           }
           let tweet = this.returnTweet(tweet_id);
-	  if (tweet) {
+          if (tweet) {
             this.app.connection.emit("redsquare-tweet-render-request", tweet);
-	  }
+          }
         });
         return;
       }
@@ -354,7 +355,7 @@ class RedSquare extends ModTemplate {
       this.addPeer(peer, "notifications");
 
       setTimeout(() => {
-//        this.loadNotifications(peer, () => {});
+        //        this.loadNotifications(peer, () => {});
       }, 1500);
     }
   }
@@ -473,15 +474,15 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-console.log("#");
-console.log("# RECEIVED TWEET TRANSACTION: " + JSON.stringify(txmsg));
-console.log("#");
+          console.log("#");
+          console.log("# RECEIVED TWEET TRANSACTION: " + JSON.stringify(txmsg));
+          console.log("#");
           await this.receiveTweetTransaction(blk, tx, conf);
         }
         if (txmsg.request === "like tweet") {
-console.log("#");
-console.log("# RECEIVED LIKE TRANSACTION: " + JSON.stringify(txmsg));
-console.log("#");
+          console.log("#");
+          console.log("# RECEIVED LIKE TRANSACTION: " + JSON.stringify(txmsg));
+          console.log("#");
           await this.receiveLikeTransaction(blk, tx, conf);
         }
         if (txmsg.request === "flag tweet") {
@@ -717,44 +718,41 @@ console.log("#");
   // likes, retweets, replies notifications are added through this function.
   //
   addTweet(tx, prepend = false) {
-
     //
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, tx);
-console.log("ADD TWEET: " + tweet.text);
-console.log("w/ sig: " + tx.signature);
-console.log("parent id: " + tweet.parent_id);
+    console.log("ADD TWEET: " + tweet.text);
+    console.log("w/ sig: " + tx.signature);
+    console.log("parent id: " + tweet.parent_id);
     //
     // skip duplicates
     //
     if (this.tweets_sigs_hmap[tx.signature] || this.notifications_sigs_hmap[tx.signature]) {
-console.log("DUPLICATE - skipping -> " + tweet.text);
-return;
+      console.log("DUPLICATE - skipping -> " + tweet.text);
+      return;
     }
-
-
 
     if (!tweet?.noerrors) {
       return;
     }
 
-console.log("adding tweet: " + tweet.text);
-if (tweet.tx.optional.num_replies) {
-  console.log("num replies: " + tweet.tx.optional.num_replies);
-} else {
-  console.log("num replies: 0");
-}
-if (tweet.tx.optional.num_retweets) {
-  console.log("num retweets: " + tweet.tx.optional.num_retweets);
-} else {
-  console.log("num retweets: 0");
-}
-if (tweet.tx.optional.num_likes) {
-  console.log("num likes: " + tweet.tx.optional.num_likes);
-} else {
-  console.log("num likes: 0");
-}
+    console.log("adding tweet: " + tweet.text);
+    if (tweet.tx.optional.num_replies) {
+      console.log("num replies: " + tweet.tx.optional.num_replies);
+    } else {
+      console.log("num replies: 0");
+    }
+    if (tweet.tx.optional.num_retweets) {
+      console.log("num retweets: " + tweet.tx.optional.num_retweets);
+    } else {
+      console.log("num retweets: 0");
+    }
+    if (tweet.tx.optional.num_likes) {
+      console.log("num likes: " + tweet.tx.optional.num_likes);
+    } else {
+      console.log("num likes: 0");
+    }
 
     //
     // maybe this needs to go into notifications too
@@ -764,7 +762,6 @@ if (tweet.tx.optional.num_likes) {
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.publicKey) && !this.notifications_sigs_hmap[tx.signature]) {
-
         let insertion_index = 0;
         if (prepend == false) {
           for (let i = 0; i < this.notifications.length; i++) {
@@ -794,7 +791,9 @@ if (tweet.tx.optional.num_likes) {
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet") {
-      if (!this.tweets_sigs_hmap[tx.signature]) { this.tweets_sigs_hmap[tx.signature] = 1; }
+      if (!this.tweets_sigs_hmap[tx.signature]) {
+        this.tweets_sigs_hmap[tx.signature] = 1;
+      }
       return;
     }
 
@@ -806,24 +805,26 @@ if (tweet.tx.optional.num_likes) {
       let updated = 0;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.signature) {
-	  if (this.tweets[i].tx.optional.num_replies < tweet.tx.optional.num_replies) {
-console.log("~~~");
-console.log("~~~ already have tweet - updating num replies...: " + tweet.tx.optional.num_replies);
-console.log("~~~");
+          if (this.tweets[i].tx.optional.num_replies < tweet.tx.optional.num_replies) {
+            console.log("~~~");
+            console.log(
+              "~~~ already have tweet - updating num replies...: " + tweet.tx.optional.num_replies
+            );
+            console.log("~~~");
             this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
-	  }
-	  if (this.tweets[i].tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
+          }
+          if (this.tweets[i].tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
             this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-	  }
-	  if (this.tweets[i].tx.optional.num_likes < tweet.tx.optional.num_likes) {
+          }
+          if (this.tweets[i].tx.optional.num_likes < tweet.tx.optional.num_likes) {
             this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
-	  }
-	  if (this.tweets[i].updated_at < tweet.updated_at) {
+          }
+          if (this.tweets[i].updated_at < tweet.updated_at) {
             this.tweets[i].updated_at = tweet.updated_at;
           }
-	  console.log("Update stats of tweet we already indexed");
+          console.log("Update stats of tweet we already indexed");
           console.log(this.tweets[i].tx.optional);
-	  updated = true;
+          updated = true;
           break;
         }
       }
@@ -831,19 +832,19 @@ console.log("~~~");
       // maybe this is a hidden child
       if (!updated) {
         let t = this.returnTweet(tweet.tx.signature);
-	if (t.tx.optional.num_replies < tweet.tx.optional.num_replies) {
-console.log("!!!");
-console.log("!!! updating num replies in child: " + tweet.tx.optional.num_replies);
-console.log("!!!");
+        if (t.tx.optional.num_replies < tweet.tx.optional.num_replies) {
+          console.log("!!!");
+          console.log("!!! updating num replies in child: " + tweet.tx.optional.num_replies);
+          console.log("!!!");
           t.tx.optional.num_replies = tweet.tx.optional.num_replies;
-	}
-	if (t.tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
+        }
+        if (t.tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
           t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-	}
-	if (t.tx.optional.num_likes < tweet.tx.optional.num_likes) {
+        }
+        if (t.tx.optional.num_likes < tweet.tx.optional.num_likes) {
           t.tx.optional.num_likes = tweet.tx.optional.num_likes;
-	}
-	if (t.updated_at < tweet.updated_at) {
+        }
+        if (t.updated_at < tweet.updated_at) {
           t.updated_at = tweet.updated_at;
         }
         console.log("Updated stats of sub-tweet we already indexed");
@@ -896,9 +897,9 @@ console.log("!!!");
     } else {
       let inserted = false;
 
-console.log("number of tweets already existing: " + this.tweets.length);
+      console.log("number of tweets already existing: " + this.tweets.length);
 
-console.log("looking for this thread: " + tweet.thread_id);
+      console.log("looking for this thread: " + tweet.thread_id);
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].thread_id === tweet.thread_id) {
           this.tweets[i].addTweet(tweet);
@@ -909,7 +910,7 @@ console.log("looking for this thread: " + tweet.thread_id);
       }
 
       if (inserted == false) {
-//alert("not inserted... unknown children: " + tweet.text);
+        //alert("not inserted... unknown children: " + tweet.text);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
         this.unknown_children.push(tweet);
       }
@@ -929,20 +930,20 @@ console.log("looking for this thread: " + tweet.thread_id);
       return null;
     }
     if (!this.tweets_sigs_hmap[tweet_sig]) {
-console.log("tweets not in sigs hmap!");
+      console.log("tweets not in sigs hmap!");
       return null;
     }
 
     //Performs a recursive search
-console.log("tweets length: " + this.tweets.length);
+    console.log("tweets length: " + this.tweets.length);
     for (let i = 0; i < this.tweets.length; i++) {
-console.log("checking... " + i);
+      console.log("checking... " + i);
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
-console.log("has child tweet...");
+        console.log("has child tweet...");
         return this.tweets[i].returnChildTweet(tweet_sig);
       }
     }
-console.log("returning null");
+    console.log("returning null");
 
     return null;
   }
@@ -990,7 +991,6 @@ console.log("returning null");
         // save tweets addressed to me
         //
         if (tx.isTo(this.publicKey)) {
-
           console.log("Receive tweet --> Save notification to archive");
 
           //
@@ -1011,9 +1011,11 @@ console.log("returning null");
           //
           if (txmsg.data?.parent_id) {
             let tweet = this.returnTweet(txmsg.data.parent_id);
-	    if (tweet) {
+            if (tweet) {
               if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
-console.log("SAVING: updating num_replies on parent tweet: " + txmsg.data.parent_id);
+                console.log(
+                  "SAVING: updating num_replies on parent tweet: " + txmsg.data.parent_id
+                );
                 if (tweet == null) {
                   return;
                 }
@@ -1026,18 +1028,18 @@ console.log("SAVING: updating num_replies on parent tweet: " + txmsg.data.parent
                 if (!tweet.tx.optional.num_replies) {
                   tweet.tx.optional.num_replies = 0;
                 }
- 
+
                 if (!tx.isFrom(this.publicKey)) {
-//                  tweet.tx.optional.num_replies++;
-console.log("existing tweet replies: " + tweet.tx.optional.num_replies); 
-console.log("existing tweet replies: " + tweet.tx.optional.num_replies); 
-//console.log("$");
-//console.log("$");
-//console.log("$");
-//console.log("$ Incrementing NUM replies to " + tweet.tx.optional.num_replies);
-//console.log("$");
-//console.log("$");
-//console.log("$");
+                  //                  tweet.tx.optional.num_replies++;
+                  console.log("existing tweet replies: " + tweet.tx.optional.num_replies);
+                  console.log("existing tweet replies: " + tweet.tx.optional.num_replies);
+                  //console.log("$");
+                  //console.log("$");
+                  //console.log("$");
+                  //console.log("$ Incrementing NUM replies to " + tweet.tx.optional.num_replies);
+                  //console.log("$");
+                  //console.log("$");
+                  //console.log("$");
                   tweet.renderReplies();
                 }
 
@@ -1046,8 +1048,10 @@ console.log("existing tweet replies: " + tweet.tx.optional.num_replies);
                   field3: this.publicKey,
                 });
               } else {
-console.log("SAVING: child tweet? updating num_replies for: " + txmsg.data.parent_id);
-	        if (tweet.tx) {
+                console.log(
+                  "SAVING: child tweet? updating num_replies for: " + txmsg.data.parent_id
+                );
+                if (tweet.tx) {
                   if (!tweet.tx.optional) {
                     tweet.tx.optional = {};
                   }
@@ -1076,8 +1080,8 @@ console.log("SAVING: child tweet? updating num_replies for: " + txmsg.data.paren
 
             let tweet2 = this.returnTweet(rtx.signature);
             if (tweet2) {
-console.log("SAVING: retweets updating num_retweets 1");
-	      if (this.tweets_sigs_hmap[rtx.signature]) {
+              console.log("SAVING: retweets updating num_retweets 1");
+              if (this.tweets_sigs_hmap[rtx.signature]) {
                 if (tweet2 == null) {
                   return;
                 }
@@ -1094,7 +1098,7 @@ console.log("SAVING: retweets updating num_retweets 1");
                 });
                 tweet2.renderRetweets();
               } else {
-console.log("SAVING: retweets updating num_retweets 2");
+                console.log("SAVING: retweets updating num_retweets 2");
                 if (!tweet2.tx.optional) {
                   tweet2.tx.optional = {};
                 }
@@ -1233,13 +1237,13 @@ console.log("SAVING: retweets updating num_retweets 2");
         let params4 = {
           $sig: tweet.parent_id,
         };
-console.log("$$");
-console.log("$$");
-console.log("$$");
-console.log("$$ server incrementing NUM replies to " + tweet.parent_id);
-console.log("$$");
-console.log("$$");
-console.log("$$");
+        console.log("$$");
+        console.log("$$");
+        console.log("$$");
+        console.log("$$ server incrementing NUM replies to " + tweet.parent_id);
+        console.log("$$");
+        console.log("$$");
+        console.log("$$");
         await this.app.storage.executeDatabase(sql4, params4, "redsquare");
       }
 
@@ -1251,8 +1255,6 @@ console.log("$$");
       console.error("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
     }
   }
-
-
 
   async sendLikeTransaction(app, mod, data, tx = null) {
     let redsquare_self = this;
@@ -1279,7 +1281,6 @@ console.log("$$");
   }
 
   async receiveLikeTransaction(blk, tx, conf) {
-
     //
     // browsers
     //
@@ -1288,14 +1289,13 @@ console.log("$$");
       // save my likes
       //
       if (tx.isTo(this.publicKey)) {
-
-	//
-	// ignore if already added
-	//
-	if (this.tweets_sigs_hmap[tx.signature]) { 
-	  console.log("like tweet, but we have already processed / added");
-	  return;
-	}
+        //
+        // ignore if already added
+        //
+        if (this.tweets_sigs_hmap[tx.signature]) {
+          console.log("like tweet, but we have already processed / added");
+          return;
+        }
 
         this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
@@ -1319,9 +1319,9 @@ console.log("$$");
           if (!liked_tx.optional.num_likes) {
             liked_tx.optional.num_likes = 0;
           }
-console.log("liked_tx has N optional likes: " + liked_tx.optional.num_likes);
+          console.log("liked_tx has N optional likes: " + liked_tx.optional.num_likes);
           liked_tx.optional.num_likes++;
-console.log("incrementing to: " + liked_tx.optional.num_likes);
+          console.log("incrementing to: " + liked_tx.optional.num_likes);
           this.app.storage.updateTransaction(liked_tx, { owner: this.publicKey });
           tweet.renderLikes();
         }
@@ -1408,7 +1408,6 @@ console.log("incrementing to: " + liked_tx.optional.num_likes);
   // saving and loading wallet state //
   /////////////////////////////////////
   loadLocalTweets() {
-
     if (this.app.browser.returnURLParameter("tweet_id")) {
       return;
     }
@@ -1416,7 +1415,7 @@ console.log("incrementing to: " + liked_tx.optional.num_likes);
       return;
     }
 
-/****
+    /****
 *
 * NOTE - code kept for reference but should not be used without serious testing over
 * whether the saved / loaded versions are properly updated, as this screws up tracking
@@ -1498,7 +1497,6 @@ console.log("incrementing to: " + liked_tx.optional.num_likes);
   }
 
   loadOptions() {
-
     if (!this.app.BROWSER) {
       return;
     }
@@ -1512,10 +1510,15 @@ console.log("incrementing to: " + liked_tx.optional.num_likes);
       this.notifications_number_unviewed = 0;
     }
 
-    if (this.app.options.redsquare.liked_tweets) { this.liked_tweets = this.app.options.redsquare.liked_tweets; }
-    if (this.app.options.redsquare.retweeted_tweets) { this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets; }
-    if (this.app.options.redsquare.replied_tweets) { this.replied_tweets = this.app.options.redsquare.replied_tweets; }
-
+    if (this.app.options.redsquare.liked_tweets) {
+      this.liked_tweets = this.app.options.redsquare.liked_tweets;
+    }
+    if (this.app.options.redsquare.retweeted_tweets) {
+      this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets;
+    }
+    if (this.app.options.redsquare.replied_tweets) {
+      this.replied_tweets = this.app.options.redsquare.replied_tweets;
+    }
   }
 
   saveOptions() {
@@ -1530,9 +1533,15 @@ console.log("incrementing to: " + liked_tx.optional.num_likes);
     this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
     this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
 
-    while (this.liked_tweets.length > 100) { this.liked_tweets.splice(0, 1); }
-    while (this.retweeted_tweets.length > 100) { this.retweeted_tweets.splice(0, 1); }
-    while (this.replied_tweets.length > 100) { this.replied_tweets.splice(0, 1); }
+    while (this.liked_tweets.length > 100) {
+      this.liked_tweets.splice(0, 1);
+    }
+    while (this.retweeted_tweets.length > 100) {
+      this.retweeted_tweets.splice(0, 1);
+    }
+    while (this.replied_tweets.length > 100) {
+      this.replied_tweets.splice(0, 1);
+    }
 
     this.app.options.redsquare.liked_tweets = this.liked_tweets;
     this.app.options.redsquare.retweeted_tweets = this.retweeted_tweets;
@@ -1545,49 +1554,75 @@ console.log("incrementing to: " + liked_tx.optional.num_likes);
   //////////////
   // remember //
   //////////////
-  likeTweet(sig="") {
-    if (sig === "") { return; }
-    if (!this.liked_tweets.includes(sig)) { this.liked_tweets.push(sig); }
+  likeTweet(sig = "") {
+    if (sig === "") {
+      return;
+    }
+    if (!this.liked_tweets.includes(sig)) {
+      this.liked_tweets.push(sig);
+    }
     this.saveOptions();
   }
-  unlikeTweet(sig="") {
-    if (sig === "") { return; }
+  unlikeTweet(sig = "") {
+    if (sig === "") {
+      return;
+    }
     if (this.liked_tweets.includes(sig)) {
       for (let i = 0; i < this.liked_tweets.length; i++) {
-	if (this.liked_tweets[i] === sig) { this.liked_tweets.splice(i, 1); i--; }
+        if (this.liked_tweets[i] === sig) {
+          this.liked_tweets.splice(i, 1);
+          i--;
+        }
       }
     }
     this.saveOptions();
   }
-  retweetTweet(sig="") {
-    if (sig === "") { return; }
-    if (!this.retweeted_tweets.includes(sig)) { this.retweeted_tweets.push(sig); }
+  retweetTweet(sig = "") {
+    if (sig === "") {
+      return;
+    }
+    if (!this.retweeted_tweets.includes(sig)) {
+      this.retweeted_tweets.push(sig);
+    }
     this.saveOptions();
   }
-  unretweetTweet(sig="") {
-    if (sig === "") { return; }
+  unretweetTweet(sig = "") {
+    if (sig === "") {
+      return;
+    }
     if (this.retweeted_tweets.includes(sig)) {
       for (let i = 0; i < this.retweeted_tweets.length; i++) {
-	if (this.retweeted_tweets[i] === sig) { this.retweeted_tweets.splice(i, 1); i--; }
+        if (this.retweeted_tweets[i] === sig) {
+          this.retweeted_tweets.splice(i, 1);
+          i--;
+        }
       }
     }
     this.saveOptions();
   }
-  replyTweet(sig="") {
-    if (sig === "") { return; }
-    if (!this.replied_tweets.includes(sig)) { this.replied_tweets.push(sig); }
+  replyTweet(sig = "") {
+    if (sig === "") {
+      return;
+    }
+    if (!this.replied_tweets.includes(sig)) {
+      this.replied_tweets.push(sig);
+    }
     this.saveOptions();
   }
-  unreplyTweet(sig="") {
-    if (sig === "") { return; }
+  unreplyTweet(sig = "") {
+    if (sig === "") {
+      return;
+    }
     if (this.replied_tweets.includes(sig)) {
       for (let i = 0; i < this.replied_tweets.length; i++) {
-	if (this.replied_tweets[i] === sig) { this.replied_tweets.splice(i, 1); i--; }
+        if (this.replied_tweets[i] === sig) {
+          this.replied_tweets.splice(i, 1);
+          i--;
+        }
       }
     }
     this.saveOptions();
   }
-
 
   //////////////////////////////////////////////////////////
   /////       **** WEB SERVER STUFF  *****
@@ -1686,11 +1721,10 @@ console.log("incrementing to: " + liked_tx.optional.num_likes);
   // writes the latest 10 tweets to tweets.js
   //
   async updateTweetsCacheForBrowsers() {
-
-//
-// DISABLE FOR NOW
-// 
-return;
+    //
+    // DISABLE FOR NOW
+    //
+    return;
 
     let hex_entries = [];
 
