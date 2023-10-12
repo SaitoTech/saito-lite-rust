@@ -61,7 +61,13 @@ p {
   width: unset;
 }
 
+span.tip {
+  border-bottom: 1px dotted;
+  font-weight: bold;
+}
+
 .tip .tiptext {
+  font-weight: normal;
   min-width: 100px;
   width: fit-content;
   padding: 0.5em 1em;
@@ -425,19 +431,19 @@ dt {
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
-  background-color: var(--p1-color) !important;
+  background-color: var(--p1-color);
 }
 
 .p2 {
-  background-color: var(--p2-color) !important;
+  background-color: var(--p2-color);
 }
 
 .p3 {
-  background-color: var(--p3-color) !important;
+  background-color: var(--p3-color);
 }
 
 .p4 {
-  background-color: var(--p4-color) !important;
+  background-color: var(--p4-color);
 }
 
 .display-name {
