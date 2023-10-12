@@ -209,10 +209,9 @@ export default class Wallet extends SaitoWallet {
           await this.app.modules.onWalletReset();
 
           // reset and save
-          await this.app.storage.resetOptions();
           await this.instance.reset();
           await this.app.blockchain.resetBlockchain();
-          // this.app.storage.saveOptions();
+          await this.app.storage.resetOptions();
 
           // re-specify after reset
           await this.setPrivateKey(tmpprivkey);
@@ -304,8 +303,6 @@ export default class Wallet extends SaitoWallet {
    */
   async resetWallet() {
     console.log("resetting wallet : " + (await this.getPublicKey()));
-    // await S.getInstance().resetWallet();
-    await this.app.storage.resetOptions();
 
     await this.reset();
 
@@ -313,12 +310,14 @@ export default class Wallet extends SaitoWallet {
       await this.app.blockchain.resetBlockchain();
     }
 
+    await this.app.storage.resetOptions();
+
     // keychain
     if (this.app.options.keys) {
       this.app.options.keys = [];
     }
 
-    // let modules purge stuff (not implementer)
+    // let modules purge stuff (only partially implemented)
     await this.app.modules.onWalletReset(true);
 
     await this.saveWallet();
