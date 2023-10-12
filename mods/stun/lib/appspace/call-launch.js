@@ -89,10 +89,11 @@ class CallLaunch {
 
   async createRoom() {
     this.loader.render(true);
-    function callback() {
-      this.loader.remove();
-    }
-    await this.mod.sendCreateRoomTransaction(null, callback);
+    const room_code = await this.mod.sendCreateRoomTransaction(null);
+    this.app.connection.emit("stun-remove-loader");
+    this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
+    this.app.connection.emit("close-preview-window");
+    this.app.connection.emit("start-stun-call");
     // this.joinRoom();
   }
 
