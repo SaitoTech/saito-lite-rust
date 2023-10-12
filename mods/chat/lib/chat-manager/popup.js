@@ -17,6 +17,8 @@ class ChatPopup {
 
     this.group = null;
 
+    this.is_scrolling = false;
+
     this.overlay = new SaitoOverlay(app, mod);
 
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
@@ -144,7 +146,7 @@ class ChatPopup {
     //
     // scroll to bottom
     //
-    if (document.querySelector(popup_qs + " .chat-body")) {
+    if (document.querySelector(popup_qs + " .chat-body") && !this.is_scrolling) {
       document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
     }
 
@@ -243,6 +245,20 @@ class ChatPopup {
       };
     }
 
+    let myBody = document.querySelector(popup_qs + " .chat-body");
+    if (myBody){
+      myBody.addEventListener("scroll", (e) => {
+        let chatHeight = myBody.getBoundingClientRect().height;
+
+        if (myBody.scrollHeight - chatHeight - myBody.scrollTop > chatHeight){
+          this.is_scrolling = true;
+        }else{
+          this.is_scrolling = false;
+        }
+        
+      });
+    }
+
     try {
       //
       // close
@@ -267,6 +283,7 @@ class ChatPopup {
         mod.receiveChatTransaction(newtx);
         this.input.setInput("");
         if (document.querySelector(popup_qs + " .chat-body")) {
+          this.is_scrolling = false;
           document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
         }
       };

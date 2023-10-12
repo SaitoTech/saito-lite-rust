@@ -36,6 +36,10 @@ class CallLaunch {
         }
       }, 500);
     });
+
+    app.connection.on("stun-remove-loader", () => {
+      this.loader.remove();
+    });
   }
 
   render() {
@@ -60,11 +64,10 @@ class CallLaunch {
       );
       this.attachEvents(this.app, this.mod);
       this.loader.remove();
-    }, 3000);
+    }, 2000);
 
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit("stun-init-peer-manager", "large");
-
     this.callSetting.render();
   }
 
@@ -85,8 +88,12 @@ class CallLaunch {
   }
 
   async createRoom() {
-    this.room_code = await this.mod.sendCreateRoomTransaction();
-    this.joinRoom();
+    this.loader.render(true);
+    function callback() {
+      this.loader.remove();
+    }
+    await this.mod.sendCreateRoomTransaction(null, callback);
+    // this.joinRoom();
   }
 
   joinRoom() {

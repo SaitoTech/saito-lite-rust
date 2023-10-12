@@ -1645,21 +1645,23 @@ class Browser {
         });
       };
 
-      window.sprompt = function(message) {
+      window.sprompt = function(message, suggestion = "") {
         if (document.getElementById("saito-alert")) {
           return;
         }
         return new Promise((resolve, reject) => {
           let wrapper = document.createElement("div");
           wrapper.id = "saito-alert";
-          let html = "<div id=\"saito-alert-shim\">";
-          html += "<div id=\"saito-alert-box\">";
-          html += "<p class=\"saito-alert-message\">" + browser_self.sanitize(message) + "</p>";
-          html +=
-            "<div class=\"alert-prompt\"><input type=\"text\" id=\"promptval\" class=\"promptval\" /></div>";
-          html +=
-            "<div id=\"alert-buttons\"><button id=\"alert-cancel\">Cancel</button><button id=\"alert-ok\">OK</button>";
-          html += "</div></div></div>";
+          let html = `<div id="saito-alert-shim">
+                        <div id="saito-alert-box">
+                          <p class="saito-alert-message">${browser_self.sanitize(message)}</p>
+                          <div class="alert-prompt"><input type="text" id="promptval" class="promptval" placeholder="${suggestion}" /></div>
+                          <div id="alert-buttons">
+                            <button id="alert-cancel">Cancel</button>
+                            <button id="alert-ok">OK</button>
+                          </div>
+                        </div>
+                      </div>`;
           wrapper.innerHTML = html;
           document.body.appendChild(wrapper);
           document.querySelector("#promptval").focus();
@@ -1676,7 +1678,7 @@ class Browser {
           document.querySelector("#alert-ok").addEventListener(
             "click",
             function() {
-              let val = document.querySelector("#promptval").value;
+              let val = document.querySelector("#promptval").value || suggestion;
               wrapper.remove();
               resolve(val);
             },

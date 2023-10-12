@@ -167,7 +167,7 @@ class Stun extends ModTemplate {
     // console.log(type, obj);
     let stun_self = this;
     let obj = arguments[1];
-    
+
     if (type === "user-menu") {
       if (obj?.publicKey) {
         if (obj.publicKey !== this.app.wallet.publicKey) {
@@ -252,24 +252,48 @@ class Stun extends ModTemplate {
     return null;
   }
 
-  onConfirmation(blk, tx, conf, app) {
-    let txmsg = tx.returnMessage();
+  // onConfirmation(blk, tx, conf, app) {
+  //   if (tx == null) {
+  //     return;
+  //   }
+  //   let txmsg = tx.returnMessage();
 
-    if (conf === 0) {
-      if (txmsg.module === "Stun") {
-        //
-        // Do we even need/want to send messages on chain?
-        // There are problems with double processing events...
-        //
-        if (app.BROWSER === 1) {
-          if (txmsg.request === "stun-send-message-to-peers") {
-            console.log("onConf: stun-send-message-to-peers");
-            this.receiveStunMessageToPeersTransaction(app, tx);
-          }
-        }
-      }
-    }
-  }
+  //   if (conf === 0) {
+  //     if (txmsg.module === "Stun") {
+  //       //
+  //       // Do we even need/want to send messages on chain?
+  //       // There are problems with double processing events...
+  //       //
+  //       if (txmsg.request === "stun-message-broadcast") {
+  //         let inner_tx = new Transaction(undefined, txmsg.data);
+  //         let message = inner_tx.returnMessage();
+  //         try {
+  //           if (message.request === "stun-create-room-transaction") {
+  //             this.receiveCreateRoomTransaction(app, inner_tx);
+  //           }
+  //           if (message.request === "stun-send-message-to-server") {
+  //             this.receiveStunMessageToServerTransaction(app, inner_tx, peer);
+  //           }
+
+  //           if (message.request === "stun-send-message-to-peers") {
+  //             console.log("HPT: stun-send-message-to-peers");
+  //             this.receiveStunMessageToPeersTransaction(app, inner_tx);
+  //           }
+  //           if (message.request === "stun-send-game-call-message") {
+  //             console.log("HPT: stun-send-game-call-message");
+  //             this.receiveGameCallMessageToPeers(app, inner_tx);
+  //           }
+  //           if (message.request === "stun-room-created-notification-transaction") {
+  //             console.log("HPT:stun-room-created-notification-transaction");
+  //             this.receiveRoomCreatedNotificationTransaction(app, inner_tx);
+  //           }
+  //         } catch (err) {
+  //           console.error("Stun Error:", err);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
@@ -296,6 +320,10 @@ class Stun extends ModTemplate {
           console.log("HPT: stun-send-game-call-message");
           this.receiveGameCallMessageToPeers(app, inner_tx);
         }
+        if (message.request === "stun-room-created-notification-transaction") {
+          console.log("HPT:stun-room-created-notification-transaction");
+          this.receiveRoomCreatedNotificationTransaction(app, inner_tx);
+        }
       } catch (err) {
         console.error("Stun Error:", err);
       }
@@ -304,14 +332,15 @@ class Stun extends ModTemplate {
     super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  async sendCreateRoomTransaction(room_code = null) {
-    if (!room_code){
+  async sendCreateRoomTransaction(room_code = null, callback = null) {
+    if (!room_code) {
       room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
     }
 
     let _data = {
       public_key: this.publicKey,
       room_code,
+      callback,
     };
 
     // onchain
@@ -334,6 +363,7 @@ class Stun extends ModTemplate {
 
     // server.sendRequestAsTransaction("stun-create-room-transaction", data);
 
+    // this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
 
     return room_code;
@@ -343,6 +373,44 @@ class Stun extends ModTemplate {
   async receiveCreateRoomTransaction(app, tx) {
     let txmsg = tx.returnMessage();
     this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
+    this.sendRoomCreatedNotificationTransaction(txmsg.data);
+  }
+
+  async sendRoomCreatedNotificationTransaction(txmsg_data) {
+    let _data = {
+      ...txmsg_data,
+    };
+
+    // onchain
+    //Are we sure this will always be the stun server?
+    // Shouldn't this be set by onPeerServiceUp
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    newtx.addTo(txmsg_data.public_key);
+    newtx.msg.module = "Stun";
+    newtx.msg.request = "stun-room-created-notification-transaction";
+    newtx.msg.data = _data;
+    await newtx.sign();
+
+    let data = {
+      recipient: txmsg_data.public_key,
+      request: "stun-message-broadcast",
+      data: newtx.toJson(),
+    };
+
+    // server.sendRequestAsTransaction("stun-create-room-transaction", data);
+
+    // this.app.network.propagateTransaction(newtx);
+    this.app.connection.emit("relay-send-message", data);
+  }
+
+  async receiveRoomCreatedNotificationTransaction(app, tx) {
+    let txmsg = tx.returnMessage();
+    // this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
+    this.app.connection.emit("stun-remove-loader");
+    this.app.connection.emit("stun-peer-manager-update-room-code", txmsg.data.room_code);
+    this.app.connection.emit("close-preview-window");
+    this.app.connection.emit("start-stun-call");
   }
 
   async sendStunMessageToServerTransaction(_data) {
@@ -364,6 +432,7 @@ class Stun extends ModTemplate {
       data: newtx.toJson(),
     };
 
+    // this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
   }
 
@@ -431,6 +500,7 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
+    // this.app.network.propagateTransaction(newtx);
     if (recipients) {
       recipients.forEach((recipient) => {
         let data = {
@@ -534,6 +604,8 @@ class Stun extends ModTemplate {
       };
       this.app.connection.emit("relay-send-message", data);
     });
+
+    // this.app.network.propagateTransaction(newtx);
   }
 
   async receiveGameCallMessageToPeers(app, tx) {
@@ -558,7 +630,7 @@ class Stun extends ModTemplate {
 
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
 
-          setTimeout(() => {  
+          setTimeout(() => {
             // init peer manager
             app.connection.emit("stun-init-peer-manager", data.ui);
             app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
@@ -567,7 +639,6 @@ class Stun extends ModTemplate {
             // show-call-interface
             app.connection.emit("start-stun-call");
           }, 2000);
-
         } else {
           //send to sender to stop connection
           let _data = {
@@ -592,16 +663,15 @@ class Stun extends ModTemplate {
 
         siteMessage(`${data.sender} accepted your call`, 2000);
 
-        if (this.dialing){
+        if (this.dialing) {
           clearTimeout(this.dialing);
           this.dialing = null;
         }
-        
+
         // init peer manager and chat manager through self event
         this.app.connection.emit("stun-init-peer-manager", data.ui);
         this.app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
         this.app.connection.emit("start-stun-call");
-        
 
         break;
       case "connection-rejected":
@@ -636,12 +706,23 @@ class Stun extends ModTemplate {
   Will add an empty room if it doesn't already exist and there is no key
   */
   addKeyToRoom(room_code, public_key = "") {
-    let public_keys = this.rooms.has(room_code) ? this.rooms.get(room_code) : [];
+    // Check if the room already exists. If not, initialize with an empty array.
+    if (!this.rooms.has(room_code)) {
+      this.rooms.set(room_code, []);
+    }
+
+    // Now, retrieve the public keys for the room.
+    let public_keys = this.rooms.get(room_code);
+
     console.log("public keys in the room", public_keys);
     console.log("public key that wants to join ", public_key);
-    if (!public_keys.includes(public_key)) {
+
+    // Add the public key if it's not already in the list.
+    if (!public_keys.includes(public_key) && public_key !== "") {
       public_keys.push(public_key);
     }
+
+    // Update the room's public keys.
     this.rooms.set(room_code, public_keys);
   }
 
