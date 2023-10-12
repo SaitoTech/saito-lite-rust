@@ -54,6 +54,9 @@
 .card {
     height: calc(8vw * 1.4);
     width: 8vw;
+
+    max-width: 120px;
+    max-height: 168px;
 }
 
 .hud-body .controls .game-cardgrid {
