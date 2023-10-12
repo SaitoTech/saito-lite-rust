@@ -467,9 +467,6 @@ class Tweet {
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick = (e) => {
-
-alert("clicked on tweet!");
-
           //
           // if we have selected text, then we are trying to copy and paste and
           // the last thing we want is for the UI to update and prevent us from
@@ -502,7 +499,7 @@ alert("clicked on tweet!");
           // if we are asking to see a tweet, WE SHOULD load from parent if exists
           //
           if (e.target.tagName != "IMG") {
-            //window.location.href = `/redsquare/?tweet_id=${this.thread_id}`;
+            window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
             app.connection.emit("redsquare-home-tweet-render-request", this);
           }
         };

@@ -402,6 +402,27 @@ class RedSquare extends ModTemplate {
         return;
       }
 
+
+      // check url hash
+      let hash = window.location.hash;
+      if (hash) {
+        switch(hash) {
+          case "#home":
+            this.app.connection.emit("redsquare-home-render-request");
+            break;
+          case "#notifications":
+            this.app.connection.emit("redsquare-notifications-render-request");
+            break;
+          case "#profile":
+            this.app.connection.emit("redsquare-profile-render-request");
+            break;
+          default:
+            this.app.connection.emit("redsquare-home-render-request");
+        }
+        return;
+      }
+
+
       //
       // or fetch tweets
       //
