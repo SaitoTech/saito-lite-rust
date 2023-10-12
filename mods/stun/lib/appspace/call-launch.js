@@ -36,6 +36,10 @@ class CallLaunch {
         }
       }, 500);
     });
+
+    app.connection.on("stun-remove-loader", () => {
+      this.loader.remove();
+    });
   }
 
   render() {
@@ -85,8 +89,12 @@ class CallLaunch {
   }
 
   async createRoom() {
-    this.room_code = await this.mod.sendCreateRoomTransaction();
-    this.joinRoom();
+    this.loader.render(true);
+    function callback() {
+      this.loader.remove();
+    }
+    await this.mod.sendCreateRoomTransaction(null, callback);
+    // this.joinRoom();
   }
 
   joinRoom() {
