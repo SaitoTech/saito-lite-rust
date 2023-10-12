@@ -127,7 +127,7 @@ async function init() {
 }
 
 // init();
-window.onload = async function () {
+window.onload = async function() {
   try {
     await init();
   } catch (error) {
