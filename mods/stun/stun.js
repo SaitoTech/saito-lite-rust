@@ -332,7 +332,7 @@ class Stun extends ModTemplate {
     super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  async sendCreateRoomTransaction(room_code = null, callback) {
+  async sendCreateRoomTransaction(room_code = null, callback = null) {
     if (!room_code) {
       room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
     }
@@ -363,7 +363,7 @@ class Stun extends ModTemplate {
 
     // server.sendRequestAsTransaction("stun-create-room-transaction", data);
 
-    this.app.network.propagateTransaction(newtx);
+    // this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
 
     return room_code;
@@ -400,7 +400,7 @@ class Stun extends ModTemplate {
 
     // server.sendRequestAsTransaction("stun-create-room-transaction", data);
 
-    this.app.network.propagateTransaction(newtx);
+    // this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
   }
 
@@ -432,7 +432,7 @@ class Stun extends ModTemplate {
       data: newtx.toJson(),
     };
 
-    this.app.network.propagateTransaction(newtx);
+    // this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", data);
   }
 
@@ -500,7 +500,7 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    this.app.network.propagateTransaction(newtx);
+    // this.app.network.propagateTransaction(newtx);
     if (recipients) {
       recipients.forEach((recipient) => {
         let data = {
@@ -605,7 +605,7 @@ class Stun extends ModTemplate {
       this.app.connection.emit("relay-send-message", data);
     });
 
-    this.app.network.propagateTransaction(newtx);
+    // this.app.network.propagateTransaction(newtx);
   }
 
   async receiveGameCallMessageToPeers(app, tx) {

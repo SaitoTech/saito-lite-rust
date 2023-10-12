@@ -68,7 +68,6 @@ class CallLaunch {
 
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit("stun-init-peer-manager", "large");
-
     this.callSetting.render();
   }
 
