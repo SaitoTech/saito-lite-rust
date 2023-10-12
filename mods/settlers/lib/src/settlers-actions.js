@@ -310,7 +310,7 @@ class SettlersActions {
 
     if (vpChange){
       this.updateLog(`${this.formatPlayer(player)} claims the LARGEST ARMY`);
-      this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player-1]} has the largest army`);
+      this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player-1]} forms the largest army ${this.largest.svg}`);
     }
   }
 
@@ -403,7 +403,7 @@ class SettlersActions {
             this.game.state.longestRoad.player = player;
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
-            this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[this.game.state.longestRoad.player - 1]} claimed the longest road`);
+            this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.svg}`);
           } else {
             //Increase size
             this.game.state.longestRoad.size = longest.length;
@@ -424,7 +424,7 @@ class SettlersActions {
           `claimed the ${this.longest.name} with ${longest.length} segments.`
         );
 
-        this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[this.game.state.longestRoad.player - 1]} claimed the longest road`);
+        this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.svg}`);
         this.game.state.longestRoad.player = player;
         this.game.state.longestRoad.size = longest.length;
         this.game.state.longestRoad.path = longest;

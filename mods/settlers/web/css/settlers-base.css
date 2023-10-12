@@ -61,7 +61,13 @@ p {
   width: unset;
 }
 
+span.tip {
+  border-bottom: 1px dotted;
+  font-weight: bold;
+}
+
 .tip .tiptext {
+  font-weight: normal;
   min-width: 100px;
   width: fit-content;
   padding: 0.5em 1em;
