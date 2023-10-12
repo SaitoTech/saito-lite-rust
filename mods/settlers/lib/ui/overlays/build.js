@@ -52,13 +52,11 @@ class BuildOverlay {
           e.preventDefault();
           e.stopImmediatePropagation();
 
-
           let id = e.currentTarget.getAttribute("id");
           let disabled = e.currentTarget.classList.contains("settlers-row-disabled");
 
           if (!disabled) {
             this_self.overlay.hide();
-            this_self.mod.updateStatus(`<div class="player-notice">purchasing...</div>`);
 
             document.querySelectorAll(".settlers-item-row").forEach((row) => {row.onclick = (e) => {}});
 
@@ -83,7 +81,7 @@ class BuildOverlay {
             }
             let purchase = parseInt(id);
             if (purchase >= 0 && purchase <= 3) {
-              let cost = this_self.mod.priceList[parseInt(id)];
+              let cost = this_self.mod.priceList[purchase];
               for (let resource of cost) {
                 //Put the spends on the front of the move, so we can maybe cancel the building action
                 this_self.mod.prependMove(
@@ -95,7 +93,9 @@ class BuildOverlay {
             } else {
               //console.log("Unexpected selection for player move:",id);
             }
-          }
+          
+            this_self.mod.updateStatus(`<div class="player-notice">purchasing...</div>`);
+          }          
       };
     }); 
   }

@@ -23,7 +23,7 @@ class Stun extends ModTemplate {
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
-
+    this.isRelayConnected = false;
     this.servers = [
       {
         urls: "stun:stun-sf.saito.io:3478",
@@ -80,27 +80,7 @@ class Stun extends ModTemplate {
   // Just use inherited initialize, which sets this.publicKey
   // async initialize(app)
 
-  onPeerHandshakeComplete(app, peer) {
-    if (app.BROWSER !== 1) {
-      return;
-    }
-
-    this.ring_sound = new Audio("/videocall/audio/ring.mp3");
-    if (app.browser.returnURLParameter("stun_video_chat")) {
-      let room_obj = JSON.parse(
-        app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
-      );
-
-      // JOIN THE ROOM
-      if (this.browser_active) {
-        this.renderInto("body");
-      } else {
-        this.renderInto(".saito-overlay");
-      }
-
-      app.connection.emit("stun-to-join-room", room_obj.room_code);
-    }
-  }
+  onPeerHandshakeComplete(app, peer) {}
 
   /**
    * Stun will be rendered on
@@ -111,6 +91,35 @@ class Stun extends ModTemplate {
    *
    * This will trigger a "stun-init-peer-manager" event that leads to the creation of PeerManager
    */
+
+  async onPeerServiceUp(app, peer, service) {
+    if (app.BROWSER !== 1) {
+      return;
+    }
+
+    if (service.service === "relay") {
+      if (app.BROWSER !== 1) {
+        return;
+      }
+
+      this.isRelayConnected = true;
+      this.ring_sound = new Audio("/videocall/audio/ring.mp3");
+      if (app.browser.returnURLParameter("stun_video_chat")) {
+        let room_obj = JSON.parse(
+          app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
+        );
+
+        // JOIN THE ROOM
+        if (this.browser_active) {
+          this.renderInto("body");
+        } else {
+          this.renderInto(".saito-overlay");
+        }
+
+        app.connection.emit("stun-to-join-room", room_obj.room_code);
+      }
+    }
+  }
   render() {
     this.renderInto("body");
   }
@@ -158,6 +167,7 @@ class Stun extends ModTemplate {
     // console.log(type, obj);
     let stun_self = this;
     let obj = arguments[1];
+    
     if (type === "user-menu") {
       if (obj?.publicKey) {
         if (obj.publicKey !== this.app.wallet.publicKey) {
@@ -203,14 +213,25 @@ class Stun extends ModTemplate {
     //Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
     //
     if (type == "game-menu") {
+      console.log("game-menu");
       this.attachStyleSheets();
       super.render(this.app, this);
       if (obj?.game?.players?.length > 1) {
         return {
           id: "game-chat",
-          text: "Video Chat",
+          text: "Voice Chat",
           submenus: [
             {
+              parent: "game-chat",
+              text: "Voice Chat",
+              id: "group-voice-chat",
+              class: "group-voice-chat",
+              callback: function (app, game_mod) {
+                //this.showSubMenu("start-group-video-chat");
+              },
+            },
+            {
+              parent: "group-voice-chat",
               text: "Start call",
               id: "start-group-video-chat",
               class: "start-group-video-chat",
@@ -283,8 +304,10 @@ class Stun extends ModTemplate {
     super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  async sendCreateRoomTransaction() {
-    let room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
+  async sendCreateRoomTransaction(room_code = null) {
+    if (!room_code){
+      room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
+    }
 
     let _data = {
       public_key: this.publicKey,
@@ -454,7 +477,7 @@ class Stun extends ModTemplate {
 
     this.sendStunCallMessageToPeers(this.app, data, recipients);
 
-    setTimeout(() => {
+    this.dialing = setTimeout(() => {
       // cancel the call after 30seconds
       let data = {
         type: "cancel-connection-request",
@@ -480,6 +503,8 @@ class Stun extends ModTemplate {
         ui: ui_type,
         sender: this.publicKey,
       };
+      clearTimeout(this.dialing);
+      this.dialing = null;
       this.stopRing();
       this.sendStunCallMessageToPeers(this.app, data, recipients);
     }
@@ -528,16 +553,21 @@ class Stun extends ModTemplate {
             type: "connection-accepted",
             room_code: data.room_code,
             sender: app.wallet.publicKey,
+            ui: data.ui,
           };
 
-          // init peer manager
-          app.connection.emit("stun-init-peer-manager", data.ui);
-          app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
-
-          // send the information to the other peers and ask them to join the call
-          // show-call-interface
-          app.connection.emit("start-stun-call");
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
+
+          setTimeout(() => {  
+            // init peer manager
+            app.connection.emit("stun-init-peer-manager", data.ui);
+            app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
+
+            // send the information to the other peers and ask them to join the call
+            // show-call-interface
+            app.connection.emit("start-stun-call");
+          }, 2000);
+
         } else {
           //send to sender to stop connection
           let _data = {
@@ -560,14 +590,18 @@ class Stun extends ModTemplate {
             .parentElement.removeChild(document.getElementById("saito-alert"));
         }
 
-        salert(`Call accepted by ${data.sender}`);
+        siteMessage(`${data.sender} accepted your call`, 2000);
 
-        setTimeout(() => {
-          // init peer manager and chat manager through self event
-          this.app.connection.emit("stun-init-peer-manager", data.ui);
-          app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
-          app.connection.emit("start-stun-call");
-        }, 4000);
+        if (this.dialing){
+          clearTimeout(this.dialing);
+          this.dialing = null;
+        }
+        
+        // init peer manager and chat manager through self event
+        this.app.connection.emit("stun-init-peer-manager", data.ui);
+        this.app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
+        this.app.connection.emit("start-stun-call");
+        
 
         break;
       case "connection-rejected":
@@ -603,13 +637,11 @@ class Stun extends ModTemplate {
   */
   addKeyToRoom(room_code, public_key = "") {
     let public_keys = this.rooms.has(room_code) ? this.rooms.get(room_code) : [];
-
     console.log("public keys in the room", public_keys);
     console.log("public key that wants to join ", public_key);
     if (!public_keys.includes(public_key)) {
       public_keys.push(public_key);
     }
-
     this.rooms.set(room_code, public_keys);
   }
 

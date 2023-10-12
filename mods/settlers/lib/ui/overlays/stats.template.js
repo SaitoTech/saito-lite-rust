@@ -2,6 +2,22 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
 
     let players_count = stats.mod.game.state.players.length;
 
+
+    let highest_count =  stats.mod.game.stats.dice[2];
+    // get highest count
+    for (let i = 2; i <= 12; i++){
+      if (stats.mod.game.stats.dice[i] > highest_count) {
+        highest_count = stats.mod.game.stats.dice[i];
+      }
+    }
+
+    let player_count = stats.mod.game.state.players.length;
+    let max_bar_height = (player_count >= 3) ? 15 : 15;
+
+    // height for 1 count; 
+    let base_height = max_bar_height/highest_count;
+
+
     let html = `
       <div class="settlers-stats-overlay ${(players_count >= 3) ? `vp-3p ` : `` }saitoa">`;
 
@@ -13,9 +29,17 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
         
         html += `<div class="settlers-dice-histogram">`
         for (let i = 2; i <= 12; i++){
-          html += `  <div class="settlers-dice-bar dice-${i}" data-dice-rolls="${i}">
-                      <div class="settlers-dice-count">${stats.mod.game.stats.dice[i]}</div>
-                    </div>`;
+
+          let bar_height = base_height*stats.mod.game.stats.dice[i];
+          html += `  <div class="settlers-dice-bar dice-${i} ${stats.mod.game.stats.dice[i] > 0 ? "has_been_rolled": "never_rolled"}" data-dice-rolls="${i}" style="height:${bar_height}rem;">
+                      <div class="settlers-dice-count">${stats.mod.game.stats.dice[i]}</div>`;
+
+                      for (let j = 0; j < players_count; j++){
+                        let player_bar_height = base_height * stats.mod.game.stats.dicePlayer[i][j];
+                        html += `<div class="settlers-dice-count-player p${stats.mod.game.colors[j]}" style="height:${player_bar_height}rem;"></div>`;
+                      }
+
+          html += "</div>";
         }
         html += `</div>`
 

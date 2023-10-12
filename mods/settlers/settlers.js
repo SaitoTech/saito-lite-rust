@@ -387,6 +387,7 @@ class Settlers extends GameTemplate {
       state.players[i].devcards = 0;
       state.players[i].ports = [];
       state.players[i].road = 0;
+
     }
     return state;
   }
@@ -394,9 +395,16 @@ class Settlers extends GameTemplate {
   initializeStats() {
     let stats = {};
     stats.dice = {};
+    stats.dicePlayer = {};
+
     stats.production = {};
     for (let i = 2; i <= 12; i++) {
       stats.dice[i] = 0;
+
+      let array = new Array(this.game.players.length);
+      array.fill(0);
+
+      stats.dicePlayer[i] = array;
     }
 
     for (let r of this.returnResources()) {

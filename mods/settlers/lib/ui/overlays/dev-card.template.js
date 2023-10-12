@@ -25,7 +25,10 @@ module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
       for (let x = 0; x < mod.game.deck[0].hand.length; x++) {
           let card = mod.game.deck[0].cards[mod.game.deck[0].hand[x]];
         
-          let card_disable = disable || (x >= mod.game.state.players[mod.game.player - 1].devcards);
+          //
+          // It's not out turn or we have already played a dev card this turn, or which just bought the card (but it isn't a VP)
+          // 
+          let card_disable = disable || (x >= mod.game.state.players[mod.game.player - 1].devcards && card.action != 0);
           
           if (!mod.game.state.hasRolled && card.action !== 1){
             card_disable = true;

@@ -64,6 +64,8 @@ class Encrypt extends ModTemplate {
         callback: function (app, publicKey) {
           encrypt_self.app.keychain.saveKeys();
           encrypt_self.initiate_key_exchange(publicKey, 0);
+          salert("Requesting keys to establish an encrypted channel, please be patient as this may take some time");
+
           //      encrypt_self.app.connection.emit("stun-create-peer-connection", ([publicKey]));
           //
           // TODO - remove if above works
@@ -276,6 +278,8 @@ class Encrypt extends ModTemplate {
     let our_address = tx.to[0].publicKey;
     let alice_publicKey = txmsg.alice_publicKey;
 
+    siteMessage(`${this.app.keychain.returnUsername(remote_address, 8)} has requested a key exchange with you`, 5000);
+    
     let fee = BigInt(tx.to[0].amount);
 
     let bob = this.app.crypto.createDiffieHellman();
@@ -341,6 +345,9 @@ class Encrypt extends ModTemplate {
         return;
       }
     }
+
+    siteMessage(`Key exchange with ${this.app.keychain.returnUsername(sender, 8)} completed`, 5000);
+
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
     let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
     let alice = this.app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);

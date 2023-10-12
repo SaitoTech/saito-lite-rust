@@ -99,21 +99,23 @@ class Invite {
 
       //Custom Game
 
-      let defaultOptions = game_mod.returnDefaultGameOptions();
-      let defaultKeys = Object.keys(defaultOptions);
-      let inviteKeys = Object.keys(txmsg.options);
+      if (game_mod){
+        let defaultOptions = game_mod.returnDefaultGameOptions();
+        let defaultKeys = Object.keys(defaultOptions);
+        let inviteKeys = Object.keys(txmsg.options);
 
-      if (defaultKeys.length == inviteKeys.length) {
-        for (const key of defaultKeys) {
-          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")) {
-            alt_game_type += "custom ";
-            this.invite_data.game_type = "custom game";
-            break;
+        if (defaultKeys.length == inviteKeys.length) {
+          for (const key of defaultKeys) {
+            if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")) {
+              alt_game_type += "custom ";
+              this.invite_data.game_type = "custom game";
+              break;
+            }
           }
+        } else {
+          alt_game_type += "custom ";
+          this.invite_data.game_type = "custom game";
         }
-      } else {
-        alt_game_type += "custom ";
-        this.invite_data.game_type = "custom game";
       }
 
       //Crypto Game
