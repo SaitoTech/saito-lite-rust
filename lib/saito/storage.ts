@@ -220,10 +220,12 @@ class Storage {
     let wallet = await localforage.getItem(publicKey);
     if (wallet) {
       console.log(`Found wallet for ${publicKey} in IndexedDB`);
+      //siteMessage(`Found wallet for ${publicKey} in IndexedDB`);
       this.app.options = wallet;
       this.app.storage.saveOptions();
     } else {
       console.log(`Creating fresh wallet for ${publicKey}`);
+      //siteMessage(`Creating fresh wallet for ${publicKey}`);
       await this.resetOptions();
     }
   }
