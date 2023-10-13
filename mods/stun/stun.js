@@ -514,7 +514,9 @@ class Stun extends ModTemplate {
     };
 
     this.sendStunCallMessageToPeers(this.app, data, recipients);
-
+    
+    this.startRing();
+    
     this.dialing = setTimeout(() => {
       // cancel the call after 30seconds
       let data = {
