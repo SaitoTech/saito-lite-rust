@@ -1103,6 +1103,8 @@ class RedSquare extends ModTemplate {
       //
       if (tx.isTo(this.publicKey)) {
 
+	let ts = tx.timestamp;
+
         await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
           field3: this.publicKey,
@@ -1116,12 +1118,16 @@ class RedSquare extends ModTemplate {
           let tweet = this.returnTweet(txmsg.data.signature);
 
           if (tweet.tx) {
+	    if (!tweet.tx.optional) { tweet.tx.optional = {}; }
 	    if (tweet.tx.optional) {
 	      if (!tweet.tx.optional.updated_at) { tweet.tx.optional.updated_at = 0; }
-	      if (tweet.tx.optional.updated_at > blk.timestamp) {
+	      if (tweet.tx.optional.updated_at > ts) {
                 return;
               } else {
-                tx.optional.updated_at = blk.timestamp;
+		// we should logically update updated_at here, but we don't
+		// because browsers will not load likes for each other in a
+		// confused manner like this, and not updating the field 
+		// allows for accurate counting of multiple likes...
 	      }
             }
           }
@@ -1177,7 +1183,7 @@ class RedSquare extends ModTemplate {
     // consensus variable and if they're loading tweets from server-archives uncritically it is a 
     // sensible set of defaults.
     //
-    this.app.storage.loadTransactions({ sig: txmsg.data.signature , owner: this.publicKey }, (txs) => {
+    this.app.storage.loadTransactions({ sig: txmsg.data.signature , owner: this.publicKey }, async (txs) => {
       if (!txs) { return; }
       if (txs.length == 0) { return; }
       let tx = txs[0];
@@ -1189,7 +1195,7 @@ class RedSquare extends ModTemplate {
       }
       tx.optional.updated_at = new Date().getTime();
       tx.optional.num_likes++;
-      this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
+      await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
     }, "localhost");
 
     //
@@ -1466,7 +1472,7 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
         //
         // servers load from themselves
         //
-        this.app.storage.loadTransactions({ sig: tweet.thread_id ,owner: this.publicKey }, (txs) => {
+        this.app.storage.loadTransactions({ sig: tweet.thread_id ,owner: this.publicKey }, async (txs) => {
           if (!txs) { return; }
           if (txs.length == 0) { return; }
           let tx = txs[0];
@@ -1475,7 +1481,7 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
             tx.optional.num_retweets = 0;
           }
           tx.optional.num_retweets++;
-          this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
+          await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
         }, "localhost");
       }
 
@@ -1493,7 +1499,7 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
         //
         // servers load from themselves
         //
-        this.app.storage.loadTransactions({ sig: tweet.parent_id ,owner: this.publicKey }, (txs) => {
+        this.app.storage.loadTransactions({ sig: tweet.parent_id ,owner: this.publicKey }, async (txs) => {
           if (!txs) { return; }
           if (txs.length == 0) { return; }
           let tx = txs[0];
@@ -1502,7 +1508,7 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
             tx.optional.num_replies = 0;
           }
           tx.optional.num_replies++;
-          this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
+          await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
         }, "localhost");
       }
 
