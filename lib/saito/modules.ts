@@ -75,12 +75,18 @@ class Mods {
     peer: Peer,
     mycallback: (any) => Promise<void> = null
   ) {
+    let have_responded = false;
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
-        await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
+        if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
+	  have_responded = true;
+	};
       } catch (err) {
         console.error("handlePeerTransaction Unknown Error: ", err);
       }
+    }
+    if (have_responded == false) {
+      mycallback({});
     }
     return;
   }

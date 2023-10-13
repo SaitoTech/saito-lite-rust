@@ -520,7 +520,8 @@ class Chat extends ModTemplate {
 
       if (mycallback) {
         let txs = group.txs.filter((t) => t.timestamp > txmsg?.data?.timestamp);
-        await mycallback(txs);
+        mycallback(txs);
+	return 1;
       }
     }
 
@@ -531,7 +532,8 @@ class Chat extends ModTemplate {
       // notify sender if requested
       //
       if (mycallback) {
-        await mycallback({ payload: "success", error: {} });
+        mycallback({ payload: "success", error: {} });
+        return 1;
       }
     } else if (txmsg.request === "chat message broadcast") {
 
@@ -571,7 +573,8 @@ class Chat extends ModTemplate {
       // notify sender if requested
       //
       if (mycallback) {
-        await mycallback({ payload: "success", error: {} });
+        mycallback({ payload: "success", error: {} });
+        return 1;
       }
     }
   }

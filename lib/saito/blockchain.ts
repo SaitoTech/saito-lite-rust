@@ -72,8 +72,8 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   public async affixCallbacks(block: Block) {
-    // console.log(" --- AFFIX CALLBACK --- " + block.id);
-    // console.log("affixing callbacks for block : " + block.hash);
+    console.log(" --- AFFIX CALLBACK --- " + block.id);
+    console.log("affixing callbacks for block : " + block.hash);
     let callbacks = [];
     let callbackIndices = [];
     let txs: Transaction[] = block.transactions as Transaction[];
@@ -83,6 +83,8 @@ export default class Blockchain extends SaitoBlockchain {
       if (txs[z].type === TransactionType.Normal) {
         await txs[z].decryptMessage(this.app);
         const txmsg = txs[z].returnMessage();
+console.log("affixing for tx: " + z);
+console.log(JSON.stringify(txmsg));
         this.app.modules.affixCallbacks(txs[z], z, txmsg, callbacks, callbackIndices);
         console.assert(
           callbacks.length === callbackIndices.length,
@@ -97,6 +99,7 @@ console.log("set callbacks 1...");
 console.log("set callback indices 2...");
     this.callbackIndices.set(block.hash, callbackIndices);
 console.log("set confirmations 3...");
+console.log(" and setting confs for block hash: " + block.hash);
     this.confirmations.set(block.hash, BigInt(-1));
 console.log("done affixing callbacks...");
   }

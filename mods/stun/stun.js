@@ -280,7 +280,7 @@ class Stun extends ModTemplate {
       }
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    return await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async sendCreateRoomTransaction() {

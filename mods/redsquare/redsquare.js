@@ -1223,6 +1223,8 @@ console.log("owner is: " + this.publicKey);
             field3: this.publicKey,
           });
 
+console.log("done saving transaction...");
+
           //
           // if replies
           //

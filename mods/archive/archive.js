@@ -150,7 +150,7 @@ class Archive extends ModTemplate {
       if (req.data.request === "load") {
         let txs = await this.loadTransactions(req.data);
         mycallback(txs);
-        return;
+        return 1;
       }
 
       let newtx = new Transaction();
@@ -167,7 +167,7 @@ class Archive extends ModTemplate {
       }
     }
 
-    await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   //////////

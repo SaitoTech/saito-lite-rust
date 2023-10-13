@@ -386,7 +386,7 @@ class Registry extends ModTemplate {
       return;
     }
 
-    await super.handlePeerTransaction(app, newtx, peer, mycallback);
+    return await super.handlePeerTransaction(app, newtx, peer, mycallback);
   }
 
   //
