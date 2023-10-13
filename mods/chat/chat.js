@@ -951,7 +951,7 @@ class Chat extends ModTemplate {
     }
 
     if (members.length == 2) {
-      console.log("Chat: Encrypting Message for " + secret_holder);
+      console.log("Chat: Try encrypting Message for " + secret_holder);
 
       //
       // Only encrypts if we have swapped keys and haveSharedKey, otherwise just signs

@@ -199,7 +199,7 @@ class ChatPopup {
 
       //
       // minimize
-      let chat_bubble = document.querySelector(`${popup_qs} .chat-header .fa-comment-dots`);
+      let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
       if (chat_bubble) {
         if (!this.mod.chat_manager_overlay) {
           chat_bubble.onclick = (e) => {
