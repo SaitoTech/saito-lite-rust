@@ -131,18 +131,7 @@ class SettingsAppspace {
           "This will reset/nuke your account, do you wish to proceed?"
         );
         if (confirmation) {
-          app.keychain.keys = [];
-          app.keychain.groups = [];
-          localforage
-            .clear()
-            .then(function () {
-              console.log("DB Reset Success");
-              return app.wallet.resetWallet();
-            })
-            .catch(function (err) {
-              console.error(err);
-              return app.wallet.resetWallet();
-            });              
+          app.wallet.resetWallet();
         }
       };
 
@@ -193,7 +182,6 @@ class SettingsAppspace {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
             let version = app.wallet.version;
-            // await app.storage.resetOptions();
 
             publicKey = app.crypto.generatePublicKey(privatekey);
             console.log("111 : " + (await app.wallet.getPublicKey()));
@@ -210,7 +198,8 @@ class SettingsAppspace {
             app.wallet.pending = [];
 
             // await app.blockchain.resetBlockchain();
-            delete app.options.keys;
+
+            await app.storage.resetOptionsFromKey(publicKey);
 
             // await fetch wallet balance
             await app.wallet.fetchBalanceSnapshot(publicKey);

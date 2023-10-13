@@ -162,7 +162,6 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-
     this.saitoCrypto = new SaitoCrypto(this.app);
 
     if (this.app.options.wallet != null) {
@@ -304,6 +303,9 @@ export default class Wallet extends SaitoWallet {
   async resetWallet() {
     console.log("resetting wallet : " + (await this.getPublicKey()));
 
+    //
+    // This creates the new key pair
+    //
     await this.reset();
 
     if (this.app.options.blockchain) {
@@ -320,11 +322,10 @@ export default class Wallet extends SaitoWallet {
     // let modules purge stuff (only partially implemented)
     await this.app.modules.onWalletReset(true);
 
-    await this.saveWallet();
-
     this.app.options.invites = [];
     this.app.options.games = [];
-    this.app.storage.saveOptions();
+
+    await this.saveWallet();
 
     console.log("new wallet : " + (await this.getPublicKey()));
 
@@ -889,7 +890,6 @@ export default class Wallet extends SaitoWallet {
         wobj.wallet.outputs = [];
         wobj.wallet.spends = [];
         wobj.games = [];
-        //wobj.gameprefs = {}; //Don't delete gameprefs
         this.app.options = wobj;
 
         await this.app.blockchain.resetBlockchain();

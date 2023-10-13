@@ -39,19 +39,7 @@ class Storage {
       }
     }
 
-    try {
-      let key = await this.app.wallet.getPublicKey();
-      console.log("Read from localforage", key);
-      let wallet = await localforage.getItem(key);
-      if (wallet) {
-        this.app.options = wallet;
-      } else {
-        await this.resetOptions();
-      }
-    } catch (err) {
-      console.warn(err);
-      await this.resetOptions();
-    }
+    await this.resetOptions();
   }
 
   returnClientOptions(): string {
@@ -228,6 +216,18 @@ class Storage {
     }
   }
 
+  async resetOptionsFromKey(publicKey) {
+    let wallet = await localforage.getItem(publicKey);
+    if (wallet) {
+      console.log(`Found wallet for ${publicKey} in IndexedDB`);
+      this.app.options = wallet;
+      this.app.storage.saveOptions();
+    } else {
+      console.log(`Creating fresh wallet for ${publicKey}`);
+      await this.resetOptions();
+    }
+  }
+
   //
   // Note: this function won't save options for at least 250 ms from it's call
   // So, if you are going to redirect the browser after calling it, you need to
@@ -239,18 +239,20 @@ class Storage {
         return;
       }
     }
-    console.log("calling save options...");
+    //console.log("calling save options...");
 
     const saveOptionsForReal = async () => {
       clearTimeout(this.timeout);
-      console.log("Actually saving options");
+      //console.log("Actually saving options");
       try {
         localStorage.setItem("options", JSON.stringify(this.app.options));
 
-        let key = await this.app.wallet.getPublicKey();
-        localforage.setItem(key, this.app.options).then(function(value){
-          console.log("Local forage updated for public key: " + key);
-        });
+        if (this.app?.wallet) {
+          let key = await this.app.wallet.getPublicKey();
+          localforage.setItem(key, this.app.options).then(function (value) {
+            console.log("Local forage updated for public key: " + key);
+          });
+        }
       } catch (err) {
         console.error(err);
         for (let i = 0; i < localStorage.length; i++) {
