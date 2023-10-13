@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.466;
+  version = 5.467;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -162,7 +162,6 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-
     this.saitoCrypto = new SaitoCrypto(this.app);
 
     if (this.app.options.wallet != null) {
@@ -209,10 +208,9 @@ export default class Wallet extends SaitoWallet {
           await this.app.modules.onWalletReset();
 
           // reset and save
-          await this.app.storage.resetOptions();
           await this.instance.reset();
           await this.app.blockchain.resetBlockchain();
-          // this.app.storage.saveOptions();
+          await this.app.storage.resetOptions();
 
           // re-specify after reset
           await this.setPrivateKey(tmpprivkey);
@@ -304,28 +302,30 @@ export default class Wallet extends SaitoWallet {
    */
   async resetWallet() {
     console.log("resetting wallet : " + (await this.getPublicKey()));
-    // await S.getInstance().resetWallet();
-    await this.app.storage.resetOptions();
 
+    //
+    // This creates the new key pair
+    //
     await this.reset();
 
     if (this.app.options.blockchain) {
       await this.app.blockchain.resetBlockchain();
     }
 
+    await this.app.storage.resetOptions();
+
     // keychain
     if (this.app.options.keys) {
       this.app.options.keys = [];
     }
 
-    // let modules purge stuff (not implementer)
+    // let modules purge stuff (only partially implemented)
     await this.app.modules.onWalletReset(true);
-
-    await this.saveWallet();
 
     this.app.options.invites = [];
     this.app.options.games = [];
-    this.app.storage.saveOptions();
+
+    await this.saveWallet();
 
     console.log("new wallet : " + (await this.getPublicKey()));
 
@@ -890,7 +890,6 @@ export default class Wallet extends SaitoWallet {
         wobj.wallet.outputs = [];
         wobj.wallet.spends = [];
         wobj.games = [];
-        //wobj.gameprefs = {}; //Don't delete gameprefs
         this.app.options = wobj;
 
         await this.app.blockchain.resetBlockchain();

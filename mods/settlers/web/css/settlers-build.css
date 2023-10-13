@@ -211,7 +211,7 @@
 .dev-card-overlay .settlers-cards-container {
   min-height: 21rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(1px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
 .dev-card-overlay .settlers-items-container .settlers-cards-container img {

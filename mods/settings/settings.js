@@ -113,18 +113,7 @@ class Settings extends ModTemplate {
             let confirmation = await sconfirm("This will reset/nuke your account, do you wish to proceed?");
 
             if (confirmation){
-              app.keychain.keys = [];
-              app.keychain.groups = [];
-              localforage
-                .clear()
-                .then(function () {
-                  console.log("DB Reset Success");
-                  return app.wallet.resetWallet();
-                })
-                .catch(function (err) {
-                  console.error(err);
-                  return app.wallet.resetWallet();
-                });              
+              app.wallet.resetWallet();
             }
           },
         },

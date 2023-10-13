@@ -124,6 +124,10 @@
   transition: all 0.2s;
 }
 
+.chat-minimizer-icon {
+  cursor: n-resize;
+}
+
 .chat-header>i:last-child {
   padding-bottom: 1.3rem;
   cursor: pointer;
@@ -139,6 +143,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   margin: auto;
+  cursor: unset;
 }
 
 .chat-body {

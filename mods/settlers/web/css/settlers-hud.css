@@ -106,6 +106,14 @@
 }
 
 
+.player-notice span img {
+  width: 60px;
+  background-color: #456;
+  border-radius: 25%;
+  border: 1px solid #fff8;
+  margin-left: 1rem;
+}
+
 
 @media only screen and (max-width: 600px) and (orientation: portrait) {
   .saitoa {

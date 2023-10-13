@@ -2,6 +2,7 @@ import * as JSON from "json-bigint";
 import Transaction from "./transaction";
 import { Saito } from "../../apps/core";
 import Block from "./block";
+const localforage = require("localforage");
 
 class Storage {
   public app: Saito;
@@ -16,25 +17,29 @@ class Storage {
 
   async initialize() {
     await this.loadOptions();
-    this.saveOptions();
     return;
   }
 
+  //
+  // Oct 12, 2023 added the safety check from deprecated getOptions()
+  // Should we worry about app.BROWSER == 0 ???
+  //
   async loadOptions() {
-    // if (typeof Storage !== "undefined") {
-    const data = localStorage.getItem("options");
-    if (data != "null" && data != null) {
-      this.app.options = JSON.parse(data);
-    } else {
-      try {
-        const response = await fetch(`/options`);
-        this.app.options = await response.json();
-        this.saveOptions();
-      } catch (err) {
-        console.error(err);
+    if (this.app.BROWSER == 1) {
+      if (this.active_tab == 0) {
+        return;
       }
     }
-    // }
+
+    if (typeof Storage !== "undefined") {
+      const data = localStorage.getItem("options");
+      if (data != "null" && data != null) {
+        this.app.options = JSON.parse(data);
+        return;
+      }
+    }
+
+    await this.resetOptions();
   }
 
   returnClientOptions(): string {
@@ -211,6 +216,20 @@ class Storage {
     }
   }
 
+  async resetOptionsFromKey(publicKey) {
+    let wallet = await localforage.getItem(publicKey);
+    if (wallet) {
+      console.log(`Found wallet for ${publicKey} in IndexedDB`);
+      //siteMessage(`Found wallet for ${publicKey} in IndexedDB`);
+      this.app.options = wallet;
+      this.app.storage.saveOptions();
+    } else {
+      console.log(`Creating fresh wallet for ${publicKey}`);
+      //siteMessage(`Creating fresh wallet for ${publicKey}`);
+      await this.resetOptions();
+    }
+  }
+
   //
   // Note: this function won't save options for at least 250 ms from it's call
   // So, if you are going to redirect the browser after calling it, you need to
@@ -222,13 +241,20 @@ class Storage {
         return;
       }
     }
-    // console.log("calling save options...");
+    //console.log("calling save options...");
 
-    const saveOptionsForReal = () => {
+    const saveOptionsForReal = async () => {
       clearTimeout(this.timeout);
-      // console.log("Actually saving options");
+      //console.log("Actually saving options");
       try {
         localStorage.setItem("options", JSON.stringify(this.app.options));
+
+        if (this.app?.wallet) {
+          let key = await this.app.wallet.getPublicKey();
+          localforage.setItem(key, this.app.options).then(function (value) {
+            console.log("Local forage updated for public key: " + key);
+          });
+        }
       } catch (err) {
         console.error(err);
         for (let i = 0; i < localStorage.length; i++) {
@@ -240,21 +266,6 @@ class Storage {
 
     clearTimeout(this.timeout);
     this.timeout = setTimeout(saveOptionsForReal, 250);
-  }
-
-  getOptions() {
-    if (this.app.BROWSER == 1) {
-      if (this.active_tab == 0) {
-        return;
-      }
-    }
-    try {
-      // if (typeof Storage !== "undefined") {
-      return localStorage.getItem("options");
-      // }
-    } catch (err) {
-      console.error(err);
-    }
   }
 
   getModuleOptionsByName(modname) {
