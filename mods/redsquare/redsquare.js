@@ -1114,6 +1114,17 @@ class RedSquare extends ModTemplate {
         let txmsg = tx.returnMessage();
         if (this.tweets_sigs_hmap[txmsg.data.signature]) {
           let tweet = this.returnTweet(txmsg.data.signature);
+
+          if (tweet.tx) {
+	    if (tweet.tx.optional) {
+	      if (!tweet.tx.optional.updated_at) { tweet.tx.optional.updated_at = 0; }
+	      if (tweet.tx.optional.updated_at > blk.timestamp) {
+                return;
+              } else {
+                tx.optional.updated_at = blk.timestamp;
+	      }
+            }
+          }
           if (tweet == null) {
             return;
           }
@@ -1157,6 +1168,15 @@ class RedSquare extends ModTemplate {
     //
     // servers load from themselves
     //
+    // servers update their TX.updated_at timestamps based on current_time, since they won't be
+    // fetching the blockchain transiently afterwards while viewing tweets that have loaded from
+    // others. this permits browsers to avoid double-liking tweets that show up with pre-calculated
+    // likes, as those will also have pre-updated updated_at values.
+    //
+    // this isn't an ironclad way of avoiding browsers saving likes 2x, but last_updated is not a 
+    // consensus variable and if they're loading tweets from server-archives uncritically it is a 
+    // sensible set of defaults.
+    //
     this.app.storage.loadTransactions({ sig: txmsg.data.signature , owner: this.publicKey }, (txs) => {
       if (!txs) { return; }
       if (txs.length == 0) { return; }
@@ -1167,6 +1187,7 @@ class RedSquare extends ModTemplate {
       if (!tx.optional.num_likes) {
         tx.optional.num_likes = 0;
       }
+      tx.optional.updated_at = new Date().getTime();
       tx.optional.num_likes++;
       this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
     }, "localhost");
