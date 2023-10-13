@@ -237,6 +237,7 @@ class Stun extends ModTemplate {
               class: "start-group-video-chat",
               callback: function (app, game_mod) {
                 //Start Call
+                console.log("Establish connection with: ", game_mod.game.players);
                 stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
               },
             },
@@ -311,10 +312,13 @@ class Stun extends ModTemplate {
       let inner_tx = new Transaction(undefined, txmsg.data);
       let message = inner_tx.returnMessage();
       try {
-        // if (message.request === "stun-send-game-call-message") {
-        //   console.log("HPT: stun-send-game-call-message");
-        //   this.receiveGameCallMessageToPeers(app, inner_tx);
-        // }
+        /*
+        This code is important. Do not comment out or delete...
+        */
+           if (message.request === "stun-send-game-call-message") {
+             console.log("HPT: stun-send-game-call-message");
+             this.receiveGameCallMessageToPeers(app, inner_tx);
+           }
       } catch (err) {
         console.error("Stun Error:", err);
       }
