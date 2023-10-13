@@ -29,6 +29,7 @@ class RedSquareMain {
     });
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
+      document.querySelector(".saito-main").innerHTML = "";
       this.manager.publicKey = this.mod.publicKey;
       this.manager.mode = "tweets";
       this.manager.renderTweet(tweet);
