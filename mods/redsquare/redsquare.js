@@ -656,6 +656,25 @@ class RedSquare extends ModTemplate {
   }
 
   //
+  //
+  //
+  loadAndRenderTweetChildren(peer, sig, mycallback = null) {
+
+    let sql = `SELECT *
+               FROM tweets
+               WHERE parent_id = '${sig}'
+               ORDER BY created_at DESC`;
+    this.loadTweetsFromPeer(peer, sql, (txs) => {
+      for (let z = 0; z < txs.length; z++) {
+        this.addTweet(txs[z]);
+      } 
+      mycallback(txs);
+    });
+
+  }
+
+
+  //
   // the following functions are all deprecated, but included because it is going to be a challenge
   // to upgrade them quickly. we prefer to use the Archive module to fetch and load transactions
   // rather than falling back to SQL commands....
@@ -1058,6 +1077,30 @@ class RedSquare extends ModTemplate {
 
     return null;
   }
+
+  returnThreadSigs(parent_id, child_id) {
+
+    let sigs = [];
+    let tweet = this.returnTweet(child_id);
+    if (!tweet) { return [parent_id]; }
+    let target_id = tweet.tx.signature;
+
+    sigs.push(target_id);
+    while (parent_id != "" && parent_id != target_id) {
+      let x = this.mod.returnTweet(parent_id);
+      if (!x) { parent_id = target_id; } else {
+        if (x.parent_id != "") {
+          sigs.push(x.parent_id);
+        } else {
+          parent_id = target_id;
+        }
+      }
+    }
+    sigs.push(parent_id);
+    return sigs;
+
+  }
+
 
   ///////////////////////
   // network functions //

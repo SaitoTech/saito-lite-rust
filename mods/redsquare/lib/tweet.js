@@ -419,6 +419,54 @@ class Tweet {
     this.attachEvents();
   }
 
+
+  //
+  // render this tweet with its children, but leading to a specific tweet.
+  //
+  renderWithChildrenWithTweet(tweet, sigs=[]) {
+
+    //
+    // sigs will have list of signatures that form 
+    // a direct chain between parent and child that
+    // we want to show.
+    //
+    if (sigs.length == 0) {
+      sigs = this.mod.returnThreadSigs(this.tx.signature, tweet.tx.signature);
+    }
+
+    //
+    // now render anything in the sigs list
+    //
+    if (sigs.includes(this.tx.signature)) {
+      this.render();
+    }
+
+    //
+    // then render its children
+    //
+    // it's clear we need to figure out tweet threading....
+    //
+    if (this.children.length > 0) {
+      let myqs = this.container + ` .tweet-${this.tx.signature}`;
+      let obj = document.querySelector(myqs);
+      if (obj) {
+        obj.classList.add("has-reply");
+      }
+
+      for (let i = 0; i < this.children.length; i++) {
+        this.children[i].container = this.container;
+        this.children[i].render_after_selector = `.tweet-${this.tx.signature}`;
+        if (this.tx.signature == tweet.tx.signature) {
+          this.children[i].renderWithChildren();
+	} else {
+          this.children[i].renderWithChildrenWithTweet(tweet, sigs);
+        }
+      }
+    }
+
+    this.attachEvents();
+  }
+
   attachEvents() {
     let mod = this.mod;
     let app = this.app;
@@ -499,8 +547,25 @@ class Tweet {
           // if we are asking to see a tweet, WE SHOULD load from parent if exists
           //
           if (e.target.tagName != "IMG") {
-            window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
-            app.connection.emit("redsquare-home-tweet-render-request", this);
+
+	    //
+	    // if there is a connection between us and the parent, we have all of the 
+	    // tweets needed to display and we can emit the event that triggers the
+	    // redisplay directly, and then load and append any children as needed.
+	    //
+	    let sigs = this.mod.returnThreadSigs(this.thread_id, this.tx.signature);
+	    if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
+
+              app.connection.emit("redsquare-home-tweet-render-request", this);
+
+	      this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
+                let tweet = this.mod.returnTweet(txs[z].signature);
+        	if (tweet) { tweet.render(); }
+	      });
+
+	    } else {
+              window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
+            }
           }
         };
       }

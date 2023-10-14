@@ -274,7 +274,8 @@ console.log("no notifications to render");
 
     this.mod.loadTweetThread(null, thread_id, () => {
       let root_tweet = this.mod.returnTweet(thread_id);
-      root_tweet.renderWithChildren();
+      root_tweet.renderWithChildrenWithTweet(tweet);
+console.log("rendered root tweet with children...");
       this.hideLoader();
     });
 
