@@ -874,7 +874,7 @@ class RedSquare extends ModTemplate {
   // this does not DISPLAY any tweets, although it makes sure that when they are
   // added they will render into the TWEET MANAGER component.
   //
-  addTweet(tx, prepend = false) {
+  async addTweet(tx, prepend = false) {
 
     //
     // create the tweet
@@ -1031,11 +1031,13 @@ class RedSquare extends ModTemplate {
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
-          if (this.tweets[i].addTweet(tweet) == 1) {
+          let xyz = await this.tweets[i].addTweet(tweet);
+          if (xyz == 1) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
             inserted = true;
             break;
-          }
+          } else {
+	  }
         }
       }
 
@@ -1062,6 +1064,7 @@ class RedSquare extends ModTemplate {
       return null;
     }
 
+
     if (!this.tweets_sigs_hmap[tweet_sig]) {
       return null;
     }
@@ -1078,25 +1081,26 @@ class RedSquare extends ModTemplate {
     return null;
   }
 
-  returnThreadSigs(parent_id, child_id) {
+  returnThreadSigs(root_id, child_id) {
 
     let sigs = [];
     let tweet = this.returnTweet(child_id);
     if (!tweet) { return [parent_id]; }
-    let target_id = tweet.tx.signature;
+    let parent_id = tweet.parent_id;
 
-    sigs.push(target_id);
-    while (parent_id != "" && parent_id != target_id) {
-      let x = this.mod.returnTweet(parent_id);
-      if (!x) { parent_id = target_id; } else {
+    sigs.push(child_id);
+    while (parent_id != "" && parent_id != root_id) {
+      let x = this.returnTweet(parent_id);
+      if (!x) { parent_id = root_id; } else {
         if (x.parent_id != "") {
-          sigs.push(x.parent_id);
+          sigs.push(parent_id);
+	  parent_id = x.parent_id;
         } else {
-          parent_id = target_id;
+          parent_id = root_id;
         }
       }
     }
-    sigs.push(parent_id);
+    if (child_id != root_id) { sigs.push(root_id); }
     return sigs;
 
   }

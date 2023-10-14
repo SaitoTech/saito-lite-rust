@@ -431,6 +431,7 @@ class Tweet {
     // we want to show.
     //
     if (sigs.length == 0) {
+      // this tweet, child tweet we want to show
       sigs = this.mod.returnThreadSigs(this.tx.signature, tweet.tx.signature);
     }
 
@@ -548,12 +549,22 @@ class Tweet {
           //
           if (e.target.tagName != "IMG") {
 
+console.log(":");
+console.log(":");
+console.log(":");
+
 	    //
 	    // if there is a connection between us and the parent, we have all of the 
 	    // tweets needed to display and we can emit the event that triggers the
 	    // redisplay directly, and then load and append any children as needed.
 	    //
 	    let sigs = this.mod.returnThreadSigs(this.thread_id, this.tx.signature);
+	    if (sigs.length > 0) { sigs.push(this.tx.signature); }
+console.log(": " + JSON.stringify(sigs));
+console.log(": " + this.tx.signature);
+console.log(": " + this.thread_id);
+console.log(":");
+
 	    if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
 
               app.connection.emit("redsquare-home-tweet-render-request", this);
@@ -564,7 +575,7 @@ class Tweet {
 	      });
 
 	    } else {
-              window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
+//              window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
             }
           }
         };
@@ -758,8 +769,6 @@ class Tweet {
 
   async addTweet(tweet, levels_deep = 0) {
 
-console.log("just in add tweet!");
-
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here
@@ -803,6 +812,7 @@ console.log("just in add tweet!");
         //
         // tweet adds its orphan
         //
+alert("tweet addTweet 1");
         tweet.addTweet(this.unknown_children[i], levels_deep + 1);
 
         //
@@ -827,7 +837,7 @@ console.log("we are parent of this tweet!");
       // already added?
       //
       if (this.children_sigs_hmap[tweet.tx.signature]) {
-console.log("ALREADY ADDED - returning ZERO");
+alert("ALREADY ADDED -- returning ZERO");
         return 0;
       }
 

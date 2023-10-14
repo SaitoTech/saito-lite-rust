@@ -148,8 +148,9 @@ class RedSquareNotification {
         let tweet = this.mod.returnTweet(this.tx.signature);
 
         if (tweet) {
-          this.app.connection.emit("redsquare-tweet-render-request", tweet);
+          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
         } else {
+
           //
           // I'm not sure we would ever run into this situation
           // Besides wounldn't the this.tweet be the one we are looking for... why even go through the DOM dataset?
