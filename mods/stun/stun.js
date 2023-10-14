@@ -315,10 +315,10 @@ class Stun extends ModTemplate {
         /*
         This code is important. Do not comment out or delete...
         */
-           if (message.request === "stun-send-game-call-message") {
-             console.log("HPT: stun-send-game-call-message");
-             this.receiveGameCallMessageToPeers(app, inner_tx);
-           }
+        if (message.request === "stun-send-game-call-message") {
+          console.log("HPT: stun-send-game-call-message");
+          this.receiveGameCallMessageToPeers(app, inner_tx);
+        }
       } catch (err) {
         console.error("Stun Error:", err);
       }
@@ -514,9 +514,9 @@ class Stun extends ModTemplate {
     };
 
     this.sendStunCallMessageToPeers(this.app, data, recipients);
-    
+
     this.startRing();
-    
+
     this.dialing = setTimeout(() => {
       // cancel the call after 30seconds
       let data = {
