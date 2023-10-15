@@ -30,16 +30,28 @@ class TweetManager {
 
             this.showLoader();
 
+console.log("WHAT MODE: " + this.mode);
+	    //
+	    // single tweet mode should hide loader immediately
+	    //
+	    if (this.mode === "tweet") {
+	      this.hideLoader();
+	      return;
+ 	    }
+
+
             //
             // load more tweets
             //
-            if (this.mode == "tweets") {
+            if (this.mode === "tweets") {
               mod.loadTweets(null, (txs) => {
+
+		this.hideLoader();
+
                 if (this.mode !== "tweets") {
                   return;
                 }
 
-                this.hideLoader();
                 for (let i = 0; i < this.mod.tweets.length; i++) {
                   let tweet = this.mod.tweets[i];
                   if (!tweet.isRendered()) {
@@ -64,7 +76,7 @@ class TweetManager {
             //
             // load more notifications
             //
-            if (this.mode == "notifications") {
+            if (this.mode === "notifications") {
               mod.loadNotifications(null, (txs) => {
                 if (this.mode !== "notifications") {
                   return;
@@ -96,7 +108,7 @@ console.log("no notifications to render");
             //
             // load more profile tweets
             //
-            if (this.mode == "profile") {
+            if (this.mode === "profile") {
 
               this.mod.loadProfile(null, this.publicKey, (txs) => {
 
@@ -262,7 +274,7 @@ console.log("no notifications to render");
     console.log("#");
     console.log("# " + tweet.text);
     console.log("#");
-    this.render("render single tweet");
+    this.render("tweet");
 
     // show the basic tweet first
     if (!tweet.parent_id) {
@@ -275,7 +287,6 @@ console.log("no notifications to render");
     this.mod.loadTweetThread(null, thread_id, () => {
       let root_tweet = this.mod.returnTweet(thread_id);
       root_tweet.renderWithChildrenWithTweet(tweet);
-console.log("rendered root tweet with children...");
       this.hideLoader();
     });
 
