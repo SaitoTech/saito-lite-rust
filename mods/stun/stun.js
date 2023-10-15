@@ -412,11 +412,11 @@ class Stun extends ModTemplate {
     newtx.msg.data = _data;
     await newtx.sign();
 
-    // let data = {
-    //   recipient: server.publicKey,
-    //   request: "stun-message-broadcast",
-    //   data: newtx.toJson(),
-    // };
+    let data = {
+      recipient: server.publicKey,
+      request: "stun-message-broadcast",
+      data: newtx.toJson(),
+    };
 
     this.app.connection.emit("relay-send-message", data);
     // await this.app.network.propagateTransaction(newtx);
