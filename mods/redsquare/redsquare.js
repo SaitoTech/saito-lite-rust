@@ -63,10 +63,6 @@ class RedSquare extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/redsquare/style.css"];
 
-    this.liked_tweets = [];
-    this.retweeted_tweets = [];
-    this.replied_tweets = [];
-
     this.social = {
       twitter_card: "summary",
       twitter_site: "@SaitoOfficial",
@@ -234,9 +230,6 @@ class RedSquare extends ModTemplate {
     //
     await super.initialize(app);
 
-    if (this.browser_active) {
-      this.styles = ["/saito/saito.css", "/redsquare/style.css"];
-    }
     this.publicKey = await app.wallet.getPublicKey();
 
     //
@@ -384,11 +377,6 @@ class RedSquare extends ModTemplate {
       // if viewing a specific tweet
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
-
-      if (tweet_id === "undefined") {
-        tweet_id = "";
-      }
-
       if (tweet_id != "") {
         let sql = `SELECT *
                    FROM tweets
@@ -400,10 +388,7 @@ class RedSquare extends ModTemplate {
             this.addTweet(txs[z]);
           }
           let tweet = this.returnTweet(tweet_id);
-
-          if (tweet) {
-            this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
-          }
+          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
         });
         return;
       }
@@ -455,7 +440,6 @@ class RedSquare extends ModTemplate {
     // archive -- load notifications
     //
     if (service.service === "archive") {
-
       await this.addPeer(peer, "notifications");
       let recursiveLoadNotifications = (peer, delay) => {
         setTimeout(() => {
@@ -975,65 +959,6 @@ class RedSquare extends ModTemplate {
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet") {
-      if (!this.tweets_sigs_hmap[tx.signature]) {
-        this.tweets_sigs_hmap[tx.signature] = 1;
-      }
-      return;
-    }
-
-    //
-    // We have already indexed this tweet, so just update the stats
-    // we are adding it because it's updated_at is newer, e.g. there are more replies/retweets/likes
-    //
-    if (this.tweets_sigs_hmap[tweet.tx.signature]) {
-      let updated = 0;
-      for (let i = 0; i < this.tweets.length; i++) {
-        if (this.tweets[i].tx.signature === tweet.tx.signature) {
-          if (this.tweets[i].tx.optional.num_replies < tweet.tx.optional.num_replies) {
-            console.log("~~~");
-            console.log(
-              "~~~ already have tweet - updating num replies...: " + tweet.tx.optional.num_replies
-            );
-            console.log("~~~");
-            this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
-          }
-          if (this.tweets[i].tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
-            this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-          }
-          if (this.tweets[i].tx.optional.num_likes < tweet.tx.optional.num_likes) {
-            this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
-          }
-          if (this.tweets[i].updated_at < tweet.updated_at) {
-            this.tweets[i].updated_at = tweet.updated_at;
-          }
-          console.log("Update stats of tweet we already indexed");
-          console.log(this.tweets[i].tx.optional);
-          updated = true;
-          break;
-        }
-      }
-
-      // maybe this is a hidden child
-      if (!updated) {
-        let t = this.returnTweet(tweet.tx.signature);
-        if (t.tx.optional.num_replies < tweet.tx.optional.num_replies) {
-          console.log("!!!");
-          console.log("!!! updating num replies in child: " + tweet.tx.optional.num_replies);
-          console.log("!!!");
-          t.tx.optional.num_replies = tweet.tx.optional.num_replies;
-        }
-        if (t.tx.optional.num_retweets < tweet.tx.optional.num_retweets) {
-          t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-        }
-        if (t.tx.optional.num_likes < tweet.tx.optional.num_likes) {
-          t.tx.optional.num_likes = tweet.tx.optional.num_likes;
-        }
-        if (t.updated_at < tweet.updated_at) {
-          t.updated_at = tweet.updated_at;
-        }
-        console.log("Updated stats of sub-tweet we already indexed");
-        console.log(this.tweets[i].tx.optional);
-      }
       return;
     }
 
@@ -1117,7 +1042,6 @@ class RedSquare extends ModTemplate {
       }
 
       if (inserted == false) {
-        this.tweets_sigs_hmap[tweet.tx.signature] = 1;
         this.unknown_children.push(tweet);
       }
     }
@@ -1384,11 +1308,17 @@ class RedSquare extends ModTemplate {
           // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
           // from archives by fetching on field3 will get this.
           //
+
+console.log("SAVING TRANSACTION!");
+console.log("owner is: " + this.publicKey);
+
           await this.app.storage.saveTransaction(tx, {
             owner: this.publicKey,
             field1: "RedSquare",
             field3: this.publicKey,
           });
+
+console.log("done saving transaction...");
 
           //
           // if replies
@@ -1758,6 +1688,7 @@ return;
   }
 
   loadOptions() {
+
     if (!this.app.BROWSER) {
       return;
     }
@@ -1771,15 +1702,10 @@ return;
       this.notifications_number_unviewed = 0;
     }
 
-    if (this.app.options.redsquare.liked_tweets) {
-      this.liked_tweets = this.app.options.redsquare.liked_tweets;
-    }
-    if (this.app.options.redsquare.retweeted_tweets) {
-      this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets;
-    }
-    if (this.app.options.redsquare.replied_tweets) {
-      this.replied_tweets = this.app.options.redsquare.replied_tweets;
-    }
+    if (this.app.options.redsquare.liked_tweets) { this.liked_tweets = this.app.options.redsquare.liked_tweets; }
+    if (this.app.options.redsquare.retweeted_tweets) { this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets; }
+    if (this.app.options.redsquare.replied_tweets) { this.replied_tweets = this.app.options.redsquare.replied_tweets; }
+
   }
 
   saveOptions() {
@@ -1794,15 +1720,9 @@ return;
     this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
     this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
 
-    while (this.liked_tweets.length > 100) {
-      this.liked_tweets.splice(0, 1);
-    }
-    while (this.retweeted_tweets.length > 100) {
-      this.retweeted_tweets.splice(0, 1);
-    }
-    while (this.replied_tweets.length > 100) {
-      this.replied_tweets.splice(0, 1);
-    }
+    while (this.liked_tweets.length > 100) { this.liked_tweets.splice(0, 1); }
+    while (this.retweeted_tweets.length > 100) { this.retweeted_tweets.splice(0, 1); }
+    while (this.replied_tweets.length > 100) { this.replied_tweets.splice(0, 1); }
 
     this.app.options.redsquare.liked_tweets = this.liked_tweets;
     this.app.options.redsquare.retweeted_tweets = this.retweeted_tweets;
@@ -1816,75 +1736,50 @@ return;
   //////////////
   // remember //
   //////////////
-  likeTweet(sig = "") {
-    if (sig === "") {
-      return;
-    }
-    if (!this.liked_tweets.includes(sig)) {
-      this.liked_tweets.push(sig);
-    }
+  likeTweet(sig="") {
+    if (sig === "") { return; }
+    if (!this.liked_tweets.includes(sig)) { this.liked_tweets.push(sig); }
     this.saveOptions();
   }
-  unlikeTweet(sig = "") {
-    if (sig === "") {
-      return;
-    }
+  unlikeTweet(sig="") {
+    if (sig === "") { return; }
     if (this.liked_tweets.includes(sig)) {
       for (let i = 0; i < this.liked_tweets.length; i++) {
-        if (this.liked_tweets[i] === sig) {
-          this.liked_tweets.splice(i, 1);
-          i--;
-        }
+	if (this.liked_tweets[i] === sig) { this.liked_tweets.splice(i, 1); i--; }
       }
     }
     this.saveOptions();
   }
-  retweetTweet(sig = "") {
-    if (sig === "") {
-      return;
-    }
-    if (!this.retweeted_tweets.includes(sig)) {
-      this.retweeted_tweets.push(sig);
-    }
+  retweetTweet(sig="") {
+    if (sig === "") { return; }
+    if (!this.retweeted_tweets.includes(sig)) { this.retweeted_tweets.push(sig); }
     this.saveOptions();
   }
-  unretweetTweet(sig = "") {
-    if (sig === "") {
-      return;
-    }
+  unretweetTweet(sig="") {
+    if (sig === "") { return; }
     if (this.retweeted_tweets.includes(sig)) {
       for (let i = 0; i < this.retweeted_tweets.length; i++) {
-        if (this.retweeted_tweets[i] === sig) {
-          this.retweeted_tweets.splice(i, 1);
-          i--;
-        }
+	if (this.retweeted_tweets[i] === sig) { this.retweeted_tweets.splice(i, 1); i--; }
       }
     }
     this.saveOptions();
   }
-  replyTweet(sig = "") {
-    if (sig === "") {
-      return;
-    }
-    if (!this.replied_tweets.includes(sig)) {
-      this.replied_tweets.push(sig);
-    }
+  replyTweet(sig="") {
+    if (sig === "") { return; }
+    if (!this.replied_tweets.includes(sig)) { this.replied_tweets.push(sig); }
     this.saveOptions();
   }
-  unreplyTweet(sig = "") {
-    if (sig === "") {
-      return;
-    }
+  unreplyTweet(sig="") {
+    if (sig === "") { return; }
     if (this.replied_tweets.includes(sig)) {
       for (let i = 0; i < this.replied_tweets.length; i++) {
-        if (this.replied_tweets[i] === sig) {
-          this.replied_tweets.splice(i, 1);
-          i--;
-        }
+	if (this.replied_tweets[i] === sig) { this.replied_tweets.splice(i, 1); i--; }
       }
     }
     this.saveOptions();
   }
+
+
 
   async saveLocalTweets() {
     if (!this.app.BROWSER || !this.browser_active) {
