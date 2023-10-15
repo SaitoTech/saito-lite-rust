@@ -397,7 +397,7 @@ class PeerManager {
         setTimeout(() => {
           // console.log('sending offer');
           this.reconnect(peerId, type);
-        }, 10000);
+        }, 30000);
       }
       if (peerConnection.connectionState === "connected") {
         let sound = new Audio("/videocall/audio/enter-call.mp3");

@@ -30,6 +30,10 @@ class CallInterfaceVideo {
 
       this.loader.render(true);
 
+      setTimeout(() => {
+        this.loader.remove();
+      }, 60000);
+
       console.log("Render Video Call Interface");
       //This will render the (full-screen) component
       if (!document.querySelector(".stun-chatbox")) {

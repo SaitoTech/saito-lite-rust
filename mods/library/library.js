@@ -220,7 +220,7 @@ class Library extends ModTemplate {
     // values.
     //
     await super.initialize(app);
-    
+
     for (const m of await app.modules.returnModulesRespondingTo("library-collection")) {
       this.addCollection(await m.respondTo("library-collection"), this.publicKey);
     }
@@ -294,7 +294,7 @@ class Library extends ModTemplate {
       }
       if (mycallback) {
         mycallback(this.library[message.data.collection].peers[this.publicKey]);
-	return 1;
+        return 1;
       }
       return;
     }
