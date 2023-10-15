@@ -271,9 +271,9 @@ class Stun extends ModTemplate {
             console.log("recieving stun create room transaction");
             this.receiveCreateRoomTransaction(this.app, tx);
           }
-          if (message.request === "stun-send-message-to-server") {
-            this.receiveStunMessageToServerTransaction(this.app, tx);
-          }
+          // if (message.request === "stun-send-message-to-server") {
+          //   this.receiveStunMessageToServerTransaction(this.app, tx);
+          // }
 
           // if (message.request === "stun-send-message-to-peers") {
           //   console.log("OnConfirmation: stun-send-message-to-peers");
@@ -315,6 +315,9 @@ class Stun extends ModTemplate {
         //   console.log("HPT: stun-send-game-call-message");
         //   this.receiveGameCallMessageToPeers(app, inner_tx);
         // }
+        if (message.request === "stun-send-message-to-server") {
+          this.receiveStunMessageToServerTransaction(this.app, inner_tx);
+        }
       } catch (err) {
         console.error("Stun Error:", err);
       }
@@ -412,22 +415,22 @@ class Stun extends ModTemplate {
     newtx.msg.data = _data;
     await newtx.sign();
 
-    // let data = {
-    //   recipient: server.publicKey,
-    //   request: "stun-message-broadcast",
-    //   data: newtx.toJson(),
-    // };
+    let data = {
+      recipient: server.publicKey,
+      request: "stun-message-broadcast",
+      data: newtx.toJson(),
+    };
 
-    // this.app.connection.emit("relay-send-message", data);
-    await this.app.network.propagateTransaction(newtx);
+    this.app.connection.emit("relay-send-message", data);
+    // await this.app.network.propagateTransaction(newtx);
   }
 
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx) {
-    // console.log(tx.from[0].publicKey, "from");
     let from = tx.from[0].publicKey;
     let txmsg = tx.returnMessage();
 
+    console.log(tx.from[0].publicKey, "from", txmsg);
     let room_code = txmsg.data.room_code;
     let type = txmsg.data.type;
     let public_key = from;
