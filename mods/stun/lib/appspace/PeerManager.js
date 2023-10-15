@@ -426,25 +426,32 @@ class PeerManager {
 
     const attemptReconnect = (currentRetry) => {
       const peerConnection = this.peers.get(peerId);
-      if (currentRetry === maxRetries) {
-        if (peerConnection && peerConnection.connectionState !== "connected") {
-          console.log("Reached maximum number of reconnection attempts, giving up");
-          this.removePeerConnection(peerId);
-        }
+
+      if (!peerConnection) {
+        console.log(`No peerConnection found for peerId: ${peerId}`);
         return;
       }
 
-      if (peerConnection && peerConnection.connectionState === "connected") {
+      if (peerConnection.connectionState === "connected") {
         console.log("Reconnection successful");
-        // remove connection message
         return;
       }
 
-      if (peerConnection && peerConnection.connectionState !== "connected") {
+      // Remove peer connection if its state is neither "connected" nor "connecting"
+      if (
+        peerConnection.connectionState !== "connected" &&
+        peerConnection.connectionState !== "connecting"
+      ) {
+        console.log(`Removing peerConnection with state: ${peerConnection.connectionState}`);
         this.removePeerConnection(peerId);
         if (type === "offer") {
           this.createPeerConnection(peerId, "offer");
         }
+      }
+
+      if (currentRetry === maxRetries) {
+        console.log("Reached maximum number of reconnection attempts, giving up");
+        return;
       }
 
       setTimeout(() => {
