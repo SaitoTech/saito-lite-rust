@@ -418,8 +418,8 @@ class Stun extends ModTemplate {
     //   data: newtx.toJson(),
     // };
 
-    // this.app.connection.emit("relay-send-message", data);
-    await this.app.network.propagateTransaction(newtx);
+    this.app.connection.emit("relay-send-message", data);
+    // await this.app.network.propagateTransaction(newtx);
   }
 
   // server receives this
