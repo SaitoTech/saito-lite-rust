@@ -8,6 +8,7 @@ const JSON = require("json-bigint");
 const Transaction = require("../../../lib/saito/transaction").default;
 
 class Tweet {
+
   constructor(app, mod, tx, container = ".tweet-manager") {
     this.app = app;
     this.mod = mod;
@@ -93,7 +94,7 @@ class Tweet {
     this.text = "";
     this.youtube_id = null;
     this.created_at = this.tx.timestamp;
-    // ***will be updated by tx.optional.updated_at if necessary***
+    // updated by tx.optional.updated_at if exists
     this.updated_at = this.tx.timestamp;
 
     //
@@ -115,6 +116,7 @@ class Tweet {
     // Default is a new tweet
     //
     this.user.notice = "new post on " + this.formatDate(this.created_at);
+
 
     this.children = [];
     this.children_sigs_hmap = {};
@@ -153,6 +155,7 @@ class Tweet {
     //
     //This is async and won't necessarily finish before running the following code!
     //
+
     this.generateTweetProperties(app, mod, 0);
 
     //
@@ -175,8 +178,6 @@ class Tweet {
     //
     // image preview -- copied over from txmsg.data.images
     //
-    //tweet.tx.msg.data.images
-
     if (this.images?.length > 0) {
       this.img_preview = new Image(
         this.app,
@@ -192,7 +193,8 @@ class Tweet {
   }
 
   formatDate(ts = 0) {
-    let dt = this.app.browser.formatDate(ts || this.updated_at);
+    let submit_ts = ts || this.updated_at;
+    let dt = this.app.browser.formatDate(submit_ts);
     return `${dt.month} ${dt.day}, ${dt.year} at ${dt.hours}:${dt.minutes}`;
   }
 
@@ -417,6 +419,55 @@ class Tweet {
     this.attachEvents();
   }
 
+
+  //
+  // render this tweet with its children, but leading to a specific tweet.
+  //
+  renderWithChildrenWithTweet(tweet, sigs=[]) {
+
+    //
+    // sigs will have list of signatures that form 
+    // a direct chain between parent and child that
+    // we want to show.
+    //
+    if (sigs.length == 0) {
+      // this tweet, child tweet we want to show
+      sigs = this.mod.returnThreadSigs(this.tx.signature, tweet.tx.signature);
+    }
+
+    //
+    // now render anything in the sigs list
+    //
+    if (sigs.includes(this.tx.signature)) {
+      this.render();
+    }
+
+    //
+    // then render its children
+    //
+    // it's clear we need to figure out tweet threading....
+    //
+    if (this.children.length > 0) {
+      let myqs = this.container + ` .tweet-${this.tx.signature}`;
+      let obj = document.querySelector(myqs);
+      if (obj) {
+        obj.classList.add("has-reply");
+      }
+
+      for (let i = 0; i < this.children.length; i++) {
+        this.children[i].container = this.container;
+        this.children[i].render_after_selector = `.tweet-${this.tx.signature}`;
+        if (this.tx.signature == tweet.tx.signature) {
+          this.children[i].renderWithChildren();
+	} else {
+          this.children[i].renderWithChildrenWithTweet(tweet, sigs);
+        }
+      }
+    }
+
+    this.attachEvents();
+  }
+
   attachEvents() {
     let mod = this.mod;
     let app = this.app;
@@ -497,8 +548,35 @@ class Tweet {
           // if we are asking to see a tweet, WE SHOULD load from parent if exists
           //
           if (e.target.tagName != "IMG") {
-            //window.location.href = `/redsquare/?tweet_id=${this.thread_id}`;
-            app.connection.emit("redsquare-tweet-render-request", this);
+
+	    //
+	    // if there is a connection between us and the parent, we have all of the 
+	    // tweets needed to display and we can emit the event that triggers the
+	    // redisplay directly, and then load and append any children as needed.
+	    //
+	    let sigs = this.mod.returnThreadSigs(this.thread_id, this.tx.signature);
+	    if (sigs.length > 0) { sigs.push(this.tx.signature); }
+
+	    //
+	    // full thread already exists
+	    //
+	    if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
+
+              app.connection.emit("redsquare-home-tweet-render-request", this);
+
+	      this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
+                let tweet = this.mod.returnTweet(txs[z].signature);
+        	if (tweet) { tweet.render(); }
+		// hide manager loader
+		this.mod.manager.hideLoader();
+	      });
+
+	    //
+	    // otherwise re-load
+	    //
+	    } else {
+              window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
+            }
           }
         };
       }
@@ -514,11 +592,11 @@ class Tweet {
             //window.location.href = `/redsquare/?tweet_id=${sig}`;
             let t = this.mod.returnTweet(sig);
             if (t) {
-              app.connection.emit("redsquare-tweet-render-request", t);
+              app.connection.emit("redsquare-home-tweet-render-request", t);
             } else {
               console.warn("This is going to screw up the feed");
               this.retweet.container = ".tweet-manager";
-              app.connection.emit("redsquare-tweet-render-request", this.retweet);
+              app.connection.emit("redsquare-home-tweet-render-request", this.retweet);
             }
           }
         });
@@ -660,7 +738,7 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        this.mod.sendFlagTransaction(this.app, this.mod, { sig: this.tx.signature });
+        this.mod.sendFlagTransaction(this.app, this.mod, { signature: this.tx.signature });
         this.flagged = 1;
 
         let obj = document.querySelector(`.tweet-${this.tx.signature}`);
@@ -690,8 +768,6 @@ class Tweet {
   }
 
   async addTweet(tweet, levels_deep = 0) {
-
-console.log("just in add tweet!");
 
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
@@ -746,21 +822,15 @@ console.log("just in add tweet!");
     }
 
 
-console.log("adding tweet under this tweet: " + tweet.tx.signature);
-console.log("adding tweet with this parent_id: " + tweet.parent_id);
-
     //
     // tweet is direct child
     //
     if (tweet.parent_id == this.tx.signature) {
 
-console.log("we are parent of this tweet!");
-
       //
       // already added?
       //
       if (this.children_sigs_hmap[tweet.tx.signature]) {
-console.log("ALREADY ADDED - returning ZERO");
         return 0;
       }
 
@@ -806,14 +876,10 @@ console.log("ALREADY ADDED - returning ZERO");
       //
     } else {
 
-console.log("<--- maybe this is a sub-child");
-
       //
       // maybe it is a critical child
       //
-console.log(" --- about to await crit child...");
       if (this.isCriticalChild(tweet)) {
-console.log("is critical child...");
         this.critical_child = tweet;
         //
         // April 14, 2023 - do not show critical children unless 2nd level
@@ -828,15 +894,9 @@ console.log("is critical child...");
         this.user.notice = "new reply on " + this.formatDate();
       }
 
-console.log("moving forward");
-console.log("is in children_sigs_hmap: " + this.children_sigs_hmap[tweet.parent_id]);
-
       if (this.children_sigs_hmap[tweet.parent_id]) {
-console.log("num children: " + this.children.length);
         for (let i = 0; i < this.children.length; i++) {
-console.log("adding child");
           if (this.children[i].addTweet(tweet, levels_deep + 1)) {
-console.log("added child!!!");
             this.removeUnknownChild(tweet);
             this.children_sigs_hmap[tweet.tx.signature] = 1;
             //
@@ -855,17 +915,13 @@ console.log("added child!!!");
           }
         }
       } else {
-console.log("x: tweet isn't in sigs hmap");
-console.log("levels deep: " + levels_deep);
         //
         // if still here, add to unknown children if top-level as we didn't add to any children
         //
 	let inserted = false;
 	for (let z = 0; z < this.children.length; z++) {
 	  if (tweet.parent_id == this.children[z].tx.signature) {
-console.log("we have found the parent id!");
 	    if (this.children[z].addTweet(tweet) != 0) {
-console.log("child got it added!");
               this.children_sigs_hmap[tweet.tx.signature] = 1;
 	      inserted = true;
 	    }
@@ -873,17 +929,13 @@ console.log("child got it added!");
 	}
 
         if (levels_deep == 0 && inserted == false) {
-console.log("is tweet in unknown children sigs?");
           if (this.unknown_children_sigs_hmap[tweet.tx.signature] != 1) {
-console.log("is tweet in unknown children sigs?");
             this.unknown_children.push(tweet);
             this.unknown_children_sigs_hmap[tweet.tx.signature] = 1;
           }
         }
       }
     }
-
-console.log("ok, returning 1");
 
     return 1;
   }

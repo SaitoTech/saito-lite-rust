@@ -768,6 +768,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
         }
 
+
+
         if (mv[0] === "diplomacy_card_event") {
 
 	  let faction = mv[1];

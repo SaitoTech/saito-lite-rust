@@ -138,7 +138,6 @@ class VideoBox {
 
   removeConnectionMessage() {
     const video_box = document.querySelector(`#stream${this.stream_id}`);
-
     if (video_box && video_box.querySelector("#connection-message")) {
       video_box.querySelectorAll("#connection-message").forEach((item) => {
         item.parentElement.removeChild(video_box.querySelector("#connection-message"));

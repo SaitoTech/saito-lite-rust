@@ -14,61 +14,6 @@ export default class Network {
 
   initialize() {
     console.debug("[DEBUG] initialize network");
-
-    // if (this.app.options) {
-    //   if (this.app.options.server) {
-    //     if (
-    //       this.app.options.server.receiveblks !== undefined &&
-    //       this.app.options.server.receiveblks === 0
-    //     ) {
-    //       this.receiveblks = 0;
-    //     }
-    //     if (
-    //       this.app.options.server.receivetxs !== undefined &&
-    //       this.app.options.server.receivetxs === 0
-    //     ) {
-    //       this.receivetxs = 0;
-    //     }
-    //     if (
-    //       this.app.options.server.receivegts !== undefined &&
-    //       this.app.options.server.receivegts === 0
-    //     ) {
-    //       this.receivegts = 0;
-    //     }
-    //     if (
-    //       this.app.options.server.sendblks !== undefined &&
-    //       this.app.options.server.sendblks === 0
-    //     ) {
-    //       this.sendblks = 0;
-    //     }
-    //     if (
-    //       this.app.options.server.sendtxs !== undefined &&
-    //       this.app.options.server.sendtxs === 0
-    //     ) {
-    //       this.sendtxs = 0;
-    //     }
-    //     if (
-    //       this.app.options.server.sendgts !== undefined &&
-    //       this.app.options.server.sendgts === 0
-    //     ) {
-    //       this.sendgts = 0;
-    //     }
-    //   }
-    // }
-
-    // if (this.app.options.peers != null) {
-    //   console.debug("[DEBUG] peers length " + this.app.options.peers.length);
-    //   for (let i = 0; i < this.app.options.peers.length; i++) {
-    //     this.addPeer(JSON.stringify(this.app.options.peers[i]));
-    //   }
-    // } else {
-    //   console.debug("[DEBUG] no peers defined");
-    // }
-
-    //
-    // this.peer_monitor_timer = setInterval(() => {
-    //   this.pollPeers();
-    // }, this.peer_monitor_timer_speed);
   }
 
   public async propagateTransaction(tx: Transaction) {
@@ -99,7 +44,7 @@ export default class Network {
   public async sendRequestAsTransaction(
     message: string,
     data: any = "",
-    callback?: any,
+    callback?: any, 
     peerIndex?: bigint
   ) {
     return S.getInstance().sendRequest(message, data, callback, peerIndex);
@@ -118,17 +63,6 @@ export default class Network {
   returnPeersWithService() {}
 
   updatePeersWithWatchedPublicKeys() {}
-
-  // public async propagateServices(peerIndex: bigint) {
-  //   let my_services = [];
-  //   for (let i = 0; i < this.app.modules.mods.length; i++) {
-  //     let modservices = this.app.modules.mods[i].returnServices();
-  //     for (let k = 0; k < modservices.length; k++) {
-  //       my_services.push(modservices[k]);
-  //     }
-  //   }
-  //   return S.getInstance().propagateServices(peerIndex, my_services);
-  // }
 
   public getServices(): PeerService[] {
     let my_services = [];

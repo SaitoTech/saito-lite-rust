@@ -294,11 +294,12 @@ class Library extends ModTemplate {
       }
       if (mycallback) {
         mycallback(this.library[message.data.collection].peers[this.publicKey]);
+	return 1;
       }
       return;
     }
 
-    await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   load() {

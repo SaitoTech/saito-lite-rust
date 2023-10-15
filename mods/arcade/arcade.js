@@ -633,7 +633,7 @@ class Arcade extends ModTemplate {
       }
     }
 
-    await super.handlePeerTransaction(app, newtx, peer, mycallback);
+    return await super.handlePeerTransaction(app, newtx, peer, mycallback);
   }
 
   //

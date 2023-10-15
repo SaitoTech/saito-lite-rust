@@ -30,16 +30,28 @@ class TweetManager {
 
             this.showLoader();
 
+console.log("WHAT MODE: " + this.mode);
+	    //
+	    // single tweet mode should hide loader immediately
+	    //
+	    if (this.mode === "tweet") {
+	      this.hideLoader();
+	      return;
+ 	    }
+
+
             //
             // load more tweets
             //
-            if (this.mode == "tweets") {
+            if (this.mode === "tweets") {
               mod.loadTweets(null, (txs) => {
+
+		this.hideLoader();
+
                 if (this.mode !== "tweets") {
                   return;
                 }
 
-                this.hideLoader();
                 for (let i = 0; i < this.mod.tweets.length; i++) {
                   let tweet = this.mod.tweets[i];
                   if (!tweet.isRendered()) {
@@ -48,10 +60,12 @@ class TweetManager {
                 }
 
                 if (txs.length == 0) {
-                  this.app.browser.addElementToSelector(
-                    `<div class="saito-end-of-redsquare">No more tweets</div>`,
-                    ".tweet-manager"
-                  );
+	          if (!document.querySelector(".saito-end-of-redsquare")) {
+                    this.app.browser.addElementToSelector(
+                      `<div class="saito-end-of-redsquare">no more tweets</div>`,
+                      ".tweet-manager"
+                    );
+	 	  }
                   this.intersectionObserver.unobserve(
                     document.querySelector("#redsquare-intersection")
                   );
@@ -62,7 +76,7 @@ class TweetManager {
             //
             // load more notifications
             //
-            if (this.mode == "notifications") {
+            if (this.mode === "notifications") {
               mod.loadNotifications(null, (txs) => {
                 if (this.mode !== "notifications") {
                   return;
@@ -73,12 +87,14 @@ class TweetManager {
                     this.mod,
                     this.mod.notifications[i].tx
                   );
+console.log("at least one notification to render");
                   //if (!notification.isRendered()) {
                   notification.render(".tweet-manager");
                   //}
                 }
                 if (this.mod.notifications.length == 0) {
                   let notification = new Notification(this.app, this.mod, null);
+console.log("no notifications to render");
                   notification.render(".tweet-manager");
                 }
 
@@ -92,8 +108,10 @@ class TweetManager {
             //
             // load more profile tweets
             //
-            if (this.mode == "profile") {
-              this.mod.loadProfileTweets(null, this.publicKey, (txs) => {
+            if (this.mode === "profile") {
+
+              this.mod.loadProfile(null, this.publicKey, (txs) => {
+
                 if (this.mode !== "profile") {
                   return;
                 }
@@ -106,10 +124,12 @@ class TweetManager {
                 }
                 this.hideLoader();
                 if (txs.length == 0) {
-                  this.app.browser.addElementToSelector(
-                    `<div class="saito-end-of-redsquare">No more tweets</div>`,
-                    ".tweet-manager"
-                  );
+		  if (!document.querySelector(".saito-end-of-redsquare")) {
+                    this.app.browser.addElementToSelector(
+                      `<div class="saito-end-of-redsquare">no more tweets</div>`,
+                      ".tweet-manager"
+                    );
+	          }
                   this.intersectionObserver.unobserve(
                     document.querySelector("#redsquare-intersection")
                   );
@@ -127,14 +147,30 @@ class TweetManager {
     );
   }
 
-  render(new_mode = "tweets") {
+  render(new_mode = "") {
+
+    //
+    // remove notification at end
+    //
+    if (document.querySelector(".saito-end-of-redsquare")) {
+      document.querySelector(".saito-end-of-redsquare").remove();
+    }
+
+
+    //
+    // if someone asks the manager to render with a mode that is not currently
+    // set, we want to update our mode and proceed with it.
+    //
+    if (new_mode != this.mode && new_mode != "") { this.mode = new_mode; }
+    if (this.mode == "") { this.mode = "tweets"; }
+
     let myqs = `.tweet-manager`;
 
-    //Stop observering while we rebuild the page
+    //
+    // Stop observering while we rebuild the page
+    //
     this.intersectionObserver.disconnect();
     this.profile.remove();
-
-    console.log(new_mode);
 
     let holder = document.getElementById("tweet-thread-holder");
     let managerElem = document.querySelector(myqs);
@@ -144,7 +180,6 @@ class TweetManager {
     } else {
       if (this.mode == "tweets") {
         console.log("Cache tweets");
-
         let kids = managerElem.children;
         console.log(kids.length);
         holder.replaceChildren(...kids);
@@ -161,19 +196,16 @@ class TweetManager {
     ////////////
     // tweets //
     ////////////
-    if (new_mode == "newtweets") {
-      //Drop everything so that feed gets reordered correctly
+    if (this.mode == "newtweets") {
       while (holder?.hasChildNodes()){
         holder.firstChild.remove();
       }
       while (managerElem?.hasChildNodes()) {
         managerElem.firstChild.remove();
       }
-
-      new_mode = "tweets";
     }
 
-    if (new_mode == "tweets") {
+    if (this.mode == "tweets") {
       if (holder) {
         console.log("Restore tweets");
         let kids = holder.children;
@@ -194,7 +226,7 @@ class TweetManager {
     ///////////////////
     // notifications //
     ///////////////////
-    if (new_mode == "notifications") {
+    if (this.mode == "notifications") {
       if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
         notification.render(".tweet-manager");
@@ -213,26 +245,21 @@ class TweetManager {
     /////////////
     // profile //
     /////////////
-    if (new_mode == "profile") {
+    if (this.mode == "profile") {
+
       this.profile.publicKey = this.publicKey;
 
       this.profile.render();
 
-      //
-      // all peers reset to 0 tweets fetched
-      //
-      this.mod.updatePeerStat(new Date().getTime(), "profile_earliest_ts");
-
-      /*this.mod.loadProfileTweets(null, this.publickey, (txs) => {
+      this.mod.loadProfile(null, this.publickey, (txs) => {
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this.mod, txs[z]);
           tweet.render();
         }
         setTimeout(()=> { this.hideLoader();}, 50);
-      });*/
-    }
+      });
 
-    this.mode = new_mode;
+    }
 
     //Fire up the intersection observer
     this.attachEvents();
@@ -247,7 +274,7 @@ class TweetManager {
     console.log("#");
     console.log("# " + tweet.text);
     console.log("#");
-    this.render("render single tweet");
+    this.render("tweet");
 
     // show the basic tweet first
     if (!tweet.parent_id) {
@@ -259,7 +286,7 @@ class TweetManager {
 
     this.mod.loadTweetThread(null, thread_id, () => {
       let root_tweet = this.mod.returnTweet(thread_id);
-      root_tweet.renderWithChildren();
+      root_tweet.renderWithChildrenWithTweet(tweet);
       this.hideLoader();
     });
 

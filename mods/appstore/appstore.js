@@ -101,7 +101,8 @@ class AppStore extends ModTemplate {
       res.err = "";
       res.rows = rows;
 
-      await mycallback(res);
+      mycallback(res);
+      return 1;
     }
   }
 

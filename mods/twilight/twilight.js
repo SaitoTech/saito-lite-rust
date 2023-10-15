@@ -3155,7 +3155,7 @@ try {
 	      this.game.state.events.tsarbomba_added = 1; // avoid getting re-added later
               this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
 	    }
-	    if (this.game.state.events.iranianultimatum != 1 && iranianultimatum_removed != 1) {
+	    if (this.game.state.events.iranianultimatum != 1 && this.game.state.events.iranianultimatum_removed != 1) {
 	      this.game.state.events.iranianultimatum_removed = 1;
 	      this.removeCardFromDeckNextDeal("iranianultimatum", "Removed");
 	    }
