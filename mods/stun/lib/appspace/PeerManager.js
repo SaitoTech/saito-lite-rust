@@ -445,7 +445,7 @@ class PeerManager {
         console.log(`Removing peerConnection with state: ${peerConnection.connectionState}`);
         this.removePeerConnection(peerId);
         if (type === "offer") {
-          this.createPeerConnection(peerId, "offer");
+          // this.createPeerConnection(peerId, "offer");
         }
       }
 
