@@ -151,7 +151,7 @@ class Recovery extends ModTemplate {
       }
 
       if (txmsg.request === "recovery recover") {
-        await this.receiveRecoverTransaction(tx, mycallback);
+        return await this.receiveRecoverTransaction(tx, mycallback);
       }
     } catch (err) {
       console.log("Error in handlePeerTransaction in Recovery module: " + err);
@@ -248,7 +248,8 @@ class Recovery extends ModTemplate {
 
 
     if (mycallback){
-      await mycallback(results);  
+      mycallback(results);  
+      return 1;
     }else{
       console.warn("No callback to process recovered wallet");
     }

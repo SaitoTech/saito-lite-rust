@@ -186,7 +186,8 @@ class Relay extends ModTemplate {
                   relayed_tx,
                   async function () {
                     if (mycallback != null) {
-                      await mycallback({ err: "", success: 1 });
+                      mycallback({ err: "", success: 1 });
+		      return 1;
                     }
                   },
                   peers[i].peerIndex
@@ -197,7 +198,8 @@ class Relay extends ModTemplate {
 
           if (peer_found == 0) {
             if (mycallback != null) {
-              await mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
+              mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
+	      return 1;
             }
           }
         }

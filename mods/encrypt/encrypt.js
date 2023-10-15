@@ -148,7 +148,6 @@ class Encrypt extends ModTemplate {
     }
 
     if (message.request === "diffie hellman key response") {
-
       this.confirm_key_exchange(txmsg.bob, sender);
     }
   }

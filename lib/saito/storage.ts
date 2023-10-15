@@ -93,17 +93,22 @@ class Storage {
       if (peer === "localhost") {
         let archive_mod = this.app.modules.returnModule("Archive");
         if (archive_mod) {
-          await archive_mod.saveTransaction(tx, data);
+          let res = await archive_mod.saveTransaction(tx, data);
         }
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       }
       if (peer != null) {
+console.log("a1");
         await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
+console.log("a2");
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       } else {
+console.log("a3");
         await this.app.network.sendRequestAsTransaction(message, data);
+        //await this.app.network.sendRequestAsTransaction(message, data, () => { console.log("a3.5"); });
+console.log("a4");
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       }
@@ -111,6 +116,7 @@ class Storage {
       console.warn("failed saving tx : " + tx.signature);
       console.error(error);
     }
+    return;
   }
 
   async updateTransaction(tx: Transaction, obj = {}, peer = null) {
@@ -162,6 +168,7 @@ class Storage {
       }
       mycallback(txs);
     };
+
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
@@ -241,7 +248,6 @@ class Storage {
         return;
       }
     }
-    //console.log("calling save options...");
 
     const saveOptionsForReal = async () => {
       clearTimeout(this.timeout);

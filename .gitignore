@@ -8,6 +8,8 @@ saitolitedocs
 
 .env
 
+options
+
 logs
 logs/*
 config/modules*

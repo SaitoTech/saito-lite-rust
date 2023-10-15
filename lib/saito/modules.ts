@@ -56,17 +56,17 @@ class Mods {
     }
 
     for (let i = 0; i < this.mods.length; i++) {
-      if (!!message && message.module != undefined) {
-        if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-          callbackIndexArray.push(txindex);
-        }
-      } else {
-        if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
-          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-          callbackIndexArray.push(txindex);
-        }
+      // if (!!message && message.module != undefined) {
+      if (this.mods[i].shouldAffixCallbackToModule(message?.module || "", tx) == 1) {
+        callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+        callbackIndexArray.push(txindex);
       }
+      // } else {
+      //   if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
+      //     callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+      //     callbackIndexArray.push(txindex);
+      //   }
+      // }
     }
   }
 
@@ -75,12 +75,18 @@ class Mods {
     peer: Peer,
     mycallback: (any) => Promise<void> = null
   ) {
+    let have_responded = false;
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
-        await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
+        if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
+	  have_responded = true;
+	};
       } catch (err) {
         console.error("handlePeerTransaction Unknown Error: ", err);
       }
+    }
+    if (have_responded == false) {
+      mycallback({});
     }
     return;
   }

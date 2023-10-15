@@ -9,7 +9,6 @@ module.exports = () => {
       
       <div class="saito-main">
         <div id="show-new-tweets" class="saito-button-primary new-tweets-notification">New Posts Available</div>
-        <div class="saito-start-loader saito-loader"></div>
       </div>
      
       <div class="saito-sidebar right">

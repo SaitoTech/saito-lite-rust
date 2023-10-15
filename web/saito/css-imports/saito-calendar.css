@@ -41,7 +41,7 @@
 }
 
 .saito-calendar-events {
-    background-color: var(--saito-background-color);
+    background-color: whitesmoke;
     width: 40rem;
     height: 35rem;
     padding: 0px;
