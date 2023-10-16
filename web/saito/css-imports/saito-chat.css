@@ -508,6 +508,7 @@
 
   .chat-manager-overlay + .chat-container {
     height: 100vh;
+    height: calc(var(--saito-vh) * 100);
   }
 
 }

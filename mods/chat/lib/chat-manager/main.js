@@ -309,8 +309,16 @@ class ChatManager {
         console.log("clcked popup", this.popups[gid]);
         // unset manually closed to permit rendering
         this.popups[gid].manually_closed = false;
+
         this.popups[gid].render();
-        this.popups[gid].input.focus(true);
+        //
+        // We would want to force this if juggling multiple chat popups on a desktop
+        // because the user is choosing to open the popup, otherwise there are safety 
+        // catches to keep the focus on the already open text window
+        //
+        if (!this.app.browser.isMobileBrowser()){
+          this.popups[gid].input.focus(true);  
+        }
 
         if (this.render_manager_to_screen) {
           await this.render();
