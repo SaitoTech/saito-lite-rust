@@ -1,6 +1,7 @@
 .chat-manager {
   height: 25%;
   flex: 1;
+  position: relative;
 }
 
 .chat-manager .saito-userline {
@@ -33,6 +34,50 @@
 /* We have a chat-manager click event on saito-user */ 
 .chat-manager-list .saito-user {
   cursor: pointer;
+}
+
+
+.chat-manager-menu {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 24px;
+  background-color: var(--saito-background-color);
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+}
+
+.chat-manager-options.active{
+  transform: rotate(90deg);
+}
+
+.chat-manager-menu > div {
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.chat-manager-menu > div:hover{
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
+}
+
+.chat-manager-menu i {
+  width: 24px;
+  height: 22px;
+  margin: auto;
+}
+
+.chat-manager-menu .notice {
+  cursor: unset;
+  font-style: italic;
+  font-size: 16px;
+}
+
+.chat-manager-menu > div.notice:hover{
+  color: var(--saito-font-color);
+  background-color: var(--saito-background-color);
 }
 
 /*  Chat / Popup  */
@@ -356,6 +401,8 @@
   align-items: center;
   font-size: 22px;
   justify-content: flex-end;
+  height: 24px;
+  line-height: 24px;
 }
 
 .chat-manager-header > div {
@@ -365,12 +412,9 @@
   padding: 0 0.5rem;
 }
 
-.add-contacts{
-  font-size: 24px;
-}
 
 .saito-sidebar .chat-manager-header > div:hover{
-  transform: rotate(90deg);
+  opacity: 0.9;
 }
 
 

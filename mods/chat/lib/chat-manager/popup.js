@@ -140,7 +140,7 @@ class ChatPopup {
       //
       // inputs
       //
-      this.input.render();
+      this.input.render(!this.app.browser.isMobileBrowser());
     }
 
     //
