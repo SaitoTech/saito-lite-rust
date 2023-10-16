@@ -1207,6 +1207,11 @@ class RedSquare extends ModTemplate {
         // convert like into tweet and addTweet to get notifications working
         //
         this.addTweet(tx, true);
+
+	//
+	// save local cache
+	//
+	this.saveLocalTweets();
       }
 
       return;
@@ -1635,16 +1640,6 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
   saveLocalTweets() {
 
     if (!this.app.BROWSER || !this.browser_active) { return; }
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
 
 
     let txs = [];
