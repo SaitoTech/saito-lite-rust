@@ -331,6 +331,12 @@ class ChatManager {
       };
     }
 
+    /*if (this.app.browser.isMobileBrowser() || window.innerWidth < 600){
+      this.app.connection.emit("saito-header-replace-logo", () => {
+        this.app.connection.emit("close-chat-manager-overlay");
+      });
+    }*/
+
 
     if (document.querySelector(".chat-manager-options")) {
       document.querySelector(".chat-manager-options").onclick = (e) => {
