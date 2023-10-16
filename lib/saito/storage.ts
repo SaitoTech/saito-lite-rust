@@ -99,16 +99,12 @@ class Storage {
         return;
       }
       if (peer != null) {
-console.log("a1");
         await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
-console.log("a2");
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       } else {
-console.log("a3");
         await this.app.network.sendRequestAsTransaction(message, data);
         //await this.app.network.sendRequestAsTransaction(message, data, () => { console.log("a3.5"); });
-console.log("a4");
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       }

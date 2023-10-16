@@ -613,7 +613,6 @@ class Archive extends ModTemplate {
     if (rows != undefined) {
       if (rows.length > 0) {
         for (let i = 0; i < rows.length; i++) {
-console.log("loaded id / tx_id: " + rows[i].id + "/" + rows[i].tx_id);
           txs.push({ tx: rows[i].tx });
         }
       }
