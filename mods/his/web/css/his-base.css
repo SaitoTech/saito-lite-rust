@@ -264,6 +264,42 @@ img {
   display: block;
   position: absolute;
 }
+.navy_tile:nth-child(1) {
+  margin-left: -20px;
+  margin-top: -20px;
+}
+.navy_tile:nth-child(2) {
+  margin-left: -10px;
+  margin-top: -30px;
+}
+.navy_tile:nth-child(3) {
+  margin-left: 0px;
+  margin-top: -40px;
+}
+.navy_tile:nth-child(4) {
+  margin-left: 10px;
+  margin-top: -50px;
+}
+.navy_tile:nth-child(5) {
+  margin-left: 20px;
+  margin-top: -60px;
+}
+.navy_tile:nth-child(6) {
+  margin-left: 30px;
+  margin-top: -70px;
+}
+.navy_tile:nth-child(7) {
+  margin-left: 40px;
+  margin-top: -80px;
+}
+.navy_tile:nth-child(8) {
+  margin-left: 50px;
+  margin-top: -90px;
+}
+.navy_tile:nth-child(9) {
+  margin-left: 60px;
+  margin-top: -100px;
+}
 
 
 .army_tile {

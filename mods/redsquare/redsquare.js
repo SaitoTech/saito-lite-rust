@@ -13,6 +13,7 @@ const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
+const localforage = require("localforage");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
@@ -241,9 +242,12 @@ class RedSquare extends ModTemplate {
     // servers update their cache for browsers
     //
     if (app.BROWSER == 0) {
-      this.updateTweetsCacheForBrowsers();
+//
+// temporarily disabled
+//
+//      this.updateTweetsCacheForBrowsers();
     } else {
-//      this.loadLocalTweets();
+      this.loadLocalTweets();
     }
   }
 
@@ -388,7 +392,8 @@ class RedSquare extends ModTemplate {
             this.addTweet(txs[z]);
           }
           let tweet = this.returnTweet(tweet_id);
-          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
+//          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
+          this.app.connection.emit("redsquare-home-render-request", tweet);
         });
         return;
       }
@@ -433,6 +438,9 @@ class RedSquare extends ModTemplate {
           this.app.connection.emit("redsquare-home-loader-hide-request");
           return;
         }
+
+        this.saveLocalTweets();
+
       });
     }
 
@@ -1620,12 +1628,38 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
     return;
   }
 
+
   /////////////////////////////////////
   // saving and loading wallet state //
   /////////////////////////////////////
-  loadLocalTweets() {
+  saveLocalTweets() {
 
-return;
+    if (!this.app.BROWSER || !this.browser_active) { return; }
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+
+
+    let txs = [];
+    let maximum = 10;
+    for (let tweet of this.tweets) {
+      txs.push(tweet.tx.serialize_to_web(this.app));
+      if (--maximum <= 0) { break; }
+    }
+
+    localforage.setItem(`tweet_history`, txs).then(function () {
+      console.log(`Saved ${txs.length} tweets`);
+    });
+
+  }
+  loadLocalTweets() {
 
     if (!this.app.BROWSER) { return; }
 
@@ -1643,48 +1677,10 @@ return;
           newtx.deserialize_from_web(this.app, tx);
           this.addTweet(newtx);
         }
-      } else {
-        //
-        // servers can suggest a number of curated tweets for instant-loading
-        // and display. this avoids the need for the browser to handshake with
-        // the peer before there is something to load on-screen.
-        //
-        // if our browser has loaded cached tweets through a direct
-        // download they will be in our tweets object already and we can and
-        // should display them to speed-up the experience of using Red Square.
-        //
-        // this runs after components are rendered or it breaks/fails
-        //
-        try {
-//
-//
-// CACHE TWEETS LOADED HERE
-//
-//
-//
-//
-//
-          //Prefer our locally cached tweets to the webServer ones
-          if (window?.tweets?.length > 0) {
-            console.log("Using Server Cached Tweets");
-            for (let z = 0; z < window.tweets.length; z++) {
-              //console.log(window.tweets[z]);
-              let newtx = new Transaction();
-              newtx.deserialize_from_web(this.app, window.tweets[z]);
-              //console.log(newtx);
-              this.addTweet(newtx);
-            }
-          }
-        } catch (err) {
-          console.log("error in initial redsquare post fetch: " + err);
-        }
-
-        this.saveLocalTweets();
       }
-      if (this.browser_active && this.rendered) {
-        this.app.connection.emit("redsquare-home-render-request", false);
-      }
+      this.app.connection.emit("redsquare-home-render-request", false);
     });
+
   }
 
   loadOptions() {
@@ -1780,30 +1776,6 @@ return;
   }
 
 
-
-  async saveLocalTweets() {
-    if (!this.app.BROWSER || !this.browser_active) {
-      return;
-    }
-
-    this.saveOptions();
-
-    let tweet_txs = [];
-    let maximum = 10;
-    for (let tweet of this.tweets) {
-      tweet.tx.optional.updated_at = tweet.updated_at;
-      // let tweet_json = tweet.tx.toJson();
-      // tweet_json.optional = tweet.tx.optional;
-      tweet_txs.push(tweet.tx.serialize_to_web(this.app));
-      if (--maximum <= 0) {
-        break;
-      }
-    }
-    console.log("start save");
-    localforage.setItem(`tweet_history`, tweet_txs).then(function () {
-      console.log(`Saved ${tweet_txs.length} tweets`);
-    });
-  }
 
 
   //

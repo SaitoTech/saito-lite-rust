@@ -230,18 +230,22 @@ class Post {
     let rparent = this.tweet;
     if (rparent) {
       if (posted_tweet.retweet_tx) {
-        rparent.tx.optional.num_retweets++;
-        rparent.num_retweets++;
+        // Oct 15 - debugging
+        //rparent.tx.optional.num_retweets++;
+        //rparent.num_retweets++;
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
       } else {
         rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;
-	// OCT 2 - debug
-        //rparent.tx.optional.num_replies++;
-        //rparent.num_replies++;
         rparent.renderWithCriticalChild();
+	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
+	try {
+	  obj.innerHTML++;
+	} catch (err) {
+console.log("err: " + err);
+	}
       }
     } else {
       this.mod.addTweet(newtx, true);

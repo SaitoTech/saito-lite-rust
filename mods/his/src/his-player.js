@@ -3304,6 +3304,9 @@ console.log("A");
   async playerNavalMove(his_self, player, faction) {
 
     let units_to_move = [];
+
+console.log("naval move faction: " + faction);
+
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {

@@ -12121,13 +12121,15 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
     //
     // if this is the 2P game, include any major activated units
     //
-    if (this.game.players.length == 2) { 
-      if (this.areAllies(faction, "hapsburg") && faction != "hapsburg") { fip.push("hapsburg"); }
-      if (this.areAllies(faction, "protestant") && faction != "protestant") { fip.push("protestant"); }
-      if (this.areAllies(faction, "france") && faction != "france") { fip.push("france"); }
-      if (this.areAllies(faction, "england") && faction != "england") { fip.push("england"); }
-      if (this.areAllies(faction, "papacy") && faction != "papacy") { fip.push("papacy"); }
-      if (this.areAllies(faction, "ottoman") && faction != "ottoman") { fip.push("ottoman"); }
+    if (faction != "independent" && faction != "scotland" && faction != "genoa" && faction != "venice" && faction != "hungary") {
+      if (this.game.players.length == 2) {
+        if (this.areAllies(faction, "hapsburg") && faction != "hapsburg") { fip.push("hapsburg"); }
+        if (this.areAllies(faction, "protestant") && faction != "protestant") { fip.push("protestant"); }
+        if (this.areAllies(faction, "france") && faction != "france") { fip.push("france"); }
+        if (this.areAllies(faction, "england") && faction != "england") { fip.push("england"); }
+        if (this.areAllies(faction, "papacy") && faction != "papacy") { fip.push("papacy"); }
+        if (this.areAllies(faction, "ottoman") && faction != "ottoman") { fip.push("ottoman"); }
+      }
     }
 
     //
@@ -27742,6 +27744,9 @@ console.log("A");
   async playerNavalMove(his_self, player, faction) {
 
     let units_to_move = [];
+
+console.log("naval move faction: " + faction);
+
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {

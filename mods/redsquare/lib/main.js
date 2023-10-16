@@ -22,7 +22,9 @@ class RedSquareMain {
     //
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", () => {
-      document.querySelector(".saito-main").innerHTML = "";
+      try {
+        document.querySelector(".saito-main").innerHTML = "";
+      } catch (err) {}
       this.manager.publicKey = this.mod.publicKey;
       this.manager.mode = "tweets";
       this.manager.render();
