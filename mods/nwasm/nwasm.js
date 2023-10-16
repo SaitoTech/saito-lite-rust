@@ -101,15 +101,16 @@ class Nwasm extends OnePlayerGameTemplate {
       return;
     }
     let message = tx.returnMessage();
+
     //
     // this code doubles onConfirmation
     //
     if (message.request === "nwasm testing") {
       mycallback("Handle Peer Request in Nwasm: this can be used for testing");
-      return;
+      return 1;
     }
 
-    await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async render(app) {
@@ -239,57 +240,126 @@ class Nwasm extends OnePlayerGameTemplate {
     this.active_game_load_ts = ts;
   }
 
-  async deleteRoms() {
-    let newtx = await this.app.wallet.createUnsignedTransaction();
-    newtx.msg = {
+
+  ////////////////////
+  // ROM Management //
+  ////////////////////
+  //
+  // this function is run when the user uploads the ROM into their browser. it
+  // encrypts the ROM using a secret key that is only known to this wallet and
+  // then puts the encrypted ROM into a transaction which is saved through the 
+  // normal storage functions.
+  //
+  // the transaction will be indexed by the Archive module of any users who are
+  // providing storage for this user, as well as their own browser possibly. the
+  // same Archive module that provides storage can then listen on the network 
+  // for requests that will transfer ownership/control/rights as needed for 
+  // legal DRM usage.
+  //
+  // DO NOT CONSOLE LOG THIS FUNCTION as it is called from the browser when
+  // parsing the logs for the NWASM game load condition. any attempt to output
+  // a console.log here thus triggers circular loop.
+  //
+  async saveRomFile(data) {
+
+    let nwasm_self = this;
+
+    let base64data = this.xorBase64(this.convertByteArrayToBase64(data));
+    let added_to_library = 0;
+    let iobj = document.querySelector(".nwasm-upload-instructions");
+
+    //
+    // larger tx, so we use subrequest and manually handle the save
+    // transaction process...
+    //
+    // the transaction goes into data, the type goes into type
+    // and the rest is used by this module in handling the tansaction
+    // callback.
+    //
+    let obj = {
       module: this.name,
-      request: "archive delete",
+      id: this.app.crypto.hash(this.active_rom_name),
+      type: this.app.crypto.hash(this.active_rom_name),
+      title: this.active_rom_name.trim(),
+      request: "archive insert",
+      data: base64data,
     };
 
-    await newtx.sign();
-
-    //
-    // save off-chain
-    //
-    // TODO - uploading such a large file halts execution of the emulator
-    // because it is so CPU and memory intensive, so we want to see if we
-    // can avoid this problem and somehow speed up ROM loading. It would
-    // be ideal either to display an advert showing the pace of ROM upload
-    // or allow the upload to happen in the background.
-    //
-    //this.app.storage.saveTransaction(newtx, { owner : this.publicKey });
-
-    let library_mod = this.app.modules.returnModule("Library");
-    if (library_mod) {
-      library_mod.handlePeerTransaction(this.app, newtx, null, function () {
-        nwasm_mod.libraries = {};
-        nwasm_mod.save();
-        nwasm_mod.updateVisibleLibrary();
-      });
+    if (iobj) {
+      iobj.innerHTML = "bundling ROM into archive file...";
     }
 
-    /***
-     let message = {};
-     message.request = "library delete";
-     message.data = {};
-     message.data.collection = "Nwasm";
-     message.data.publicKey = this.publicKey;
+    let newtx = await this.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
 
-     let newtx = this.app.wallet.createUnsignedTransaction(this.publicKey, BigInt(0), BigInt(0));
-     newtx.msg = message;
-     newtx.presign(this.app);
-     newtx.sign(this.app);
+    document.querySelector(".loader").classList.add("steptwo");
+    if (iobj) {
+      iobj.innerHTML = "cryptographically signing archive file...";
+    }
+    await newtx.sign();
+    if (iobj) {
+      let size = Object.keys(newtx).length;
+      iobj.innerHTML = "uploading archive file: " + size + " bytes";
+    }
 
-     let library_mod = this.app.modules.returnModule("Library");
-     if (library_mod) {
-	  library_mod.handlePeerTransaction(this.app, newtx, null, function() {
-            nwasm_mod.libraries = {};
-	    nwasm_mod.save();
-            nwasm_mod.updateVisibleLibrary();
-	  });
-	}
-     ***/
+    //
+    // save the encrypted ROM file
+    //
+    await this.app.storage.saveTransaction(newtx, { owner: this.publicKey , field1: obj.module , field2 : this.publicKey , field3 : this.active_rom_name });
+
+    //
+    // and hide our instructions
+    //
+    this.hideLibrary();
   }
+
+
+  async deleteRoms() {
+
+    let nwasm_mod = this;
+
+    //
+    // broadcast message instructing any configured archives to delete all content associated
+    // with this collection and our publickey.
+    //
+    this.app.storage.deleteTransactions(
+
+      {
+        owner  : this.publicKey ,
+        field1 : this.name
+      },
+
+      () => {
+	try {
+	  alert("Transactions deleted");
+	} catch (err) {
+	  console.log("error running alert when transactions deleted");
+	}
+      },
+
+      null
+
+    );
+
+    //
+    // and manually purge library if installed
+    //
+    let library_mod = this.app.modules.returnModule("Library");
+    if (library_mod) {
+      nwasm_mod.library[this.name] = {};
+      nwasm_mod.library[this.name].peers = {};
+      nwasm_mod.library[this.name].peers['localhost'] = [];
+      nwasm_mod.save();
+      nwasm_mod.updateVisibleLibrary();
+    }
+
+  }
+
+
+
+
+
+
 
   hideSplashScreen() {
     if (document.querySelector(".nwasm-instructions")) {
@@ -385,7 +455,7 @@ class Nwasm extends OnePlayerGameTemplate {
             function (txs) {
               try {
                 for (let z = 0; z < txs.length; z++) {
-                  let newtx = new Transaction(undefined, txs[z]);
+                  let newtx = txs[z];
                   nwasm_self.active_game_saves.push(newtx);
                 }
               } catch (err) {
@@ -430,8 +500,18 @@ class Nwasm extends OnePlayerGameTemplate {
   // transactions //
   //////////////////
   loadRomFile(tx) {
+
+alert("in load ROM file... 1");
+
     let txmsg = tx.returnMessage();
+
+alert("in load ROM file... 2");
+
+console.log(txmsg.data);
+
     let ab = this.convertBase64ToByteArray(this.xorBase64(txmsg.data));
+
+alert("in load ROM file... 3");
 
     //
     // prevents us saving the file, this is an already uploaded rom
@@ -445,78 +525,6 @@ class Nwasm extends OnePlayerGameTemplate {
     // initialize ROM gets the ROM the APP and the MOD
     //
     myApp.initializeRom(ab, this.app, this);
-  }
-
-  //
-  // save the ROM
-  //
-  // this function is run when the user uploads the ROM into their browser. it
-  // encrypts the ROM using a secret key that is only known to this wallet and
-  // then puts it into a transaction which is saved out in the network.
-  //
-  // the transaction will be indexed by the Archive module of any users who are
-  // providing storage for this user, as well as their own browser possibly. the
-  // Archive module will then be able to transfer ownership and control as needed
-  // for DRM management purposes.
-  //
-  // DO NOT CONSOLE LOG THIS FUNCTION as it is called from the browser when
-  // parsing the logs for the NWASM game load condition.
-  //
-  async saveRomFile(data) {
-    let nwasm_self = this;
-
-    let base64data = this.xorBase64(this.convertByteArrayToBase64(data));
-    let added_to_library = 0;
-    let iobj = document.querySelector(".nwasm-upload-instructions");
-
-    //
-    // larger tx, so we use subrequest and manually handle the save
-    // transaction process...
-    //
-    // the transaction goes into data, the type goes into type
-    // and the rest is used by this module in handling the tansaction
-    // callback.
-    //
-    let obj = {
-      module: this.name,
-      id: this.app.crypto.hash(this.active_rom_name),
-      type: this.app.crypto.hash(this.active_rom_name),
-      title: this.active_rom_name.trim(),
-      request: "archive insert",
-      data: base64data,
-    };
-
-    if (iobj) {
-      iobj.innerHTML = "bundling ROM into archive file...";
-    }
-
-    let newtx = await this.app.wallet.createUnsignedTransaction();
-    newtx.msg = obj;
-
-    document.querySelector(".loader").classList.add("steptwo");
-    if (iobj) {
-      iobj.innerHTML = "cryptographically signing archive file...";
-    }
-    await newtx.sign();
-    if (iobj) {
-      iobj.innerHTML = "uploading archive file: " + newtx.m.length + " bytes";
-    }
-
-    //
-    // save off-chain
-    //
-    // TODO - uploading such a large file halts execution of the emulator
-    // because it is so CPU and memory intensive, so we want to see if we
-    // can avoid this problem and somehow speed up ROM loading. It would
-    // be ideal either to display an advert showing the pace of ROM upload
-    // or allow the upload to happen in the background.
-    //
-    await this.app.storage.saveTransaction(newtx, { owner: this.publicKey });
-
-    //
-    // and hide our instructions
-    //
-    this.hideLibrary();
   }
 
   sleep(ms) {
@@ -546,7 +554,7 @@ class Nwasm extends OnePlayerGameTemplate {
           if (txs.length <= 0) {
             alert("No Saved Games Available");
           }
-          let newtx = new Transaction(undefined, txs[0]);
+          let newtx = txs[0];
           let txmsg = newtx.returnMessage();
           let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
           nwasm_mod.active_game = byteArray;
@@ -582,6 +590,8 @@ class Nwasm extends OnePlayerGameTemplate {
     await this.app.storage.saveTransaction(newtx, { field1: "Nwasm-" + this.active_rom_sig });
     this.active_game_saves.push(newtx);
   }
+
+
 
   /////////////////////
   // data conversion //

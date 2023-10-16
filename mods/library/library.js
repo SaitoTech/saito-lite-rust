@@ -3,29 +3,43 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const PeerService = require("saito-js/lib/peer_service").default;
 
 //
-// Library module is used to index material that I have saved in my own transaction
+// Library
+//
+// the library  module is used to index content I have saved in my own transaction
 // archives for curation, personal use and lending as legally permitted. It queries
 // my peers for items they have indexed in the same collections, and fetches those
 // records on load.
 //
-// Modules that wish to manage distributed and curated content should respondTo() the
-// the "library-collection" to tell it what class of material it should index for
-// personal or distributed use. The library will then start indexing those materials
-// and serve entries to peers on request.
+// this.collections = [
+//   {
+//     module 		: "Nwasm" ,
+//     mod 		: this ,
+//     collection 	: "Nwasm" ,
+//     key 		: this.nwasm.random ,
+//     shouldArchive 	: (tx) => { return false; } // true or false
+//   }     
+// ]
 //
-// Library indexes are stored in the wallet - backup wallet to save.
-//
-// library['collection'] = [
+// this.library[collection.id].peers{'publickey'} = [
 //    {
-//	id : "",
-//	title : "" ,
-//	description : "" ,
-//	num : 1 ,
-//	available : 1,
-//	checkout : [],
-//	sig : ""
-//    }
-// }
+//      id 		: "id" ,
+//      title 		: "title" ,
+//      description 	: "description" ,
+//      num 		: 1 ,				// total in collection
+//      available 	: 1 ,				// total available (not in use)
+//      checkout 	: [] ,
+//      sig 		: "sig"
+//   }
+// ]
+//
+// The library module provides basic functionality for DRM-respecting management of this
+// digital content. It specifically transfers ownership of the items in question when 
+// they are lent.
+//
+// Modules that wish to use the library to view/manage network-available content should
+// respondTo() the "library-collection" event to inform the library of what kind of 
+// material it should track. The library will add this to its list of collections and 
+// start indexing and serving those materials to peers on request.
 //
 class Library extends ModTemplate {
   constructor(app) {
@@ -50,11 +64,6 @@ class Library extends ModTemplate {
     //
     // the information stored will look like this
     //
-    //    module 	: "Nwasm" ,
-    //    mod 		: this ,
-    //    collection 	: "Nwasm" ,
-    //    key 		: this.nwasm.random ,
-    //    shouldArchive : (tx) => { return false; } // true or false
     //
     this.collections = [];
 
@@ -67,11 +76,12 @@ class Library extends ModTemplate {
     // index transactions that are saved
     //
     app.connection.on("saito-save-transaction", (tx) => {
-      //console.log("---------------------");
-      //console.log("---------------------");
-      //console.log("IN LIBRARY ON SAVE TX");
-      //console.log("---------------------");
-      //console.log("---------------------");
+
+      console.log("---------------------");
+      console.log("---------------------");
+      console.log("IN LIBRARY ON SAVE TX");
+      console.log("---------------------");
+      console.log("---------------------");
 
       //
       // fetch information for index
@@ -84,34 +94,15 @@ class Library extends ModTemplate {
       let sig = tx.signature;
 
       //
-      // sanity check
+      // sanity check to avoid adding duplicates
       //
       let does_item_exist_in_collection = this.isItemInCollection({ id: id }, module);
       if (does_item_exist_in_collection) {
         try {
           let c = confirm("Your library already contains a copy of this item. Is this a new copy?");
-          if (c) {
-            let idx = -1;
-            for (let i = 0; i < this.library[module].peers[this.publicKey], length; i++) {
-              if (this.library[module].peers[this.publicKey][i].id == id) {
-                idx = i;
-                break;
-              }
-            }
-
-            if (idx == -1) {
-              alert("ERROR: cannot find item which supposedly exists");
-            } else {
-              this.library[module].peers[this.publicKey][idx].num++;
-              this.library[module].peers[this.publicKey][idx].available++;
-              this.save();
-            }
-
-            return;
-          } else {
-            alert("Not Saving");
-            return;
-          }
+          if (!c) {
+            alert("refusing to add duplicate item!");
+	  }
         } catch (err) {}
       }
 
@@ -136,9 +127,136 @@ class Library extends ModTemplate {
     });
   }
 
+  //
+  // initialization
+  //
+  // this asks any modules we have installed locally whether they want library
+  // support. if they do, we run addCollection() to make sure that we will index
+  // and fetch information needed.
+  //
+  async initialize(app) {
+    //
+    // modules respondTo("library-collection") if they want the library to be
+    // indexing content for them. we add each of the collections we are being
+    // asked to manage to our library, and initialize it with sensible default
+    // values.
+    //
+    await super.initialize(app);
+    
+    for (const m of await app.modules.returnModulesRespondingTo("library-collection")) {
+      this.addCollection(await m.respondTo("library-collection"), this.publicKey);
+    }
+  }
+
+  returnServices() {
+    let services = [];
+    if (this.app.BROWSER == 0) {
+      services.push(new PeerService(null, "library", "Library"));
+    }
+    return services;
+  }
+
+  //
+  // ON PEER SERVICE UP 
+  //
+  // when we connect to a peer that supports the "Library" service, we contact
+  // them with a request for any information on collections we are interested in 
+  // accessing.
+  //
+  async onPeerServiceUp(app, peer, service = {}) {
+
+    let library_self = app.modules.returnModule("Library");
+
+    //
+    // remote peer runs a library
+    //
+    if (service.service === "library") {
+
+      //
+      // fetch their library
+      //
+      for (let m of library_self.collections) {
+        //
+        // we want to know what content is indexed for collection with specified name
+        //
+        let message = {};
+        message.request = "library collection";
+        message.data = {};
+        message.data.collection = m.name;
+
+        //
+        // add it to our library
+        //
+        app.network.sendRequestAsTransaction(
+          message.request,
+          message.data,
+          (res) => {
+            if (res.length > 0) {
+              library_self.library[m.collection].peers[peer.publicKey] = res; // res = collection
+            }
+          },
+          peer.peerIndex
+        );
+      }
+    }
+  }
+
+
+  //
+  // handle off-chain requests for copies of specific collections we may be 
+  // indexing.
+  //
+  async handlePeerTransaction(app, tx = null, peer, mycallback) {
+    if (tx == null) {
+      return;
+    }
+    let message = tx.returnMessage();
+
+    //
+    // respond to requests for our local collection
+    //
+    if (message.request === "library collection") {
+      if (!message.data) {
+        return;
+      }
+      if (!message.data.collection) {
+        return;
+      }
+      if (!this.library[message.data.collection].peers[this.publicKey]) {
+        return;
+      }
+      if (mycallback) {
+        mycallback(this.library[message.data.collection].peers[this.publicKey]);
+	return 1;
+      }
+      return;
+    }
+
+    return await super.handlePeerTransaction(app, tx, peer, mycallback);
+  }
+
+
+
+  //
+  // interacting with our collections
+  //
+  // - addCollection()
+  // - isItemInCollection()
+  // - addItemToCollection()
+  // - checkoutItem()
+  // - returnItem()
+  //
   addCollection(collection, peer = "localhost") {
+
     if (peer === "localhost") {
       peer = this.publicKey;
+    }
+
+    if (this.collections[collection.name]) { 
+      if (this.app.BROWSER) {
+        alert("collection already exists!");
+      }
+      return;
     }
 
     this.collections.push(collection);
@@ -163,6 +281,7 @@ class Library extends ModTemplate {
     this.save();
   }
 
+
   isItemInCollection(item, collection, peer = "localhost") {
     if (peer === "localhost") {
       peer = this.publicKey;
@@ -180,7 +299,9 @@ class Library extends ModTemplate {
     return false;
   }
 
+
   addItemToCollection(item, collection, peer = "localhost") {
+
     if (peer === "localhost") {
       peer = this.publicKey;
     }
@@ -199,11 +320,12 @@ class Library extends ModTemplate {
 
     let does_item_exist_in_collection = false;
 
+    //
+    // every item must have a unique signature
+    //
     for (let i = 0; i < this.library[collection.name].peers[peer].length; i++) {
-      if (this.library[collection.name].peers[peer][i].title === item.title) {
+      if (this.library[collection.name].peers[peer][i].title === item.title && this.library[collection.name].peers[peer][i].sig == item.sig) {
         does_item_exist_in_collection = true;
-        this.library[collection.name].peers[peer][i].num++;
-        this.library[collection.name].peers[peer][i].available++;
       }
     }
 
@@ -212,116 +334,14 @@ class Library extends ModTemplate {
     }
   }
 
-  async initialize(app) {
-    //
-    // modules respondTo("library-collection") if they want the library to be
-    // indexing content for them. we add each of the collections we are being
-    // asked to manage to our library, and initialize it with sensible default
-    // values.
-    //
-    await super.initialize(app);
-    
-    for (const m of await app.modules.returnModulesRespondingTo("library-collection")) {
-      this.addCollection(await m.respondTo("library-collection"), this.publicKey);
-    }
-  }
-
-  returnServices() {
-    let services = [];
-    if (this.app.BROWSER == 0) {
-      services.push(new PeerService(null, "library", "Library"));
-    }
-    return services;
-  }
-
-  //
-  // runs when peer with library service connects
-  //
-  async onPeerServiceUp(app, peer, service = {}) {
-    let library_self = app.modules.returnModule("Library");
-
-    //
-    // remote peer runs a library
-    //
-    if (service.service === "library") {
-      //
-      // fetch content for collections we are tracking
-      //
-      for (let m of library_self.collections) {
-        //
-        // we want to know what content is indexed for collection with specified name
-        //
-        let message = {};
-        message.request = "library collection";
-        message.data = {};
-        message.data.collection = m.name;
-
-        //
-        // send the request and fetch the peer collection
-        //
-        app.network.sendRequestAsTransaction(
-          message.request,
-          message.data,
-          (res) => {
-            if (res.length > 0) {
-              library_self.library[m.collection].peers[peer.publicKey] = res; // res = collection
-            }
-          },
-          peer.peerIndex
-        );
-      }
-    }
-  }
-
-  async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    if (tx == null) {
-      return;
-    }
-    let message = tx.returnMessage();
-
-    //
-    // respond to requests for our local collection
-    //
-    if (message.request === "library collection") {
-      if (!message.data) {
-        return;
-      }
-      if (!message.data.collection) {
-        return;
-      }
-      if (!this.library[message.data.collection].peers[this.publicKey]) {
-        return;
-      }
-      if (mycallback) {
-        mycallback(this.library[message.data.collection].peers[this.publicKey]);
-      }
-      return;
-    }
-
-    await super.handlePeerTransaction(app, tx, peer, mycallback);
-  }
-
-  load() {
-    if (this.app.options.library) {
-      this.library = this.app.options.library;
-      return;
-    }
-    this.library = {};
-    this.save();
-  }
-
-  save() {
-    this.app.options.library = this.library;
-    this.app.storage.saveOptions();
-  }
-
   returnItem(collection, publicKey, sig, mycallback) {
+
     //
     // get index of item
     //
     let idx = -1;
     for (let i = 0; i < this.library[collection].peers[this.publicKey].length; i++) {
-      if (this.library[collection].peers[this.publicKey][i].signature === sig) {
+      if (this.library[collection].peers[this.publicKey][i].sig === sig) {
         idx = i;
         break;
       }
@@ -350,11 +370,11 @@ class Library extends ModTemplate {
       // one who has borrowed the item previously and has it in their
       // possession. in that case they have simply rebooted their
       // machine and should be provided with the data under the previous
-      // loan.
+      // valid request to borrow, since they are already marked as in 
+      // control of the item.
       //
-      // this "unsets" the loan so that it can be reset with the passing
+      // first we "unset" the loan so that it can be reset with the passing
       // through of control to the !is_already_borrowed sanity check.
-      //
       //
       if (is_already_borrowed) {
         for (let i = 0; i < item.checkout.length; i++) {
@@ -374,6 +394,7 @@ class Library extends ModTemplate {
   }
 
   checkoutItem(collection, publicKey, sig, mycallback) {
+
     //
     // if the collection doesn't exist, we cannot lend
     //
@@ -386,7 +407,7 @@ class Library extends ModTemplate {
     //
     let idx = -1;
     for (let i = 0; i < this.library[collection].peers[this.publicKey].length; i++) {
-      if (this.library[collection].peers[this.publicKey][i].signature === sig) {
+      if (this.library[collection].peers[this.publicKey][i].sig === sig) {
         idx = i;
         break;
       }
@@ -396,6 +417,7 @@ class Library extends ModTemplate {
     // if the item exists
     //
     if (idx != -1) {
+
       //
       // grab the item
       //
@@ -444,9 +466,13 @@ class Library extends ModTemplate {
       //
       if (!is_already_borrowed) {
         if (item.available < 1) {
+alert("1 - " + item.available);
+this.app.storage.loadTransactions({ sig: sig }, mycallback);
           return;
         }
         if (item.checkout.length > item.num) {
+alert("2 - " + item.checkout.length + " -- " + item.num);
+this.app.storage.loadTransactions({ sig: sig }, mycallback);
           return;
         }
         //
@@ -456,13 +482,36 @@ class Library extends ModTemplate {
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         // be careful that item.available //
         // is not removed above for legal //
+        // as allows sanity check         //
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         item.available--;
         this.save();
+
+alert("ABOUT TO CHECKOUT!");
+
         this.app.storage.loadTransactions({ sig: sig }, mycallback);
       }
     }
   }
+
+
+  //
+  // save and load 
+  //
+  save() {
+    this.app.options.library = this.library;
+    this.app.storage.saveOptions();
+  }
+
+  load() {
+    if (this.app.options.library) {
+      this.library = this.app.options.library;
+      return;
+    }
+    this.library = {};
+    this.save();
+  }
+
 }
 
 module.exports = Library;

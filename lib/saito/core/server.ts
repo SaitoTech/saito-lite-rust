@@ -482,6 +482,8 @@ class Server {
     //   }
     // });
 
+
+
     /////////////////
     // lite-blocks //
     /////////////////
@@ -511,7 +513,6 @@ class Server {
           console.error(error);
         }
       }
-
       if (peer == null) {
         keylist.push(pkey);
       } else {
@@ -595,6 +596,7 @@ class Server {
         console.error(error);
       }
     });
+
 
     expressApp.get("/block/:hash", async (req, res) => {
       try {

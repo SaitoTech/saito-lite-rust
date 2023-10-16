@@ -93,7 +93,7 @@ class Storage {
       if (peer === "localhost") {
         let archive_mod = this.app.modules.returnModule("Archive");
         if (archive_mod) {
-          await archive_mod.saveTransaction(tx, data);
+          let res = await archive_mod.saveTransaction(tx, data);
         }
         this.app.connection.emit("saito-save-transaction", tx);
         return;
@@ -104,6 +104,7 @@ class Storage {
         return;
       } else {
         await this.app.network.sendRequestAsTransaction(message, data);
+        //await this.app.network.sendRequestAsTransaction(message, data, () => { console.log("a3.5"); });
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       }
@@ -111,6 +112,7 @@ class Storage {
       console.warn("failed saving tx : " + tx.signature);
       console.error(error);
     }
+    return;
   }
 
   async updateTransaction(tx: Transaction, obj = {}, peer = null) {
@@ -162,6 +164,7 @@ class Storage {
       }
       mycallback(txs);
     };
+
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
@@ -241,7 +244,6 @@ class Storage {
         return;
       }
     }
-    //console.log("calling save options...");
 
     const saveOptionsForReal = async () => {
       clearTimeout(this.timeout);
@@ -252,7 +254,7 @@ class Storage {
         if (this.app?.wallet) {
           let key = await this.app.wallet.getPublicKey();
           localforage.setItem(key, this.app.options).then(function (value) {
-            console.log("Local forage updated for public key: " + key);
+            //console.log("Local forage updated for public key: " + key);
           });
         }
       } catch (err) {

@@ -155,7 +155,7 @@ class PeerManager {
     });
 
     //Launch the Stun call
-    app.connection.on("start-stun-call", async () => {
+    app.connection.on("start-stun-call", async (isJoining) => {
       console.log("start-stun-call");
       if (this.mod.ui_type == "voice") {
         this.videoEnabled = false;
@@ -185,7 +185,8 @@ class PeerManager {
         "show-call-interface",
         this.room_code,
         this.videoEnabled,
-        this.audioEnabled
+        this.audioEnabled,
+        isJoining
       );
       this.app.connection.emit("add-local-stream-request", this.localStream);
 
@@ -397,7 +398,7 @@ class PeerManager {
         setTimeout(() => {
           // console.log('sending offer');
           this.reconnect(peerId, type);
-        }, 20000);
+        }, 30000);
       }
       if (peerConnection.connectionState === "connected") {
         let sound = new Audio("/videocall/audio/enter-call.mp3");
@@ -426,25 +427,32 @@ class PeerManager {
 
     const attemptReconnect = (currentRetry) => {
       const peerConnection = this.peers.get(peerId);
-      if (currentRetry === maxRetries) {
-        if (peerConnection && peerConnection.connectionState !== "connected") {
-          console.log("Reached maximum number of reconnection attempts, giving up");
-          this.removePeerConnection(peerId);
-        }
+
+      if (!peerConnection) {
+        console.log(`No peerConnection found for peerId: ${peerId}`);
         return;
       }
 
-      if (peerConnection && peerConnection.connectionState === "connected") {
+      if (peerConnection.connectionState === "connected") {
         console.log("Reconnection successful");
-        // remove connection message
         return;
       }
 
-      if (peerConnection && peerConnection.connectionState !== "connected") {
+      // Remove peer connection if its state is neither "connected" nor "connecting"
+      if (
+        peerConnection.connectionState !== "connected" &&
+        peerConnection.connectionState !== "connecting"
+      ) {
+        console.log(`Removing peerConnection with state: ${peerConnection.connectionState}`);
         this.removePeerConnection(peerId);
         if (type === "offer") {
-          this.createPeerConnection(peerId, "offer");
+          // this.createPeerConnection(peerId, "offer");
         }
+      }
+
+      if (currentRetry === maxRetries) {
+        console.log("Reached maximum number of reconnection attempts, giving up");
+        return;
       }
 
       setTimeout(() => {

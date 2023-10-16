@@ -206,7 +206,8 @@ class Giphy extends ModTemplate {
       try {
         api_key = process.env.GIPHY_KEY;
         if (mycallback) {
-          await mycallback(api_key);
+          mycallback(api_key);
+	  return 1;
         }
       } catch (err) {
         console.log("Failed to find key with error: " + err);

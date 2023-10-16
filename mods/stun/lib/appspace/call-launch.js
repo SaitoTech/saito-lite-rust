@@ -64,7 +64,7 @@ class CallLaunch {
       );
       this.attachEvents(this.app, this.mod);
       this.loader.remove();
-    }, 2000);
+    }, 3500);
 
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit("stun-init-peer-manager", "large");
@@ -88,12 +88,12 @@ class CallLaunch {
   }
 
   async createRoom() {
-    this.loader.render(true);
+    // this.loader.render(true);
     const room_code = await this.mod.sendCreateRoomTransaction(null);
-    this.app.connection.emit("stun-remove-loader");
     this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
     this.app.connection.emit("close-preview-window");
-    this.app.connection.emit("start-stun-call");
+    this.app.connection.emit("start-stun-call", false);
+    this.app.connection.emit("stun-remove-loader");
     // this.joinRoom();
   }
 
@@ -104,7 +104,7 @@ class CallLaunch {
     this.app.connection.emit("stun-peer-manager-update-room-code", this.room_code);
     //For myself and call-Settings
     this.app.connection.emit("close-preview-window");
-    this.app.connection.emit("start-stun-call");
+    this.app.connection.emit("start-stun-call", true);
   }
 
   async createConferenceCall(app, mod, room_code) {}
