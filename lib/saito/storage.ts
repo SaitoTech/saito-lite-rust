@@ -258,7 +258,7 @@ console.log("a4");
         if (this.app?.wallet) {
           let key = await this.app.wallet.getPublicKey();
           localforage.setItem(key, this.app.options).then(function (value) {
-            console.log("Local forage updated for public key: " + key);
+            //console.log("Local forage updated for public key: " + key);
           });
         }
       } catch (err) {

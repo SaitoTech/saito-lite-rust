@@ -25,33 +25,37 @@ class CallInterfaceVideo {
     this.speaker_candidate = null;
     this.loader = new SaitoLoader(app, mod);
 
-    this.app.connection.on("show-call-interface", async (room_code, videoEnabled, audioEnabled) => {
-      this.room_code = room_code;
+    this.app.connection.on(
+      "show-call-interface",
+      async (room_code, videoEnabled, audioEnabled, isJoining) => {
+        this.room_code = room_code;
 
-      this.loader.render(true);
+        if (isJoining) {
+          this.loader.render(true);
+          setTimeout(() => {
+            this.loader.remove();
+          }, 60000);
+        }
 
-      setTimeout(() => {
-        this.loader.remove();
-      }, 60000);
+        console.log("Render Video Call Interface");
+        //This will render the (full-screen) component
+        if (!document.querySelector(".stun-chatbox")) {
+          this.render(videoEnabled, audioEnabled);
+        }
 
-      console.log("Render Video Call Interface");
-      //This will render the (full-screen) component
-      if (!document.querySelector(".stun-chatbox")) {
-        this.render(videoEnabled, audioEnabled);
+        this.room_link = this.createRoomLink();
+
+        /* automatically copy invite link to clipboard for first user */
+        console.log(this.users_on_call);
+
+        if (this.users_on_call == 1) {
+          this.copyInviteLink();
+        }
+
+        // create chat group
+        await this.createRoomTextChat();
       }
-
-      this.room_link = this.createRoomLink();
-
-      /* automatically copy invite link to clipboard for first user */
-      console.log(this.users_on_call);
-
-      if (this.users_on_call == 1) {
-        this.copyInviteLink();
-      }
-
-      // create chat group
-      await this.createRoomTextChat();
-    });
+    );
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
       this.addLocalStream(localStream);
@@ -84,6 +88,9 @@ class CallInterfaceVideo {
       } else if (status === "disconnected") {
         this.video_boxes[peer_id].video_box.renderPlaceholder("retrying connection");
       }
+    });
+    app.connection.on("stun-remove-loader", () => {
+      this.loader.remove();
     });
 
     this.app.connection.on("remove-peer-box", (peer_id) => {

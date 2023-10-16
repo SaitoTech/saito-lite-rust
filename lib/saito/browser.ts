@@ -1701,18 +1701,19 @@ class Browser {
         }
         let wrapper = document.createElement("div");
         wrapper.id = "message-wrapper";
-        let html = "<div id=\"message-box\">";
-        html += "<p class=\"message-message\">" + browser_self.sanitize(message) + "</p>";
-        html += "</div>";
-        wrapper.innerHTML = html;
+        wrapper.innerHTML = `<div class="message-message">${browser_self.sanitize(message)}</div>`;
+
         document.body.appendChild(wrapper);
-        setTimeout(() => {
+        
+        let timeout = setTimeout(() => {
           wrapper.remove();
         }, killtime);
+        
         document.querySelector("#message-wrapper").addEventListener(
           "click",
-          function() {
+          () => {
             wrapper.remove();
+            clearTimeout(timeout);
           },
           false
         );

@@ -2,33 +2,14 @@ const ChatPopup = require("./popup");
 const ChatManagerTemplate = require("./main.template");
 const ChatTeaser = require("./teaser.template");
 const JSON = require("json-bigint");
-const ChatMenu = require("./../overlays/chat-menu");
-const ContactsList = require("./../../../../lib/saito/ui/modals/saito-contacts/saito-contacts");
+const ChatUserMenu = require("./../overlays/chat-user-menu");
+const ChatManagerMenu = require("./../overlays/chat-manager-menu");
 
 class ChatManager {
   constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
     this.container = container || ".chat-manager";
-    this.contactList = new ContactsList(app, mod, true);
-    this.contactList.callback = async (person) => {
-      if (Array.isArray(person) && person.length > 1) {
-        let name = await sprompt("Choose a name for the group");
-        //Make sure I am in the group too!
-        person.push(this.mod.publicKey);
-        let group = this.mod.returnOrCreateChatGroupFromMembers(person, name);
-
-        if (group.txs.length == 0) {
-          await this.mod.sendCreateGroupTransaction(group);
-        } else {
-          this.app.connection.emit("chat-popup-render-request", group);
-        }
-      } else if (Array.isArray(person) && person.length == 1) {
-        this.app.keychain.addKey(person[0], { mute: 0 });
-        person.push(this.mod.publicKey);
-        let group = this.mod.returnOrCreateChatGroupFromMembers(person);
-      }
-    };
 
     //
     // some apps may want chat manager quietly in background
@@ -328,8 +309,16 @@ class ChatManager {
         console.log("clcked popup", this.popups[gid]);
         // unset manually closed to permit rendering
         this.popups[gid].manually_closed = false;
+
         this.popups[gid].render();
-        this.popups[gid].input.focus(true);
+        //
+        // We would want to force this if juggling multiple chat popups on a desktop
+        // because the user is choosing to open the popup, otherwise there are safety 
+        // catches to keep the focus on the already open text window
+        //
+        if (!this.app.browser.isMobileBrowser()){
+          this.popups[gid].input.focus(true);  
+        }
 
         if (this.render_manager_to_screen) {
           await this.render();
@@ -339,7 +328,7 @@ class ChatManager {
       item.oncontextmenu = async (e) => {
         e.preventDefault();
         let gid = e.currentTarget.getAttribute("data-id");
-        let chatMenu = new ChatMenu(this.app, this.mod, this.mod.returnGroup(gid));
+        let chatMenu = new ChatUserMenu(this.app, this.mod, this.mod.returnGroup(gid));
         await chatMenu.render();
       };
     });
@@ -350,84 +339,27 @@ class ChatManager {
       };
     }
 
-    if (document.querySelector(".add-contacts")) {
-      document.querySelector(".add-contacts").onclick = (e) => {
-        this.contactList.render();
-      };
-    }
+    /*if (this.app.browser.isMobileBrowser() || window.innerWidth < 600){
+      this.app.connection.emit("saito-header-replace-logo", () => {
+        this.app.connection.emit("close-chat-manager-overlay");
+      });
+    }*/
 
-    if (document.querySelector(".refresh-contacts")) {
-      document.querySelector(".refresh-contacts").onclick = async (e) => {
-        for (let group of this.mod.groups) {
-          if (group.members.length == 2) {
-            //console.log(JSON.parse(JSON.stringify(group.members)));
-            for (let member of group.members) {
-              if (member != this.mod.publicKey) {
-                //console.log("Send Ping to " + member);
-                this.app.connection.emit("relay-send-message", {
-                  recipient: [member],
-                  request: "ping",
-                  data: {},
-                });
 
-                this.pinged[group.id] = new Date().getTime();
-
-                if (this.timers[group.id]) {
-                  clearTimeout(this.timers[group.id]);
-                }
-
-                //If you don't hear back in 5 seconds, assume offline
-                this.timers[group.id] = setTimeout(() => {
-                  console.log("Auto change to offline");
-                  let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
-                  if (cm_handle) {
-                    cm_handle.classList.remove("online");
-                  }
-                  group.online = false;
-                  this.timers[group.id] = null;
-                }, 1000 * 5);
-              }
-            }
-          }
+    if (document.querySelector(".chat-manager-options")) {
+      document.querySelector(".chat-manager-options").onclick = (e) => {
+        if (!this.chatManagerMenu){
+          this.chatManagerMenu = new ChatManagerMenu(this.app, this.mod);
         }
-      };
-    }
-
-    if (document.querySelector(".toggle-notifications")) {
-      let icon = document.querySelector(".toggle-notifications i");
-      if (Notification?.permission === "granted" && this.mod.enable_notifications) {
-        if (icon) {
-          icon.classList.add("fa-bell");
-          icon.classList.remove("fa-bell-slash");
+        if (this.chatManagerMenu.active){
+          this.chatManagerMenu.hide();
+        }else{
+          this.chatManagerMenu.render();  
         }
+        document.querySelector(".chat-manager-options").classList.toggle("active");
       }
-
-      document.querySelector(".toggle-notifications").onclick = (e) => {
-        if (this.mod.enable_notifications) {
-          this.mod.enable_notifications = false;
-          if (icon) {
-            icon.classList.remove("fa-bell");
-            icon.classList.add("fa-bell-slash");
-          }
-          this.app.options.chat.enable_notifications = false;
-          this.app.storage.saveOptions();
-        } else {
-          Notification.requestPermission().then((result) => {
-            console.log(result);
-            if (result === "granted") {
-              this.mod.enable_notifications = true;
-              if (icon) {
-                icon.classList.add("fa-bell");
-                icon.classList.remove("fa-bell-slash");
-              }
-
-              this.app.options.chat.enable_notifications = true;
-              this.app.storage.saveOptions();
-            }
-          });
-        }
-      };
     }
+
   }
 }
 

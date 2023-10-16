@@ -73,7 +73,10 @@ class Spider extends OnePlayerGameTemplate {
       // Insert game board
       $(".gameboard").html(this.returnBoard());
       this.removeEvents();
-      this.changeDifficulty(input_dif);
+      let start = this.changeDifficulty(input_dif);
+      if (start){
+        this.newRound();
+      }
     } else {
       this.game.queue.push("READY");
     }
@@ -1158,7 +1161,9 @@ class Spider extends OnePlayerGameTemplate {
       this.saveGamePreference("spider_difficulty", dif);
       this.game.queue.push("lose");
       this.endTurn();
+      return 0;
     }
+    return 1;
   }
 
   displayBoard() {

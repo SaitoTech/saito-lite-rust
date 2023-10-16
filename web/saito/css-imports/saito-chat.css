@@ -1,6 +1,7 @@
 .chat-manager {
   height: 25%;
   flex: 1;
+  position: relative;
 }
 
 .chat-manager .saito-userline {
@@ -33,6 +34,51 @@
 /* We have a chat-manager click event on saito-user */ 
 .chat-manager-list .saito-user {
   cursor: pointer;
+}
+
+
+.chat-manager-menu {
+  position: absolute;
+  width: 100%;
+  min-height: fit-content;
+  height: 100%;
+  top: 24px;
+  background-color: var(--saito-background-color);
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+}
+
+.chat-manager-options.active{
+  transform: rotate(90deg);
+}
+
+.chat-manager-menu > div {
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.chat-manager-menu > div:hover{
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
+}
+
+.chat-manager-menu i {
+  width: 24px;
+  height: 22px;
+  margin: auto;
+}
+
+.chat-manager-menu .notice {
+  cursor: unset;
+  font-style: italic;
+  font-size: 16px;
+}
+
+.chat-manager-menu > div.notice:hover{
+  color: var(--saito-font-color);
+  background-color: var(--saito-background-color);
 }
 
 /*  Chat / Popup  */
@@ -324,24 +370,6 @@
   border-bottom-right-radius: 0 !important;
 }
 
-/* Mobile Overlay */
-.close-chat-manager {
-  margin-left: 1rem;
-  margin-right: auto;
-  display: none;
-}
-
-.chat-manager-overlay .close-chat-manager {
-  display: block;
-}
-
-.chat-manager-overlay .chat-manager-header {
-  font-size: 32px;
-}
-
-.chat-manager-overlay .add-contacts {
-  font-size: 38px;
-}
 
 .remove_user {
   padding: 0.5rem;
@@ -356,6 +384,8 @@
   align-items: center;
   font-size: 22px;
   justify-content: flex-end;
+  height: 24px;
+  line-height: 24px;
 }
 
 .chat-manager-header > div {
@@ -365,12 +395,9 @@
   padding: 0 0.5rem;
 }
 
-.add-contacts{
-  font-size: 24px;
-}
 
 .saito-sidebar .chat-manager-header > div:hover{
-  transform: rotate(90deg);
+  opacity: 0.9;
 }
 
 
@@ -403,14 +430,29 @@
   color: var(--saito-font-color-heavy);
 }
 
-@media screen and (max-width: 768px) {
-  .chat-container {
-    margin: 0;
-    width: 100vw;
-    height: calc(100% - var(--saito-header-height));
-    max-height: none;
-    border-radius: 0;
-  }
+/* Mobile Overlay */
+.close-chat-manager {
+  margin-left: 1rem;
+  margin-right: auto;
+  display: none;
+  position: relative;
+}
+
+.chat-manager-overlay .close-chat-manager {
+  display: block;
+}
+
+.close-chat-manager i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 1rem;
+  background: var(--saito-background-color);
+  font-size: 24px;
+}
+
+.chat-manager-overlay .chat-manager-header, .chat-manager-overlay .chat-manager-menu {
+  font-size: 20px;
 }
 
 @media screen and (max-width: 600px) {
@@ -418,20 +460,33 @@
     background-color: var(--saito-background-color);
     position: absolute;
     left: 0;
-    top: var(--saito-header-height);
+    top: 0;
     height: calc(100 * var(--saito-vh));
     width: 100vw;
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;
-    padding-top: 1rem;
-    z-index: 7;
+    z-index: 15;
   }
   .chat-manager-overlay .chat-manager {
     margin-left: auto;
     margin-right: auto;
     width: 95vw;
+    min-height: 25rem;
     height: fit-content;
     max-height: 100%;
+  }
+
+  .chat-manager-overlay .chat-manager-menu {
+    top: var(--saito-header-height);
+  }
+
+  .chat-manager-overlay .chat-manager-menu i {
+    width: 40px;
+    height: 40px;
+  }
+
+  .chat-manager-overlay .chat-manager-header {
+    height: var(--saito-header-height);
   }
 
   .chat-minimizer-icon {
@@ -440,7 +495,18 @@
   
 
   .chat-container {
+    margin: 0;
+    width: 100vw;
+    height: calc(100% - var(--saito-header-height));
+    max-height: none;
+    border-radius: 0;
     resize: unset;
   }
+
+  .chat-manager-overlay + .chat-container {
+    height: 100vh;
+    height: calc(var(--saito-vh) * 100);
+  }
+
 }
 

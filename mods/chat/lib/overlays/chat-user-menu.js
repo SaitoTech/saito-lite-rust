@@ -1,8 +1,8 @@
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
-const chatMenuTemplate = require("./chat-menu.template");
+const chatMenuTemplate = require("./chat-user-menu.template");
 const ContactsList = require("./../../../../lib/saito/ui/modals/saito-contacts/saito-contacts");
 
-class ChatMenu {
+class ChatUserMenu {
   constructor(app, mod, chat_group) {
     this.app = app;
     this.mod = mod;
@@ -132,4 +132,4 @@ class ChatMenu {
   }
 }
 
-module.exports = ChatMenu;
+module.exports = ChatUserMenu;
