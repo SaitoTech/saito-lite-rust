@@ -166,7 +166,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
       // console.log("response_object ", response_object);
       await S.getInstance().sendApiSuccess(
         msgIndex,
-        Buffer.from(JSON.stringify(response_object), "utf-8"),
+        response_object ? Buffer.from(JSON.stringify(response_object), "utf-8") : Buffer.alloc(0),
         peerIndex
       );
     };
@@ -482,8 +482,6 @@ class Server {
     //   }
     // });
 
-
-
     /////////////////
     // lite-blocks //
     /////////////////
@@ -596,7 +594,6 @@ class Server {
         console.error(error);
       }
     });
-
 
     expressApp.get("/block/:hash", async (req, res) => {
       try {

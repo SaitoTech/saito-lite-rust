@@ -29,7 +29,7 @@ class Giphy extends ModTemplate {
     this.loader = new SaitoLoader(app, mod);
     this.auth = null;
 
-   this.gf = null;
+    this.gf = null;
 
     this.styles = ["/giphy/style.css"];
 
@@ -43,7 +43,7 @@ class Giphy extends ModTemplate {
     let giphy_self = this;
 
     //
-    //Calculate reasonable sizing of results 
+    //Calculate reasonable sizing of results
     //
     this.selectorWidth = window.innerWidth;
     if (this.container) {
@@ -72,9 +72,9 @@ class Giphy extends ModTemplate {
 
 
     if (this.container) {
-        if (!document.querySelector(".saito-gif-container")){
-            this.app.browser.addElementToSelector(saitoGifTemplate(this.app, this.mod), this.container);      
-        }
+      if (!document.querySelector(".saito-gif-container")) {
+        this.app.browser.addElementToSelector(saitoGifTemplate(this.app, this.mod), this.container);
+      }
     } else {
       this.overlay.show(saitoGifTemplate(this.app, this.mod));
     }
@@ -90,13 +90,13 @@ class Giphy extends ModTemplate {
       {
         width: giphy_self.selectorWidth,
         fetchGifs: (offset) => {
-            //giphy_self.loader.remove();
+          //giphy_self.loader.remove();
           return this.gf.search("inception", { offset });
         },
         columns: giphy_self.selectorColumns,
         gutter: 2,
         onGifClick,
-        key: 34,
+        key: 34
       },
       document.querySelector(".saito-gif-content")
     );
@@ -117,7 +117,7 @@ class Giphy extends ModTemplate {
     let gif_self = this;
 
     if (service.service === "giphy") {
-      app.network.sendRequestAsTransaction("get giphy auth", {}, function (res) {
+      app.network.sendRequestAsTransaction("get giphy auth", {}, function(res) {
         gif_self.auth = res;
       });
     }
@@ -133,13 +133,12 @@ class Giphy extends ModTemplate {
           giphy_self.parent_callback = callback;
           giphy_self.render();
           giphy_self.attachEvents();
-        },
+        }
       };
     }
 
     return super.respondTo(type, obj);
   }
-
 
 
   toDataURL = (url) =>
@@ -187,11 +186,11 @@ class Giphy extends ModTemplate {
           columns: giphy_self.selectorColumns,
           gutter: 2,
           onGifClick,
-          key: value,
+          key: value
         },
         document.querySelector(".saito-gif-content")
       );
-      
+
     };
 
   }
@@ -207,7 +206,7 @@ class Giphy extends ModTemplate {
         api_key = process.env.GIPHY_KEY;
         if (mycallback) {
           mycallback(api_key);
-	  return 1;
+          return 1;
         }
       } catch (err) {
         console.log("Failed to find key with error: " + err);
