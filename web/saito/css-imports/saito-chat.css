@@ -371,12 +371,6 @@
 }
 
 
-.chat-manager-overlay .chat-manager-header, .chat-manager-overlay .chat-manager-menu {
-  font-size: 26px;
-}
-
-
-
 .remove_user {
   padding: 0.5rem;
 }
@@ -454,9 +448,12 @@
   top: 0;
   padding: 1rem;
   background: var(--saito-background-color);
+  font-size: 24px;
 }
 
-
+.chat-manager-overlay .chat-manager-header, .chat-manager-overlay .chat-manager-menu {
+  font-size: 20px;
+}
 
 @media screen and (max-width: 600px) {
   .chat-manager-overlay {

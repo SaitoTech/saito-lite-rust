@@ -20,8 +20,9 @@
 }
 
 .saito-header-logo {
-  width: 15rem;
+  max-width: 15rem;
   cursor: pointer;
+  height: 100%;
 }
 
 #saito-header-menu-toggle {
@@ -375,18 +376,24 @@
   position: relative;
 }
 
-.saito-back-button {
-  font-size: 32px;
-  margin-left: 1rem;
-  padding: 0.5rem 1.25rem;
-  color: var(--saito-white);
-  width: fit-content;
-  cursor: pointer;
-  margin-right: auto;
-  transition: transform 0.2s;
+.saito-header-logo-wrapper{
+  position: relative;
+  height: 100%;
 }
 
-.saito-back-button:hover{
+.saito-back-button {
+  position: absolute;
+  font-size: 30px;
+  padding: 0.75rem;
+  color: var(--saito-white);
+  cursor: pointer;
+  transition: transform 0.2s;
+  top: 0;
+  left: 0;
+  background: var(--saito-background-color);
+}
+
+.saito-header-logo-wrapper:hover .saito-back-button{
   transform: scale(1.1);
 }
 
