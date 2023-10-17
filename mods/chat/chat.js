@@ -1089,7 +1089,7 @@ class Chat extends ModTemplate {
           }
 
           //Use FA 5 so compatible in games (until we upgrade everything to FA6)
-          const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
+          const replyButton = `<div data-id="${group_id}" data-href="${sender+ts}" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
           html += `${SaitoUserTemplate({
             app: this.app,
             publicKey: sender,
@@ -1098,6 +1098,7 @@ class Chat extends ModTemplate {
               `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
               this.app.browser.returnTime(ts) +
               `</span>${replyButton}</div>`,
+            id: sender+ts
           })}`;
         }
       }

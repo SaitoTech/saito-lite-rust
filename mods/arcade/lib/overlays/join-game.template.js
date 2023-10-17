@@ -36,13 +36,12 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
   // render players who have joined
   for (let i = 0; i < invite.players.length; i++) {
     html += `
-		  <div class="arcade-game-playerbox saito-table-row">
-		    <div class="saito-identicon-box${
-          invite.winner?.includes(invite.players[i]) ? " winner" : ""
-        }"><img class="saito-identicon" src="${app.keychain.returnIdenticon(
-      invite.players[i]
-    )}"></div>
+		  <div class="arcade-game-playerbox saito-table-row" id="invite-user-${invite.players[i]}">
+		    <div class="saito-identicon-box${invite.winner?.includes(invite.players[i]) ? " winner" : ""}">
+          <img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.players[i])}">
+        </div>
 		    ${app.browser.returnAddressHTML(invite.players[i])}
+        <div class="online-status-indicator"></div>
 		  </div>					  	  
 			`;
   }
@@ -51,11 +50,12 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
   for (let i = 0; i < invite.desired_opponent_publickeys.length; i++) {
     html += `
 
-      <div class="arcade-game-playerbox empty saito-table-row requested_player">
+      <div class="arcade-game-playerbox empty saito-table-row requested_player" id="invite-user-${invite.desired_opponent_publickeys[i]}">
 	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(
           invite.desired_opponent_publickeys[i]
         )}"></div>
  	      ${app.browser.returnAddressHTML(invite.desired_opponent_publickeys[i])}
+        <div class="online-status-indicator"></div>
 	    </div>
 
       `;

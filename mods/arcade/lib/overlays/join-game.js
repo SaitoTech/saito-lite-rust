@@ -16,6 +16,24 @@ class JoinGameOverlay {
     this.mod = mod;
     this.invite = invite;
     this.overlay = new SaitoOverlay(app, mod, false, true); //No close button, auto-delete overlay
+
+    app.connection.on("relay-is-online", async (pkey) => {
+      if (pkey == this.invite.originator){
+        if (document.getElementById(`invite-user-${pkey}`)){
+          document.getElementById(`invite-user-${pkey}`).classList.add("online");
+        } 
+      }
+    });
+
+    app.connection.on("relay-is-busy", async (pkey) => {
+      if (pkey == this.invite.originator){
+        if (document.getElementById(`invite-user-${pkey}`)){
+          document.getElementById(`invite-user-${pkey}`).classList.add("online");
+          document.getElementById(`invite-user-${pkey}`).classList.add("busy");
+        } 
+      }
+    });
+
   }
 
   async render() {
@@ -30,6 +48,15 @@ class JoinGameOverlay {
 
   attachEvents() {
     if (document.getElementById("arcade-game-controls-join-game")) {
+      //This is a joinable game
+      this.app.connection.emit("relay-send-message", {
+        recipient: [this.invite.originator],
+        request: "ping",
+        data: {},
+      });
+
+
+
       document.getElementById("arcade-game-controls-join-game").onclick = async (e) => {
         //
         // Create Transaction

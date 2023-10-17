@@ -76,7 +76,7 @@ class SettlersActions {
     }
 
     let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
-    firstMsg += ` rolled a <span class='die_value'>${value}</span>`;
+    firstMsg += ` rolled <span class='die_value'>${value}</span>`;
 
     for (let player in collection){
       let logMsg = `${this.formatPlayer(player)} gains`;

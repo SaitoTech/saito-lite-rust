@@ -241,14 +241,12 @@ class RedSquare extends ModTemplate {
     //
     // servers update their cache for browsers
     //
+    // currently disabled
+    //
     if (app.BROWSER == 0) {
-//
-// temporarily disabled
-//
-//      this.updateTweetsCacheForBrowsers();
-    } else {
-      this.loadLocalTweets();
+      this.updateTweetsCacheForBrowsers();
     }
+
   }
 
   ////////////
@@ -263,6 +261,7 @@ class RedSquare extends ModTemplate {
   // connected and available for a content-fetch request.
   //
   async render() {
+
     //
     // browsers only!
     //
@@ -308,6 +307,11 @@ class RedSquare extends ModTemplate {
 
     await super.render();
     this.rendered = true;
+
+    if (this.app.BROWSER) {
+      this.loadLocalTweets();
+    }
+
 
   }
 
@@ -392,8 +396,7 @@ class RedSquare extends ModTemplate {
             this.addTweet(txs[z]);
           }
           let tweet = this.returnTweet(tweet_id);
-//          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
-          this.app.connection.emit("redsquare-home-render-request", tweet);
+          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
         });
         return;
       }
@@ -433,14 +436,13 @@ class RedSquare extends ModTemplate {
       //
       await this.addPeer(peer, "tweets");
       this.loadTweets(peer, (txs) => {
-        this.app.connection.emit("redsquare-home-render-request");
         if (txs.length == 0) {
-          this.app.connection.emit("redsquare-home-loader-hide-request");
+          this.app.connection.emit("redsquare-home-postcache-render-request", (0));
           return;
-        }
-
-        this.saveLocalTweets();
-
+        } else {
+          this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
+          this.saveLocalTweets();
+	}
       });
     }
 
@@ -1673,7 +1675,7 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
           this.addTweet(newtx);
         }
       }
-      this.app.connection.emit("redsquare-home-render-request", false);
+      this.app.connection.emit("redsquare-home-cached-render-request", false);
     });
 
   }

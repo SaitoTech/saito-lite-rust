@@ -1453,7 +1453,8 @@ class Browser {
         allowedAttributes: {
           div: ["class", "id"],
           a: ["href", "name", "target", "class", "id"],
-          img: ["src", "class"]
+          img: ["src", "class"],
+          blockquote: ["href"]
         },
         selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
         allowedSchemes: ["http", "https", "ftp", "mailto"],

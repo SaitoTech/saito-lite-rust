@@ -73,7 +73,7 @@
   gap: 2rem;
 }
 
-#redsquare-intersection {
+.redsquare-intersection {
   opacity: 1;
   height: 1rem;
 }
@@ -162,4 +162,25 @@
 .redsquare-home .saito-user>.saito-identicon-box {
   position: relative;
   z-index: 5;
+}
+
+
+
+.saito-cached-loader {
+  padding: 1rem;
+  text-align: center;
+  animation-name: flash;
+  -webkit-animation: flash linear 1s infinite;
+  animation: flash linear 3s infinite;
+}
+.saito-main {
+  padding-top: 0px;
+}
+@keyframes flash {
+   0%, 50%, 100% {
+      opacity: 1;
+   }
+   25%, 75% {
+      opacity: 0;
+   }
 }

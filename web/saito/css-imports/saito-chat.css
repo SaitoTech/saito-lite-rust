@@ -36,6 +36,10 @@
   cursor: pointer;
 }
 
+.chat-body blockquote {
+  cursor: help;
+}
+
 
 .chat-manager-menu {
   position: absolute;
