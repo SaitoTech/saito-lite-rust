@@ -309,8 +309,10 @@ console.log("no notifications to render");
     //
     // dynamic content loading
     //
-    this.intersectionObserver.observe(document.querySelector("#redsquare-intersection"));
-
+    if (typeof (document.querySelector("#redsquare-intersection")) != 'undefined') {
+      this.intersectionObserver.observe(document.querySelector("#redsquare-intersection"));
+    }
+    
     this.app.connection.emit("redsquare-navigation-complete");
   }
 

@@ -247,6 +247,7 @@ class RedSquare extends ModTemplate {
 //
 //      this.updateTweetsCacheForBrowsers();
     } else {
+      console.log("loading local tweets //////");
       this.loadLocalTweets();
     }
   }
@@ -1673,7 +1674,7 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
           this.addTweet(newtx);
         }
       }
-      this.app.connection.emit("redsquare-home-render-request", false);
+      this.app.connection.emit("redsquare-home-cached-render-request", false);
     });
 
   }

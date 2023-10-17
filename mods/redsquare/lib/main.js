@@ -29,6 +29,27 @@ class RedSquareMain {
       this.manager.mode = "tweets";
       this.manager.render();
     });
+
+    this.app.connection.on("redsquare-home-cached-render-request", () => {
+      try {
+        document.querySelector(".saito-main").innerHTML = `<div class="loader-btn" style="
+    border: 1px solid var(--saito-primary);
+    background: var(--saito-primary);
+    color: var(--saito-font-color);
+    text-align: center;
+">
+    <i class="fa-solid fa-ellipsis " style="
+    color: var(--saito-font-color);
+    font-size: 4rem;
+"></i>
+</div>`;
+return;
+      } catch (err) {}
+      // this.manager.publicKey = this.mod.publicKey;
+      // this.manager.mode = "tweets";
+      // this.manager.render();
+    });
+
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       document.querySelector(".saito-main").innerHTML = "";
