@@ -150,8 +150,10 @@
 
 
 .game-playerbox .saito-user, .game-playerbox .saito-user > .saito-address{
-  color: white;
-  text-shadow: 1px 1px 2px black, 1px 0px 2px black, 0px 1px 2px black, 0px 0px 2px black;
+  /*
+    color: white;
+    text-shadow: 1px 1px 2px black, 1px 0px 2px black, 0px 1px 2px black, 0px 0px 2px black;
+  */
 }
 
 /*.game-playerbox .saito-user .saito-identicon-box{
