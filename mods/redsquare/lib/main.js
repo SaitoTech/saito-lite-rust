@@ -22,12 +22,35 @@ class RedSquareMain {
     //
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", () => {
-      try {
-        document.querySelector(".saito-main").innerHTML = "";
-      } catch (err) {}
+alert("home render request!");
+return;
+      try { document.querySelector(".saito-main").innerHTML = ""; } catch (err) {}
       this.manager.publicKey = this.mod.publicKey;
       this.manager.mode = "tweets";
       this.manager.render();
+    });
+    this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets=0) => {
+      if (!1) {
+        try { document.querySelector(".saito-main").innerHTML = ""; } catch (err) {}
+        this.manager.publicKey = this.mod.publicKey;
+        this.manager.mode = "tweets";
+        this.manager.render();
+      } else {
+        try {
+	  document.querySelector(".saito-cached-loader").remove();
+	  if (num_tweets > 0) {
+  	    document.querySelector(".saito-new-tweets").style.display = "block";
+	  }
+	} catch (err) {
+
+	}
+      }
+    });
+    this.app.connection.on("redsquare-home-cached-render-request", () => {
+      this.manager.publicKey = this.mod.publicKey;
+      this.manager.mode = "tweets";
+      this.manager.render();
+      this.app.browser.prependElementToSelector(`<div class="saito-cached-loader">loader</div>`, ".saito-main");
     });
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
