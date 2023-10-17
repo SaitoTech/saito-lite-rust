@@ -22,7 +22,8 @@
 .arcade-game-playerbox {
   display: grid;
   grid-template-columns: 5rem 1fr;
-  grid-gap: 0.5rem;
+  grid-gap: 0;
+  column-gap: 1.5rem;
   padding: 1rem 1rem 1rem;
   transition: all 0.2s;
   background-color: var(--saito-gray-transparent);
@@ -67,7 +68,7 @@
 }
 
 .arcade-game-overlay .saito-table-row {
-  grid-template-columns: 5rem 1fr;
+  grid-template-columns: 4rem 1fr;
   align-items: center;
   cursor: unset;
 }
@@ -165,6 +166,12 @@
 }
 .saito-scheduler-modal .saito-modal-title .saito-user > .saito-userline {
   font-size: 2rem;
+}
+
+
+.arcade-game-playerbox.online .online-status-indicator:after{
+  top: 3.5rem;
+  left: 3.5rem;
 }
 
 @media screen and (max-width: 1000px) {
