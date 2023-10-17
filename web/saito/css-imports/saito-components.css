@@ -30,3 +30,7 @@
   left: 4rem;
   border: 2px solid var(--saito-background-color);
 }
+
+.busy .online-status-indicator:after {
+  background-color: var(--saito-font-color);
+}
