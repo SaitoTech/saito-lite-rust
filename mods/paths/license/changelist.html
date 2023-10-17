@@ -1,0 +1,377 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<head>
+<style>
+body {background: #eeeeee; font-size:14px;}
+p {background: #eeeeee; font-size:14px;}
+h3 {background: #eeeeee; font-size:16px;}
+h2 {background: #eeeeee; font-size:18px;}
+h1 {background: #eeeeee; font-size:20px;}
+</style>
+<style type="text/css">
+</style>
+</head>
+<BODY>
+<h1>Paths of Glory VASSAL Module Change List</h1>
+<h2>10.6 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Updated 2022 edition rules included on Help menu!!! (no game changes, just errata and clarifications -- e.g. 7.1.8, 9.2.9, 9.5.2.5.1, 12.4.4.2, 14.1.1.1)</li>
+    <li>Movement Trails now much more stable following excellent tune-up by Jim Hunter!</li>
+    <li>Fixed bug where Basra did not receive auto-placed control markers</li>
+    <li>Right+click menu on MO markers gives correct options</li>
+    <li>Warning message when Place of Execution event marker is deployed before Falkenhayn</li>
+    <li>Warning message when a Turkish unit moved when Turkey is still neutral</li>
+    <li>Warning message when AP at LW attempt "manual/ACTS" 5 RPs while CP at TW</li>
+    <li>Fixed duplicate cards for the AP Player when using Bitterwoods Valiant Variant scenario. Thx to Ronny Esterlus!</li>
+    <li>Fixed inability to clear movement trails when "Mark Moved Pieces" preference is unchecked. Thx to Jim Hunter!</li>
+    <li>Neutral country markers can't be moved.</li>
+    <li>Advancing the turn displays a more obvious banner in the chat log.</li>
+    <li>Yudenitch card now inherently supports play-to-Petrograd/Moscow/Kharkov/Caucasus</li>
+</ul>
+<h2>10.5 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Warning displayed when SR or RPs are taken in consecutive action rounds</li>
+    <li>Feedback message displayed when MO markers are flipped to/from "Done" side</li>
+    <li>When a stack is activated that costs more than 1 op to activate, the confirmation message includes special colored highlighting</li>
+    <li>When a broken army is auto-replaced by a *flipped* corps instead of a full corps, the confirmation includes special colored highlighting</li>
+    <li>Adjusted the auto-placement locations of control markers to avoid covering up the names of the spaces</li>
+    <li>"Draw" buttons and card outlines added to player hand windows</li>
+    <li>Quicker RPs! Alt+2/Alt+3/Alt+4/Alt+5 hotkeys directly simulate AP RP cards for ACTS play. (Alt+0 clears AP RPs)</li>
+    <li>Quicker RPs! Alt+Ctrl+2/Alt+Ctrl+3/Alt+Ctrl+4/Alt+Ctrl+5 hotkeys directly simulate CP RP cards for ACTS play. (Alt+Ctrl+0 clears CP RPs)</li>
+    <li>Maintenance release to update custom code for Vassal 3.6 -- will prevent obsolete code warnings from being displayed.</li>
+    <li>Reorganized some internals into folders to make module a bit easier to read in the Vassal Editor</li>
+    <li>Fixed a minor bug with drawing cards buttons on the Player Hand screens</li>
+    <li>Fixed a bug with where the MO markers go when flipped</li>
+    <li>Fixed a bug where the three BR corps that start on the NE map weren't auto-capturing CP spaces when moved there</li>
+</ul>
+<h2>10.4 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Automatic placement of control markers, besieged markers, and trench capture can be disabled in prefercenes ("Paths of Glory" tab)</li>
+    <li>Warning displayed when desert spaces or desert-adjacent spaces activated for combat in summer turns.</li>
+    <li>Warning displayed when MEF is played as the event when Salonika already marked as having been played.</li>
+    <li>Right-click menu now allows trenches to be placed properly while besieging an enemy fort.</li>
+    <li>CP Removed pile now sorts correctly the way the other piles do (when "Draw Specific Cards" selected).</li>
+</ul>
+<h2>10.3 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>10.3.1 - fix - Cracow was missing from the internal list of fort spaces, so wasn't behaving like a fort.</li>
+    <li>Spanish translation of module available, thanks to the hard work of javiermunozk! (set VASSAL language preference and then restart module)</li>
+    <li>Capture of trenches is handled automatically when units are moved.</li>
+    <li>When MO marker is moved to the space of a Nation with enemy-occupied capital(s), a reminder is displayed.</li>
+    <li>"Nice" has now been correctly marked as a space in France for various rules purposes (e.g. US/French activation, etc)</li>
+    <li>Turkey no longer accumulates RPs on the display when not yet in the war.</li>
+    <li>RP Markers for Turkey and Bulgaria no longer move to the general records track when not yet in the war.</li>
+    <li>Bulgarian default deployment includes Burgas rather than Varna</li>
+    <li>Context menu for board spaces cleaned up (e.g. doesn't offer fort tokens in non-fort spaces, etc)</li>
+    <li>Games should start up faster than before.</li>
+    <li>Optional Russian corps (RUCav and CzL) now have their own Reserve Piles, so won't clutter the normal RUc stack.</li>
+    <li>Warning messages displayed if armies moved to Italy in violation of Historical Scenario rules</li>
+    <li>Warning messages displayed when German Armies moved to Amiens/Calais/Ostend when Race to the Sea unplayed and WS < 4</li>
+    <li>BUGFIX - in 10.2 when reinforcements cards were "played" the corps didn't always go to the Reserve Box. Fixed in this build.</li>
+</ul>
+<h2>10.2 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Control Markers are appropriately auto-placed as units are moved on the map (takes forts into account)</li>
+    <li>Besieged Markers are also auto-placed (and when flipped to destroyed game will check if a control marker should be placed).</li>
+    <li>VP scoring now includes a summary of events</li>
+    <li>VP counts now work correctly for values less than 0 or greater than 20</li>
+    <li>Warning messages displayed if BEF, BEFc, PTc or CNDc moved to disallowed locations.</li>
+    <li>Fall of the Tsar now marked on "non-SR" RU NE restrictions when active</li>
+    <li>RP markers/menus include 'Reset to Zero" options</li>
+    <li>MO markers flipped to "Done" will automatically move do the "None or Made" box</li>
+    <li>Preference added to have "Missed MO" markers auto-place (see menu: "File"/"Preferences" - "Paths of Glory" tab)</li>
+</ul>
+<h2>10.1 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Activation Markers can be rotated for clarity and aesthetic purposes with Ctrl+T (then drag to rotate)</li>
+    <li>Dragging an Action Marker to SR will remove any current Activation Markers.</li>
+</ul>
+<h2>10.0 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Takes advantage of nice features of VASSAL 3.4.0+ release. I've been contributing code to that, so some of these UI treats will start showing up in your other games too. More to come!</li>
+    <li>When a regular "fort destroyed" marker is placed on the Deluxe Map, a "fort mini marker" is auto-placed in the correct location.</li>
+    <li>When besieged marker is flipped to destroyed on Deluxe Map, a "fort mini marker" is autoplaced. It is likewise auto-removed if marker is flipped back to besieged.</li>
+    <li>The playtested optional cards scenario described at https://www.bitterwoods.net/paths-of-glory-valiant-variants-vv/ is implemented (see Optional/Expansion Cards screen)</li>
+    <li>Player Hand windows now include a button to print cards into the chat log (for showing hand w/ Mata Hari and Cloak & Dagger.</li>
+    <li>Band-selecting won't sweep up all the "empty space" markers that allow right-clicking on empty spaces.</li>
+    <li>There is now a much more noticeable "drag threshold" (10 pixels instead of 1), so pieces/stacks won't be so pixel-sensitive and fidgety. </li>
+    <li>Rollover text for groups of units does a better job of picking up other counters underneath (e.g. trenches) as well</li>
+    <li>"Change Sides" button now defaults to opposite site for quicker "Hot Seat" play</li>
+    <li>Ctrl+Mousewheel will zoom the map in and out (YAY! They let me put this in VASSAL! Coming soon to ALL your games...)</li>
+    <li>Mousewheel in general should "scroll text windows faster", it used to be infuriatingly slow</li>
+    <li>ANA Event Card text was slightly wrong (a digit of the rule number mentioned)</li>
+</ul>
+<h2>9.9 Changelist</h2>
+<h3>Bug Fixes</h3>
+<ul style="margin-top:-20px;">
+    <li>9.9 exists entirely as a bugfix patch to keep the 9.X line compatible with future Vassal versions.</li>
+    <li>It is precisely "9.8 except doesn't break Vassal 3.3.2+"</li>   
+    <li>Future feature work on the Paths of Glory will take place in the 10.0 line!</li>
+    <li>It will still work with Vassal 3.2.17, but will not resize the chat window as attractively (Vassal 3.3.2+ have taken that function over and do a better job themselves)</li>
+</ul>
+<h2>9.8 Changelist</h2>
+<ul style="margin-top:-20px;">
+<li>NOTE: This module NOT recommended for use with save files from earlier versions. (At minimum may not provide new features and bug fixes).</li>
+</ul>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Chess Clocks added for timed play.</li>
+    <li>Better "How To Play" module manual added to toolbar.</li>
+    <li>Right clicking on MO markers includes "Missed MO" option to place 
+        Missed MO VP marker.</li>
+    <li>When clicking on an empty space, hotkeys are available to place 
+        markers.</li>
+    <li>Turn can be advanced by right-clicking on the turn marker.</li>
+    <li>Can click on open spots on turn track and right click to add missed 
+        MO's and other VP penalty markers.</li>
+</ul>
+<h3>Bug Fixes</h3>
+<ul style="margin-top:-20px;">
+    <li>Medina now tracked properly as a VP site.</li>   
+    <li>A few bugs fixed in Ops tracking, Sud Army, etc.</li>     
+</ul>
+<h2>9.7 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Game log now more legible, featuring bold/italic text, multiple 
+        colors, and even cute little dice icons.</li>
+    <li>Card numbers are displayed when cards played in Vassal.</li>
+    <li>Rollover legibility and information improved for units and cards.</li>
+    <li>Eliminated units will arrive consistently face up in Eliminated (or 
+        Permanently Eliminated) box, regardless of whether they were reduced 
+        when they left the board. They can still of course be flipped there, 
+        e.g. to send a half-strength corps to reserve, etc. Seems better than
+        when you select a big stack of armies/corps in the Elim box you can have 
+        confidence they are all facing the same way up. Counterargument would be
+        if people will forget how big the thing was they just eliminated while
+        taking losses - hopefully the fact that it's marked correctly in the log
+        suffices for that? If I got a bunch of complaints I can change it back
+        or make a preference. </li>
+    <li>Armies are now (automatically) permanently eliminated if they are 
+        Ctrl+E'ed without an appropriate corps in the reserve. It used to just
+        put up a "Check for Permanent Elimination?" warning, because I was 
+        worried players wouldn't always notice and might think the unit got 
+        lost. Now both the font display (bold text, red text, etc) is much 
+        clearer and the Reserve Box tracking has gotten pretty robust.
+        </li>
+</ul>
+<h3>Bug Fixes</h3>
+<ul style="margin-top:-20px;">
+    <li>"Center on enemy moves" preference now properly configured.</li>
+    <li>CAU Army deployment now moves AP action markers properly to RU 
+        Reinf.</li>
+    <li>Missed MO markers now stack properly with other event markers on 
+        turn track.</li>
+    <li>US/France nationality bonus in France and Germany is now tracked 
+        properly.</li>
+    <li>Moltke ops penalty is now tracked properly.</li>
+<h2>9.6 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>Name of turn (e.g. "August 1914") is displayed in toolbar widget as 
+        well as turn number.</li>
+    <li>When auto-computing VP, an itemized list of captured VP sites is 
+        provided (helps in comparing maps/scores on ACTS, especially if e.g. one
+        player forgets to put down a control marker).</li> 
+    <li>Blockade VP's and Italy VP's are no longer potentially double-placed if 
+        one backs up the turn. </li>
+    <li>Improvements to sorting in "Draw specific cards" dialogs</li>
+    <li>Bug in Libyan Revolt card corrected.</li>
+    <li>Java source for custom classes now incorporated into module.</li>
+</ul>
+<h2>9.5 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+    <li>When stacks are activated for Move or Attack, indicates the correct 
+    number of Ops required based on nationality, Sud/11th Army, MEF, Fall of
+    Tsar, BE/BR, etc.</li>
+    <li>Empty spaces can now be right-clicked to access a menu for placing 
+        trenches, control markers, fort besieged/destroyed, and out-of-supply
+        markers.</li>
+    <li>Armies dragged or deployed to new locations which already 
+    contain at least one corps will automatically be placed on the bottom of the 
+    stack instead of the top.</li>
+    <li>Hotkeys (e.g. Ctrl+1) added to deploy armies and event markers from 
+        the reinforcements card; likewise for rebuilding armies from the 
+        Eliminated box.</li>
+    <li>Corps in Reserve Box have "Quick Deploy" options to cut down on 
+        "dragging all the way across the map to the side I can't see right now"
+        problems.</li>
+    <li>Control Markers now protected against two or more ending up in the same 
+        space.</li>
+    <li>MEF and Cau armies have better deployment options.</li>
+    <li>When MEF Beachhead is eliminated it is returned to the 
+        reinforcement card.</li>
+    <li>Event markers have "cancel" option to return them to reinforcement 
+        card. Effectively "unplays" the event.</li>
+    <li>Grand Fleet event eligibility properly tracked when using Vassal for 
+        card management.</li>
+    <li>Guns of August card automated.</li>
+    <li>Montenegran capital name internal spelling corrected to the correct 
+        Cetinje (incorrect spelling was appearing in log messages).</li>
+</ul>
+<h2>9.4.3 Changelist </h2>
+<ul style="margin-top:-20px;">
+  <li>Bill Thomson integrated Paul Blankenship's PBU LookAt capability (original 
+    code credited to David Sullivan). CTRL-RightClick will temporarily draw a 
+    large circle on the map around the mouse location, to draw opponent's
+    attention to the location being acted upon. This circle will appear both
+    during server play and any logfile for PBEM.</li>
+   <li>Optional Cards made easier to find (button bigger, and a button 
+       added down near the cards) after about 5 people emailed asking where the
+       optional cards were.</li>
+</ul>
+<h2>9.4 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+<li>VP level updated when VP sites change control (via Control markers). VP and Final Scoring can be calculated from new toolbar buttons (or right click VP marker)</li>
+<li>When armies are eliminated, a replacement corps of the correct nation/status is automatically retrieved from the Reserve Box.</li>
+<li>NOTE: When NE armies or BEF are permanently eliminated, a replacement corps is automatically retrieved as well. In the rarer case of such armies being permanently eliminated in e.g. failure-to-retreat situations where a corps replacement is not needed, it will be up to players to "send the corps back" e.g. with Ctrl+R</li>
+<li>Event markers now deployed from Reinforcement screens, for easy right-click deployment -- using these will keep VP and War Status totals up to date! (Also - better event marker art)</li>
+<li>Placement of AR markers is now substantially automated even for ACTS play. Can be turned off if desired from "Prefs" button on Toolbar. Automation works by noticing the placement of activation markers for Move/Attack, when Reinforcements are deployed, and when Event markers placed on map or turn track. Cannot detect SR. Only works when moves are alternated between sides (e.g. dragging 3 CP events in a row over w/o any AP actions will only move one marker to Event).</li>
+<li>Bidding marker (AP Bid / CP Bid) provided for bidding VP in competitive games. </li>
+<li>Russian Capitulation track fully automated based on control markers and event markers (or event card play)</li>
+<li>Solitaire player option restored to the module (since no meaningful hand security can be provided anyway when not using a 3rd-party hand/dice tracker such as ACTS)</li>
+<li>Draw card buttons added below draw piles, for better usability.</li>
+<li>Draw card buttons added to player hand windows. "Draw All" and "Draw Specific Cards" options added to facilitate e.g. following ACTS games.</li>
+<li>Event markers for Italy, Bulgaria, Romania and Greece entry remove the "Neutral" notices and if relevant auto-deploy troops when placed on map or turn track.</li>
+<li>Likewise, deleting a "Neutral" notice will properly process entering the country (event markers, War Status, and troop deployment if relevant)</li>
+<li>CP cards played for RP's do not add BU RP's unless Bulgaria has entered (AP cards already handled IT and US RP's correctly as of 9.3)</li>
+<li>Event markers for Walter Rathenau, Independent Air Force, U-Boats Unleashed, and Convoy now properly flip GE RP or BR RP markers (as appropriate) when placed on map or turn track.</li>
+<li>Messages for "CP has reached Limited War", etc, now appear at proper times rather than the instant War Status reaches 4 or 11.</li>
+<li>Optional/Expansion cards had old versions of text/art. Have now been updated to latest edition including especially Prince Max for WS3.</li>
+<li>Hotkeys for most toolbar buttons provided (for example: Alt+A for Allied Reinforcements, Alt+C for CP Reinforcements, Alt+G Markers, Alt+F Fire Tables, Alt+Shift+E Perm Elim, Alt+U Turn)</li>
+<li>Hotkey for sending corps to the reserve box is now Ctrl+R for better consistency with other unit keys (but Alt+R still works as legacy hotkey).</li>
+<li>Much fine-tuning of where armies/corps center on spaces (an active gameboard should look a bit better aesthetically, and stacks less likely to obscure place names).</li>
+<li>Much general polish, speed optimization, etc.</li>
+</ul>
+<h2>9.3 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+<li>Corps are better organized when sent to the Reserve Boxes - e.g. the BEFc will not be automatically stacked with other BRc's, depleted corps will be initially placed in a different spot from full strength corps.</li>
+<li>Improved organization of Eliminated boxes -- Armies stacked in a separate spot from corps, and all individual nations have their own default stacking spots.</li>
+<li>Improved organization of Permanently Eliminated box -- Armies from different nations stack in different piles.</li>
+<li>Markers interface simplified to show all main markers on a single palette. Older "List" format is still supported for those who prefer it (just click to far right tab).</li>
+<li>Fire Tables & Terrain given a separate button from other player aids, mainly so that everything will open full & proper size</li>
+<li>If Blockade card is played as an event (or Blockade Event dragged to map/turntrack in ACTS play), Blockade VP markers will automatically appear when turn is advanced in winter, and VP marker will be updated appropriately.</li>
+<li>Miscellaneous automation improvements, e.g. US Entry marker, Russian Capitulation Marker.</li>
+<li>Complete 2018 Living Rules PDF linked from Help menu.</li>
+<li>Further chat/log reporting cleanup and streamlining -- unit moves reported correctly for all combinations of map-to-map, map-to-zone, zone-to-map, and zone-to-zone, and RB counts provided when appropriate.</li>
+<li>Minor visual overlay patches to Classic Map to account for the now-standard corps setup in Lutsk and Stanislau, and corresponding changes in Reserve Box initial sizes.</li>
+</ul>
+<h3>ACTS Support</h3>
+<ul style="margin-top:-20px;">
+<li>Corps moving to and from Reserve Box (or flipping in it) now provide standard ACTS-style reporting, e.g. (3,1) for three full-strength and one flipped corps.</li>
+<li>VP and War Status tracking moved from the cards to the Event Markers (in non-ACTS play the cards now auto-place the event markers on turn track) -- so ACTS players can drag event markers onto map or turn track and VP/War Status will auto-update. Use of Event Markers remains optional of course - can still just drag War Status and VP where you want them.</li>
+<li>Appropriate markers provided for all VP-modifying situations (e.g. Fall of Tsar +1VP or +3VP, Italy Unplayed, FR Mutiny, etc), and will update VP marker appropriately when dragged to map or turn track.</li>
+</ul>
+<h3>Regular Vassal Play (non-ACTS) support</h3>
+<ul style="margin-top:-20px;">
+<li>When a card is played from the hand, the next Action Round marker is automatically removed to the correct location (e.g. "Neutral Entry", "Ops", "Event", etc)</li>
+<li>Reinforcement cards played from the hand now allow the destination (e.g. Paris or Orleans for a FR Reinf card) to be selected immediately at time card is played.</li>
+</ul>
+<h3>Bug Fixes</h3>
+<ul style="margin-top:-20px;">
+<li>Move reporting improved and duplicate messages eliminated.</li>
+<li>Allied Powers 5-Ops cards now play for RP's correctly.</li>
+<li>US RP's now advance when RP's are played after US Entry.</li>
+<li>IT RP's no longer advance when Italy has not yet entered.</li>
+<li>Turkey is no longer announced as entering the war on Turn 2 if CP reaches WS4 on Turn 1.</li>
+<li>Window sizing issues for Permanently Eliminated units screen corrected.</li>
+</ul>
+<h2>9.2.3 Changelist</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>Missing corps names in some log reports corrected.</li>
+<li>Deployment problems with AUS, CND, and PT corps fixed.</li>
+<li>Fixed Zimmerman Telegram "unplayable" bug</li>
+<li>Hotkeys for CP and AP action markers made consistent, to assist solitaire players.</li>
+<li>Issues with starting Russian forces on the Classic map having wrong prototypes corrected.</li>
+</ul>
+<h2>9.2.2 Changelist</h2>
+<h3>Improvements</h3>
+<ul style="margin-top:-20px;">
+<li>Event marker list alphabetized.</li>
+<li>Event markers added to (or moved on, removed from) Turn Track have proper log file reporting.</li>
+<li>Attack/Move activation hotkeys moved to Ctrl+A and Ctrl+M for better consistency with other unit hotkeys.</li>
+<li>Deletion of Neutral Country markers is reported to the log as entry of the neutral into the war.</li>
+<li>Change list (you are here!) and complete credits added to the Help menu.</li>
+<li>New icon for the Hide Markers button - so that it is distinct from the Hide Units button</li>
+<li>Ctrl+Z hotkey added for Remove Activations</li>
+</ul>
+<h3>Bug Fixes</h3>
+<ul style="margin-top:-20px;">
+<li>Double log messages for some reinforcements have been removed.</li>
+<li>Occasional double-log messages when unstacking CP and AP war status markers from each other has been cleaned up.</li>
+<li>ANA Corps no longer displays send-to-Reserve-Box option.</li>
+</ul>
+<h2>9.2 Changelist</h2>
+<h3>Deluxe 2018 edition art incorporated</h3>
+<ul style="margin-top:-20px;">
+<li>Reinforcement Card: all units on Reinforcement Cards have valid right-click direct deployment options, including neutral country units. E.g. French Armies have "To Paris" and "To Orleans"; etc. Can still be dragged manually to desired locations, of course.</li>
+<li>Updated 2018 card deck art incorporated (e.g. yellow highlights for Over There, etc)</li>
+<li>2018 art for Fire Tables and other player aids incorporated</li>
+<li>Improved art and icon for Permanently Eliminated units</li>
+</ul>
+<h3>Both "Deluxe Map" and "Classic Map" Supported</h3>
+<ul style="margin-top:-20px;">
+<li>Support for "Classic Map" restored.</li>
+<li>Support for "Campaign Scenario" setup restored.</li>
+<li>"Historical Scenario" can be played on either the Classic Map or Deluxe Historical Map.</li>
+<li>Note that present 2018 rulebook only supports these two setups; for "true vanilla" setup w/o no-longer-optional corps on Russian border, simple return the two corps to the reserve box before beginning play.</li>
+</ul>
+<h3>Log Reporting improvements</h3>
+<ul style="margin-top:-20px;">
+<li>Counters only report movement when they represent an actual change of game state (i.e. no more "GE 1st Army Budapest to Budapest" spam)</li>
+<li>By the same token, reporting has been added to reflect changes of game state previously not reported, including trench creation/movement/deletion, fort sieges/destruction, Missed MO's, OOS Markers, etc.</li>
+<li>Permanent Elimination of units is now properly reported to the log</li>
+</ul>
+<h3>ACTS Support</h3>
+<ul style="margin-top:-20px;">
+<li>Manual access to “French Mutiny” side of AP MO counter restored.</li>
+<li>Units can be deployed from new reinforcement card directly to proper build spots with right-click (or by manual dragging)</li>
+<li>All units on reinforcement card now have deployment options, including MEF, Orient, NE Army, ANA, SN, etc.
+<li>Allied Near East armies also support non-NE deployment e.g. MEF "To London" a la 9.5.3.4.
+<li>Right+Click deploying BU and RO units directly from card will automatically remove Neutral Country marker and disperse forces to legal spaces in the country - they can then be dragged to adjust initial deployment</li>
+</ul>
+<h3>Interface streamlining</h3>
+<ul style="margin-top:-20px;">
+<li>Consistency of hotkeys across the module addressed (e.g. Ctrl+F always to flip)</li>
+<li>Most counters should "flip" to the same thing they do in physical game - e.g. Control Markers now flip AP/CP</li>
+<li>Move/Attack markers can be "flipped to the other side" with Ctrl+F or right click menu</li>
+<li>Missed MO markers can be "flipped to the other side" with Ctrl+F or right click menu</li>
+<li>Trench right-click menu cleaned up.</li>
+<li>"Trench Roll" markers now have "does not stack" property so that they do not glue themselves over top of units and activation markers, making selection difficult.
+<li>Fort Marker right click menus cleaned up</li>
+<li>Discard piles and Removed piles easier to cycle through cards and examine</li>
+<li>Draw piles now support the Draw 1/6/7/8 commands on right-click menu</li>
+<li>Expansion Card deck display cleaned up, and better icon added</li>
+</ul>
+<h3>Misc Automation Improvements</h3>
+<ul style="margin-top:-20px;">
+<li>Turkey's "Neutral Country" marker is automatically removed when CP reaches Limited War.</li>
+<li>Missed MO markers automatically adjust the victory point marker when created/flipped/deleted, and report this to the log</li>
+</ul>
+<h3>Bug Fixes and card deck cleanup</h3>
+<ul style="margin-top:-20px;">
+<li>Stacks activated to move or attack no longer generate multiple Move/Attack Markers.</li>
+<li>Several British Reinforcements weren’t working properly due to name mismatches</li>
+<li>Liman Sanders card is now recognized properly as a combat card and a * card.</li>
+<li>Combat Cards can now be discarded from the Combat Card stack</li>
+<li>Combat Cards with * can now be removed from play from the Combat Card stack</li>
+<li>All reinforcements properly deploy either to their appropriate destination or an appropriate and nearby staging area when their card is played (this partially worked before but many of the more esoteric units were omitted; also unit staging areas are now nearer their respective countries, e.g. no more Russian Armies in the North Sea)
+<li>All units on reinforcement card now have deployment options, including MEF, Orient, NE Army, ANA, SN, etc.</li>
+<li>Allied Near East army cards also support non-NE deployment e.g. MEF "To London", allowing normal pre-conditions on cardplay to be properly bypassed per 9.5.3.4.</li> 
+<li>MEF Beachhead now auto-deploys to Mediterranean area (along with MEF Army) when card is played</li>
+<li>Sinai Pipeline is now auto-placed on the Sinai space when the event is played.</li>
+<li>Neutral countries activate and forces moved to the map to deploy when their card is played.</li>
+</ul>
+</BODY>
+</HTML>

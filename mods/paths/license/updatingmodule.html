@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<head>
+<style>
+body {background: #eeeeee}
+</style>
+<style type="text/css">
+</style>
+</head>
+<BODY>
+<h1>Paths of Glory</h1>
+<h2>Tips When Updating Module</h2>
+Vassal Module development is a bit "wild west", in that anyone can jump in and do it, and anyone can upload a new one to the server! So by all means jump in and help! BUT, there are a few "delicate" aspects of updating a Paths of Glory module, and this file lists a few steps that "if followed" will make everyone's life easier. They are also documented here lest we forget them ourselves!    -- Brian Reynolds, 2019
+
+<h2>Git Repository</h2>
+The current module developers keep a "git repository" for module development. It is presently located at: https://github.com/Cattlesquat/PathsOfGlory.git If you are familiar with git, you can
+clone or fork this repository, which look like an "unzipped" copy of the internals of the .vmod module file, with a batch file (build.bat) which can be used to build an actual .vmod file from
+the current contents. Working in this way will occasionally require extracting "buildFile.xml" and "moduledata" from a copy of the module which you've edited in the VASSAL editor to put back into
+the directory structure. More on git can be found at http://www.vassalengine.org/wiki/Using_Git and https://git-scm.com/book/en/v2  So hopefully you can get in touch with us and contribute directly
+into the community!
+
+<h2>Updating Preset Scenarios</h2>
+The three "Scenario" saves must be created afresh whenever there have been any significant changes to prototypes and internal logic. The "Refresh Counters" function is NOT sufficient, as there are aspects which this cannot touch! Therefore each of the three scenarios must be created again manually - frustrating, but only takes about 5 minutes.
+
+<h2>Step 0 - (Optional-but-Recommended) See if the coast is clear!</h2>
+<ul style="margin-top:-20px;">
+<li>Email the person listed in the "Credits and Docs" entry as the current maintainer of the module and make sure they're not about to drop a giant new version or something. You don't want to do a bunch of work for nothing, etc. If two people are going to do work on the module, it's best for them to trade it back and forth for periods of time so that only one person is editing the module at the same time -- there is no practicable way to "merge changes" between two versions.</li>
+</ul>
+
+<h2>Step 1 - Update Deluxe Historical Scenario</h2>
+<ul style="margin-top:-20px;">
+<li>Start with a "fresh VASSAL boot" of the module</li>
+<li>From File/Scenario menu, select "Custom Game". Do NOT select the Deluxe Historical Scenario, which will load the old now-tainted save!</li>
+<li>Join as "observer" and select "Deluxe Historical Map".</li>
+<li>From the CP discard pile, drag out out the Guns of August Card to somewhere on the map.</li>
+<li>Right+Click Guns of August card, and select "Play Event". This will put GoA 
+    card in Removed pile, update the war status, destroy the Liege fort, advance
+    the GE armies, and activate them.</li>
+<li>"Save Game As..." and pick an appropriate save file name e.g. DeluxeHistorical10-0-0</li>
+<li>In the module editor, find the "Scenarios" entry at the bottom.</li>
+<li>Edit the Historical Scenario (Deluxe Map) entry</li>
+<li>Use the "Select File" button to replace the save with your newly created one.</li>
+<li>Save the module. (I recommend saving after EACH step because VASSAL can be recalcitrant during this process).</li>
+</ul>
+
+<h2>Step 2 - Update Campaign (Classic Map) Scenario</h2>
+<ul style="margin-top:-20px;">
+<li>From File/Scenario menu, select "Custom Game". Do NOT select the Classic Scenario, which will load the old now-tainted save!</li>
+<li>Join as "observer" and select "Classic Map".</li>
+<li><b>Click the red "Prefs" button on the toolbar and change Scenario to "Campaign". This will display the "classic" VP sites rather than the "historical" ones.</b></li>
+<li><b>Press Alt+Ctrl+Shift+A</b>, which will automatically add an AP Trench 1 in Brussels. Delete the trenches in Strasbourg, Verona, Asiago, Maggiore, and Udine.</li>
+<li>"Save Game As..." and pick an appropriate save file name e.g. Classic10-0-0</li>
+<li>In the module editor, find the "Scenarios" entry at the bottom.</li>
+<li>Edit the Campaign Scenario entry</li>
+<li>Use the "Select File" button to replace the save with your newly created one.</li>
+<li>Save the module.</li>
+</ul>
+
+<h2>Step 3 - Update Historical (Classic Map) Scenario</h2>
+<ul style="margin-top:-20px;">
+<li>Start with a "fresh VASSAL boot" of the module</li>
+<li>From File/Scenario menu, select "Custom Game". Do NOT select the Historical Scenario, which will load the old now-tainted save!</li>
+<li>Join as "observer" and select "Deluxe Historical Map".</li>
+<li><b>Make sure the Historical VP sites are showing (e.g. Kovno should be a VP site, Minsk should not) -- otherwise go to Prefs button and chance Scenario to Historical. </b></li>
+<li>From the CP discard pile, fish out the Guns of August Card.</li>
+<li>Right+Click Guns of August card, and select "Play Event". This will put GoA 
+    card in Removed pile, update the war status, destroy the Liege fort, advance
+    the GE armies, and activate them.</li>
+<li>"Save Game As..." and pick an appropriate save file name e.g. Historical10-0-0</li>
+<li>In the module editor, find the "Scenarios" entry at the bottom.</li>
+<li>Edit the Historical Scenario (Classic Map) entry</li>
+<li>Use the "Select File" button to replace the save with your newly created one.</li>
+<li>Save the module.</li>
+</ul>
+
+<h2>Step 4 - Optional But Recommended - adjust Change List and Credits</h2>
+<ul style="margin-top:-20px;">
+<li>Extract the "notes.html" and "changelist.html" from the vmod file. (You can temporarily rename the .vmod to a .zip file to make it easier to view/extract files, then rename it back)</li>
+<li>Update the notes.html as appropriate. Add your name to the credits near the top. Mark yourself as the current maintainer of the module ("you break it, you buy it!")
+<li>Update the changelist.html to add your new changes to the top. Leave the old changelist notes there (unless you're doing a sweeping revision).</li>
+<li>In the Module Editor, find the "Help Menu" section near the top. Edit the "Credits and Docs" and "Change List" entries, and use "Select File" to insert your new versions of each file.</li>
+</ul>
+
+<h2>Step 5 - Save Your Module Out</h2>
+<h2>Step 6 - Test Module Even More ("Just In Case")</h2>
+
+<h2>Step 7 - Optional But Recommended - Push a PR to the git repository</h2>
+<ul style="margin-top:-20px;">
+  <li>Ensure that the latest "buildFile.xml" and the "moduledata" file have been extracted from your .vmod and into your local git repository</li>
+  <li>"git add *" and "git commit" your changes, and "git push" them to your forked copy of the repository</li>
+  <li>On Github.com go to https://github.com/Cattlesquat/PathsOfGlory.git and create a "Pull Request" of your new changes</li>
+</ul>
+
+<h2>Step 8 - Upload to the Paths of Glory Vassal Module page</h2>
+<h2>Step 9 - Relax and Enjoy!</h2>
+
+</BODY>
+</HTML>

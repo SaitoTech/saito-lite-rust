@@ -1,4 +1,4 @@
-const ThesesTemplate = require('./theses.template');
+const ThesesTemplate = require('./zoom.template');
 const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class ThesesOverlay {

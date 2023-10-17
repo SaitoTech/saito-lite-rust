@@ -23,7 +23,7 @@ console.log("MOVE: " + mv[0]);
 	//
 	// entry point for every round in the game
 	//
-        if (mv[0] === "round") {
+        if (mv[0] === "turn") {
 
 	  this.game.state.turn++;
 	   

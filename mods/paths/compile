@@ -32,6 +32,7 @@ cat ./src/paths-setup.js >> ./paths.js
 cat ./src/paths-start.js >> ./paths.js
 cat ./src/paths-cards.js >> ./paths.js
 cat ./src/paths-display.js >> ./paths.js
+cat ./src/paths-events.js >> ./paths.js
 cat ./src/paths-spaces.js >> ./paths.js
 cat ./src/paths-state.js >> ./paths.js
 cat ./src/paths-gameloop.js >> ./paths.js

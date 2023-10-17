@@ -27,7 +27,7 @@ console.log("\n\n\n\n");
       //
       // Game Queue
       //
-      this.game.queue.push("round");
+      this.game.queue.push("turn");	// turn 1
       this.game.queue.push("READY");
 
        this.game.queue.push("DECK\t1\t"+JSON.stringify({})); 
