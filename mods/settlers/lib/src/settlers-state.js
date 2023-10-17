@@ -380,7 +380,7 @@ class SettlersState {
 
 
     randomMsg(){
-        let choices = ["You get nothing", "No soup for you", "A poor harvest", "Tough luck", "Sucks to be you", "Better luck next time"];
+        let choices = ["nothing gained", "a poor harvest", "unlucky roll", "better luck next time"];
         let die = Math.floor(Math.random()*choices.length);
         return choices[die];
     }
