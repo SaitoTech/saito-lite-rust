@@ -22,15 +22,14 @@ class RedSquareMain {
     //
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", () => {
-alert("home render request!");
-return;
       try { document.querySelector(".saito-main").innerHTML = ""; } catch (err) {}
       this.manager.publicKey = this.mod.publicKey;
       this.manager.mode = "tweets";
       this.manager.render();
     });
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets=0) => {
-      if (!1) {
+      if (1) {
+	document.querySelector(".saito-cached-loader").remove();
         try { document.querySelector(".saito-main").innerHTML = ""; } catch (err) {}
         this.manager.publicKey = this.mod.publicKey;
         this.manager.mode = "tweets";
@@ -50,7 +49,7 @@ return;
       this.manager.publicKey = this.mod.publicKey;
       this.manager.mode = "tweets";
       this.manager.render();
-      this.app.browser.prependElementToSelector(`<div class="saito-cached-loader">loader</div>`, ".saito-main");
+      this.app.browser.prependElementToSelector(`<div class="saito-cached-loader">loading new tweets...</div>`, ".saito-main");
     });
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
