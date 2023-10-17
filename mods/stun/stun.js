@@ -116,7 +116,7 @@ class Stun extends ModTemplate {
           this.renderInto(".saito-overlay");
         }
 
-        app.connection.emit("stun-to-join-room", room_obj.room_code);
+        app.connection.emit("stun-to-join-room", room_obj);
       }
     }
   }
@@ -252,7 +252,7 @@ class Stun extends ModTemplate {
     return null;
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  onConfirmation(blk, tx, conf) {
     if (tx == null) {
       return;
     }
@@ -267,6 +267,31 @@ class Stun extends ModTemplate {
         //
 
         try {
+          if (this.app.BROWSER === 1) {
+            console.log(
+              "this transaction is from ",
+              tx.from[0].publicKey,
+              " my public key ",
+              this.publicKey
+            );
+            if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
+              if (message.request === "stun-send-call-list-request") {
+                console.log("OnConfirmation:  stun-send-call-list-request");
+                this.receiveCallListRequestTransaction(this.app, tx);
+              }
+              if (message.request === "stun-send-call-list-response") {
+                console.log("OnConfirmation:  stun-send-call-list-response");
+                this.receiveCallListResponseTransaction(this.app, tx);
+              }
+
+              if (message.request === "stun-send-message-to-peers") {
+                console.log("OnConfirmation: stun-send-message-to-peers");
+                // console.log(tx.to, "to transactions");
+
+                this.receiveStunMessageToPeersTransaction(this.app, tx);
+              }
+            }
+          }
           if (message.request === "stun-create-room-transaction") {
             console.log("recieving stun create room transaction");
             this.receiveCreateRoomTransaction(this.app, tx);
@@ -275,13 +300,6 @@ class Stun extends ModTemplate {
           //   this.receiveStunMessageToServerTransaction(this.app, tx);
           // }
 
-          // if (message.request === "stun-send-message-to-peers") {
-          //   console.log("OnConfirmation: stun-send-message-to-peers");
-          //   console.log(tx.to, "to transactions");
-          //   if (tx.isTo(this.publicKey)) {
-          //     this.receiveStunMessageToPeersTransaction(this.app, tx);
-          //   }
-          // }
           if (message.request === "stun-send-game-call-message") {
             console.log("OnConfirmation:  stun-send-game-call-message");
             this.receiveGameCallMessageToPeers(this.app, tx);
@@ -461,8 +479,11 @@ class Stun extends ModTemplate {
   }
 
   async sendStunMessageToPeersTransaction(_data, recipients) {
+    console.log("sending to peers ", recipients, " data ", _data);
     let request = "stun-send-message-to-peers";
+
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    // newtx.addFrom(this.publicKey);
     if (recipients) {
       recipients.forEach((recipient) => {
         if (recipient) {
@@ -473,20 +494,19 @@ class Stun extends ModTemplate {
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
     newtx.msg.data = _data;
+
     await newtx.sign();
-    if (recipients) {
-      let peers = await this.app.network.getPeers();
-      peers.forEach((p) => {
-        if (recipients.includes(p.publicKey)) {
-          console.log(p, recipients);
-          this.app.network.sendTransactionWithCallback(newtx, null, p.peerIndex);
-        }
-      });
-    }
+
+    recipients.forEach((recipient) => {
+      this.app.connection.emit("relay-send-message", { request, recipient, data: _data });
+    });
+
+    // await this.app.network.propagateTransaction(newtx);
   }
 
   receiveStunMessageToPeersTransaction(app, tx) {
     let data = tx.msg.data;
+    console.log("receiving stun message to peers", data);
     app.connection.emit("stun-event-message", data);
     // this.peerManager.handleStunEventMessage(data);
   }
@@ -667,6 +687,67 @@ class Stun extends ModTemplate {
       default:
         break;
     }
+  }
+
+  async sendCallListRequestTransaction(public_key, room_code) {
+    let request = "stun-send-call-list-request";
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    newtx.addTo(public_key);
+    newtx.msg.module = "Stun";
+    newtx.msg.request = request;
+    newtx.msg.data = {
+      room_code,
+    };
+    await newtx.sign();
+    this.app.network.propagateTransaction(newtx);
+  }
+  async receiveCallListRequestTransaction(app, tx) {
+    let room_code = tx.returnMessage().data.room_code;
+    let from = tx.from[0].publicKey;
+
+    let call_list = [];
+    this.peerManager.peers.forEach((value, key) => {
+      console.log(key);
+      if (!call_list.includes(key)) {
+        call_list.push(key);
+      }
+    });
+
+    if (!call_list.includes(this.publicKey)) {
+      call_list.push(this.publicKey);
+    }
+
+    await this.sendCallListResponseTransaction(from, call_list, room_code);
+
+    console.log(call_list, from, "call list");
+  }
+
+  async sendCallListResponseTransaction(public_key, call_list, room_code) {
+    let request = "stun-send-call-list-response";
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    newtx.addTo(public_key);
+    newtx.msg.module = "Stun";
+    newtx.msg.request = request;
+    newtx.msg.data = {
+      call_list,
+      room_code,
+    };
+    await newtx.sign();
+    this.app.network.propagateTransaction(newtx);
+  }
+  async receiveCallListResponseTransaction(app, tx) {
+    let txmsg = tx.returnMessage();
+    let call_list = txmsg.data.call_list;
+    let room_code = txmsg.data.room_code;
+
+    let data = {
+      type: "peer-joined",
+      public_key: this.publicKey,
+      room_code,
+    };
+    await this.sendStunMessageToPeersTransaction(data, call_list);
   }
 
   /*

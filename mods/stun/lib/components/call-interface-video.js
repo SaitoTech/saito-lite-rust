@@ -24,11 +24,13 @@ class CallInterfaceVideo {
     this.current_speaker = null;
     this.speaker_candidate = null;
     this.loader = new SaitoLoader(app, mod);
+    this.public_key = mod.publicKey;
 
     this.app.connection.on(
       "show-call-interface",
-      async (room_code, videoEnabled, audioEnabled, isJoining) => {
-        this.room_code = room_code;
+      async (room_obj, videoEnabled, audioEnabled, isJoining) => {
+        console.log("show-call-interface", room_obj);
+        this.room_code = room_obj.room_code;
 
         if (isJoining) {
           this.loader.render(true);
@@ -43,7 +45,7 @@ class CallInterfaceVideo {
           this.render(videoEnabled, audioEnabled);
         }
 
-        this.room_link = this.createRoomLink();
+        this.createRoomLink();
 
         /* automatically copy invite link to clipboard for first user */
         console.log(this.users_on_call);
@@ -290,7 +292,10 @@ class CallInterfaceVideo {
   createRoomLink() {
     let obj = {
       room_code: this.room_code,
+      access_public_key: this.public_key,
     };
+
+    console.log(obj, "obj");
     let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
 
     let url1 = window.location.origin + "/videocall/";
