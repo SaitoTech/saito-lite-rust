@@ -14,6 +14,7 @@ class RedSquareMain {
     this.scroll_depth = 0;
 
     this.manager = new TweetManager(app, mod, ".saito-main");
+    this.idleTime = 0;
 
     //
     // EVENTS
@@ -28,21 +29,21 @@ class RedSquareMain {
       this.manager.render();
     });
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets=0) => {
-      if (1) {
-	document.querySelector(".saito-cached-loader").remove();
+      if (this.canRefreshPage()) {
+	      document.querySelector(".saito-cached-loader").remove();
         try { document.querySelector(".saito-main").innerHTML = ""; } catch (err) {}
         this.manager.publicKey = this.mod.publicKey;
         this.manager.mode = "tweets";
         this.manager.render();
       } else {
         try {
-	  document.querySelector(".saito-cached-loader").remove();
-	  if (num_tweets > 0) {
-  	    document.querySelector(".saito-new-tweets").style.display = "block";
-	  }
-	} catch (err) {
+	       document.querySelector(".saito-cached-loader").remove();
+      	  if (num_tweets > 0) {
+        	    document.querySelector(".saito-new-tweets").style.display = "block";
+      	  }
+	       } catch (err) {
 
-	}
+	     }
       }
     });
     this.app.connection.on("redsquare-home-cached-render-request", () => {
@@ -146,10 +147,11 @@ class RedSquareMain {
     }
     this.manager.render();
     this.attachEvents();
+    this.monitorUserInteraction();
   }
 
   attachEvents() {
-
+    let this_main = this;
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
@@ -185,6 +187,7 @@ class RedSquareMain {
         }
       }
       scrollTop = scrollableElement.scrollTop;
+      this_main.idleTime = 0;
     });
   }
 
@@ -194,6 +197,38 @@ class RedSquareMain {
     }
 
     document.querySelector(".saito-container").scroll({ top: newDepth, left: 0, behavior });
+  }
+
+  monitorUserInteraction() {
+    let this_main = this;   
+    // Increment the idle time counter every second.
+    var idleInterval = setInterval(function(){
+
+      this_main.idleTime = this_main.idleTime + 1;
+    }, 1000); 
+
+
+    document.body.addEventListener('scroll', function(){
+      this_main.idleTime = 0;
+    });
+    document.body.addEventListener('keydown', function(){
+      this_main.idleTime = 0;
+    });
+    document.body.addEventListener('click', function(){
+      this_main.idleTime = 0;
+    });
+    document.body.addEventListener('touchstart', function(){
+      this_main.idleTime = 0;
+    });
+  }
+
+  canRefreshPage() {
+    // if user didnt interact in last 5 seconds, can refresh page for new content
+    if (this.idleTime >= 5) {
+      return true;
+    }
+
+    return false;
   }
 }
 
