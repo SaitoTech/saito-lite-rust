@@ -894,6 +894,11 @@ class RedSquare extends ModTemplate {
     let is_notification = 0;
 
     //
+    // avoid errors
+    //
+    if (!tweet.tx.optional) { tweet.tx.optional = {}; }
+
+    //
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.publicKey)) {
@@ -978,6 +983,7 @@ class RedSquare extends ModTemplate {
     //
     // this is a post
     //
+    if (!tweet.tx.optional.parent_id) { tweet.tx.optional.parent_id = ""; }
     if (tweet.tx.optional.parent_id === "") {
       //
       // we do not have this tweet indexed, it's new

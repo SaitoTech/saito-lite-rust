@@ -548,7 +548,7 @@ class Tweet {
           // if we are asking to see a tweet, WE SHOULD load from parent if exists
           //
           if (e.target.tagName != "IMG") {
-            
+
             //
             // if there is a connection between us and the parent, we have all of the 
             // tweets needed to display and we can emit the event that triggers the
