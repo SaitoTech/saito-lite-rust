@@ -222,7 +222,13 @@ class ChatPopup {
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
-        let quote = "<blockquote>";
+        
+        /*let copy = el.parentElement.parentElement.cloneNode(true);
+        copy.querySelector(".saito-userline-reply").remove();
+        let quote = `<blockquote>${copy.outerHTML}</blockquote>`;*/
+
+        //Sanitize wipes dataset
+        let quote = `<blockquote href="${el.dataset.href}">`;
         if (el.parentElement.previousElementSibling.innerText.length > 25) {
           quote +=
             "..." + el.parentElement.previousElementSibling.innerText.slice(-25) + "<br/><em>";
@@ -233,10 +239,24 @@ class ChatPopup {
         quote +=
           el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML +
           "</em></blockquote><br/>";
+        
 
         this.input.insertRange(quote.replaceAll("\n", "<br/>"));
+
         this.input.focus();
       });
+    });
+
+    document.querySelectorAll(`${popup_qs} blockquote`).forEach((el) => {
+      el.onclick = (e) => {
+        let href = el.getAttribute("href");
+
+        let myAnchor = document.querySelector(popup_qs + " #" + href);
+        if (myAnchor){
+          myAnchor.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"});
+        }
+        
+      }
     });
 
     if (document.querySelector(popup_qs + " #load-older-chats")) {
