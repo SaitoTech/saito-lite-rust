@@ -4,6 +4,10 @@
   }
 
   onNewTurn() {
+
+    this.game.state.rp['central'] = {};
+    this.game.state.rp['allies'] = {};
+
   }
 
   returnState() {
@@ -15,9 +19,28 @@
     state.removed = []; // removed cards
     state.turn = 1;
     state.skip_counter_or_acknowledge = 0; // don't skip
+    state.cards_left = {};
+
+    state.reserves = {};
+    state.reserves['central'] = [];
+    state.reserves['allies'] = [];
+
+    state.rp = {};
+    state.rp['central'] = {};
+    state.rp['allies'] = {};
+
 
     state.active_player = -1;
 
     return state;
 
   }
+
+  returnActivationCost(key) {
+    return 1;
+  }
+
+  returnMovementCost(key) {
+    return 1;
+  }
+

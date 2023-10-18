@@ -2454,13 +2454,13 @@ console.log("done u=1 autoclick");
             $('.option').on('click', function () {
 
               let is_committed = $(this).attr("id");
-	      if (is_committed == "uncommitted") { is_committed = 1; } else { is_committed = 0; }
+	      if (is_committed == "uncommitted") { is_committed = 0; } else { is_committed = 1; }
 
               let msg = "Leigzip Debate Format?";
               let html = '<ul>';
               html += '<li class="option" id="select">Pick My Debater</li>';
 	      // or prohibit uncommitted debaters
-              if (1 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", is_committed)) {
+              if (is_committed == 0 && 1 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", is_committed)) {
                 html += '<li class="option" id="prohibit">Prohibit Protestant Debater</li>';
               }
               html += '</ul>';
