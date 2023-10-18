@@ -1,4 +1,16 @@
 
+.stirling {
+    top: 690px;
+    left: 1222px;
+    color: red;
+    width: 90px;
+    height: 90px;
+    z-index: 99999;
+    background-color: red;
+    position: absolute;
+}
+
+
 .hud-body .status .status-message {
   padding-top: 15px;
 }
