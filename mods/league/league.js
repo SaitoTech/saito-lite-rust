@@ -967,7 +967,11 @@ class League extends ModTemplate {
         this.fetchLeagueLeaderboard(leag.id, () => {
 
           if (myRank <= 0){
-            siteMessage(`You are now ranked ${leag.rank} on the ${leag.name} leaderboard`);
+            if (leag.rank > 0){
+              siteMessage(`You are now ranked ${leag.rank} on the ${leag.name} leaderboard`);  
+            }else{
+              siteMessage(`You are still unranked on the ${leag.name} leaderboard`);
+            }
           }else{
             let point_message = "";
             if (leag.ranking_algorithm === "ELO") {
