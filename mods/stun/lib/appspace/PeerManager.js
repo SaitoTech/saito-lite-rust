@@ -19,6 +19,7 @@ class PeerManager {
     });
 
     app.connection.on("stun-event-message", (data) => {
+      console.log(data, this.room_obj);
       if (data.room_code !== this.room_obj.room_code) {
         return;
       }
@@ -574,7 +575,9 @@ class PeerManager {
       // console.log(track);
       console.log("stopping track");
     });
+    let keys = [];
     this.peers.forEach((peerConnections, key) => {
+      keys.push(key);
       peerConnections.close();
     });
 
@@ -587,9 +590,10 @@ class PeerManager {
     let data = {
       room_code: this.room_obj.room_code,
       type: "peer-left",
+      public_key: this.mod.publicKey,
     };
 
-    // this.mod.sendStunMessageToPeersTransaction(data, );
+    this.mod.sendStunMessageToPeersTransaction(data, keys);
   }
 
   sendSignalingMessage(data) {}
