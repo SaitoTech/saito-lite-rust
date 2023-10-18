@@ -269,6 +269,12 @@ class PeerManager {
     });
 
     this.peers.set(peerId, peerConnection);
+    let _peers = [];
+    this.peers.forEach((value, key) => {
+      _peers.push(key);
+    });
+
+    localStorage.setItem(this.room_obj.room_code, JSON.stringify(_peers));
 
     //Make sure you have a local Stream
     if (!this.localStream) {
@@ -532,6 +538,20 @@ class PeerManager {
     if (this.room_obj.access_public_key === this.mod.publicKey) {
       // get public key from other source
       console.log("cannot join with this link public key is the same");
+      let peers = localStorage.getItem(this.room_obj.room_code);
+      if (peers) {
+        console.log("peers, ", peers);
+        peers = JSON.parse(peers);
+        console.log("peers, ", peers);
+        if (peers.length > 0) {
+          for (let i = 0; i < peers.length; i++) {
+            if (peers[i] !== this.mod.publicKey)
+              await this.mod.sendCallListRequestTransaction(peers[i], this.room_obj.room_code);
+            break;
+          }
+        }
+      }
+
       return;
     }
 

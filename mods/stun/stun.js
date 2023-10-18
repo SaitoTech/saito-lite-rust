@@ -705,22 +705,29 @@ class Stun extends ModTemplate {
   async receiveCallListRequestTransaction(app, tx) {
     let room_code = tx.returnMessage().data.room_code;
     let from = tx.from[0].publicKey;
-
+    console.log(room_code);
     let call_list = [];
-    this.peerManager.peers.forEach((value, key) => {
-      console.log(key);
-      if (!call_list.includes(key)) {
-        call_list.push(key);
-      }
-    });
+    let peers = localStorage.getItem(room_code);
+    console.log("peers, ", peers);
+    peers = JSON.parse(peers);
+    console.log("peers, ", peers);
+
+    if (peers) {
+      peers.forEach((key) => {
+        console.log(key);
+        if (!call_list.includes(key)) {
+          call_list.push(key);
+        }
+      });
+    }
 
     if (!call_list.includes(this.publicKey)) {
       call_list.push(this.publicKey);
     }
 
-    await this.sendCallListResponseTransaction(from, call_list, room_code);
+    console.log("call list", call_list);
 
-    console.log(call_list, from, "call list");
+    await this.sendCallListResponseTransaction(from, call_list, room_code);
   }
 
   async sendCallListResponseTransaction(public_key, call_list, room_code) {
@@ -740,6 +747,10 @@ class Stun extends ModTemplate {
   async receiveCallListResponseTransaction(app, tx) {
     let txmsg = tx.returnMessage();
     let call_list = txmsg.data.call_list;
+
+    // remove my own key
+    call_list = call_list.filter((key) => this.publicKey !== key);
+
     let room_code = txmsg.data.room_code;
 
     let data = {
@@ -747,6 +758,7 @@ class Stun extends ModTemplate {
       public_key: this.publicKey,
       room_code,
     };
+
     await this.sendStunMessageToPeersTransaction(data, call_list);
   }
 
