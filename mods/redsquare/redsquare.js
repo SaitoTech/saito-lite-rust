@@ -816,8 +816,10 @@ class RedSquare extends ModTemplate {
         }
       },
       (p) => {
-        if (p.publicKey == peer.publicKey) {
-          return 1;
+        if (typeof peer != 'undefined' && peer != null) {
+          if (p.publicKey == peer.publicKey) {
+            return 1;
+          }
         }
         return 0;
       }
