@@ -277,13 +277,13 @@ class Stun extends ModTemplate {
               !this.peerManager.room_obj ||
               this.peerManager.room_obj.room_code !== message.data.room_code
             ) {
-              // console.log("Tab is not active");
+              console.log("Tab is not active");
               return;
             }
-            if (document.hidden) {
-              console.log("tab is not active");
-              return;
-            }
+            // if (document.hidden) {
+            //   console.log("tab is not active");
+            //   return;
+            // }
 
             if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
               if (this.hasSeenTransaction(tx)) return;
@@ -329,7 +329,7 @@ class Stun extends ModTemplate {
           !this.peerManager.room_obj ||
           this.peerManager.room_obj.room_code !== txmsg.data.room_code
         ) {
-          // console.log("Tab is not active");
+          console.log("Tab is not active");
           return;
         }
         // if (document.hidden) {

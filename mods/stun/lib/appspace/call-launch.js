@@ -35,7 +35,7 @@ class CallLaunch {
           document.querySelector("#createRoom").textContent = "Join Meeting";
           clearInterval(interval);
         }
-      }, 4000);
+      }, 500);
     });
 
     app.connection.on("stun-remove-loader", () => {
@@ -65,7 +65,7 @@ class CallLaunch {
       );
       this.attachEvents(this.app, this.mod);
       this.loader.remove();
-    });
+    }, 4000);
 
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit("stun-init-peer-manager", "large");
