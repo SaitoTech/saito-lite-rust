@@ -100,7 +100,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
                       <div class="settlers-stats-vp settlers-stats-vpc${stats.mod.game.state.players[player].vpc ? "":" no-vp"}" title="Victory Point Card">${stats.mod.vp.img} <div class="settlers-stats-vp-count">${stats.mod.game.state.players[player].vpc}</div></div>
                       <div class="settlers-stats-vp settlers-stats-largest-road${(stats.mod.game.state.longestRoad.player == player + 1) ? "":" no-vp"}" title="Largest Road">
                         ${stats.mod.longest.svg}
-                        <div class="settlers-stats-vp-count">${stats.mod.game.state.players[i].road}</div>
+                        <div class="settlers-stats-vp-count">${stats.mod.game.state.players[player].road}</div>
                         <div class="settlers-stats-multiplier">+2</div>
                       </div>
                       <div class="settlers-stats-vp settlers-stats-largest-army${(stats.mod.game.state.largestArmy.player == player + 1) ? "":" no-vp"}" title="Largest Army">
