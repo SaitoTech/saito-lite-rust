@@ -1,0 +1,120 @@
+.naval-battle-overlay {
+    background-image: url(/his/img/backgrounds/field_battle.jpg);
+    background-size: cover;
+    max-height: 90vh;
+    max-width: 90vw;
+    width: 90vw;
+    height: auto;
+    min-height: 622px;
+    text-align: center;
+}
+
+.naval-battle-overlay .help {
+    background: #0009;
+    width: 100%;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.4rem;
+    padding: 0.75rem;
+    max-width: 100%;
+    padding: 1rem;
+    line-height: 3.4rem;
+}
+
+
+.naval-battle-grid {
+        display: grid;
+        grid-template-columns: 50vw 50vw;
+        padding: 4rem;
+        justify-items: center;
+        justify-content: space-evenly;
+}
+
+.naval-battle-grid .attacker .naval-battle-row, .naval-battle-grid .defender .naval-battle-row {
+        display: grid;
+        justify-items: right;
+        background: #0005;
+        border: 1px solid black;
+        height: min-content;
+        margin-left: unset;
+        margin-right: unset;
+        margin-top: unset;
+        width: unset;
+        color: whitesmoke;
+        letter-spacing: 0.05rem;
+}
+
+.naval-battle-grid .attacker .naval-battle-row.hits-assignable-hover-effect, .naval-battle-grid .defender .naval-battle-row.hits-assignable-hover-effect {
+    background-color: #FFFC;
+    color: black;
+    grid-template-columns: 1fr min-content;
+    cursor: pointer;
+}
+.naval-battle-grid .attacker .naval-battle-row.destroyed , .naval-battle-grid .defender .naval-battle-row.destroyed {
+    background-color: #000A;
+    color: #AAA;
+    grid-template-columns: 1fr min-content;
+}
+
+
+.naval-battle-grid .attacker .title , .naval-battle-grid .defender .title {
+        color: whitesmoke;
+        background: #0005;
+        font-size: 25;
+        text-align: center;
+        border: 1px solid black;
+        grid-column: 1 / span 2;
+        grid-row: 1;
+        padding: 1rem;
+}
+
+.naval-battle-unit {
+    width: 80%;
+    height: 5rem;
+    padding: 0.75rem;
+    font-size: 2rem;
+    grid-column: 1;
+    margin-left: 0rem;
+    margin-right: 4vw;
+    text-align: left;
+    justify-self: left;
+}
+
+.naval-battle-desc {
+        position: relative;
+        font-size: 1.5rem;
+}
+
+.naval-battle-roll {
+        display: grid;
+        grid-template-columns: 6rem 6rem;
+        background: #0005;
+        width: 6rem;
+        height: 6rem;
+        border: 1px solid black;
+        margin-bottom: 0rem;
+        min-height: 0px;
+        font-weight: bolder;
+        text-transform: uppercase;
+        font-size: 3.5rem;
+        text-align: center;
+        padding-top: 1rem;
+        grid-column: 2;
+}
+
+.naval-battle-roll.hit {
+        background-color: goldenrod;
+        color: black;
+}
+
+.attacker, .defender {
+	width: 35vw;
+}
+
+.hits-assignable-hover-effect:hover {
+  font-weight: bold;
+}
+
+
+
