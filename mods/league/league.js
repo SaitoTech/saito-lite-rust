@@ -862,21 +862,36 @@ class League extends ModTemplate {
       request: "league remove",
       league_id: league_id,
     };
+
+    if (this?.sudo == league_id){
+      newtx.msg["sudo"] = this.publicKey;
+    }
+
     await newtx.sign();
     return newtx;
   }
 
   async receiveRemoveTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
+    let sql1, params1;
 
-    let sql1 = `UPDATE leagues
-                SET deleted = 1
-                WHERE id = $id
-                  AND admin = $admin`;
-    let params1 = {
-      $id: txmsg.league_id,
-      $admin: tx.from[0].publicKey,
-    };
+    if (txmsg?.sudo && txmsg.sudo === tx.from[0].publicKey) {
+      sql1 = `UPDATE leagues
+            SET deleted = 1
+            WHERE id = $id`;
+      params1 = {
+        $id: txmsg.league_id,
+      };
+    } else {
+      sql1 = `UPDATE leagues
+                  SET deleted = 1
+                  WHERE id = $id
+                    AND admin = $admin`;
+      params1 = {
+        $id: txmsg.league_id,
+        $admin: tx.from[0].publicKey,
+      };
+    }
 
     let result = await this.app.storage.executeDatabase(sql1, params1, "league");
 
@@ -980,6 +995,10 @@ class League extends ModTemplate {
               }else{
                 point_message = `lost ${myScore - leag.score} points`;
               } 
+            }else if (leag.ranking_algorithm === "HSC") {
+              if (leag.score > myScore) {
+                point_message = `set a new personal best of ${leag.score}`;
+              }
             }
 
             let rank_message = "";

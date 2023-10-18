@@ -56,6 +56,7 @@ class LeagueMenu {
           return;
         }
         this.league.admin = this.mod.publicKey;
+        this.mod.sudo = this.league.id;
         this.app.connection.emit("league-overlay-render-request", this.league.id);
       };
     } catch (err) {}
