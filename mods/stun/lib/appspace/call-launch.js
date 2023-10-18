@@ -35,7 +35,7 @@ class CallLaunch {
           document.querySelector("#createRoom").textContent = "Join Meeting";
           clearInterval(interval);
         }
-      }, 500);
+      }, 4000);
     });
 
     app.connection.on("stun-remove-loader", () => {

@@ -45,7 +45,7 @@ class CallInterfaceVideo {
           this.render(videoEnabled, audioEnabled);
         }
 
-        this.createRoomLink();
+        this.room_link = this.createRoomLink();
 
         /* automatically copy invite link to clipboard for first user */
         console.log(this.users_on_call);
