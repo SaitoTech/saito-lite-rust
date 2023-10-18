@@ -549,8 +549,6 @@ class Tweet {
           //
           if (e.target.tagName != "IMG") {
 
-            window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
-
             //
             // if there is a connection between us and the parent, we have all of the 
             // tweets needed to display and we can emit the event that triggers the
@@ -563,6 +561,8 @@ class Tweet {
             // full thread already exists
             //
             if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
+                window.history.pushState({}, document.title, `/redsquare?tweet_id=${this.thread_id}`);
+  
                 app.connection.emit("redsquare-home-tweet-render-request", this);
                 this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
                   let tweet = this.mod.returnTweet(txs[z].signature);
@@ -574,8 +574,7 @@ class Tweet {
             // otherwise re-load
             //
             } else {
-              // window.location.href set already above with tweet_id= , so just need to reload  
-              window.location.reload();
+              window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
             }
           }
         };
