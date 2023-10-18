@@ -981,16 +981,12 @@ class League extends ModTemplate {
         let myRank = leag.rank;
         this.fetchLeagueLeaderboard(leag.id, () => {
 
-          if (myRank <= 0){
-            if (leag.rank > 0){
-              siteMessage(`You are now ranked ${leag.rank} on the ${leag.name} leaderboard`);  
-            }else{
-              siteMessage(`You are still unranked on the ${leag.name} leaderboard`);
-            }
+          if (myRank <= 0 && leag.rank > 0){
+            siteMessage(`You are now ranked ${leag.rank} on the ${leag.name} leaderboard`);  
           }else{
             let point_message = "";
-            if (leag.ranking_algorithm === "ELO") {
-              if (leag.score >= myScore) {
+            if (leag.ranking_algorithm === "ELO" && leag.score != myScore){ 
+              if (leag.score > myScore) {
                 point_message = `gained ${leag.score - myScore} points`;
               }else{
                 point_message = `lost ${myScore - leag.score} points`;
@@ -1010,14 +1006,14 @@ class League extends ModTemplate {
             } 
 
            if (point_message && rank_message){
-            siteMessage(`You ${point_message} and ${rank_message}`);
+            siteMessage(`${leag.name}: You ${point_message} and ${rank_message}`);
            }else if (point_message || rank_message) {
-            siteMessage(`You ${point_message}${rank_message}`);
+            siteMessage(`${leag.name}: You ${point_message}${rank_message}`);
            }
 
           }
-          console.log("My previous score and rank:", myScore, myRank);
-          console.log("My new score and rank: ", leag.score, leag.rank);
+          console.log("LEAGUE: My previous score and rank:", myScore, myRank);
+          console.log("LEAGUE: My new score and rank: ", leag.score, leag.rank);
         });
       }
     }
