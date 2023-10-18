@@ -10,6 +10,7 @@ class Initializer {
       await this.render(game_details.id);
       this.notify(game_details.name);
       this.attachEvents(game_details.slug);
+      siteMessage(`${game_details.name} ready to play!`);
     });
 
     app.connection.on("arcade-close-game", (game_id)=>{

@@ -1273,9 +1273,10 @@ class Arcade extends ModTemplate {
     if (txmsg.players.includes(this.publicKey)) {
       this.app.connection.emit("arcade-game-initialize-render-request");
 
-      if (this.app.BROWSER == 1) {
-        siteMessage(txmsg.game + " invite accepted.", 20000);
+      if (this.app.BROWSER == 1 && txmsg.players.length > 1) {
+        siteMessage(txmsg.game + " invite accepted", 5000);
       }
+
       /*
       So the game engine does a bunch of checks and returns false if something prevents the game
       from initializing, so... we should wait for feedback and nope out of the spinner if something breaks
