@@ -29,11 +29,31 @@ console.log("\n\n\n\n");
       //
       this.game.queue.push("turn");	// turn 1
       this.game.queue.push("READY");
+      this.game.queue.push("init");
 
-       this.game.queue.push("DECK\t1\t"+JSON.stringify({})); 
-       this.game.queue.push("init");
+      this.game.queue.push("DEAL\t2\t2\t7");
+      this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
+
+      this.game.queue.push("DECKENCRYPT\t2\t2");
+      this.game.queue.push("DECKENCRYPT\t2\t1");
+      this.game.queue.push("DECKXOR\t2\t2");
+      this.game.queue.push("DECKXOR\t2\t1");
+
+      this.game.queue.push("DECKENCRYPT\t1\t2");
+      this.game.queue.push("DECKENCRYPT\t1\t1");
+      this.game.queue.push("DECKXOR\t1\t2");
+      this.game.queue.push("DECKXOR\t1\t1");
+
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMobilizationDeck("central")));
+      this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnMobilizationDeck("allies")));
 
     }
+
+    //
+    // all cards with events added to this.deck
+    //
+    this.deck = this.returnDeck("all");
+
 
     //
     // attach events to spaces

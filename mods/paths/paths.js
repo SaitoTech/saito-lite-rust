@@ -59,108 +59,6 @@ class PathsOfGlory extends GameTemplate {
   }
 
 
-  returnSingularGameOption(){
-    return PathsSingularOption();
-  }
-
-  returnAdvancedOptions() {
-    return PathsOptions();
-  }
-
-  returnGameRulesHTML(){
-    return PathsRules();
-  }
-
-
-
-
-  ////////////////
-  // initialize //
-  ////////////////
-  initializeGame(game_id) {
-
-    //
-    // check user preferences to update interface, if text
-    //
-    if (this.app?.options?.gameprefs) {
-      if (this.app.options.gameprefs.his_expert_mode == 1) {
-        this.confirm_moves = 0;
-      } else {
-        this.confirm_moves = 1;
-      }
-    }
-
-    //
-    // re-fill status and log
-    //
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-
-    //
-    // initialize game objects
-    //
-    this.deck = this.returnDeck();
-
-
-
-    let first_time_running = 0;
-
-    //
-    // initialize
-    //
-    if (!this.game.state) {
-
-      this.game.state = this.returnState();
-      this.game.state.players_info = this.returnPlayers(this.game.players.length);
-      this.game.spaces = this.returnSpaces();
-
-console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
-
-console.log("\n\n\n\n");
-console.log("---------------------------");
-console.log("---------------------------");
-console.log("------ INITIALIZE GAME ----");
-console.log("---------------------------");
-console.log("---------------------------");
-console.log("---------------------------");
-console.log("DECK: " + this.game.options.deck);
-console.log("\n\n\n\n");
-
-      this.updateStatus("<div class='status-message' id='status-message'>Generating the Game</div>");
-
-      //
-      // Game Queue
-      //
-      this.game.queue.push("turn");	// turn 1
-      this.game.queue.push("READY");
-
-       this.game.queue.push("DECK\t1\t"+JSON.stringify({})); 
-       this.game.queue.push("init");
-
-    }
-
-    //
-    // attach events to spaces
-    //
-    this.spaces = {};
-    for (let key in this.game.spaces) {
-      this.spaces[key] = this.importSpace(this.game.spaces[key], key);
-    }
-
-    //
-    // add initial units
-    //
-    if (first_time_running == 1) {
-    }
-
-    //
-    // and show the board
-    //
-    this.displayBoard();
-
-  }
-
-
-
   render(app) {
 
     if (this.browser_active == 0) { return; }
@@ -283,6 +181,129 @@ console.log("\n\n\n\n");
 
 
 
+
+  returnSingularGameOption(){
+    return PathsSingularOption();
+  }
+
+  returnAdvancedOptions() {
+    return PathsOptions();
+  }
+
+  returnGameRulesHTML(){
+    return PathsRules();
+  }
+
+
+
+
+  ////////////////
+  // initialize //
+  ////////////////
+  initializeGame(game_id) {
+
+    //
+    // check user preferences to update interface, if text
+    //
+    if (this.app?.options?.gameprefs) {
+      if (this.app.options.gameprefs.his_expert_mode == 1) {
+        this.confirm_moves = 0;
+      } else {
+        this.confirm_moves = 1;
+      }
+    }
+
+    //
+    // re-fill status and log
+    //
+    if (this.game.status != "") { this.updateStatus(this.game.status); }
+
+    //
+    // initialize game objects
+    //
+    this.deck = this.returnDeck();
+
+
+
+    let first_time_running = 0;
+
+    //
+    // initialize
+    //
+    if (!this.game.state) {
+
+      this.game.state = this.returnState();
+      this.game.state.players_info = this.returnPlayers(this.game.players.length);
+      this.game.spaces = this.returnSpaces();
+
+console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
+
+console.log("\n\n\n\n");
+console.log("---------------------------");
+console.log("---------------------------");
+console.log("------ INITIALIZE GAME ----");
+console.log("---------------------------");
+console.log("---------------------------");
+console.log("---------------------------");
+console.log("DECK: " + this.game.options.deck);
+console.log("\n\n\n\n");
+
+      this.updateStatus("<div class='status-message' id='status-message'>Generating the Game</div>");
+
+      //
+      // Game Queue
+      //
+      this.game.queue.push("turn");	// turn 1
+      this.game.queue.push("READY");
+      this.game.queue.push("init");
+
+      this.game.queue.push("DEAL\t2\t2\t7");
+      this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
+
+      this.game.queue.push("DECKENCRYPT\t2\t2");
+      this.game.queue.push("DECKENCRYPT\t2\t1");
+      this.game.queue.push("DECKXOR\t2\t2");
+      this.game.queue.push("DECKXOR\t2\t1");
+
+      this.game.queue.push("DECKENCRYPT\t1\t2");
+      this.game.queue.push("DECKENCRYPT\t1\t1");
+      this.game.queue.push("DECKXOR\t1\t2");
+      this.game.queue.push("DECKXOR\t1\t1");
+
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMobilizationDeck("central")));
+      this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnMobilizationDeck("allies")));
+
+    }
+
+    //
+    // all cards with events added to this.deck
+    //
+    this.deck = this.returnDeck("all");
+
+
+    //
+    // attach events to spaces
+    //
+    this.spaces = {};
+    for (let key in this.game.spaces) {
+      this.spaces[key] = this.importSpace(this.game.spaces[key], key);
+    }
+
+    //
+    // add initial units
+    //
+    if (first_time_running == 1) {
+    }
+
+    //
+    // and show the board
+    //
+    this.displayBoard();
+
+  }
+
+
+
   popup(card) {
 
     let c = null;
@@ -307,33 +328,281 @@ console.log("\n\n\n\n");
 
 
 
-  returnDeck() {
+  returnMobilizationDeck(type="all") {
+    let deck = {};
 
-    var deck = {};
+    if (type == "allies" || type == "all") {
 
-    deck['001'] = { 
-      img : "cards/HIS-001.svg" , 
-      name : "Janissaries" ,
-      ops : 5 ,
-      turn : 1 ,
-      type : "normal" ,
-      faction : "ottoman" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      deck['ap01'] = { 
+        key : 'ap01',
+        img : "cards/card_ap01.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap02'] = { 
+        key : 'ap02',
+        img : "cards/card_ap02.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap03'] = { 
+        key : 'ap03',
+        img : "cards/card_ap03.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap04'] = { 
+        key : 'ap04',
+        img : "cards/card_ap04.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap05'] = { 
+        key : 'ap05',
+        img : "cards/card_ap05.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap06'] = { 
+        key : 'ap06',
+        img : "cards/card_ap06.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap07'] = { 
+        key : 'ap07',
+        img : "cards/card_ap07.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap08'] = { 
+        key : 'ap08',
+        img : "cards/card_ap08.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap09'] = { 
+        key : 'ap09',
+        img : "cards/card_ap09.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['ap10'] = { 
+        key : 'ap10',
+        img : "cards/card_ap10.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+
     }
+    if (type == "central" || type == "all") {
 
-    //
-    //
-    //
-
-
-    for (let key in deck) {
-      deck[key] = this.addEvents(deck[key]);
-      if (!deck[key].warn) { deck[key].warn = []; }
+      deck['cp01'] = { 
+        key : 'cp01',
+        img : "cards/card_cp01.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp02'] = { 
+        key : 'cp02',
+        img : "cards/card_cp02.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp03'] = { 
+        key : 'cp03',
+        img : "cards/card_cp03.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp04'] = { 
+        key : 'cp04',
+        img : "cards/card_cp04.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp05'] = { 
+        key : 'cp05',
+        img : "cards/card_cp05.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp06'] = { 
+        key : 'cp06',
+        img : "cards/card_cp06.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp07'] = { 
+        key : 'cp07',
+        img : "cards/card_cp07.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp08'] = { 
+        key : 'cp08',
+        img : "cards/card_cp08.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp09'] = { 
+        key : 'cp09',
+        img : "cards/card_cp09.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
+      deck['cp10'] = { 
+        key : 'cp10',
+        img : "cards/card_cp10.svg" ,
+        name : "British Reinforcements" ,
+        text : "2nd army, 1 corps" ,
+        cc : false ,
+        ps : 4 ,
+        sr : 4 ,		
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
+        type : "normal" ,
+	removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+      }
     }
 
     return deck;
-
   }
+  returnLimitedWarDeck(type="all") {
+    let deck = {};
+    return deck;
+  }
+  returnFullWarDeck(type="all") {
+    let deck = {};
+    return deck;
+  }
+  returnDeck(type="all") {
+    let a = this.returnMobilizationDeck(type);
+    let b = this.returnLimitedWarDeck(type);
+    let c = this.returnFullWarDeck(type);
+    let d = Object.assign({}, a, b);
+    let deck = Object.assign({}, d, c);
+
+    for (let key in deck) {
+      deck[key] = this.addEvents(deck[key]);
+    }
+
+    return deck;
+  }
+
 
 
 
@@ -341,17 +610,84 @@ console.log("\n\n\n\n");
     this.zoom_overlay.hide();
   }
 
+
   displayBoard() {
+
+    let paths_self = this;
+
+    //
+    // display the spaces on the board
+    //
     try {
       this.displaySpaces();
     } catch (err) {
       console.log("error displaying spaces... " + err);
     }
+
+
+    //
+    // add click event to gameboard for close-up / zoom UI
+    //
+    let xpos = 0;
+    let ypos = 0;
+
+
+    if (!paths_self.bound_gameboard_zoom) {
+
+      $('.gameboard').on('mousedown', function (e) {
+        if (e.currentTarget.classList.contains("space")) { return; }
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
+      $('.gameboard').on('mouseup', function (e) {
+        if (Math.abs(xpos-e.clientX) > 4) { return; }
+        if (Math.abs(ypos-e.clientY) > 4) { return; }
+        //
+        // if this is a selectable space, let people select directly
+        //
+        // this is a total hack by the way, but it captures the embedding that happens when
+        // we are clicking and the click action is technically on the item that is INSIDE
+        // the selectable DIV, like a click on a unit in a key, etc.
+        //
+        if (e.target.classList.contains("selectable")) {
+          return;
+        } else {
+          let el = e.target;
+          if (el.parentNode) {
+            if (el.parentNode.classList.contains("selectable")) {
+              return;
+            } else {
+              if (el.parentNode.parentNode) {
+                if (el.parentNode.parentNode.classList.contains("selectable")) {
+                  return;
+                }
+              }
+            }
+          }
+        }
+	//
+        // nothing is selectable here, so show zoom
+        paths_self.zoom_overlay.renderAtCoordinates(xpos, ypos);
+      });
+
+      //
+      // we only attach this event to the gameboard once, so once we have done
+      // that remember that we have already bound the gameboard zoom event so that
+      // we will not do it again. If necessary we can reset this variable to 0
+      // and call this function again.
+      //
+      paths_self.bound_gameboard_zoom = 1;
+    }
+
   }
 
 
   displaySpace(key) {
 console.log("display: " + key);
+  }
+
+  displaySpaceDetailedView(key) {
+alert("display detailed space!");
   }
 
   displaySpaces() {
@@ -435,57 +771,22 @@ console.log("display: " + key);
   returnCardImage(cardname) {
 
     let cardclass = "cardimg";
-    let deckidx = -1;
-    let card;
-    let cdeck = this.returnDeck();
-    let ddeck = this.returnDiplomaticDeck();
+    let deck = this.returnDeck();
+    let card = "";
+    let html = "";
 
     if (cardname === "pass") {
-      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
+      return `<img class="${cardclass}" src="/paths/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
-    if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
-
-    for (let i = 0; i < this.game.deck.length; i++) {
-      var c = this.game.deck[i].cards[cardname];
-      if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
-      if (c == undefined) { c = this.game.deck[i].removed[cardname]; }
-      if (c !== undefined) { 
-	deckidx = i;
-        card = c;
-      }
-    }
-    if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
-    if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
-
-    //
-    // triggered before card deal
-    //
-    if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
-
-    if (deckidx === -1 && !cdeck[cardname] && !ddeck[cardname]) {
-      //
-      // this is not a card, it is something like "skip turn" or cancel
-      //
-      return `<div class="noncard" id="${cardname.replaceAll(" ","")}">${cardname}</div>`;
-    }
-
-    var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
-
-    //
-    // add cancel button to uneventable cards
-    //
-    if (deckidx == 0) { 
-      if (!this.deck[cardname]) {
-        if (!this.deck[cardname].canEvent(this, "")) {
-          html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+    if (deck[cardname]) {
+      card = deck[cardname];
+      html = `<img class="${cardclass}" src="/paths/img/${card.img}" />`;
+      try {
+	if (card.canEvent(this)) {
+          html += `<img class="${cardclass} cancel_x" src="/paths/img/cancel_x.png" />`;
         }
-      }
-    }
-    if (deckidx == 1) { 
-      if (!this.diplomatic_deck[cardname].canEvent(this, "")) {
-        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
-      }
+      } catch (err) {}
     }
 
     return html
@@ -510,7 +811,7 @@ console.log("display: " + key);
       pre_images[idx].onload = () => {
         this.preloadImageArray(imageArray, idx+1);
       }
-      pre_images[idx].src = "/his/" + imageArray[idx];
+      pre_images[idx].src = "/paths/" + imageArray[idx];
     }
 
   }
@@ -2194,6 +2495,10 @@ console.log("and friendly");
   }
 
   onNewTurn() {
+
+    this.game.state.rp['central'] = {};
+    this.game.state.rp['allies'] = {};
+
   }
 
   returnState() {
@@ -2205,12 +2510,31 @@ console.log("and friendly");
     state.removed = []; // removed cards
     state.turn = 1;
     state.skip_counter_or_acknowledge = 0; // don't skip
+    state.cards_left = {};
+
+    state.reserves = {};
+    state.reserves['central'] = [];
+    state.reserves['allies'] = [];
+
+    state.rp = {};
+    state.rp['central'] = {};
+    state.rp['allies'] = {};
+
 
     state.active_player = -1;
 
     return state;
 
   }
+
+  returnActivationCost(key) {
+    return 1;
+  }
+
+  returnMovementCost(key) {
+    return 1;
+  }
+
 
 
   //
@@ -2234,7 +2558,11 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 console.log("MOVE: " + mv[0]);
 
 	//
-	// entry point for every round in the game
+	// entry point for every turn in the game
+	//
+	// NOTE: turns contains rounds in this game, which is a somewhat
+	// unusual terminology. the action phase contains 6 rounds per 
+	// player, played in sequence.
 	//
         if (mv[0] === "turn") {
 
@@ -2246,15 +2574,92 @@ this.updateLog(`###############`);
 
 	  this.onNewTurn();
 
-	  this.game.state.cards_left = {};
+          for (let i = 0; i < this.game.state.players_info.length; i++) {
+            this.resetPlayerRound((i+1));
+          }
+
+          this.game.queue.push("draw_strategy_card_phase");
+          this.game.queue.push("replacement_phase");
+          this.game.queue.push("war_status_phase");
+          this.game.queue.push("siege_phase");
+          this.game.queue.push("attrition_phase");
+          this.game.queue.push("action_phase");
+          this.game.queue.push("mandated_offensive_phase");
 
 	}
+
+ 	if (mv[0] == "draw_strategy_card_phase") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+ 	if (mv[0] == "replacement_phase") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+ 	if (mv[0] == "war_status_phase") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+ 	if (mv[0] == "siege_phase") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+ 	if (mv[0] == "attrition_phase") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+ 	if (mv[0] == "action_phase") {
+
+          this.game.queue.splice(qe, 1);
+
+	  for (let i = 0; i < 6; i++) {
+	    this.game.queue.push("play\tallies");
+	    this.game.queue.push("play\tcentral");
+	  }
+
+	  return 1;
+	}
+ 	if (mv[0] == "mandated_offensive_phase") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
+
+	//////////////
+	// GAMEPLAY //
+	//////////////
+	if (mv[0] == "play") {
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+	  let name = this.returnPlayerName(faction);
+	  let hand = this.returnPlayerHand();
+
+console.log("PLAYER: " + this.game.player);
+console.log("LIve: " + player);
+console.log("HAND: " + JSON.stringify(hand));
+
+	  if (this.game.player == player) {
+	    this.playerTurn(faction);
+	  } else {
+	    this.updateStatusAndListCards(`${name} is picking a card`, hand);
+	  }
+	  
+	  return 0;
+
+	}
+
 
         if (mv[0] == "init") {
           this.game.queue.splice(qe, 1);
 	  return 1;
         }
 
+
+
+	////////////////////////////
+	// SHOW AND HIDE OVERLAYS //
+	////////////////////////////
 	if (mv[0] === "show_overlay") {
 
 	  //
@@ -2269,11 +2674,37 @@ this.updateLog(`###############`);
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
+
 	if (mv[0] === "hide_overlay") {
 	  if (mv[1] === "zoom") { this.theses_overlay.hide(); }
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
+
+
+
+	/////////////////////
+	// modifying state //
+	/////////////////////
+  	if (mv[0] === "sr") {
+	  let faction = mv[1];
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
+  	if (mv[0] === "rp") {
+
+	  let faction = mv[1];
+	  let key = mv[2];
+	  let value = mv[3];
+
+	  if (!this.game.state.rp[faction][key]) { this.game.state.rp[faction][key] = 0; }
+	  this.game.state.rp[faction][key] += parseInt(value);
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
 
 
         if (mv[0] === "card") {
@@ -2295,25 +2726,17 @@ this.updateLog(`###############`);
 
         if (mv[0] === "ops") {
 
-	  this.game.queue.splice(qe, 1);
-
 	  let faction = mv[1];
 	  let card = mv[2];
 	  let opsnum = parseInt(mv[3]);
- 
-          this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for ops");
 
-	  let p = this.returnPlayerOfFaction(faction);
+	  this.game.queue.splice(qe, 1);
 
-	  if (this.game.player === p) {
-	    this.playerPlayOps(card, faction, opsnum);
-	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " playing ops");
-	  }
-
-	  return 0;
+	  return 1;
 
 	}
+
+
 
 	//
 	// objects and cards can add commands
@@ -2347,7 +2770,133 @@ this.updateLog(`###############`);
 
   }
 
+  returnPlayerHand() {
+    return this.game.deck[this.game.player-1].hand;
+  }
 
+  returnPlayerName(faction="") {
+    if (faction == "central") { return "Central Powers"; }
+    return "Allies";
+  }
+
+  returnPlayerOfFaction(faction="") {
+    if (faction == "central") { return 1; }
+    return 2;
+  }
+
+  playerPlayCard(faction, card) {
+
+    //
+    // hide any popup
+    //
+    this.cardbox.hide();
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
+    html    += `<li class="card" id="sr">strategic redeployment</li>`;
+    html    += `<li class="card" id="rp">replacement points</li>`;
+    html    += `<li class="card" id="event">trigger event</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
+    this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+    this.attachCardboxEvents((action) => {
+
+      if (action === "ops") {
+	alert("ops");
+	this.playerPlayOps(faction, card, card.ops);
+      }
+
+      if (action === "sr") {
+	alert("sr");
+	this.playerPlayStrategicRedeployment(faction, card, card.rp);
+      }
+
+      if (action === "rp") {
+	alert("rp");
+	this.playerPlayReplacementPoints(faction, card);
+      }
+
+      if (action === "event") {
+	alert("event");
+      }
+
+    });
+
+  }
+
+  playerPlayOps(faction, card, cost) {
+
+    //
+    // hide any popup
+    //
+    this.cardbox.hide();
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="movement">activate for movement</li>`;
+    html    += `<li class="card" id="combat">activate for combat</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`You have ${cost} OPS remaining`, html, true);
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
+    this.attachCardboxEvents((action) => {
+
+      if (action === "movement") {
+	alert("movement");
+      }
+
+      if (action === "combat") {
+	alert("combat");
+      }
+
+    });
+
+  }
+
+  playerPlayReplacementPoints(faction, card) {
+
+    let c = this.deck[card];
+
+    //
+    // hide any popup
+    //
+    this.cardbox.hide();
+
+    let html = `<ul>`;
+    for (let key in c.sr) {
+      html    += `<li class="card" id="${key}">${key} - ${c.sr[key]}</li>`;
+    }
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Add Strategic Redeployments:`, html, true);
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
+    this.attachCardboxEvents((action) => {
+      this.addMove("rp\tfaction\t${action}\t${c.sr[key]}");
+      this.endTurn();
+    });
+
+  }
+
+  playerPlayStrategicRedeployment(faction, value) {
+    this.addMove(`sr\t${faction}\t${value}`);
+    this.endTurn();
+  }
+
+  playerPlayEvent(faction, card) {
+
+  }
+
+  playerTurn(faction) {
+
+    let name = this.returnPlayerName(faction);
+    let hand = this.returnPlayerHand();
+
+    this.updateStatusAndListCards(`${name}: pick a card`, hand);
+    this.attachCardboxEvents((card) => {
+      this.playerPlayCard(faction, card);
+    });
+
+  }
 
 
 

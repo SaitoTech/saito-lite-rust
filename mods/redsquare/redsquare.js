@@ -108,7 +108,7 @@ class RedSquare extends ModTemplate {
         icon: "fa fa-user",
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square") {
-            app.connection.emit("redsquare-profile-render-request", publicKey);
+            app.connection.emit("redsquare-profile-render-request", (publicKey));
           } else {
             window.location = `/redsquare/?user_id=${publicKey}`;
           }
@@ -345,7 +345,7 @@ class RedSquare extends ModTemplate {
         tweets_earliest_ts: new Date().getTime(),
         tweets_latest_ts: 0,
         tweets_limit: 20,
-        profile_earliest_ts: 0,
+        profile_earliest_ts: new Date().getTime(),
         profile_latest_ts: 0,
         profile_limit: 20,
         notifications_earliest_ts: new Date().getTime(),
@@ -522,8 +522,10 @@ class RedSquare extends ModTemplate {
   //
   loadProfile(peer, publickey = "", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
+      if (publickey === "") { publickey = this.publicKey; }
       let peer = this.peers[i].peer;
       let peer_publickey = this.peers[i].publickey;
+
       if (this.peers[i].profile_earliest_ts != 0) {
 	//
 	// specifying OWNER as the remote peer tells us to fetch the tweets that they
@@ -532,9 +534,11 @@ class RedSquare extends ModTemplate {
 	// us separately. we will update the OWNER field in the notifications fetch
 	// so that fetch will return any content specific to us...
 	//
+	// field2 is publickey (the submitted not our own)
+	//
         this.app.storage.loadTransactions(
           {
-            field2: this.publicKey ,
+            field2: publickey ,
             owner: peer_publickey,
             created_earlier_than: this.peers[i].profile_earliest_ts,
             limit: this.peers[i].profile_limit,

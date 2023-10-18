@@ -112,14 +112,22 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode === "profile") {
+
+console.log("loading profile!");
+
               this.mod.loadProfile(null, this.publicKey, (txs) => {
                 if (this.mode !== "profile") {
+console.log("returning as our mode is not profile!");
                   return;
                 }
 
+console.log("txs length: " + txs.length);
+
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
+console.log("does tweet have errors: " +tweet?.noerrors);
                   if (tweet?.noerrors) {
+console.log("rendering!");
                     tweet.render();
                   }
                 }
@@ -251,11 +259,14 @@ class TweetManager {
     // profile //
     /////////////
     if (this.mode == "profile") {
+
       this.profile.publicKey = this.publicKey;
+
+console.log("rendering profile with publickey: " + this.profile.publicKey);
 
       this.profile.render();
 
-      this.mod.loadProfile(null, this.publickey, (txs) => {
+      this.mod.loadProfile(null, this.publicKey, (txs) => {
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this.mod, txs[z]);
           tweet.render();

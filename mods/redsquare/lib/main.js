@@ -79,6 +79,8 @@ class RedSquareMain {
         this.mod.peers[i].profile_earliest_ts = new Date().getTime();
       }
 
+console.log("SUBMITTED FOR PUBLICKEY: " + publickey);
+
       if (publickey == "") {
         publickey = this.mod.publicKey;
       }
@@ -86,6 +88,7 @@ class RedSquareMain {
       this.manager.mode = "profile";
       this.manager.publicKey = publickey;
       this.manager.render();
+
     });
     this.app.connection.on("redsquare-home-loader-render-request", () => {
       this.manager.showLoader();

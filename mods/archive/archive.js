@@ -430,6 +430,7 @@ class Archive extends ModTemplate {
       limit = Math.min(limit, 100);
     }
 
+
     let searched = false;
     //
     // SEARCH BASED ON CRITERIA PROVIDED
@@ -604,8 +605,6 @@ class Archive extends ModTemplate {
         limit,
       });
     }
-
-
 
     //
     // FILTER FOR TXS

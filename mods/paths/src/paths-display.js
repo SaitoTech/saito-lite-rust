@@ -3,17 +3,84 @@
     this.zoom_overlay.hide();
   }
 
+
   displayBoard() {
+
+    let paths_self = this;
+
+    //
+    // display the spaces on the board
+    //
     try {
       this.displaySpaces();
     } catch (err) {
       console.log("error displaying spaces... " + err);
     }
+
+
+    //
+    // add click event to gameboard for close-up / zoom UI
+    //
+    let xpos = 0;
+    let ypos = 0;
+
+
+    if (!paths_self.bound_gameboard_zoom) {
+
+      $('.gameboard').on('mousedown', function (e) {
+        if (e.currentTarget.classList.contains("space")) { return; }
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
+      $('.gameboard').on('mouseup', function (e) {
+        if (Math.abs(xpos-e.clientX) > 4) { return; }
+        if (Math.abs(ypos-e.clientY) > 4) { return; }
+        //
+        // if this is a selectable space, let people select directly
+        //
+        // this is a total hack by the way, but it captures the embedding that happens when
+        // we are clicking and the click action is technically on the item that is INSIDE
+        // the selectable DIV, like a click on a unit in a key, etc.
+        //
+        if (e.target.classList.contains("selectable")) {
+          return;
+        } else {
+          let el = e.target;
+          if (el.parentNode) {
+            if (el.parentNode.classList.contains("selectable")) {
+              return;
+            } else {
+              if (el.parentNode.parentNode) {
+                if (el.parentNode.parentNode.classList.contains("selectable")) {
+                  return;
+                }
+              }
+            }
+          }
+        }
+	//
+        // nothing is selectable here, so show zoom
+        paths_self.zoom_overlay.renderAtCoordinates(xpos, ypos);
+      });
+
+      //
+      // we only attach this event to the gameboard once, so once we have done
+      // that remember that we have already bound the gameboard zoom event so that
+      // we will not do it again. If necessary we can reset this variable to 0
+      // and call this function again.
+      //
+      paths_self.bound_gameboard_zoom = 1;
+    }
+
   }
 
 
   displaySpace(key) {
 console.log("display: " + key);
+  }
+
+  displaySpaceDetailedView(key) {
+alert("display detailed space!");
   }
 
   displaySpaces() {
@@ -97,57 +164,22 @@ console.log("display: " + key);
   returnCardImage(cardname) {
 
     let cardclass = "cardimg";
-    let deckidx = -1;
-    let card;
-    let cdeck = this.returnDeck();
-    let ddeck = this.returnDiplomaticDeck();
+    let deck = this.returnDeck();
+    let card = "";
+    let html = "";
 
     if (cardname === "pass") {
-      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
+      return `<img class="${cardclass}" src="/paths/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
-    if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
-
-    for (let i = 0; i < this.game.deck.length; i++) {
-      var c = this.game.deck[i].cards[cardname];
-      if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
-      if (c == undefined) { c = this.game.deck[i].removed[cardname]; }
-      if (c !== undefined) { 
-	deckidx = i;
-        card = c;
-      }
-    }
-    if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
-    if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
-
-    //
-    // triggered before card deal
-    //
-    if (cardname === "008") { return `<img class="${cardclass}" src="/his/img/cards/HIS-008.svg" />`; }
-
-    if (deckidx === -1 && !cdeck[cardname] && !ddeck[cardname]) {
-      //
-      // this is not a card, it is something like "skip turn" or cancel
-      //
-      return `<div class="noncard" id="${cardname.replaceAll(" ","")}">${cardname}</div>`;
-    }
-
-    var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
-
-    //
-    // add cancel button to uneventable cards
-    //
-    if (deckidx == 0) { 
-      if (!this.deck[cardname]) {
-        if (!this.deck[cardname].canEvent(this, "")) {
-          html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+    if (deck[cardname]) {
+      card = deck[cardname];
+      html = `<img class="${cardclass}" src="/paths/img/${card.img}" />`;
+      try {
+	if (card.canEvent(this)) {
+          html += `<img class="${cardclass} cancel_x" src="/paths/img/cancel_x.png" />`;
         }
-      }
-    }
-    if (deckidx == 1) { 
-      if (!this.diplomatic_deck[cardname].canEvent(this, "")) {
-        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
-      }
+      } catch (err) {}
     }
 
     return html
@@ -172,7 +204,7 @@ console.log("display: " + key);
       pre_images[idx].onload = () => {
         this.preloadImageArray(imageArray, idx+1);
       }
-      pre_images[idx].src = "/his/" + imageArray[idx];
+      pre_images[idx].src = "/paths/" + imageArray[idx];
     }
 
   }
