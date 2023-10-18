@@ -555,6 +555,10 @@ class Tweet {
             // redisplay directly, and then load and append any children as needed.
             //
             let sigs = this.mod.returnThreadSigs(this.thread_id, this.tx.signature);
+
+console.log("TWO SIGS: " + this.thread_id + " / " + this.tx.signature);
+console.log("SIGS: " + JSON.stringify(sigs));
+
             if (sigs.length > 0) { sigs.push(this.tx.signature); }
 
             //
@@ -574,6 +578,8 @@ class Tweet {
             // otherwise re-load
             //
             } else {
+console.log(`/redsquare?tweet_id=${this.thread_id}`);
+return;
               window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
             }
           }

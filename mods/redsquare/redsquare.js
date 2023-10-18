@@ -1083,19 +1083,23 @@ class RedSquare extends ModTemplate {
 
   returnTweet(tweet_sig = null) {
     if (tweet_sig == null) {
+console.log("no sig submitted");
       return null;
     }
 
 
     if (!this.tweets_sigs_hmap[tweet_sig]) {
+console.log("nothing in tweets_sigs_hmap");
       return null;
     }
 
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.signature === tweet_sig) {
+console.log("found it parent level...");
         return this.tweets[i];
       }
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
+console.log("found it child level...");
         return this.tweets[i].returnChildTweet(tweet_sig);
       }
     }
@@ -1107,7 +1111,11 @@ class RedSquare extends ModTemplate {
 
     let sigs = [];
     let tweet = this.returnTweet(child_id);
-    if (!tweet) { return [parent_id]; }
+    if (!tweet) { 
+
+console.log("cannot find tweet!");
+
+return [root_id]; }
     let parent_id = tweet.parent_id;
 
     sigs.push(child_id);
