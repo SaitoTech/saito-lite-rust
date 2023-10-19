@@ -109,6 +109,7 @@ class RedSquare extends ModTemplate {
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square") {
             app.connection.emit("redsquare-profile-render-request", (publicKey));
+            window.history.pushState({}, document.title, "/" + this_mod.slug + `/?user_id=${publicKey}`);
           } else {
             window.location = `/redsquare/?user_id=${publicKey}`;
           }
