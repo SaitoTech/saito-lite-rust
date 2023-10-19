@@ -257,6 +257,7 @@ console.log("err: " + err);
     //We let the loader run for a half second to show we are sending the tweet
     setTimeout(() => {
       post_self.overlay.remove();
+      post_self.mod.main.scrollFeed(0);
     }, 800);
   }
 
