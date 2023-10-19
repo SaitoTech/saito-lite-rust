@@ -6,7 +6,7 @@
 }
 
 .saito-loader::after {
-    background-color: transparent;
+    background-color: var(--saito-primary);
     background-image: url(/saito/img/saito-loader.svg);
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -15,6 +15,7 @@
     animation-name: loader-pulse;
     animation-iteration-count: infinite;
     position: relative;
+
     width: 70px;
     height: 70px;
     left: 50%;
@@ -31,27 +32,21 @@
         background-size: 0px;
     }
 
-    30% {
+    40% {
         transform: translate(-50%, -50%) scale(1);
-        border-radius: 0;
-        background-color: red;
-        background-size: 0px;
+        background-size: 50px;
+        border-radius: 5%;
     }
 
-    50% {
-        background-size: 50px;
-        transform: translate(-50%, -50%) scale(1.1);
-    }
 
-    70% {
+    60% {
         transform: translate(-50%, -50%) scale(1);
-        border-radius: 0;
-        background-color: red;
         background-size: 50px;
+        border-radius: 5%;
     }
 
     100% {
-        transform: translate(-50%, -50%) scale(0.5);
+        transform: translate(-50%, -50%) scale(0.2);
         border-radius: 50%;
         background-size: 0px;
     }
