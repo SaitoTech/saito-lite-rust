@@ -19,9 +19,11 @@ async function initCLI() {
     mod_paths: mods_config.core,
   });
   
+  //app.server = new Server(app);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
+  await hashLoader(app);
 
   app.BROWSER = 0;
   app.SPVMODE = 0;
@@ -42,16 +44,7 @@ async function initCLI() {
   app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
   app.blockchain.app = app;
 
-  //app.server = new Server(app);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  app.storage = new StorageCore(app);
-  await hashLoader(app);
-
-  app.BROWSER = 0;
-  app.SPVMODE = 0;
-
-  console.log("npm run cli help - for help");
+  console.log("\n===========================\nnpm run cli help - for help");
 
   switch (process.argv[2]) {
     case "block":
