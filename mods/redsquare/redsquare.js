@@ -1692,6 +1692,8 @@ if (this.app.BROWSER) { alert("num replies incrementing 1"); }
     let maximum = 10;
     for (let tweet of this.tweets) {
       txs.push(tweet.tx.serialize_to_web(this.app));
+      txs.push(tweet.returnTransactionsInThread());
+
       if (--maximum <= 0) { break; }
     }
 

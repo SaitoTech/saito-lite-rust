@@ -1145,6 +1145,21 @@ console.log("ERROR UPDATING LIKES: " + err);
       }
     } catch (err) {}
   }
+
+
+  returnTransactionsInThread(limit = 10){
+    let txs = [];
+
+    for (let i=0; i<this.children.length; i++) {
+      if (i >= limit) {
+        break;
+      }  
+
+      txs.push(this.children[i].tx.serialize_to_web(this.app));
+    }
+
+    return txs;
+  }
 }
 
 module.exports = Tweet;
