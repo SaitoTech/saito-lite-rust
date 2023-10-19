@@ -280,3 +280,22 @@ Useful declarations for game stats
 .saito-table-body .saito-table-row > div:not(.saito-table-label) {
   text-align: center;
 }
+
+
+
+
+.debug_overlay {
+  max-height: 94vh;
+  max-width: 95vw;
+  background: var(--saito-background-color);
+  color: var(--saito-text-color);
+  margin-top: 4rem;
+  padding: 3rem;
+  overflow: auto;
+}
+
+/*json tree */
+
+.jsontree_node {
+  list-style: none;
+}

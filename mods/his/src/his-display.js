@@ -1697,7 +1697,10 @@
     let ddeck = this.returnDiplomaticDeck();
 
     if (cardname === "pass") {
-      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
+      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /></div>`;
+    }
+    if (cardname === "autopass") {
+      return `<img class="${cardclass}" src="/his/img/cards/AUTOPASS.png" /></div>`;
     }
 
     if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }

@@ -108,7 +108,7 @@ class RedSquare extends ModTemplate {
         icon: "fa fa-user",
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square") {
-            app.connection.emit("redsquare-profile-render-request", publicKey);
+            app.connection.emit("redsquare-profile-render-request", (publicKey));
           } else {
             window.location = `/redsquare/?user_id=${publicKey}`;
           }
@@ -345,7 +345,7 @@ class RedSquare extends ModTemplate {
         tweets_earliest_ts: new Date().getTime(),
         tweets_latest_ts: 0,
         tweets_limit: 20,
-        profile_earliest_ts: 0,
+        profile_earliest_ts: new Date().getTime(),
         profile_latest_ts: 0,
         profile_limit: 20,
         notifications_earliest_ts: new Date().getTime(),
@@ -522,8 +522,10 @@ class RedSquare extends ModTemplate {
   //
   loadProfile(peer, publickey = "", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
+      if (publickey === "") { publickey = this.publicKey; }
       let peer = this.peers[i].peer;
       let peer_publickey = this.peers[i].publickey;
+
       if (this.peers[i].profile_earliest_ts != 0) {
 	//
 	// specifying OWNER as the remote peer tells us to fetch the tweets that they
@@ -532,9 +534,11 @@ class RedSquare extends ModTemplate {
 	// us separately. we will update the OWNER field in the notifications fetch
 	// so that fetch will return any content specific to us...
 	//
+	// field2 is publickey (the submitted not our own)
+	//
         this.app.storage.loadTransactions(
           {
-            field2: this.publicKey ,
+            field2: publickey ,
             owner: peer_publickey,
             created_earlier_than: this.peers[i].profile_earliest_ts,
             limit: this.peers[i].profile_limit,
@@ -812,8 +816,10 @@ class RedSquare extends ModTemplate {
         }
       },
       (p) => {
-        if (p.publicKey == peer.publicKey) {
-          return 1;
+        if (typeof peer != 'undefined' && peer != null) {
+          if (p.publicKey == peer.publicKey) {
+            return 1;
+          }
         }
         return 0;
       }
@@ -1077,19 +1083,23 @@ class RedSquare extends ModTemplate {
 
   returnTweet(tweet_sig = null) {
     if (tweet_sig == null) {
+console.log("no sig submitted");
       return null;
     }
 
 
     if (!this.tweets_sigs_hmap[tweet_sig]) {
+console.log("nothing in tweets_sigs_hmap");
       return null;
     }
 
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.signature === tweet_sig) {
+console.log("found it parent level...");
         return this.tweets[i];
       }
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
+console.log("found it child level...");
         return this.tweets[i].returnChildTweet(tweet_sig);
       }
     }
@@ -1101,7 +1111,11 @@ class RedSquare extends ModTemplate {
 
     let sigs = [];
     let tweet = this.returnTweet(child_id);
-    if (!tweet) { return [parent_id]; }
+    if (!tweet) { 
+
+console.log("cannot find tweet!");
+
+return [root_id]; }
     let parent_id = tweet.parent_id;
 
     sigs.push(child_id);

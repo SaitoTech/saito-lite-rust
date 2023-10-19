@@ -1,0 +1,61 @@
+
+.stirling {
+    top: 690px;
+    left: 1222px;
+    color: red;
+    width: 90px;
+    height: 90px;
+    z-index: 99999;
+    background-color: red;
+    position: absolute;
+}
+
+
+.hud-body .status .status-message {
+  padding-top: 15px;
+}
+
+img {
+  width: unset;
+}
+
+.card {
+  position: relative;
+}
+.cardimg , .card img {
+  position: relative;
+}
+.cardimg.cancel_x {
+  position: absolute;
+  width: inherit;
+  top: 20%;
+}
+
+.cancel_x {
+  opacity: 0.3;
+}
+.cardimg {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0px;
+  left: 0px;
+}
+
+.vp_tile {
+  position: absolute;
+  z-index: 200;
+  height: 100px;
+  width: 100px;
+  top: 100px;
+  left: 100px;
+  display: none;
+}
+
+.gameboard {
+  background-image: url("/paths/img/backgrounds/gameboard-large.jpg");
+  background-size: cover;
+  width: 5100px;
+  height: 3312px;
+}
+
