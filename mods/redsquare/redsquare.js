@@ -678,12 +678,29 @@ class RedSquare extends ModTemplate {
                FROM tweets
                WHERE parent_id = '${sig}'
                ORDER BY created_at DESC`;
-    this.loadTweetsFromPeer(peer, sql, (txs) => {
-      for (let z = 0; z < txs.length; z++) {
-        this.addTweet(txs[z]);
-      } 
-      mycallback(txs);
-    });
+
+    let mypeers = [];
+
+    //
+    // we don't know which peer to check, so fetch the first one
+    // in our list of peers which supports tweet fetching
+    //
+    if (peer == null) {
+      for (let i = 0; i < this.peers.length; i++) {
+	if (this.peers[i].has_tweets) { mypeers.push(this.peers[i].peer); }
+      }
+    } else {
+      mypeers.push(peer);
+    }
+
+    for (let i = 0; i < mypeers.length; i++) {
+      this.loadTweetsFromPeer(mypeers[i], sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+          this.addTweet(txs[z]);
+        } 
+        mycallback(txs);
+      });
+    }
 
   }
 
@@ -768,7 +785,9 @@ class RedSquare extends ModTemplate {
 
   loadTweetsFromPeer(peer, sql, mycallback = null) {
     let txs = [];
+console.log("LOAD TWEETS FROM PEER");
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
+console.log("AND BACK LOAD TWEETS FROM PEER");
       for (let z = 0; z < txs.length; z++) {
         this.addTweet(txs[z]);
       }
@@ -1027,8 +1046,10 @@ class RedSquare extends ModTemplate {
         //
         // and insert it
         //
+console.log("INSERTING TWEET!");
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+
       } else {
         for (let i = 0; i < this.tweets.length; i++) {
           if (this.tweets[i].tx.signature === tweet.tx.signature) {
@@ -1051,8 +1072,12 @@ class RedSquare extends ModTemplate {
     } else {
       let inserted = false;
 
+console.log("LOOKS LIKE COMMENT, WHAT IS OPTIONAL? ");
+console.log(JSON.stringify(tweet.tx.optional));
+
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
+console.log("INSERTING COMMENT!");
           let xyz = await this.tweets[i].addTweet(tweet);
           if (xyz == 1) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
@@ -1066,6 +1091,11 @@ class RedSquare extends ModTemplate {
       if (inserted == false) {
         this.unknown_children.push(tweet);
       }
+
+      // we've inserted
+console.log("add to hmap indicating insertion...");
+      this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+
     }
 
     //
@@ -1083,23 +1113,18 @@ class RedSquare extends ModTemplate {
 
   returnTweet(tweet_sig = null) {
     if (tweet_sig == null) {
-console.log("no sig submitted");
       return null;
     }
 
-
     if (!this.tweets_sigs_hmap[tweet_sig]) {
-console.log("nothing in tweets_sigs_hmap");
       return null;
     }
 
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.signature === tweet_sig) {
-console.log("found it parent level...");
         return this.tweets[i];
       }
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
-console.log("found it child level...");
         return this.tweets[i].returnChildTweet(tweet_sig);
       }
     }
@@ -1111,11 +1136,7 @@ console.log("found it child level...");
 
     let sigs = [];
     let tweet = this.returnTweet(child_id);
-    if (!tweet) { 
-
-console.log("cannot find tweet!");
-
-return [root_id]; }
+    if (!tweet) { return [root_id]; }
     let parent_id = tweet.parent_id;
 
     sigs.push(child_id);
@@ -1370,7 +1391,9 @@ console.log("done saving transaction...");
               if (!tweet.tx.optional.num_replies) {
                 tweet.tx.optional.num_replies = 0;
               }
-              tx.optional.num_replies++;
+if (this.app.BROWSER) { alert("num replies incrementing 2"); } 
+              tweet.tx.optional.num_replies++;
+	      tweet.rerenderControls();
               await this.app.storage.updateTransaction(
                 tx,
                 {
@@ -1589,7 +1612,10 @@ console.log("TX FROM: " + JSON.stringify(tx.from));
           if (!tx.optional.num_replies) {
             tx.optional.num_replies = 0;
           }
+if (this.app.BROWSER) { alert("num replies incrementing 1"); } 
           tx.optional.num_replies++;
+	  let t = this.returnTweet(tx.signature);
+	  if (t) { t.rerenderControls(); }
           await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
         }, "localhost");
       }

@@ -230,14 +230,16 @@ class Post {
     let rparent = this.tweet;
     if (rparent) {
       if (posted_tweet.retweet_tx) {
-        // Oct 15 - debugging
-        //rparent.tx.optional.num_retweets++;
-        //rparent.num_retweets++;
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
       } else {
-        rparent.addTweet(posted_tweet);
+
+// add the tweet 
+console.log("ADDING TWEET AT MODULE LEVEL");
+        this.mod.addTweet(newtx, true);
+// OCT 19 -- should happen as above
+//        rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;
         rparent.renderWithCriticalChild();
 	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);

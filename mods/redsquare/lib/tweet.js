@@ -369,6 +369,12 @@ class Tweet {
     this.attachEvents();
   }
 
+  rerenderControls() {
+    try { document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`).innerHTML = this.tx.optional.num_replies; } catch (err) {}
+    try { document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-likes-count`).innerHTML = this.tx.optional.num_likes; } catch (err) {}
+    try { document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-retweets-count`).innerHTML = this.tx.optional.num_retweets; } catch (err) {}
+  }
+
   renderWithCriticalChild() {
 
     this.render();
@@ -555,31 +561,47 @@ class Tweet {
             // redisplay directly, and then load and append any children as needed.
             //
             let sigs = this.mod.returnThreadSigs(this.thread_id, this.tx.signature);
-
-console.log("TWO SIGS: " + this.thread_id + " / " + this.tx.signature);
-console.log("SIGS: " + JSON.stringify(sigs));
-
             if (sigs.length > 0) { sigs.push(this.tx.signature); }
+
+	    //
+	    // if we have just replied, the count on the page will be higher than
+	    // the count in the tweet itself, so we want to catch this edge-case
+	    // by checking the number of replies before reload and keeping them
+	    //
+	    let parent_replies = null;
+	    try {
+	      parent_replies = document.querySelector(`.tweet-${this.thread_id} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`).innerHTML;
+	    } catch (err) {
+	    }
+
+
 
             //
             // full thread already exists
             //
             if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
                 window.history.pushState({}, document.title, `/redsquare?tweet_id=${this.thread_id}`);
-  
+ 
                 app.connection.emit("redsquare-home-tweet-render-request", this);
+
+                setTimeout(() => {
+		  if (parent_replies) {
+	            document.querySelector(`.tweet-${this.thread_id} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`).innerHTML = parent_replies;  
+		  }
+                }, 50);
+
                 this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
-                  let tweet = this.mod.returnTweet(txs[z].signature);
-                  if (tweet) { tweet.render(); }
-                  // hide manager loader
-                  this.mod.manager.hideLoader();
+		  for (let z = 0; z < txs.length; z++) {
+                    let tweet = this.mod.returnTweet(txs[z].signature);
+                    if (tweet) { tweet.render(); }
+                    // hide manager loader
+                    this.mod.manager.hideLoader();
+		  }
                 });
             //
             // otherwise re-load
             //
             } else {
-console.log(`/redsquare?tweet_id=${this.thread_id}`);
-return;
               window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
             }
           }

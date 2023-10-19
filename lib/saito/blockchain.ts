@@ -83,8 +83,6 @@ export default class Blockchain extends SaitoBlockchain {
       if (txs[z].type === TransactionType.Normal) {
         await txs[z].decryptMessage(this.app);
         const txmsg = txs[z].returnMessage();
-console.log("affixing for tx: " + z);
-console.log(JSON.stringify(txmsg));
         this.app.modules.affixCallbacks(txs[z], z, txmsg, callbacks, callbackIndices);
         console.assert(
           callbacks.length === callbackIndices.length,
@@ -94,14 +92,9 @@ console.log(JSON.stringify(txmsg));
       }
     }
     // console.log(`affixed callbacks for : ${validTxs} out of ${txs.length}`);
-console.log("set callbacks 1...");
     this.callbacks.set(block.hash, callbacks);
-console.log("set callback indices 2...");
     this.callbackIndices.set(block.hash, callbackIndices);
-console.log("set confirmations 3...");
-console.log(" and setting confs for block hash: " + block.hash);
     this.confirmations.set(block.hash, BigInt(-1));
-console.log("done affixing callbacks...");
   }
 
   public async onNewBlock(block: Block, lc: boolean) {
