@@ -273,7 +273,7 @@ class Tweet {
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
-        this.formatDate();
+        " " + this.formatDate();
       this.retweet.container = ".tweet-manager";
 
       let t = this.mod.returnTweet(this.retweet.tx.signature);
