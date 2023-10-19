@@ -16,7 +16,7 @@ class CallLaunch {
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
     this.callSetting = new CallSetting(app, this);
-    this.loader = new SaitoLoader(app, mod);
+    this.loader = new SaitoLoader(app, mod, ".stunx-appspace-splash");
     this.room_code = null;
 
     // close-preview-window shuts downt the streams in call-settings
@@ -55,16 +55,23 @@ class CallLaunch {
       this.app.browser.addElementToDom(StunLaunchTemplate(this.app, this.mod));
     }
 
-    this.loader.render(true);
+    this.loader.render();
 
     setTimeout(() => {
-      this.app.browser.addElementToSelector(
-        `  <div class="saito-button-primary" id="createRoom">Start Call</div>`,
-        ".stunx-appspace-actions"
-      );
+      
+      this.loader.remove(0);
+
+      let btn = document.querySelector(".stunx-appspace-launch-call-btn");
+      if (!btn){
+        console.warn("Button doesn't exit: stunx-appspace-launch-call-btn");
+        return;
+      }
+
+      btn.style.display = "block";
+
       this.attachEvents(this.app, this.mod);
-      this.loader.remove();
-    }, 4000);
+      
+    }, 3000);
 
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit("stun-init-peer-manager", "large");
