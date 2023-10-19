@@ -918,6 +918,8 @@ console.log("AND BACK LOAD TWEETS FROM PEER");
     tweet.updated_at = tx.timestamp;
     let is_notification = 0;
 
+console.log("trying to add: " + tweet.text);
+
     //
     // avoid errors
     //
@@ -1050,19 +1052,22 @@ console.log("INSERTING TWEET!");
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
 
-      } else {
-        for (let i = 0; i < this.tweets.length; i++) {
-          if (this.tweets[i].tx.signature === tweet.tx.signature) {
-	    if (tweet.num_replies > this.tweets[i].tx.optional.num_replies) {
-              this.tweets[i].tx.optional.num_replies = tweet.num_replies;
-	    }
-	    if (tweet.num_retweets > this.tweets[i].tx.optional.num_retweets) {
-              this.tweets[i].tx.optional.num_retweets = tweet.num_retweets;
-	    }
-	    if (tweet.num_likes > this.tweets[i].tx.optional.num_likes) {
-              this.tweets[i].tx.optional.num_likes = tweet.num_likes;
-	    }
-          }
+      }
+
+      let t = this.returnTweet(tweet.tx.signature);
+      if (tweet.tx.optional) {
+        if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
+          t.tx.optional.num_replies = tweet.tx.optional.num_replies;
+	  t.rerenderControls();
+        }
+        if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
+          t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+	  t.rerenderControls();
+        }
+console.log("LIKES ON LOADED TWEET: " + tweet.tx.optional.num_likes);
+        if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
+          t.tx.optional.num_likes = tweet.tx.optional.num_likes;
+	  t.rerenderControls();
         }
       }
 
@@ -1256,6 +1261,7 @@ console.log("updating num likes: 1");
 	// save local cache
 	//
 	this.saveLocalTweets();
+
       }
 
       return;
@@ -1366,25 +1372,17 @@ console.log("updating num likes: 2");
           // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
           // from archives by fetching on field3 will get this.
           //
-
-console.log("SAVING TRANSACTION!");
-console.log("owner is: " + this.publicKey);
-
           await this.app.storage.saveTransaction(tx, {
             owner: this.publicKey,
             field1: "RedSquare",
             field3: this.publicKey,
           });
 
-console.log("done saving transaction...");
-
           //
           // if replies
           //
           if (txmsg.data?.parent_id) {
-console.log("does the parent exist?");
             if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
-console.log("yes and it exists locally, so num replies will go up!");
               let tweet = this.returnTweet(txmsg.data.parent_id);
               if (tweet == null) {
                 return;
@@ -1395,7 +1393,6 @@ console.log("yes and it exists locally, so num replies will go up!");
               if (!tweet.tx.optional.num_replies) {
                 tweet.tx.optional.num_replies = 0;
               }
-if (this.app.BROWSER) { alert("num replies incrementing 2"); } 
               tweet.tx.optional.num_replies++;
 	      tweet.rerenderControls();
               await this.app.storage.updateTransaction(
@@ -1408,7 +1405,6 @@ if (this.app.BROWSER) { alert("num replies incrementing 2"); }
               );
               tweet.renderReplies();
             } else {
-console.log("no, so num replies will not go up");
               await this.app.storage.updateTransaction(
                 tx,
                 {
@@ -1727,6 +1723,10 @@ if (this.app.BROWSER) { alert("num replies incrementing 1"); }
 
   }
 
+  /////////////////////////////////////
+  // saving and loading wallet state //
+  /////////////////////////////////////
+  load() { this.loadOptions(); }
   loadOptions() {
 
     if (!this.app.BROWSER) {
@@ -1748,6 +1748,7 @@ if (this.app.BROWSER) { alert("num replies incrementing 1"); }
 
   }
 
+  save() { this.saveOptions(); }
   saveOptions() {
     if (!this.app.BROWSER || !this.browser_active) {
       return;
@@ -1759,6 +1760,10 @@ if (this.app.BROWSER) { alert("num replies incrementing 1"); }
 
     this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
     this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
+
+console.log("LT: " + this.liked_tweets.length);
+console.log("RW: " + this.retweeted_tweets.length);
+console.log("RT: " + this.replied_tweets.length);
 
     while (this.liked_tweets.length > 100) { this.liked_tweets.splice(0, 1); }
     while (this.retweeted_tweets.length > 100) { this.retweeted_tweets.splice(0, 1); }
@@ -1887,28 +1892,6 @@ if (this.app.BROWSER) { alert("num replies incrementing 1"); }
     return "";
   }
 
-  /////////////////////////////////////
-  // saving and loading wallet state //
-  /////////////////////////////////////
-  load() {
-    if (this.app.options.redsquare) {
-      this.redsquare = this.app.options.redsquare;
-      this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;
-      this.notifications_number_unviewed = this.redsquare.notifications_number_unviewed;
-    } else {
-      this.redsquare = {};
-      this.notifications_last_viewed_ts = new Date().getTime();
-      this.notifications_number_unviewed = 0;
-      this.save();
-    }
-  }
-
-  save() {
-    this.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
-    this.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
-    this.app.options.redsquare = this.redsquare;
-    this.app.storage.saveOptions();
-  }
 
   ///////////////
   // webserver //
