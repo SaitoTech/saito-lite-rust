@@ -1,4 +1,3 @@
-// import "source-map-support/register";
 import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
 import fs from "fs-extra";
@@ -11,8 +10,6 @@ import Factory from "./lib/saito/factory";
 import { LogLevel } from "saito-js/saito";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
-import Block from "./lib/saito/block";
-import json from "body-parser/lib/types/json";
 
 let processing_started = false;
 let work_queue: any[] = [];
@@ -42,9 +39,9 @@ async function initCLI() {
     new NodeSharedMethods(app),
     new Factory(),
     privateKey,
-    LogLevel.Info
+    LogLevel.Error
   ).then(() => {
-    console.log("saito wasm lib initialized");
+    // console.log("saito wasm lib initialized");
   });
   app.wallet = (await S.getInstance().getWallet()) as Wallet;
   app.wallet.app = app;
@@ -54,7 +51,7 @@ async function initCLI() {
   //
   // S.getInstance().start();
 
-  console.log("npm run cli help - for help");
+  console.log("\nnpm run cli help - for help");
 
   switch (process.argv[2]) {
     case "count":
@@ -113,7 +110,7 @@ async function initCLI() {
     });
     console.info(total + " blocks added queue (" + work_queue.length + ")");
     processing_started = true;
-    console.info("Processing Sarted");
+    console.info("Processing Started");
     processBlocks();
   }
 
@@ -143,9 +140,8 @@ async function initCLI() {
   }
 
   function inflateBlockforDatabase(blk) {
-    // console.log('warehouse - on new block');
     let json_block = JSON.parse(blk.toJson());
-    console.info(json_block);
+
     let txwmsgs = [];
     try {
       blk.transactions.forEach((transaction) => {
