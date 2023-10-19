@@ -7,11 +7,40 @@ import * as JSON from "json-bigint";
 import hashLoader from "./apps/core/hash-loader";
 
 import mods_config from "./config/modules.config";
+import S, { initialize as initS } from "saito-js/index.node";
+import { NodeSharedMethods } from "./lib/saito/core/server";
+import Factory from "./lib/saito/factory";
+import { LogLevel } from "saito-js/saito";
+import Wallet from "./lib/saito/wallet";
+import Blockchain from "./lib/saito/blockchain";
 
 async function initCLI() {
   const app = new Saito({
     mod_paths: mods_config.core,
   });
+  
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  app.storage = new StorageCore(app);
+
+  app.BROWSER = 0;
+  app.SPVMODE = 0;
+  await app.storage.initialize();
+
+  let privateKey = app.options.wallet?.privateKey || "";
+  await initS(
+    app.options,
+    new NodeSharedMethods(app),
+    new Factory(),
+    privateKey,
+    LogLevel.Info
+  ).then(() => {
+    console.log("saito wasm lib initialized");
+  });
+  app.wallet = (await S.getInstance().getWallet()) as Wallet;
+  app.wallet.app = app;
+  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  app.blockchain.app = app;
 
   //app.server = new Server(app);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
