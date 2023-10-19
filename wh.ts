@@ -41,7 +41,7 @@ async function initCLI() {
     privateKey,
     LogLevel.Error
   ).then(() => {
-    // console.log("saito wasm lib initialized");
+    console.log("saito wasm lib initialized");
   });
   app.wallet = (await S.getInstance().getWallet()) as Wallet;
   app.wallet.app = app;
@@ -74,7 +74,6 @@ async function initCLI() {
   }
 
   function queue(item) {
-    //console.info(item);
     work_queue.push(item);
     console.info("Queu length: " + work_queue.length);
   }
@@ -90,6 +89,7 @@ async function initCLI() {
       setInterval(processBlocks, 1000);
     } else {
       console.info("Processing Complete");
+      process.exit(1);
     }
   }
 
