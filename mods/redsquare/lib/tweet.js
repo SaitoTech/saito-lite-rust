@@ -370,9 +370,9 @@ class Tweet {
   }
 
   rerenderControls() {
-    try { document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`).innerHTML = this.tx.optional.num_replies; } catch (err) {}
-    try { document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-likes-count`).innerHTML = this.tx.optional.num_likes; } catch (err) {}
-    try { document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-retweets-count`).innerHTML = this.tx.optional.num_retweets; } catch (err) {}
+    this.renderLikes();
+    this.renderRetweets();
+    this.renderReplies();
   }
 
   renderWithCriticalChild() {
@@ -1096,10 +1096,18 @@ class Tweet {
     try {
       let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`;
       let likes = this.tx?.optional?.num_likes || 0;
-      for (let obj of Array.from(document.querySelectorAll(qs))) {
-        obj.innerHTML = likes;
+      let existing = likes;
+      if (document.querySelector(qs)) {
+	existing = parseInt(document.querySelector(qs).innerHTML);
       }
-    } catch (err) {}
+      for (let obj of Array.from(document.querySelectorAll(qs))) {
+	if (likes > existing) {
+          obj.innerHTML = likes;
+	}
+      }
+    } catch (err) {
+console.log("ERROR UPDATING LIKES: " + err);
+    }
   }
 
   renderRetweets() {
@@ -1108,8 +1116,14 @@ class Tweet {
     try {
       let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
       let retweets = this.tx?.optional?.num_retweets || 0;
+      let existing = retweets;
+      if (document.querySelector(qs)) {
+	existing = parseInt(document.querySelector(qs).innerHTML);
+      }
       for (let obj of Array.from(document.querySelectorAll(qs))) {
-        obj.innerHTML = retweets;
+	if (retweets > existing) {
+          obj.innerHTML = retweets;
+	}
       }
     } catch (err) {}
   }
@@ -1120,8 +1134,14 @@ class Tweet {
     try {
       let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
       let replies = this.tx?.optional?.num_replies || 0;
+      let existing = replies;
+      if (document.querySelector(qs)) {
+	existing = parseInt(document.querySelector(qs).innerHTML);
+      }
       for (let obj of Array.from(document.querySelectorAll(qs))) {
-        obj.innerHTML = replies;
+	if (replies > existing) {
+          obj.innerHTML = replies;
+        }
       }
     } catch (err) {}
   }

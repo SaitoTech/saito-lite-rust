@@ -1239,6 +1239,7 @@ console.log("add to hmap indicating insertion...");
           if (!tx.optional.num_likes) {
             tx.optional.num_likes = 0;
           }
+console.log("updating num likes: 1");
           tx.optional.num_likes++;
           await this.app.storage.updateTransaction(tx, { owner: this.publicKey });
           tweet.renderLikes();
@@ -1297,6 +1298,7 @@ console.log("add to hmap indicating insertion...");
         tx.optional.num_likes = 0;
       }
       tx.optional.updated_at = new Date().getTime();
+console.log("updating num likes: 2");
       tx.optional.num_likes++;
       await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
     }, "localhost");
@@ -1380,7 +1382,9 @@ console.log("done saving transaction...");
           // if replies
           //
           if (txmsg.data?.parent_id) {
+console.log("does the parent exist?");
             if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
+console.log("yes and it exists locally, so num replies will go up!");
               let tweet = this.returnTweet(txmsg.data.parent_id);
               if (tweet == null) {
                 return;
@@ -1404,6 +1408,7 @@ if (this.app.BROWSER) { alert("num replies incrementing 2"); }
               );
               tweet.renderReplies();
             } else {
+console.log("no, so num replies will not go up");
               await this.app.storage.updateTransaction(
                 tx,
                 {
@@ -1549,10 +1554,6 @@ if (this.app.BROWSER) { alert("num replies incrementing 2"); }
         $has_images: has_images,
         $tx_size: tx_size,
       };
-
-console.log("TWEETS INSERT: " + JSON.stringify(params));
-console.log("TX FROM: " + JSON.stringify(tx.from));
-console.log("TX FROM: " + JSON.stringify(tx.from));
 
       await app.storage.executeDatabase(sql, params, "redsquare");
 
