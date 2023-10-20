@@ -261,6 +261,15 @@
   /* margin-right: .5rem; */
 }
 
+.tweet-like-button .heart-icon:hover {
+  background: var(--saito-heart-animation-clicked);
+  cursor: pointer;
+  position: absolute;
+  background-size: cover;
+  width: 60px;
+  height: 60px;
+}
+
 .tweet-like-button .heart-icon.liked {
   animation: like-anim 0.7s steps(28) forwards;
 }
