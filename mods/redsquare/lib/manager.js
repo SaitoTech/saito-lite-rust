@@ -5,15 +5,12 @@ const SaitoProfile = require("./../../../lib/saito/ui/saito-profile/saito-profil
 const SaitoLoader = require("./../../../lib/saito/ui/saito-loader/saito-loader");
 
 class TweetManager {
-
   constructor(app, mod, container = ".saito-main") {
     this.app = app;
     this.mod = mod;
     this.container = container;
 
     this.mode = "loading";
-
-    this.publicKey = "";
 
     this.profile = new SaitoProfile(app, mod, ".saito-main");
 
@@ -112,22 +109,21 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode === "profile") {
+              console.log("loading profile!");
 
-console.log("loading profile!");
-
-              this.mod.loadProfile(null, this.publicKey, (txs) => {
+              this.mod.loadProfile(null, this.profile.publicKey, (txs) => {
                 if (this.mode !== "profile") {
-console.log("returning as our mode is not profile!");
+                  console.log("returning as our mode is not profile!");
                   return;
                 }
 
-console.log("txs length: " + txs.length);
+                console.log("txs length: " + txs.length);
 
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
-console.log("does tweet have errors: " +tweet?.noerrors);
+                  console.log("does tweet have errors: " + tweet?.noerrors);
                   if (tweet?.noerrors) {
-console.log("rendering!");
+                    console.log("rendering!");
                     tweet.render();
                   }
                 }
@@ -170,10 +166,10 @@ console.log("rendering!");
     // if someone asks the manager to render with a mode that is not currently
     // set, we want to update our mode and proceed with it.
     //
-    if (new_mode != this.mode && new_mode != "") {
+    if (new_mode && new_mode != this.mode) {
       this.mode = new_mode;
     }
-    if (this.mode == "") {
+    if (!this.mode) {
       this.mode = "tweets";
     }
 
@@ -209,15 +205,6 @@ console.log("rendering!");
     ////////////
     // tweets //
     ////////////
-    if (this.mode == "newtweets") {
-      while (holder?.hasChildNodes()) {
-        holder.firstChild.remove();
-      }
-      while (managerElem?.hasChildNodes()) {
-        managerElem.firstChild.remove();
-      }
-    }
-
     if (this.mode == "tweets") {
       if (holder) {
         console.log("Restore tweets");
@@ -255,29 +242,28 @@ console.log("rendering!");
       }, 50);
     }
 
-    /////////////
-    // profile //
-    /////////////
-    if (this.mode == "profile") {
-
-      this.profile.publicKey = this.publicKey;
-
-console.log("rendering profile with publickey: " + this.profile.publicKey);
-
-      this.profile.render();
-
-      this.mod.loadProfile(null, this.publicKey, (txs) => {
-        for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(this.app, this.mod, txs[z]);
-          tweet.render();
-        }
-        setTimeout(() => {
-          this.hideLoader();
-        }, 50);
-      });
-    }
-
     //Fire up the intersection observer
+    this.attachEvents();
+  }
+
+  renderProfile(publicKey) {
+    console.log("rendering profile with publickey: " + publicKey);
+
+    this.mode = "profile";
+
+    this.profile.publicKey = publicKey;
+    this.profile.render();
+
+    this.mod.loadProfile(null, publicKey, (txs) => {
+      for (let z = 0; z < txs.length; z++) {
+        let tweet = new Tweet(this.app, this.mod, txs[z]);
+        tweet.render();
+      }
+      setTimeout(() => {
+        this.hideLoader();
+      }, 50);
+    });
+
     this.attachEvents();
   }
 
@@ -328,7 +314,6 @@ console.log("rendering profile with publickey: " + this.profile.publicKey);
     if (ob) {
       this.intersectionObserver.observe(ob);
     }
-
   }
 
   showLoader() {
