@@ -420,5 +420,18 @@
 
   .arcade-wizard-game-invite button {
     width: 100%;
+    min-width: unset;
   }
+
+
+  .arcade-wizard-game-name{
+    font-size: 2.8rem;
+  }
+
+  .arcade-wizard-game-description, .saito-multi-select_btn_options button, 
+    .arcade-advance-opt-text, .arcade-wizard-overlay select {
+    font-size: 1.6rem;
+    line-height: 2rem;
+  }
+
 }
