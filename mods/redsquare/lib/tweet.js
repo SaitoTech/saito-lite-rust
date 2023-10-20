@@ -598,6 +598,10 @@ class Tweet {
                     this.mod.manager.hideLoader();
 		  }
                 });
+            
+
+            document.querySelector(".saito-container").scroll({ top: 0, left: 0, behavior: "smooth" });
+
             //
             // otherwise re-load
             //
@@ -626,6 +630,8 @@ class Tweet {
               app.connection.emit("redsquare-tweet-render-request", this.retweet);
             }
           }
+
+          document.querySelector(".saito-container").scroll({ top: 0, left: 0, behavior: "smooth" });
         });
       });
 
