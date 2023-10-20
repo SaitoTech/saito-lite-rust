@@ -230,22 +230,17 @@ class Post {
     let rparent = this.tweet;
     if (rparent) {
       if (posted_tweet.retweet_tx) {
-        // Oct 15 - debugging
-        //rparent.tx.optional.num_retweets++;
-        //rparent.num_retweets++;
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
+	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`);
+	try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
       } else {
-        rparent.addTweet(posted_tweet);
+        this.mod.addTweet(newtx, true);
         rparent.critical_child = posted_tweet;
         rparent.renderWithCriticalChild();
 	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
-	try {
-	  obj.innerHTML++;
-	} catch (err) {
-console.log("err: " + err);
-	}
+	try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
       }
     } else {
       this.mod.addTweet(newtx, true);
@@ -255,6 +250,7 @@ console.log("err: " + err);
     //We let the loader run for a half second to show we are sending the tweet
     setTimeout(() => {
       post_self.overlay.remove();
+      post_self.mod.main.scrollFeed(0);
     }, 800);
   }
 

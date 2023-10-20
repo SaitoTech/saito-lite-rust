@@ -3,10 +3,10 @@ module.exports = CallInterfaceAudioGeneric = () => {
     <div class="small-audio-chatbox" id="small-audio-chatbox">
       <div class="control-panel">
         <div class="timer">
-          <p class="counter"> 00.00 </p>
+          <div class="counter"> 00.00 </div>
           <div class="users-on-call">
             <div class="image-list"></div>
-            <p> <span class="users-on-call-count">1</span> on call </p>
+            <div> <span class="users-on-call-count">1</span> on call </div>
           </div>
         </div>  
         <div class="control-list">

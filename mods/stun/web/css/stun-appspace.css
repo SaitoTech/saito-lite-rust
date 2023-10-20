@@ -9,9 +9,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--saito-white);
   background-color: black;
-  color: white;
+  color: var(--saito-white);
   padding: 3rem;
   justify-content: center;
   position: relative;
@@ -26,12 +25,10 @@
   gap: 5rem;
 }
 
-.stunx-appspace-splah {
-  /* width: 50%; */
-  margin-left: 7rem;
-}
 
-.stunx-appspace-settings {}
+.chat-settings-preview-message {
+  font-style: italic;
+}
 
 .my-stun-container-info {
   display: none;
@@ -43,33 +40,7 @@
   font-size: 5rem;
 }
 
-.stunx-appspace-splah>p {
-  margin-bottom: 1rem;
-  font-size: 2.2rem;
-  line-height: 3rem;
-  color: var(--saito-white);
-}
 
-.stunx-appspace-splah>p span {
-  text-decoration: underline;
-}
-
-.stunx-appspace-splah .saito-badge {
-  color: var(--saito-white);
-  background: var(--saito-primary);
-  width: 5rem;
-  height: 5rem;
-  display: inline-block;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 4.5rem;
-  vertical-align: super;
-}
-
-.stunx-appspace-splah .saito-info-text {
-  color: rgb(195, 195, 195);
-  line-height: 1.2rem;
-}
 
 .stun-host-your-own {
   display: inline;
@@ -81,68 +52,22 @@
 .stunx-appspace-actions {
   margin-bottom: 2rem;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-top: 2rem;
 }
 
-.stunx-appspace-create {
-  width: 100%;
-  ;
-}
 
-.stunx-appspace-create p {
-  font-weight: bold;
-}
-
-.stunx-appspace-join {
-  display: flex;
-  margin-left: 1.5rem;
-  position: relative;
-}
-
-.stunx-appspace-join input {
-  margin-right: 1rem;
-  padding-left: 1rem;
-  font-size: 3rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  height: 4.5rem;
-  max-width: 20rem;
-}
-
-.stunx-appspace-join p {
-  font-weight: bold;
-}
-
-.stunx-appspace-join {
-  display: flex;
-  align-items: center;
-}
-
-.stunx-appspace-join input {
-  margin-right: 1rem;
-  padding-left: 1rem;
-  /* height: 50.798px; */
-}
-
-.stunx-appspace-join input:focus {
-  outline: none;
-}
-
-.stunx-appspace-splash p {
-  color: white;
-}
-
-.stunx-appspace-join .saito-button-secondary {
-  position: absolute;
-  height: 50%;
-  display: flex;
-  right: 0.5rem;
+.stunx-appspace-launch-call-btn {
+  margin: 3rem;
   display: none;
-  align-items: center;
-  background: var(--saito-white);
-  color: var(--saito-primary);
-  border: 1px solid var(--saito-primary);
 }
+
+.stunx-appspace-splash {
+  height: 25rem;
+  color: var(--saito-white);
+}
+
 
 .stun-appspace-navigation {
   width: 80%;
@@ -184,12 +109,6 @@
   }
 }
 
-@media screen and (max-width: 900px) {
-  .stunx-appspace-splah {
-    width: 80%;
-    margin-left: 2rem;
-  }
-}
 
 @media screen and (max-width: 580px) {
   .stun-appspace, .chat-settings-wrapper {
@@ -202,10 +121,9 @@
   .stunx-appspace-splash {
     padding: 0;
   }
-}
 
-@media screen and (max-width: 396px) {
-  .stunx-appspace-join input {
-    width: 15rem;
+  .chat-settings-preview-message{
+    width: 60%;
   }
 }
+

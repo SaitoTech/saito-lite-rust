@@ -223,9 +223,8 @@
 }
 
 .stun-chatbox .side-videos {
-  display: flex;
+  display: grid;
   gap: 1rem;
-  flex-direction: column;
   width: 25%;
   height: 100%;
   max-height: 100%;
@@ -500,6 +499,7 @@
   align-items: center;
   background-color: #060505;
   height: 100%;
+  color: var(--saito-white);
 }
 
 .control-panel .timer {
