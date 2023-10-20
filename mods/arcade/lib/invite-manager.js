@@ -52,7 +52,7 @@ class InviteManager {
       }
     });
 
-    app.connection.on("arcade-continue-game-from-options", (game_mod) => {
+    app.connection.on("arcade-continue-game-from-options", async (game_mod) => {
 
       let id = game_mod.game?.id;
       if (!id){
@@ -63,7 +63,8 @@ class InviteManager {
 
       if (!game_tx) {
         console.log("Creating fresh transaction");
-        game_tx = mod.createPseudoTransaction(game_mod.game);
+        game_tx = await mod.createPseudoTransaction(game_mod.game);
+        mod.addGame(game_tx, "closed");
       }else{
         delete game_tx.msg.time_finished;
         delete game_tx.msg.method;
@@ -72,6 +73,7 @@ class InviteManager {
       }
 
       console.log(JSON.parse(JSON.stringify(game_tx)));
+      console.log(JSON.parse(JSON.stringify(game_mod.game)));
 
       let newInvite = new Invite(app, mod, null, this.type, game_tx, mod.publicKey);
       let join_overlay = new JoinGameOverlay(app, mod, newInvite.invite_data);
