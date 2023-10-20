@@ -36,7 +36,7 @@ class JoinGameOverlay {
 
   }
 
-  async render() {
+  render() {
     let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
 

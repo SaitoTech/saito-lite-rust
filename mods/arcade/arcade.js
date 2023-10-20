@@ -111,63 +111,35 @@ class Arcade extends ModTemplate {
       if (this.app.options.games) {
         this.purgeBadGamesFromWallet();
 
-        //
-        // We create a dummy tx from the saved game state so that the arcade can render the
-        // active game like a new open invite
-        //
+        console.log("Processing games from app.options:");
+
         for (let game of this.app.options.games) {
-          if (
-            game.over == 0 &&
-            (game.players_set != 1 ||
-              game.players.includes(this.publicKey) ||
-              game.accepted.includes(this.publicKey))
-          ) {
-            if (game.over) {
+          if (game.players.includes(this.publicKey) || game.accepted.includes(this.publicKey)) {
+            if (game.over == 1) {
               if (game.last_block > 0) {
+                console.log("Game Over");
                 return;
               }
             }
-            let game_tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-            if (game.players) {
-              game.players.forEach((player) => {
-                game_tx.addTo(player);
-                game_tx.addFrom(player);
-              });
-            } else {
-              game_tx.addFrom(this.publicKey);
-              game_tx.addTo(this.publicKey);
-            }
-
-            let msg = {
-              //ts
-              module: "Arcade",
-              request: "loaded", //will be overwritten as "active" when added
-              game: game.module,
-              options: game.options,
-              players_needed: game.players_needed,
-              players: game.players,
-              players_sigs: [], //Only used to verify cryptology when initializing the game
-              originator: game.originator,
-              //winner: game.winner,
-              step: game?.step?.game,
-              ts: game?.step?.timestamp,
-            };
-
-            game_tx.signature = game.id;
-            game_tx.timestamp = BigInt(game.timestamp || 0);
-            game_tx.msg = msg;
-
-            console.log("Processing games from app.options:");
+            //
+            // We create a dummy tx from the saved game state so that the arcade can render the
+            // active game like a new open invite
+            //
+            let game_tx = await this.createPseudoTransaction(game);
 
             //
             // and add to list of my games
             //
-            this.addGame(game_tx, "active");
+            if (game.over == 0){
+              this.addGame(game_tx, "active");  
+            }
+            
           }
         }
       }
 
+      console.log(JSON.parse(JSON.stringify(this.games)));
       this.app.connection.emit("arcade-invite-manager-render-request");
     }
 
@@ -176,6 +148,42 @@ class Arcade extends ModTemplate {
     } catch (err) {
       this.leagueCallback = {};
     }
+  }
+
+  async createPseudoTransaction(game) {
+
+    let game_tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    if (game.players) {
+      game.players.forEach((player) => {
+        game_tx.addTo(player);
+        game_tx.addFrom(player);
+      });
+    } else {
+      game_tx.addFrom(this.publicKey);
+      game_tx.addTo(this.publicKey);
+    }
+
+    let msg = {
+      //ts
+      module: "Arcade",
+      request: "loaded", //will be overwritten as "active" when added
+      game: game.module,
+      options: game.options,
+      players_needed: game.players_needed,
+      players: game.players,
+      players_sigs: [], //Only used to verify cryptology when initializing the game
+      originator: game.originator,
+      //winner: game.winner,
+      step: game?.step?.game,
+      ts: game?.step?.timestamp,
+    };
+
+    game_tx.signature = game.id;
+    game_tx.timestamp = BigInt(game.timestamp || 0);
+    game_tx.msg = msg;
+
+    return game_tx;
   }
 
   //
@@ -1532,9 +1540,9 @@ class Arcade extends ModTemplate {
     for (let key in this.games) {
       for (let z = 0; z < this.games[key].length; z++) {
         if (tx.signature === this.games[key][z].signature) {
-          // if (this.debug) {
-          console.log("TX is already in Arcade list");
-          //}
+          if (this.debug) {
+            console.log("TX is already in Arcade list");
+          }
           return;
         }
       }
