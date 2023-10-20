@@ -351,6 +351,15 @@ dt {
   border-radius: 10px;
 }
 
+.road:after{
+  top: -50%;
+  left: 0;
+  width: 100%;
+  height: 200%;
+  position: absolute;
+  content: "";
+}
+
 .road5 {
   transform: rotate(90deg);
   left: -34%;
