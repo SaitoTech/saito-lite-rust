@@ -924,7 +924,7 @@ console.log("trying to add: " + tweet.text);
     //
     // avoid errors
     //
-    if (!tweet.tx.optional) { tweet.tx.optional = {}; }
+    if (!tweet?.tx?.optional) { tweet.tx.optional = {}; }
 
     //
     // maybe this needs to go into notifications too

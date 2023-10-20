@@ -329,7 +329,6 @@ console.log("rendering profile with publickey: " + this.profile.publicKey);
       this.intersectionObserver.observe(ob);
     }
 
-    this.app.connection.emit("redsquare-navigation-complete");
   }
 
   showLoader() {
