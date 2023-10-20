@@ -154,6 +154,27 @@ class RedSquareMain {
         }
       }
     });
+
+
+    // event for rendering back btn when viewing post
+    this.app.connection.on("saito-main-render-back-btn", (callback = null) => {
+      this.app.browser.prependElementToSelector(
+        `<div class="saito-main-back">
+          <i class="fa-solid fa-arrow-left"></i> 
+          <span>Back</span>
+        </div>`,
+        ".saito-main"
+      );
+
+      document.querySelector(".saito-main-back").onclick = async (e) => {
+        e.currentTarget.remove();
+
+        if (callback) {
+          await callback(e);
+        }
+      };
+    });
+
   }
 
   render() {
