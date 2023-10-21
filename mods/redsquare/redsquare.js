@@ -10,6 +10,7 @@ const fetch = require("node-fetch");
 const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
+const RedSquareHammerSwipe = require("./lib/redsquare-hammer-swipe/redsquare-hammer-swipe");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
@@ -57,7 +58,7 @@ class RedSquare extends ModTemplate {
 
     this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
 
-    this.scripts = ["/saito/lib/virtual-bg/virtual-bg.js"];
+    this.scripts = ["/saito/lib/virtual-bg/virtual-bg.js", "/saito/lib/hammer/hammer.min.js"];
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
@@ -289,11 +290,13 @@ class RedSquare extends ModTemplate {
       await this.header.initialize(this.app);
       this.menu = new SaitoMenu(this.app, this, ".saito-sidebar.left");
       this.sidebar = new RedSquareSidebar(this.app, this, ".saito-sidebar.right");
+      this.hammer = new RedSquareHammerSwipe(this.app, this);
 
       this.addComponent(this.header);
       this.addComponent(this.main);
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
+      this.addComponent(this.hammer);
 
       //
       // chat manager can insert itself into left-sidebar if exists

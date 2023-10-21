@@ -7,16 +7,6 @@ rm ../../web/saito/saito.js
 #
 cat ./src/paths-init.js > ./paths.js
 
-for file in ./src/cards/core/*
-do
-  cat $file >> ./paths.js
-done
-
-for file in ./src/factions/*
-do
-  cat $file >> ./paths.js
-done
-
 for file in ./src/units/*
 do
   cat $file >> ./paths.js

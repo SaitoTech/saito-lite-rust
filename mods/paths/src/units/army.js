@@ -1,13 +1,4 @@
 
-
-    if (!obj.combat)    { obj.combat    = 5; }
-    if (!obj.loss)      { obj.loss      = 3; }
-    if (!obj.movement)  { obj.movement  = 3; }
-    if (!obj.rcombat)   { obj.rcombat   = 5; }
-    if (!obj.rloss)     { obj.rloss     = 3; }
-    if (!obj.rmovement) { obj.rmovement = 3; }
-
-
     //
     // Austria-Hungary AH
     //

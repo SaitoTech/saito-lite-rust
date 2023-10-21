@@ -68,13 +68,6 @@ class PathsOfGlory extends GameTemplate {
     let game_mod = this;
 
     //
-    //
-    //
-    if (!this.game.state) {
-      this.game.state = this.returnState();
-    }
-
-    //
     // preload images
     //
     this.preloadImages();
@@ -148,8 +141,8 @@ class PathsOfGlory extends GameTemplate {
     //
     // position cities / spaces / etc
     //
-    let spaces = this.returnSpaces();
-    for (let key in spaces) {
+    if (!this.game.spaces) { this.game.spaces = this.returnSpaces(); }
+    for (let key in this.game.spaces) {
       if (spaces.hasOwnProperty(key)) {
 	try {
 	  let obj = document.getElementById(key);
@@ -221,7 +214,7 @@ class PathsOfGlory extends GameTemplate {
     //
     // initialize game objects
     //
-    this.deck = this.returnDeck();
+    this.deck = this.returnDeck("all");
 
 
 
@@ -235,6 +228,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army01.png" ,
       back		:	"ah_army01_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army02', {
       ckey		:       "AH" ,
@@ -243,6 +242,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army02.png" ,
       back		:	"ah_army02_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army03', {
       ckey		:       "AH" ,
@@ -251,6 +256,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army03.png" ,
       back		:	"ah_army03_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army04', {
       ckey		:       "AH" ,
@@ -259,6 +270,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army04.png" ,
       back		:	"ah_army04_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army05', {
       ckey		:       "AH" ,
@@ -267,6 +284,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army05.png" ,
       back		:	"ah_army05_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army06', {
       ckey		:       "AH" ,
@@ -275,6 +298,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army06.png" ,
       back		:	"ah_army06_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army07', {
       ckey		:       "AH" ,
@@ -283,22 +312,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army07.png" ,
       back		:	"ah_army07_back.png" ,
-    });
-    this.importUnit('ah_army08', {
-      ckey		:       "AH" ,
-      country           :       "Austro-Hungarian" ,
-      name		:	"8th Army" ,
-      type		:	"army" ,
-      front		:	"ah_army08.png" ,
-      back		:	"ah_army08_back.png" ,
-    });
-    this.importUnit('ah_army09', {
-      ckey		:       "AH" ,
-      country           :       "Austro-Hungarian" ,
-      name		:	"9th Army" ,
-      type		:	"army" ,
-      front		:	"ah_army09.png" ,
-      back		:	"ah_army09_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army10', {
       ckey		:       "AH" ,
@@ -307,6 +326,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army10.png" ,
       back		:	"ah_army10_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_army11', {
       ckey		:       "AH" ,
@@ -315,6 +340,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ah_army11.png" ,
       back		:	"ah_army11_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ah_corps', {
       ckey		:       "AH" ,
@@ -323,6 +354,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"ah_corps.png" ,
       back		:	"ah_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -335,6 +372,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"ana_corps.png" ,
       back		:	"ana_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -347,6 +390,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"aoi_army.png" ,
       back		:	"aoi_army_back.png" ,
+      combat		:	1 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	2 ,
     });
 
     //
@@ -359,6 +408,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"aus_corps.png" ,
       back		:	"aus_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	2 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
     //
@@ -371,6 +426,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"be_army.png" ,
       back		:	"be_army_back.png" ,
+      combat		:	2 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -383,6 +444,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"be_corps.png" ,
       back		:	"be_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -395,6 +462,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"bef_army.png" ,
       back		:	"bef_army_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	4 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -407,6 +480,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"bef_corps.png" ,
       back		:	"bef_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	4 ,
+      rcombat		:	2 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
 
@@ -420,6 +499,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"br_army01.png" ,
       back		:	"br_army01_back.png" ,
+      combat		:	4 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('br_army02', {
       ckey		:       "BR" ,
@@ -428,6 +513,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"br_army02.png" ,
       back		:	"br_army02_back.png" ,
+      combat		:	4 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('br_army03', {
       ckey		:       "BR" ,
@@ -436,6 +527,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"br_army03.png" ,
       back		:	"br_army03_back.png" ,
+      combat		:	4 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('br_army04', {
       ckey		:       "BR" ,
@@ -444,6 +541,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"br_army04.png" ,
       back		:	"br_army04_back.png" ,
+      combat		:	4 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('br_army05', {
       ckey		:       "BR" ,
@@ -452,6 +555,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"br_army05.png" ,
       back		:	"br_army05_back.png" ,
+      combat		:	4 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('br_corps', {
       ckey		:       "BR" ,
@@ -460,6 +569,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"br_corps.png" ,
       back		:	"br_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	1 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
     //
@@ -472,6 +587,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"bu_corps.png" ,
       back		:	"bu_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -484,6 +605,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"cau_army.png" ,
       back		:	"cau_army_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -496,6 +623,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"cnd_corps.png" ,
       back		:	"cnd_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	2 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
     //
@@ -508,6 +641,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"czl_army.png" ,
       back		:	"czl_army_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	1 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
 
@@ -521,6 +660,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army01.png" ,
       back		:	"fr_army01_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army02', {
       ckey		:       "FR" ,
@@ -529,6 +674,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army02.png" ,
       back		:	"fr_army02_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army03', {
       ckey		:       "FR" ,
@@ -537,6 +688,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army03.png" ,
       back		:	"fr_army03_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army04', {
       ckey		:       "FR" ,
@@ -545,6 +702,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army04.png" ,
       back		:	"fr_army04_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army05', {
       ckey		:       "FR" ,
@@ -553,6 +716,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army05.png" ,
       back		:	"fr_army05_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army06', {
       ckey		:       "FR" ,
@@ -561,6 +730,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army06.png" ,
       back		:	"fr_army06_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army07', {
       ckey		:       "FR" ,
@@ -569,14 +744,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army07.png" ,
       back		:	"fr_army07_back.png" ,
-    });
-    this.importUnit('fr_army08', {
-      ckey		:       "FR" ,
-      country           :       "France" ,
-      name		:	"8th Army" ,
-      type		:	"army" ,
-      front		:	"fr_army08.png" ,
-      back		:	"fr_army08_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army09', {
       ckey		:       "FR" ,
@@ -585,6 +758,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army09.png" ,
       back		:	"fr_army09_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_army10', {
       ckey		:       "FR" ,
@@ -593,6 +772,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"fr_army10.png" ,
       back		:	"fr_army10_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('fr_corps', {
       ckey		:       "FR" ,
@@ -601,6 +786,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"fr_corps.png" ,
       back		:	"fr_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	1 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
 
@@ -614,6 +805,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army01.png" ,
       back		:	"ge_army01_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army02', {
       ckey		:       "GE" ,
@@ -622,6 +819,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army02.png" ,
       back		:	"ge_army02_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army03', {
       ckey		:       "GE" ,
@@ -630,6 +833,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army03.png" ,
       back		:	"ge_army03_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army04', {
       ckey		:       "GE" ,
@@ -638,6 +847,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army04.png" ,
       back		:	"ge_army04_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army05', {
       ckey		:       "GE" ,
@@ -646,6 +861,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army05.png" ,
       back		:	"ge_army05_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army06', {
       ckey		:       "GE" ,
@@ -654,6 +875,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army06.png" ,
       back		:	"ge_army06_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army07', {
       ckey		:       "GE" ,
@@ -662,6 +889,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army07.png" ,
       back		:	"ge_army07_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army08', {
       ckey		:       "GE" ,
@@ -670,6 +903,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army08.png" ,
       back		:	"ge_army08_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army09', {
       ckey		:       "GE" ,
@@ -678,6 +917,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army09.png" ,
       back		:	"ge_army09_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army10', {
       ckey		:       "GE" ,
@@ -686,6 +931,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army10.png" ,
       back		:	"ge_army10_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army11', {
       ckey		:       "GE" ,
@@ -694,6 +945,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army11.png" ,
       back		:	"ge_army11_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army12', {
       ckey		:       "GE" ,
@@ -702,14 +959,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army12.png" ,
       back		:	"ge_army12_back.png" ,
-    });
-    this.importUnit('ge_army13', {
-      ckey		:       "GE" ,
-      country           :       "Germany" ,
-      name		:	"13th Army" ,
-      type		:	"army" ,
-      front		:	"ge_army13.png" ,
-      back		:	"ge_army13_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army14', {
       ckey		:       "GE" ,
@@ -718,22 +973,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army14.png" ,
       back		:	"ge_army14_back.png" ,
-    });
-    this.importUnit('ge_army15', {
-      ckey		:       "GE" ,
-      country           :       "Germany" ,
-      name		:	"15th Army" ,
-      type		:	"army" ,
-      front		:	"ge_army15.png" ,
-      back		:	"ge_army15_back.png" ,
-    });
-    this.importUnit('ge_army16', {
-      ckey		:       "GE" ,
-      country           :       "Germany" ,
-      name		:	"16th Army" ,
-      type		:	"army" ,
-      front		:	"ge_army16.png" ,
-      back		:	"ge_army16_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army17', {
       ckey		:       "GE" ,
@@ -742,6 +987,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army17.png" ,
       back		:	"ge_army17_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_army18', {
       ckey		:       "GE" ,
@@ -750,6 +1001,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ge_army18.png" ,
       back		:	"ge_army18_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ge_corps', {
       ckey		:       "GE" ,
@@ -758,6 +1015,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"ge_corps.png" ,
       back		:	"ge_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	1 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
     //
@@ -770,6 +1033,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"gr_corps.png" ,
       back		:	"gr_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -782,6 +1051,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"it_army01.png" ,
       back		:	"it_army01_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('it_army02', {
       ckey		:       "IT" ,
@@ -790,6 +1065,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"it_army02.png" ,
       back		:	"it_army02_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('it_army03', {
       ckey		:       "IT" ,
@@ -798,6 +1079,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"it_army03.png" ,
       back		:	"it_army03_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('it_army04', {
       ckey		:       "IT" ,
@@ -806,6 +1093,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"it_army04.png" ,
       back		:	"it_army04_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('it_army05', {
       ckey		:       "IT" ,
@@ -814,6 +1107,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"it_army05.png" ,
       back		:	"it_army05_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('it_corps', {
       ckey		:       "IT" ,
@@ -822,18 +1121,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"it_corps.png" ,
       back		:	"it_corps_back.png" ,
-    });
-
-    //
-    // Greek
-    //
-    this.importUnit('gr_corps', {
-      ckey		:       "GR" ,
-      country           :       "Greek Corps" ,
-      name		:	"GR Corps" ,
-      type		:	"corps" ,
-      front		:	"gr_corps.png" ,
-      back		:	"gr_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -846,6 +1139,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"mef_army.png" ,
       back		:	"mef_army_back.png" ,
+      combat		:	1 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -858,6 +1157,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"mn_corps.png" ,
       back		:	"mn_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	0 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	0 ,
     });
 
     //
@@ -870,6 +1175,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ne_army.png" ,
       back		:	"ne_army_back.png" ,
+      combat		:	4 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -882,6 +1193,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"orient_army.png" ,
       back		:	"orient_army_back.png" ,
+      combat		:	3 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -894,6 +1211,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"pol_corps.png" ,
       back		:	"pol_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	1 ,
+      rloss		:	1 ,
+      rmovement		:	4	 ,
     });
 
     //
@@ -906,6 +1229,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"pt_corps.png" ,
       back		:	"pt_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -918,6 +1247,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ro_corps.png" ,
       back		:	"ro_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -930,6 +1265,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army01.png" ,
       back		:	"ru_army01_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army02', {
       ckey		:       "RU" ,
@@ -938,6 +1279,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army02.png" ,
       back		:	"ru_army02_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army03', {
       ckey		:       "RU" ,
@@ -946,6 +1293,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army03.png" ,
       back		:	"ru_army03_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army04', {
       ckey		:       "RU" ,
@@ -954,6 +1307,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army04.png" ,
       back		:	"ru_army04_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army05', {
       ckey		:       "RU" ,
@@ -962,6 +1321,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army05.png" ,
       back		:	"ru_army05_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army06', {
       ckey		:       "RU" ,
@@ -970,6 +1335,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army06.png" ,
       back		:	"ru_army06_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army07', {
       ckey		:       "RU" ,
@@ -978,6 +1349,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army07.png" ,
       back		:	"ru_army07_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army08', {
       ckey		:       "RU" ,
@@ -986,6 +1363,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army08.png" ,
       back		:	"ru_army08_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army09', {
       ckey		:       "RU" ,
@@ -994,6 +1377,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army09.png" ,
       back		:	"ru_army09_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army10', {
       ckey		:       "RU" ,
@@ -1002,6 +1391,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army10.png" ,
       back		:	"ru_army10_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army11', {
       ckey		:       "RU" ,
@@ -1010,6 +1405,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army11.png" ,
       back		:	"ru_army11_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('ru_army12', {
       ckey		:       "RU" ,
@@ -1018,6 +1419,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"ru_army12.png" ,
       back		:	"ru_army12_back.png" ,
+      combat		:	3 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	2 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -1030,6 +1437,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"ru_cav.png" ,
       back		:	"ru_cav_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
     //
@@ -1042,6 +1455,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"ru_corps.png" ,
       back		:	"ru_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -1054,6 +1473,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"sb_army01.png" ,
       back		:	"sb_army01_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
     this.importUnit('sb_army02', {
       ckey		:       "SB" ,
@@ -1062,6 +1487,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"sb_army02.png" ,
       back		:	"sb_army02_back.png" ,
+      combat		:	2 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -1074,6 +1505,30 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"sb_corps.png" ,
       back		:	"sb_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
+    });
+
+    //
+    // Sennusi Tribal
+    //
+    this.importUnit('sn_corps', {
+      ckey		:       "SN" ,
+      country           :       "Sennusi" ,
+      name		:	"Sennusi Corps" ,
+      type		:	"corps" ,
+      front		:	"sn_corps.png" ,
+      back		:	"sn_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	1 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	1 ,
     });
 
     //
@@ -1086,6 +1541,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"tu_corps.png" ,
       back		:	"tu_corps_back.png" ,
+      combat		:	1 ,
+      loss		:	1 ,
+      movement		:	3 ,
+      rcombat		:	0 ,
+      rloss		:	1 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -1098,6 +1559,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"us_army01.png" ,
       back		:	"us_army01_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
     this.importUnit('us_army02', {
       ckey		:       "US" ,
@@ -1106,6 +1573,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"us_army02.png" ,
       back		:	"us_army02_back.png" ,
+      combat		:	5 ,
+      loss		:	3 ,
+      movement		:	3 ,
+      rcombat		:	3 ,
+      rloss		:	3 ,
+      rmovement		:	3 ,
     });
 
     //
@@ -1118,6 +1591,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"corps" ,
       front		:	"us_corps.png" ,
       back		:	"us_corps_back.png" ,
+      combat		:	2 ,
+      loss		:	1 ,
+      movement		:	4 ,
+      rcombat		:	1 ,
+      rloss		:	1 ,
+      rmovement		:	4 ,
     });
 
 
@@ -1131,6 +1610,12 @@ class PathsOfGlory extends GameTemplate {
       type		:	"army" ,
       front		:	"yld_army01.png" ,
       back		:	"yld_army01_back.png" ,
+      combat		:	1 ,
+      loss		:	2 ,
+      movement		:	3 ,
+      rcombat		:	1 ,
+      rloss		:	2 ,
+      rmovement		:	2 ,
     });
 
 
@@ -1144,8 +1629,8 @@ class PathsOfGlory extends GameTemplate {
     if (!this.game.state) {
 
       this.game.state = this.returnState();
-      this.game.state.players_info = this.returnPlayers(this.game.players.length);
       this.game.spaces = this.returnSpaces();
+      this.game.state.players_info = this.returnPlayers(this.game.players.length);
 
 console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
 
@@ -1193,23 +1678,29 @@ console.log("\n\n\n\n");
 
 
     //
-    // attach events to spaces
-    //
-    this.spaces = {};
-    for (let key in this.game.spaces) {
-      this.spaces[key] = this.importSpace(this.game.spaces[key], key);
-    }
-
-    //
     // add initial units
     //
     if (first_time_running == 1) {
+
+alert("adding to stirling!");
+      this.addUnitToSpace("ah_army01", "stirling");
+      this.displaySpace("stirling");
+
     }
+
+
+alert("adding to stirling!");
+      this.addUnitToSpace("ah_army01", "stirling");
+      this.displaySpace("stirling");
+    
+
 
     //
     // and show the board
     //
     this.displayBoard();
+
+
 
   }
 
@@ -1595,6 +2086,17 @@ console.log("\n\n\n\n");
 
   displaySpace(key) {
 console.log("display: " + key);
+console.log("space: " + JSON.stringify(this.game.spaces[key]));
+    let space = this.game.spaces[key];
+    let html = "";
+
+    for (let i = 0; i < space.units.length; i++) {
+console.log("unit in space: " + space.units[i]);
+      html += this.returnUnitImage(space.units[i]);
+    }
+
+    document.querySelector(`.${key}`).innerHTML = html;
+
   }
 
   displaySpaceDetailedView(key) {
@@ -1604,15 +2106,6 @@ alert("display detailed space!");
   displaySpaces() {
 
     let paths_self = this;
-
-    if (!this.game.state.board) {
-      this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
-      this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
-      this.game.state.board["england"] = this.returnOnBoardUnits("england");
-      this.game.state.board["france"] = this.returnOnBoardUnits("france");
-      this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
-      this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
-    }
 
     //
     // add tiles
@@ -3298,7 +3791,7 @@ console.log("and friendly");
     }
 
     for (let key in spaces) {
-      spaces[key].units = {};
+      spaces[key].units = [];
     }
 
     return spaces;
@@ -3813,18 +4306,58 @@ console.log("HAND: " + JSON.stringify(hand));
 
   importUnit(key, obj) {
 
-    if (!this.units) { this.units = {}; }
+    if (!this.game.units) { this.game.units = {}; }
+
+    //
+    // avoid re-importing
+    //
+    if (this.game.units[key]) { return; }
 
     obj.key = key;
 
-    if (obj.returnTileImage == null) {
-      obj.returnTileImage = () => { return ""; }
-    }
+    if (!obj.combat)	{ obj.combat 	= 5; }
+    if (!obj.loss)	{ obj.loss 	= 3; }
+    if (!obj.movement)	{ obj.movement 	= 3; }
+    if (!obj.rcombat)	{ obj.rcombat 	= 5; }
+    if (!obj.rloss)	{ obj.rloss 	= 3; }
+    if (!obj.rmovement)	{ obj.rmovement = 3; }
 
-    this.addEvents(obj);
-    this.units[name] = obj;
+    if (!obj.damaged)	{ obj.damaged = false; }
+
+    this.game.units[name] = obj;
 
   }
+
+  returnUnitImage(key) {
+
+    let unit = this.game.units[key];
+
+    if (unit.damaged) {
+      return `<img src="/paths/img/tiles/${key}_back.png" class="army-tile" />`;
+    } else {
+      return `<img src="/paths/img/tiles/${key}.png" class="army-tile" />`;
+    }
+
+  }
+
+  addUnitToSpace(unitkey, spacekey) {
+    if (!this.game.spaces[spacekey]) { return; }
+    if (!this.game.spaces[spacekey].units) { return; }
+    if (this.game.spaces[spacekey].units.includes(unitkey)) { return; }
+    this.game.spaces[spacekey].units.push(unitkey);
+  }
+
+  damageUnitInSpace(unitkey, spacekey) {
+    if (!this.game.spaces[spacekey]) { return; }
+    if (!this.game.spaces[spacekey].includes(unitkey)) { return; }
+    for (let i = 0; i < this.game.spaces[spacekey].units.length; i++) {
+      let u = this.game.spaces[spacekey].units[i];
+      if (u.key === unitkey) {
+	if (u.damaged == false) { u.damaged = true; }
+      }
+    }
+  }
+
 
 
 } // end and export

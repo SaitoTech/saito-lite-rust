@@ -68,13 +68,6 @@ class PathsOfGlory extends GameTemplate {
     let game_mod = this;
 
     //
-    //
-    //
-    if (!this.game.state) {
-      this.game.state = this.returnState();
-    }
-
-    //
     // preload images
     //
     this.preloadImages();
@@ -148,8 +141,8 @@ class PathsOfGlory extends GameTemplate {
     //
     // position cities / spaces / etc
     //
-    let spaces = this.returnSpaces();
-    for (let key in spaces) {
+    if (!this.game.spaces) { this.game.spaces = this.returnSpaces(); }
+    for (let key in this.game.spaces) {
       if (spaces.hasOwnProperty(key)) {
 	try {
 	  let obj = document.getElementById(key);
@@ -221,6 +214,6 @@ class PathsOfGlory extends GameTemplate {
     //
     // initialize game objects
     //
-    this.deck = this.returnDeck();
+    this.deck = this.returnDeck("all");
 
 

@@ -1514,7 +1514,7 @@ console.log("and friendly");
     }
 
     for (let key in spaces) {
-      spaces[key].units = {};
+      spaces[key].units = [];
     }
 
     return spaces;

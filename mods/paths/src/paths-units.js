@@ -1,7 +1,12 @@
 
   importUnit(key, obj) {
 
-    if (!this.units) { this.units = {}; }
+    if (!this.game.units) { this.game.units = {}; }
+
+    //
+    // avoid re-importing
+    //
+    if (this.game.units[key]) { return; }
 
     obj.key = key;
 
@@ -13,15 +18,22 @@
     if (!obj.rmovement)	{ obj.rmovement = 3; }
 
     if (!obj.damaged)	{ obj.damaged = false; }
-    if (obj.returnTileImage == null) {
-      obj.returnTileImage = () => { return ""; }
-    }
 
-    this.addEvents(obj);
-    this.units[name] = obj;
+    this.game.units[key] = obj;
 
   }
 
+  returnUnitImage(key) {
+
+    let unit = this.game.units[key];
+
+    if (unit.damaged) {
+      return `<img src="/paths/img/tiles/${key}_back.png" class="army-tile" />`;
+    } else {
+      return `<img src="/paths/img/tiles/${key}.png" class="army-tile" />`;
+    }
+
+  }
 
   addUnitToSpace(unitkey, spacekey) {
     if (!this.game.spaces[spacekey]) { return; }

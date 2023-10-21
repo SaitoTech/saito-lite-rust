@@ -4,6 +4,10 @@
   flex-direction: column;
 }
 
+.saito-main .tweet-manager .tweet:nth-child(1) {
+  padding-top: 0px;
+}
+
 .saito-main .saito-profile {
   order: -1;
 }

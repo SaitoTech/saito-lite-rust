@@ -77,6 +77,17 @@
 
   displaySpace(key) {
 console.log("display: " + key);
+console.log("space: " + JSON.stringify(this.game.spaces[key]));
+    let space = this.game.spaces[key];
+    let html = "";
+
+    for (let i = 0; i < space.units.length; i++) {
+console.log("unit in space: " + space.units[i]);
+      html += this.returnUnitImage(space.units[i]);
+    }
+
+    document.querySelector(`.${key}`).innerHTML = html;
+
   }
 
   displaySpaceDetailedView(key) {
@@ -86,15 +97,6 @@ alert("display detailed space!");
   displaySpaces() {
 
     let paths_self = this;
-
-    if (!this.game.state.board) {
-      this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
-      this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
-      this.game.state.board["england"] = this.returnOnBoardUnits("england");
-      this.game.state.board["france"] = this.returnOnBoardUnits("france");
-      this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
-      this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
-    }
 
     //
     // add tiles
