@@ -1,6 +1,8 @@
 
   returnPowerOfUnit(unit) {
 
+    try { if (!unit.ckey) { unit = this.game.units[unit]; } } catch (err) {}
+
     let allied = ["FR", "RU", "BR", "BE", "IT", "US"];
     let central = ["GE", "AH", "TU", "BG"];
 

@@ -2088,28 +2088,10 @@ console.log("!");
   displaySpace(key) {
 
     try {
+
       let space = this.game.spaces[key];
       let html = "";
-
-      //
-      // trenches
-      //
-      if (space.trench == 1) {
-	if (space.control == "allies") {
-          html += `<img src="/paths/img/tiles/ap_trench1.png" class="trench-tile" />`;
-	}
-	if (space.control == "central") {
-          html += `<img src="/paths/img/tiles/cp_trench1.png" class="trench-tile" />`;
-	}
-      }
-      if (space.trench == 2) {
-	if (space.control == "allies") {
-          html += `<img src="/paths/img/tiles/ap_trench2.png" class="trench-tile" />`;
-	}
-	if (space.control == "central") {
-          html += `<img src="/paths/img/tiles/cp_trench2.png" class="trench-tile" />`;
-	}
-      }
+      let control = this.returnControlOfSpace(key);
 
       //
       // units / armies
@@ -2126,6 +2108,26 @@ console.log("!");
       }
       if (space.activated_for_combat) {
         html += `<img src="/paths/img/tiles/activate_combat.png" class="activation-tile" />`;
+      }
+
+      //
+      // trenches
+      //
+      if (space.trench == 1) {
+	if (control == "allies") {
+          html += `<img src="/paths/img/tiles/ap_trench1.png" class="trench-tile" />`;
+	}
+	if (control == "central") {
+          html += `<img src="/paths/img/tiles/cp_trench1.png" class="trench-tile" />`;
+	}
+      }
+      if (space.trench == 2) {
+	if (control == "allies") {
+          html += `<img src="/paths/img/tiles/ap_trench2.png" class="trench-tile" />`;
+	}
+	if (control == "central") {
+          html += `<img src="/paths/img/tiles/cp_trench2.png" class="trench-tile" />`;
+	}
       }
 
       document.querySelector(`.${key}`).innerHTML = html;
@@ -2319,6 +2321,40 @@ alert("display detailed space!");
   activateSpaceForMovement(spacekey) {
     this.game.spaces[spacekey].activated_for_movement = 1;
     this.displaySpace(spacekey);
+  }
+
+  addTrench(spacekey, level=0) {
+    if (level != 0) {
+      this.game.spaces[spacekey].trench = level;
+      return;
+    }
+    if (this.game.spaces[spacekey].trench == 1) {
+      this.game.spaces[spacekey].trench = 2;
+    }
+    if (this.game.spaces[spacekey].trench == 0) {
+      this.game.spaces[spacekey].trench = 1;
+    }
+  }
+  removeTrench(spacekey, level=0) {
+    if (level != 0) {
+      this.game.spaces[spacekey].trench = level;
+      return;
+    }
+    if (this.game.spaces[spacekey].trench == 1) {
+      this.game.spaces[spacekey].trench = 0;
+    }
+    if (this.game.spaces[spacekey].trench == 2) {
+      this.game.spaces[spacekey].trench = 1;
+    }
+  }
+
+  returnControlOfSpace(key) {
+    let space = this.game.spaces[key];
+    if (space.control) { return space.control; }
+    if (space.units.length > 0) {
+      return this.returnPowerOfUnit(space.units[0]);     
+    }
+    return "";
   }
 
   returnActivationCost(key) {
@@ -2591,6 +2627,9 @@ console.log("HAND: " + JSON.stringify(hand));
           this.addUnitToSpace("ah_army01", "stirling");
           this.addUnitToSpace("ge_army01", "stirling");
           this.addUnitToSpace("br_army01", "stirling");
+          this.addTrench("stirling", 1);
+
+alert("trench is: " + this.game.spaces[spacekey].trench);
 
           this.displayBoard();
 
@@ -2796,7 +2835,6 @@ console.log("HAND: " + JSON.stringify(hand));
     this.attachCardboxEvents((action) => {
 
       if (action === "ops") {
-	alert("ops - " + JSON.stringify(c));
 	this.playerPlayOps(faction, card, c.ops);
       }
 
@@ -3069,6 +3107,8 @@ console.log("HAND: " + JSON.stringify(hand));
 
 
   returnPowerOfUnit(unit) {
+
+    try { if (!unit.ckey) { unit = this.game.units[unit]; } } catch (err) {}
 
     let allied = ["FR", "RU", "BR", "BE", "IT", "US"];
     let central = ["GE", "AH", "TU", "BG"];

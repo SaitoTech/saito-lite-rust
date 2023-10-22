@@ -97,28 +97,10 @@ console.log("!");
   displaySpace(key) {
 
     try {
+
       let space = this.game.spaces[key];
       let html = "";
-
-      //
-      // trenches
-      //
-      if (space.trench == 1) {
-	if (space.control == "allies") {
-          html += `<img src="/paths/img/tiles/ap_trench1.png" class="trench-tile" />`;
-	}
-	if (space.control == "central") {
-          html += `<img src="/paths/img/tiles/cp_trench1.png" class="trench-tile" />`;
-	}
-      }
-      if (space.trench == 2) {
-	if (space.control == "allies") {
-          html += `<img src="/paths/img/tiles/ap_trench2.png" class="trench-tile" />`;
-	}
-	if (space.control == "central") {
-          html += `<img src="/paths/img/tiles/cp_trench2.png" class="trench-tile" />`;
-	}
-      }
+      let control = this.returnControlOfSpace(key);
 
       //
       // units / armies
@@ -135,6 +117,26 @@ console.log("!");
       }
       if (space.activated_for_combat) {
         html += `<img src="/paths/img/tiles/activate_combat.png" class="activation-tile" />`;
+      }
+
+      //
+      // trenches
+      //
+      if (space.trench == 1) {
+	if (control == "allies") {
+          html += `<img src="/paths/img/tiles/ap_trench1.png" class="trench-tile" />`;
+	}
+	if (control == "central") {
+          html += `<img src="/paths/img/tiles/cp_trench1.png" class="trench-tile" />`;
+	}
+      }
+      if (space.trench == 2) {
+	if (control == "allies") {
+          html += `<img src="/paths/img/tiles/ap_trench2.png" class="trench-tile" />`;
+	}
+	if (control == "central") {
+          html += `<img src="/paths/img/tiles/cp_trench2.png" class="trench-tile" />`;
+	}
       }
 
       document.querySelector(`.${key}`).innerHTML = html;

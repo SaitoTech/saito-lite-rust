@@ -121,6 +121,8 @@ console.log("HAND: " + JSON.stringify(hand));
           this.addUnitToSpace("br_army01", "stirling");
           this.addTrench("stirling", 1);
 
+alert("trench is: " + this.game.spaces[spacekey].trench);
+
           this.displayBoard();
 
           this.game.queue.splice(qe, 1);

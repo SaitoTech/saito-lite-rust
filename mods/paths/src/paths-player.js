@@ -40,7 +40,6 @@
     this.attachCardboxEvents((action) => {
 
       if (action === "ops") {
-	alert("ops - " + JSON.stringify(c));
 	this.playerPlayOps(faction, card, c.ops);
       }
 

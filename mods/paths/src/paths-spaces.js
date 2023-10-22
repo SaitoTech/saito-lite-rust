@@ -34,6 +34,15 @@
     }
   }
 
+  returnControlOfSpace(key) {
+    let space = this.game.spaces[key];
+    if (space.control) { return space.control; }
+    if (space.units.length > 0) {
+      return this.returnPowerOfUnit(space.units[0]);     
+    }
+    return "";
+  }
+
   returnActivationCost(key) {
 
     let space = this.game.spaces[key];
