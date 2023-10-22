@@ -114,6 +114,14 @@ console.log("HAND: " + JSON.stringify(hand));
 
 
         if (mv[0] == "init") {
+
+	  // initialize the board
+          this.addUnitToSpace("ah_army01", "stirling");
+          this.addUnitToSpace("ge_army01", "stirling");
+          this.addUnitToSpace("br_army01", "stirling");
+
+          this.displayBoard();
+
           this.game.queue.splice(qe, 1);
 	  return 1;
         }
@@ -186,6 +194,36 @@ console.log("HAND: " + JSON.stringify(hand));
 	  return 0;
 
 	}
+
+
+
+        if (mv[0] === "activate_for_combat") {
+
+	  let faction = mv[1];
+	  let key = mv[2];
+
+	  this.activateSpaceForCombat(key);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+
+        if (mv[0] === "activate_for_movement") {
+
+	  let faction = mv[1];
+	  let key = mv[2];
+
+	  this.activateSpaceForMovement(key);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
 
         if (mv[0] === "ops") {
 

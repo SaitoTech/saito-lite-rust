@@ -1,4 +1,17 @@
 
+  returnPowerOfUnit(unit) {
+
+    let allied = ["FR", "RU", "BR", "BE", "IT", "US"];
+    let central = ["GE", "AH", "TU", "BG"];
+
+    if (allied.includes(unit.ckey)) { return "allies"; }
+    if (central.includes(unit.ckey)) { return "central"; }
+
+    return "";
+
+  }
+
+
   importUnit(key, obj) {
 
     if (!this.game.units) { this.game.units = {}; }
@@ -23,23 +36,26 @@
 
   }
 
-  returnUnitImage(key) {
+  returnUnitImage(spacekey, idx) {
 
-    let unit = this.game.units[key];
+    let unit = this.game.spaces[spacekey].units[idx];
+    let key = unit.key;
 
     if (unit.damaged) {
-      return `<img src="/paths/img/tiles/${key}_back.png" class="army-tile" />`;
+      return `<img src="/paths/img/army/${key}_back.png" class="army-tile" />`;
     } else {
-      return `<img src="/paths/img/tiles/${key}.png" class="army-tile" />`;
+      return `<img src="/paths/img/army/${key}.png" class="army-tile" />`;
     }
 
   }
 
+  cloneUnit(unitkey) {
+    return JSON.parse(JSON.stringify(this.game.units[unitkey]));
+  }
+
   addUnitToSpace(unitkey, spacekey) {
-    if (!this.game.spaces[spacekey]) { return; }
-    if (!this.game.spaces[spacekey].units) { return; }
-    if (this.game.spaces[spacekey].units.includes(unitkey)) { return; }
-    this.game.spaces[spacekey].units.push(unitkey);
+    this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
+console.log("SPACE: " + spacekey + ": " + JSON.stringify(this.game.spaces[spacekey]));
   }
 
   damageUnitInSpace(unitkey, spacekey) {

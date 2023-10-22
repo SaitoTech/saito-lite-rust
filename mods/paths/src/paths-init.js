@@ -143,11 +143,11 @@ class PathsOfGlory extends GameTemplate {
     //
     if (!this.game.spaces) { this.game.spaces = this.returnSpaces(); }
     for (let key in this.game.spaces) {
-      if (spaces.hasOwnProperty(key)) {
+      if (this.game.spaces.hasOwnProperty(key)) {
 	try {
 	  let obj = document.getElementById(key);
-	  obj.style.top = spaces[key].top + "px";
-	  obj.style.left = spaces[key].left + "px";
+	  obj.style.top = this.game.spaces[key].top + "px";
+	  obj.style.left = this.game.spaces[key].left + "px";
         } catch (err) {
 	}
       }

@@ -56,24 +56,6 @@ console.log("\n\n\n\n");
 
 
     //
-    // add initial units
-    //
-    if (first_time_running == 1) {
-
-alert("adding to stirling!");
-      this.addUnitToSpace("ah_army01", "stirling");
-      this.displaySpace("stirling");
-
-    }
-
-
-alert("adding to stirling!");
-      this.addUnitToSpace("ah_army01", "stirling");
-      this.displaySpace("stirling");
-    
-
-
-    //
     // and show the board
     //
     this.displayBoard();

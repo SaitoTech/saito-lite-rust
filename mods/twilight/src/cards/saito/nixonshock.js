@@ -41,7 +41,6 @@
               }
             }
 
-
             if (Object.keys(discarded_cards).length > 0) {
 
               //
