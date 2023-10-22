@@ -119,6 +119,7 @@ console.log("HAND: " + JSON.stringify(hand));
           this.addUnitToSpace("ah_army01", "stirling");
           this.addUnitToSpace("ge_army01", "stirling");
           this.addUnitToSpace("br_army01", "stirling");
+          this.addTrench("stirling", 1);
 
           this.displayBoard();
 
@@ -195,6 +196,25 @@ console.log("HAND: " + JSON.stringify(hand));
 
 	}
 
+
+	if (mv[0] === "player_play_ops") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let card = mv[2];
+	  let cost = parseInt(mv[3]);
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.playerPlayOps(faction, card, cost);    
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " playing OPS");
+	  }
+
+	  return 0;
+
+	}
 
 
         if (mv[0] === "activate_for_combat") {

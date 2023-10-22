@@ -1,9 +1,7 @@
 
   returnPlayers(num = 0) {
-
     var players = [];
     return players;
-
   }
 
   returnPlayerHand() {
@@ -22,10 +20,13 @@
 
   playerPlayCard(faction, card) {
 
+    let c = this.deck[card];
+
     //
     // hide any popup
     //
     this.cardbox.hide();
+
 
     let html = `<ul>`;
     html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
@@ -39,13 +40,13 @@
     this.attachCardboxEvents((action) => {
 
       if (action === "ops") {
-	alert("ops");
-	this.playerPlayOps(faction, card, card.ops);
+	alert("ops - " + JSON.stringify(c));
+	this.playerPlayOps(faction, card, c.ops);
       }
 
       if (action === "sr") {
 	alert("sr");
-	this.playerPlayStrategicRedeployment(faction, card, card.rp);
+	this.playerPlayStrategicRedeployment(faction, card, c.rp);
       }
 
       if (action === "rp") {
@@ -63,19 +64,41 @@
 
   playerPlayOps(faction, card, cost) {
 
+    let targets = this.returnNumberOfSpacesWithFilter((key) => {
+      if (cost < this.returnActivationCost(key)) { return 0; }
+      let space = this.game.spaces[key];
+      if (space.activated_for_combat == 1) { return 0; }
+      if (space.activated_for_movement == 1) { return 0; }
+      for (let i = 0; i < space.units.length; i++) {
+        return 1;
+      }
+      return 0;
+    });
+
     //
     // hide any popup
     //
     this.cardbox.hide();
 
     let html = `<ul>`;
-    html    += `<li class="card" id="movement">activate for movement</li>`;
-    html    += `<li class="card" id="combat">activate for combat</li>`;
+    if (targets > 0) {
+      html    += `<li class="card" id="movement">activate for movement</li>`;
+    }
+    if (targets > 0) {
+      html    += `<li class="card" id="combat">activate for combat</li>`;
+    }
+    html    += `<li class="card" id="end">continue without activation</li>`;
     html    += `</ul>`;
 
     this.updateStatusWithOptions(`You have ${cost} OPS remaining`, html, true);
     this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
     this.attachCardboxEvents((action) => {
+
+      if (action === "end") {
+	this.updateStatus("ending turn");
+	this.endTurn();
+      }
+
 
       if (action === "movement") {
 
@@ -87,6 +110,8 @@
 	  (key) => {
 	    if (cost < this.returnActivationCost(key)) { return 0; }
 	    let space = this.game.spaces[key];
+	    if (space.activated_for_combat == 1) { return 0; }
+	    if (space.activated_for_movement == 1) { return 0; }
 	    for (let i = 0; i < space.units.length; i++) {
 	      return 1;
 	    }
@@ -95,6 +120,12 @@
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForMovement(key);
+	    let cost_paid = this.returnActivationCost(key); 
+	    cost -= cost_paid;
+	    if (cost < 0) { cost = 0; }
+	    if (cost > 0) {
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	    }
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
 	    this.endTurn();
 	  },
@@ -113,6 +144,8 @@
 	  "Select Space to Activate:",
 	  (key) => {
 	    let space = this.game.spaces[key];
+	    if (space.activated_for_movement == 1) { return 0; }
+	    if (space.activated_for_combat == 1) { return 0; }
 	    for (let i = 0; i < space.units.length; i++) {
 	      return 1;
 	    }
@@ -121,6 +154,12 @@
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForCombat(key);
+	    let cost_paid = this.returnActivationCost(key); 
+	    cost -= cost_paid;
+	    if (cost < 0) { cost = 0; }
+	    if (cost > 0) {
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	    }
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
 	    this.endTurn();
 	  },

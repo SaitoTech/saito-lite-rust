@@ -1723,7 +1723,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1735,7 +1735,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1747,7 +1747,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1759,7 +1759,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1771,7 +1771,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1783,7 +1783,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1795,7 +1795,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1807,7 +1807,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1819,7 +1819,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1831,7 +1831,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1847,7 +1847,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1859,7 +1859,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1871,7 +1871,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1883,7 +1883,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1895,7 +1895,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1907,7 +1907,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1919,7 +1919,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1931,7 +1931,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1943,7 +1943,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -1955,7 +1955,7 @@ console.log("\n\n\n\n");
         name : "British Reinforcements" ,
         text : "2nd army, 1 corps" ,
         cc : false ,
-        ps : 4 ,
+        ops : 4 ,
         sr : 4 ,		
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,		
         type : "normal" ,
@@ -2340,6 +2340,16 @@ alert("display detailed space!");
   }
  
 
+  returnNumberOfSpacesWithFilter(filter_func) {
+    let count = 0;
+    for (let key in this.game.spaces) {
+      if (filter_func(key) == 1) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   returnHopsToDestination(source, destination) {
     try { if (this.game.spaces[source]) { destination = this.game.spaces[source]; } } catch (err) {}
     return this.returnHopsBetweenSpacesWithFilter(source, function(spacekey) {
@@ -2658,6 +2668,25 @@ console.log("HAND: " + JSON.stringify(hand));
 	}
 
 
+	if (mv[0] === "player_play_ops") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let card = mv[2];
+	  let cost = parseInt(mv[3]);
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.playerPlayOps(faction, card, cost);    
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " playing OPS");
+	  }
+
+	  return 0;
+
+	}
+
 
         if (mv[0] === "activate_for_combat") {
 
@@ -2727,10 +2756,8 @@ console.log("HAND: " + JSON.stringify(hand));
 
 
   returnPlayers(num = 0) {
-
     var players = [];
     return players;
-
   }
 
   returnPlayerHand() {
@@ -2749,10 +2776,13 @@ console.log("HAND: " + JSON.stringify(hand));
 
   playerPlayCard(faction, card) {
 
+    let c = this.deck[card];
+
     //
     // hide any popup
     //
     this.cardbox.hide();
+
 
     let html = `<ul>`;
     html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
@@ -2766,13 +2796,13 @@ console.log("HAND: " + JSON.stringify(hand));
     this.attachCardboxEvents((action) => {
 
       if (action === "ops") {
-	alert("ops");
-	this.playerPlayOps(faction, card, card.ops);
+	alert("ops - " + JSON.stringify(c));
+	this.playerPlayOps(faction, card, c.ops);
       }
 
       if (action === "sr") {
 	alert("sr");
-	this.playerPlayStrategicRedeployment(faction, card, card.rp);
+	this.playerPlayStrategicRedeployment(faction, card, c.rp);
       }
 
       if (action === "rp") {
@@ -2790,19 +2820,41 @@ console.log("HAND: " + JSON.stringify(hand));
 
   playerPlayOps(faction, card, cost) {
 
+    let targets = this.returnNumberOfSpacesWithFilter((key) => {
+      if (cost < this.returnActivationCost(key)) { return 0; }
+      let space = this.game.spaces[key];
+      if (space.activated_for_combat == 1) { return 0; }
+      if (space.activated_for_movement == 1) { return 0; }
+      for (let i = 0; i < space.units.length; i++) {
+        return 1;
+      }
+      return 0;
+    });
+
     //
     // hide any popup
     //
     this.cardbox.hide();
 
     let html = `<ul>`;
-    html    += `<li class="card" id="movement">activate for movement</li>`;
-    html    += `<li class="card" id="combat">activate for combat</li>`;
+    if (targets > 0) {
+      html    += `<li class="card" id="movement">activate for movement</li>`;
+    }
+    if (targets > 0) {
+      html    += `<li class="card" id="combat">activate for combat</li>`;
+    }
+    html    += `<li class="card" id="end">continue without activation</li>`;
     html    += `</ul>`;
 
     this.updateStatusWithOptions(`You have ${cost} OPS remaining`, html, true);
     this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
     this.attachCardboxEvents((action) => {
+
+      if (action === "end") {
+	this.updateStatus("ending turn");
+	this.endTurn();
+      }
+
 
       if (action === "movement") {
 
@@ -2814,6 +2866,8 @@ console.log("HAND: " + JSON.stringify(hand));
 	  (key) => {
 	    if (cost < this.returnActivationCost(key)) { return 0; }
 	    let space = this.game.spaces[key];
+	    if (space.activated_for_combat == 1) { return 0; }
+	    if (space.activated_for_movement == 1) { return 0; }
 	    for (let i = 0; i < space.units.length; i++) {
 	      return 1;
 	    }
@@ -2822,6 +2876,12 @@ console.log("HAND: " + JSON.stringify(hand));
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForMovement(key);
+	    let cost_paid = this.returnActivationCost(key); 
+	    cost -= cost_paid;
+	    if (cost < 0) { cost = 0; }
+	    if (cost > 0) {
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	    }
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
 	    this.endTurn();
 	  },
@@ -2840,6 +2900,8 @@ console.log("HAND: " + JSON.stringify(hand));
 	  "Select Space to Activate:",
 	  (key) => {
 	    let space = this.game.spaces[key];
+	    if (space.activated_for_movement == 1) { return 0; }
+	    if (space.activated_for_combat == 1) { return 0; }
 	    for (let i = 0; i < space.units.length; i++) {
 	      return 1;
 	    }
@@ -2848,6 +2910,12 @@ console.log("HAND: " + JSON.stringify(hand));
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForCombat(key);
+	    let cost_paid = this.returnActivationCost(key); 
+	    cost -= cost_paid;
+	    if (cost < 0) { cost = 0; }
+	    if (cost > 0) {
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	    }
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
 	    this.endTurn();
 	  },
@@ -2898,7 +2966,7 @@ console.log("HAND: " + JSON.stringify(hand));
     $('.army-tile').off();
     $('.space').off();
 
-    this.zoom_overlay.space_onclick_callback = mycallback;
+    this.zoom_overlay.spaces_onclick_callback = mycallback;
 
     for (let key in this.game.spaces) {
       if (filter_func(key) == 1) {
@@ -2919,7 +2987,7 @@ console.log("HAND: " + JSON.stringify(hand));
               $('.space').off();
               $('.army-tile').off();
               $('.trench-tile').off();
-              paths_self.zoom_overlay.space_onclick_callback = null;
+              paths_self.zoom_overlay.spaces_onclick_callback = null;
               paths_self.removeSelectable();
               if (callback_run == false) {
                 callback_run = true;
@@ -2966,7 +3034,7 @@ console.log("HAND: " + JSON.stringify(hand));
         return 0;
       }
 
-      paths_self.theses_overlay.space_onclick_callback = null;
+      paths_self.zoom_overlay.spaces_onclick_callback = null;
       mycallback(action);
 
     });

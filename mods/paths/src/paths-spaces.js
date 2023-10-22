@@ -9,6 +9,31 @@
     this.displaySpace(spacekey);
   }
 
+  addTrench(spacekey, level=0) {
+    if (level != 0) {
+      this.game.spaces[spacekey].trench = level;
+      return;
+    }
+    if (this.game.spaces[spacekey].trench == 1) {
+      this.game.spaces[spacekey].trench = 2;
+    }
+    if (this.game.spaces[spacekey].trench == 0) {
+      this.game.spaces[spacekey].trench = 1;
+    }
+  }
+  removeTrench(spacekey, level=0) {
+    if (level != 0) {
+      this.game.spaces[spacekey].trench = level;
+      return;
+    }
+    if (this.game.spaces[spacekey].trench == 1) {
+      this.game.spaces[spacekey].trench = 0;
+    }
+    if (this.game.spaces[spacekey].trench == 2) {
+      this.game.spaces[spacekey].trench = 1;
+    }
+  }
+
   returnActivationCost(key) {
 
     let space = this.game.spaces[key];
@@ -27,6 +52,16 @@
 
   }
  
+
+  returnNumberOfSpacesWithFilter(filter_func) {
+    let count = 0;
+    for (let key in this.game.spaces) {
+      if (filter_func(key) == 1) {
+        count++;
+      }
+    }
+    return count;
+  }
 
   returnHopsToDestination(source, destination) {
     try { if (this.game.spaces[source]) { destination = this.game.spaces[source]; } } catch (err) {}

@@ -919,9 +919,9 @@ class RedSquare extends ModTemplate {
     //
     // avoid errors
     //
-    if (!tweet?.tx?.optional) {
-      tweet.tx.optional = {};
-    }
+    if (!tweet) { return; }
+    if (!tweet.tx) { return; }
+    if (!tweet.tx.optional) { tweet.tx.optional = {}; }
 
     //
     // maybe this needs to go into notifications too
