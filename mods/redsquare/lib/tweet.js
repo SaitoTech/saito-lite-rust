@@ -22,7 +22,7 @@ class Tweet {
     let txmsg = tx.returnMessage();
 
     if (txmsg.module !== mod.name) {
-      console.warn("Attempting to create Tweet from non-Redsquare tx");
+      console.warn("Attempting to create Tweet from non-Redsquare tx, ", txmsg.module);
       return null;
     }
 

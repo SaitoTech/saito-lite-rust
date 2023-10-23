@@ -24,8 +24,36 @@ class RedSquareMain {
     // rendering the main thread
     //
     this.app.connection.on("redsquare-home-render-request", () => {
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      window.location.hash = "#home";
+      document.querySelector(".saito-main").innerHTML = "";
       this.manager.render("tweets");
       this.scrollFeed();
+
+      document.querySelectorAll(".optional-menu-item").forEach(item => {
+        item.style.display = "none";
+      });
+
+      document.querySelector(".redsquare-menu-refresh").style.display = "flex";
+    });
+
+    this.app.connection.on("redsquare-refresh-feed", ()=>{
+
+      this.scroll_depth = 0;
+      this.scrollFeed(0, "smooth");
+
+      siteMessage("Checking for new tweets");
+
+      this.mod.loadTweets((txs) => {
+        if (txs.length > 0) {
+          this.mod.saveLocalTweets();
+          siteMessage(`${txs.length} new tweets`, 2000);
+        }else{
+          siteMessage("No new tweets", 2000);
+        }
+        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
+      });
+
     });
 
     //
@@ -81,6 +109,13 @@ class RedSquareMain {
       this.scrollFeed(0);
       document.querySelector(".saito-main").innerHTML = "";
       this.manager.renderTweet(tweet);
+
+      document.querySelectorAll(".optional-menu-item").forEach(item => {
+        item.style.display = "none";
+      });
+
+      document.querySelector(".redsquare-menu-home").style.display = "flex";
+
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
@@ -91,6 +126,13 @@ class RedSquareMain {
       this.mod.save();
       this.mod.menu.incrementNotifications("notifications", 0);
       this.manager.render("notifications");
+
+      document.querySelectorAll(".optional-menu-item").forEach(item => {
+        item.style.display = "none";
+      });
+
+      document.querySelector(".redsquare-menu-home").style.display = "flex";
+
     });
 
 
@@ -112,6 +154,13 @@ class RedSquareMain {
       }
 
       this.manager.renderProfile(publickey);
+
+      document.querySelectorAll(".optional-menu-item").forEach(item => {
+        item.style.display = "none";
+      });
+
+      document.querySelector(".redsquare-menu-home").style.display = "flex";
+
 
     });
 
