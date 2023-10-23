@@ -14,12 +14,13 @@ class PeerManager {
     this.videoEnabled = true;
     this.audioEnabled = true;
 
-    this.app.connection.on("stun-peer-manager-update-room-code", (room_code) => {
-      this.room_code = room_code;
+    this.app.connection.on("stun-peer-manager-update-room-details", (room_obj) => {
+      this.room_obj = room_obj;
     });
 
     app.connection.on("stun-event-message", (data) => {
-      if (data.room_code !== this.room_code) {
+      console.log(data, this.room_obj);
+      if (data.room_code !== this.room_obj.room_code) {
         return;
       }
 
@@ -35,7 +36,7 @@ class PeerManager {
       } else {
         let peerConnection = this.peers.get(data.public_key);
 
-        console.log("peers consoled", peerConnection);
+        // console.log("peers consoled", peerConnection);
         if (!peerConnection) {
           this.createPeerConnection(data.public_key);
           peerConnection = this.peers.get(data.public_key);
@@ -96,7 +97,7 @@ class PeerManager {
       }
 
       let data = {
-        room_code: this.room_code,
+        room_code: this.room_obj.room_code,
         type: "toggle-video",
         enabled: this.videoEnabled,
       };
@@ -116,7 +117,7 @@ class PeerManager {
       }
 
       let data = {
-        room_code: this.room_code,
+        room_code: this.room_obj.room_code,
         type: "toggle-audio",
         enabled: this.audioEnabled,
       };
@@ -183,7 +184,7 @@ class PeerManager {
       //Render the UI component
       this.app.connection.emit(
         "show-call-interface",
-        this.room_code,
+        this.room_obj,
         this.videoEnabled,
         this.audioEnabled,
         isJoining
@@ -191,7 +192,7 @@ class PeerManager {
       this.app.connection.emit("add-local-stream-request", this.localStream);
 
       //Send Message to peers
-      this.join();
+      this.enterCall();
 
       let sound = new Audio("/videocall/audio/enter-call.mp3");
       sound.play();
@@ -220,7 +221,7 @@ class PeerManager {
       //   return;
       // }
 
-      console.log(this.getPeerConnection(public_key), "remote description offer");
+      // console.log(this.getPeerConnection(public_key), "remote description offer");
 
       this.getPeerConnection(public_key)
         .setRemoteDescription(new RTCSessionDescription({ type: "offer", sdp }))
@@ -232,28 +233,19 @@ class PeerManager {
         })
         .then(() => {
           let data = {
-            room_code: this.room_code,
+            room_code: this.room_obj.room_code,
             type: "renegotiate-answer",
             sdp: this.getPeerConnection(public_key).localDescription.sdp,
             targetPeerId: public_key,
+            public_key: this.mod.publicKey,
           };
-          this.mod.sendStunMessageToServerTransaction(data);
+          this.mod.sendStunMessageToPeersTransaction(data, [public_key]);
         })
         .catch((error) => {
           console.error("Error handling offer:", error);
         });
       this.peers.set(data.public_key, this.getPeerConnection(public_key));
     } else if (type === "renegotiate-answer" || type === "answer") {
-      console.log(
-        this.getPeerConnection(public_key),
-        this.getPeerConnection(public_key).connectionState,
-        "remote description answer"
-      );
-      // if (
-      //   this.getPeerConnection(public_key).connectionState === "connected" ||
-      //   this.getPeerConnection(public_key).signalingState === "stable"
-      // )
-      //   return;
       this.getPeerConnection(public_key)
         .setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp }))
         .then((answer) => {})
@@ -278,6 +270,12 @@ class PeerManager {
     });
 
     this.peers.set(peerId, peerConnection);
+    let _peers = [];
+    this.peers.forEach((value, key) => {
+      _peers.push(key);
+    });
+
+    localStorage.setItem(this.room_obj.room_code, JSON.stringify(_peers));
 
     //Make sure you have a local Stream
     if (!this.localStream) {
@@ -293,12 +291,13 @@ class PeerManager {
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
         let data = {
-          room_code: this.room_code,
+          room_code: this.room_obj.room_code,
           type: "candidate",
           candidate: event.candidate,
           targetPeerId: peerId,
+          public_key: this.mod.publicKey,
         };
-        this.mod.sendStunMessageToServerTransaction(data);
+        this.mod.sendStunMessageToPeersTransaction(data, [peerId]);
       }
     };
 
@@ -325,7 +324,7 @@ class PeerManager {
         }
 
         this.remoteStreams.set(peerId, { remoteStream, peerConnection });
-        console.log(this.remoteStreams, "remote stream new");
+        // console.log(this.remoteStreams, "remote stream new");
         this.app.connection.emit("add-remote-stream-request", peerId, remoteStream);
 
         this.analyzeAudio(remoteStream, peerId);
@@ -410,7 +409,7 @@ class PeerManager {
 
       this.app.connection.emit(
         "stun-update-connection-message",
-        this.room_code,
+        this.room_obj.room_code,
         peerId,
         peerConnection.connectionState
       );
@@ -519,12 +518,13 @@ class PeerManager {
       })
       .then(() => {
         let data = {
-          room_code: this.room_code,
+          room_code: this.room_obj.room_code,
           type: "renegotiate-offer",
           sdp: peerConnection.localDescription.sdp,
           targetPeerId: peerId,
+          public_key: this.mod.publicKey,
         };
-        this.mod.sendStunMessageToServerTransaction(data);
+        this.mod.sendStunMessageToPeersTransaction(data, [peerId]);
       })
       .catch((error) => {
         console.error("Error creating offer:", error);
@@ -533,12 +533,40 @@ class PeerManager {
     // Implement renegotiation logic for reconnections and media stream restarts
   }
 
-  join() {
-    console.log("joining mesh network");
-    this.mod.sendStunMessageToServerTransaction({
-      type: "peer-joined",
-      room_code: this.room_code,
-    });
+  async enterCall() {
+    console.log("entering call", this.room_obj);
+
+    if (this.room_obj.access_public_key === this.mod.publicKey) {
+      // get public key from other source
+      console.log("cannot join with this link public key is the same");
+      let peers = localStorage.getItem(this.room_obj.room_code);
+      if (peers) {
+        console.log("peers, ", peers);
+        peers = JSON.parse(peers);
+        console.log("peers, ", peers);
+        if (peers.length > 0) {
+          for (let i = 0; i < peers.length; i++) {
+            if (peers[i] !== this.mod.publicKey)
+              await this.mod.sendCallListRequestTransaction(peers[i], this.room_obj.room_code);
+            break;
+          }
+        }
+      }
+
+      return;
+    }
+
+    // send ping transaction
+
+    console.log("requesting call list from ", this.room_obj.access_public_key);
+    await this.mod.sendCallListRequestTransaction(
+      this.room_obj.access_public_key,
+      this.room_obj.room_code
+    );
+    // this.mod.sendStunMessageToServerTransaction({
+    //   type: "peer-joined",
+    //   room_code: this.room_obj.room_code,
+    // });
   }
 
   leave() {
@@ -547,7 +575,9 @@ class PeerManager {
       // console.log(track);
       console.log("stopping track");
     });
+    let keys = [];
     this.peers.forEach((peerConnections, key) => {
+      keys.push(key);
       peerConnections.close();
     });
 
@@ -558,11 +588,12 @@ class PeerManager {
     }
 
     let data = {
-      room_code: this.room_code,
+      room_code: this.room_obj.room_code,
       type: "peer-left",
+      public_key: this.mod.publicKey,
     };
 
-    this.mod.sendStunMessageToServerTransaction(data);
+    this.mod.sendStunMessageToPeersTransaction(data, keys);
   }
 
   sendSignalingMessage(data) {}

@@ -60,17 +60,10 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
-      this.app.connection.emit("redsquare-home-render-request");
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("redsquare-home-new-render-request");
     }
-
-    document.querySelector(".redsquare-menu-refresh").onclick = (e) => {
-      //window.history.pushState({}, document.title, "/" + this.mod.slug);
-      //history.replaceState(null, null, ' ');
-      //this.app.connection.emit("redsquare-home-render-request");
-
-      this.app.connection.emit("redsquare-refresh-feed");
-
-    };
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       window.history.pushState({}, document.title, "/" + this.mod.slug);

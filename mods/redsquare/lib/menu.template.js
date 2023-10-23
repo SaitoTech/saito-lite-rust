@@ -6,13 +6,10 @@ module.exports = () => {
         <div id="new-tweet" class="saito-button-primary">New Post</div>
 
         <ul class="saito-menu-list">
-          <li class="redsquare-menu-home optional-menu-item">
+          <li class="redsquare-menu-home">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
-          </li>
-          <li class="redsquare-menu-refresh optional-menu-item">
-            <i class="fa-solid fa-rotate"></i>
-            <span>Refresh</span>
+<!--            <i class="fa-solid fa-rotate"></i> -->
           </li>
           <li class="redsquare-menu-notifications">
             <i class="fas fa-bell"></i>

@@ -103,6 +103,15 @@
   z-index: 3;
 }
 
+.redsquare-menu-home .fa-house::before  {
+  transition: all 0.15s ease-in-out;
+}
+
+
+.redsquare-menu-home:hover .fa-house::before {
+  content: "\f021";
+}
+
 
 .optional-menu-item {
   display: none;
