@@ -34,7 +34,6 @@ class RedSquareMain {
       window.location.hash = "#home";
 
       document.querySelector(".saito-main").innerHTML = "";
-      this.app.connection.emit("redsquare-insert-loading-message");
       this.manager.render("tweets");
     });
 
