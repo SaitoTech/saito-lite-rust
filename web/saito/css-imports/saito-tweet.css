@@ -6,6 +6,10 @@
   position: relative;
 }
 
+.tweet-preview .tweet .tweet-body {
+  min-height: 4rem;
+}
+
 .tweet-main .tweet {
   border-bottom: 0px;
   border-top: 0px;
@@ -259,6 +263,15 @@
   height: 60px;
   background-size: cover;
   /* margin-right: .5rem; */
+}
+
+.tweet-like-button .heart-icon:hover {
+  background: var(--saito-heart-animation-clicked);
+  cursor: pointer;
+  position: absolute;
+  background-size: cover;
+  width: 60px;
+  height: 60px;
 }
 
 .tweet-like-button .heart-icon.liked {

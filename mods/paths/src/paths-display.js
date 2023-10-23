@@ -4,6 +4,23 @@
   }
 
 
+  addSelectable(el) {
+    if (!el.classList.contains("selectable")) {
+      el.classList.add('selectable');
+    }
+  } 
+    
+  removeSelectable() {
+    document.querySelectorAll(".selectable").forEach((el) => {
+      el.onclick = (e) => {};
+      el.classList.remove('selectable');
+    });
+    $('.trench-tile').off();
+    $('.army-tile').off();
+    $('.space').off();
+  }
+
+
   displayBoard() {
 
     let paths_self = this;
@@ -14,6 +31,9 @@
     try {
       this.displaySpaces();
     } catch (err) {
+console.log("!");
+console.log("!");
+console.log("!");
       console.log("error displaying spaces... " + err);
     }
 
@@ -23,7 +43,6 @@
     //
     let xpos = 0;
     let ypos = 0;
-
 
     if (!paths_self.bound_gameboard_zoom) {
 
@@ -76,7 +95,54 @@
 
 
   displaySpace(key) {
-console.log("display: " + key);
+
+    try {
+
+      let space = this.game.spaces[key];
+      let html = "";
+      let control = this.returnControlOfSpace(key);
+
+      //
+      // units / armies
+      //
+      for (let i = 0; i < space.units.length; i++) {
+        html += this.returnUnitImage(key, i);
+      }
+
+      //
+      // activated for movement
+      //
+      if (space.activated_for_movement) {
+        html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
+      }
+      if (space.activated_for_combat) {
+        html += `<img src="/paths/img/tiles/activate_combat.png" class="activation-tile" />`;
+      }
+
+      //
+      // trenches
+      //
+      if (space.trench == 1) {
+	if (control == "allies") {
+          html += `<img src="/paths/img/tiles/ap_trench1.png" class="trench-tile" />`;
+	}
+	if (control == "central") {
+          html += `<img src="/paths/img/tiles/cp_trench1.png" class="trench-tile" />`;
+	}
+      }
+      if (space.trench == 2) {
+	if (control == "allies") {
+          html += `<img src="/paths/img/tiles/ap_trench2.png" class="trench-tile" />`;
+	}
+	if (control == "central") {
+          html += `<img src="/paths/img/tiles/cp_trench2.png" class="trench-tile" />`;
+	}
+      }
+
+      document.querySelector(`.${key}`).innerHTML = html;
+
+    } catch (err) {
+    }
   }
 
   displaySpaceDetailedView(key) {
@@ -87,20 +153,11 @@ alert("display detailed space!");
 
     let paths_self = this;
 
-    if (!this.game.state.board) {
-      this.game.state.board["protestant"] = this.returnOnBoardUnits("protestant");
-      this.game.state.board["papacy"] = this.returnOnBoardUnits("papacy");
-      this.game.state.board["england"] = this.returnOnBoardUnits("england");
-      this.game.state.board["france"] = this.returnOnBoardUnits("france");
-      this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
-      this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
-    }
-
     //
     // add tiles
     //
-    for (let key in this.spaces) {
-      if (this.spaces.hasOwnProperty(key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
       }
     }
@@ -145,7 +202,7 @@ alert("display detailed space!");
 	}
 	// otherwise show zoom
         //if (e.target.classList.contains("space")) {
-          paths_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+          paths_self.zoom_overlay.renderAtCoordinates(xpos, ypos);
 	  //e.stopPropagation();
 	  //e.preventDefault();	
 	  //return;

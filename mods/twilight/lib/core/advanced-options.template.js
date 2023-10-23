@@ -177,7 +177,8 @@ module.exports = () => {
               <li><input class="remove_card" type="checkbox" name="energycrisis" /> <span> Energy Crisis (Mid-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="nixonshock" /> <span> Nixon Shock (Mid-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="kissinger" /> <span> Kissinger Bombs Cambodia (Mid-War)</span></li>
-              <li><input class="remove_card" type="checkbox" name="handshake" /> <span> Handshake in Space (Mid-War)</span></li>
+              <!--<li><input class="remove_card" type="checkbox" name="handshake" /> <span> Handshake in Space (Mid-War)</span></li>-->
+              <li><input class="remove_card" type="checkbox" name="khruschevthaw" /> <span> Khruschev Thaw (Mid-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="bayofpigs" /> <span> Bay of Pigs (Mid-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="fallofsaigon" /> <span> Fall of Saigon (Mid-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="fischerspassky" /> <span> Fischer-Spassky (Mid-War)</span></li>

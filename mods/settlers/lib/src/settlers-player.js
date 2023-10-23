@@ -213,6 +213,7 @@ class SettlersPlayer {
       $(".road.new").off();
       $(".road.new").on("click", function () {
         let slot = $(this).attr("id");
+        $(".road.empty").css("background-color", "");
         settlers_self.confirmPlacement(slot, settlers_self.r.name, () => {
           $(".road.new").off();
           $(".road.new").removeAttr("style");

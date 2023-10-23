@@ -295,6 +295,7 @@ Media Queries
   }
   #message-wrapper {
     width: 100vw;
+    min-width: unset;
     position: absolute;
     padding: 2rem;
     bottom: 0;

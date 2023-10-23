@@ -88,13 +88,12 @@
     //
     // position cities / spaces / etc
     //
-    let spaces = this.returnSpaces();
-    for (let key in spaces) {
-      if (spaces.hasOwnProperty(key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces.hasOwnProperty(key)) {
 	try {
 	  let obj = document.getElementById(key);
-	  obj.style.top = spaces[key].top + "px";
-	  obj.style.left = spaces[key].left + "px";
+	  obj.style.top = this.game.spaces[key].top + "px";
+	  obj.style.left = this.game.spaces[key].left + "px";
         } catch (err) {
 	}
       }

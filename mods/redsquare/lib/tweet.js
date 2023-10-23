@@ -8,7 +8,6 @@ const JSON = require("json-bigint");
 const Transaction = require("../../../lib/saito/transaction").default;
 
 class Tweet {
-
   constructor(app, mod, tx, container = ".tweet-manager") {
     this.app = app;
     this.mod = mod;
@@ -23,7 +22,7 @@ class Tweet {
     let txmsg = tx.returnMessage();
 
     if (txmsg.module !== mod.name) {
-      console.warn("Attempting to create Tweet from non-Redsquare tx");
+      console.warn("Attempting to create Tweet from non-Redsquare tx, ", txmsg.module);
       return null;
     }
 
@@ -117,7 +116,6 @@ class Tweet {
     //
     this.user.notice = "new post on " + this.formatDate(this.created_at);
 
-
     this.children = [];
     this.children_sigs_hmap = {};
     this.unknown_children = [];
@@ -137,19 +135,16 @@ class Tweet {
     this.parent_id = "";
     this.thread_id = "";
 
-
     //
     // Read data from txmsg.data and tx.optional to populate this class
     //
     try {
       this.setKeys(txmsg.data);
     } catch (err) {
-      //console.log("ERROR 1: " + err);
     }
     try {
       this.setKeys(tx.optional);
     } catch (err) {
-      //console.log("ERROR 2: " + err);
     }
 
     //
@@ -215,8 +210,11 @@ class Tweet {
     }
   }
 
-  render(prepend = false) {
-    //Process link stuff here and not on constructor
+  render(prepend = false, render_with_children = true) {
+
+    //
+    // handle if link
+    //
     if (this.link && !this.link_preview) {
       this.link_preview = new Link(
         this.app,
@@ -226,9 +224,11 @@ class Tweet {
       );
     }
 
-    // double-rendering is possible with commented retweets
-    // but we should just replace, duh.
-
+    //
+    // in the case of a quote-or-retweet the retweet might appear on the same page
+    // as the original tweet, so we check here and flag whether or not the element
+    // already exists. if it does we will only render 1.
+    //
     let myqs = this.container + `> .tweet-${this.tx.signature}`;
     let replace_existing_element = true;
 
@@ -237,10 +237,12 @@ class Tweet {
 
     //
     // we might be re-rendering when critical child is on screen, so check if the
-    // class exists and flag if so
+    // class exists and flag if so. the class indicates that a critical child exists
+    // and by flagging it we will be able to re-add the class to the re-rendered 
+    // tweet and preserve the CSS so the visual connector between the tweets does not
+    // disappear.
     //
     let obj = document.querySelector(myqs);
-
     if (obj) {
       if (obj.classList.contains("has-reply")) {
         has_reply = true;
@@ -258,7 +260,8 @@ class Tweet {
     }
 
     //
-    // We only want this default behavior for main feed, NEED TO FIX
+    // if the tweet has been updated, we upate the user notice to inform users that
+    // there is a new reply!
     //
     if (this.updated_at > this.created_at) {
       if (this.tx.optional.num_replies > 0) {
@@ -267,13 +270,16 @@ class Tweet {
     }
 
     //
-    // retweets without commentary? pass-through and render subtweet
+    // if this is a retweet but not a quote tweet we pass through the "parent" and just
+    // render the child with a "retweet-notice" that shows up at the top of the tweet. we
+    // then pass-through and render the sub-tweet directly.
     //
     if (this.retweet_tx && !this.text && !this.img_preview) {
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
-        " " + this.formatDate();
+        " " +
+        this.formatDate();
       this.retweet.container = ".tweet-manager";
 
       let t = this.mod.returnTweet(this.retweet.tx.signature);
@@ -288,22 +294,33 @@ class Tweet {
       return;
     }
 
-    //
-    // remove if selector does not exist
-    //
     if (this.render_after_selector) {
+      //
+      // remove if selector does not exist
+      //
       if (!document.querySelector(this.render_after_selector)) {
         this.render_after_selector = "";
       }
+      //
+      // remove if selector is a previewed tweet, like retweet
+      //
+      let preview_selector = ".tweet-preview " + this.render_after_selector;
+      if (document.querySelector(preview_selector)) {
+	//
+	//
+	//
+	this.render_after_selector = "";
+      }
     }
 
-    if (/*replace_existing_element &&*/ document.querySelector(myqs)) {
+    if (document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(
         TweetTemplate(this.app, this.mod, this),
         this.container
       );
+
     } else if (this.render_after_selector) {
       this.app.browser.addElementAfterSelector(
         TweetTemplate(this.app, this.mod, this),
@@ -319,13 +336,13 @@ class Tweet {
     //
     // has-reply and has-reply-disconnected
     //
-    if (has_reply) {
+    if (has_reply && render_with_children == true) {
       let obj = document.querySelector(myqs);
       if (obj) {
         obj.classList.add("has-reply");
       }
     }
-    if (has_reply_disconnected) {
+    if (has_reply_disconnected && render_with_children == true) {
       let obj = document.querySelector(myqs);
       if (obj) {
         obj.classList.add("has-reply-disconnected");
@@ -377,9 +394,16 @@ class Tweet {
 
   renderWithCriticalChild() {
 
-    this.render();
+    let does_tweet_already_exist_on_page = false;
+    if (document.querySelector(`.tweet-${this.tx.signature}`)) {
+      does_tweet_already_exist_on_page = true;
+    }
 
-    if (this.critical_child) {
+    if (!does_tweet_already_exist_on_page) {
+      this.render();
+    }
+
+    if (this.critical_child && does_tweet_already_exist_on_page == false) {
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
       this.critical_child.render();
 
@@ -425,14 +449,12 @@ class Tweet {
     this.attachEvents();
   }
 
-
   //
   // render this tweet with its children, but leading to a specific tweet.
   //
-  renderWithChildrenWithTweet(tweet, sigs=[]) {
-
+  renderWithChildrenWithTweet(tweet, sigs = []) {
     //
-    // sigs will have list of signatures that form 
+    // sigs will have list of signatures that form
     // a direct chain between parent and child that
     // we want to show.
     //
@@ -465,7 +487,7 @@ class Tweet {
         this.children[i].render_after_selector = `.tweet-${this.tx.signature}`;
         if (this.tx.signature == tweet.tx.signature) {
           this.children[i].renderWithChildren();
-	} else {
+        } else {
           this.children[i].renderWithChildrenWithTweet(tweet, sigs);
         }
       }
@@ -554,53 +576,59 @@ class Tweet {
           // if we are asking to see a tweet, WE SHOULD load from parent if exists
           //
           if (e.target.tagName != "IMG") {
-
             //
-            // if there is a connection between us and the parent, we have all of the 
+            // if there is a connection between us and the parent, we have all of the
             // tweets needed to display and we can emit the event that triggers the
             // redisplay directly, and then load and append any children as needed.
             //
             let sigs = this.mod.returnThreadSigs(this.thread_id, this.tx.signature);
-            if (sigs.length > 0) { sigs.push(this.tx.signature); }
+            if (sigs.length > 0) {
+              sigs.push(this.tx.signature);
+            }
 
-	    //
-	    // if we have just replied, the count on the page will be higher than
-	    // the count in the tweet itself, so we want to catch this edge-case
-	    // by checking the number of replies before reload and keeping them
-	    //
-	    let parent_replies = null;
-	    try {
-	      parent_replies = document.querySelector(`.tweet-${this.thread_id} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`).innerHTML;
-	    } catch (err) {
-	    }
-
-
+            //
+            // if we have just replied, the count on the page will be higher than
+            // the count in the tweet itself, so we want to catch this edge-case
+            // by checking the number of replies before reload and keeping them
+            //
+            let parent_replies = null;
+            try {
+              parent_replies = document.querySelector(
+                `.tweet-${this.thread_id} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`
+              ).innerHTML;
+            } catch (err) {}
 
             //
             // full thread already exists
             //
             if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
-                window.history.pushState({}, document.title, `/redsquare?tweet_id=${this.thread_id}`);
- 
-                app.connection.emit("redsquare-home-tweet-render-request", this);
+              window.history.pushState({}, document.title, `/redsquare?tweet_id=${this.thread_id}`);
 
-                setTimeout(() => {
-		  if (parent_replies) {
-	            document.querySelector(`.tweet-${this.thread_id} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`).innerHTML = parent_replies;  
-		  }
-                }, 50);
+              app.connection.emit("redsquare-tweet-render-request", this);
 
-                this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
-		  for (let z = 0; z < txs.length; z++) {
-                    let tweet = this.mod.returnTweet(txs[z].signature);
-                    if (tweet) { tweet.render(); }
-                    // hide manager loader
-                    this.mod.manager.hideLoader();
-		  }
-                });
-            //
-            // otherwise re-load
-            //
+              setTimeout(() => {
+                if (parent_replies) {
+                  document.querySelector(
+                    `.tweet-${this.thread_id} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`
+                  ).innerHTML = parent_replies;
+                }
+              }, 50);
+
+              this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
+                for (let z = 0; z < txs.length; z++) {
+                  let tweet = this.mod.returnTweet(txs[z].signature);
+                  if (tweet) {
+                    tweet.render();
+                  }
+                  // hide manager loader
+                  this.mod.manager.hideLoader();
+                }
+              });
+
+
+              //
+              // otherwise re-load
+              //
             } else {
               window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
             }
@@ -619,13 +647,14 @@ class Tweet {
             //window.location.href = `/redsquare/?tweet_id=${sig}`;
             let t = this.mod.returnTweet(sig);
             if (t) {
-              app.connection.emit("redsquare-home-tweet-render-request", t);
+              app.connection.emit("redsquare-tweet-render-request", t);
             } else {
               console.warn("This is going to screw up the feed");
               this.retweet.container = ".tweet-manager";
-              app.connection.emit("redsquare-home-tweet-render-request", this.retweet);
+              app.connection.emit("redsquare-tweet-render-request", this.retweet);
             }
           }
+
         });
       });
 
@@ -635,7 +664,6 @@ class Tweet {
       document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`
       ).onclick = (e) => {
-
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -710,7 +738,7 @@ class Tweet {
       heartIcon.onclick = async (e) => {
         if (!heartIcon.classList.contains("liked")) {
           heartIcon.classList.add("liked");
-	  this.mod.likeTweet(this.tx.signature);
+          this.mod.likeTweet(this.tx.signature);
         } else {
           setTimeout(() => {
             heartIcon.classList.remove("liked");
@@ -736,7 +764,9 @@ class Tweet {
         );
         if (obj) {
           obj.innerHTML = parseInt(obj.innerHTML) + 1;
-          if (!obj.classList.contains("liked")) { obj.classList.add("liked"); }
+          if (!obj.classList.contains("liked")) {
+            obj.classList.add("liked");
+          }
         }
       };
 
@@ -795,7 +825,6 @@ class Tweet {
   }
 
   async addTweet(tweet, levels_deep = 0) {
-
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here
@@ -848,12 +877,10 @@ class Tweet {
       }
     }
 
-
     //
     // tweet is direct child
     //
     if (tweet.parent_id == this.tx.signature) {
-
       //
       // already added?
       //
@@ -865,7 +892,7 @@ class Tweet {
       // make critical child if needed
       //
       if (
-        (this.isCriticalChild(tweet)) ||
+        this.isCriticalChild(tweet) ||
         (tweet.tx.timestamp > this.updated_at && this.critical_child == null)
       ) {
         this.critical_child = tweet;
@@ -902,7 +929,6 @@ class Tweet {
       // tweet belongs to a child
       //
     } else {
-
       //
       // maybe it is a critical child
       //
@@ -945,15 +971,15 @@ class Tweet {
         //
         // if still here, add to unknown children if top-level as we didn't add to any children
         //
-	let inserted = false;
-	for (let z = 0; z < this.children.length; z++) {
-	  if (tweet.parent_id == this.children[z].tx.signature) {
-	    if (this.children[z].addTweet(tweet) != 0) {
+        let inserted = false;
+        for (let z = 0; z < this.children.length; z++) {
+          if (tweet.parent_id == this.children[z].tx.signature) {
+            if (this.children[z].addTweet(tweet) != 0) {
               this.children_sigs_hmap[tweet.tx.signature] = 1;
-	      inserted = true;
-	    }
-	  }
-	}
+              inserted = true;
+            }
+          }
+        }
 
         if (levels_deep == 0 && inserted == false) {
           if (this.unknown_children_sigs_hmap[tweet.tx.signature] != 1) {
@@ -1053,8 +1079,6 @@ class Tweet {
         this.link = first_link;
       }
 
-      //console.log(this.link);
-
       //
       // youtube link
       //
@@ -1098,15 +1122,15 @@ class Tweet {
       let likes = this.tx?.optional?.num_likes || 0;
       let existing = likes;
       if (document.querySelector(qs)) {
-	existing = parseInt(document.querySelector(qs).innerHTML);
+        existing = parseInt(document.querySelector(qs).innerHTML);
       }
       for (let obj of Array.from(document.querySelectorAll(qs))) {
-	if (likes > existing) {
+        if (likes > existing) {
           obj.innerHTML = likes;
-	}
+        }
       }
     } catch (err) {
-console.log("ERROR UPDATING LIKES: " + err);
+      console.log("ERROR UPDATING LIKES: " + err);
     }
   }
 
@@ -1118,12 +1142,12 @@ console.log("ERROR UPDATING LIKES: " + err);
       let retweets = this.tx?.optional?.num_retweets || 0;
       let existing = retweets;
       if (document.querySelector(qs)) {
-	existing = parseInt(document.querySelector(qs).innerHTML);
+        existing = parseInt(document.querySelector(qs).innerHTML);
       }
       for (let obj of Array.from(document.querySelectorAll(qs))) {
-	if (retweets > existing) {
+        if (retweets > existing) {
           obj.innerHTML = retweets;
-	}
+        }
       }
     } catch (err) {}
   }
@@ -1136,24 +1160,23 @@ console.log("ERROR UPDATING LIKES: " + err);
       let replies = this.tx?.optional?.num_replies || 0;
       let existing = replies;
       if (document.querySelector(qs)) {
-	existing = parseInt(document.querySelector(qs).innerHTML);
+        existing = parseInt(document.querySelector(qs).innerHTML);
       }
       for (let obj of Array.from(document.querySelectorAll(qs))) {
-	if (replies > existing) {
+        if (replies > existing) {
           obj.innerHTML = replies;
         }
       }
     } catch (err) {}
   }
 
-
-  returnTransactionsInThread(limit = 10){
+  returnTransactionsInThread(limit = 10) {
     let txs = [];
 
-    for (let i=0; i<this.children.length; i++) {
+    for (let i = 0; i < this.children.length; i++) {
       if (i >= limit) {
         break;
-      }  
+      }
 
       txs.push(this.children[i].tx.serialize_to_web(this.app));
     }

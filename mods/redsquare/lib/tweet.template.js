@@ -17,10 +17,15 @@ module.exports = (app, mod, tweet) => {
   let is_retweeted_css = "";
   let is_replied_css ="";
 
-  if (mod.liked_tweets.includes(tweet.tx.signature)) { is_liked_css = "liked"; }
-  if (mod.retweeted_tweets.includes(tweet.tx.signature)) { is_retweeted_css = "retweeted"; }
-  if (mod.replied_tweets.includes(tweet.tx.signature)) { is_replied_css = "replied"; }
-
+  if (mod.liked_tweets.includes(tweet.tx.signature)) { is_liked_css = "liked"; 
+    if (num_likes == 0) { num_likes++; }
+  }
+  if (mod.retweeted_tweets.includes(tweet.tx.signature)) { is_retweeted_css = "retweeted"; 
+    if (num_retweets == 0) { num_retweets++; }
+  }
+  if (mod.replied_tweets.includes(tweet.tx.signature)) { is_replied_css = "replied"; 
+    if (num_replies == 0) { num_replies++; }
+  }
 
 
   let controls = `

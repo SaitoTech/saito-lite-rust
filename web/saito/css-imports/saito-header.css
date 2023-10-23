@@ -6,7 +6,7 @@
   backdrop-filter: blur(5px);
   margin: 0;
   align-items: center;
-  padding: 0 calc((100vw - var(--saito-width)) / 2);
+  padding: 1rem max(2rem, calc((100vw - var(--saito-width)) / 2 + 0.5rem));
   top: 0;
   left: 0;
   z-index: 15;
@@ -20,7 +20,7 @@
 }
 
 .saito-header-logo {
-  max-width: 15rem;
+  width: 15rem;
   cursor: pointer;
   height: 100%;
 }
@@ -383,7 +383,7 @@
 
 .saito-back-button {
   position: absolute;
-  font-size: 30px;
+  font-size: 40px;
   padding: 0.75rem;
   color: var(--saito-white);
   cursor: pointer;
@@ -398,18 +398,6 @@
 }
 
 
-
-@media screen and (max-width: 1600px) {
-  #saito-header {
-    padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
-  }
-}
-
-@media screen and (max-width: 1500px) {
-  #saito-header {
-    padding: 1.3rem 2rem;
-  }
-}
 
 @media screen and (max-width: 1200px) {
   .saito-floating-plus-btn {
@@ -451,8 +439,12 @@
     padding: 1.3rem 1rem;
   }
   .saito-header-logo {
-    max-width: 12rem;
+    width: 12rem;
   }
+  .saito-back-button {
+    font-size: 30px;
+  }
+
 }
 
 @media screen and (max-width: 420px) {

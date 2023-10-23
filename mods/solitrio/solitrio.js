@@ -40,6 +40,9 @@ class Solitrio extends OnePlayerGameTemplate {
       this.game.queue.push("READY");
     } else {
       this.game.state = Object.assign(this.returnState(), this.game.state);
+      if (this.game.state.game_started){
+        this.game.queue = ["play"];  
+      }
     }
 
     console.log(JSON.parse(JSON.stringify(this.game.state)));
@@ -52,7 +55,7 @@ class Solitrio extends OnePlayerGameTemplate {
   newRound() {
     //Set up queue
     this.game.queue = [];
-    this.game.queue.push("play");
+    this.game.queue.push("play\t90");
     this.game.queue.push("DEAL\t1\t1\t40");
     this.game.queue.push("SHUFFLE\t1\t1");
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
@@ -154,6 +157,7 @@ class Solitrio extends OnePlayerGameTemplate {
   returnState() {
     let state = super.returnState();
     state.recycles_remaining = 2;
+    state.game_started = 0;
 
     return state;
   }
@@ -510,6 +514,7 @@ class Solitrio extends OnePlayerGameTemplate {
       console.log(JSON.stringify(mv));
 
       if (mv[0] === "round") {
+        this.game.state.game_started = true;
         this.newRound();
       }
 
@@ -542,13 +547,16 @@ class Solitrio extends OnePlayerGameTemplate {
       }
 
       if (mv[0] === "play") {
-        //this.game.queue.splice(qe, 1);
+        
         if (this.browser_active) {
-          console.log("Play " + mv[1]);
+          this.game.queue.splice(qe, 1);
+          this.game.queue.push("play\t90");
+
+          let pause = (mv[1]) ? parseInt(mv[1]) : 0;
           this.displayUserInterface();
           this.handToBoard();
           setTimeout(async () => {
-            await this.displayBoard(90);
+            await this.displayBoard(pause);
             this.attachEventsToBoard();
             this.checkBoardStatus();
           }, 25);

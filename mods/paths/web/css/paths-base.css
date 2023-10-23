@@ -2,12 +2,73 @@
 .stirling {
     top: 690px;
     left: 1222px;
-    color: red;
     width: 90px;
     height: 90px;
     z-index: 99999;
-    background-color: red;
     position: absolute;
+}
+
+.selectable::before {
+    content: " ";
+    box-shadow: 2rem 2rem 7rem 3rem #FFFC, -2rem -2rem 7rem 3rem #FFFC;
+    height: 6rem;
+    width: 6rem;
+    display: block;
+    margin-top: 2.5rem;
+    margin-left: 2rem;
+    position: absolute;
+}
+
+.trench-tile {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: +30;
+  left: +30;
+  z-index: -1;
+}
+.trench-tile:hover {
+  z-index: 999;
+}
+.activation-tile {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: +30;
+  left: -30px;
+  z-index: 999;
+}
+.army-tile {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+.army-tile:hover {
+  z-index: 999;
+}
+.space .army-tile:nth-child(1) {
+  top: 0;
+  left: 0;
+}
+.space .army-tile:nth-child(2) {
+  top: -30;
+  left: 30;
+}
+.space .army-tile:nth-child(3) {
+  top: -60;
+  left: 60;
+}
+.space .army-tile:nth-child(4) {
+  top: -90;
+  left: 90;
+}
+.space .army-tile:nth-child(5) {
+  top: -120;
+  left: 120;
+}
+.space .army-tile:nth-child(6) {
+  top: -150;
+  left: 150;
 }
 
 

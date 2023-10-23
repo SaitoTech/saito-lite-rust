@@ -7,8 +7,8 @@
     if (!this.game.state) {
 
       this.game.state = this.returnState();
-      this.game.state.players_info = this.returnPlayers(this.game.players.length);
       this.game.spaces = this.returnSpaces();
+      this.game.state.players_info = this.returnPlayers(this.game.players.length);
 
 console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
 
@@ -56,23 +56,11 @@ console.log("\n\n\n\n");
 
 
     //
-    // attach events to spaces
-    //
-    this.spaces = {};
-    for (let key in this.game.spaces) {
-      this.spaces[key] = this.importSpace(this.game.spaces[key], key);
-    }
-
-    //
-    // add initial units
-    //
-    if (first_time_running == 1) {
-    }
-
-    //
     // and show the board
     //
     this.displayBoard();
+
+
 
   }
 

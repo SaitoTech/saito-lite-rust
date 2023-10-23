@@ -7,16 +7,6 @@ rm ../../web/saito/saito.js
 #
 cat ./src/paths-init.js > ./paths.js
 
-for file in ./src/cards/core/*
-do
-  cat $file >> ./paths.js
-done
-
-for file in ./src/factions/*
-do
-  cat $file >> ./paths.js
-done
-
 for file in ./src/units/*
 do
   cat $file >> ./paths.js
@@ -36,6 +26,7 @@ cat ./src/paths-spaces.js >> ./paths.js
 cat ./src/paths-state.js >> ./paths.js
 cat ./src/paths-gameloop.js >> ./paths.js
 cat ./src/paths-player.js >> ./paths.js
+cat ./src/paths-units.js >> ./paths.js
 cat ./src/paths-end.js >> ./paths.js
 
 

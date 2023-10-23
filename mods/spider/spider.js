@@ -73,10 +73,7 @@ class Spider extends OnePlayerGameTemplate {
       // Insert game board
       $(".gameboard").html(this.returnBoard());
       this.removeEvents();
-      let start = this.changeDifficulty(input_dif);
-      if (start){
-        this.newRound();
-      }
+      this.changeDifficulty(input_dif);
     } else {
       this.game.queue.push("READY");
     }
@@ -211,7 +208,8 @@ class Spider extends OnePlayerGameTemplate {
       //Copy Board state from memory if it exists
       //
       if (this.game.state.board[i]) {
-        this.cardStacks[i].cards = JSON.parse(JSON.stringify(this.game.state.board[i]));
+        console.log("Load Last Board:", JSON.parse(JSON.stringify(this.game.state.board[i])));
+        this.cardStacks[i].cards = this.game.state.board[i];
       }
     }
   }
@@ -652,7 +650,9 @@ class Spider extends OnePlayerGameTemplate {
         //drop the first card we already added
         stack_to_move.shift();
         //Concat the rest of the stack
-        this.cardStacks[target].cards = this.cardStacks[target].cards.concat(stack_to_move);
+        for (let card of stack_to_move){
+          this.cardStacks[target].cards.push(card);  
+        }
         this.commitMove(source+"_"+index, target, stack_to_move.length + 1);
       }
     }, ()=>{
@@ -670,7 +670,10 @@ class Spider extends OnePlayerGameTemplate {
 
   placeStack(activated_card_stack, card_index, event) {
     let spider_self = activated_card_stack.mod;
-    activated_card_stack.cards = activated_card_stack.cards.concat(spider_self.selected_stack);
+    for (let card of spider_self.selected_stack){
+      activated_card_stack.cards.push(card);  
+    }
+
     activated_card_stack.render();
     spider_self.selected_stack = [];
     $("#helper").remove();
@@ -833,7 +836,9 @@ class Spider extends OnePlayerGameTemplate {
 
     let moved_cards = this.cardStacks[slot].cards.splice(-stackSize);
 
-    this.cardStacks[oldstackNum].cards = this.cardStacks[oldstackNum].cards.concat(moved_cards);
+    for (let card of moved_cards){
+      this.cardStacks[oldstackNum].cards.push(card);  
+    }
 
     this.game.state.moves++;
     this.displayBoard();
