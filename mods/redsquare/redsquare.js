@@ -434,7 +434,7 @@ class RedSquare extends ModTemplate {
       // or fetch tweets
       //
       await this.addPeer(peer, "tweets");
-      this.loadTweets(peer, (txs) => {
+      this.loadTweets((txs) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
         if (txs.length > 0) {
           this.saveLocalTweets();
@@ -572,9 +572,8 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadTweets(peer, mycallback) {
+  loadTweets(mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
-      let peer = this.peers[i].peer;
       let peer_publickey = this.peers[i].publickey;
       if (this.peers[i].tweets_earliest_ts != 0) {
         //
@@ -804,7 +803,6 @@ class RedSquare extends ModTemplate {
       async (res) => {
         if (res.rows) {
           await this.addPeer(peer, "tweet");
-
           res.rows.forEach((row) => {
             let tx = new saito.default.transaction();
             tx.deserialize_from_web(this.app, row.tx);
@@ -1722,7 +1720,7 @@ class RedSquare extends ModTemplate {
     let maximum = 10;
     for (let tweet of this.tweets) {
       txs.push(tweet.tx.serialize_to_web(this.app));
-      txs.push(tweet.returnTransactionsInThread());
+      txs = txs.concat(tweet.returnTransactionsInThread());
 
       if (--maximum <= 0) {
         break;
@@ -1750,6 +1748,7 @@ class RedSquare extends ModTemplate {
       if (value && value.length > 0) {
         for (let tx of value) {
           let newtx = new Transaction();
+          console.log("tweet_history");
           newtx.deserialize_from_web(this.app, tx);
           this.addTweet(newtx);
         }
