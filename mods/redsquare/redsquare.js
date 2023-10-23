@@ -290,13 +290,17 @@ class RedSquare extends ModTemplate {
       await this.header.initialize(this.app);
       this.menu = new SaitoMenu(this.app, this, ".saito-sidebar.left");
       this.sidebar = new RedSquareSidebar(this.app, this, ".saito-sidebar.right");
-      this.hammer = new RedSquareHammerSwipe(this.app, this);
 
       this.addComponent(this.header);
       this.addComponent(this.main);
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
-      this.addComponent(this.hammer);
+
+      if (this.app.browser.isMobileBrowser()){
+        this.hammer = new RedSquareHammerSwipe(this.app, this);
+        this.addComponent(this.hammer);
+      }
+      
 
       //
       // chat manager can insert itself into left-sidebar if exists

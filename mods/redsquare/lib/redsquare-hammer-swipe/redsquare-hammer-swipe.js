@@ -23,14 +23,11 @@ class RedSquareHammerSwipe {
     }
 
     this.attachEvents(target);
-    this.onSwipeUp();
+   // this.onSwipeUp();
   }
 
   onSwipeUp() {
-
-    alert('swipeup');
-    alert(window.pageYOffset + " - " + this.element.scrollTop + " - " + document.body.scrollTop);
-
+    alert('swipeup: ' + window.pageYOffset + " - " + this.element.scrollTop + " - " + document.body.scrollTop);
   }
 
   attachEvents(target){
