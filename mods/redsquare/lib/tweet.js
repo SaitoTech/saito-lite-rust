@@ -212,8 +212,11 @@ class Tweet {
     }
   }
 
-  render(prepend = false) {
-    //Process link stuff here and not on constructor
+  render(prepend = false, render_with_children = true) {
+
+    //
+    // handle if link
+    //
     if (this.link && !this.link_preview) {
       this.link_preview = new Link(
         this.app,
@@ -223,9 +226,11 @@ class Tweet {
       );
     }
 
-    // double-rendering is possible with commented retweets
-    // but we should just replace, duh.
-
+    //
+    // in the case of a quote-or-retweet the retweet might appear on the same page
+    // as the original tweet, so we check here and flag whether or not the element
+    // already exists. if it does we will only render 1.
+    //
     let myqs = this.container + `> .tweet-${this.tx.signature}`;
     let replace_existing_element = true;
 
@@ -234,10 +239,12 @@ class Tweet {
 
     //
     // we might be re-rendering when critical child is on screen, so check if the
-    // class exists and flag if so
+    // class exists and flag if so. the class indicates that a critical child exists
+    // and by flagging it we will be able to re-add the class to the re-rendered 
+    // tweet and preserve the CSS so the visual connector between the tweets does not
+    // disappear.
     //
     let obj = document.querySelector(myqs);
-
     if (obj) {
       if (obj.classList.contains("has-reply")) {
         has_reply = true;
@@ -255,7 +262,8 @@ class Tweet {
     }
 
     //
-    // We only want this default behavior for main feed, NEED TO FIX
+    // if the tweet has been updated, we upate the user notice to inform users that
+    // there is a new reply!
     //
     if (this.updated_at > this.created_at) {
       if (this.tx.optional.num_replies > 0) {
@@ -264,7 +272,9 @@ class Tweet {
     }
 
     //
-    // retweets without commentary? pass-through and render subtweet
+    // if this is a retweet but not a quote tweet we pass through the "parent" and just
+    // render the child with a "retweet-notice" that shows up at the top of the tweet. we
+    // then pass-through and render the sub-tweet directly.
     //
     if (this.retweet_tx && !this.text && !this.img_preview) {
       this.retweet.notice =
@@ -295,7 +305,7 @@ class Tweet {
       }
     }
 
-    if (/*replace_existing_element &&*/ document.querySelector(myqs)) {
+    if (document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(
@@ -317,13 +327,13 @@ class Tweet {
     //
     // has-reply and has-reply-disconnected
     //
-    if (has_reply) {
+    if (has_reply && render_with_children == true) {
       let obj = document.querySelector(myqs);
       if (obj) {
         obj.classList.add("has-reply");
       }
     }
-    if (has_reply_disconnected) {
+    if (has_reply_disconnected && render_with_children == true) {
       let obj = document.querySelector(myqs);
       if (obj) {
         obj.classList.add("has-reply-disconnected");
