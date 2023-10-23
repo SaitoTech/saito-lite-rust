@@ -249,7 +249,6 @@ class RedSquareMain {
     scrollableElement.addEventListener("scroll", (e) => {
 
       this.hasScrolledDown = true;
-alert("setting hasScrolledDown to true");
       if (window.innerHeight - 150 < sidebar.clientHeight) {
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
