@@ -509,7 +509,8 @@ initializeGame(game_id) {
       this.game.options.poliovaccine = 1;
       this.game.options.communistrevolution = 1;
 
-      this.game.options.handshake = 1;
+//      this.game.options.handshake = 1;
+      this.game.options.khruschevthaw = 1;
       this.game.options.rustinredsquare = 1;
       this.game.options.berlinagreement = 1;
       this.game.options.august1968 = 1;
@@ -1888,11 +1889,12 @@ console.log("DECK IS: " + this.game.options.deck);
 
 
     // used by nixon shock
-    if (mv[0] === "play_card_or_hand_to_opponent") {
+    if (mv[0] === "nixon_shock_play_card_or_hand_to_opponent") {
 
       this.game.queue.splice(qe, 1);
 
       let player = parseInt(mv[1]);
+      let active_player = mv[2];
       let opponent = 1;
       if (player == 1) { opponent = 2; }
 
@@ -1902,7 +1904,8 @@ console.log("DECK IS: " + this.game.options.deck);
 
         let user_message = `${this.cardToText(card)} drawn:`;
         let html = `<ul>`;
-        if (this.game.state.headline == 1) {
+        //if (this.game.state.headline == 1) {
+        if (active_player === "us") {
           html += `<li class="option" id="play">play card</li>`;
         }
         html += `
@@ -2721,9 +2724,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["fiveyearplan", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["nixonshock", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["fidel", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["fidel", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -2923,6 +2926,39 @@ try {
       // show active events
       //
       this.updateEventTiles();
+
+      //
+      // USSR gets extra turn if desired
+      //
+      if (this.game.state.events.khruschev_thaw) {
+	this.game.state.events.khruschev_thaw = 0;
+        if (this.game.player == 1) {
+
+          //
+          // USSR gets extra move
+          //
+          let html  = `<ul>
+                      <li class="option" id="play">play extra turn</li>
+                      <li class="option" id="nope">do not play</li>
+                      </ul>`;
+          this.updateStatusWithOptions(`Do you want to take an extra turn? (Khruschev Thaw)`,html, function(action2) {
+
+            if (action2 == "play") {
+              twilight_self.addMove("play\t1");
+              twilight_self.endTurn(1);
+            }
+            if (action2 == "nope") {
+              twilight_self.addMove("NOTIFY\tUSSR does not play extra turn");
+              twilight_self.endTurn(1);
+            }
+
+          });
+        } else {
+          this.updateStatus("USSR is deciding whether to take extra turn");
+        }
+	return 0;
+      }
+
 
       if (this.game.state.events.northseaoil_bonus == 1) {
         //
@@ -3187,10 +3223,10 @@ try {
 	      this.addCardToDeck("lonegunman", "Prerequisites Met");
 	      this.game.state.events.cia_created_added = 1;
 	    }
-	    if (this.game.state.events.handshake_added != 1) {
-	      this.addCardToDeck("handshake", "New Card");
-	      this.game.state.events.handshake_added = 1;
-	    }
+//	    if (this.game.state.events.handshake_added != 1) {
+//	      this.addCardToDeck("handshake", "New Card");
+//	      this.game.state.events.handshake_added = 1;
+//	    }
 
 	    //
 	    // delete removed from existing deck
@@ -7202,15 +7238,15 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       deck['tsarbomba']       		= { img : "TNRnTS-209png" ,name : "Tsar Bomba", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 1 };
       deck['carterdoctrine']  		= { img : "TNRnTS-211png" ,name : "Carter Doctrine", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
       deck['energycrisis']      	= { img : "TNRnTS-212png" ,name : "Energy Crisis", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
-      deck['nixonshock']       		= { img : "TNRnTS-213Apng" ,name : "Nixon Shock", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
+      deck['nixonshock']       		= { img : "TNRnTS-213png" ,name : "Nixon Shock", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
       deck['kissinger'] 	     	= { img : "TNRnTS-218png" ,name : "Kissinger Bombs Cambodia", scoring : 0 , player : "us"     , recurring : 1 , ops : 2 };
-      deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+      //deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
       deck['fischerspassky']  		= { img : "TNRnTS-221png" ,name : "Fischer-Spassky", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 };
       deck['sudan']       		= { img : "TNRnTS-219png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 };
       deck['fallofsaigon']      	= { img : "TNRnTS-225png" ,name : "Fall of Saigon", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 };
       deck['bayofpigs']       		= { img : "TNRnTS-222png" ,name : "Bay of Pigs", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 2 };
       deck['august1968']       		= { img : "TNRnTS-220png" ,name : "August Protests", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 };
-      deck['khruschevthaw']    		= { img : "TNRnTS-231png" ,name : "Khruschev Thaw", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
+      deck['khruschevthaw']    		= { img : "TNRnTS-230png" ,name : "Khruschev Thaw", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
 
       // END OF HISTORY
       deck['manwhosavedtheworld']       = { img : "TNRnTS-301png" ,name : "The Man Who Saved the World", scoring : 0 , player : "both"   , recurring : 0 , ops : 4 };
@@ -7237,7 +7273,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           if (key === "energycrisis") { deck['energycrisis']      = { img : "TNRnTS-212png" ,name : "Energy Crisis", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
           if (key === "nixonshock") { deck['nixonshock']       	= { img : "TNRnTS-213png" ,name : "Nixon Shock", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
           if (key === "kissinger") { deck['kissinger'] 	     	= { img : "TNRnTS-218png" ,name : "Kissinger Bombs Cambodia", scoring : 0 , player : "us"     , recurring : 1 , ops : 2 }; }
-          if (key === "handshake") { deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 1 }; }
+          if (key === "kissinger") { deck['khruschevthaw'] 	     	= { img : "TNRnTS-230png" ,name : "Khrushchev Thaw", scoring : 0 , player : "ussr"     , recurring : 0 , ops : 3 }; }
+          //if (key === "handshake") { deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 1 }; }
           if (key === "fischerspassky") { deck['fischerspassky']  = { img : "TNRnTS-221png" ,name : "Fischer-Spassky", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 }; }
           if (key === "sudan") { deck['sudan']       		= { img : "TNRnTS-219png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
           if (key === "fallofsaigon") { deck['fallofsaigon']      = { img : "TNRnTS-225png" ,name : "Fall of Saigon", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
