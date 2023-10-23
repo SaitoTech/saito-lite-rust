@@ -56,7 +56,7 @@ class CallLaunch {
       this.app.browser.addElementToDom(StunLaunchTemplate(this.app, this.mod));
     }
 
-    this.loader.render();
+    this.loader.render(true);
 
     setTimeout(() => {
       this.loader.remove(0);
@@ -70,7 +70,7 @@ class CallLaunch {
       btn.style.display = "block";
 
       this.attachEvents(this.app, this.mod);
-    }, 2000);
+    }, 3000);
 
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit("stun-init-peer-manager", "large");
