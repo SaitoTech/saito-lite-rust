@@ -141,12 +141,10 @@ class Tweet {
     try {
       this.setKeys(txmsg.data);
     } catch (err) {
-      //console.log("ERROR 1: " + err);
     }
     try {
       this.setKeys(tx.optional);
     } catch (err) {
-      //console.log("ERROR 2: " + err);
     }
 
     //
@@ -169,11 +167,6 @@ class Tweet {
         this.container + `> .tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
       );
       this.retweet.is_retweet = true;
-
-console.log("#");
-console.log("#");
-console.log("# is retweet! " + this.text);
-
       this.retweet.show_controls = 0;
     }
 
@@ -218,8 +211,6 @@ console.log("# is retweet! " + this.text);
   }
 
   render(prepend = false, render_with_children = true) {
-
-console.log("TWEET RENDER: " + this.text);
 
     //
     // handle if link
@@ -294,12 +285,10 @@ console.log("TWEET RENDER: " + this.text);
       let t = this.mod.returnTweet(this.retweet.tx.signature);
       if (t) {
         t.notice = this.retweet.notice;
-console.log("rendering parent tweet");
         t.render(prepend);
       } else {
         (this.retweet.user.container =
           this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
-console.log("rendering retweet w/ prepend of: " + prepend);
           this.retweet.render(prepend);
       }
       return;
@@ -316,7 +305,6 @@ console.log("rendering retweet w/ prepend of: " + prepend);
       // remove if selector is a previewed tweet, like retweet
       //
       let preview_selector = ".tweet-preview " + this.render_after_selector;
-console.log("PREVIEW SELECTOR: " + preview_selector);
       if (document.querySelector(preview_selector)) {
 	//
 	//
@@ -326,24 +314,19 @@ console.log("PREVIEW SELECTOR: " + preview_selector);
     }
 
     if (document.querySelector(myqs)) {
-console.log("replace element by selector: " + myqs);
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else if (prepend) {
-console.log("prepend...");
       this.app.browser.prependElementToSelector(
         TweetTemplate(this.app, this.mod, this),
         this.container
       );
 
     } else if (this.render_after_selector) {
-console.log("render after selector...");
-console.log("selector: " + this.render_after_selector);
       this.app.browser.addElementAfterSelector(
         TweetTemplate(this.app, this.mod, this),
         this.render_after_selector
       );
     } else {
-console.log("add element to selector...");
       this.app.browser.addElementToSelector(
         TweetTemplate(this.app, this.mod, this),
         this.container
@@ -356,12 +339,10 @@ console.log("add element to selector...");
     if (has_reply && render_with_children == true) {
       let obj = document.querySelector(myqs);
       if (obj) {
-console.log("adding has-reply to: " + this.text);
         obj.classList.add("has-reply");
       }
     }
     if (has_reply_disconnected && render_with_children == true) {
-console.log("adding has-reply-disconnected to: " + this.text);
       let obj = document.querySelector(myqs);
       if (obj) {
         obj.classList.add("has-reply-disconnected");
@@ -392,7 +373,6 @@ console.log("adding has-reply-disconnected to: " + this.text);
       this.img_preview.render();
     }
     if (this.retweet) {
-console.log("rendering associated retweet...");
       this.retweet.render();
     }
     if (this.link_preview != null) {
@@ -419,9 +399,9 @@ console.log("rendering associated retweet...");
       does_tweet_already_exist_on_page = true;
     }
 
-    this.render();
-
-console.log("render with critical child: " + this.text);
+    if (!does_tweet_already_exist_on_page) {
+      this.render();
+    }
 
     if (this.critical_child && does_tweet_already_exist_on_page == false) {
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
@@ -431,10 +411,8 @@ console.log("render with critical child: " + this.text);
       let obj = document.querySelector(myqs);
       if (obj) {
         if (this.critical_child.parent_id == this.tx.signature) {
-console.log("adding has reply3 for: " + this.text);
           obj.classList.add("has-reply");
         } else {
-console.log("adding has reply4 for: " + this.text);
           obj.classList.add("has-reply-disconnected");
         }
       }
@@ -458,7 +436,6 @@ console.log("adding has reply4 for: " + this.text);
       let myqs = this.container + ` .tweet-${this.tx.signature}`;
       let obj = document.querySelector(myqs);
       if (obj) {
-console.log("adding has reply5 for: " + this.text);
         obj.classList.add("has-reply");
       }
 
@@ -1101,8 +1078,6 @@ console.log("adding has reply5 for: " + this.text);
         console.error(err);
         this.link = first_link;
       }
-
-      //console.log(this.link);
 
       //
       // youtube link
