@@ -10,7 +10,7 @@ const fetch = require("node-fetch");
 const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
-const RedSquareHammerSwipe = require("./lib/redsquare-hammer-swipe/redsquare-hammer-swipe");
+//const RedSquareHammerSwipe = require("./lib/redsquare-hammer-swipe/redsquare-hammer-swipe");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
@@ -296,10 +296,10 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
 
-      if (this.app.browser.isMobileBrowser()){
-        this.hammer = new RedSquareHammerSwipe(this.app, this);
-        this.addComponent(this.hammer);
-      }
+//      if (this.app.browser.isMobileBrowser()){
+//        this.hammer = new RedSquareHammerSwipe(this.app, this);
+//        this.addComponent(this.hammer);
+//      }
       
 
       //

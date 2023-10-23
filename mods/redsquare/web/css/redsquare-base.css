@@ -2,8 +2,6 @@
   color: var(--saito-primary);;
 }
 
-
-
 .redsquare-home {
   margin: -2.5rem 0 0 0;
 }
@@ -61,8 +59,6 @@
   border-radius: 0.5rem;
 }
 
-
-
 .redsquare-sidebar {
   display: flex;
   flex-direction: column;
@@ -82,6 +78,10 @@
 
 .saito-main {
   transition: opacity 0.8s;
+}
+
+.saito-profile {
+  margin-bottom: 0.5rem;
 }
 
 .saito-main>.saito-loader {
@@ -177,8 +177,10 @@
   animation: flash linear 3s infinite;
 }
 .saito-main {
-  padding-top: 0px;
+  padding-top: 1.5rem;
 }
+
+
 @keyframes flash {
    0%, 50%, 100% {
       opacity: 1;
@@ -187,3 +189,11 @@
       opacity: 0;
    }
 }
+
+
+@media screen and (max-width: 800px) {
+  .saito-main {
+    padding-top: 0px;
+  }
+}
+

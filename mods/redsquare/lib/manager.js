@@ -247,7 +247,6 @@ class TweetManager {
   }
 
   renderProfile(publicKey) {
-    console.log("rendering profile with publickey: " + publicKey);
 
     this.mode = "profile";
 
@@ -272,9 +271,6 @@ class TweetManager {
   // as they appear...
   //
   renderTweet(tweet) {
-    console.log("#");
-    console.log("# " + tweet.text);
-    console.log("#");
     this.render("tweet");
 
     // show the basic tweet first

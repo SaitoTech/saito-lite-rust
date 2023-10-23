@@ -141,12 +141,10 @@ class Tweet {
     try {
       this.setKeys(txmsg.data);
     } catch (err) {
-      //console.log("ERROR 1: " + err);
     }
     try {
       this.setKeys(tx.optional);
     } catch (err) {
-      //console.log("ERROR 2: " + err);
     }
 
     //
@@ -169,11 +167,6 @@ class Tweet {
         this.container + `> .tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
       );
       this.retweet.is_retweet = true;
-
-console.log("#");
-console.log("#");
-console.log("# is retweet! " + this.text);
-
       this.retweet.show_controls = 0;
     }
 
@@ -301,12 +294,22 @@ console.log("# is retweet! " + this.text);
       return;
     }
 
-    //
-    // remove if selector does not exist
-    //
     if (this.render_after_selector) {
+      //
+      // remove if selector does not exist
+      //
       if (!document.querySelector(this.render_after_selector)) {
         this.render_after_selector = "";
+      }
+      //
+      // remove if selector is a previewed tweet, like retweet
+      //
+      let preview_selector = ".tweet-preview " + this.render_after_selector;
+      if (document.querySelector(preview_selector)) {
+	//
+	//
+	//
+	this.render_after_selector = "";
       }
     }
 
@@ -317,6 +320,7 @@ console.log("# is retweet! " + this.text);
         TweetTemplate(this.app, this.mod, this),
         this.container
       );
+
     } else if (this.render_after_selector) {
       this.app.browser.addElementAfterSelector(
         TweetTemplate(this.app, this.mod, this),
@@ -389,9 +393,17 @@ console.log("# is retweet! " + this.text);
   }
 
   renderWithCriticalChild() {
-    this.render();
 
-    if (this.critical_child) {
+    let does_tweet_already_exist_on_page = false;
+    if (document.querySelector(`.tweet-${this.tx.signature}`)) {
+      does_tweet_already_exist_on_page = true;
+    }
+
+    if (!does_tweet_already_exist_on_page) {
+      this.render();
+    }
+
+    if (this.critical_child && does_tweet_already_exist_on_page == false) {
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
       this.critical_child.render();
 
@@ -1066,8 +1078,6 @@ console.log("# is retweet! " + this.text);
         console.error(err);
         this.link = first_link;
       }
-
-      //console.log(this.link);
 
       //
       // youtube link
