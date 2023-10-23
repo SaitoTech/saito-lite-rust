@@ -28,38 +28,38 @@ class RedSquareMain {
     //    
     // rendering the main thread
     //
+
     this.app.connection.on("redsquare-home-render-request", () => {
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       window.location.hash = "#home";
+
       document.querySelector(".saito-main").innerHTML = "";
+      this.app.connection.emit("redsquare-insert-loading-message");
       this.manager.render("tweets");
-      this.scrollFeed();
-
-      document.querySelectorAll(".optional-menu-item").forEach(item => {
-        item.style.display = "none";
-      });
-
-      document.querySelector(".redsquare-menu-refresh").style.display = "flex";
     });
 
-    this.app.connection.on("redsquare-refresh-feed", ()=>{
+
+    this.app.connection.on("redsquare-home-new-render-request", () => {
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      window.location.hash = "#home";
+      document.querySelector(".saito-main").innerHTML = "";
 
       this.scroll_depth = 0;
       this.scrollFeed(0, "smooth");
-
-      siteMessage("Checking for new tweets");
-
-      this.mod.loadTweets((txs) => {
+      this.manager.render("tweets");
+      
+      this.app.connection.emit("redsquare-insert-loading-message");
+      
+      this.mod.loadTweets('later', (txs) => {
+        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
         if (txs.length > 0) {
           this.mod.saveLocalTweets();
-          siteMessage(`${txs.length} new tweets`, 2000);
-        }else{
-          siteMessage("No new tweets", 2000);
         }
-        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
       });
 
     });
+
+
 
     //
     // Emitted by redsquare.js/onPeerServiceUp
@@ -69,9 +69,12 @@ class RedSquareMain {
 
       //
       //Remove notice for loading new tweets
-      if (document.querySelector(".saito-cached-loader")) {
-        document.querySelector(".saito-cached-loader").remove();
-      }
+      setTimeout(function() {
+        if (document.querySelector(".saito-cached-loader") != null &&
+          typeof (document.querySelector(".saito-cached-loader")) != 'undefined') {
+          document.querySelector(".saito-cached-loader").remove();          
+        }
+      }, 1000);
 
       //
       //See if we want to auto insert or provide a prompt
@@ -249,7 +252,6 @@ class RedSquareMain {
     scrollableElement.addEventListener("scroll", (e) => {
 
       this.hasScrolledDown = true;
-alert("setting hasScrolledDown to true");
       if (window.innerHeight - 150 < sidebar.clientHeight) {
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;

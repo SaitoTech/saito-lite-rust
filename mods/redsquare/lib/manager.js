@@ -295,15 +295,11 @@ class TweetManager {
     //Mobile/Desktop back button (when left navigation bar hidden!)
     //
 
-    if (window && window?.innerWidth < 1200) {
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-      });
-    } /*else {
-      this.app.connection.emit("saito-main-render-back-btn", (e) => {
-        document.querySelector(".redsquare-menu-home").click();
-      });
-    }*/
+
+    this.app.connection.emit("saito-header-replace-logo", (e) => {
+      this.app.connection.emit("redsquare-home-render-request");
+    });
+ 
   }
 
   attachEvents() {

@@ -433,7 +433,7 @@ class RedSquare extends ModTemplate {
       // or fetch tweets
       //
       await this.addPeer(peer, "tweets");
-      this.loadTweets((txs) => {
+      this.loadTweets('earlier', (txs) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
         if (txs.length > 0) {
           this.saveLocalTweets();
@@ -571,7 +571,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadTweets(mycallback) {
+  loadTweets(created_at='earlier', mycallback) {
 
 console.log("loading tweets...");
 
@@ -586,13 +586,21 @@ console.log("loading tweets...");
         // so that fetch will return any content specific to us...
         //
 console.log("loading transactions from storage...");
+        let obj = {
+          field1: "RedSquare",
+          owner: peer_publickey,
+          limit: this.peers[i].tweets_limit,
+        };
+
+        if (created_at == 'earlier') {
+          obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
+        } else if(created_at == 'later') {
+          obj.created_later_than = this.peers[i].tweets_earliest_ts;
+        }
+
+
         this.app.storage.loadTransactions(
-          {
-            field1: "RedSquare",
-            owner: peer_publickey,
-            created_earlier_than: this.peers[i].tweets_earliest_ts,
-            limit: this.peers[i].tweets_limit,
-          },
+          obj,
           (txs) => {
 console.log("received reply with: " +txs.length + " txs");
             if (txs.length > 0) {
@@ -1762,7 +1770,6 @@ console.log("received reply with: " +txs.length + " txs");
         }
       }
       this.app.connection.emit("redsquare-home-render-request");
-      this.app.connection.emit("redsquare-insert-loading-message");
     });
 
   }
