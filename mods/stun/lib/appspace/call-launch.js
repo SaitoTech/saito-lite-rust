@@ -16,8 +16,8 @@ class CallLaunch {
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
     this.callSetting = new CallSetting(app, this);
-    this.loader = new SaitoLoader(app, mod, ".stunx-appspace-splash");
-    this.room_code = null;
+    this.loader = new SaitoLoader(app, mod);
+    this.room_obj = {};
 
     // close-preview-window shuts downt the streams in call-settings
     app.connection.on("close-preview-window", () => {
@@ -27,8 +27,9 @@ class CallLaunch {
       }
     });
 
-    app.connection.on("stun-to-join-room", (room_code) => {
-      this.room_code = room_code;
+    app.connection.on("stun-to-join-room", (room_obj) => {
+      console.log(room_obj, "stun-to-join-room");
+      this.room_obj = room_obj;
       const interval = setInterval(() => {
         if (document.querySelector("#createRoom")) {
           document.querySelector("#createRoom").textContent = "Join Meeting";
@@ -58,11 +59,10 @@ class CallLaunch {
     this.loader.render();
 
     setTimeout(() => {
-      
       this.loader.remove(0);
 
       let btn = document.querySelector(".stunx-appspace-launch-call-btn");
-      if (!btn){
+      if (!btn) {
         console.warn("Button doesn't exit: stunx-appspace-launch-call-btn");
         return;
       }
@@ -70,7 +70,6 @@ class CallLaunch {
       btn.style.display = "block";
 
       this.attachEvents(this.app, this.mod);
-      
     }, 2000);
 
     // create peer manager and initialize , send an event to stun to initialize
@@ -81,7 +80,7 @@ class CallLaunch {
   attachEvents(app, mod) {
     if (document.getElementById("createRoom")) {
       document.getElementById("createRoom").onclick = (e) => {
-        if (this.room_code) {
+        if (this.room_obj.room_code) {
           if (this.mod.isRelayConnected) {
             this.joinRoom();
           } else {
@@ -97,7 +96,11 @@ class CallLaunch {
   async createRoom() {
     // this.loader.render(true);
     const room_code = await this.mod.sendCreateRoomTransaction(null);
-    this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
+    this.room_obj = {
+      room_code,
+      access_public_key: this.mod.publicKey,
+    };
+    this.app.connection.emit("stun-peer-manager-update-room-details", this.room_obj);
     this.app.connection.emit("close-preview-window");
     this.app.connection.emit("start-stun-call", false);
     this.app.connection.emit("stun-remove-loader");
@@ -105,10 +108,10 @@ class CallLaunch {
   }
 
   joinRoom() {
-    if (!this.room_code) {
+    if (!this.room_obj.room_code) {
       return;
     }
-    this.app.connection.emit("stun-peer-manager-update-room-code", this.room_code);
+    this.app.connection.emit("stun-peer-manager-update-room-details", this.room_obj);
     //For myself and call-Settings
     this.app.connection.emit("close-preview-window");
     this.app.connection.emit("start-stun-call", true);
