@@ -22,7 +22,6 @@ module.exports = (app, mod, tweet) => {
   if (mod.replied_tweets.includes(tweet.tx.signature)) { is_replied_css = "replied"; }
 
 
-
   let controls = `
               <div class="tweet-controls">
                 <div class="tweet-tool tweet-tool-comment">

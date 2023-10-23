@@ -14,6 +14,11 @@ class RedSquareMain {
     this.scroll_depth = 0;
 
     this.manager = new TweetManager(app, mod, ".saito-main");
+
+    //
+    // measuring activity
+    //
+    this.hasScrolledDown = false;
     this.idleTime = 10;
 
     ////////////////////
@@ -73,19 +78,16 @@ class RedSquareMain {
       //
       if (num_tweets > 0) {
         if (this.canRefreshPage()) {
-          console.log("Refresh page");
           try {
             document.querySelector(".saito-main").innerHTML = "";
           } catch (err) {}
           this.manager.render("tweets");
         } else {
-          console.log("Add message")
 
           /*
             We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
             at the top of the feed and scroll up there
           */
-
           if (document.querySelector(".saito-new-tweets")) {
             document.querySelector(".saito-new-tweets").style.display = "block";
           }
@@ -245,6 +247,9 @@ class RedSquareMain {
     var stop = 0;
 
     scrollableElement.addEventListener("scroll", (e) => {
+
+      this.hasScrolledDown = true;
+alert("setting hasScrolledDown to true");
       if (window.innerHeight - 150 < sidebar.clientHeight) {
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
@@ -307,11 +312,41 @@ class RedSquareMain {
     });
   }
 
+  //
+  // we can refresh the page if we are at the top, and we have not
+  // clicked on an overlay such as leaving a response or trying to 
+  // load content.
+  //
   canRefreshPage() {
-    // if user didnt interact in last 5 seconds, can refresh page for new content
-    if (this.idleTime >= 10) {
-      return true;
-    }
+
+console.log("^");
+console.log("^");
+console.log("^");
+console.log("^ canRefreshPage ");
+
+    try {
+
+      //
+      // no if we have scrolled down
+      //
+      if (this.hasScrolledDown == true) { return 0; }
+
+      //
+      // yes if still at top
+      //
+      if (window.pageYOffset == 0 && document.body.scrollTop == 0) {
+	return 1;
+      }
+    } catch (err) {}
+
+    //
+    // no by default
+    //
+    return 0;
+
+    //if (this.idleTime >= 10) {
+    //  return true;
+    //}
 
     return false;
   }

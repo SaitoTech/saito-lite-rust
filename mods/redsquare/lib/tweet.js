@@ -169,6 +169,11 @@ class Tweet {
         this.container + `> .tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
       );
       this.retweet.is_retweet = true;
+
+console.log("#");
+console.log("#");
+console.log("# is retweet! " + this.text);
+
       this.retweet.show_controls = 0;
     }
 

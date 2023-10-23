@@ -425,9 +425,8 @@ class RedSquare extends ModTemplate {
             this.app.connection.emit("redsquare-profile-render-request");
             break;
           default: // #home
-            this.app.connection.emit("redsquare-home-render-request");
+	    break;
         }
-        return;
       }
 
       //
@@ -573,6 +572,9 @@ class RedSquare extends ModTemplate {
   }
 
   loadTweets(mycallback) {
+
+console.log("loading tweets...");
+
     for (let i = 0; i < this.peers.length; i++) {
       let peer_publickey = this.peers[i].publickey;
       if (this.peers[i].tweets_earliest_ts != 0) {
@@ -583,6 +585,7 @@ class RedSquare extends ModTemplate {
         // us separately. we will update the OWNER field in the notifications fetch
         // so that fetch will return any content specific to us...
         //
+console.log("loading transactions from storage...");
         this.app.storage.loadTransactions(
           {
             field1: "RedSquare",
@@ -591,6 +594,7 @@ class RedSquare extends ModTemplate {
             limit: this.peers[i].tweets_limit,
           },
           (txs) => {
+console.log("received reply with: " +txs.length + " txs");
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);
@@ -1732,7 +1736,9 @@ class RedSquare extends ModTemplate {
     });
   }
 
+
   loadLocalTweets() {
+
     if (!this.app.BROWSER) {
       return;
     }
@@ -1747,16 +1753,18 @@ class RedSquare extends ModTemplate {
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
         for (let tx of value) {
-          let newtx = new Transaction();
-          console.log("tweet_history");
-          newtx.deserialize_from_web(this.app, tx);
-          this.addTweet(newtx);
+	  try {
+            let newtx = new Transaction();
+            newtx.deserialize_from_web(this.app, tx);
+            this.addTweet(newtx);
+          } catch (err) {
+	  }
         }
       }
       this.app.connection.emit("redsquare-home-render-request");
       this.app.connection.emit("redsquare-insert-loading-message");
-
     });
+
   }
 
   /////////////////////////////////////

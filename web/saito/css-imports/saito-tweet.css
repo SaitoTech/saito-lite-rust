@@ -6,6 +6,10 @@
   position: relative;
 }
 
+.tweet-preview .tweet .tweet-body {
+  min-height: 4rem;
+}
+
 .tweet-main .tweet {
   border-bottom: 0px;
   border-top: 0px;
