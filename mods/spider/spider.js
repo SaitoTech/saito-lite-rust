@@ -73,10 +73,15 @@ class Spider extends OnePlayerGameTemplate {
       // Insert game board
       $(".gameboard").html(this.returnBoard());
       this.removeEvents();
-      this.changeDifficulty(input_dif);
+
+      if (this.changeDifficulty(input_dif) || this.game.deck.length == 0){
+        this.newRound();
+      }
+
     } else {
       this.game.queue.push("READY");
     }
+
   }
 
   render(app) {
@@ -157,6 +162,8 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-confirm-easy",
       callback: function (app, game_mod) {
         game_mod.changeDifficulty("easy");
+        game_mod.game.queue.push("lose");
+        game_mod.endTurn();
       },
     });
 
@@ -166,6 +173,9 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-confirm-medium",
       callback: function (app, game_mod) {
         game_mod.changeDifficulty("medium");
+        game_mod.game.queue.push("lose");
+        game_mod.endTurn();
+
       },
     });
 
@@ -175,6 +185,9 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-confirm-hard",
       callback: function (app, game_mod) {
         game_mod.changeDifficulty("hard");
+        game_mod.game.queue.push("lose");
+        game_mod.endTurn();
+
       },
     });
 
@@ -1162,13 +1175,10 @@ class Spider extends OnePlayerGameTemplate {
     }
     if (saved_dif !== dif /*|| this.game.deck.length == 0 || this.game.deck[0].length == 0*/) {
       console.log("Original Difficulty = " + saved_dif + ", new difficulty: " + dif);
-
       this.saveGamePreference("spider_difficulty", dif);
-      this.game.queue.push("lose");
-      this.endTurn();
-      return 0;
+      return 1;
     }
-    return 1;
+    return 0;
   }
 
   displayBoard() {
