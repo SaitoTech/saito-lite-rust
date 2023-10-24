@@ -4687,6 +4687,8 @@ alert("entrench here!");
 	    this.moveUnit(sourcekey, sourceidx, destinationkey);
 	  }
 
+	  this.game.queue.splice(qe, 1);
+
 	  return 1;
 	}
 
@@ -4775,12 +4777,10 @@ alert("entrench here!");
       }
 
       if (action === "sr") {
-	alert("sr");
-	this.playerPlayStrategicRedeployment(faction, card, c.rp);
+	this.playerPlayStrategicRedeployment(faction, card, c.sr);
       }
 
       if (action === "rp") {
-	alert("rp");
 	this.playerPlayReplacementPoints(faction, card);
       }
 
@@ -4874,7 +4874,7 @@ alert("entrench here!");
       let html  = `<ul>`;
           html += `<li class="option" id="move">move</li>`;
           html += `<li class="option" id="entrench">entrench</li>`;
-          html += `<li class="option" id="skip">skip</li>`;
+          html += `<li class="option" id="skip">stand down</li>`;
           html += `</ul>`;
       paths_self.updateStatusWithOptions(`Select Action for Unit`, html);
       paths_self.attachCardboxEvents((action) => {
@@ -4910,8 +4910,6 @@ alert("entrench here!");
 	  return;
         }
         if (action === "skip") {
-          paths_self.endTurn();
-	  // this unit has been moved
 	  paths_self.game.spaces[key].units[idx].moved = 1;
 	  let mint = false;
 	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
@@ -4929,7 +4927,6 @@ alert("entrench here!");
 
 
     let moveInterface = function(key, options, mainInterface, moveInterface, unitActionInterface) {
-console.log("moving interface for " + key);
       let units = [];
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
 	if (paths_self.game.spaces[key].units[z].moved != 1) {
@@ -5208,8 +5205,66 @@ console.log("moving interface for " + key);
 
 
   playerPlayStrategicRedeployment(faction, value) {
-    this.addMove(`sr\t${faction}\t${value}`);
-    this.endTurn();
+
+    let paths_self = this;
+
+    let spaces = this.returnSpacesWithFilter((key) => {
+      for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+        let unit = paths_self.game.spaces[key].units[z];
+	if (faction == paths_self.returnPowerOfUnit(unit)) {
+	  if (unit.type == "core" && value >= 1) { 
+	    return 1;
+	  }
+	  if (unit.type == "army" && value >= 4) {
+	    return 1;
+	  }
+	}
+      }
+      return 0;
+    });
+
+    //
+    // hide any popup
+    //
+    this.cardbox.hide();
+
+    //
+    // select box with unit
+    //
+    this.playerSelectSpaceWithFilter(
+      "Select Space with Unit to Strategically Redeploy",
+      (key) => {
+	if (spaces.includes(key)) { return 1; }
+        return 0;
+      },
+      (key) => {
+
+        let units = [];
+        for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+  	  if (paths_self.game.spaces[key].units[z].moved != 1) {
+	    units.push(z);
+	  }
+        }
+
+        paths_self.playerSelectOptionWithFilter(
+	  "Redeploy Which Unit?",
+	  units,
+	  (idx) => {
+	    let unit = paths_self.game.spaces[key].units[idx];
+	    return `<li class="option" id="${idx}">${unit.name}</li>`;
+	  },
+	  (idx) => {
+	    let unit = paths_self.game.spaces[key].units[idx];
+	    paths_self.game.spaces[key].units[idx].moved = 1;
+alert("redeploying this unit!");
+	  },
+          false
+        );
+      }
+    );
+
+//    this.addMove(`sr\t${faction}\t${value}`);
+//    this.endTurn();
   }
 
   playerPlayEvent(faction, card) {
