@@ -25,7 +25,6 @@
   gap: 5rem;
 }
 
-
 .chat-settings-preview-message {
   font-style: italic;
 }
@@ -39,8 +38,6 @@
   margin-bottom: 1rem;
   font-size: 5rem;
 }
-
-
 
 .stun-host-your-own {
   display: inline;
@@ -57,17 +54,15 @@
   margin-top: 2rem;
 }
 
-
 .stunx-appspace-launch-call-btn {
   margin: 3rem;
-  display: none;
+  /* display: none; */
 }
 
 .stunx-appspace-splash {
   height: 25rem;
   color: var(--saito-white);
 }
-
 
 .stun-appspace-navigation {
   width: 80%;
@@ -109,9 +104,9 @@
   }
 }
 
-
 @media screen and (max-width: 580px) {
-  .stun-appspace, .chat-settings-wrapper {
+  .stun-appspace,
+  .chat-settings-wrapper {
     padding: 1rem;
     margin: 0;
   }
@@ -122,8 +117,7 @@
     padding: 0;
   }
 
-  .chat-settings-preview-message{
+  .chat-settings-preview-message {
     width: 60%;
   }
 }
-
