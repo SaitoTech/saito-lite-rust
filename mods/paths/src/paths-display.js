@@ -116,7 +116,7 @@ console.log("!");
         html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
       }
       if (space.activated_for_combat) {
-        html += `<img src="/paths/img/tiles/activate_combat.png" class="activation-tile" />`;
+        html += `<img src="/paths/img/tiles/activate_attack.png" class="activation-tile" />`;
       }
 
       //
@@ -139,7 +139,7 @@ console.log("!");
 	}
       }
 
-      document.querySelector(`.${key}`).innerHTML = html;
+      document.querySelectorAll(`.${key}`).forEach((el) => { el.innerHTML = html; });
 
     } catch (err) {
     }

@@ -1,5 +1,5 @@
 
-  activeSpaceForCombat(spacekey) {
+  activateSpaceForCombat(spacekey) {
     this.game.spaces[spacekey].activated_for_combat = 1;
     this.displaySpace(spacekey);
   }
@@ -60,7 +60,14 @@
     return 100;
 
   }
- 
+
+  returnSpacesWithFilter(filter_func) {
+    let spaces = [];
+    for (let key in this.game.spaces) {
+      if (filter_func(key) == 1) { spaces.push(key); }
+    }
+    return spaces;
+  } 
 
   returnNumberOfSpacesWithFilter(filter_func) {
     let count = 0;

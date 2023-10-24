@@ -1,5 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const ZoomOverlay = require('./lib/ui/overlays/zoom');
+const CombatOverlay = require('./lib/ui/overlays/combat');
 
 const PathsRules = require('./lib/core/rules.template');
 const PathsOptions = require('./lib/core/advanced-options.template');
@@ -33,6 +34,7 @@ class PathsOfGlory extends GameTemplate {
     // ui components
     //
     this.zoom_overlay = new ZoomOverlay(this.app, this); 
+    this.combat_overlay = new CombatOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining
@@ -102,6 +104,15 @@ class PathsOfGlory extends GameTemplate {
           game_mod.saveGamePreference('his_expert_mode', 1);
 	  window.location.reload();	
 	}
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text : "Combat",
+      id : "game-combat",
+      class : "game-combat",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.combat_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-game", {

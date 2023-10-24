@@ -268,6 +268,58 @@ try {
 
 	}
 
+	if (mv[0] === "player_play_combat") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+          let options = this.returnSpacesWithFilter(
+            (key) => {
+              if (this.game.spaces[key].activated_for_combat == 1) { return 1; }
+              return 0;
+            }
+          );
+          if (options.length == 0) { return 1; }
+
+	  if (this.game.player == player) {
+	    this.playerPlayCombat(faction);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " executing combat");
+	  }
+
+	  return 0;
+
+	}
+
+	if (mv[0] === "player_play_movement") {
+
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+
+    	  let options = this.returnSpacesWithFilter(
+    	    (key) => {
+    	      if (this.game.spaces[key].activated_for_movement == 1) { return 1; }
+      	      return 0;
+      	    }
+    	  );
+
+console.log("how many spaces activated?" + options.length);
+
+	  if (options.length == 0) { return 1; }
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerPlayMovement(faction);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " executing movement");
+	  }
+
+	  return 0;
+
+	}
+
 
 	if (mv[0] === "player_play_ops") {
 
@@ -315,6 +367,38 @@ try {
 
 	}
 
+
+	if (mv[0] === "entrench") {
+
+	  let faction = mv[1];
+	  let key = mv[2];
+	  let idx = parseInt(mv[3]);
+
+alert("entrench here!");
+	  this.game.spaces[key].units[idx].moved = 1;
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "move") {
+
+	  let faction = mv[1];
+	  let sourcekey = mv[2];
+	  let sourceidx = parseInt(mv[3]);
+	  let destinationkey = mv[4];
+	  let player_to_ignore = 0;
+	  if (mv[5]) { player_to_ignore = parseInt(mv[5]); }
+
+	  if (this.game.player != player_to_ignore) {
+	    this.moveUnit(sourcekey, sourceidx, destinationkey);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+	}
 
 
         if (mv[0] === "ops") {

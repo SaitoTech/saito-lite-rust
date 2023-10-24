@@ -1,5 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const ZoomOverlay = require('./lib/ui/overlays/zoom');
+const CombatOverlay = require('./lib/ui/overlays/combat');
 
 const PathsRules = require('./lib/core/rules.template');
 const PathsOptions = require('./lib/core/advanced-options.template');
@@ -33,6 +34,7 @@ class PathsOfGlory extends GameTemplate {
     // ui components
     //
     this.zoom_overlay = new ZoomOverlay(this.app, this); 
+    this.combat_overlay = new CombatOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining
@@ -102,6 +104,15 @@ class PathsOfGlory extends GameTemplate {
           game_mod.saveGamePreference('his_expert_mode', 1);
 	  window.location.reload();	
 	}
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text : "Combat",
+      id : "game-combat",
+      class : "game-combat",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.combat_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-game", {
@@ -2107,7 +2118,7 @@ console.log("!");
         html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
       }
       if (space.activated_for_combat) {
-        html += `<img src="/paths/img/tiles/activate_combat.png" class="activation-tile" />`;
+        html += `<img src="/paths/img/tiles/activate_attack.png" class="activation-tile" />`;
       }
 
       //
@@ -2130,7 +2141,7 @@ console.log("!");
 	}
       }
 
-      document.querySelector(`.${key}`).innerHTML = html;
+      document.querySelectorAll(`.${key}`).forEach((el) => { el.innerHTML = html; });
 
     } catch (err) {
     }
@@ -2313,7 +2324,7 @@ alert("display detailed space!");
 
 
 
-  activeSpaceForCombat(spacekey) {
+  activateSpaceForCombat(spacekey) {
     this.game.spaces[spacekey].activated_for_combat = 1;
     this.displaySpace(spacekey);
   }
@@ -2374,7 +2385,14 @@ alert("display detailed space!");
     return 100;
 
   }
- 
+
+  returnSpacesWithFilter(filter_func) {
+    let spaces = [];
+    for (let key in this.game.spaces) {
+      if (filter_func(key) == 1) { spaces.push(key); }
+    }
+    return spaces;
+  } 
 
   returnNumberOfSpacesWithFilter(filter_func) {
     let count = 0;
@@ -4229,6 +4247,13 @@ spaces['athens'] = {
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
 
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+	this.game.spaces[key].units[z].moved = 0;
+      }
+    }
+
   }
 
   returnState() {
@@ -4383,11 +4408,8 @@ console.log("HAND: " + JSON.stringify(hand));
         if (mv[0] == "init") {
 try {
 	  // belgium
-console.log("auts");
           this.addUnitToSpace("be_army", "antwerp");
-console.log("auts");
           this.addUnitToSpace("bef_army", "brussels");
-console.log("auts");
 
 	  // france
           this.addTrench("paris", 1);
@@ -4401,14 +4423,10 @@ console.log("auts");
           this.addUnitToSpace("fr_corps", "belfort");
           this.addUnitToSpace("fr_corps", "grenoble");
 
-console.log("after grenoble");
-
 	  // germany
-console.log("trench 1");
 	  this.addTrench("metz", 1);
-console.log("trench 3");
+	  this.addTrench("konigsberg", 1);
 	  this.addTrench("strasbourg", 1);
-console.log("trench 4");
           this.addUnitToSpace("ge_army01", "aachen");
           this.addUnitToSpace("ge_army02", "koblenz");
           this.addUnitToSpace("ge_army03", "koblenz");
@@ -4429,6 +4447,7 @@ console.log("trench 4");
           this.addUnitToSpace("ru_army05", "lublin");
           this.addUnitToSpace("ru_army03", "dubno");
           this.addUnitToSpace("ru_army08", "kamenetspodolski");
+          this.addUnitToSpace("ru_corps", "grodno");
           this.addUnitToSpace("ru_corps", "riga");
           this.addUnitToSpace("ru_corps", "szawli");
           this.addUnitToSpace("ru_corps", "odessa");
@@ -4541,6 +4560,58 @@ console.log("trench 4");
 
 	}
 
+	if (mv[0] === "player_play_combat") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+          let options = this.returnSpacesWithFilter(
+            (key) => {
+              if (this.game.spaces[key].activated_for_combat == 1) { return 1; }
+              return 0;
+            }
+          );
+          if (options.length == 0) { return 1; }
+
+	  if (this.game.player == player) {
+	    this.playerPlayCombat(faction);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " executing combat");
+	  }
+
+	  return 0;
+
+	}
+
+	if (mv[0] === "player_play_movement") {
+
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+
+    	  let options = this.returnSpacesWithFilter(
+    	    (key) => {
+    	      if (this.game.spaces[key].activated_for_movement == 1) { return 1; }
+      	      return 0;
+      	    }
+    	  );
+
+console.log("how many spaces activated?" + options.length);
+
+	  if (options.length == 0) { return 1; }
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerPlayMovement(faction);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " executing movement");
+	  }
+
+	  return 0;
+
+	}
+
 
 	if (mv[0] === "player_play_ops") {
 
@@ -4588,6 +4659,36 @@ console.log("trench 4");
 
 	}
 
+
+	if (mv[0] === "entrench") {
+
+	  let faction = mv[1];
+	  let key = mv[2];
+	  let idx = parseInt(mv[3]);
+
+alert("entrench here!");
+	  this.game.spaces[key].units[idx].moved = 1;
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "move") {
+
+	  let faction = mv[1];
+	  let sourcekey = mv[2];
+	  let sourceidx = parseInt(mv[3]);
+	  let destinationkey = mv[4];
+	  let player_to_ignore = 0;
+	  if (mv[5]) { player_to_ignore = parseInt(mv[5]); }
+
+	  if (this.game.player != player_to_ignore) {
+	    this.moveUnit(sourcekey, sourceidx, destinationkey);
+	  }
+
+	  return 1;
+	}
 
 
         if (mv[0] === "ops") {
@@ -4691,7 +4792,175 @@ console.log("trench 4");
 
   }
 
+  playerPlayCombat(faction) {
+    alert("player play combat...");
+  }
+
+  playerPlayMovement(faction) {
+
+    let paths_self = this;
+    let options = this.returnSpacesWithFilter(
+      (key) => {
+	if (this.game.spaces[key].activated_for_movement == 1) { return 1; }
+        return 0;
+      }
+    );
+
+    let mainInterface = function(options, mainInterface, moveInterface, unitActionInterface) {
+
+      //
+      // sometimes this ends
+      //
+      if (options.length == 0) {
+	this.updateStatus("moving units...");
+	this.endTurn();
+	return;
+      }
+
+      //
+      // sanity check options still valid
+      //
+      let units_to_move = 0;
+      for (let i = 0; i < options.length; i++) {
+	for (let z = 0; z < paths_self.game.spaces[options[i]].units.length; z++) {
+	  if (paths_self.game.spaces[options[i]].units[z].moved != 1) {
+	    units_to_move++;
+	  }
+	}
+      }
+      if (units_to_move == 0) {
+	//
+	// nothing left
+	//
+	paths_self.removeSelectable();
+	paths_self.updateStatus("acknowledge...");
+	paths_self.endTurn();
+      }
+
+
+
+
+      paths_self.playerSelectSpaceWithFilter(
+	"Units Awaiting Command: ",
+	(key) => {
+	  if (
+	    paths_self.game.spaces[key].activated_for_movement == 1 
+	    && options.includes(key)
+	  ) {
+	    let everything_moved = true;
+	    for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	      if (paths_self.game.spaces[key].units[z].moved != 1) { everything_moved = false; }
+	    }
+	    if (everything_moved == false) { return 1; }
+	  }
+	  return 0;
+	},
+	(key) => {
+	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	    paths_self.game.spaces[key].units[z].moved = 0;
+	  }
+	  paths_self.game.spaces[key].activated_for_movement = 0;
+	  paths_self.removeSelectable();
+	  moveInterface(key, options, mainInterface, moveInterface, unitActionInterface);
+	},
+	null,
+	true
+      )
+    }
+
+    let unitActionInterface = function(key, idx, options, mainInterface, moveInterface, unitActionInterface) {
+      let unit = paths_self.game.spaces[key].units[idx];
+      let sourcekey = key;
+      let html  = `<ul>`;
+          html += `<li class="option" id="move">move</li>`;
+          html += `<li class="option" id="entrench">entrench</li>`;
+          html += `<li class="option" id="skip">skip</li>`;
+          html += `</ul>`;
+      paths_self.updateStatusWithOptions(`Select Action for Unit`, html);
+      paths_self.attachCardboxEvents((action) => {
+
+        if (action === "move") {
+	  paths_self.playerSelectSpaceWithFilter(
+	    `Select Destination for ${unit.name}`,
+	    (key) => {
+	      return 1;
+	    },
+	    (key) => {
+              paths_self.moveUnit(sourcekey, idx, key);
+	      paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
+              paths_self.displaySpace(key);
+	      let mint = false;
+	      for (let z = 0; z < paths_self.game.spaces[sourcekey].units.length; z++) {
+	        if (paths_self.game.spaces[sourcekey].units[z].moved != 1) { mint = true; }
+	      }
+	      if (mint) {
+	        moveInterface(sourcekey, options, mainInterface, moveInterface, unitActionInterface);
+	      } else {
+	        mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+	      }
+	    },
+	    null,
+	    true
+	  );
+        }
+        if (action === "entrench") {
+	  paths_self.addMove(`player_play_movement\t${faction}`);
+	  paths_self.addMove(`entrench\t${faction}\t${sourcekey}\t${idx}`);
+	  paths_self.endTurn();
+	  return;
+        }
+        if (action === "skip") {
+          paths_self.endTurn();
+	  // this unit has been moved
+	  paths_self.game.spaces[key].units[idx].moved = 1;
+	  let mint = false;
+	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	    if (paths_self.game.spaces[key].units[z].moved != 1) { mint = true; }
+	  }
+	  if (mint) {
+	    moveInterface(key, options, mainInterface, moveInterface, unitActionInterface);
+	  } else {
+	    mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+	  }
+        }
+
+      });
+    }
+
+
+    let moveInterface = function(key, options, mainInterface, moveInterface, unitActionInterface) {
+console.log("moving interface for " + key);
+      let units = [];
+      for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	if (paths_self.game.spaces[key].units[z].moved != 1) {
+	  units.push(z);
+	}
+      }
+
+      paths_self.playerSelectOptionWithFilter(
+	"Which Unit?",
+	units,
+	(idx) => {
+	  let unit = paths_self.game.spaces[key].units[idx];
+	  return `<li class="option" id="${idx}">${unit.name}</li>`;
+	},
+	(idx) => {
+	  let unit = paths_self.game.spaces[key].units[idx];
+	  paths_self.game.spaces[key].units[idx].moved = 1;
+          unitActionInterface(key, idx, options, mainInterface, moveInterface, unitActionInterface);
+	},
+        false
+      );
+    }
+
+    mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+
+  }
+
   playerPlayOps(faction, card, cost) {
+
+    this.addMove("player_play_combat\t"+faction);
+    this.addMove("player_play_movement\t"+faction);
 
     let targets = this.returnNumberOfSpacesWithFilter((key) => {
       if (cost < this.returnActivationCost(key)) { return 0; }
@@ -4728,9 +4997,7 @@ console.log("trench 4");
 	this.endTurn();
       }
 
-
       if (action === "movement") {
-
 	//
 	// select valid space to activate
 	//
@@ -4749,6 +5016,7 @@ console.log("trench 4");
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForMovement(key);
+            this.displaySpace(key);
 	    let cost_paid = this.returnActivationCost(key); 
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
@@ -4825,6 +5093,27 @@ console.log("trench 4");
     });
 
   }
+
+  playerSelectOptionWithFilter(msg, opts, filter_func, mycallback, cancel_func = null, board_blickable = false) {
+
+    let paths_self = this;
+
+    let html = '<ul>';
+    for (let i = 0; i < opts.length; i++) { html += filter_func(opts[i]); }
+    html += '</ul>';
+
+    this.updateStatusWithOptions(msg, html);
+    $('.option').off();
+    $('.option').on('click', function () {
+      let action = $(this).attr("id");
+      $('.option').off();
+      paths_self.updateStatus("acknowledge...");
+      mycallback(action);
+    });
+
+  }
+
+
 
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
@@ -4980,6 +5269,16 @@ console.log("trench 4");
 
   }
 
+  moveUnit(sourcekey, sourceidx, destinationkey) {
+    let unit = this.game.spaces[sourcekey].units[sourceidx];
+    this.game.spaces[sourcekey].units[sourceidx].moved = 1;
+    this.game.spaces[sourcekey].units.splice(sourceidx, 1);
+    if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
+    this.game.spaces[destinationkey].units.push(unit);
+    this.displaySpace(sourcekey);
+    this.displaySpace(destinationkey);
+  }
+
   returnUnitImage(spacekey, idx) {
 
     let unit = this.game.spaces[spacekey].units[idx];
@@ -4998,9 +5297,7 @@ console.log("trench 4");
   }
 
   addUnitToSpace(unitkey, spacekey) {
-console.log("into auts: " + unitkey + " -- " + spacekey);
     this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
-console.log("SPACE: " + spacekey + ": " + JSON.stringify(this.game.spaces[spacekey]));
   }
 
   damageUnitInSpace(unitkey, spacekey) {

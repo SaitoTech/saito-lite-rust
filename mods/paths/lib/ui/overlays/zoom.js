@@ -81,6 +81,8 @@ class ZoomOverlay {
       gb2.classList.remove("zoom-ottoman");
       gb2.style.transform = `translate(-${percent_right}%, -${percent_down}%) scaleX(1) scaleY(1)`;
 
+      this.attachEvents();
+
     }
   
     render() {
@@ -117,9 +119,15 @@ class ZoomOverlay {
       //
       // add tiles
       //
-      for (let key in this.mod.spaces) {
+      for (let key in this.mod.game.spaces) {
         let qs = ".zoom-overlay .gameboard ."+key;
+if (!document.querySelector(qs)) {
+console.log("qs: " + qs);
+} else {
 	document.querySelector(qs).onclick = (e) => {
+
+alert("clicked on space: " + key);
+
 	  let space_id = e.currentTarget.id;
 	  //
 	  // we have clicked on a space. if there is a callback attached to the 
@@ -127,7 +135,16 @@ class ZoomOverlay {
 	  // when we want people to use the zoom overlay to select something.
 	  //
 	  if (this.spaces_onclick_callback != null) {
-	    this.spaces_onclick_callback(space_id);
+
+	    //
+	    // trigger if selectable
+ 	    //
+	    let can_trigger = false;
+	    let tkey = `.${key}`;
+	    document.querySelectorAll(tkey).forEach((el) => { if (el.classList.contains("selectable")) { can_trigger = true; } });
+	    if (can_trigger) {
+	      this.spaces_onclick_callback(space_id);
+	    }
 
 	  //
 	  // otherwise we will show the detailed VIEW of the space, since people
@@ -139,7 +156,7 @@ class ZoomOverlay {
 	  }
 	}
       }
-
+}
     }
 
 }

@@ -61,7 +61,175 @@
 
   }
 
+  playerPlayCombat(faction) {
+    alert("player play combat...");
+  }
+
+  playerPlayMovement(faction) {
+
+    let paths_self = this;
+    let options = this.returnSpacesWithFilter(
+      (key) => {
+	if (this.game.spaces[key].activated_for_movement == 1) { return 1; }
+        return 0;
+      }
+    );
+
+    let mainInterface = function(options, mainInterface, moveInterface, unitActionInterface) {
+
+      //
+      // sometimes this ends
+      //
+      if (options.length == 0) {
+	this.updateStatus("moving units...");
+	this.endTurn();
+	return;
+      }
+
+      //
+      // sanity check options still valid
+      //
+      let units_to_move = 0;
+      for (let i = 0; i < options.length; i++) {
+	for (let z = 0; z < paths_self.game.spaces[options[i]].units.length; z++) {
+	  if (paths_self.game.spaces[options[i]].units[z].moved != 1) {
+	    units_to_move++;
+	  }
+	}
+      }
+      if (units_to_move == 0) {
+	//
+	// nothing left
+	//
+	paths_self.removeSelectable();
+	paths_self.updateStatus("acknowledge...");
+	paths_self.endTurn();
+      }
+
+
+
+
+      paths_self.playerSelectSpaceWithFilter(
+	"Units Awaiting Command: ",
+	(key) => {
+	  if (
+	    paths_self.game.spaces[key].activated_for_movement == 1 
+	    && options.includes(key)
+	  ) {
+	    let everything_moved = true;
+	    for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	      if (paths_self.game.spaces[key].units[z].moved != 1) { everything_moved = false; }
+	    }
+	    if (everything_moved == false) { return 1; }
+	  }
+	  return 0;
+	},
+	(key) => {
+	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	    paths_self.game.spaces[key].units[z].moved = 0;
+	  }
+	  paths_self.game.spaces[key].activated_for_movement = 0;
+	  paths_self.removeSelectable();
+	  moveInterface(key, options, mainInterface, moveInterface, unitActionInterface);
+	},
+	null,
+	true
+      )
+    }
+
+    let unitActionInterface = function(key, idx, options, mainInterface, moveInterface, unitActionInterface) {
+      let unit = paths_self.game.spaces[key].units[idx];
+      let sourcekey = key;
+      let html  = `<ul>`;
+          html += `<li class="option" id="move">move</li>`;
+          html += `<li class="option" id="entrench">entrench</li>`;
+          html += `<li class="option" id="skip">skip</li>`;
+          html += `</ul>`;
+      paths_self.updateStatusWithOptions(`Select Action for Unit`, html);
+      paths_self.attachCardboxEvents((action) => {
+
+        if (action === "move") {
+	  paths_self.playerSelectSpaceWithFilter(
+	    `Select Destination for ${unit.name}`,
+	    (key) => {
+	      return 1;
+	    },
+	    (key) => {
+              paths_self.moveUnit(sourcekey, idx, key);
+	      paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
+              paths_self.displaySpace(key);
+	      let mint = false;
+	      for (let z = 0; z < paths_self.game.spaces[sourcekey].units.length; z++) {
+	        if (paths_self.game.spaces[sourcekey].units[z].moved != 1) { mint = true; }
+	      }
+	      if (mint) {
+	        moveInterface(sourcekey, options, mainInterface, moveInterface, unitActionInterface);
+	      } else {
+	        mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+	      }
+	    },
+	    null,
+	    true
+	  );
+        }
+        if (action === "entrench") {
+	  paths_self.addMove(`player_play_movement\t${faction}`);
+	  paths_self.addMove(`entrench\t${faction}\t${sourcekey}\t${idx}`);
+	  paths_self.endTurn();
+	  return;
+        }
+        if (action === "skip") {
+          paths_self.endTurn();
+	  // this unit has been moved
+	  paths_self.game.spaces[key].units[idx].moved = 1;
+	  let mint = false;
+	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	    if (paths_self.game.spaces[key].units[z].moved != 1) { mint = true; }
+	  }
+	  if (mint) {
+	    moveInterface(key, options, mainInterface, moveInterface, unitActionInterface);
+	  } else {
+	    mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+	  }
+        }
+
+      });
+    }
+
+
+    let moveInterface = function(key, options, mainInterface, moveInterface, unitActionInterface) {
+console.log("moving interface for " + key);
+      let units = [];
+      for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	if (paths_self.game.spaces[key].units[z].moved != 1) {
+	  units.push(z);
+	}
+      }
+
+      paths_self.playerSelectOptionWithFilter(
+	"Which Unit?",
+	units,
+	(idx) => {
+	  let unit = paths_self.game.spaces[key].units[idx];
+	  return `<li class="option" id="${idx}">${unit.name}</li>`;
+	},
+	(idx) => {
+	  let unit = paths_self.game.spaces[key].units[idx];
+	  paths_self.game.spaces[key].units[idx].moved = 1;
+          unitActionInterface(key, idx, options, mainInterface, moveInterface, unitActionInterface);
+	},
+        false
+      );
+    }
+
+    mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+
+  }
+
   playerPlayOps(faction, card, cost) {
+
+    this.addMove("player_play_combat\t"+faction);
+    this.addMove("player_play_movement\t"+faction);
 
     let targets = this.returnNumberOfSpacesWithFilter((key) => {
       if (cost < this.returnActivationCost(key)) { return 0; }
@@ -98,9 +266,7 @@
 	this.endTurn();
       }
 
-
       if (action === "movement") {
-
 	//
 	// select valid space to activate
 	//
@@ -119,6 +285,7 @@
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForMovement(key);
+            this.displaySpace(key);
 	    let cost_paid = this.returnActivationCost(key); 
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
@@ -195,6 +362,27 @@
     });
 
   }
+
+  playerSelectOptionWithFilter(msg, opts, filter_func, mycallback, cancel_func = null, board_blickable = false) {
+
+    let paths_self = this;
+
+    let html = '<ul>';
+    for (let i = 0; i < opts.length; i++) { html += filter_func(opts[i]); }
+    html += '</ul>';
+
+    this.updateStatusWithOptions(msg, html);
+    $('.option').off();
+    $('.option').on('click', function () {
+      let action = $(this).attr("id");
+      $('.option').off();
+      paths_self.updateStatus("acknowledge...");
+      mycallback(action);
+    });
+
+  }
+
+
 
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {

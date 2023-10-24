@@ -8,6 +8,13 @@
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
 
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+	this.game.spaces[key].units[z].moved = 0;
+      }
+    }
+
   }
 
   returnState() {

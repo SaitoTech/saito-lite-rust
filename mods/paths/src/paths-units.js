@@ -38,6 +38,16 @@
 
   }
 
+  moveUnit(sourcekey, sourceidx, destinationkey) {
+    let unit = this.game.spaces[sourcekey].units[sourceidx];
+    this.game.spaces[sourcekey].units[sourceidx].moved = 1;
+    this.game.spaces[sourcekey].units.splice(sourceidx, 1);
+    if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
+    this.game.spaces[destinationkey].units.push(unit);
+    this.displaySpace(sourcekey);
+    this.displaySpace(destinationkey);
+  }
+
   returnUnitImage(spacekey, idx) {
 
     let unit = this.game.spaces[spacekey].units[idx];
@@ -56,9 +66,7 @@
   }
 
   addUnitToSpace(unitkey, spacekey) {
-console.log("into auts: " + unitkey + " -- " + spacekey);
     this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
-console.log("SPACE: " + spacekey + ": " + JSON.stringify(this.game.spaces[spacekey]));
   }
 
   damageUnitInSpace(unitkey, spacekey) {
