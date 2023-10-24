@@ -99,6 +99,8 @@ class Stun extends ModTemplate {
       return;
     }
 
+    // this.renderInto("body");
+
     if (service.service === "relay") {
       if (app.BROWSER !== 1) {
         return;
@@ -119,12 +121,17 @@ class Stun extends ModTemplate {
         }
 
         app.connection.emit("stun-to-join-room", room_obj);
+      } else {
+        this.renderInto("body");
       }
     }
   }
-  render() {
-    this.renderInto("body");
-  }
+  // render() {
+  //   // if (!this.hasRendered) {
+  //   //   this.renderInto("body");
+  //   //   this.hasRendered = true;
+  //   // }
+  // }
 
   canRenderInto(qs) {
     if (qs === ".saito-overlay") {

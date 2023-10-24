@@ -16,12 +16,12 @@ class CallLaunch {
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
     this.callSetting = new CallSetting(app, this);
-    
+
     //
     //this looks a lot better if it is in the dom structure
     //
-    this.loader = new SaitoLoader(app, mod, ".stunx-appspace-splash");
-    
+    // this.loader = new SaitoLoader(app, mod, ".stunx-appspace-splash");
+
     this.room_obj = {};
 
     // close-preview-window shuts downt the streams in call-settings
@@ -35,12 +35,9 @@ class CallLaunch {
     app.connection.on("stun-to-join-room", (room_obj) => {
       console.log(room_obj, "stun-to-join-room");
       this.room_obj = room_obj;
-      const interval = setInterval(() => {
-        if (document.querySelector("#createRoom")) {
-          document.querySelector("#createRoom").textContent = "Join Meeting";
-          clearInterval(interval);
-        }
-      }, 500);
+      if (document.querySelector("#createRoom")) {
+        document.querySelector("#createRoom").textContent = "Join Meeting";
+      }
     });
 
     app.connection.on("stun-remove-loader", () => {
@@ -62,24 +59,11 @@ class CallLaunch {
     }
 
     //
-    // We should be able to toggle our video/audio controls 
+    // We should be able to toggle our video/audio controls
     // Do not make it a blocking loader
     //
-    this.loader.render(false);
 
-    setTimeout(() => {
-      this.loader.remove(0);
-
-      let btn = document.querySelector(".stunx-appspace-launch-call-btn");
-      if (!btn) {
-        console.warn("Button doesn't exit: stunx-appspace-launch-call-btn");
-        return;
-      }
-
-      btn.style.display = "block";
-
-      this.attachEvents(this.app, this.mod);
-    }, 3000);
+    this.attachEvents(this.app, this.mod);
 
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit("stun-init-peer-manager", "large");
