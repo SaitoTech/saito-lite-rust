@@ -43,6 +43,11 @@ class RedSquareMain {
       window.location.hash = "#home";
       document.querySelector(".saito-main").innerHTML = "";
 
+
+      if (document.querySelector(".saito-back-button") != null) {
+        document.querySelector(".saito-back-button").remove();
+      }
+
       this.scroll_depth = 0;
       this.scrollFeed(0, "smooth");
       this.manager.render("tweets");
