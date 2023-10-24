@@ -16,7 +16,12 @@ class CallLaunch {
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
     this.callSetting = new CallSetting(app, this);
-    this.loader = new SaitoLoader(app, mod);
+    
+    //
+    //this looks a lot better if it is in the dom structure
+    //
+    this.loader = new SaitoLoader(app, mod, ".stunx-appspace-splash");
+    
     this.room_obj = {};
 
     // close-preview-window shuts downt the streams in call-settings
@@ -56,7 +61,11 @@ class CallLaunch {
       this.app.browser.addElementToDom(StunLaunchTemplate(this.app, this.mod));
     }
 
-    this.loader.render(true);
+    //
+    // We should be able to toggle our video/audio controls 
+    // Do not make it a blocking loader
+    //
+    this.loader.render(false);
 
     setTimeout(() => {
       this.loader.remove(0);
