@@ -58,10 +58,15 @@ class Registry extends ModTemplate {
       let unidentified_keys = [];
 
       //
-      // every 1 in 500 times, clear cache
+      // every 1 in 20 times, clear cache of anonymous keys to requery 
       //
-      if (Math.random() < 0.005) {
-        this.cached_keys = {};
+      if (Math.random() < 0.05) {
+        for (let i of Object.keys(this.cached_keys)){
+          if (i == this.cached_keys[i]){
+            delete this.cached_keys[i]
+          }
+        }
+        console.log("REGISTRY: new cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
       }
 
       for (let i = 0; i < keys.length; i++) {
@@ -180,7 +185,7 @@ class Registry extends ModTemplate {
       }
     });
 
-    //console.log("REGISTRY Found: ", found_keys);
+    //console.log("REGISTRY Found in my keychain: ", found_keys);
 
     if (missing_keys.length == 0) {
       mycallback(found_keys);
@@ -543,14 +548,6 @@ class Registry extends ModTemplate {
     }
   }
 
-  returnCachedIdentifier(key) {
-    if (this.cached_keys[key]) {
-      if (this.cached_keys[key] !== key) {
-        return this.cached_keys[key];
-      }
-    }
-    return "";
-  }
 
   /*
    * Lightly recursive, server side code to look up keys in the registry database
@@ -558,6 +555,7 @@ class Registry extends ModTemplate {
    * Any requested keys not found are passed on to any peers with the DNS publickey
    */
   async fetchIdentifiersFromDatabase(keys, mycallback = null) {
+    let registry_self = this;
     let found_keys = {};
     let missing_keys = [];
 
@@ -567,10 +565,10 @@ class Registry extends ModTemplate {
         keys.splice(i, 1);
         continue;
       }
-      if (this.returnCachedIdentifier(keys[i])) {
-        found_keys[keys[i]] = this.returnCachedIdentifier(keys[i]);
+      /*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
+        found_keys[keys[i]] = this.cached_keys[keys[i]];
         keys.splice(i, 1);
-      }
+      }*/
     }
 
     //
@@ -583,18 +581,10 @@ class Registry extends ModTemplate {
                    WHERE ${where_statement}`;
 
       let rows = await this.app.storage.queryDatabase(sql, {}, "registry");
-      if (rows != undefined) {
-        if (rows.length > 0) {
-          for (let i = 0; i < rows.length; i++) {
-            //const { publickey, identifier, bid, bsh, lc } = rows[i];
-            let publickey = rows[i].publickey;
-            let identifier = rows[i].identifier;
-            if (identifier !== publickey) {
-              found_keys[publickey] = identifier;
-              // and add to the cache for faster responsiveness in future
-              this.cached_keys[publickey] = identifier;
-            }
-          }
+      if (rows?.length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+          found_keys[rows[i].publickey] = rows[i].identifier;
+          registry_self.cached_keys[rows[i].publickey] = rows[i].identifier;
         }
       }
     }
@@ -627,8 +617,8 @@ class Registry extends ModTemplate {
           this.queryKeys(this.peers[i], missing_keys, (res) => {
             let more_keys = {};
             for (let key in res) {
-              if (res[key] != key) {
-                this.cached_keys[key] = res[key];
+              if (res[key] !== key) {
+                registry_self.cached_keys[key] = res[key];
                 more_keys[key] = res[key];
               }
             }
