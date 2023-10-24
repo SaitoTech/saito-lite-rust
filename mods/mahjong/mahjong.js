@@ -105,6 +105,9 @@ class Mahjong extends OnePlayerGameTemplate {
       this.sizer.render();
       this.sizer.attachEvents("#mahj-rowbox");
     }
+
+
+    this.displayModal("Mahjong", "Welcome to the jungle");
   }
 
 
@@ -650,7 +653,7 @@ class Mahjong extends OnePlayerGameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.state.session.round++;
         this.game.state.session.wins++;
-        this.displayModal("Congratulations!", "You solved the puzzle!");
+        this.displayModal("Congratulations! Here is your fortune", this.returnFortune());
         this.newRound();
         this.game.queue.push(
           `ROUNDOVER\t${JSON.stringify([this.publicKey])}\troundover\t${JSON.stringify([])}`
@@ -740,6 +743,45 @@ class Mahjong extends OnePlayerGameTemplate {
     }
 
     return deck;
+  }
+
+
+  returnFortune(){
+    let fortunes = [
+      "Do not be afraid of competition",
+      "An exciting opportunity lies ahead of you",
+      "You will always be surrounded by true friends",
+      "You are kind and friendly",
+      "You should be able to undertake and complete anything",
+      "You are wise beyond your years",
+      "A routine task will turn into an enchanting adventure",
+      "Beware of all enterprises that require new clothes",
+      "Be true to your work, your word, and your friends",
+      "Goodness is the only investment that never fails",
+      "A journey of a thousand miles begins with a single step",
+      "Forget injuries, but never forget kindnesses",
+      "Respect yourself and others will respect you",
+      "A man cannot be comfortable without his own approval",
+      "It is easier to stay out than to get out",
+      "You will receive money from an unexpected source",
+      "Attitude is a little thing that makes a big difference",
+      "Plan for many pleasure ahead",
+      "Experience is the best teacher",
+      "You ability to juggle many tasks will take you far",
+      "Once you make a decision the universe conspires to make it happen",
+      "Make yourself necessary to someone",
+      "The only way to have a friend is to be one",
+      "Nothing great was ever achieved without enthusiasm",
+      "Live this day as if it were your last",
+      "Your life will be happy and peaceful",
+      "Bloom where you are planted",
+      "Move in the direction of your dreams",
+      "Help! I'm being held prisoner in a fortune cookie factory",
+      "The one you love is closer than you think",
+      "In dreams and in love there are no impossibilities"
+    ];
+
+    return fortunes[Math.floor(fortunes.length * Math.random())];
   }
 }
 
