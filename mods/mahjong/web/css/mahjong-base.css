@@ -306,3 +306,29 @@ div[id^="row21"] {
   align-items: center;
   justify-content: center;
 }
+
+#saito-alert-box, .solitaire-stats-overlay, .rules-overlay {
+  background-color: #f0e7c4;
+}
+
+.solitaire-stats-overlay hr {
+  color: #2e2b1f;
+}
+
+.saito-table-row {
+  background-color: #a1976e23;
+}
+
+.saito-alert-message {
+  font-family: "Papyrus";  
+}
+
+#saito-alert-box button {
+  background-color: #45402f;
+  font-family: "Papyrus";  
+}
+
+#saito-alert-box button:focus-visible{
+  outline: 2px solid var(--saito-primary);
+}
+

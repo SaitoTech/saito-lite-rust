@@ -36,17 +36,18 @@ class Mahjong extends OnePlayerGameTemplate {
     // us this is the first time we have initialized this game.
     //
     if (!this.game.state) {
+      //Just default 1 player game state (for the stats)
       this.game.state = this.returnState();
+      this.game.state.hidden = [];
       this.newRound();
-    }else{
+    } else {
       this.game.queue.push("READY");
     }
 
     this.saveGame(this.game.id);
-
   }
 
-    //
+  //
   // runs whenever we load the game into the browser. render()
   //
   async render(app) {
@@ -97,7 +98,10 @@ class Mahjong extends OnePlayerGameTemplate {
     //
     // display the board?
     //
-    this.displayBoard();
+    if (this.game.board && this.game.deck){
+      this.displayBoard(0);  
+    }
+    
 
     if (app.browser.isMobileBrowser(navigator.userAgent)) {
       this.hammer.render("#mahj-rowbox");
@@ -107,16 +111,17 @@ class Mahjong extends OnePlayerGameTemplate {
     }
   }
 
-
   newRound() {
     //Set up queue
-    this.game.queue = ["READY"];
+    this.game.queue.push("play");
+    this.game.queue.push("READY");
+    this.game.queue.push("DEAL\t1\t1\t144");
+    this.game.queue.push("SHUFFLE\t1\t1");
+    this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
 
     //Clear board
     this.game.board = {};
 
-    //Reset/Increment State
-    this.displayBoard();
   }
 
   isArrayInArray(arr, item) {
@@ -290,64 +295,67 @@ class Mahjong extends OnePlayerGameTemplate {
   ];
 
   // displayBoard
-  async displayBoard(timeInterval = 1) {
+  async displayBoard(timeInterval = 0) {
+
+    console.log("Display board with pause of " + timeInterval);
     let index = 0;
 
-    let deckSize = 0;
+    let deckSize = 144;
 
     this.game.availableMoves = [];
-    if (!("board" in this.game) || Object.values(this.game.board).length === 0) {
-      this.game.deck.cards = this.returnDeck();
+
+    for (let row = 1; row <= 21; row++) {
+      for (let column = 1; column <= 14; column++) {
+        let position = `row${row}_slot${column}`;
+        this.makeInvisible(position);
+      }
+    }
+
+    if (!this.game?.board || Object.values(this.game.board).length === 0) {
       this.game.board = {};
-      deckSize = Object.values(this.game.deck.cards).length;
-      this.game.hidden = [];
+      this.game.state.hidden = [];
+
       for (let row = 1; row <= 21; row++) {
         for (let column = 1; column <= 14; column++) {
           let position = `row${row}_slot${column}`;
-          this.makeInvisible(position);
-          if (!this.isArrayInArray(this.emptyCells, [row, column]) && deckSize > index) {
-            this.game.board[position] = Object.values(this.game.deck.cards)[index];
-            index++;
+
+          if (
+            !this.isArrayInArray(this.emptyCells, [row, column]) &&
+            this.game.deck[0].hand.length > 0
+          ) {
+            let tile = this.game.deck[0].hand.pop();
+            this.game.board[position] = this.game.deck[0].cards[tile];
           } else {
             this.game.board[position] = "E";
           }
         }
       }
-    } else {
-      deckSize = Object.values(this.returnDeck()).length;
-      for (let row = 1; row <= 21; row++) {
-        for (let column = 1; column <= 14; column++) {
-          let position = `row${row}_slot${column}`;
-          this.makeInvisible(position);
-        }
-      }
     }
 
-    this.game.cardsLeft = deckSize - this.game.hidden.length;
+    this.game.cardsLeft = deckSize - this.game.state.hidden.length;
     this.game.selected = "";
     $(".selected").removeClass("selected");
 
-    index = 0;
-    try {
+    for (let row = 1; row <= 21; row++) {
+      for (let column = 1; column <= 14; column++) {
+        var divname = `row${row}_slot${column}`;
 
-      for (let row = 1; row <= 21; row++) {
-        for (let column = 1; column <= 14; column++) {
-          var divname = `row${row}_slot${column}`;
-          if (!this.isArrayInArray(this.emptyCells, [row, column]) && deckSize > index) {
-            await this.timeout(timeInterval);
-            $("#" + divname).html(this.returnCardImageHTML(this.game.board[divname]));
+        if (this.game.board[divname] !== "E") {
+          $("#" + divname).html(this.returnCardImageHTML(this.game.board[divname]));
+          if (this.game.state.hidden.includes(divname)) {
+            this.makeInvisible(divname);
+          } else {
             this.makeVisible(divname);
-            if (this.game.hidden.includes(divname)) {
-              this.makeInvisible(divname);
-            }
+          }
+
+          if (timeInterval){
+            await this.timeout(timeInterval);
           }
         }
       }
-      this.attachEventsToBoard();
-      this.displayUserInterface();
-    } catch (err) {
-      console.log(err);
     }
+    this.attachEventsToBoard();
+    this.displayUserInterface();
   }
 
   makeInvisible(divname) {
@@ -381,8 +389,6 @@ class Mahjong extends OnePlayerGameTemplate {
     }
   }
 
-
-
   attachEventsToBoard() {
     let mahjong_self = this;
 
@@ -406,38 +412,46 @@ class Mahjong extends OnePlayerGameTemplate {
           if (
             mahjong_self.game.board[card] === mahjong_self.game.board[mahjong_self.game.selected]
           ) {
-
             $(".selected").removeClass("selected");
 
-            mahjong_self.moveGameElement(mahjong_self.copyGameElement("#"+card), `.notfound.${mahjong_self.game.board[card].toLowerCase()}`, 
-              { 
+            mahjong_self.moveGameElement(
+              mahjong_self.copyGameElement("#" + card),
+              `.notfound.${mahjong_self.game.board[card].toLowerCase()}`,
+              {
                 resize: 1,
-                callback: (id)=>{
+                callback: (id) => {
                   document.getElementById(id).style.opacity = 0;
-                }
-              }, null);
-            mahjong_self.moveGameElement(mahjong_self.copyGameElement("#"+mahjong_self.game.selected), `.notfound.${mahjong_self.game.board[card].toLowerCase()}`, { 
+                },
+              },
+              null
+            );
+            mahjong_self.moveGameElement(
+              mahjong_self.copyGameElement("#" + mahjong_self.game.selected),
+              `.notfound.${mahjong_self.game.board[card].toLowerCase()}`,
+              {
                 resize: 1,
-                callback: (id)=>{
+                callback: (id) => {
                   document.getElementById(id).style.opacity = 0;
-                }
-              }, null);
+                },
+              },
+              null
+            );
 
             mahjong_self.makeInvisible(card);
             mahjong_self.makeInvisible(mahjong_self.game.selected);
-            mahjong_self.game.hidden.push(card);
-            mahjong_self.game.hidden.push(mahjong_self.game.selected);
+            mahjong_self.game.state.hidden.push(card);
+            mahjong_self.game.state.hidden.push(mahjong_self.game.selected);
             mahjong_self.game.cardsLeft = mahjong_self.game.cardsLeft - 2;
 
             if (mahjong_self.game.cardsLeft === 0) {
               mahjong_self.prependMove("win");
               mahjong_self.endTurn();
               return;
-            }            
-  
+            }
+
             mahjong_self.game.selected = "";
             mahjong_self.displayUserInterface();
-          }          
+          }
         }
       }
     });
@@ -450,43 +464,43 @@ class Mahjong extends OnePlayerGameTemplate {
     for (let row = 1; row <= 21; row++) {
       for (let column = 1; column <= 14; column++) {
         if (
-          (row === 5 && column === 2 && !this.game.hidden.includes("row4_slot1")) ||
-          (row === 4 && column === 13 && !this.game.hidden.includes("row5_slot14"))
+          (row === 5 && column === 2 && !this.game.state.hidden.includes("row4_slot1")) ||
+          (row === 4 && column === 13 && !this.game.state.hidden.includes("row5_slot14"))
         ) {
           continue;
         }
         if (row >= 2 && row <= 7 && column >= 5 && column <= 10) {
-          if (!this.game.hidden.includes(`row${row + 7}_slot${column}`)) {
+          if (!this.game.state.hidden.includes(`row${row + 7}_slot${column}`)) {
             continue;
           }
         }
         if (row >= 10 && row <= 13 && column >= 6 && column <= 9) {
-          if (!this.game.hidden.includes(`row${row + 5}_slot${column}`)) {
+          if (!this.game.state.hidden.includes(`row${row + 5}_slot${column}`)) {
             continue;
           }
         }
         if (row >= 16 && row <= 17 && column >= 7 && column <= 8) {
-          if (!this.game.hidden.includes(`row${row + 3}_slot${column}`)) {
+          if (!this.game.state.hidden.includes(`row${row + 3}_slot${column}`)) {
             continue;
           }
         }
         if (row >= 19 && row <= 20 && column >= 7 && column <= 8) {
-          if (!this.game.hidden.includes(`row21_slot${column}`)) {
+          if (!this.game.state.hidden.includes(`row21_slot${column}`)) {
             continue;
           }
         }
         if (
           // \/ checking if right or left tile is unlocked or empty
-          ((this.game.hidden.includes(`row${row}_slot${column - 1}`) ||
+          ((this.game.state.hidden.includes(`row${row}_slot${column - 1}`) ||
             this.game.board[`row${row}_slot${column - 1}`] === "E" ||
-            this.game.hidden.includes(`row${row}_slot${column + 1}`) ||
+            this.game.state.hidden.includes(`row${row}_slot${column + 1}`) ||
             this.game.board[`row${row}_slot${column + 1}`] === "E") &&
             this.game.board[`row${row}_slot${column}`] !== "E" &&
-            !this.game.hidden.includes(`row${row}_slot${column}`)) ||
+            !this.game.state.hidden.includes(`row${row}_slot${column}`)) ||
           // /\ checking if right or left tile is unlocked or empty
           // \/ checking two outermost rows
-          (row === 4 && column === 1 && !this.game.hidden.includes("row4_slot1")) ||
-          (row === 5 && column === 14 && !this.game.hidden.includes("row5_slot14"))
+          (row === 4 && column === 1 && !this.game.state.hidden.includes("row4_slot1")) ||
+          (row === 5 && column === 14 && !this.game.state.hidden.includes("row5_slot14"))
         ) {
           // /\ checking two outermost rows
           if (availableTiles.get(this.game.board[`row${row}_slot${column}`]) !== undefined) {
@@ -499,10 +513,10 @@ class Mahjong extends OnePlayerGameTemplate {
           }
           this.game.availableMoves.push(`row${row}_slot${column}`);
           $(`#row${row}_slot${column}`).addClass("available");
-          if (this.game.selected && this.game.selected !== `row${row}_slot${column}`){
-            if (this.game.board[`row${row}_slot${column}`] == this.game.board[this.game.selected]){
+          if (this.game.selected && this.game.selected !== `row${row}_slot${column}`) {
+            if (this.game.board[`row${row}_slot${column}`] == this.game.board[this.game.selected]) {
               $(`#row${row}_slot${column}`).addClass("valid");
-            }else{
+            } else {
               $(`#row${row}_slot${column}`).addClass("invalid");
             }
           }
@@ -542,7 +556,7 @@ class Mahjong extends OnePlayerGameTemplate {
 
     let option = "<ul>";
     option += `<li id="hint" class="option"><span>Hint: ${tilesLeftToUnlock.length}<span class="hidable"> pairs available</span></span></li>`;
-    if (this.game.hidden.length > 0) {
+    if (this.game.state.hidden.length > 0) {
       option += `<li class="option" id="undo">Undo</li>`;
     }
     option += `</ul>`;
@@ -553,8 +567,12 @@ class Mahjong extends OnePlayerGameTemplate {
     html = "";
     for (let tile of tiles) {
       let num_found = this.returnHidden(tile);
-      html += `<div class="scoreboard_tile ${(num_found>1)?"found":"notfound"} ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
-               <div class="scoreboard_tile ${(num_found>3)?"found":"notfound"} ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
+      html += `<div class="scoreboard_tile ${
+        num_found > 1 ? "found" : "notfound"
+      } ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
+               <div class="scoreboard_tile ${
+                 num_found > 3 ? "found" : "notfound"
+               } ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
        `;
     }
     $("#tiles").html(html);
@@ -601,8 +619,8 @@ class Mahjong extends OnePlayerGameTemplate {
     if (this.game.selected !== "") {
       this.untoggleCard(this.game.selected);
     }
-    this.makeVisible(this.game.hidden.pop());
-    this.makeVisible(this.game.hidden.pop());
+    this.makeVisible(this.game.state.hidden.pop());
+    this.makeVisible(this.game.state.hidden.pop());
 
     this.game.cardsLeft += 2;
     this.displayUserInterface();
@@ -634,6 +652,14 @@ class Mahjong extends OnePlayerGameTemplate {
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
+      if (mv[0] === "play") {
+        if (this.browser_active){
+          this.game.queue.splice(qe, 1);
+          //Reset/Increment State
+          this.displayBoard(2);
+        }
+      }
+
       if (mv[0] === "lose") {
         this.game.queue.splice(qe, 1);
         this.newRound();
@@ -650,12 +676,17 @@ class Mahjong extends OnePlayerGameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.state.session.round++;
         this.game.state.session.wins++;
-        this.displayModal("Congratulations!", "You solved the puzzle!");
+        this.displayModal("Congratulations! Here is your fortune", this.returnFortune());
         this.newRound();
         this.game.queue.push(
           `ROUNDOVER\t${JSON.stringify([this.publicKey])}\troundover\t${JSON.stringify([])}`
         );
 
+        return 1;
+      }
+
+      if (mv[0] === "move") {
+        this.game.queue.splice(qe, 1);
         return 1;
       }
 
@@ -668,10 +699,10 @@ class Mahjong extends OnePlayerGameTemplate {
     return 0;
   }
 
-  returnHidden(tile){
+  returnHidden(tile) {
     let count = 0;
-    for (let slot of this.game.hidden){
-      if (this.game.board[slot] == tile){
+    for (let slot of this.game.state.hidden) {
+      if (this.game.board[slot] == tile) {
         count++;
       }
     }
@@ -722,26 +753,55 @@ class Mahjong extends OnePlayerGameTemplate {
   returnDeck() {
     let cards = this.returnTiles();
 
-    // TODO - remove (use for testing)
-
-    // let cards = [
-    //   "Chun",
-    //   "Hatsu"
-    // ];
-
     let deck = {};
+    let index = 1;
 
-    for (let j = 0; j < 4; j++) {
-      cards.sort(() => Math.random() - 0.5);
-      for (let i = 0; i < cards.length; i++) {
-        let name = cards[i];
-        deck[`${name}_${j}`] = name;
+    for (let i = 0; i < cards.length; i++) {
+      for (let j = 0; j < 4; j++) {
+        deck[index++] = cards[i];
       }
     }
 
     return deck;
   }
+
+  returnFortune() {
+    let fortunes = [
+      "Do not be afraid of competition",
+      "An exciting opportunity lies ahead of you",
+      "You will always be surrounded by true friends",
+      "You are kind and friendly",
+      "You should be able to undertake and complete anything",
+      "You are wise beyond your years",
+      "A routine task will turn into an enchanting adventure",
+      "Beware of all enterprises that require new clothes",
+      "Be true to your work, your word, and your friends",
+      "Goodness is the only investment that never fails",
+      "A journey of a thousand miles begins with a single step",
+      "Forget injuries, but never forget kindnesses",
+      "Respect yourself and others will respect you",
+      "A man cannot be comfortable without his own approval",
+      "It is easier to stay out than to get out",
+      "You will receive money from an unexpected source",
+      "Attitude is a little thing that makes a big difference",
+      "Plan for many pleasure ahead",
+      "Experience is the best teacher",
+      "You ability to juggle many tasks will take you far",
+      "Once you make a decision the universe conspires to make it happen",
+      "Make yourself necessary to someone",
+      "The only way to have a friend is to be one",
+      "Nothing great was ever achieved without enthusiasm",
+      "Live this day as if it were your last",
+      "Your life will be happy and peaceful",
+      "Bloom where you are planted",
+      "Move in the direction of your dreams",
+      "Help! I'm being held prisoner in a fortune cookie factory",
+      "The one you love is closer than you think",
+      "In dreams and in love there are no impossibilities",
+    ];
+
+    return fortunes[Math.floor(fortunes.length * Math.random())];
+  }
 }
 
 module.exports = Mahjong;
-

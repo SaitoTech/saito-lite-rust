@@ -14,10 +14,10 @@
   background: var(--saito-background-color);
   margin: 1rem auto;
   position: relative;
-  /* top: -50rem; */
+  top: 0;
   border: 1px solid var(--saito-border-color);
   border-radius: 0.5rem;
-  padding: 1em;
+  padding: 1.5rem;
   color: var(--saito-font-color);
   display: flex;
   flex-direction: column;
@@ -36,14 +36,15 @@
   min-width: 20rem;
 }
 
-#saito-alert-box p {
+.saito-alert-message {
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  font-size: 1.4em;
+  font-size: 2rem;
   text-align: center;
   align-self: center;
   display: block;
-  margin: 1em 0;
+  margin: 1rem 0;
   overflow-wrap: break-word;
+  line-height: 3rem;
 }
 
 @media screen and (max-width: 740px) {
