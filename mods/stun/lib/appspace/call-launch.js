@@ -41,7 +41,7 @@ class CallLaunch {
     });
 
     app.connection.on("stun-remove-loader", () => {
-      this.loader.remove();
+      // this.loader.remove();
     });
   }
 
@@ -77,10 +77,14 @@ class CallLaunch {
           if (this.mod.isRelayConnected) {
             this.joinRoom();
           } else {
-            salert("initializing");
+            siteMessage("initializing");
           }
         } else {
-          this.createRoom();
+          if (this.mod.isRelayConnected) {
+            this.createRoom();
+          } else {
+            siteMessage("Waiting for peer connection");
+          }
         }
       };
     }
