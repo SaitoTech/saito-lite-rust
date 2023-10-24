@@ -583,7 +583,7 @@ spaces['mulhouse'] = {
     left: 1214 , 
    }
 
-spaces['turin] = {
+spaces['turin'] = {
     name: "Turin" ,
     top: 1966 ,
     left: 1161 , 
@@ -1211,7 +1211,7 @@ spaces['kharkov'] = {
       left: 3948 ,
     }
 
-spaces['kamenestspodolski'] = {
+spaces['kamenetspodolski'] = {
       name: "Kamenets Podolski" ,
       top: 1440 ,
       left: 3196 ,
@@ -1323,7 +1323,8 @@ spaces['baku'] = {
       name: "Baku" ,
       top: 2202 ,
       left: 4619 ,
-   
+    }
+
 spaces['dilman'] = {
       name: "Dilman" ,
       top: 2318 ,

@@ -114,14 +114,84 @@ console.log("HAND: " + JSON.stringify(hand));
 
 
         if (mv[0] == "init") {
+try {
+	  // belgium
+          this.addUnitToSpace("be_army", "antwerp");
+          this.addUnitToSpace("bef_army", "brussels");
 
-	  // initialize the board
-          this.addUnitToSpace("ah_army01", "stirling");
-          this.addUnitToSpace("ge_army01", "stirling");
-          this.addUnitToSpace("br_army01", "stirling");
-          this.addTrench("stirling", 1);
+	  // france
+          this.addTrench("paris", 1);
+          this.addUnitToSpace("fr_army05", "sedan");
+          this.addUnitToSpace("fr_army06", "paris");
+          this.addUnitToSpace("fr_army03", "verdun");
+          this.addUnitToSpace("fr_army04", "verdun");
+          this.addUnitToSpace("fr_army01", "nancy");
+          this.addUnitToSpace("fr_army02", "nancy");
+          this.addUnitToSpace("fr_army09", "barleduc");
+          this.addUnitToSpace("fr_corps", "belfort");
+          this.addUnitToSpace("fr_corps", "grenoble");
 
-alert("trench is: " + this.game.spaces[spacekey].trench);
+	  // germany
+	  this.addTrench("metz", 1);
+	  this.addTrench("konigsberg", 1);
+	  this.addTrench("strasbourg", 1);
+          this.addUnitToSpace("ge_army01", "aachen");
+          this.addUnitToSpace("ge_army02", "koblenz");
+          this.addUnitToSpace("ge_army03", "koblenz");
+          this.addUnitToSpace("ge_army04", "metz");
+          this.addUnitToSpace("ge_army05", "metz");
+          this.addUnitToSpace("ge_army06", "strasbourg");
+          this.addUnitToSpace("ge_army08", "insterberg");
+          this.addUnitToSpace("ge_corps", "insterberg");
+          this.addUnitToSpace("ge_corps", "bremen");
+          this.addUnitToSpace("ge_corps", "oppeln");
+
+	  // russia
+	  this.addTrench("riga", 1);
+	  this.addTrench("odessa", 1);
+          this.addUnitToSpace("ru_army01", "kovno");
+          this.addUnitToSpace("ru_army02", "lomza");
+          this.addUnitToSpace("ru_army04", "ivangorod");
+          this.addUnitToSpace("ru_army05", "lublin");
+          this.addUnitToSpace("ru_army03", "dubno");
+          this.addUnitToSpace("ru_army08", "kamenetspodolski");
+          this.addUnitToSpace("ru_corps", "grodno");
+          this.addUnitToSpace("ru_corps", "riga");
+          this.addUnitToSpace("ru_corps", "szawli");
+          this.addUnitToSpace("ru_corps", "odessa");
+          this.addUnitToSpace("ru_corps", "lutsk");
+          this.addUnitToSpace("ru_corps", "riga");
+          this.addUnitToSpace("ru_corps", "batum");
+
+	  // austria
+	  this.addTrench("cracow", 1);
+	  this.addTrench("trieste", 1);
+	  this.addTrench("villach", 1);
+          this.addUnitToSpace("ah_corps", "cracow");
+          this.addUnitToSpace("ah_corps", "villach");
+          this.addUnitToSpace("ah_corps", "timisvar");
+          this.addUnitToSpace("ah_corps", "czernowitz");
+          this.addUnitToSpace("ah_corps", "stanislau");
+          this.addUnitToSpace("ah_army06", "sarajevo");
+          this.addUnitToSpace("ah_army05", "novisad");
+          this.addUnitToSpace("ah_army02", "munkacs");
+          this.addUnitToSpace("ah_army01", "tarnow");
+          this.addUnitToSpace("ah_army04", "przemysl");
+          this.addUnitToSpace("ah_army03", "tarnopol");
+
+	  // italy
+	  this.addTrench("trent", 1);
+	  this.addTrench("asiago", 1);
+	  this.addTrench("maggiore", 1);
+          this.addUnitToSpace("it_corps", "taranto");
+          this.addUnitToSpace("it_corps", "rome");
+          this.addUnitToSpace("it_corps", "turin");
+          this.addUnitToSpace("it_army01", "verona");
+          this.addUnitToSpace("it_army02", "udine");
+          this.addUnitToSpace("it_army03", "maggiore");
+          this.addUnitToSpace("it_army04", "asiago");
+
+}catch(err) {console.log("error initing:" + JSON.stringify(err));}
 
           this.displayBoard();
 

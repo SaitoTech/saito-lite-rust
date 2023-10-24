@@ -56,6 +56,7 @@
   }
 
   addUnitToSpace(unitkey, spacekey) {
+console.log("into auts: " + unitkey + " -- " + spacekey);
     this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
 console.log("SPACE: " + spacekey + ": " + JSON.stringify(this.game.spaces[spacekey]));
   }

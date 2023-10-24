@@ -1,10 +1,7 @@
 
-.stirling {
-    top: 690px;
-    left: 1222px;
+.space {
     width: 90px;
     height: 90px;
-    z-index: 99999;
     position: absolute;
 }
 
