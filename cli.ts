@@ -18,7 +18,7 @@ async function initCLI() {
   const app = new Saito({
     mod_paths: mods_config.core,
   });
-  
+
   //app.server = new Server(app);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -74,8 +74,9 @@ async function initCLI() {
     files.forEach((file) => {
       try {
         if (file !== "empty") {
-          app.storage.loadBlockByFilename(dir + file).then((blk) => {
-            console.log(blk);
+          app.storage.loadBlockByFilename(dir + file).then((block) => {
+            let json_block = inflateBlock(block);
+            console.log(json_block);
           });
         }
       } catch (err) {
@@ -89,8 +90,10 @@ async function initCLI() {
     files.forEach((file) => {
       try {
         if (file !== "empty") {
-          app.storage.loadBlockByFilename(dir + file).then((blk) => {
-            console.log(blk.transactions);
+          app.storage.loadBlockByFilename(dir + file).then((block) => {
+            console.log('block id: ' + block.id + ' TX: ' + block.transactions.length);
+            console.log(block.transactions);
+
           });
         }
       } catch (err) {
@@ -101,32 +104,35 @@ async function initCLI() {
 
   function readBlock(filename) {
     app.storage.loadBlockFromDisk(filename).then((block) => {
-      console.log(block);
+      let json_block = inflateBlock(block);
+      console.log(json_block);
     });
   }
   function readBlockTransactions(filename) {
     app.storage.loadBlockFromDisk(filename).then((block) => {
-      console.log(block.transactions);
+      let json_transaction = inflateTransaction(block);
+      console.log(json_transaction);
     });
   }
 
+  
   function printHelp() {
     let help = `
     Commands:
-
-     block <path and file name>     print block;
-     block.tx <path and file name>  print transactions from block
-     blocks <directory>             print out blocks in directory
-     blocks.tx <directory>          print out all tx from all bocks in direcory
+    
+    block <path and file name>     print block;
+    block.tx <path and file name>  print transactions from block
+    blocks <directory>             print out blocks in directory
+    blocks.tx <directory>          print out all tx from all bocks in direcory
     `;
     console.log(help);
   }
-
+  
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
   process.on("SIGTERM", function () {
-
+    
     console.log("Network Shutdown");
     process.exit(0);
   });
@@ -134,6 +140,44 @@ async function initCLI() {
     console.log("Network Shutdown");
     process.exit(0);
   });
+
+  //
+  // 
+  //
+  function inflateBlock(blk) {
+    let json_block = JSON.parse(blk.toJson());
+  
+    let txwmsgs = [];
+    try {
+      blk.transactions.forEach((transaction) => {
+        let tx = transaction.toJson();
+        tx.msg = transaction.returnMessage();
+        txwmsgs.push(tx);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    if (txwmsgs.length > 0) {
+      json_block.transactions = txwmsgs;
+    }
+    return json_block;
+  }
+
+  function inflateTransaction(blk) {
+  
+    let txwmsgs = [];
+    try {
+      blk.transactions.forEach((transaction) => {
+        let tx = transaction.toJson();
+        tx.msg = transaction.returnMessage();
+        txwmsgs.push(tx);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
+    return txwmsgs;
+  }
 }
 
 initCLI();
