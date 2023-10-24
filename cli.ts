@@ -92,8 +92,8 @@ async function initCLI() {
         if (file !== "empty") {
           app.storage.loadBlockByFilename(dir + file).then((block) => {
             console.log('block id: ' + block.id + ' TX: ' + block.transactions.length);
-            console.log(block.transactions);
-
+            let json_block = inflateBlock(block);
+            console.log(json_block.transactions);
           });
         }
       } catch (err) {
