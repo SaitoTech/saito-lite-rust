@@ -46,7 +46,6 @@ class CallLaunch {
   }
 
   render() {
-    //
     if (document.querySelector(".stun-appspace")) {
       return;
     }
