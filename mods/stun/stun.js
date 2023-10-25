@@ -330,7 +330,7 @@ class Stun extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (this.app.BROWSER === 1) {
-      if (txmsg.module = "Stun"){
+      if (txmsg.module == "Stun"){
         if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
           if (
             !this.peerManager ||
