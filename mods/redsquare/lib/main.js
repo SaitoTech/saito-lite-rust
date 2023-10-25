@@ -26,23 +26,12 @@ class RedSquareMain {
     ////////////////////
 
     //    
-    // rendering the main thread
+    // HOME-RENDER-REQUEST render the main thread from scratch
     //
-
     this.app.connection.on("redsquare-home-render-request", () => {
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       window.location.hash = "#home";
-
       document.querySelector(".saito-main").innerHTML = "";
-      this.manager.render("tweets");
-    });
-
-
-    this.app.connection.on("redsquare-home-new-render-request", () => {
-      window.history.pushState({}, document.title, "/" + this.mod.slug);
-      window.location.hash = "#home";
-      document.querySelector(".saito-main").innerHTML = "";
-
 
       if (document.querySelector(".saito-back-button") != null) {
         document.querySelector(".saito-back-button").remove();
@@ -51,28 +40,28 @@ class RedSquareMain {
       this.scroll_depth = 0;
       this.scrollFeed(0, "smooth");
       this.manager.render("tweets");
-      
-      this.app.connection.emit("redsquare-insert-loading-message");
-      
-      this.mod.loadTweets('later', (txs) => {
-        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
-        if (txs.length > 0) {
-          this.mod.saveLocalTweets();
-        }
-      });
 
     });
 
 
-
     //
-    // Emitted by redsquare.js/onPeerServiceUp
+    // POSTCACHE RENDER REQUEST removes "loading new tweets" if exists, then 
+    // re-renders if canRefreshPage() returns true. if we cannot refresh the 
+    // page we show a button that can be clicked to do so.
     //
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets = 0) => {
+
       console.log(`postcache, pulled ${num_tweets} new tweets`);
 
+for (let z = 0; z < this.mod.tweets.length; z++) {
+  let higher = this.mod.tweets[z].created_at;
+  if (this.mod.tweets[z].updated_at > higher) { higher = this.mod.tweets[z].updated_at; }
+  console.log(higher + " -- " + this.mod.tweets[z].text);
+}
+
       //
-      //Remove notice for loading new tweets
+      // remove "loading new tweets" notice...
+      //
       setTimeout(function() {
         if (document.querySelector(".saito-cached-loader") != null &&
           typeof (document.querySelector(".saito-cached-loader")) != 'undefined') {
@@ -81,16 +70,17 @@ class RedSquareMain {
       }, 1000);
 
       //
-      //See if we want to auto insert or provide a prompt
+      // check if we can refresh page (show tweets immediately) or show prompt / button
       //
       if (num_tweets > 0) {
         if (this.canRefreshPage()) {
+console.log("postcache-render-request: can refresh the page!");
           try {
             document.querySelector(".saito-main").innerHTML = "";
           } catch (err) {}
           this.manager.render("tweets");
         } else {
-
+console.log("postcache-render-request: CANNOT refresh the page!");
           /*
             We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
             at the top of the feed and scroll up there
@@ -111,6 +101,7 @@ class RedSquareMain {
       );
     })
 
+
     //
     // when someone clicks on a tweet
     //
@@ -118,13 +109,10 @@ class RedSquareMain {
       this.scrollFeed(0);
       document.querySelector(".saito-main").innerHTML = "";
       this.manager.renderTweet(tweet);
-
       document.querySelectorAll(".optional-menu-item").forEach(item => {
         item.style.display = "none";
       });
-
       document.querySelector(".redsquare-menu-home").style.display = "flex";
-
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {

@@ -18,9 +18,8 @@ const localforage = require("localforage");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
- * lib/main.js:    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {   // renders tweet
+ * lib/main.js:    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {   // renders tweet onto page, at bottom
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
- * lib/main.js:    //this.app.connection.on("redsquare-contacts-render-request", () => {    // renders contacts
  * lib/main.js:    this.app.connection.on("redsquare-notifications-render-request", () => {   // renders notifications
  * lib/main.js:    this.app.connection.on("redsquare-component-render-request", (obj) => {    // renders other modules into .saito-main
  */
@@ -260,10 +259,12 @@ class RedSquare extends ModTemplate {
   // likely functional, so it focuses on writing the components to the screen rather
   // that fetching content.
   //
-  // the content fetch begins when onPeerServiceUp() lets us know that a peer is
-  // connected and available for a content-fetch request.
+  // content is loaded from the local cache, and then the "loading new tweets" indicator
+  // is enabled, and when onPeerServiceUp() triggers we run a postcache-render-request
+  // to update the page if it is in a state where that is permitted.
   //
   async render() {
+
     //
     // browsers only!
     //
@@ -430,7 +431,7 @@ class RedSquare extends ModTemplate {
       }
 
       //
-      // or fetch tweets
+      // or fetch tweets (load tweets "earlier")
       //
       await this.addPeer(peer, "tweets");
       this.loadTweets('earlier', (txs) => {
@@ -1034,11 +1035,14 @@ console.log("received reply with: " +txs.length + " txs");
         let insertion_index = 0;
         if (prepend == false) {
           for (let i = 0; i < this.tweets.length; i++) {
-            if (this.tweets[i].updated_at > tweet.updated_at) {
+	    let target = this.tweets[i].created_at;
+	    if (this.tweets[i].updated_at > target) { target = this.tweets[i].updated_at; }
+	    let ttarget = tweet.created_at;
+	    if (tweet.updated_at > ttarget) { ttarget = tweet.updated_at; }
+            if (target > ttarget) {
               insertion_index++;
-              break;
             } else {
-              //insertion_index++;
+              break;
             }
           }
         }
@@ -1768,8 +1772,9 @@ console.log("received reply with: " +txs.length + " txs");
           } catch (err) {
 	  }
         }
+        this.app.connection.emit("redsquare-home-render-request");
+        this.app.connection.emit("redsquare-insert-loading-message");
       }
-      this.app.connection.emit("redsquare-home-render-request");
     });
 
   }
