@@ -259,15 +259,16 @@ class Stun extends ModTemplate {
   }
 
   onConfirmation(blk, tx, conf) {
+    if (this.app.BROWSER !== 1) {
+      return;
+    }
     console.log(tx, "transactipon");
     if (tx == null) {
       return;
     }
-    let message = tx.returnMessage();
-
-    console.log(message, "message");
     // console.log(tx.isTo(this.publicKey), "transaction");
     if (conf === 0) {
+      let message = tx.returnMessage();
       if (message.module === "Stun") {
         //
         // Do we even need/want to send messages on chain?
@@ -275,7 +276,6 @@ class Stun extends ModTemplate {
         //
 
         try {
-          if (this.app.BROWSER === 1) {
             if (
               !this.peerManager ||
               !this.peerManager.room_obj ||
@@ -312,7 +312,6 @@ class Stun extends ModTemplate {
                 this.receiveGameCallMessageToPeers(this.app, tx);
               }
             }
-          }
         } catch (err) {
           console.error("Stun Error:", err);
         }
