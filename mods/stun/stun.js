@@ -268,6 +268,10 @@ class Stun extends ModTemplate {
     console.log(message, "message");
     // console.log(tx.isTo(this.publicKey), "transaction");
     if (conf === 0) {
+      //
+      // Victor: you shouldn't need this check in onConfirmation, but you 
+      // need it in handlePeerTransaction
+      //
       if (message.module === "Stun") {
         //
         // Do we even need/want to send messages on chain?
@@ -322,55 +326,59 @@ class Stun extends ModTemplate {
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
-      return;
+      return 0;
     }
     let txmsg = tx.returnMessage();
 
     if (this.app.BROWSER === 1) {
-      if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
-        if (
-          !this.peerManager ||
-          !this.peerManager.room_obj ||
-          this.peerManager.room_obj.room_code !== txmsg.data.room_code
-        ) {
-          console.log("Tab is not active");
-          return;
-        }
-        // if (document.hidden) {
-        //   console.log("tab is not active");
-        //   return;
-        // }
-        if (this.hasSeenTransaction(tx)) return;
-        if (txmsg.request === "stun-send-call-list-request") {
-          console.log("HPT:  stun-send-call-list-request");
-          this.receiveCallListRequestTransaction(this.app, tx);
-        }
-        if (txmsg.request === "stun-send-call-list-response") {
-          console.log("HPT:  stun-send-call-list-response");
-          this.receiveCallListResponseTransaction(this.app, tx);
-        }
-
-        if (txmsg.request === "stun-send-message-to-peers") {
-          console.log("HPT: stun-send-message-to-peers");
-          this.receiveStunMessageToPeersTransaction(app, tx);
-        }
-
-        if (txmsg.request === "stun-message-broadcast") {
-          let inner_tx = new Transaction(undefined, txmsg.data);
-          let message = inner_tx.returnMessage();
-          try {
-            if (message.request === "stun-send-game-call-message") {
-              console.log("HPT: stun-send-game-call-message");
-              this.receiveGameCallMessageToPeers(app, inner_tx);
-            }
-          } catch (err) {
-            console.error("Stun Error:", err);
+      if (txmsg.module = "Stun"){
+        if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
+          if (
+            !this.peerManager ||
+            !this.peerManager.room_obj ||
+            this.peerManager.room_obj.room_code !== txmsg.data.room_code
+          ) {
+            console.log("Tab is not active");
+            return;
           }
+          // if (document.hidden) {
+          //   console.log("tab is not active");
+          //   return;
+          // }
+          if (this.hasSeenTransaction(tx)) return;
+          if (txmsg.request === "stun-send-call-list-request") {
+            console.log("HPT:  stun-send-call-list-request");
+            this.receiveCallListRequestTransaction(this.app, tx);
+          }
+          if (txmsg.request === "stun-send-call-list-response") {
+            console.log("HPT:  stun-send-call-list-response");
+            this.receiveCallListResponseTransaction(this.app, tx);
+          }
+
+          if (txmsg.request === "stun-send-message-to-peers") {
+            console.log("HPT: stun-send-message-to-peers");
+            this.receiveStunMessageToPeersTransaction(app, tx);
+          }
+
+          if (txmsg.request === "stun-message-broadcast") {
+            let inner_tx = new Transaction(undefined, txmsg.data);
+            let message = inner_tx.returnMessage();
+            try {
+              if (message.request === "stun-send-game-call-message") {
+                console.log("HPT: stun-send-game-call-message");
+                this.receiveGameCallMessageToPeers(app, inner_tx);
+              }
+            } catch (err) {
+              console.error("Stun Error:", err);
+            }
+          }
+        
+          return 1;
         }
       }
     }
 
-    return await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async sendCreateRoomTransaction(room_code = null, callback = null) {

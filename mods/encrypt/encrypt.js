@@ -119,12 +119,12 @@ class Encrypt extends ModTemplate {
 
   async handlePeerTransaction(app, newtx = null, peer, mycallback) {
     if (newtx == null) {
-      return;
+      return 0;
     }
     let message = newtx.returnMessage();
 
     if (!message.request.includes("diffie hellman")) {
-      return;
+      return super.handlePeerTransaction(app, newtx, peer, mycallback);
     }
 
     console.log(message);

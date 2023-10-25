@@ -79,14 +79,16 @@ class Mods {
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
         if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
-	  have_responded = true;
-	};
+          have_responded = true;
+        }
       } catch (err) {
-        console.error("handlePeerTransaction Unknown Error: ", err);
+        console.error(`handlePeerTransaction Unknown Error in ${this.mods[iii].name}: `, err);
       }
     }
     if (have_responded == false) {
-      mycallback({});
+      if (mycallback) {
+        mycallback({});
+      }
     }
     return;
   }

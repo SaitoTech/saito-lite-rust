@@ -197,10 +197,10 @@ class Giphy extends ModTemplate {
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
-      return;
+      return 0;
     }
     let message = tx.returnMessage();
-    if (message.request === "get giphy auth") {
+    if (message?.request === "get giphy auth") {
       let api_key = "";
       try {
         api_key = process.env.GIPHY_KEY;
@@ -211,7 +211,9 @@ class Giphy extends ModTemplate {
       } catch (err) {
         console.log("Failed to find key with error: " + err);
       }
+      return 1;
     }
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 }
 

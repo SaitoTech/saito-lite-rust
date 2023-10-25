@@ -489,14 +489,14 @@ class Chat extends ModTemplate {
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
-      return;
+      return 0;
     }
 
     await tx.decryptMessage(app); //In case forwarding private messages
     let txmsg = tx.returnMessage();
 
     if (!txmsg.request) {
-      return;
+      return 0;
     }
 
     if (this.debug && txmsg.request.includes("chat ")) {
@@ -508,7 +508,7 @@ class Chat extends ModTemplate {
 
       if (!group) {
         console.log("Group doesn't exist?");
-        return;
+        return 0;
       }
 
       //Just process the most recent 50 (if event that any)
@@ -518,8 +518,9 @@ class Chat extends ModTemplate {
       if (mycallback) {
         let txs = group.txs.filter((t) => t.timestamp > txmsg?.data?.timestamp);
         mycallback(txs);
-	return 1;
       }
+
+      return 1;
     }
 
     if (txmsg.request === "chat message") {
@@ -530,9 +531,12 @@ class Chat extends ModTemplate {
       //
       if (mycallback) {
         mycallback({ payload: "success", error: {} });
-        return 1;
       }
-    } else if (txmsg.request === "chat message broadcast") {
+
+      return 1;
+    } 
+
+    if (txmsg.request === "chat message broadcast") {
       let inner_tx = new Transaction(undefined, txmsg.data);
 
       // console.log(inner_tx);
@@ -570,9 +574,11 @@ class Chat extends ModTemplate {
       //
       if (mycallback) {
         mycallback({ payload: "success", error: {} });
-        return 1;
       }
+      return 1;
     }
+
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   //
@@ -1089,7 +1095,9 @@ class Chat extends ModTemplate {
           }
 
           //Use FA 5 so compatible in games (until we upgrade everything to FA6)
-          const replyButton = `<div data-id="${group_id}" data-href="${sender+ts}" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
+          const replyButton = `<div data-id="${group_id}" data-href="${
+            sender + ts
+          }" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
           html += `${SaitoUserTemplate({
             app: this.app,
             publicKey: sender,
@@ -1098,7 +1106,7 @@ class Chat extends ModTemplate {
               `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
               this.app.browser.returnTime(ts) +
               `</span>${replyButton}</div>`,
-            id: sender+ts
+            id: sender + ts,
           })}`;
         }
       }
