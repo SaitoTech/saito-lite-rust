@@ -544,22 +544,18 @@ class Arcade extends ModTemplate {
   // HANDLE PEER TRANSACTION //
   /////////////////////////////
   //
-  // handles off-chain transactions
+  // handles off-chain transactions, packaged as data by Relay module
   //
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
     if (newtx == null) {
-      return;
+      return 0;
     }
     let message = newtx.returnMessage();
-
-    if (!message?.data) {
-      return;
-    }
 
     //
     // this code doubles onConfirmation
     //
-    if (message?.request === "arcade spv update") {
+    if (message?.data && message?.request === "arcade spv update") {
       let tx = new Transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
@@ -639,9 +635,11 @@ class Arcade extends ModTemplate {
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
         await this.notifyPeers(tx);
       }
+
+      return 1;
     }
 
-    return await super.handlePeerTransaction(app, newtx, peer, mycallback);
+    return super.handlePeerTransaction(app, newtx, peer, mycallback);
   }
 
   //

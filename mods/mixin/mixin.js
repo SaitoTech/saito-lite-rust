@@ -67,7 +67,7 @@ class Mixin extends ModTemplate {
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
-      return;
+      return 0;
     }
     let message = tx.returnMessage();
 
@@ -108,8 +108,8 @@ class Mixin extends ModTemplate {
               // send response to browser
               if (mycallback) {
                 mycallback(d);
-		return 1;
               }
+              return 1;
             })
             .catch((err) => {
               console.error(
@@ -117,8 +117,10 @@ class Mixin extends ModTemplate {
               );
             });
         }
+        return 1;
       }
     }
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async loadCryptos() {

@@ -130,14 +130,13 @@ class Archive extends ModTemplate {
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
     if (tx == null) {
-      return;
+      return 0;
     }
+
     let req = tx.returnMessage();
-    if (req.request == null) {
-      return;
-    }
-    if (req.data == null) {
-      return;
+
+    if (!req?.request || !req?.data) {
+      return 0;
     }
 
     var txs;
@@ -149,8 +148,10 @@ class Archive extends ModTemplate {
     if (req.request === "archive") {
       if (req.data.request === "load") {
         let txs = await this.loadTransactions(req.data);
-        mycallback(txs);
-        return 1;
+        if (mycallback){
+          mycallback(txs);
+          return 1;
+        }
       }
 
       let newtx = new Transaction();
@@ -165,9 +166,11 @@ class Archive extends ModTemplate {
       if (req.data.request === "update") {
         await this.updateTransaction(newtx, req.data);
       }
+
+      return 1;
     }
 
-    return await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   //////////
