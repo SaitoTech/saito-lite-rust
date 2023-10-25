@@ -41,7 +41,7 @@ class Recovery extends ModTemplate {
     app.connection.on("recovery-backup-overlay-render-request", async (obj) => {
       console.debug("Received recovery-backup-overlay-render-request");
       if (obj?.success_callback) {
-        this.backup_overlay.success_callback = obj.success_callback;  
+        this.backup_overlay.success_callback = obj.success_callback;
       }
       if (obj?.desired_identifier) {
         this.backup_overlay.desired_identifier = obj.desired_identifier;
@@ -67,7 +67,6 @@ class Recovery extends ModTemplate {
       //
       this.backup_overlay.render();
     });
-
   }
 
   returnDecryptionSecret(email = "", pass = "") {
@@ -125,9 +124,8 @@ class Recovery extends ModTemplate {
 
   async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
-
       let txmsg = tx.returnMessage();
-      
+
       if (txmsg.request == "recovery backup") {
         await this.receiveBackupTransaction(tx);
       }
@@ -139,23 +137,26 @@ class Recovery extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    try {
-      if (tx == null) {
-        return;
-      }
+    if (tx == null) {
+      return;
+    }
 
+    if (app.BROWSER == 0) {
       let txmsg = tx.returnMessage();
 
-      if (txmsg.request == "recovery backup") {
-        await this.receiveBackupTransaction(tx);
+      if (txmsg?.request == "recovery backup") {
+        this.receiveBackupTransaction(tx);
+        return 1;
       }
 
-      if (txmsg.request === "recovery recover") {
-        return await this.receiveRecoverTransaction(tx, mycallback);
+      if (txmsg?.request === "recovery recover") {
+        this.receiveRecoverTransaction(tx, mycallback);
+        return 1;
       }
-    } catch (err) {
-      console.log("Error in handlePeerTransaction in Recovery module: " + err);
+
     }
+
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   ////////////
@@ -191,7 +192,7 @@ class Recovery extends ModTemplate {
       $tx: txjson,
     };
 
-    console.log("********************")
+    console.log("********************");
     console.log("Backup Transaction");
     console.log("********************");
 
@@ -227,7 +228,7 @@ class Recovery extends ModTemplate {
       return;
     }
     if (this.app.BROWSER == 1) {
-      console.warn("Browsers don't support backup/recovery")
+      console.warn("Browsers don't support backup/recovery");
       return;
     }
 
@@ -242,22 +243,19 @@ class Recovery extends ModTemplate {
 
     let results = await this.app.storage.queryDatabase(sql, params, "recovery");
 
-    console.log("********************")
+    console.log("********************");
     console.log("Restore Transaction");
     console.log("********************");
 
-
-    if (mycallback){
-      mycallback(results);  
+    if (mycallback) {
+      mycallback(results);
       return 1;
-    }else{
+    } else {
       console.warn("No callback to process recovered wallet");
     }
-    
   }
 
   async backupWallet(email, password) {
-    
     let decryption_secret = this.returnDecryptionSecret(email, password);
     let retrieval_hash = this.returnRetrievalHash(email, password);
 
@@ -285,8 +283,8 @@ class Recovery extends ModTemplate {
     let newtx = await this.createRecoverTransaction(retrieval_hash);
     let peers = await this.app.network.getPeers();
 
-    for (let peer of peers){
-      if (peer.hasService("recovery")){
+    for (let peer of peers) {
+      if (peer.hasService("recovery")) {
         this.app.network.sendTransactionWithCallback(
           newtx,
           async (rows_as_tx) => {
@@ -310,7 +308,7 @@ class Recovery extends ModTemplate {
             newtx.deserialize_from_web(this.app, rows[0].tx);
 
             let txmsg = newtx.returnMessage();
-            
+
             console.log(txmsg);
 
             let encrypted_wallet = txmsg.wallet;
@@ -336,7 +334,6 @@ class Recovery extends ModTemplate {
         "<center>Unable to download encrypted wallet from network...</center>";
     }
     this.login_overlay.failure();
-
   }
 }
 

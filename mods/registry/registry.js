@@ -380,18 +380,18 @@ class Registry extends ModTemplate {
     }
 
     if (txmsg.data.request === "registry query") {
-      let keys = txmsg?.data?.keys;
+      let keys = txmsg.data?.keys;
       this.fetchIdentifiersFromDatabase(keys, mycallback);
-      return;
+      return 1;
     }
 
     if (txmsg.data.request === "registry namecheck") {
-      let identifier = txmsg?.data?.identifier;
+      let identifier = txmsg.data?.identifier;
       this.checkIdentifierInDatabase(identifier, mycallback);
-      return;
+      return 1;
     }
 
-    return await super.handlePeerTransaction(app, newtx, peer, mycallback);
+    return super.handlePeerTransaction(app, newtx, peer, mycallback);
   }
 
   //
