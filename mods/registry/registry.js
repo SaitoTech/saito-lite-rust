@@ -58,9 +58,9 @@ class Registry extends ModTemplate {
       let unidentified_keys = [];
 
       //
-      // every 1 in 20 times, clear cache of anonymous keys to requery 
+      // every 1 in 200 times, clear cache of anonymous keys to requery 
       //
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.005) {
         for (let i of Object.keys(this.cached_keys)){
           if (i == this.cached_keys[i]){
             delete this.cached_keys[i]
@@ -192,9 +192,8 @@ class Registry extends ModTemplate {
       return;
     }
 
-    //console.log("REGISTRY Missing: ", missing_keys);
-
     this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
+      console.log("REGISTRY Missing: ", missing_keys, `REGISTRY (${registry_self.peers[0].publicKey}) found: `, identifiers);
       for (let key in identifiers) {
         registry_self.cached_keys[key] = identifiers[key];
         found_keys[key] = identifiers[key];
@@ -325,7 +324,7 @@ class Registry extends ModTemplate {
         this.queryKeys(peer, [this.publicKey], function (identifiers) {
           console.log(
             "REGISTRY lookup: " + registry_self.publicKey + " in " + peer.publicKey,
-            identifiers
+            "found: ", identifiers
           );
           for (let key in identifiers) {
             if (key == myKey.publicKey) {
@@ -379,16 +378,20 @@ class Registry extends ModTemplate {
       return;
     }
 
-    if (txmsg.data.request === "registry query") {
-      let keys = txmsg.data?.keys;
-      this.fetchIdentifiersFromDatabase(keys, mycallback);
-      return 1;
-    }
+    if (txmsg.request == "registry query"){
+   
+      if (txmsg.data.request === "registry query") {
+        let keys = txmsg.data?.keys;
+        this.fetchIdentifiersFromDatabase(keys, mycallback);
+        return 1;
+      }
 
-    if (txmsg.data.request === "registry namecheck") {
-      let identifier = txmsg.data?.identifier;
-      this.checkIdentifierInDatabase(identifier, mycallback);
-      return 1;
+      if (txmsg.data.request === "registry namecheck") {
+        let identifier = txmsg.data?.identifier;
+        this.checkIdentifierInDatabase(identifier, mycallback);
+        return 1;
+      }
+
     }
 
     return super.handlePeerTransaction(app, newtx, peer, mycallback);

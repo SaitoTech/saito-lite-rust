@@ -738,7 +738,7 @@ class Arcade extends ModTemplate {
     this.app.connection.emit("arcade-invite-manager-render-request");
 
     if (txmsg?.options?.desired_opponent_publickey == this.publicKey) {
-      siteMessage("You were invited to a game", 5000);
+      siteMessage(`You were invited to play ${txmsg.game}`, 5000);
     }
 
     //
