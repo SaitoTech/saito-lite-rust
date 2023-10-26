@@ -325,47 +325,47 @@ class Stun extends ModTemplate {
       return;
     }
     let txmsg = tx.returnMessage();
-    console.log(txmsg.module, txmsg, "txmsg.module");
-    if (txmsg.module !== "Stun") return;
-    if (this.app.BROWSER === 1) {
-      if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
-        if (
-          !this.peerManager ||
-          !this.peerManager.room_obj ||
-          this.peerManager.room_obj.room_code !== txmsg.data.room_code
-        ) {
-          console.log("Tab is not active");
-          return;
-        }
-        // if (document.hidden) {
-        //   console.log("tab is not active");
-        //   return;
-        // }
-        if (this.hasSeenTransaction(tx)) return;
-        if (txmsg.request === "stun-send-call-list-request") {
-          console.log("HPT:  stun-send-call-list-request");
-          this.receiveCallListRequestTransaction(this.app, tx);
-        }
-        if (txmsg.request === "stun-send-call-list-response") {
-          console.log("HPT:  stun-send-call-list-response");
-          this.receiveCallListResponseTransaction(this.app, tx);
-        }
+    if (txmsg.data.module === "Stun") {
+      if (this.app.BROWSER === 1) {
+        if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
+          if (
+            !this.peerManager ||
+            !this.peerManager.room_obj ||
+            this.peerManager.room_obj.room_code !== txmsg.data.room_code
+          ) {
+            console.log("Tab is not active");
+            return;
+          }
+          // if (document.hidden) {
+          //   console.log("tab is not active");
+          //   return;
+          // }
+          if (this.hasSeenTransaction(tx)) return;
+          if (txmsg.request === "stun-send-call-list-request") {
+            console.log("HPT:  stun-send-call-list-request");
+            this.receiveCallListRequestTransaction(this.app, tx);
+          }
+          if (txmsg.request === "stun-send-call-list-response") {
+            console.log("HPT:  stun-send-call-list-response");
+            this.receiveCallListResponseTransaction(this.app, tx);
+          }
 
-        if (txmsg.request === "stun-send-message-to-peers") {
-          console.log("HPT: stun-send-message-to-peers");
-          this.receiveStunMessageToPeersTransaction(app, tx);
-        }
+          if (txmsg.request === "stun-send-message-to-peers") {
+            console.log("HPT: stun-send-message-to-peers");
+            this.receiveStunMessageToPeersTransaction(app, tx);
+          }
 
-        if (txmsg.request === "stun-message-broadcast") {
-          let inner_tx = new Transaction(undefined, txmsg.data);
-          let message = inner_tx.returnMessage();
-          try {
-            if (message.request === "stun-send-game-call-message") {
-              console.log("HPT: stun-send-game-call-message");
-              this.receiveGameCallMessageToPeers(app, inner_tx);
+          if (txmsg.request === "stun-message-broadcast") {
+            let inner_tx = new Transaction(undefined, txmsg.data);
+            let message = inner_tx.returnMessage();
+            try {
+              if (message.request === "stun-send-game-call-message") {
+                console.log("HPT: stun-send-game-call-message");
+                this.receiveGameCallMessageToPeers(app, inner_tx);
+              }
+            } catch (err) {
+              console.error("Stun Error:", err);
             }
-          } catch (err) {
-            console.error("Stun Error:", err);
           }
         }
       }
@@ -399,6 +399,7 @@ class Stun extends ModTemplate {
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
     newtx.msg.data = _data;
+    newtx.msg.data.module = "Stun";
     await newtx.sign();
 
     let data = {
@@ -430,6 +431,7 @@ class Stun extends ModTemplate {
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
     newtx.msg.data = _data;
+    newtx.msg.data.module = "Stun";
 
     newtx.msg.data.timestamp = Date.now();
 
@@ -526,6 +528,7 @@ class Stun extends ModTemplate {
     newtx.msg.module = "Stun";
     newtx.msg.request = "stun-send-game-call-message";
     newtx.msg.data = _data;
+    newtx.msg.data.module = "Stun";
     await newtx.sign();
 
     recipients.forEach((recipient) => {
@@ -656,6 +659,7 @@ class Stun extends ModTemplate {
       timestamp: Date.now(),
     };
     newtx.msg.data = _data;
+    newtx.msg.data.module = "Stun";
     await newtx.sign();
 
     if (this.useRelay) {
@@ -710,6 +714,7 @@ class Stun extends ModTemplate {
       timestamp: Date.now(),
     };
     newtx.msg.data = _data;
+    newtx.msg.data.module = "Stun";
     await newtx.sign();
 
     if (this.useRelay) {
