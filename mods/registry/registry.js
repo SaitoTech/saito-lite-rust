@@ -371,11 +371,11 @@ class Registry extends ModTemplate {
   //
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
     if (newtx == null) {
-      return;
+      return 0;
     }
     let txmsg = newtx.returnMessage();
     if (!txmsg?.data) {
-      return;
+      return 0;
     }
 
     if (txmsg.request == "registry query"){
