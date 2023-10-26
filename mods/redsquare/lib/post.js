@@ -217,7 +217,7 @@ class Post {
     // new Tweet is not a constructor error!!! ???
     //
     const Tweet = require("./tweet");
-    let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
+    let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx, ".tweet-manager");
     //console.log("New tweet:", posted_tweet);
 
     if (is_reply) {
@@ -235,10 +235,20 @@ class Post {
         posted_tweet.render(true);
       } else {
         this.mod.addTweet(newtx, true);
+        if (rparent.parent_id != "") {
+	  let t = this.mod.returnTweet(rparent.parent_id);
+	  if (t) {
+	    t.critical_child = posted_tweet;
+	  }
+        }
         rparent.critical_child = posted_tweet;
-        rparent.renderWithCriticalChild();
-	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
-	try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
+console.log("FORCE RENDERING WITH CRITICAL CHILD!");
+        rparent.forceRenderWithCriticalChild();
+//
+// oct 26 - not needed...
+//
+//	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
+//	try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
       }
     } else {
       this.mod.addTweet(newtx, true);

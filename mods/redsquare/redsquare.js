@@ -574,8 +574,6 @@ class RedSquare extends ModTemplate {
 
   loadTweets(created_at='earlier', mycallback) {
 
-console.log("loading tweets...");
-
     for (let i = 0; i < this.peers.length; i++) {
       let peer_publickey = this.peers[i].publickey;
       if (this.peers[i].tweets_earliest_ts != 0) {
@@ -586,7 +584,6 @@ console.log("loading tweets...");
         // us separately. we will update the OWNER field in the notifications fetch
         // so that fetch will return any content specific to us...
         //
-console.log("loading transactions from storage...");
         let obj = {
           field1: "RedSquare",
           owner: peer_publickey,
@@ -603,7 +600,6 @@ console.log("loading transactions from storage...");
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
-console.log("received reply with: " +txs.length + " txs");
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);
@@ -925,11 +921,8 @@ console.log("received reply with: " +txs.length + " txs");
     let is_notification = 0;
 
     if (!tweet.tx) {
-      //Don't process if we failed on the tx => tweet operation
       return;
     }
-
-    console.log("trying to add: " + tweet.text);
 
     //
     // avoid errors
@@ -1064,7 +1057,6 @@ console.log("received reply with: " +txs.length + " txs");
         //
         // and insert it
         //
-        console.log("INSERTING TWEET!");
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
       }
@@ -1079,7 +1071,6 @@ console.log("received reply with: " +txs.length + " txs");
           t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
           t.rerenderControls();
         }
-        console.log("LIKES ON LOADED TWEET: " + tweet.tx.optional.num_likes);
         if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
           t.tx.optional.num_likes = tweet.tx.optional.num_likes;
           t.rerenderControls();
@@ -1091,13 +1082,8 @@ console.log("received reply with: " +txs.length + " txs");
       //
     } else {
       let inserted = false;
-
-      console.log("LOOKS LIKE COMMENT, WHAT IS OPTIONAL? ");
-      console.log(JSON.stringify(tweet.tx.optional));
-
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
-          console.log("INSERTING COMMENT!");
           let xyz = await this.tweets[i].addTweet(tweet);
           if (xyz == 1) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
@@ -1113,7 +1099,6 @@ console.log("received reply with: " +txs.length + " txs");
       }
 
       // we've inserted
-      console.log("add to hmap indicating insertion...");
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
     }
 
@@ -1224,30 +1209,23 @@ console.log("received reply with: " +txs.length + " txs");
       if (tx.isTo(this.publicKey)) {
         let ts = tx.timestamp;
 
-console.log(" before save tx");
-
         await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
           field3: this.publicKey,
         });
-
-console.log(" after save tx");
 
         //
         // save optional likes
         //
         let txmsg = tx.returnMessage();
         if (this.tweets_sigs_hmap[txmsg.data.signature]) {
-console.log("liked tweet is in hmap");
           let tweet = this.returnTweet(txmsg.data.signature);
 
           if (tweet.tx) {
-console.log("and the tweet exists...");
             if (!tweet.tx.optional) {
               tweet.tx.optional = {};
             }
             if (tweet.tx.optional) {
-console.log("and the tweet has optional data...");
               if (!tweet.tx.optional.updated_at) {
                 tweet.tx.optional.updated_at = 0;
               }
@@ -1271,11 +1249,8 @@ console.log("and the tweet has optional data...");
           if (!tx.optional.num_likes) {
             tx.optional.num_likes = 0;
           }
-          console.log("updating num likes: 1");
           tx.optional.num_likes++;
-console.log("running updateTransaction...");
           await this.app.storage.updateTransaction(tx, { owner: this.publicKey });
-console.log("done and rendering Likes...");
           tweet.renderLikes();
         } else {
           await this.app.storage.updateTransaction(tx, { owner: this.publicKey });
@@ -1338,7 +1313,6 @@ console.log("done and rendering Likes...");
           tx.optional.num_likes = 0;
         }
         tx.optional.updated_at = new Date().getTime();
-        console.log("updating num likes: 2");
         tx.optional.num_likes++;
         await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
       },
