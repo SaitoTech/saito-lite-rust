@@ -9,16 +9,28 @@
 .mahj-rowbox {
   margin: 80px;
   margin-left: 160px;
+  padding: 30px 10px 10px 30px;
   display: grid;
   grid-template-columns: repeat(14, 80px) !important;
   grid-template-rows: repeat(21, 107px);
-  width: 1120px;
-  height: 856px;
+  width: 1175px;
+  height: 900px;
   /*max-width: min(90vw,120vh);*/
   /*grid-gap: min(0px,1vh);*/
   /*height: fit-content;*/
+  cursor: grab;
 }
 
+.mahjong-backdrop {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 25%;
+}
+
+.mahjong-backdrop:hover{
+  /*background-color: rgba(200,200,200,0.1);*/
+}
 
 .slot {
   position: relative;
@@ -31,7 +43,7 @@
   
   /*box-shadow: 3px 3px 6px 4px black, -7px -9px 8px 3px black;*/
   filter: drop-shadow(-1px -1px 1px black);
-
+  cursor: default;
 }
 
 

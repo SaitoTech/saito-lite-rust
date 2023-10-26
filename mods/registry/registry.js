@@ -189,7 +189,7 @@ class Registry extends ModTemplate {
 
     if (missing_keys.length == 0) {
       mycallback(found_keys);
-      return;
+      return 1;
     }
 
     this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
@@ -382,14 +382,12 @@ class Registry extends ModTemplate {
    
       if (txmsg.data.request === "registry query") {
         let keys = txmsg.data?.keys;
-        this.fetchIdentifiersFromDatabase(keys, mycallback);
-        return 1;
+        return this.fetchIdentifiersFromDatabase(keys, mycallback);
       }
 
       if (txmsg.data.request === "registry namecheck") {
         let identifier = txmsg.data?.identifier;
-        this.checkIdentifierInDatabase(identifier, mycallback);
-        return 1;
+        return this.checkIdentifierInDatabase(identifier, mycallback);
       }
 
     }
@@ -605,6 +603,7 @@ class Registry extends ModTemplate {
 
     if (mycallback) {
       mycallback(found_keys);
+      return 1;
     }
 
     //
@@ -627,9 +626,10 @@ class Registry extends ModTemplate {
             }
             if (mycallback) {
               mycallback(more_keys);
+	      return 0;
             }
           });
-          return;
+          return 0;
         }
       }
     }
@@ -639,7 +639,7 @@ class Registry extends ModTemplate {
 
     if (!mycallback) {
       console.warn("No callback");
-      return;
+      return 0;
     }
 
     if (this.publicKey == this.registry_publickey) {
@@ -648,6 +648,7 @@ class Registry extends ModTemplate {
       let rows = await this.app.storage.queryDatabase(sql, [identifier], "registry");
 
       mycallback(rows);
+      return 1;
 
     } else {
       
@@ -656,6 +657,7 @@ class Registry extends ModTemplate {
         `SELECT * FROM records WHERE identifier = "${identifier}"`,
         (res) => {
           mycallback(res?.rows);
+	  return 1;
         },
       
         (p) => {

@@ -117,7 +117,6 @@ class Mixin extends ModTemplate {
               );
             });
         }
-        return 1;
       }
     }
     return super.handlePeerTransaction(app, tx, peer, mycallback);

@@ -1,6 +1,6 @@
 const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay.js");
 const StunLaunchTemplate = require("./call-launch.template.js");
-const CallSetting = require("../components/call-setting");
+const CallSetting = require("../components/call-setting.js");
 const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader.js");
 
 /**

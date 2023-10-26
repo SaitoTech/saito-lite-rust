@@ -118,34 +118,28 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    console.log("into relay.handlePeerTransaction...");
     //console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
-      console.log("exit as tx is null...");
-      return;
+      return 0;
     }
     let message = tx.msg;
 
     try {
       if (tx.isTo(this.publicKey)) {
         if (message.request === "ping") {
-console.log("ping message...");
           await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
             status: this.busy,
           });
-console.log("done await ping message...");
-          return 1;
+          return 0;
         }
 
         if (message.request === "echo") {
-console.log("done await echo message...");
           if (message.data.status) {
             app.connection.emit("relay-is-busy", tx.from[0].publicKey);
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
           }
-console.log("done await echo message...");
-          return 1;
+          return 0;
         }
       }
 
@@ -155,9 +149,7 @@ console.log("done await echo message...");
         //
         // sanity check on tx
         //
-console.log("relay peer message, pre-decrypt...");
         await relayed_tx.decryptMessage(app);
-console.log("relay peer message, post-decrypt...");
         let txjson = relayed_tx.returnMessage();
 
         if (this.debug) {
@@ -167,7 +159,6 @@ console.log("relay peer message, post-decrypt...");
         }
 
         if (!relayed_tx.to[0]?.publicKey) {
-console.log("returning 0 in relay...");
           return 0;
         }
 
@@ -179,7 +170,6 @@ console.log("returning 0 in relay...");
         }
 
         if (relayed_tx.isTo(this.publicKey)) {
-console.log("relayed tx is sent TO us...");
           return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
         } else {
           // check to see if original tx is for a peer
@@ -208,10 +198,9 @@ console.log("relayed tx is sent TO us...");
 
           if (peer_found == 0) {
             if (mycallback != null) {
-console.log("peer not found, pushing error into callback...");
               mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
+              return 1;
             }
-            return 1;
           }
         }
       }
@@ -219,7 +208,6 @@ console.log("peer not found, pushing error into callback...");
       console.log(err);
     }
 
-console.log("returning 0 in relay...");
     return 0;
 
   }

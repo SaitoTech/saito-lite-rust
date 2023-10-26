@@ -146,12 +146,11 @@ class Recovery extends ModTemplate {
 
       if (txmsg?.request == "recovery backup") {
         this.receiveBackupTransaction(tx);
-        return 1;
+        return 0;
       }
 
       if (txmsg?.request === "recovery recover") {
-        this.receiveRecoverTransaction(tx, mycallback);
-        return 1;
+        return this.receiveRecoverTransaction(tx, mycallback);
       }
 
     }
@@ -225,11 +224,11 @@ class Recovery extends ModTemplate {
   async receiveRecoverTransaction(tx, mycallback = null) {
     if (mycallback == null) {
       console.warn("No callback");
-      return;
+      return 0;
     }
     if (this.app.BROWSER == 1) {
       console.warn("Browsers don't support backup/recovery");
-      return;
+      return 0;
     }
 
     let txmsg = tx.returnMessage();
@@ -253,6 +252,9 @@ class Recovery extends ModTemplate {
     } else {
       console.warn("No callback to process recovered wallet");
     }
+
+    return 0;
+
   }
 
   async backupWallet(email, password) {

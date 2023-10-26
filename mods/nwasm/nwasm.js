@@ -108,8 +108,8 @@ class Nwasm extends OnePlayerGameTemplate {
     if (message?.request === "nwasm testing") {
       if (mycallback){
         mycallback("Handle Peer Request in Nwasm: this can be used for testing");  
+        return 1;
       }
-      return 1;
     }
 
     return super.handlePeerTransaction(app, tx, peer, mycallback);

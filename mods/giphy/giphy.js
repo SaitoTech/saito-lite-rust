@@ -211,7 +211,6 @@ class Giphy extends ModTemplate {
       } catch (err) {
         console.log("Failed to find key with error: " + err);
       }
-      return 1;
     }
     return super.handlePeerTransaction(app, tx, peer, mycallback);
   }

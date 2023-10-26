@@ -108,6 +108,7 @@ class Mahjong extends OnePlayerGameTemplate {
     } else {
       this.sizer.render();
       this.sizer.attachEvents("#mahj-rowbox");
+      $("#mahj-rowbox").draggable("option", "cancel", "img");
     }
   }
 
@@ -385,7 +386,7 @@ class Mahjong extends OnePlayerGameTemplate {
     if (name[0] === "E") {
       return "";
     } else {
-      return '<img src="/mahjong/img/tiles/white/' + name + '.png" />';
+      return '<img draggable="false" src="/mahjong/img/tiles/white/' + name + '.png" />';
     }
   }
 

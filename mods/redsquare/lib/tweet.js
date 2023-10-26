@@ -392,6 +392,29 @@ class Tweet {
     this.renderReplies();
   }
 
+  forceRenderWithCriticalChild() {
+
+    this.render();
+
+    if (this.critical_child) {
+
+      this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
+      this.critical_child.render();
+
+      let myqs = this.container + ` .tweet-${this.tx.signature}`;
+      let obj = document.querySelector(myqs);
+      if (obj) {
+        if (this.critical_child.parent_id == this.tx.signature) {
+          obj.classList.add("has-reply");
+        } else {
+          obj.classList.add("has-reply-disconnected");
+        }
+      }
+    }
+
+    this.attachEvents();
+
+  }
   renderWithCriticalChild() {
 
     let does_tweet_already_exist_on_page = false;
@@ -843,6 +866,8 @@ class Tweet {
         //
         this.user.notice = "new reply on " + this.formatDate(tweet.created_at);
       }
+    } else {
+
     }
 
     //

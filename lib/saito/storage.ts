@@ -104,7 +104,6 @@ class Storage {
         return;
       } else {
         await this.app.network.sendRequestAsTransaction(message, data);
-        //await this.app.network.sendRequestAsTransaction(message, data, () => { console.log("a3.5"); });
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       }
