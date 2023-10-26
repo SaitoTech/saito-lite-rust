@@ -118,6 +118,7 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+    console.log("into relay.handlePeerTransaction...");
     //console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
       return;
@@ -127,18 +128,22 @@ class Relay extends ModTemplate {
     try {
       if (tx.isTo(this.publicKey)) {
         if (message.request === "ping") {
+console.log("ping message...");
           await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
             status: this.busy,
           });
+console.log("done await ping message...");
           return 1;
         }
 
         if (message.request === "echo") {
+console.log("done await echo message...");
           if (message.data.status) {
             app.connection.emit("relay-is-busy", tx.from[0].publicKey);
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
           }
+console.log("done await echo message...");
           return 1;
         }
       }
@@ -149,7 +154,9 @@ class Relay extends ModTemplate {
         //
         // sanity check on tx
         //
+console.log("relay peer message, pre-decrypt...");
         await relayed_tx.decryptMessage(app);
+console.log("relay peer message, post-decrypt...");
         let txjson = relayed_tx.returnMessage();
 
         if (this.debug) {
