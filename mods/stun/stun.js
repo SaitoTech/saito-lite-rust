@@ -1,5 +1,5 @@
 const saito = require("../../lib/saito/saito");
-const ModTemplate = require("./../../lib/templates/modtemplate");
+const ModTemplate = require("../../lib/templates/modtemplate");
 const StunLauncher = require("./lib/appspace/call-launch");
 const CallInterfaceVideo = require("./lib/components/call-interface-video");
 const CallInterfaceAudio = require("./lib/components/call-interface-audio");
@@ -326,47 +326,45 @@ class Stun extends ModTemplate {
     }
     let txmsg = tx.returnMessage();
 
-    if (txmsg.module === "Stun") {
-      if (this.app.BROWSER === 1) {
-        if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
-          if (
-            !this.peerManager ||
-            !this.peerManager.room_obj ||
-            this.peerManager.room_obj.room_code !== txmsg.data.room_code
-          ) {
-            console.log("Tab is not active");
-            return;
-          }
-          // if (document.hidden) {
-          //   console.log("tab is not active");
-          //   return;
-          // }
-          if (this.hasSeenTransaction(tx)) return;
-          if (txmsg.request === "stun-send-call-list-request") {
-            console.log("HPT:  stun-send-call-list-request");
-            this.receiveCallListRequestTransaction(this.app, tx);
-          }
-          if (txmsg.request === "stun-send-call-list-response") {
-            console.log("HPT:  stun-send-call-list-response");
-            this.receiveCallListResponseTransaction(this.app, tx);
-          }
+    if (this.app.BROWSER === 1) {
+      if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
+        if (
+          !this.peerManager ||
+          !this.peerManager.room_obj ||
+          this.peerManager.room_obj.room_code !== txmsg.data.room_code
+        ) {
+          console.log("Tab is not active");
+          return;
+        }
+        // if (document.hidden) {
+        //   console.log("tab is not active");
+        //   return;
+        // }
+        if (this.hasSeenTransaction(tx)) return;
+        if (txmsg.request === "stun-send-call-list-request") {
+          console.log("HPT:  stun-send-call-list-request");
+          this.receiveCallListRequestTransaction(this.app, tx);
+        }
+        if (txmsg.request === "stun-send-call-list-response") {
+          console.log("HPT:  stun-send-call-list-response");
+          this.receiveCallListResponseTransaction(this.app, tx);
+        }
 
-          if (txmsg.request === "stun-send-message-to-peers") {
-            console.log("HPT: stun-send-message-to-peers");
-            this.receiveStunMessageToPeersTransaction(app, tx);
-          }
+        if (txmsg.request === "stun-send-message-to-peers") {
+          console.log("HPT: stun-send-message-to-peers");
+          this.receiveStunMessageToPeersTransaction(app, tx);
+        }
 
-          if (txmsg.request === "stun-message-broadcast") {
-            let inner_tx = new Transaction(undefined, txmsg.data);
-            let message = inner_tx.returnMessage();
-            try {
-              if (message.request === "stun-send-game-call-message") {
-                console.log("HPT: stun-send-game-call-message");
-                this.receiveGameCallMessageToPeers(app, inner_tx);
-              }
-            } catch (err) {
-              console.error("Stun Error:", err);
+        if (txmsg.request === "stun-message-broadcast") {
+          let inner_tx = new Transaction(undefined, txmsg.data);
+          let message = inner_tx.returnMessage();
+          try {
+            if (message.request === "stun-send-game-call-message") {
+              console.log("HPT: stun-send-game-call-message");
+              this.receiveGameCallMessageToPeers(app, inner_tx);
             }
+          } catch (err) {
+            console.error("Stun Error:", err);
           }
         }
       }
