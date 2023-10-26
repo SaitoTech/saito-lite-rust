@@ -93,21 +93,17 @@ class Storage {
       if (peer === "localhost") {
         let archive_mod = this.app.modules.returnModule("Archive");
         if (archive_mod) {
-console.log("archive mod saving...");
           let res = await archive_mod.saveTransaction(tx, data);
         }
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       }
       if (peer != null) {
-console.log("archive mod saving 2...");
         await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       } else {
-console.log("archive mod saving 3...");
         await this.app.network.sendRequestAsTransaction(message, data);
-        //await this.app.network.sendRequestAsTransaction(message, data, () => { console.log("a3.5"); });
         this.app.connection.emit("saito-save-transaction", tx);
         return;
       }

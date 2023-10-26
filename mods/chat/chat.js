@@ -518,9 +518,11 @@ class Chat extends ModTemplate {
       if (mycallback) {
         let txs = group.txs.filter((t) => t.timestamp > txmsg?.data?.timestamp);
         mycallback(txs);
+        return 1;
       }
 
-      return 1;
+      return 0;
+
     }
 
     if (txmsg.request === "chat message") {
@@ -531,9 +533,11 @@ class Chat extends ModTemplate {
       //
       if (mycallback) {
         mycallback({ payload: "success", error: {} });
+        return 1;
       }
 
-      return 1;
+      return 0;
+
     } 
 
     if (txmsg.request === "chat message broadcast") {
@@ -574,8 +578,11 @@ class Chat extends ModTemplate {
       //
       if (mycallback) {
         mycallback({ payload: "success", error: {} });
+        return 1;
       }
-      return 1;
+
+      return 0;
+
     }
 
     return super.handlePeerTransaction(app, tx, peer, mycallback);

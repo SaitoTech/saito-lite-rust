@@ -120,7 +120,7 @@ class Relay extends ModTemplate {
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     //console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
-      return;
+      return 0;
     }
     let message = tx.msg;
 
@@ -130,7 +130,7 @@ class Relay extends ModTemplate {
           await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
             status: this.busy,
           });
-          return 1;
+          return 0;
         }
 
         if (message.request === "echo") {
@@ -139,7 +139,7 @@ class Relay extends ModTemplate {
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
           }
-          return 1;
+          return 0;
         }
       }
 
@@ -199,8 +199,8 @@ class Relay extends ModTemplate {
           if (peer_found == 0) {
             if (mycallback != null) {
               mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
+              return 1;
             }
-            return 1;
           }
         }
       }

@@ -376,7 +376,7 @@ class Stun extends ModTemplate {
             }
           }
         
-          return 1;
+          return 0;
         }
       }
     }

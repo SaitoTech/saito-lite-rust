@@ -129,8 +129,6 @@ class Archive extends ModTemplate {
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-console.log("HPT in archive...");
-
     if (tx == null) {
       return 0;
     }
@@ -159,8 +157,6 @@ console.log("HPT in archive...");
       let newtx = new Transaction();
       newtx.deserialize_from_web(app, req.data.serial_transaction);
 
-console.log("ARCHIVE 1: " + req.data.request);
-
       if (req.data.request === "delete") {
         await this.deleteTransaction(newtx, req.data);
       }
@@ -171,9 +167,9 @@ console.log("ARCHIVE 1: " + req.data.request);
         await this.updateTransaction(newtx, req.data);
       }
 
-console.log("ARCHIVE 2");
+      // archive returns 0 if callback not sent !
+      return 0;
 
-      return 1;
     }
 
     return super.handlePeerTransaction(app, tx, peer, mycallback);
