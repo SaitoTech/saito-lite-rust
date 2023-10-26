@@ -259,20 +259,15 @@ class Stun extends ModTemplate {
   }
 
   onConfirmation(blk, tx, conf) {
-    if (this.app.BROWSER !== 1) {
-      return;
-    }
     console.log(tx, "transactipon");
     if (tx == null) {
       return;
     }
+    let message = tx.returnMessage();
+
+    console.log(message, "message");
     // console.log(tx.isTo(this.publicKey), "transaction");
     if (conf === 0) {
-      let message = tx.returnMessage();
-      //
-      // Victor: you shouldn't need this check in onConfirmation, but you 
-      // need it in handlePeerTransaction
-      //
       if (message.module === "Stun") {
         //
         // Do we even need/want to send messages on chain?
@@ -280,6 +275,7 @@ class Stun extends ModTemplate {
         //
 
         try {
+          if (this.app.BROWSER === 1) {
             if (
               !this.peerManager ||
               !this.peerManager.room_obj ||
@@ -316,6 +312,7 @@ class Stun extends ModTemplate {
                 this.receiveGameCallMessageToPeers(this.app, tx);
               }
             }
+          }
         } catch (err) {
           console.error("Stun Error:", err);
         }
@@ -324,17 +321,13 @@ class Stun extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    // this prevents us opening stun channels with a server
-    if (this.app.BROWSER !== 1) {
-      return 0;
-    }
     if (tx == null) {
-      return 0;
+      return;
     }
     let txmsg = tx.returnMessage();
 
-    if (this.app.BROWSER === 1) {
-      if (txmsg.module == "Stun"){
+    if (txmsg.module === "Stun") {
+      if (this.app.BROWSER === 1) {
         if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
           if (
             !this.peerManager ||
@@ -375,13 +368,11 @@ class Stun extends ModTemplate {
               console.error("Stun Error:", err);
             }
           }
-        
-          return 0;
         }
       }
     }
 
-    return super.handlePeerTransaction(app, tx, peer, mycallback);
+    return await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async sendCreateRoomTransaction(room_code = null, callback = null) {
