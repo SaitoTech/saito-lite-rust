@@ -31,6 +31,12 @@ class Archive extends ModTemplate {
     this.localDB = null;
 
     //
+    //
+    //
+    this.prune_public_ts  = 20000000; // about 2 weeks
+    this.prune_private_ts = 10000000; // about 1+ week
+
+    //
     // settings saved and loaded from app.options
     //
     this.archive = {
@@ -45,6 +51,7 @@ class Archive extends ModTemplate {
   }
 
   async initialize(app) {
+
     await super.initialize(app);
     this.load();
 
@@ -68,21 +75,14 @@ class Archive extends ModTemplate {
           block_hash: { dataType: "string", default: "" },
           created_at: { dataType: "number", default: 0 },
           updated_at: { dataType: "number", default: 0 },
+          text: { dataType: "string", default: "" },
           preserve: { dataType: "number", default: 0 },
-        },
-      };
-
-      let txs = {
-        name: "txs",
-        columns: {
-          id: { primaryKey: true, autoIncrement: true },
-          tx: { dataType: "string", unique: true },
         },
       };
 
       let db = {
         name: "archive_db",
-        tables: [archives, txs],
+        tables: [archives],
       };
 
       var isDbCreated = await this.localDB.initDb(db);
@@ -129,6 +129,8 @@ class Archive extends ModTemplate {
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
+console.log("HPT in archive...");
+
     if (tx == null) {
       return 0;
     }
@@ -157,6 +159,8 @@ class Archive extends ModTemplate {
       let newtx = new Transaction();
       newtx.deserialize_from_web(app, req.data.serial_transaction);
 
+console.log("ARCHIVE 1: " + req.data.request);
+
       if (req.data.request === "delete") {
         await this.deleteTransaction(newtx, req.data);
       }
@@ -166,6 +170,8 @@ class Archive extends ModTemplate {
       if (req.data.request === "update") {
         await this.updateTransaction(newtx, req.data);
       }
+
+console.log("ARCHIVE 2");
 
       return 1;
     }
@@ -192,36 +198,13 @@ class Archive extends ModTemplate {
     newObj.preserve = obj?.preserve || 0;
     newObj.created_at = obj?.created_at || tx.timestamp;
     newObj.updated_at = obj?.updated_at || tx.timestamp;
-
-    //
-    // insert transaction
-    //
-    let sql = `INSERT
-    OR IGNORE INTO txs (tx) VALUES (
-    $tx
-    )`;
-    let params = { $tx: tx.serialize_to_web(this.app) };
-    let tx_id = await this.app.storage.insertDatabase(sql, params, "archive");
-
-    if (this.app.BROWSER) {
-      let inserted_rows = await this.localDB.insert({
-        into: "txs",
-        values: [{ tx: tx.serialize_to_web(this.app) }],
-        return: true,
-      });
-      tx_id = inserted_rows[0]["id"];
-    }
-
-    if (!tx_id) {
-      return;
-    }
+    newObj.tx = tx.serialize_to_web(this.app);
 
     //
     // insert index record
     //
-    sql = `INSERT
+    let sql = `INSERT
     OR IGNORE INTO archives (
-      tx_id, 
       publickey, 
       owner, 
       sig, 
@@ -232,9 +215,9 @@ class Archive extends ModTemplate {
       block_hash, 
       created_at, 
       updated_at, 
+      tx,
       preserve
     ) VALUES (
-    $tx_id,
     $publickey,
     $owner,
     $sig,
@@ -245,10 +228,10 @@ class Archive extends ModTemplate {
     $block_hash,
     $created_at,
     $updated_at,
+    $tx,
     $preserve
     )`;
-    params = {
-      $tx_id: tx_id,
+    let params = {
       $publickey: newObj.publicKey,
       $owner: newObj.owner,
       $sig: newObj.signature,
@@ -259,9 +242,9 @@ class Archive extends ModTemplate {
       $block_hash: newObj.block_hash,
       $created_at: newObj.created_at,
       $updated_at: newObj.updated_at,
+      $tx: newObj.tx ,
       $preserve: newObj.preserve,
     };
-
     let archives_id = await this.app.storage.insertDatabase(sql, params, "archive");
 
     if (this.app.BROWSER) {
@@ -287,7 +270,6 @@ class Archive extends ModTemplate {
     // update records
     //
     let newObj = {};
-    newObj.tx_id = obj?.tx_id || 0;
     newObj.user_id = obj?.user_id || 0; //What is this supposed to be
     newObj.publicKey = obj?.publicKey || "";
     newObj.owner = obj?.owner || "";
@@ -301,49 +283,23 @@ class Archive extends ModTemplate {
     newObj.block_id = obj?.block_id || 0;
     newObj.block_hash = obj?.block_hash || "";
     newObj.preserve = obj?.preserve || 0;
+    newObj.tx = tx.serialize_to_web(this.app);
     newObj.updated_at = new Date().getTime();
-
-    //
-    // find entries to update
-    //
-    let sql = `SELECT id, tx_id
-               FROM archives
-               WHERE owner = $owner
-                 AND sig = $sig`;
-    let params = { $owner: newObj.owner, $sig: newObj.signature };
-    let rows = await this.app.storage.queryDatabase(sql, params, "archive");
-
-    if (this.app.BROWSER) {
-      rows = await this.localDB.select({
-        from: "archives",
-        where: {
-          owner: newObj.owner,
-          sig: newObj.signature,
-        },
-      });
-    }
-
-    if (!rows?.length) {
-      return;
-    }
-
-    let id = rows[0].id;
-    let tx_id = rows[0].tx_id;
 
     //
     // update index
     //
-    sql = `UPDATE archives
+    let sql = `UPDATE archives
            SET updated_at = $updated_at,
-               owner      = $owner,
+	       owner	  = $owner,
+               tx	  = $tx,
                preserve   = $preserve
-           WHERE id = $id
-             AND sig = $sig`;
-    params = {
+           WHERE sig = $sig`;
+    let params = {
       $updated_at: newObj.updated_at,
       $owner: newObj.owner,
+      $tx: tx.serialize_to_web(this.app),
       $preserve: newObj.preserve,
-      $id: id,
       $sig: newObj.signature,
     };
 
@@ -355,33 +311,12 @@ class Archive extends ModTemplate {
         set: {
           updated_at: newObj.updated_at,
           owner: newObj.owner,
+          tx: tx.serialize_to_web(this.app),
           preserve: newObj.preserve,
         },
         where: {
-          id: id,
           sig: newObj.signature,
         },
-      });
-    }
-
-    //
-    // update tx
-    //
-    sql = `UPDATE txs
-           SET tx = $tx
-           WHERE id = $tx_id`;
-    params = {
-      $tx: tx.serialize_to_web(this.app),
-      $tx_id: tx_id,
-    };
-
-    await this.app.storage.executeDatabase(sql, params, "archive");
-
-    if (this.app.BROWSER) {
-      await this.localDB.update({
-        in: "txs",
-        set: { tx: tx.serialize_to_web(this.app) },
-        where: { id: tx_id },
       });
     }
 
@@ -441,10 +376,8 @@ class Archive extends ModTemplate {
     if (obj.signature && obj.owner && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
              WHERE archives.sig = $sig
-               AND archives.owner = $owner 
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+               AND archives.owner = $owner ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $sig: obj.signature, $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -455,9 +388,7 @@ class Archive extends ModTemplate {
     if (obj.signature && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
-             WHERE archives.sig = $sig
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             WHERE archives.sig = $sig ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $sig: obj.signature, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -466,12 +397,10 @@ class Archive extends ModTemplate {
     }
     // acceptable variant on signature
     if (obj.sig && obj.owner && searched == false) {
-      sql = `SELECT *
+      sql = `SELECT * 
              FROM archives
-                      JOIN txs
              WHERE archives.sig = $sig
-               AND archives.owner = $owner 
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+               AND archives.owner = $owner ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $sig: obj.sig, $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -479,11 +408,9 @@ class Archive extends ModTemplate {
       searched = true;
     }
     if (obj.sig && searched == false) {
-      sql = `SELECT *
+      sql = `SELECT * 
              FROM archives
-                      JOIN txs
-             WHERE archives.sig = $sig
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             WHERE archives.sig = $sig ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $sig: obj.sig, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -493,10 +420,8 @@ class Archive extends ModTemplate {
     if (obj.field1 && obj.owner && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
              WHERE archives.field1 = $field1
-               AND archives.owner = $owner 
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+               AND archives.owner = $owner ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field1: obj.field1, $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -507,9 +432,7 @@ class Archive extends ModTemplate {
     if (obj.field1 && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
-             WHERE archives.field1 = $field1
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             WHERE archives.field1 = $field1 ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field1: obj.field1, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -519,10 +442,8 @@ class Archive extends ModTemplate {
     if (obj.field2 && obj.owner && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
              WHERE archives.field2 = $field2
-               AND archives.owner = $owner 
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+               AND archives.owner = $owner ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field2: obj.field2, $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -532,9 +453,7 @@ class Archive extends ModTemplate {
     if (obj.field2 && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
-             WHERE archives.field2 = $field2
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             WHERE archives.field2 = $field2 ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field2: obj.field2, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -544,10 +463,8 @@ class Archive extends ModTemplate {
     if (obj.field3 && obj.owner && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
              WHERE archives.field3 = $field3
-               AND archives.owner = $owner 
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+               AND archives.owner = $owner ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field3: obj.field3, $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -557,9 +474,7 @@ class Archive extends ModTemplate {
     if (obj.field3 && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
-             WHERE archives.field3 = $field3
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             WHERE archives.field3 = $field3 ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field3: obj.field3, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -569,9 +484,7 @@ class Archive extends ModTemplate {
     if (obj.owner && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
-             WHERE archives.owner = $owner
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             WHERE archives.owner = $owner ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -581,9 +494,7 @@ class Archive extends ModTemplate {
     if (obj.publicKey && searched == false) {
       sql = `SELECT *
              FROM archives
-                      JOIN txs
-             WHERE archives.publickey = $publickey
-               AND txs.id = archives.tx_id ${timestamp_limiting_clause}
+             WHERE archives.publickey = $publickey ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
       params = { $publickey: obj.publicKey, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
@@ -598,13 +509,7 @@ class Archive extends ModTemplate {
       rows = await this.localDB.select({
         from: "archives",
         where: where_obj,
-        join: {
-          with: "txs",
-          on: "archives.tx_id=txs.id",
-          type: "inner",
-          as: { id: "tid" },
-        },
-        order: { by: "archives.id", type: "desc" },
+        order: { by: "id", type: "desc" },
         limit,
       });
     }
@@ -644,24 +549,9 @@ class Archive extends ModTemplate {
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //
-    sql = `SELECT * FROM archives WHERE archives.sig = $sig`;
+    sql = `DELETE FROM archives WHERE archives.sig = $sig`;
     params = { $sig: tx.transaction.sig };
-    rows = await this.app.storage.queryDatabase(sql, params, "archive");
-
-    if (rows.length > 0) {
-
-      let archives_id = rows[0].id;
-      let tx_id = rows[0].tx_id;
-
-      let sql2 = "DELETE FROM archives WHERE id = $id";
-      let params2 = { $id : archives_id };
-      await this.app.storage.executeDatabase(sql2, params2);
-
-      let sql3 = "DELETE FROM txs WHERE id = $id";
-      let params3 = { $id : txs_id };
-      await this.app.storage.executeDatabase(sql3, params3);
-
-    }
+    await this.app.storage.executeDatabase(sql3, params3, "archive");
 
     return;
 
@@ -687,87 +577,126 @@ class Archive extends ModTemplate {
     let where_obj = {};
 
     if (obj.created_later_than) {
-      timestamp_limiting_clause = " AND created_at > " + parseInt(obj.created_later_than);
+      timestamp_limiting_clause = " AND archives.created_at > " + parseInt(obj.created_later_than);
       where_obj = {created_at: { '>': parseInt(obj.created_later_than)}};
     }
     if (obj.created_earlier_than) {
-      timestamp_limiting_clause = " AND created_at < " + parseInt(obj.created_earlier_than);
+      timestamp_limiting_clause = " AND archives.created_at < " + parseInt(obj.created_earlier_than);
       where_obj = {created_at: { '<': parseInt(obj.created_earlier_than)}};
     }
     if (obj.updated_later_than) {
-      timestamp_limiting_clause = " AND updated_at > " + parseInt(obj.updated_later_than);
+      timestamp_limiting_clause = " AND archives.updated_at > " + parseInt(obj.updated_later_than);
       where_obj = {updated_at: { '>': parseInt(obj.updated_later_than)}};
     }
     if (obj.updated_earlier_than) {
-      timestamp_limiting_clause = " AND updated_at < " + parseInt(obj.updated_earlier_than);
+      timestamp_limiting_clause = " AND archives.updated_at < " + parseInt(obj.updated_earlier_than);
       where_obj = {updated_at: { '<': parseInt(obj.updated_earlier_than)}};
     }
 
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //
+    let have_i_deleted = false;
     if (obj.field1) {
-      sql = `SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      sql = `DELETE FROM archives WHERE archives.field1 = $field1 ${timestamp_limiting_clause}`;
       params = { $field1: obj.field1, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["field1"] = obj.field1;
+      await this.app.storage.executeDatabase(sql, params, "archive");
     }
     if (obj.field2) {
-      sql = `SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      sql = `DELETE FROM archives WHERE archives.field2 = $field2 ${timestamp_limiting_clause}`;
       params = { $field2: obj.field2, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["field2"] = obj.field2;
+      await this.app.storage.executeDatabase(sql, params, "archive");
     }
     if (obj.field3) {
-      sql = `SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      sql = `DELETE FROM archives WHERE archives.field3 = $field3 ${timestamp_limiting_clause}`;
       params = { $field3: obj.field3, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["field3"] = obj.field3;
+      await this.app.storage.executeDatabase(sql, params, "archive");
     }
     if (obj.owner) {
-      sql = `SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      sql = `DELETE FROM archives WHERE archives.owner = $owner ${timestamp_limiting_clause}`;
       params = { $owner: obj.owner, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["owner"] = obj.owner;
+      await this.app.storage.executeDatabase(sql, params, "archive");
     }
     if (obj.publickey) {
-      sql = `SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      sql = `DELETE FROM archives WHERE archives.publickey = $publickey ${timestamp_limiting_clause}`;
       params = { $publickey: obj.publickey, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["publickey"] = obj.publickey;
+      await this.app.storage.executeDatabase(sql, params, "archive");
     }
     if (obj.sig) {
-      sql = `SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMI`;
+      sql = `DELETE FROM archives WHERE archives.sig = $sig ${timestamp_limiting_clause}`;
       params = { $sig: obj.sig, $limit: limit };
-      rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["sig"] = obj.sig;
-    }
-
-    //
-    // FILTER FOR TXS
-    //
-    if (rows != undefined) {
-      if (rows.length > 0) {
-        for (let i = 0; i < rows.length; i++) {
-
-          let archives_id = rows[i].id;
-          let tx_id = rows[i].tx_id;
-
-          let sql2 = "DELETE FROM archives WHERE id = $id";
-          let params2 = { $id : archives_id };
-          await this.app.storage.executeDatabase(sql2, params2);
-
-          let sql3 = "DELETE FROM txs WHERE id = $id";
-          let params3 = { $id : txs_id };
-          await this.app.storage.executeDatabase(sql3, params3);
-	
-        }
-      }
+      await this.app.storage.executeDatabase(sql, params, "archive");
     }
 
     return;
 
   }
+
+  //
+  // Pruning 
+  //
+  // the Archive module stores two types of transactions:
+  //
+  // - blockchain transactions (no owner)
+  // - saved user transactions (owner)
+  //
+  // we want to keep a copy of all blockchain transactions for about a month and then
+  // prune them automatically since they can be restored by parsing the chain as needed
+  // but should not be needed.
+  //
+  // users will submit requests to save-and-update copies of the transactions that affect
+  // them, and this has the potential to place a greater load on the server. for this 
+  // reason, we have a harder limit for these transactions, and will delete them after 
+  // 2,000 transactions or once they are older than 3 weeks.
+  //
+  // modules that save data can decide which transactions to keep and which ones to 
+  // delete based on internal transaction logic. we will respectfully avoid deleting any
+  // transactions that users have marked as prune = false, although this may change in 
+  // the future if it is abused.
+  //
+  async onNewBlock() {
+
+    let x = Math.random();
+    // 90% of blocks don't try to delete anything
+    if (x < 0.9) { return; } 
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$ PURGING ARCHIVE BLOCK");
+console.log("$");
+console.log("$");
+console.log("$");
+
+    let ts = new Date().getTime() - this.prune_public_ts;
+
+    //
+    // delete public blockchain transactions
+    //
+    let sql = `DELETE FROM archives WHERE owner = "" AND created_at <= $ts AND preserve = 0`;
+    let params = { $ts: ts };
+    await this.app.storage.executeDatabase(sql, params, "archive");
+    
+
+    //
+    // delete private transactions
+    //
+    ts = new Date().getTime() - this.prune_private_ts;
+    sql = `DELETE FROM archives WHERE owner != "" AND created_at <= $ts AND preserve = 0`;
+    params = { $ts: ts };
+    await this.app.storage.executeDatabase(sql, params, "archive");
+    
+    x = Math.random();
+    // 90% of prunings don't vacuum
+    if (x < 0.9) { return; } 
+
+    let sql5 = "VACUUM archives";
+    let params5 = {}
+    await this.app.storage.executeDatabase(sql5, params5, "archive");
+
+  }
+
+
 
   //////////////////////////
   // listen to everything //
@@ -801,7 +730,6 @@ class Archive extends ModTemplate {
     await super.onWalletReset(nuke);
     if (nuke && this.localDB) {
       await this.localDB.clear("archives");
-      await this.localDB.clear("txs");
     }
     return 1;
   }

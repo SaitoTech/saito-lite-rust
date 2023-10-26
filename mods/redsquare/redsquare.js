@@ -1224,23 +1224,30 @@ console.log("received reply with: " +txs.length + " txs");
       if (tx.isTo(this.publicKey)) {
         let ts = tx.timestamp;
 
+console.log(" before save tx");
+
         await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
           field3: this.publicKey,
         });
+
+console.log(" after save tx");
 
         //
         // save optional likes
         //
         let txmsg = tx.returnMessage();
         if (this.tweets_sigs_hmap[txmsg.data.signature]) {
+console.log("liked tweet is in hmap");
           let tweet = this.returnTweet(txmsg.data.signature);
 
           if (tweet.tx) {
+console.log("and the tweet exists...");
             if (!tweet.tx.optional) {
               tweet.tx.optional = {};
             }
             if (tweet.tx.optional) {
+console.log("and the tweet has optional data...");
               if (!tweet.tx.optional.updated_at) {
                 tweet.tx.optional.updated_at = 0;
               }
@@ -1266,7 +1273,9 @@ console.log("received reply with: " +txs.length + " txs");
           }
           console.log("updating num likes: 1");
           tx.optional.num_likes++;
+console.log("running updateTransaction...");
           await this.app.storage.updateTransaction(tx, { owner: this.publicKey });
+console.log("done and rendering Likes...");
           tweet.renderLikes();
         } else {
           await this.app.storage.updateTransaction(tx, { owner: this.publicKey });

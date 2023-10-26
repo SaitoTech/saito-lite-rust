@@ -77,7 +77,6 @@ class Mods {
   ) {
     let have_responded = false;
     for (let iii = 0; iii < this.mods.length; iii++) {
-console.log("hpt into... " + this.mods[iii].name);
       try {
         if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
           have_responded = true;
@@ -85,15 +84,12 @@ console.log("hpt into... " + this.mods[iii].name);
       } catch (err) {
         console.error(`handlePeerTransaction Unknown Error in ${this.mods[iii].name}: `, err);
       }
-console.log("hpt out... " + have_responded);
     }
     if (have_responded == false) {
       if (mycallback) {
-console.log("triggering callback default.");
         mycallback({});
       }
     }
-console.log("just returning...");
     return;
   }
 

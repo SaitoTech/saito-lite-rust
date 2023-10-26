@@ -60,7 +60,6 @@ class Chat extends ModTemplate {
     this.enable_notifications = false;
 
     this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
-      console.log("Chat: Successful encrypt key exchange, make group");
       this.returnOrCreateChatGroupFromMembers(data?.members);
       this.app.connection.emit("chat-manager-render-request");
     });
@@ -377,7 +376,6 @@ class Chat extends ModTemplate {
               text: "Chat",
               icon: "fas fa-comments",
               callback: function (app, id) {
-                console.log("Callback for saito-header chat");
                 chat_self.chat_manager_overlay.render();
               },
             },
@@ -457,7 +455,7 @@ class Chat extends ModTemplate {
       let txmsg = tx.returnMessage();
 
       if (this.debug) {
-        console.log("Chat onConfirmation: " + txmsg.request);
+        //console.log("Chat onConfirmation: " + txmsg.request);
       }
 
       if (txmsg.request == "chat message") {
@@ -493,11 +491,7 @@ class Chat extends ModTemplate {
       return 0;
     }
 
-    console.log("HPT in Chat -- attempting decrypt");
-
     await tx.decryptMessage(app); //In case forwarding private messages
-
-    console.log("HPT in Chat -- post attempting decrypt");
 
     let txmsg = tx.returnMessage();
 
