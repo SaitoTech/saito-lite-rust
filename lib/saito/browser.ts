@@ -1465,6 +1465,9 @@ class Browser {
         }">${url.trim()}</a>`;
       });
 
+      //trim lines at start and end 
+      text = text.replace(/^\s+|\s+$/g, '');
+
       text = emoji.emojify(text);
 
       return text;
