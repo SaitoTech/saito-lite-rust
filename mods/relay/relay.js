@@ -121,6 +121,7 @@ class Relay extends ModTemplate {
     console.log("into relay.handlePeerTransaction...");
     //console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
+      console.log("exit as tx is null...");
       return;
     }
     let message = tx.msg;
@@ -166,6 +167,7 @@ console.log("relay peer message, post-decrypt...");
         }
 
         if (!relayed_tx.to[0]?.publicKey) {
+console.log("returning 0 in relay...");
           return 0;
         }
 
@@ -177,6 +179,7 @@ console.log("relay peer message, post-decrypt...");
         }
 
         if (relayed_tx.isTo(this.publicKey)) {
+console.log("relayed tx is sent TO us...");
           return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
         } else {
           // check to see if original tx is for a peer
@@ -205,6 +208,7 @@ console.log("relay peer message, post-decrypt...");
 
           if (peer_found == 0) {
             if (mycallback != null) {
+console.log("peer not found, pushing error into callback...");
               mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
             }
             return 1;
@@ -214,6 +218,10 @@ console.log("relay peer message, post-decrypt...");
     } catch (err) {
       console.log(err);
     }
+
+console.log("returning 0 in relay...");
+    return 0;
+
   }
 }
 
