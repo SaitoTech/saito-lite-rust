@@ -324,6 +324,10 @@ class Stun extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+    // this prevents us opening stun channels with a server
+    if (this.app.BROWSER !== 1) {
+      return 0;
+    }
     if (tx == null) {
       return 0;
     }

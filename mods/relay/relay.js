@@ -118,8 +118,10 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+    console.log("into relay.handlePeerTransaction...");
     //console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
+      console.log("exit as tx is null...");
       return;
     }
     let message = tx.msg;
@@ -127,18 +129,22 @@ class Relay extends ModTemplate {
     try {
       if (tx.isTo(this.publicKey)) {
         if (message.request === "ping") {
+console.log("ping message...");
           await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
             status: this.busy,
           });
+console.log("done await ping message...");
           return 1;
         }
 
         if (message.request === "echo") {
+console.log("done await echo message...");
           if (message.data.status) {
             app.connection.emit("relay-is-busy", tx.from[0].publicKey);
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
           }
+console.log("done await echo message...");
           return 1;
         }
       }
@@ -149,7 +155,9 @@ class Relay extends ModTemplate {
         //
         // sanity check on tx
         //
+console.log("relay peer message, pre-decrypt...");
         await relayed_tx.decryptMessage(app);
+console.log("relay peer message, post-decrypt...");
         let txjson = relayed_tx.returnMessage();
 
         if (this.debug) {
@@ -159,6 +167,7 @@ class Relay extends ModTemplate {
         }
 
         if (!relayed_tx.to[0]?.publicKey) {
+console.log("returning 0 in relay...");
           return 0;
         }
 
@@ -170,6 +179,7 @@ class Relay extends ModTemplate {
         }
 
         if (relayed_tx.isTo(this.publicKey)) {
+console.log("relayed tx is sent TO us...");
           return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
         } else {
           // check to see if original tx is for a peer
@@ -198,6 +208,7 @@ class Relay extends ModTemplate {
 
           if (peer_found == 0) {
             if (mycallback != null) {
+console.log("peer not found, pushing error into callback...");
               mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
             }
             return 1;
@@ -207,6 +218,10 @@ class Relay extends ModTemplate {
     } catch (err) {
       console.log(err);
     }
+
+console.log("returning 0 in relay...");
+    return 0;
+
   }
 }
 

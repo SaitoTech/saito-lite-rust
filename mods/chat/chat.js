@@ -488,11 +488,17 @@ class Chat extends ModTemplate {
   // or addressed to me
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+
     if (tx == null) {
       return 0;
     }
 
+    console.log("HPT in Chat -- attempting decrypt");
+
     await tx.decryptMessage(app); //In case forwarding private messages
+
+    console.log("HPT in Chat -- post attempting decrypt");
+
     let txmsg = tx.returnMessage();
 
     if (!txmsg.request) {
