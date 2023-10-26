@@ -78,10 +78,9 @@ class Mods {
     let have_responded = false;
     try{
       let txmsg = tx.returnMessage();
-      console.log("Peer Request: ",txmsg?.request);
     }catch(err){}
     for (let iii = 0; iii < this.mods.length; iii++) {
-console.log("hpt into... " + this.mods[iii].name);
+      console.log(`peer request (${txmsg?.request}), hpt into... ` + this.mods[iii].name);
       try {
         if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
           have_responded = true;

@@ -17,7 +17,6 @@ class MailRelay extends ModTemplate {
   onConfirmation(blk, tx, conf) {}
 
   async initialize(app) {
-
     // browsers will not have server endpoint coded
     if (app.BROWSER) {
       return;
@@ -58,7 +57,7 @@ class MailRelay extends ModTemplate {
 
   async handlePeerTransaction(app, tx, peer, callback) {
     if (tx == null) {
-      return;
+      return 0;
     }
     let message = tx.returnMessage();
 
@@ -94,12 +93,15 @@ class MailRelay extends ModTemplate {
       // ref: https://github.com/guileen/node-sendmail/blob/master/examples/attachmentFile.js
 
       try {
-console.log("sending email: " + JSON.stringify(email));
+        console.log("sending email: " + JSON.stringify(email));
         this.sendMail(email);
       } catch (err) {
         console.err(err);
       }
+      return 1;
     }
+
+    return super.handlePeerTransaction(app, tx, peer, callback);
   }
 
   async sendMailRelayTransaction(
