@@ -590,6 +590,8 @@
   color: green;
   transition: all 0.2s;
   font-size: 2rem;
+  min-width: 2rem; /* make sure narrow icons center, bigger ones are fine */
+  text-align: center;
 }
 
 .icon_click_area {
