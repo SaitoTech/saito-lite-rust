@@ -105,6 +105,12 @@
     text-overflow: ellipsis;
 }
 
+.saito-overlay-form-header-title.loading{
+    line-height: 6rem;
+    text-align: left;
+    padding-top: 0rem;
+}
+
 .saito-overlay-form-input {
     margin: 0 3px;
 }
