@@ -247,7 +247,6 @@ class TweetManager {
   }
 
   renderProfile(publicKey) {
-
     this.mode = "profile";
 
     this.profile.publicKey = publicKey;
@@ -291,14 +290,19 @@ class TweetManager {
     //Mobile/Desktop back button (when left navigation bar hidden!)
     //
 
-
     this.app.connection.emit("saito-header-replace-logo", (e) => {
-      this.app.connection.emit("redsquare-home-render-request");
+      console.log("Click on back button");
+      this.app.connection.emit("redsquare-home-render-request", false);
     });
- 
   }
 
   attachEvents() {
+    if (this.mode !== "tweets") {
+      this.app.connection.emit("saito-header-replace-logo", (e) => {
+        console.log("Click on back button");
+        this.app.connection.emit("redsquare-home-render-request", false);
+      });
+    }
     //
     // dynamic content loading
     //

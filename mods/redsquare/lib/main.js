@@ -28,7 +28,7 @@ class RedSquareMain {
     //    
     // HOME-RENDER-REQUEST render the main thread from scratch
     //
-    this.app.connection.on("redsquare-home-render-request", () => {
+    this.app.connection.on("redsquare-home-render-request", (scroll_to_top = true) => {
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       window.location.hash = "#home";
       document.querySelector(".saito-main").innerHTML = "";
@@ -37,9 +37,13 @@ class RedSquareMain {
         document.querySelector(".saito-back-button").remove();
       }
 
-      this.scroll_depth = 0;
-      this.scrollFeed(0, "smooth");
       this.manager.render("tweets");
+
+      if (scroll_to_top) {
+        this.scroll_depth = 0;  
+      }
+      
+      this.scrollFeed(this.scroll_depth, "smooth");
 
     });
 
