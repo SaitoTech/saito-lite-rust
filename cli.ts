@@ -76,7 +76,8 @@ async function initCLI() {
         if (file !== "empty") {
           app.storage.loadBlockByFilename(dir + file).then((block) => {
             let json_block = inflateBlock(block);
-            console.log(json_block);
+            console.log(dir + file);
+            console.log(JSON.stringify(json_block, null, 2));
           });
         }
       } catch (err) {
@@ -91,9 +92,9 @@ async function initCLI() {
       try {
         if (file !== "empty") {
           app.storage.loadBlockByFilename(dir + file).then((block) => {
-            console.log('block id: ' + block.id + ' TX: ' + block.transactions.length);
             let json_block = inflateBlock(block);
-            console.log(json_block.transactions);
+            console.log(dir + file + " --- TXS: " + block.transactions.length);
+            console.log(JSON.stringify(json_block.transactions, null, 2));
           });
         }
       } catch (err) {
@@ -105,17 +106,19 @@ async function initCLI() {
   function readBlock(filename) {
     app.storage.loadBlockFromDisk(filename).then((block) => {
       let json_block = inflateBlock(block);
-      console.log(json_block);
+      console.log(filename);
+      console.log(JSON.stringify(json_block, null, 2));
     });
   }
   function readBlockTransactions(filename) {
     app.storage.loadBlockFromDisk(filename).then((block) => {
       let json_transaction = inflateTransaction(block);
-      console.log(json_transaction);
+      console.log(filename);
+      console.log(JSON.stringify(json_transaction, null, 2));
     });
   }
 
-  
+
   function printHelp() {
     let help = `
     Commands:
@@ -127,12 +130,12 @@ async function initCLI() {
     `;
     console.log(help);
   }
-  
+
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
   process.on("SIGTERM", function () {
-    
+
     console.log("Network Shutdown");
     process.exit(0);
   });
@@ -146,7 +149,7 @@ async function initCLI() {
   //
   function inflateBlock(blk) {
     let json_block = JSON.parse(blk.toJson());
-  
+
     let txwmsgs = [];
     try {
       blk.transactions.forEach((transaction) => {
@@ -164,7 +167,7 @@ async function initCLI() {
   }
 
   function inflateTransaction(blk) {
-  
+
     let txwmsgs = [];
     try {
       blk.transactions.forEach((transaction) => {
