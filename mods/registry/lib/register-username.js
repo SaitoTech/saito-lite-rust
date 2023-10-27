@@ -36,14 +36,14 @@ class RegisterUsername {
         try {
           document.querySelector(".saito-overlay-form-header-title").innerHTML =
             "Registering name...";
+          document.querySelector(".saito-overlay-form-header-title").classList.add("saito-cached-loader", "loading");
+
           document.querySelector(".saito-overlay-form-text").remove();
-          document.querySelector(".saito-overlay-form-input").remove();
+          document.querySelector(".saito-overlay-form-input").style.visibility = 'hidden';
           document.querySelector(".saito-overlay-form-submitline").remove();
         } catch (err) {
           console.log(err);
         }
-
-        this.loader.render();
 
         let domain = "@saito";
 

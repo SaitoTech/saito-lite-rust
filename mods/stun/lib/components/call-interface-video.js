@@ -299,10 +299,7 @@ class CallInterfaceVideo {
     let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
 
     let url1 = window.location.origin + "/videocall/";
-
-    let orig_url = window.location.origin + window.location.pathname;
-    orig_url = `${orig_url}?stun_video_chat=${base64obj}`;
-    history.pushState(null, null, orig_url);
+    window.history.pushState({}, document.title, `${url1}?stun_video_chat=${base64obj}`);
 
     return `${url1}?stun_video_chat=${base64obj}`;
   }
