@@ -286,10 +286,12 @@ class Tweet {
       if (t) {
         t.notice = this.retweet.notice;
         t.render(prepend);
+        t.attachEvents();
       } else {
         (this.retweet.user.container =
           this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
           this.retweet.render(prepend);
+	  this.retweet.attachEvents();
       }
       return;
     }
