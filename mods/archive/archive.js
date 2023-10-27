@@ -33,8 +33,8 @@ class Archive extends ModTemplate {
     //
     //
     //
-    this.prune_public_ts  = 20000000; // about 2 weeks
-    this.prune_private_ts = 10000000; // about 1+ week
+    this.prune_public_ts  = 600000000; // about 1 week
+    this.prune_private_ts = 450000000; // about 5 days
 
     //
     // settings saved and loaded from app.options
@@ -669,7 +669,7 @@ console.log("$");
     //
     // delete public blockchain transactions
     //
-    let sql = `DELETE FROM archives WHERE owner = "" AND created_at <= $ts AND preserve = 0`;
+    let sql = `DELETE FROM archives WHERE owner = "" AND created_at < $ts AND preserve = 0`;
     let params = { $ts: ts };
     await this.app.storage.executeDatabase(sql, params, "archive");
     
@@ -678,7 +678,7 @@ console.log("$");
     // delete private transactions
     //
     ts = new Date().getTime() - this.prune_private_ts;
-    sql = `DELETE FROM archives WHERE owner != "" AND created_at <= $ts AND preserve = 0`;
+    sql = `DELETE FROM archives WHERE owner != "" AND created_at < $ts AND preserve = 0`;
     params = { $ts: ts };
     await this.app.storage.executeDatabase(sql, params, "archive");
     
