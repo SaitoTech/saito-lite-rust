@@ -536,6 +536,8 @@ class RedSquare extends ModTemplate {
         //
         // field2 is publickey (the submitted not our own)
         //
+console.log("about to load transactions for " + publickey);
+
         this.app.storage.loadTransactions(
           {
             field2: publickey,
@@ -544,6 +546,9 @@ class RedSquare extends ModTemplate {
             limit: this.peers[i].profile_limit,
           },
           (txs) => {
+
+console.log("values returned: " + txs.length);
+
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);

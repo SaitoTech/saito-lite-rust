@@ -249,10 +249,15 @@ class TweetManager {
   renderProfile(publicKey) {
     this.mode = "profile";
 
+    if (!document.querySelector(".tweet-manager")) {
+      this.app.browser.addElementToSelector(TweetManagerTemplate(), ".saito-main");
+    }
+
     this.profile.publicKey = publicKey;
     this.profile.render();
 
     this.mod.loadProfile(null, publicKey, (txs) => {
+console.log("here in load profile with txs: " + txs.length);
       for (let z = 0; z < txs.length; z++) {
         let tweet = new Tweet(this.app, this.mod, txs[z]);
         tweet.render();

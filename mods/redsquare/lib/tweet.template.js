@@ -30,8 +30,6 @@ module.exports = (app, mod, tweet) => {
     if (num_replies == 0) { num_replies++; }
   }
 
-console.log(text + " ---> " + num_retweets);
-
   let controls = `
               <div class="tweet-controls">
                 <div class="tweet-tool tweet-tool-comment">
