@@ -151,15 +151,7 @@ async function initCLI() {
     let json_block = JSON.parse(blk.toJson());
 
     let txwmsgs = [];
-    try {
-      blk.transactions.forEach((transaction) => {
-        let tx = transaction.toJson();
-        tx.msg = transaction.returnMessage();
-        txwmsgs.push(tx);
-      });
-    } catch (err) {
-      console.error(err);
-    }
+    txwmsgs = inflateTransaction(blk);
     if (txwmsgs.length > 0) {
       json_block.transactions = txwmsgs;
     }
