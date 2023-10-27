@@ -13,7 +13,7 @@ class GameSelector {
     this.overlay = new SaitoOverlay(app, mod, false, true);
     this.obj = obj;
 
-    this.app.connection.on("arcade-launch-game-selector", async (obj = {}) => {
+    this.app.connection.on("arcade-launch-game-selector", (obj = {}) => {
       mod.styles = [
         "/arcade/css/arcade-game-selector-overlay.css",
         "/arcade/css/arcade-overlays.css",
@@ -21,19 +21,19 @@ class GameSelector {
       mod.attachStyleSheets();
 
       this.obj = obj;
-      await this.render();
+      this.render();
       this.attachEvents();
     });
   }
 
-  async render() {
+  render() {
     this.overlay.show(GameSelectorTemplate(this.app, this.mod, this));
     this.attachEvents();
   }
 
   attachEvents() {
     Array.from(document.querySelectorAll(".arcade-game-selector-game")).forEach((game) => {
-      game.onclick = async (e) => {
+      game.onclick = (e) => {
         e.stopPropagation();
         let modname = e.currentTarget.getAttribute("data-id");
         this.obj.game = modname;

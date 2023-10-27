@@ -58,12 +58,12 @@ class Registry extends ModTemplate {
       let unidentified_keys = [];
 
       //
-      // every 1 in 200 times, clear cache of anonymous keys to requery 
+      // every 1 in 200 times, clear cache of anonymous keys to requery
       //
       if (Math.random() < 0.005) {
-        for (let i of Object.keys(this.cached_keys)){
-          if (i == this.cached_keys[i]){
-            delete this.cached_keys[i]
+        for (let i of Object.keys(this.cached_keys)) {
+          if (i == this.cached_keys[i]) {
+            delete this.cached_keys[i];
           }
         }
         console.log("REGISTRY: new cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
@@ -193,7 +193,12 @@ class Registry extends ModTemplate {
     }
 
     this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
-      console.log("REGISTRY Missing: ", missing_keys, `REGISTRY (${registry_self.peers[0].publicKey}) found: `, identifiers);
+      console.log(
+        "REGISTRY Missing: ",
+        missing_keys,
+        `REGISTRY (${registry_self.peers[0].publicKey}) found: `,
+        identifiers
+      );
       for (let key in identifiers) {
         registry_self.cached_keys[key] = identifiers[key];
         found_keys[key] = identifiers[key];
@@ -324,7 +329,8 @@ class Registry extends ModTemplate {
         this.queryKeys(peer, [this.publicKey], function (identifiers) {
           console.log(
             "REGISTRY lookup: " + registry_self.publicKey + " in " + peer.publicKey,
-            "found: ", identifiers
+            "found: ",
+            identifiers
           );
           for (let key in identifiers) {
             if (key == myKey.publicKey) {
@@ -345,7 +351,7 @@ class Registry extends ModTemplate {
           //
           //Make sure that we actually checked the right source
           //
-          if (peer.publicKey == registry_self.registry_publickey){
+          if (peer.publicKey == registry_self.registry_publickey) {
             let identifier = myKey.identifier.split("@");
             if (identifier.length !== 2) {
               console.log("REGISTRY: Invalid identifier", myKey.identifier);
@@ -378,8 +384,7 @@ class Registry extends ModTemplate {
       return 0;
     }
 
-    if (txmsg.request == "registry query"){
-   
+    if (txmsg.request == "registry query") {
       if (txmsg.data.request === "registry query") {
         let keys = txmsg.data?.keys;
         return this.fetchIdentifiersFromDatabase(keys, mycallback);
@@ -389,7 +394,6 @@ class Registry extends ModTemplate {
         let identifier = txmsg.data?.identifier;
         return this.checkIdentifierInDatabase(identifier, mycallback);
       }
-
     }
 
     return super.handlePeerTransaction(app, newtx, peer, mycallback);
@@ -549,7 +553,6 @@ class Registry extends ModTemplate {
     }
   }
 
-
   /*
    * Lightly recursive, server side code to look up keys in the registry database
    * Invoked through a peer request.
@@ -626,7 +629,7 @@ class Registry extends ModTemplate {
             }
             if (mycallback) {
               mycallback(more_keys);
-	      return 0;
+              return 0;
             }
           });
           return 0;
@@ -636,7 +639,6 @@ class Registry extends ModTemplate {
   }
 
   async checkIdentifierInDatabase(identifier, mycallback = null) {
-
     if (!mycallback) {
       console.warn("No callback");
       return 0;
@@ -649,17 +651,15 @@ class Registry extends ModTemplate {
 
       mycallback(rows);
       return 1;
-
     } else {
-      
-      await this.sendPeerDatabaseRequestWithFilter(
+      this.sendPeerDatabaseRequestWithFilter(
         "Registry",
         `SELECT * FROM records WHERE identifier = "${identifier}"`,
         (res) => {
           mycallback(res?.rows);
-	  return 1;
+          return 1;
         },
-      
+
         (p) => {
           if (p.publicKey == this.registry_publickey) {
             return 1;
@@ -667,9 +667,7 @@ class Registry extends ModTemplate {
           return 0;
         }
       );
-
     }
-
   }
 
   async addRecord(

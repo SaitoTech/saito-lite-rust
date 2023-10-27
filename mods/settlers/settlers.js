@@ -168,9 +168,9 @@ class Settlers extends GameTemplate {
       },
     });
 
-    await this.menu.addChatMenu();
+    this.menu.addChatMenu();
 
-    await this.menu.render();
+    this.menu.render();
     this.log.render();
     this.hexgrid.render(".gameboard");
 
@@ -179,7 +179,7 @@ class Settlers extends GameTemplate {
       this.cardbox.addCardType("handy-help", "", null);
       this.cardbox.makeDraggable();
 
-      await this.playerbox.render();
+      this.playerbox.render();
 
       //
       // This adds a class in the playerbox to attach color

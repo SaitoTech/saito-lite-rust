@@ -2332,7 +2332,7 @@ console.log("2. insert index: " + index_to_insert_moves);
 	        //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 	        his_self.updateStatus("acknowledged");
-                await his_self.endTurn();
+                his_self.endTurn();
               }
 	      return 0;
             }

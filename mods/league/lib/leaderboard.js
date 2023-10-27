@@ -28,7 +28,7 @@ class Leaderboard {
 
     //
     //
-    await this.renderLeaderboardContents();
+    this.renderLeaderboardContents();
     //
     // fetch league info if it is not already downloaded
     //
@@ -44,13 +44,13 @@ class Leaderboard {
           "Query Server for leaderboard"
         );
       }
-      await this.mod.fetchLeagueLeaderboard(this.league.id, async (rows) => {
-        await this.renderLeaderboardContents();
+      this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
+        this.renderLeaderboardContents();
       });
     }
   }
 
-  async renderLeaderboardContents() {
+  renderLeaderboardContents() {
     //
     // safety check
     //

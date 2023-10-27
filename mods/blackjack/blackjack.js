@@ -75,17 +75,17 @@ class Blackjack extends GameTableTemplate {
     });
      ****/
 
-    await this.menu.addChatMenu();
-    await this.menu.render();
+    this.menu.addChatMenu();
+    this.menu.render();
 
     this.log.render();
 
-    await this.playerbox.render();
+    this.playerbox.render();
     this.playerbox.addClassAll("poker-seat-", true);
     this.playerbox.addGraphicClass("hand");
     this.playerbox.addGraphicClass("tinyhand");
-    await this.playerbox.addStatus(); //enable update Status to display in playerbox
-    await this.updateStatus("Waiting for other players to sit down to start playing");
+    this.playerbox.addStatus(); //enable update Status to display in playerbox
+    this.updateStatus("Waiting for other players to sit down to start playing");
   }
 
   /* Opt out of letting League create a default*/
@@ -100,7 +100,7 @@ class Blackjack extends GameTableTemplate {
   // if we switch into a staked game, we reset to a new round, while keeping all of the
   // other settings identical.
   //
-  async initializeGameStake(crypto, stake) {
+  initializeGameStake(crypto, stake) {
     this.game.crypto = this.game.options.crypto = crypto;
     this.game.stake = this.game.options.stake = parseFloat(stake);
 
@@ -121,7 +121,7 @@ class Blackjack extends GameTableTemplate {
     //
     // and redisplay board
     //
-    await this.displayBoard();
+    this.displayBoard();
   }
 
   async initializeGame() {
@@ -140,7 +140,7 @@ class Blackjack extends GameTableTemplate {
 
     if (this.game.deck.length == 0) {
       this.game.state = this.returnInitialState(this.game.players.length);
-      await this.updateStatus("Generating the Game");
+      this.updateStatus("Generating the Game");
       //Neither of these show up
       //this.game.state.required_pot = this.game.state.big_blind;
 
@@ -156,7 +156,7 @@ class Blackjack extends GameTableTemplate {
     }
     //console.log("Num dec places needed:" + this.decimal_precision);
     if (this.browser_active) {
-      await this.displayBoard();
+      this.displayBoard();
     }
 
     //If reloading, make sure we can refresh the queue operations
@@ -276,7 +276,7 @@ class Blackjack extends GameTableTemplate {
     return players;
   }
 
-  async settleLastRound() {
+  settleLastRound() {
     /*
     We want these at the end of the queue so they get processed first, but if
     any players got removed, there will be some issues....
@@ -300,7 +300,7 @@ class Blackjack extends GameTableTemplate {
     }
     console.log("new queue: " + JSON.stringify(this.game.queue));
 
-    await this.updateStatus(msg);
+    this.updateStatus(msg);
     this.cardfan.hide();
 
     this.settlement = [];
@@ -339,7 +339,7 @@ class Blackjack extends GameTableTemplate {
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
-      await this.displayBoard();
+      this.displayBoard();
 
       if (mv[0] === "start" || mv[0] === "newround") {
         //If we change the # of players, we want to stop the queue and refresh the game
@@ -389,7 +389,7 @@ class Blackjack extends GameTableTemplate {
         this.game.queue.splice(qe, 1);
         let status = null;
         $(".player-box.active").removeClass("active");
-        await this.playerbox.addClass("active", player);
+        this.playerbox.addClass("active", player);
 
         if (this.game.state.player[player - 1].wager == 0 && player != this.game.state.dealer) {
           return 1;
@@ -411,9 +411,9 @@ class Blackjack extends GameTableTemplate {
 
         //Default turn behavior
         if (player == this.game.player) {
-          await this.playerTurn();
+          this.playerTurn();
         } else {
-          await this.updateStatus(
+          this.updateStatus(
             this.getLastNotice(true) +
               `<div>Waiting for ${
                 player === this.game.state.dealer ? "the dealer" : `Player ${player}`
@@ -510,7 +510,7 @@ class Blackjack extends GameTableTemplate {
         this.game.state.player[this.game.state.dealer - 1].wager -= wager * 2;
         this.game.state.player[player - 1].wager = 0;
         if (player == this.game.player) {
-          await this.updateStatus(
+          this.updateStatus(
             `<div class="persistent">Blackjack! You win double your bet (${wager}x2)</div>`
           );
         }
@@ -555,7 +555,7 @@ class Blackjack extends GameTableTemplate {
           this.game.state.player[this.game.state.dealer - 1].wager += wager;
           this.game.state.player[player - 1].wager = 0;
           if (player == this.game.player) {
-            await this.updateStatus(
+            this.updateStatus(
               `<div class="persistent">You have gone bust. You lose your bet of ${wager}</div>`
             );
           }
@@ -602,13 +602,13 @@ class Blackjack extends GameTableTemplate {
         $(".player-box.active").removeClass("active");
         for (let i of betters) {
           if (this.game.confirms_needed[i - 1] == 1) {
-            await this.playerbox.addClass("active", i);
+            this.playerbox.addClass("active", i);
             statusMsg += `Player ${i}, `;
             betsNeeded++;
             if (this.game.player == parseInt(i)) {
               //If >2 players, this gets called repeatedly....
               this.addMove("RESOLVE\t" + this.publicKey);
-              await this.selectWager();
+              this.selectWager();
               doINeedToBet = true;
             }
           }
@@ -621,7 +621,7 @@ class Blackjack extends GameTableTemplate {
         }
 
         if (!doINeedToBet) {
-          await this.updateStatus(`Waiting for ${statusMsg} to place their bets.`);
+          this.updateStatus(`Waiting for ${statusMsg} to place their bets.`);
         }
 
         if (betsNeeded == 0) {
@@ -641,9 +641,9 @@ class Blackjack extends GameTableTemplate {
           if (score == 21) {
             this.addMove("announceblackjack");
           }
-          await this.endTurn();
+          this.endTurn();
         } else {
-          await this.updateStatus("Waiting for dealer");
+          this.updateStatus("Waiting for dealer");
         }
         return 0;
       }
@@ -693,7 +693,7 @@ class Blackjack extends GameTableTemplate {
         if (player === this.game.player) {
           let card = this.game.deck[0].cards[this.game.deck[0].hand[0]].name; //Just One Card
           this.addMove("flipcard\t" + this.game.player + "\t" + [card]);
-          await this.endTurn();
+          this.endTurn();
         }
         return 0;
       }
@@ -705,7 +705,7 @@ class Blackjack extends GameTableTemplate {
           //Only share if it is my turn
           let card = this.game.deck[0].hand[this.game.deck[0].hand.length - 1];
           this.addMove("flipcard\t" + this.game.player + "\t" + this.game.deck[0].cards[card].name);
-          await this.endTurn();
+          this.endTurn();
         }
         return 0;
       }
@@ -735,7 +735,7 @@ class Blackjack extends GameTableTemplate {
         this.game.crypto = null; //Clear crypto to prevent double dipping
         //Notably not keyed to game.player, but by the index
         if (this.game.player == parseInt(mv[1]) + 1) {
-          await this.sendGameOverTransaction(this.publicKey, "elimination");
+          this.sendGameOverTransaction(this.publicKey, "elimination");
         }
         return 0;
       }
@@ -827,7 +827,7 @@ class Blackjack extends GameTableTemplate {
     }
     html += "</ul>";
 
-    await this.updateStatus(this.getLastNotice() + html, 1);
+    this.updateStatus(this.getLastNotice() + html, 1);
     this.lockInterface();
     try {
       $(".menu_option").off();
@@ -836,7 +836,7 @@ class Blackjack extends GameTableTemplate {
         blackjack_self.unlockInterface();
         let choice = $(this).attr("id");
         blackjack_self.addMove("setwager\t" + blackjack_self.game.player + "\t" + choice);
-        await blackjack_self.endTurn();
+        blackjack_self.endTurn();
       });
     } catch (err) {
       console.error("selectwager error", err);
@@ -870,7 +870,7 @@ class Blackjack extends GameTableTemplate {
       html += "</ul>";
     }
 
-    await this.updateStatus(html, 1);
+    this.updateStatus(html, 1);
     this.lockInterface();
 
     $(".menu_option").off();
@@ -881,44 +881,44 @@ class Blackjack extends GameTableTemplate {
 
       if (choice === "hit") {
         blackjack_self.addMove("hit\t" + blackjack_self.game.player);
-        await blackjack_self.endTurn();
+        blackjack_self.endTurn();
         return 0;
       }
 
       if (choice === "stand") {
         //blackjack_self.addMove("RESOLVE\t"+blackjack_self.publicKey);
         blackjack_self.addMove("stand\t" + blackjack_self.game.player);
-        await blackjack_self.endTurn();
+        blackjack_self.endTurn();
         return 0;
       }
 
       if (choice === "double") {
         blackjack_self.addMove("double\t" + blackjack_self.game.player);
-        await blackjack_self.endTurn();
+        blackjack_self.endTurn();
         return 0;
       }
 
       if (choice === "split") {
         blackjack_self.addMove("split\t" + blackjack_self.game.player);
-        await blackjack_self.endTurn();
+        blackjack_self.endTurn();
         return 0;
       }
     });
   }
 
-  async displayBoard() {
+  displayBoard() {
     if (this.browser_active == 0) {
       return;
     }
 
-    await this.displayPlayers();
-    await this.displayHand();
+    this.displayPlayers();
+    this.displayHand();
   }
 
   /*
   Player should see their hand in position 1 of player_box, other players are even spaced around "poker table"
   */
-  async displayPlayers() {
+  displayPlayers() {
     if (this.browser_active == 0) {
       return;
     }
@@ -928,7 +928,7 @@ class Blackjack extends GameTableTemplate {
         let newhtml = "";
         let player_hand_shown = 0;
 
-        await this.playerbox.refreshName(i + 1);
+        this.playerbox.refreshName(i + 1);
 
         if (this.game.state.player[i].wager > 0 && this.game.state.dealer !== i + 1) {
           newhtml = `<div class="chips">${this.app.crypto.convertStringToDecimalPrecision(
@@ -948,7 +948,7 @@ class Blackjack extends GameTableTemplate {
           newhtml += `<div class="player-notice">Player ${i + 1}</div>`;
         }
         //
-        await this.playerbox.refreshInfo(newhtml, i + 1);
+        this.playerbox.refreshInfo(newhtml, i + 1);
         newhtml = "";
 
         //Check for backup hands
@@ -967,7 +967,7 @@ class Blackjack extends GameTableTemplate {
         }
 
         if (this.game.player !== i + 1 && this.game.state.player[i].total !== 0) {
-          await this.playerbox.refreshLog(
+          this.playerbox.refreshLog(
             newhtml +
               `<div class="status-info">Hand Score: ${
                 this.game.state.player[i].total > 0 ? this.game.state.player[i].total : "Bust"
@@ -988,7 +988,7 @@ class Blackjack extends GameTableTemplate {
             newhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
           }
 
-          await this.playerbox.refreshGraphic(newhtml, i + 1);
+          this.playerbox.refreshGraphic(newhtml, i + 1);
         }
       }
     } catch (err) {
@@ -996,7 +996,7 @@ class Blackjack extends GameTableTemplate {
     }
   }
 
-  async displayHand() {
+  displayHand() {
     if (this.game.player == 0) {
       return;
     }
@@ -1020,7 +1020,7 @@ class Blackjack extends GameTableTemplate {
           newhtml += this.handToHTML(this.game.state.player[this.game.player - 1].split[z]);
           newhtml += "</div>";
         }
-        await this.playerbox.refreshGraphic(newhtml);
+        this.playerbox.refreshGraphic(newhtml);
         $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
       } else {
         $("#player-box-graphic-1").addClass("hidden-playerbox-element");
@@ -1295,7 +1295,7 @@ class Blackjack extends GameTableTemplate {
 
     //Consolidated log message
     this.updateLog(logMsg);
-    await this.settleLastRound();
+    this.settleLastRound();
 
     if (winners.length > 0) {
       this.game.queue.push(
@@ -1313,8 +1313,8 @@ class Blackjack extends GameTableTemplate {
     }
 
     if (this.settlement.length > 0) {
-      this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, async () => {
-        await this.restartQueue();
+      this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, () => {
+        this.restartQueue();
       });
       this.halted = 1;
       return 0;
@@ -1393,12 +1393,12 @@ class Blackjack extends GameTableTemplate {
     This function may be less than ideal, abusing the concept of status,
     since it is mostly being used to update the DOM for user interface
   */
-  async updateStatus(str, hide_info = 0) {
+  updateStatus(str, hide_info = 0) {
     try {
       if (hide_info == 0) {
-        await this.playerbox.showInfo();
+        this.playerbox.showInfo();
       } else {
-        await this.playerbox.hideInfo();
+        this.playerbox.hideInfo();
       }
 
       if (this.lock_interface == 1) {

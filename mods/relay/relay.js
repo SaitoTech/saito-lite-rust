@@ -107,7 +107,7 @@ class Relay extends ModTemplate {
       // tx.msg.data is a json-ready transaction
       // this network function wraps the whole thing within another transaction
       // newtx.msg.data.msg.data = original transactionn
-      await this.app.network.sendRequestAsTransaction(
+      this.app.network.sendRequestAsTransaction(
         "relay peer message",
         tx.toJson(),
         null,
