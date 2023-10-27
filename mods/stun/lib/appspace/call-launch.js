@@ -50,7 +50,6 @@ class CallLaunch {
       return;
     }
     if (this.container === ".saito-overlay") {
-      //Should add callback to "hang up the call" if we close the overlay
       this.overlay.show(StunLaunchTemplate(this.app, this.mod), () => {
         this.app.connection.emit("close-preview-window");
       });

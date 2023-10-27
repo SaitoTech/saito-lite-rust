@@ -285,16 +285,14 @@
   margin: auto;
   width: 6rem;
   height: 6rem;
-  bottom: 0;
-  right: 0;
   transition: transform 200ms ease-out;
   background-color: var(--saito-primary);
   border-radius: 50%;
-  text-align: center;
-  line-height: 6rem;
   z-index: 6;
   cursor: pointer;
   display: none;
+  justify-content: center;
+  align-items: center;
 }
 
 .saito-floating-plus-btn.activated {
@@ -304,7 +302,9 @@
 .saito-floating-plus-btn i {
   font-size: 2.5rem;
   color: #fff;
-  line-height: 64px;
+  width: 2.5rem;
+  height: 2.5rem;
+  text-align: center;
 }
 
 .saito-floating-menu-item {
@@ -401,7 +401,7 @@
 
 @media screen and (max-width: 1200px) {
   .saito-floating-plus-btn {
-    display: block;
+    display: flex;
   }
   .saito-floating-container {
     right: 35.5rem;

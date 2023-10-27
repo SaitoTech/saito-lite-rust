@@ -387,6 +387,7 @@ class Registry extends ModTemplate {
     if (txmsg.request == "registry query") {
       if (txmsg.data.request === "registry query") {
         let keys = txmsg.data?.keys;
+        console.log("REGISTRY lookup: ", keys);
         return this.fetchIdentifiersFromDatabase(keys, mycallback);
       }
 
@@ -501,6 +502,7 @@ class Registry extends ModTemplate {
             //
             // am email? for us? from the DNS registrar?
             //
+            let publickey = tx.to[0].publicKey;
             let identifier = tx.msg.identifier;
             let signed_message = tx.msg.signed_message;
             let sig = tx.msg.signature;
@@ -613,11 +615,14 @@ class Registry extends ModTemplate {
     // Fallback because browsers don't automatically have DNS as a peer
     //
     if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
+      console.log("this REGISTRY didn't find keys");
+      let has_peer = false;
       //
       // if we were asked about any missing keys, ask our parent server
       //
       for (let i = 0; i < this.peers.length; i++) {
         if (this.peers[i].publicKey == this.registry_publickey) {
+          has_peer = true;
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, (res) => {
             let more_keys = {};
@@ -629,11 +634,15 @@ class Registry extends ModTemplate {
             }
             if (mycallback) {
               mycallback(more_keys);
-              return 0;
+              return 1;
             }
           });
           return 0;
         }
+      }
+
+      if (!has_peer) {
+        console.log("REGISTRY: Not a peer with the central DNS");
       }
     }
   }
@@ -652,7 +661,7 @@ class Registry extends ModTemplate {
       mycallback(rows);
       return 1;
     } else {
-      this.sendPeerDatabaseRequestWithFilter(
+      await this.sendPeerDatabaseRequestWithFilter(
         "Registry",
         `SELECT * FROM records WHERE identifier = "${identifier}"`,
         (res) => {
@@ -668,6 +677,7 @@ class Registry extends ModTemplate {
         }
       );
     }
+    return 0;
   }
 
   async addRecord(
