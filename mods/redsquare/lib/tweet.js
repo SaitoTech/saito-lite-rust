@@ -286,10 +286,12 @@ class Tweet {
       if (t) {
         t.notice = this.retweet.notice;
         t.render(prepend);
+        t.attachEvents();
       } else {
         (this.retweet.user.container =
           this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
           this.retweet.render(prepend);
+	  this.retweet.attachEvents();
       }
       return;
     }
@@ -427,6 +429,7 @@ class Tweet {
     }
 
     if (this.critical_child && does_tweet_already_exist_on_page == false) {
+
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
       this.critical_child.render();
 
@@ -439,6 +442,15 @@ class Tweet {
           obj.classList.add("has-reply-disconnected");
         }
       }
+
+      //
+      // if no replies are listed, but we are showing a reply... show least one to avoid confusion
+      //
+      if (this.tx.optional.num_replies == 0) {
+        let obj = document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
+        try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
+      }
+
     }
 
     this.attachEvents();

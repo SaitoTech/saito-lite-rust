@@ -74,7 +74,8 @@
 
 .tweet-notice .saito-address {
   display: inline;
-  margin-left: 0.25rem;
+  margin-right: 0.3rem;
+  margin-left: 0.3rem;
   font-weight: bold;
   font-size: 1.4rem;
   color: var(--saito-font-color-light);

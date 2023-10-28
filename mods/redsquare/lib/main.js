@@ -142,6 +142,9 @@ console.log("postcache-render-request: CANNOT refresh the page!");
     //
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
 
+      // reset main 
+      document.querySelector(".saito-main").innerHTML = "";
+
       this.scrollFeed(0);
 
       // reset peers
