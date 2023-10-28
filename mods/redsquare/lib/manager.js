@@ -24,11 +24,9 @@ class TweetManager {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            console.log("Intersection: " + this.mode);
 
             this.showLoader();
 
-            console.log("WHAT MODE: " + this.mode);
             //
             // single tweet mode should hide loader immediately
             //
@@ -85,14 +83,12 @@ class TweetManager {
                     this.mod,
                     this.mod.notifications[i].tx
                   );
-                  console.log("at least one notification to render");
                   //if (!notification.isRendered()) {
                   notification.render(".tweet-manager");
                   //}
                 }
                 if (this.mod.notifications.length == 0) {
                   let notification = new Notification(this.app, this.mod, null);
-                  console.log("no notifications to render");
                   notification.render(".tweet-manager");
                 }
 
@@ -109,21 +105,15 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode === "profile") {
-              console.log("loading profile!");
 
               this.mod.loadProfile(null, this.profile.publicKey, (txs) => {
                 if (this.mode !== "profile") {
-                  console.log("returning as our mode is not profile!");
                   return;
                 }
 
-                console.log("txs length: " + txs.length);
-
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
-                  console.log("does tweet have errors: " + tweet?.noerrors);
                   if (tweet?.noerrors) {
-                    console.log("rendering!");
                     tweet.render();
                   }
                 }
@@ -188,12 +178,9 @@ class TweetManager {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
       if (this.mode == "tweets") {
-        console.log("Cache tweets");
         let kids = managerElem.children;
-        console.log(kids.length);
         holder.replaceChildren(...kids);
       } else {
-        console.log("clear tweet manager");
         while (managerElem.hasChildNodes()) {
           managerElem.firstChild.remove();
         }
@@ -207,9 +194,7 @@ class TweetManager {
     ////////////
     if (this.mode == "tweets") {
       if (holder) {
-        console.log("Restore tweets");
         let kids = holder.children;
-        console.log(kids.length);
         managerElem.replaceChildren(...kids);
       }
 
@@ -257,7 +242,6 @@ class TweetManager {
     this.profile.render();
 
     this.mod.loadProfile(null, publicKey, (txs) => {
-console.log("here in load profile with txs: " + txs.length);
       for (let z = 0; z < txs.length; z++) {
         let tweet = new Tweet(this.app, this.mod, txs[z]);
         tweet.render();
@@ -296,7 +280,6 @@ console.log("here in load profile with txs: " + txs.length);
     //
 
     this.app.connection.emit("saito-header-replace-logo", (e) => {
-      console.log("Click on back button");
       this.app.connection.emit("redsquare-home-render-request", false);
     });
   }
@@ -304,7 +287,6 @@ console.log("here in load profile with txs: " + txs.length);
   attachEvents() {
     if (this.mode !== "tweets") {
       this.app.connection.emit("saito-header-replace-logo", (e) => {
-        console.log("Click on back button");
         this.app.connection.emit("redsquare-home-render-request", false);
       });
     }

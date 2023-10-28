@@ -536,7 +536,6 @@ class RedSquare extends ModTemplate {
         //
         // field2 is publickey (the submitted not our own)
         //
-console.log("about to load transactions for " + publickey);
 
         this.app.storage.loadTransactions(
           {
@@ -546,8 +545,6 @@ console.log("about to load transactions for " + publickey);
             limit: this.peers[i].profile_limit,
           },
           (txs) => {
-
-console.log("values returned: " + txs.length);
 
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
@@ -795,9 +792,7 @@ console.log("values returned: " + txs.length);
 
   loadTweetsFromPeer(peer, sql, mycallback = null) {
     let txs = [];
-    console.log("LOAD TWEETS FROM PEER");
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
-      console.log("AND BACK LOAD TWEETS FROM PEER");
       for (let z = 0; z < txs.length; z++) {
         this.addTweet(txs[z]);
       }
@@ -1198,11 +1193,7 @@ console.log("values returned: " + txs.length);
   }
 
   async receiveLikeTransaction(blk, tx, conf, app) {
-    console.log(":");
-    console.log(":");
     console.log(": receive like transaction!");
-    console.log(":");
-    console.log(":");
 
     //
     // browsers
