@@ -74,7 +74,7 @@ class Spam extends ModTemplate {
     let this_mod = this;
     if (this.loop_start == 1) {
       console.log("starting loop ..");
-      console.log("txs per second: " + Math.ceil(this_mod.period / this_mod.frequency));
+      console.log("txs per second: " + 1000 / this_mod.period * this_mod.frequency);
 
       this.interval = setInterval(function () {
         document.querySelector(".spam-loop-count").innerHTML = this_mod.loop_count;
