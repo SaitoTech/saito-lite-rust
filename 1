@@ -1,0 +1,34 @@
+const PopupLessonTemplate = require("./lesson.template");
+
+class PopupLesson {
+
+  constructor(app, mod, container = ".popup-lesson") {
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
+    this.name = "PopupLesson";
+  }
+
+  render() {
+
+    //
+    // replace element or insert into page
+    //
+    this.app.browser.replaceElementContentBySelector(PopupLessonTemplate(this.app, this.mod), ".popup-lesson");
+    this.attachEvents();
+
+  }
+
+  attachEvents() {
+
+    document.querySelector(".popup-lesson-lessons").onclick = (e) => {
+      //window.history.pushState({}, document.title, "/" + this.mod.slug);
+      //history.replaceState(null, null, ' ');
+      //this.app.connection.emit("popup-lessons-render-request");
+    }
+
+  }
+}
+
+module.exports = PopupLesson;
+
