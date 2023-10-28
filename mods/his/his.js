@@ -5466,6 +5466,7 @@ console.log("done u=1 autoclick");
                   $('.option').on('click', function () {
                     his_self.language_zone_overlay.hide();
                     let prohibited_protestant_debater = $(this).attr("id");
+		    prohibited_protestant_debater = his_self.game.state.debaters[i].type;
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -17235,6 +17236,7 @@ if (this.game.state.scenario != "is_testing") {
 
 	  this.setAllies("protestant", "france");
 	  this.setEnemies("papacy", "france");
+	  this.setEnemies("papacy", "hapsburg");
 	  this.setActivatedPower("protestant", "france");
 	  this.addRegular("france","milan", 1);
 	  this.controlSpace("france", "trent");
@@ -17591,6 +17593,13 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	            }
 	          }
 	        }
+
+		if (anyone_else_here == 0 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
+console.log("NO-ONE BUT US, ADD ALLY CHECK!");
+	 	  space.besieged = 2;
+		  this.displaySpace(space.key);
+	        }
+
 	      } else {
 		//
 		// we only update the occupier of the space if the next move is not a "move"
