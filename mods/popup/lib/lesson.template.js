@@ -1,5 +1,7 @@
 module.exports = (lesson) => {
 
+console.log(JSON.stringify(lesson));
+
    return `
      <div class="lesson-container">
 

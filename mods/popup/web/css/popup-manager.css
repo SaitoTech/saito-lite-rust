@@ -18,8 +18,9 @@
   line-height: 3rem;
 }
 
-.lesson-manage .lessons {
+.lessons {
   max-width: 100%;
+  width: 100%;
 }
 
 .manager .menu ul {

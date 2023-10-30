@@ -1,6 +1,6 @@
 const LessonManagerTemplate = require("./manager.template");
 const TeaserTemplate = require("./teaser.template");
-const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loader");
+const SaitoLoader = require("./../../../lib/saito/ui/saito-loader/saito-loader");
 
 class LessonManager {
 
@@ -21,20 +21,16 @@ class LessonManager {
           if (entry.isIntersecting) {
 
             this.showLoader();
-
-            //
-            // load more lessons
-            //
+/**
             mod.loadMoreLessons(null, (txs) => {
-
                 this.hideLoader();
-
                 if (document.querySelector("#popup-intersection")) {
                   this.intersectionObserver.unobserve(
                     document.querySelector("#popup-intersection")
                   );
                 }
             });
+**/
           }
         });
       },
@@ -75,6 +71,17 @@ class LessonManager {
   }
 
   attachEvents() {
+
+    //
+    // click to lesson
+    //
+    document.querySelectorAll(".teaser").forEach((el) => {
+      el.onclick = (e) => {
+	let lesson_id = e.currentTarget.id;
+        this.app.connection.emit("popup-lesson-render-request", (lesson_id));
+      }
+    });
+
 
     //
     // dynamic content loading

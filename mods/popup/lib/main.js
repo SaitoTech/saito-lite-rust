@@ -1,4 +1,5 @@
 const PopupMainTemplate = require("./main.template");
+const TestimonialsTemplate = require("./testimonials.template");
 
 class PopupMain {
 
@@ -11,11 +12,10 @@ class PopupMain {
 
     this.app.connection.on("popup-home-render-request", () => {
       document.querySelector(".popup-content").innerHTML = "";
-      this.mod.lesson.render(0);
+      this.app.browser.addElementToSelector(TestimonialsTemplate(), ".popup-content");
     });
 
     this.app.connection.on("popup-lessons-render-request", (level="all") => {
-alert("L: " + level);
       document.querySelector(".popup-content").innerHTML = "";
       this.mod.manager.render(level);
     });
@@ -31,10 +31,10 @@ alert("L: " + level);
 
     if (!document.querySelector(".saito-container")) {
       this.app.browser.addElementToDom(PopupMainTemplate());
+      this.app.browser.addElementToSelector(TestimonialsTemplate(), ".popup-content");
     } else {
       this.app.browser.replaceElementBySelector(PopupMainTemplate(), ".saito-container");
     }
-
 
     this.attachEvents();
   }

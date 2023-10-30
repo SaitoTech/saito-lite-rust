@@ -1,10 +1,10 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const PopupLesson = require("./lib/ui/lesson");
-const PopupMenu = require("./lib/ui/menu");
-const PopupMain = require("./lib/ui/main");
-const PopupLessonManager = require("./lib/ui/manager");
+const PopupLesson = require("./lib/lesson");
+const PopupMenu = require("./lib/menu");
+const PopupMain = require("./lib/main");
+const PopupLessonManager = require("./lib/manager");
 const PeerService = require("saito-js/lib/peer_service").default;
 const localforage = require("localforage");
 
@@ -130,9 +130,9 @@ class Popup extends ModTemplate {
       //
       // sql request
       //
-      let sql = `SELECT lessons.id, lessons.title, lessons.slug, lessons.photo, users.username, users.userslug
+      let sql = `SELECT lessons.id, lessons.title, lessons.content, lessons.slug, lessons.photo, users.username, users.userslug
                    FROM lessons JOIN users 
-                   WHERE users.id = lessons.user_id
+                   WHERE users.id = lessons.user_id AND promoted = 1
                    ORDER BY lessons.created_at DESC`;
       this.sendPeerDatabaseRequestWithFilter(
 	"Popup", 

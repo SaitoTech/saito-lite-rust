@@ -63,6 +63,18 @@ class PopupMenu {
       this.app.connection.emit("popup-lessons-render-request", ("quiz-night"));
     }
 
+    document.querySelector(".short-stories").onclick = (e) => {
+      window.history.pushState({}, document.title, "/lessons/short-stories");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-lessons-render-request", ("short-stories"));
+    }
+
+    document.querySelector(".ktv-wednesday").onclick = (e) => {
+      window.history.pushState({}, document.title, "/lessons/ktv-wednesday");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-lessons-render-request", ("ktv-wednesday"));
+    }
+
 /***
     document.querySelector(".popup-menu-vocabulary").onclick = (e) => {
       //window.history.pushState({}, document.title, "/" + this.mod.slug);
