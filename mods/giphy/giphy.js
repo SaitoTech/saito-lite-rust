@@ -163,17 +163,17 @@ class Giphy extends ModTemplate {
     let gif_search_icon = document.querySelector(".saito-gif-search i");
     let gif_input_search = document.querySelector(".saito-gif-search input");
 
-    gif_search_icon.onclick = () => {
+    const onGifClick = (gif, e) => {
+      e.preventDefault();
+      this.parent_callback(gif.images.original.url);
+      this.overlay.remove();
+    };
+
+    const searchGif = () => {
       let value = gif_input_search.value;
       console.log(gif_input_search.value, "value");
       document.querySelector(".saito-gif-content").innerHTML = "";
       //this.loader.render(this.app, this.mod, "saito-gif-content");
-
-      let onGifClick = (gif, e) => {
-        e.preventDefault();
-        this.parent_callback(gif.images.original.url);
-        this.overlay.remove();
-      };
 
       renderGrid(
         {
@@ -190,8 +190,15 @@ class Giphy extends ModTemplate {
         },
         document.querySelector(".saito-gif-content")
       );
+    }
 
-    };
+    gif_search_icon.onclick = searchGif;
+
+    gif_input_search.onkeydown = (e) => {
+      if (e.keyCode === 13){
+        searchGif();
+      }
+    }
 
     //add focus to search bar
     if (gif_input_search){
