@@ -143,8 +143,8 @@ class Library extends ModTemplate {
     //
     await super.initialize(app);
     
-    for (const m of await app.modules.returnModulesRespondingTo("library-collection")) {
-      this.addCollection(await m.respondTo("library-collection"), this.publicKey);
+    for (const m of app.modules.returnModulesRespondingTo("library-collection")) {
+      this.addCollection(m.respondTo("library-collection"), this.publicKey);
     }
   }
 
@@ -232,7 +232,7 @@ class Library extends ModTemplate {
       return;
     }
 
-    return await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
 

@@ -115,12 +115,12 @@ class Chessgame extends GameTemplate {
       },
     });
 
-    await this.menu.addChatMenu();
-    await this.menu.render();
+    this.menu.addChatMenu();
+    this.menu.render();
 
     this.log.render();
 
-    await this.playerbox.render();
+    this.playerbox.render();
 
     for (let i = 1; i <= 2; i++) {
       this.playerbox.updateUserline(this.roles[i], i);
@@ -232,7 +232,7 @@ class Chessgame extends GameTemplate {
     if (data.draw) {
       if (data.draw === "accept") {
         console.log("Ending game");
-        await this.sendGameOverTransaction(this.game.players, "draw");
+        this.sendGameOverTransaction(this.game.players, "draw");
         return;
       } else {
         //(data.draw == "offer")
@@ -268,7 +268,7 @@ class Chessgame extends GameTemplate {
 
       //Check for draw according to game engine
       if (this.engine.in_draw() === true) {
-        await this.sendGameOverTransaction(this.game.players, "draw");
+        this.sendGameOverTransaction(this.game.players, "draw");
         return 0;
       }
 
@@ -277,7 +277,7 @@ class Chessgame extends GameTemplate {
       if (msg.extra.target == this.game.player) {
         //I announce that I am in checkmate to end the game
         if (this.engine.in_checkmate() === true) {
-          await this.sendStopGameTransaction("checkmate");
+          this.sendStopGameTransaction("checkmate");
           return 0;
         }
 

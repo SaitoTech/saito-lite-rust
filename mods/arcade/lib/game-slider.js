@@ -15,8 +15,8 @@ class GameSlider {
     //
     // handle requests to re-render
     //
-    this.app.connection.on("arcade-game-slider-render-request", async () => {
-      await this.render();
+    this.app.connection.on("arcade-game-slider-render-request", () => {
+      this.render();
     });
   }
 
@@ -30,7 +30,7 @@ class GameSlider {
     }
   }
 
-  async render() {
+  render() {
     //
     // create HTML of games list
     //
@@ -118,13 +118,13 @@ class GameSlider {
 
     this.interval = setInterval(changeSlide.bind(null, 1), 6000);
 
-    slides.onclick = async (e) => {
+    slides.onclick = (e) => {
       e.stopPropagation();
       const activeSlide = slides.querySelector("[data-active-slide]");
 
       let modname = activeSlide.dataset.game;
 
-      await this.app.browser.logMatomoEvent("GameWizard", "GameSlider", modname);
+      this.app.browser.logMatomoEvent("GameWizard", "GameSlider", modname);
       this.app.connection.emit("arcade-launch-game-wizard", { game: modname });
     };
   }

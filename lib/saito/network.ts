@@ -41,6 +41,10 @@ export default class Network {
     return S.getInstance().sendTransactionWithCallback(transaction, callback, peerIndex);
   }
 
+  /*
+    You don't need to await this function, but it will pass back any return value
+    from the callback you provide (hopefully)
+  */
   public async sendRequestAsTransaction(
     message: string,
     data: any = "",

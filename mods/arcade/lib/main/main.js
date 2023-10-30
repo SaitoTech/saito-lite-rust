@@ -22,7 +22,7 @@ class ArcadeMain {
     //
     // load init page
     //
-    app.connection.on("arcade-game-initialize-render-request", async () => {
+    app.connection.on("arcade-game-initialize-render-request", () => {
       document.querySelector(".arcade-central-panel").innerHTML = "";
       this.slider.hide();
 
@@ -31,7 +31,7 @@ class ArcadeMain {
       }
 
       let initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
-      await initializer.render();
+      initializer.render();
     });
 
 

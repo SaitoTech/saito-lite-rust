@@ -39,7 +39,6 @@ class JoinGameOverlay {
   render() {
     let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
-
     this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite));
     this.overlay.setBackground(game_mod.respondTo("arcade-games").image);
     this.attachEvents();
@@ -66,7 +65,7 @@ class JoinGameOverlay {
         //
         // send it on-chain and off-chain
         //
-        await this.app.network.propagateTransaction(newtx);
+        this.app.network.propagateTransaction(newtx);
 
         //this.app.connection.emit("relay-send-message", {recipient: this.invite.players, request: "arcade spv update", data: newtx.transaction });
         this.app.connection.emit("relay-send-message", {
@@ -93,14 +92,14 @@ class JoinGameOverlay {
     }
 
     if (document.getElementById("arcade-game-controls-close-game")) {
-      document.getElementById("arcade-game-controls-close-game").onclick = async (e) => {
+      document.getElementById("arcade-game-controls-close-game").onclick = (e) => {
         this.overlay.remove();
         this.app.browser.logMatomoEvent(
           "GameInvite",
           "CloseActiveGame",
           this.invite.game_mod.name
         );
-        await this.mod.sendQuitTransaction(this.invite.game_id);
+        this.mod.sendQuitTransaction(this.invite.game_id);
       };
     }
 
@@ -114,20 +113,20 @@ class JoinGameOverlay {
     // and game engine have checks to prevent that in most cases where a game breaks early on
     //
     if (document.getElementById("arcade-game-controls-forfeit-game")) {
-      document.getElementById("arcade-game-controls-forfeit-game").onclick = async (e) => {
+      document.getElementById("arcade-game-controls-forfeit-game").onclick = (e) => {
         this.overlay.remove();
         this.app.browser.logMatomoEvent(
           "GameInvite",
           "ForfeitGame",
           this.invite.game_mod.name
         );
-        await this.mod.sendQuitTransaction(this.invite.game_id, "forfeit");
+        this.mod.sendQuitTransaction(this.invite.game_id, "forfeit");
       };
     }
 
     if (document.getElementById("arcade-game-controls-cancel-join")) {
-      document.getElementById("arcade-game-controls-cancel-join").onclick = async (e) => {
-        await this.mod.sendCancelTransaction(this.invite.game_id);
+      document.getElementById("arcade-game-controls-cancel-join").onclick = (e) => {
+        this.mod.sendCancelTransaction(this.invite.game_id);
         this.overlay.remove();
         this.app.browser.logMatomoEvent(
           "GameInvite",
@@ -138,10 +137,10 @@ class JoinGameOverlay {
     }
 
     if (document.getElementById("arcade-game-controls-watch-game")) {
-      document.getElementById("arcade-game-controls-watch-game").onclick = async (e) => {
+      document.getElementById("arcade-game-controls-watch-game").onclick = (e) => {
         this.app.connection.emit("league-overlay-remove-request");
 
-        await this.mod.observeGame(this.invite.game_id);
+        this.mod.observeGame(this.invite.game_id);
         
         this.overlay.remove();
         this.app.browser.logMatomoEvent("GameInvite", "WatchGame", this.invite.game_mod.name);
@@ -149,9 +148,9 @@ class JoinGameOverlay {
     }
 
     if (document.getElementById("arcade-game-controls-review-game")) {
-      document.getElementById("arcade-game-controls-review-game").onclick = async (e) => {
+      document.getElementById("arcade-game-controls-review-game").onclick = (e) => {
         this.app.connection.emit("league-overlay-remove-request");
-        await this.mod.observeGame(this.invite.game_id);
+        this.mod.observeGame(this.invite.game_id);
         this.overlay.remove();
         this.app.browser.logMatomoEvent(
           "GameInvite",
