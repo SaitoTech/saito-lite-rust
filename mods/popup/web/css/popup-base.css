@@ -1,0 +1,44 @@
+
+body {
+  color: #202020;
+  font-size: 12px;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif
+}
+
+.saito-container {
+  display: flex !important;
+  flex-direction: column;
+  width: 100vw;
+  height: calc(100% - var(--saito-header-height));
+  padding: 0 calc((100vw - var(--saito-width)) / 2);
+  z-index: 0;
+  margin: 0;
+  position: absolute;
+  top: var(--saito-header-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.user {
+  color: #9C1010;
+  font-weight: bold;
+}
+
+.level {
+  color: #9C1010;
+  font-weight: bold;
+}
+
+.title {
+}
+
+.red {
+  color: #9C1010;
+}
+
+.odd {
+  background-color: #F7F7F7;
+}
+
+
+

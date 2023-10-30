@@ -1,0 +1,47 @@
+
+.popup-content {
+  display: flex;
+}
+
+.lesson-introduction {
+  font-size: 1.8rem;
+  line-height: 2.3rem;
+  margin-left: 2rem;
+}
+
+#lesson_dialogue {
+  font-size: 2.5rem;
+  line-height: 3rem;
+  margin-left: 2rem;
+  width: 100%
+}
+
+#lesson_dialogue table {
+  width: 100%;
+}
+
+#lesson_dialogue table tr td {
+  padding-bottom: 2rem;
+}
+
+.lesson_sentence_player {
+  vertical-align: top;
+  padding-right: 2rem;
+}
+
+.lesson_sentence_speaker {
+  vertical-align: top;
+  padding-right: 2rem;
+}
+
+.lesson_sentence_data * {
+  padding-bottom: 1rem;
+}
+
+.lesson_word {
+  width: 100%;
+  font-size: 2.5rem;
+  line-height: 3rem;
+  margin-left: 2rem;
+}
+

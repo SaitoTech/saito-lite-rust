@@ -70,8 +70,8 @@ web/saito/saito.css
 # ignore all style.css files as these are not compiled
 style.css
 
-mods/popup
-mods/popup/*
+mods/popup/src/*
+mods/popup/src/sql/*
 mods/appstore/mods/*
 mods/appstore/bundler
 mods/appstore/bundler/*
