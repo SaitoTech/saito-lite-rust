@@ -56,9 +56,13 @@ class ChatManager {
           this.popups[group.id].group = group;
         }
 
-        // if (this.render_popups_to_screen || !this.popups[group.id].is_rendered) {
-        this.popups[group.id].render();
-        // }
+        // For the love of all the is holy, would you stop commenting out this if-condition
+        // to make "stun" work, it breaks chat on mobile
+        // Talk to me about how to get chat to work in your desired field... there are other less
+        // destructive ways to do so
+        if (this.render_popups_to_screen || !this.popups[group.id].is_rendered) {
+          this.popups[group.id].render();
+        }
 
         if (this.render_manager_to_screen) {
           await this.render();

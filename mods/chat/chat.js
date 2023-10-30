@@ -202,7 +202,7 @@ class Chat extends ModTemplate {
     }
     this.chat_manager.container = ".saito-sidebar.left";
 
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 500) {
+    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 599) {
       this.chat_manager.chat_popup_container = ".saito-main";
       //Main Chat Application doesn't use popups as such...
       this.chat_manager.render_popups_to_screen = 0;
@@ -331,8 +331,9 @@ class Chat extends ModTemplate {
             ) {
               this.app.connection.emit("chat-manager-request-no-interrupts");
               return;
+            }else{
+              this.app.connection.emit("chat-popup-render-request");
             }
-            this.app.connection.emit("chat-popup-render-request");
           }
         });
       }
