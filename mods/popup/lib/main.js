@@ -36,6 +36,12 @@ class PopupMain {
       this.app.browser.replaceElementBySelector(PopupMainTemplate(), ".saito-container");
     }
 
+    //
+    // lesson menu
+    //
+    document.querySelectorAll(".option.lesson").forEach((el) => { el.style.display = "none"; });
+    document.querySelectorAll(".option.non-lesson").forEach((el) => { el.style.display = "block"; });
+
     this.attachEvents();
   }
 

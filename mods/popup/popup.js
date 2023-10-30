@@ -21,6 +21,8 @@ class Popup extends ModTemplate {
 
     this.styles = ["/popup/style.css"];
 
+    this.peers = [];
+
     this.social = {
       twitter_card: "summary",
       twitter_site: "@SaitoOfficial",
@@ -127,6 +129,8 @@ class Popup extends ModTemplate {
     //
     if (service.service === "popup") {
 
+      if (!this.peers.includes(peer.publicKey)) { this.peers.push(peer.publicKey); }
+
       //
       // sql request
       //
@@ -174,7 +178,7 @@ class Popup extends ModTemplate {
 	async (res) => {
           if (res.rows) {
 	    lesson.sentences = res.rows;
-	    
+	    mycallback(lesson);
             return;
           }
         },
@@ -183,30 +187,6 @@ class Popup extends ModTemplate {
           return 0;
         }
     );
-
-
-    //
-    // sql request
-    //
-    sql = `SELECT *
-               FROM words
-               WHERE lesson_id = ${lesson.id} 
-               ORDER BY display_order ASC`;
-    this.sendPeerDatabaseRequestWithFilter(
-        "Popup", 
-	sql, 
-	async (res) => {
-          if (res.rows) {
-	    lesson.words = res.rows;
-            return;
-          }
-        },
-        (p) => {
-  	  if (p.publicKey == peer.publicKey) { return 1; }
-          return 0;
-        }
-    );
-
 
   }
   ///////////////////////
@@ -241,6 +221,68 @@ class Popup extends ModTemplate {
     let add_me = true;
     for (let i = 0; i < this.lessons.length; i++) { if (this.lessons[i].id === lesson.id) { return; } }
     this.lessons.push(lesson);
+  }
+
+  async fetchLessonSentences(lesson, mycallback=null) {
+    let sql = `SELECT sentences.speaker_text, sentences.speaker_translation, sentences.sentence_text, sentences.sentence_translation, sentences.display_order, sentences.audio_source, sentences.audio_translation, sentences.video_start, sentences.video_stop, sentences.youtube_start, sentences.youtube_stop, sentences.youku_start, sentences.youku_stop FROM sentences WHERE sentences.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
+    this.sendPeerDatabaseRequestWithFilter(
+      	"Popup", 
+      	sql, 
+        async (res) => {
+	  if (res.rows) {
+            lesson.sentences = res.rows;
+	    mycallback(lesson);
+          }
+        },
+        (p) => {
+  	  if (this.peers.includes(p.publicKey)) {
+            return 1; 
+          }
+          return 0;
+        }
+    );
+  }
+
+  async fetchLessonQuestions(lesson, mycallback=null) {
+    let sql = `SELECT questions.question, questions.answer1, questions.answer2, questions.answer3, questions.answer4, questions.correct, questions.display_order, questions.audio, questions.question_image, questions.explanation, questions.audio_transcript FROM questions WHERE questions.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
+console.log(sql);
+    this.sendPeerDatabaseRequestWithFilter(
+      	"Popup", 
+      	sql, 
+        async (res) => {
+	  if (res.rows) {
+            lesson.questions = res.rows;
+	    mycallback(lesson);
+          }
+        },
+        (p) => {
+  	  if (this.peers.includes(p.publicKey)) {
+            return 1; 
+          }
+          return 0;
+        }
+    );
+  }
+
+  async fetchLessonVocabulary(lesson, mycallback=null) {
+    let sql = `SELECT words.audio_source, words.audio_translation, words.field1, words.field2, words.field3, words.field4, words.field5 FROM words WHERE words.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
+console.log(sql);
+    this.sendPeerDatabaseRequestWithFilter(
+      	"Popup", 
+      	sql, 
+        async (res) => {
+	  if (res.rows) {
+            lesson.words = res.rows;
+	    mycallback(lesson);
+          }
+        },
+        (p) => {
+  	  if (this.peers.includes(p.publicKey)) {
+            return 1; 
+          }
+          return 0;
+        }
+    );
   }
 
   returnLesson(lesson_id = null) {

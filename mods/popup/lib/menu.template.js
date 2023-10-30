@@ -13,10 +13,11 @@ module.exports = () => {
 	<li class="option non-lesson story-archives" id="story-archives">annotated texts</li>
 	<li class="option non-lesson faq" id="faq">frequently asked questions</li>
 
-	<li class="option lesson">discussion</li>
-	<li class="option lesson">transcript</li>
-	<li class="option lesson">vocabulary</li>
-	<li class="option lesson">writing</li>
+	<li class="option lesson discussion">discussion</li>
+	<li class="option lesson transcript">transcript</li>
+	<li class="option lesson vocabulary">vocabulary</li>
+	<li class="option lesson writing">writing</li>
+	<li class="option lesson test">test</li>
 
       </ul>
 

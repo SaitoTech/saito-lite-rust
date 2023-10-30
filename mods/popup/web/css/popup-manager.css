@@ -47,6 +47,13 @@
 .teaser:nth-child(even) {
   background-color: #F7F7F7;}
 
+.title {
+  cursor: pointer;
+}
+.level {
+  cursor: pointer;
+}
+
 .teaser .title {
   display: block;
   padding-left: 1rem;
