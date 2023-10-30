@@ -547,6 +547,8 @@ class Poker extends GameTableTemplate {
           //Reload game to rebuild the html
           setTimeout(() => {
             this.initialize_game_run = 0;
+            this.playerbox.removeBoxes();
+            this.halted = 0;
             this.initializeGameQueue(this.game.id);
           }, 1000);
           return 0;
@@ -1122,11 +1124,6 @@ class Poker extends GameTableTemplate {
 
         let call_portion = this.game.state.required_pot - this.game.state.player_pot[player - 1];
         let raise_portion = raise - call_portion;
-
-        if (raise_portion < this.game.state.last_raise) {
-          salert("Insufficient raise");
-          console.error("Call process in raise/Insufficient Raise", mv);
-        }
 
         this.game.state.plays_since_last_raise = 1;
 
