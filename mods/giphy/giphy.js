@@ -194,14 +194,19 @@ class Giphy extends ModTemplate {
 
     gif_search_icon.onclick = searchGif;
 
-    gif_input_search.onkeydown = (e) => {
-      if (e.keyCode === 13){
-        searchGif();
-      }
-    }
-
     //add focus to search bar
     if (gif_input_search){
+
+      gif_input_search.onkeydown = (e) => {
+        if (e.keyCode === 13){
+          searchGif();
+        }
+      }
+
+      gif_input_search.onclick = (e) => {
+        e.currentTarget.select();
+      }
+      
       gif_input_search.focus({ focusVisible: true });
     }
 
