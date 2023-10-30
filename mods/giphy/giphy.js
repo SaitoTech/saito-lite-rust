@@ -193,6 +193,11 @@ class Giphy extends ModTemplate {
 
     };
 
+    //add focus to search bar
+    if (gif_input_search){
+      gif_input_search.focus({ focusVisible: true });
+    }
+
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {

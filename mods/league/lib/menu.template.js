@@ -1,4 +1,4 @@
-module.exports = async (app, mod, league) => {
+module.exports = (app, mod, league) => {
   let html = `
       <div class="league-component-existing-league-box" id="lg${league.id}">
         <div class="league-component-existing-league-details">

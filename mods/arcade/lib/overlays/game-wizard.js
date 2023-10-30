@@ -144,7 +144,7 @@ class GameWizard {
           this.app.browser.logMatomoEvent("GameWizard", "CreatePrivateInvite", options.game);
         } else if (gameType == "single") {
           this.app.browser.logMatomoEvent("GameWizard", "PlaySinglePlayerGame", options.game);
-          await this.mod.makeGameInvite(options, "private", this.obj);
+          this.mod.makeGameInvite(options, "private", this.obj);
           return;
         } else if (gameType == "direct") {
           this.app.browser.logMatomoEvent("GameWizard", "CreateDirectInvite", options.game);
@@ -152,7 +152,7 @@ class GameWizard {
           this.app.browser.logMatomoEvent("GameWizard", "CreateOpenInvite", options.game);
         }
 
-        await this.mod.makeGameInvite(options, gameType, this.obj);
+        this.mod.makeGameInvite(options, gameType, this.obj);
       });
     });
   }

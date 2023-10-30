@@ -1752,8 +1752,8 @@ class Poker extends GameTableTemplate {
             </svg>`;
   }
 
-  receiveStopGameTransaction(resigning_player, txmsg) {
-    super.receiveStopGameTransaction(resigning_player, txmsg);
+  async receiveStopGameTransaction(resigning_player, txmsg) {
+    await super.receiveStopGameTransaction(resigning_player, txmsg);
 
     if (!txmsg.loser) {
       return;

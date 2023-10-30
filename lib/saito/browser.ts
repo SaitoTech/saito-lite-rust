@@ -1273,7 +1273,7 @@ class Browser {
     this.app.connection.emit("update-username-in-game");
   }
 
-  async logMatomoEvent(category, action, name, value) {
+  logMatomoEvent(category, action, name, value) {
     try {
       this.app.modules
         .returnFirstRespondTo("matomo_event_push")

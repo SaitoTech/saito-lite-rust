@@ -12,7 +12,8 @@ class Spam extends ModTemplate {
     this.categories = "Core Utilities Messaging";
     this.publickey = "";
     this.loop_start = 0;
-    this.frequency = 1; //no of tx per second
+    this.frequency = 1; //no of tx per period
+    this.period = 1000;
     this.interval = null;
     this.loop_count = 0;
 
@@ -37,6 +38,7 @@ class Spam extends ModTemplate {
     let start = document.querySelector(".start");
     start.onclick = (e) => {
       this_mod.frequency = document.querySelector("#frequency").value;
+      this_mod.period = document.querySelector("#period").value * 1000;
 
       document.querySelector(".spam-loop-count").innerHTML = this_mod.loop_count;
       document.querySelector(".spam-loop-dot").style.backgroundColor = "green";
@@ -56,12 +58,14 @@ class Spam extends ModTemplate {
     reset.onclick = (e) => {
       this_mod.loop_start = 0;
       this_mod.frequency = 1;
+      this_mod.period = 1000;
       this_mod.interval = null;
       this_mod.loop_count = 0;
 
       document.querySelector(".spam-loop-count").innerHTML = "0";
       document.querySelector(".spam-loop-dot").style.backgroundColor = "red";
       document.querySelector("#frequency").value = 1;
+      document.querySelector("#period").value = 1;
       this_mod.changeLoopStatus();
     };
   }
@@ -70,13 +74,13 @@ class Spam extends ModTemplate {
     let this_mod = this;
     if (this.loop_start == 1) {
       console.log("starting loop ..");
-      console.log("txs per second: " + Math.ceil(1000 / this_mod.frequency));
+      console.log("txs per second: " + 1000 / this_mod.period * this_mod.frequency);
 
       this.interval = setInterval(function () {
         document.querySelector(".spam-loop-count").innerHTML = this_mod.loop_count;
         this_mod.sendSpamTransaction(this_mod.app, this_mod.mod, { tx_num: this_mod.loop_count });
         this_mod.loop_count++;
-      }, Math.floor(1000 / this_mod.frequency));
+      }, Math.floor(this_mod.period / this_mod.frequency));
     } else {
       console.log("stop loop ..");
 

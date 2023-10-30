@@ -80,7 +80,7 @@ class Arcade extends ModTemplate {
     //
     // compile list of arcade games
     //
-    (await app.modules.returnModulesRespondingTo("arcade-games")).forEach((game_mod) => {
+    app.modules.returnModulesRespondingTo("arcade-games").forEach((game_mod) => {
       this.arcade_games.push(game_mod);
       //
       // and listen to their transactions
@@ -294,7 +294,7 @@ class Arcade extends ModTemplate {
           //arcade_self.addGame(game, "private");
         }
 
-        await app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
+        app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
 
         let invite = new Invite(app, this, null, null, game, this.publicKey);
         let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
@@ -633,7 +633,7 @@ class Arcade extends ModTemplate {
       // only servers notify lite-clients
       //
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
-        await this.notifyPeers(tx);
+        this.notifyPeers(tx);
       }
 
       return 1;
@@ -877,7 +877,7 @@ class Arcade extends ModTemplate {
     }
 
     let close_tx = await this.createCancelTransaction(game);
-    await this.app.network.propagateTransaction(close_tx);
+    this.app.network.propagateTransaction(close_tx);
 
     this.app.connection.emit("relay-send-message", {
       recipient: game.msg.players,
@@ -934,7 +934,7 @@ class Arcade extends ModTemplate {
     }
 
     let close_tx = await this.createQuitTransaction(game, reason);
-    await this.app.network.propagateTransaction(close_tx);
+    this.app.network.propagateTransaction(close_tx);
 
     this.app.connection.emit("relay-send-message", {
       recipient: game.msg.players,
@@ -1183,7 +1183,7 @@ class Arcade extends ModTemplate {
         //
         if (game.msg.originator == this.publicKey) {
           let newtx = await this.createAcceptTransaction(game);
-          await this.app.network.propagateTransaction(newtx);
+          this.app.network.propagateTransaction(newtx);
           this.app.connection.emit("relay-send-message", {
             recipient: "PEERS",
             request: "arcade spv update",
@@ -1294,7 +1294,7 @@ class Arcade extends ModTemplate {
       console.log(game_engine_id);
 
       if (!game_engine_id || game_engine_id !== txmsg.game_id) {
-        await sconfirm("Something went wrong with the game initialization: " + game_engine_id);
+        salert("Something went wrong with the game initialization: " + game_engine_id);
       }
     }
   }
@@ -1465,7 +1465,7 @@ class Arcade extends ModTemplate {
 
     let newtx = await this.createAcceptTransaction(opentx);
 
-    await this.app.network.propagateTransaction(newtx);
+    this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "arcade spv update",
@@ -1839,7 +1839,8 @@ class Arcade extends ModTemplate {
     };
 
     if (players_needed == 1) {
-      await this.launchSinglePlayerGame(gamedata);
+      this.launchSinglePlayerGame(gamedata);
+      return;
     } else {
       if (gameType == "direct") {
         if (gamedata.players_needed > 2) {
@@ -1856,7 +1857,7 @@ class Arcade extends ModTemplate {
         return;
       }
 
-      await this.app.network.propagateTransaction(newtx);
+      this.app.network.propagateTransaction(newtx);
       this.app.connection.emit("relay-send-message", {
         recipient: "PEERS",
         request: "arcade spv update",
@@ -1905,7 +1906,7 @@ class Arcade extends ModTemplate {
 
     //We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
     game_msg.game_id = game_id;
-    await this.sendFollowTx(game_msg);
+    this.sendFollowTx(game_msg);
 
     if (!this.app.options.games) {
       this.app.options.games = [];

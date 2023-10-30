@@ -48,8 +48,8 @@ class ArcadeMenu {
     let menu_self = this;
 
     Array.from(document.getElementsByClassName("arcade-menu-item")).forEach((game) => {
-      game.addEventListener("click", async (e) => {
-        await this.app.browser.logMatomoEvent("GameWizard", "ArcadeMenu", e.currentTarget.id);
+      game.addEventListener("click", (e) => {
+        this.app.browser.logMatomoEvent("GameWizard", "ArcadeMenu", e.currentTarget.id);
         menu_self.app.connection.emit("arcade-launch-game-wizard", { game: e.currentTarget.id });
       });
     });
