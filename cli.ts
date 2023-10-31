@@ -131,21 +131,36 @@ async function initCLI() {
           convertBlock(arg);
         } else if (stat.isDirectory()){
           console.log("is dir");
-
+          convertBlocks(arg);
         }
       } else {
         printHelp();
-        console.log("Argument invalid.");
+        console.log("Argument invalid.\nexample: npm run cli convert <path_to_dir/filename>");
         throw err;
       }
     });
   };
 
   function convertBlock(filename) {
-    const files = fs;
     app.storage.loadBlockFromDisk(filename).then((block) => {
       let json_block = inflateBlock(block);
       fs.writeJSON(json_block.timestamp + "-" + json_block.hash + ".json", json_block);
+    });
+  };
+
+  function convertBlocks(dir) {
+    const files = fs.readdirSync(dir);
+    files.forEach((file) => {
+      try {
+        if (file !== "empty") {
+          app.storage.loadBlockByFilename(dir + file).then((block) => {
+            let json_block = inflateBlock(block);
+            fs.writeJSON(json_block.timestamp + "-" + json_block.hash + ".json", json_block);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     });
   };
 
