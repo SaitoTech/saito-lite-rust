@@ -201,8 +201,8 @@ class Nwasm extends OnePlayerGameTemplate {
       },
     });
 
-    await this.menu.addChatMenu();
-    await this.menu.render();
+    this.menu.addChatMenu();
+    this.menu.render();
 
     await this.library.render();
   }
@@ -220,9 +220,9 @@ class Nwasm extends OnePlayerGameTemplate {
     //
     // when games are saved in the emulator
     //
-    this.app.connection.on("nwasm-export-game-save", async (savegame) => {
+    this.app.connection.on("nwasm-export-game-save", (savegame) => {
       nwasm_self.active_game = savegame;
-      await nwasm_self.saveGameFile(savegame);
+      nwasm_self.saveGameFile(savegame);
     });
   }
 

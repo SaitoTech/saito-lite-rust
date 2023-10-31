@@ -47,6 +47,10 @@
 }
 
 
+.emphasis {
+  filter: brightness(0.8);
+}
+
 .slot.invisible{
   opacity: 0;
   pointer-events: none;
@@ -83,7 +87,7 @@
   opacity: 0.75;
 }
 
-.slot.valid.available:hover{
+.slot.valid.available:hover, .slot.selected.valid {
   background-color: #00ff00;
   box-shadow: -6px -6px 1px 5px #00ff00;
 }

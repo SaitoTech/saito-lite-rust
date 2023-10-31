@@ -77,25 +77,25 @@
 .game-playerbox-seat-8 {
   position: absolute;
   bottom: 1vh;
-  left: 1em;
+  left: 1rem;
 } 
 
 .game-playerbox-seat-7 {
   position: absolute;
   bottom: 1vh;
-  right: 1em;
+  right: 1rem;
 }
 
 .game-playerbox-seat-6 {
   position: absolute;
-  left: 1em;
+  left: 1rem;
   top: 45vh;
   transform: translateY(-50%);
 }
   
 .game-playerbox-seat-5 {
   position: absolute;
-  left: 1em;
+  left: 1rem;
   top: 20vh;
   transform: translateY(-50%);
 }
@@ -109,14 +109,14 @@
 
 .game-playerbox-seat-3 {
   position: absolute;
-  right: 1em;
+  right: 1rem;
   top: 20vh;
   transform: translateY(-50%);
 }
 
 .game-playerbox-seat-2 {
   position: absolute;
-  right: 1em;
+  right: 1rem;
   top: 45vh;
   transform: translateY(-50%);
 }
@@ -148,10 +148,17 @@
   }
 
   .game-playerbox {
-    width: 100%;
-    max-width: 100%;
+    max-width: 50vw;
+    min-width: unset;
   }
 
+  .game-playerbox-seat-3{
+    right: 0;
+  }
+
+  .game-playerbox-seat-5{
+    left: 0;
+  }
 }
 
 

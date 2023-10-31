@@ -98,10 +98,9 @@ class Mahjong extends OnePlayerGameTemplate {
     //
     // display the board?
     //
-    if (this.game.board && this.game.deck){
-      this.displayBoard(0);  
+    if (this.game.board && this.game.deck) {
+      this.displayBoard(0);
     }
-    
 
     if (app.browser.isMobileBrowser(navigator.userAgent)) {
       this.hammer.render("#mahj-rowbox");
@@ -122,7 +121,6 @@ class Mahjong extends OnePlayerGameTemplate {
 
     //Clear board
     this.game.board = {};
-
   }
 
   isArrayInArray(arr, item) {
@@ -297,7 +295,6 @@ class Mahjong extends OnePlayerGameTemplate {
 
   // displayBoard
   async displayBoard(timeInterval = 0) {
-
     console.log("Display board with pause of " + timeInterval);
     let index = 0;
 
@@ -349,7 +346,7 @@ class Mahjong extends OnePlayerGameTemplate {
             this.makeVisible(divname);
           }
 
-          if (timeInterval){
+          if (timeInterval) {
             await this.timeout(timeInterval);
           }
         }
@@ -361,7 +358,7 @@ class Mahjong extends OnePlayerGameTemplate {
 
   makeInvisible(divname) {
     $(`#${divname}`).addClass("invisible");
-    $(`#${divname}`).removeClass("selected");
+    $(`#mahj-rowbox #${divname}`).removeClass("selected");
   }
 
   makeVisible(divname) {
@@ -369,17 +366,30 @@ class Mahjong extends OnePlayerGameTemplate {
   }
 
   toggleCard(divname) {
-    $(`#${divname}`).addClass("selected");
-    $(`#${divname}`).removeClass("available");
+    $(`#${divname}`)
+      .addClass("selected")
+      .removeClass("available")
+      .addClass("emphasis")
+      .delay(350)
+      .queue(function () {
+        $(`#${divname}`).removeClass("emphasis").dequeue();
+      });
     this.game.selected = divname;
     this.getAvailableTiles();
   }
 
   untoggleCard(divname) {
     $(`#${divname}`).removeClass("selected");
-    $(`#${divname}`).addClass("available");
+
     this.game.selected = "";
     this.getAvailableTiles();
+
+    $(`#${divname}`)
+      .removeClass("available")
+      .delay(250)
+      .queue(function () {
+        $(`#${divname}`).addClass("available").dequeue();
+      });
   }
 
   returnCardImageHTML(name) {
@@ -394,7 +404,7 @@ class Mahjong extends OnePlayerGameTemplate {
     let mahjong_self = this;
 
     $(".slot").off();
-    $(".slot").on("click", function () {
+    $(".slot").on("click", async function () {
       let card = $(this).attr("id");
       if (!mahjong_self.game.availableMoves.includes(card)) {
         return;
@@ -413,8 +423,9 @@ class Mahjong extends OnePlayerGameTemplate {
           if (
             mahjong_self.game.board[card] === mahjong_self.game.board[mahjong_self.game.selected]
           ) {
-            $(".selected").removeClass("selected");
-
+            $(".selected").addClass("valid");
+            $("#" + card).addClass("selected");
+            await mahjong_self.timeout(100);
             mahjong_self.moveGameElement(
               mahjong_self.copyGameElement("#" + card),
               `.notfound.${mahjong_self.game.board[card].toLowerCase()}`,
@@ -452,6 +463,13 @@ class Mahjong extends OnePlayerGameTemplate {
 
             mahjong_self.game.selected = "";
             mahjong_self.displayUserInterface();
+          } else {
+            $(this)
+              .addClass("emphasis")
+              .delay(350)
+              .queue(() => {
+                $(this).removeClass("emphasis").dequeue();
+              });
           }
         }
       }
@@ -461,7 +479,7 @@ class Mahjong extends OnePlayerGameTemplate {
   getAvailableTiles() {
     let availableTiles = new Map([]);
     this.game.availableMoves = [];
-    $(".slot").removeClass("available").removeClass("valid").removeClass("invalid");
+    $(".mahj-rowbox .slot").removeClass("available").removeClass("valid").removeClass("invalid");
     for (let row = 1; row <= 21; row++) {
       for (let column = 1; column <= 14; column++) {
         if (
@@ -654,7 +672,7 @@ class Mahjong extends OnePlayerGameTemplate {
       let mv = this.game.queue[qe].split("\t");
 
       if (mv[0] === "play") {
-        if (this.browser_active){
+        if (this.browser_active) {
           this.game.queue.splice(qe, 1);
           //Reset/Increment State
           this.displayBoard(2);

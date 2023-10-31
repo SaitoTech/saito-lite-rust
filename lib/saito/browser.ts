@@ -71,20 +71,13 @@ class Browser {
 
         const channel = new BroadcastChannel("saito");
         if (!document.hidden) {
-          channel.postMessage({
-            active: 1,
-            publicKey: publicKey,
-          });
+          channel.postMessage({active: 1, publicKey: publicKey});
         }
 
-        /******
-         channel.onmessage = (e) => {
+        /* channel.onmessage = async (e) => {
                   console.log("document onmessage change");
                   if (!document.hidden) {
-                    channel.postMessage({
-                      active: 1,
-                      publicKey: this.app.wallet.getPublicKey(),
-                    });
+                    channel.postMessage({active: 1, publicKey: publicKey});
                     this.setActiveTab(1);
                   } else {
                     //
@@ -92,29 +85,25 @@ class Browser {
                     //
                     if (e.data) {
                       if (e.data.active == 1) {
-                        if (e.data.active == 1 && e.data.publicKey === this.app.wallet.getPublicKey()) {
+                        if (e.data.active == 1 && e.data.publicKey === publicKey) {
                           this.setActiveTab(0);
+                          salert("Saito is already open in another tab");
                         }
                       }
                     }
                   }
                 };
-         *****/
+        */
 
         document.addEventListener(
           "visibilitychange",
           () => {
             if (document.hidden) {
-              channel.postMessage({
-                active: 0,
-                publicKey: publicKey,
-              });
+              this.setActiveTab(0);
+              channel.postMessage({active: 0, publicKey: publicKey});
             } else {
               this.setActiveTab(1);
-              channel.postMessage({
-                active: 1,
-                publicKey: publicKey,
-              });
+              channel.postMessage({active: 1, publicKey: publicKey});
             }
           },
           false
@@ -499,8 +488,8 @@ class Browser {
       if (e.key == "page_available" && !this.isMobileBrowser(navigator.userAgent)) {
         console.log(e.key);
         console.log(navigator.userAgent);
-        //alert("One more page already open");
-        //window.location.href = "/tabs.html";
+        //alert("Saito already open in another tab!");
+        window.location.href = "/tabs.html";
       }
     };
     window.addEventListener("storage", onLocalStorageEvent, false);
@@ -1273,7 +1262,7 @@ class Browser {
     this.app.connection.emit("update-username-in-game");
   }
 
-  async logMatomoEvent(category, action, name, value) {
+  logMatomoEvent(category, action, name, value) {
     try {
       this.app.modules
         .returnFirstRespondTo("matomo_event_push")

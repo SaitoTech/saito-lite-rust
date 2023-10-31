@@ -90,28 +90,25 @@ class Storage {
         data.field3 = tx.to[0].publicKey;
       }
 
+      this.app.connection.emit("saito-save-transaction", tx);
+
       if (peer === "localhost") {
         let archive_mod = this.app.modules.returnModule("Archive");
         if (archive_mod) {
-          let res = await archive_mod.saveTransaction(tx, data);
+          return archive_mod.saveTransaction(tx, data);
         }
-        this.app.connection.emit("saito-save-transaction", tx);
-        return;
       }
       if (peer != null) {
-        await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
-        this.app.connection.emit("saito-save-transaction", tx);
-        return;
+        return this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       } else {
-        await this.app.network.sendRequestAsTransaction(message, data);
-        this.app.connection.emit("saito-save-transaction", tx);
-        return;
+        return this.app.network.sendRequestAsTransaction(message, data);
       }
     } catch (error) {
       console.warn("failed saving tx : " + tx.signature);
       console.error(error);
+      return { err: error };
     }
-    return;
+    return { err: "Save Transaction failed" };
   }
 
   async updateTransaction(tx: Transaction, obj = {}, peer = null) {
@@ -127,17 +124,16 @@ class Storage {
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-        let res = archive_mod.updateTransaction(tx, obj);
+        return archive_mod.updateTransaction(tx, obj);
       }
-      return;
-    }
-    if (peer != null) {
-      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
-      return;
     } else {
-      await this.app.network.sendRequestAsTransaction(message, data);
-      return;
+      if (peer != null) {
+        return this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
+      } else {
+        return this.app.network.sendRequestAsTransaction(message, data);
+      }
     }
+    return { err: "Save Transaction failed" };
   }
 
   loadTransactions(obj = {}, mycallback, peer = null) {
@@ -163,7 +159,6 @@ class Storage {
       }
       mycallback(txs);
     };
-
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");

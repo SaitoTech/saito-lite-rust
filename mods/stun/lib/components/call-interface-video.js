@@ -32,6 +32,7 @@ class CallInterfaceVideo {
         console.log("show-call-interface", room_obj);
         this.room_code = room_obj.room_code;
 
+        //Why is this a blocking loader????
         if (isJoining) {
           this.loader.render(true);
           setTimeout(() => {
@@ -241,6 +242,11 @@ class CallInterfaceVideo {
     });
 
     if (!this.mod.browser_active) {
+      //
+      // If you are in RedSquare/Arcade/etc, allow stun to shrink down to small box so you
+      // can still interact with the site
+      //
+
       document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
         // fas fa-expand"
         let icon = document.querySelector(".stun-chatbox .minimizer i");
@@ -263,6 +269,17 @@ class CallInterfaceVideo {
           this.app.browser.cancelDraggable("stun-chatbox");
         }
       });
+    }else{
+
+      //
+      // If in the stun app, all a request for full screen mode
+      // 
+      let maximizer = document.querySelector(".stun-chatbox .maximizer");
+      if (maximizer){
+        maximizer.onclick = (e) => {
+          this.app.browser.requestFullscreen();
+        }
+      }
     }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {

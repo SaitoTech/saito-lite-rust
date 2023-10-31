@@ -89,8 +89,8 @@ class SaitoMania extends OnePlayerGameTemplate {
     //
     this.menu.addMenuOption("game-game", "Game");
 
-    await this.menu.addChatMenu();
-    await this.menu.render();
+    this.menu.addChatMenu();
+    this.menu.render();
 
     const log = console.info.bind(console);
     console.info = async (...args) => {

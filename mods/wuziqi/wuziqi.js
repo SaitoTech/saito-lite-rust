@@ -59,10 +59,10 @@ class Wuziqi extends GameTemplate {
         });
 
         // Add Chat Features to Menu
-        await this.menu.addChatMenu(this.roles.slice(1));
+        this.menu.addChatMenu(this.roles.slice(1));
         
         // Render menu and attach events
-        await this.menu.render();
+        this.menu.render();
 
 
         if (this.game.player > 0) {
@@ -418,9 +418,9 @@ class Wuziqi extends GameTemplate {
         if (this.game.player == 0 ) { return; }
 
         let game_self = this;
-        this.playerAcknowledgeNotice(notice, async function () {
-            await game_self.addMove("clearboard\t"+game_self.game.player);
-            await game_self.endTurn();
+        this.playerAcknowledgeNotice(notice, function () {
+            game_self.addMove("clearboard\t"+game_self.game.player);
+            game_self.endTurn();
         });
 
     }

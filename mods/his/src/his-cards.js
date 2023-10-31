@@ -2525,6 +2525,7 @@ console.log("done u=1 autoclick");
                   $('.option').on('click', function () {
                     his_self.language_zone_overlay.hide();
                     let prohibited_protestant_debater = $(this).attr("id");
+		    prohibited_protestant_debater = his_self.game.state.debaters[i].type;
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	    his_self.addMove("RESETCONFIRMSNEEDED\tall");

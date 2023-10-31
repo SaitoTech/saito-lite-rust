@@ -270,7 +270,7 @@ if (this.game.state.scenario != "is_testing") {
 	    }
 	  }
 
-	  this.updateLog(faction + " passes");
+	  this.updateLog(this.returnFactionName(faction) + " passes");
 
           this.game.queue.splice(qe, 1);
 	  return 1;
@@ -689,6 +689,7 @@ if (this.game.state.scenario != "is_testing") {
 
 	  this.setAllies("protestant", "france");
 	  this.setEnemies("papacy", "france");
+	  this.setEnemies("papacy", "hapsburg");
 	  this.setActivatedPower("protestant", "france");
 	  this.addRegular("france","milan", 1);
 	  this.controlSpace("france", "trent");
@@ -1045,6 +1046,13 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	            }
 	          }
 	        }
+
+		if (anyone_else_here == 0 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
+console.log("NO-ONE BUT US, ADD ALLY CHECK!");
+	 	  space.besieged = 2;
+		  this.displaySpace(space.key);
+	        }
+
 	      } else {
 		//
 		// we only update the occupier of the space if the next move is not a "move"
@@ -1329,6 +1337,7 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	  //    break;
 	  //  }
 	  //}
+
 
 	  if (this.game.player === player) {
 	    this.playerFortifySpace(faction, attacker, spacekey);
@@ -2332,7 +2341,7 @@ console.log("2. insert index: " + index_to_insert_moves);
 	        //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                 his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 	        his_self.updateStatus("acknowledged");
-                await his_self.endTurn();
+                his_self.endTurn();
               }
 	      return 0;
             }
@@ -2779,6 +2788,20 @@ console.log("#");
 	  }
 
 	  //
+	  // if the defender has no units in the space and this is a fortified space
+	  // we don't want to go into hits assignment because we cannot actually have
+	  // a field battle, so we just nope out and put the space immediately under 
+	  // siege.
+	  //
+	  if (defender_units.length <= 1 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
+	    space.besieged = 2;
+	    this.displaySpace(space.key);
+	    this.updateLog(space.name + " put under siege.");
+	    return 1;	    
+	  }
+
+
+	  //
 	  // add rolls for highest battle ranking
 	  //
 	  for (let z = 0; z < attacker_highest_battle_rating; z++) {
@@ -3190,19 +3213,13 @@ console.log("field battle assign hits: player commanding faction is: " + player)
 	    return 1;
 	  }
 
-console.log("DEFENDING FACTIONS: " + defending_factions);
-console.log("FM: " + JSON.stringify(this.game.state.field_battle.faction_map));
-console.log("player: " + player + " -- " + this.game.player);
-
 	  //
 	  // otherwise assign hits directly
 	  //
 	  if (player == this.game.player) {
-console.log("going into render field battle!");
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
             his_self.field_battle_overlay.assignHits(his_self.game.state.field_battle, faction);
 	  } else {
-console.log("else!");
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
 	    his_self.updateStatus(this.returnFactionName(faction) + " Assigning Hits");
             his_self.field_battle_overlay.updateInstructions(this.returnFactionName(faction) + " Assigning Hits");
@@ -5235,6 +5252,8 @@ console.log("purging naval units and capturing leader");
 
 	  let x = 0;
 
+console.log("PROHIBITED PROTESTANT DEBATER: " + prohibited_protestant_debater);
+
 	  //
 	  // Henry Petitions for Divorce pre-selects 
 	  //
@@ -5285,15 +5304,15 @@ console.log("purging naval units and capturing leader");
 	  let dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
-	    if (this.game.state.theological_debate.committed == "committed") {
-	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	        dd++;
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          dd++;
+	        }
+	      } else {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed != 1) {
+	          dd++;
+	        }
 	      }
-	    } else {
-	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed != 1) {
-	        dd++;
-	      }
-	    }
 	    }
 	  }
 
@@ -5335,7 +5354,6 @@ console.log("purging naval units and capturing leader");
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
-
 
 	  this.game.queue.splice(qe, 1);
 

@@ -285,13 +285,20 @@ Useful declarations for game stats
 
 
 .debug_overlay {
-  max-height: 94vh;
-  max-width: 95vw;
+  max-height: 90vh;
+  max-width: 92vw;
   background: var(--saito-background-color);
   color: var(--saito-text-color);
-  margin-top: 4rem;
   padding: 3rem;
+  padding-left: 2rem;
   overflow: auto;
+}
+
+@media screen and (max-width: 600px) {
+  .debug_overlay{
+    padding: 1rem;
+    padding-left: 0;
+  }
 }
 
 /*json tree */

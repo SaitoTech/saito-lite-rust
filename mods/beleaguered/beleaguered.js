@@ -121,7 +121,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       },
     });
 
-    await this.menu.addChatMenu();
+    this.menu.addChatMenu();
     this.menu.render();
 
     //Check screen dimensions

@@ -1,8 +1,3 @@
-.saito-overlay-closebox-btn {
-  width: 3rem;
-  height: 3rem;
-  font-size: 3rem;
-}
 
 .stun-overlay-container{
   position: fixed;
@@ -24,12 +19,26 @@
   transition: all 0.2s;
 }
 
-.stun-chatbox .minimizer {
+.stun-chatbox .minimizer, .stun-chatbox .maximizer {
   position: absolute;
-  right: 2rem;
-  top: 1rem;
+  right: 1.8rem;
+  top: 1.5rem;
   z-index: 2;
   cursor: pointer;
+  height: 3rem;
+  width: 3rem;
+  text-align: center;
+}
+
+.stun-chatbox.minimize .minimizer {
+  right: 1.5rem;
+}
+
+.stun-chatbox .maximizer i {
+  font-size: 3rem;
+  color: var(--saito-white);
+  transition: all 0.2s;
+  text-shadow: 0 0 3px var(--saito-black);
 }
 
 .stun-chatbox .minimizer i {
@@ -37,6 +46,7 @@
   color: var(--saito-white);
   transition: all 0.2s;
   text-shadow: 0 0 3px var(--saito-black);
+  line-height: 3rem;
 }
 
 @keyframes minimize {
@@ -109,13 +119,10 @@
   margin-right: 1rem;
 }
 
-.stun-chatbox.minimize .minimizer:hover i {
-  transform: scale(1.1);
-}
 
-.stun-chatbox .minimizer:hover i {
+.stun-chatbox .minimizer:hover i, .stun-chatbox .maximizer:hover i {
   color: var(--saito-primary);
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .stun-chatbox main {
@@ -518,12 +525,9 @@
 }
 
 .timer .counter {
-  font-size: 2rem;
-}
-
-.timer .counter span {
   color: orangered;
   font-size: 2rem;
+  min-width: 9rem;
 }
 
 .users-on-call {
@@ -552,7 +556,6 @@
 .add_users_container {
   margin-right: 2rem;
   border-radius: 50%;
-  padding: 1rem;
   width: 5rem;
   height: 5rem;
   display: flex;
@@ -667,6 +670,27 @@
   }
 }
 
+@media screen and (max-width: 600px) {
+  .control-panel{
+    padding: 4rem 0;
+  }
+
+  .control-panel .timer {
+    gap: 0.5rem;
+  }
+
+  .users-on-call-text {
+    display: none;
+  }
+
+  .control-panel .control-list {
+    gap: unset;
+    width: 40rem;
+    max-width: 98vw;
+    justify-content: space-between;
+  }
+}
+
 /* CHAT SETTINGS */
 
 .chat-settings-container {
@@ -753,7 +777,8 @@
   border-radius: var(--saito-border-radius);
   width: 55rem;
   max-width: 92vw;
-  max-height: 95vw;
+  max-height: 92vw;
+  /*min-height: 30rem;*/
   display: flex;
 }
 

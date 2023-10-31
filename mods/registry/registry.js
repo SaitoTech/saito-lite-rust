@@ -606,10 +606,6 @@ class Registry extends ModTemplate {
       }
     }
 
-    if (mycallback) {
-      mycallback(found_keys);
-      return 1;
-    }
 
     //
     // Fallback because browsers don't automatically have DNS as a peer
@@ -625,15 +621,14 @@ class Registry extends ModTemplate {
           has_peer = true;
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, (res) => {
-            let more_keys = {};
             for (let key in res) {
               if (res[key] !== key) {
                 registry_self.cached_keys[key] = res[key];
-                more_keys[key] = res[key];
+                found_keys[key] = res[key];
               }
             }
             if (mycallback) {
-              mycallback(more_keys);
+              mycallback(found_keys);
               return 1;
             }
           });
@@ -643,6 +638,11 @@ class Registry extends ModTemplate {
 
       if (!has_peer) {
         console.log("REGISTRY: Not a peer with the central DNS");
+      }
+    }else{
+      if (mycallback) {
+        mycallback(found_keys);
+        return 1;
       }
     }
   }
@@ -677,6 +677,7 @@ class Registry extends ModTemplate {
         }
       );
     }
+    return 0;
   }
 
   async addRecord(

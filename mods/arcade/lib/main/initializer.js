@@ -6,8 +6,8 @@ class Initializer {
     this.mod = mod;
     this.container = container;
 
-    app.connection.on("arcade-game-ready-render-request", async (game_details) => {
-      await this.render(game_details.id);
+    app.connection.on("arcade-game-ready-render-request", (game_details) => {
+      this.render(game_details.id);
       this.notify(game_details.name);
       this.attachEvents(game_details.slug);
       siteMessage(`${game_details.name} ready to play!`);
@@ -54,18 +54,23 @@ class Initializer {
 
   attachEvents(slug) {
     if (document.querySelector(".arcade-game-initializer-success-button")) {
-      document.querySelector(".arcade-game-initializer-success-button").onclick = async (e) => {
+      document.querySelector(".arcade-game-initializer-success-button").onclick = (e) => {
         //Remember where we enter the game from
         let am = this.app.modules.returnActiveModule().returnName();
         this.app.options.homeModule = am;
         this.app.storage.saveOptions();
 
-        await this.app.browser.logMatomoEvent(
+        this.app.browser.logMatomoEvent(
           "StartGameClick",
           am,
           slug.slice(0, 1).toUpperCase() + slug.slice(1)
         );
-        window.location = "/" + slug;
+
+        //Make sure we have enough time to save the options
+        setTimeout(()=> {
+          window.location = "/" + slug;  
+        }, 400);
+        
       };
     }
   }
