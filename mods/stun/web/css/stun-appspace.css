@@ -111,6 +111,12 @@
     padding: 1rem;
     margin: 0;
   }
+
+  .stun-appspace-content {
+    margin-top: 1rem;
+    gap: 0;
+  }
+
   #createRoom {
     width: 100%;
   }
@@ -125,7 +131,8 @@
 
   .stun-appspace-navigation {
     gap: 2rem;
-    padding: 3rem;
+    padding: 2rem;
+    justify-content: center;
   }
 
   .stunx-appspace-launch-call-btn {
@@ -134,5 +141,6 @@
 
   .stunx-appspace-actions {
     margin-bottom: 0;
+    margin-top: 1rem;
   }
 }
