@@ -79,18 +79,73 @@
     return count;
   }
 
-  returnHopsToDestination(source, destination) {
-    try { if (this.game.spaces[source]) { destination = this.game.spaces[source]; } } catch (err) {}
-    return this.returnHopsBetweenSpacesWithFilter(source, function(spacekey) {
+  returnSpacesWithinHops(source, limit=0) {
+
+    let paths_self = this;
+
+    try { if (this.game.spaces[source]) { source = this.game.spaces[source]; } } catch (err) {}
+    if (limit == 0) { return [source.key]; }
+    let hop = 0;
+    let old = [];
+
+    let addHop = function(news, hop) {     
+
+      hop++;
+      let newer = [];
+
+      //
+      //
+      for (let i = 0; i < news.length; i++) {
+        for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
+          let n = paths_self.game.spaces[news[i]].neighbours[z];
+          if (!old.includes(n)) {
+            if (!news.includes(n)) {
+              if (!newer.includes(n)) {
+                if (n !== source.key) {
+	          newer.push(n);
+	        }
+	      }
+	    }
+	  }
+        }
+      }
+
+      if (hop != 1) {
+        for (let i = 0; i < news.length; i++) {
+	  if (!old.includes(news[i])) {
+	    if (news[i] !== source.key) {
+	      old.push(news[i]);
+	    }
+  	  }
+        }
+      }
+
+      if (hop < limit) {
+	  return addHop(newer, hop);
+      } else {
+	  return old;
+      }
+
+    }
+
+    return addHop([source.key], 0); 
+
+  }
+
+  returnHopsToDestination(source, destination, limit=0) {
+    try { if (this.game.spaces[source]) { source = this.game.spaces[source]; } } catch (err) {}
+    try { if (this.game.spaces[destination]) { destination = this.game.spaces[destination]; } } catch (err) {}
+console.log("RETURN HOPS TO DESTINATION: " + source.key + " -- " + destination.key + " -- limit: " + limit);
+    return this.returnHopsBetweenSpacesWithFilter(source, limit=0, function(spacekey) {
       if (spacekey === destination.key) { return 1; }
       return 0;  
     });
   }
 
-  returnHopsBetweenSpacesWithFilter(space, filter_func) {
+  returnHopsBetweenSpacesWithFilter(space, limit=0, filter_func) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
-    let his_self = this;
+    let paths_self = this;
     let map = {};
     let sources = [];
     let hop = 0;
@@ -98,29 +153,39 @@
     let addHop = function(sources, hop) {
 
       hop++;
-      
+
+      if (hop > limit && limit > 0) { return 0; }      
+
       let new_neighbours = [];
 
       for (let i = 0; i < sources.length; i++) {
 
+        if (!map[sources[i]]) {
 console.log("examining 1: " + sources[i]);
 
-	for (let z = 0; z < his_self.game.spaces[sources[i]].neighbours.length; z++) {
-console.log("examining 2: " + his_self.game.spaces[sources[i]].neighbours[z]);
-	  let sourcekey = his_self.game.spaces[sources[i]].neighbours[z];
-	  if (!map[sourcekey]) {
-	    map[sourcekey] = 1;
-	    new_neighbours.push(sourcekey);
+	  for (let z = 0; z < paths_self.game.spaces[sources[i]].neighbours.length; z++) {
+console.log("examining 2: " + paths_self.game.spaces[sources[i]].neighbours[z]);
+	    let sourcekey = paths_self.game.spaces[sources[i]].neighbours[z];
+	    if (!map[sourcekey]) {
+	      //
+	      // if we have a hit, it's this many hops!
+	      //
+	      if (filter_func(sourcekey)) { return hop; }
 
-	    //
-	    // if we have a hit, it's this many hops!
-	    //
-	    if (filter_func(sourcekey)) { return hop; }
+	      //
+	      // otherwise queue for next hop
+	      //
+	      if (!new_neighbours.includes(sourcekey)) { new_neighbours.push(sourcekey); }
+
+	    }
 	  }
+
+	  map[sources[i]] = 1;
+
 	}
       }
 
-      if (new_neighbours.length > 0) {
+      if (new_neighbours.length > 0 && hop < limit) {
 	return addHop(new_neighbours, hop);
       } else {
 	return 0;
@@ -2733,42 +2798,13 @@ spaces['athens'] = {
       vp : false ,
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     for (let key in spaces) {
       spaces[key].units = [];
       spaces[key].trench = 0;
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;
       spaces[key].activated_for_combat = 0;
+      spaces[key].key = key;
     }
 
     return spaces;

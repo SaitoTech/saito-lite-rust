@@ -148,11 +148,14 @@
 
 console.log("movement limit: " + unit.movement);
 
+	  let spaces_within_hops = paths_self.returnSpacesWithinHops(key, unit.movement);
+
+console.log("SPACES WITHIN HOPS: " + JSON.stringify(spaces_within_hops));
+
 	  paths_self.playerSelectSpaceWithFilter(
 	    `Select Destination for ${unit.name}`,
 	    (destination) => {
-	      if (paths_self.returnHopsToDestination(key, destination) < unit.movement) {
-console.log(destination + ": " + paths_self.returnHopsToDestination(key, destination));
+	      if (spaces_within_hops.includes(destination)) {
 	        return 1;
 	      }
 	      return 0;
