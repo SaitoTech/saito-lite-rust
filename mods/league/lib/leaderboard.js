@@ -75,6 +75,7 @@ class Leaderboard {
           ${this.app.browser.returnAddressHTML(publicKey)}
           <div class="right-align">${Math.round(player.score)}</div>
           <div class="right-align">${Math.round(player.games_finished)}</div>
+          <div class="right-align">${Math.round(player.games_won)}</div>
         </div>
       `;
 
