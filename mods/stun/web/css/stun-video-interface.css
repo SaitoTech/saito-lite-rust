@@ -513,12 +513,9 @@
 }
 
 .timer .counter {
-  font-size: 2rem;
-}
-
-.timer .counter span {
   color: orangered;
   font-size: 2rem;
+  min-width: 8rem;
 }
 
 .users-on-call {
