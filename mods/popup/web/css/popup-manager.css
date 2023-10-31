@@ -54,6 +54,10 @@
   cursor: pointer;
 }
 
+.header .level {
+  margin-right: 1rem;
+}
+
 .teaser .title {
   display: block;
   padding-left: 1rem;

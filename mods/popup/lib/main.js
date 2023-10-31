@@ -29,11 +29,11 @@ class PopupMain {
 
   render() {
 
-    if (!document.querySelector(".saito-container")) {
+    if (!document.querySelector(".popup-container")) {
       this.app.browser.addElementToDom(PopupMainTemplate());
       this.app.browser.addElementToSelector(TestimonialsTemplate(), ".popup-content");
     } else {
-      this.app.browser.replaceElementBySelector(PopupMainTemplate(), ".saito-container");
+      this.app.browser.replaceElementBySelector(PopupMainTemplate(), ".popup-container");
     }
 
     //

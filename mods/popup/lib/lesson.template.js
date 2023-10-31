@@ -1,11 +1,9 @@
 module.exports = (lesson) => {
 
-console.log(JSON.stringify(lesson));
-
    return `
      <div class="lesson-container">
 
-       <div class="lesson-section discussion">${lesson.content}</div>
+       <div class="lesson-section discussion">${unescape(lesson.content)}</div>
 
        <div class="lesson-section transcript"></div>
 
@@ -18,11 +16,11 @@ console.log(JSON.stringify(lesson));
      </div>
      <div class="lesson-sidebar">
 
-<img id="podcast_photo" src="/data/1449/image.jpg" class="podcast_photo">
- <audio controls="" style="margin-top:5px">
-  <source src="http://popupchinese.com/data/1449/audio.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio> 
+       <img id="podcast_photo" src="http://popupchinese.com/data/${lesson.id}/image.jpg" class="podcast_photo">
+       <audio controls="" style="margin-top:5px">
+         <source src="http://popupchinese.com/data/${lesson.id}/audio.mp3" type="audio/mpeg">
+         Your browser does not support the audio element.
+       </audio> 
  
      </div>
 

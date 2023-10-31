@@ -27,54 +27,6 @@ class PopupMenu {
       this.app.connection.emit("popup-lessons-render-request", ("all"));
     }
 
-    document.querySelector(".absolute-beginners").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/absolute-beginners");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("absolute-beginners"));
-    }
-
-    document.querySelector(".elementary").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/elementary");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("elementary"));
-    }
-
-    document.querySelector(".intermediate").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/intermediate");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("intermediate"));
-    }
-
-    document.querySelector(".advanced").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/advanced");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("advanced"));
-    }
-
-    document.querySelector(".film-friday").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/film-friday");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("film-friday"));
-    }
-
-    document.querySelector(".quiz-night").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/quiz-night");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("quiz-night"));
-    }
-
-    document.querySelector(".short-stories").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/short-stories");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("short-stories"));
-    }
-
-    document.querySelector(".ktv-wednesday").onclick = (e) => {
-      window.history.pushState({}, document.title, "/lessons/ktv-wednesday");
-      history.replaceState(null, null, ' ');
-      this.app.connection.emit("popup-lessons-render-request", ("ktv-wednesday"));
-    }
-
 /***
     document.querySelector(".popup-menu-vocabulary").onclick = (e) => {
       //window.history.pushState({}, document.title, "/" + this.mod.slug);
