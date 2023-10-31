@@ -36,14 +36,15 @@
 
 .saito-overlay-closebox {
     position: absolute;
-    width: 3rem;
-    height: 3rem;
+    width: 2.7rem;
+    height: 2.7rem;
     border-radius: 50%;
     z-index: 100;
     top: -1.5rem;
     right: -1.5rem;
-    display: none;
+    background-color: var(--saito-white);
     transition: all 0.3s;
+    display: none;
 }
 
 .saito-overlay>.saito-overlay-closebox {
@@ -63,9 +64,12 @@
     height: 3rem;
     width: 3rem;
     color: var(--saito-primary);
-    background-color: var(--saito-white);
-    font-size: 3.1rem;
+    font-size: 3rem;
     border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .saito-overlay-closebox:hover {
