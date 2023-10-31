@@ -9,7 +9,6 @@ module.exports = LeaderboardTemplate = (title = "Games") => {
             <div>Player</div>
             <div>Score</div>
             <div class="right-align">${title}</div>
-            <div class="right-align">Wins</div>
           </div>
           <div class="saito-table-body"></div>
         </div>
