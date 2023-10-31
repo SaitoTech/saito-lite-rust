@@ -122,6 +122,23 @@ async function initCLI() {
     });
   }
 
+  function convert(arg) {
+    const files = fs;
+    fs.stat(arg, (err, stat) => {
+      if (!err) {
+        if (stat.isFile()){
+          console.log("is file");
+
+        } else if (stat.isDirectory()){
+          console.log("is dir");
+
+        }
+      } else {
+        throw err;
+      }
+    });
+  };
+
   function convertBlock(filename) {
     const files = fs;
     app.storage.loadBlockFromDisk(filename).then((block) => {
