@@ -128,12 +128,14 @@ async function initCLI() {
       if (!err) {
         if (stat.isFile()){
           console.log("is file");
-
+          convertBlock(arg);
         } else if (stat.isDirectory()){
           console.log("is dir");
 
         }
       } else {
+        printHelp();
+        console.log("Argument invalid.");
         throw err;
       }
     });
@@ -151,10 +153,11 @@ async function initCLI() {
     let help = `
     Commands:
     
-    block <path and file name>     print block;
-    block.tx <path and file name>  print transactions from block
-    blocks <directory>             print out blocks in directory
-    blocks.tx <directory>          print out all tx from all bocks in direcory
+    block <path and file name>      print block;
+    block.tx <path and file name>   print transactions from block
+    blocks <directory>              print out blocks in directory
+    blocks.tx <directory>           print out all tx from all bocks in direcory
+    convert <filename or directory> convert block/blocks to JSON file
     `;
     console.log(help);
   }
