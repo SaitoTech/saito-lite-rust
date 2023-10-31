@@ -32,6 +32,7 @@ class CallInterfaceVideo {
         console.log("show-call-interface", room_obj);
         this.room_code = room_obj.room_code;
 
+        //Why is this a blocking loader????
         if (isJoining) {
           this.loader.render(true);
           setTimeout(() => {
