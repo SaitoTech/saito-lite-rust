@@ -513,12 +513,9 @@
 }
 
 .timer .counter {
-  font-size: 2rem;
-}
-
-.timer .counter span {
   color: orangered;
   font-size: 2rem;
+  min-width: 9rem;
 }
 
 .users-on-call {
@@ -547,7 +544,6 @@
 .add_users_container {
   margin-right: 2rem;
   border-radius: 50%;
-  padding: 1rem;
   width: 5rem;
   height: 5rem;
   display: flex;
@@ -662,6 +658,27 @@
   }
 }
 
+@media screen and (max-width: 600px) {
+  .control-panel{
+    padding: 4rem 0;
+  }
+
+  .control-panel .timer {
+    gap: 0.5rem;
+  }
+
+  .users-on-call-text {
+    display: none;
+  }
+
+  .control-panel .control-list {
+    gap: unset;
+    width: 40rem;
+    max-width: 98vw;
+    justify-content: space-between;
+  }
+}
+
 /* CHAT SETTINGS */
 
 .chat-settings-container {
@@ -748,7 +765,8 @@
   border-radius: var(--saito-border-radius);
   width: 55rem;
   max-width: 92vw;
-  max-height: 95vw;
+  max-height: 92vw;
+  /*min-height: 30rem;*/
   display: flex;
 }
 
