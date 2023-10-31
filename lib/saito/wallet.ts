@@ -329,9 +329,7 @@ export default class Wallet extends SaitoWallet {
 
     console.log("new wallet : " + (await this.getPublicKey()));
 
-    if (this.app.browser.browser_active == 1) {
-      window.location.reload();
-    }
+    
   }
 
   /**
@@ -973,5 +971,19 @@ export default class Wallet extends SaitoWallet {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  public onUpgrade(type="", privatekey="", walletfile=null)  {
+    if (type == 'nuke') {
+      this.app.wallet.resetWallet();
+
+      if (this.app.browser.browser_active == 1) {
+        setTimeout(function() {
+          window.location.reload();
+        }, 1500);
+      }
+    }
+
+    this.app.modules.onUpgrade(type, privatekey, walletfile);
   }
 }

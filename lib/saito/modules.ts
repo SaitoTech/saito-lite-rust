@@ -483,6 +483,12 @@ class Mods {
     }
     return null;
   }
+
+  onUpgrade(type, privatekey, walletfile){
+    for(let i=0; i<this.app.modules.mods.length; i++) {
+      this.app.modules.mods[i].onUpgrade(type, privatekey, walletfile);
+    }
+  }
 }
 
 export default Mods;

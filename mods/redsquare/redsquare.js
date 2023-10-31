@@ -496,6 +496,15 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  onUpgrade(type, privatekey, walletfile) {
+    if (type == 'nuke') {
+      console.log("clearing localforage for redsquare //////");  
+
+      // clear localforage data
+      localforage.clear();
+    }
+  }
+
   ///////////////////////////////
   // content loading functions //
   ///////////////////////////////
