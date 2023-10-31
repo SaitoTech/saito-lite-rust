@@ -102,7 +102,11 @@
       let new_neighbours = [];
 
       for (let i = 0; i < sources.length; i++) {
+
+console.log("examining 1: " + sources[i]);
+
 	for (let z = 0; z < his_self.game.spaces[sources[i]].neighbours.length; z++) {
+console.log("examining 2: " + his_self.game.spaces[sources[i]].neighbours[z]);
 	  let sourcekey = his_self.game.spaces[sources[i]].neighbours[z];
 	  if (!map[sourcekey]) {
 	    map[sourcekey] = 1;
@@ -279,7 +283,7 @@ spaces['orleans'] = {
     name: "Orleans" ,
     top: 1575 ,
     left: 561 , 
-    neighbours: ["lemans", "paris", "meun", "stamand", "tours"] ,
+    neighbours: ["lemans", "paris", "melun", "stamand", "tours"] ,
     terrain : "normal" ,
     vp : true , 
    }
@@ -306,6 +310,9 @@ spaces['nantes'] = {
     name: "Nantes" ,
     top: 1663 ,
     left: 157 , 
+    neighbours: ["rennes","lemans","tours","larochelle"] ,
+    terrain : "normal" ,
+    vp : false ,
    }
 
 spaces['tours'] = {
@@ -874,6 +881,9 @@ spaces['udine'] = {
     name: "Udine" ,
     top: 1883 ,
     left: 1767 , 
+    neighbours: ["trieste", "venice", "maggiore"] ,
+    terrain: "normal" ,
+    vp : false ,
    }
 
 spaces['venice'] = {
@@ -1099,6 +1109,7 @@ spaces['mostar'] = {
     terrain : "mountain" ,
     vp : false , 
    }
+
 spaces['sarajevo'] = {
     name: "Sarajevo" ,
     top: 2137 ,
@@ -1272,7 +1283,7 @@ spaces['hermannstadt'] = {
     name: "Hermannstadt" ,
     top: 1842 ,
     left: 2850 , 
-    neighbours: ["cluj", "kornstadt", "cartedearges"] ,
+    neighbours: ["cluj", "kronstadt", "cartedearges"] ,
     terrain : "mountain" ,
     vp : false , 
    }
@@ -1299,7 +1310,7 @@ spaces['czernowitz'] = {
     name: "Czernowitz" ,
     top: 1524 ,
     left: 3048 , 
-    neighbours: ["munkacs", "stanislau", "tarnopol", "kamenets-podolski"] ,
+    neighbours: ["munkacs", "stanislau", "tarnopol", "kamenestspodolski"] ,
     terrain : "normal" ,
     vp : true , 
    }
@@ -1308,7 +1319,7 @@ spaces['tarnopol'] = {
     name: "Tarnopol" ,
     top: 1371 ,
     left: 3049 , 
-    neighbours: ["stanislau", "lemberg", "dubno", "kamenets-podolski", "czernowitz"] ,
+    neighbours: ["stanislau", "lemberg", "dubno", "kamenestspodolski", "czernowitz"] ,
     terrain : "normal" ,
     vp : false , 
    }
@@ -1722,16 +1733,13 @@ spaces['kharkov'] = {
       name: "Kharkov" ,
       top: 1183 ,
       left: 3948 ,
-      neighbours: ["kievr"] ,
+      neighbours: ["kiev"] ,
       terrain : "normal" ,
       vp : false ,
 }
 
-
-
-
 spaces['kamenestspodolski'] = {
-      name: "Kamenets Podolski" ,
+      name: "Kamenests Podolski" ,
       top: 1440 ,
       left: 3196 ,
       neighbours: ["dubno", "tarnopol", "vinnitsa", "zhmerinka", "czernowitz"] ,
@@ -1778,7 +1786,7 @@ spaces['uman'] = {
 
 
 
-spaces['Kishinev'] = {
+spaces['kishinev'] = {
       name: "Kishinev" ,
       top: 1692 ,
       left: 3444 ,
@@ -1876,7 +1884,7 @@ spaces['erivan'] = {
       name: "Erivan" ,
       top: 2166 ,
       left: 4684 ,
-      neighbours: ["tbilisi", "dilman", "eleskirt"] ,
+      neighbours: ["tbilisi", "dilman", "eleskrit"] ,
       terrain : "mountain" ,
       vp : false ,
 }
@@ -2083,7 +2091,7 @@ spaces['erzerum'] = {
       name: "Erzerum" ,
       top: 2211 ,
       left: 4397 ,
-      neighbours: ["diyarbakir", "eleskirt", "erzingan", "kars"] ,
+      neighbours: ["diyarbakir", "eleskrit", "erzingan", "kars"] ,
       terrain : "mountain" ,
       vp : false ,
 }
@@ -2152,7 +2160,7 @@ spaces['van'] = {
       name: "Van" ,
       top: 2340 ,
       left: 4544 ,
-      neighbours: ["bitlis", "dilman", "eleskirt"] ,
+      neighbours: ["bitlis", "dilman", "eleskrit"] ,
       terrain : "mountain" ,
       vp : false ,
 }
@@ -2555,7 +2563,7 @@ spaces['plevna'] = {
       name: "Plevna" ,
       top: 2247 ,
       left: 3017 ,
-      neighbours: [ "cacaral", "bucharest", "varna", "kazanlik"] ,
+      neighbours: [ "caracal", "bucharest", "varna", "kazanlik"] ,
       terrain : "normal" ,
       vp : false ,
 }
@@ -2652,7 +2660,7 @@ spaces['monastir'] = {
       vp : false ,
 }
 
-spaces['centije'] = {
+spaces['cetinje'] = {
       name: "Centije" ,
       top: 2341 ,
       left: 2365 ,
@@ -2665,7 +2673,7 @@ spaces['tirana'] = {
       name: "Tirana" ,
       top: 2484 ,
       left: 2468 ,
-      neighbours: [ "valona", "centije", "skopje"] ,
+      neighbours: [ "valona", "cetinje", "skopje"] ,
       terrain : "mountain" ,
       vp : false ,
 }

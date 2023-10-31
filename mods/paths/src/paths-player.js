@@ -105,8 +105,6 @@
       }
 
 
-
-
       paths_self.playerSelectSpaceWithFilter(
 	"Units Awaiting Command: ",
 	(key) => {
@@ -147,10 +145,17 @@
       paths_self.attachCardboxEvents((action) => {
 
         if (action === "move") {
+
+console.log("movement limit: " + unit.movement);
+
 	  paths_self.playerSelectSpaceWithFilter(
 	    `Select Destination for ${unit.name}`,
-	    (key) => {
-	      return 1;
+	    (destination) => {
+	      if (paths_self.returnHopsToDestination(key, destination) < unit.movement) {
+console.log(destination + ": " + paths_self.returnHopsToDestination(key, destination));
+	        return 1;
+	      }
+	      return 0;
 	    },
 	    (key) => {
               paths_self.moveUnit(sourcekey, idx, key);
@@ -194,7 +199,9 @@
 
 
     let moveInterface = function(key, options, mainInterface, moveInterface, unitActionInterface) {
+
       let units = [];
+
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
 	if (paths_self.game.spaces[key].units[z].moved != 1) {
 	  units.push(z);
@@ -206,7 +213,7 @@
 	units,
 	(idx) => {
 	  let unit = paths_self.game.spaces[key].units[idx];
-	  return `<li class="option" id="${idx}">${unit.name}</li>`;
+	  return `<li class="option" id="${idx}">${unit.name} / ${unit.movement}</li>`;
 	},
 	(idx) => {
 	  let unit = paths_self.game.spaces[key].units[idx];
