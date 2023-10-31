@@ -39,7 +39,7 @@ async function initCLI() {
     new NodeSharedMethods(app),
     new Factory(),
     privateKey,
-    LogLevel.Error
+    LogLevel.Info
   ).then(() => {
     console.log("saito wasm lib initialized");
   });
@@ -89,7 +89,7 @@ async function initCLI() {
       setInterval(processBlocks, 1000);
     } else {
       console.info("Processing Complete");
-      process.exit(1);
+      process.exit(0);
     }
   }
 
