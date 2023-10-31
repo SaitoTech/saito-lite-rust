@@ -105,7 +105,7 @@
   }
 }
 
-@media screen and (max-width: 580px) {
+@media screen and (max-width: 600px) {
   .stun-appspace,
   .chat-settings-wrapper {
     padding: 1rem;
@@ -116,9 +116,23 @@
   }
   .stunx-appspace-splash {
     padding: 0;
+    height: unset;
   }
 
   .chat-settings-preview-message {
     width: 60%;
+  }
+
+  .stun-appspace-navigation {
+    gap: 2rem;
+    padding: 3rem;
+  }
+
+  .stunx-appspace-launch-call-btn {
+    margin: 2rem;
+  }
+
+  .stunx-appspace-actions {
+    margin-bottom: 0;
   }
 }
