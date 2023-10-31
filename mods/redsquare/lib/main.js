@@ -25,7 +25,7 @@ class RedSquareMain {
     // EVENTS
     ////////////////////
 
-    //    
+    //
     // HOME-RENDER-REQUEST render the main thread from scratch
     //
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = true) => {
@@ -40,36 +40,37 @@ class RedSquareMain {
       this.manager.render("tweets");
 
       if (scroll_to_top) {
-        this.scroll_depth = 0;  
+        this.scroll_depth = 0;
       }
-      
-      this.scrollFeed(this.scroll_depth, "smooth");
 
+      this.scrollFeed(this.scroll_depth, "smooth");
     });
 
-
     //
-    // POSTCACHE RENDER REQUEST removes "loading new tweets" if exists, then 
-    // re-renders if canRefreshPage() returns true. if we cannot refresh the 
+    // POSTCACHE RENDER REQUEST removes "loading new tweets" if exists, then
+    // re-renders if canRefreshPage() returns true. if we cannot refresh the
     // page we show a button that can be clicked to do so.
     //
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets = 0) => {
-
       console.log(`postcache, pulled ${num_tweets} new tweets`);
 
-for (let z = 0; z < this.mod.tweets.length; z++) {
-  let higher = this.mod.tweets[z].created_at;
-  if (this.mod.tweets[z].updated_at > higher) { higher = this.mod.tweets[z].updated_at; }
-  console.log(higher + " -- " + this.mod.tweets[z].text);
-}
+      for (let z = 0; z < this.mod.tweets.length; z++) {
+        let higher = this.mod.tweets[z].created_at;
+        if (this.mod.tweets[z].updated_at > higher) {
+          higher = this.mod.tweets[z].updated_at;
+        }
+        console.log(higher + " -- " + this.mod.tweets[z].text);
+      }
 
       //
       // remove "loading new tweets" notice...
       //
-      setTimeout(function() {
-        if (document.querySelector(".saito-cached-loader") != null &&
-          typeof (document.querySelector(".saito-cached-loader")) != 'undefined') {
-          document.querySelector(".saito-cached-loader").remove();          
+      setTimeout(function () {
+        if (
+          document.querySelector(".saito-cached-loader") != null &&
+          typeof document.querySelector(".saito-cached-loader") != "undefined"
+        ) {
+          document.querySelector(".saito-cached-loader").remove();
         }
       }, 1000);
 
@@ -78,13 +79,13 @@ for (let z = 0; z < this.mod.tweets.length; z++) {
       //
       if (num_tweets > 0) {
         if (this.canRefreshPage()) {
-console.log("postcache-render-request: can refresh the page!");
+          console.log("postcache-render-request: can refresh the page!");
           try {
             document.querySelector(".saito-main").innerHTML = "";
           } catch (err) {}
           this.manager.render("tweets");
         } else {
-console.log("postcache-render-request: CANNOT refresh the page!");
+          console.log("postcache-render-request: CANNOT refresh the page!");
           /*
             We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
             at the top of the feed and scroll up there
@@ -96,15 +97,12 @@ console.log("postcache-render-request: CANNOT refresh the page!");
       }
     });
 
-
-
-    this.app.connection.on("redsquare-insert-loading-message", ()=> {
+    this.app.connection.on("redsquare-insert-loading-message", () => {
       this.app.browser.prependElementToSelector(
         `<div class="saito-cached-loader">loading new tweets...</div>`,
         ".saito-main"
       );
-    })
-
+    });
 
     //
     // when someone clicks on a tweet
@@ -113,7 +111,7 @@ console.log("postcache-render-request: CANNOT refresh the page!");
       this.scrollFeed(0);
       document.querySelector(".saito-main").innerHTML = "";
       this.manager.renderTweet(tweet);
-      document.querySelectorAll(".optional-menu-item").forEach(item => {
+      document.querySelectorAll(".optional-menu-item").forEach((item) => {
         item.style.display = "none";
       });
       document.querySelector(".redsquare-menu-home").style.display = "flex";
@@ -128,21 +126,18 @@ console.log("postcache-render-request: CANNOT refresh the page!");
       this.mod.menu.incrementNotifications("notifications", 0);
       this.manager.render("notifications");
 
-      document.querySelectorAll(".optional-menu-item").forEach(item => {
+      document.querySelectorAll(".optional-menu-item").forEach((item) => {
         item.style.display = "none";
       });
 
       document.querySelector(".redsquare-menu-home").style.display = "flex";
-
     });
-
 
     //
     // Replace RS with a user's profile (collection of their tweets)
     //
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
-
-      // reset main 
+      // reset main
       document.querySelector(".saito-main").innerHTML = "";
 
       this.scrollFeed(0);
@@ -159,13 +154,11 @@ console.log("postcache-render-request: CANNOT refresh the page!");
 
       this.manager.renderProfile(publickey);
 
-      document.querySelectorAll(".optional-menu-item").forEach(item => {
+      document.querySelectorAll(".optional-menu-item").forEach((item) => {
         item.style.display = "none";
       });
 
       document.querySelector(".redsquare-menu-home").style.display = "flex";
-
-
     });
 
     this.app.connection.on("redsquare-home-loader-render-request", () => {
@@ -175,7 +168,6 @@ console.log("postcache-render-request: CANNOT refresh the page!");
     this.app.connection.on("redsquare-home-loader-hide-request", () => {
       this.manager.hideLoader();
     });
-
 
     //
     // This isn't triggered anywhere, but may be useful in the future,
@@ -208,7 +200,6 @@ console.log("postcache-render-request: CANNOT refresh the page!");
       }
     });
 
-
     // event for rendering back btn when viewing post
     this.app.connection.on("saito-main-render-back-btn", (callback = null) => {
       this.app.browser.prependElementToSelector(
@@ -227,7 +218,6 @@ console.log("postcache-render-request: CANNOT refresh the page!");
         }
       };
     });
-
   }
 
   render() {
@@ -238,19 +228,25 @@ console.log("postcache-render-request: CANNOT refresh the page!");
     }
     this.manager.render();
     this.attachEvents();
-    this.monitorUserInteraction();
+    
+    //
+    //We aren't checking idleTime right now, so let's not set 
+    //an unnecessary interval
+    //
+    //this.monitorUserInteraction();
   }
 
   attachEvents() {
-    let this_main = this;
+
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
     var stop = 0;
 
     scrollableElement.addEventListener("scroll", (e) => {
-
       this.hasScrolledDown = true;
+      this.idleTime = 0;
+
       if (window.innerHeight - 150 < sidebar.clientHeight) {
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
@@ -280,7 +276,6 @@ console.log("postcache-render-request: CANNOT refresh the page!");
         }
       }
       scrollTop = scrollableElement.scrollTop;
-      this_main.idleTime = 0;
     });
   }
 
@@ -315,41 +310,46 @@ console.log("postcache-render-request: CANNOT refresh the page!");
 
   //
   // we can refresh the page if we are at the top, and we have not
-  // clicked on an overlay such as leaving a response or trying to 
+  // clicked on an overlay such as leaving a response or trying to
   // load content.
   //
   canRefreshPage() {
+    console.log("^");
+    console.log("^");
+    console.log("^");
+    console.log("^ canRefreshPage ");
 
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("^ canRefreshPage ");
+    //
+    // no if we have scrolled down
+    //
+    if (this.hasScrolledDown) {
+      return 0;
+    }
 
-    try {
+    //
+    // Don't insert new tweets if looking at a tweet or profile
+    //
+    console.log("Tweet manager: ", this.manager.mode);
+    if (this.manager.mode !== "tweets") {
+      return 0;
+    }
 
-      //
-      // no if we have scrolled down
-      //
-      if (this.hasScrolledDown == true) { return 0; }
+    //
+    // yes if still at top
+    //
+    if (window?.pageYOffset == 0 && document?.body?.scrollTop == 0) {
+      return 1;
+    }
 
-      //
-      // yes if still at top
-      //
-      if (window.pageYOffset == 0 && document.body.scrollTop == 0) {
-	return 1;
-      }
-    } catch (err) {}
+    //if (this.idleTime >= 10) {
+    //  return 1;
+    //}
 
     //
     // no by default
     //
     return 0;
 
-    //if (this.idleTime >= 10) {
-    //  return true;
-    //}
-
-    return false;
   }
 }
 
