@@ -59,6 +59,9 @@ async function initCLI() {
     case "blocks.tx":
       readBlocksTransactions(process.argv[3]);
       break;
+    case "convert":
+      convertBlock(process.argv[3]);
+      break;
     case "help":
       printHelp();
       break;
@@ -76,7 +79,7 @@ async function initCLI() {
         if (file !== "empty") {
           app.storage.loadBlockByFilename(dir + file).then((block) => {
             let json_block = inflateBlock(block);
-            console.log(dir + file);
+            // console.log(dir + file);
             console.log(JSON.stringify(json_block, null, 2));
           });
         }
@@ -93,7 +96,7 @@ async function initCLI() {
         if (file !== "empty") {
           app.storage.loadBlockByFilename(dir + file).then((block) => {
             let json_block = inflateBlock(block);
-            console.log(dir + file + " --- TXS: " + block.transactions.length);
+            // console.log(dir + file + " --- TXS: " + block.transactions.length);
             console.log(JSON.stringify(json_block.transactions, null, 2));
           });
         }
@@ -106,18 +109,26 @@ async function initCLI() {
   function readBlock(filename) {
     app.storage.loadBlockFromDisk(filename).then((block) => {
       let json_block = inflateBlock(block);
-      console.log(filename);
+      // console.log(filename);
       console.log(JSON.stringify(json_block, null, 2));
     });
   }
+
   function readBlockTransactions(filename) {
     app.storage.loadBlockFromDisk(filename).then((block) => {
       let json_transaction = inflateTransaction(block);
-      console.log(filename);
+      // console.log(filename);
       console.log(JSON.stringify(json_transaction, null, 2));
     });
   }
 
+  function convertBlock(filename) {
+    const files = fs;
+    app.storage.loadBlockFromDisk(filename).then((block) => {
+      let json_block = inflateBlock(block);
+      fs.writeJSON(json_block.timestamp + "-" + json_block.hash + ".json", json_block);
+    });
+  };
 
   function printHelp() {
     let help = `
@@ -143,6 +154,7 @@ async function initCLI() {
     console.log("Network Shutdown");
     process.exit(0);
   });
+
 
   //
   // 
