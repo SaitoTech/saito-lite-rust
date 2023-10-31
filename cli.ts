@@ -60,7 +60,7 @@ async function initCLI() {
       readBlocksTransactions(process.argv[3]);
       break;
     case "convert":
-      convertBlock(process.argv[3]);
+      convert(process.argv[3]);
       break;
     case "help":
       printHelp();
