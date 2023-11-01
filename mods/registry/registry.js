@@ -645,7 +645,6 @@ class Registry extends ModTemplate {
               return 1;
             }
           });
-          return 0;
         }
       }
 
@@ -660,6 +659,7 @@ class Registry extends ModTemplate {
       return 1;
     }
   
+    return 0;
   }
 
   async checkIdentifierInDatabase(identifier, mycallback = null) {
