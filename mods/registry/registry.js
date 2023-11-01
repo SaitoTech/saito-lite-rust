@@ -328,8 +328,7 @@ class Registry extends ModTemplate {
 
         this.queryKeys(peer, [this.publicKey], function (identifiers) {
           console.log(
-            "REGISTRY lookup: " + registry_self.publicKey + " in " + peer.publicKey,
-            "found: ",
+            `REGISTRY lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `,
             identifiers
           );
           for (let key in identifiers) {
@@ -387,12 +386,13 @@ class Registry extends ModTemplate {
     if (txmsg.request == "registry query") {
       if (txmsg.data.request === "registry query") {
         let keys = txmsg.data?.keys;
-        console.log("REGISTRY lookup: ", keys);
+        console.log("REGISTRY query lookup: ", keys);
         return this.fetchIdentifiersFromDatabase(keys, mycallback);
       }
 
       if (txmsg.data.request === "registry namecheck") {
         let identifier = txmsg.data?.identifier;
+        console.log("REGISTRY check if identifer is registered: ", identifier);
         return this.checkIdentifierInDatabase(identifier, mycallback);
       }
     }
@@ -515,7 +515,7 @@ class Registry extends ModTemplate {
 
             if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
               if (this.publicKey != this.registry_publickey) {
-                // servers update database
+                /* servers update database
                 if (!this.app.BROWSER) {
                   let res = await this.addRecord(
                     identifier,
@@ -528,7 +528,7 @@ class Registry extends ModTemplate {
                     signer,
                     1
                   );
-                }
+                }*/
 
                 if (tx.isTo(this.publicKey)) {
                   this.app.keychain.addKey(tx.to[0].publicKey, {
