@@ -79,14 +79,12 @@ class Registry extends ModTemplate {
 
       this.fetchManyIdentifiers(unidentified_keys, (answer) => {
         //
-        // This runs in the browser
+        // This callback is run in the browser
         // 
         console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
         Object.entries(answer).forEach(([key, value]) => {
           console.log(key, value);
           if (value !== this.publicKey) {
-            this.cached_keys[key] = value;
-
             //
             // if this is a key that is stored in our keychain, then we want
             // to update the cached value that we have stored there as well
@@ -108,6 +106,8 @@ class Registry extends ModTemplate {
             this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
           }
         }
+
+        console.log(this.cached_keys);
       });
     });
 
@@ -199,6 +199,9 @@ class Registry extends ModTemplate {
 
     console.log("REGISTRY: fetchManyIdentifiers --> queryKeys");
     this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
+      //
+      // This callback is executed in the browser
+      // 
       console.log("REGISTRY: Top level queryKeys callback (fetchManyIdentifiers)");
       console.log(
         "REGISTRY Missing: ",
@@ -615,6 +618,10 @@ class Registry extends ModTemplate {
       }
     }
 
+    const nested_callback = (pass) => {
+      mycallback(pass);
+    }
+
     console.log("this REGISTRY found", found_keys, "but not", missing_keys);
 
     //
@@ -632,16 +639,23 @@ class Registry extends ModTemplate {
           has_peer = true;
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, (res) => {
-            console.log("Inside nested query keys callback");
+
+            console.log("REGISTRY: We have results from the DNS");
+            //
+            // This is run by the main service node
+            //
+
             for (let key in res) {
               if (res[key] !== key) {
                 registry_self.cached_keys[key] = res[key];
                 new_keys[key] = res[key];
               }
             }
+
             if (mycallback) {
               console.log("REGISTRY: run nested DB callback on found keys", new_keys);
               mycallback(new_keys);
+              nested_callback(new_keys);
               return 1;
             }
           });
@@ -654,6 +668,9 @@ class Registry extends ModTemplate {
     }
     
     if (mycallback && found_check.length > 0) {
+      //
+      // This is run by either the main service node or the proper registry node
+      // 
       console.log("REGISTRY: run DB callback on found keys", found_keys);
       mycallback(found_keys);
       return 1;
