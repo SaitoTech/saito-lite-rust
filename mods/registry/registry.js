@@ -398,13 +398,13 @@ class Registry extends ModTemplate {
       if (txmsg.data.request === "registry query") {
         let keys = txmsg.data?.keys;
         console.log("REGISTRY query lookup: ", keys);
-        return this.fetchIdentifiersFromDatabase(keys, mycallback);
+        this.fetchIdentifiersFromDatabase(keys, mycallback);
       }
 
       if (txmsg.data.request === "registry namecheck") {
         let identifier = txmsg.data?.identifier;
         console.log("REGISTRY check if identifer is registered: ", identifier);
-        return this.checkIdentifierInDatabase(identifier, mycallback);
+        this.checkIdentifierInDatabase(identifier, mycallback);
       }
     }
 
@@ -618,10 +618,6 @@ class Registry extends ModTemplate {
       }
     }
 
-    const nested_callback = (pass) => {
-      mycallback(pass);
-    }
-
     console.log("this REGISTRY found", found_keys, "but not", missing_keys);
 
     //
@@ -655,8 +651,6 @@ class Registry extends ModTemplate {
             if (mycallback) {
               console.log("REGISTRY: run nested DB callback on found keys", new_keys);
               mycallback(new_keys);
-              nested_callback(new_keys);
-              return 1;
             }
           });
         }
@@ -673,10 +667,8 @@ class Registry extends ModTemplate {
       // 
       console.log("REGISTRY: run DB callback on found keys", found_keys);
       mycallback(found_keys);
-      return 1;
     }
   
-    return 0;
   }
 
   async checkIdentifierInDatabase(identifier, mycallback = null) {
