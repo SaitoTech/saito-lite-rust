@@ -78,8 +78,12 @@ class Registry extends ModTemplate {
       }
 
       this.fetchManyIdentifiers(unidentified_keys, (answer) => {
+        //
+        // This runs in the browser
+        // 
         console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
         Object.entries(answer).forEach(([key, value]) => {
+          console.log(key, value);
           if (value !== this.publicKey) {
             this.cached_keys[key] = value;
 
@@ -193,6 +197,7 @@ class Registry extends ModTemplate {
       return 1;
     }
 
+    console.log("REGISTRY: fetchManyIdentifiers --> queryKeys");
     this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
       console.log("REGISTRY: Top level queryKeys callback (fetchManyIdentifiers)");
       console.log(
@@ -623,6 +628,7 @@ class Registry extends ModTemplate {
       //
       for (let i = 0; i < this.peers.length; i++) {
         if (this.peers[i].publicKey == this.registry_publickey) {
+          let new_keys = {};
           has_peer = true;
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, (res) => {
@@ -630,12 +636,12 @@ class Registry extends ModTemplate {
             for (let key in res) {
               if (res[key] !== key) {
                 registry_self.cached_keys[key] = res[key];
-                found_keys[key] = res[key];
+                new_keys[key] = res[key];
               }
             }
             if (mycallback) {
-              console.log("REGISTRY: run nested callback on found keys", found_keys);
-              mycallback(found_keys);
+              console.log("REGISTRY: run nested DB callback on found keys", new_keys);
+              mycallback(new_keys);
               return 1;
             }
           });
@@ -646,13 +652,14 @@ class Registry extends ModTemplate {
       if (!has_peer) {
         console.log("REGISTRY: Not a peer with the central DNS");
       }
-    }else{
-      if (mycallback) {
-        console.log("REGISTRY: run callback on found keys", found_keys);
-        mycallback(found_keys);
-        return 1;
-      }
     }
+    
+    if (mycallback && found_check.length > 0) {
+      console.log("REGISTRY: run DB callback on found keys", found_keys);
+      mycallback(found_keys);
+      return 1;
+    }
+  
   }
 
   async checkIdentifierInDatabase(identifier, mycallback = null) {
