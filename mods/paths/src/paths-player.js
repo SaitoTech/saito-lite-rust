@@ -60,8 +60,162 @@
   }
 
   playerPlayCombat(faction) {
-    alert("player play combat...");
+
+    let paths_self = this;
+    let options = this.returnSpacesWithFilter(
+      (key) => {
+	if (this.game.spaces[key].units.length > 0) {
+	  if (this.returnPowerOfUnit(this.game.spaces[key].units[0]) != faction) {
+  	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
+	      let n = this.game.spaces[key].neighbours[i];
+	      if (this.game.spaces[n].activated_for_combat == 1) { return 1; }
+	    }
+	  }
+	}
+        return 0;
+      }
+    );
+
+
+    let mainInterface = function(options, mainInterface, attackInterface) {
+
+      //
+      // sometimes this ends
+      //
+      if (options.length == 0) {
+	paths_self.updateStatus("combat finished...");
+	paths_self.endTurn();
+	return;
+      }
+
+      //
+      // sanity check options still valid
+      //
+      let units_to_attack = 0;
+      for (let i = 0; i < options.length; i++) {
+	let s = options[i];
+	for (let z = 0; z < paths_self.game.spaces[options[i]].units.length; z++) {
+	  if (paths_self.game.spaces[options[i]].units[z].attacked != 1) {
+	    units_to_attack++;
+	  }
+	}
+      }
+
+      //
+      // exit if nothing is left to attack with
+      //
+      if (units_to_attack == 0) {
+	//
+	// nothing left
+	//
+	paths_self.removeSelectable();
+	paths_self.updateStatus("acknowledge...");
+	paths_self.endTurn();
+      }
+
+      //
+      // select space to attack
+      //
+      paths_self.playerSelectSpaceWithFilter(
+	"Select Target for Attack: ",
+	(key) => {
+	  if (paths_self.game.spaces[key].units.length > 0) {
+	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
+  	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
+	        let n = paths_self.game.spaces[key].neighbours[i];
+	        if (paths_self.game.spaces[n].activated_for_combat == 1) { return 1; }
+	      }
+	    }
+            return 0;
+	  }
+	},
+	(key) => {
+
+	  if (key === "skip") {
+alert("trying to SKIP the attack stage...");
+	  }
+	
+	  paths_self.removeSelectable();
+	  attackInterface(key, options, [], mainInterface, attackInterface);
+	},
+	null,
+	true,
+	[{ key : "skip" , value : "finish attack" }],
+      )
+    }
+
+    let attackInterface = function(key, options, selected, mainInterface, attackInterface) {
+
+      let units = [];
+      let original_key = key;
+
+      for (let z = 0; z < paths_self.game.spaces[key].neighbours.length; z++) {
+	let n = paths_self.game.spaces[key].neighbours[z];
+	if (paths_self.game.spaces[n].activated_for_combat == 1) {
+	  for (let k = 0; k < paths_self.game.spaces[n].units.length; k++) {
+	    let u = paths_self.game.spaces[n].units[k];
+	    if (u.attacked != 1) {
+	       units.push({ key : key , unit_sourcekey: n , unit_idx : k });
+	    }
+	  }
+	}
+      }
+      units.push({ key : "skip" , unit_idx : "skip" });
+      paths_self.playerSelectOptionWithFilter(
+	"Which Units Participate in Attack?",
+	units,
+	(idx) => {
+	  if (idx.key == "skip") {
+	    return `<li class="option" id="skip">finished selecting</li>`;
+	  }
+	  let unit = paths_self.game.spaces[idx.unit_sourcekey].units[idx.unit_idx];
+	  let already_selected = false;
+	  for (let z = 0; z < selected.length; z++) {
+	     if (JSON.stringify(idx) == selected[z]) { already_selected = true; }
+	  }
+	  if (already_selected) {
+  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey} ***</li>`;
+	  } else {
+  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey}</li>`;
+	  }
+	},
+	(idx) => {
+
+	  //
+	  // maybe we are done!
+	  //
+	  if (idx === "skip") {
+	    alert("launching or skipping attack: " + JSON.stringify(selected));
+	    return;
+	  }
+
+	  //
+	  // or our JSON object
+	  //
+	  idx = JSON.parse(unescape(idx));
+
+	  let key = idx.key;
+	  let unit_sourcekey = idx.unit_sourcekey;
+	  let unit_idx = idx.unit_idx;
+
+	  if (selected.includes(JSON.stringify(idx))) {
+	    selected.splice(selected.indexOf(JSON.stringify(idx)), 1);
+	  } else {
+	    selected.push(JSON.stringify(idx));
+	  }
+
+
+          attackInterface(original_key, options, selected, mainInterface, attackInterface);
+
+	},
+        false
+      );
+    }
+
+    mainInterface(options, mainInterface, attackInterface);
+
   }
+
 
   playerPlayMovement(faction) {
 
@@ -124,7 +278,6 @@
 	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
 	    paths_self.game.spaces[key].units[z].moved = 0;
 	  }
-	  paths_self.game.spaces[key].activated_for_movement = 0;
 	  paths_self.removeSelectable();
 	  moveInterface(key, options, mainInterface, moveInterface, unitActionInterface);
 	},
@@ -145,12 +298,14 @@
       paths_self.attachCardboxEvents((action) => {
 
         if (action === "move") {
-
-console.log("movement limit: " + unit.movement);
-
-	  let spaces_within_hops = paths_self.returnSpacesWithinHops(key, unit.movement);
-
-console.log("SPACES WITHIN HOPS: " + JSON.stringify(spaces_within_hops));
+	  let spaces_within_hops = paths_self.returnSpacesWithinHops(key, unit.movement, (spacekey) => {
+	    if (paths_self.game.spaces[spacekey].units.length > 0) {
+	      if (paths_self.returnPowerOfUnit(paths_self.game.spaces[spacekey].units[0]) != faction) { 
+		return 0; 
+	      }
+	    }
+	    return 1;
+	  });
 
 	  paths_self.playerSelectSpaceWithFilter(
 	    `Select Destination for ${unit.name}`,
@@ -283,7 +438,9 @@ console.log("SPACES WITHIN HOPS: " + JSON.stringify(spaces_within_hops));
 	    if (space.activated_for_combat == 1) { return 0; }
 	    if (space.activated_for_movement == 1) { return 0; }
 	    for (let i = 0; i < space.units.length; i++) {
-	      return 1;
+	      if (this.returnPowerOfUnit(space.units[i]) === faction) {
+	        return 1;
+	      }
 	    }
 	    return 0;
 	  },
@@ -318,7 +475,9 @@ console.log("SPACES WITHIN HOPS: " + JSON.stringify(spaces_within_hops));
 	    if (space.activated_for_movement == 1) { return 0; }
 	    if (space.activated_for_combat == 1) { return 0; }
 	    for (let i = 0; i < space.units.length; i++) {
-	      return 1;
+	      if (this.returnPowerOfUnit(space.units[i]) === faction) {
+	        return 1;
+	      }
 	    }
 	    return 0;
 	  },
@@ -390,7 +549,7 @@ console.log("SPACES WITHIN HOPS: " + JSON.stringify(spaces_within_hops));
 
 
 
-  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false, extra_options=[]) {
 
     let paths_self = this;
     let callback_run = false;
@@ -436,6 +595,9 @@ console.log("SPACES WITHIN HOPS: " + JSON.stringify(spaces_within_hops));
     }
     if (cancel_func != null) {
       html += '<li class="option" id="cancel">cancel</li>';
+    }
+    if (extra_options.length > 0) {
+      for (let z = 0; z < extra_options.length; z++) { html += `<li class="option ${extra_options[z].key}" id="${extra_options[z].key}">${extra_options[z].value}</li>`; }
     }
     html += '</ul>';
 

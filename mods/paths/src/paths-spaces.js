@@ -79,7 +79,7 @@
     return count;
   }
 
-  returnSpacesWithinHops(source, limit=0) {
+  returnSpacesWithinHops(source, limit=0, passthrough_func=null) {
 
     let paths_self = this;
 
@@ -96,28 +96,38 @@
       //
       //
       for (let i = 0; i < news.length; i++) {
-        for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
-          let n = paths_self.game.spaces[news[i]].neighbours[z];
-          if (!old.includes(n)) {
-            if (!news.includes(n)) {
-              if (!newer.includes(n)) {
-                if (n !== source.key) {
-	          newer.push(n);
+
+	let passthrough = true;
+	if (passthrough_func != null) { if (!passthrough_func(news[i])) { passthrough = false; } } 
+
+	//
+	// don't add anything that isn't passthrough, and don't process any of its
+	// neighbours since we cannot route through it.
+	//
+	if (passthrough) {
+
+          for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
+            let n = paths_self.game.spaces[news[i]].neighbours[z];
+            if (!old.includes(n)) {
+              if (!news.includes(n)) {
+                if (!newer.includes(n)) {
+                  if (n !== source.key) {
+	            newer.push(n);
+	          }
 	        }
 	      }
 	    }
-	  }
-        }
-      }
+          }
 
-      if (hop != 1) {
-        for (let i = 0; i < news.length; i++) {
-	  if (!old.includes(news[i])) {
-	    if (news[i] !== source.key) {
-	      old.push(news[i]);
-	    }
-  	  }
+          if (hop != 1) {
+	    if (!old.includes(news[i])) {
+	      if (news[i] !== source.key) {
+	        old.push(news[i]);
+	      }
+            }
+          }
         }
+
       }
 
       if (hop < limit) {
@@ -135,7 +145,6 @@
   returnHopsToDestination(source, destination, limit=0) {
     try { if (this.game.spaces[source]) { source = this.game.spaces[source]; } } catch (err) {}
     try { if (this.game.spaces[destination]) { destination = this.game.spaces[destination]; } } catch (err) {}
-console.log("RETURN HOPS TO DESTINATION: " + source.key + " -- " + destination.key + " -- limit: " + limit);
     return this.returnHopsBetweenSpacesWithFilter(source, limit=0, function(spacekey) {
       if (spacekey === destination.key) { return 1; }
       return 0;  
@@ -161,12 +170,11 @@ console.log("RETURN HOPS TO DESTINATION: " + source.key + " -- " + destination.k
       for (let i = 0; i < sources.length; i++) {
 
         if (!map[sources[i]]) {
-console.log("examining 1: " + sources[i]);
 
 	  for (let z = 0; z < paths_self.game.spaces[sources[i]].neighbours.length; z++) {
-console.log("examining 2: " + paths_self.game.spaces[sources[i]].neighbours[z]);
 	    let sourcekey = paths_self.game.spaces[sources[i]].neighbours[z];
 	    if (!map[sourcekey]) {
+
 	      //
 	      // if we have a hit, it's this many hops!
 	      //

@@ -41,6 +41,11 @@ this.updateLog(`###############`);
             this.resetPlayerRound((i+1));
           }
 
+	  //
+	  // we have reset variables, so redisplay
+	  //
+	  this.displayBoard();
+
           this.game.queue.push("draw_strategy_card_phase");
           this.game.queue.push("replacement_phase");
           this.game.queue.push("war_status_phase");
@@ -48,7 +53,6 @@ this.updateLog(`###############`);
           this.game.queue.push("attrition_phase");
           this.game.queue.push("action_phase");
           this.game.queue.push("mandated_offensive_phase");
-
 	}
 
  	if (mv[0] == "draw_strategy_card_phase") {
@@ -393,6 +397,17 @@ alert("entrench here!");
 
 	  if (this.game.player != player_to_ignore) {
 	    this.moveUnit(sourcekey, sourceidx, destinationkey);
+	  }
+
+	  let deactivate_for_movement = true;
+          for (let z = 0; z < this.game.spaces[sourcekey].units.length; z++) {
+            if (this.game.spaces[sourcekey].units[z].moved == 0) {
+	      deactivate_for_movement = false;
+	    }
+          }
+	  if (deactivate_for_movement) {
+            this.game.spaces[sourcekey].activated_for_movement = 0;
+	    this.displaySpace(sourcekey);
 	  }
 
 	  this.game.queue.splice(qe, 1);
