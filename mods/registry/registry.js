@@ -611,7 +611,8 @@ class Registry extends ModTemplate {
     // Fallback because browsers don't automatically have DNS as a peer
     //
     if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
-      console.log("this REGISTRY didn't find keys");
+      console.log("this REGISTRY found", found_keys, "but not", missing_keys);
+
       let has_peer = false;
       //
       // if we were asked about any missing keys, ask our parent server
