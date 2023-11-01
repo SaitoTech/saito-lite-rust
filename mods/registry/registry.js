@@ -304,7 +304,7 @@ class Registry extends ModTemplate {
     };
 
     console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
-    this.app.network.sendRequestAsTransaction("registry query", data, mycallback, peer.peerIndex);
+    return this.app.network.sendRequestAsTransaction("registry query", data, mycallback, peer.peerIndex);
   }
 
   onPeerServiceUp(app, peer, service = {}) {
@@ -634,7 +634,7 @@ class Registry extends ModTemplate {
         if (this.peers[i].publicKey == this.registry_publickey) {
           has_peer = true;
           // ask the parent for the missing values, cache results
-          this.queryKeys(this.peers[i], missing_keys, (res) => {
+          return this.queryKeys(this.peers[i], missing_keys, (res) => {
 
             console.log("REGISTRY: We have results from the DNS");
             //
@@ -660,6 +660,10 @@ class Registry extends ModTemplate {
       if (!has_peer) {
         console.log("REGISTRY: Not a peer with the central DNS");
       }
+
+      //No peer found...
+      return 0;
+
     }else if (mycallback && found_check.length > 0) {
       //
       // This is run by either the main service node or the proper registry node
@@ -669,7 +673,6 @@ class Registry extends ModTemplate {
       return 1;
     }
   
-    return 0;
   }
 
   async checkIdentifierInDatabase(identifier, mycallback = null) {
