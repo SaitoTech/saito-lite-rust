@@ -78,6 +78,7 @@ class Registry extends ModTemplate {
       }
 
       this.fetchManyIdentifiers(unidentified_keys, (answer) => {
+        console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
         Object.entries(answer).forEach(([key, value]) => {
           if (value !== this.publicKey) {
             this.cached_keys[key] = value;
@@ -192,7 +193,7 @@ class Registry extends ModTemplate {
       return 1;
     }
 
-    this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
+    this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
       console.log("REGISTRY: Top level queryKeys callback (fetchManyIdentifiers)");
       console.log(
         "REGISTRY Missing: ",
@@ -634,7 +635,6 @@ class Registry extends ModTemplate {
             }
             if (mycallback) {
               console.log("REGISTRY: run nested callback on found keys", found_keys);
-              console.log(mycallback);
               mycallback(found_keys);
               return 1;
             }
