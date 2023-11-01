@@ -63,7 +63,9 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
 
     ${
       mod.browser_active
-        ? ""
+        ? `<div class="maximizer">
+      <i class="fa fa-window-maximize" aria-hidden="true"></i>
+    </div>`
         : `<div class="minimizer">
       <i class=" fas fa-caret-down"></i>
     </div>`
