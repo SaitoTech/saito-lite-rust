@@ -66,7 +66,7 @@ class Registry extends ModTemplate {
             delete this.cached_keys[i];
           }
         }
-        console.log("REGISTRY: new cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
+        console.log("REGISTRY: reset cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
       }
 
       for (let i = 0; i < keys.length; i++) {
@@ -81,9 +81,8 @@ class Registry extends ModTemplate {
         //
         // This callback is run in the browser
         // 
-        console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
+        //console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
         Object.entries(answer).forEach(([key, value]) => {
-          console.log(key, value);
           if (value !== this.publicKey) {
             //
             // if this is a key that is stored in our keychain, then we want
@@ -106,8 +105,6 @@ class Registry extends ModTemplate {
             this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
           }
         }
-
-        console.log(this.cached_keys);
       });
     });
 
@@ -190,25 +187,15 @@ class Registry extends ModTemplate {
       }
     });
 
-    //console.log("REGISTRY Found in my keychain: ", found_keys);
-
     if (missing_keys.length == 0) {
       mycallback(found_keys);
       return 1;
     }
 
-    console.log("REGISTRY: fetchManyIdentifiers --> queryKeys");
     this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
       //
       // This callback is executed in the browser
       // 
-      console.log("REGISTRY: Top level queryKeys callback (fetchManyIdentifiers)");
-      console.log(
-        "REGISTRY Missing: ",
-        missing_keys,
-        `REGISTRY (${registry_self.peers[0].publicKey}) found: `,
-        identifiers
-      );
       for (let key in identifiers) {
         registry_self.cached_keys[key] = identifiers[key];
         found_keys[key] = identifiers[key];
@@ -303,7 +290,7 @@ class Registry extends ModTemplate {
       keys: keys,
     };
 
-    console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
+    //console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
     return this.app.network.sendRequestAsTransaction("registry query", data, mycallback, peer.peerIndex);
   }
 
@@ -397,13 +384,13 @@ class Registry extends ModTemplate {
     if (txmsg.request == "registry query") {
       if (txmsg.data.request === "registry query") {
         let keys = txmsg.data?.keys;
-        console.log("REGISTRY query lookup: ", keys);
+        //console.log("REGISTRY query lookup: ", keys);
         return this.fetchIdentifiersFromDatabase(keys, mycallback);
       }
 
       if (txmsg.data.request === "registry namecheck") {
         let identifier = txmsg.data?.identifier;
-        console.log("REGISTRY check if identifer is registered: ", identifier);
+        //console.log("REGISTRY check if identifer is registered: ", identifier);
         return this.checkIdentifierInDatabase(identifier, mycallback);
       }
     }
@@ -526,7 +513,7 @@ class Registry extends ModTemplate {
 
             if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
               if (this.publicKey != this.registry_publickey) {
-                /* servers update database
+                // servers update database
                 if (!this.app.BROWSER) {
                   let res = await this.addRecord(
                     identifier,
@@ -539,7 +526,7 @@ class Registry extends ModTemplate {
                     signer,
                     1
                   );
-                }*/
+                }
 
                 if (tx.isTo(this.publicKey)) {
                   this.app.keychain.addKey(tx.to[0].publicKey, {
@@ -592,7 +579,7 @@ class Registry extends ModTemplate {
     // check database if needed
     //
     if (keys.length > 0) {
-      console.log("REGISTRY: DB lookup");
+      //console.log("REGISTRY: DB lookup");
       const where_statement = `publickey in ("${keys.join('","')}")`;
       const sql = `SELECT * 
                    FROM records
@@ -618,8 +605,7 @@ class Registry extends ModTemplate {
       }
     }
 
-
-    console.log("this REGISTRY found", found_keys, "but not", missing_keys);
+    //console.log("this REGISTRY found", found_keys, "but not", missing_keys);
 
     //
     // Fallback because browsers don't automatically have DNS as a peer
@@ -636,11 +622,9 @@ class Registry extends ModTemplate {
           // ask the parent for the missing values, cache results
           return this.queryKeys(this.peers[i], missing_keys, (res) => {
 
-            console.log("REGISTRY: We have results from the DNS");
             //
             // This is run by the main service node
             //
-
             for (let key in res) {
               if (res[key] !== key) {
                 registry_self.cached_keys[key] = res[key];
@@ -649,7 +633,7 @@ class Registry extends ModTemplate {
             }
 
             if (mycallback) {
-              console.log("REGISTRY: run nested DB callback on found keys", found_keys);
+              //console.log("REGISTRY: run nested DB callback on found keys", found_keys);
               mycallback(found_keys);
               return 1;
             }
@@ -668,7 +652,7 @@ class Registry extends ModTemplate {
       //
       // This is run by either the main service node or the proper registry node
       // 
-      console.log("REGISTRY: run DB callback on found keys", found_keys);
+      //console.log("REGISTRY: run DB callback on found keys", found_keys);
       mycallback(found_keys);
       return 1;
     }
