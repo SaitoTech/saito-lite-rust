@@ -193,6 +193,7 @@ class Registry extends ModTemplate {
     }
 
     this.queryKeys(this.peers[0], missing_keys, function (identifiers) {
+      console.log("REGISTRY: Top level queryKeys callback (fetchManyIdentifiers)");
       console.log(
         "REGISTRY Missing: ",
         missing_keys,
@@ -581,6 +582,7 @@ class Registry extends ModTemplate {
     // check database if needed
     //
     if (keys.length > 0) {
+      console.log("REGISTRY: DB lookup");
       const where_statement = `publickey in ("${keys.join('","')}")`;
       const sql = `SELECT * 
                    FROM records
@@ -606,12 +608,12 @@ class Registry extends ModTemplate {
       }
     }
 
+    console.log("this REGISTRY found", found_keys, "but not", missing_keys);
 
     //
     // Fallback because browsers don't automatically have DNS as a peer
     //
     if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
-      console.log("this REGISTRY found", found_keys, "but not", missing_keys);
 
       let has_peer = false;
       //
@@ -622,6 +624,7 @@ class Registry extends ModTemplate {
           has_peer = true;
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, (res) => {
+            console.log("Inside nested query keys callback");
             for (let key in res) {
               if (res[key] !== key) {
                 registry_self.cached_keys[key] = res[key];
@@ -629,6 +632,7 @@ class Registry extends ModTemplate {
               }
             }
             if (mycallback) {
+              console.log("REGISTRY: run nested callback on found keys", found_keys);
               mycallback(found_keys);
               return 1;
             }
@@ -642,6 +646,7 @@ class Registry extends ModTemplate {
       }
     }else{
       if (mycallback) {
+        console.log("REGISTRY: run callback on found keys", found_keys);
         mycallback(found_keys);
         return 1;
       }
