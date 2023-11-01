@@ -398,13 +398,13 @@ class Registry extends ModTemplate {
       if (txmsg.data.request === "registry query") {
         let keys = txmsg.data?.keys;
         console.log("REGISTRY query lookup: ", keys);
-        this.fetchIdentifiersFromDatabase(keys, mycallback);
+        return this.fetchIdentifiersFromDatabase(keys, mycallback);
       }
 
       if (txmsg.data.request === "registry namecheck") {
         let identifier = txmsg.data?.identifier;
         console.log("REGISTRY check if identifer is registered: ", identifier);
-        this.checkIdentifierInDatabase(identifier, mycallback);
+        return this.checkIdentifierInDatabase(identifier, mycallback);
       }
     }
 
@@ -618,6 +618,7 @@ class Registry extends ModTemplate {
       }
     }
 
+
     console.log("this REGISTRY found", found_keys, "but not", missing_keys);
 
     //
@@ -631,7 +632,6 @@ class Registry extends ModTemplate {
       //
       for (let i = 0; i < this.peers.length; i++) {
         if (this.peers[i].publicKey == this.registry_publickey) {
-          let new_keys = {};
           has_peer = true;
           // ask the parent for the missing values, cache results
           this.queryKeys(this.peers[i], missing_keys, (res) => {
@@ -644,13 +644,14 @@ class Registry extends ModTemplate {
             for (let key in res) {
               if (res[key] !== key) {
                 registry_self.cached_keys[key] = res[key];
-                new_keys[key] = res[key];
+                found_keys[key] = res[key];
               }
             }
 
             if (mycallback) {
-              console.log("REGISTRY: run nested DB callback on found keys", new_keys);
-              mycallback(new_keys);
+              console.log("REGISTRY: run nested DB callback on found keys", found_keys);
+              mycallback(found_keys);
+              return 1;
             }
           });
         }
@@ -659,16 +660,16 @@ class Registry extends ModTemplate {
       if (!has_peer) {
         console.log("REGISTRY: Not a peer with the central DNS");
       }
-    }
-    
-    if (mycallback && found_check.length > 0) {
+    }else if (mycallback && found_check.length > 0) {
       //
       // This is run by either the main service node or the proper registry node
       // 
       console.log("REGISTRY: run DB callback on found keys", found_keys);
       mycallback(found_keys);
+      return 1;
     }
   
+    return 0;
   }
 
   async checkIdentifierInDatabase(identifier, mycallback = null) {
