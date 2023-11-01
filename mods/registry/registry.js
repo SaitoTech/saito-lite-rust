@@ -285,6 +285,7 @@ class Registry extends ModTemplate {
    */
   queryKeys(peer, keys, mycallback) {
     if (!peer?.peerIndex) {
+      console.log("No peer");
       return;
     }
 
@@ -293,7 +294,7 @@ class Registry extends ModTemplate {
       keys: keys,
     };
 
-    //console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
+    console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
     this.app.network.sendRequestAsTransaction("registry query", data, mycallback, peer.peerIndex);
   }
 
@@ -633,6 +634,7 @@ class Registry extends ModTemplate {
             }
             if (mycallback) {
               console.log("REGISTRY: run nested callback on found keys", found_keys);
+              console.log(mycallback);
               mycallback(found_keys);
               return 1;
             }
