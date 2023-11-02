@@ -435,16 +435,12 @@ class RedSquare extends ModTemplate {
       //
       await this.addPeer(peer, "tweets");
 
-setTimeout(() => {
-console.log("LOADING!");
       this.loadTweets('earlier', (txs) => {
-console.log("load tweets: earlier " + txs.length);
         this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
         if (txs.length > 0) {
-          //this.saveLocalTweets();
+          this.saveLocalTweets();
         }
       });
-}, 4000);
 
     }
 
