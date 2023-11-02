@@ -40,6 +40,7 @@ class Encrypt extends ModTemplate {
     app.connection.on("encrypt-key-exchange", (publicKey) => {
       console.log("initiating key exchange...");
       this.initiate_key_exchange(publicKey, 0);
+      salert("Requesting keys to establish an encrypted channel, please be patient as this may take some time");
     });
 
     return this;
