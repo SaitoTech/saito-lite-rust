@@ -121,7 +121,7 @@ class Archive extends ModTemplate {
         block_hash = blk.hash;
       }
 
-      this.saveTransaction(tx, { block_id, block_hash }, 1);
+      await this.saveTransaction(tx, { block_id, block_hash }, 1);
     }
   }
 
@@ -155,13 +155,13 @@ class Archive extends ModTemplate {
       newtx.deserialize_from_web(app, req.data.serial_transaction);
 
       if (req.data.request === "delete") {
-        this.deleteTransaction(newtx, req.data);
+        await this.deleteTransaction(newtx, req.data);
       }
       if (req.data.request === "save") {
-        this.saveTransaction(newtx, req.data);
+        await this.saveTransaction(newtx, req.data);
       }
       if (req.data.request === "update") {
-        this.updateTransaction(newtx, req.data);
+        await this.updateTransaction(newtx, req.data);
       }
 
       // archive returns 0 if callback not sent !
