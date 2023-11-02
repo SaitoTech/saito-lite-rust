@@ -2346,6 +2346,22 @@ alert("display detailed space!");
     this.displaySpace(spacekey);
   }
 
+  canSpaceFlank(spacekey) {
+    if (this.game.spaces[spacekey].units.length == 0) { return 0; }
+    let enemy_units = 0;
+    let faction = this.returnPowerOfUnit(this.game.spaces[spacekey].units[0]);
+    for (let z = 0; z < this.game.spaces[spacekey].neighbours.length; z++) {
+      let n = this.game.spaces[this.game.spaces[spacekey].neighbours[z]];
+      if (n.units > 0) {
+	if (this.returnPowerOfUnit(n.units[0]) != faction) {
+	  enemy_units++;
+	}
+      }
+    }
+    if (enemy_units == 1) { return 1; }
+    return 0;
+  }
+
   addTrench(spacekey, level=0) {
     if (level != 0) {
       this.game.spaces[spacekey].trench = level;
@@ -5150,6 +5166,7 @@ spaces['athens'] = {
       spaces[key].activated_for_movement = 0;
       spaces[key].activated_for_combat = 0;
       spaces[key].key = key;
+      spaces[key].type = "normal";
     }
 
     return spaces;
@@ -5489,7 +5506,12 @@ try {
 
 	if (mv[0] === "player_play_combat") {
 
-	  this.game.queue.splice(qe, 1);
+	  //
+	  // we do not splice, because combat involves multiple
+	  // returns to this, so we only want to clear this once
+	  // it is not possible to execute any more combat.
+	  //
+	  //this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
@@ -5512,6 +5534,257 @@ try {
 
 	}
 
+	if (mv[0] === "combat") {
+
+	  let key = mv[1];
+	  let selected = mv[2];
+
+	  this.game.state.combat = {};
+	  this.game.state.combat.key = key;
+	  this.game.state.combat.attacker = JSON.parse(selected);
+	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_spacekey].units[0]);
+
+	  //
+	  // remove this from the queue
+	  //
+	  this.game.queue.splice(qe, 1);
+
+//1. Designate the Combat --> already finished
+
+//2. Determine Combat Strengths
+
+	  let attacker_strength = 0;
+	  let defender_strength = 0;
+
+	  for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+	    defender_strength += this.game.spaces[key].units[i].combat;
+	  }
+
+	  for (let z = 0; z < this.game.state.combat.attacker.length; z++) {
+	    let obj = this.game.state.combat.attacker[z];
+	    attacker_strength += this.game.spaces[obj.unit_sourcekey].units[obj.unit_idx].combat;
+	  }
+
+	  this.game.state.combat.attacker_strength = attacker_strength;
+	  this.game.state.combat.defender_strength = defender_strength;
+
+	  //
+	  // now show overlay and 
+	  //
+	  this.game.queue.push("combat_determine_outcome");
+	  this.game.queue.push("combat_play_combat_cards");
+	  this.game.queue.push("combat_evaluate_flank_attack");
+	  this.game.queue.push("counter_or_acknowledge\tcombat_cards_trenches");
+
+
+//3. Play trench-negating Combat Cards
+//4. Attempt Flank Attack
+//5. Play Combat Cards
+//6. Determine DRM
+//7. Determine Fire Column
+//8. Determine Results
+//9. Take Losses
+//10. Determine Combat Winner
+//11. Defender Retreat
+//12. Attacker Advance
+
+alert("COMBAT: " + JSON.stringify(this.game.state.combat));
+
+	  this.combat_overlay.render();
+	  this.combat_overlay.pullHudOverOverlay();
+
+	  return 1;
+
+	}
+
+	if (mv[0] == "combat_play_combat_cards") {
+	}
+
+	if (mv[0] == "combat_determine_outcome") {
+
+	  //
+	  // rolls are either handled synchronously or in sequence
+	  //
+	  let attacker_drm = 0;
+	  let defender_drm = 0;
+	  let attacker_roll = 0;
+	  let defender_roll = 0;
+	  let attacker_modified_roll = 0;
+	  let defender_modified_roll = 0;
+	  let attacker_power = "allies";
+	  let defender_power = "central";
+
+	  let attacker_table = "corps";
+	  let defender_table = "corps";
+
+	  for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
+	    let unit = this.game.spaces[this.game.state.combat.key].units[i];
+	    if (this.returnPowerOfUnit(unit) == "allies") { attacker_power = "central"; defender_power = "allies"; } 
+	    if (unit.key.indexOf("army") > 0) { attacker_table = "army"; }
+	  }
+
+	  for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
+	    let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
+	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
+	  }
+
+	  attacker_roll = this.rollDice(6);
+	  defender_roll = this.rollDice(6);
+
+	  attacker_modified_roll = attacker_roll + attacker_drm;
+	  defender_modified_roll = defender_roll + defender_drm;
+	  
+	  if (attacker_modified_roll > 6) { attacker_modified_roll = 6; }
+	  if (defender_modified_roll > 6) { defender_modified_roll = 6; }
+	  if (attacker_modified_roll < 1) { attacker_modified_roll = 1; }
+	  if (defender_modified_roll < 1) { defender_modified_roll = 1; }
+
+	  this.game.state.combat.attacker_power = attacker_power;
+	  this.game.state.combat.defender_power = defender_power;
+	  this.game.state.combat.attacker_drm = attacker_drm;
+	  this.game.state.combat.defender_drm = defender_drm;
+	  this.game.state.combat.attacker_roll = attacker_drm;
+	  this.game.state.combat.defender_roll = defender_drm;
+	  this.game.state.combat.attacker_modified_roll = attacker_modified_roll;
+	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
+	  this.game.state.combat.attacker_loss_factor = 1;
+	  this.game.state.combat.defender_loss_factor = 1;
+
+	  if (this.game.state.combat.flank_attack == "attacker") {
+	    this.game.queue.push(`combat_assign_hits\tattacker`);
+	    this.game.queue.push(`combat_assign_hits\tdefender`);
+	  }
+	  if (this.game.state.combat.flank_attack == "attacker") {
+	    this.game.queue.push(`combat_assign_hits\tattacker`);
+	    this.game.queue.push(`combat_assign_hits\tdefender`);
+	  }
+	  //
+	  // defender applies losses first if not a flank attack
+	  //
+	  if (!this.game.state.combat.flank_attack) {
+	    this.game.queue.push(`combat_assign_hits\tattacker`);
+	    this.game.queue.push(`combat_assign_hits\tdefender`);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+
+	if (mv[0] === "combat_assign_hits") {
+
+	  let power = mv[1];
+	  let player = 1;
+	  let loss_factor = 1;
+
+	  if (power == "attacker") { 
+	    player = this.returnPlayerOfFaction(this.game.state.combat.attacker_power);
+	    loss_factor = this.game.state.combat.attacker_loss_factor;
+	  }
+	  if (power == "defender") {
+	    player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
+	    loss_factor = this.game.state.combat.defender_loss_factor;
+	  }
+
+	  alert(power + " assign losses of " + loss_number);
+
+	  this.game.queue.splice(qe, 1);
+	  return;
+
+	}
+
+
+	if (mv[0] === "combat_determine_winner") {
+
+	  if (this.game.state.combat.attacker_loss_factor > this.game.state.combat.defender_loss_factor) {
+	    // loser discards combat cards
+	  }
+	  if (this.game.state.combat.attacker_loss_factor > this.game.state.combat.defender_loss_factor) {
+	    // loser discards combat cards
+	  }
+	  if (this.game.state.combat.attacker_loss_factor == this.game.state.combat.defender_loss_factor) {
+	    // both players lose
+	  }
+
+console.log("handle defender retreat if attacker won and has any full strength units...");
+
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+
+
+	if (mv[0] == "combat_evaluate_flank_attack") {
+
+	  this.game.splice(qe, 1);
+
+	  let is_attacking_from_multiple_spaces = false;
+	  let defending_space_valid = false;
+
+	  let space = this.game.space[this.game.state.combat.key];
+
+	  //
+	  // if swamp or mountain return
+	  //
+	  if (space.terrain != "swamp" && space.terrain != "mountain") { return 1; }	  
+	  if (space.type == "fort") { return 1; }
+	  if (space.trench >= 1) { return 1; }
+
+	  if (this.game.player = this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
+	    this.playerPlayFlankAttack();
+	  } else {
+	    this.updateStatus("Opponent deciding whether to launch flanking attack");
+	  }  
+
+	  return 0;
+
+	}
+
+
+
+
+	if (mv[0] == "flank_attack_attempt") {
+
+	  let action = mv[1];
+	  let eligible_spaces = JSON.parse(mv[2]);
+	  let drm_modifiers = 0;
+          //
+          // +1 for every unit without another army adjacent to it
+          //
+          let flanking_spaces = [];
+
+          for (let i = 0; i < eligible_spaces.length; i++) {
+            if (i != action) {
+              if (!flanking_spaces.includes(eligible_spaces[i])) {
+                flanking_spaces.push(eligible_spaces[i]);
+                if (this.canSpaceFlank(eligible_spaces[i])) {
+                  drm_modifiers++;
+                }
+              }
+            }
+          }
+
+	  let roll = this.rollDice(6);
+	  this.updateLog("roll: " + roll + " (+"+drm_modifiers+")"); 
+
+	  if (roll > (3+drm_modifiers)) {
+	    this.game.state.combat.flank_attack = "attacker"; 
+	  } else {
+	    this.game.state.combat.flank_attack = "defender"; 
+	  }
+
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+        }
+
+
+	
 	if (mv[0] === "player_play_movement") {
 
 	  this.game.queue.splice(qe, 1);
@@ -5523,8 +5796,6 @@ try {
       	      return 0;
       	    }
     	  );
-
-console.log("how many spaces activated?" + options.length);
 
 	  if (options.length == 0) { return 1; }
 
@@ -5644,6 +5915,15 @@ alert("entrench here!");
 	}
 
 
+	if (mv[0] === "counter_or_acknowledge") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+
 
 	//
 	// objects and cards can add commands
@@ -5687,6 +5967,49 @@ alert("entrench here!");
   returnPlayerOfFaction(faction="") {
     if (faction == "central") { return 1; }
     return 2;
+  }
+
+  playerPlayFlankAttack() {
+
+    //
+    // it is possible to launch a flank attack if we want
+    //
+    let html = `<ul>`;
+    html    += `<li class="card" id="yes">flank attack</li>`;
+    html    += `<li class="card" id="no">normal attack</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Flank Attack?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "no") {
+	this.endTurn();
+      }
+
+      if (action === "yes") {
+
+        //
+        // select pinning unit
+        //
+        let html = `<ul>`;
+	let eligible_spaces = [];
+	for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
+	  let unit_spacekey = this.game.state.combat.attacker[i].unit_spacekey;
+	  if (!eligible_spaces.includes(unit_spacekey)) { eligible_spaces.push(unit_spacekey); }
+	}
+	for (let i = 0; i < eligible_spaces.length; i++) {
+          html    += `<li class="card" id="${i}">${eligible_spaces[i]}</li>`;
+	}
+        html    += `</ul>`;
+	
+        this.updateStatusWithOptions(`Select Unit to Pin Defender:`, html, true);
+        this.attachCardboxEvents((action) => {
+	  this.addMove(`flank_attack_attempt\t${action}\t${JSON.stringify(eligible_spaces)}`);
+	  this.endTurn();
+	});
+
+      }
+    });
   }
 
   playerPlayCard(faction, card) {
@@ -5755,6 +6078,7 @@ alert("entrench here!");
       //
       if (options.length == 0) {
 	paths_self.updateStatus("combat finished...");
+	paths_self.addMove("resolve\tplayer_play_combat");
 	paths_self.endTurn();
 	return;
       }
@@ -5781,6 +6105,7 @@ alert("entrench here!");
 	//
 	paths_self.removeSelectable();
 	paths_self.updateStatus("acknowledge...");
+	paths_self.addMove("resolve\tplayer_play_combat");
 	paths_self.endTurn();
       }
 
@@ -5804,6 +6129,10 @@ alert("entrench here!");
 
 	  if (key === "skip") {
 alert("trying to SKIP the attack stage...");
+	    paths_self.addMove("resolve\tplayer_play_combat");
+	    paths_self.removeSelectable();
+	    paths_self.endTurn();
+	    return;
 	  }
 	
 	  paths_self.removeSelectable();
@@ -5856,6 +6185,14 @@ alert("trying to SKIP the attack stage...");
 	  // maybe we are done!
 	  //
 	  if (idx === "skip") {
+	    let finished = false;
+	    if (selected.length > 0) {
+	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(selected)}`);
+	      paths_self.endTurn();
+	    } else {
+	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.endTurn();
+	    }
 	    alert("launching or skipping attack: " + JSON.stringify(selected));
 	    return;
 	  }

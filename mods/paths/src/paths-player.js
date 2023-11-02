@@ -18,6 +18,49 @@
     return 2;
   }
 
+  playerPlayFlankAttack() {
+
+    //
+    // it is possible to launch a flank attack if we want
+    //
+    let html = `<ul>`;
+    html    += `<li class="card" id="yes">flank attack</li>`;
+    html    += `<li class="card" id="no">normal attack</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Flank Attack?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "no") {
+	this.endTurn();
+      }
+
+      if (action === "yes") {
+
+        //
+        // select pinning unit
+        //
+        let html = `<ul>`;
+	let eligible_spaces = [];
+	for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
+	  let unit_spacekey = this.game.state.combat.attacker[i].unit_spacekey;
+	  if (!eligible_spaces.includes(unit_spacekey)) { eligible_spaces.push(unit_spacekey); }
+	}
+	for (let i = 0; i < eligible_spaces.length; i++) {
+          html    += `<li class="card" id="${i}">${eligible_spaces[i]}</li>`;
+	}
+        html    += `</ul>`;
+	
+        this.updateStatusWithOptions(`Select Unit to Pin Defender:`, html, true);
+        this.attachCardboxEvents((action) => {
+	  this.addMove(`flank_attack_attempt\t${action}\t${JSON.stringify(eligible_spaces)}`);
+	  this.endTurn();
+	});
+
+      }
+    });
+  }
+
   playerPlayCard(faction, card) {
 
     let c = this.deck[card];
@@ -84,6 +127,7 @@
       //
       if (options.length == 0) {
 	paths_self.updateStatus("combat finished...");
+	paths_self.addMove("resolve\tplayer_play_combat");
 	paths_self.endTurn();
 	return;
       }
@@ -110,6 +154,7 @@
 	//
 	paths_self.removeSelectable();
 	paths_self.updateStatus("acknowledge...");
+	paths_self.addMove("resolve\tplayer_play_combat");
 	paths_self.endTurn();
       }
 
@@ -133,6 +178,10 @@
 
 	  if (key === "skip") {
 alert("trying to SKIP the attack stage...");
+	    paths_self.addMove("resolve\tplayer_play_combat");
+	    paths_self.removeSelectable();
+	    paths_self.endTurn();
+	    return;
 	  }
 	
 	  paths_self.removeSelectable();
@@ -185,6 +234,14 @@ alert("trying to SKIP the attack stage...");
 	  // maybe we are done!
 	  //
 	  if (idx === "skip") {
+	    let finished = false;
+	    if (selected.length > 0) {
+	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(selected)}`);
+	      paths_self.endTurn();
+	    } else {
+	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.endTurn();
+	    }
 	    alert("launching or skipping attack: " + JSON.stringify(selected));
 	    return;
 	  }

@@ -78,6 +78,7 @@ class RedSquareMain {
       // check if we can refresh page (show tweets immediately) or show prompt / button
       //
       if (num_tweets > 0) {
+
         if (this.canRefreshPage()) {
           console.log("postcache-render-request: can refresh the page!");
           try {
@@ -92,7 +93,14 @@ class RedSquareMain {
           */
           if (document.querySelector(".saito-new-tweets")) {
             document.querySelector(".saito-new-tweets").style.display = "block";
-          }
+          } else {
+	    this.app.browser.prependElementToSelector(`<div class="saito-new-tweets" id="saito-new-tweets">load new tweets</div>`, ".saito-main");
+            document.querySelector(".saito-new-tweets").style.display = "block";
+	  }
+	  document.querySelector(".saito-new-tweets").onclick = (e) => {
+	    document.querySelector(".saito-main").innerHTML = "";
+	    this.manager.render("tweets");
+	  }
         }
       }
     });
