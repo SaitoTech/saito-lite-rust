@@ -131,7 +131,10 @@ class SettingsAppspace {
           "This will reset/nuke your account, do you wish to proceed?"
         );
         if (confirmation) {
-          app.wallet.onUpgrade("nuke");
+          await app.wallet.onUpgrade("nuke");
+          if (this.app.browser.browser_active == 1) {
+            window.location.reload();
+          }
         }
       };
 

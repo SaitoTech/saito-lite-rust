@@ -496,7 +496,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  onUpgrade(type, privatekey, walletfile) {
+  async onUpgrade(type, privatekey, walletfile) {
     if (type == 'nuke') {
       console.log("clearing localforage for redsquare //////");  
 
