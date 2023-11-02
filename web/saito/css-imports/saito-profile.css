@@ -28,11 +28,6 @@
   margin-left: 1.2rem;
 }
 
-.saito-follow-count {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-}
 
 .saito-username {
   font-size: 1.8rem;
@@ -42,14 +37,18 @@
 
 .saito-follow {
   font-size: 1.5rem;
+  color: var(--saito-font-color-light);
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.saito-follow-count{
   color: var(--saito-font-color-heavy);
   font-weight: bold;
 }
 
-.saito-follow span {
-  color: var(--saito-font-color-light);
-  font-weight: normal;
-}
 
 
 .saito-profile-options-row {
