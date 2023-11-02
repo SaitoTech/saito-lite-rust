@@ -106,7 +106,7 @@ async function init() {
       new WebMethods(saito),
       new Factory(),
       saito.options.wallet?.privateKey || "",
-      LogLevel.Warn
+      LogLevel.Debug
     );
   } catch (e) {
     console.error(e);
@@ -127,7 +127,7 @@ async function init() {
 }
 
 // init();
-window.onload = async function () {
+window.onload = async function() {
   try {
     await init();
   } catch (error) {

@@ -12,12 +12,13 @@ import CustomSharedMethods from "saito-js/lib/custom/custom_shared_methods";
 import { parse } from "url";
 import Peer from "../peer";
 import Transaction from "../transaction";
-import Factory from "../factory";
 import PeerServiceList from "saito-js/lib/peer_service_list";
 import Block from "../block";
 
 import fetch from "node-fetch";
 import { toBase58 } from "saito-js/lib/util";
+import { TransactionType } from "saito-js/lib/transaction";
+import { BlockType } from "saito-js/lib/block";
 
 const JSON = require("json-bigint");
 const expressApp = express();
@@ -539,16 +540,26 @@ class Server {
         return;
       }
 
-      if (!block.hasKeylistTxs(keylist)) {
+      if (block.block_type === BlockType.Full || !block.hasKeylistTxs(keylist)) {
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
         const liteblock = block.generateLiteBlock(keylist);
+
+        console.log(
+          `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
+        );
+        console.log(
+          "valid txs : " +
+            liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
+        );
         const buffer = Buffer.from(liteblock.serialize());
         res.end(buffer, "utf8");
         return;
       }
+
+      console.log("loading block from disk : " + bsh);
 
       let methods = new NodeSharedMethods(this.app);
       // TODO - load from disk to ensure we have txs -- slow.
@@ -573,6 +584,11 @@ class Server {
         // );
         console.log(
           `lite block fetch : block  = ${req.params.bhash} key = ${pkey} with txs : ${newblk.transactions.length}`
+        );
+        console.log(`liteblock : ${bsh} from disk txs count = : ${newblk.transactions.length}`);
+        console.log(
+          "valid txs : " +
+            newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
         );
 
         res.writeHead(200, {
