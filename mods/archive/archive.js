@@ -676,7 +676,7 @@ class Archive extends ModTemplate {
       return;
     }
 
-    let sql5 = "VACUUM archives";
+    let sql5 = "VACUUM";
     let params5 = {};
     await this.app.storage.executeDatabase(sql5, params5, "archive");
   }
