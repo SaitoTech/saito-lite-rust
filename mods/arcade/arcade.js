@@ -1042,11 +1042,7 @@ class Arcade extends ModTemplate {
       };
       await this.app.storage.executeDatabase(sql, params, "arcade");
 
-      await this.app.storage.saveTransaction(
-        tx,
-        { field1: txmsg.module + "_" + txmsg.game_id },
-        "localhost"
-      );
+      await this.app.storage.saveTransaction(tx, { field1: txmsg.module + "_" + txmsg.game_id }, "localhost");
     }
   }
 

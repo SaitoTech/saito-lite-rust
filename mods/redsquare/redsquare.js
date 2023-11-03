@@ -1213,7 +1213,7 @@ class RedSquare extends ModTemplate {
 
         await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
-          field3: this.publicKey,
+          field3: this.publicKey, /* Default field3 is tx.to, which should be me since my tweet was liked... */
         });
 
         //
