@@ -95,13 +95,13 @@ class Storage {
       if (peer === "localhost") {
         let archive_mod = this.app.modules.returnModule("Archive");
         if (archive_mod) {
-          return archive_mod.saveTransaction(tx, data);
+          return await archive_mod.saveTransaction(tx, data);
         }
       }
       if (peer != null) {
-        return this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
+        return await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       } else {
-        return this.app.network.sendRequestAsTransaction(message, data);
+        return await this.app.network.sendRequestAsTransaction(message, data);
       }
     } catch (error) {
       console.warn("failed saving tx : " + tx.signature);
@@ -124,13 +124,13 @@ class Storage {
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-        return archive_mod.updateTransaction(tx, obj);
+        return await archive_mod.updateTransaction(tx, obj);
       }
     } else {
       if (peer != null) {
-        return this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
+        return await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       } else {
-        return this.app.network.sendRequestAsTransaction(message, data);
+        return await this.app.network.sendRequestAsTransaction(message, data);
       }
     }
     return { err: "Save Transaction failed" };
