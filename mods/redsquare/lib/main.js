@@ -100,7 +100,7 @@ class RedSquareMain {
             Alternate button extracted from main.template.js
             <!--div id="show-new-tweets" class="saito-button-primary new-tweets-notification">New Posts Available</div-->
             */
-	    this.app.browser.prependElementToSelector(`<div class="saito-new-tweets" id="saito-new-tweets">load new tweets</div>`, ".saito-main");
+	    this.app.browser.prependElementToSelector(`<div class=" saito-button-secondary" id="saito-new-tweets">load new tweets</div>`, ".saito-main");
             document.querySelector(".saito-new-tweets").style.display = "block";
 	  }
 	  document.querySelector(".saito-new-tweets").onclick = (e) => {
