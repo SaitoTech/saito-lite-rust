@@ -123,7 +123,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
   isExistingFile(key: string): boolean {
     try {
-      let result = fs.statSync(key);
+      let result = fs.existsSync(key);
       return !!result;
     } catch (error) {
       console.error(error);
