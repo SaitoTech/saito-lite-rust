@@ -670,13 +670,16 @@ class Archive extends ModTemplate {
     params = { $ts: ts };
     await this.app.storage.executeDatabase(sql, params, "archive");
 
+    sql = `DELETE from archives WHERE tx = ""`;
+    await this.app.storage.executeDatabase(sql, {}, "archive");    
+
     x = Math.random();
     // 90% of prunings don't vacuum
     if (x < 0.9) {
       return;
     }
 
-    let sql5 = "VACUUM archives";
+    let sql5 = "VACUUM";
     let params5 = {};
     await this.app.storage.executeDatabase(sql5, params5, "archive");
   }
