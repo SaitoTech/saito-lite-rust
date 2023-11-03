@@ -179,6 +179,18 @@ class PathsOfGlory extends GameTemplate {
     this.hud.render();
     this.displayBoard();
 
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#HOPS: nantes to nevers " + this.returnHopsToDestination("nantes", "nevers"));
+
+
+
   }
 
 

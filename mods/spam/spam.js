@@ -27,6 +27,9 @@ class Spam extends ModTemplate {
     if (this.browser_active) {
       this.styles = ["/spam/style.css", "/saito/saito.css"];
     }
+    setInterval(() => {
+      this.nodeSpamLoop(app, this);
+    }, 13000);
   }
 
   async render() {
@@ -70,11 +73,17 @@ class Spam extends ModTemplate {
     };
   }
 
+  nodeSpamLoop(app, mod) {
+    console.info("Sending heartbeat spam tx: " + mod.loop_count);
+    mod.sendSpamTransaction(app, mod, { tx_num: mod.loop_count });
+    mod.loop_count++;
+  }
+
   changeLoopStatus() {
     let this_mod = this;
     if (this.loop_start == 1) {
       console.log("starting loop ..");
-      console.log("txs per second: " + 1000 / this_mod.period * this_mod.frequency);
+      console.log("txs per second: " + (1000 / this_mod.period) * this_mod.frequency);
 
       this.interval = setInterval(function () {
         document.querySelector(".spam-loop-count").innerHTML = this_mod.loop_count;
@@ -139,5 +148,3 @@ class Spam extends ModTemplate {
 }
 
 module.exports = Spam;
-
-

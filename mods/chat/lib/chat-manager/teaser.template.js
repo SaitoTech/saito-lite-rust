@@ -1,4 +1,4 @@
-module.exports = ChatTeaser = async (app, group) => {
+module.exports = ChatTeaser = (app, mod, group) => {
   let id = group.id;
 
   let last_msg = "<em>new chat</em>";
@@ -21,7 +21,7 @@ module.exports = ChatTeaser = async (app, group) => {
 
   if (group.members.length == 2) {
     for (let mem of group.members) {
-      if (mem !== (await app.wallet.getPublicKey())) {
+      if (mem !== mod.publicKey) {
         identicon_source = mem;
       }
     }

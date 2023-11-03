@@ -93,6 +93,7 @@ class Mods {
     }
     if (have_responded == false) {
       if (mycallback) {
+        console.log("Execute null callback on " + request);
         mycallback({});
       }
     }

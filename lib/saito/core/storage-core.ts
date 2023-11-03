@@ -83,21 +83,22 @@ class StorageCore extends Storage {
     return filename;
   }
 
-  // async loadBlockFromDisk(filename) {
-  //   try {
-  //     if (fs.existsSync(filename)) {
-  //       const buffer = fs.readFileSync(filename);
+  async loadBlockFromDisk(filename) {
+    try {
+      if (fs.existsSync(filename)) {
+        const data = fs.readFileSync(filename);
   //       const block = new Block(this.app);
-  //       block.deserialize(buffer);
+        const block = new Block();
+        block.deserialize(data);
   //       block.generateMetadata();
-  //       return block;
-  //     }
-  //   } catch (error) {
-  //     console.log("Error reading block from disk");
-  //     console.error(error);
-  //   }
-  //   return null;
-  // }
+        return block;
+      }
+    } catch (error) {
+      console.log("Error reading block from disk");
+      console.error(error);
+    }
+    return null;
+  }
 
   // async loadBlocksFromDisk(maxblocks = 0) {
   //   this.loading_active = true;
@@ -300,7 +301,8 @@ class StorageCore extends Storage {
             "genesis_timestamp":0,
             "lowest_acceptable_timestamp":0,
             "lowest_acceptable_block_hash":"0000000000000000000000000000000000000000000000000000000000000000",
-            "lowest_acceptable_block_id":0
+            "lowest_acceptable_block_id":0,
+            "fork_id":"0000000000000000000000000000000000000000000000000000000000000000",
           },
           "wallet": {
           }

@@ -78,11 +78,14 @@ class RedSquareMain {
       // check if we can refresh page (show tweets immediately) or show prompt / button
       //
       if (num_tweets > 0) {
+
         if (this.canRefreshPage()) {
           console.log("postcache-render-request: can refresh the page!");
           try {
             document.querySelector(".saito-main").innerHTML = "";
-          } catch (err) {}
+          } catch (err) {
+            console.errors(err);
+          }
           this.manager.render("tweets");
         } else {
           console.log("postcache-render-request: CANNOT refresh the page!");
@@ -92,7 +95,18 @@ class RedSquareMain {
           */
           if (document.querySelector(".saito-new-tweets")) {
             document.querySelector(".saito-new-tweets").style.display = "block";
-          }
+          } else {
+            /*
+            Alternate button extracted from main.template.js
+            <!--div id="show-new-tweets" class="saito-button-primary new-tweets-notification">New Posts Available</div-->
+            */
+	    this.app.browser.prependElementToSelector(`<div class=" saito-button-secondary" id="saito-new-tweets">load new tweets</div>`, ".saito-main");
+            document.querySelector(".saito-new-tweets").style.display = "block";
+	  }
+	  document.querySelector(".saito-new-tweets").onclick = (e) => {
+	    document.querySelector(".saito-main").innerHTML = "";
+	    this.manager.render("tweets");
+	  }
         }
       }
     });
@@ -314,10 +328,7 @@ class RedSquareMain {
   // load content.
   //
   canRefreshPage() {
-    console.log("^");
-    console.log("^");
-    console.log("^");
-    console.log("^ canRefreshPage ");
+    console.log("RS: canRefreshPage ");
 
     //
     // no if we have scrolled down

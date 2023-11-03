@@ -266,7 +266,7 @@ class Browser {
           e.stopImmediatePropagation();
 
           let userMenu = new UserMenu(app, publicKey);
-          userMenu.render(app);
+          userMenu.render();
         }
       },
       {

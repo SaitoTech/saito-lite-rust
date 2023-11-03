@@ -73,7 +73,7 @@ class Arcade extends ModTemplate {
   async initialize(app) {
     await super.initialize(app);
 
-    if (this.browser_active){
+    if (this.browser_active) {
       this.styles = ["/saito/saito.css", "/arcade/style.css"];
     }
 
@@ -131,10 +131,9 @@ class Arcade extends ModTemplate {
             //
             // and add to list of my games
             //
-            if (game.over == 0){
-              this.addGame(game_tx, "active");  
+            if (game.over == 0) {
+              this.addGame(game_tx, "active");
             }
-            
           }
         }
       }
@@ -151,7 +150,6 @@ class Arcade extends ModTemplate {
   }
 
   async createPseudoTransaction(game) {
-
     let game_tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
     if (game.players) {
@@ -288,7 +286,7 @@ class Arcade extends ModTemplate {
           console.log("Make it my game");
           //Mark myself as an invited guest
           //game.msg.options.desired_opponent_publickey = this.publicKey;
-          
+
           //Then we have to remove and readd the game so it goes under "mine"
           //arcade_self.removeGame(game.signature);
           //arcade_self.addGame(game, "private");
@@ -857,13 +855,16 @@ class Arcade extends ModTemplate {
 
         await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
       }
-    } else if (game.msg.options?.desired_opponent_publickey && tx.isFrom(game.msg.options.desired_opponent_publickey)) {
+    } else if (
+      game.msg.options?.desired_opponent_publickey &&
+      tx.isFrom(game.msg.options.desired_opponent_publickey)
+    ) {
       if (this.publicKey == game.msg.originator) {
         siteMessage("Your game invite was declined", 5000);
       }
       await this.changeGameStatus(txmsg.game_id, "close");
     }
-    
+
     console.log("Cancel game transaction");
     this.app.connection.emit("arcade-close-game", txmsg.game_id);
     this.app.connection.emit("arcade-invite-manager-render-request");
@@ -1041,11 +1042,7 @@ class Arcade extends ModTemplate {
       };
       await this.app.storage.executeDatabase(sql, params, "arcade");
 
-      await this.app.storage.saveTransaction(
-        tx,
-        { field1: txmsg.module + "_" + txmsg.game_id },
-        "localhost"
-      );
+      await this.app.storage.saveTransaction(tx, { field1: txmsg.module + "_" + txmsg.game_id }, "localhost");
     }
   }
 
@@ -1702,9 +1699,23 @@ class Arcade extends ModTemplate {
     return null;
   }
 
+  returnOpenInvites() {
+    let invites = [];
+
+    for (let invite of this.games?.mine) {
+      if (!this.isAcceptedGame(invite.signature) && this.publicKey == invite.msg.originator) {
+        invites.push(invite.signature);
+      }
+    }
+
+    return invites;
+  }
+
   returnGameFromHash(game_id) {
     for (let key in this.games) {
-      let game = this.games[key].find((g) => this.app.crypto.hash(g.signature).slice(-6) == game_id);
+      let game = this.games[key].find(
+        (g) => this.app.crypto.hash(g.signature).slice(-6) == game_id
+      );
       if (game) {
         if (this.debug) {
           console.log(`Game found in ${key} list`);
@@ -1714,7 +1725,6 @@ class Arcade extends ModTemplate {
     }
     return null;
   }
-
 
   shouldAffixCallbackToModule(modname) {
     if (modname == "Arcade") {
@@ -1842,6 +1852,23 @@ class Arcade extends ModTemplate {
       this.launchSinglePlayerGame(gamedata);
       return;
     } else {
+      let open_invites = this.returnOpenInvites();
+      if (open_invites.length > 0) {
+        let c = await sconfirm(
+          "You already have an open invite. Are you sure you want to create a new one?"
+        );
+        if (!c) {
+          return;
+        } else {
+          c = await sconfirm("Would you like to close the other invites?");
+          if (c) {
+            for (let game_id of open_invites) {
+              this.sendCancelTransaction(game_id);
+            }
+          }
+        }
+      }
+
       if (gameType == "direct") {
         if (gamedata.players_needed > 2) {
           gamedata.invitation_type = "open";

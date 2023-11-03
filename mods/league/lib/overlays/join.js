@@ -80,7 +80,7 @@ class JoinLeague {
           publickey: this.mod.publicKey,
         };
 
-        this.mod.addLeaguePlayer(league_id, params);
+        await this.mod.addLeaguePlayer(league_id, params);
 
         this.timer = setTimeout(() => {
           console.log("Time out");

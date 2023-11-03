@@ -1,4 +1,4 @@
-module.exports = async (app, chat_group) => {
+module.exports = (app, mod, chat_group) => {
   let html = `
    <div class="saito-modal saito-modal-menu" id="saito-chat-menu">
     <div class="saito-modal-title">${chat_group.name}</div>
@@ -7,7 +7,7 @@ module.exports = async (app, chat_group) => {
       <div id="delete" class="saito-modal-menu-option"><i class="fas fa-trash-alt"></i><div>Delete</div></div>`;
 
   if (chat_group.member_ids) {
-    if (chat_group.member_ids[await app.wallet.getPublicKey()] == "admin") {
+    if (chat_group.member_ids[mod.publicKey] == "admin") {
       html += `<div id="invite" class="saito-modal-menu-option"><i class="fa-solid fa-user-plus"></i><div>Add Member</div></div>`;
     }
 
@@ -25,7 +25,7 @@ module.exports = async (app, chat_group) => {
       //
       //only display for admin
       //
-      if (chat_group.member_ids[await app.wallet.getPublicKey()] == "admin") {
+      if (chat_group.member_ids[mod.publicKey] == "admin") {
         if (!chat_group.member_ids[publickey]) {
           unconfirmed_tag = " unconfirmed";
         }
@@ -41,8 +41,8 @@ module.exports = async (app, chat_group) => {
                   ${name}
                 <div class="saito-userline">${publickey}</div>
                 ${
-                  chat_group.member_ids[await app.wallet.getPublicKey()] == "admin" ||
-                  publickey === (await app.wallet.getPublicKey())
+                  chat_group.member_ids[mod.publicKey] == "admin" ||
+                  publickey === (mod.publicKey)
                     ? `<div class="remove_user saito-user-fourth-elem-large" data-id="${publickey}"><i class="fa-solid fa-user-minus"></i></div>`
                     : "<div></div>"
                 }
