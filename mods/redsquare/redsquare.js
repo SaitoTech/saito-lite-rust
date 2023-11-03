@@ -264,7 +264,6 @@ class RedSquare extends ModTemplate {
   // to update the page if it is in a state where that is permitted.
   //
   async render() {
-
     //
     // browsers only!
     //
@@ -297,11 +296,10 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
 
-//      if (this.app.browser.isMobileBrowser()){
-//        this.hammer = new RedSquareHammerSwipe(this.app, this);
-//        this.addComponent(this.hammer);
-//      }
-      
+      //      if (this.app.browser.isMobileBrowser()){
+      //        this.hammer = new RedSquareHammerSwipe(this.app, this);
+      //        this.addComponent(this.hammer);
+      //      }
 
       //
       // chat manager can insert itself into left-sidebar if exists
@@ -426,7 +424,7 @@ class RedSquare extends ModTemplate {
             this.app.connection.emit("redsquare-profile-render-request");
             break;
           default: // #home
-	    break;
+            break;
         }
       }
 
@@ -435,13 +433,12 @@ class RedSquare extends ModTemplate {
       //
       await this.addPeer(peer, "tweets");
 
-      this.loadTweets('earlier', (txs) => {
+      this.loadTweets("earlier", (txs) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
         if (txs.length > 0) {
           this.saveLocalTweets();
         }
       });
-
     }
 
     //
@@ -547,7 +544,6 @@ class RedSquare extends ModTemplate {
             limit: this.peers[i].profile_limit,
           },
           (txs) => {
-
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);
@@ -576,8 +572,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadTweets(created_at='earlier', mycallback) {
-
+  loadTweets(created_at = "earlier", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
       let peer_publickey = this.peers[i].publickey;
       if (this.peers[i].tweets_earliest_ts != 0) {
@@ -594,12 +589,11 @@ class RedSquare extends ModTemplate {
           limit: this.peers[i].tweets_limit,
         };
 
-        if (created_at == 'earlier') {
+        if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
-        } else if(created_at == 'later') {
+        } else if (created_at == "later") {
           obj.created_later_than = this.peers[i].tweets_earliest_ts;
         }
-
 
         this.app.storage.loadTransactions(
           obj,
@@ -929,9 +923,15 @@ class RedSquare extends ModTemplate {
     //
     // avoid errors
     //
-    if (!tweet) { return; }
-    if (!tweet.tx) { return; }
-    if (!tweet.tx.optional) { tweet.tx.optional = {}; }
+    if (!tweet) {
+      return;
+    }
+    if (!tweet.tx) {
+      return;
+    }
+    if (!tweet.tx.optional) {
+      tweet.tx.optional = {};
+    }
 
     //
     // maybe this needs to go into notifications too
@@ -1030,10 +1030,14 @@ class RedSquare extends ModTemplate {
         let insertion_index = 0;
         if (prepend == false) {
           for (let i = 0; i < this.tweets.length; i++) {
-	    let target = this.tweets[i].created_at;
-	    if (this.tweets[i].updated_at > target) { target = this.tweets[i].updated_at; }
-	    let ttarget = tweet.created_at;
-	    if (tweet.updated_at > ttarget) { ttarget = tweet.updated_at; }
+            let target = this.tweets[i].created_at;
+            if (this.tweets[i].updated_at > target) {
+              target = this.tweets[i].updated_at;
+            }
+            let ttarget = tweet.created_at;
+            if (tweet.updated_at > ttarget) {
+              ttarget = tweet.updated_at;
+            }
             if (target > ttarget) {
               insertion_index++;
             } else {
@@ -1729,9 +1733,7 @@ class RedSquare extends ModTemplate {
     });
   }
 
-
   loadLocalTweets() {
-
     if (!this.app.BROWSER) {
       return;
     }
@@ -1746,18 +1748,17 @@ class RedSquare extends ModTemplate {
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
         for (let tx of value) {
-	  try {
+          try {
             let newtx = new Transaction();
             newtx.deserialize_from_web(this.app, tx);
             this.addTweet(newtx);
-          } catch (err) {
-	  }
+          } catch (err) {}
         }
-        this.app.connection.emit("redsquare-home-render-request");
-        this.app.connection.emit("redsquare-insert-loading-message");
       }
+      //Run these regardless of results
+      this.app.connection.emit("redsquare-home-render-request");
+      this.app.connection.emit("redsquare-insert-loading-message");
     });
-
   }
 
   /////////////////////////////////////
