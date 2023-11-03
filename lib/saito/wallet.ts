@@ -204,13 +204,7 @@ export default class Wallet extends SaitoWallet {
           await this.setPrivateKey(tmpprivkey);
           await this.setPublicKey(tmppubkey);
 
-          // let modules purge stuff
-          await this.app.modules.onWalletReset();
-
-          // reset and save
-          await this.instance.reset();
-          await this.app.blockchain.resetBlockchain();
-          await this.app.storage.resetOptions();
+          await this.app.wallet.onUpgrade("upgrade");
 
           // re-specify after reset
           await this.setPrivateKey(tmpprivkey);
@@ -983,21 +977,63 @@ export default class Wallet extends SaitoWallet {
        await this.fetchBalanceSnapshot(publicKey);
     
     } else if (type == 'import') {
-      
-      this.reset();
-      await this.fetchBalanceSnapshot(publicKey);
+
+      // wallet file used for importing 
+      if (walletfile != null) {
+
+        let decryption_secret = "";
+        let decrypted_wallet = walletfile.result.toString();
+        try {
+          let wobj = JSON.parse(decrypted_wallet);
+          
+          await this.reset();
+
+          await this.setPublicKey(wobj.wallet.publicKey);
+          await this.setPrivateKey(wobj.wallet.privateKey);
+          wobj.wallet.version = this.version;
+          wobj.wallet.inputs = [];
+          wobj.wallet.outputs = [];
+          wobj.wallet.spends = [];
+          wobj.games = [];
+          this.app.options = wobj;
+
+          await this.app.blockchain.resetBlockchain();
+          await this.fetchBalanceSnapshot(publicKey);
+
+        } catch (err) {
+          console.log(err);
+          return err.name;
+        }
+
+      } else if (privatekey != "") {
+        // privatekey used for wallet importing 
+        try {
+          publicKey = this.app.crypto.generatePublicKey(privatekey);
+          await this.setPublicKey(publicKey);
+          await this.setPrivateKey(privatekey);
+          this.app.options.wallet.version = this.version;
+          this.app.options.wallet.inputs = [];
+          this.app.options.wallet.outputs = [];
+          this.app.options.wallet.spends = [];
+          this.app.options.wallet.pending = [];
+    
+          await this.app.storage.resetOptionsFromKey(publicKey);
+          await this.fetchBalanceSnapshot(publicKey);
+        } catch (err) {
+          return err.name;
+        }
+      }
 
     } else if (type == 'upgrade') {
-      
       // purge old slips
       this.app.options.wallet.slips = [];
       this.app.storage.resetOptions();
 
       await this.fetchBalanceSnapshot(publicKey);
-      await this.getSlips();
     }
 
     await this.app.wallet.saveWallet();
     await this.app.modules.onUpgrade(type, privatekey, walletfile);
+    return true;
   }
 }
