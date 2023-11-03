@@ -360,9 +360,9 @@ class Chat extends ModTemplate {
         }
         return this.chat_manager;
       case "saito-header":
-        //TODO:
-        //Since the left-sidebar chat-manager disappears at screens less than 1200px wide
-        //We need another way to display/open it...
+        //
+        // In mobile, we use the hamburger menu to open chat (without leaving the page)
+        //
         if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
           if (this.chat_manger) {
             //Don't want mobile chat auto popping up
@@ -379,9 +379,42 @@ class Chat extends ModTemplate {
               callback: function (app, id) {
                 chat_self.chat_manager_overlay.render();
               },
+              event: function(id){
+
+                chat_self.app.connection.on("chat-manager-render-request", ()=> {
+                
+                  let elem = document.getElementById(id);
+                  console.log("Chat event, update", elem);
+                  if (elem){
+                    let unread = 0;
+                    for (let group of chat_self.groups){
+                      unread += group.unread;
+                    }
+
+                    if (unread){
+                      if (elem.querySelector(".saito-notification-dot")){
+                        elem.querySelector(".saito-notification-dot").innerHTML = unread;
+                      }else{
+                        chat_self.app.browser.addElementToId(`<div class="saito-notification-dot">${unread}</div>`, id);
+                      }
+                    }else{
+                      if (elem.querySelector(".saito-notification-dot")){
+                        elem.querySelector(".saito-notification-dot").remove();
+                      }
+                    }
+                  }
+
+                });
+
+                //Trigger my initial display
+                chat_self.app.connection.emit("chat-manager-render-request");
+              }
             },
           ];
         } else if (!chat_self.browser_active) {
+          //
+          // Otherwise we go to the main chat application
+          //
           return [
             {
               text: "Chat",

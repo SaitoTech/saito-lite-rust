@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS archives (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  tx_id INTEGER ,
   user_id INTEGER DEFAULT 0,
   publickey TEXT DEFAULT "",
   owner TEXT DEFAULT "",

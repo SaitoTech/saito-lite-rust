@@ -87,6 +87,10 @@
 	.chat-main-container .saito-main {
 		width: unset !important;
 	}
+
+	.chat-main-container.saito-container{
+		grid-template-columns: 20rem auto;
+	}
 }
 
 @media screen and (max-width: 500px) {

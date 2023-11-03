@@ -9,6 +9,22 @@
     this.displaySpace(spacekey);
   }
 
+  canSpaceFlank(spacekey) {
+    if (this.game.spaces[spacekey].units.length == 0) { return 0; }
+    let enemy_units = 0;
+    let faction = this.returnPowerOfUnit(this.game.spaces[spacekey].units[0]);
+    for (let z = 0; z < this.game.spaces[spacekey].neighbours.length; z++) {
+      let n = this.game.spaces[this.game.spaces[spacekey].neighbours[z]];
+      if (n.units > 0) {
+	if (this.returnPowerOfUnit(n.units[0]) != faction) {
+	  enemy_units++;
+	}
+      }
+    }
+    if (enemy_units == 1) { return 1; }
+    return 0;
+  }
+
   addTrench(spacekey, level=0) {
     if (level != 0) {
       this.game.spaces[spacekey].trench = level;
@@ -2813,6 +2829,7 @@ spaces['athens'] = {
       spaces[key].activated_for_movement = 0;
       spaces[key].activated_for_combat = 0;
       spaces[key].key = key;
+      spaces[key].type = "normal";
     }
 
     return spaces;

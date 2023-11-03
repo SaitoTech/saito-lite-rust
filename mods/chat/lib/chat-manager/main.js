@@ -28,9 +28,13 @@ class ChatManager {
     //
     // handle requests to re-render chat manager
     //
-    app.connection.on("chat-manager-render-request", async () => {
+    app.connection.on("chat-manager-render-request", () => {
       if (this.render_manager_to_screen) {
-        await this.render();
+        //
+        // Rerender the chat manager, sorting the chats by last active
+        // and updating unread message notifications
+        //
+        this.render();
       }
     });
 
@@ -41,7 +45,7 @@ class ChatManager {
     //
     // handle requests to re-render chat popups
     //
-    app.connection.on("chat-popup-render-request", async (group = null) => {
+    app.connection.on("chat-popup-render-request", (group = null) => {
       if (!group) {
         group = this.mod.returnCommunityChat();
       }
@@ -60,13 +64,14 @@ class ChatManager {
         // to make "stun" work, it breaks chat on mobile
         // Talk to me about how to get chat to work in your desired field... there are other less
         // destructive ways to do so
-        if (this.render_popups_to_screen || !this.popups[group.id].is_rendered) {
+        if (this.render_popups_to_screen || this.popups[group.id].is_rendered) {
           this.popups[group.id].render();
         }
 
-        if (this.render_manager_to_screen) {
-          await this.render();
-        }
+        //
+        // We use an event so that other components can piggy back off this request
+        //
+        this.app.connection.emit("chat-manager-render-request");
       }
     });
 
@@ -89,7 +94,7 @@ class ChatManager {
     // This is a short cut for any other UI components to trigger the chat-popup window
     // (in the absence of a proper chat-manager listing the groups/contacts)
 
-    app.connection.on("open-chat-with", async (data = null) => {
+    app.connection.on("open-chat-with", (data = null) => {
       this.render_popups_to_screen = 1;
 
       if (this.mod.debug) {
@@ -130,7 +135,7 @@ class ChatManager {
           // But if groups have variable memberships, it does push out an update to everyone as long
           // as the admin has an accurate list
           //
-          await this.mod.sendCreateGroupTransaction(group);
+          this.mod.sendCreateGroupTransaction(group);
         }
       }
 
@@ -144,7 +149,7 @@ class ChatManager {
       app.connection.emit("chat-popup-render-request", group);
     });
 
-    app.connection.on("relay-is-online", async (pkey) => {
+    app.connection.on("relay-is-online", (pkey) => {
       let target_id = this.mod.createGroupIdFromMembers([pkey, this.mod.publicKey]);
       let group = this.mod.returnGroup(target_id);
       //console.log("Receive online confirmation from " + pkey);
@@ -181,7 +186,7 @@ class ChatManager {
     });
   }
 
-  async render() {
+  render() {
     //
     // some applications do not want chat-manager appearing (games!)
     //
@@ -260,7 +265,7 @@ class ChatManager {
         }
       }
 
-      let html = await ChatTeaser(this.app, group);
+      let html = ChatTeaser(this.app, this.mod, group);
       let divid = "saito-user-" + group.id;
 
       let obj = document.getElementById(divid);
@@ -291,7 +296,7 @@ class ChatManager {
     // clicks on the element itself (background)
     //
     document.querySelectorAll(".chat-manager-list .saito-user").forEach((item) => {
-      item.onclick = async (e) => {
+      item.onclick = (e) => {
         e.stopPropagation();
 
         let gid = e.currentTarget.getAttribute("data-id");
@@ -324,16 +329,14 @@ class ChatManager {
           this.popups[gid].input.focus(true);  
         }
 
-        if (this.render_manager_to_screen) {
-          await this.render();
-        }
+        this.app.connection.emit("chat-manager-render-request");
       };
 
-      item.oncontextmenu = async (e) => {
+      item.oncontextmenu = (e) => {
         e.preventDefault();
         let gid = e.currentTarget.getAttribute("data-id");
         let chatMenu = new ChatUserMenu(this.app, this.mod, this.mod.returnGroup(gid));
-        await chatMenu.render();
+        chatMenu.render();
       };
     });
 
