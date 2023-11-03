@@ -153,7 +153,7 @@ class Storage {
       if (res) {
         for (let i = 0; i < res.length; i++) {
           let tx = new Transaction();
-          tx.deserialize_from_web(this.app, res[i].tx);
+          tx.deserialize_from_web(storage_self.app, res[i].tx);
           txs.push(tx);
         }
       }
