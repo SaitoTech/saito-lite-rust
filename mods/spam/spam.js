@@ -27,9 +27,11 @@ class Spam extends ModTemplate {
     if (this.browser_active) {
       this.styles = ["/spam/style.css", "/saito/saito.css"];
     }
-    setInterval(() => {
-      this.nodeSpamLoop(app, this);
-    }, 13000);
+    if (this.app.BROWSER == 0) {
+      setInterval(() => {
+        this.nodeSpamLoop(app, this);
+      }, 13000);
+      }
   }
 
   async render() {
