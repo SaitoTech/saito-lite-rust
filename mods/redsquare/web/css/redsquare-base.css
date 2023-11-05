@@ -1,16 +1,4 @@
 
-.saito-new-tweets {
-  display: block;
-  position: absolute;
-  width: 400px;
-  top: 40px;
-  left: 50%;
-  cursor: pointer;
-  z-index: 9000000;
-  margin: auto;
-  transform: translateX(-50%);
-}
-
 .liked , .replied , .retweeted {
   color: var(--saito-primary);;
 }
