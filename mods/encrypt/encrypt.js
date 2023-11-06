@@ -40,7 +40,7 @@ class Encrypt extends ModTemplate {
     app.connection.on("encrypt-key-exchange", (publicKey) => {
       console.log("initiating key exchange...");
       this.initiate_key_exchange(publicKey, 0);
-      salert("Requesting keys to establish an encrypted channel, please be patient as this may take some time");
+      salert("Please be patient as this may take some time");
     });
 
     return this;
@@ -278,7 +278,7 @@ class Encrypt extends ModTemplate {
     let our_address = tx.to[0].publicKey;
     let alice_publicKey = txmsg.alice_publicKey;
 
-    siteMessage(`${this.app.keychain.returnUsername(remote_address, 8)} has requested a key exchange with you`, 5000);
+    siteMessage(`${this.app.keychain.returnUsername(remote_address, 8)} has added you as a friend`, 5000);
     
     let fee = BigInt(tx.to[0].amount);
 
@@ -346,7 +346,7 @@ class Encrypt extends ModTemplate {
       }
     }
 
-    siteMessage(`Key exchange with ${this.app.keychain.returnUsername(sender, 8)} completed`, 5000);
+    siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
 
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
     let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
