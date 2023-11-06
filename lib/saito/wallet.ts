@@ -329,9 +329,7 @@ export default class Wallet extends SaitoWallet {
 
     console.log("new wallet : " + (await this.getPublicKey()));
 
-    if (this.app.browser.browser_active == 1) {
-      window.location.reload();
-    }
+    
   }
 
   /**
@@ -973,5 +971,33 @@ export default class Wallet extends SaitoWallet {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  public async onUpgrade(type="", privatekey="", walletfile=null)  {
+    let publicKey = await this.getPublicKey();
+
+    if (type == 'nuke') {
+       this.reset()
+       this.app.blockchain.resetBlockchain();
+       this.app.storage.resetOptions();
+       await this.fetchBalanceSnapshot(publicKey);
+    
+    } else if (type == 'import') {
+      
+      this.reset();
+      await this.fetchBalanceSnapshot(publicKey);
+
+    } else if (type == 'upgrade') {
+      
+      // purge old slips
+      this.app.options.wallet.slips = [];
+      this.app.storage.resetOptions();
+
+      await this.fetchBalanceSnapshot(publicKey);
+      await this.getSlips();
+    }
+
+    await this.app.wallet.saveWallet();
+    await this.app.modules.onUpgrade(type, privatekey, walletfile);
   }
 }

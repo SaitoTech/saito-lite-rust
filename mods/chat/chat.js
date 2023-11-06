@@ -1611,11 +1611,8 @@ class Chat extends ModTemplate {
     this.app.connection.emit("chat-manager-render-request");
   }
 
-  async onWalletReset(nuke) {
-    console.log("Wallet reset");
-    await super.onWalletReset(nuke);
-
-    if (nuke) {
+  async onUpgrade(type, privatekey, walletfile) {
+    if (type == 'nuke') {
       for (let i = 0; i < this.groups.length; i++) {
         await localforage.removeItem(`chat_${this.groups[i].id}`);
       }

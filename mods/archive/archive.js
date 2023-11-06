@@ -709,9 +709,8 @@ class Archive extends ModTemplate {
     this.app.storage.saveOptions();
   }
 
-  async onWalletReset(nuke) {
-    await super.onWalletReset(nuke);
-    if (nuke && this.localDB) {
+  async onUpgrade(type, privatekey, walletfile) {
+    if (type == 'nuke' && this.localDB) {
       await this.localDB.clear("archives");
     }
     return 1;
