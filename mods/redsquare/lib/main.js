@@ -33,7 +33,7 @@ class RedSquareMain {
       window.location.hash = "#home";
       document.querySelector(".saito-main").innerHTML = "";
 
-      if (document.querySelector(".saito-back-button") != null) {
+      if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
       }
 
@@ -66,13 +66,11 @@ class RedSquareMain {
       // remove "loading new tweets" notice...
       //
       setTimeout(function () {
-        if (
-          document.querySelector(".saito-cached-loader") != null &&
-          typeof document.querySelector(".saito-cached-loader") != "undefined"
-        ) {
+        if (document.querySelector(".saito-cached-loader")) {
           document.querySelector(".saito-cached-loader").remove();
         }
       }, 1000);
+
 
       //
       // check if we can refresh page (show tweets immediately) or show prompt / button
@@ -92,23 +90,37 @@ class RedSquareMain {
             We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
             at the top of the feed and scroll up there
           */
-          /*
-            Alternate button extracted from main.template.js
-            <!--div id="show-new-tweets" class="saito-button-primary new-tweets-notification">New Posts Available</div-->
-            */
-
+          
+/*
+>>>>>>>
+>>>>>>> UNCOMMENT THIS WHEN DONE
+>>>>>>> 
           if (!document.getElementById("saito-new-tweets")) {
             this.app.browser.prependElementToSelector(
-              `<div class="saito-button-secondary" id="saito-new-tweets">load new tweets</div>`,
+              `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
               ".saito-main"
             );
           }
+*/
           document.getElementById("saito-new-tweets").onclick = (e) => {
-            document.querySelector(".saito-main").innerHTML = "";
-            this.manager.render("tweets");
+            this.app.connection.emit("redsquare-home-render-request", true);
           };
+
         }
       }
+
+
+// >>>>>>>>>>>>>
+// >>>>>>>>>>>>> delete THIS when done
+// >>>>>>>>>>>>>
+          if (!document.getElementById("saito-new-tweets")) {
+            this.app.browser.prependElementToSelector(
+              `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
+              ".saito-main"
+            );
+          }
+
+
     });
 
     this.app.connection.on("redsquare-insert-loading-message", () => {

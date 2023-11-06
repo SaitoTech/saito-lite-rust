@@ -1686,12 +1686,15 @@ class Browser {
         });
       };
 
-      window.siteMessage = function (message, killtime = 9999999) {
+      window.siteMessage = function (message, killtime = 9999999, callback = null) {
         if (document.getElementById("message-wrapper")) {
           document.getElementById("message-wrapper").remove();
         }
         let wrapper = document.createElement("div");
         wrapper.id = "message-wrapper";
+        if (callback){
+          wrapper.classList.add("message-clickable");
+        }
         wrapper.innerHTML = `<div class="message-message">${browser_self.sanitize(message)}</div>`;
 
         document.body.appendChild(wrapper);
@@ -1703,6 +1706,9 @@ class Browser {
         document.querySelector("#message-wrapper").addEventListener(
           "click",
           () => {
+            if (callback){
+              callback();
+            }
             wrapper.remove();
             clearTimeout(timeout);
           },
