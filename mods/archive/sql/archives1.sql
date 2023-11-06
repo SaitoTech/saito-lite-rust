@@ -14,3 +14,4 @@ CREATE TABLE IF NOT EXISTS archives (
   tx TEXT DEFAULT "",
   preserve INTEGER DEFAULT 0
 );
+

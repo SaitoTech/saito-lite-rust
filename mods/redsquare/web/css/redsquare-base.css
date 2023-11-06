@@ -1,31 +1,4 @@
 
-.saito-new-tweets {
-    display: block;
-    position: fixed;
-    height: 80px;
-    width: 400px;
-    background-color: white;
-    z-index: 900;
-    align-items: center;
-    margin-right: auto;
-    top: 72px;
-    left: 50%;
-    margin-left: -200px;
-    border-radius: 1rem;
-    background-color: var(--saito-button-background);
-    color: white;
-    text-align: center;
-    padding-top: 30px;
-    font-size: 20px;
-    cursor: pointer;
-    z-index: 9000000;
-}
-.saito-new-tweets:hover {
-    font-weight: bold;
-    border: 1px solid white;
-}
-
-
 .liked , .replied , .retweeted {
   color: var(--saito-primary);;
 }

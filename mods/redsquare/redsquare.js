@@ -85,6 +85,7 @@ class RedSquare extends ModTemplate {
     this.theme_options = {
       lite: "fa-solid fa-sun",
       dark: "fa-solid fa-moon",
+      sangre: "fa-solid fa-droplet"
     };
 
     return this;

@@ -78,7 +78,6 @@ class RedSquareMain {
       // check if we can refresh page (show tweets immediately) or show prompt / button
       //
       if (num_tweets > 0) {
-
         if (this.canRefreshPage()) {
           console.log("postcache-render-request: can refresh the page!");
           try {
@@ -93,20 +92,21 @@ class RedSquareMain {
             We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
             at the top of the feed and scroll up there
           */
-          if (document.querySelector(".saito-new-tweets")) {
-            document.querySelector(".saito-new-tweets").style.display = "block";
-          } else {
-            /*
+          /*
             Alternate button extracted from main.template.js
             <!--div id="show-new-tweets" class="saito-button-primary new-tweets-notification">New Posts Available</div-->
             */
-	    this.app.browser.prependElementToSelector(`<div class="saito-new-tweets" id="saito-new-tweets">load new tweets</div>`, ".saito-main");
-            document.querySelector(".saito-new-tweets").style.display = "block";
-	  }
-	  document.querySelector(".saito-new-tweets").onclick = (e) => {
-	    document.querySelector(".saito-main").innerHTML = "";
-	    this.manager.render("tweets");
-	  }
+
+          if (!document.getElementById("saito-new-tweets")) {
+            this.app.browser.prependElementToSelector(
+              `<div class="saito-button-secondary" id="saito-new-tweets">load new tweets</div>`,
+              ".saito-main"
+            );
+          }
+          document.getElementById("saito-new-tweets").onclick = (e) => {
+            document.querySelector(".saito-main").innerHTML = "";
+            this.manager.render("tweets");
+          };
         }
       }
     });
@@ -242,16 +242,15 @@ class RedSquareMain {
     }
     this.manager.render();
     this.attachEvents();
-    
+
     //
-    //We aren't checking idleTime right now, so let's not set 
+    //We aren't checking idleTime right now, so let's not set
     //an unnecessary interval
     //
     //this.monitorUserInteraction();
   }
 
   attachEvents() {
-
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
@@ -360,7 +359,6 @@ class RedSquareMain {
     // no by default
     //
     return 0;
-
   }
 }
 
