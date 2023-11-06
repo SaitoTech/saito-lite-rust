@@ -16,6 +16,10 @@ class MovementOverlay {
 
   render(mobj, units_to_move = null, selectUnitsInterface = null, selectDestinationInterface = null) {
 
+console.log("MOBJ: " + JSON.stringify(mobj));
+console.log("UNITS 2 MOVE: " + JSON.stringify(units_to_move));
+
+    let his_self = this.mod;
     let space = mobj.space;
     let faction = mobj.faction;
     let source = mobj.source;
@@ -28,30 +32,49 @@ class MovementOverlay {
     if (destination === "") { destination = "?"; } else { to = this.mod.game.spaces[destination].name; }
 
     //
-    // regular to move
-    // regular already moved
-    // cavalry to move
-    // cavalry already moved
-    // mercenary to move
-    // mercenary already moved
+    // create list of figures in each space
     //
-    let rtm = -1;
-    let ram = -1;
-    let mtm = -1;
-    let mam = -1;
-    let ctm = -1;
-    let cam = -1;
-    let has_regulars = 0;
-    let has_mercenaries = 0;
-    let has_cavalry = 0;
-    let source_regulars_total = 0;
-    let source_mercenaries_total = 0;
-    let source_cavalry_total = 0;
-    let source_regulars_moved = 0;
-    let source_mercenaries_moved = 0;
-    let source_cavalry_moved = 0;
-    let commanders = [];
+    let moved_units = mobj.moved_units;
+    let unmoved_units = mobj.unmoved_units;
+    let destination_units = [];
 
+/***
+    let s = space;
+    try { if (this.mod.game.spaces[s]) { s = this.mod.game.spaces[s]; } } catch (err) {}
+    for (let key in s.units) {
+      if (his_self.returnPlayerCommandingFaction(key) == faction) {
+        for (let i = 0; i < s.units[key].length; i++) {
+          if (s.units[key][i].land_or_sea === "land" || s.units[key][i].land_or_sea === "both") {
+            if (s.units[key][i].locked != true && (his_self.game.state.events.foul_weather != 1 && s.units[key][i].already_moved != 1)) {
+              let does_units_to_move_have_unit = false;
+              for (let z = 0; z < units_to_move.length; z++) {
+                if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
+              }
+              if (does_units_to_move_have_unit) {
+                moved_units.push({ faction : key , idx : i , type : s.units[key][i].type});
+              } else {
+                unmoved_units.push({ faction : key , idx : i , type : s.units[key][i].type});
+              }
+            }
+          }
+        }
+      }
+    }
+***/
+
+    let s = destination;
+    try { if (this.mod.game.spaces[s]) { s = this.mod.game.spaces[s]; } } catch (err) {}
+    for (let key in s.units) {
+      if (his_self.returnPlayerCommandingFaction(key) == faction) {
+        for (let i = 0; i < s.units[key].length; i++) {
+          if (s.units[key][i].land_or_sea === "land" || s.units[key][i].land_or_sea === "both") {
+            destination_units.push({ faction : key , idx : i , type : s.units[key][i].type});
+          }
+        }
+      }
+    }
+
+/*****
     for (let i = 0; i < space.units[faction].length; i++) {
       if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 
@@ -60,78 +83,14 @@ class MovementOverlay {
 	    commanders.push(i);
 	  }
 	}
-
-	if (space.units[faction][i].type == "regular") {
-	  source_regulars_total++;
-	  if (units_to_move.includes(i)) {
-	    source_regulars_moved++;
-	    if (ram == -1) {
-              has_regulars = 1;
-	      ram = i;
-	    }
-	  } else {
-	    if (rtm == -1) {
-              has_regulars = 1;
-	      rtm = i;
-	    }
-	  }
-	}
-
-	if (space.units[faction][i].type == "mercenary") {
-	  source_mercenaries_total++;
-	  if (units_to_move.includes(i)) {
-	    source_mercenaries_moved++;
-	    if (mam == -1) {
-              has_mercenaries = 1;
-	      mam = i;
-	    }
-	  } else {
-	    if (mtm == -1) {
-              has_mercenaries = 1;
-	      mtm = i;
-	    }
-	  }
-	}
-
-	if (space.units[faction][i].type == "cavalry") {
-	  source_cavalry_total++;
-	  if (units_to_move.includes(i)) {
-	    source_cavalry_moved++;
-	    if (cam == -1) {
-              has_cavalry = 1;
-	      cam = i;
-	    }
-	  } else {
-	    if (ctm == -1) {
-              has_cavalry = 1;
-	      ctm = i;
-	    }
-	  }
-	}
-
-      }
-    }
+*****/
 
     let obj = {
       faction : faction ,
-      has_regulars : has_regulars ,
-      has_mercenaries : has_mercenaries ,
-      has_cavalry : has_cavalry ,
-      source_regulars_total : source_regulars_total ,
-      source_mercenaries_total : source_mercenaries_total ,
-      source_cavalry_total : source_cavalry_total ,
-      source_regulars_moved : source_regulars_moved ,
-      source_mercenaries_moved : source_mercenaries_moved ,
-      source_cavalry_moved : source_cavalry_moved ,
-      rtm_idx : rtm ,
-      ram_idx : ram ,
-      mtm_idx : mtm ,
-      mam_idx : mam ,
-      ctm_idx : ctm ,
-      cam_idx : cam ,
+      moved_units : moved_units ,
+      unmoved_units : unmoved_units ,
+      destination_units : destination_units ,
       space : space ,
-      commanders : commanders ,
-      units_to_move : units_to_move ,
       from : from ,
       to : to ,
       max_formation_size : max_formation_size ,
@@ -145,44 +104,6 @@ class MovementOverlay {
 
   attachEvents(obj) {
 
-    let qs = "";
-    let el;
-
-    qs = `.regular .unit-available`;
-    el = document.querySelector(qs);
-    if (el) {
-      el.innerHTML = obj.source_regulars_total - obj.source_regulars_moved;
-    }
-
-    qs = `.regular .unit-moving`;
-    el = document.querySelector(qs);
-    if (el) {
-      el.innerHTML = obj.source_regulars_moved;
-    }
-
-    qs = `.mercenary .unit-available`;
-    el = document.querySelector(qs);
-    if (el) {
-      el.innerHTML = obj.source_mercenaries_total - obj.source_mercenaries_moved;
-    }
-
-    qs = `.mercentary .unit-moving`;
-    el = document.querySelector(qs);
-    if (el) {
-      el.innerHTML = obj.source_mercenaries_moved;
-    }
-
-    qs = `.cavalry .unit-available`;
-    el = document.querySelector(qs);
-    if (el) {
-      el.innerHTML = obj.source_cavalry_total - obj.source_cavalry_moved;
-    }
-
-    qs = `.cavalry .unit-moving`;
-    el = document.querySelector(qs);
-    if (el) {
-      el.innerHTML = obj.source_cavalry_moved;
-    }
   }
 
 }

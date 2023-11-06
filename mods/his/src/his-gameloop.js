@@ -542,9 +542,14 @@ if (this.game.state.scenario != "is_testing") {
 	  for (let i in this.game.navalspaces) {
 	    for (let key in this.game.navalspaces[i].units) {
 	      if (this.game.navalspaces[i].units[key].length > 0) {
+	        let faction = key;
 	        let space = this.game.navalspaces[i];
-		let res = this.returnNearestFactionControlledPorts(key, space);
-		moves.push("retreat_to_winter_ports_player_select\t"+key+"\t"+space.key);
+		let res = this.returnNearestFactionControlledPorts(faction, space);
+		if (res.length == 1) {
+      	          moves.push("move\t"+faction+"\tport\t"+i+"\t"+res[0]);
+		} else {
+		  moves.push("retreat_to_winter_ports_player_select\t"+key+"\t"+space.key+"\t"+JSON.stringify(res));
+		}
 	      }
 	    }
 	  }
@@ -566,10 +571,13 @@ if (this.game.state.scenario != "is_testing") {
 
 	  this.game.queue.splice(qe, 1);
 
-	  let x = this.returnPlayerOfFaction(mv[1]);
+	  let faction = mv[1];
+	  let navalspace = mv[2];
+	  let ports = JSON.parse(mv[3]);
+	  let x = this.returnPlayerOfFaction(faction);
 
 	  if (this.game.player === x) {
-	    this.playerResolvePortsWinterRetreat(mv[1], mv[2]);
+	    this.playerResolveNavalWinterRetreat(faction, navalspace);
 	  } else {
 	    this.updateStatus(this.returnFactionName(mv[1]) + " winter port retreat from " + this.returnSpaceName(mv[2]));
 	  }
@@ -688,6 +696,8 @@ if (this.game.state.scenario != "is_testing") {
 	  this.addRegular("papacy", "siena", 1);
 
 	  this.setAllies("protestant", "france");
+	  this.setAllies("papacy", "venice");
+	  this.addRegular("venice", "ravenna", 1);
 	  this.setEnemies("papacy", "france");
 	  this.setEnemies("papacy", "hapsburg");
 	  this.setActivatedPower("protestant", "france");
@@ -906,6 +916,17 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let skip_avoid_battle = parseInt(mv[6]);
 
 	  this.game.queue.splice(qe, 1);
+
+
+	  // winter retreat into port
+	  if (movetype === "port") {
+	    let units = this.game.navalspaces[source].units[faction];
+	    this.game.navalspaces[source].units[faction] = [];
+	    for (let z = 0; z < units.length; z++) {
+	      this.game.spaces[destination].units[faction].push(units[z]);
+	    }
+	  }
+
 
 	  if (movetype === "sea") {
 
@@ -2436,9 +2457,7 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  // migrate any bonuses to attacker or defender
 	  //
           for (let f in space.units) {
-console.log("1: " + f);
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-console.log("2: " + f);
 	      let fp = his_self.returnPlayerOfFaction(f);
 	      let p = {};
 	      if (fp > 0) { p = his_self.game.state.players_info[fp-1]; }
@@ -7574,6 +7593,18 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  if (this.game.spaces[space].language !== target_language_zone && target_language_zone != "all") {
 	    ties_resolve = "catholic";
  	  }
+
+	  //
+	  // everyone gets a minimum of one roll
+	  //
+	  if (p_rolls == 0) {
+	    p_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
+	    p_rolls++;
+	  }
+	  if (c_rolls == 0) {
+	    c_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
+	    c_rolls++;
+	  }
 
 	  //
 	  // temporary bonuses
