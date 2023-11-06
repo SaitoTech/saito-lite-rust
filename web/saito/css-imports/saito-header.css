@@ -390,7 +390,9 @@
   transition: transform 0.2s;
   top: 0;
   left: 0;
-  background: var(--saito-background-color);
+  background: var(--saito-arcade-header-background);
+  background-size: 100vw;
+  background-position-x: min(-2rem, calc(-(100vw - var(--saito-width)) / 2 + 0.5rem));
 }
 
 .saito-header-logo-wrapper:hover .saito-back-button{
