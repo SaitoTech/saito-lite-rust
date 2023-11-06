@@ -238,10 +238,11 @@ class ChatPopup {
         //Add the time stamp of the original message
         quote +=
           el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML +
-          "</em></blockquote><br/>";
+          "</em></blockquote>";
         
 
-        this.input.insertRange(quote.replaceAll("\n", "<br/>"));
+        //this.input.insertRange(quote.replaceAll("\n", "<br/>"));
+        this.input.insertQuote(quote.replaceAll("\n", "<br/>"));
 
         this.input.focus();
       });

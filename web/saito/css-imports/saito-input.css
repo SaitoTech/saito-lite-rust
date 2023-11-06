@@ -153,6 +153,33 @@ emoji-picker {
 	bottom: 1rem;
 }
 
+
+.saito-input-quote {
+	display: grid;
+	grid-template-columns: 5rem auto 3rem;
+	align-items: center;
+	font-size: 1.5rem;
+}
+
+.saito-input-quote i {
+	justify-self: center;
+	font-size: 2rem;
+}
+
+.saito-input-quote blockquote {
+	background-color: rgba(250,250,250,0.1);
+	cursor: default;
+}
+
+.saito-input-quote .cancel-quote {
+	cursor: pointer;
+}
+
+.saito-input-quote i:hover{
+	transform: unset;
+}
+
+
 @media only screen and (max-width: 525px) {
 
 	.tweet-overlay-content {
