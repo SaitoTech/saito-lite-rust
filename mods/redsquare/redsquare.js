@@ -1734,6 +1734,23 @@ class RedSquare extends ModTemplate {
     });
   }
 
+  saveLocalProfile() {
+    let ptxs = [];
+    let rtxs = [];
+    for (let i = 0; i < this.manager.profile_posts.length; i++) {
+      ptxs.push(this.manager.profile_posts[i].tx.serialize_to_web(this.app));
+    }
+    for (let i = 0; i < this.manager.profile_replies.length; i++) {
+      rtxs.push(this.manager.profile_replies[i].tx.serialize_to_web(this.app));
+    }
+    localforage.setItem(`profile_posts_history`, ptxs).then(function () {
+      console.log(`Saved ${txs.length} tweets`);
+    });
+    localforage.setItem(`profile_replies_history`, rtxs).then(function () {
+      console.log(`Saved ${txs.length} tweets`);
+    });
+  }
+
   loadLocalTweets() {
     if (!this.app.BROWSER) {
       return;
@@ -1746,6 +1763,30 @@ class RedSquare extends ModTemplate {
       return;
     }
 
+    localforage.getItem(`profile_posts_history`, (error, value) => {
+      if (value && value.length > 0) {
+        for (let tx of value) {
+          try {
+            let newtx = new Transaction();
+            newtx.deserialize_from_web(this.app, tx);
+	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+            this.manager.profile_posts.push(t); // the tweet
+          } catch (err) {}
+        }
+      }
+    });
+    localforage.getItem(`profile_replies_history`, (error, value) => {
+      if (value && value.length > 0) {
+        for (let tx of value) {
+          try {
+            let newtx = new Transaction();
+            newtx.deserialize_from_web(this.app, tx);
+	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+            this.manager.profile_replies.push(t); // the tweet
+          } catch (err) {}
+        }
+      }
+    });
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
         for (let tx of value) {

@@ -187,6 +187,16 @@ class Tweet {
     this.noerrors = true;
   }
 
+  isPost() {
+    if (this.parent_id == "") { return true; }
+    return false;
+  }
+
+  isReply() {
+    if (this.parent_id != "") { return true; }
+    return false;
+  }
+
   formatDate(ts = 0) {
     let submit_ts = ts || this.updated_at;
     let dt = this.app.browser.formatDate(submit_ts);
