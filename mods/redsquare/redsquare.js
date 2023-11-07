@@ -90,7 +90,7 @@ class RedSquare extends ModTemplate {
     this.theme_options = {
       lite: "fa-solid fa-sun",
       dark: "fa-solid fa-moon",
-      sangre: "fa-solid fa-droplet"
+      sangre: "fa-solid fa-droplet",
     };
 
     return this;
@@ -479,22 +479,26 @@ class RedSquare extends ModTemplate {
     if (conf === 0) {
       console.log("%%");
       console.log("NEW TRANSACTION RECEIVED!");
-      console.log("txmsg: " + JSON.stringify(txmsg));
+      if (txmsg.data.images){
+        let new_obj = JSON.parse(JSON.stringify(txmsg));
+        new_obj.data.images = "[image tweet]";
+        console.log("txmsg: " + JSON.stringify(new_obj));  
+      }else{
+        console.log("txmsg: " + JSON.stringify(txmsg));  
+      }
+      
     }
 
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
           await this.receiveTweetTransaction(blk, tx, conf, this.app);
-          this.sqlcache = {};
         }
         if (txmsg.request === "like tweet") {
           await this.receiveLikeTransaction(blk, tx, conf, this.app);
-          this.sqlcache = {};
         }
         if (txmsg.request === "flag tweet") {
           await this.receiveFlagTransaction(blk, tx, conf, this.app);
-          this.sqlcache = {};
         }
       }
     } catch (err) {
@@ -503,8 +507,8 @@ class RedSquare extends ModTemplate {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
-    if (type == 'nuke') {
-      console.log("clearing localforage for redsquare //////");  
+    if (type == "nuke") {
+      console.log("clearing localforage for redsquare //////");
 
       // clear localforage data
       //localforage.clear();
@@ -608,7 +612,7 @@ class RedSquare extends ModTemplate {
         if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
         } else if (created_at == "later") {
-          obj.created_later_than = this.peers[i].tweets_earliest_ts;
+          obj.created_later_than = this.peers[i].tweets_latest_ts;
         }
 
         this.app.storage.loadTransactions(
@@ -745,34 +749,6 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadTweetChildren(peer, sig, mycallback = null) {
-    if (this.peers.length == 0) {
-      return;
-    }
-    if (mycallback == null) {
-      return;
-    }
-
-    for (let i = 0; i < this.peers.length; i++) {
-      let peer = this.peers[i].peer;
-
-      let x = [];
-      let sql = `SELECT *
-                 FROM tweets
-                 WHERE parent_id = '${sig}'
-                 ORDER BY created_at DESC`;
-
-      this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
-        for (let z = 0; z < txs.length; z++) {
-          this.addTweet(txs[z]);
-        }
-        if (mycallback) {
-          mycallback(txs);
-        }
-      });
-    }
-  }
-
   loadTweetWithSig(sig, mycallback = null) {
     if (this.peers.length == 0) {
       return;
@@ -860,57 +836,6 @@ class RedSquare extends ModTemplate {
     );
   }
 
-  loadTweetsWithParentId(sig, mycallback = null) {
-    if (this.peers.length == 0) {
-      return;
-    }
-    if (mycallback == null) {
-      return;
-    }
-
-    let t = this.returnTweet(sig);
-    if (t != null) {
-      let x = [];
-      for (let z = 0; z < t.children.length; z++) {
-        x.push(t.children[z]);
-      }
-      mycallback(x);
-      return;
-    }
-
-    let sql = `SELECT *
-               FROM tweets
-               WHERE parent_id = '${sig}'
-               ORDER BY created_at DESC`;
-    this.loadTweetsFromPeer(mod.peers[0].peer, sql, (txs) => {
-      let x = [];
-      this.loadTweetsFromPeer(
-        peer,
-        sql,
-        (txs) => {
-          for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(app, mod, txs[z], ".tweet-manager");
-            x.push(tweet);
-          }
-          mycallback(x);
-        },
-        false,
-        false
-      );
-      return;
-    });
-  }
-
-  returnEarliestTimestampFromTransactionArray(txs = []) {
-    let ts = new Date().getTime();
-    for (let i = 0; i < txs.length; i++) {
-      if (txs[i].timestamp < ts) {
-        ts = txs[i].timestamp;
-      }
-    }
-    return ts;
-  }
-
   ///////////////
   // add tweet //
   ///////////////
@@ -932,19 +857,13 @@ class RedSquare extends ModTemplate {
     tweet.updated_at = tx.timestamp;
     let is_notification = 0;
 
-    if (!tweet.tx) {
-      return;
-    }
-
     //
     // avoid errors
     //
-    if (!tweet) {
+    if (!tweet?.tx) {
       return;
     }
-    if (!tweet.tx) {
-      return;
-    }
+
     if (!tweet.tx.optional) {
       tweet.tx.optional = {};
     }
@@ -955,6 +874,8 @@ class RedSquare extends ModTemplate {
     // NOTE -- addNotification() duplicates while avoiding this.tweets insertion
     //
     if (tx.isTo(this.publicKey)) {
+      console.log("RS: Processing Tweet/Like directed to me");
+
       //
       // this is a notification, so update our timestamps
       //
@@ -968,6 +889,8 @@ class RedSquare extends ModTemplate {
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.publicKey)) {
+        console.log("Not from me");
+
         let insertion_index = 0;
         if (prepend == false) {
           for (let i = 0; i < this.notifications.length; i++) {
@@ -986,6 +909,8 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
+          console.log("new notification");
+
           //
           // insert / update
           //
@@ -1311,7 +1236,70 @@ console.log("#");
   }
 
   async receiveLikeTransaction(blk, tx, conf, app) {
-    console.log(": receive like transaction!");
+    console.log("RS: receive like transaction!");
+
+    let txmsg = tx.returnMessage();
+
+    let liked_tweet = this.returnTweet(txmsg.data.signature);
+
+
+    //
+    // save optional likes
+    //
+
+    if (liked_tweet?.tx) {
+      
+      console.log("I have liked tweet locally");
+
+      if (!liked_tweet.tx.optional) {
+        liked_tweet.tx.optional = {};
+      }
+
+      if (!liked_tweet.tx.optional.num_likes) {
+        liked_tweet.tx.optional.num_likes = 0;
+      }
+      liked_tweet.tx.optional.num_likes++;
+      
+      await this.app.storage.updateTransaction(liked_tweet.tx, { owner: this.publicKey }, "localhost");
+
+      liked_tweet.renderLikes();
+
+    } else {
+      //
+      // fetch original
+      //
+      // servers load from themselves
+      //
+      // servers update their TX.updated_at timestamps based on current_time, since they won't be
+      // fetching the blockchain transiently afterwards while viewing tweets that have loaded from
+      // others. this permits browsers to avoid double-liking tweets that show up with pre-calculated
+      // likes, as those will also have pre-updated updated_at values.
+      //
+      // this isn't an ironclad way of avoiding browsers saving likes 2x, but last_updated is not a
+      // consensus variable and if they're loading tweets from server-archives uncritically it is a
+      // sensible set of defaults.
+      //
+      this.app.storage.loadTransactions(
+        { sig: txmsg.data.signature, owner: this.publicKey },
+        async (txs) => {
+          if (txs?.length > 0) {
+            let tx = txs[0];
+            
+            if (!tx.optional) {
+              tx.optional = {};
+            }
+            if (!tx.optional.num_likes) {
+              tx.optional.num_likes = 0;
+            }
+            tx.optional.num_likes++;
+
+            console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
+            await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
+          }
+        },
+        "localhost"
+      );
+    }
 
     //
     // browsers
@@ -1321,54 +1309,11 @@ console.log("#");
       // save my likes
       //
       if (tx.isTo(this.publicKey)) {
-        let ts = tx.timestamp;
-
-        await this.app.storage.saveTransaction(tx, {
-          owner: this.publicKey,
-          field3: this.publicKey, /* Default field3 is tx.to, which should be me since my tweet was liked... */
-        });
 
         //
-        // save optional likes
+        // Save locally
         //
-        let txmsg = tx.returnMessage();
-        if (this.tweets_sigs_hmap[txmsg.data.signature]) {
-          let tweet = this.returnTweet(txmsg.data.signature);
-
-          if (tweet.tx) {
-            if (!tweet.tx.optional) {
-              tweet.tx.optional = {};
-            }
-            if (tweet.tx.optional) {
-              if (!tweet.tx.optional.updated_at) {
-                tweet.tx.optional.updated_at = 0;
-              }
-              if (tweet.tx.optional.updated_at > ts) {
-                return;
-              } else {
-                // we should logically update updated_at here, but we don't
-                // because browsers will not load likes for each other in a
-                // confused manner like this, and not updating the field
-                // allows for accurate counting of multiple likes...
-              }
-            }
-          }
-          if (tweet == null) {
-            return;
-          }
-          let tx = tweet.tx;
-          if (!tx.optional) {
-            tx.optional = {};
-          }
-          if (!tx.optional.num_likes) {
-            tx.optional.num_likes = 0;
-          }
-          tx.optional.num_likes++;
-          await this.app.storage.updateTransaction(tx, { owner: this.publicKey });
-          tweet.renderLikes();
-        } else {
-          await this.app.storage.updateTransaction(tx, { owner: this.publicKey });
-        }
+        await this.app.storage.saveTransaction(tx, {owner: this.publicKey, field3: this.publicKey}, "localhost");
 
         //
         // convert like into tweet and addTweet to get notifications working
@@ -1376,62 +1321,11 @@ console.log("#");
         this.addTweet(tx, true);
 
         //
-        // save local cache
+        // save local cache with updated values...
         //
         this.saveLocalTweets();
       }
-
-      return;
     }
-
-    //
-    // servers
-    //
-    let txmsg = tx.returnMessage();
-    let sql = `UPDATE tweets
-               SET num_likes = num_likes + 1
-               WHERE sig = $sig`;
-    let params = {
-      $sig: txmsg.data.signature,
-    };
-    await app.storage.executeDatabase(sql, params, "redsquare");
-
-    //
-    // fetch original
-    //
-    // servers load from themselves
-    //
-    // servers update their TX.updated_at timestamps based on current_time, since they won't be
-    // fetching the blockchain transiently afterwards while viewing tweets that have loaded from
-    // others. this permits browsers to avoid double-liking tweets that show up with pre-calculated
-    // likes, as those will also have pre-updated updated_at values.
-    //
-    // this isn't an ironclad way of avoiding browsers saving likes 2x, but last_updated is not a
-    // consensus variable and if they're loading tweets from server-archives uncritically it is a
-    // sensible set of defaults.
-    //
-    this.app.storage.loadTransactions(
-      { sig: txmsg.data.signature, owner: this.publicKey },
-      async (txs) => {
-        if (!txs) {
-          return;
-        }
-        if (txs.length == 0) {
-          return;
-        }
-        let tx = txs[0];
-        if (!tx.optional) {
-          tx.optional = {};
-        }
-        if (!tx.optional.num_likes) {
-          tx.optional.num_likes = 0;
-        }
-        tx.optional.updated_at = new Date().getTime();
-        tx.optional.num_likes++;
-        await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
-      },
-      "localhost"
-    );
 
     //
     // update cache
@@ -1469,103 +1363,100 @@ console.log("#");
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
-    console.log(":");
-    console.log(":");
-    console.log(": receive tweet transaction!");
-    console.log(":");
-    console.log(":");
+    console.log("RS: receive tweet transaction!");
 
     try {
       let tweet = new Tweet(app, this, tx, ".tweet-manager");
+      let other_tweet = null;
       let txmsg = tx.returnMessage();
 
       //
-      // browsers
+      // browsers keep a list in memory of processed tweets
       //
       if (app.BROWSER == 1) {
-        //
+                //
         // profile caching of tweets FROM me
         //
         if (tx.isFrom(this.publicKey)) {
-	  if (this.manager) {
-	    if (tweet.isPost()) {
-	      if (!this.manager.profilePostsAlreadyHasTweet(tweet)) { this.profile_posts.push(tweet); this.saveLocalProfile(); }
-	    }
-	    if (tweet.isReply()) {
-	      if (!this.manager.profileRepliesAlreadyHasTweet(tweet)) { this.profile_replies.push(tweet); this.saveLocalProfile(); }
-	    }
-	  }
-	}
+    if (this.manager) {
+      if (tweet.isPost()) {
+        if (!this.manager.profilePostsAlreadyHasTweet(tweet)) { this.profile_posts.push(tweet); this.saveLocalProfile(); }
+      }
+      if (tweet.isReply()) {
+        if (!this.manager.profileRepliesAlreadyHasTweet(tweet)) { this.profile_replies.push(tweet); this.saveLocalProfile(); }
+      }
+    }
+  }
 
-        //
-        // save tweets addressed to me
-        //
-        if (tx.isTo(this.publicKey)) {
-          //
-          // this transaction is TO me, but I may not be the tx.to[0].publicKey address, and thus the archive
-          // module may not index this transaction for me in a way that makes it very easy to fetch (field3 = MY_KEY}
-          // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
-          // from archives by fetching on field3 will get this.
-          //
-          await this.app.storage.saveTransaction(tx, {
-            owner: this.publicKey,
-            field1: "RedSquare",
-            field3: this.publicKey,
-          });
+        this.addTweet(tx, 1);
+      }
 
-          //
-          // if replies
-          //
-          if (txmsg.data?.parent_id) {
-            if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
-              let tweet = this.returnTweet(txmsg.data.parent_id);
-              if (tweet == null) {
-                return;
-              }
-              if (!tweet.tx.optional) {
-                tweet.tx.optional = {};
-              }
-              if (!tweet.tx.optional.num_replies) {
-                tweet.tx.optional.num_replies = 0;
-              }
-              tweet.tx.optional.num_replies++;
-              tweet.rerenderControls();
-              await this.app.storage.updateTransaction(
-                tx,
-                {
-                  owner: this.publicKey,
-                  field3: this.publicKey,
-                },
-                "localhost"
-              );
-              tweet.renderReplies();
-            } else {
-              await this.app.storage.updateTransaction(
-                tx,
-                {
-                  owner: this.publicKey,
-                  field3: this.publicKey,
-                },
-                "localhost"
-              );
-            }
+      //
+      // save this transaction in our archives as a redsquare transaction that is owned by ME (the server), so that I
+      // can deliver it to users who want to fetch RedSquare transactions from the archives instead of just through the
+      // sql database -- this is done by specifying that I -- "localhost" am the peer required.
+      //
+
+      //
+      // this transaction is TO me, but I may not be the tx.to[0].publicKey address, and thus the archive
+      // module may not index this transaction for me in a way that makes it very easy to fetch (field3 = MY_KEY}
+      // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
+      // from archives by fetching on field3 will get this.
+      //
+      let opt = {
+        owner: this.publicKey,
+        field1: "RedSquare", //defaults to module.name, but just to make sure we match the capitalization with our loadTweets
+      };
+
+      if (tx.isTo(this.publicKey)) {
+        opt["field3"] = this.publicKey;
+      }
+
+      await this.app.storage.saveTransaction(tx, opt, "localhost");
+
+      //
+      // servers -- get open graph properties
+      //
+      //  TODO 
+      //
+
+      tweet = await tweet.generateTweetProperties(app, this, 1);
+
+
+      //
+      // Includes retweeted tweet
+      //
+      if (tweet.retweet_tx != null) {
+
+        other_tweet = this.returnTweet(tweet.thread_id);
+
+        if (other_tweet) {
+          if (!other_tweet.tx.optional) {
+            other_tweet.tx.optional = {};
           }
-
+          if (!other_tweet.tx.optional.num_retweets) {
+            other_tweet.tx.optional.num_retweets = 0;
+          }
+          other_tweet.tx.optional.num_retweets++;
+          await this.app.storage.updateTransaction(
+            other_tweet.tx,
+            { owner: this.publicKey },
+            "localhost"
+          );
+          other_tweet.renderRetweets();
+        } else {
           //
-          // if retweets
+          // fetch archived copy
           //
-          if (txmsg.data?.retweet_tx) {
-            if (txmsg.data?.retweet_tx) {
-              let rtx = new saito.default.transaction();
-              rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
-              let rtxsig = rtxobj.sig;
+          // servers load from themselves
+          //
+          this.app.storage.loadTransactions(
+            { sig: tweet.thread_id, owner: this.publicKey },
+            async (txs) => {
+              if (txs?.length) {
+                //Only update the first copy??
+                let tx = txs[0];
 
-              if (this.tweets_sigs_hmap[rtxsig]) {
-                let tweet2 = this.returnTweet(rtxsig);
-                if (tweet2 == null) {
-                  return;
-                }
-                let tx = tweet2.tx;
                 if (!tx.optional) {
                   tx.optional = {};
                 }
@@ -1575,211 +1466,74 @@ console.log("#");
                 tx.optional.num_retweets++;
                 await this.app.storage.updateTransaction(
                   tx,
-                  {
-                    owner: this.publicKey,
-                    field3: this.publicKey,
-                  },
-                  "localhost"
-                );
-                tweet2.renderRetweets();
-              } else {
-                await this.app.storage.updateTransaction(
-                  tx,
-                  {
-                    owner: this.publicKey,
-                    field3: this.publicKey(),
-                  },
+                  { owner: this.publicKey },
                   "localhost"
                 );
               }
-            }
-          }
+            },
+            "localhost"
+          );
         }
-
-        this.addTweet(tx, 1);
-        return;
       }
 
       //
-      // save this transaction in our archives as a redsquare transaction that is owned by ME (the server), so that I
-      // can deliver it to users who want to fetch RedSquare transactions from the archives instead of just through the
-      // sql database -- this is done by specifying that I -- "localhost" am the peer required.
+      // Is a reply
       //
-      await this.app.storage.saveTransaction(tx, { owner: this.publicKey }, "localhost");
-
-      //
-      // servers
-      //
-      tweet = await tweet.generateTweetProperties(app, this, 1);
-
-      let type_of_tweet = 0; // unknown
-      if (txmsg.data?.parent_id) {
-        type_of_tweet = 1; // reply
-      }
-      if (txmsg.data?.retweet_tx) {
-        type_of_tweet = 2; // retweet
-      }
-      if (tweet.link != null) {
-        type_of_tweet = 3; // link
-      }
-      if (tweet.images?.length > 0) {
-        type_of_tweet = 4; // images
-      }
-
-      let created_at = tx.timestamp;
-      let updated_at = tx.timestamp;
-
-      //
-      // insert the basic information
-      //
-      let sql = `INSERT INTO tweets (tx,
-                                     sig,
-                                     created_at,
-                                     updated_at,
-                                     parent_id,
-                                     thread_id,
-                                     type,
-                                     publickey,
-                                     link,
-                                     link_properties,
-                                     num_replies,
-                                     num_retweets,
-                                     num_likes,
-                                     has_images,
-                                     tx_size)
-                 VALUES ($txjson,
-                         $sig,
-                         $created_at,
-                         $updated_at,
-                         $parent_id,
-                         $thread_id,
-                         $type,
-                         $publickey,
-                         $link,
-                         $link_properties,
-                         0,
-                         0,
-                         0,
-                         $has_images,
-                         $tx_size)`;
-
-      let has_images = 0;
-      if (typeof tweet.images != "undefined") {
-        has_images = 1;
-      }
-      let txjson = tx.serialize_to_web(this.app);
-      let tx_size = txjson.length;
-
-      let params = {
-        $txjson: txjson,
-        $sig: tx.signature,
-        $created_at: created_at,
-        $updated_at: updated_at,
-        $parent_id: tweet.tx.optional.parent_id,
-        $type: type_of_tweet,
-        $thread_id: tweet.tx.optional.thread_id,
-        $publickey: tx.from[0].publicKey,
-        $link: tweet.link,
-        $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
-        $has_images: has_images,
-        $tx_size: tx_size,
-      };
-
-      await app.storage.executeDatabase(sql, params, "redsquare");
-
-      let ts = new Date().getTime();
-      let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
-      let params2 = {
-        $timestamp: ts,
-        $sig: tweet.thread_id,
-      };
-      await app.storage.executeDatabase(sql2, params2, "redsquare");
-
-      if (tweet.retweet_tx != null) {
-        let ts = new Date().getTime();
-        let sql3 = "UPDATE tweets SET num_retweets = num_retweets + 1 WHERE sig = $sig";
-        let params3 = {
-          $sig: tweet.thread_id,
-        };
-        await app.storage.executeDatabase(sql3, params3, "redsquare");
+      if (tweet.parent_id && tweet.parent_id !== tweet.tx.signature) {
 
         //
-        // fetch archived copy
+        // if we have the parent tweet in memory...
         //
-        // servers load from themselves
-        //
-        this.app.storage.loadTransactions(
-          { sig: tweet.thread_id, owner: this.publicKey },
-          async (txs) => {
-            if (!txs) {
-              return;
-            }
-            if (txs.length == 0) {
-              return;
-            }
-            let tx = txs[0];
-            if (!tx.optional) {
-              tx.optional = {};
-            }
-            if (!tx.optional.num_retweets) {
-              tx.optional.num_retweets = 0;
-            }
-            tx.optional.num_retweets++;
-            await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
-          },
-          "localhost"
-        );
-      }
+        other_tweet = this.returnTweet(tweet.parent_id);
 
-      if (tweet.parent_id !== tweet.tx.signature && tweet.parent_id !== "") {
-        let ts = new Date().getTime();
-        let sql4 = "UPDATE tweets SET num_replies = num_replies + 1 WHERE sig = $sig";
-        let params4 = {
-          $sig: tweet.parent_id,
-        };
-        await app.storage.executeDatabase(sql4, params4, "redsquare");
+        if (other_tweet) {
+          if (!other_tweet.tx.optional) {
+            other_tweet.tx.optional = {};
+          }
+          if (!other_tweet.tx.optional.num_replies) {
+            other_tweet.tx.optional.num_replies = 0;
+          }
+          other_tweet.tx.optional.num_replies++;
+          other_tweet.rerenderControls();
+          other_tweet.renderReplies();
 
-        //
-        // fetch archived copy
-        //
-        // servers load from themselves
-        //
-        this.app.storage.loadTransactions(
-          { sig: tweet.parent_id, owner: this.publicKey },
-          async (txs) => {
-            if (!txs) {
-              return;
-            }
-            if (txs.length == 0) {
-              return;
-            }
-            let tx = txs[0];
-            if (!tx.optional) {
-              tx.optional = {};
-            }
-            if (!tx.optional.num_replies) {
-              tx.optional.num_replies = 0;
-            }
-            if (this.app.BROWSER) {
-              //alert("num replies incrementing 1");
-            }
-            tx.optional.num_replies++;
-            let t = this.returnTweet(tx.signature);
-            if (t) {
-              t.rerenderControls();
-            }
-            await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
-          },
-          "localhost"
-        );
+          await this.app.storage.updateTransaction(
+            other_tweet.tx,
+            { owner: this.publicKey },
+            "localhost"
+          );
+        } else {
+          //
+          // ...otherwise, hit up the archive first
+          //
+          this.app.storage.loadTransactions(
+            { sig: tweet.parent_id, owner: this.publicKey },
+            async (txs) => {
+              if (txs?.length) {
+                let tx = txs[0];
+                if (!tx.optional) {
+                  tx.optional = {};
+                }
+                if (!tx.optional.num_replies) {
+                  tx.optional.num_replies = 0;
+                }
+                tx.optional.num_replies++;
+                await this.app.storage.updateTransaction(
+                  tx,
+                  { owner: this.publicKey },
+                  "localhost"
+                );
+              }
+            },
+            "localhost"
+          );
+        }
       }
 
       //
       // update cache
       //
       this.updateTweetsCacheForBrowsers();
-      this.sqlcache = {};
-      return;
     } catch (err) {
       console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
     }
@@ -1813,24 +1567,6 @@ console.log("#");
       return;
     }
 
-    //
-    // servers
-    //
-    let txmsg = tx.returnMessage();
-    let sql = `UPDATE tweets
-               SET flagged = 1
-               WHERE sig = $sig`;
-    let params = {
-      $sig: txmsg.data.signature,
-    };
-    await app.storage.executeDatabase(sql, params, "redsquare");
-
-    this.sqlcache = [];
-
-    //
-    // update cache
-    //
-    this.updateTweetsCacheForBrowsers();
 
     return;
   }
@@ -2103,6 +1839,9 @@ console.log("profile cache load: " + t.text);
   // writes the latest 10 tweets to tweets.js
   //
   async updateTweetsCacheForBrowsers() {
+    if (this.app.BROWSER) {
+      return;
+    }
     let hex_entries = [];
 
     let sql = `SELECT *, (updated_at + 10 * (num_likes + num_replies + num_retweets)) AS virality

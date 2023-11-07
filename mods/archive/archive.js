@@ -206,7 +206,7 @@ class Archive extends ModTemplate {
       });
 
       if (numRows) {
-        console.log("Local Archive index successfully inserted");
+        console.log("Local Archive index successfully inserted: ", JSON.parse(JSON.stringify(newObj)));
       }
     } else {
       //
@@ -267,27 +267,15 @@ class Archive extends ModTemplate {
     // update records
     //
     let newObj = {};
-    newObj.user_id = obj?.user_id || 0; //What is this supposed to be
-    newObj.publicKey = obj?.publicKey || "";
+
     newObj.owner = obj?.owner || "";
-    newObj.signature = obj?.signature || "";
-    if (newObj.signature == "" && obj?.sig) {
-      newObj.signature = obj.sig;
-    }
-    if (newObj.signature == "") {
-      if (tx?.signature) {
-        newObj.signature = tx.signature;
-      }
-    }
-    //Field1-3 are set by default in app.storage
-    newObj.field1 = obj?.field1 || "";
-    newObj.field2 = obj?.field2 || "";
-    newObj.field3 = obj?.field3 || "";
-    newObj.block_id = obj?.block_id || 0;
-    newObj.block_hash = obj?.block_hash || "";
-    newObj.preserve = obj?.preserve || 0;
+    newObj.signature = obj?.signature || obj?.sig || tx?.signature || "";
     newObj.tx = tx.serialize_to_web(this.app);
     newObj.updated_at = new Date().getTime();
+
+    if (!newObj.signature){
+      console.warn("No tx signature for archive update:", tx);
+    }
 
     //
     // update index
@@ -295,14 +283,13 @@ class Archive extends ModTemplate {
     let sql = `UPDATE archives
            SET updated_at = $updated_at,
                owner = $owner,
-               tx  = $tx,
-               preserve   = $preserve
+               tx  = $tx
            WHERE sig = $sig`;
+ 
     let params = {
       $updated_at: newObj.updated_at,
       $owner: newObj.owner,
       $tx: tx.serialize_to_web(this.app),
-      $preserve: newObj.preserve,
       $sig: newObj.signature,
     };
 
@@ -315,7 +302,6 @@ class Archive extends ModTemplate {
           updated_at: newObj.updated_at,
           owner: newObj.owner,
           tx: tx.serialize_to_web(this.app),
-          preserve: newObj.preserve,
         },
         where: {
           sig: newObj.signature,
@@ -670,8 +656,6 @@ class Archive extends ModTemplate {
     params = { $ts: ts };
     await this.app.storage.executeDatabase(sql, params, "archive");
 
-    sql = `DELETE from archives WHERE tx = ""`;
-    await this.app.storage.executeDatabase(sql, {}, "archive");    
 
     x = Math.random();
     // 90% of prunings don't vacuum
