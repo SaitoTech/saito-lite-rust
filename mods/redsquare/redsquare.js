@@ -50,6 +50,11 @@ class RedSquare extends ModTemplate {
     this.notifications_sigs_hmap = {};
 
     //
+    // set by main
+    //
+    this.manager = "";
+
+    //
     // is this a notification?
     //
     this.notifications_last_viewed_ts = 0;
@@ -291,6 +296,7 @@ class RedSquare extends ModTemplate {
       await this.header.initialize(this.app);
       this.menu = new SaitoMenu(this.app, this, ".saito-sidebar.left");
       this.sidebar = new RedSquareSidebar(this.app, this, ".saito-sidebar.right");
+      this.manager = this.main.manager;
 
       this.addComponent(this.header);
       this.addComponent(this.main);
@@ -946,6 +952,8 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
+    // NOTE -- addNotification() duplicates while avoiding this.tweets insertion
+    //
     if (tx.isTo(this.publicKey)) {
       //
       // this is a notification, so update our timestamps
@@ -1009,6 +1017,13 @@ class RedSquare extends ModTemplate {
           this.tweets_oldest_ts = tx.timestamp;
         }
         return;
+      } else {
+
+	//
+	// update notifications cache
+	//
+	this.saveLocalNotifications();
+
       }
     }
 
@@ -1130,6 +1145,84 @@ class RedSquare extends ModTemplate {
       }
     }
   }
+  //
+  // addTweets adds to notifications, but we have a separate function here
+  // for cached notifications, because we don't want to show all of the 
+  // cached notifications in the main thread automatically, which is what
+  // will happen if we use addTweet() on loading.
+  //
+  async addNotification(tx, prepend = false) {
+
+    let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
+    let is_notification = 1;
+
+console.log("#");
+console.log("# note: " + tweet.text);
+console.log("#");
+
+    if (!tweet.tx) {
+      return;
+    }
+
+    //
+    // avoid errors
+    //
+    if (!tweet) {
+      return;
+    }
+    if (!tweet.tx) {
+      return;
+    }
+    if (!tweet.tx.optional) {
+      tweet.tx.optional = {};
+    }
+
+    if (tx.isTo(this.publicKey)) {
+
+      //
+      // notify of other people's actions, but not ours
+      //
+      if (!tx.isFrom(this.publicKey)) {
+        let insertion_index = 0;
+        if (prepend == false) {
+          for (let i = 0; i < this.notifications.length; i++) {
+            if (this.notifications[i].updated_at > tweet.updated_at) {
+              insertion_index++;
+              break;
+            } else {
+              insertion_index++;
+            }
+          }
+        }
+
+        is_notification = 1;
+
+        //
+        // only insert notification if doesn't already exist
+        //
+        if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
+          //
+          // insert / update
+          //
+          this.notifications.splice(insertion_index, 0, tweet);
+          this.notifications_sigs_hmap[tweet.tx.signature] = 1;
+
+	  if (!this.notifications_last_viewed_ts && !(this.notifications_last_viewed_ts < 1)) {
+	    this.loadOptions();
+	  }
+
+          if (tx.timestamp > this.notifications_last_viewed_ts) {
+            this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
+            this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
+          }
+        }
+      }
+    }
+
+    return;
+
+  }
+
 
   returnTweet(tweet_sig = null) {
     if (tweet_sig == null) {
@@ -1381,6 +1474,20 @@ class RedSquare extends ModTemplate {
       // browsers
       //
       if (app.BROWSER == 1) {
+        //
+        // profile caching of tweets FROM me
+        //
+        if (tx.isFrom(this.publicKey)) {
+	  if (this.manager) {
+	    if (tweet.isPost()) {
+	      if (!this.manager.profilePostsAlreadyHasTweet(tweet)) { this.profile_posts.push(tweet); this.saveLocalProfile(); }
+	    }
+	    if (tweet.isReply()) {
+	      if (!this.manager.profileRepliesAlreadyHasTweet(tweet)) { this.profile_replies.push(tweet); this.saveLocalProfile(); }
+	    }
+	  }
+	}
+
         //
         // save tweets addressed to me
         //
@@ -1743,6 +1850,41 @@ class RedSquare extends ModTemplate {
     });
   }
 
+  saveLocalProfile() {
+    let ptxs = [];
+    let rtxs = [];
+    for (let i = 0; i < this.manager.profile_posts.length && i < 20; i++) {
+      ptxs.push(this.manager.profile_posts[i].tx.serialize_to_web(this.app));
+    }
+    for (let i = 0; i < this.manager.profile_replies.length && i < 20; i++) {
+      rtxs.push(this.manager.profile_replies[i].tx.serialize_to_web(this.app));
+    }
+    localforage.setItem(`profile_posts_history`, ptxs).then(function () {
+      console.log(`Saved ${ptxs.length} tweets`);
+    });
+    localforage.setItem(`profile_replies_history`, rtxs).then(function () {
+      console.log(`Saved ${rtxs.length} tweets`);
+    });
+  }
+
+  saveLocalNotifications() {
+    let ntxs = [];
+    let total_cached = 0;
+    for (let i = 0; i < this.notifications.length && total_cached < 10; i++) {
+      //
+      // avoid caching likes, because we'll fetch them separately
+      //
+      let txmsg = this.notifications[i].tx.returnMessage();
+      if (txmsg.request != "like tweet") {
+        ntxs.push(this.notifications[i].tx.serialize_to_web(this.app));
+	total_cached++;
+      }
+    }
+    localforage.setItem(`notifications_history`, ntxs).then(function () {
+      console.log(`Saved ${ntxs.length} notifications`);
+    });
+  }
+
   loadLocalTweets() {
     if (!this.app.BROWSER) {
       return;
@@ -1751,10 +1893,44 @@ class RedSquare extends ModTemplate {
     if (this.app.browser.returnURLParameter("tweet_id")) {
       return;
     }
-    if (this.app.browser.returnURLParameter("user_id")) {
-      return;
-    }
 
+    localforage.getItem(`notifications_history`, (error, value) => {
+      if (value && value.length > 0) {
+        for (let tx of value) {
+          try {
+            let newtx = new Transaction();
+            newtx.deserialize_from_web(this.app, tx);
+            this.addNotification(newtx);
+          } catch (err) {}
+        }
+      }
+    });
+    localforage.getItem(`profile_posts_history`, (error, value) => {
+      if (value && value.length > 0) {
+        for (let tx of value) {
+          try {
+            let newtx = new Transaction();
+            newtx.deserialize_from_web(this.app, tx);
+	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+console.log("profile cache load: " + t.text);
+            this.manager.profile_posts.push(t); // the tweet
+          } catch (err) {}
+        }
+      }
+    });
+    localforage.getItem(`profile_replies_history`, (error, value) => {
+      if (value && value.length > 0) {
+        for (let tx of value) {
+          try {
+            let newtx = new Transaction();
+            newtx.deserialize_from_web(this.app, tx);
+	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+console.log("profile cache load: " + t.text);
+            this.manager.profile_replies.push(t); // the tweet
+          } catch (err) {}
+        }
+      }
+    });
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
         for (let tx of value) {
@@ -1785,6 +1961,8 @@ class RedSquare extends ModTemplate {
     if (this.app.options.redsquare) {
       this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
       this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
+      if (!this.notifications_last_viewed_ts) { this.notifications_last_viewed_ts = 0; }
+      if (!this.notifications_number_unviewed) { this.notifications_number_unviewed = 0; }
     } else {
       this.app.options.redsquare = {};
       this.notifications_last_viewed_ts = new Date().getTime();

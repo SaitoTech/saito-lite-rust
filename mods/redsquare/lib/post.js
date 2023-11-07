@@ -230,10 +230,30 @@ class Post {
     let rparent = this.tweet;
     if (rparent) {
       if (posted_tweet.retweet_tx) {
+
+	//
+	// go back to tweets list if needed
+	//
+	if (this.mod.manager) { 
+	  if (this.mod.manager.mode != "tweets") {
+	    this.mod.manager.render("tweets"); // switches
+	  }
+	}
+
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
       } else {
+
+	//
+	// go back to tweets list if needed
+	//
+	if (this.mod.manager) { 
+	  if (this.mod.manager.mode != "tweets") {
+	    this.mod.manager.render("tweets"); // switches
+	  }
+	}
+
         this.mod.addTweet(newtx, true);
         if (rparent.parent_id != "") {
 	  let t = this.mod.returnTweet(rparent.parent_id);
@@ -241,16 +261,21 @@ class Post {
 	    t.critical_child = posted_tweet;
 	  }
         }
+
         rparent.critical_child = posted_tweet;
-console.log("FORCE RENDERING WITH CRITICAL CHILD!");
         rparent.forceRenderWithCriticalChild();
-//
-// oct 26 - not needed...
-//
-//	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
-//	try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
       }
     } else {
+
+      //
+      // go back to tweets list if needed
+      //
+      if (this.mod.manager) { 
+        if (this.mod.manager.mode != "tweets") {
+          this.mod.manager.render("tweets"); // switches
+        }
+      }
+
       this.mod.addTweet(newtx, true);
       posted_tweet.render(true);
     }

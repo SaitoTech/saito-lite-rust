@@ -3,6 +3,20 @@
   margin-top: -1rem;
 }
 
+.saito-profile-menu {
+}
+
+.saito-profile-menu div {
+  float: left;
+  margin-right: 5rem;
+  cursor: pointer;
+}
+
+.saito-profile-menu .active {
+  border-bottom: 1px dashed var(--saito-font-color);
+}
+
+
 .saito-profile-cover {
   width: 100%;
   height: 15rem;
@@ -81,6 +95,8 @@
   border: 1px solid var(--saito-font-color);
   width: 10rem;
   height: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   text-align: center;
   line-height: 4rem;
   border-radius: 0.3rem;

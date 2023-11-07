@@ -7,7 +7,7 @@ class RedSquareMenu {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMenu";
-
+    this.increments = 0;
   }
 
   render() {
@@ -111,7 +111,10 @@ class RedSquareMenu {
   }
 
   incrementNotifications(menu_item, notifications = -1) {
+
     let qs = `.redsquare-menu-${menu_item}`;
+
+    if (notifications < this.increments && notifications != -1) { notifications = this.increments; }
 
     if (document.querySelector(qs)) {
       qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
