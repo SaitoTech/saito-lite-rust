@@ -501,7 +501,7 @@ class RedSquare extends ModTemplate {
       console.log("clearing localforage for redsquare //////");  
 
       // clear localforage data
-      localforage.clear();
+      //localforage.clear();
     }
   }
 
