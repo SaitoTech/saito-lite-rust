@@ -8,7 +8,7 @@ class GameScheduler {
     this.app = app;
     this.mod = mod;
     this.invite_tx = invite_tx;
-    this.overlay = new SaitoOverlay(app);
+    this.overlay = new SaitoOverlay(app, mod);
     this.mycallback = null;
 
     this.app.connection.on("arcade-launch-game-scheduler", (invite_tx = {}) => {
@@ -18,31 +18,30 @@ class GameScheduler {
     });
   }
 
-  render(mycallback = null) {
-    if (mycallback != null) {
-      this.mycallback = mycallback;
-    }
+  render() {
+
     this.overlay.show(ScheduleInviteTemplate(this.app, this.invite_tx));
-    this.attachEvents(mycallback);
+    this.attachEvents();
   }
 
-  attachEvents(mycallback = null) {
+  attachEvents() {
     let scheduler_self = this;
 
     //
     // create invite now
     //
     document.getElementById("create-invite-now").onclick = (e) => {
-      this.overlay.hide();
+      this.overlay.remove();
 
       this.app.network.propagateTransaction(scheduler_self.invite_tx);
       this.app.connection.emit("relay-send-message", {
-        recipient: scheduler_self.invite_tx.msg.options.desired_opponent_publickey,
+        recipient: [scheduler_self.invite_tx.msg.options.desired_opponent_publickey, this.mod.publicKey],
         request: "arcade spv update",
         data: scheduler_self.invite_tx.toJson(),
       });
 
-      this.mod.addGame(scheduler_self.invite_tx, "open");
+      this.mod.addGame(scheduler_self.invite_tx, "private");
+      this.app.connection.emit("arcade-invite-manager-render-request");
 
       //
       // create invite link from the game_sig

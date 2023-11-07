@@ -99,21 +99,23 @@ class Invite {
 
       //Custom Game
 
-      let defaultOptions = game_mod.returnDefaultGameOptions();
-      let defaultKeys = Object.keys(defaultOptions);
-      let inviteKeys = Object.keys(txmsg.options);
+      if (game_mod){
+        let defaultOptions = game_mod.returnDefaultGameOptions();
+        let defaultKeys = Object.keys(defaultOptions);
+        let inviteKeys = Object.keys(txmsg.options);
 
-      if (defaultKeys.length == inviteKeys.length) {
-        for (const key of defaultKeys) {
-          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")) {
-            alt_game_type += "custom ";
-            this.invite_data.game_type = "custom game";
-            break;
+        if (defaultKeys.length == inviteKeys.length) {
+          for (const key of defaultKeys) {
+            if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")) {
+              alt_game_type += "custom ";
+              this.invite_data.game_type = "custom game";
+              break;
+            }
           }
+        } else {
+          alt_game_type += "custom ";
+          this.invite_data.game_type = "custom game";
         }
-      } else {
-        alt_game_type += "custom ";
-        this.invite_data.game_type = "custom game";
       }
 
       //Crypto Game
@@ -175,16 +177,16 @@ class Invite {
 
     try {
       if (typeof document.querySelector(qs) != "undefined") {
-        document.querySelector(qs).onclick = async (e) => {
+        document.querySelector(qs).onclick = (e) => {
           e.stopImmediatePropagation();
 
-          await this.app.browser.logMatomoEvent(
+          this.app.browser.logMatomoEvent(
             "GameInvite",
             this.invite_data.game_status,
             this.invite_data.game_mod.name
           );
           let game_overlay = new JoinGameOverlay(this.app, this.mod, this.invite_data);
-          await game_overlay.render();
+          game_overlay.render();
         };
       }
     } catch (err) {

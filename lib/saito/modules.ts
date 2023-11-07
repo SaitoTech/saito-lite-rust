@@ -56,17 +56,17 @@ class Mods {
     }
 
     for (let i = 0; i < this.mods.length; i++) {
-      if (!!message && message.module != undefined) {
-        if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-          callbackIndexArray.push(txindex);
-        }
-      } else {
-        if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
-          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-          callbackIndexArray.push(txindex);
-        }
+      // if (!!message && message.module != undefined) {
+      if (this.mods[i].shouldAffixCallbackToModule(message?.module || "", tx) == 1) {
+        callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+        callbackIndexArray.push(txindex);
       }
+      // } else {
+      //   if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
+      //     callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+      //     callbackIndexArray.push(txindex);
+      //   }
+      // }
     }
   }
 
@@ -75,11 +75,26 @@ class Mods {
     peer: Peer,
     mycallback: (any) => Promise<void> = null
   ) {
+    let have_responded = false;
+    let request = "";
+    try{
+      let txmsg = tx.returnMessage();
+      request = txmsg?.request;
+    }catch(err){}
     for (let iii = 0; iii < this.mods.length; iii++) {
+      //console.log(`peer request (${request}), hpt into... ` + this.mods[iii].name);
       try {
-        await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
+        if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
+          have_responded = true;
+        }
       } catch (err) {
-        console.error("handlePeerTransaction Unknown Error: ", err);
+        console.error(`handlePeerTransaction Unknown Error in ${this.mods[iii].name}: `, err);
+      }
+    }
+    if (have_responded == false) {
+      if (mycallback) {
+        console.log("Execute null callback on " + request);
+        mycallback({});
       }
     }
     return;
@@ -187,8 +202,16 @@ class Mods {
     //
     // initialize the modules
     //
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].initialize(this.app);
+    let module_name = "";
+
+    try {
+      for (let i = 0; i < this.mods.length; i++) {
+        module_name = this.mods[i].name;
+        await this.mods[i].initialize(this.app);
+      }
+    } catch (err) {
+      console.error("Failing module: " + module_name);
+      throw new Error(err);
     }
 
     const onPeerHandshakeComplete = this.onPeerHandshakeComplete.bind(this);
@@ -259,10 +282,9 @@ class Mods {
   }
 
   returnModulesRespondingTo(request, obj = null) {
-
     let m = [];
     for (let mod of this.mods) {
-      if ((mod.respondTo(request, obj)) != null) {
+      if (mod.respondTo(request, obj) != null) {
         m.push(mod);
       }
     }
@@ -270,10 +292,9 @@ class Mods {
   }
 
   respondTo(request, obj = null) {
-
     let m = [];
     for (let mod of this.mods) {
-      if ((mod.respondTo(request, obj)) != null) {
+      if (mod.respondTo(request, obj) != null) {
         m.push(mod);
       }
     }
@@ -339,6 +360,12 @@ class Mods {
   }
 
   onNewBlock(blk, i_am_the_longest_chain) {
+    // blk.transactions.forEach(transaction => {
+    //   console.log(transaction.toJson(), "new block")
+    // })
+    console.log("#################");
+    console.log("### New Block ### " + blk.id);
+    console.log("#################");
     for (let iii = 0; iii < this.mods.length; iii++) {
       this.mods[iii].onNewBlock(blk, i_am_the_longest_chain);
     }

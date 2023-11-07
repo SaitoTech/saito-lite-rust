@@ -27,37 +27,33 @@ class DevCardOverlay {
       card.onclick = (e) => {
 
         let target = e.currentTarget;
+
+        if (target.classList.contains("settlers-card-disabled")){
+          salert("You cannot play that card now");
+          return;
+        }
+
         let card = target.getAttribute("id");
         let cardobj = this_dev_card.mod.game.deck[0].cards[this_dev_card.mod.game.deck[0].hand[card]];
 
         this_dev_card.overlay.remove();
 
-
         switch (cardobj.action) {
           case 1: //Soldier/Knight
-            this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
             this_dev_card.mod.addMove(
               `play_knight\t${this_dev_card.mod.game.player}\t${cardobj.card}`
             );
             this_dev_card.mod.endTurn();
             break;
           case 2:
-            // this_dev_card.mod.playYearOfPlenty(
-            //   this_dev_card.mod.game.player,
-            //   cardobj.card
-            // );
-
             this_dev_card.mod.year_of_plenty.player = this_dev_card.mod.game.player;
             this_dev_card.mod.year_of_plenty.cardname = cardobj.card; 
-            this_dev_card.mod.year_of_plenty.render();
-            //this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
+            this_dev_card.mod.year_of_plenty.render(this_dev_card.mod.game.deck[0].hand[card]);
             break;
           case 3:
             this_dev_card.mod.monopoly.player = this_dev_card.mod.game.player;
             this_dev_card.mod.monopoly.cardname = cardobj.card;
-            this_dev_card.mod.monopoly.render();
-            //this_dev_card.mod.playMonopoly(this_dev_card.mod.game.player, cardobj.card);
-            //this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
+            this_dev_card.mod.monopoly.render(this_dev_card.mod.game.deck[0].hand[card]);
             break;
           case 4:
             this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
@@ -80,8 +76,12 @@ class DevCardOverlay {
             this_dev_card.mod.endTurn();
         }
         this_dev_card.mod.removeCardFromHand(this_dev_card.mod.game.deck[0].hand[card]);
-        
+        this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
 
+        if (this_dev_card.mod.game.deck[0].hand.length == 0){
+          document.querySelector(".hud-body .mobile .cards").classList.add("hidden");
+        }
+        
       };
     });
 

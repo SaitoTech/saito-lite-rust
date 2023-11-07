@@ -251,6 +251,20 @@ export default class Crypto {
     return stringx.toFixed(p).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, "");
   }
 
+  convertFloatToSmartPrecision(num, max_precision = 8, min_precision = 0) {
+    let stringx = num.toFixed(max_precision).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, ""); 
+    if (min_precision) {
+      let split_string = stringx.split(".");
+      let fraction = split_string[1] || "";
+      if (fraction.length < min_precision){
+        fraction = fraction.padEnd(min_precision, "0");
+      }
+      stringx = split_string[0] + "." + fraction;
+    }
+
+    return stringx
+  }
+
   /**
    * Checks if a publickey passed into a function
    * fits the criteria for a publickey

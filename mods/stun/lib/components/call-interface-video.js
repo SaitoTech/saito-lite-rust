@@ -3,6 +3,7 @@ const CallInterfaceVideoTemplate = require("./call-interface-video.template");
 
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
+const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 
 class CallInterfaceVideo {
   constructor(app, mod) {
@@ -22,28 +23,42 @@ class CallInterfaceVideo {
     this.remote_streams = new Map();
     this.current_speaker = null;
     this.speaker_candidate = null;
+    this.loader = new SaitoLoader(app, mod);
+    this.public_key = mod.publicKey;
 
-    this.app.connection.on("show-call-interface", async (room_code, videoEnabled, audioEnabled) => {
-      this.room_code = room_code;
+    this.app.connection.on(
+      "show-call-interface",
+      async (room_obj, videoEnabled, audioEnabled, isJoining) => {
+        console.log("show-call-interface", room_obj);
+        this.room_code = room_obj.room_code;
 
-      console.log("Render Video Call Interface");
-      //This will render the (full-screen) component
-      if (!document.querySelector(".stun-chatbox")) {
-        this.render(videoEnabled, audioEnabled);
+        //Why is this a blocking loader????
+        if (isJoining) {
+          this.loader.render(true);
+          setTimeout(() => {
+            this.loader.remove();
+          }, 60000);
+        }
+
+        console.log("Render Video Call Interface");
+        //This will render the (full-screen) component
+        if (!document.querySelector(".stun-chatbox")) {
+          this.render(videoEnabled, audioEnabled);
+        }
+
+        this.room_link = this.createRoomLink();
+
+        /* automatically copy invite link to clipboard for first user */
+        console.log(this.users_on_call);
+
+        if (this.users_on_call == 1) {
+          this.copyInviteLink();
+        }
+
+        // create chat group
+        await this.createRoomTextChat();
       }
-
-      this.room_link = this.createRoomLink();
-
-      /* automatically copy invite link to clipboard for first user */
-      console.log(this.users_on_call);
-
-      if (this.users_on_call == 1) {
-        this.copyInviteLink();
-      }
-
-      // create chat group
-      await this.createRoomTextChat();
-    });
+    );
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
       this.addLocalStream(localStream);
@@ -66,6 +81,7 @@ class CallInterfaceVideo {
 
       this.createVideoBox(peer_id, container);
       if (status === "connecting") {
+        this.loader.remove();
         this.video_boxes[peer_id].video_box.renderPlaceholder("connecting");
       } else if (status === "connected") {
         this.video_boxes[peer_id].video_box.removeConnectionMessage();
@@ -75,6 +91,9 @@ class CallInterfaceVideo {
       } else if (status === "disconnected") {
         this.video_boxes[peer_id].video_box.renderPlaceholder("retrying connection");
       }
+    });
+    app.connection.on("stun-remove-loader", () => {
+      this.loader.remove();
     });
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
@@ -159,7 +178,7 @@ class CallInterfaceVideo {
       unread: 0,
       //
       // USE A TARGET Container if the chat box is supposed to show up embedded within the UI
-      // Don't include if you want it to be just a chat popup.... 
+      // Don't include if you want it to be just a chat popup....
       //
       //target_container: `.stun-chatbox .${this.remote_container}`,
     };
@@ -181,7 +200,7 @@ class CallInterfaceVideo {
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
       //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
-      this.app.connection.emit("open-chat-with", { id: this.chat_group.id});
+      this.app.connection.emit("open-chat-with", { id: this.chat_group.id });
     });
 
     if (document.querySelector(".effects-control")) {
@@ -193,7 +212,9 @@ class CallInterfaceVideo {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.addEventListener("click", async (e) => {
         let chat_module = this.app.modules.returnModule("Chat");
-        await chat_module.deleteChatGroup(this.chat_group);
+        if (chat_module) {
+          await chat_module.deleteChatGroup(this.chat_group);
+        }
         this.disconnect();
         siteMessage("You have been disconnected", 3000);
       });
@@ -221,6 +242,11 @@ class CallInterfaceVideo {
     });
 
     if (!this.mod.browser_active) {
+      //
+      // If you are in RedSquare/Arcade/etc, allow stun to shrink down to small box so you
+      // can still interact with the site
+      //
+
       document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
         // fas fa-expand"
         let icon = document.querySelector(".stun-chatbox .minimizer i");
@@ -243,6 +269,17 @@ class CallInterfaceVideo {
           this.app.browser.cancelDraggable("stun-chatbox");
         }
       });
+    }else{
+
+      //
+      // If in the stun app, all a request for full screen mode
+      // 
+      let maximizer = document.querySelector(".stun-chatbox .maximizer");
+      if (maximizer){
+        maximizer.onclick = (e) => {
+          this.app.browser.requestFullscreen();
+        }
+      }
     }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
@@ -272,14 +309,14 @@ class CallInterfaceVideo {
   createRoomLink() {
     let obj = {
       room_code: this.room_code,
+      access_public_key: this.public_key,
     };
+
+    console.log(obj, "obj");
     let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
 
     let url1 = window.location.origin + "/videocall/";
-
-    let orig_url = window.location.origin + window.location.pathname;
-    orig_url = `${orig_url}?stun_video_chat=${base64obj}`;
-    history.pushState(null, null, orig_url);
+    window.history.pushState({}, document.title, `${url1}?stun_video_chat=${base64obj}`);
 
     return `${url1}?stun_video_chat=${base64obj}`;
   }

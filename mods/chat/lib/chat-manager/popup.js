@@ -7,7 +7,6 @@ class ChatPopup {
     this.app = app;
     this.mod = mod;
 
-    console.log("Rendering chat popup into" + container);
     this.container = container;
     this.input = null; //new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
     this.manually_closed = false;
@@ -18,11 +17,12 @@ class ChatPopup {
 
     this.group = null;
 
+    this.is_scrolling = false;
+
     this.overlay = new SaitoOverlay(app, mod);
 
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
-        console.log("Button remove request");
         this.no_older_messages = true;
         if (document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats")) {
           document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats").remove();
@@ -49,6 +49,7 @@ class ChatPopup {
   }
 
   render() {
+
     //
     // exit if group unset
     //
@@ -130,7 +131,6 @@ class ChatPopup {
       // now set left-position of popup
       //
       if (!this.container && popups_on_page > 0) {
-        console.log("Reposition secondary popup");
         let obj = document.querySelector(popup_qs);
         let x_pos = x_offset - obj.getBoundingClientRect().width - 10;
         x_pos = Math.max(0, x_pos);
@@ -140,13 +140,13 @@ class ChatPopup {
       //
       // inputs
       //
-      this.input.render();
+      this.input.render(!this.app.browser.isMobileBrowser());
     }
 
     //
     // scroll to bottom
     //
-    if (document.querySelector(popup_qs + " .chat-body")) {
+    if (document.querySelector(popup_qs + " .chat-body") && !this.is_scrolling) {
       document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
     }
 
@@ -199,7 +199,7 @@ class ChatPopup {
 
       //
       // minimize
-      let chat_bubble = document.querySelector(`${popup_qs} .chat-header .fa-comment-dots`);
+      let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
       if (chat_bubble) {
         if (!this.mod.chat_manager_overlay) {
           chat_bubble.onclick = (e) => {
@@ -222,7 +222,13 @@ class ChatPopup {
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
-        let quote = "<blockquote>";
+        
+        /*let copy = el.parentElement.parentElement.cloneNode(true);
+        copy.querySelector(".saito-userline-reply").remove();
+        let quote = `<blockquote>${copy.outerHTML}</blockquote>`;*/
+
+        //Sanitize wipes dataset
+        let quote = `<blockquote href="${el.dataset.href}">`;
         if (el.parentElement.previousElementSibling.innerText.length > 25) {
           quote +=
             "..." + el.parentElement.previousElementSibling.innerText.slice(-25) + "<br/><em>";
@@ -232,17 +238,46 @@ class ChatPopup {
         //Add the time stamp of the original message
         quote +=
           el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML +
-          "</em></blockquote><br/>";
+          "</em></blockquote>";
+        
 
-        this.input.insertRange(quote.replaceAll("\n", "<br/>"));
+        //this.input.insertRange(quote.replaceAll("\n", "<br/>"));
+        this.input.insertQuote(quote.replaceAll("\n", "<br/>"));
+
         this.input.focus();
       });
+    });
+
+    document.querySelectorAll(`${popup_qs} blockquote`).forEach((el) => {
+      el.onclick = (e) => {
+        let href = el.getAttribute("href");
+
+        let myAnchor = document.querySelector(popup_qs + " #" + href);
+        if (myAnchor){
+          myAnchor.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"});
+        }
+        
+      }
     });
 
     if (document.querySelector(popup_qs + " #load-older-chats")) {
       document.querySelector(popup_qs + " #load-older-chats").onclick = async (e) => {
         await this.mod.getOlderTransactions(e.currentTarget.dataset.id);
       };
+    }
+
+    let myBody = document.querySelector(popup_qs + " .chat-body");
+    if (myBody){
+      myBody.addEventListener("scroll", (e) => {
+        let chatHeight = myBody.getBoundingClientRect().height;
+
+        if (myBody.scrollHeight - chatHeight - myBody.scrollTop > chatHeight){
+          this.is_scrolling = true;
+        }else{
+          this.is_scrolling = false;
+        }
+        
+      });
     }
 
     try {
@@ -269,6 +304,7 @@ class ChatPopup {
         mod.receiveChatTransaction(newtx);
         this.input.setInput("");
         if (document.querySelector(popup_qs + " .chat-body")) {
+          this.is_scrolling = false;
           document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
         }
       };
@@ -321,15 +357,19 @@ class ChatPopup {
         };
       });
     } catch (err) {
-      console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
+      //console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
     }
   }
 
   restorePopup(chatPopup) {
     chatPopup.classList.remove("minimized");
     chatPopup.classList.add("active");
-    chatPopup.style.width = this.width;
-    chatPopup.style.height = this.height;
+    if (this.width) {
+      chatPopup.style.width = this.width;  
+    }
+    if (this.height) {
+      chatPopup.style.height = this.height;  
+    }
   }
 }
 

@@ -52,6 +52,17 @@
  right: -5px;
 }*/
 
+.game-menu-sub-options:after{
+ content: "";
+ position: absolute;
+ width: calc(100% + 40px);
+ height: calc(100% + 25px);
+ top: 0;
+ left: 50%;
+ transform: translateX(-50%);
+ z-index: -1;
+}
+
 .game-menu ul .game-menu-icon {
   width: 40px;
   margin: 0 5px;

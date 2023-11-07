@@ -148,19 +148,19 @@ class Keychain {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publicKey === publicKey) {
         if (this.keys[x].aes_secret) {
+          console.log(encrypted_msg, "------>");
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg != null) {
+            console.log(tmpmsg);
             const tmpx = JSON.parse(tmpmsg);
             if (tmpx.module != null) {
               return tmpx;
             }
-          } else {
-      // we appear to have received a message we cannot decrypto
-    }
+          } 
         }
       }
     }
-
+    console.log("Key not found, cannot decrypt");
     // or return original
     return encrypted_msg;
   }
@@ -231,6 +231,7 @@ class Keychain {
         }
       }
     }
+    console.warn("Message not encrypted, missing key");
     return msg;
   }
 
@@ -256,17 +257,6 @@ class Keychain {
     return false;
   }
 
-  //
-  // used in the encrypt module, provided here for convenience of generating DHKE
-  // in other ways.
-  //
-  initializeKeyExchange(publicKey: string) {
-    const alice = this.app.crypto.createDiffieHellman();
-    const alice_publicKey = alice.getPublicKey(null, "compressed").toString("hex");
-    const alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
-    this.updateCryptoByPublicKey(publicKey, alice_publicKey, alice_privatekey, "");
-    return alice_publicKey;
-  }
 
   removeKey(publicKey = null) {
     if (publicKey == null) {
@@ -495,8 +485,8 @@ class Keychain {
     this.app.network.updatePeersWithWatchedPublicKeys();
   }
 
-  updateCryptoByPublicKey(publicKey:string, aes_publicKey = "", aes_privatekey = "", shared_secret = "") {
-    if (publicKey == "") {
+  updateEncryptionByPublicKey(publicKey:string, aes_publicKey = "", aes_privatekey = "", shared_secret = "") {
+    if (!publicKey) {
       return;
     }
     this.addKey(publicKey, {

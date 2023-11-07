@@ -9,7 +9,9 @@ class TreatiseOverlay {
 	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
     }
-    
+ 
+    hide() { this.overlay.hide(); } 
+   
     render() {
         this.overlay.show(TreatiseTemplate());
         this.attachEvents();

@@ -6,6 +6,10 @@
   position: relative;
 }
 
+.tweet-preview .tweet .tweet-body {
+  min-height: 4rem;
+}
+
 .tweet-main .tweet {
   border-bottom: 0px;
   border-top: 0px;
@@ -70,7 +74,8 @@
 
 .tweet-notice .saito-address {
   display: inline;
-  margin-left: 0.25rem;
+  margin-right: 0.3rem;
+  margin-left: 0.3rem;
   font-weight: bold;
   font-size: 1.4rem;
   color: var(--saito-font-color-light);
@@ -252,13 +257,22 @@
 }
 
 .tweet-like-button .heart-icon {
-  background: url("/redsquare/images/heart.png");
+  background: var(--saito-heart-animation);
   cursor: pointer;
   position: absolute;
   width: 60px;
   height: 60px;
   background-size: cover;
   /* margin-right: .5rem; */
+}
+
+.tweet-like-button .heart-icon:hover {
+  background: var(--saito-heart-animation-clicked);
+  cursor: pointer;
+  position: absolute;
+  background-size: cover;
+  width: 60px;
+  height: 60px;
 }
 
 .tweet-like-button .heart-icon.liked {

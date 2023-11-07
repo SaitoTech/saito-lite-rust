@@ -3,6 +3,7 @@ const InviteManagerTemplate = require("./invite-manager.template");
 const JSON = require("json-bigint");
 const ArcadeInitializer = require("./main/initializer");
 const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
+const JoinGameOverlay = require("./overlays/join-game");
 
 class InviteManager {
   constructor(app, mod, container = "") {
@@ -22,20 +23,20 @@ class InviteManager {
     //
     // handle requests to re-render invite manager
     //
-    app.connection.on("arcade-invite-manager-render-request", async () => {
+    app.connection.on("arcade-invite-manager-render-request", () => {
       console.log("arcade-invite-manager-render-request");
       if (!this.mod.is_game_initializing) {
         this.mod.purgeOldGames();
-        await this.render();
+        this.render();
       }else{
         console.log("Don't update Arcade while initializing game");
       }
     });
 
-    app.connection.on("finished-loading-leagues", async () => {
+    app.connection.on("finished-loading-leagues", () => {
       if (!this.mod.is_game_initializing) {
         this.mod.purgeOldGames();
-        await this.render();
+        this.render();
       }
     });
 
@@ -50,9 +51,38 @@ class InviteManager {
         game_loader.render();
       }
     });
+
+    app.connection.on("arcade-continue-game-from-options", async (game_mod) => {
+
+      let id = game_mod.game?.id;
+      if (!id){
+        return;
+      }
+
+      let game_tx = mod.returnGame(id);
+
+      if (!game_tx) {
+        console.log("Creating fresh transaction");
+        game_tx = await mod.createPseudoTransaction(game_mod.game);
+        mod.addGame(game_tx, "closed");
+      }else{
+        delete game_tx.msg.time_finished;
+        delete game_tx.msg.method;
+        delete game_tx.msg.winner;
+        game_tx.msg.request = "paused";
+      }
+
+      console.log(JSON.parse(JSON.stringify(game_tx)));
+      console.log(JSON.parse(JSON.stringify(game_mod.game)));
+
+      let newInvite = new Invite(app, mod, null, this.type, game_tx, mod.publicKey);
+      let join_overlay = new JoinGameOverlay(app, mod, newInvite.invite_data);
+      join_overlay.render();
+
+    });
   }
 
-  async render() {
+  render() {
     //
     // replace element or insert into page (deletes invites for a full refresh)
     //

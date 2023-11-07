@@ -334,6 +334,10 @@
   font-size: 2rem;
 }
 
+.pagination-button.disabled {
+  visibility: hidden;
+}
+
 .pagination-button:hover {
   transition: all 0.2s ease-in-out;
   transform: scale(1.5);
@@ -350,12 +354,13 @@
 
 
 .deposit {
-  color: #005900;
-  font-weight: 800;
+  color: #00ae00;
+  font-weight: bold;
 }
 
 .withdrawal {
   color: #e34927;
+  font-weight: bold;
 }
 
 #mixin-balance-container .mixin-item {
@@ -511,6 +516,19 @@
   font-size: 10rem;
 }
 
+.confirm-msg-container .withdraw-msg-icon.hide {
+  display: none;
+}
+
+.confirm-msg-container .spinner {
+  display: none;
+  height: 9rem;
+}
+
+.confirm-msg-container .spinner.show {
+  display: block;
+}
+
 .confirm-msg-container .confirm-msg {
   display: inline-block;
   width: min-content;
@@ -566,6 +584,15 @@
   gap: 3rem;
   display: flex;
   flex-direction: column;
+}
+
+
+#withdraw-step-one .input-elem {
+  color: var(--saito-font-color);
+}
+
+.saito-history-msg {
+  color: var(--saito-font-color);
 }
 
 @keyframes spin {

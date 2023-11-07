@@ -8,8 +8,8 @@ module.exports = () => {
         <ul class="saito-menu-list">
           <li class="redsquare-menu-home">
             <i class="fa-solid fa-house"></i>
-            <span class="no-display-hover">Home</span>
-            <span class="display-on-hover">Refresh</span>
+            <span>Home</span>
+<!--            <i class="fa-solid fa-rotate"></i> -->
           </li>
           <li class="redsquare-menu-notifications">
             <i class="fas fa-bell"></i>

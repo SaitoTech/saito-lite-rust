@@ -192,12 +192,12 @@
 /*******************/
 .splash_overlay {
   padding: 2px;
-  width: auto;
+  width: min(800px, 110vh);
   height: auto;
   max-height: 90vh;
   max-width: 95%;
-  min-width: 800px;
 }
+
 .splash_overlay img{
     width: 100%;
     height: auto;
@@ -247,9 +247,10 @@ Useful declarations for game stats
   min-width: 600px;
   max-width: 90vw;
   background-color: #f5f5f5;
-  padding: 40px;
+  padding: 50px;
   border-radius: 5px;
   border: 2px solid var(--saito-black-faded);
+  box-shadow:  4px 4px 6px 4px black;
 }
 
 .solitaire-stats-overlay hr {
@@ -259,6 +260,10 @@ Useful declarations for game stats
 
 .solitaire-stats-overlay .saito-table-row {
   grid-template-columns: repeat(3, 1fr);
+}
+
+.solitaire-stats-overlay .saito-table-body {
+  font-size: 2rem;
 }
 
 .solitaire-stats-overlay .saito-table-label, .solitaire-stats-overlay .saito-table-header {
@@ -274,4 +279,30 @@ Useful declarations for game stats
 
 .saito-table-body .saito-table-row > div:not(.saito-table-label) {
   text-align: center;
+}
+
+
+
+
+.debug_overlay {
+  max-height: 90vh;
+  max-width: 92vw;
+  background: var(--saito-background-color);
+  color: var(--saito-text-color);
+  padding: 3rem;
+  padding-left: 2rem;
+  overflow: auto;
+}
+
+@media screen and (max-width: 600px) {
+  .debug_overlay{
+    padding: 1rem;
+    padding-left: 0;
+  }
+}
+
+/*json tree */
+
+.jsontree_node {
+  list-style: none;
 }

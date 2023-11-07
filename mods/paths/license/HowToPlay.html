@@ -1,0 +1,528 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<head>
+<style>
+body {background: #eeeeee; font-size:18px;}
+  h1   {font-size:40px;} 
+  h2   {font-size:26px;}
+  h3   {font-size:22px;}
+   p   {font-size:18px;}
+
+.container {float:left;}
+.image   {display:block;}
+.caption {display:block; width:100%; text-align:center;
+.tab { margin-left: 75px; }
+.tab2 { margin-left: 150px; }
+</style>
+</head>
+<body> <h1 style="overflow:auto;"><img src="about.jpg" hspace=20 
+           style="float:left;">&nbsp;&nbsp;&nbsp;&nbsp;
+           Paths of Glory 10.6
+    </h1>
+    <p>
+The Paths of Glory 10 project was led by <b>Brian Reynolds</b>. None of it 
+would be possible without the efforts of <b>Joel Koepp</b>, who led most of the 
+module 7.0/8.0 efforts which formed the backbone of all that followed. 
+<b>Claudio Ciardelli</b>, who built 9.0, added the Deluxe Historical map, 
+snazzier card decks, and pushed forward with automation features. Brian Reynolds
+then took over and built 9.2 through 9.9 incorporating the rest of the 2018
+Deluxe Edition art assets, adding RB/Eliminated box organization and 
+RB-counting, automatic corps-army substitution, VP site control and scoring, 
+automated AR markers, improved logfile reporting, and continued bug-fixing and 
+polish. <b>Javier Munoz Kirshberg</b> supplied a full Spanish translation (and a lot of work
+to help clean up VASSAL to support localization properly). <b>Jim Hunter</b> did a 
+major tune-up on Movement Trails for 10.6. Special Thanks to Pranas Pauliukonis 
+who did a thorough round of testing for the 9.3 and 9.4 versions, to Tom Gregorio for providing 
+veteran-player feedback, to Michael Kiefte who shared his Chess Clock source code from Twilight
+Struggle, and also to Bill Thomson who integrated Paul Blankenship's "LookAt" feature - original code 
+credited to David Sullivan - which ultimately went on to become the "Flare" feature of VASSAL itself. 
+Thanks also to everyone who has contributed to the module over the years, including Davout, Kaiman, Pmanlig, 
+ampercival, and egg_salad! <br> <br>The module is presently maintained by 
+<b>Brian Reynolds</b> - please report any problems to 
+<b>brian@brianreynolds.net</b>. 
+</p>
+
+    <br><br>
+    <img src="rules front cover.png">
+    <br>
+    <h2>1. First Things First</h2>
+    <p>
+Under the <b>"Help"</b> menu you will find a link to the latest <b>Living 
+Rules</b> version of the Paths of Glory rulebook, in case you are still learning 
+how to play the game itself, or just need to "look up a rule". A nice "Rules 
+Overview" video that uses the latest version of the game can also be found here:
+<i></i>https://www.youtube.com/watch?v=SHMr-gu1u1c</i>
+                                                          <br><br>
+        Meanwhile if you've played using earlier versions of the module and just 
+        want to check out the latest list of changes, please see the <b>"Change
+        List"</b> from the Help Menu of the module. <br><br>
+
+        <b>Advanced Players</b> should page through and take in the latest 
+        capabilities of the module! It may have changed a lot since the last 
+        time you checked it out!
+        <br><br>
+    This version of the Paths of Glory module aims to incorporate the graphics
+    from the latest release of the physical game, including all of the artwork
+    from the Deluxe 2018 edition, along with considerable play enhancements, 
+    interface improvements, and automation. We hope you enjoy it!
+</p>
+
+        <br><br>
+<img src="deluxemapshot2.png">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="classicmapshot2.png"><br>
+    <p>
+        <span style="margin-left:90px;">Deluxe Map</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span style="margin-left:250px;">Classic Map</span>
+    </p>
+    <br>
+    
+<h2>2. Setting Up</h2> 
+<p> The latest 2018 rulebook includes two scenarios - the <b>Historical Scenario</b>
+used in most competitive play and the <b>Campaign Scenario</b> representing more
+closely the "classic" original rules. You can choose to play the Historical
+Scenario either on the original "classic" map by Mark Simonitch or the new
+"deluxe" map by Terry Leeds. The original Campaign Scenario is only supported on
+the classic map. 
+</p>
+
+    <br><br>
+<img src="toolbar_aphand.png">&nbsp;&nbsp;&nbsp;<img src="toolbar_cphand.png">&nbsp;&nbsp;&nbsp;<img 
+src="expansion4.png">
+    <br>
+<h2>3. Choosing a Side</h2> 
+    <p> The side you choose gives you access to its hand of cards--or choose
+Solitaire to have access to both (also useful for local play on one computer,
+and for PBEM play via ACTS). For players and competitive events in need of
+security for cards and dice rolls, it is recommended to use ACTS or a similar
+server -- the Vassal client by itself cannot provide meaningful security.</p>
+
+        <br><br>
+<img src="fullscreen small2.png">
+    <p>Locations of Cards</p> <br>
+
+<h2>4. Cards</h2>
+    <p><b>Note: </b>Players using ACTS can skip straight to section 5 on Units 
+and Markers. 
+        <br><br>To reduce window clutter, card decks have been placed on the main 
+map below the board. Cards can be drawn through several methods, including 
+right-clicking on the draw pile, the "draw" button below each draw pile, and 
+"Draw Cards" buttons located on the toolbar ribbon of both the main window and 
+the player hand windows.
+
+<br><br>
+
+<img src="goasmall.png">
+
+<br> 
+<b>Guns of August, Historical Scenario: </b>If you start the Historical Scenario 
+(on either map), the Guns of August card will have been played automatically to 
+start the game -- the appropriate German Armies will already have activation 
+markers placed, the Liege fort will be destroyed, etc. The CP player should thus 
+draw one fewer card than normal when filling their hand for turn 1.
+        <br><br>
+        <b>Guns of August, Classic Scenario: </b>If you start the Classic 
+        Scenario, the Guns of August card will begin in the discard pile. The CP 
+        player may either take it into their hand (open the CP Hand window from
+        the toolbar and drag the card into the window) or right click on it and 
+        select "Reshuffle" to shuffle it into the deck. At this point the CP 
+        player should draw cards to fill their hand to the correct hand size.
+
+<br><br>
+
+<img src="influenzasmall.png"> &nbsp;&nbsp; <img src="princemaxsmall.png">
+
+        <br>
+            <img src="expansion4.png"><b>Optional Cards:</b> Instead of 
+creating several scenarios that include/exclude the Optional cards, they are in 
+their own labeled decks for inclusion if you wish. The window containing them
+can be opened either by clicking the "Optional" button on the toolbar (see icon
+to the left), or by clicking on the "Optional Cards" button in the center of the
+card-play area below the gameboard.
+        <br><br> Once the optional cards window is open, click the "Add to Game"
+        buttons below each deck to automatically add the Optional cards to their 
+        respective decks. You can also choose to fish out specific cards and 
+        then add them to their appropriate decks manually if you wish to play 
+        with an agreed subset. Once the desired optional cards have been added 
+        to the appropriate decks, play can proceed normally.
+
+<br><br>
+<img src="play-a-card.png">
+
+        <br>
+            <b>Playing Cards:</b> Select a card in your hand, right click,
+                and choose from: Play as Event (Ctrl-E), Play for OPS (Ctrl-O),
+                Play for RPs (Ctrl-R), Play for SR (Ctrl-S). Combat Cards also
+                have these options: Play as Combat Card (Ctrl-C), or Discard
+                (Ctrl-D). Combat Cards get played to locations below the game
+                map. Events that adjust War Status or VPs will modify those 
+                values automatically. Some of the options are greyed out or 
+                removed based on the game status (Ex: Play as Event is not 
+                available on Turn 1 for Reinforcements events). 
+<br><br>
+<img src="play-a-reinf.png">
+
+        <br>
+
+
+            <b>Reinforcement Cards:</b> Reinforcement events for e.g. AH, FR,
+            GE, RU now allow the destination to be selected when the event is
+            played. For the occasional situation where it is desired to play a
+            two-army reinforcement card (e.g. GE 17th and 18th armies) split 
+            between two spaces, simply event the card to one location and then 
+            move one of the armies manually to the other. This was judged more 
+            desirable than giving cards a vast menu of split deployment options.
+
+        <br><br> 
+        <img src="orient_army_back.png"> &nbsp;&nbsp; <img src="ge_army01.png"> &nbsp;&nbsp; 
+        <img src="bef_corps_back.png"> &nbsp;&nbsp; <img src="bu_corps.png"> &nbsp;&nbsp; <img 
+        src="ap_trench1.png"> &nbsp;&nbsp; <img src="cp_trench2.png"> 
+        &nbsp;&nbsp; <img src="control_ap.png"> &nbsp;&nbsp; <img 
+        src="control_cp.png"> &nbsp;&nbsp; <img src="fort_besieged.png"> 
+        &nbsp;&nbsp; <img 
+        src="fort_destroyed.png">
+        
+        <br>
+<h2>5. Units and Markers</h2> 
+        <p>
+        Control markers, forts, trenches, armies/corps, 
+and the various map markers (Attack/Move markers, etc) are separated into 
+different game piece layers to prevent accidental movement and stacking. The 
+drawing order from bottom to top is: Forts, Control Markers, Trenches, Units 
+(armies/corps), then everything else. Units placed in a space will stack with 
+other units there (double click to expand a stack so that individual pieces can 
+be clicked on). Trenches and other markers do not "stack" and can therefore be 
+dragged/adjusted around for better visibility. From 9.2 forward, an effort has 
+been made to make hotkeys consistent across various counter types (e.g. Ctrl+F 
+is always the "Flip"), and to have counters "flip" to the same back-side as 
+they'd have in the physical game (so e.g. control markers can be flipped AP/CP). 
+
+            <br><br>
+              <img src="palette sample.png">
+            <br>
+            The <b>Markers</b> can be found on the toolbar, and opens a 
+            "palette" window to open to the left of the chat log. All of the 
+            common markers (e.g. trenches, control markers) can be found here in 
+            infinite supply, and can be dragged to the map as needed. A separate 
+            tab also makes available VP markers for various situations. 
+
+<br><br>
+            <img src="activate_move.png"> &nbsp; &nbsp; <img 
+            src="activate_attack.png"> &nbsp; &nbsp; <img 
+            src="removesample.png">
+<br>
+            <b>Activation Markers:</b> With any unit OR stack selected, you can use
+Ctrl+M or Ctrl+A to activate the stack for movement or attack (you can also
+right click). All activation markers can be removed by the toolbar button, and
+are also removed when the turn is advanced.
+
+<br><br>
+<img src="sud_army.png"> &nbsp; &nbsp; <img src="event_11tharmy.png"> &nbsp; 
+&nbsp; <img src="be_army.png"> &nbsp; &nbsp; <img 
+src="vp_fall_of_the_tsar_3.png">
+            <br><br>
+            <img src="ops example.png">
+        <br>
+            <b>Operations count:</b> An appropriate count of operations will be 
+            maintained as stacks are activated. Multinational stacks, for 
+            example, will be charged extra ops to activate per rule 9.2.3. 
+            However appropriate exceptions will be made for e.g. Sud Army, 11th 
+            Army, British/Belgian cooperation, French/US cooperation. Likewise 
+            appropriate additional costs will be assessed for e.g. Moltke and 
+            attacking during Fall of the Tsar when those events are in effect.
+        </p>
+        <br><br>
+
+        <img src="vp.png"> &nbsp;&nbsp; <img src="warstatus_combined.png"> 
+        &nbsp;&nbsp; <img src="ev_falkenhayn.png"> &nbsp;&nbsp; <img 
+        src="vp_lusitania.png"> &nbsp;&nbsp; 
+
+<h2>6. Scoring, War Status, and Events</h2>
+        <p>
+            Event markers have now been provided for all events that either 
+            affect War Status, award VP's, or produce lingering game effects 
+            that need notation (e.g. Entrench, Moltke, etc). When an event 
+            marker is placed on the map or turn track, both the War Status and the VP level will be automatically 
+            adjusted as appropriate (they can also be adjusted manually if 
+            desired).
+            <br><br>
+            When a card is "played for the event" with the normal live-play or 
+            PBEM interface, the event marker will be placed on the turn track 
+            automatically. When playing via ACTS, the event markers for each 
+            side can be found on the reinforcement card screens for each side.
+            
+            <br><br>
+            <img src="blockade_event.png"> &nbsp;&nbsp; <img 
+            src="vp_1_blockade.png"> <br> 
+            <b>Blockade: </b>Once the Blockade event is played (or its marker
+            placed on the turn track), appropriate -1 VP markers will be added
+            to the turn track automatically at each Winter turn, and the VP
+            level adjusted accordingly. <b>NOTE:</b> Although Blockade VP's are 
+            formally supposed to be added during "War Status Phase" at the 
+            <i>end</i> of each turn, that is also the only time that VP's are 
+            actually checked for victory purposes. For technical and interface 
+            reasons, a Blockade VP marker will be placed at the beginning of 
+            each Winter turn (or at the moment the event is played if the event 
+            is played during the turn) - but as long as this is understood it 
+            will not affect gameplay since autovictory is checked only at the 
+            end of each turn.
+
+            <br><br>
+            <img src="control_ap.png"> &nbsp; &nbsp; <img src="control_cp.png">
+            <br><br>
+            <img src="control example.png">
+            <br>
+
+                <b>Control Markers and Scoring: </b>Control markers are now automatically placed when units capture spaces by moving into them, but they can also be dragged from the markers window. When control markers are
+                    placed in (or moved to, or deleted from) VP sites, the VP
+                    level is automatically adjusted. In the event the VP marker
+                    has been manually dragged, the correct VP level (based on
+                    current control markers, and any event/vp markers presently
+                    on the map or turn track) can be recalculated by
+                    right-clicking on the VP marker or from the VP button on the
+                    main toolbar.
+
+            <br><br>
+            <img src="victory summary.png"> <br>
+
+                <b>Final Scoring: </b>By right clicking the VP marker, or
+                    from the VP button on the main toolbar, it is possible to
+                    calculate Final Scoring using the current map conditions. If
+                    the game has not yet reached the end of turn 20 and the
+                    combined war status is below the Armistice level of 40, it
+                    is still perfectly safe to use the button to compute
+                    "hypothetical" final scoring.
+            
+        </p>
+        
+<br><br> 
+<img src="action round sample.png">
+<br>
+         
+<h2>7. Placing Action Round markers</h2> 
+        <p> At start, and after turn advance, the Action Round markers are 
+            positioned near the Action Round chart. When cards are played the AR 
+            markers will <b>automatically</b> place themselves on the chart to 
+            appropriate locations (e.g. "Ops", "Neutral Entry", etc); for 1-Ops 
+            actions and in ACTS play they can be dragged manually or 
+            right+clicked for a menu of choices.
+            <br><br>
+            NOTE: when playing with <b>ACTS</b> and not using the module's 
+            cards, the module will still <i>attempt</i> to move the action round 
+            markers appropriately by interpreting what the players are doing. 
+            One action that it simply cannot detect, however, is <b>Strategic
+            Redeployment (SR),</b> which must be manually marked or it will go 
+            undetected. 
+            <br><br>
+            Action round markers can <i>always</i> be manually relocated as 
+            needed.
+            </p>
+        
+        <br><br>
+        <img src="mo example.png">
+        <br>
+
+<h2>8. Mandatory Offensives and "Missed MOs"</h2>
+        <p>When Mandatory Offensive are rolled at the beginning of the turn, 
+            they can be marked by moving the MO markers appropriately (one can
+            also right-click on them and select a destination).
+            <br><br> 
+            <b>Missed MOs</b> can be noted by right clicking the MO marker and 
+            selecting the Missed MO option, which will send a victory point 
+            marker of the appropriate +1 or -1 value to the Turn Track for the 
+            current turn. Missed MO markers are also available on from the 
+            "Markers palette" (see section 5), or by right-clicking on an empty part
+            of the Turn Track.
+            
+            </p>
+
+                <br><br>
+        <img src="rp_allied.png"> &nbsp;&nbsp; <img src="rp_fr.png"> 
+        &nbsp;&nbsp; <img src="rp_ge_rathenau.png"> &nbsp;&nbsp; <img 
+        src="rp_br_uboats.png"> &nbsp;&nbsp; <img src="rp_us.png"> &nbsp;&nbsp; 
+        <img src="toolbar sample rps.png"> &nbsp;&nbsp; 
+<br>
+
+
+<h2>9. Replacement Points markers</h2> 
+        <p>When a card is played as RPs, the Replacement Points markers are 
+            moved automatically on the tracker. In ACTS play, the "RP's" button 
+            on the main toolbar can be used to simulate the play of a card of 
+            the appropriate ops value for RP's. RP markers for initially neutral 
+            countries such as Italy, Bulgaria, and the US now properly stay put 
+            and do not accrue RP's before the country enters the war (as marked 
+            by either playing the entry card, dragging the appropriate event 
+            marker to the map or turn track, or in the case of the US moving the 
+            US Entry marker to the Over There box.</p>
+        <br><br>
+
+        <img src="br_ne_sr2.png"> &nbsp;&nbsp; <img src="cp_ne_sr_used2.png"> 
+        &nbsp;&nbsp; <img src="ru_ne_sr2.png"> &nbsp;&nbsp; <img 
+        src="ru_ne_move_used3.png"> &nbsp;&nbsp; 
+        
+        <br>
+
+<h2>10. Near East Restrictions</h2> 
+        <p>Reminder markers have been provided to help players keep 
+            track of "Near East retrictions" that allow certain actions only
+            once per turn. Right-click any of the four static Near East 
+            restriction markers to flip them over when each one is used in a 
+            turn. They will automatically flip back to their available side when 
+            the turn is advanced.</p> 
+        <br><br>
+
+<img src="reinf example.png"> &nbsp;&nbsp; <img src="deploy-a-reinf.png">
+
+        <br>
+<h2>11. Reinforcements Card</h2> 
+        <p><b>Reinforcement Units: </b>The Reinforcements Card from the 2018 
+edition is now supported, providing useful organization and visualization for 
+available armies and corps. When playing via ACTS, the easiest way to deploy 
+these units is to right click on them and pick the destination from the menu 
+(e.g. AH armies will offer "Vienna" and "Budapest"). Units can also be dragged 
+straight to their on-map destinations if desired.
+
+<br><br>
+            <b>Events: </b>Event markers for all events that affect War Status, 
+            VP, or have lingering game effects are now provided. When an event 
+            marker is placed on the map (typically on the turn track, but this 
+            is not required), the proper War Status, VP, and game effects will 
+            be recorded and updated. If players are drawing their hands of cards 
+            in the module and using the interface provided to play them, then 
+            event markers will be moved automatically. When playing under 
+            <b>ACTS</b>, where cards are managed on a separate website, the 
+            Event Markers on the Reinforcement Cards can be right clicked to 
+            send them to the turn track at the appropriate time (or they can be 
+            manually dragged onto the map). This will keep the VP, War Status, 
+            and so forth up to date.
+            
+            </p>
+        <br><br>
+
+
+        <img src="empty sample.png">
+        <br>
+
+<h2>12. Empty Spaces - shortcuts for adding markers</h2>
+        <p>By clicking on any empty space on the map, you can select it. 
+            Right clicking will display a context menu allowing common markers
+            (trenches, control markers, etc) to be quickly added. The hotkeys
+            listed on the context menu are also available any time an empty 
+            space is selected. The boundaries of the empty space selection zones 
+            intentionally come out a bit past the boundaries of the space 
+            itself, so that it is usually possible to select a space even if it
+            already has pieces in it. </p>
+
+        <br><br>
+        <img src="flare example.png">
+        <br>
+
+        <h2>13. "Flaring" a space to attract opponent's attention</h2>
+        <p>By using <b>Ctrl+Click</b> anywhere on the map, you can send a 
+            "flare", a signal to attract your opponent's attention to that 
+            particular spot. A green circle will briefly appear in the relevant 
+            location, indicating where you want to focus attention. If you are 
+            playing online, this flare will be displayed immediately on your 
+            opponent's map. If you are playing PBEM by logfiles, the flare will 
+            appear when your opponent replays the logfile.
+            </p>
+
+        <br><br>
+<img src="logfile sample.png">
+        <br>
+        
+<h2>13. Logfile Reporting</h2> 
+        <p>Substantial work has been done to clean up and de-bloat the logfile, 
+            to help with live and non-ACTS play. In particular units no longer 
+            report cosmetic adjustments within the same space or zone (i.e. no 
+            more "AH1 Budapest to Budapest" spam). Reporting has also been 
+            improved for other game-state changes such as when trenches are 
+            added, forts besieged, etc. </p>
+        <br><br>
+
+        <img src="chessclocksscreenie.png">
+<br>
+
+<h2>14. Chess Clocks</h2> 
+        <p>For those who would like to agree to time limits in a competitive 
+            game, the chess clock feature is new with version 9.8. 
+            <ul>
+                <li>Clicking
+                the chess clock button on the toolbar will reveal the two chess 
+                clocks.</li>
+                <li>Once play is underway, clicking one clock or the other
+            will switch back and forth between the two sides.</li>
+                <li>Clocks tick UP in time, not DOWN. This makes it 
+                    possible to agree to any appropriate time limit, simply 
+                    agree on it in advance.</li>
+                <li>When the clocks are running, clicking the master "Chess 
+                    Clock" icon will pause both clocks. </li>
+                <li>When playing online, the timer values are kept in synch 
+                    between the two players though a handshaking system.</li>
+                <li>The module does not judge when "time is up", that is up 
+                    to the players.</li>
+                <li>Saving/Loading is fully supported: the game can be saved and 
+                    resumed later, and the time clocks will remember how much 
+                    time was elapsed.</li>
+            </ul> </p> <br><br>
+
+        
+<br><br>
+        <img src="acts sample.png">
+        <br>
+
+<h2>15. ACTS support - for server-based play.</h2> 
+        <p>Competitive events, and players who desire more hand and dice 
+            security, will want to combine use of this Vassal module with a 
+            card/dice management site like ACTS (http://acts.warhorsesim.com). 
+            Several features have been added to the module to facilitate this 
+            mode of play: 
+            <br><br>
+            <img src="reservetext.png">
+            <br>
+
+
+                <b>Reserve Box Counts (1,1): </b>Whenever a corps is moved to or 
+                from the Reserve Box, a count of that nation's RB levels of
+                full- and half- strength units is given e.g. (8,0), reflecting
+                the values <i>after</i> the action just taken.
+            <br><br>
+
+            <img src="deploy-a-reinf.png"> 
+            <br> 
+            <b>Quick Deploy: </b>From the Reinforcements Card, new armies/corps
+            can be directly dispatched to their appropriate arrival points via
+            the right-click menu.
+
+            <br><br>
+            <img src="reinf example.png">
+            <br>
+                <b>Functional Event Markers: </b>Tracking War Status and VP's is 
+                facilitated through the use of Event Markers (e.g. moving
+                "Zimmermann Telegram" marker to the turn track or map will raise
+                Allied War status by 2 and apply -1 VP). Markers are now 
+                provided for all WS and VP-affecting events/penalties/etc. 
+            <br><br>
+            
+            <img src="toolbar sample rps.png"> 
+            <br> 
+            <b>Quick Replacement Point tracking: </b>
+            When a card is played for RP's in an ACTS game, a toolbar shortcut         
+            has been provided to make tracking the RP's in Vassal         
+            easier. From the toolbar's "RP's" button one can tell Vassal 
+                    that one has just played e.g. "a 4-Ops card for RP's", and 
+                    the RP levels will update appropriately. RP levels reset to 
+                    0 whenever the turn advances.
+            <br><br>
+                <b>Draw All: </b>For the occasional ACTS player who would like 
+                to track card 
+                    plays and deck counts in Vassal, several new features have 
+                    been provided, including a "Solitaire" player with access to 
+                    both hands, "Draw ALL Cards" buttons, and a better zoom-out 
+                    control on the hand windows. One can "Draw All" cards into 
+                    the hand window for each side, and then manually organize 
+                    them as they are played via ACTS.
+            
+        </p>
+</BODY>
+</HTML>
+

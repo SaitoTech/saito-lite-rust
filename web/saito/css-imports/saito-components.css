@@ -14,6 +14,12 @@
   justify-content: space-around;
 }
 
+.saito-header-appspace-option .saito-notification-dot {
+  left: 60%;
+  bottom: unset;
+  top: 5%;
+}
+
 .online-status-indicator:after {
   position: absolute;
   display: none;
@@ -29,4 +35,8 @@
   top: 3rem;
   left: 4rem;
   border: 2px solid var(--saito-background-color);
+}
+
+.busy .online-status-indicator:after {
+  background-color: var(--saito-font-color);
 }

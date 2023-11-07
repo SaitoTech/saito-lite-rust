@@ -1,5 +1,3 @@
-
-
 .other-player-hand {
   position: absolute;
 }
@@ -9,6 +7,7 @@
 .game-playerbox-manager .game-playerbox {
   overflow: visible;
 }
+
 .game-playerbox.game-playerbox-seat-1 {
   height: 250px;
 }
@@ -37,24 +36,23 @@
 .game-playerbox {
   min-width: 250px;
   max-width: 250px;
-  border: 1px solid #FFF3;
+  border: 1px solid #fff3;
   min-height: unset;
   color: white;
-  background-color: #4448
-
+  background-color: #4448;
 }
 
 .game-playerbox.active {
-  border: 1px solid #FFF;
+  border: 1px solid #fff;
 }
 
 .game-playerbox-body .status {
-    width: 100%;
-    padding: 0rem;
-    margin-top: 0.5rem;
-    line-height: 2.3rem;
-    font-size: 1.8rem;
-    text-align: center;
+  width: 100%;
+  padding: 0rem;
+  margin-top: 0.5rem;
+  line-height: 2.3rem;
+  font-size: 1.8rem;
+  text-align: center;
 }
 
 .game-playerbox-body .status .status-header .status-message {
@@ -62,14 +60,16 @@
 }
 
 .game-playerbox .status-header .status-message {
-    background: unset;
+  background: unset;
 }
 
-.game-playerbox .status-text-menu, .game-playerbox .status-text-menu ul {
-    background: unset;
+.game-playerbox .status-text-menu,
+.game-playerbox .status-text-menu ul {
+  background: unset;
 }
 
-.game-playerbox-head .saito-user>.saito-address , .game-playerbox-head .saito-user>.saito-userline {
+.game-playerbox-head .saito-user > .saito-address,
+.game-playerbox-head .saito-user > .saito-userline {
   color: white;
   display: flex;
   flex-direction: row;
@@ -87,4 +87,15 @@
   z-index: -10;
 }
 
+@media screen and (max-width: 600px) {
+  .game-playerbox {
+    max-width: 50vw;
+    min-width: unset;
+  }
 
+  .game-playerbox.game-playerbox-seat-1 {
+    min-width: 250px;
+    max-width: 250px;
+    margin-bottom: 0.5rem;
+  }
+}

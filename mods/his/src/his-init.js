@@ -12,9 +12,17 @@ const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
+const UnitsOverlay = require('./lib/ui/overlays/units');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
+const WinterOverlay = require('./lib/ui/overlays/winter');
+const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
+
+const HISRules = require('./lib/core/rules.template');
+const HISOptions = require('./lib/core/advanced-options.template');
+const HISingularOption = require('./lib/core/options.template');
+
 const JSON = require('json-bigint');
 
 
@@ -57,7 +65,10 @@ class HereIStand extends GameTemplate {
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
+    this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
+    this.winter_overlay = new WinterOverlay(this.app, this);
+    this.units_overlay = new UnitsOverlay(this.app, this);
 
     //
     // this sets the ratio used for determining
@@ -83,6 +94,18 @@ class HereIStand extends GameTemplate {
 
   }
 
+
+  returnSingularGameOption(){
+    return HISSingularOption();
+  }
+
+  returnAdvancedOptions() {
+    return HISOptions();
+  }
+
+  returnGameRulesHTML(){
+    return HISRules();
+  }
 
 
   ////////////////

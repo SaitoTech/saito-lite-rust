@@ -333,7 +333,7 @@ span.attention {
     height: calc(90vh - 12rem);
   }
   .league-overlay-body>div {
-    overflow-y: unset;
+  /*  overflow-y: unset;*/
   }
   .league-overlay-body .league-overlay-controls {
     justify-content: center;

@@ -131,9 +131,7 @@ class SettingsAppspace {
           "This will reset/nuke your account, do you wish to proceed?"
         );
         if (confirmation) {
-          app.options.keys = [];
-          app.options.groups = [];
-          await app.wallet.resetWallet();
+          app.wallet.resetWallet();
         }
       };
 
@@ -184,7 +182,6 @@ class SettingsAppspace {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
             let version = app.wallet.version;
-            // await app.storage.resetOptions();
 
             publicKey = app.crypto.generatePublicKey(privatekey);
             console.log("111 : " + (await app.wallet.getPublicKey()));
@@ -201,10 +198,20 @@ class SettingsAppspace {
             app.wallet.pending = [];
 
             // await app.blockchain.resetBlockchain();
+
+            await app.storage.resetOptionsFromKey(publicKey);
+
+            // await fetch wallet balance
+            await app.wallet.fetchBalanceSnapshot(publicKey);
+
+            console.log("wallet slips : ", await app.wallet.getSlips());
             await app.wallet.saveWallet();
 
-            console.log("222 : " + (await app.wallet.getPublicKey()));
-            // window.location.reload();
+            let c = await sconfirm("Success! Confirm to reload");
+
+            if (c) {
+              window.location.reload();
+            }
           }
         } catch (e) {
           salert("Restore Private Key ERROR: " + e);

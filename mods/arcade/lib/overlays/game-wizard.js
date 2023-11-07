@@ -19,13 +19,23 @@ class GameWizard {
     app.connection.on("arcade-launch-game-wizard", async (obj) => {
       console.log("event : arcade-launch-game-wizard", obj);
       if (obj?.game) {
+
         let game_mod = this.app.modules.returnModuleByName(obj.game);
-        console.log("game mod : ", game_mod);
 
         if (game_mod) {
-          this.game_mod = game_mod;
-          this.obj = obj;
-          this.render();
+          //
+          // We do a little check that if we already have a game in the options, 
+          // we prompt them to continue that one instead of creating a new game
+          //
+          if (game_mod.doWeHaveAnOngoingGame()){
+            console.log("Found existing game", game_mod.game);
+            app.connection.emit("arcade-continue-game-from-options", game_mod);
+          }else{
+            //Launch game wizard
+            this.game_mod = game_mod;
+            this.obj = obj;
+            this.render();
+          }
         } else {
           salert("Module not found: " + obj.game);
         }
@@ -134,7 +144,7 @@ class GameWizard {
           this.app.browser.logMatomoEvent("GameWizard", "CreatePrivateInvite", options.game);
         } else if (gameType == "single") {
           this.app.browser.logMatomoEvent("GameWizard", "PlaySinglePlayerGame", options.game);
-          await this.mod.makeGameInvite(options, "private", this.obj);
+          this.mod.makeGameInvite(options, "private", this.obj);
           return;
         } else if (gameType == "direct") {
           this.app.browser.logMatomoEvent("GameWizard", "CreateDirectInvite", options.game);
@@ -142,7 +152,7 @@ class GameWizard {
           this.app.browser.logMatomoEvent("GameWizard", "CreateOpenInvite", options.game);
         }
 
-        await this.mod.makeGameInvite(options, gameType, this.obj);
+        this.mod.makeGameInvite(options, gameType, this.obj);
       });
     });
   }

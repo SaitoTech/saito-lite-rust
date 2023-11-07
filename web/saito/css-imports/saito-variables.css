@@ -34,7 +34,7 @@ font imports
 :root {
   --saito-vh: 1vh;
   --saito-font: "visuelt-light";
-  --saito-header-height: 5em;
+  --saito-header-height: 7rem; /*formerly 5em*/
   --saito-width: 1250px;
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
@@ -77,6 +77,8 @@ font imports
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #6a6a6a;
   --saito-faded-icon-border: #d7d7d7;
+  --saito-heart-animation: url('/redsquare/images/heart.png');
+  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-red.png');
 }
 
 html[data-theme="dark"] {
@@ -101,7 +103,34 @@ html[data-theme="dark"] {
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #bdbaba;
   --saito-faded-icon-border: #000;
+  --saito-heart-animation: url('/redsquare/images/heart-orange.png');
+  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
 }
+
+html[data-theme="sangre"] {
+  --saito-primary: #b70b0b;
+  --saito-secondary: #c90c0c;
+  --saito-font-color: #dedede;
+  --saito-font-color-heavy: #ddd;
+  --saito-font-color-light: #aaa;
+  --saito-font-color-inverse: #010101;
+  --saito-profile-background: #222;
+  --saito-border-color: #555;
+  --saito-border-color-dark: #666;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-background-color: #1f1a1b;
+  --saito-background-light: #333;
+  --saito-gray-transparent: #88888818;
+  --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
+  --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
+  --saito-arcade-header-background: var(--saito-background-color);
+  --saito-button-background: var(--saito-primary);
+  --saito-modal-background: #2e2636;
+  --saito-font-color-dark-modal: #efefef;
+  --saito-faded-icon-font: #bdbaba;
+  --saito-faded-icon-border: #000;
+}
+
 
 html[data-theme="arcade"] {
   --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
@@ -128,4 +157,6 @@ html[data-theme="arcade"] {
   --saito-arcade-header-background: transparent;
   --saito-modal-background: var(--saito-background-light);
   --saito-font-color-dark-modal: #efefef;
+  --saito-heart-animation: url('/redsquare/images/heart-orange.png');
+  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
 }

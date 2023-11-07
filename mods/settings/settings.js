@@ -109,21 +109,12 @@ class Settings extends ModTemplate {
           text: "Nuke",
           icon: "fa-solid fa-radiation",
           rank: 130,
-          callback: function (app, id) {
-            app.keychain.keys = [];
-            app.keychain.groups = [];
-            app.keychain.saveKeys();
-            app.keychain.saveGroups();
-            localforage
-              .clear()
-              .then(function () {
-                console.log("DB Reset Success");
-                return app.wallet.resetWallet();
-              })
-              .catch(function (err) {
-                console.error(err);
-                return app.wallet.resetWallet();
-              });
+          callback: async function (app, id) {
+            let confirmation = await sconfirm("This will reset/nuke your account, do you wish to proceed?");
+
+            if (confirmation){
+              app.wallet.resetWallet();
+            }
           },
         },
       ];

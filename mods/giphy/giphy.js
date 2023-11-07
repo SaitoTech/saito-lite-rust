@@ -29,7 +29,7 @@ class Giphy extends ModTemplate {
     this.loader = new SaitoLoader(app, mod);
     this.auth = null;
 
-   this.gf = null;
+    this.gf = null;
 
     this.styles = ["/giphy/style.css"];
 
@@ -43,7 +43,7 @@ class Giphy extends ModTemplate {
     let giphy_self = this;
 
     //
-    //Calculate reasonable sizing of results 
+    //Calculate reasonable sizing of results
     //
     this.selectorWidth = window.innerWidth;
     if (this.container) {
@@ -72,9 +72,9 @@ class Giphy extends ModTemplate {
 
 
     if (this.container) {
-        if (!document.querySelector(".saito-gif-container")){
-            this.app.browser.addElementToSelector(saitoGifTemplate(this.app, this.mod), this.container);      
-        }
+      if (!document.querySelector(".saito-gif-container")) {
+        this.app.browser.addElementToSelector(saitoGifTemplate(this.app, this.mod), this.container);
+      }
     } else {
       this.overlay.show(saitoGifTemplate(this.app, this.mod));
     }
@@ -90,13 +90,13 @@ class Giphy extends ModTemplate {
       {
         width: giphy_self.selectorWidth,
         fetchGifs: (offset) => {
-            //giphy_self.loader.remove();
+          //giphy_self.loader.remove();
           return this.gf.search("inception", { offset });
         },
         columns: giphy_self.selectorColumns,
         gutter: 2,
         onGifClick,
-        key: 34,
+        key: 34
       },
       document.querySelector(".saito-gif-content")
     );
@@ -117,7 +117,7 @@ class Giphy extends ModTemplate {
     let gif_self = this;
 
     if (service.service === "giphy") {
-      app.network.sendRequestAsTransaction("get giphy auth", {}, function (res) {
+      app.network.sendRequestAsTransaction("get giphy auth", {}, function(res) {
         gif_self.auth = res;
       });
     }
@@ -133,13 +133,12 @@ class Giphy extends ModTemplate {
           giphy_self.parent_callback = callback;
           giphy_self.render();
           giphy_self.attachEvents();
-        },
+        }
       };
     }
 
     return super.respondTo(type, obj);
   }
-
 
 
   toDataURL = (url) =>
@@ -164,17 +163,17 @@ class Giphy extends ModTemplate {
     let gif_search_icon = document.querySelector(".saito-gif-search i");
     let gif_input_search = document.querySelector(".saito-gif-search input");
 
-    gif_search_icon.onclick = () => {
+    const onGifClick = (gif, e) => {
+      e.preventDefault();
+      this.parent_callback(gif.images.original.url);
+      this.overlay.remove();
+    };
+
+    const searchGif = () => {
       let value = gif_input_search.value;
       console.log(gif_input_search.value, "value");
       document.querySelector(".saito-gif-content").innerHTML = "";
       //this.loader.render(this.app, this.mod, "saito-gif-content");
-
-      let onGifClick = (gif, e) => {
-        e.preventDefault();
-        this.parent_callback(gif.images.original.url);
-        this.overlay.remove();
-      };
 
       renderGrid(
         {
@@ -187,31 +186,50 @@ class Giphy extends ModTemplate {
           columns: giphy_self.selectorColumns,
           gutter: 2,
           onGifClick,
-          key: value,
+          key: value
         },
         document.querySelector(".saito-gif-content")
       );
+    }
+
+    gif_search_icon.onclick = searchGif;
+
+    //add focus to search bar
+    if (gif_input_search){
+
+      gif_input_search.onkeydown = (e) => {
+        if (e.keyCode === 13){
+          searchGif();
+        }
+      }
+
+      gif_input_search.onclick = (e) => {
+        e.currentTarget.select();
+      }
       
-    };
+      gif_input_search.focus({ focusVisible: true });
+    }
 
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
-      return;
+      return 0;
     }
     let message = tx.returnMessage();
-    if (message.request === "get giphy auth") {
+    if (message?.request === "get giphy auth") {
       let api_key = "";
       try {
         api_key = process.env.GIPHY_KEY;
         if (mycallback) {
-          await mycallback(api_key);
+          mycallback(api_key);
+          return 1;
         }
       } catch (err) {
         console.log("Failed to find key with error: " + err);
       }
     }
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 }
 

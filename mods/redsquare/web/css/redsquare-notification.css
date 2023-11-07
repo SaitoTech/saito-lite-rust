@@ -11,8 +11,7 @@
   left: 50%;
   transform: translateX(-50%);
   height: 6rem;
-  border-radius: 2rem;
-  padding: 2rem 1rem;
+  padding: 2.2rem 2rem 1.8rem;
   align-items: center;
   justify-content: center;
   cursor: pointer;

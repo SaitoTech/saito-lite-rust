@@ -1,5 +1,4 @@
 module.exports = (app, mod) => {
-
   return `
     
 
@@ -17,7 +16,7 @@ module.exports = (app, mod) => {
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="saito.io redsquare" />
-  <meta name="apple-mobile-web-app-title" content="🟥 Saito Red Square" />
+  <meta name="apple-mobile-web-app-title" content="🟥 Saito P2P RedSquare" />
   <meta name="theme-color" content="#FFFFFF" />
   <meta name="msapplication-navbutton-color" content="#FFFFFF" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -53,21 +52,8 @@ module.exports = (app, mod) => {
 
 
 </body>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.0.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.1.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.2.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.3.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.4.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.5.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.6.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.7.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.8.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.9.js?x=${new Date().getTime()}"></script>
-
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
-<style></style>
 </html>
 
 `;
-
-}
+};

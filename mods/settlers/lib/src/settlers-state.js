@@ -1,6 +1,40 @@
 
 class SettlersState {
 
+  /*
+    Every player should have in deck[2] and deck[3] the board tiles and tokens in the same order
+    */
+  generateMap() {
+    console.log("GENERATING MAP");
+    console.log(JSON.stringify(this.game.deck));
+    let tileCt = 0;
+    let tokenCt = 0;
+    let tile, resourceName, token;
+    console.log("POOL 1");
+    for (let hex of this.hexgrid.hexes) {
+      tile = this.game.pool[0].hand[tileCt++];
+      resourceName = this.game.deck[1].cards[tile].resource;
+      console.log("res: " + resourceName);
+      if (resourceName != this.returnNullResource()) {
+        let temp = this.game.pool[1].hand[tokenCt++];
+        token = this.game.deck[2].cards[temp].value;
+      } else {
+        token = 0;
+      }
+      this.game.state.hexes[hex] = {
+        resource: resourceName,
+        value: token,
+        img: this.game.deck[1].cards[tile].img,
+        neighbours: [],
+        robber: false,
+      };
+      if (resourceName == this.returnNullResource()) this.game.state.hexes[hex].robber = true;
+      if (token) this.addSectorValueToGameboard(hex, token);
+    }
+    console.log("DONE GENERATING MAP");
+  }
+
+
 
   /*
     Given a resource cost and player, check if they meet the minimum
@@ -16,13 +50,6 @@ class SettlersState {
     return true;
   }
 
-  hasVPCards() {
-    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
-      if (!this.isActionCard(cardname)) { return true; }
-    }
-    return false;
-  }
 
 
 
@@ -196,18 +223,16 @@ class SettlersState {
         let hexobj = document.getElementById(selector);
         let svid = `sector_value_${hex}`;
 
+        //Create Sector_value
+        let sector_value_html = `
+            <div class="sector-container sc${sector_value}" id="${svid}">
+                <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
+            </div>
+        `;
+
         if (document.getElementById(svid)) {
-            //Update Sector Value
-            let temp = document.getElementById(svid);
-            temp.textContent = sector_value;
-            temp.classList.add("sv" + sector_value);
+            this.app.browser.replaceElementById(sector_value_html, svid);
         } else {
-            //Create Sector_value
-            let sector_value_html = `
-                <div class="sector-container sc${sector_value}" id="${svid}">
-                    <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
-                </div>
-            `;
             let sector_value_obj = this.app.browser.htmlToElement(sector_value_html);
             if (hexobj) {
                 hexobj.after(sector_value_obj);
@@ -349,24 +374,16 @@ class SettlersState {
     }
 
 
-    //Allow this player to click buttons to display resource or dev cards in their cardfan
-    addEventsToHand() {
-        let settlers_self = this;
-
-        $(".cardselector").off(); //Previous events should be erased when the dom is rebuilt, but just in case...
-        $(".cardselector").on("click", function () {
-            console.log("settlers state cards ////");
-            settlers_self.displayCardfan($(this).attr("id"));
-        });
-    }
-
     removeEvents() {
-        //console.trace("remove events");
-        this.displayBoard();
-        $(".cardselector").off();
-        $(".trade").off();
+        $(".trade").off();        
     }
 
+
+    randomMsg(){
+        let choices = ["nothing gained", "a poor harvest", "unlucky roll", "better luck next time"];
+        let die = Math.floor(Math.random()*choices.length);
+        return choices[die];
+    }
 }
 
 module.exports = SettlersState;

@@ -8,6 +8,8 @@ saitolitedocs
 
 .env
 
+options
+
 logs
 logs/*
 config/modules*
@@ -37,6 +39,7 @@ data/blocks/empty
 data/shashmaps/*.smap
 data/backup/*
 data/backup
+data/issuance/issuance
 
 bundler
 bundler/*
@@ -67,8 +70,8 @@ web/saito/saito.css
 # ignore all style.css files as these are not compiled
 style.css
 
-mods/popup
-mods/popup/*
+mods/popup/src/*
+mods/popup/src/sql/*
 mods/appstore/mods/*
 mods/appstore/bundler
 mods/appstore/bundler/*

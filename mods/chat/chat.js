@@ -60,7 +60,6 @@ class Chat extends ModTemplate {
     this.enable_notifications = false;
 
     this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
-      console.log("Chat: Successful encrypt key exchange, make group");
       this.returnOrCreateChatGroupFromMembers(data?.members);
       this.app.connection.emit("chat-manager-render-request");
     });
@@ -81,10 +80,7 @@ class Chat extends ModTemplate {
       await this.sendChatTransaction(this.app, newtx);
 
       siteMessage("Message sent through chat", 2500);
-      
     });
-
-
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
@@ -179,21 +175,24 @@ class Chat extends ModTemplate {
   }
 
   async render() {
-    if (this.app.BROWSER == 1) {
-      if (this.app.options.theme) {
-        let theme = this.app.options.theme[this.slug];
+    if (!this.app.BROWSER) {
+      return;
+    }
 
-        if (theme != null) {
-          this.app.browser.switchTheme(theme);
-        }
+    if (this.app.options.theme) {
+      let theme = this.app.options.theme[this.slug];
+
+      if (theme != null) {
+        this.app.browser.switchTheme(theme);
       }
     }
 
     if (this.main == null) {
-      this.main = new ChatMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
       await this.header.initialize(this.app);
       this.addComponent(this.header);
+
+      this.main = new ChatMain(this.app, this);
       this.addComponent(this.main);
     }
 
@@ -202,10 +201,14 @@ class Chat extends ModTemplate {
       this.addComponent(this.chat_manager);
     }
     this.chat_manager.container = ".saito-sidebar.left";
-    this.chat_manager.chat_popup_container = ".saito-main";
+
+    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 599) {
+      this.chat_manager.chat_popup_container = ".saito-main";
+      //Main Chat Application doesn't use popups as such...
+      this.chat_manager.render_popups_to_screen = 0;
+    }
+
     this.chat_manager.render_manager_to_screen = 1;
-    //Main Chat Application doesn't use popups as such...
-    this.chat_manager.render_popups_to_screen = 0;
 
     await super.render();
   }
@@ -328,8 +331,9 @@ class Chat extends ModTemplate {
             ) {
               this.app.connection.emit("chat-manager-request-no-interrupts");
               return;
+            }else{
+              this.app.connection.emit("chat-popup-render-request");
             }
-            this.app.connection.emit("chat-popup-render-request");
           }
         });
       }
@@ -356,9 +360,9 @@ class Chat extends ModTemplate {
         }
         return this.chat_manager;
       case "saito-header":
-        //TODO:
-        //Since the left-sidebar chat-manager disappears at screens less than 1200px wide
-        //We need another way to display/open it...
+        //
+        // In mobile, we use the hamburger menu to open chat (without leaving the page)
+        //
         if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
           if (this.chat_manger) {
             //Don't want mobile chat auto popping up
@@ -373,12 +377,44 @@ class Chat extends ModTemplate {
               text: "Chat",
               icon: "fas fa-comments",
               callback: function (app, id) {
-                console.log("Callback for saito-header chat");
                 chat_self.chat_manager_overlay.render();
               },
+              event: function(id){
+
+                chat_self.app.connection.on("chat-manager-render-request", ()=> {
+                
+                  let elem = document.getElementById(id);
+                  console.log("Chat event, update", elem);
+                  if (elem){
+                    let unread = 0;
+                    for (let group of chat_self.groups){
+                      unread += group.unread;
+                    }
+
+                    if (unread){
+                      if (elem.querySelector(".saito-notification-dot")){
+                        elem.querySelector(".saito-notification-dot").innerHTML = unread;
+                      }else{
+                        chat_self.app.browser.addElementToId(`<div class="saito-notification-dot">${unread}</div>`, id);
+                      }
+                    }else{
+                      if (elem.querySelector(".saito-notification-dot")){
+                        elem.querySelector(".saito-notification-dot").remove();
+                      }
+                    }
+                  }
+
+                });
+
+                //Trigger my initial display
+                chat_self.app.connection.emit("chat-manager-render-request");
+              }
             },
           ];
         } else if (!chat_self.browser_active) {
+          //
+          // Otherwise we go to the main chat application
+          //
           return [
             {
               text: "Chat",
@@ -453,7 +489,7 @@ class Chat extends ModTemplate {
       let txmsg = tx.returnMessage();
 
       if (this.debug) {
-        console.log("Chat onConfirmation: " + txmsg.request);
+        //console.log("Chat onConfirmation: " + txmsg.request);
       }
 
       if (txmsg.request == "chat message") {
@@ -484,15 +520,17 @@ class Chat extends ModTemplate {
   // or addressed to me
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+
     if (tx == null) {
-      return;
+      return 0;
     }
 
     await tx.decryptMessage(app); //In case forwarding private messages
+
     let txmsg = tx.returnMessage();
 
     if (!txmsg.request) {
-      return;
+      return 0;
     }
 
     if (this.debug && txmsg.request.includes("chat ")) {
@@ -504,7 +542,7 @@ class Chat extends ModTemplate {
 
       if (!group) {
         console.log("Group doesn't exist?");
-        return;
+        return 0;
       }
 
       //Just process the most recent 50 (if event that any)
@@ -513,8 +551,12 @@ class Chat extends ModTemplate {
 
       if (mycallback) {
         let txs = group.txs.filter((t) => t.timestamp > txmsg?.data?.timestamp);
-        await mycallback(txs);
+        mycallback(txs);
+        return 1;
       }
+
+      return 0;
+
     }
 
     if (txmsg.request === "chat message") {
@@ -524,13 +566,15 @@ class Chat extends ModTemplate {
       // notify sender if requested
       //
       if (mycallback) {
-        await mycallback({ payload: "success", error: {} });
+        mycallback({ payload: "success", error: {} });
+        return 1;
       }
-    } else if (txmsg.request === "chat message broadcast") {
-      //
-      // This whole block is duplicating the functional logic of the Relay module....
-      //
 
+      return 0;
+
+    } 
+
+    if (txmsg.request === "chat message broadcast") {
       let inner_tx = new Transaction(undefined, txmsg.data);
 
       // console.log(inner_tx);
@@ -567,9 +611,15 @@ class Chat extends ModTemplate {
       // notify sender if requested
       //
       if (mycallback) {
-        await mycallback({ payload: "success", error: {} });
+        mycallback({ payload: "success", error: {} });
+        return 1;
       }
+
+      return 0;
+
     }
+
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   //
@@ -951,7 +1001,7 @@ class Chat extends ModTemplate {
     }
 
     if (members.length == 2) {
-      console.log("Chat: Encrypting Message for " + secret_holder);
+      console.log("Chat: Try encrypting Message for " + secret_holder);
 
       //
       // Only encrypts if we have swapped keys and haveSharedKey, otherwise just signs
@@ -960,6 +1010,7 @@ class Chat extends ModTemplate {
     } else {
       await newtx.sign();
     }
+
     return newtx;
   }
 
@@ -1085,7 +1136,9 @@ class Chat extends ModTemplate {
           }
 
           //Use FA 5 so compatible in games (until we upgrade everything to FA6)
-          const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
+          const replyButton = `<div data-id="${group_id}" data-href="${
+            sender + ts
+          }" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
           html += `${SaitoUserTemplate({
             app: this.app,
             publicKey: sender,
@@ -1094,6 +1147,7 @@ class Chat extends ModTemplate {
               `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
               this.app.browser.returnTime(ts) +
               `</span>${replyButton}</div>`,
+            id: sender + ts,
           })}`;
         }
       }
@@ -1256,10 +1310,15 @@ class Chat extends ModTemplate {
     if (members == null) {
       return "";
     }
-    //So David + Richard == Richard + David
-    members.sort();
 
-    return this.app.crypto.hash(`${members.join("_")}`);
+    let clean_array = [];
+    for (let member of members) {
+      clean_array.push(member);
+    }
+    //So David + Richard == Richard + David
+    clean_array.sort();
+
+    return this.app.crypto.hash(`${clean_array.join("_")}`);
   }
 
   //

@@ -101,7 +101,8 @@ class AppStore extends ModTemplate {
       res.err = "";
       res.rows = rows;
 
-      await mycallback(res);
+      mycallback(res);
+      return 1;
     }
   }
 
@@ -1130,7 +1131,7 @@ class AppStore extends ModTemplate {
     //console.log(sql_query);
 
     if (this.app.BROWSER === 1) {
-      await this.sendPeerDatabaseRequestWithFilter(this.name, sql_query, (res) => {
+      this.sendPeerDatabaseRequestWithFilter(this.name, sql_query, (res) => {
         if (res.rows != undefined) {
           mycallback(res.rows);
         } else {

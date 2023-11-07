@@ -33,6 +33,17 @@ This alows for a header with a header with title to be added without extra CSS
   gap: 1rem;
 }
 
+
+.secure_contact_notice {
+  position: absolute;
+  left: 3rem;
+  top: 0;
+  z-index: 2;
+  color: var(--saito-font-color-light);
+  text-shadow: 2px 2px 2px var(--saito-black);
+
+}
+
 .saito-contact.unconfirmed {
   filter: brightness(0.7) grayscale(1);
 }

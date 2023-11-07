@@ -29,7 +29,7 @@ class League extends ModTemplate {
     this.categories = "Arcade Gaming";
     this.overlay = null;
 
-    this.styles = ["/league/style.css", "/arcade/style.css"];
+    this.styles = ["/arcade/style.css", "/league/style.css"];
 
     this.leagues = [];
 
@@ -97,6 +97,10 @@ class League extends ModTemplate {
 
   async initialize(app) {
     await super.initialize(app);
+
+    if (this.browser_active) {
+      this.styles.unshift("/saito/saito.css");
+    }
 
     //Trial -- So that we can display league results in game page
     this.overlay = new LeagueOverlay(app, this);
@@ -292,14 +296,20 @@ class League extends ModTemplate {
       this.sendPeerDatabaseRequestWithFilter(
         "League",
         sql,
-        (res) => {
+        async (res) => {
           if (res?.rows) {
             for (let league of res.rows) {
               //In case I missed the deletion tx, I can catch that my league has been removed and I should drop it
               if (league.deleted) {
-                league_self.removeLeague(league.id);
+                await league_self.removeLeague(league.id);
               } else {
-                league_self.updateLeague(league);
+                await league_self.updateLeague(league);
+                if (league.game === this.app.modules.returnActiveModule()?.name) {
+                  console.log(
+                    "Updated info on this game's league: ",
+                    JSON.parse(JSON.stringify(league))
+                  );
+                }
               }
             }
           }
@@ -356,7 +366,7 @@ class League extends ModTemplate {
            WHERE deleted = 0
              AND league_id IN (${league_list})
            ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
-          (res) => {
+          async (res) => {
             if (res?.rows) {
               let league_id = 0;
 
@@ -369,7 +379,7 @@ class League extends ModTemplate {
 
                   //Add me to bottom of list if I haven't played any games
                   if (myPlayerStats) {
-                    this.addLeaguePlayer(league_id, myPlayerStats);
+                    await this.addLeaguePlayer(league_id, myPlayerStats);
                   }
 
                   league = league_self.returnLeague(league_id);
@@ -407,12 +417,12 @@ class League extends ModTemplate {
                 //
                 // Update player-league data in our live data structure
                 //
-                this.addLeaguePlayer(league_id, p);
+                await this.addLeaguePlayer(league_id, p);
               }
 
               //Add me to bottom of list if I haven't played any games
               if (myPlayerStats) {
-                this.addLeaguePlayer(league_id, myPlayerStats);
+                await this.addLeaguePlayer(league_id, myPlayerStats);
               }
 
               league_self.leagues.forEach((l) => {
@@ -475,9 +485,8 @@ class League extends ModTemplate {
         return;
       }
 
-      this.saveLeagues();
-
       if (this.app.BROWSER) {
+        this.saveLeagues();
         this.sortLeagues();
         this.app.connection.emit("leagues-render-request");
         this.app.connection.emit("league-rankings-render-request");
@@ -532,6 +541,13 @@ class League extends ModTemplate {
               league.players = value.players;
               league.rank = value.rank;
               league.numPlayers = value.numPlayers;
+
+              if (league.game === league_self.app.modules.returnActiveModule()?.name) {
+                console.log(
+                  "Local version of this game league: ",
+                  JSON.parse(JSON.stringify(league))
+                );
+              }
             }
 
             cnt--;
@@ -569,6 +585,8 @@ class League extends ModTemplate {
   /**
    * We only store the leagues we are a member of.
    * League id -> app.options, full league data in localForage
+   * 
+   * maybe this should be async...
    */
   saveLeagues() {
     if (!this.app.BROWSER) {
@@ -578,6 +596,7 @@ class League extends ModTemplate {
     let league_self = this;
     this.app.options.leagues = [];
 
+    let cnt = 0;
     for (let league of this.leagues) {
       if (league.rank >= 0 || league.admin === this.publicKey) {
         //let newLeague = JSON.parse(JSON.stringify(league));
@@ -588,6 +607,7 @@ class League extends ModTemplate {
             console.log("Saved league data for " + league.id);
             console.log(JSON.parse(JSON.stringify(league)));
           }
+          //console.log(`Saved ${++cnt} out of ${league_self.app.options.leagues.length} leagues`);
         });
       }
     }
@@ -858,21 +878,36 @@ class League extends ModTemplate {
       request: "league remove",
       league_id: league_id,
     };
+
+    if (this?.sudo == league_id) {
+      newtx.msg["sudo"] = this.publicKey;
+    }
+
     await newtx.sign();
     return newtx;
   }
 
   async receiveRemoveTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
+    let sql1, params1;
 
-    let sql1 = `UPDATE leagues
-                SET deleted = 1
-                WHERE id = $id
-                  AND admin = $admin`;
-    let params1 = {
-      $id: txmsg.league_id,
-      $admin: tx.from[0].publicKey,
-    };
+    if (txmsg?.sudo && txmsg.sudo === tx.from[0].publicKey) {
+      sql1 = `UPDATE leagues
+            SET deleted = 1
+            WHERE id = $id`;
+      params1 = {
+        $id: txmsg.league_id,
+      };
+    } else {
+      sql1 = `UPDATE leagues
+                  SET deleted = 1
+                  WHERE id = $id
+                    AND admin = $admin`;
+      params1 = {
+        $id: txmsg.league_id,
+        $admin: tx.from[0].publicKey,
+      };
+    }
 
     let result = await this.app.storage.executeDatabase(sql1, params1, "league");
 
@@ -958,7 +993,46 @@ class League extends ModTemplate {
       if (this.app.BROWSER) {
         //console.log("Update league rankings on game over");
         //console.log(JSON.parse(JSON.stringify(leag.players)));
-        this.fetchLeagueLeaderboard(leag.id);
+        let myScore = leag.score;
+        let myRank = leag.rank;
+        this.fetchLeagueLeaderboard(leag.id, () => {
+          if (myRank <= 0 && leag.rank > 0) {
+            siteMessage(`You are now ranked ${leag.rank} on the ${leag.name} leaderboard`);
+          } else {
+            let point_message = "";
+            if (leag.ranking_algorithm === "ELO" && leag.score != myScore) {
+              if (leag.score > myScore) {
+                point_message = `gained ${leag.score - myScore} points`;
+              } else {
+                point_message = `lost ${myScore - leag.score} points`;
+              }
+            } else if (leag.ranking_algorithm === "HSC") {
+              if (leag.score > myScore) {
+                point_message = `set a new personal best of ${leag.score}`;
+              }
+            }
+
+            let rank_message = "";
+
+            if (myRank > leag.rank) {
+              rank_message = `jumped ${myRank - leag.rank} place${
+                myRank - leag.rank > 1 ? "s" : ""
+              } on the leaderboard`;
+            } else if (myRank < leag.rank) {
+              rank_message = `dropped ${leag.rank - myRank} place${
+                leag.rank - myRank > 1 ? "s" : ""
+              } on the leaderboard`;
+            }
+
+            if (point_message && rank_message) {
+              siteMessage(`${leag.name}: You ${point_message} and ${rank_message}`);
+            } else if (point_message || rank_message) {
+              siteMessage(`${leag.name}: You ${point_message}${rank_message}`);
+            }
+          }
+          console.log("LEAGUE: My previous score and rank:", myScore, myRank);
+          console.log("LEAGUE: My new score and rank: ", leag.score, leag.rank);
+        });
       }
     }
   }
@@ -1380,7 +1454,8 @@ class League extends ModTemplate {
       return;
     }
 
-    oldLeague = Object.assign(oldLeague, obj);
+    Object.assign(oldLeague, obj);
+
     //console.log("Updated League from Storage");
     //console.log(JSON.parse(JSON.stringify(oldLeague)));
   }
@@ -1417,8 +1492,8 @@ class League extends ModTemplate {
     newPlayer.score = parseInt(newPlayer.score);
 
     if (newPlayer.publicKey === this.publicKey) {
-      console.log("Adding myself to league");
-      if (league.rank <= 0 || !league?.rank) {
+      league.score = newPlayer.score;
+      if (!league?.rank || league.rank <= 0) {
         league.rank = 0;
         league.numPlayers = league.players.length;
       }

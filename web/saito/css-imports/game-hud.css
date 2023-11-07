@@ -95,6 +95,17 @@
     list-style: none;
 }
 
+.status {
+    border-radius: unset;
+    position: relative;
+    font-size: 1.6rem;
+    justify-content: space-around;
+    height: min-content;
+    min-height: fit-content;
+    text-align: center;
+}
+
+
 .hud-body .status {
     background-color: whitesmoke;
     width: 500px;
@@ -106,30 +117,19 @@
     padding-bottom: 0.9rem;
 }
 
-.hud-body .status .back-button {
-    top: 1rem;
-    margin-left: 1rem;
-    position: absolute;
-    font-size: 1.7rem;
-}
-
-.status {
-    border-radius: unset;
-    position: relative;
-    font-size: 1.6rem;
-    justify-content: space-around;
-    height: min-content;
-    min-height: fit-content;
-    text-align: center;
-}
 
 .hud-body .status .back-button {
-    padding-left: 1rem;
+    padding: 1rem;
     font-size: 1.85rem;
     display: inline-block;
     position: absolute;
-    top: 1rem;
+    top: 0;
     left: 0;
+    cursor: pointer;
+}
+
+.hud-body .status .back-button:hover{
+    transform: scale(1.3);
 }
 
 .status-overlay {
@@ -157,7 +157,6 @@
     overflow-x: clip;
     grid-template-columns: repeat(auto-fit, minmax(10vw, 1fr) );
     user-select: none;
-    margin-top: 1rem;
 }
 
 .controls ul {

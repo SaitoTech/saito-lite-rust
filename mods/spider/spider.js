@@ -73,10 +73,15 @@ class Spider extends OnePlayerGameTemplate {
       // Insert game board
       $(".gameboard").html(this.returnBoard());
       this.removeEvents();
-      this.changeDifficulty(input_dif);
+
+      if (this.changeDifficulty(input_dif) || this.game.deck.length == 0){
+        this.newRound();
+      }
+
     } else {
       this.game.queue.push("READY");
     }
+
   }
 
   render(app) {
@@ -157,6 +162,8 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-confirm-easy",
       callback: function (app, game_mod) {
         game_mod.changeDifficulty("easy");
+        game_mod.game.queue.push("lose");
+        game_mod.endTurn();
       },
     });
 
@@ -166,6 +173,9 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-confirm-medium",
       callback: function (app, game_mod) {
         game_mod.changeDifficulty("medium");
+        game_mod.game.queue.push("lose");
+        game_mod.endTurn();
+
       },
     });
 
@@ -175,6 +185,9 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-confirm-hard",
       callback: function (app, game_mod) {
         game_mod.changeDifficulty("hard");
+        game_mod.game.queue.push("lose");
+        game_mod.endTurn();
+
       },
     });
 
@@ -194,7 +207,7 @@ class Spider extends OnePlayerGameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnStatsHTML("Spider Stats"));
+        game_mod.overlay.show(game_mod.returnStatsHTML());
       },
     });
 
@@ -208,7 +221,8 @@ class Spider extends OnePlayerGameTemplate {
       //Copy Board state from memory if it exists
       //
       if (this.game.state.board[i]) {
-        this.cardStacks[i].cards = JSON.parse(JSON.stringify(this.game.state.board[i]));
+        console.log("Load Last Board:", JSON.parse(JSON.stringify(this.game.state.board[i])));
+        this.cardStacks[i].cards = this.game.state.board[i];
       }
     }
   }
@@ -649,7 +663,9 @@ class Spider extends OnePlayerGameTemplate {
         //drop the first card we already added
         stack_to_move.shift();
         //Concat the rest of the stack
-        this.cardStacks[target].cards = this.cardStacks[target].cards.concat(stack_to_move);
+        for (let card of stack_to_move){
+          this.cardStacks[target].cards.push(card);  
+        }
         this.commitMove(source+"_"+index, target, stack_to_move.length + 1);
       }
     }, ()=>{
@@ -667,7 +683,10 @@ class Spider extends OnePlayerGameTemplate {
 
   placeStack(activated_card_stack, card_index, event) {
     let spider_self = activated_card_stack.mod;
-    activated_card_stack.cards = activated_card_stack.cards.concat(spider_self.selected_stack);
+    for (let card of spider_self.selected_stack){
+      activated_card_stack.cards.push(card);  
+    }
+
     activated_card_stack.render();
     spider_self.selected_stack = [];
     $("#helper").remove();
@@ -677,7 +696,7 @@ class Spider extends OnePlayerGameTemplate {
     let spider_self = activated_card_stack.mod;
     let af = null;
 
-    this.removeEvents();
+    spider_self.removeEvents();
 
     if (!document.getElementById("helper")) {
       spider_self.app.browser.addElementToSelector(
@@ -830,7 +849,9 @@ class Spider extends OnePlayerGameTemplate {
 
     let moved_cards = this.cardStacks[slot].cards.splice(-stackSize);
 
-    this.cardStacks[oldstackNum].cards = this.cardStacks[oldstackNum].cards.concat(moved_cards);
+    for (let card of moved_cards){
+      this.cardStacks[oldstackNum].cards.push(card);  
+    }
 
     this.game.state.moves++;
     this.displayBoard();
@@ -912,7 +933,7 @@ class Spider extends OnePlayerGameTemplate {
           setTimeout(async () => {
             this.displayBoard();
             $(".animated_elem").remove();
-            this.game.halted = 0;
+            this.halted = 0;
             let temp = await this.revealCard(stackNum);
             if (temp) {
               this.prependMove(`flip\t${stackNum}\t${temp}`);
@@ -1154,11 +1175,10 @@ class Spider extends OnePlayerGameTemplate {
     }
     if (saved_dif !== dif /*|| this.game.deck.length == 0 || this.game.deck[0].length == 0*/) {
       console.log("Original Difficulty = " + saved_dif + ", new difficulty: " + dif);
-
       this.saveGamePreference("spider_difficulty", dif);
-      this.game.queue.push("lose");
-      this.endTurn();
+      return 1;
     }
+    return 0;
   }
 
   displayBoard() {

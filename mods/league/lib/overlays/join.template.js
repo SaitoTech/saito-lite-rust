@@ -1,4 +1,4 @@
-module.exports = JoinLeagueTemplate = async (app, mod, league) => {
+module.exports = JoinLeagueTemplate = (app, mod, league) => {
   let game = league.game.toLowerCase();
 
   let name = app.keychain.returnIdentifierByPublicKey(mod.publicKey, true);

@@ -2,33 +2,14 @@ const ChatPopup = require("./popup");
 const ChatManagerTemplate = require("./main.template");
 const ChatTeaser = require("./teaser.template");
 const JSON = require("json-bigint");
-const ChatMenu = require("./../overlays/chat-menu");
-const ContactsList = require("./../../../../lib/saito/ui/modals/saito-contacts/saito-contacts");
+const ChatUserMenu = require("./../overlays/chat-user-menu");
+const ChatManagerMenu = require("./../overlays/chat-manager-menu");
 
 class ChatManager {
   constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
     this.container = container || ".chat-manager";
-    this.contactList = new ContactsList(app, mod, true);
-    this.contactList.callback = async (person) => {
-      if (Array.isArray(person) && person.length > 1) {
-        let name = await sprompt("Choose a name for the group");
-        //Make sure I am in the group too!
-        person.push(this.mod.publicKey);
-        let group = this.mod.returnOrCreateChatGroupFromMembers(person, name);
-
-        if (group.txs.length == 0) {
-          await this.mod.sendCreateGroupTransaction(group);
-        } else {
-          this.app.connection.emit("chat-popup-render-request", group);
-        }
-      } else if (Array.isArray(person) && person.length == 1) {
-        this.app.keychain.addKey(person[0], { mute: 0 });
-        person.push(this.mod.publicKey);
-        let group = this.mod.returnOrCreateChatGroupFromMembers(person);
-      }
-    };
 
     //
     // some apps may want chat manager quietly in background
@@ -47,9 +28,13 @@ class ChatManager {
     //
     // handle requests to re-render chat manager
     //
-    app.connection.on("chat-manager-render-request", async () => {
+    app.connection.on("chat-manager-render-request", () => {
       if (this.render_manager_to_screen) {
-        await this.render();
+        //
+        // Rerender the chat manager, sorting the chats by last active
+        // and updating unread message notifications
+        //
+        this.render();
       }
     });
 
@@ -60,12 +45,11 @@ class ChatManager {
     //
     // handle requests to re-render chat popups
     //
-    app.connection.on("chat-popup-render-request", async (group = null) => {
+    app.connection.on("chat-popup-render-request", (group = null) => {
       if (!group) {
         group = this.mod.returnCommunityChat();
       }
 
-      console.log("rendered group", group);
       if (group) {
         if (!this.popups[group.id]) {
           this.popups[group.id] = new ChatPopup(
@@ -76,13 +60,18 @@ class ChatManager {
           this.popups[group.id].group = group;
         }
 
-        // if (this.render_popups_to_screen || !this.popups[group.id].is_rendered) {
-        this.popups[group.id].render();
-        // }
-
-        if (this.render_manager_to_screen) {
-          await this.render();
+        // For the love of all the is holy, would you stop commenting out this if-condition
+        // to make "stun" work, it breaks chat on mobile
+        // Talk to me about how to get chat to work in your desired field... there are other less
+        // destructive ways to do so
+        if (this.render_popups_to_screen || this.popups[group.id].is_rendered) {
+          this.popups[group.id].render();
         }
+
+        //
+        // We use an event so that other components can piggy back off this request
+        //
+        this.app.connection.emit("chat-manager-render-request");
       }
     });
 
@@ -105,7 +94,7 @@ class ChatManager {
     // This is a short cut for any other UI components to trigger the chat-popup window
     // (in the absence of a proper chat-manager listing the groups/contacts)
 
-    app.connection.on("open-chat-with", async (data = null) => {
+    app.connection.on("open-chat-with", (data = null) => {
       this.render_popups_to_screen = 1;
 
       if (this.mod.debug) {
@@ -146,7 +135,7 @@ class ChatManager {
           // But if groups have variable memberships, it does push out an update to everyone as long
           // as the admin has an accurate list
           //
-          await this.mod.sendCreateGroupTransaction(group);
+          this.mod.sendCreateGroupTransaction(group);
         }
       }
 
@@ -160,7 +149,7 @@ class ChatManager {
       app.connection.emit("chat-popup-render-request", group);
     });
 
-    app.connection.on("relay-is-online", async (pkey) => {
+    app.connection.on("relay-is-online", (pkey) => {
       let target_id = this.mod.createGroupIdFromMembers([pkey, this.mod.publicKey]);
       let group = this.mod.returnGroup(target_id);
       //console.log("Receive online confirmation from " + pkey);
@@ -197,7 +186,7 @@ class ChatManager {
     });
   }
 
-  async render() {
+  render() {
     //
     // some applications do not want chat-manager appearing (games!)
     //
@@ -276,7 +265,7 @@ class ChatManager {
         }
       }
 
-      let html = await ChatTeaser(this.app, group);
+      let html = ChatTeaser(this.app, this.mod, group);
       let divid = "saito-user-" + group.id;
 
       let obj = document.getElementById(divid);
@@ -307,7 +296,7 @@ class ChatManager {
     // clicks on the element itself (background)
     //
     document.querySelectorAll(".chat-manager-list .saito-user").forEach((item) => {
-      item.onclick = async (e) => {
+      item.onclick = (e) => {
         e.stopPropagation();
 
         let gid = e.currentTarget.getAttribute("data-id");
@@ -329,19 +318,25 @@ class ChatManager {
         console.log("clcked popup", this.popups[gid]);
         // unset manually closed to permit rendering
         this.popups[gid].manually_closed = false;
-        this.popups[gid].render();
-        this.popups[gid].input.focus(true);
 
-        if (this.render_manager_to_screen) {
-          await this.render();
+        this.popups[gid].render();
+        //
+        // We would want to force this if juggling multiple chat popups on a desktop
+        // because the user is choosing to open the popup, otherwise there are safety 
+        // catches to keep the focus on the already open text window
+        //
+        if (!this.app.browser.isMobileBrowser()){
+          this.popups[gid].input.focus(true);  
         }
+
+        this.app.connection.emit("chat-manager-render-request");
       };
 
-      item.oncontextmenu = async (e) => {
+      item.oncontextmenu = (e) => {
         e.preventDefault();
         let gid = e.currentTarget.getAttribute("data-id");
-        let chatMenu = new ChatMenu(this.app, this.mod, this.mod.returnGroup(gid));
-        await chatMenu.render();
+        let chatMenu = new ChatUserMenu(this.app, this.mod, this.mod.returnGroup(gid));
+        chatMenu.render();
       };
     });
 
@@ -351,84 +346,27 @@ class ChatManager {
       };
     }
 
-    if (document.querySelector(".add-contacts")) {
-      document.querySelector(".add-contacts").onclick = (e) => {
-        this.contactList.render();
-      };
-    }
+    /*if (this.app.browser.isMobileBrowser() || window.innerWidth < 600){
+      this.app.connection.emit("saito-header-replace-logo", () => {
+        this.app.connection.emit("close-chat-manager-overlay");
+      });
+    }*/
 
-    if (document.querySelector(".refresh-contacts")) {
-      document.querySelector(".refresh-contacts").onclick = async (e) => {
-        for (let group of this.mod.groups) {
-          if (group.members.length == 2) {
-            //console.log(JSON.parse(JSON.stringify(group.members)));
-            for (let member of group.members) {
-              if (member != this.mod.publicKey) {
-                //console.log("Send Ping to " + member);
-                this.app.connection.emit("relay-send-message", {
-                  recipient: [member],
-                  request: "ping",
-                  data: {},
-                });
 
-                this.pinged[group.id] = new Date().getTime();
-
-                if (this.timers[group.id]) {
-                  clearTimeout(this.timers[group.id]);
-                }
-
-                //If you don't hear back in 5 seconds, assume offline
-                this.timers[group.id] = setTimeout(() => {
-                  console.log("Auto change to offline");
-                  let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
-                  if (cm_handle) {
-                    cm_handle.classList.remove("online");
-                  }
-                  group.online = false;
-                  this.timers[group.id] = null;
-                }, 1000 * 5);
-              }
-            }
-          }
+    if (document.querySelector(".chat-manager-options")) {
+      document.querySelector(".chat-manager-options").onclick = (e) => {
+        if (!this.chatManagerMenu){
+          this.chatManagerMenu = new ChatManagerMenu(this.app, this.mod);
         }
-      };
-    }
-
-    if (document.querySelector(".toggle-notifications")) {
-      let icon = document.querySelector(".toggle-notifications i");
-      if (Notification?.permission === "granted" && this.mod.enable_notifications) {
-        if (icon) {
-          icon.classList.add("fa-bell");
-          icon.classList.remove("fa-bell-slash");
+        if (this.chatManagerMenu.active){
+          this.chatManagerMenu.hide();
+        }else{
+          this.chatManagerMenu.render();  
         }
+        document.querySelector(".chat-manager-options").classList.toggle("active");
       }
-
-      document.querySelector(".toggle-notifications").onclick = (e) => {
-        if (this.mod.enable_notifications) {
-          this.mod.enable_notifications = false;
-          if (icon) {
-            icon.classList.remove("fa-bell");
-            icon.classList.add("fa-bell-slash");
-          }
-          this.app.options.chat.enable_notifications = false;
-          this.app.storage.saveOptions();
-        } else {
-          Notification.requestPermission().then((result) => {
-            console.log(result);
-            if (result === "granted") {
-              this.mod.enable_notifications = true;
-              if (icon) {
-                icon.classList.add("fa-bell");
-                icon.classList.remove("fa-bell-slash");
-              }
-
-              this.app.options.chat.enable_notifications = true;
-              this.app.storage.saveOptions();
-            }
-          });
-        }
-      };
     }
+
   }
 }
 

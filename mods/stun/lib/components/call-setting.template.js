@@ -4,7 +4,7 @@ module.exports = () => {
     <div class="chat-settings-wrapper">
     <div class="chat-settings">
     <div class="chat-settings-preview-section">
-        <p> Please take a moment to review your video and audio settings.</p>
+        <div class="chat-settings-preview-message">Please take a moment to review your video and audio settings.</div>
 
         <div id="video-preview" class="chat-settings-preview">
             <video id="video" autoplay muted playsinline></video>

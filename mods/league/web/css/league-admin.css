@@ -544,18 +544,6 @@ i.link_icon.private {
   color: var(--saito-white) !important;
 }
 
-.saito-select .saito-slct {
-  font-size: 2rem;
-}
-
-.saito-slct {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: var(--saito-white);
-  border-radius: 1rem;
-  padding: 0 1rem;
-}
-
 @media (max-width: 900px) {
   .league-main-container {
     grid-template-columns: 1fr;

@@ -12,14 +12,24 @@ module.exports = (app, mod, group, isStatic = false) => {
      class_name = "chat-static";
   }
 
+  let is_encrypted = `<i class="far fa-comment-dots chat-minimizer-icon"></i>`;
+
+  if (group.members.length == 2) {
+    for (let member of group.members) {
+      if (member !== mod.publicKey) {
+        if (app.keychain.hasSharedSecret(member)) {
+          is_encrypted = `<i class="fa-solid fa-lock chat-minimizer-icon"></i>`;
+        }
+      }
+    }
+  }
+
   let html = `
       <div class="${class_name} chat-popup" id="chat-popup-${group.id}">
 
         <div class="chat-header" id="chat-header-${group.id}">
-          <i  class="far fa-comment-dots chat-minimizer-icon"></i>
-          <div id="chat-group-${
-            group.id
-          }" class="chat-group active-chat-tab saito-address" data-id="${group.name}">${
+          ${is_encrypted}
+          <div id="chat-group-${group.id}" class="chat-group active-chat-tab saito-address" data-id="${group.name}" data-disable="true">${
     group.name
   }</div>
           <i id="chat-container-close" class="chat-container-close fas fa-times"></i>

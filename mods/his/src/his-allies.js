@@ -63,12 +63,41 @@
     return 0;
   }
 
+  setActivatedPower(faction, activated_power) {
+    if (!this.game.state.activated_powers[faction].includes(activated_power)) { 
+      this.game.state.activated_powers[faction].push(activated_power);
+    }
+  }
+
+  unsetActivatedPower(faction, activated_power) {
+    if (this.game.state.activated_powers[faction1].includes(activated_power)) {
+      let x = [];
+      for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+        if (this.game.state.activated_powers[faction][i] !== activated_power) {
+          x.push(this.game.state.activated_powers[faction][i]);
+        }
+      }
+      this.game.state.activated_powers[faction] = x;
+    }
+  }
+
+
   setAllies(faction1, faction2, amp=1) {
 
     try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+
+    //
+    // in the 2P game, Hapsburgs are an activated power for the Papacy
+    //
+    if (this.game.state.events.schmalkaldic_league == 1 && this.game.players.length == 2 && (faction1 == "papacy" || faction1 == "hapsburg") && (faction1 == "hapsburg" || faction2 == "papacy")) {
+      if (!this.game.state.activated_powers["papacy"].includes("hapsburg")) {
+        this.setActivatedPower("papacy", "hapsburg");
+      }
+    }
+
 
     if (amp == 1) {
       if (this.isMinorPower(faction1)) {
@@ -101,6 +130,16 @@
 	this.updateLog("NOTE: Hapsburg and Papacy must remain allied in 2P game after Schmalkaldic League formed");
       }
     } }
+
+
+    //
+    // remove activated powers if set
+    //
+    try {
+      this.unsetActivatePower(faction1, faction2);
+      this.unsetActivatePower(faction2, faction1);
+    } catch (err) {}
+
 
     if (amp == 1) {
       if (this.isMinorPower(faction1)) {
@@ -159,4 +198,45 @@
     this.displayWarBox();
 
   }
+
+
+  returnPlayerCommandingFaction(defender) {
+
+    //
+    // by default factions control themselves
+    //
+
+    //
+    // maybe this is a minor power controlled by a larger one
+    //
+    if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
+      defender = this.returnControllingPower(defender);
+    }         
+
+    //
+    // defender now controlling power or itself
+    //
+    for (let p = 0; p < this.game.players.length; p++) {
+
+      //
+      // does player command this faction
+      //
+      let player_factions = this.returnPlayerFactions((p+1));
+      let i_command_this_faction = false;
+      for (let i = 0; i < player_factions.length; i++) { 
+	if (player_factions[i] === defender) { return (p+1); }
+        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { return (p+1); }
+        for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
+          if (this.game.state.activated_powers[player_factions[i]][z] === defender) { return (p+1); }
+        }
+      }
+    }
+
+    //
+    // no-one controls this faction
+    //
+    return 0;
+
+  }
+
 

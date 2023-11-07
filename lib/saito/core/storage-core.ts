@@ -83,21 +83,22 @@ class StorageCore extends Storage {
     return filename;
   }
 
-  // async loadBlockFromDisk(filename) {
-  //   try {
-  //     if (fs.existsSync(filename)) {
-  //       const buffer = fs.readFileSync(filename);
+  async loadBlockFromDisk(filename) {
+    try {
+      if (fs.existsSync(filename)) {
+        const data = fs.readFileSync(filename);
   //       const block = new Block(this.app);
-  //       block.deserialize(buffer);
+        const block = new Block();
+        block.deserialize(data);
   //       block.generateMetadata();
-  //       return block;
-  //     }
-  //   } catch (error) {
-  //     console.log("Error reading block from disk");
-  //     console.error(error);
-  //   }
-  //   return null;
-  // }
+        return block;
+      }
+    } catch (error) {
+      console.log("Error reading block from disk");
+      console.error(error);
+    }
+    return null;
+  }
 
   // async loadBlocksFromDisk(maxblocks = 0) {
   //   this.loading_active = true;
@@ -271,9 +272,43 @@ class StorageCore extends Storage {
       }
     } else {
       // default options file
-      this.app.options = JSON.parse(
-        '{"server":{"host":"localhost","port":12101,"protocol":"http"}}'
-      );
+      const defaultOptions = `
+        {
+          "server": {
+            "host": "127.0.0.1",
+            "port": 12101,
+            "protocol": "http",
+            "endpoint": {
+              "host": "127.0.0.1",
+              "port": 12101,
+              "protocol": "http"
+            },
+            "verification_threads": 4,
+            "channel_size": 10000,
+            "stat_timer_in_ms": 5000,
+            "reconnection_wait_time": 10000,
+            "thread_sleep_time_in_ms": 10,
+            "block_fetch_batch_size": 10
+          },
+          "peers": [],
+          "spv_mode": false,
+          "browser_mode": false,
+          "blockchain":{
+            "last_block_hash":"0000000000000000000000000000000000000000000000000000000000000000",
+            "last_block_id":0,
+            "last_timestamp":0,
+            "genesis_block_id":0,
+            "genesis_timestamp":0,
+            "lowest_acceptable_timestamp":0,
+            "lowest_acceptable_block_hash":"0000000000000000000000000000000000000000000000000000000000000000",
+            "lowest_acceptable_block_id":0,
+            "fork_id":"0000000000000000000000000000000000000000000000000000000000000000",
+          },
+          "wallet": {
+          }
+        }
+      `;
+      this.app.options = JSON.parse(defaultOptions);
     }
     return this.app.options;
   }

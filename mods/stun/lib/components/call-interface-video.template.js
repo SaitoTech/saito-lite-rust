@@ -13,10 +13,10 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
 
           <div class="control-panel">
             <div class="timer">
-              <p class="counter"> 00.00 </p>
+              <div class="counter"> 00.00 </div>
               <div class="users-on-call">
                 <div class="image-list"></div>
-                <p><span class="users-on-call-count">1</span> on call</p>
+                <div class="users-on-call-text"><span class="users-on-call-count">1</span> on call</div>
               </div>
               <div class="add_users_container icon_click_area">
                 <label>Invite</label>
@@ -63,7 +63,9 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
 
     ${
       mod.browser_active
-        ? ""
+        ? `<div class="maximizer">
+      <i class="fa fa-window-maximize" aria-hidden="true"></i>
+    </div>`
         : `<div class="minimizer">
       <i class=" fas fa-caret-down"></i>
     </div>`

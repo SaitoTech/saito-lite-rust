@@ -144,8 +144,6 @@ hasSharedSecret(publickey)
 
 isWatched(publickey)
 
-initializeKeyExchange(publickey)
-
 isTagged(publickey, tag)
 
 saveKeys()
@@ -173,8 +171,6 @@ returnIdenticon(publickey)
 returnIdenticonColor(publickey)
 
 fetchIdentifierPromise(publickey)
-
-fetchManyIdentifiersPromise(publickeys)
 
 fetchIdentifier(publickey = "", mycallback) 
 

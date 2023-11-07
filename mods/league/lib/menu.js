@@ -11,7 +11,7 @@ class LeagueMenu {
     this.league = league;
   }
 
-  async render() {
+  render() {
     let selector = this.container ? `${this.container} ` : "";
     selector += `#lg${this.league.id}`;
 
@@ -22,12 +22,12 @@ class LeagueMenu {
 
     if (document.querySelector(selector)) {
       this.app.browser.replaceElementBySelector(
-        await LeagueMenuTemplate(this.app, this.mod, this.league),
+        LeagueMenuTemplate(this.app, this.mod, this.league),
         selector
       );
     } else {
       this.app.browser.addElementToSelector(
-        await LeagueMenuTemplate(this.app, this.mod, this.league),
+        LeagueMenuTemplate(this.app, this.mod, this.league),
         this.container
       );
     }
@@ -39,9 +39,9 @@ class LeagueMenu {
     console.log(this.app.crypto.hash("gamedoctor"));
 
     try {
-      document.querySelector(`#lg${this.league.id} .league-join-button`).onclick = async (e) => {
+      document.querySelector(`#lg${this.league.id} .league-join-button`).onclick = (e) => {
         let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
-        await jlo.render();
+        jlo.render();
       };
     } catch (err) {}
 
@@ -56,14 +56,15 @@ class LeagueMenu {
           return;
         }
         this.league.admin = this.mod.publicKey;
+        this.mod.sudo = this.league.id;
         this.app.connection.emit("league-overlay-render-request", this.league.id);
       };
     } catch (err) {}
 
     try {
-      document.querySelector(`#lg${this.league.id} .league-edit-button`).onclick = async (e) => {
+      document.querySelector(`#lg${this.league.id} .league-edit-button`).onclick = (e) => {
         let le = new LeagueEditor(this.app, this.mod, this.league.id);
-        await le.render();
+        le.render();
       };
     } catch (err) {}
 
@@ -91,7 +92,7 @@ class LeagueMenu {
         let confirm = await sconfirm("Are you sure you want to delete this league?");
         if (confirm) {
           let newtx = await this.mod.createRemoveTransaction(this.league.id);
-          await this.app.network.propagateTransaction(newtx);
+          this.app.network.propagateTransaction(newtx);
           this.mod.removeLeague(this.league.id);
           this.app.connection.emit("leagues-render-request");
         }

@@ -8,16 +8,6 @@ class RedSquareMenu {
     this.container = container;
     this.name = "RedSquareMenu";
 
-    app.connection.on("redsquare-navigation", (to_home) => {
-      let home_button = document.querySelector(".redsquare-menu-home");
-      if (home_button) {
-        if (to_home) {
-          home_button.classList.add("redsquare-menu-refresh");
-        } else {
-          home_button.classList.remove("redsquare-menu-refresh");
-        }
-      }
-    });
   }
 
   render() {
@@ -70,20 +60,37 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      history.replaceState(null, null, ' ');
       this.app.connection.emit("redsquare-home-render-request");
-    };
+
+      //
+      // show loading new content message
+      //
+      this.app.connection.emit("redsquare-insert-loading-message");
+
+      //
+      // and load any NEW tweets at the top
+      //
+      this.mod.loadTweets('later', (txs) => {
+        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
+        if (txs.length > 0) {
+          this.mod.saveLocalTweets();
+        }   
+      });   
+
+    }
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      window.location.hash = "#notifications";
       this.app.connection.emit("redsquare-notifications-render-request");
-      this.app.connection.emit("redsquare-navigation", false);
     };
 
     document.querySelector(".redsquare-menu-profile").onclick = (e) => {
-      this.app.connection.emit(
-        "redsquare-profile-render-request",
-        this.mod.publicKey
-      );
-      this.app.connection.emit("redsquare-navigation", false);
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      window.location.hash = "#profile";
+      this.app.connection.emit("redsquare-profile-render-request", this.mod.publicKey);
     };
 
     //

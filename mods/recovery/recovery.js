@@ -41,7 +41,7 @@ class Recovery extends ModTemplate {
     app.connection.on("recovery-backup-overlay-render-request", async (obj) => {
       console.debug("Received recovery-backup-overlay-render-request");
       if (obj?.success_callback) {
-        this.backup_overlay.success_callback = obj.success_callback;  
+        this.backup_overlay.success_callback = obj.success_callback;
       }
       if (obj?.desired_identifier) {
         this.backup_overlay.desired_identifier = obj.desired_identifier;
@@ -66,12 +66,6 @@ class Recovery extends ModTemplate {
       // Otherwise, call up the modal to query them from the user
       //
       this.backup_overlay.render();
-    });
-
-    app.connection.on("recovery-login-overlay-render-request", (success_callback = null) => {
-      console.debug("Received recovery-login-overlay-render-request");
-      this.login_overlay.success_callback = success_callback;
-      this.login_overlay.render();
     });
   }
 
@@ -130,9 +124,8 @@ class Recovery extends ModTemplate {
 
   async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
-
       let txmsg = tx.returnMessage();
-      
+
       if (txmsg.request == "recovery backup") {
         await this.receiveBackupTransaction(tx);
       }
@@ -144,23 +137,25 @@ class Recovery extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    try {
-      if (tx == null) {
-        return;
-      }
+    if (tx == null) {
+      return;
+    }
 
+    if (app.BROWSER == 0) {
       let txmsg = tx.returnMessage();
 
-      if (txmsg.request == "recovery backup") {
-        await this.receiveBackupTransaction(tx);
+      if (txmsg?.request == "recovery backup") {
+        this.receiveBackupTransaction(tx);
+        return 0;
       }
 
-      if (txmsg.request === "recovery recover") {
-        await this.receiveRecoverTransaction(tx, mycallback);
+      if (txmsg?.request === "recovery recover") {
+        return this.receiveRecoverTransaction(tx, mycallback);
       }
-    } catch (err) {
-      console.log("Error in handlePeerTransaction in Recovery module: " + err);
+
     }
+
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   ////////////
@@ -168,12 +163,13 @@ class Recovery extends ModTemplate {
   ////////////
   async createBackupTransaction(decryption_secret, retrieval_hash) {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
     newtx.msg = {
       module: "Recovery",
       request: "recovery backup",
       email: "",
       hash: retrieval_hash,
-      wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.options), decryption_secret),
+      wallet: this.app.crypto.aesEncrypt(this.app.wallet.exportWallet(), decryption_secret),
     };
 
     newtx.addTo(this.publicKey);
@@ -194,6 +190,10 @@ class Recovery extends ModTemplate {
       $hash: hash,
       $tx: txjson,
     };
+
+    console.log("********************");
+    console.log("Backup Transaction");
+    console.log("********************");
 
     let res = await this.app.storage.executeDatabase(sql, params, "recovery");
 
@@ -224,11 +224,11 @@ class Recovery extends ModTemplate {
   async receiveRecoverTransaction(tx, mycallback = null) {
     if (mycallback == null) {
       console.warn("No callback");
-      return;
+      return 0;
     }
     if (this.app.BROWSER == 1) {
-      console.warn("Browsers don't support backup/recovery")
-      return;
+      console.warn("Browsers don't support backup/recovery");
+      return 0;
     }
 
     let txmsg = tx.returnMessage();
@@ -242,14 +242,22 @@ class Recovery extends ModTemplate {
 
     let results = await this.app.storage.queryDatabase(sql, params, "recovery");
 
-    if (mycallback){
-      await mycallback(results);  
+    console.log("********************");
+    console.log("Restore Transaction");
+    console.log("********************");
+
+    if (mycallback) {
+      mycallback(results);
+      return 1;
+    } else {
+      console.warn("No callback to process recovered wallet");
     }
-    
+
+    return 0;
+
   }
 
   async backupWallet(email, password) {
-    
     let decryption_secret = this.returnDecryptionSecret(email, password);
     let retrieval_hash = this.returnRetrievalHash(email, password);
 
@@ -277,11 +285,13 @@ class Recovery extends ModTemplate {
     let newtx = await this.createRecoverTransaction(retrieval_hash);
     let peers = await this.app.network.getPeers();
 
-    for (let peer of peers){
-      if (peer.hasService("recovery")){
+    for (let peer of peers) {
+      if (peer.hasService("recovery")) {
         this.app.network.sendTransactionWithCallback(
           newtx,
           async (rows_as_tx) => {
+            console.log("Restoring wallet!!!!!");
+
             //This is so weird that the passed data gets turned into a pseudotransaction
             let rows = rows_as_tx.msg;
 
@@ -300,17 +310,20 @@ class Recovery extends ModTemplate {
             newtx.deserialize_from_web(this.app, rows[0].tx);
 
             let txmsg = newtx.returnMessage();
-            
+
+            console.log(txmsg);
+
             let encrypted_wallet = txmsg.wallet;
             let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 
-            //Junk any games...
-            decrypted_wallet.games = [];
             this.app.options = JSON.parse(decrypted_wallet);
+
+            console.log(this.app.options);
 
             this.app.storage.saveOptions();
 
             this.login_overlay.success();
+            console.log("Recover success");
           },
           peer.peerIndex
         );
@@ -323,7 +336,6 @@ class Recovery extends ModTemplate {
         "<center>Unable to download encrypted wallet from network...</center>";
     }
     this.login_overlay.failure();
-
   }
 }
 

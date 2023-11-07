@@ -107,7 +107,7 @@ class Relay extends ModTemplate {
       // tx.msg.data is a json-ready transaction
       // this network function wraps the whole thing within another transaction
       // newtx.msg.data.msg.data = original transactionn
-      await this.app.network.sendRequestAsTransaction(
+      this.app.network.sendRequestAsTransaction(
         "relay peer message",
         tx.toJson(),
         null,
@@ -120,7 +120,7 @@ class Relay extends ModTemplate {
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     //console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
-      return;
+      return 0;
     }
     let message = tx.msg;
 
@@ -130,7 +130,7 @@ class Relay extends ModTemplate {
           await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
             status: this.busy,
           });
-          return;
+          return 0;
         }
 
         if (message.request === "echo") {
@@ -139,7 +139,7 @@ class Relay extends ModTemplate {
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
           }
-          return;
+          return 0;
         }
       }
 
@@ -159,7 +159,7 @@ class Relay extends ModTemplate {
         }
 
         if (!relayed_tx.to[0]?.publicKey) {
-          return;
+          return 0;
         }
 
         //
@@ -170,7 +170,7 @@ class Relay extends ModTemplate {
         }
 
         if (relayed_tx.isTo(this.publicKey)) {
-          app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
+          return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
         } else {
           // check to see if original tx is for a peer
           let peer_found = 0;
@@ -186,8 +186,9 @@ class Relay extends ModTemplate {
                   relayed_tx,
                   async function () {
                     if (mycallback != null) {
-                      await mycallback({ err: "", success: 1 });
-                    }
+                      mycallback({ err: "", success: 1 });
+		                }
+                    return 1;
                   },
                   peers[i].peerIndex
                 );
@@ -197,7 +198,8 @@ class Relay extends ModTemplate {
 
           if (peer_found == 0) {
             if (mycallback != null) {
-              await mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
+              mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
+              return 1;
             }
           }
         }
@@ -205,6 +207,9 @@ class Relay extends ModTemplate {
     } catch (err) {
       console.log(err);
     }
+
+    return 0;
+
   }
 }
 

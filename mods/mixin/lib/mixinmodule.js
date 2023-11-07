@@ -26,9 +26,7 @@ const CryptoModule = require("./../../../lib/templates/cryptomodule");
 const getUuid = require("uuid-by-string");
 
 class MixinModule extends CryptoModule {
-
   constructor(app, ticker, mixin_mod, asset_id) {
-
     super(app);
 
     this.app = app;
@@ -42,9 +40,8 @@ class MixinModule extends CryptoModule {
     this.icon_url = "";
     this.balance = "0.0";
     this.balance_timestamp_last_fetched = 0;
-    this.minimum_delay_between_balance_queries = 10000; // if it hasn't been 10 seconds since last fetch, fetch
+    this.minimum_delay_between_balance_queries = 20000; // if it hasn't been 10 seconds since last fetch, fetch
     this.deposit_entries = {};
-    this.destination = "";
     this.tag = "";
     this.price_btc = 0;
     this.price_usd = 0;
@@ -58,17 +55,16 @@ class MixinModule extends CryptoModule {
     this.liquidity = "";
 
     return this;
-
   }
 
   onPeerServiceUp(app, peer, service = {}) {
-
-    if (!peer.hasService("mixin")) { return; }
+    if (!peer.hasService("mixin")) {
+      return;
+    }
 
     if (this.mixin) {
       if (this.app.wallet.preferred_crypto !== "SAITO" && this.app.wallet.preferred_crypto !== "") {
         if (this.mixin.account_created == 0) {
-
           //
           // not every crypto should trigger account creation
           //
@@ -86,21 +82,21 @@ class MixinModule extends CryptoModule {
   activate() {
     if (this.mixin.account_created == 0) {
       if (this.mixin.mixin.session_id === "") {
-        this.mixin.createAccount();
+        this.app.connection.emit("create-mixin-account");
+        this.mixin.createAccount(() => {
+          super.activate();
+        });
       }
+    } else {
+      super.activate();
     }
-    super.activate();
   }
 
-
   hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
-
     let trace_id = getUuid(unique_hash);
 
     for (let i = 0; i < this.mixin.deposits.length; i++) {
-      if (
-        this.mixin.deposits[i].trace_id === trace_id
-      ) {
+      if (this.mixin.deposits[i].trace_id === trace_id) {
         return 1;
       }
     }
@@ -114,7 +110,6 @@ class MixinModule extends CryptoModule {
       }
     }
     return 0;
-
   }
 
   hasSentPayment(amount, sender, receiver, timestamp, unique_hash) {
@@ -129,11 +124,26 @@ class MixinModule extends CryptoModule {
     return 0;
   }
 
-}
+  /**
+   * Abstract method which should get balance from underlying crypto endpoint
+   * @abstract
+   * @return {Number}
+   */
+  async returnBalance() {
+    console.log("Query balance for " + this.ticker);
+    if (
+      new Date().getTime() - this.balance_timestamp_last_fetched >
+      this.minimum_delay_between_balance_queries
+    ) {
+      console.log("Return Balance: ", this.balance_timestamp_last_fetched);
+      this.balance_timestamp_last_fetched = new Date().getTime();
+      this.mixin.checkBalance(this.asset_id);
+    }
+    return this.balance;
+  }
 
-
-MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
-  return `
+  renderModalSelectCrypto(app, mod, cryptomod) {
+    return `
     <div class="mixin_crypto_overlay" id="mixin_crypto_overlay">
 
       <div class="mixin_crypto_title">Heads up!</div>
@@ -150,182 +160,241 @@ MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
 
     </div>
   `;
-};
-
-
-MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptomod) {
-  let ab = document.querySelector(".mixin_risk_acknowledge");
-  ab.onclick = (e) => {
-    cryptomod.modal_overlay.hide(function() {
-      setTimeout(function() {
-        document.querySelector("#settings-dropdown").classList.add("show-right-sidebar");
-      }, 500);
-    });
-  };
-};
-
-
-/**
- * Abstract method which should get balance from underlying crypto endpoint
- * @abstract
- * @return {Number}
- */
-MixinModule.prototype.returnBalance = async function() {
-  if ((new Date().getTime() - this.balance_timestamp_last_fetched) > this.minimum_delay_between_balance_queries) {
-    this.balance_timestamp_last_fetched = new Date().getTime();
-    let mixin_mod = this.app.modules.returnModule("Mixin");
-    if (mixin_mod) {
-      mixin_mod.checkBalance(this.asset_id);
-    }
   }
-  return this.balance;
-};
 
-/**
- * Abstract method which should transfer tokens via the crypto endpoint
- * @abstract
- * @param {Number} howMuch - How much of the token to transfer
- * @param {String} to - Pubkey/address to send to
- * @abstract
- * @return {Number}
- */
-MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique_hash = "") {
-
-  let r = recipient.split("|");
-  let ts = new Date().getTime();
-
-  //
-  // internal MIXIN transfer
-  //
-  if (r.length >= 2) {
-    if (r[2] === "mixin") {
-      let opponent_address_id = r[1];
-      let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {
+  attachEventsModalSelectCrypto(app, mod, cryptomod) {
+    let ab = document.querySelector(".mixin_risk_acknowledge");
+    ab.onclick = (e) => {
+      cryptomod.modal_overlay.hide(function () {
+        setTimeout(function () {
+          document.querySelector("#settings-dropdown").classList.add("show-right-sidebar");
+        }, 500);
       });
-      this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
-      return;
-    }
+    };
   }
 
-  //
-  // external withdrawal to network
-  //
-  let destination = this.returnNetworkAddress(recipient);
-  let withdrawal_address_exists = 0;
-  let withdrawal_address_id = "";
+  /**
+   * Abstract method which should transfer tokens via the crypto endpoint
+   * @abstract
+   * @param {Number} howMuch - How much of the token to transfer
+   * @param {String} to - Pubkey/address to send to
+   * @abstract
+   * @return {Number}
+   */
+  async sendPayment(amount = "", recipient = "", unique_hash = "") {
+    let r = recipient.split("|");
+    let ts = new Date().getTime();
 
-  for (let i = 0; i < this.mixin.addresses.length; i++) {
-    if (this.mixin.addresses[i].destination === destination) {
-      withdrawal_address_exists = 1;
-      withdrawal_address_id = this.mixin.addresses[i].address_id;
-    }
-  }
-
-  //
-  // existing withdrawal address
-  //
-  if (withdrawal_address_exists === 1) {
-
-    this.mixin.sendWithdrawalRequest(this.asset_id, withdrawal_address_id, destination, amount, unique_hash, function(d) {
-    });
-    this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
-    return unique_hash;
+    console.log("Recipient: " + recipient);
 
     //
-    // create withdrawal address and save
+    // internal MIXIN transfer
     //
-  } else {
+    if (r.length >= 2) {
+      if (r[2] === "mixin") {
+        console.log("Send to Mixin address");
+        let opponent_address_id = r[1];
+        let trace_id = await this.mixin.sendInNetworkTransferRequest(
+          this.asset_id,
+          opponent_address_id,
+          amount,
+          unique_hash
+        );
+        if (trace_id?.error) {
+          return "";
+        }
+        this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
+        return trace_id;
+      }
+    }
 
-    let mm_self = this;
+    console.log("Possibly external transfer");
 
-    this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
+    //
+    // external withdrawal to network
+    //
+    let destination = this.returnNetworkAddress(recipient);
+    let withdrawal_address_exists = 0;
+    let withdrawal_address_id = "";
 
-      let asset_id = d.data.asset_id;
-      let withdrawal_address_id = d.data.address_id;
+    for (let i = 0; i < this.mixin.addresses.length; i++) {
+      if (this.mixin.addresses[i]?.destination === destination) {
+        withdrawal_address_exists = 1;
+        withdrawal_address_id = this.mixin.addresses[i].address_id;
+      }
+    }
 
-      mm_self.mixin.sendWithdrawalRequest(mm_self.asset_id, withdrawal_address_id, destination, amount, unique_hash, (d) => {
+    //
+    // existing withdrawal address
+    //
+    if (withdrawal_address_exists === 1) {
+
+      this.mixin.sendWithdrawalRequest(
+        this.asset_id,
+        withdrawal_address_id,
+        destination,
+        amount,
+        unique_hash,
+        function (d) {}
+      );
+      this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
+      return unique_hash;
+
+      //
+      // create withdrawal address and save
+      //
+    } else {
+
+      this.mixin.createWithdrawalAddress(this.asset_id, destination, "", "", (d) => {
+        let asset_id = d.data.asset_id;
+        let withdrawal_address_id = d.data.address_id;
+
+        this.mixin.sendWithdrawalRequest(
+          this.asset_id,
+          withdrawal_address_id,
+          destination,
+          amount,
+          unique_hash,
+          (d) => {}
+        );
+        this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
       });
-      mm_self.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
 
-    });
-
-    return unique_hash;
-
+      return unique_hash;
+    }
   }
-};
 
-
-/**
- * Abstract method which should get pubkey/address
- * @abstract
- * @return {String} Pubkey/address
- */
-MixinModule.prototype.returnAddress = function() {
-  if (this.destination === "") {
-    return "unknown address";
+  /**
+   * Abstract method which should get pubkey/address
+   * @abstract
+   * @return {String} Pubkey/address
+   */
+  returnAddress() {
+    if (this.destination === "") {
+      return "unknown address";
+    }
+    return this.destination + "|" + this.mixin.mixin.user_id + "|" + "mixin";
   }
-  return this.destination + "|" + this.mixin.mixin.user_id + "|" + "mixin";
-};
-/**
- * Abstract method which should get private key
- * @abstract
- * @return {String} Private Key
- */
-MixinModule.prototype.returnPrivateKey = function() {
-  return this.mixin.mixin.privatekey;
-};
 
-/**
- * Searches for a payment which matches the criteria specified in the parameters.
- * @abstract
- * @param {Number} howMuch - How much of the token was transferred
- * @param {String} from - Pubkey/address the transasction was sent from
- * @param {String} to - Pubkey/address the transasction was sent to
- * @param {timestamp} to - timestamp after which the transaction was sent
- * @return {Boolean}
- */
-MixinModule.prototype.receivePayment = function(amount = "", sender = "", recipient = "", timestamp = 0, unique_hash = "") {
 
-  //
-  // mixin transfers will be registered with a specific TRACE_ID
-  //
-  // so we can use this TRACE_ID to monitor transactions that have been
-  // made from other accounts.
-  //
-  let trace_id = getUuid(unique_hash);
-
-  //
-  // the mixin module might have a record of this already stored locally
-  //
-  if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) {
-    return 1;
+  formatAddress(address){
+    return address; //+ "|" + this.mixin.mixin.user_id + "|" + "mixin";
   }
-  this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {
-  });
-  return 0;
 
-};
+  /**
+   * Abstract method which should get private key
+   * @abstract
+   * @return {String} Private Key
+   */
+  returnPrivateKey() {
+    return this.mixin.mixin.privatekey;
+  }
 
-/**
- * Abstract method which should get withdrawl fee
- * @abstract
- * @return {Function} Callback function
- */
-MixinModule.prototype.returnWithdrawalFee = function(asset_id, callback=null) {
-  return this.mixin.checkWithdrawalFee(asset_id, callback);
-};
+  /**
+   * Searches for a payment which matches the criteria specified in the parameters.
+   * @abstract
+   * @param {Number} howMuch - How much of the token was transferred
+   * @param {String} from - Pubkey/address the transasction was sent from
+   * @param {String} to - Pubkey/address the transasction was sent to
+   * @param {timestamp} to - timestamp after which the transaction was sent
+   * @return {Boolean}
+   */
+  receivePayment(amount = "", sender = "", recipient = "", timestamp = 0, unique_hash = "") {
+    //
+    // mixin transfers will be registered with a specific TRACE_ID
+    //
+    // so we can use this TRACE_ID to monitor transactions that have been
+    // made from other accounts.
+    //
+    let trace_id = getUuid(unique_hash);
 
-/**
- * Abstract method which returns snapshot of asset withdrawls, deposits
- * @abstract
- * @return {Function} Callback function
- */
+    //
+    // the mixin module might have a record of this already stored locally
+    //
+    if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) {
+      return 1;
+    }
+    this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {});
+    return 0;
+  }
 
-MixinModule.prototype.returnHistory = function(asset_id="", records=20, callback=null) {
-  return this.mixin.fetchSnapshots(asset_id, records, callback);
-};
+  /**
+   * Abstract method which should get withdrawl fee
+   * @abstract
+   * @return {Function} Callback function
+   */
+  returnWithdrawalFee(asset_id) {
+    return this.mixin.checkWithdrawalFee(asset_id);
+  }
+
+  //
+  // this function creates a Mixin address associated with the account in order to check
+  // if it can offer zero-fee in-network transfers or requires a network fee to be paid
+  // in order to process the payment.
+  //
+  async returnWithdrawalFeeForAddress(recipient = "", mycallback) {
+    let r = recipient.split("|");
+    let ts = new Date().getTime();
+
+    //
+    // internal MIXIN transfer
+    //
+    if (r.length >= 2) {
+      if (r[2] === "mixin") {
+        mycallback(0);
+      }
+    }
+
+    //
+    // external withdrawal to network
+    //
+    let destination = this.returnNetworkAddress(recipient);
+    let withdrawal_address_exists = 0;
+    let withdrawal_address_id = "";
+
+    for (let i = 0; i < this.mixin.addresses.length; i++) {
+      if (this.mixin.addresses[i].destination === destination) {
+        withdrawal_address_exists = 1;
+        withdrawal_address_id = this.mixin.addresses[i].address_id;
+      }
+    }
+
+    //
+    // existing withdrawal address
+    //
+    if (withdrawal_address_exists === 1) {
+      //
+      // return 0 if in-network address, or estimate if external
+      //
+      if (withdrawal_address_id) {
+        mycallback(0);
+      }else{
+        let fee = await this.returnWithdrawalFee(this.asset_id);  
+        mycallback(fee);
+      }
+
+      //
+      // create withdrawal address to see if is Mixin address
+      //
+    } else {
+
+      this.mixin.createWithdrawalAddress(this.asset_id, destination, "", "", (d) => {
+          if (d.data?.fee) {
+            mycallback(d.data?.fee);
+          }
+          
+      });
+    }
+  }
+
+  /**
+   * Abstract method which returns snapshot of asset withdrawls, deposits
+   * @abstract
+   * @return {Function} Callback function
+   */
+  returnHistory(asset_id = "", records = 20, callback = null) {
+    return this.mixin.fetchSnapshots(asset_id, records, callback);
+  }
+}
 
 module.exports = MixinModule;
-
-
-

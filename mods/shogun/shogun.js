@@ -421,7 +421,7 @@ return;
           let did = this.game.player - 1;
 
           //Make sure incoming moves from opponent are queued until the animation finishes
-          this.game.halted = 1;
+          this.halted = 1;
 
 	  this.board.render();
 

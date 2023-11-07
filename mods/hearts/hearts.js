@@ -62,13 +62,13 @@ class Hearts extends GameTemplate {
   //
   // initialize HTML (overwrites game template stuff, so include...)
   //
-  async initializeHTML(app) {
+  async render(app) {
     if (!this.browser_active) {
       return;
     }
 
-    await super.initializeHTML(app);
-
+    await super.render(app);
+    
     //
     // add ui components here
     //
@@ -133,8 +133,7 @@ class Hearts extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render();
       } else {
         this.sizer.render();
         this.sizer.attachEvents(".gameboard");

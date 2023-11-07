@@ -40,14 +40,14 @@ class Wordblocks extends GameTemplate {
     return this;
   }
 
-  render(app) {
+  async render(app) {
     if (!this.browser_active) {
       return;
     }
 
     if (this.initialize_game_run) { return; }
 
-    super.render(app);
+    await super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
 
@@ -106,7 +106,7 @@ class Wordblocks extends GameTemplate {
 
       $("#game-scoreboard").off();
       $("#game-scoreboard").on("click", function () {
-        $("#opponentbox").toggleClass("visible");
+        $(".game-playerbox-manager").toggleClass("visible");
       });
     } catch (err) {
       console.error(err);
@@ -114,8 +114,7 @@ class Wordblocks extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render();
       } else {
         this.sizer.render();
         this.sizer.attachEvents(".gameboard");
@@ -228,7 +227,6 @@ class Wordblocks extends GameTemplate {
         xhr.responseType = "json"; //only in async
         xhr.send();
         this.loadingDictionary = true; //flag that the game module is processing xhr
-        //this.game.halted = 1;
         xhr.onload = () => {
           if (xhr.status != 200) {
             salert(`Network issues downloading dictionary -- ${durl}`);
@@ -569,7 +567,6 @@ class Wordblocks extends GameTemplate {
             </div>`;
 
           //Change this because stupid game-playerbox-manager not opponent box
-          //$("#opponentbox").append(html);
           $(".game-playerbox-manager").append(html);
 
           $(".action").off();

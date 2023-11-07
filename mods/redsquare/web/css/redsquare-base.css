@@ -1,3 +1,8 @@
+
+.liked , .replied , .retweeted {
+  color: var(--saito-primary);;
+}
+
 .redsquare-home {
   margin: -2.5rem 0 0 0;
 }
@@ -55,8 +60,6 @@
   border-radius: 0.5rem;
 }
 
-
-
 .redsquare-sidebar {
   display: flex;
   flex-direction: column;
@@ -69,13 +72,17 @@
   gap: 2rem;
 }
 
-#redsquare-intersection {
+.redsquare-intersection {
   opacity: 1;
   height: 1rem;
 }
 
 .saito-main {
   transition: opacity 0.8s;
+}
+
+.saito-profile {
+  margin-bottom: 0.5rem;
 }
 
 .saito-main>.saito-loader {
@@ -97,19 +104,20 @@
   z-index: 3;
 }
 
+.redsquare-menu-home .fa-house::before  {
+  transition: all 0.15s ease-in-out;
+}
 
-.redsquare-menu-refresh:hover .fa-house::before {
+
+.redsquare-menu-home:hover .fa-house::before {
   content: "\f021";
 }
-.redsquare-menu-refresh:hover .no-display-hover {
+
+
+.optional-menu-item {
   display: none;
 }
-.display-on-hover {
-  display: none;
-}
-.redsquare-menu-refresh:hover .display-on-hover {
-  display: block;
-}
+
 
 .saito-loader.temp {
   margin-top: 3rem;
@@ -159,3 +167,24 @@
   position: relative;
   z-index: 5;
 }
+
+
+
+.saito-cached-loader {
+  padding: 1rem;
+  text-align: center;
+  animation-name: flash;
+  -webkit-animation: flash linear 1s infinite;
+  animation: flash linear 3s infinite;
+}
+.saito-main {
+  padding-top: 1.5rem;
+}
+
+
+@media screen and (max-width: 800px) {
+  .saito-main {
+    padding-top: 0px;
+  }
+}
+

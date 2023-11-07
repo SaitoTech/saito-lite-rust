@@ -13,17 +13,34 @@ module.exports = (app, mod, tweet) => {
   let num_replies = optional.num_replies || 0;
   let num_retweets = optional.num_retweets || 0;
 
+  let is_liked_css = "";
+  let is_retweeted_css = "";
+  let is_replied_css ="";
+
+  if (mod.liked_tweets.includes(tweet.tx.signature)) {
+    is_liked_css = "liked"; 
+    if (num_likes == 0) { num_likes++; }
+  }
+  if (mod.retweeted_tweets.includes(tweet.tx.signature)) {
+    is_retweeted_css = "retweeted"; 
+    if (num_retweets == 0) { num_retweets++; }
+  }
+  if (mod.replied_tweets.includes(tweet.tx.signature)) {
+    is_replied_css = "replied"; 
+    if (num_replies == 0) { num_replies++; }
+  }
+
   let controls = `
               <div class="tweet-controls">
                 <div class="tweet-tool tweet-tool-comment">
-                  <span class="tweet-tool-comment-count">${num_replies}</span> <i class="far fa-comment"></i>
+                  <span class="tweet-tool-comment-count ${is_replied_css}">${num_replies}</span> <i class="far fa-comment ${is_replied_css}"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">${num_retweets}</span>
-                  <i class="fa fa-repeat"></i>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count ${is_retweeted_css}">${num_retweets}</span>
+                  <i class="fa fa-repeat ${is_retweeted_css}"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count">${num_likes}</span> <div class="tweet-like-button">
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count ${is_liked_css}">${num_likes}</span> <div class="tweet-like-button">
                 <div class="heart-bg">
-                  <div class="heart-icon"></div>
+                  <div class="heart-icon ${is_liked_css}"></div>
                 </div>
               </div></div>
                     

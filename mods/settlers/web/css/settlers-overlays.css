@@ -1,21 +1,31 @@
 
+.settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: min(600px, 90vw);
+  max-height: 90vh;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: min(4rem, 3vw, 5vh);
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+
+.settlers-selection-overlay{
+  width: min(630px, 95vw);
+  align-items: center;
+}
+
 .mobile-trading-container .player-box {
   max-width: 80vw;
 }
 
-.trade_area {
-    position: relative;
-    height: 22vh;
-    width: calc(22vh * 0.72);
-    padding-left: 3vh;
-    padding-top: 1vh;
-    color: white;
-    font-size: bold;
-    font-size: 17vh;
-    -webkit-text-stroke: 2px black;
-    margin-left: 1rem;
-    margin-right: 1rem;
-}
+
 
 .brick {
   background-image: url(/settlers/img/cards/brick.png);
@@ -54,15 +64,28 @@ stats overlay
   justify-content: space-around;
   align-content: flex-end;
   flex-wrap: wrap-reverse;
+  margin-top: 1.5rem;
 }
 
 .settlers-dice-bar {
-  border: 1px solid #000;
   width: calc(100%/14);
-  height: 10rem;
+  height: 0;
   background: #ab815f73;
   border-bottom: none;
   position: relative;
+}
+
+.settlers-dice-bar.has_been_rolled {
+  border: 1px solid #000;
+  box-sizing: content-box;
+}
+
+.settlers-dice-bar.never_rolled {
+  border: none;
+}
+
+.settlers-dice-bar.never_rolled .settlers-dice-count{
+  display: none;
 }
 
 .settlers-dice-count {
@@ -75,10 +98,7 @@ stats overlay
 }
 
 .settlers-dice-number {
-  position: absolute;
-  bottom: -1rem;
-  left: 0rem;
-  font-size: 1.8rem;
+  width: calc(100%/14);
   text-align: center;
   font-weight: bold;
 }
@@ -86,13 +106,9 @@ stats overlay
 .settlers-dice-numbers {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 1.5em;
+  margin-bottom: 1rem;
 }
 
-.settlers-dice-number {
-  width: calc(100%/14);
-  position: relative;
-}
 
 .settlers-achievements-container {
   width: fit-content;
@@ -109,10 +125,6 @@ stats overlay
   justify-content: space-between;
 }
 
-.settlers-stats-player {
-  font-weight: bold;
-  line-height: 3rem;
-}
 
 .settlers-achievements-row  .achievements .army,
 .settlers-achievements-row  .achievements .victory_point_cards {
@@ -147,27 +159,30 @@ stats overlay
 
 .settlers-stats-card {
   position: relative;
-  filter: grayscale(0.2);
+  filter: grayscale(0.1); /* Make a little less bright */
 }
 
 .settlers-stats-card img {
-  width: 5.3rem;
+  /*width: 5.3rem;*/
+  width: auto;
+  height: min(6.5rem, 13vw);
 }
 
 .settlers-stats-resource-count {
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
   color: var(--saito-white);
   text-shadow: 1px 1px 3px var(--saito-black);
-  transform: translate(-50%, -50%);
-  font-size: 3rem;
   background: rgba(0,0,0,0.4);
-  width: 82%;
-  text-align: center;
+
+  font-size: 3rem;
+  width: 75%;
   border-radius: 50%;
-  height: 60%;
-  line-height: 4.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .settlers-stats-caption {
@@ -183,7 +198,18 @@ stats overlay
 
 .settlers-stats-player {
   font-size: 1.9rem;
-  font-weight: normal;
+  line-height: 3rem;
+  color: whitesmoke;
+  text-shadow: 1px 1px 1px black;
+  padding-left: 0.5rem;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-vp {
+  filter: brightness(65%) grayscale(50%);
 }
 
 .settlers-achievements-row .victory_point_cards img {
@@ -191,18 +217,207 @@ stats overlay
   width: auto !important;
 }
 
-.settlers-stats-overlay {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+
+
+
+
+/*********
+ * 
+ * Trading overlays
+ * 
+ * ********/
+
+.trade-overlay {
+  width: min(1000px, 90vw);
 }
+
+.trade_overlay_title {
+  text-align: center;
+}
+
+.trade_overlay_offers {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin: auto;
+}
+
+.trade_overlay_buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 1em 0px;
+  font-size: 18px;
+}
+
+
+.trade_area {
+    position: relative;
+    height: min(22vh, 20vw);
+    width: calc(min(22vh, 20vw) * 0.72);
+    color: white;
+    font-size: bold;
+    font-size: 9rem;
+    -webkit-text-stroke: 2px black;
+
+}
+
+.invalid_offer {
+  filter: grayscale(40%) brightness(0.5);
+  color: red;
+}
+
+.trade_count_number {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease-in-out;
+  z-index: 2;
+}
+
+.trade_count_arrow {
+  content: "";
+  width: 100%;
+  height: min(5rem,50%);
+  position: absolute;
+  left: 0px;
+  z-index: 3;
+  background: #331800;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+  
+}
+
+.trade_area:hover .trade_count_arrow.can_select {
+  opacity: 0.7;
+  pointer-events: unset;
+}
+
+
+.trade_count_up {
+  top: 0px;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.trade_count_up::before  {
+  content: "⌃";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down::after {
+  content: "⌄";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down {
+  bottom: 0;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+/* Disable trade submit button in overlays */
+.trade_overlay_button.noselect {
+  opacity: 50%;
+  pointer-events: none;
+}
+
+.trade_overlay_button {
+  padding: 0.5rem 1rem;
+  line-height: 4rem;
+  border: 4px solid #424143;
+  border-radius: 1.5rem;
+  min-width: 16rem;
+  max-width: 250px;
+  text-align: center;
+}
+
+.trade_overlay_button.valid_trade:hover {
+  background-color: #b79e76; 
+  font-size: 18px;
+  cursor: pointer;
+}
+
+
+
+
+
 
 .rules-overlay {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  width: min(800px, 95vw);
 }
 
+/* Hide scrollbar for IE, Edge and Firefox */
+/* Hide scrollbar for Chrome, Safari and Opera */
+.rules-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+.rules-overlay h2 {
+  margin-top: 1em;
+  clear: both;
+}
+
+.rules-overlay img {
+  margin: 0 auto;
+}
+
+.vp-table img {
+  max-height: 4rem;
+}
+
+.welcome_overlay {
+  padding: 0 !important;
+}
+
+.stats-table {
+  font-size: 1.25em;
+  width: 100%;
+  text-align: center;
+  margin: 1em 0;
+}
+
+.stats-table caption {
+  font-size: 1.5em;
+}
+
+.stats-table td, .stats-table th {
+  width: 2em;
+  padding: 3px;
+}
+
+.stats-table th:first-child {
+  width: 3em;
+  text-align: left;
+}
+
+.stats-table .icon, .stats-table .token {
+  width: 50px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
 
 .settlers-state-container .settlers-achievements-row .achievements  {  
   margin: 0rem;
@@ -269,19 +484,8 @@ stats overlay
 }
 
 .settlers-stats-vp-row img {
-  width: 6rem;
-}
-
-.settlers-stats-vpc img {
-  width: 4.5rem;
-}
-
-.settlers-stats-largest-army img {
-  width: 7rem;
-}
-
-.settlers-stats-largest-road img {
-  width: 6.5rem;
+  height: min(6.5rem, 13vw);
+  width: auto;
 }
 
 .settlers-stats-vp {
@@ -304,10 +508,25 @@ stats overlay
   font-size: 2.4rem;
 }
 
+.settlers-stats-multiplier {
+  position: absolute;
+  bottom: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--saito-profile-background);
+  width: 2.7rem;
+  height: 2.7rem;
+  text-align: center;
+  text-shadow: 1px 1px 1px var(--saito-font-color-heavy), -1px -1px 1px var(--saito-font-color-heavy), -1px 1px 1px var(--saito-font-color-heavy), 1px -1px 1px var(--saito-font-color-heavy);
+  font-size: 2.8rem;
+}
+
 .settlers-stats-largest-road .settlers-stats-vp-count,
 .settlers-stats-largest-army .settlers-stats-vp-count {
   right: -0.5rem;
 }
+
+
 
 
 .settlers-state-container.combined-player-stats {
@@ -315,25 +534,60 @@ stats overlay
   gap: 6rem;
 }
 
-.settlers-state-container.vp-3p {
-  gap: 2.2rem;
+.vp-3p.settlers-stats-overlay {
+  width: min(760px, 98vw);
 }
 
-.settlers-stats-vp-row.vp-3p {
-    gap: 3rem;
+.combined-player-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 2rem;
 }
 
-.settlers-stats-resource-container.vp-3p {
-  gap: 2rem;
+.vp-3p .settlers-stats-vp-row, .vp-3p .settlers-stats-resource-container {
+  gap: 0.5rem;
 }
 
-.settlers-stats-resource-container.vp-3p .settlers-stats-card img {
-  width: 6.5rem;
+.vp-3p .settlers-stats-vp-row  {
+  height: min(6.5rem, 13vw);
 }
 
-.settlers-stats-resource-container.vp-3p .settlers-stats-card .settlers-stats-resource-count {
+.vp-3p .settlers-stats-vp-row img {
+  height: min(5.5rem, 8vw);
+}
+
+
+.vp-3p .settlers-stats-resource-container .settlers-stats-card .settlers-stats-resource-count {
   font-size: 3rem;
   width: 82%;
   height: 58%;
   line-height: 5.3rem;
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .combined-player-stats {
+    display: flex;
+    flex-direction: column;
+  }
+
+.vp-3p .settlers-stats-vp-row img {
+  height: min(6.5rem, 13vw);
+}
+
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
+    max-height: 98vh;
+    gap: 0.5rem;
+
+  }
+
+  .trade-overlay {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+  }
+  .trade_overlay_buttons{
+    grid-column: 1 / span 2;
+  }
 }

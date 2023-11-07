@@ -21,7 +21,7 @@
 	  //
 	  // offer to USSR
 	  //
-	  twilight_self.addMove("play_card_or_hand_to_opponent\t2");
+	  twilight_self.addMove("nixon_shock_play_card_or_hand_to_opponent\t2\t"+player);
 
 	  //
 	  // need reshuffle? do it
@@ -40,7 +40,6 @@
                 delete discarded_cards['shuttle'];
               }
             }
-
 
             if (Object.keys(discarded_cards).length > 0) {
 

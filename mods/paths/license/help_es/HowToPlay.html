@@ -1,0 +1,497 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<head>
+<style>
+body {background: #eeeeee; font-size:18px;}
+  h1   {font-size:40px;} 
+  h2   {font-size:26px;}
+  h3   {font-size:22px;}
+   p   {font-size:18px;}
+
+.container {float:left;}
+.image   {display:block;}
+.caption {display:block; width:100%; text-align:center;
+.tab { margin-left: 75px; }
+.tab2 { margin-left: 150px; }
+</style>
+</head>
+<body> <h1 style="overflow:auto;"><img src="about.jpg" hspace=20 
+           style="float:left;">&nbsp;&nbsp;&nbsp;&nbsp;
+           Senderos de gloria 10.2
+    </h1>
+    <p>
+El projecto de Senderos de Gloria versión 10 fue liderado por <b>Brian Reynolds</b>.
+No hubiera sido posible sin el esfuerzo de <b>Joel Koepp</b>, que lideró la mayoria
+de los cambios en las versiones 7.0 y 8.0, formando la columna vertebral de todo lo
+que siguío. <b>Claudio Ciardelli</b>, que construyó la versión 9.0, añadió el mapa
+de la edición de lujo, cartas más elegantes e incluyó funcionalidades de automatización.
+Brian Reynolds se encargo a partir de entonces del módulo, y publicó la versiones de
+9.2 a 9.9, incorporando el resto de elementos artísticos de la versión de lujo, añadió
+organización y conteo automático a las casillas de eliminadas y reserva, reemplazo de
+ejércitos por cuerpos de forma automática, control y puntuación de las casillas de PV,
+indicadores de acción de ronda automatizados, mejores informes en los archivos de log
+y continuó resolviendo errores y puliendo detalles. Un agradecimiento especial a Pranas
+Pauliukonis que hizo un testeo exhaustivo de las version 9.3 y 9.4, a Tom Gregorio por
+su evaluación del módulo como jugador experto, a Michael Kiefte que compartió su código
+fuente de relojes de ajedrez que diseñó para el módulo de Twilight Struggle, y también
+para Bill Thomsom, que integró la funcionalidad "LookAt" de Paul Blankeship's - con
+código original de David Sullivan ¡Gracias, también, a todos aquellos que han contribuido
+al módulo durante todos estos años, como Davout, Kaiman, Pmalig, ampercival y egg_salad!
+<br><br> El módulo está ahora mismo bajo mantenimiento de <b>Brian Reynolds</b> - por favor
+informa de cualquier problema a <b>brian@brianreynolds.net</b>
+</p>
+
+    <br><br>
+    <img src="rules front cover.png">
+    <br>
+    <h2>1. Lo primero de todo</h2>
+    <p>
+En el menú de <b>"Ayuda"</b> encontrarás un enlace a la última versión de las <b>
+Living Rules</b>, en caso de que todavía estés aprendiendo el juego en sí, o necesites
+"mirar una regla". Un buen vídeo de "Introducción a las reglas" que usa la última
+versión edl juego lo puedes encontrar aquí:
+<i></i>https://www.youtube.com/watch?v=SHMr-gu1u1c</i>
+<br><br>
+Si has jugado con versiones anteriores del módulo y sólo quieres comprobar qué ha cambiado,
+por favor mira la sección <b>"Lista de cambios"</b> del menú de "Ayuda" del módulo<br><br>
+
+<b>Los jugadors más avezados</b> deberían recorrer esa lista de cambios para ver las nuevas
+posibilidades del módulo. Puede haber cambiado mucho desde la última vez que lo comprobaron
+
+Esta versión del módulo de Senderos de Gloria intentar incorporar los últimos diseños artísticos
+de la versión más reciente del juego, incluyendo todos los elementos artísticos de la versión
+de lujo publicada en 2018, así como un número considerable de mejoras de juego y de interaz, y
+de automatización. ¡Esperamos que lo disfrutéis!
+</p>
+
+        <br><br>
+<img src="deluxemapshot2.png">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="classicmapshot2.png"><br>
+    <p>
+        <span style="margin-left:90px;">Deluxe Map</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span style="margin-left:250px;">Classic Map</span>
+    </p>
+    <br>
+    
+<h2>2. Configuración</h2> 
+<p> El último manual de 2018 incluye dos escenarios - el <b>histórico</b>, que se usa
+en la mayoría de las competiciones, y la <b>campaña</b> que representa mejor el escenario
+clásico de las reglas orginales. Puedes escoger jugar el escenario histórico en el mapa
+clásico de Mark Simonitch o en el mapa de lujo de Terry Leeds. El escenario original de 
+campaña sólo se puede jugar en el mapa clásico.
+</p>
+
+    <br><br>
+<img src="toolbar_aphand.png">&nbsp;&nbsp;&nbsp;<img src="toolbar_cphand.png">&nbsp;&nbsp;&nbsp;<img 
+src="expansion4.png">
+    <br>
+<h2>3. Escogiendo bando</h2> 
+    <p> El escenario que escojas te dará acceso a su mano de cartas - o puedes
+seleccionar Solitario para acceder a ambas (esto es útil para jugar en un sólo
+ordenador de forma local o por PBEM a través de ACTS). Para jugadores y eventos
+competitivos, donde hace falta tener seguridad para las cartas y las tiradas, se
+recomienda jugar en ACTS o un servidor similar, el cliente Vassal por sí mismo
+no puede ofrecer ninguna seguridad real.</p>
+
+        <br><br>
+<img src="fullscreen small2.png">
+    <p>Donde están las cartas</p> <br>
+
+<h2>4. Cartas</h2>
+    <p><b>Nota: </b>Los jugadores que usen ACTS pueden saltar directamente a la sección
+5 de unidades e indicadores.
+
+    <br><br>Para reducir el exceso de ventanas, los montones de cartas se han colado
+en el mapa, debajo del tablero. Las cartas pueden ser robadas mediante distintos métodos,
+incluyendo pulsar con el boton derecho en el mazo, el boton de "robar" debajo de cada mazo
+y los botones de "Robar Carta" que están en la lista de iconos tanto en la ventana principal
+como en la ventada con la mano de cada jugador
+
+<br><br>
+
+<img src="goasmall.png">
+
+<br> 
+<b>Cañones de Agosto, escenario histórico: </b>Si comienzas el escenario histórico
+(en cualquiera de los dos mapas), la carta de Cañones de Agosto se habrá jugado
+automaticamente al comienzo de la partida - los ejércitos alemanes adecuados estarán
+listos y con indicadores de activación, la fortaleza de Lieja estará destruida, etc.
+El jugador de PC debería, por tanto, robar una carta menos de lo normal cuando llené
+su mano durante el turno 1.
+        <br><br>
+        <b>Cañones de Agosto, escenario clásico: </b>Si comienzas una partida en
+	el escenario clásico, la carta de Cañones de Agosto comienza en el descarte.
+	El jugador de PC puede llevarsela en su mano (abre la venta de cartas de PC
+	y arrastra la carta hasta la ventana) o pulsar con el bonton derecho en ella
+	y seleccionar "Barajar" para meterla de nuevo en el mazo. Después, el jugador
+	de PC debe coger cartas suficientes para llenar su mano.
+
+<br><br>
+
+<img src="influenzasmall.png"> &nbsp;&nbsp; <img src="princemaxsmall.png">
+
+        <br>
+        <img src="expansion4.png"><b>Cartas opcionales:</b> En vez de crear
+distintos escenarios que incluyan o excluyan las cartas opcionales, éstas están
+en un mazo propio y etiquetado, para incluirlas si así lo deseáis. La ventana que
+las contiene puede ser abierta de dos maneras: o pulsando en el botón "Opcional" de la
+lista de iconos (su icono está a la izquierda de este texto para referencia) o pulsando
+botón de "Cartas Opcionales" en el centro de la área de cartas debajo del tablero.
+        <br><br> Una vez que la ventana de cartas opcionales esté abierta, pulsa en
+	"Añadir a la partida" debajo de cada mazo para automáticamente añadir las
+	cartas a sus respectivos mazos. También puedes elegir algunas cartas en concreto
+	y llevarlas a sus mazos, si estáis de acuerdo en jugar con un subconjunto de cartas.
+	Una vez que las cartas opcionales hayan sido añadidas, la partida prosigue normalmente.
+
+<br><br>
+<img src="play-a-card.png">
+
+        <br>
+        <b>Jugando las cartas:</b> Selecciona una carta de tu mano, pulsa en
+	        botón derecho y elige entre: Jugar como Evento (Ctrl-E), Jugar Select a card in your hand, right click,
+	        cómo Operaciones (Ctrl-O), Jugar para PRs (Ctrl-R), Jugar como ME (Ctrl-S). Las cartas de combate,
+	        tienen, adicionalmente, estas opciones: Jugar como carta de combate (Ctrl-C) y descartar (Ctrl-D). Las
+	        cartas de combate se juegan debajo del tablero principal. Los eventos que ajusten el estado de guerra o
+	        los PVs modificarán esos valores automáticamente. Algunas de esas opciones pueden estar en grís o eliminadas,
+	        dependiendo del estado de la partida (Ej: jugar como evento no está disponible en el turno 1 para eventos
+	        de refuerzo).
+<br><br>
+<img src="play-a-reinf.png">
+
+        <br>
+
+
+            <b>Cartas de refuerzo:</b> Los eventos de refuerzo como, por ejemplo
+	    AH, FR, GE, RU - también permiten ahora elegir dónde se juega el evento.
+	    En el caso poco común de que se quiera jugar un evento que tiene dos ejércitos
+	    (por ejemplo el 17 y 18 alemanes) a dos sitios distintos, simplemente juega
+	    el evento a una casilla y mueve uno de los ejércitos manualmente a la otra casilla.
+	    Esto se ha considerado más deseable que dar un montón de opciones de despliegue mixto
+	    en esas cartas.
+
+        <br><br> 
+        <img src="orient_army_back.png"> &nbsp;&nbsp; <img src="ge_army01.png"> &nbsp;&nbsp; 
+        <img src="bef_corps_back.png"> &nbsp;&nbsp; <img src="bu_corps.png"> &nbsp;&nbsp; <img 
+        src="ap_trench1.png"> &nbsp;&nbsp; <img src="cp_trench2.png"> 
+        &nbsp;&nbsp; <img src="control_ap.png"> &nbsp;&nbsp; <img 
+        src="control_cp.png"> &nbsp;&nbsp; <img src="fort_besieged.png"> 
+        &nbsp;&nbsp; <img 
+        src="fort_destroyed.png">
+        
+        <br>
+<h2>5. Unidades e indicadores</h2> 
+        <p>
+        Los indicadores de control, fortaleza, trinchera, ejércitos y cuerpos, y
+otros indcadores del mapa (movimiento, ataque, etc.), están separados en distintas
+capas para evitar que haya apilamientos o movimientos indeseados. El orden para
+colocarlos, de abajo a arriba es: Fortalezas, indicadores de control, trincheras,
+unidades (ejércitos/cuerpos), y después todo lo demás. Las unidades que se coloquen
+en un espacio, se apilarán automáticamente con el resto de unidades allí presentes 
+(haz doble click en una pila para ver las distintas piezas individuales que puedes 
+clicar). Las trincheras y otros indicadores no forman una pila, y pueden, por tanto,
+ser arrastradas y ajustadas para mejor visibilidad. Desde la versión 9.2 en adelante,
+se ha hecho un esfuerzo para que los atajos de teclado sean consistentes entre 
+distintos tipos de unidades (por ejemplo, que Ctrl-F sea siempre Girar), y hacer
+que las undiades siempre sean girados a la misma cara que serían el juego físico (así,
+pr ejemplo, indicadores de control pueden ser girados entre Aliados/PC).
+
+            <br><br>
+              <img src="palette sample.png">
+            <br>
+            Los <b>indicadores</b> se encuentran la barra de herramientos, y se abren en 
+            una ventana de "paleta" a la izquierda de los iconos. Todos los indicadores
+            comunes (ej: tricnheras, indicadores de control) se encuentran aquí en número
+            infinito, y pueden ser arrastrados al mapa según sea necesario. Una pestaña
+            separada contiene los indicadores de PV para distintas situaciones.
+
+<br><br>
+            <img src="activate_move.png"> &nbsp; &nbsp; <img 
+            src="activate_attack.png"> &nbsp; &nbsp; <img 
+            src="removesample.png">
+<br>
+            <b>Indicadores de activación:</b> Con cada unidad o pila seleccionada, puedes usar
+Ctrl+M o Ctrl+A para activar la pila para movimiento o atauqe (también lo puedes hacer con
+el botón derecho). Todos los indicadores de activación se pueden quitar con el botón 
+apropiado de la barra de herramientas y también se eliminan al finalizar el turno.
+
+<br><br>
+<img src="sud_army.png"> &nbsp; &nbsp; <img src="event_11tharmy.png"> &nbsp; 
+&nbsp; <img src="be_army.png"> &nbsp; &nbsp; <img 
+src="vp_fall_of_the_tsar_3.png">
+            <br><br>
+            <img src="ops example.png">
+        <br>
+            <b>Cuenta de operaciones:</b> Una cuenta apropiada de operaciones
+            se mantenderá a medida que las pilas sean activadas. Las pilas multinacionales,
+            por ejemplo, contarán extra para activaciones, por la regla 9.2.3
+            Sin embargo, excepciones apropiadas se hacen para, por ejemplo, para Suddarme,
+            Ejército 11, cooperación británico-belga, cooperación EEUUU/Francia. Asi mismo, 
+	    los costes adicionales apropiados seran tenidos en cuenta para, por ejemplo, Moltke
+	    y ataques durante la caída del zar, cuando esos eventos están en efecto.
+        </p>
+        <br><br>
+
+        <img src="vp.png"> &nbsp;&nbsp; <img src="warstatus_combined.png"> 
+        &nbsp;&nbsp; <img src="ev_falkenhayn.png"> &nbsp;&nbsp; <img 
+        src="vp_lusitania.png"> &nbsp;&nbsp; 
+
+<h2>6. Puntuación, estado de guerra y eventos</h2>
+        <p>
+            Se proporcionan indicadores para todos los eventos que afecten al 
+            estado de guerra, que concedan PV o que produzcan efectos a partir
+	    de entonces en el juego, y que necesiten apuntarse (como Atrincheramiento
+	    o Molkte). Cuando un indicador de evento se coloca en el mapa o el registro
+	    de turnos, tanto el estado de guerra como el nivel de PV serán ajustados
+	    adecuadamente, de forma automática (pueden ser ajustados también
+	    manualmente, si se desea).
+            <br><br>
+	    Cuando una carta se juega por el evento a través de una partida normal en
+	    vivo o por correo electrónico, el indicador del eventos se colocará sobre
+	    el registro de turnos automáticamente. Cuando se juege a través de ACTS,
+	    los indicadores de eventos de ambos jugadores se pueden colocar manualmente -
+	    se encuentran en la ventana de refuerzos apropiada a cada bando.
+            
+            <br><br>
+            <img src="blockade_event.png"> &nbsp;&nbsp; <img 
+            src="vp_1_blockade.png"> <br> 
+            <b>Bloqueo: </b>Una vez que bloqueo se juegue por el evento (o su indicador
+	    se coloque en el registro de turnos), indicadores de -1 PV se colocarán
+	    automáticamente, de forma apropiada, en cada turno de invierno, y el nivel
+	    de PV se ajustará también de forma automática. <b>NOTA:</b> Aunque los
+	    PV de bloqueo se suponen añadidos, formalmente, durante la fase de estado
+	    de guerra, al <i>final</i> del turno, ese es también el único momente en que
+	    se comprueban los puntos de victoria. Por razones ténicas y de interfaz, el
+	    marcador de PV de bloqueo se coloca al principio de cada turno de invierno (o
+	    cuando se juegue el evento, si el evento es jugado durante ese turno). Si se
+	    entiende esto, no debería afectar al juego, ya que las condiciones de autovictoria
+	    sólo se comprueban al final de cada turno.
+
+            <br><br>
+            <img src="control_ap.png"> &nbsp; &nbsp; <img src="control_cp.png">
+            <br><br>
+            <img src="control example.png">
+            <br>
+
+            <b>Indicadores de control y puntuación: </b>Los indicadores de control se colocan automáticamente cuando las unidades capturan espacios al moverse a ellos, pero pueden también
+	    colocarse desde la ventada de indicadores. Cuando un indicador se coloca en (o es movida a, o borrado de) los espacios de PV,
+	    los PVs se ajustan automáticamente, basándose en el conteo de espacios de control. y de cualquier indicador de PV/evento jugado, y
+	    puede recalcularse pulsando con el botón derecho en el indicador de PV o a través del botón de la barra de herramientas principal.
+
+            <br><br>
+            <img src="victory summary.png"> <br>
+
+            <b>Puntuación final: </b>Al pulsar con el botón derecho en el indicador
+	    de PV, o el botón de PV de la barra principal, es posible calcular cuál
+	    sería la puntuación final usando las condiciones actuales, aunque la
+	    partida no haya alcanzado aún el turno 20 y el valor de estado de guerra
+	    combinado esté por debajo de 40.             
+        </p>
+        
+<br><br> 
+<img src="action round sample.png">
+<br>
+         
+<h2>7. Colocación de los indicadores de ronda de acción</h2> 
+<p> Al comienzo de la partida, y con cada avance de turno, los indicadores
+  de acción se colocán cerca de la tabla de rondas de acción. Cuando se juegan
+  cartas, estos indicadores se colocarán <b>automáticamente</b> en su lugar apropiado,
+  (por ejempl, "Ops", "Entrada de país neutral", etc.); para los casos de 1 una operacion
+  sin carta o de juego a través de ACTS, pueden arrastrarse manualmente o seleccionar su
+  destino pulsando con el botón derecho sobre ellos.
+            <br><br>
+            NOTA: Cuando se juega a través de <b>ACTS</b> y no usando las cartas del módulo,
+            el módulo todavía <i>intentará</i> mover los indicadores de ronda de acción 
+            apropiadamente, interpretando lo que los jugadores están acción. Sin embargo,
+	    el módulo no es capaz de detectar <b>Movimiento Estratégico (ME)</b>, que debe
+	    ser marcado automáticamnte o quedará sin detectar.
+            <br><br>
+            Los indicadores de ronda de acción pueden <i>siempre</i> ser recolocados a mano.
+            </p>
+        
+        <br><br>
+        <img src="mo example.png">
+        <br>
+
+<h2>8. Ofensivas obligatorias and "Ofensivas obligatorias no realizadas"</h2>
+        <p>Cuando se tiran los dados para Ofensiva Obligatoria al comienzo del turno,
+          se pueden marcar moviendo el indicador de OO según sea apropiado (y también,
+	  pulsando con el botón derecho y seleccionado el destino)
+            <br><br> 
+            <b>Las ofensivas obligatorais no realizadas</b> se pueden anotar seleccionando
+	    el indicador de OO y seleccionando la opción de "No realizada", lo que colocará
+	    un marcador de punto de victoria adecuado (de valor +1 o  -1) en el regirsto de turnos
+	    (en la casilla del turno actual). Estos indicadores también están disponibles en la
+	    paleta de marcadores (ver sección 5) y mediante la pulsación del botón derecho sobre
+	    una casilla del registro de turnos.
+            
+            </p>
+
+                <br><br>
+        <img src="rp_allied.png"> &nbsp;&nbsp; <img src="rp_fr.png"> 
+        &nbsp;&nbsp; <img src="rp_ge_rathenau.png"> &nbsp;&nbsp; <img 
+        src="rp_br_uboats.png"> &nbsp;&nbsp; <img src="rp_us.png"> &nbsp;&nbsp; 
+        <img src="toolbar sample rps.png"> &nbsp;&nbsp; 
+<br>
+
+
+<h2>9. Indicadores de puntos de reemplazo</h2> 
+<p>Cuando se juega una carta por PRs, los indicadores de PRs se mueven
+  automáticamente en el registro. Para partidas por ACTS, el botón de PRs de
+  la barra de herramientas principal se puede usar para simular el juego de
+  una carta de valor apropiado para PRs. Los indicadores de PRs para los países
+  que comienzan neutrales (como Italia, Bulgaria y EE.UU.) se mantienen correctamente
+  a 0, y no se suman hasta que ese país no haya entrado en la guerra (lo que se marca
+  ya sea jugando la carta, arrastrando el indicador adecuado a la barra de turnos, o
+  en el caso de EE.UU., moviendo el indicador de entrada de guerra de EE.UU. a la casilla
+  Alla vamos)</p>
+        <br><br>
+
+        <img src="br_ne_sr2.png"> &nbsp;&nbsp; <img src="cp_ne_sr_used2.png"> 
+        &nbsp;&nbsp; <img src="ru_ne_sr2.png"> &nbsp;&nbsp; <img 
+        src="ru_ne_move_used3.png"> &nbsp;&nbsp; 
+        
+        <br>
+
+<h2>10. Restricciones de Oriente Próximo</h2> 
+<p>Para que los jugadores puedan tener en cuenta las restricciones por turno
+  de movimientos a y desde Oriente Próxinmo, se proporcionan indicadores de
+  "recuerdo". Pulsando con el botón derecho sobre cualquiera de esos cuatro indicadores,
+  se voltearán para indicar que ese tipo de movimiento ya se ha usado ese turno. Al avanzar
+  el turno, se voltearán automáticamente al lada de "disponible".</p> 
+        <br><br>
+
+<img src="reinf example.png"> &nbsp;&nbsp; <img src="deploy-a-reinf.png">
+
+        <br>
+<h2>11. Cartas de refuerzo</h2> 
+        <p><b>Unidades de refuerzo: </b>Las cartas de refuerzos de la edición de 2018
+	  se soportan ahora, lo que proporciona una organización y visualización util de los
+	  cuerpos y ejércitos disponibles. Cuando se juegue a través de ACTS, la forma más
+	  cómoda de desplegar esas unidades es pulsar en el botón derecho y pulsar entonces
+	  el destino del ejército (por ejemplo, las unidades AH ofrecerán "Viena" y "Budapest").
+	  La unidades también se pueden arrastrar directamente al mapa, si así se prefiere.
+
+<br><br>
+<b>Eventos: </b>Se proporcionan indicadores de eventos para todos aquellos eventos que afecten
+al estado de guerra, a los PV o que tengan efectos duraderos durante la partida. Cuando uno
+de esos eventos se coloca en el tablero (típicamente en el registro de turnos, pero no es obligatorio),
+los efectos adecuados sobre estado de guerra, PV o la partida se tendrán en cuenta. Si los jugadores
+usan las cartas del módulo y el interfaz para jugarlas, entonces estos eventos se mueven automáticamente.
+Cuando se juegue a través de <b>ACTS</b>, donde las cartas se manejan en una página web separada, los
+indicadores de eventos de las pestañas de refuerzos pueden ser pulsadas con el boton derecho para ser
+enviadas al registro de turnos (o arrastradas manualmente al tablero). Esto mantendrá la cuenta de VP,
+estado de guerra y otros actualizadas adecuadamente.
+            
+            </p>
+        <br><br>
+
+
+        <img src="empty sample.png">
+        <br>
+
+<h2>13. Espacios vacios - atajos para añadir eventos</h2>
+<p>Al pulsar sobre un espacio vacío del tablero, se puede seleccionar. Pulsando
+  con el botón derecho se mostará un menu contextual que permitirá añadir marcadores
+  comúnes (trincheras, control, etc). Las teclas de atajo que se muestran en ese menú
+  también están disponibles en cualquier ocasión en la que se haya seleccionado un
+  espacio vacío. Los bordes del espacio para el módulo son un poco más grandes que los bordes
+  reales en el tablero para permitir esta pulsación incluso si ya hay otras piezas en el espacio. </p>
+
+        <br><br>
+        <img src="flare example.png">
+        <br>
+
+        <h2>14. Usando las bengalas para llamar la atención del oponente</h2>
+<p>Mediante el uso de <b>Ctrl+Click</b> en cualquier lugar del mapa, se disparará una
+  "bengala", una señal para atraer la atención de tu rival a ese espacio particular.
+  Un círculo verde aparecerá brevemente en la casilla adecuada, indicando donde hay
+  que fiar la atención. Si estás jugando online, esta bengala se mostrará automáticamente
+  en el tablero de tu oponente. Si estás jugando por correo electronico, la bengala aparecerá
+  cuando tu rival juegue el registro.
+            </p>
+
+        <br><br>
+<img src="logfile sample.png">
+        <br>
+        
+<h2>14. Informe de registro</h2> 
+<p>Un esfuerzo sustancial se ha llevado a cabo para limpiar y simplificar el fichero de registro,
+  ayudar con las partidas en directo y con aquellas que no se hacen por ACTS. En particular, las unidades
+  ya no informan de cambios cosméticos dentro de la misma casilla (por ejemplo - ya no habrá múltiples mensajes
+  de "AH1 Budapest a Budapest"). El informe se ha mejorado también para otros cambios que ocurren durante la partida,
+  como trincheras, asedio de fortalezas, etc.</p>
+        <br><br>
+
+        <img src="chessclocksscreenie.png">
+<br>
+
+<h2>15. Relojes de ajedrez</h2> 
+<p>Para aquellos a los que les gustaría jugar con un límite de tiempo acordado en una partidad competitiva,
+  los relojes de ajedrez son una nueva funcionalidad de la versión 9.8. 
+            <ul>
+              <li>Pulsando el botón de relojes de ajedrez en la barra de herramientas, se mostrará los
+		dos relojes de ajedrez.</li>
+              <li>Una vez que la partida ha comenzado, pulsar sobre un reloj u otro cambiará el tiempo
+		a contar, de un bando a otro</li>
+              <li>Los relojes cuentan hacia arriba. Esto hace posible que se acuerde cualquier límite de
+		tiempo, simplemente hablando con el otro jugador antes de la partida.</li>
+                <li>Mientras los relojes estén funcionando, el pusar sobre el icono maestro de relojes, parará ambos. </li>
+              <li>Cuando se juega online, los relojes de ajedrez se mantienen sincronizados entre ambos jugadores mediante
+		un sistema de negociación.</li>
+                <li>El módulo no avisa de tiempo agotado, eso corresponde a los jugadores.</li>
+                <li>Grabar y cargar partidas está soportado: los relojes recordarán exactamente el tiempo transcurrido</li>
+            </ul> </p> <br><br>
+
+        
+<br><br>
+        <img src="acts sample.png">
+        <br>
+
+<h2>15. Soporte de ACTS para juego en servidor.</h2> 
+<p>Para torneos y jugadores que desean más seguridad con las cartas y los dados,
+  está disponible la opción de usar la página web ACTS (http://acts.warhorsesim.com).
+  Distintas funcionalidades han sido añadidas al módulo para facilitar este modo de juego:
+            <br><br>
+            <img src="reservetext.png">
+            <br>
+
+
+            <b>Conteo de la casilla de reserva (1,1): </b>Cuando un cuerpo se mueve a
+	    o desde la casilla de reserva, se proporciona un contador del número de unidades
+	    a fuerza completa o media fuerza (ej: 8,0), reflejando los valores justo <i>después</i>
+	    de la acción que se acaba de tomar.
+            <br><br>
+
+            <img src="deploy-a-reinf.png"> 
+            <br> 
+            <b>Despliegue rápido : </b>Desde la tarjeta de refuerzos, nuevos cuerpos y ejércitos se pueden enviar
+	    diractemente a sus puntos de llegada a través del menú contextual que aparece al pulsar el botón derecho
+
+            <br><br>
+            <img src="reinf example.png">
+            <br>
+            <b>Indicadors funcionales de eventos: </b>Mantener el estado de guerra y los PV es más fácil
+	    gracias al uso de indicadores de eventos (por ejemplo, mover "El telegrama Zimmermann" al registro
+	    de turnos incrementará el estado de guerra aliado en 2 y aplicará -1 PV). Ahora hay indicadores para
+	    cada evento que afecte al estado de guerra y a los PV.
+            <br><br>
+            
+            <img src="toolbar sample rps.png"> 
+            <br> 
+            <b>Gestión rápida de PR: </b>
+            Cuando una carta se juega por PRs en ACTS, se puede realizar lo mismo en Vassal
+	    a través de un atajo en la barra de herramientas: el botón "RP's" se usa para
+	    indicar a Vassal el valor de la carta jugada, para que los indicadores de PRsss
+	    se ajusten automáticamente. Estos indicadores se resetean a 0 cuando avanza el
+	    turno.
+            <br><br>
+            <b>Robar todas las cartas: </b>Para aquellos jugadores de ACTS que quieren
+	    gestionar cartas a través del módulo, se han añadido nuevas funcionalidades,
+	    incluido un modo "Solitario" que permite acceso a ambas manos, un botón "Robar
+	    TODAS las cartas", y mejores controles para acercar y alejar en la ventana de mano. Se
+	    puede usar "Robar TODAS las cartas" para obtenerlas todas, y luego descartarlas según
+	    se vayan jugando en ACTS.
+        </p>
+</BODY>
+</HTML>
+

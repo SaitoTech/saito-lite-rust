@@ -90,6 +90,7 @@ class ExplorerCore extends ModTemplate {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const blk = await app.blockchain.getBlock(bhash);
+        console.log(blk, "this block");
         if (!blk) {
           return;
         }
@@ -99,13 +100,12 @@ class ExplorerCore extends ModTemplate {
         blkwtx.transactions = blk.transactions;
         blkwtx.app = null;
         */
-        var txwmsgs = []
-        blk.transactions.forEach(transaction => {
+        var txwmsgs = [];
+        blk.transactions.forEach((transaction) => {
           let tx = transaction.toJson();
           tx.msg = transaction.returnMessage();
-          txwmsgs.push(tx);          
+          txwmsgs.push(tx);
         });
-
 
         // console.info("### write from line 232 of server.ts.");
         res.writeHead(200, {
@@ -166,7 +166,7 @@ class ExplorerCore extends ModTemplate {
 
   async returnIndexMain() {
     let txs = await S.getInstance().getMempoolTxs();
-
+    console.log(await this.listBlocks);
     return (
       '<div class="explorer-main"> \
         <div class="block-table"> \
