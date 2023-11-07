@@ -275,6 +275,7 @@ class TweetManager {
         this.profile_replies[z].render();
       }
     }
+    this.attachEvents();
   }
 
   renderProfile(publicKey) {
