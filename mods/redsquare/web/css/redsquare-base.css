@@ -1,11 +1,11 @@
 .saito-new-tweets {
-  position: fixed;
-  top: var(--saito-header-height);
-  left: 50%;
-  transform: translateX(-50%);
+  position: sticky;
+  top: 5px;
+  margin: auto;
+  width: 75%;
+  align-self: center;
   z-index: 5;
 }
-
 
 .liked , .replied , .retweeted {
   color: var(--saito-primary);;
