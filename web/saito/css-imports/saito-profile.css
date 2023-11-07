@@ -95,6 +95,8 @@
   border: 1px solid var(--saito-font-color);
   width: 10rem;
   height: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   text-align: center;
   line-height: 4rem;
   border-radius: 0.3rem;

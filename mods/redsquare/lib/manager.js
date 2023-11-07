@@ -115,8 +115,6 @@ class TweetManager {
                   return;
                 }
 
-alert("rendering in A: " + this.tab);
-
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
                   if (tweet?.noerrors) {
@@ -143,7 +141,11 @@ alert("rendering in A: " + this.tab);
                       document.querySelector("#redsquare-intersection")
                     );
                   }
-                }
+                } else {
+		  if (this.profile.publicKey === this.mod.publicKey) {
+		    this.mod.saveLocalProfile();
+		  }
+	        }
               });
             }
           }
@@ -281,9 +283,11 @@ alert("rendering in A: " + this.tab);
     if (!document.querySelector(".tweet-manager")) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), ".saito-main");
     }
-alert("cleaning out profile posts and replies!");
-    this.profile_posts = [];
-    this.profile_replies = [];
+
+    if (publicKey != this.mod.publicKey || (publicKey == this.mod.publicKey && this.profile.publicKey != publicKey)) {
+      this.profile_posts = [];
+      this.profile_replies = [];
+    }
 
     this.profile.publicKey = publicKey;
     this.profile.render();
@@ -310,6 +314,12 @@ alert("cleaning out profile posts and replies!");
             tweet.render();
 	  }
 	}
+      }
+
+      if (txs.length > 0) {
+        if (this.profile.publicKey === this.mod.publicKey) {
+          this.mod.saveLocalProfile();
+        }
       }
 
       setTimeout(() => {

@@ -50,6 +50,11 @@ class RedSquare extends ModTemplate {
     this.notifications_sigs_hmap = {};
 
     //
+    // set by main
+    //
+    this.manager = "";
+
+    //
     // is this a notification?
     //
     this.notifications_last_viewed_ts = 0;
@@ -291,6 +296,7 @@ class RedSquare extends ModTemplate {
       await this.header.initialize(this.app);
       this.menu = new SaitoMenu(this.app, this, ".saito-sidebar.left");
       this.sidebar = new RedSquareSidebar(this.app, this, ".saito-sidebar.right");
+      this.manager = this.main.manager;
 
       this.addComponent(this.header);
       this.addComponent(this.main);
@@ -1737,17 +1743,17 @@ class RedSquare extends ModTemplate {
   saveLocalProfile() {
     let ptxs = [];
     let rtxs = [];
-    for (let i = 0; i < this.manager.profile_posts.length; i++) {
+    for (let i = 0; i < this.manager.profile_posts.length && i < 20; i++) {
       ptxs.push(this.manager.profile_posts[i].tx.serialize_to_web(this.app));
     }
-    for (let i = 0; i < this.manager.profile_replies.length; i++) {
+    for (let i = 0; i < this.manager.profile_replies.length && i < 20; i++) {
       rtxs.push(this.manager.profile_replies[i].tx.serialize_to_web(this.app));
     }
     localforage.setItem(`profile_posts_history`, ptxs).then(function () {
-      console.log(`Saved ${txs.length} tweets`);
+      console.log(`Saved ${ptxs.length} tweets`);
     });
     localforage.setItem(`profile_replies_history`, rtxs).then(function () {
-      console.log(`Saved ${txs.length} tweets`);
+      console.log(`Saved ${rtxs.length} tweets`);
     });
   }
 
@@ -1759,9 +1765,6 @@ class RedSquare extends ModTemplate {
     if (this.app.browser.returnURLParameter("tweet_id")) {
       return;
     }
-    if (this.app.browser.returnURLParameter("user_id")) {
-      return;
-    }
 
     localforage.getItem(`profile_posts_history`, (error, value) => {
       if (value && value.length > 0) {
@@ -1770,6 +1773,7 @@ class RedSquare extends ModTemplate {
             let newtx = new Transaction();
             newtx.deserialize_from_web(this.app, tx);
 	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+console.log("profile cache load: " + t.text);
             this.manager.profile_posts.push(t); // the tweet
           } catch (err) {}
         }
@@ -1782,6 +1786,7 @@ class RedSquare extends ModTemplate {
             let newtx = new Transaction();
             newtx.deserialize_from_web(this.app, tx);
 	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+console.log("profile cache load: " + t.text);
             this.manager.profile_replies.push(t); // the tweet
           } catch (err) {}
         }
