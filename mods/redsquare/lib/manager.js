@@ -265,6 +265,7 @@ class TweetManager {
     if (document.querySelector(".tweet-manager")) {
       document.querySelector(".tweet-manager").innerHTML = "";
     }
+    this.renderProfileMenu();
     if (this.tab == "posts") {
       for (let z = 0; z < this.profile_posts.length; z++) {
         this.profile_posts[z].render();
@@ -276,6 +277,27 @@ class TweetManager {
       }
     }
     this.attachEvents();
+  }
+
+  renderProfileMenu() {
+    if (!document.querySelector(".redsquare-profile-menu-posts")) {
+      this.app.browser.addElementToSelector('<div class="redsquare-profile-menu-posts active">Posts</div>', ".saito-profile-menu");
+    }
+    if (!document.querySelector(".redsquare-profile-menu-replies")) {
+      this.app.browser.addElementToSelector('<div class="redsquare-profile-menu-replies">Replies</div>', ".saito-profile-menu");
+    }
+    if (this.tab == "posts") {
+      let el1 = document.querySelector(".redsquare-profile-menu-posts");
+      let el2 = document.querySelector(".redsquare-profile-menu-replies");
+      el2.classList.remove("active");
+      el1.classList.add("active");
+    }
+    if (this.tab == "replies") {
+      let el1 = document.querySelector(".redsquare-profile-menu-posts");
+      let el2 = document.querySelector(".redsquare-profile-menu-replies");
+      el1.classList.remove("active");
+      el2.classList.add("active");
+    }
   }
 
   renderProfile(publicKey) {
@@ -293,12 +315,7 @@ class TweetManager {
     this.profile.publicKey = publicKey;
     this.profile.render();
 
-    if (!document.querySelector(".redsquare-profile-menu-posts")) {
-      this.app.browser.addElementToSelector('<div class="redsquare-profile-menu-posts active">Posts</div>', ".saito-profile-menu");
-    }
-    if (!document.querySelector(".redsquare-profile-menu-replies")) {
-      this.app.browser.addElementToSelector('<div class="redsquare-profile-menu-replies">Replies</div>', ".saito-profile-menu");
-    }
+    this.renderProfileMenu();
 
     this.mod.loadProfile(null, publicKey, (txs) => {
       for (let z = 0; z < txs.length; z++) {
@@ -379,24 +396,36 @@ class TweetManager {
     if (this.mode === "profile") {
       document.querySelectorAll(".redsquare-profile-menu-posts").forEach((el) => {
         el.onclick = (e) => {
-          if (this.tab == "posts") { return; }
-          try { document.querySelector(`.redsquare-profile-menu-${this.tab}`).classList.remove("active"); } catch (err) {}
-  	  el.classList.add("active");
-          this.tab = "posts";
-	  this.rerenderProfile();
+	  this.switchToPosts();
         }
       });
       document.querySelectorAll(".redsquare-profile-menu-replies").forEach((el) => {
         el.onclick = (e) => {
-          if (this.tab == "replies") { return; }
-          try { document.querySelector(`.redsquare-profile-menu-${this.tab}`).classList.remove("active"); } catch (err) {}
-  	  el.classList.add("active");
-          this.tab = "replies";
-	  this.rerenderProfile();
+	  this.switchToReplies();
         };
       });
     }
 
+  }
+
+  switchToPosts() {
+    if (this.tab == "posts") { return; }
+    let el = document.querySelector(`.redsquare-profile-menu-replies`);
+    if (el) { el.classList.remove("active"); }
+    this.tab = "posts";
+    el = document.querySelector(`.redsquare-profile-menu-posts`);
+    if (el) { el.classList.add("active"); }
+    this.rerenderProfile();
+  }
+
+  switchToReplies() {
+    if (this.tab == "replies") { return; }
+    let el = document.querySelector(`.redsquare-profile-menu-posts`);
+    if (el) { el.classList.remove("active"); }
+    this.tab = "replies";
+    el = document.querySelector(`.redsquare-profile-menu-replies`);
+    if (el) { el.classList.add("active"); }
+    this.rerenderProfile();
   }
 
   showLoader() {

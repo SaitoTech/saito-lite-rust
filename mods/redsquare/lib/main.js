@@ -152,22 +152,6 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
 
-      //
-      // HACK - clicked on profile from profile
-      //
-      if (this.manager.profile) {
-	if (this.manager.profile.tab != "posts" && (this.manager.profile.tab)) {
-alert("manager profile tab: " + this.manager.profile.tab);
-          this.manager.renderProfile(publickey);
-          this.manager.profile.tab = "posts";
-	  this.manager.rerenderProfile();
-          this.scrollFeed(0);
-          document.querySelectorAll(".optional-menu-item").forEach((item) => { item.style.display = "none"; });
-          document.querySelector(".redsquare-menu-home").style.display = "flex";
-	  return;
-        }
-      }
-
       // reset main
       document.querySelector(".saito-main").innerHTML = "";
 
@@ -182,6 +166,13 @@ alert("manager profile tab: " + this.manager.profile.tab);
       if (publickey == "") { publickey = this.mod.publicKey; }
 
       this.manager.renderProfile(publickey);
+
+      // clicked on profile from profile
+      if (this.manager) {
+        if (this.manager.tab == "replies") {
+	  this.manager.switchToPosts();
+        }
+      }
 
       document.querySelectorAll(".optional-menu-item").forEach((item) => { item.style.display = "none"; });
       document.querySelector(".redsquare-menu-home").style.display = "flex";
