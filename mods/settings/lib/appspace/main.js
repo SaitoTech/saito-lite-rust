@@ -118,9 +118,30 @@ class SettingsAppspace {
 
       if (document.getElementById("restore-account-btn")) {
         document.getElementById("restore-account-btn").onclick = async (e) => {
-          document.getElementById("file-input").addEventListener("change", function (e) {
+          document.getElementById("file-input").addEventListener("change", async function (e) {
             var file = e.target.files[0];
-            app.wallet.restoreWallet(file);
+            
+            let wallet_reader = new FileReader();
+            wallet_reader.readAsBinaryString(file);
+            wallet_reader.onloadend = async () => {
+              let result = await app.wallet.onUpgrade("import", "", wallet_reader);
+
+              if (result === true) {
+                alert("Restoration Complete ... click to reload Saito");
+                window.location.reload();
+              } else {
+                let err = result;
+                if (err.name == "SyntaxError") {
+                  salert("Error reading wallet file. Did you upload the correct file?");
+                } else if (false) {
+                  // put this back when we support encrypting wallet backups again...
+                  salert("Error decrypting wallet file. Password incorrect");
+                } else {
+                  salert("Unknown error<br/>" + err);
+                }
+              }         
+            };
+
           });
           document.querySelector("#file-input").click();
         };
@@ -184,36 +205,16 @@ class SettingsAppspace {
         try {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
-            let version = app.wallet.version;
+            let result = await app.wallet.onUpgrade("import", privatekey);
 
-            publicKey = app.crypto.generatePublicKey(privatekey);
-            console.log("111 : " + (await app.wallet.getPublicKey()));
-
-            console.log("publickey ///");
-            console.log(publicKey);
-
-            await app.wallet.setPublicKey(publicKey);
-            await app.wallet.setPrivateKey(privatekey);
-            app.wallet.version = version;
-            app.wallet.inputs = [];
-            app.wallet.outputs = [];
-            app.wallet.spends = [];
-            app.wallet.pending = [];
-
-            // await app.blockchain.resetBlockchain();
-
-            await app.storage.resetOptionsFromKey(publicKey);
-
-            // await fetch wallet balance
-            await app.wallet.fetchBalanceSnapshot(publicKey);
-
-            console.log("wallet slips : ", await app.wallet.getSlips());
-            await app.wallet.saveWallet();
-
-            let c = await sconfirm("Success! Confirm to reload");
-
-            if (c) {
-              window.location.reload();
+            if (result === true) {
+              let c = await sconfirm("Success! Confirm to reload");
+              if (c) {
+                window.location.reload();
+              }
+            } else {
+              let err = result;
+              salert("Something went wrong: " + err.name);
             }
           }
         } catch (e) {
