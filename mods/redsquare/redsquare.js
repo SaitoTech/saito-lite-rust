@@ -1115,6 +1115,11 @@ class RedSquare extends ModTemplate {
       let inserted = false;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
+console.log("#");
+console.log("#");
+console.log("# our comment is " + tweet.text);
+console.log("# we think this is comment on " + this.tweets[i].text);
+console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
           let xyz = await this.tweets[i].addTweet(tweet);
           if (xyz == 1) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
@@ -1126,6 +1131,10 @@ class RedSquare extends ModTemplate {
       }
 
       if (inserted == false) {
+console.log("^");
+console.log("^");
+console.log("^");
+console.log("^ pushed onto unknown children: ");
         this.unknown_children.push(tweet);
       }
 
@@ -1519,7 +1528,6 @@ console.log("#");
               if (!tweet.tx.optional.num_replies) {
                 tweet.tx.optional.num_replies = 0;
               }
-alert("incrementing num replies of: " + tweet.text);
               tweet.tx.optional.num_replies++;
               tweet.rerenderControls();
               await this.app.storage.updateTransaction(
@@ -1753,7 +1761,7 @@ alert("incrementing num replies of: " + tweet.text);
               tx.optional.num_replies = 0;
             }
             if (this.app.BROWSER) {
-              alert("num replies incrementing 1");
+              //alert("num replies incrementing 1");
             }
             tx.optional.num_replies++;
             let t = this.returnTweet(tx.signature);
