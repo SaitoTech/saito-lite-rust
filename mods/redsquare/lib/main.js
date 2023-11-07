@@ -151,6 +151,23 @@ class RedSquareMain {
     // Replace RS with a user's profile (collection of their tweets)
     //
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
+
+      //
+      // HACK - clicked on profile from profile
+      //
+      if (this.manager.profile) {
+	if (this.manager.profile.tab != "posts" && (this.manager.profile.tab)) {
+alert("manager profile tab: " + this.manager.profile.tab);
+          this.manager.renderProfile(publickey);
+          this.manager.profile.tab = "posts";
+	  this.manager.rerenderProfile();
+          this.scrollFeed(0);
+          document.querySelectorAll(".optional-menu-item").forEach((item) => { item.style.display = "none"; });
+          document.querySelector(".redsquare-menu-home").style.display = "flex";
+	  return;
+        }
+      }
+
       // reset main
       document.querySelector(".saito-main").innerHTML = "";
 
@@ -162,16 +179,11 @@ class RedSquareMain {
         this.mod.peers[i].profile_earliest_ts = new Date().getTime();
       }
 
-      if (publickey == "") {
-        publickey = this.mod.publicKey;
-      }
+      if (publickey == "") { publickey = this.mod.publicKey; }
 
       this.manager.renderProfile(publickey);
 
-      document.querySelectorAll(".optional-menu-item").forEach((item) => {
-        item.style.display = "none";
-      });
-
+      document.querySelectorAll(".optional-menu-item").forEach((item) => { item.style.display = "none"; });
       document.querySelector(".redsquare-menu-home").style.display = "flex";
     });
 

@@ -1519,6 +1519,7 @@ console.log("#");
               if (!tweet.tx.optional.num_replies) {
                 tweet.tx.optional.num_replies = 0;
               }
+alert("incrementing num replies of: " + tweet.text);
               tweet.tx.optional.num_replies++;
               tweet.rerenderControls();
               await this.app.storage.updateTransaction(
