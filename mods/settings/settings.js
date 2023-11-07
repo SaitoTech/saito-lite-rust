@@ -113,7 +113,7 @@ class Settings extends ModTemplate {
             let confirmation = await sconfirm("This will reset/nuke your account, do you wish to proceed?");
 
             if (confirmation){
-              app.wallet.resetWallet();
+              await app.wallet.onUpgrade("nuke");
             }
           },
         },
