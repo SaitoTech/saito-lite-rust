@@ -364,7 +364,7 @@ class TweetManager {
     // query the whole thread
     let thread_id = tweet.thread_id || tweet.parent_id || tweet.tx.signature;
 
-    this.mod.loadTweetThread(null, thread_id, () => {
+    this.mod.loadTweetThread(thread_id, () => {
       let root_tweet = this.mod.returnTweet(thread_id);
       root_tweet.renderWithChildrenWithTweet(tweet);
       this.hideLoader();
