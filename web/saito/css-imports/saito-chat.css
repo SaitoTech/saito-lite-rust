@@ -259,6 +259,10 @@
   grid-row: span 2;
 }
 
+.chat-message-line {
+  position: relative;
+}
+
 .saito-userline-reply {
   display: none;
 }
@@ -267,7 +271,7 @@
   width: 100%;
 }
 
-.saito-user:hover .saito-userline-reply {
+.chat-message-line:hover .saito-userline-reply {
   display: flex;
   position: absolute;
   top: -3px;

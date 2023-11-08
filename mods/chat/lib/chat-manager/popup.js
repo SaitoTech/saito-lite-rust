@@ -49,7 +49,6 @@ class ChatPopup {
   }
 
   render() {
-
     //
     // exit if group unset
     //
@@ -222,7 +221,6 @@ class ChatPopup {
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
-        
         /*let copy = el.parentElement.parentElement.cloneNode(true);
         copy.querySelector(".saito-userline-reply").remove();
         let quote = `<blockquote>${copy.outerHTML}</blockquote>`;*/
@@ -239,7 +237,6 @@ class ChatPopup {
         quote +=
           el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML +
           "</em></blockquote>";
-        
 
         //this.input.insertRange(quote.replaceAll("\n", "<br/>"));
         this.input.insertQuote(quote.replaceAll("\n", "<br/>"));
@@ -253,11 +250,10 @@ class ChatPopup {
         let href = el.getAttribute("href");
 
         let myAnchor = document.querySelector(popup_qs + " #" + href);
-        if (myAnchor){
-          myAnchor.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"});
+        if (myAnchor) {
+          myAnchor.scrollIntoView({ block: "end", inline: "nearest", behavior: "smooth" });
         }
-        
-      }
+      };
     });
 
     if (document.querySelector(popup_qs + " #load-older-chats")) {
@@ -267,16 +263,15 @@ class ChatPopup {
     }
 
     let myBody = document.querySelector(popup_qs + " .chat-body");
-    if (myBody){
+    if (myBody) {
       myBody.addEventListener("scroll", (e) => {
         let chatHeight = myBody.getBoundingClientRect().height;
 
-        if (myBody.scrollHeight - chatHeight - myBody.scrollTop > chatHeight){
+        if (myBody.scrollHeight - chatHeight - myBody.scrollTop > chatHeight) {
           this.is_scrolling = true;
-        }else{
+        } else {
           this.is_scrolling = false;
         }
-        
       });
     }
 
@@ -365,10 +360,10 @@ class ChatPopup {
     chatPopup.classList.remove("minimized");
     chatPopup.classList.add("active");
     if (this.width) {
-      chatPopup.style.width = this.width;  
+      chatPopup.style.width = this.width;
     }
     if (this.height) {
-      chatPopup.style.height = this.height;  
+      chatPopup.style.height = this.height;
     }
   }
 }
