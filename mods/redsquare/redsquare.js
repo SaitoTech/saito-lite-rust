@@ -23,13 +23,11 @@ const PeerService = require("saito-js/lib/peer_service").default;
  * lib/main.js:    this.app.connection.on("redsquare-component-render-request", (obj) => {    // renders other modules into .saito-main
  */
 
-
-
 ////////////////////////////////////////////
 //
 // RedSquare is now entirely dependent on Archive for TX storage
 // This may create some lingering issues because having a dedicated DB
-// allowed us to surface important information. For reference, the original 
+// allowed us to surface important information. For reference, the original
 // schema is:
 /*
 
@@ -59,7 +57,6 @@ const PeerService = require("saito-js/lib/peer_service").default;
     PRIMARY KEY     (id ASC)
   );
 */
-
 
 class RedSquare extends ModTemplate {
   constructor(app) {
@@ -849,12 +846,10 @@ class RedSquare extends ModTemplate {
         }
         return;
       } else {
-
-	//
-	// update notifications cache
-	//
-	this.saveLocalNotifications();
-
+        //
+        // update notifications cache
+        //
+        //this.saveLocalNotifications();
       }
     }
 
@@ -946,11 +941,11 @@ class RedSquare extends ModTemplate {
       let inserted = false;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
-console.log("#");
-console.log("#");
-console.log("# our comment is " + tweet.text);
-console.log("# we think this is comment on " + this.tweets[i].text);
-console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
+          console.log("#");
+          console.log("#");
+          console.log("# our comment is " + tweet.text);
+          console.log("# we think this is comment on " + this.tweets[i].text);
+          console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
           let xyz = await this.tweets[i].addTweet(tweet);
           if (xyz == 1) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
@@ -962,10 +957,10 @@ console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
       }
 
       if (inserted == false) {
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("^ pushed onto unknown children: ");
+        console.log("^");
+        console.log("^");
+        console.log("^");
+        console.log("^ pushed onto unknown children: ");
         this.unknown_children.push(tweet);
       }
 
@@ -987,18 +982,17 @@ console.log("^ pushed onto unknown children: ");
   }
   //
   // addTweets adds to notifications, but we have a separate function here
-  // for cached notifications, because we don't want to show all of the 
+  // for cached notifications, because we don't want to show all of the
   // cached notifications in the main thread automatically, which is what
   // will happen if we use addTweet() on loading.
   //
   async addNotification(tx, prepend = false) {
-
     let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
     let is_notification = 1;
 
-console.log("#");
-console.log("# note: " + tweet.text);
-console.log("#");
+    console.log("#");
+    console.log("# note: " + tweet.text);
+    console.log("#");
 
     if (!tweet.tx) {
       return;
@@ -1018,7 +1012,6 @@ console.log("#");
     }
 
     if (tx.isTo(this.publicKey)) {
-
       //
       // notify of other people's actions, but not ours
       //
@@ -1047,9 +1040,9 @@ console.log("#");
           this.notifications.splice(insertion_index, 0, tweet);
           this.notifications_sigs_hmap[tweet.tx.signature] = 1;
 
-	  if (!this.notifications_last_viewed_ts && !(this.notifications_last_viewed_ts < 1)) {
-	    this.loadOptions();
-	  }
+          if (!this.notifications_last_viewed_ts && !(this.notifications_last_viewed_ts < 1)) {
+            this.loadOptions();
+          }
 
           if (tx.timestamp > this.notifications_last_viewed_ts) {
             this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
@@ -1060,9 +1053,7 @@ console.log("#");
     }
 
     return;
-
   }
-
 
   returnTweet(tweet_sig = null) {
     if (tweet_sig == null) {
@@ -1277,20 +1268,26 @@ console.log("#");
       // browsers keep a list in memory of processed tweets
       //
       if (app.BROWSER == 1) {
-                //
+        //
         // profile caching of tweets FROM me
         //
-        if (tx.isFrom(this.publicKey)) {
-    if (this.manager) {
-      if (tweet.isPost()) {
-        if (!this.manager.profilePostsAlreadyHasTweet(tweet)) { this.profile_posts.push(tweet); this.saveLocalProfile(); }
-      }
-      if (tweet.isReply()) {
-        if (!this.manager.profileRepliesAlreadyHasTweet(tweet)) { this.profile_replies.push(tweet); this.saveLocalProfile(); }
-      }
-    }
-  }
-
+        /*if (tx.isFrom(this.publicKey)) {
+          if (this.manager) {
+            if (tweet.isPost()) {
+              if (!this.manager.profilePostsAlreadyHasTweet(tweet)) {
+                this.profile_posts.push(tweet);
+                this.saveLocalProfile();
+              }
+            }
+            if (tweet.isReply()) {
+              if (!this.manager.profileRepliesAlreadyHasTweet(tweet)) {
+                this.profile_replies.push(tweet);
+                this.saveLocalProfile();
+              }
+            }
+          }
+        }
+        */
         this.addTweet(tx, 1);
       }
 
@@ -1486,11 +1483,13 @@ console.log("#");
   /////////////////////////////////////
   // saving and loading wallet state //
   /////////////////////////////////////
-  saveTweet(sig) {}
-
+  saveTweet(sig) {
+    // When we interact with a tweet, we want to mark it as important to us and add it to our
+    // local tweet cache .... maybe????
+  }
 
   saveLocalProfile() {
-    let ptxs = [];
+    /*let ptxs = [];
     let rtxs = [];
     for (let i = 0; i < this.manager.profile_posts.length && i < 20; i++) {
       ptxs.push(this.manager.profile_posts[i].tx.serialize_to_web(this.app));
@@ -1504,10 +1503,11 @@ console.log("#");
     localforage.setItem(`profile_replies_history`, rtxs).then(function () {
       console.log(`Saved ${rtxs.length} tweets`);
     });
+    */
   }
 
   saveLocalNotifications() {
-    let ntxs = [];
+    /*let ntxs = [];
     let total_cached = 0;
     for (let i = 0; i < this.notifications.length && total_cached < 10; i++) {
       //
@@ -1522,8 +1522,8 @@ console.log("#");
     localforage.setItem(`notifications_history`, ntxs).then(function () {
       console.log(`Saved ${ntxs.length} notifications`);
     });
+    */
   }
-
 
   loadLocalTweets() {
     if (!this.app.BROWSER) {
@@ -1531,6 +1531,22 @@ console.log("#");
     }
 
     console.log("Load Local Tweets");
+
+    try {
+      //Prefer our locally cached tweets to the webServer ones
+      if (window?.tweets?.length > 0) {
+        console.log("Using Server Cached Tweets");
+        for (let z = 0; z < window.tweets.length; z++) {
+          //console.log(window.tweets[z]);
+          let newtx = new Transaction();
+          newtx.deserialize_from_web(this.app, window.tweets[z]);
+          //console.log(newtx);
+          this.addTweet(newtx);
+        }
+      }
+    } catch (err) {
+      console.log("error in initial redsquare post fetch: " + err);
+    }
 
     this.app.storage.loadTransactions(
       { field1: "RedSquare" },
@@ -1577,7 +1593,7 @@ console.log("#");
           try {
             let newtx = new Transaction();
             newtx.deserialize_from_web(this.app, tx);
-	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+      let t = new Tweet(this.app, this, newtx, ".tweet-manager");
 console.log("profile cache load: " + t.text);
             this.manager.profile_posts.push(t); // the tweet
           } catch (err) {}
@@ -1590,7 +1606,7 @@ console.log("profile cache load: " + t.text);
           try {
             let newtx = new Transaction();
             newtx.deserialize_from_web(this.app, tx);
-	    let t = new Tweet(this.app, this, newtx, ".tweet-manager");
+      let t = new Tweet(this.app, this, newtx, ".tweet-manager");
 console.log("profile cache load: " + t.text);
             this.manager.profile_replies.push(t); // the tweet
           } catch (err) {}
@@ -1627,8 +1643,12 @@ console.log("profile cache load: " + t.text);
     if (this.app.options.redsquare) {
       this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
       this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
-      if (!this.notifications_last_viewed_ts) { this.notifications_last_viewed_ts = 0; }
-      if (!this.notifications_number_unviewed) { this.notifications_number_unviewed = 0; }
+      if (!this.notifications_last_viewed_ts) {
+        this.notifications_last_viewed_ts = 0;
+      }
+      if (!this.notifications_number_unviewed) {
+        this.notifications_number_unviewed = 0;
+      }
     } else {
       this.app.options.redsquare = {};
       this.notifications_last_viewed_ts = new Date().getTime();
@@ -1768,7 +1788,7 @@ console.log("profile cache load: " + t.text);
 
     console.log("Update Cache");
     this.app.storage.loadTransactions(
-      { field1: "RedSquare"},
+      { field1: "RedSquare" },
       (txs) => {
         if (txs.length > 0) {
           try {
@@ -1784,7 +1804,7 @@ console.log("profile cache load: " + t.text);
               for (let i = 0; i < txs.length; i++) {
                 let thisfile = filename + i + ".js";
                 const fd = fs.openSync(thisfile, "w");
-                html += `  tweets.push(\`${txs[i]}\`);   `;
+                html += `  tweets.push(\`${txs[i].serialize_to_web(this.app)}\`);   `;
                 fs.writeSync(fd, html);
                 fs.fsyncSync(fd);
                 fs.closeSync(fd);

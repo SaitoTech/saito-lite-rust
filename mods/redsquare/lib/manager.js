@@ -15,7 +15,6 @@ class TweetManager {
     this.profile_posts = [];
     this.profile_replies = [];
 
-
     this.profile = new SaitoProfile(app, mod, ".saito-main");
 
     //This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
@@ -28,7 +27,6 @@ class TweetManager {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-
             this.showLoader();
 
             //
@@ -109,7 +107,6 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode === "profile") {
-
               this.mod.loadProfile(null, this.profile.publicKey, (txs) => {
                 if (this.mode !== "profile") {
                   return;
@@ -118,14 +115,22 @@ class TweetManager {
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
                   if (tweet?.noerrors) {
-		    if (tweet.isPost()) {
-	  	      if (!this.profilePostsAlreadyHasTweet(tweet)) { this.profile_posts.push(tweet); }
-                      if (this.tab == "posts" ) { tweet.render(); }
-		    }
-		    if (tweet.isReply()) {
-	  	      if (!this.profileRepliesAlreadyHasTweet(tweet)) { this.profile_replies.push(tweet); }
-                      if (this.tab == "replies") { tweet.render(); }
-		    }
+                    if (tweet.isPost()) {
+                      if (!this.profilePostsAlreadyHasTweet(tweet)) {
+                        this.profile_posts.push(tweet);
+                      }
+                      if (this.tab == "posts") {
+                        tweet.render();
+                      }
+                    }
+                    if (tweet.isReply()) {
+                      if (!this.profileRepliesAlreadyHasTweet(tweet)) {
+                        this.profile_replies.push(tweet);
+                      }
+                      if (this.tab == "replies") {
+                        tweet.render();
+                      }
+                    }
                   }
                 }
                 this.hideLoader();
@@ -142,10 +147,10 @@ class TweetManager {
                     );
                   }
                 } else {
-		  if (this.profile.publicKey === this.mod.publicKey) {
-		    this.mod.saveLocalProfile();
-		  }
-	        }
+                  if (this.profile.publicKey === this.mod.publicKey) {
+                    //this.mod.saveLocalProfile();
+                  }
+                }
               });
             }
           }
@@ -161,20 +166,23 @@ class TweetManager {
 
   profileRepliesAlreadyHasTweet(tweet) {
     for (let z = 0; z < this.profile_replies.length; z++) {
-      if (tweet.tx.signature == this.profile_replies[z].tx.signature) { return true; }
+      if (tweet.tx.signature == this.profile_replies[z].tx.signature) {
+        return true;
+      }
     }
     return false;
   }
 
   profilePostsAlreadyHasTweet(tweet) {
     for (let z = 0; z < this.profile_posts.length; z++) {
-      if (tweet.tx.signature == this.profile_posts[z].tx.signature) { return true; }
+      if (tweet.tx.signature == this.profile_posts[z].tx.signature) {
+        return true;
+      }
     }
     return false;
   }
 
   render(new_mode = "") {
-
     //
     // remove notification at end
     //
@@ -281,10 +289,16 @@ class TweetManager {
 
   renderProfileMenu() {
     if (!document.querySelector(".redsquare-profile-menu-posts")) {
-      this.app.browser.addElementToSelector('<div class="redsquare-profile-menu-posts active">Posts</div>', ".saito-profile-menu");
+      this.app.browser.addElementToSelector(
+        '<div class="redsquare-profile-menu-posts active">Posts</div>',
+        ".saito-profile-menu"
+      );
     }
     if (!document.querySelector(".redsquare-profile-menu-replies")) {
-      this.app.browser.addElementToSelector('<div class="redsquare-profile-menu-replies">Replies</div>', ".saito-profile-menu");
+      this.app.browser.addElementToSelector(
+        '<div class="redsquare-profile-menu-replies">Replies</div>',
+        ".saito-profile-menu"
+      );
     }
     if (this.tab == "posts") {
       let el1 = document.querySelector(".redsquare-profile-menu-posts");
@@ -307,7 +321,10 @@ class TweetManager {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), ".saito-main");
     }
 
-    if (publicKey != this.mod.publicKey || (publicKey == this.mod.publicKey && this.profile.publicKey != publicKey)) {
+    if (
+      publicKey != this.mod.publicKey ||
+      (publicKey == this.mod.publicKey && this.profile.publicKey != publicKey)
+    ) {
       this.profile_posts = [];
       this.profile_replies = [];
     }
@@ -320,23 +337,27 @@ class TweetManager {
     this.mod.loadProfile(null, publicKey, (txs) => {
       for (let z = 0; z < txs.length; z++) {
         let tweet = new Tweet(this.app, this.mod, txs[z]);
-	if (tweet.isPost()) {
-          if (!this.profilePostsAlreadyHasTweet(tweet)) { this.profile_posts.push(tweet); }
-	  if (this.tab == "posts") {
+        if (tweet.isPost()) {
+          if (!this.profilePostsAlreadyHasTweet(tweet)) {
+            this.profile_posts.push(tweet);
+          }
+          if (this.tab == "posts") {
             tweet.render();
-	  }
-	}
-	if (tweet.isReply()) {
-	  if (!this.profileRepliesAlreadyHasTweet(tweet)) { this.profile_replies.push(tweet); }
-	  if (this.tab == "replies") {
+          }
+        }
+        if (tweet.isReply()) {
+          if (!this.profileRepliesAlreadyHasTweet(tweet)) {
+            this.profile_replies.push(tweet);
+          }
+          if (this.tab == "replies") {
             tweet.render();
-	  }
-	}
+          }
+        }
       }
 
       if (txs.length > 0) {
         if (this.profile.publicKey === this.mod.publicKey) {
-          this.mod.saveLocalProfile();
+          //this.mod.saveLocalProfile();
         }
       }
 
@@ -353,7 +374,6 @@ class TweetManager {
   // as they appear...
   //
   renderTweet(tweet) {
-
     this.render("tweet");
 
     // show the basic tweet first
@@ -389,48 +409,58 @@ class TweetManager {
     // dynamic content loading
     //
 
-
     let ob = document.getElementById("redsquare-intersection");
     if (ob) {
       //Only set up intersection observer if we have more content than fits on the screen
       //(so we don't double tap the servers)
-      if (ob.getBoundingClientRect().top > window.innerHeight){
-        this.intersectionObserver.observe(ob);  
+      if (ob.getBoundingClientRect().top > window.innerHeight) {
+        this.intersectionObserver.observe(ob);
       }
     }
 
     if (this.mode === "profile") {
       document.querySelectorAll(".redsquare-profile-menu-posts").forEach((el) => {
         el.onclick = (e) => {
-	  this.switchToPosts();
-        }
+          this.switchToPosts();
+        };
       });
       document.querySelectorAll(".redsquare-profile-menu-replies").forEach((el) => {
         el.onclick = (e) => {
-	  this.switchToReplies();
+          this.switchToReplies();
         };
       });
     }
-
   }
 
   switchToPosts() {
-    if (this.tab == "posts") { return; }
+    if (this.tab == "posts") {
+      return;
+    }
     let el = document.querySelector(`.redsquare-profile-menu-replies`);
-    if (el) { el.classList.remove("active"); }
+    if (el) {
+      el.classList.remove("active");
+    }
     this.tab = "posts";
     el = document.querySelector(`.redsquare-profile-menu-posts`);
-    if (el) { el.classList.add("active"); }
+    if (el) {
+      el.classList.add("active");
+    }
     this.rerenderProfile();
   }
 
   switchToReplies() {
-    if (this.tab == "replies") { return; }
+    if (this.tab == "replies") {
+      return;
+    }
     let el = document.querySelector(`.redsquare-profile-menu-posts`);
-    if (el) { el.classList.remove("active"); }
+    if (el) {
+      el.classList.remove("active");
+    }
     this.tab = "replies";
     el = document.querySelector(`.redsquare-profile-menu-replies`);
-    if (el) { el.classList.add("active"); }
+    if (el) {
+      el.classList.add("active");
+    }
     this.rerenderProfile();
   }
 
