@@ -440,6 +440,11 @@ class Tweet {
 
     if (this.critical_child && does_tweet_already_exist_on_page == false) {
 
+      //
+      // does child already exist on page
+      //
+      if (document.querySelector(`.tweet-${this.critical_child.tx.signature}`)) { return; }
+
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
       this.critical_child.render();
 

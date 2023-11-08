@@ -16,7 +16,7 @@ module.exports = (app, mod, post) => {
 
         <!--div class="tweet-overlay-content-controls">
           <div class="post-tweet-img-icon" id="post-tweet-img-icon"><i class="fa-solid fa-image"></i></div>
-          <div class="saito-gif-icon-container"><div class="saito-gif"><i class="fa-solid fa-video"></i></div></div>
+          <div class="saito-gif-icon-container"><div class="saito-gif gif-icon"></div></div>
           <div class="saito-emoji-icon-container"></div>
           <div class="tweet-overlay-content-controls-spacer"></div>
 
