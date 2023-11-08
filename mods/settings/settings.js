@@ -110,10 +110,13 @@ class Settings extends ModTemplate {
           icon: "fa-solid fa-radiation",
           rank: 130,
           callback: async function (app, id) {
-            let confirmation = await sconfirm("This will reset/nuke your account, do you wish to proceed?");
+            let confirmation = await sconfirm(
+              "This will reset/nuke your account, do you wish to proceed?"
+            );
 
-            if (confirmation){
+            if (confirmation) {
               await app.wallet.onUpgrade("nuke");
+              window.location.reload();
             }
           },
         },
