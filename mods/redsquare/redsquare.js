@@ -14,7 +14,6 @@ const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
-const localforage = require("localforage");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
@@ -23,6 +22,44 @@ const localforage = require("localforage");
  * lib/main.js:    this.app.connection.on("redsquare-notifications-render-request", () => {   // renders notifications
  * lib/main.js:    this.app.connection.on("redsquare-component-render-request", (obj) => {    // renders other modules into .saito-main
  */
+
+
+
+////////////////////////////////////////////
+//
+// RedSquare is now entirely dependent on Archive for TX storage
+// This may create some lingering issues because having a dedicated DB
+// allowed us to surface important information. For reference, the original 
+// schema is:
+/*
+
+  tweets (
+    id      INTEGER,
+    tx      TEXT,
+    sig       VARCHAR(99),
+    publickey     VARCHAR(99),
+    thread_id     VARCHAR(99),
+    parent_id     VARCHAR(99),
+    `text`    TEXT,
+    link      TEXT,
+    link_properties TEXT,
+    type      INTEGER,
+    processed   INTEGER,
+    flagged     INTEGER,
+    moderated     INTEGER,
+    has_images      INTEGER,
+    tx_size   INTEGER,
+    num_likes     INTEGER,
+    num_retweets    INTEGER,
+    num_replies     INTEGER,
+    created_at    INTEGER,
+    updated_at    INTEGER,
+    UNIQUE    (id),
+    UNIQUE    (sig),
+    PRIMARY KEY     (id ASC)
+  );
+*/
+
 
 class RedSquare extends ModTemplate {
   constructor(app) {
@@ -422,9 +459,6 @@ class RedSquare extends ModTemplate {
 
       this.loadTweets("earlier", (txs) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
-        if (txs.length > 0) {
-          this.saveLocalTweets();
-        }
       });
     }
   }
@@ -464,15 +498,6 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  async onUpgrade(type, privatekey, walletfile) {
-    if (type == "nuke") {
-      console.log("clearing localforage for redsquare //////");
-
-      // clear localforage data
-      //localforage.clear();
-    }
-  }
-
   ///////////////////////////////
   // content loading functions //
   ///////////////////////////////
@@ -489,12 +514,7 @@ class RedSquare extends ModTemplate {
   // form of transactions that can be fed to addTweets() or displayed
   // via the manager.
   //
-  // there are additional functions that fetch content via SQL requests to
-  // the main server. these are older functions that date back to when
-  // RedSquare was mostly a server-client app and exist so that the UI
-  // can still fetch individual tweets using the more complicated SQL-powered
-  // loading logic.
-  //
+
   loadProfile(peer, publickey = "", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
       if (publickey === "") {
@@ -563,7 +583,7 @@ class RedSquare extends ModTemplate {
         //
         let obj = {
           field1: "RedSquare",
-          owner: peer_publickey,
+          //owner: peer_publickey,
           limit: this.peers[i].tweets_limit,
         };
 
@@ -1212,18 +1232,8 @@ console.log("#");
         // convert like into tweet and addTweet to get notifications working
         //
         this.addTweet(tx, true);
-
-        //
-        // save local cache with updated values...
-        //
-        this.saveLocalTweets();
       }
     }
-
-    //
-    // update cache
-    //
-    this.updateTweetsCacheForBrowsers();
 
     return;
   }
@@ -1476,26 +1486,8 @@ console.log("#");
   /////////////////////////////////////
   // saving and loading wallet state //
   /////////////////////////////////////
-  saveLocalTweets() {
-    if (!this.app.BROWSER || !this.browser_active) {
-      return;
-    }
+  saveTweet(sig) {}
 
-    let txs = [];
-    let maximum = 10;
-    for (let tweet of this.tweets) {
-      txs.push(tweet.tx.serialize_to_web(this.app));
-      txs = txs.concat(tweet.returnTransactionsInThread());
-
-      if (--maximum <= 0) {
-        break;
-      }
-    }
-
-    localforage.setItem(`tweet_history`, txs).then(function () {
-      console.log(`Saved ${txs.length} tweets`);
-    });
-  }
 
   saveLocalProfile() {
     let ptxs = [];
@@ -1524,7 +1516,7 @@ console.log("#");
       let txmsg = this.notifications[i].tx.returnMessage();
       if (txmsg.request != "like tweet") {
         ntxs.push(this.notifications[i].tx.serialize_to_web(this.app));
-	total_cached++;
+        total_cached++;
       }
     }
     localforage.setItem(`notifications_history`, ntxs).then(function () {
@@ -1532,12 +1524,39 @@ console.log("#");
     });
   }
 
+
   loadLocalTweets() {
     if (!this.app.BROWSER) {
       return;
     }
 
-    if (this.app.browser.returnURLParameter("tweet_id")) {
+    console.log("Load Local Tweets");
+
+    this.app.storage.loadTransactions(
+      { field1: "RedSquare" },
+      (txs) => {
+        if (txs.length > 0) {
+          for (let z = 0; z < txs.length; z++) {
+            txs[z].decryptMessage(this.app);
+            this.addTweet(txs[z]);
+          }
+        }
+
+        if (this.app.browser.returnURLParameter("tweet_id")) {
+          return;
+        }
+        if (this.app.browser.returnURLParameter("user_id")) {
+          return;
+        }
+
+        //Run these regardless of results
+        this.app.connection.emit("redsquare-home-render-request");
+        this.app.connection.emit("redsquare-insert-loading-message");
+      },
+      "localhost"
+    );
+
+    /*if (this.app.browser.returnURLParameter("tweet_id")) {
       return;
     }
 
@@ -1591,7 +1610,7 @@ console.log("profile cache load: " + t.text);
       //Run these regardless of results
       this.app.connection.emit("redsquare-home-render-request");
       this.app.connection.emit("redsquare-insert-loading-message");
-    });
+    });*/
   }
 
   /////////////////////////////////////
@@ -1744,65 +1763,41 @@ console.log("profile cache load: " + t.text);
     if (this.app.BROWSER) {
       return;
     }
+
     let hex_entries = [];
 
-    let sql = `SELECT *, (updated_at + 10 * (num_likes + num_replies + num_retweets)) AS virality
-               FROM tweets
-               WHERE (flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size > 1000)
-               ORDER BY virality DESC LIMIT 10`;
+    console.log("Update Cache");
+    this.app.storage.loadTransactions(
+      { field1: "RedSquare"},
+      (txs) => {
+        if (txs.length > 0) {
+          try {
+            let path = this.app.storage.returnPath();
+            if (!path) {
+              return;
+            }
 
-    let params = {};
-    let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
-
-    for (let i = 0; i < rows.length; i++) {
-      if (!rows[i].tx) {
-        continue;
-      }
-      // create the transaction
-      let tx = new Transaction();
-      tx.deserialize_from_web(this.app, rows[i].tx);
-
-      if (rows[i].num_reples) {
-        tx.optional.num_replies = rows[i].num_replies;
-      }
-      if (rows[i].num_retweets) {
-        tx.optional.num_retweets = rows[i].num_retweets;
-      }
-      if (rows[i].num_likes) {
-        tx.optional.num_likes = rows[i].num_likes;
-      }
-      if (rows[i].flagged) {
-        tx.optional.flagged = rows[i].flagged;
-      }
-      let tweet = new Tweet(this.app, this, tx, "");
-      let hexstring = tx.serialize_to_web(this.app);
-      hex_entries.push(hexstring);
-    }
-
-    try {
-      let path = this.app.storage.returnPath();
-      if (!path) {
-        return;
-      }
-
-      const filename = path.join(__dirname, "web/tweets.");
-      let fs = this.app.storage.returnFileSystem();
-      let html = `if (!tweets) { var tweets = [] };`;
-      if (fs != null) {
-        for (let i = 0; i < hex_entries.length; i++) {
-          let thisfile = filename + i + ".js";
-          const fd = fs.openSync(thisfile, "w");
-          html += `  tweets.push(\`${hex_entries[i]}\`);   `;
-          fs.writeSync(fd, html);
-          fs.fsyncSync(fd);
-          fs.closeSync(fd);
-          html = "";
+            const filename = path.join(__dirname, "web/tweets.");
+            let fs = this.app.storage.returnFileSystem();
+            let html = `if (!tweets) { var tweets = [] };`;
+            if (fs != null) {
+              for (let i = 0; i < txs.length; i++) {
+                let thisfile = filename + i + ".js";
+                const fd = fs.openSync(thisfile, "w");
+                html += `  tweets.push(\`${txs[i]}\`);   `;
+                fs.writeSync(fd, html);
+                fs.fsyncSync(fd);
+                fs.closeSync(fd);
+                html = "";
+              }
+            }
+          } catch (err) {
+            console.error("ERROR 2832329: error tweet cache to disk. ", err);
+          }
         }
-      }
-    } catch (err) {
-      console.error("ERROR 2832329: error tweet cache to disk. ", err);
-    }
-    return "";
+      },
+      "localhost"
+    );
   }
 
   ///////////////

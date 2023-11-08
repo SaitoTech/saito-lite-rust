@@ -659,6 +659,13 @@ class Tweet {
                 }
               }, 50);
 
+              //
+              // Archive based loading
+              // TODO -- check the logic of this whole function... 
+              
+              
+              /*
+              To Delete in Future
               this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = this.mod.returnTweet(txs[z].signature);
@@ -669,7 +676,7 @@ class Tweet {
                   this.mod.manager.hideLoader();
                 }
               });
-
+              */
 
               //
               // otherwise re-load

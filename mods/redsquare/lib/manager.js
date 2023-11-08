@@ -43,7 +43,7 @@ class TweetManager {
             // load more tweets
             //
             if (this.mode === "tweets") {
-              mod.loadTweets(null, (txs) => {
+              mod.loadTweets("earlier", (txs) => {
                 this.hideLoader();
 
                 if (this.mode !== "tweets") {
@@ -388,9 +388,15 @@ class TweetManager {
     //
     // dynamic content loading
     //
+
+
     let ob = document.getElementById("redsquare-intersection");
     if (ob) {
-      this.intersectionObserver.observe(ob);
+      //Only set up intersection observer if we have more content than fits on the screen
+      //(so we don't double tap the servers)
+      if (ob.getBoundingClientRect().top > window.innerHeight){
+        this.intersectionObserver.observe(ob);  
+      }
     }
 
     if (this.mode === "profile") {

@@ -29,7 +29,7 @@ class Archive extends ModTemplate {
     this.categories = "Utilities Core";
 
     this.localDB = null;
-
+    this.schema = ["id", "user_id", "publickey", "owner", "sig", "field1", "field2", "field3", "block_id", "block_hash", "created_at", "updated_at", "tx", "preserve"];
     //
     //
     //
@@ -111,17 +111,17 @@ class Archive extends ModTemplate {
     if (conf == 0 && this.archive.index_blockchain == 1) {
       //if (conf == 0) {
 
-      let block_id = 0;
-      let block_hash = "";
+      let block_id = blk?.id || 0;
+      let block_hash = blk?.hash || "";
 
-      if (blk.id) {
-        block_id = blk.id;
-      }
-      if (blk.hash) {
-        block_hash = blk.hash;
-      }
-
-      await this.saveTransaction(tx, { block_id, block_hash }, 1);
+      setTimeout(async ()=> {
+        let txs = await this.loadTransactions({signature: tx.signature});
+        if (txs?.length > 0){
+          this.updateTransaction(tx, { block_id, block_hash });    
+        }else{
+          this.saveTransaction(tx, { block_id, block_hash });  
+        }
+      }, 10000)
     }
   }
 
@@ -177,7 +177,7 @@ class Archive extends ModTemplate {
   //////////
   // save //
   //////////
-  async saveTransaction(tx, obj = {}, onchain = 0) {
+  async saveTransaction(tx, obj = {}) {
     let newObj = {};
 
     //
@@ -259,16 +259,15 @@ class Archive extends ModTemplate {
     }
   }
 
-  ////////////
-  // update //
-  ////////////
+  /////////////////////////////////////////////////////
+  // update  -- we can update any arbitrary set of the fields (though we usually just update the tx itself)
+  /////////////////////////////////////////////////////
   async updateTransaction(tx, obj = {}) {
     //
     // update records
     //
     let newObj = {};
 
-    newObj.owner = obj?.owner || "";
     newObj.signature = obj?.signature || obj?.sig || tx?.signature || "";
     newObj.tx = tx.serialize_to_web(this.app);
     newObj.updated_at = new Date().getTime();
@@ -282,16 +281,22 @@ class Archive extends ModTemplate {
     //
     let sql = `UPDATE archives
            SET updated_at = $updated_at,
-               owner = $owner,
-               tx  = $tx
-           WHERE sig = $sig`;
- 
+               tx  = $tx`;
+          
     let params = {
       $updated_at: newObj.updated_at,
-      $owner: newObj.owner,
       $tx: tx.serialize_to_web(this.app),
       $sig: newObj.signature,
     };
+
+    for (let key in obj){
+      if (this.schema.includes(key)){
+        sql += `, ${key} = $${key}`;
+        params[`$${key}`] = obj[key];
+      }
+    }
+
+    sql += ` WHERE sig = $sig`;
 
     await this.app.storage.executeDatabase(sql, params, "archive");
 
