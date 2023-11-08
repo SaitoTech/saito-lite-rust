@@ -1258,15 +1258,16 @@ class RedSquare extends ModTemplate {
         opt["field3"] = tweet?.thread_id;
       }
 
-      await this.app.storage.saveTransaction(tx, opt, "localhost");
-
       //
       // servers -- get open graph properties
       //
-      //  TODO
-      //
 
       tweet = await tweet.generateTweetProperties(app, this, 1);
+
+      //
+      // Save the modified tx so we have open graph properties available
+      //
+      await this.app.storage.saveTransaction(tweet.tx, opt, "localhost");
 
       //
       // Includes retweeted tweet
