@@ -316,11 +316,15 @@
   background-color: var(--saito-background-color);
   transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 1px 1px 1px var(--saito-border-color-dark), -1px -1px 1px var(--saito-border-color-dark), -1px 1px 1px var(--saito-border-color-dark), 1px -1px 1px var(--saito-border-color-dark);
-  line-height: 5rem;
+  line-height: 5.5rem;
   border: 1px solid var(--saito-border-color);
   color: var(--saito-font-color);
   cursor: pointer;
   text-align: center;
+}
+
+.saito-floating-menu-item i {
+  font-size: 2rem;
 }
 
 .redsquare-menu {

@@ -180,6 +180,15 @@ emoji-picker {
 }
 
 
+@media only screen and (max-width: 768px) {
+
+	.saito-input-selection-box{
+		
+	}
+
+}
+
+
 @media only screen and (max-width: 525px) {
 
 	.tweet-overlay-content {

@@ -745,6 +745,7 @@ class Tweet {
         );
         new_tweet.show_controls = 0;
         new_tweet.render();
+        document.querySelector("#post-tweet-textarea").focus();
       };
 
       /////////////
