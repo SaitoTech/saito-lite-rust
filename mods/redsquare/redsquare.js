@@ -512,75 +512,14 @@ class RedSquare extends ModTemplate {
   // via the manager.
   //
 
-  loadProfile(peer, publickey = "", mycallback) {
-    for (let i = 0; i < this.peers.length; i++) {
-      if (publickey === "") {
-        publickey = this.publicKey;
-      }
-      let peer = this.peers[i].peer;
-      let peer_publickey = this.peers[i].publickey;
-
-      if (this.peers[i].profile_earliest_ts != 0) {
-        //
-        // specifying OWNER as the remote peer tells us to fetch the tweets that they
-        // have saved under the publickey associated with RedSquare as opposed to our
-        // own publickey, under which they may have transactions that are indexed for
-        // us separately. we will update the OWNER field in the notifications fetch
-        // so that fetch will return any content specific to us...
-        //
-        // field2 is publickey (the submitted not our own)
-        //
-
-        this.app.storage.loadTransactions(
-          {
-            field2: publickey,
-            owner: peer_publickey,
-            created_earlier_than: this.peers[i].profile_earliest_ts,
-            limit: this.peers[i].profile_limit,
-          },
-          (txs) => {
-            if (txs.length > 0) {
-              for (let z = 0; z < txs.length; z++) {
-                txs[z].decryptMessage(this.app);
-                this.addTweet(txs[z]);
-              }
-            } else {
-              this.peers[i].profile_earliest_ts = 0;
-            }
-
-            for (let z = 0; z < txs.length; z++) {
-              if (txs[z].timestamp < this.peers[i].profile_earliest_ts) {
-                this.peers[i].profile_earliest_ts = txs[z].timestamp;
-              }
-              if (txs[z].timestamp > this.peers[i].profile_latest_ts) {
-                this.peers[i].profile_latest_ts = txs[z].timestamp;
-              }
-            }
-
-            if (mycallback) {
-              mycallback(txs);
-            }
-          },
-          this.peers[i].peer
-        );
-      }
-    }
-  }
 
   loadTweets(created_at = "earlier", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
       let peer_publickey = this.peers[i].publickey;
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
-        //
-        // specifying OWNER as the remove peer tells us to fetch the tweets that they
-        // have saved under the publickey associated with RedSquare as opposed to our
-        // own publickey, under which they may have transactions that are indexed for
-        // us separately. we will update the OWNER field in the notifications fetch
-        // so that fetch will return any content specific to us...
-        //
+
         let obj = {
           field1: "RedSquare",
-          //owner: peer_publickey,
           limit: this.peers[i].tweets_limit,
         };
 
@@ -625,7 +564,6 @@ class RedSquare extends ModTemplate {
     if (this.notifications_earliest_ts !== 0) {
       this.app.storage.loadTransactions(
         {
-          owner: this.publicKey,
           field3: this.publicKey,
           created_earlier_than: this.notifications_earliest_ts,
         },
@@ -660,7 +598,6 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].has_tweets) {
         let obj = {
-          owner: this.peers[i].publicKey,
           field3: thread_id,
         };
 
@@ -705,7 +642,7 @@ class RedSquare extends ModTemplate {
     }
 
     this.app.storage.loadTransactions(
-      { sig, owner: this.publicKey },
+      { sig },
       (txs) => {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
@@ -716,7 +653,7 @@ class RedSquare extends ModTemplate {
           for (let i = 0; i < this.peers.length; i++) {
             if (this.peers[i].has_tweets) {
               this.app.storage.loadTransactions(
-                { sig, owner: this.publicKey },
+                { sig },
                 (txs) => {
                   if (txs.length > 0) {
                     for (let z = 0; z < txs.length; z++) {
@@ -1160,7 +1097,7 @@ class RedSquare extends ModTemplate {
 
       await this.app.storage.updateTransaction(
         liked_tweet.tx,
-        { owner: this.publicKey },
+        { },
         "localhost"
       );
 
@@ -1181,7 +1118,7 @@ class RedSquare extends ModTemplate {
       // sensible set of defaults.
       //
       this.app.storage.loadTransactions(
-        { sig: txmsg.data.signature, owner: this.publicKey },
+        { sig: txmsg.data.signature },
         async (txs) => {
           if (txs?.length > 0) {
             let tx = txs[0];
@@ -1195,7 +1132,7 @@ class RedSquare extends ModTemplate {
             tx.optional.num_likes++;
 
             console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
-            await this.app.storage.updateTransaction(tx, { owner: this.publicKey }, "localhost");
+            await this.app.storage.updateTransaction(tx, { }, "localhost");
           }
         },
         "localhost"
@@ -1215,7 +1152,7 @@ class RedSquare extends ModTemplate {
         //
         await this.app.storage.saveTransaction(
           tx,
-          { owner: this.publicKey, field3: this.publicKey },
+          { field3: this.publicKey },
           "localhost"
         );
 
@@ -1304,7 +1241,6 @@ class RedSquare extends ModTemplate {
       // from archives by fetching on field3 will get this.
       //
       let opt = {
-        owner: this.publicKey,
         field1: "RedSquare", //defaults to module.name, but just to make sure we match the capitalization with our loadTweets
       };
 
@@ -1348,7 +1284,7 @@ class RedSquare extends ModTemplate {
           other_tweet.tx.optional.num_retweets++;
           await this.app.storage.updateTransaction(
             other_tweet.tx,
-            { owner: this.publicKey },
+            { },
             "localhost"
           );
           other_tweet.renderRetweets();
@@ -1359,7 +1295,7 @@ class RedSquare extends ModTemplate {
           // servers load from themselves
           //
           this.app.storage.loadTransactions(
-            { sig: tweet.thread_id, owner: this.publicKey },
+            { sig: tweet.thread_id },
             async (txs) => {
               if (txs?.length) {
                 //Only update the first copy??
@@ -1374,7 +1310,7 @@ class RedSquare extends ModTemplate {
                 tx.optional.num_retweets++;
                 await this.app.storage.updateTransaction(
                   tx,
-                  { owner: this.publicKey },
+                  { },
                   "localhost"
                 );
               }
@@ -1406,7 +1342,7 @@ class RedSquare extends ModTemplate {
 
           await this.app.storage.updateTransaction(
             other_tweet.tx,
-            { owner: this.publicKey },
+            { },
             "localhost"
           );
         } else {
@@ -1414,7 +1350,7 @@ class RedSquare extends ModTemplate {
           // ...otherwise, hit up the archive first
           //
           this.app.storage.loadTransactions(
-            { sig: tweet.parent_id, owner: this.publicKey },
+            { sig: tweet.parent_id },
             async (txs) => {
               if (txs?.length) {
                 let tx = txs[0];
@@ -1427,7 +1363,7 @@ class RedSquare extends ModTemplate {
                 tx.optional.num_replies++;
                 await this.app.storage.updateTransaction(
                   tx,
-                  { owner: this.publicKey },
+                  { },
                   "localhost"
                 );
               }

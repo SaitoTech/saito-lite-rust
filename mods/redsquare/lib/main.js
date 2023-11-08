@@ -169,12 +169,6 @@ class RedSquareMain {
 
       this.scrollFeed(0);
 
-      // reset peers
-      for (let i = 0; i < this.mod.peers.length; i++) {
-        this.mod.peers[i].profile_latest_ts = 0;
-        this.mod.peers[i].profile_earliest_ts = new Date().getTime();
-      }
-
       if (publickey == "") { publickey = this.mod.publicKey; }
 
       this.manager.renderProfile(publickey);
