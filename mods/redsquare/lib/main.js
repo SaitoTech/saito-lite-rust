@@ -41,6 +41,8 @@ class RedSquareMain {
 
       if (scroll_to_top) {
         this.scroll_depth = 0;
+        this.hasScrolledDown = false;
+        this.idleTime = 10;
       }
 
       this.scrollFeed(this.scroll_depth, "smooth");
@@ -91,35 +93,19 @@ class RedSquareMain {
             at the top of the feed and scroll up there
           */
           
-/*
->>>>>>>
->>>>>>> UNCOMMENT THIS WHEN DONE
->>>>>>> 
           if (!document.getElementById("saito-new-tweets")) {
             this.app.browser.prependElementToSelector(
               `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
               ".saito-main"
             );
           }
-*/
+
           document.getElementById("saito-new-tweets").onclick = (e) => {
             this.app.connection.emit("redsquare-home-render-request", true);
           };
 
         }
       }
-
-
-// >>>>>>>>>>>>>
-// >>>>>>>>>>>>> delete THIS when done
-// >>>>>>>>>>>>>
-          if (!document.getElementById("saito-new-tweets")) {
-            this.app.browser.prependElementToSelector(
-              `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
-              ".saito-main"
-            );
-          }
-
 
     });
 
@@ -252,11 +238,7 @@ class RedSquareMain {
     this.manager.render();
     this.attachEvents();
 
-    //
-    //We aren't checking idleTime right now, so let's not set
-    //an unnecessary interval
-    //
-    //this.monitorUserInteraction();
+    this.monitorUserInteraction();
   }
 
   attachEvents() {
@@ -342,6 +324,7 @@ class RedSquareMain {
     // no if we have scrolled down
     //
     if (this.hasScrolledDown) {
+      console.log("Scrolled down");
       return 0;
     }
 
@@ -353,16 +336,19 @@ class RedSquareMain {
       return 0;
     }
 
+
     //
     // yes if still at top
     //
     if (window?.pageYOffset == 0 && document?.body?.scrollTop == 0) {
-      return 1;
+      if (this.idleTime >= 10) {
+        return 1;
+      }
     }
 
-    //if (this.idleTime >= 10) {
-    //  return 1;
-    //}
+
+    console.log(window?.pageYOffset, document?.body?.scrollTop == 0, this.idleTime);
+    console.log("Default to no");
 
     //
     // no by default
