@@ -13,7 +13,7 @@ class PeerManager {
 
     this.videoEnabled = true;
     this.audioEnabled = true;
-
+    this.recording = false;
     this.app.connection.on("stun-peer-manager-update-room-details", (room_obj) => {
       this.room_obj = room_obj;
     });
@@ -639,6 +639,43 @@ class PeerManager {
     }
     this.audioStreamAnalysis = setInterval(update, 1000);
     //requestAnimationFrame(update);
+  }
+
+  recordCall() {
+    this.recording = true;
+    this.mixed_streams = [];
+    this.chunks = [];
+    this.mixed_streams.push(this.localStream);
+    this.remoteStreams.forEach((stream) => {
+      this.mixed_streams.push(stream);
+    });
+
+    this.mediaRecorder = new MediaRecorder(stream);
+    this.mediaRecorder.start();
+    this.mediaRecorder.ondataavailable = (e) => {
+      console.log(this.chunks, "chunks gotten");
+      this.chunks.push(e.data);
+    };
+
+    this.mediaRecorder.onstop = (e) => {
+      console.log("recorder stopped");
+      const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+      this.chunks = [];
+      const videoUrl = window.URL.createObjectURL(blob);
+      console.log(videoUrl);
+      // audio.src = audioURL;
+
+      // deleteButton.onclick = (e) => {
+      //   let evtTgt = e.target;
+      //   evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+      // };
+    };
+  }
+
+  stopRecordCall() {
+    this.mediaRecorder.stop();
+    this.recording = false;
+    console.log(this.mediaRecorder.state);
   }
 }
 

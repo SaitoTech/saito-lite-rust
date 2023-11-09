@@ -48,6 +48,12 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
               <label>Audio</label>
               <i class="fa ${audioEnabled ? "fa-microphone" : "fa-microphone-slash"}"> </i>
             </span>
+            <span class="record-control mini_okay icon_click_area${
+              audioEnabled ? "" : " disabled"
+            }">
+              <label>Record</label>
+              <i class="fa ${audioEnabled ? "fa-microphone" : "fa-microphone-slash"}"> </i>
+            </span>
             <span class="video-control mini_okay icon_click_area${videoEnabled ? "" : " disabled"}">
               <label>Video</label>
               <i class="fas ${videoEnabled ? "fa-video" : "fa-video-slash"}"></i>
@@ -73,7 +79,7 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
 
   </div>`;
 
-  if (!mod.browser_active){
+  if (!mod.browser_active) {
     html = `<div class="stun-overlay-container">${html}</div>`;
   }
 
