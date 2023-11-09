@@ -526,7 +526,13 @@ class RedSquare extends ModTemplate {
         if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
         } else if (created_at == "later") {
+          //
+          // For "new" tweets we maybe want to look at updated, not created
+          // this should allow us to pull fresh stats for tweets that aren't
+          // otherwise directed at us
+          //
           obj.created_later_than = this.peers[i].tweets_latest_ts;
+          //obj.updated_later_than = this.peers[i].tweets_latest_ts;
         }
 
         this.app.storage.loadTransactions(
@@ -717,15 +723,6 @@ class RedSquare extends ModTemplate {
       console.log("RS: Processing Tweet/Like directed to me");
 
       //
-      // this is a notification, so update our timestamps
-      //
-      if (tx.timestamp > this.notifications_newest_ts) {
-        this.notifications_newest_ts = tx.timestamp;
-      }
-      if (tx.timestamp < this.notifications_oldest_ts) {
-        this.notifications_oldest_ts = tx.timestamp;
-      }
-      //
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.publicKey)) {
@@ -765,28 +762,6 @@ class RedSquare extends ModTemplate {
             this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
           }
         }
-      }
-
-      //
-      // if this is a like, we can avoid adding it to our tweet index
-      //
-      let txmsg = tx.returnMessage();
-      if (txmsg.request === "like tweet") {
-        //
-        // skip out on likes but still update timestamps
-        //
-        if (tx.timestamp > this.tweets_newest_ts) {
-          this.tweets_newest_ts = tx.timestamp;
-        }
-        if (tx.timestamp < this.notifications_oldest_ts) {
-          this.tweets_oldest_ts = tx.timestamp;
-        }
-        return;
-      } else {
-        //
-        // update notifications cache
-        //
-        //this.saveLocalNotifications();
       }
     }
 
@@ -905,17 +880,6 @@ class RedSquare extends ModTemplate {
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
     }
 
-    //
-    // this is a tweet, so update our info
-    //
-    if (is_notification == 0) {
-      if (tx.timestamp > this.tweets_newest_ts) {
-        this.tweets_newest_ts = tx.timestamp;
-      }
-      if (tx.timestamp < this.notifications_oldest_ts) {
-        this.tweets_oldest_ts = tx.timestamp;
-      }
-    }
   }
   //
   // addTweets adds to notifications, but we have a separate function here
@@ -1117,7 +1081,7 @@ class RedSquare extends ModTemplate {
       // consensus variable and if they're loading tweets from server-archives uncritically it is a
       // sensible set of defaults.
       //
-      this.app.storage.loadTransactions(
+      await this.app.storage.loadTransactions(
         { sig: txmsg.data.signature },
         async (txs) => {
           if (txs?.length > 0) {
@@ -1295,7 +1259,7 @@ class RedSquare extends ModTemplate {
           //
           // servers load from themselves
           //
-          this.app.storage.loadTransactions(
+          await this.app.storage.loadTransactions(
             { sig: tweet.thread_id },
             async (txs) => {
               if (txs?.length) {
@@ -1350,7 +1314,7 @@ class RedSquare extends ModTemplate {
           //
           // ...otherwise, hit up the archive first
           //
-          this.app.storage.loadTransactions(
+          await this.app.storage.loadTransactions(
             { sig: tweet.parent_id },
             async (txs) => {
               if (txs?.length) {

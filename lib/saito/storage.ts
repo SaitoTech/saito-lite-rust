@@ -136,7 +136,7 @@ class Storage {
     return { err: "Save Transaction failed" };
   }
 
-  loadTransactions(obj = {}, mycallback, peer = null) {
+  async loadTransactions(obj = {}, mycallback, peer = null) {
     let storage_self = this;
 
     const message = "archive";
@@ -163,7 +163,7 @@ class Storage {
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-        archive_mod.loadTransactionsWithCallback(obj, (res) => {
+        await archive_mod.loadTransactionsWithCallback(obj, (res) => {
           internal_callback(res);
         });
       }
