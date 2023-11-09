@@ -514,6 +514,12 @@ class RedSquare extends ModTemplate {
 
 
   loadTweets(created_at = "earlier", mycallback) {
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("# load tweets with num peers: " + this.peers.length);
+
     for (let i = 0; i < this.peers.length; i++) {
       let peer_publickey = this.peers[i].publickey;
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
@@ -551,6 +557,19 @@ class RedSquare extends ModTemplate {
             }
 
             if (mycallback) {
+
+	      //
+	      //
+	      //
+	      if (txs.length > 0 && peer_publickey != this.publicKey) {
+		console.log("S");
+		console.log("S");
+		console.log("S: " + peer_publickey + " -- " + this.publicKey);
+		console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
+		this.saveLocalTweets();
+	      }
+
+
               mycallback(txs);
             }
           },
@@ -1424,6 +1443,36 @@ class RedSquare extends ModTemplate {
     // local tweet cache .... maybe????
   }
 
+  async saveLocalTweets() {
+
+    //
+    // randomly delete any REDSQUARECOMMUNITY-tagged RedSquare tweets
+    //
+    await this.app.storage.deleteTransactions(
+      { field3: "REDSQUARECOMMUNITY" },
+      () => {
+console.log("saveLocalTweets -> storage transactions deleted");
+      },
+      "localhost"
+    );
+
+
+    //
+    // save the last 4-5 tweets
+    //
+    for (let i = 0; i < this.tweets.length && i < 8; i++) {
+      //
+      // no await
+      //
+      this.app.storage.saveTransaction(
+        this.tweets[i].tx,
+        { field3: "REDSQUARECOMMUNITY" },
+        "localhost"
+      );
+    }
+
+  }
+
   saveLocalProfile() {
     /*let ptxs = [];
     let rtxs = [];
@@ -1467,6 +1516,46 @@ class RedSquare extends ModTemplate {
     }
 
     console.log("Load Local Tweets");
+
+    try {
+
+        let obj = {
+          field3: "REDSQUARECOMMUNITY",
+          limit: 15 ,
+          created_earlier_than: new Date().getTime()
+        };
+
+        this.app.storage.loadTransactions(
+          obj,
+          (txs) => {
+            if (txs.length > 0) {
+              for (let z = 0; z < txs.length; z++) {
+                txs[z].decryptMessage(this.app);
+console.log(JSON.stringify(txs[z].returnMessage()));
+                this.addTweet(txs[z]);
+              }
+            }
+for (let i = 0; i < this.tweets.length; i++) {
+  console.log(this.tweets[i].text);
+}
+            console.log("%");
+            console.log("%");
+            console.log("%");
+            console.log("% local load fetched: " + txs.length + " txs");
+	  },
+	  "localhost"
+	);
+
+    } catch (err) {
+
+console.log("!!!!!");
+console.log("!!!!!");
+console.log("!!!!! ERROR WITH LOCAL CONTENT FETCH: " + err);
+console.log("!!!!!");
+console.log("!!!!!");
+
+    }
+
 
     try {
       //Prefer our locally cached tweets to the webServer ones

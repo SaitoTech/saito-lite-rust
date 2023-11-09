@@ -169,6 +169,9 @@ class Archive extends ModTemplate {
       if (req.data.request === "delete") {
         await this.deleteTransaction(newtx, req.data);
       }
+      if (req.data.request === "multidelete") {
+        await this.deleteTransactions(req.data);
+      }
       if (req.data.request === "save") {
         await this.saveTransaction(newtx, req.data);
       }
@@ -493,6 +496,7 @@ class Archive extends ModTemplate {
         order: { by: "id", type: "desc" },
         limit,
       });
+console.log("ROWS IN LOCAL DB: " + rows.length);
     }
 
     //
@@ -533,6 +537,18 @@ class Archive extends ModTemplate {
     sql = `DELETE FROM archives WHERE archives.sig = $sig`;
     params = { $sig: tx.transaction.sig };
     await this.app.storage.executeDatabase(sql3, params3, "archive");
+    where_obj["sig"] = tx.transaction.sig;
+
+    //
+    // browsers handle with localDB search
+    //
+    if (this.app.BROWSER) {
+      rows = await this.localDB.remove({
+        from: "archives",
+        where: where_obj,
+      });
+console.log("DELETED FROM localDB! ");
+    }
 
     return;
   }
@@ -584,33 +600,51 @@ class Archive extends ModTemplate {
 
     if (obj.field1) {
       sql = `DELETE FROM archives WHERE archives.field1 = $field1 ${timestamp_limiting_clause}`;
-      params = { $field1: obj.field1, $limit: limit };
+      params = { $field1: obj.field1 };
       await this.app.storage.executeDatabase(sql, params, "archive");
+      where_obj["field1"] = obj.field1;
     }
     if (obj.field2) {
       sql = `DELETE FROM archives WHERE archives.field2 = $field2 ${timestamp_limiting_clause}`;
-      params = { $field2: obj.field2, $limit: limit };
+      params = { $field2: obj.field2 };
       await this.app.storage.executeDatabase(sql, params, "archive");
+      where_obj["field2"] = obj.field2;
     }
     if (obj.field3) {
       sql = `DELETE FROM archives WHERE archives.field3 = $field3 ${timestamp_limiting_clause}`;
-      params = { $field3: obj.field3, $limit: limit };
+      params = { $field3: obj.field3 };
       await this.app.storage.executeDatabase(sql, params, "archive");
+      where_obj["field3"] = obj.field3;
     }
     if (obj.owner) {
       sql = `DELETE FROM archives WHERE archives.owner = $owner ${timestamp_limiting_clause}`;
-      params = { $owner: obj.owner, $limit: limit };
+      params = { $owner: obj.owner };
       await this.app.storage.executeDatabase(sql, params, "archive");
+      where_obj["owner"] = obj.owner;
     }
     if (obj.publickey) {
       sql = `DELETE FROM archives WHERE archives.publickey = $publickey ${timestamp_limiting_clause}`;
-      params = { $publickey: obj.publickey, $limit: limit };
+      params = { $publickey: obj.publickey };
       await this.app.storage.executeDatabase(sql, params, "archive");
+      where_obj["publickey"] = obj.publickey;
     }
     if (obj.sig) {
       sql = `DELETE FROM archives WHERE archives.sig = $sig ${timestamp_limiting_clause}`;
-      params = { $sig: obj.sig, $limit: limit };
+      params = { $sig: obj.sig };
       await this.app.storage.executeDatabase(sql, params, "archive");
+      where_obj["sig"] = obj.sig;
+    }
+
+
+    //
+    // browsers handle with localDB search
+    //
+    if (this.app.BROWSER) {
+      rows = await this.localDB.remove({
+        from: "archives",
+        where: where_obj,
+      });
+console.log("DELETED FROM localDB! ");
     }
 
     return;
