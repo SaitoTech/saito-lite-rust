@@ -56,21 +56,23 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets = 0) => {
       console.log(`postcache, pulled ${num_tweets} new tweets`);
 
-      for (let z = 0; z < this.mod.tweets.length; z++) {
-        let higher = this.mod.tweets[z].created_at;
-        if (this.mod.tweets[z].updated_at > higher) {
-          higher = this.mod.tweets[z].updated_at;
+      if (this.mod.debug) {
+        // I don't know what we were debugging here.... maybe checking that they are ordered correctly
+        for (let z = 0; z < this.mod.tweets.length; z++) {
+          let higher = this.mod.tweets[z].created_at;
+          if (this.mod.tweets[z].updated_at > higher) {
+            higher = this.mod.tweets[z].updated_at;
+          }
+          console.log(higher + " -- " + this.mod.tweets[z].text);
         }
-        console.log(higher + " -- " + this.mod.tweets[z].text);
       }
 
       //
       // remove "loading new tweets" notice...
-      // we use a timeout so that there is a minimum interval where the notice is displayed 
+      // we use a timeout so that there is a minimum interval where the notice is displayed
       // and you don't get horrible flashing on the DOM
       //
-      setTimeout( ()=> {
-      
+      setTimeout(() => {
         if (document.querySelector(".saito-cached-loader")) {
           document.querySelector(".saito-cached-loader").remove();
         }
@@ -93,7 +95,7 @@ class RedSquareMain {
               We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
               at the top of the feed and scroll up there
             */
-            
+
             if (!document.getElementById("saito-new-tweets")) {
               this.app.browser.prependElementToSelector(
                 `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
@@ -104,12 +106,9 @@ class RedSquareMain {
             document.getElementById("saito-new-tweets").onclick = (e) => {
               this.app.connection.emit("redsquare-home-render-request", true);
             };
-
           }
         }
-
       }, 1000);
-
     });
 
     this.app.connection.on("redsquare-insert-loading-message", () => {
@@ -152,24 +151,27 @@ class RedSquareMain {
     // Replace RS with a user's profile (collection of their tweets)
     //
     this.app.connection.on("redsquare-profile-render-request", (publicKey = "") => {
-
       // reset main
       document.querySelector(".saito-main").innerHTML = "";
 
       this.scrollFeed(0);
 
-      if (publicKey == "") { publicKey = this.mod.publicKey; }
+      if (publicKey == "") {
+        publicKey = this.mod.publicKey;
+      }
 
       this.manager.renderProfile(publicKey);
 
       // clicked on profile from profile
       if (this.manager) {
         if (this.manager.tab == "replies") {
-	  this.manager.switchToPosts();
+          this.manager.switchToPosts();
         }
       }
 
-      document.querySelectorAll(".optional-menu-item").forEach((item) => { item.style.display = "none"; });
+      document.querySelectorAll(".optional-menu-item").forEach((item) => {
+        item.style.display = "none";
+      });
       document.querySelector(".redsquare-menu-home").style.display = "flex";
     });
 
@@ -339,12 +341,10 @@ class RedSquareMain {
       return 0;
     }
 
-
     //
     // yes if still at top
     //
     if (window?.pageYOffset == 0 && document?.body?.scrollTop == 0) {
-
       //return false if any overlay is open
       if (document.querySelector(".saito-overlay") != null) {
         return 0;
@@ -354,7 +354,6 @@ class RedSquareMain {
         return 1;
       }
     }
-
 
     console.log(window?.pageYOffset, document?.body?.scrollTop == 0, this.idleTime);
     console.log("Default to no");
