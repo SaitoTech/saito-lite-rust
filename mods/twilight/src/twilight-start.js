@@ -2726,7 +2726,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["nixonshock", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["fidel", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["bayofpigs", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
