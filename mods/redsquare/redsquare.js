@@ -1387,6 +1387,7 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   saveTweet(sig) {
+
     // When we interact with a tweet, we want to mark it as important to us and add it to our
     // local tweet cache .... maybe????
 
@@ -1402,7 +1403,7 @@ class RedSquare extends ModTemplate {
         if (txs?.length > 0) {
           return;
         }
-        this.app.storage(saveTransaction(tweet.tx, { field1: "RedSquare" }, "localhost"));
+        this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare" }, "localhost");
       },
       "localhost"
     );
