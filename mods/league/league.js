@@ -69,6 +69,16 @@ class League extends ModTemplate {
     return [new PeerService(null, "league", null, "saito")];
   }
 
+  async onUpgrade(type, privatekey, walletfile) {
+    if (type == 'nuke') {
+      for (let i = 0; i < this.app.options.leagues; i++) {
+        await localforage.removeItem(`league_${this.this.app.options.leagues[i]}`);
+      }
+    }
+    return 1;
+  }
+
+
   respondTo(type, obj = null) {
     if (type == "league_membership") {
       let league_self = this;
