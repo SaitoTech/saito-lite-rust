@@ -151,16 +151,16 @@ class RedSquareMain {
     //
     // Replace RS with a user's profile (collection of their tweets)
     //
-    this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
+    this.app.connection.on("redsquare-profile-render-request", (publicKey = "") => {
 
       // reset main
       document.querySelector(".saito-main").innerHTML = "";
 
       this.scrollFeed(0);
 
-      if (publickey == "") { publickey = this.mod.publicKey; }
+      if (publicKey == "") { publicKey = this.mod.publicKey; }
 
-      this.manager.renderProfile(publickey);
+      this.manager.renderProfile(publicKey);
 
       // clicked on profile from profile
       if (this.manager) {

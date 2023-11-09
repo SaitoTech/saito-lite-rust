@@ -402,9 +402,8 @@ class Archive extends ModTemplate {
       });
     }
 
-    rows = await this.app.storage.queryDatabase(sql, params, "archive");  
+    return this.app.storage.queryDatabase(sql, params, "archive");  
 
-    return rows;
   }
 
   ////////////

@@ -149,7 +149,7 @@ class Storage {
     // idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
     //
     let internal_callback = (res) => {
-console.log("internal callback: " + res.length);
+      console.log("internal callback: " + res?.length);
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
@@ -167,11 +167,10 @@ console.log("internal callback: " + res.length);
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-        await archive_mod.loadTransactionsWithCallback(obj, (res) => {
+        return archive_mod.loadTransactionsWithCallback(obj, (res) => {
           internal_callback(res);
         });
       }
-      return;
     }
 
     if (peer != null) {

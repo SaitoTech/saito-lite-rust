@@ -70,6 +70,8 @@ class RedSquare extends ModTemplate {
 
     this.publicKey = "";
 
+    this.debug = false;
+    
     this.tweets = [];
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
@@ -287,8 +289,9 @@ class RedSquare extends ModTemplate {
     //
     if (app.BROWSER == 0) {
       this.updateTweetsCacheForBrowsers();
-    }else{
+    } else {
       //Add myself as a peer...
+      this.addPeer("localhost");
     }
   }
 
@@ -363,32 +366,27 @@ class RedSquare extends ModTemplate {
   /////////////////////
   // peer management //
   /////////////////////
-  async addPeer(peer) {
-    let mypeers = await this.app.network.getPeers();
-    let has_tweets = true;
-    let publicKey = peer.publicKey;
+  addPeer(peer) {
+    //For "localhost"
+    let publicKey = peer?.publicKey || this.publicKey;
 
     let peer_idx = -1;
+
     for (let i = 0; i < this.peers.length; i++) {
-      if (this.peers[i].publickey === publicKey) {
+      if (this.peers[i].publicKey === publicKey) {
         peer_idx = i;
       }
     }
     if (peer_idx == -1) {
       this.peers.push({
         peer: peer,
-        publickey: publicKey,
+        publicKey: publicKey,
         tweets_earliest_ts: new Date().getTime(),
         tweets_latest_ts: 0,
         tweets_limit: 20,
-        profile_earliest_ts: new Date().getTime(),
-        profile_latest_ts: 0,
-        profile_limit: 20,
-        has_tweets: has_tweets,
       });
     } else {
       this.peers[peer_idx].peer = peer;
-      this.peers[peer_idx].tweets = has_tweets;
     }
   }
 
@@ -410,7 +408,7 @@ class RedSquare extends ModTemplate {
       //
       // or fetch tweets (load tweets "earlier")
       //
-      await this.addPeer(peer, "tweets");
+      this.addPeer(peer, "tweets");
 
       //
       // if viewing a specific tweet
@@ -462,22 +460,22 @@ class RedSquare extends ModTemplate {
   // network functions //
   ///////////////////////
   async onConfirmation(blk, tx, conf) {
-    let txmsg = tx.returnMessage();
-
-    if (conf === 0) {
-      console.log("%%");
-      console.log("NEW TRANSACTION RECEIVED!");
-      if (txmsg.data.images) {
-        let new_obj = JSON.parse(JSON.stringify(txmsg));
-        new_obj.data.images = "[image tweet]";
-        console.log("txmsg: " + JSON.stringify(new_obj));
-      } else {
-        console.log("txmsg: " + JSON.stringify(txmsg));
-      }
-    }
-
     try {
+      let txmsg = tx.returnMessage();
+
       if (conf == 0) {
+        if (this.debug) {
+          console.log("%%");
+          console.log("NEW TRANSACTION RECEIVED!");
+          if (txmsg.data.images) {
+            let new_obj = JSON.parse(JSON.stringify(txmsg));
+            new_obj.data.images = "[image tweet]";
+            console.log("txmsg: " + JSON.stringify(new_obj));
+          } else {
+            console.log("txmsg: " + JSON.stringify(txmsg));
+          }
+        }
+
         if (txmsg.request === "create tweet") {
           await this.receiveTweetTransaction(blk, tx, conf, this.app);
         }
@@ -489,7 +487,7 @@ class RedSquare extends ModTemplate {
         }
       }
     } catch (err) {
-      console.log("ERROR in " + this.name + " onConfirmation: " + err);
+      console.log("ERROR in RedSquare onConfirmation: " + err);
     }
   }
 
@@ -571,17 +569,15 @@ class RedSquare extends ModTemplate {
 
             if (mycallback) {
               //
+              // we aren't caching old tweets, so don't incur the costs of deleting and saving!
               //
-              //
-              if (txs.length > 0 && peer_publickey != this.publicKey) {
-                console.log("S");
-                console.log("S");
-                console.log("S: " + peer_publickey + " -- " + this.publicKey);
+              if (count > 0 && this.peers[i].publicKey != this.publicKey && created_at == "later") {
+                console.log("RS: " + this.peers[i].publicKey + " -- " + this.publicKey);
                 console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
                 this.saveLocalTweets();
               }
 
-              mycallback(txs);
+              mycallback(count);
             }
           },
           this.peers[i].peer
@@ -627,29 +623,27 @@ class RedSquare extends ModTemplate {
     }
 
     for (let i = 0; i < this.peers.length; i++) {
-      if (this.peers[i].has_tweets) {
-        let obj = {
-          field1: "RedSquare",
-          field3: thread_id,
-        };
+      let obj = {
+        field1: "RedSquare",
+        field3: thread_id,
+      };
 
-        this.app.storage.loadTransactions(
-          obj,
-          (txs) => {
-            if (txs.length > 0) {
-              for (let z = 0; z < txs.length; z++) {
-                txs[z].decryptMessage(this.app);
-                this.addTweet(txs[z]);
-              }
+      this.app.storage.loadTransactions(
+        obj,
+        (txs) => {
+          if (txs.length > 0) {
+            for (let z = 0; z < txs.length; z++) {
+              txs[z].decryptMessage(this.app);
+              this.addTweet(txs[z]);
             }
+          }
 
-            if (mycallback) {
-              mycallback(txs);
-            }
-          },
-          this.peers[i].peer
-        );
-      }
+          if (mycallback) {
+            mycallback(txs);
+          }
+        },
+        this.peers[i].peer
+      );
     }
   }
 
@@ -683,22 +677,20 @@ class RedSquare extends ModTemplate {
           }
         } else {
           for (let i = 0; i < this.peers.length; i++) {
-            if (this.peers[i].has_tweets) {
-              this.app.storage.loadTransactions(
-                { sig, field1: "RedSquare" },
-                (txs) => {
-                  if (txs.length > 0) {
-                    for (let z = 0; z < txs.length; z++) {
-                      txs[z].decryptMessage(this.app);
-                      this.addTweet(txs[z]);
-                    }
-
-                    mycallback(txs);
+            this.app.storage.loadTransactions(
+              { sig, field1: "RedSquare" },
+              (txs) => {
+                if (txs.length > 0) {
+                  for (let z = 0; z < txs.length; z++) {
+                    txs[z].decryptMessage(this.app);
+                    this.addTweet(txs[z]);
                   }
-                },
-                this.peer[i].peer
-              );
-            }
+
+                  mycallback(txs);
+                }
+              },
+              this.peer[i].peer
+            );
           }
         }
 
@@ -1416,31 +1408,29 @@ class RedSquare extends ModTemplate {
     );
   }
 
-  async saveLocalTweets() {
+  saveLocalTweets() {
     //
     // randomly delete any REDSQUARECOMMUNITY-tagged RedSquare tweets
     //
-    await this.app.storage.deleteTransactions(
+    this.app.storage.deleteTransactions(
       { field3: "REDSQUARECOMMUNITY" },
       () => {
-        console.log("saveLocalTweets -> storage transactions deleted");
+        //
+        // save the last 4-5 tweets
+        //
+        for (let i = 0; i < this.tweets.length && i < 8; i++) {
+          //
+          // no await
+          //
+          this.app.storage.saveTransaction(
+            this.tweets[i].tx,
+            { field3: "REDSQUARECOMMUNITY" },
+            "localhost"
+          );
+        }
       },
       "localhost"
     );
-
-    //
-    // save the last 4-5 tweets
-    //
-    for (let i = 0; i < this.tweets.length && i < 8; i++) {
-      //
-      // no await
-      //
-      this.app.storage.saveTransaction(
-        this.tweets[i].tx,
-        { field3: "REDSQUARECOMMUNITY" },
-        "localhost"
-      );
-    }
   }
 
   saveLocalProfile() {
@@ -1773,7 +1763,6 @@ console.log("profile cache load: " + t.text);
 
     let hex_entries = [];
 
-    console.log("Update Cache");
     this.app.storage.loadTransactions(
       { field1: "RedSquare" },
       (txs) => {
