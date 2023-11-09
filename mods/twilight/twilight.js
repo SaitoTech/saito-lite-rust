@@ -4737,12 +4737,10 @@ console.log("getPrivateKey(): " + privateKey);
       if (card === "missileenvy") { bind_back_button_state = false; }
       if (twilight_self.game.state.event_before_ops == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
-      if (twilight_self.game.state.back_button_cancelled == 1) {
+      if (twilight_self.game.state.back_button_cancelled == 1 || bind_back_button_state == false) {
 	twilight_self.cancelBackButtonFunction();
 	bind_back_button_state = false;
       }
-
-      console.log(JSON.parse(JSON.stringify(this.game.state)));
 
       let html = '<ul>';
       if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
@@ -4755,7 +4753,6 @@ console.log("getPrivateKey(): " + privateKey);
         }
       }
       html += '</ul>';
-
 
       if (bind_back_button_state) {
         twilight_self.bindBackButtonFunction(() => {
@@ -4924,6 +4921,7 @@ console.log("getPrivateKey(): " + privateKey);
         if (action2 == "realign") {
 
           twilight_self.game.state.back_button_cancelled = 1;
+	  twilight_self.cancelBackButtonFunction();
 
           let alignment_rolls = ops;
           let header_msg = `Pick a target to realign (${alignment_rolls} rolls), or:`;
@@ -5065,6 +5063,7 @@ console.log("getPrivateKey(): " + privateKey);
   cancelBackButtonFunction() {
     this.hud.back_button = false;
     this.hud.back_button_callback = null;
+    this.unbindBackButtonFunction();
   }
   bindBackButtonFunction(mycallback) {
     this.hud.back_button = true;
