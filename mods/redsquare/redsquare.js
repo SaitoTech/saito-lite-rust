@@ -581,6 +581,7 @@ class RedSquare extends ModTemplate {
     if (this.notifications_earliest_ts !== 0) {
       this.app.storage.loadTransactions(
         {
+          field1: "RedSquare",
           field3: this.publicKey,
           created_earlier_than: this.notifications_earliest_ts,
         },
@@ -615,6 +616,7 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].has_tweets) {
         let obj = {
+          field1: "RedSquare",
           field3: thread_id,
         };
 
@@ -659,7 +661,7 @@ class RedSquare extends ModTemplate {
     }
 
     this.app.storage.loadTransactions(
-      { sig },
+      { sig, field1: "RedSquare"},
       (txs) => {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
@@ -670,7 +672,7 @@ class RedSquare extends ModTemplate {
           for (let i = 0; i < this.peers.length; i++) {
             if (this.peers[i].has_tweets) {
               this.app.storage.loadTransactions(
-                { sig },
+                { sig, field1: "RedSquare" },
                 (txs) => {
                   if (txs.length > 0) {
                     for (let z = 0; z < txs.length; z++) {
@@ -1091,7 +1093,7 @@ class RedSquare extends ModTemplate {
       // sensible set of defaults.
       //
       await this.app.storage.loadTransactions(
-        { sig: txmsg.data.signature },
+        { sig: txmsg.data.signature, field1: "RedSquare" },
         async (txs) => {
           if (txs?.length > 0) {
             let tx = txs[0];
@@ -1261,7 +1263,7 @@ class RedSquare extends ModTemplate {
           // servers load from themselves
           //
           await this.app.storage.loadTransactions(
-            { sig: tweet.thread_id },
+            { sig: tweet.thread_id, field1: "RedSquare" },
             async (txs) => {
               if (txs?.length) {
                 //Only update the first copy??
@@ -1308,7 +1310,7 @@ class RedSquare extends ModTemplate {
           // ...otherwise, hit up the archive first
           //
           await this.app.storage.loadTransactions(
-            { sig: tweet.parent_id },
+            { sig: tweet.parent_id, field1: "RedSquare" },
             async (txs) => {
               if (txs?.length) {
                 let tx = txs[0];
