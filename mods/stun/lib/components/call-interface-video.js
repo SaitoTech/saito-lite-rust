@@ -230,10 +230,11 @@ class CallInterfaceVideo {
         // this.toggleAudio();
 
         if (this.mod.peerManager.recording === true) {
-          console.log("recording");
+          console.log("stopping recording");
           this.mod.peerManager.stopRecordCall();
         } else {
-          console.log("stopping recording");
+          console.log("recording");
+
           this.mod.peerManager.recordCall();
         }
       };
