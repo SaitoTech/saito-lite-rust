@@ -307,7 +307,6 @@ class Archive extends ModTemplate {
         in: "archives",
         set: {
           updated_at: newObj.updated_at,
-          owner: newObj.owner,
           tx: tx.serialize_to_web(this.app),
         },
         where: {
@@ -336,7 +335,8 @@ class Archive extends ModTemplate {
     let params = {};
     let rows = [];
     let timestamp_limiting_clause = "";
-    let where_obj = {};
+
+    let where_obj = {}; //For JS-Store
 
     if (obj.created_later_than) {
       timestamp_limiting_clause = " AND created_at > " + parseInt(obj.created_later_than);
@@ -361,6 +361,7 @@ class Archive extends ModTemplate {
     if (obj.limit) {
       limit = Math.max(limit, obj.limit);
       limit = Math.min(limit, 100);
+      delete obj.limit;
     }
 
     //
@@ -488,19 +489,7 @@ class Archive extends ModTemplate {
       });
     }
 
-    //
-    // FILTER FOR TXS
-    //
-    if (rows?.length > 0) {
-      for (let i = 0; i < rows.length; i++) {
-        //
-        // Shouldn't we return all the metadata too?
-        //
-        txs.push({ tx: rows[i].tx });
-      }
-    }
-
-    return txs;
+    return rows;
   }
 
   ////////////

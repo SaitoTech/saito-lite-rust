@@ -154,6 +154,9 @@ class Storage {
         for (let i = 0; i < res.length; i++) {
           let tx = new Transaction();
           tx.deserialize_from_web(storage_self.app, res[i].tx);
+
+          tx["updated_at"] = res[i].updated_at;
+
           txs.push(tx);
         }
       }

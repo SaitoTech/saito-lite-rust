@@ -41,7 +41,7 @@ class TweetManager {
             // load more tweets
             //
             if (this.mode === "tweets") {
-              mod.loadTweets("earlier", (txs) => {
+              mod.loadTweets("earlier", (tx_count) => {
                 this.hideLoader();
 
                 if (this.mode !== "tweets") {
@@ -55,7 +55,7 @@ class TweetManager {
                   }
                 }
 
-                if (txs.length == 0) {
+                if (tx_count == 0) {
                   if (!document.querySelector(".saito-end-of-redsquare")) {
                     this.app.browser.addElementToSelector(
                       `<div class="saito-end-of-redsquare">no more tweets</div>`,

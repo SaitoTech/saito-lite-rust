@@ -454,8 +454,8 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      this.loadTweets("earlier", (txs) => {
-        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
+      this.loadTweets("earlier", (tx_count) => {
+        this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
     }
   }
@@ -512,12 +512,10 @@ class RedSquare extends ModTemplate {
   // via the manager.
   //
 
-
   loadTweets(created_at = "earlier", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
       let peer_publickey = this.peers[i].publickey;
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
-
         let obj = {
           field1: "RedSquare",
           limit: this.peers[i].tweets_limit,
@@ -531,33 +529,46 @@ class RedSquare extends ModTemplate {
           // this should allow us to pull fresh stats for tweets that aren't
           // otherwise directed at us
           //
-          obj.created_later_than = this.peers[i].tweets_latest_ts;
-          //obj.updated_later_than = this.peers[i].tweets_latest_ts;
+          obj.updated_later_than = this.peers[i].tweets_latest_ts;
         }
 
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
+            //
+            // Instead of just passing the txs to the callback, we count how many of these txs
+            // are new to us so we can have a better UX
+            //
+            let count = 0;
+
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);
-                this.addTweet(txs[z]);
+                count += this.addTweet(txs[z]);
+
+                //timestamp is the original timestamp of the create tweet transaction
+                if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
+                  this.peers[i].tweets_earliest_ts = txs[z].timestamp;
+                }
+
+                if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
+                  this.peers[i].tweets_latest_ts = txs[z].updated_at;
+                }
+
+                let tweet = this.returnTweet(txs[z].signature);
+                if (tweet) {
+                  //
+                  // Update our local archive with any updated metadata
+                  //
+                  this.app.storage.updateTransaction(tweet.tx, null, "localhost");
+                }
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
             }
 
-            for (let z = 0; z < txs.length; z++) {
-              if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
-                this.peers[i].tweets_earliest_ts = txs[z].timestamp;
-              }
-              if (txs[z].timestamp > this.peers[i].tweets_latest_ts) {
-                this.peers[i].tweets_latest_ts = txs[z].timestamp;
-              }
-            }
-
             if (mycallback) {
-              mycallback(txs);
+              mycallback(count);
             }
           },
           this.peers[i].peer
@@ -695,7 +706,9 @@ class RedSquare extends ModTemplate {
   // this does not DISPLAY any tweets, although it makes sure that when they are
   // added they will render into the TWEET MANAGER component.
   //
-  async addTweet(tx, prepend = false) {
+  // returns 1 if this is a new tweet that can be displayed
+  //
+  addTweet(tx, prepend = false) {
     //
     // create the tweet
     //
@@ -707,7 +720,7 @@ class RedSquare extends ModTemplate {
     // avoid errors
     //
     if (!tweet?.tx) {
-      return;
+      return 0;
     }
 
     if (!tweet.tx.optional) {
@@ -770,8 +783,10 @@ class RedSquare extends ModTemplate {
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet") {
-      return;
+      return 0;
     }
+
+    let inserted = 0;
 
     //
     // add tweet to tweet and tweets_sigs_hmap for easy-reference
@@ -828,29 +843,33 @@ class RedSquare extends ModTemplate {
         //
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-      }
 
-      let t = this.returnTweet(tweet.tx.signature);
-      if (tweet.tx.optional) {
-        if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
-          t.tx.optional.num_replies = tweet.tx.optional.num_replies;
-          t.rerenderControls();
-        }
-        if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
-          t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-          t.rerenderControls();
-        }
-        if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
-          t.tx.optional.num_likes = tweet.tx.optional.num_likes;
-          t.rerenderControls();
+        return 1;
+      } else {
+        //
+        // Update the stats for this tweet we already have in memory
+        //
+        let t = this.returnTweet(tweet.tx.signature);
+        if (tweet.tx.optional) {
+          if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
+            t.tx.optional.num_replies = tweet.tx.optional.num_replies;
+            t.rerenderControls();
+          }
+          if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
+            t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+            t.rerenderControls();
+          }
+          if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
+            t.tx.optional.num_likes = tweet.tx.optional.num_likes;
+            t.rerenderControls();
+          }
         }
       }
-
-      //
-      // this is a comment
-      //
     } else {
-      let inserted = false;
+      //
+      // this is a comment / reply
+      //
+
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
           console.log("#");
@@ -858,28 +877,22 @@ class RedSquare extends ModTemplate {
           console.log("# our comment is " + tweet.text);
           console.log("# we think this is comment on " + this.tweets[i].text);
           console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
-          let xyz = await this.tweets[i].addTweet(tweet);
-          if (xyz == 1) {
+          if (this.tweets[i].addTweet(tweet)) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-            inserted = true;
-            break;
-          } else {
+            return 1;
           }
         }
       }
 
-      if (inserted == false) {
-        console.log("^");
-        console.log("^");
-        console.log("^");
-        console.log("^ pushed onto unknown children: ");
-        this.unknown_children.push(tweet);
-      }
-
-      // we've inserted
+      console.log("^");
+      console.log("^");
+      console.log("^");
+      console.log("^ pushed onto unknown children: ");
+      this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
     }
 
+    return 0;
   }
   //
   // addTweets adds to notifications, but we have a separate function here
@@ -1059,11 +1072,7 @@ class RedSquare extends ModTemplate {
       }
       liked_tweet.tx.optional.num_likes++;
 
-      await this.app.storage.updateTransaction(
-        liked_tweet.tx,
-        { },
-        "localhost"
-      );
+      await this.app.storage.updateTransaction(liked_tweet.tx, {}, "localhost");
 
       liked_tweet.renderLikes();
     } else {
@@ -1096,7 +1105,7 @@ class RedSquare extends ModTemplate {
             tx.optional.num_likes++;
 
             console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
-            await this.app.storage.updateTransaction(tx, { }, "localhost");
+            await this.app.storage.updateTransaction(tx, {}, "localhost");
           }
         },
         "localhost"
@@ -1114,11 +1123,7 @@ class RedSquare extends ModTemplate {
         //
         // Save locally -- indexed to myKey so it is accessible as a notification
         //
-        await this.app.storage.saveTransaction(
-          tx,
-          { field3: this.publicKey },
-          "localhost"
-        );
+        await this.app.storage.saveTransaction(tx, { field3: this.publicKey }, "localhost");
 
         //
         // convert like into tweet and addTweet to get notifications working
@@ -1247,11 +1252,7 @@ class RedSquare extends ModTemplate {
             other_tweet.tx.optional.num_retweets = 0;
           }
           other_tweet.tx.optional.num_retweets++;
-          await this.app.storage.updateTransaction(
-            other_tweet.tx,
-            { },
-            "localhost"
-          );
+          await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
           other_tweet.renderRetweets();
         } else {
           //
@@ -1273,11 +1274,7 @@ class RedSquare extends ModTemplate {
                   tx.optional.num_retweets = 0;
                 }
                 tx.optional.num_retweets++;
-                await this.app.storage.updateTransaction(
-                  tx,
-                  { },
-                  "localhost"
-                );
+                await this.app.storage.updateTransaction(tx, {}, "localhost");
               }
             },
             "localhost"
@@ -1305,11 +1302,7 @@ class RedSquare extends ModTemplate {
           other_tweet.rerenderControls();
           other_tweet.renderReplies();
 
-          await this.app.storage.updateTransaction(
-            other_tweet.tx,
-            { },
-            "localhost"
-          );
+          await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
         } else {
           //
           // ...otherwise, hit up the archive first
@@ -1326,11 +1319,7 @@ class RedSquare extends ModTemplate {
                   tx.optional.num_replies = 0;
                 }
                 tx.optional.num_replies++;
-                await this.app.storage.updateTransaction(
-                  tx,
-                  { },
-                  "localhost"
-                );
+                await this.app.storage.updateTransaction(tx, {}, "localhost");
               }
             },
             "localhost"
