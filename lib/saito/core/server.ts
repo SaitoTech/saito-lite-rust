@@ -550,16 +550,16 @@ class Server {
         const liteblock = block.generateLiteBlock(keylist);
         block.free();
 
-        console.log(
-          `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
-        );
-        console.log(
-          "valid txs : " +
-            liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
-        );
-        liteblock.transactions.forEach((tx) => {
-          tx.free();
-        });
+        // console.log(
+        //   `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
+        // );
+        // console.log(
+        //   "valid txs : " +
+        //     liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
+        // );
+        // liteblock.transactions.forEach((tx) => {
+        //   tx.free();
+        // });
         const buffer = Buffer.from(liteblock.serialize());
         liteblock.free();
         res.end(buffer, "utf8");
