@@ -280,15 +280,15 @@ class RedSquare extends ModTemplate {
     //
     // fetch content from options file
     //
-    this.load();
+    this.loadOptions();
 
     //
     // servers update their cache for browsers
     //
-    // currently disabled
-    //
     if (app.BROWSER == 0) {
       this.updateTweetsCacheForBrowsers();
+    }else{
+      //Add myself as a peer...
     }
   }
 
@@ -357,9 +357,7 @@ class RedSquare extends ModTemplate {
     await super.render();
     this.rendered = true;
 
-    if (this.app.BROWSER) {
-      this.loadLocalTweets();
-    }
+    this.loadLocalTweets();
   }
 
   /////////////////////
@@ -513,11 +511,10 @@ class RedSquare extends ModTemplate {
   //
 
   loadTweets(created_at = "earlier", mycallback) {
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("# load tweets with num peers: " + this.peers.length);
+    console.log("#");
+    console.log("#");
+    console.log("#");
+    console.log("# load tweets with num peers: " + this.peers.length);
 
     for (let i = 0; i < this.peers.length; i++) {
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
@@ -573,20 +570,18 @@ console.log("# load tweets with num peers: " + this.peers.length);
             }
 
             if (mycallback) {
-
-	      //
-	      //
-	      //
-	      if (txs.length > 0 && peer_publickey != this.publicKey) {
-		console.log("S");
-		console.log("S");
-		console.log("S: " + peer_publickey + " -- " + this.publicKey);
-		console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
-		this.saveLocalTweets();
-	      }
+              //
+              //
+              //
+              if (txs.length > 0 && peer_publickey != this.publicKey) {
+                console.log("S");
+                console.log("S");
+                console.log("S: " + peer_publickey + " -- " + this.publicKey);
+                console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
+                this.saveLocalTweets();
+              }
 
               mycallback(txs);
-
             }
           },
           this.peers[i].peer
@@ -1409,29 +1404,29 @@ console.log("# load tweets with num peers: " + this.peers.length);
       return;
     }
 
-    this.app.storage.loadTransactions({ field1: "RedSquare", sig }, 
+    this.app.storage.loadTransactions(
+      { field1: "RedSquare", sig },
       (txs) => {
         if (txs?.length > 0) {
           return;
         }
         this.app.storage(saveTransaction(tweet.tx, { field1: "RedSquare" }, "localhost"));
-      }, 
-      "localhost");
+      },
+      "localhost"
+    );
   }
 
   async saveLocalTweets() {
-
     //
     // randomly delete any REDSQUARECOMMUNITY-tagged RedSquare tweets
     //
     await this.app.storage.deleteTransactions(
       { field3: "REDSQUARECOMMUNITY" },
       () => {
-console.log("saveLocalTweets -> storage transactions deleted");
+        console.log("saveLocalTweets -> storage transactions deleted");
       },
       "localhost"
     );
-
 
     //
     // save the last 4-5 tweets
@@ -1446,7 +1441,6 @@ console.log("saveLocalTweets -> storage transactions deleted");
         "localhost"
       );
     }
-
   }
 
   saveLocalProfile() {
@@ -1494,44 +1488,39 @@ console.log("saveLocalTweets -> storage transactions deleted");
     console.log("Load Local Tweets");
 
     try {
+      let obj = {
+        field3: "REDSQUARECOMMUNITY",
+        limit: 15,
+        created_earlier_than: new Date().getTime(),
+      };
 
-        let obj = {
-          field3: "REDSQUARECOMMUNITY",
-          limit: 15 ,
-          created_earlier_than: new Date().getTime()
-        };
-
-        this.app.storage.loadTransactions(
-          obj,
-          (txs) => {
-            if (txs.length > 0) {
-              for (let z = 0; z < txs.length; z++) {
-                txs[z].decryptMessage(this.app);
-console.log(JSON.stringify(txs[z].returnMessage()));
-                this.addTweet(txs[z]);
-              }
+      this.app.storage.loadTransactions(
+        obj,
+        (txs) => {
+          if (txs.length > 0) {
+            for (let z = 0; z < txs.length; z++) {
+              txs[z].decryptMessage(this.app);
+              console.log(JSON.stringify(txs[z].returnMessage()));
+              this.addTweet(txs[z]);
             }
-for (let i = 0; i < this.tweets.length; i++) {
-  console.log(this.tweets[i].text);
-}
-            console.log("%");
-            console.log("%");
-            console.log("%");
-            console.log("% local load fetched: " + txs.length + " txs");
-	  },
-	  "localhost"
-	);
-
+          }
+          for (let i = 0; i < this.tweets.length; i++) {
+            console.log(this.tweets[i].text);
+          }
+          console.log("%");
+          console.log("%");
+          console.log("%");
+          console.log("% local load fetched: " + txs.length + " txs");
+        },
+        "localhost"
+      );
     } catch (err) {
-
-console.log("!!!!!");
-console.log("!!!!!");
-console.log("!!!!! ERROR WITH LOCAL CONTENT FETCH: " + err);
-console.log("!!!!!");
-console.log("!!!!!");
-
+      console.log("!!!!!");
+      console.log("!!!!!");
+      console.log("!!!!! ERROR WITH LOCAL CONTENT FETCH: " + err);
+      console.log("!!!!!");
+      console.log("!!!!!");
     }
-
 
     try {
       //Prefer our locally cached tweets to the webServer ones
@@ -1633,9 +1622,6 @@ console.log("profile cache load: " + t.text);
   /////////////////////////////////////
   // saving and loading wallet state //
   /////////////////////////////////////
-  load() {
-    this.loadOptions();
-  }
   loadOptions() {
     if (!this.app.BROWSER) {
       return;
@@ -1667,9 +1653,6 @@ console.log("profile cache load: " + t.text);
     }
   }
 
-  save() {
-    this.saveOptions();
-  }
   saveOptions() {
     if (!this.app.BROWSER || !this.browser_active) {
       return;

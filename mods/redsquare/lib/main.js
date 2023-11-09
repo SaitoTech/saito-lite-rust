@@ -137,7 +137,7 @@ class RedSquareMain {
       document.querySelector(".saito-main").innerHTML = "";
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
-      this.mod.save();
+      this.mod.saveOptions();
       this.mod.menu.incrementNotifications("notifications", 0);
       this.manager.render("notifications");
 
