@@ -211,7 +211,7 @@ class Archive extends ModTemplate {
       });
 
       if (numRows) {
-        console.log("Local Archive index successfully inserted: ", JSON.parse(JSON.stringify(newObj)));
+        //console.log("Local Archive index successfully inserted: ", JSON.parse(JSON.stringify(newObj)));
       }
     } else {
       //
@@ -333,8 +333,6 @@ class Archive extends ModTemplate {
 
   async loadTransactions(obj = {}) {
     let limit = 10;
-    let txs = [];
-    let rows = [];
     let timestamp_limiting_clause = "";
 
     let where_obj = {}; //For JS-Store
@@ -390,10 +388,12 @@ class Archive extends ModTemplate {
 
     //
     // SEARCH BASED ON CRITERIA PROVIDED
-    // Run SQL queries for full nodes and build where_obj for browser search
+    // Run SQL queries for full nodes, with JS-Store fallback for browsers
     //
-    if (this.app.BROWSER) {
-      //console.log(JSON.parse(JSON.stringify(where_obj)));
+
+    let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+
+    if (this.app.BROWSER && !rows?.length) {
       rows = await this.localDB.select({
         from: "archives",
         where: where_obj,
@@ -402,7 +402,7 @@ class Archive extends ModTemplate {
       });
     }
 
-    return this.app.storage.queryDatabase(sql, params, "archive");  
+    return rows;
 
   }
 
@@ -439,7 +439,7 @@ class Archive extends ModTemplate {
         from: "archives",
         where: where_obj,
       });
-console.log("DELETED FROM localDB! ");
+      console.log("DELETED FROM localDB! ");
     }
 
     return;
