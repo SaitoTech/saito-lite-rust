@@ -116,7 +116,6 @@ export default class Transaction extends SaitoTransaction {
         if (jsonobj.buffer) {
           this.data = new Uint8Array(Buffer.from(jsonobj.buffer, "base64"));
         }
-
       }
     } catch (error) {
       console.error(error);
@@ -314,6 +313,7 @@ export default class Transaction extends SaitoTransaction {
       m: m.toString("base64"),
       opt: app.crypto.stringToBase64(opt),
     };
+    newtx.free();
     //console.log("serialize_to_web : ", web_obj);
     return JSON.stringify(web_obj);
   }
