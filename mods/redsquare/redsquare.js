@@ -454,8 +454,8 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      this.loadTweets("earlier", (txs) => {
-        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
+      this.loadTweets("earlier", (tx_count) => {
+        this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
     }
   }
@@ -512,7 +512,6 @@ class RedSquare extends ModTemplate {
   // via the manager.
   //
 
-
   loadTweets(created_at = "earlier", mycallback) {
 
 console.log("#");
@@ -523,7 +522,6 @@ console.log("# load tweets with num peers: " + this.peers.length);
     for (let i = 0; i < this.peers.length; i++) {
       let peer_publickey = this.peers[i].publickey;
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
-
         let obj = {
           field1: "RedSquare",
           limit: this.peers[i].tweets_limit,
@@ -532,28 +530,47 @@ console.log("# load tweets with num peers: " + this.peers.length);
         if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
         } else if (created_at == "later") {
-          obj.created_later_than = this.peers[i].tweets_latest_ts;
+          //
+          // For "new" tweets we maybe want to look at updated, not created
+          // this should allow us to pull fresh stats for tweets that aren't
+          // otherwise directed at us
+          //
+          obj.updated_later_than = this.peers[i].tweets_latest_ts;
         }
 
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
+            //
+            // Instead of just passing the txs to the callback, we count how many of these txs
+            // are new to us so we can have a better UX
+            //
+            let count = 0;
+
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);
-                this.addTweet(txs[z]);
+                count += this.addTweet(txs[z]);
+
+                //timestamp is the original timestamp of the create tweet transaction
+                if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
+                  this.peers[i].tweets_earliest_ts = txs[z].timestamp;
+                }
+
+                if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
+                  this.peers[i].tweets_latest_ts = txs[z].updated_at;
+                }
+
+                let tweet = this.returnTweet(txs[z].signature);
+                if (tweet) {
+                  //
+                  // Update our local archive with any updated metadata
+                  //
+                  this.app.storage.updateTransaction(tweet.tx, null, "localhost");
+                }
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
-            }
-
-            for (let z = 0; z < txs.length; z++) {
-              if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
-                this.peers[i].tweets_earliest_ts = txs[z].timestamp;
-              }
-              if (txs[z].timestamp > this.peers[i].tweets_latest_ts) {
-                this.peers[i].tweets_latest_ts = txs[z].timestamp;
-              }
             }
 
             if (mycallback) {
@@ -569,8 +586,8 @@ console.log("# load tweets with num peers: " + this.peers.length);
 		this.saveLocalTweets();
 	      }
 
-
               mycallback(txs);
+
             }
           },
           this.peers[i].peer
@@ -583,6 +600,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
     if (this.notifications_earliest_ts !== 0) {
       this.app.storage.loadTransactions(
         {
+          field1: "RedSquare",
           field3: this.publicKey,
           created_earlier_than: this.notifications_earliest_ts,
         },
@@ -617,6 +635,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].has_tweets) {
         let obj = {
+          field1: "RedSquare",
           field3: thread_id,
         };
 
@@ -661,7 +680,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
     }
 
     this.app.storage.loadTransactions(
-      { sig },
+      { sig, field1: "RedSquare"},
       (txs) => {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
@@ -672,7 +691,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
           for (let i = 0; i < this.peers.length; i++) {
             if (this.peers[i].has_tweets) {
               this.app.storage.loadTransactions(
-                { sig },
+                { sig, field1: "RedSquare" },
                 (txs) => {
                   if (txs.length > 0) {
                     for (let z = 0; z < txs.length; z++) {
@@ -708,7 +727,9 @@ console.log("# load tweets with num peers: " + this.peers.length);
   // this does not DISPLAY any tweets, although it makes sure that when they are
   // added they will render into the TWEET MANAGER component.
   //
-  async addTweet(tx, prepend = false) {
+  // returns 1 if this is a new tweet that can be displayed
+  //
+  addTweet(tx, prepend = false) {
     //
     // create the tweet
     //
@@ -720,7 +741,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
     // avoid errors
     //
     if (!tweet?.tx) {
-      return;
+      return 0;
     }
 
     if (!tweet.tx.optional) {
@@ -735,15 +756,6 @@ console.log("# load tweets with num peers: " + this.peers.length);
     if (tx.isTo(this.publicKey)) {
       console.log("RS: Processing Tweet/Like directed to me");
 
-      //
-      // this is a notification, so update our timestamps
-      //
-      if (tx.timestamp > this.notifications_newest_ts) {
-        this.notifications_newest_ts = tx.timestamp;
-      }
-      if (tx.timestamp < this.notifications_oldest_ts) {
-        this.notifications_oldest_ts = tx.timestamp;
-      }
       //
       // notify of other people's actions, but not ours
       //
@@ -785,28 +797,6 @@ console.log("# load tweets with num peers: " + this.peers.length);
           }
         }
       }
-
-      //
-      // if this is a like, we can avoid adding it to our tweet index
-      //
-      let txmsg = tx.returnMessage();
-      if (txmsg.request === "like tweet") {
-        //
-        // skip out on likes but still update timestamps
-        //
-        if (tx.timestamp > this.tweets_newest_ts) {
-          this.tweets_newest_ts = tx.timestamp;
-        }
-        if (tx.timestamp < this.notifications_oldest_ts) {
-          this.tweets_oldest_ts = tx.timestamp;
-        }
-        return;
-      } else {
-        //
-        // update notifications cache
-        //
-        //this.saveLocalNotifications();
-      }
     }
 
     //
@@ -814,8 +804,10 @@ console.log("# load tweets with num peers: " + this.peers.length);
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet") {
-      return;
+      return 0;
     }
+
+    let inserted = 0;
 
     //
     // add tweet to tweet and tweets_sigs_hmap for easy-reference
@@ -872,29 +864,33 @@ console.log("# load tweets with num peers: " + this.peers.length);
         //
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-      }
 
-      let t = this.returnTweet(tweet.tx.signature);
-      if (tweet.tx.optional) {
-        if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
-          t.tx.optional.num_replies = tweet.tx.optional.num_replies;
-          t.rerenderControls();
-        }
-        if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
-          t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-          t.rerenderControls();
-        }
-        if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
-          t.tx.optional.num_likes = tweet.tx.optional.num_likes;
-          t.rerenderControls();
+        return 1;
+      } else {
+        //
+        // Update the stats for this tweet we already have in memory
+        //
+        let t = this.returnTweet(tweet.tx.signature);
+        if (tweet.tx.optional) {
+          if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
+            t.tx.optional.num_replies = tweet.tx.optional.num_replies;
+            t.rerenderControls();
+          }
+          if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
+            t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+            t.rerenderControls();
+          }
+          if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
+            t.tx.optional.num_likes = tweet.tx.optional.num_likes;
+            t.rerenderControls();
+          }
         }
       }
-
-      //
-      // this is a comment
-      //
     } else {
-      let inserted = false;
+      //
+      // this is a comment / reply
+      //
+
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
           console.log("#");
@@ -902,39 +898,22 @@ console.log("# load tweets with num peers: " + this.peers.length);
           console.log("# our comment is " + tweet.text);
           console.log("# we think this is comment on " + this.tweets[i].text);
           console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
-          let xyz = await this.tweets[i].addTweet(tweet);
-          if (xyz == 1) {
+          if (this.tweets[i].addTweet(tweet)) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-            inserted = true;
-            break;
-          } else {
+            return 1;
           }
         }
       }
 
-      if (inserted == false) {
-        console.log("^");
-        console.log("^");
-        console.log("^");
-        console.log("^ pushed onto unknown children: ");
-        this.unknown_children.push(tweet);
-      }
-
-      // we've inserted
+      console.log("^");
+      console.log("^");
+      console.log("^");
+      console.log("^ pushed onto unknown children: ");
+      this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
     }
 
-    //
-    // this is a tweet, so update our info
-    //
-    if (is_notification == 0) {
-      if (tx.timestamp > this.tweets_newest_ts) {
-        this.tweets_newest_ts = tx.timestamp;
-      }
-      if (tx.timestamp < this.notifications_oldest_ts) {
-        this.tweets_oldest_ts = tx.timestamp;
-      }
-    }
+    return 0;
   }
   //
   // addTweets adds to notifications, but we have a separate function here
@@ -1114,11 +1093,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
       }
       liked_tweet.tx.optional.num_likes++;
 
-      await this.app.storage.updateTransaction(
-        liked_tweet.tx,
-        { },
-        "localhost"
-      );
+      await this.app.storage.updateTransaction(liked_tweet.tx, {}, "localhost");
 
       liked_tweet.renderLikes();
     } else {
@@ -1136,8 +1111,8 @@ console.log("# load tweets with num peers: " + this.peers.length);
       // consensus variable and if they're loading tweets from server-archives uncritically it is a
       // sensible set of defaults.
       //
-      this.app.storage.loadTransactions(
-        { sig: txmsg.data.signature },
+      await this.app.storage.loadTransactions(
+        { sig: txmsg.data.signature, field1: "RedSquare" },
         async (txs) => {
           if (txs?.length > 0) {
             let tx = txs[0];
@@ -1151,7 +1126,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
             tx.optional.num_likes++;
 
             console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
-            await this.app.storage.updateTransaction(tx, { }, "localhost");
+            await this.app.storage.updateTransaction(tx, {}, "localhost");
           }
         },
         "localhost"
@@ -1169,11 +1144,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
         //
         // Save locally -- indexed to myKey so it is accessible as a notification
         //
-        await this.app.storage.saveTransaction(
-          tx,
-          { field3: this.publicKey },
-          "localhost"
-        );
+        await this.app.storage.saveTransaction(tx, { field3: this.publicKey }, "localhost");
 
         //
         // convert like into tweet and addTweet to get notifications working
@@ -1277,15 +1248,16 @@ console.log("# load tweets with num peers: " + this.peers.length);
         opt["field3"] = tweet?.thread_id;
       }
 
-      await this.app.storage.saveTransaction(tx, opt, "localhost");
-
       //
       // servers -- get open graph properties
       //
-      //  TODO
-      //
 
       tweet = await tweet.generateTweetProperties(app, this, 1);
+
+      //
+      // Save the modified tx so we have open graph properties available
+      //
+      await this.app.storage.saveTransaction(tweet.tx, opt, "localhost");
 
       //
       // Includes retweeted tweet
@@ -1301,11 +1273,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
             other_tweet.tx.optional.num_retweets = 0;
           }
           other_tweet.tx.optional.num_retweets++;
-          await this.app.storage.updateTransaction(
-            other_tweet.tx,
-            { },
-            "localhost"
-          );
+          await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
           other_tweet.renderRetweets();
         } else {
           //
@@ -1313,8 +1281,8 @@ console.log("# load tweets with num peers: " + this.peers.length);
           //
           // servers load from themselves
           //
-          this.app.storage.loadTransactions(
-            { sig: tweet.thread_id },
+          await this.app.storage.loadTransactions(
+            { sig: tweet.thread_id, field1: "RedSquare" },
             async (txs) => {
               if (txs?.length) {
                 //Only update the first copy??
@@ -1327,11 +1295,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
                   tx.optional.num_retweets = 0;
                 }
                 tx.optional.num_retweets++;
-                await this.app.storage.updateTransaction(
-                  tx,
-                  { },
-                  "localhost"
-                );
+                await this.app.storage.updateTransaction(tx, {}, "localhost");
               }
             },
             "localhost"
@@ -1359,17 +1323,13 @@ console.log("# load tweets with num peers: " + this.peers.length);
           other_tweet.rerenderControls();
           other_tweet.renderReplies();
 
-          await this.app.storage.updateTransaction(
-            other_tweet.tx,
-            { },
-            "localhost"
-          );
+          await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
         } else {
           //
           // ...otherwise, hit up the archive first
           //
-          this.app.storage.loadTransactions(
-            { sig: tweet.parent_id },
+          await this.app.storage.loadTransactions(
+            { sig: tweet.parent_id, field1: "RedSquare" },
             async (txs) => {
               if (txs?.length) {
                 let tx = txs[0];
@@ -1380,11 +1340,7 @@ console.log("# load tweets with num peers: " + this.peers.length);
                   tx.optional.num_replies = 0;
                 }
                 tx.optional.num_replies++;
-                await this.app.storage.updateTransaction(
-                  tx,
-                  { },
-                  "localhost"
-                );
+                await this.app.storage.updateTransaction(tx, {}, "localhost");
               }
             },
             "localhost"

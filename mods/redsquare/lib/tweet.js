@@ -882,7 +882,7 @@ class Tweet {
     }
   }
 
-  async addTweet(tweet, levels_deep = 0) {
+  addTweet(tweet, levels_deep = 0) {
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here

@@ -66,46 +66,49 @@ class RedSquareMain {
 
       //
       // remove "loading new tweets" notice...
+      // we use a timeout so that there is a minimum interval where the notice is displayed 
+      // and you don't get horrible flashing on the DOM
       //
-      setTimeout(function () {
+      setTimeout( ()=> {
+      
         if (document.querySelector(".saito-cached-loader")) {
           document.querySelector(".saito-cached-loader").remove();
         }
-      }, 1000);
 
+        //
+        // check if we can refresh page (show tweets immediately) or show prompt / button
+        //
+        if (num_tweets > 0) {
+          if (this.canRefreshPage()) {
+            console.log("postcache-render-request: can refresh the page!");
+            try {
+              document.querySelector(".saito-main").innerHTML = "";
+            } catch (err) {
+              console.errors(err);
+            }
+            this.manager.render("tweets");
+          } else {
+            console.log("postcache-render-request: CANNOT refresh the page!");
+            /*
+              We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
+              at the top of the feed and scroll up there
+            */
+            
+            if (!document.getElementById("saito-new-tweets")) {
+              this.app.browser.prependElementToSelector(
+                `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
+                ".saito-main"
+              );
+            }
 
-      //
-      // check if we can refresh page (show tweets immediately) or show prompt / button
-      //
-      if (num_tweets > 0) {
-        if (this.canRefreshPage()) {
-          console.log("postcache-render-request: can refresh the page!");
-          try {
-            document.querySelector(".saito-main").innerHTML = "";
-          } catch (err) {
-            console.errors(err);
+            document.getElementById("saito-new-tweets").onclick = (e) => {
+              this.app.connection.emit("redsquare-home-render-request", true);
+            };
+
           }
-          this.manager.render("tweets");
-        } else {
-          console.log("postcache-render-request: CANNOT refresh the page!");
-          /*
-            We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
-            at the top of the feed and scroll up there
-          */
-          
-          if (!document.getElementById("saito-new-tweets")) {
-            this.app.browser.prependElementToSelector(
-              `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
-              ".saito-main"
-            );
-          }
-
-          document.getElementById("saito-new-tweets").onclick = (e) => {
-            this.app.connection.emit("redsquare-home-render-request", true);
-          };
-
         }
-      }
+
+      }, 1000);
 
     });
 

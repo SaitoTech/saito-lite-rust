@@ -906,7 +906,7 @@ class SettlersGameloop {
           }
         }
 
-        let victim_name = victim > 0 ? `${this.formatPlayer(victim)}` : "nobody";
+        let victim_name = victim > 0 ? `${this.formatPlayer(victim)}` : "<span>nobody</span>";
         this.updateLog(`${this.formatPlayer(thief)} stole ${x}<span> from </span>${victim_name}`);
         return 1;
       }
