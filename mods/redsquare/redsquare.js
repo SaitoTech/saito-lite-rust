@@ -71,13 +71,14 @@ class RedSquare extends ModTemplate {
     this.publicKey = "";
 
     this.debug = false;
-    
+
     this.tweets = [];
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
 
     this.peers = [];
 
+    this.tweet_count = 0;
     this.liked_tweets = [];
     this.retweeted_tweets = [];
     this.replied_tweets = [];
@@ -292,6 +293,29 @@ class RedSquare extends ModTemplate {
     } else {
       //Add myself as a peer...
       this.addPeer("localhost");
+
+      //
+      // New browser fetch from server cache
+      //
+      if (this.browser_active && this.tweet_count == 0) {
+        try {
+          //Prefer our locally cached tweets to the webServer ones
+          if (window?.tweets?.length > 0) {
+            console.log("Using Server Cached Tweets");
+            for (let z = 0; z < window.tweets.length; z++) {
+              //console.log(window.tweets[z]);
+              let newtx = new Transaction();
+              newtx.deserialize_from_web(this.app, window.tweets[z]);
+              //console.log(newtx);
+              this.addTweet(newtx);
+            }
+          }
+        } catch (err) {
+          console.log("error in initial redsquare post fetch: " + err);
+        }
+        this.tweet_count = 1;
+        this.saveOptions();
+      }
     }
   }
 
@@ -450,7 +474,7 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      this.loadTweets("earlier", (tx_count) => {
+      this.loadTweets("later", (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
     }
@@ -509,10 +533,8 @@ class RedSquare extends ModTemplate {
   //
 
   loadTweets(created_at = "earlier", mycallback) {
-    console.log("#");
-    console.log("#");
-    console.log("#");
-    console.log("# load tweets with num peers: " + this.peers.length);
+
+    console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
 
     for (let i = 0; i < this.peers.length; i++) {
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
@@ -530,11 +552,16 @@ class RedSquare extends ModTemplate {
           // otherwise directed at us
           //
           obj.updated_later_than = this.peers[i].tweets_latest_ts;
+        } else {
+          console.error("Unsupported time restraint in rS");
         }
 
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
+
+            console.log(`${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
+
             //
             // Instead of just passing the txs to the callback, we count how many of these txs
             // are new to us so we can have a better UX
@@ -1513,22 +1540,6 @@ class RedSquare extends ModTemplate {
       console.log("!!!!!");
     }
 
-    try {
-      //Prefer our locally cached tweets to the webServer ones
-      if (window?.tweets?.length > 0) {
-        console.log("Using Server Cached Tweets");
-        for (let z = 0; z < window.tweets.length; z++) {
-          //console.log(window.tweets[z]);
-          let newtx = new Transaction();
-          newtx.deserialize_from_web(this.app, window.tweets[z]);
-          //console.log(newtx);
-          this.addTweet(newtx);
-        }
-      }
-    } catch (err) {
-      console.log("error in initial redsquare post fetch: " + err);
-    }
-
     this.app.storage.loadTransactions(
       { field1: "RedSquare" },
       (txs) => {
@@ -1619,28 +1630,23 @@ console.log("profile cache load: " + t.text);
     }
 
     if (this.app.options.redsquare) {
-      this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
-      this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
-      if (!this.notifications_last_viewed_ts) {
-        this.notifications_last_viewed_ts = 0;
+      this.notifications_last_viewed_ts =
+        this.app.options.redsquare?.notifications_last_viewed_ts || 0;
+      this.notifications_number_unviewed =
+        this.app.options.redsquare?.notifications_number_unviewed || 0;
+      this.tweet_count = this.app.options.redsquare?.tweet_count || 0;
+
+      if (this.app.options.redsquare.liked_tweets) {
+        this.liked_tweets = this.app.options.redsquare.liked_tweets;
       }
-      if (!this.notifications_number_unviewed) {
-        this.notifications_number_unviewed = 0;
+      if (this.app.options.redsquare.retweeted_tweets) {
+        this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets;
+      }
+      if (this.app.options.redsquare.replied_tweets) {
+        this.replied_tweets = this.app.options.redsquare.replied_tweets;
       }
     } else {
-      this.app.options.redsquare = {};
-      this.notifications_last_viewed_ts = new Date().getTime();
-      this.notifications_number_unviewed = 0;
-    }
-
-    if (this.app.options.redsquare.liked_tweets) {
-      this.liked_tweets = this.app.options.redsquare.liked_tweets;
-    }
-    if (this.app.options.redsquare.retweeted_tweets) {
-      this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets;
-    }
-    if (this.app.options.redsquare.replied_tweets) {
-      this.replied_tweets = this.app.options.redsquare.replied_tweets;
+      this.saveOptions();
     }
   }
 
@@ -1655,10 +1661,13 @@ console.log("profile cache load: " + t.text);
 
     this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
     this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
+    this.app.options.redsquare.tweet_count = this.tweet_count;
 
-    console.log("Liked: " + this.liked_tweets.length);
-    console.log("Quote: " + this.retweeted_tweets.length);
-    console.log("Reply: " + this.replied_tweets.length);
+    if (this.debug) {
+      console.log("Liked: " + this.liked_tweets.length);
+      console.log("Quote: " + this.retweeted_tweets.length);
+      console.log("Reply: " + this.replied_tweets.length);
+    }
 
     while (this.liked_tweets.length > 100) {
       this.liked_tweets.splice(0, 1);
@@ -1674,7 +1683,6 @@ console.log("profile cache load: " + t.text);
     this.app.options.redsquare.retweeted_tweets = this.retweeted_tweets;
     this.app.options.redsquare.replied_tweets = this.replied_tweets;
 
-    //console.log(JSON.parse(JSON.stringify(this.app.options.redsquare)));
     this.app.storage.saveOptions();
   }
 
