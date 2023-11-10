@@ -317,6 +317,25 @@ class RedSquare extends ModTemplate {
         this.saveOptions();
       }
     }
+
+    // check tweets in pending txs
+    try {
+      let pending = await app.wallet.getPendingTxs();
+      for (let i = 0; i < pending.length; i++) {
+        let tx = pending[i];
+
+        let txmsg = tx.returnMessage();
+        if (txmsg && txmsg.module == this.name) {
+          if (txmsg.request === "create tweet") {
+            this.addTweet(tx);
+          }
+        }
+      }
+    } catch(err){
+      console.log("Error while checking pending txs: ");
+      console.log(err);
+    }
+
   }
 
   ////////////
