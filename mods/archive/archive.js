@@ -536,7 +536,6 @@ class Archive extends ModTemplate {
         from: "archives",
         where: where_obj,
       });
-console.log("DELETED FROM localDB! ");
     }
 
     return;
@@ -595,6 +594,24 @@ console.log("DELETED FROM localDB! ");
     sql = `DELETE FROM archives WHERE owner != "" AND updated_at < $ts AND preserve = 0`;
     params = { $ts: ts };
     await this.app.storage.executeDatabase(sql, params, "archive");
+
+
+    //
+    // localDB
+    //
+    // in order to avoid data simply building-up for eternity, and especially for content
+    // saved such as likes, our pruning is turned off explicitly for anything where the
+    // preserve flag is set to 0.
+    //
+    if (this.app.BROWSER) {
+      where_obj = { created_at: { ">": ts } };
+      where_obj["preserve"] = 0;
+      rows = await this.localDB.remove({
+        from: "archives",
+        where: where_obj,
+      });
+    }
+
 
 
     x = Math.random();
