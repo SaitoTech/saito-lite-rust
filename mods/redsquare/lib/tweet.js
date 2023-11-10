@@ -856,6 +856,8 @@ class Tweet {
         this.mod.sendFlagTransaction(this.app, this.mod, { signature: this.tx.signature });
         this.flagged = 1;
 
+	this.app.storage.deleteTransaction(this.tx, null, "localhost");
+
         let obj = document.querySelector(`.tweet-${this.tx.signature}`);
         if (obj) {
           obj.style.display = "none";

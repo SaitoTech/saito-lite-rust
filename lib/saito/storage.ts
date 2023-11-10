@@ -192,6 +192,31 @@ class Storage {
     }
   }
 
+  async deleteTransaction(tx = null, mycallback = null, peer = null) {
+
+    if (tx == null) { return; }
+
+    const message = "archive";
+    let data: any = {};
+    data.request = "delete";
+    data = Object.assign(data, obj);
+
+    if (peer === "localhost") {
+      let archive_mod = this.app.modules.returnModule("Archive");
+      if (archive_mod) {
+        await archive_mod.deleteTransaction(tx);
+      }
+      return;
+    }
+
+    if (peer != null) {
+      this.app.network.sendRequestAsTransaction(message, data, function (obj) {
+        if (mycallback != null) { mycallback(); }
+      });
+    }
+
+  }
+
   async deleteTransactions(obj = {}, mycallback = null , peer = null) {
     const message = "archive";
     let data: any = {};
