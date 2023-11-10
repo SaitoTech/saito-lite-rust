@@ -199,7 +199,6 @@ class CallInterfaceVideo {
     }
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
-      //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
       this.app.connection.emit("open-chat-with", { id: this.chat_group.id });
     });
 

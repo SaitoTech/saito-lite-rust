@@ -644,30 +644,32 @@ class PeerManager {
   }
 
   async recordCall() {
+    localforage.config({
+      driver: localforage.INDEXEDDB,
+      name: "VideoCall",
+      storeName: "keyvaluepairs",
+      description: "Video Chunks data store",
+    });
     const start_recording = await sconfirm("Are you sure you want to start recording?");
     console.log(start_recording);
     if (!start_recording) return false;
     this.recording = true;
     this.chunks = [];
-    // Prepare the canvas to composite the video.
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    // You need to determine the appropriate size for your canvas.
-    canvas.width = 1280; // Example width
-    canvas.height = 720; // Example height
+    canvas.width = 1280;
+    canvas.height = 720;
 
-    // Prepare the audio context to mix the audio tracks.
     const audioContext = new AudioContext();
     const audioDestination = audioContext.createMediaStreamDestination();
 
-    // Draw the local stream onto the canvas.
     const localVideo = document.createElement("video");
     localVideo.srcObject = this.localStream;
     localVideo.muted = true;
     localVideo.onloadedmetadata = () => localVideo.play();
 
-    // Draw the remote streams onto the canvas.
     const remoteVideos = [];
     Array.from(this.remoteStreams.values()).forEach((c, index) => {
       const remoteVideo = document.createElement("video");
@@ -677,15 +679,12 @@ class PeerManager {
       remoteVideos.push(remoteVideo);
     });
 
-    // Function to update the canvas with the video frames.
     const draw = () => {
       if (!this.recording) return;
 
-      // Clear the canvas to prevent ghosting.
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Calculate the number of columns and rows needed based on the number of videos.
-      const totalVideos = 1 + remoteVideos.length; // 1 for localVideo + all remoteVideos
+      const totalVideos = 1 + remoteVideos.length;
       const cols = Math.ceil(Math.sqrt(totalVideos));
       const rows = Math.ceil(totalVideos / cols);
       const videoWidth = canvas.width / cols;
@@ -707,10 +706,8 @@ class PeerManager {
       requestAnimationFrame(draw);
     };
 
-    // Start the drawing loop.
     draw();
 
-    // Mix the audio tracks.
     [
       this.localStream,
       ...Array.from(this.remoteStreams.values()).map((c) => c.remoteStream),
@@ -719,88 +716,45 @@ class PeerManager {
       source.connect(audioDestination);
     });
 
-    // Combine the canvas (video) and audioDestination (audio) into one stream.
     const combinedStream = new MediaStream([
       ...audioDestination.stream.getTracks(),
       ...canvas.captureStream(30).getTracks(),
     ]);
 
-    // Use the combined stream for the MediaRecorder.
     this.mediaRecorder = new MediaRecorder(combinedStream);
 
-    // Remaining part of your original function...
     this.mediaRecorder.start();
     this.mediaRecorder.ondataavailable = (e) => {
       if (e.data.size > 0) {
-        // Save each chunk to LocalForage directly.
-        localforage
-          .getItem("recorded_chunks")
-          .then((savedChunks) => {
-            savedChunks = savedChunks || [];
-            savedChunks.push(e.data);
-
-            localforage
-              .setItem("recorded_chunks", savedChunks)
-              .then(() => {
-                console.log("Chunk saved to localForage");
-              })
-              .catch((err) => {
-                console.error("Error saving chunk:", err);
-              });
-          })
-          .catch((err) => {
-            console.error("Error retrieving chunks:", err);
-          });
+        this.chunks.push(e.data);
       }
     };
 
     this.mediaRecorder.onstop = async () => {
-      // Retrieve the chunks from LocalForage
-      localforage
-        .getItem("recorded_chunks")
-        .then(async (chunks) => {
-          console.log(chunks);
-          if (chunks && chunks.length) {
-            // Combine all the chunks into a Blob
-            const blob = new Blob(chunks, { type: "video/webm" });
+      const blob = new Blob(this.chunks, { type: "video/webm" });
+      const defaultFileName = "recorded_call.webm";
+      const fileName =
+        (await sprompt("Please enter a recording name", defaultFileName)) || defaultFileName;
 
-            // Create an object URL for the Blob
-            const videoUrl = window.URL.createObjectURL(blob);
+      // Create an object URL for the Blob
+      const videoUrl = window.URL.createObjectURL(blob);
 
-            // Create a download link and append it to the body of the page
-            const downloadLink = document.createElement("a");
-            document.body.appendChild(downloadLink);
-            downloadLink.style = "display: none";
-            downloadLink.href = videoUrl;
-            downloadLink.download = "recorded_call.webm"; // Set your desired file name
-            downloadLink.click();
+      const downloadLink = document.createElement("a");
+      document.body.appendChild(downloadLink);
+      downloadLink.style = "display: none";
+      downloadLink.href = videoUrl;
+      downloadLink.download = fileName;
+      downloadLink.click();
 
-            // Optional: Revoke the object URL and remove the download link element
-            window.URL.revokeObjectURL(videoUrl);
-            downloadLink.remove();
-          }
+      window.URL.revokeObjectURL(videoUrl);
+      downloadLink.remove();
+      // Stop the audio context
+      if (audioContext.state !== "closed") {
+        audioContext.close();
+      }
 
-          // Reset chunks for the next recording
-          localforage
-            .removeItem("recorded_chunks")
-            .then(() => {
-              console.log("Chunks removed from localForage");
-            })
-            .catch((err) => {
-              console.error("Error removing chunks:", err);
-            });
-
-          // Stop the audio context
-          if (audioContext.state !== "closed") {
-            audioContext.close();
-          }
-
-          // Reset recording flag
-          this.recording = false;
-        })
-        .catch((err) => {
-          console.error("Error retrieving chunks:", err);
-        });
+      // Reset recording flag
+      this.recording = false;
     };
 
     return true;
