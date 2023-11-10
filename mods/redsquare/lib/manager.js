@@ -144,7 +144,6 @@ class TweetManager {
     );
   }
 
-
   render(new_mode = "") {
     //
     // remove notification at end
@@ -249,13 +248,13 @@ class TweetManager {
 
     this.loadProfile((txs) => {
       this.filterAndRenderProfile(txs);
-      if (this.profile.posts.length > 0){
-        this.app.connection.emit("update-profile-stats", "posts", this.profile.posts.length);  
+      if (this.profile.posts.length > 0) {
+        this.app.connection.emit("update-profile-stats", "posts", this.profile.posts.length);
       }
-      if (this.profile.replies.length > 0){
-        this.app.connection.emit("update-profile-stats", "replies", this.profile.replies.length);  
+      if (this.profile.replies.length > 0) {
+        this.app.connection.emit("update-profile-stats", "replies", this.profile.replies.length);
       }
-      
+
       this.hideLoader();
       this.profile.render();
     });
@@ -265,60 +264,57 @@ class TweetManager {
 
   loadProfile(mycallback) {
     if (this.mod.publicKey == this.profile.publicKey) {
-      this.app.storage.loadTransactions(
-        {
-          field1: "RedSquare",
-          field2: this.profile.publicKey,
-          limit: 100,
-        },
-        (txs) => {
-          if (mycallback) {
-            mycallback(txs);
-          }
-        },
-        "localhost"
-      );
-
       // Find likes...
       // I already have a list of tweets I liked available
       this.loadLikes(this.mod.liked_tweets, "localhost");
-
-    } else {
-
-      this.app.storage.loadTransactions(
-        {
-          field1: "RedSquare",
-          field2: this.profile.publicKey,
-          limit: 100,
-        },
-        (txs) => {
-          if (mycallback) {
-            mycallback(txs);
-          }
-        },
-        null //Query network
-      );
-
-      this.app.storage.loadTransactions(
-        { field1: "RedSquareLike", field2: this.profile.publicKey },
-        (txs) => {
-          let liked_tweets = [];
-          for (tx of txs) {
-            let txmsg = tx.returnMessage();
-
-            let sig = txmsg?.data?.signature;
-            if (sig && !liked_tweets.includes(sig)) {
-              liked_tweets.push(sig);
-            }
-          }
-
-          this.loadLikes(liked_tweets, null);
-        },
-        null
-      );
     }
-  }
 
+    this.app.storage.loadTransactions(
+      {
+        field1: "RedSquare",
+        field2: this.profile.publicKey,
+        limit: 100,
+      },
+      (txs) => {
+        if (mycallback) {
+          mycallback(txs);
+        }
+      },
+      "localhost"
+    );
+
+    this.app.storage.loadTransactions(
+      {
+        field1: "RedSquare",
+        field2: this.profile.publicKey,
+        limit: 100,
+      },
+      (txs) => {
+        if (mycallback) {
+          mycallback(txs);
+        }
+      },
+      null //Query network
+    );
+
+    this.app.storage.loadTransactions(
+      { field1: "RedSquareLike", field2: this.profile.publicKey },
+      (txs) => {
+        let liked_tweets = [];
+        for (tx of txs) {
+          let txmsg = tx.returnMessage();
+
+          let sig = txmsg?.data?.signature;
+          if (sig && !liked_tweets.includes(sig)) {
+            liked_tweets.push(sig);
+          }
+        }
+
+        this.loadLikes(liked_tweets, null);
+      },
+      null
+    );
+  }
 
   /*
     Liked tweets are more complicated than tweets I have sent because it is a 2-step look up
@@ -337,7 +333,11 @@ class TweetManager {
         likes_to_load--;
         this.profile.insertTweet(old_tweet, this.profile.likes);
         if (likes_to_load == 0) {
-          this.app.connection.emit("update-profile-stats", "likes", list_of_liked_tweet_sigs.length);
+          this.app.connection.emit(
+            "update-profile-stats",
+            "likes",
+            list_of_liked_tweet_sigs.length
+          );
         }
       } else {
         //
@@ -352,7 +352,11 @@ class TweetManager {
               this.profile.insertTweet(tweet, this.profile.likes);
             }
             if (likes_to_load == 0) {
-              this.app.connection.emit("update-profile-stats", "likes", list_of_liked_tweet_sigs.length);
+              this.app.connection.emit(
+                "update-profile-stats",
+                "likes",
+                list_of_liked_tweet_sigs.length
+              );
             }
           },
           peer
