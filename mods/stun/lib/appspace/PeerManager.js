@@ -13,7 +13,7 @@ class PeerManager {
 
     this.videoEnabled = true;
     this.audioEnabled = true;
-
+    this.recording = false;
     this.app.connection.on("stun-peer-manager-update-room-details", (room_obj) => {
       this.room_obj = room_obj;
     });
@@ -639,6 +639,64 @@ class PeerManager {
     }
     this.audioStreamAnalysis = setInterval(update, 1000);
     //requestAnimationFrame(update);
+  }
+
+  recordCall() {
+    this.recording = true;
+    this.mixed_streams = new MediaStream();
+    this.chunks = [];
+
+    console.log(this.localStream, this.remoteStreams, "streams");
+
+    // Using forEach to iterate over the tracks of localStream
+    this.localStream.getTracks().forEach((track) => {
+      console.log("local stream track", track, this.localStream);
+      this.mixed_streams.addTrack(track);
+    });
+
+    // Using forEach to iterate over remoteStreams
+    Array.from(this.remoteStreams.values()).forEach((c) => {
+      console.log(c.remoteStream, "remote stream");
+      c.remoteStream.getTracks().forEach((track) => {
+        console.log("track", track);
+        this.mixed_streams.addTrack(track);
+      });
+    });
+
+    console.log(this.mixed_streams, "mixed streams");
+    this.mediaRecorder = new MediaRecorder(this.mixed_streams);
+
+    this.mediaRecorder.start();
+    this.mediaRecorder.ondataavailable = (e) => {
+      console.log(this.chunks, "chunks gotten");
+      this.chunks.push(e.data);
+    };
+
+    this.mediaRecorder.onstop = () => {
+      console.log("recorder stopped");
+      const blob = new Blob(this.chunks, { type: "video/webm" }); // Adjust the MIME type if necessary
+      this.chunks = [];
+      const videoUrl = window.URL.createObjectURL(blob);
+      console.log(videoUrl);
+
+      // Create a download link and append it to the body of the page
+      const downloadLink = document.createElement("a");
+      document.body.appendChild(downloadLink);
+      downloadLink.style = "display: none";
+      downloadLink.href = videoUrl;
+      downloadLink.download = "recorded_video.webm"; // Name of the file to be downloaded
+      downloadLink.click();
+
+      // Optional: Remove the download link element after downloading
+      window.URL.revokeObjectURL(videoUrl);
+      downloadLink.remove();
+    };
+  }
+
+  stopRecordCall() {
+    this.mediaRecorder.stop();
+    this.recording = false;
+    console.log(this.mediaRecorder.state);
   }
 }
 

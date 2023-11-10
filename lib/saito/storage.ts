@@ -192,7 +192,7 @@ class Storage {
     }
   }
 
-  deleteTransactions(obj = {}, mycallback = null , peer = null) {
+  async deleteTransactions(obj = {}, mycallback = null , peer = null) {
     const message = "archive";
     let data: any = {};
     data.request = "multidelete";
@@ -201,7 +201,7 @@ class Storage {
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-        archive_mod.deleteTransactions(obj);
+        await archive_mod.deleteTransactions(obj);
         if (mycallback != null) { mycallback(); }
       }
       return;

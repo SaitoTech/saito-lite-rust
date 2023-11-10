@@ -225,6 +225,20 @@ class CallInterfaceVideo {
         this.toggleAudio();
       };
     });
+    document.querySelectorAll(".record-control").forEach((item) => {
+      item.onclick = () => {
+        // this.toggleAudio();
+
+        if (this.mod.peerManager.recording === true) {
+          console.log("stopping recording");
+          this.mod.peerManager.stopRecordCall();
+        } else {
+          console.log("recording");
+
+          this.mod.peerManager.recordCall();
+        }
+      };
+    });
     document.querySelectorAll(".display-control").forEach((item) => {
       item.onclick = () => {
         this.switchDisplay.render(this.display_mode);
@@ -269,16 +283,15 @@ class CallInterfaceVideo {
           this.app.browser.cancelDraggable("stun-chatbox");
         }
       });
-    }else{
-
+    } else {
       //
       // If in the stun app, all a request for full screen mode
-      // 
+      //
       let maximizer = document.querySelector(".stun-chatbox .maximizer");
-      if (maximizer){
+      if (maximizer) {
         maximizer.onclick = (e) => {
           this.app.browser.requestFullscreen();
-        }
+        };
       }
     }
 

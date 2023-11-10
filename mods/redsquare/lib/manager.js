@@ -42,9 +42,13 @@ class TweetManager {
             //
             if (this.mode === "tweets") {
               mod.loadTweets("earlier", (tx_count) => {
+                
+                console.log(`${tx_count} new tweets`);
+                
                 this.hideLoader();
 
                 if (this.mode !== "tweets") {
+                  console.log("Not on main feed anymore");
                   return;
                 }
 
