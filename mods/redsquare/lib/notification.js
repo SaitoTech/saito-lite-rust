@@ -51,6 +51,11 @@ class RedSquareNotification {
 
         //Process as normal
         if (txmsg.request == "like tweet") {
+
+          if (this.mod.publicKey != tweet_tx.tx.from[0].publicKey) {
+            return null;
+          }
+          
           this.tweet = new Tweet(
             this.app,
             this.mod,
