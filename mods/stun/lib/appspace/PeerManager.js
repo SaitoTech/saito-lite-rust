@@ -734,7 +734,7 @@ class PeerManager {
       const blob = new Blob(this.chunks, { type: "video/webm" });
       const defaultFileName = "recorded_call.webm";
       const fileName =
-        (await sprompt("Please enter a recording name", defaultFileName)) || defaultFileName;
+        (await sprompt("Please enter a recording name", "recorded_call")) || defaultFileName;
 
       // Create an object URL for the Blob
       const videoUrl = window.URL.createObjectURL(blob);
