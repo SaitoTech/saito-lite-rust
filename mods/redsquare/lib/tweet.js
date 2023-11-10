@@ -188,11 +188,19 @@ class Tweet {
   }
 
   isPost() {
+    let txmsg = this.tx.returnMessage();
+    if (txmsg.request != "create tweet") {
+      return false;
+    }
     if (this.parent_id == "") { return true; }
     return false;
   }
 
   isReply() {
+    let txmsg = this.tx.returnMessage();
+    if (txmsg.request != "create tweet") {
+      return false;
+    }
     if (this.parent_id != "") { return true; }
     return false;
   }

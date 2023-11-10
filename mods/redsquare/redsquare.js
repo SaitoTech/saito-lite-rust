@@ -571,7 +571,6 @@ class RedSquare extends ModTemplate {
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);
-                count += this.addTweet(txs[z]);
 
                 //timestamp is the original timestamp of the create tweet transaction
                 if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
@@ -581,6 +580,8 @@ class RedSquare extends ModTemplate {
                 if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
                   this.peers[i].tweets_latest_ts = txs[z].updated_at;
                 }
+
+                count += this.addTweet(txs[z]);
 
                 let tweet = this.returnTweet(txs[z].signature);
                 if (tweet) {
@@ -592,6 +593,7 @@ class RedSquare extends ModTemplate {
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
+              console.log(`Peer ${this.peers[i].publicKey} doesn't have any earlier tweets`);
             }
 
             if (mycallback) {
@@ -747,7 +749,6 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
-    tweet.updated_at = tx.timestamp;
     let is_notification = 0;
 
     //
@@ -755,10 +756,6 @@ class RedSquare extends ModTemplate {
     //
     if (!tweet?.tx) {
       return 0;
-    }
-
-    if (!tweet.tx.optional) {
-      tweet.tx.optional = {};
     }
 
     //

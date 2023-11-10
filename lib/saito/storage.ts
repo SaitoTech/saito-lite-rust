@@ -149,7 +149,6 @@ class Storage {
     // idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
     //
     let internal_callback = (res) => {
-      console.log("internal callback: " + res?.length);
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
