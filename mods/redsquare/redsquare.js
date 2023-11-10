@@ -935,15 +935,20 @@ class RedSquare extends ModTemplate {
           console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
           if (this.tweets[i].addTweet(tweet)) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-            return 1;
+            
+            // We don't want to return 1 here, because most replies will be "quiet"
+            // so it doesn't help to announce new tweets and then have it just be a reply down somewhere 
+            // in the feed.... unless we attach the reply, and move the parent up to the top of the feed...
+
           }
         }
       }
 
-      console.log("^");
-      console.log("^");
-      console.log("^");
-      console.log("^ pushed onto unknown children: ");
+      //
+      // I wonder if maybe we should just add these to the feed as if they were original posts...
+      //
+
+      console.log("RS: pushed onto unknown children: ", tweet.text);
       this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
     }
