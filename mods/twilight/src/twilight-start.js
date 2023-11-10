@@ -5063,7 +5063,9 @@ console.log("getPrivateKey(): " + privateKey);
   cancelBackButtonFunction() {
     this.hud.back_button = false;
     this.hud.back_button_callback = null;
-    this.unbindBackButtonFunction();
+  }
+  unbindBackButtonFunction() {
+    this.cancelBackButtonFunction();
   }
   bindBackButtonFunction(mycallback) {
     this.hud.back_button = true;
