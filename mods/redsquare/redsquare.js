@@ -596,6 +596,12 @@ class RedSquare extends ModTemplate {
                   this.peers[i].tweets_earliest_ts = txs[z].timestamp;
                 }
 
+                //
+                // If we have a large gap of time, where are 200 new tweets are later than our local tweets,
+                // but those get processed and set our earliest timestamp, then we miss everything between the
+                // initial limited load and what we had saved locally...
+                //
+
                 if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
                   this.peers[i].tweets_latest_ts = txs[z].updated_at;
                 }
@@ -783,13 +789,13 @@ class RedSquare extends ModTemplate {
     // NOTE -- addNotification() duplicates while avoiding this.tweets insertion
     //
     if (tx.isTo(this.publicKey)) {
-      console.log("RS: Processing Tweet/Like directed to me");
+      //console.log("RS: Processing Tweet/Like directed to me");
 
       //
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.publicKey)) {
-        console.log("Not from me");
+        //console.log("Not from me");
 
         let insertion_index = 0;
         if (prepend == false) {
@@ -1100,7 +1106,7 @@ class RedSquare extends ModTemplate {
   }
 
   async receiveLikeTransaction(blk, tx, conf, app) {
-    console.log("RS: receive like transaction!");
+    //console.log("RS: receive like transaction!");
 
     let txmsg = tx.returnMessage();
 
@@ -1111,7 +1117,7 @@ class RedSquare extends ModTemplate {
     //
 
     if (liked_tweet?.tx) {
-      console.log("I have liked tweet locally");
+      //console.log("I have liked tweet locally");
 
       if (!liked_tweet.tx.optional) {
         liked_tweet.tx.optional = {};
@@ -1154,7 +1160,7 @@ class RedSquare extends ModTemplate {
             }
             tx.optional.num_likes++;
 
-            console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
+            //console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
             await this.app.storage.updateTransaction(tx, {}, "localhost");
           }
         },
@@ -1171,22 +1177,18 @@ class RedSquare extends ModTemplate {
       //
       if (tx.isTo(this.publicKey)) {
         //
-        // Save locally -- indexed to myKey so it is accessible as a notification
-        //
-        // I'm not sure we really want to save these...
-        ///
-        await this.app.storage.saveTransaction(
-          tx,
-          { field1: "RedSquare", field3: this.publicKey },
-          "localhost"
-        );
-
-        //
         // convert like into tweet and addTweet to get notifications working
         //
         this.addTweet(tx, true);
       }
     }
+
+    //
+    // Save locally -- indexed to myKey so it is accessible as a notification
+    //
+    // I'm not sure we really want to save these like this... but it may work out for profile views...
+    //
+    await this.app.storage.saveTransaction(tx, { field1: "RedSquareLike" }, "localhost");
 
     return;
   }

@@ -42,9 +42,8 @@ class TweetManager {
             //
             if (this.mode === "tweets") {
               mod.loadTweets("earlier", (tx_count) => {
-                
                 console.log(`${tx_count} new tweets`);
-                
+
                 this.hideLoader();
 
                 if (this.mode !== "tweets") {
@@ -109,7 +108,7 @@ class TweetManager {
 
             //
             // load more profile tweets
-            //
+            /*
             if (this.mode === "profile") {
               this.profile.loadProfile((txs) => {
                 if (this.mode !== "profile") {
@@ -133,7 +132,7 @@ class TweetManager {
                   }
                 } 
               });
-            }
+            }*/
           }
         });
       },
@@ -143,15 +142,6 @@ class TweetManager {
         threshold: 1,
       }
     );
-  }
-
-  listContainsTweet(list, tweet) {
-    for (let z = 0; z < list.length; z++) {
-      if (tweet.tx.signature == list[z].tx.signature) {
-        return true;
-      }
-    }
-    return false;
   }
 
 
@@ -242,7 +232,6 @@ class TweetManager {
     this.attachEvents();
   }
 
-
   renderProfile(publicKey) {
     this.mode = "profile";
 
@@ -252,26 +241,124 @@ class TweetManager {
 
     //Reset Profile
     if (publicKey != this.profile.publicKey) {
-      this.profile.posts = [];
-      this.profile.replies = [];
-      this.profile.publicKey = publicKey;
+      this.profile.reset(publicKey);
     }
 
-    this.profile.profile_earliest_ts = new Date().getTime();
-
     this.profile.render();
+    this.showLoader();
 
-    this.profile.loadProfile((txs) => {
-      console.log("Finished loading profile");
-      console.log(txs);
+    this.loadProfile((txs) => {
       this.filterAndRenderProfile(txs);
-
-      setTimeout(() => {
-        this.hideLoader();
-      }, 50);
+      if (this.profile.posts.length > 0){
+        this.app.connection.emit("update-profile-stats", "posts", this.profile.posts.length);  
+      }
+      if (this.profile.replies.length > 0){
+        this.app.connection.emit("update-profile-stats", "replies", this.profile.replies.length);  
+      }
+      
+      this.hideLoader();
+      this.profile.render();
     });
 
     this.attachEvents();
+  }
+
+  loadProfile(mycallback) {
+    if (this.mod.publicKey == this.profile.publicKey) {
+      this.app.storage.loadTransactions(
+        {
+          field1: "RedSquare",
+          field2: this.profile.publicKey,
+          limit: 100,
+        },
+        (txs) => {
+          if (mycallback) {
+            mycallback(txs);
+          }
+        },
+        "localhost"
+      );
+
+      // Find likes...
+      // I already have a list of tweets I liked available
+      this.loadLikes(this.mod.liked_tweets, "localhost");
+
+    } else {
+
+      this.app.storage.loadTransactions(
+        {
+          field1: "RedSquare",
+          field2: this.profile.publicKey,
+          limit: 100,
+        },
+        (txs) => {
+          if (mycallback) {
+            mycallback(txs);
+          }
+        },
+        null //Query network
+      );
+
+      this.app.storage.loadTransactions(
+        { field1: "RedSquareLike", field2: this.profile.publicKey },
+        (txs) => {
+          let liked_tweets = [];
+          for (tx of txs) {
+            let txmsg = tx.returnMessage();
+
+            let sig = txmsg?.data?.signature;
+            if (sig && !liked_tweets.includes(sig)) {
+              liked_tweets.push(sig);
+            }
+          }
+
+          this.loadLikes(liked_tweets, null);
+        },
+        null
+      );
+    }
+  }
+
+
+  /*
+    Liked tweets are more complicated than tweets I have sent because it is a 2-step look up
+    We can find the 1, 2...n txs where I liked the tweet, which contains the signature of the original 
+    tweet transaction. Fortunately, if I am looking at my own profile, I should have everything stored locally
+  */
+  loadLikes(list_of_liked_tweet_sigs, peer) {
+    let likes_to_load = list_of_liked_tweet_sigs.length;
+
+    for (let sig of list_of_liked_tweet_sigs) {
+      //
+      // We may already have the liked tweet in memory
+      //
+      let old_tweet = this.mod.returnTweet(sig);
+      if (old_tweet) {
+        likes_to_load--;
+        this.profile.insertTweet(old_tweet, this.profile.likes);
+        if (likes_to_load == 0) {
+          this.app.connection.emit("update-profile-stats", "likes", list_of_liked_tweet_sigs.length);
+        }
+      } else {
+        //
+        // Otherwise, we gotta hit up the archive
+        //
+        this.app.storage.loadTransactions(
+          { field1: "RedSquare", sig },
+          (txs) => {
+            likes_to_load--;
+            for (let z = 0; z < txs.length; z++) {
+              let tweet = new Tweet(this.app, this.mod, txs[z]);
+              this.profile.insertTweet(tweet, this.profile.likes);
+            }
+            if (likes_to_load == 0) {
+              this.app.connection.emit("update-profile-stats", "likes", list_of_liked_tweet_sigs.length);
+            }
+          },
+          peer
+        );
+      }
+    }
   }
 
   filterAndRenderProfile(txs) {
@@ -279,20 +366,10 @@ class TweetManager {
       let tweet = new Tweet(this.app, this.mod, txs[z]);
       if (tweet?.noerrors) {
         if (tweet.isPost()) {
-          if (!this.listContainsTweet(this.profile.posts, tweet)) {
-            this.profile.posts.push(tweet);
-          }
-          if (this.tab == "posts") {
-            tweet.render();
-          }
+          this.profile.insertTweet(tweet, this.profile.posts);
         }
         if (tweet.isReply()) {
-          if (!this.listContainsTweet(this.profile.replies, tweet)) {
-            this.profile.replies.push(tweet);
-          }
-          if (this.tab == "replies") {
-            tweet.render();
-          }
+          this.profile.insertTweet(tweet, this.profile.replies);
         }
       }
     }
@@ -346,9 +423,7 @@ class TweetManager {
         this.intersectionObserver.observe(ob);
       }
     }
-
   }
-
 
   showLoader() {
     this.loader.show();
