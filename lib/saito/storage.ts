@@ -198,7 +198,6 @@ class Storage {
     const message = "archive";
     let data: any = {};
     data.request = "delete";
-    data = Object.assign(data, obj);
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
@@ -209,7 +208,7 @@ class Storage {
     }
 
     if (peer != null) {
-      this.app.network.sendRequestAsTransaction(message, data, function (obj) {
+      this.app.network.sendRequestAsTransaction(message, data, function () {
         if (mycallback != null) { mycallback(); }
       });
     }

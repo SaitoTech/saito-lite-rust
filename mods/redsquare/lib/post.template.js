@@ -6,7 +6,7 @@ module.exports = (app, mod, post) => {
 
   return `
 
-    <div class="tweet-overlay" id="tweet-overlay">
+    <div class="tweet-overlay hide-scrollbar" id="tweet-overlay">
       <div class="tweet-overlay-content">
         <div class="tweet-overlay-header"></div>
 
