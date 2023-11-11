@@ -2019,28 +2019,43 @@ return;
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) { 
 
-	      let mobj = {
-		space : space ,
-		faction : faction ,
-		source : source_spacekey ,
-		destination : destination_spacekey ,
- 	      }
-   	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+              let unmoved_units = [];
+              let moved_units = [];
 
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
 
-              let html = "<ul>";
-              for (let i = 0; i < space.units[faction].length; i++) {
-                if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-                  if (units_to_move.includes(parseInt(i))) {
-                    html += `<li class="option" style="font-weight:bold" id="${i}">* ${space.units[faction][i].name} *</li>`;
-                  } else {
-                    html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+	      for (let key in space.units) {
+                if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
+                  for (let i = 0; i < space.units[key].length; i++) {
+                    if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
+                      let does_units_to_move_have_unit = false;
+                      for (let z = 0; z < units_to_move.length; z++) {
+                        if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
+                      }
+                      if (does_units_to_move_have_unit) {
+                        html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[key][i].name} (${key})*</li>`;
+                        moved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
+                      } else {
+                        html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
+                        unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
+                      }
+                    }
                   }
                 }
+	      }
+
+              let mobj = {
+                space : space ,
+                faction : faction ,
+                source : spacekey ,
+                unmoved_units : unmoved_units ,
+                moved_units : moved_units ,
+                destination : "" ,
               }
+
+              his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
               html += `<li class="option" id="end">finish</li>`;
               html += "</ul>";
 
@@ -2051,43 +2066,43 @@ return;
 
                 let id = $(this).attr("id");
 
-                if (id === "end") {
-		  his_self.movement_overlay.hide();
-		  selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-                  return;
-                }
+	        if (id === "end") {
+	          his_self.movement_overlay.hide();
+	          selectDestinationInterface(his_self, units_to_move);
+	          return;
+	        }
 
-		//
-		// check for max formation size
-		//
-		let unitno = 0;
-		for (let i = 0; i < units_to_move.length; i++) {
-		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
-		  if (unitno >= max_formation_size) { 
-		    max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
-	            if (unitno >= max_formation_size) { 
-	              alert("Maximum Formation Size: " + max_formation_size);
-	              return;
-		    }
-		  }
-		}
+	        let x = id.split("-");
+	        let f = x[0];
+	        let idx = x[1];
 
-	        if (units_to_move.includes(id)) {
-	          let idx = units_to_move.indexOf(id);
-	          if (idx > -1) {
-  		    units_to_move.splice(idx, 1);
+	        let does_units_to_move_have_unit = false;
+	        for (let z = 0; z < units_to_move.length; z++) {
+	          if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	        }
+
+	        if (does_units_to_move_have_unit) {
+	          for (let z = 0; z < units_to_move.length; z++) {
+	            if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
 	          }
 	        } else {
-	          if (!units_to_move.includes(parseInt(id))) {
-	            units_to_move.push(parseInt(id));
-	          } else {
-		    for (let i = 0; i < units_to_move.length; i++) {
-		      if (units_to_move[i] === parseInt(id)) {
-		        units_to_move.splice(i, 1);
-		        break;
+
+	          //
+	          // check for max formation size
+	          //
+	          let unitno = 0;
+	          for (let i = 0; i < units_to_move.length; i++) {
+	            if (space.units[units_to_move[i].faction][units_to_move[i].idx].command_value == 0) { unitno++; }
+	            if (unitno >= max_formation_size) { 
+		      max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	              if (unitno >= max_formation_size) { 
+	                alert("Maximum Formation Size: " + max_formation_size);
+	                return;
 		      }
-		    }
+	            }
 	          }
+
+	          units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
 	        }
 
                 selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
