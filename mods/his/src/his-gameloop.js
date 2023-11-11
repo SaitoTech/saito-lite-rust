@@ -659,7 +659,7 @@ if (this.game.state.scenario != "is_testing") {
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
           this.addRegular("papacy", "ravenna", 2);
-          this.addRegular("papacy", "ravenna", 2);
+          this.addRegular("papacy", "rome", 2);
           this.addUnrest("graz");
 
     	  this.activateMinorPower("papacy", "venice");

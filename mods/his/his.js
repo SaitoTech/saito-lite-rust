@@ -17222,7 +17222,7 @@ if (this.game.state.scenario != "is_testing") {
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
           this.addRegular("papacy", "ravenna", 2);
-          this.addRegular("papacy", "ravenna", 2);
+          this.addRegular("papacy", "rome", 2);
           this.addUnrest("graz");
 
     	  this.activateMinorPower("papacy", "venice");
@@ -26514,7 +26514,7 @@ return;
 	      units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
               for (let i = 0; i < units_to_move.length; i++) {
-                his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
               }
               his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -26531,6 +26531,7 @@ return;
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
+	      let html = '<ul>';
 
 	      for (let key in space.units) {
                 if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
@@ -26555,10 +26556,10 @@ return;
               let mobj = {
                 space : space ,
                 faction : faction ,
-                source : spacekey ,
+                source : source_spacekey ,
                 unmoved_units : unmoved_units ,
                 moved_units : moved_units ,
-                destination : "" ,
+                destination : destination_spacekey ,
               }
 
               his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
@@ -26887,18 +26888,11 @@ return;
 
 	    if (id === "auto") {
 	      for (let key in space.units) {
-	        if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
+	        if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
 	          for (let i = 0; i < space.units[key].length; i++) {
-		    let u = space.units[key][i];
 	            if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-		      if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.command_value > 0 || u.battle_rating > 0) {
-	                if (space.units[key][i].locked != true && (his_self.game.state.events.foul_weather != 1 && space.units[key][i].already_moved != 1)) {
-		          units_to_move.push({ faction : key , idx : i , type : u.type });
-		        } else {
-		          his_self.updateLog("Some units unable to auto-move because of Foul Weather");
-		        }
-		      }
-		    }
+		      units_to_move.push({ faction : key , idx : i , type : space.units[key][i].type });
+	            }
 	          }
 	        }
 	      }
@@ -27812,18 +27806,11 @@ return;
 
 	    if (id === "auto") {
 	      for (let key in space.units) {
-	        if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
+	        if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
 	          for (let i = 0; i < space.units[key].length; i++) {
-		    let u = space.units[key][i];
 	            if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-		      if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.command_value > 0 || u.battle_rating > 0) {
-	                if (space.units[key][i].locked != true && (his_self.game.state.events.foul_weather != 1 && space.units[key][i].already_moved != 1)) {
-		          units_to_move.push({ faction : key , idx : i , type : u.type });
-		        } else {
-		          his_self.updateLog("Some units unable to auto-move because of Foul Weather");
-		        }
-		      }
-		    }
+		      units_to_move.push({ faction : key , idx : i , type : space.units[key][i].type });
+	            }
 	          }
 	        }
 	      }
