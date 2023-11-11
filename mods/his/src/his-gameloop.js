@@ -658,6 +658,8 @@ if (this.game.state.scenario != "is_testing") {
           this.addArmyLeader("papacy", "ravenna", "renegade");
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
+          this.addRegular("papacy", "ravenna", 2);
+          this.addRegular("papacy", "ravenna", 2);
           this.addUnrest("graz");
 
     	  this.activateMinorPower("papacy", "venice");

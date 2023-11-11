@@ -2027,7 +2027,6 @@ return;
  	      }
    	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
-console.log("A");
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
@@ -2112,11 +2111,19 @@ console.log("A");
     let utm = [];
     if (units_to_move.length > 0) {
       if (typeof units_to_move[0] != "number") {
-        utm = units_to_move;
+	for (let z = 0; z < units_to_move.length; z++) {
+	  if (units_to_move[z].idx && !units_to_move[z].owner) {
+	    utm.push(this.game.spaces[spacekey].units[units_to_move[z].faction][units_to_move[z].idx]);
+	  } else {
+	    utm.push(units_to_move[z]);
+	  }
+	}
+	
       } else {
         for (let i = 0; i < units_to_move.length; i++) { utm.push(this.game.spaces[spacekey].units[faction][units_to_move[i]]); }
       }
     }
+
 
     let command_value_one = 0;
     let command_value_two = 0;
@@ -2277,21 +2284,6 @@ console.log("A");
 	    let f = x[0];
 	    let idx = x[1];
 
-	    //
-	    // check for max formation size
-	    //
-	    let unitno = 0;
-	    for (let i = 0; i < units_to_move.length; i++) {
-	      if (space.units[units_to_move[i].faction][units_to_move[i].idx].command_value == 0) { unitno++; }
-	      if (unitno >= max_formation_size) { 
-		max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
-	        if (unitno >= max_formation_size) { 
-	          alert("Maximum Formation Size: " + max_formation_size);
-	          return;
-		}
-	      }
-	    }
-
 	    let does_units_to_move_have_unit = false;
 	    for (let z = 0; z < units_to_move.length; z++) {
 	      if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
@@ -2302,6 +2294,23 @@ console.log("A");
 	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
 	      }
 	    } else {
+
+
+	      //
+	      // check for max formation size
+	      //
+	      let unitno = 0;
+	      for (let i = 0; i < units_to_move.length; i++) {
+	        if (space.units[units_to_move[i].faction][units_to_move[i].idx].command_value == 0) { unitno++; }
+	        if (unitno >= max_formation_size) { 
+		  max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	          if (unitno >= max_formation_size) { 
+	            alert("Maximum Formation Size: " + max_formation_size);
+	            return;
+		  }
+	        }
+	      }
+
 	      units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
 	    }
 
