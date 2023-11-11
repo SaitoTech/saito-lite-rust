@@ -1,4 +1,4 @@
-module.exports = MovementOverlayTemplate = (obj) => {
+module.exports = MovementOverlayTemplate = (obj, his_self) => {
 
 //    let obj = {
 //      faction : faction ,
@@ -11,20 +11,60 @@ module.exports = MovementOverlayTemplate = (obj) => {
 //      max_formation_size : max_formation_size ,
 //    };
 
-  let html = `<div class="movement-overlay"><div class="movement-table"><div class="movement-source">`;
+  if (!obj.to) { obj.to = "Unknown"; }
+
+  let html = `<div class="movement-overlay">
+    <div class="help">
+	<div class="movement-from">${obj.from}</div> to <div class="movement-to">${obj.to}</div></div>
+    <div class="movement-table"><div class="movement-source">`;
   for (let i = 0; i < obj.unmoved_units.length; i++) {
-    html += `<div class="movement-unit ${obj.unmoved_units[i].type}" id="${obj.unmoved_units[i].faction}-${obj.unmoved_units[i].idx}"></div>`;
+    let ucss = "";
+    let uclass = "";
+    let utype = obj.unmoved_units[i].type;
+    if (utype != "regular" && utype != "mercenary" && utype != "cavalry") {
+      uclass = "army-unit"
+      ucss = `background-image:url('/his/img/tiles/army/${his_self.army[utype].img}');background-size:cover;`;
+    }
+    html += `
+	     <div class="movement-unit option ${uclass} ${obj.unmoved_units[i].type}" id="${obj.unmoved_units[i].faction}-${obj.unmoved_units[i].idx}">
+	       <div class="movement-unit-img" style="${ucss}"></div>
+	       <div class="movement-unit-type">${obj.unmoved_units[i].type}</div>
+	       <div class="movement-type-faction">${obj.unmoved_units[i].faction}</div>
+             </div>
+	`;
   }
   html += `</div>`;
 
   html += `<div class="movement-destination">`;
   for (let i = 0; i < obj.destination_units.length; i++) {
-    html += `<div class="movement-unit immobile ${obj.destination_units[i].type}" id="${obj.destination_units[i].faction}-${obj.destination_units[i].idx}"></div>`;
+    let ucss = "";
+    let uclass = "";
+    let utype = obj.destination_units[i].type;
+    if (utype != "regular" && utype != "mercenary" && utype != "cavalry") {
+      uclass = "army-unit"
+      ucss = `background-image:url('/his/img/tiles/army/${his_self.army[utype].img}');background-size:cover;`;
+    }
+    html += `<div class="movement-unit immobile ${uclass} ${obj.destination_units[i].type}" id="${obj.destination_units[i].faction}-${obj.destination_units[i].idx}">
+	       <div class="movement-unit-img" style="${ucss}"></div>
+	       <div class="movement-unit-type">${obj.destination_units[i].type}</div>
+	       <div class="movement-type-faction">${obj.destination_units[i].faction}</div>
+            </div>`;
   }
   for (let i = 0; i < obj.moved_units.length; i++) {
-    html += `<div class="movement-unit ${obj.moved_units[i].type}" id="${obj.moved_units[i].faction}-${obj.moved_units[i].idx}"></div>`;
+    let ucss = "";
+    let uclass = "";
+    let utype = obj.moved_units[i].type;
+    if (utype != "regular" && utype != "mercenary" && utype != "cavalry") {
+      uclass = "army-unit"
+      ucss = `background-image:url('/his/img/tiles/army/${his_self.army[utype].img}');background-size:cover;`;
+    }
+    html += `<div class="movement-unit option ${uclass} ${obj.moved_units[i].type}" id="${obj.moved_units[i].faction}-${obj.moved_units[i].idx}">
+	       <div class="movement-unit-img" style="${ucss}"></div>
+	       <div class="movement-unit-type">${obj.moved_units[i].type}</div>
+	       <div class="movement-type-faction">${obj.moved_units[i].faction}</div>
+	    </div>`;
   }
-  html += `</div></div></div>`;
+  html += `</div></div><div class="movement-submit-button option" id="end">confirm and move</div></div>`;
 
   return html;
 }

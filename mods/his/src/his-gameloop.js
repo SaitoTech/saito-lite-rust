@@ -655,7 +655,7 @@ if (this.game.state.scenario != "is_testing") {
    
 
           this.addMercenary("papacy", "siena", 4);
-          this.addArmyLeader("papacy", "siena", "renegade");
+          this.addArmyLeader("papacy", "ravenna", "renegade");
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
           this.addUnrest("graz");
@@ -1756,12 +1756,10 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let defender = mv[4];
 	  let defender_spacekey = mv[5];
 	  let controller_of_defender = this.returnPlayerCommandingFaction(defender);
-
-console.log("defender is: " + mv[4]);
-console.log("player controlling defender? " + controller_of_defender);
-console.log("i am player: " + this.game.player);
+	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
 
 	  if (controller_of_defender == 0) { return 1; }
+	  if (controller_of_defender == controller_of_attacker) { return 1; }
 
 	  if (this.game.player == controller_of_defender) {
 	    this.playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey);
