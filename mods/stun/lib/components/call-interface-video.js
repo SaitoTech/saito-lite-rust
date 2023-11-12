@@ -199,7 +199,6 @@ class CallInterfaceVideo {
     }
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
-      //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
       this.app.connection.emit("open-chat-with", { id: this.chat_group.id });
     });
 
@@ -225,20 +224,44 @@ class CallInterfaceVideo {
         this.toggleAudio();
       };
     });
-    document.querySelectorAll(".record-control").forEach((item) => {
-      item.onclick = () => {
-        // this.toggleAudio();
 
-        if (this.mod.peerManager.recording === true) {
-          console.log("stopping recording");
-          this.mod.peerManager.stopRecordCall();
-        } else {
-          console.log("recording");
+    document.getElementById("record-icon").onclick = async () => {
+      const recordIcon = document.querySelector("#record-icon i");
+      const recordLabel = document.querySelector("#record-icon label");
 
-          this.mod.peerManager.recordCall();
-        }
+      const formatTime = (totalSeconds) => {
+        const hours = Math.floor(totalSeconds / 3600)
+          .toString()
+          .padStart(2, "0");
+        const minutes = Math.floor((totalSeconds % 3600) / 60)
+          .toString()
+          .padStart(2, "0");
+        const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+        return `${hours}:${minutes}:${seconds}`;
       };
-    });
+
+      if (this.mod.peerManager.recording === true) {
+        console.log("stopping recording");
+        this.mod.peerManager.stopRecordCall();
+
+        clearInterval(this.recordingInterval);
+
+        recordLabel.textContent = "Record";
+        recordIcon.classList.remove("recording");
+      } else {
+        let recording = await this.mod.peerManager.recordCall();
+        if (!recording) return;
+        let totalSeconds = 0;
+        recordLabel.textContent = "00:00:00";
+        this.recordingInterval = setInterval(() => {
+          totalSeconds++;
+          recordLabel.textContent = `${formatTime(totalSeconds)}`;
+        }, 1000);
+
+        recordIcon.classList.add("recording");
+      }
+    };
+
     document.querySelectorAll(".display-control").forEach((item) => {
       item.onclick = () => {
         this.switchDisplay.render(this.display_mode);
