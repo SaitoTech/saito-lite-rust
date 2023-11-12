@@ -51,7 +51,6 @@ class RedSquareNotification {
 
         //Process as normal
         if (txmsg.request == "like tweet") {
-          
           this.tweet = new Tweet(
             this.app,
             this.mod,
