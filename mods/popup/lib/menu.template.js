@@ -4,7 +4,7 @@ module.exports = () => {
       <ul class="header">
 	<li class="option">Chinese Lessons</li>
 	<li class="option">Vocabulary</li>
-	<li class="option">Tools & Resources</li>
+	<li class="option popup-review">Popup Review</li>
       </ul>
       <ul class="subheader">
 

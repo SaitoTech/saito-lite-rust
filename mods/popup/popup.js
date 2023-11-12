@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const PopupLesson = require("./lib/lesson");
 const PopupMenu = require("./lib/menu");
+const PopupReview = require("./lib/review");
 const PopupMain = require("./lib/main");
 const PopupLessonManager = require("./lib/manager");
 const PeerService = require("saito-js/lib/peer_service").default;
@@ -20,7 +21,6 @@ class Popup extends ModTemplate {
     this.icon_fa = "fa-solid fa-language";
 
     this.styles = ["/popup/style.css"];
-
     this.peers = [];
 
     this.social = {
@@ -89,6 +89,7 @@ class Popup extends ModTemplate {
       this.main = new PopupMain(this.app, this);
       this.manager = new PopupLessonManager(this.app, this);
       this.lesson = new PopupLesson(this.app, this);
+      this.review = new PopupReview(this.app, this);
 
       this.addComponent(this.header);
       this.addComponent(this.main);
@@ -308,6 +309,18 @@ console.log(sql);
     if (!this.app.options.popup) {
       this.app.options.popup = {};
     }
+    if (!this.app.options.popup.display) {
+      this.app.options.popup.display = {}
+      this.app.options.popup.display.simplified = 1;
+      this.app.options.popup.display.traditional = 0;
+      this.app.options.popup.display.pinyin = 1;
+      this.app.options.popup.display.english = 1;
+      this.app.options.popup.display.part_of_speech = 0;
+    }
+    if (!this.app.options.popup.review) {
+      this.app.options.popup.review = {};
+      this.app.options.popup.review.enable = 1;
+    }
 
     localforage.getItem(`popup_vocabulary`, (error, value) => {
       if (value && value.length > 0) {
@@ -326,8 +339,16 @@ console.log(sql);
 
   save() {
 
-    if (!this.app.options?.redsquare) {
-      this.app.options.redsquare = {};
+    if (!this.app.options?.popup) {
+      this.app.options.popup = {};
+      this.app.options.popup.display = {}
+      this.app.options.popup.display.simplified = 1;
+      this.app.options.popup.display.traditional = 1;
+      this.app.options.popup.display.pinyin = 1;
+      this.app.options.popup.display.english = 1;
+      this.app.options.popup.display.part_of_speech = 1;
+      this.app.options.popup.review = {};
+      this.app.options.popup.review.enable = 1;
     }
 
     this.saveOptions();

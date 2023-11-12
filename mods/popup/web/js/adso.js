@@ -1,20 +1,4 @@
 
-function show_lightbox() {
- $.fancybox({
-        content: $('#lightbox_content'),
-        fitToView       : false,
-        width           : '860px',
-        height          : '400px',
-        autoSize        : false,
-        closeClick      : false,
-        openEffect      : 'none',
-        closeEffect     : 'none'
- });
-}
-function hide_lightbox() {
- $.fancybox.close();
-}
-
 
 /* Server Manipulates These */
 var firstdefinition = "";
@@ -90,10 +74,8 @@ function adso_callback() {};
 
 /* Showing, Hiding and Positioning the Tooltip */
 function show_tooltip() {
-
   tooltip.style.visibility = "visible";
   is_tooltip_visible = 1;
-
 }
 function save_tooltip() {
 
