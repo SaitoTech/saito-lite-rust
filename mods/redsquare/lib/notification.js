@@ -51,10 +51,6 @@ class RedSquareNotification {
 
         //Process as normal
         if (txmsg.request == "like tweet") {
-
-          if (this.mod.publicKey != tweet_tx.tx.from[0].publicKey) {
-            return null;
-          }
           
           this.tweet = new Tweet(
             this.app,
@@ -79,7 +75,13 @@ class RedSquareNotification {
             return;
           } else {
             html = LikeNotificationTemplate(this.app, this.mod, this.tx);
-            this.user.notice = "</i> <span class='notification-type'>liked your tweet</span>";
+            let msg = "liked your tweet";
+
+            if (this.mod.publicKey != tweet_tx.tx.from[0].publicKey) {
+              msg = "liked a tweet sent to you";
+            }
+
+            this.user.notice = `</i> <span class='notification-type'>${msg}</span>`;
           }
         } else if (txmsg.request == "create tweet") {
 
