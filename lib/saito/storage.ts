@@ -149,7 +149,6 @@ class Storage {
     // idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
     //
     let internal_callback = (res) => {
-      console.log("internal callback: " + res?.length);
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
@@ -190,6 +189,30 @@ class Storage {
       });
       return;
     }
+  }
+
+  async deleteTransaction(tx = null, mycallback = null, peer = null) {
+
+    if (tx == null) { return; }
+
+    const message = "archive";
+    let data: any = {};
+    data.request = "delete";
+
+    if (peer === "localhost") {
+      let archive_mod = this.app.modules.returnModule("Archive");
+      if (archive_mod) {
+        await archive_mod.deleteTransaction(tx);
+      }
+      return;
+    }
+
+    if (peer != null) {
+      this.app.network.sendRequestAsTransaction(message, data, function () {
+        if (mycallback != null) { mycallback(); }
+      });
+    }
+
   }
 
   async deleteTransactions(obj = {}, mycallback = null , peer = null) {

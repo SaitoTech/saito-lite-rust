@@ -81,32 +81,37 @@ class RedSquareMain {
         // check if we can refresh page (show tweets immediately) or show prompt / button
         //
         if (num_tweets > 0) {
-          if (this.canRefreshPage()) {
-            console.log("postcache-render-request: can refresh the page!");
-            try {
-              document.querySelector(".saito-main").innerHTML = "";
-            } catch (err) {
-              console.errors(err);
-            }
-            this.manager.render("tweets");
-          } else {
-            console.log("postcache-render-request: CANNOT refresh the page!");
-            /*
-              We seem to be missing a hidden element that encourages us to scroll to insert the new tweets 
-              at the top of the feed and scroll up there
-            */
 
-            if (!document.getElementById("saito-new-tweets")) {
-              this.app.browser.prependElementToSelector(
-                `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
-                ".saito-main"
-              );
-            }
+          //
+          // Don't insert new tweets or button if looking at a tweet or profile
+          //
+          if (this.manager.mode == "tweets") {
+            if (this.canRefreshPage()) {
+              console.log("postcache-render-request: refresh the page automatically!");
+              try {
+                document.querySelector(".saito-main").innerHTML = "";
+              } catch (err) {
+                console.errors(err);
+              }
+              this.manager.render("tweets");
+            } else {
+              console.log("postcache-render-request: CANNOT refresh the page!");
 
-            document.getElementById("saito-new-tweets").onclick = (e) => {
-              this.app.connection.emit("redsquare-home-render-request", true);
-            };
+              if (!document.getElementById("saito-new-tweets")) {
+                this.app.browser.prependElementToSelector(
+                  `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
+                  ".saito-main"
+                );
+              }
+
+              document.getElementById("saito-new-tweets").onclick = (e) => {
+                this.app.connection.emit("redsquare-home-render-request", true);
+              };
+            }
           }
+
+          // So it will automatically insert new tweets if we navigate back to the main feed from looking at something else??
+
         }
       }, 1000);
     });
@@ -330,14 +335,6 @@ class RedSquareMain {
     //
     if (this.hasScrolledDown) {
       console.log("Scrolled down");
-      return 0;
-    }
-
-    //
-    // Don't insert new tweets if looking at a tweet or profile
-    //
-    console.log("Tweet manager: ", this.manager.mode);
-    if (this.manager.mode !== "tweets") {
       return 0;
     }
 

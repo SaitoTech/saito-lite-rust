@@ -426,10 +426,12 @@ class Archive extends ModTemplate {
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //
+    //newObj.signature = obj?.signature || obj?.sig || tx?.signature || "";
+
     sql = `DELETE FROM archives WHERE archives.sig = $sig`;
-    params = { $sig: tx.transaction.sig };
-    await this.app.storage.executeDatabase(sql3, params3, "archive");
-    where_obj["sig"] = tx.transaction.sig;
+    params = { $sig: tx.signature };
+    await this.app.storage.executeDatabase(sql, params, "archive");
+    where_obj["sig"] = tx.signature;
 
     //
     // browsers handle with localDB search
@@ -536,7 +538,6 @@ class Archive extends ModTemplate {
         from: "archives",
         where: where_obj,
       });
-console.log("DELETED FROM localDB! ");
     }
 
     return;
@@ -595,6 +596,24 @@ console.log("DELETED FROM localDB! ");
     sql = `DELETE FROM archives WHERE owner != "" AND updated_at < $ts AND preserve = 0`;
     params = { $ts: ts };
     await this.app.storage.executeDatabase(sql, params, "archive");
+
+
+    //
+    // localDB
+    //
+    // in order to avoid data simply building-up for eternity, and especially for content
+    // saved such as likes, our pruning is turned off explicitly for anything where the
+    // preserve flag is set to 0.
+    //
+    if (this.app.BROWSER) {
+      where_obj = { created_at: { ">": ts } };
+      where_obj["preserve"] = 0;
+      rows = await this.localDB.remove({
+        from: "archives",
+        where: where_obj,
+      });
+    }
+
 
 
     x = Math.random();

@@ -77,11 +77,11 @@ class Library extends ModTemplate {
     //
     app.connection.on("saito-save-transaction", (tx) => {
 
-      console.log("---------------------");
-      console.log("---------------------");
-      console.log("IN LIBRARY ON SAVE TX");
-      console.log("---------------------");
-      console.log("---------------------");
+//      console.log("---------------------");
+//      console.log("---------------------");
+//      console.log("IN LIBRARY ON SAVE TX");
+//      console.log("---------------------");
+//      console.log("---------------------");
 
       //
       // fetch information for index

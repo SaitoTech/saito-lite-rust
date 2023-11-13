@@ -65,6 +65,7 @@
 
 .tweet-overlay .tweet-main {
   overflow-y: auto;
+  max-height: calc(95vh - 40rem);
   height: min-content;
 }
 

@@ -3,6 +3,8 @@
  *
  */
 
+const localforage = require("localforage");
+
 class PeerManager {
   constructor(app, mod) {
     this.app = app;
@@ -641,56 +643,121 @@ class PeerManager {
     //requestAnimationFrame(update);
   }
 
-  recordCall() {
+  async recordCall() {
+    localforage.config({
+      driver: localforage.INDEXEDDB,
+      name: "VideoCall",
+      storeName: "keyvaluepairs",
+      description: "Video Chunks data store",
+    });
+    const start_recording = await sconfirm("Are you sure you want to start recording?");
+    console.log(start_recording);
+    if (!start_recording) return false;
     this.recording = true;
-    this.mixed_streams = new MediaStream();
     this.chunks = [];
 
-    console.log(this.localStream, this.remoteStreams, "streams");
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
-    // Using forEach to iterate over the tracks of localStream
-    this.localStream.getTracks().forEach((track) => {
-      console.log("local stream track", track, this.localStream);
-      this.mixed_streams.addTrack(track);
+    canvas.width = 1280;
+    canvas.height = 720;
+
+    const audioContext = new AudioContext();
+    const audioDestination = audioContext.createMediaStreamDestination();
+
+    const localVideo = document.createElement("video");
+    localVideo.srcObject = this.localStream;
+    localVideo.muted = true;
+    localVideo.onloadedmetadata = () => localVideo.play();
+
+    const remoteVideos = [];
+    Array.from(this.remoteStreams.values()).forEach((c, index) => {
+      const remoteVideo = document.createElement("video");
+      remoteVideo.srcObject = c.remoteStream;
+      remoteVideo.muted = true;
+      remoteVideo.onloadedmetadata = () => remoteVideo.play();
+      remoteVideos.push(remoteVideo);
     });
 
-    // Using forEach to iterate over remoteStreams
-    Array.from(this.remoteStreams.values()).forEach((c) => {
-      console.log(c.remoteStream, "remote stream");
-      c.remoteStream.getTracks().forEach((track) => {
-        console.log("track", track);
-        this.mixed_streams.addTrack(track);
+    const draw = () => {
+      if (!this.recording) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const totalVideos = 1 + remoteVideos.length;
+      const cols = Math.ceil(Math.sqrt(totalVideos));
+      const rows = Math.ceil(totalVideos / cols);
+      const videoWidth = canvas.width / cols;
+      const videoHeight = canvas.height / rows;
+
+      // Draw the local video.
+      ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
+
+      // Draw the remote videos.
+      remoteVideos.forEach((remoteVideo, index) => {
+        // Calculate the x and y position for each video.
+        // Adding 1 to index because local video is at index 0.
+        const x = ((index + 1) % cols) * videoWidth;
+        const y = Math.floor((index + 1) / cols) * videoHeight;
+
+        ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
       });
+
+      requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    [
+      this.localStream,
+      ...Array.from(this.remoteStreams.values()).map((c) => c.remoteStream),
+    ].forEach((stream) => {
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(audioDestination);
     });
 
-    console.log(this.mixed_streams, "mixed streams");
-    this.mediaRecorder = new MediaRecorder(this.mixed_streams);
+    const combinedStream = new MediaStream([
+      ...audioDestination.stream.getTracks(),
+      ...canvas.captureStream(30).getTracks(),
+    ]);
+
+    this.mediaRecorder = new MediaRecorder(combinedStream);
 
     this.mediaRecorder.start();
     this.mediaRecorder.ondataavailable = (e) => {
-      console.log(this.chunks, "chunks gotten");
-      this.chunks.push(e.data);
+      if (e.data.size > 0) {
+        this.chunks.push(e.data);
+      }
     };
 
-    this.mediaRecorder.onstop = () => {
-      console.log("recorder stopped");
-      const blob = new Blob(this.chunks, { type: "video/webm" }); // Adjust the MIME type if necessary
-      this.chunks = [];
-      const videoUrl = window.URL.createObjectURL(blob);
-      console.log(videoUrl);
+    this.mediaRecorder.onstop = async () => {
+      const blob = new Blob(this.chunks, { type: "video/webm" });
+      const defaultFileName = "recorded_call.webm";
+      const fileName =
+        (await sprompt("Please enter a recording name", "recorded_call")) || defaultFileName;
 
-      // Create a download link and append it to the body of the page
+      // Create an object URL for the Blob
+      const videoUrl = window.URL.createObjectURL(blob);
+
       const downloadLink = document.createElement("a");
       document.body.appendChild(downloadLink);
       downloadLink.style = "display: none";
       downloadLink.href = videoUrl;
-      downloadLink.download = "recorded_video.webm"; // Name of the file to be downloaded
+      downloadLink.download = fileName;
       downloadLink.click();
 
-      // Optional: Remove the download link element after downloading
       window.URL.revokeObjectURL(videoUrl);
       downloadLink.remove();
+      // Stop the audio context
+      if (audioContext.state !== "closed") {
+        audioContext.close();
+      }
+
+      // Reset recording flag
+      this.recording = false;
     };
+
+    return true;
   }
 
   stopRecordCall() {
