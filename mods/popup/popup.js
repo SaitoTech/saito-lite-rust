@@ -8,6 +8,9 @@ const PopupMain = require("./lib/main");
 const PopupLessonManager = require("./lib/manager");
 const PeerService = require("saito-js/lib/peer_service").default;
 const localforage = require("localforage");
+const JsStore = require("jsstore");
+
+
 
 class Popup extends ModTemplate {
 
@@ -22,6 +25,11 @@ class Popup extends ModTemplate {
 
     this.styles = ["/popup/style.css"];
     this.peers = [];
+
+    // in browser db
+    this.localDB = null;
+    this.schema = ["id", "user_id", "publickey", "owner", "sig", "field1", "field2", "field3", "block_id", "block_hash", "created_at", "updated_at", "tx", "preserve"];
+
 
     this.social = {
       twitter_card: "summary",
@@ -353,6 +361,75 @@ console.log(sql);
 
     this.saveOptions();
 
+  }
+
+  initializeDatabase() {
+
+    if (app.BROWSER) {
+
+      //
+      // create Local database
+      //
+      let vocabulary = {
+        name: "vocabulary",
+        columns: {
+          id: { primaryKey: true, autoIncrement: true },
+          field1: { dataType: "string", default: "" },
+          field2: { dataType: "string", default: "" },
+          field3: { dataType: "string", default: "" },
+          field4: { dataType: "string", default: "" },
+          field5: { dataType: "string", default: "" },
+          label: { dataType: "string", default: "" },
+          lesson_id: { dataType: "number", default: 0 },
+          created_at: { dataType: "number", default: 0 },
+          updated_at: { dataType: "number", default: 0 },
+        },
+      };
+
+      let db = {
+        name: "vocabulary_db",
+        tables: [vocabulary],
+      };
+
+      var isDbCreated = await this.localDB.initDb(db);
+      if (isDbCreated) {
+        console.log("POPUP: db created and connection opened");
+      } else {
+        console.log("POPUP: connection opened");
+      }
+  }
+
+  addVocab(field1 = "", field2 = "", field3 = "", field4 = "", field5 = "", label = "", lesson_id = "") {
+
+    let obj = {};
+    obj.field1 = field1;
+    obj.field2 = field2;
+    obj.field3 = field3;
+    obj.field4 = field4;
+    obj.lesson_id = lesson_id;
+    obj.label = label;
+    newObj.created_at = new Date().getTime();
+    newObj.updated_at = new Date().getTime();
+
+    if (this.app.BROWSER) {
+      let numRows = await this.localDB.insert({
+        into: "vocabulary",
+        values: [obj],
+      });
+    }
+
+  }
+
+  async returnVocab(offset = 0) {
+
+    let rows = await this.localDB.select({
+      from: "vocabulary" ,
+      //where: where_obj,
+      order: { by: "id", type: "desc" },
+    });
+          
+    return rows; 
+   
   }
 
 }

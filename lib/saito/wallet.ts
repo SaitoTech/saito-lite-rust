@@ -1020,8 +1020,8 @@ export default class Wallet extends SaitoWallet {
     } else if (type == "upgrade") {
       // purge old slips
       this.app.options.wallet.slips = [];
-      this.app.storage.resetOptions();
-
+      await this.app.blockchain.resetBlockchain();
+      //this.app.storage.resetOptions();
       await this.fetchBalanceSnapshot(publicKey);
     }
 

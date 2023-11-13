@@ -606,7 +606,17 @@ class RedSquare extends ModTemplate {
                   this.peers[i].tweets_latest_ts = txs[z].updated_at;
                 }
 
-                count += this.addTweet(txs[z]);
+	
+		//
+		// only add if this is a new tweet, it might be an 
+		// old tweet, or one of the tweets that we have sent
+		// out onto the chain and then are now re-fetching
+		// but have already added -- no need for the load new
+		// tweet buttons in that case!
+		//
+      		if (!this.tweets_sigs_hmap[txs[z].signature]) {
+                  count += this.addTweet(txs[z]);
+		}
 
                 let tweet = this.returnTweet(txs[z].signature);
                 if (tweet) {
