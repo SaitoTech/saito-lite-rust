@@ -1885,18 +1885,20 @@ console.log("profile cache load: " + t.text);
               for (let i = 0; i < txs.length; i++) {
                 let tx = txs[i];
                 let txmsg = tx.returnMessage();
+                let img = "";
+                let img_type;
 
                 if (typeof txmsg.data.images != "undefined") {
                   let img_uri = txmsg.data?.images[0];
-                  let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
+                  img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
                   let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
-                  let img = Buffer.from(base64Data, "base64");
+                  img = Buffer.from(base64Data, "base64");
                 } else {
                   let publicKey = tx.from[0].publicKey;
                   let img_uri = app.keychain.returnIdenticon(publicKey, "png");
                   let base64Data = img_uri.replace(/^data:image\/png;base64,/, "");
-                  let img = Buffer.from(base64Data, "base64");
-                  let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
+                  img = Buffer.from(base64Data, "base64");
+                  img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
                 }
 
                 if (img_type == "image/svg+xml") {
@@ -1910,6 +1912,7 @@ console.log("profile cache load: " + t.text);
                 });
                 res.end(img);
                 return;
+                
               }
             });
 
