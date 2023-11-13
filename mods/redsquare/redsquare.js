@@ -331,11 +331,10 @@ class RedSquare extends ModTemplate {
           }
         }
       }
-    } catch(err){
+    } catch (err) {
       console.log("Error while checking pending txs: ");
       console.log(err);
     }
-
   }
 
   ////////////
@@ -552,7 +551,6 @@ class RedSquare extends ModTemplate {
   //
 
   loadTweets(created_at = "earlier", mycallback) {
-
     console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
 
     for (let i = 0; i < this.peers.length; i++) {
@@ -578,8 +576,9 @@ class RedSquare extends ModTemplate {
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
-
-            console.log(`${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
+            console.log(
+              `${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`
+            );
 
             //
             // Instead of just passing the txs to the callback, we count how many of these txs
@@ -616,21 +615,26 @@ class RedSquare extends ModTemplate {
                   this.app.storage.updateTransaction(tweet.tx, null, "localhost");
                 }
               }
-            } else {
-              this.peers[i].tweets_earliest_ts = 0;
-              console.log(`Peer ${this.peers[i].publicKey} doesn't have any earlier tweets`);
-            }
 
-            if (mycallback) {
               //
               // we aren't caching old tweets, so don't incur the costs of deleting and saving!
               //
-              if (count > 0 && this.peers[i].publicKey != this.publicKey && created_at == "later") {
+              if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
                 console.log("RS: " + this.peers[i].publicKey + " -- " + this.publicKey);
                 console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
                 this.saveLocalTweets();
               }
+            } else {
+              this.peers[i].tweets_earliest_ts = 0;
+              console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
+            }
 
+            //
+            // There is a UX question of whether we want to run the callback on completion
+            // of each "peer", or just collect the returned txs and run the callback after they
+            // have all returned results
+            //
+            if (mycallback) {
               mycallback(count);
             }
           },
@@ -640,7 +644,37 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  //
+  // We have two types of notifications that are slightly differently indexed, so 
+  // we are doing some fancy work to load all the transactions into one big list and then
+  // process it at once. We are only looking at local archive storage because browsers should
+  // be saving the txs that are addressed to them (i.e. notifications), but we can easily expand this
+  // logic to also query remote sources (by changing return_count to the 2x number of peers)
+  // 
   loadNotifications(peer, mycallback = null) {
+    let notifications = [];
+    let return_count = 2;
+
+    const middle_callback = () => {
+
+      if (notifications.length > 0) {
+        for (let z = 0; z < notifications.length; z++) {
+          notifications[z].decryptMessage(this.app);
+          this.addTweet(notifications[z]);
+
+          if (notifications[z].timestamp < this.notifications_earliest_ts) {
+            this.notifications_earliest_ts = notifications[z].timestamp;
+          }
+        }
+      } else {
+        this.notifications_earliest_ts = 0;
+      }
+
+      if (mycallback){
+        mycallback(notifications);
+      }
+    };
+
     if (this.notifications_earliest_ts !== 0) {
       this.app.storage.loadTransactions(
         {
@@ -649,21 +683,36 @@ class RedSquare extends ModTemplate {
           created_earlier_than: this.notifications_earliest_ts,
         },
         (txs) => {
-          if (txs.length > 0) {
-            for (let z = 0; z < txs.length; z++) {
-              txs[z].decryptMessage(this.app);
-              this.addTweet(txs[z]);
-
-              if (txs[z].timestamp < this.notifications_earliest_ts) {
-                this.notifications_earliest_ts = txs[z].timestamp;
-              }
-            }
-          } else {
-            this.notifications_earliest_ts = 0;
+          for (let tx of txs){
+            notifications.push(tx);
+          }          
+          return_count--;
+          if (return_count == 0){
+            middle_callback();
           }
+        },
+        "localhost"
+      );
 
-          if (mycallback) {
-            mycallback(txs);
+      //
+      // Okay, so using a special like tag to make profile loading easier
+      // complicates notifications loading... it would be nice if our arbitrary
+      // archive fields weren't completely occupied by module/from/to...
+      // This will need fixing if/when we change the archive schema (13 Nov 2023)
+      //
+      this.app.storage.loadTransactions(
+        {
+          field1: "RedSquareLike",
+          field3: this.publicKey,
+          created_earlier_than: this.notifications_earliest_ts,
+        },
+        (txs) => {
+          for (let tx of txs){
+            notifications.push(tx);
+          }          
+          return_count--;
+          if (return_count == 0){
+            middle_callback();
           }
         },
         "localhost"
@@ -702,20 +751,20 @@ class RedSquare extends ModTemplate {
   }
 
   //
-  // the following functions are all deprecated, but included because it is going to be a challenge
-  // to upgrade them quickly. we prefer to use the Archive module to fetch and load transactions
-  // rather than falling back to SQL commands....
+  // Prioritize looking for the specific tweet
+  // 1) in my tweet list
+  // 2) in my local archive
+  // 3) in my peer archives
+  //  It would be useful if we could convert everything to async and have a return value
+  //  so that we can avoid callback hell when we really want to get that tweet to process something on it
   //
-  // nonetheless, when we have more complex requests for thread display or tweet ordering, we fall
-  // back to asking a peer that indexes them in a database.
-  //
-
   loadTweetWithSig(sig, mycallback = null) {
     if (mycallback == null) {
       return;
     }
 
     let t = this.returnTweet(sig);
+
     if (t != null) {
       mycallback(t);
       return;
@@ -731,20 +780,22 @@ class RedSquare extends ModTemplate {
           }
         } else {
           for (let i = 0; i < this.peers.length; i++) {
-            this.app.storage.loadTransactions(
-              { sig, field1: "RedSquare" },
-              (txs) => {
-                if (txs.length > 0) {
-                  for (let z = 0; z < txs.length; z++) {
-                    txs[z].decryptMessage(this.app);
-                    this.addTweet(txs[z]);
-                  }
+            if (this.peers[i].publicKey !== this.publicKey) {
+              this.app.storage.loadTransactions(
+                { sig, field1: "RedSquare" },
+                (txs) => {
+                  if (txs.length > 0) {
+                    for (let z = 0; z < txs.length; z++) {
+                      txs[z].decryptMessage(this.app);
+                      this.addTweet(txs[z]);
+                    }
 
-                  mycallback(txs);
-                }
-              },
-              this.peer[i].peer
-            );
+                    mycallback(txs);
+                  }
+                },
+                this.peer[i].peer
+              );
+            }
           }
         }
 
@@ -935,11 +986,10 @@ class RedSquare extends ModTemplate {
           console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
           if (this.tweets[i].addTweet(tweet)) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-            
-            // We don't want to return 1 here, because most replies will be "quiet"
-            // so it doesn't help to announce new tweets and then have it just be a reply down somewhere 
-            // in the feed.... unless we attach the reply, and move the parent up to the top of the feed...
 
+            // We don't want to return 1 here, because most replies will be "quiet"
+            // so it doesn't help to announce new tweets and then have it just be a reply down somewhere
+            // in the feed.... unless we attach the reply, and move the parent up to the top of the feed...
           }
         }
       }
@@ -1094,9 +1144,10 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(tx.from[0]?.publicKey);
+
     //
-    // All tweets include the sender in the to
+    // All tweets include the sender in the to, but add the from first so they are in first position
     //
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
@@ -1107,6 +1158,7 @@ class RedSquare extends ModTemplate {
     newtx.msg = obj;
     await newtx.sign();
     await redsquare_self.app.network.propagateTransaction(newtx);
+
     return newtx;
   }
 
@@ -1195,6 +1247,8 @@ class RedSquare extends ModTemplate {
     //
     await this.app.storage.saveTransaction(tx, { field1: "RedSquareLike" }, "localhost");
 
+    console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
+
     return;
   }
 
@@ -1237,26 +1291,6 @@ class RedSquare extends ModTemplate {
       // browsers keep a list in memory of processed tweets
       //
       if (app.BROWSER == 1) {
-        //
-        // profile caching of tweets FROM me
-        //
-        /*if (tx.isFrom(this.publicKey)) {
-          if (this.manager) {
-            if (tweet.isPost()) {
-              if (!this.manager.profilePostsAlreadyHasTweet(tweet)) {
-                this.profile_posts.push(tweet);
-                this.saveLocalProfile();
-              }
-            }
-            if (tweet.isReply()) {
-              if (!this.manager.profileRepliesAlreadyHasTweet(tweet)) {
-                this.profile_replies.push(tweet);
-                this.saveLocalProfile();
-              }
-            }
-          }
-        }
-        */
         this.addTweet(tx, 1);
       }
 
@@ -1437,7 +1471,6 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   saveTweet(sig) {
-
     // When we interact with a tweet, we want to mark it as important to us and add it to our
     // local tweet cache .... maybe????
 
@@ -1482,24 +1515,6 @@ class RedSquare extends ModTemplate {
       },
       "localhost"
     );
-  }
-
-  saveLocalProfile() {
-    /*let ptxs = [];
-    let rtxs = [];
-    for (let i = 0; i < this.manager.profile_posts.length && i < 20; i++) {
-      ptxs.push(this.manager.profile_posts[i].tx.serialize_to_web(this.app));
-    }
-    for (let i = 0; i < this.manager.profile_replies.length && i < 20; i++) {
-      rtxs.push(this.manager.profile_replies[i].tx.serialize_to_web(this.app));
-    }
-    localforage.setItem(`profile_posts_history`, ptxs).then(function () {
-      console.log(`Saved ${ptxs.length} tweets`);
-    });
-    localforage.setItem(`profile_replies_history`, rtxs).then(function () {
-      console.log(`Saved ${rtxs.length} tweets`);
-    });
-    */
   }
 
   saveLocalNotifications() {
