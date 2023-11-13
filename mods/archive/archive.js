@@ -426,10 +426,12 @@ class Archive extends ModTemplate {
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //
+    //newObj.signature = obj?.signature || obj?.sig || tx?.signature || "";
+
     sql = `DELETE FROM archives WHERE archives.sig = $sig`;
-    params = { $sig: tx.transaction.sig };
-    await this.app.storage.executeDatabase(sql3, params3, "archive");
-    where_obj["sig"] = tx.transaction.sig;
+    params = { $sig: tx.signature };
+    await this.app.storage.executeDatabase(sql, params, "archive");
+    where_obj["sig"] = tx.signature;
 
     //
     // browsers handle with localDB search

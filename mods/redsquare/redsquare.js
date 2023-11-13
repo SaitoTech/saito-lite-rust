@@ -645,18 +645,17 @@ class RedSquare extends ModTemplate {
   }
 
   //
-  // We have two types of notifications that are slightly differently indexed, so 
+  // We have two types of notifications that are slightly differently indexed, so
   // we are doing some fancy work to load all the transactions into one big list and then
   // process it at once. We are only looking at local archive storage because browsers should
   // be saving the txs that are addressed to them (i.e. notifications), but we can easily expand this
   // logic to also query remote sources (by changing return_count to the 2x number of peers)
-  // 
+  //
   loadNotifications(peer, mycallback = null) {
     let notifications = [];
     let return_count = 2;
 
     const middle_callback = () => {
-
       if (notifications.length > 0) {
         for (let z = 0; z < notifications.length; z++) {
           notifications[z].decryptMessage(this.app);
@@ -670,7 +669,7 @@ class RedSquare extends ModTemplate {
         this.notifications_earliest_ts = 0;
       }
 
-      if (mycallback){
+      if (mycallback) {
         mycallback(notifications);
       }
     };
@@ -683,11 +682,11 @@ class RedSquare extends ModTemplate {
           created_earlier_than: this.notifications_earliest_ts,
         },
         (txs) => {
-          for (let tx of txs){
+          for (let tx of txs) {
             notifications.push(tx);
-          }          
+          }
           return_count--;
-          if (return_count == 0){
+          if (return_count == 0) {
             middle_callback();
           }
         },
@@ -707,11 +706,11 @@ class RedSquare extends ModTemplate {
           created_earlier_than: this.notifications_earliest_ts,
         },
         (txs) => {
-          for (let tx of txs){
+          for (let tx of txs) {
             notifications.push(tx);
-          }          
+          }
           return_count--;
-          if (return_count == 0){
+          if (return_count == 0) {
             middle_callback();
           }
         },
@@ -778,6 +777,7 @@ class RedSquare extends ModTemplate {
             txs[z].decryptMessage(this.app);
             this.addTweet(txs[z]);
           }
+          mycallback(txs);
         } else {
           for (let i = 0; i < this.peers.length; i++) {
             if (this.peers[i].publicKey !== this.publicKey) {
@@ -789,7 +789,6 @@ class RedSquare extends ModTemplate {
                       txs[z].decryptMessage(this.app);
                       this.addTweet(txs[z]);
                     }
-
                     mycallback(txs);
                   }
                 },
@@ -798,8 +797,6 @@ class RedSquare extends ModTemplate {
             }
           }
         }
-
-        mycallback(txs);
       },
       "localhost"
     );
@@ -1132,7 +1129,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
-  async sendLikeTransaction(app, mod, data, tx = null) {
+  async sendLikeTransaction(app, mod, data, tx) {
     let redsquare_self = this;
 
     let obj = {
@@ -1436,7 +1433,7 @@ class RedSquare extends ModTemplate {
   //
   // How does this work with the archive module???
   //
-  async sendFlagTransaction(app, mod, data) {
+  async sendFlagTransaction(app, mod, data, tx) {
     let redsquare_self = this;
 
     let obj = {
@@ -1444,11 +1441,16 @@ class RedSquare extends ModTemplate {
       request: "flag tweet",
       data: {},
     };
+
+    //
+    // data = {signature : tx.signature }
+    //
     for (let key in data) {
       obj.data[key] = data[key];
     }
 
-    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(tx.from[0].publicKey);
+
     newtx.msg = obj;
     await newtx.sign();
     await redsquare_self.app.network.propagateTransaction(newtx);
@@ -1456,12 +1458,55 @@ class RedSquare extends ModTemplate {
     return newtx;
   }
 
+  //
+  // We have a lot of work to do here....
+  // ...an interface for users to delete their own tweets
+  // ...an interface for moderators to review tweets
+  //
   async receiveFlagTransaction(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+
+    let flagged_tweet = this.returnTweet(txmsg.data.signature);
+
     //
-    // browsers
+    // we will "soft delete" the tweet for the person who flagged it and in the central archives
+    //
+    if (tx.isFrom(this.publicKey) || app.BROWSER == 0) {
+      if (flagged_tweet?.tx) {
+        await this.app.storage.updateTransaction(
+          flagged_tweet.tx,
+          { field1: "RedSquareFlag" },
+          "localhost"
+        );
+      } else {
+        await this.app.storage.loadTransactions(
+          { sig: txmsg.data.signature, field1: "RedSquare" },
+          async (txs) => {
+            if (txs?.length > 0) {
+              let tx = txs[0];
+              await this.app.storage.updateTransaction(
+                tx,
+                { field1: "RedSquareFlag" },
+                "localhost"
+              );
+            }
+          },
+          "localhost"
+        );
+      }
+    }
+
+    //
+    // let both users know that something happened
     //
     if (app.BROWSER == 1) {
-      return;
+      if (tx.isTo(this.publicKey)) {
+        if (tx.isFrom(this.publicKey)) {
+          siteMessage("Tweet successfully flagged for review", 3000);
+        } else {
+          siteMessage("One of your tweets was flagged for review", 10000);
+        }
+      }
     }
 
     return;
@@ -1504,13 +1549,15 @@ class RedSquare extends ModTemplate {
         //
         for (let i = 0; i < this.tweets.length && i < 8; i++) {
           //
-          // no await
+          // Don't save flagged tweets
           //
-          this.app.storage.saveTransaction(
-            this.tweets[i].tx,
-            { field3: "REDSQUARECOMMUNITY" },
-            "localhost"
-          );
+          if (!this.tweets[i].flagged) {
+            this.app.storage.saveTransaction(
+              this.tweets[i].tx,
+              { field3: "REDSQUARECOMMUNITY" },
+              "localhost"
+            );
+          }
         }
       },
       "localhost"
