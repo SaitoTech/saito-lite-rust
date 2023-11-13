@@ -1,6 +1,7 @@
 module.exports = (lesson) => {
 
    let intro = lesson.content.replaceAll("\\", "");
+       intro = intro.replaceAll("\n\n", "<p></p>");
 
    return `
      <div class="lesson-container">

@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const PopupLesson = require("./lib/lesson");
 const PopupMenu = require("./lib/menu");
+const PopupVocab = require("./lib/vocab");
 const PopupReview = require("./lib/review");
 const PopupMain = require("./lib/main");
 const PopupLessonManager = require("./lib/manager");
@@ -74,6 +75,15 @@ class Popup extends ModTemplate {
     await super.initialize(app);
 
     //
+    // create in-browser DB
+    //
+    await this.initializeDatabase();
+
+
+console.log(JSON.stringify(this.returnVocab()));
+
+
+    //
     // fetch content from options file
     //
     this.load();
@@ -98,6 +108,7 @@ class Popup extends ModTemplate {
       this.manager = new PopupLessonManager(this.app, this);
       this.lesson = new PopupLesson(this.app, this);
       this.review = new PopupReview(this.app, this);
+      this.vocab = new PopupVocab(this.app, this);
 
       this.addComponent(this.header);
       this.addComponent(this.main);
@@ -127,6 +138,17 @@ class Popup extends ModTemplate {
   // fetch language content //
   ////////////////////////////
   async onPeerServiceUp(app, peer, service = {}) {
+
+    let popup_self = this;
+
+    //
+    // override functions called by non-Saito JS
+    //
+    if (this.app.BROWSER == 1) {
+      add_to_vocab = function(field1="", field2="", field3="", field4="", field5="", label="") {
+        popup_self.addVocab(field1, field2, field3, field4, field5, label);
+      }
+    }
 
     //
     // avoid network overhead if in other apps
@@ -363,9 +385,11 @@ console.log(sql);
 
   }
 
-  initializeDatabase() {
+  async initializeDatabase() {
 
-    if (app.BROWSER) {
+    if (this.app.BROWSER) {
+
+      this.localDB = new JsStore.Connection(new Worker("/saito/lib/jsstore/jsstore.worker.js"));
 
       //
       // create Local database
@@ -397,19 +421,24 @@ console.log(sql);
       } else {
         console.log("POPUP: connection opened");
       }
+    }
+
+    return;
   }
 
-  addVocab(field1 = "", field2 = "", field3 = "", field4 = "", field5 = "", label = "", lesson_id = "") {
+
+  async addVocab(field1 = "", field2 = "", field3 = "", field4 = "", field5 = "", label = "", lesson_id = "") {
 
     let obj = {};
     obj.field1 = field1;
     obj.field2 = field2;
     obj.field3 = field3;
     obj.field4 = field4;
+    obj.field5 = field5;
     obj.lesson_id = lesson_id;
     obj.label = label;
-    newObj.created_at = new Date().getTime();
-    newObj.updated_at = new Date().getTime();
+    obj.created_at = new Date().getTime();
+    obj.updated_at = new Date().getTime();
 
     if (this.app.BROWSER) {
       let numRows = await this.localDB.insert({
@@ -418,9 +447,14 @@ console.log(sql);
       });
     }
 
+	let v = await this.returnVocab();
+console.log("POST INSERT: " + JSON.stringify(v));
+
   }
 
   async returnVocab(offset = 0) {
+
+    if (!this.app.BROWSER) { return; }
 
     let rows = await this.localDB.select({
       from: "vocabulary" ,

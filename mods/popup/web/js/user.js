@@ -10,6 +10,12 @@
 
    if (tt4 == "" && tt3 == "" && tt2 == "") { return; };
 
+   let field1 = tt1;
+   let field2 = tt2;
+   let field3 = tt3;
+   let field4 = tt4;
+   let field5 = tt5;
+
    tmpobj = $('#adso_status');
 
    tmpobj.html(tt3);
@@ -30,7 +36,11 @@
    var temptt = tt4; tt4=tt3;tt3=temptt; 
 
    // do not submit part of speech (field5)
-   var submission = "/tools/addVocab?field1="+tt4+"&field2="+tt3+"&field3="+tt2+"&field4="+tt1+"&field5=&label="+label;
+   add_to_vocab(field1, field2, field3, field4, field5, label);
 
  }
+
+  var add_to_vocab = function(field1="", field2="", field3="", field4="", field5="", label="") {alert("add to vocab exists");}
+
+  add_to_vocab();
 
