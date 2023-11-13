@@ -38,7 +38,7 @@ class TweetManager {
             }
 
             //
-            // load more tweets
+            // load more tweets -- from local and remote sources
             //
             if (this.mode === "tweets") {
               mod.loadTweets("earlier", (tx_count) => {
@@ -70,6 +70,21 @@ class TweetManager {
                       document.querySelector("#redsquare-intersection")
                     );
                   }
+                }else{
+                  //
+                  // It is possible that the local archive pull comes back with nothing
+                  // So we need logic to keep the intersection observer going if the remote
+                  // pull comes back a few seconds later with older tweets
+                  //
+                  if (document.querySelector(".saito-end-of-redsquare")) {
+                    document.querySelector(".saito-end-of-redsquare").remove();
+                  }
+                  if (document.querySelector("#redsquare-intersection")) {
+                    this.intersectionObserver.observe(
+                      document.querySelector("#redsquare-intersection")
+                    );
+                  }
+
                 }
               });
             }
@@ -95,12 +110,12 @@ class TweetManager {
                 if (this.mod.notifications.length == 0) {
                   let notification = new Notification(this.app, this.mod, null);
                   notification.render(".tweet-manager");
-                }
 
-                if (document.querySelector("#redsquare-intersection")) {
-                  this.intersectionObserver.unobserve(
-                    document.querySelector("#redsquare-intersection")
-                  );
+                  if (document.querySelector("#redsquare-intersection")) {
+                    this.intersectionObserver.unobserve(
+                      document.querySelector("#redsquare-intersection")
+                    );
+                  }
                 }
                 this.hideLoader();
               });
@@ -212,19 +227,38 @@ class TweetManager {
     // notifications //
     ///////////////////
     if (this.mode == "notifications") {
-      if (this.mod.notifications.length == 0) {
-        let notification = new Notification(this.app, this.mod, null);
+      for (let i = 0; i < this.mod.notifications.length; i++) {
+        let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
         notification.render(".tweet-manager");
-      } else {
-        for (let i = 0; i < this.mod.notifications.length; i++) {
-          let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
-          notification.render(".tweet-manager");
-        }
       }
 
-      setTimeout(() => {
+      this.mod.loadNotifications(null, (txs) => {
+        if (this.mode !== "notifications") {
+          return;
+        }
+        for (let i = 0; i < this.mod.notifications.length; i++) {
+          let notification = new Notification(
+            this.app,
+            this.mod,
+            this.mod.notifications[i].tx
+          );
+          //if (!notification.isRendered()) {
+          notification.render(".tweet-manager");
+          //}
+        }
+        if (this.mod.notifications.length == 0) {
+          let notification = new Notification(this.app, this.mod, null);
+          notification.render(".tweet-manager");
+
+          if (document.querySelector("#redsquare-intersection")) {
+            this.intersectionObserver.unobserve(
+              document.querySelector("#redsquare-intersection")
+            );
+          }
+        }
         this.hideLoader();
-      }, 50);
+      });
+
     }
 
     //Fire up the intersection observer

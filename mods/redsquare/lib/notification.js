@@ -27,26 +27,23 @@ class RedSquareNotification {
       // notification, we can make a peer DB request to try to find it
       //
 
-      this.mod.loadTweetWithSig(txmsg.data.signature, (tweet_tx) => {
+      this.mod.loadTweetWithSig(txmsg.data.signature, (txs) => {
 
-        if (!tweet_tx) {
+        if (!txs) {
           console.log("Notification for unknown tweet");
           return null;
         }
 
-        if (!tweet_tx.tx) {
-          console.log("Tweet does not contain original TX for unknown reasons");
-          return null;
-        }
-
-
-        if (Array.isArray(tweet_tx)) {
-          if (tweet_tx.length > 0) {
-            tweet_tx = tweet_tx[0];
+        let tweet_tx;
+        if (Array.isArray(txs)) {
+          if (txs.length > 0) {
+            tweet_tx = txs[0];
           } else {
             console.log("Notification for unknown tweet");
             return null;
           }
+        }else{
+          tweet_tx = txs;
         }
 
         //Process as normal
@@ -54,7 +51,7 @@ class RedSquareNotification {
           this.tweet = new Tweet(
             this.app,
             this.mod,
-            tweet_tx.tx,
+            tweet_tx,
             `.tweet-notif-fav.notification-item-${from}-${txmsg.data.signature} .tweet-body .tweet-main .tweet-preview`
           );
 
@@ -74,14 +71,20 @@ class RedSquareNotification {
             return;
           } else {
             html = LikeNotificationTemplate(this.app, this.mod, this.tx);
-            this.user.notice = "</i> <span class='notification-type'>liked your tweet</span>";
+            let msg = "liked your tweet";
+
+            if (this.mod.publicKey != tweet_tx.from[0].publicKey) {
+              msg = "liked a tweet sent to you";
+            }
+
+            this.user.notice = `</i> <span class='notification-type'>${msg}</span>`;
           }
         } else if (txmsg.request == "create tweet") {
 
           this.tweet = new Tweet(
             this.app,
             this.mod,
-            tweet_tx.tx,
+            tweet_tx,
             `.notification-item-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
           );
           this.user = new SaitoUser(
@@ -157,7 +160,7 @@ class RedSquareNotification {
           //
           console.log("Notification tweet not found...");
 
-          this.mod.loadTweetWithSig(this.tx.signature, (txs) => {
+          this.mod.loadTweetWithSig(this.tx.signature, () => {
             let tweet = this.mod.returnTweet(this.tx.signature);
             this.app.connection.emit("redsquare-tweet-render-request", tweet);
           });
