@@ -765,7 +765,7 @@ class RedSquare extends ModTemplate {
     let t = this.returnTweet(sig);
 
     if (t != null) {
-      mycallback([t]);
+      mycallback([t.tx]);
       return;
     }
 
