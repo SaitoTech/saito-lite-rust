@@ -3007,6 +3007,7 @@ if (this.game.players.length > 2) {
   returnDiplomaticDeck() {
 
     let deck = {};
+/***
 
     deck['201'] = { 
       img : "cards/HIS-201.svg" , 
@@ -3175,8 +3176,8 @@ if (this.game.players.length > 2) {
                 },
 
                 function(spacekey) {
-		  his_self.updateStatus("French build squadrons in" + his_self.returnSpaceName(spacekey));
-                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
+		  his_self.updateStatus("French build squadrons in " + his_self.returnSpaceName(spacekey));
+                  his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                   his_self.endTurn();
                 },
 
@@ -3187,7 +3188,7 @@ if (this.game.players.length > 2) {
               );
 	    }
 	    if (action === "mercenaries") {
-	      his_self.updateStatus("French add mercenaries in" + his_self.returnSpaceName(spacekey));
+	      his_self.updateStatus("French add mercenaries in " + his_self.returnSpaceName(spacekey));
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
@@ -3432,6 +3433,7 @@ if (this.game.players.length > 2) {
 	return 0;
       },
     }
+**HACK**/
     deck['205'] = { 
       img : "cards/HIS-205.svg" , 
       name : "Diplomatic Pressure" ,
@@ -3482,8 +3484,10 @@ if (this.game.players.length > 2) {
 
           his_self.game.queue.splice(qe, 1);
 	  // also remove protestant card (which is next)
-          his_self.game.queue.splice(qe, 1);
-	  
+          his_self.game.queue.splice(qe-1, 1);
+	
+console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue));
+  
 	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
 
    	    let msg = "Choose Protestant Card:";
@@ -3886,6 +3890,7 @@ if (this.game.players.length > 2) {
 	return 1;	
       }
     }
+/***** HACK
     deck['209'] = { 
       img : "cards/HIS-209.svg" , 
       name : "Plague" ,
@@ -4956,7 +4961,7 @@ console.log("done u=1 autoclick");
 
       },
     }
-
+**HACK***/
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }
@@ -5397,6 +5402,8 @@ console.log("done u=1 autoclick");
               let is_committed = $(this).attr("id");
 	      if (is_committed == "uncommitted") { is_committed = 0; } else { is_committed = 1; }
 
+alert("is_commited = " + is_committed);
+
               let msg = "Leigzip Debate Format?";
               let html = '<ul>';
               html += '<li class="option" id="select">Pick My Debater</li>';
@@ -5445,7 +5452,11 @@ console.log("done u=1 autoclick");
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	            his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
+	            if (is_committed == 0) {
+		      his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
+	            } else { 
+		      his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"committed\t" + selected_papal_debater);
+		    }
 		    his_self.endTurn();
 		  });
 	
