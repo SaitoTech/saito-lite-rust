@@ -605,17 +605,16 @@ class RedSquare extends ModTemplate {
                   this.peers[i].tweets_latest_ts = txs[z].updated_at;
                 }
 
-	
-		//
-		// only add if this is a new tweet, it might be an 
-		// old tweet, or one of the tweets that we have sent
-		// out onto the chain and then are now re-fetching
-		// but have already added -- no need for the load new
-		// tweet buttons in that case!
-		//
-      		if (!this.tweets_sigs_hmap[txs[z].signature]) {
+                //
+                // only add if this is a new tweet, it might be an
+                // old tweet, or one of the tweets that we have sent
+                // out onto the chain and then are now re-fetching
+                // but have already added -- no need for the load new
+                // tweet buttons in that case!
+                //
+                if (!this.tweets_sigs_hmap[txs[z].signature]) {
                   count += this.addTweet(txs[z]);
-		}
+                }
 
                 let tweet = this.returnTweet(txs[z].signature);
                 if (tweet) {
@@ -1557,14 +1556,14 @@ class RedSquare extends ModTemplate {
         //
         // save the last 4-5 tweets
         //
-        for (let i = 0; i < this.tweets.length && i < 8; i++) {
+        for (let i = 0; i < this.tweets.length && i < 10; i++) {
           //
           // Don't save flagged tweets
           //
           if (!this.tweets[i].flagged) {
             this.app.storage.saveTransaction(
               this.tweets[i].tx,
-              { field3: "REDSQUARECOMMUNITY" },
+              { field1: "RedSquare", field3: "REDSQUARECOMMUNITY" },
               "localhost"
             );
           }
@@ -1600,37 +1599,10 @@ class RedSquare extends ModTemplate {
 
     console.log("Load Local Tweets");
 
-    try {
-      let obj = {
-        field3: "REDSQUARECOMMUNITY",
-        limit: 15,
-        created_earlier_than: new Date().getTime(),
-      };
-
-      this.app.storage.loadTransactions(
-        obj,
-        (txs) => {
-          if (txs.length > 0) {
-            for (let z = 0; z < txs.length; z++) {
-              txs[z].decryptMessage(this.app);
-              //console.log(JSON.stringify(txs[z].returnMessage()));
-              this.addTweet(txs[z]);
-            }
-          }
-          for (let i = 0; i < this.tweets.length; i++) {
-            //console.log(this.tweets[i].text);
-          }
-          console.log("RedSquare: local load fetched: " + txs.length + " txs");
-        },
-        "localhost"
-      );
-    } catch (err) {
-      console.error("!!!!! ERROR WITH LOCAL CONTENT FETCH: ", err);
-    }
-
     this.app.storage.loadTransactions(
-      { field1: "RedSquare" },
+      { field1: "RedSquare", limit: 20 },
       (txs) => {
+        console.log(`${txs.length} tweets from local DB loaded`);
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
@@ -1977,7 +1949,6 @@ console.log("profile cache load: " + t.text);
                 });
                 res.end(img);
                 return;
-                
               }
             });
 
