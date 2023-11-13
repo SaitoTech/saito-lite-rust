@@ -1603,26 +1603,19 @@ class RedSquare extends ModTemplate {
           if (txs.length > 0) {
             for (let z = 0; z < txs.length; z++) {
               txs[z].decryptMessage(this.app);
-              console.log(JSON.stringify(txs[z].returnMessage()));
+              //console.log(JSON.stringify(txs[z].returnMessage()));
               this.addTweet(txs[z]);
             }
           }
           for (let i = 0; i < this.tweets.length; i++) {
-            console.log(this.tweets[i].text);
+            //console.log(this.tweets[i].text);
           }
-          console.log("%");
-          console.log("%");
-          console.log("%");
-          console.log("% local load fetched: " + txs.length + " txs");
+          console.log("RedSquare: local load fetched: " + txs.length + " txs");
         },
         "localhost"
       );
     } catch (err) {
-      console.log("!!!!!");
-      console.log("!!!!!");
-      console.log("!!!!! ERROR WITH LOCAL CONTENT FETCH: " + err);
-      console.log("!!!!!");
-      console.log("!!!!!");
+      console.error("!!!!! ERROR WITH LOCAL CONTENT FETCH: ", err);
     }
 
     this.app.storage.loadTransactions(
