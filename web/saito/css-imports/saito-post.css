@@ -95,3 +95,10 @@
   margin-right: 0;
 }
 
+
+@media screen and (max-width: 768px) {
+  .post-tweet-preview {
+      display: none;
+  }
+}
+
