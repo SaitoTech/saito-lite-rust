@@ -1,163 +1,70 @@
-module.exports = MovementOverlayTemplate = (obj) => {
+module.exports = MovementOverlayTemplate = (obj, his_self) => {
 
-//    obj = {
+//    let obj = {
 //      faction : faction ,
+//      moved_units : moved_units ,
+//      unmoved_units : unmoved_units ,
+//      destination_units : destination_units ,
 //      space : space ,
-//      has_regulars : has_regulars,
-//      has_mercenaries : has_mercenaries ,
-//      has_cavalry : has_cavalry ,
-//      source_regulars_total : source_regulars_total ,
-//      source_mercenaries_total : source_mercenaries_total ,
-//      source_cavalry_total : source_cavalry_total ,
-//      source_regulars_moved : source_regulars_moved ,
-//      source_mercenaries_moved : source_mercenaries_moved ,
-//      source_cavalry_moved : source_cavalry_moved ,
-//      rtm_idx : rtm ,	// regulars to move
-//      ram_idx : ram , // regulars already moved
-//      mtm_idx : mtm ,
-//      mam_idx : mam ,
-//      ctm_idx : ctm ,
-//      cam_idx : cam ,
+//      from : from ,
+//      to : to ,
+//      max_formation_size : max_formation_size ,
 //    };
 
-    obj.source_regulars_unmoved = obj.source_regulars_total - obj.source_regulars_moved;
-    obj.source_mercenaries_unmoved = obj.source_mercenaries_total - obj.source_regulars_moved;
-    obj.source_cavalry_unmoved = obj.source_cavalry_total - obj.source_regulars_moved;
+  if (!obj.to) { obj.to = "Unknown"; }
 
-    if (obj.to === "") { obj.to = "?"; }
-
-    let html = '';
+  let html = `<div class="movement-overlay">
+    <div class="help">
+	<div class="movement-from">${obj.from}</div> to <div class="movement-to">${obj.to}</div></div>
+    <div class="movement-table"><div class="movement-source">`;
+  for (let i = 0; i < obj.unmoved_units.length; i++) {
+    let ucss = "";
+    let uclass = "";
+    let utype = obj.unmoved_units[i].type;
+    if (utype != "regular" && utype != "mercenary" && utype != "cavalry") {
+      uclass = "army-unit"
+      ucss = `background-image:url('/his/img/tiles/army/${his_self.army[utype].img}');background-size:cover;`;
+    }
     html += `
-    <div class="movement-overlay">
+	     <div class="movement-unit option ${uclass} ${obj.unmoved_units[i].type}" id="${obj.unmoved_units[i].faction}-${obj.unmoved_units[i].idx}">
+	       <div class="movement-unit-img" style="${ucss}"></div>
+	       <div class="movement-unit-type">${obj.unmoved_units[i].type}</div>
+	       <div class="movement-type-faction">${obj.unmoved_units[i].faction}</div>
+             </div>
+	`;
+  }
+  html += `</div>`;
 
-      <div class="movement-header">
-        <div class="movement-from">${obj.from}</div> to <div class="movement-to">${obj.to}</div>
-      </div>
-
-      <div class="movement-table">
-    `;
-   if (obj.has_regulars) {
-     //
-     // regulars
-     //
-     html += `
-	<div class="movement-unit regular">
-  	  <div class="unit-img regular"></div>
-  	  <div class="unit-desc">Regular</div>
-    `;
-     if (obj.ram_idx != -1) {
-       html += `
-          <div class="option unit-available" id="${obj.ram_idx}">${obj.source_regulars_unmoved}</div>
-       `;
-     } else {
-       html += `
-          <div class="unit-available">${obj.source_regulars_unmoved}</div>
-       `;
-     }
-     if (obj.rtm_idx != -1) {
-       html += `
-          <div class="option unit-moving" id="${obj.rtm_idx}">${obj.source_regulars_moved}</div>
-       `;
-     } else {
-       html += `
-          <div class="unit-moving">${obj.source_regulars_moved}</div>
-       `;
-     }
-     html += `</div>`;
-   }
-
-
-
-   if (obj.has_mercenaries) {
-     //
-     // mercenaries
-     //
-     html += `
-	<div class="movement-unit mercenary">
-  	  <div class="unit-img mercenary"></div>
-  	  <div class="unit-desc">Mercenary</div>
-    `;
-     if (obj.mam_idx != -1) {
-       html += `
-          <div class="option unit-available" id="${obj.mam_idx}">${obj.source_mercenaries_unmoved}</div>
-       `;
-     } else {
-       html += `
-          <div class="unit-available">${obj.source_mercenaries_unmoved}</div>
-       `;
-     }
-     if (obj.mtm_idx != -1) {
-       html += `
-          <div class="option unit-moving" id="${obj.mtm_idx}">${obj.source_mercenaries_moved}</div>
-       `;
-     } else {
-       html += `
-          <div class="unit-moving">${obj.source_mercenaries_moved}</div>
-       `;
-     }
-     html += `</div>`;
-   }
-   if (obj.has_cavalry) {
-     //
-     // cavalry
-     //
-     html += `
-	<div class="movement-unit cavalry">
-  	  <div class="unit-img cavalry"></div>
-  	  <div class="unit-desc">Cavalry</div>
-    `;
-     if (obj.cam_idx != -1) {
-       html += `
-          <div class="option unit-available" id="${obj.cam_idx}">${obj.source_cavalry_unmoved}</div>
-       `;
-     } else {
-       html += `
-          <div class="unit-available">${obj.source_cavalry_unmoved}</div>
-       `;
-     }
-     if (obj.rtm_idx != -1) {
-       html += `
-          <div class="option unit-moving" id="${obj.ctm_idx}">${obj.source_cavalry_moved}</div>
-       `;
-     } else {
-       html += `
-          <div elass="unit-moving">${obj.source_cavalry_moved}</div>
-       `;
-     }
-     html += `</div>`;
-   }
-
-   if (obj.commanders.length > 0) {
-     html += `
-	<div class="movement-commanders">
-     `;
-     for (let i = 0; i < obj.commanders.length; i++) {
-       let army_leader_img = obj.space.units[obj.faction][obj.commanders[i]].img;
-       let css2add = `style="background-image: url('/his/img/tiles/army/${army_leader_img}'); background-size: cover;"`;
-       if (obj.units_to_move.includes(obj.commanders[i])) {
-         html += `
-            <div id="${obj.commanders[i]}" class="option movement-commander dispatched" ${css2add}></div>
-         `;
-       } else {
-         html += `
-            <div id="${obj.commanders[i]}" class="option movement-commander" ${css2add}></div>
-         `;
-       }
-     html += `
-	</div>
-     `;
-     }
-   html += `
-      </div>
-   `;
-   }
-   html += `
-    </div>
-    <div class="movement-controls">
-      <div class="movement-submit-button option" id="end">submit move</div>
-    </div>
-  </div>
-  `;
+  html += `<div class="movement-destination">`;
+  for (let i = 0; i < obj.destination_units.length; i++) {
+    let ucss = "";
+    let uclass = "";
+    let utype = obj.destination_units[i].type;
+    if (utype != "regular" && utype != "mercenary" && utype != "cavalry") {
+      uclass = "army-unit"
+      ucss = `background-image:url('/his/img/tiles/army/${his_self.army[utype].img}');background-size:cover;`;
+    }
+    html += `<div class="movement-unit immobile ${uclass} ${obj.destination_units[i].type}" id="${obj.destination_units[i].faction}-${obj.destination_units[i].idx}">
+	       <div class="movement-unit-img" style="${ucss}"></div>
+	       <div class="movement-unit-type">${obj.destination_units[i].type}</div>
+	       <div class="movement-type-faction">${obj.destination_units[i].faction}</div>
+            </div>`;
+  }
+  for (let i = 0; i < obj.moved_units.length; i++) {
+    let ucss = "";
+    let uclass = "";
+    let utype = obj.moved_units[i].type;
+    if (utype != "regular" && utype != "mercenary" && utype != "cavalry") {
+      uclass = "army-unit"
+      ucss = `background-image:url('/his/img/tiles/army/${his_self.army[utype].img}');background-size:cover;`;
+    }
+    html += `<div class="movement-unit option ${uclass} ${obj.moved_units[i].type}" id="${obj.moved_units[i].faction}-${obj.moved_units[i].idx}">
+	       <div class="movement-unit-img" style="${ucss}"></div>
+	       <div class="movement-unit-type">${obj.moved_units[i].type}</div>
+	       <div class="movement-type-faction">${obj.moved_units[i].faction}</div>
+	    </div>`;
+  }
+  html += `</div></div><div class="movement-submit-button option" id="end">confirm and move</div></div>`;
 
   return html;
 }

@@ -1,9 +1,11 @@
 module.exports = (lesson) => {
 
+   let intro = lesson.content.replaceAll("\\", "");
+
    return `
      <div class="lesson-container">
 
-       <div class="lesson-section discussion">${unescape(lesson.content)}</div>
+       <div class="lesson-section discussion">${intro}</div>
 
        <div class="lesson-section transcript"></div>
 

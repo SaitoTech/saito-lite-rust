@@ -55,7 +55,7 @@ class PopupLesson {
       this.mod.fetchLessonSentences(this.lesson, (res) => {
 
 	let html = '<table>';
-	for (let i = 0; i < this.lesson.sentences.length; i++) { html += SentenceTemplate(this.lesson.sentences[i]); }
+	for (let i = 0; i < this.lesson.sentences.length; i++) { html += SentenceTemplate(this.lesson, this.lesson.sentences[i]); }
 	html += '</table>';
 	
         let obj = document.querySelector(".lesson-section.transcript");
@@ -70,6 +70,8 @@ class PopupLesson {
       document.querySelectorAll(".lesson-section").forEach((el) => { el.style.display = "none"; });
       this.loader.show();
       this.mod.fetchLessonVocabulary(this.lesson, (res) => {
+
+console.log("RESULTS: " + JSON.stringify(res));
 
 	let html = '<table>';
 	for (let i = 0; i < this.lesson.words.length; i++) { html += VocabTemplate(this.lesson.words[i]); }

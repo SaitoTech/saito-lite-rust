@@ -5,9 +5,10 @@ body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif
 }
 
-.popup-conainer {
+.popup-container {
   position: relative;
   top: var(--saito-header-height);
+  padding-top: 0.5rem;
   width: 1000px;
   max-width: 1000px;
   z-index: 0;

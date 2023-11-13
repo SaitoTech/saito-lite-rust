@@ -27,6 +27,10 @@ class PopupMenu {
       this.app.connection.emit("popup-lessons-render-request", ("all"));
     }
 
+    document.querySelector(".popup-review").onclick = (e) => {
+      this.app.connection.emit("popup-review-render-request", (""));
+    }
+
 /***
     document.querySelector(".popup-menu-vocabulary").onclick = (e) => {
       //window.history.pushState({}, document.title, "/" + this.mod.slug);

@@ -7946,10 +7946,10 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         break;
 
       /////////////
-      // SE ASIA // -- Manually run this since every country counts as a battleground no no (control/presence/dominate)
+      // SE ASIA //
       /////////////
       case "seasia":
-        let seasia_countries = ["burma","laos", "vietnam", "malaysia", "philippines", "indonesia"/*, "thailand"*/];
+        let seasia_countries = ["burma","laos", "vietnam", "malaysia", "philippines", "indonesia"];
 
         for (country of seasia_countries) {
           for (var [player, side] of Object.entries(scoring)) {
@@ -7957,8 +7957,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           }
         }
         switch (this.whoControls("thailand")){
-          case "us": scoring.us.total++; scoring.us.bg = 1; scoring.us.status = "Thailand"; scoring.us.vp++; break;
-          case "ussr": scoring.ussr.total++; scoring.ussr.bg = 1; scoring.ussr.status = "Thailand"; scoring.ussr.cp++; break;
+          case "us": scoring.us.total += 2; scoring.us.bg = 1; scoring.us.status = "Thailand"; break;
+          case "ussr": scoring.ussr.total += 2; scoring.ussr.bg = 1; scoring.ussr.status = "Thailand"; break;
         }
 
         scoring.us.vp += scoring.us.total;
