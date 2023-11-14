@@ -176,7 +176,7 @@ class RedSquare extends ModTemplate {
         });
       }
 
-      if (this.app.browser.isMobileBrowser() && this.browser_active) {
+      if ((this.app.browser.isMobileBrowser() || window.innerWidth < 600) && this.browser_active) {
         x.push({
           text: "RedSquare Home",
           icon: "fa-solid fa-house",
@@ -191,6 +191,28 @@ class RedSquare extends ModTemplate {
           rank: 23,
           callback: function (app, id) {
             document.querySelector(".redsquare-menu-notifications").click();
+          },
+          event: function (id) {
+            this_mod.app.connection.on("redsquare-update-notification-hamburger", (unread) => {
+              let elem = document.getElementById(id);
+              console.log("Redsquare notifications event, update", elem);
+              if (elem) {
+                if (unread) {
+                  if (elem.querySelector(".saito-notification-dot")) {
+                    elem.querySelector(".saito-notification-dot").innerHTML = unread;
+                  } else {
+                    this_mod.app.browser.addElementToId(
+                      `<div class="saito-notification-dot">${unread}</div>`,
+                      id
+                    );
+                  }
+                } else {
+                  if (elem.querySelector(".saito-notification-dot")) {
+                    elem.querySelector(".saito-notification-dot").remove();
+                  }
+                }
+              }
+            });
           },
         });
         x.push({
@@ -670,7 +692,7 @@ class RedSquare extends ModTemplate {
         for (let z = 0; z < notifications.length; z++) {
           notifications[z].decryptMessage(this.app);
 
-          if (this.addNotification(notifications[z])){
+          if (this.addNotification(notifications[z])) {
             new_notifications.push(notifications[z]);
           }
 
@@ -943,7 +965,6 @@ class RedSquare extends ModTemplate {
         }
 
         return 1; // We have a new (top-level) tweet in the feed
-
       } else {
         //
         // Update the stats for this tweet we already have in memory
@@ -1000,7 +1021,7 @@ class RedSquare extends ModTemplate {
   //
   // addTweets adds notifications, but we have a separate function here
   // for cached notifications, because we don't want to show all of the
-  // cached notifications in the main thread automatically, and we want a 
+  // cached notifications in the main thread automatically, and we want a
   // dedicated function that tells us if this notification is new or not
   //
   addNotification(tx) {
@@ -1025,7 +1046,7 @@ class RedSquare extends ModTemplate {
               insertion_index++;
             }
           }
- 
+
           //
           // insert / update
           //
@@ -1066,7 +1087,7 @@ class RedSquare extends ModTemplate {
     return null;
   }
 
-  returnNotification(tweet_sig = null){
+  returnNotification(tweet_sig = null) {
     if (tweet_sig == null) {
       return null;
     }
@@ -1685,6 +1706,7 @@ console.log("profile cache load: " + t.text);
     } else {
       this.saveOptions();
     }
+
   }
 
   saveOptions() {
