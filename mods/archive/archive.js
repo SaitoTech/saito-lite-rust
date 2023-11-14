@@ -568,7 +568,7 @@ class Archive extends ModTemplate {
   async onNewBlock() {
     let x = Math.random();
     // 90% of blocks don't try to delete anything
-    if (x < 0.9) {
+    if (x < 0.95) {
       return;
     }
 
@@ -606,12 +606,13 @@ class Archive extends ModTemplate {
     // preserve flag is set to 0.
     //
     if (this.app.BROWSER) {
-      where_obj = { created_at: { ">": ts } };
+      where_obj = { updated_at: { "<": ts } };
       where_obj["preserve"] = 0;
       rows = await this.localDB.remove({
         from: "archives",
         where: where_obj,
       });
+      console.log(rows, "automatically pruned from local archive");
     }
 
 

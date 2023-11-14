@@ -2724,7 +2724,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["nixonshock", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["marine", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["bayofpigs", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
@@ -3325,7 +3325,7 @@ try {
 	    //
 	    if (this.game.state.events.johnpaul == 1 && this.game.state.events.solidarity_added != 1) {
 	      this.game.state.events.solidarity_added = 1;
-	      this.addCardToDeck("solidarity", "Prerequisite Met");
+	      //this.addCardToDeck("solidarity", "Prerequisite Met");
 	    } else {
 	      delete late_war_cards['solidarity'];
 	      this.removeCardFromDeckNextDeal("solidarity", "Prerequisite Unmet");
@@ -9153,7 +9153,10 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   /////////////////////////
   cardToText(cardname, textonly = false){
     let ac = this.returnAllCards(true);
-    let card = ac[cardname] || this.game.deck[0].discards[cardname] || this.game.deck[0].removed[cardname];
+    let card = ac[cardname];
+    if (card == undefined) { card = this.game.deck[0].discards[cardname]; }
+    if (card == undefined) { card = this.game.deck[0].removed[cardname]; }
+
     try{
       if (textonly){
         return card.name;
@@ -12395,7 +12398,6 @@ if (card == "defectors") {
       for (var i in this.countries) {
         if (this.countries[i].region == "mideast") {
           ustroops += this.countries[i].us;
-
         }
       }
 
@@ -12403,6 +12405,21 @@ if (card == "defectors") {
         this.updateLog("US has no influence in the Middle-East");
         return 1;
       }
+
+      if (ustroops <= 2) {
+        for (var i in this.countries) {
+          if (this.countries[i].region == "mideast") {
+            if (this.countries[i].us > 0) {
+	      this.countries[i].us = 0;
+	      this.showInfluence(i);
+	    }
+          }
+        }
+        this.updateLog("All US influence in Middle-East removed...");
+        return 1;
+      }
+
+
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -15072,6 +15089,7 @@ if (card == "defectors") {
         let twilight_self = this;
 
 	let available = [];
+	let ac = this.returnAllCards(true);
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	  let c = this.game.deck[0].cards[this.game.deck[0].hand[i]];
@@ -15082,7 +15100,7 @@ if (card == "defectors") {
 
         let html = `<ul>`;
         for (let i = 0; i < available.length; i++) {
-          html += `<li class="option" id="${available[i]}">${this.game.deck[0].cards[available[i]].name}</li>`;
+          html += `<li class="option" id="${available[i]}">${ac[available[i]].name}</li>`;
         }
 	html += `<li class="option" id="skip">do not discard</li>`;
         html += `</ul>`;

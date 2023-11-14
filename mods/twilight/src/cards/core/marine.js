@@ -14,7 +14,6 @@
       for (var i in this.countries) {
         if (this.countries[i].region == "mideast") {
           ustroops += this.countries[i].us;
-
         }
       }
 
@@ -22,6 +21,21 @@
         this.updateLog("US has no influence in the Middle-East");
         return 1;
       }
+
+      if (ustroops <= 2) {
+        for (var i in this.countries) {
+          if (this.countries[i].region == "mideast") {
+            if (this.countries[i].us > 0) {
+	      this.countries[i].us = 0;
+	      this.showInfluence(i);
+	    }
+          }
+        }
+        this.updateLog("All US influence in Middle-East removed...");
+        return 1;
+      }
+
+
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on

@@ -60,6 +60,9 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       history.replaceState(null, null, ' ');
       this.app.connection.emit("redsquare-home-render-request");

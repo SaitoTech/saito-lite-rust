@@ -328,13 +328,16 @@ class RedSquareMain {
   // load content.
   //
   canRefreshPage() {
-    console.log("RS: canRefreshPage ");
 
     //
     // no if we have scrolled down
     //
     if (this.hasScrolledDown) {
-      console.log("Scrolled down");
+      return 0;
+    }
+
+    //return false if any overlay is open
+    if (document.querySelector(".saito-overlay") != null) {
       return 0;
     }
 
@@ -342,18 +345,10 @@ class RedSquareMain {
     // yes if still at top
     //
     if (window?.pageYOffset == 0 && document?.body?.scrollTop == 0) {
-      //return false if any overlay is open
-      if (document.querySelector(".saito-overlay") != null) {
-        return 0;
-      }
-
       if (this.idleTime >= 10) {
         return 1;
       }
     }
-
-    console.log(window?.pageYOffset, document?.body?.scrollTop == 0, this.idleTime);
-    console.log("Default to no");
 
     //
     // no by default

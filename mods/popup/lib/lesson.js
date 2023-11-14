@@ -1,5 +1,5 @@
 const PopupLessonTemplate = require("./lesson.template");
-const VocabTemplate = require("./vocab.template");
+const WordTemplate = require("./word.template");
 const QuestionTemplate = require("./question.template");
 const SentenceTemplate = require("./sentence.template");
 const SaitoLoader = require("./../../../lib/saito/ui/saito-loader/saito-loader");
@@ -74,7 +74,7 @@ class PopupLesson {
 console.log("RESULTS: " + JSON.stringify(res));
 
 	let html = '<table>';
-	for (let i = 0; i < this.lesson.words.length; i++) { html += VocabTemplate(this.lesson.words[i]); }
+	for (let i = 0; i < this.lesson.words.length; i++) { html += WordTemplate(this.lesson.words[i]); }
 	html += '</table>';
 	
         let obj = document.querySelector(".lesson-section.vocabulary");

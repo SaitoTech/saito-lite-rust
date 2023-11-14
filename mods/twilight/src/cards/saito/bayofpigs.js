@@ -12,6 +12,7 @@
         let twilight_self = this;
 
 	let available = [];
+	let ac = this.returnAllCards(true);
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	  let c = this.game.deck[0].cards[this.game.deck[0].hand[i]];
@@ -22,7 +23,7 @@
 
         let html = `<ul>`;
         for (let i = 0; i < available.length; i++) {
-          html += `<li class="option" id="${available[i]}">${this.game.deck[0].cards[available[i]].name}</li>`;
+          html += `<li class="option" id="${available[i]}">${ac[available[i]].name}</li>`;
         }
 	html += `<li class="option" id="skip">do not discard</li>`;
         html += `</ul>`;

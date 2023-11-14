@@ -2724,7 +2724,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["nixonshock", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["marine", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["bayofpigs", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
@@ -3325,7 +3325,7 @@ try {
 	    //
 	    if (this.game.state.events.johnpaul == 1 && this.game.state.events.solidarity_added != 1) {
 	      this.game.state.events.solidarity_added = 1;
-	      this.addCardToDeck("solidarity", "Prerequisite Met");
+	      //this.addCardToDeck("solidarity", "Prerequisite Met");
 	    } else {
 	      delete late_war_cards['solidarity'];
 	      this.removeCardFromDeckNextDeal("solidarity", "Prerequisite Unmet");
@@ -9153,7 +9153,10 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   /////////////////////////
   cardToText(cardname, textonly = false){
     let ac = this.returnAllCards(true);
-    let card = ac[cardname] || this.game.deck[0].discards[cardname] || this.game.deck[0].removed[cardname];
+    let card = ac[cardname];
+    if (card == undefined) { card = this.game.deck[0].discards[cardname]; }
+    if (card == undefined) { card = this.game.deck[0].removed[cardname]; }
+
     try{
       if (textonly){
         return card.name;
