@@ -66,7 +66,6 @@
   returnDiplomaticDeck() {
 
     let deck = {};
-/***
 
     deck['201'] = { 
       img : "cards/HIS-201.svg" , 
@@ -492,7 +491,6 @@
 	return 0;
       },
     }
-**HACK**/
     deck['205'] = { 
       img : "cards/HIS-205.svg" , 
       name : "Diplomatic Pressure" ,
@@ -949,7 +947,6 @@ console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue)
 	return 1;	
       }
     }
-/***** HACK
     deck['209'] = { 
       img : "cards/HIS-209.svg" , 
       name : "Plague" ,
@@ -2020,7 +2017,6 @@ console.log("done u=1 autoclick");
 
       },
     }
-**HACK***/
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }
