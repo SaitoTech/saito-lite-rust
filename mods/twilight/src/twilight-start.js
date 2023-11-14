@@ -3716,7 +3716,7 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
       //
 
      
-      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
+      if (uscard == "defectors" && this.game.state.defectors_pulled_in_headline == 1) {
      
         this.game.turn = []; 
 
@@ -3738,7 +3738,6 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
         let statusMsg = "";
         if (this.game.state.player_to_go == 1){
           statusMsg = `USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(uscard)}`;
-
           this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}.`);
           this.updateLog(`US headlines ${this.cardToText(uscard)}`);
         }else{
@@ -3769,7 +3768,7 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
 
       let card_player = (this.game.state.player_to_go == 2)? "us" : "ussr";
 
-      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
+      if (uscard == "defectors" && this.game.state.defectors_pulled_in_headline == 1) {
      
         this.game.turn = []; 
 

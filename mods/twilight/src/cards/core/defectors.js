@@ -1,6 +1,7 @@
 if (card == "defectors") {
 
   if (this.game.state.headline == 0) {
+
     if (player == "us") {
       this.game.queue.push(`ACKNOWLEDGE\tUS events Defectors`);
       return 1;

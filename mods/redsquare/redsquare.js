@@ -767,6 +767,9 @@ class RedSquare extends ModTemplate {
   //  so that we can avoid callback hell when we really want to get that tweet to process something on it
   //
   loadTweetWithSig(sig, mycallback = null) {
+
+    let redsquare_self = this;
+
     if (mycallback == null) {
       return;
     }
@@ -801,7 +804,7 @@ class RedSquare extends ModTemplate {
                     mycallback(txs);
                   }
                 },
-                this.peer[i].peer
+                this.peers[i].peer
               );
             }
           }
