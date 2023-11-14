@@ -31,6 +31,23 @@
   z-index: 3;
 }
 
+.tweet.has-reply-disconnected {
+  border-bottom: none;
+}
+
+.tweet.has-reply-disconnected::before {
+  content: "~";
+  position: absolute;
+  font-size: 3rem;
+  font-family: monospace;
+  color: var(--saito-border-color);
+  background-color: var(--saito-background-color);
+  z-index: 99;
+  top: calc(50% + 3rem);
+  left: 28px;
+  line-height: 1.5rem;
+}
+
 .tweet.has-reply-disconnected::after {
   content: "";
   position: absolute;

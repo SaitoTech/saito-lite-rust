@@ -2726,7 +2726,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["marine", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["bayofpigs", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["defectors", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3716,7 +3716,7 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
       //
 
      
-      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
+      if (uscard === "defectors" || (ussrcard != "defectors" && this.game.state.defectors_pulled_in_headline == 1)) {
      
         this.game.turn = []; 
 
@@ -3738,7 +3738,6 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
         let statusMsg = "";
         if (this.game.state.player_to_go == 1){
           statusMsg = `USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(uscard)}`;
-
           this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}.`);
           this.updateLog(`US headlines ${this.cardToText(uscard)}`);
         }else{
@@ -3769,7 +3768,7 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
 
       let card_player = (this.game.state.player_to_go == 2)? "us" : "ussr";
 
-      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
+      if (uscard === "defectors" || (ussrcard != "defectors" && this.game.state.defectors_pulled_in_headline == 1)) {
      
         this.game.turn = []; 
 
@@ -11116,9 +11115,11 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
 
 
+
 if (card == "defectors") {
 
   if (this.game.state.headline == 0) {
+
     if (player == "us") {
       this.game.queue.push(`ACKNOWLEDGE\tUS events Defectors`);
       return 1;
@@ -11128,12 +11129,14 @@ if (card == "defectors") {
     this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
     this.updateVictoryPoints();
   } else {
+
     //
     // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
     // case it can only cancel the USSR headline if the USSR headline has not already gone.
     // what an insanely great but complicated game dynamic at play here....
     //
     this.game.state.defectors_pulled_in_headline = 1;
+
   }
 
   return 1;

@@ -262,7 +262,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     const activateCards = async () => {
       //Check for victory
       if (this.game.board["m1"].length + this.game.board["m2"].length + this.game.board["m3"].length + this.game.board["m4"].length == 52) {
-        this.updateStatus("Game Over");
+        this.updateStatus("You Win");
         let c = await sconfirm("You win! Start new Game?");
         if (c) {
           this.prependMove("win");
