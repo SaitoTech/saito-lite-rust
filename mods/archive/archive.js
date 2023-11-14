@@ -92,6 +92,7 @@ class Archive extends ModTemplate {
       } else {
         console.log("ARCHIVE: Connection is opened");
       }
+
     }
   }
 
@@ -111,7 +112,6 @@ class Archive extends ModTemplate {
     // save all on-chain transactions -- but only the service node...
     //
     if (conf == 0 && this.archive.index_blockchain == 1) {
-      //if (conf == 0) {
 
       let block_id = blk?.id || 0;
       let block_hash = blk?.hash || "";
@@ -458,31 +458,31 @@ class Archive extends ModTemplate {
   // - server operator respectfully avoid deleting transactions with preserve=1
   //
   async deleteTransactions(obj = {}) {
-    let txs = [];
-    let sql = "";
-    let params = {};
     let rows = [];
-    let timestamp_limiting_clause = "";
-    let where_obj = {};
+    
+    let timestamp_limiting_clause = " archives.preserve = 0";
+    let where_obj1 = {};
 
     if (obj.created_later_than) {
-      timestamp_limiting_clause = " AND archives.created_at > " + parseInt(obj.created_later_than);
-      where_obj = { created_at: { ">": parseInt(obj.created_later_than) } };
+      timestamp_limiting_clause += " AND archives.created_at > " + parseInt(obj.created_later_than);
+      where_obj1 = { created_at: { ">": parseInt(obj.created_later_than) } };
     }
     if (obj.created_earlier_than) {
-      timestamp_limiting_clause =
+      timestamp_limiting_clause +=
         " AND archives.created_at < " + parseInt(obj.created_earlier_than);
-      where_obj = { created_at: { "<": parseInt(obj.created_earlier_than) } };
+      where_obj1 = { created_at: { "<": parseInt(obj.created_earlier_than) } };
     }
     if (obj.updated_later_than) {
-      timestamp_limiting_clause = " AND archives.updated_at > " + parseInt(obj.updated_later_than);
-      where_obj = { updated_at: { ">": parseInt(obj.updated_later_than) } };
+      timestamp_limiting_clause += " AND archives.updated_at > " + parseInt(obj.updated_later_than);
+      where_obj1 = { updated_at: { ">": parseInt(obj.updated_later_than) } };
     }
     if (obj.updated_earlier_than) {
-      timestamp_limiting_clause =
+      timestamp_limiting_clause +=
         " AND archives.updated_at < " + parseInt(obj.updated_earlier_than);
-      where_obj = { updated_at: { "<": parseInt(obj.updated_earlier_than) } };
+      where_obj1 = { updated_at: { "<": parseInt(obj.updated_earlier_than) } };
     }
+
+    where_obj1["preserve"] = 0;
 
     //
     // SEARCH BASED ON CRITERIA PROVIDED
@@ -491,44 +491,49 @@ class Archive extends ModTemplate {
     /*
       This is set up as an OR condition, can provide multiple fields to delete any partial match
     */
+    let sql = `DELETE FROM archives WHERE `;
+    let sql_substring = "";
+    let params = {};
+    let where_obj2 = { };
+    let param_ct = 0;
 
-    if (obj.field1) {
-      sql = `DELETE FROM archives WHERE archives.field1 = $field1 ${timestamp_limiting_clause}`;
-      params = { $field1: obj.field1 };
-      await this.app.storage.executeDatabase(sql, params, "archive");
-      where_obj["field1"] = obj.field1;
-    }
-    if (obj.field2) {
-      sql = `DELETE FROM archives WHERE archives.field2 = $field2 ${timestamp_limiting_clause}`;
-      params = { $field2: obj.field2 };
-      await this.app.storage.executeDatabase(sql, params, "archive");
-      where_obj["field2"] = obj.field2;
-    }
-    if (obj.field3) {
-      sql = `DELETE FROM archives WHERE archives.field3 = $field3 ${timestamp_limiting_clause}`;
-      params = { $field3: obj.field3 };
-      await this.app.storage.executeDatabase(sql, params, "archive");
-      where_obj["field3"] = obj.field3;
-    }
-    if (obj.owner) {
-      sql = `DELETE FROM archives WHERE archives.owner = $owner ${timestamp_limiting_clause}`;
-      params = { $owner: obj.owner };
-      await this.app.storage.executeDatabase(sql, params, "archive");
-      where_obj["owner"] = obj.owner;
-    }
-    if (obj.publickey) {
-      sql = `DELETE FROM archives WHERE archives.publickey = $publickey ${timestamp_limiting_clause}`;
-      params = { $publickey: obj.publickey };
-      await this.app.storage.executeDatabase(sql, params, "archive");
-      where_obj["publickey"] = obj.publickey;
-    }
-    if (obj.sig) {
-      sql = `DELETE FROM archives WHERE archives.sig = $sig ${timestamp_limiting_clause}`;
-      params = { $sig: obj.sig };
-      await this.app.storage.executeDatabase(sql, params, "archive");
-      where_obj["sig"] = obj.sig;
+    for (let key in obj){
+      if (this.schema.includes(key)){
+        sql_substring += `archives.${key} = $${key} OR `;
+        params[`$${key}`] = obj[key];
+        if (param_ct++ > 0) {
+          if (where_obj2["or"]){
+            where_obj2.or[key] = obj[key];
+          }else{
+            where_obj2["or"] = { };
+            where_obj2.or[key] = obj[key];
+          }
+        }else{
+          where_obj2[key] = obj[key];  
+        }
+      }
     }
 
+    sql_substring = sql_substring.substring(0, sql_substring.length - 4);
+
+    if (param_ct > 1){
+      sql += `(${sql_substring})`;
+    }else{
+      sql += sql_substring;
+    }
+
+    let where_obj;
+    if (param_ct > 1) {
+      where_obj = [where_obj1, where_obj2];
+      sql += " AND" + timestamp_limiting_clause;
+    } else if (param_ct == 1) {
+      where_obj = Object.assign(where_obj1, where_obj2);
+    } else {
+      where_obj = where_obj1;
+      sql += timestamp_limiting_clause;
+    }    
+
+    rows = await this.app.storage.executeDatabase(sql, params, "archive");
 
     //
     // browsers handle with localDB search
