@@ -685,26 +685,76 @@ class PeerManager {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const totalVideos = 1 + remoteVideos.length;
-      const cols = Math.ceil(Math.sqrt(totalVideos));
-      const rows = Math.ceil(totalVideos / cols);
-      const videoWidth = canvas.width / cols;
-      const videoHeight = canvas.height / rows;
 
-      // Draw the local video.
-      ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
+      if (totalVideos === 2) {
+        const cols = Math.ceil(Math.sqrt(totalVideos));
+        const localVideoRatio = localVideo.videoWidth / localVideo.videoHeight;
+        const videoWidth = canvas.width / cols;
+        const videoHeight = videoWidth / localVideoRatio; // Calculate height based on the aspect ratio
 
-      // Draw the remote videos.
-      remoteVideos.forEach((remoteVideo, index) => {
-        // Calculate the x and y position for each video.
-        // Adding 1 to index because local video is at index 0.
-        const x = ((index + 1) % cols) * videoWidth;
-        const y = Math.floor((index + 1) / cols) * videoHeight;
+        // Draw the local video with correct aspect ratio.
+        ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
 
-        ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
-      });
+        // Draw the remote videos with their aspect ratios.
+        remoteVideos.forEach((remoteVideo, index) => {
+          const remoteVideoRatio = remoteVideo.videoWidth / remoteVideo.videoHeight;
+          const x = ((index + 1) % cols) * videoWidth;
+          let y = Math.floor((index + 1) / cols) * videoHeight;
+
+          // If the remote video has a different aspect ratio, adjust the height.
+          const adjustedHeight = videoWidth / remoteVideoRatio;
+          y += (videoHeight - adjustedHeight) / 2; // Center the video vertically
+
+          ctx.drawImage(remoteVideo, x, y, videoWidth, adjustedHeight);
+        });
+      } else {
+        const cols = Math.ceil(Math.sqrt(totalVideos));
+        const rows = Math.ceil(totalVideos / cols);
+        const videoWidth = canvas.width / cols;
+        const videoHeight = canvas.height / rows;
+
+        // Draw the local video.
+        ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
+
+        // Draw the remote videos.
+        remoteVideos.forEach((remoteVideo, index) => {
+          // Calculate the x and y position for each video.
+          // Adding 1 to index because local video is at index 0.
+          const x = ((index + 1) % cols) * videoWidth;
+          const y = Math.floor((index + 1) / cols) * videoHeight;
+          ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
+        });
+      }
 
       requestAnimationFrame(draw);
     };
+
+    // const draw = () => {
+    //   if (!this.recording) return;
+
+    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    //   const totalVideos = 1 + remoteVideos.length;
+    //   const cols = Math.ceil(Math.sqrt(totalVideos));
+    //   const rows = Math.ceil(totalVideos / cols);
+    //   const videoWidth = canvas.width / cols;
+    //   const videoHeight = canvas.height / rows;
+
+    //   // Draw the local video.
+    //   ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
+
+    //   // Draw the remote videos.
+    //   remoteVideos.forEach((remoteVideo, index) => {
+    //     // Calculate the x and y position for each video.
+    //     // Adding 1 to index because local video is at index 0.
+    //     const x = ((index + 1) % cols) * videoWidth;
+    //     const y = Math.floor((index + 1) / cols) * videoHeight;
+
+    //     ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
+    //   });
+
+    //   requestAnimationFrame(draw);
+    // };
 
     draw();
 
