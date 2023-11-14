@@ -93,28 +93,20 @@ class TweetManager {
             // load more notifications
             //
             if (this.mode === "notifications") {
-              mod.loadNotifications(null, (txs) => {
+              mod.loadNotifications((new_txs) => {
                 if (this.mode !== "notifications") {
                   return;
                 }
-                for (let i = 0; i < this.mod.notifications.length; i++) {
-                  let notification = new Notification(
-                    this.app,
-                    this.mod,
-                    this.mod.notifications[i].tx
-                  );
-                  //if (!notification.isRendered()) {
+                for (let i = 0; i < new_txs.length; i++) {
+                  let notification = new Notification(this.app, this.mod, new_txs[i]);
                   notification.render(".tweet-manager");
-                  //}
                 }
                 if (this.mod.notifications.length == 0) {
                   let notification = new Notification(this.app, this.mod, null);
                   notification.render(".tweet-manager");
 
                   if (document.querySelector("#redsquare-intersection")) {
-                    this.intersectionObserver.unobserve(
-                      document.querySelector("#redsquare-intersection")
-                    );
+                    this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
                   }
                 }
                 this.hideLoader();
@@ -208,10 +200,11 @@ class TweetManager {
     // tweets //
     ////////////
     if (this.mode == "tweets") {
-      if (holder) {
-        let kids = holder.children;
-        managerElem.replaceChildren(...kids);
-      }
+      
+      //if (holder) {
+      //  let kids = holder.children;
+      //  managerElem.replaceChildren(...kids);
+      //}
 
       for (let i = 0; i < this.mod.tweets.length; i++) {
         let tweet = this.mod.tweets[i];
@@ -221,6 +214,10 @@ class TweetManager {
       setTimeout(() => {
         this.hideLoader();
       }, 50);
+
+      //Fire up the intersection observer
+      this.attachEvents();
+      return;
     }
 
     ///////////////////
@@ -232,19 +229,14 @@ class TweetManager {
         notification.render(".tweet-manager");
       }
 
-      this.mod.loadNotifications(null, (txs) => {
+      this.mod.loadNotifications((new_txs) => {
         if (this.mode !== "notifications") {
           return;
         }
-        for (let i = 0; i < this.mod.notifications.length; i++) {
-          let notification = new Notification(
-            this.app,
-            this.mod,
-            this.mod.notifications[i].tx
-          );
-          //if (!notification.isRendered()) {
+
+        for (let i = 0; i < new_txs.length; i++) {
+          let notification = new Notification(this.app, this.mod, new_txs[i]);
           notification.render(".tweet-manager");
-          //}
         }
         if (this.mod.notifications.length == 0) {
           let notification = new Notification(this.app, this.mod, null);
@@ -257,12 +249,14 @@ class TweetManager {
           }
         }
         this.hideLoader();
+
+        //Fire up the intersection observer after the callback completes...
+        this.attachEvents();
+
       });
 
     }
 
-    //Fire up the intersection observer
-    this.attachEvents();
   }
 
   renderProfile(publicKey) {

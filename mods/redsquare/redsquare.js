@@ -176,7 +176,7 @@ class RedSquare extends ModTemplate {
         });
       }
 
-      if (this.app.browser.isMobileBrowser() && this.browser_active) {
+      if ((this.app.browser.isMobileBrowser() || window.innerWidth < 600) && this.browser_active) {
         x.push({
           text: "RedSquare Home",
           icon: "fa-solid fa-house",
@@ -191,6 +191,28 @@ class RedSquare extends ModTemplate {
           rank: 23,
           callback: function (app, id) {
             document.querySelector(".redsquare-menu-notifications").click();
+          },
+          event: function (id) {
+            this_mod.app.connection.on("redsquare-update-notification-hamburger", (unread) => {
+              let elem = document.getElementById(id);
+              console.log("Redsquare notifications event, update", elem);
+              if (elem) {
+                if (unread) {
+                  if (elem.querySelector(".saito-notification-dot")) {
+                    elem.querySelector(".saito-notification-dot").innerHTML = unread;
+                  } else {
+                    this_mod.app.browser.addElementToId(
+                      `<div class="saito-notification-dot">${unread}</div>`,
+                      id
+                    );
+                  }
+                } else {
+                  if (elem.querySelector(".saito-notification-dot")) {
+                    elem.querySelector(".saito-notification-dot").remove();
+                  }
+                }
+              }
+            });
           },
         });
         x.push({
@@ -660,15 +682,19 @@ class RedSquare extends ModTemplate {
   // be saving the txs that are addressed to them (i.e. notifications), but we can easily expand this
   // logic to also query remote sources (by changing return_count to the 2x number of peers)
   //
-  loadNotifications(peer, mycallback = null) {
+  loadNotifications(mycallback = null) {
     let notifications = [];
     let return_count = 2;
 
     const middle_callback = () => {
+      let new_notifications = [];
       if (notifications.length > 0) {
         for (let z = 0; z < notifications.length; z++) {
           notifications[z].decryptMessage(this.app);
-          this.addTweet(notifications[z]);
+
+          if (this.addNotification(notifications[z])) {
+            new_notifications.push(notifications[z]);
+          }
 
           if (notifications[z].timestamp < this.notifications_earliest_ts) {
             this.notifications_earliest_ts = notifications[z].timestamp;
@@ -679,7 +705,7 @@ class RedSquare extends ModTemplate {
       }
 
       if (mycallback) {
-        mycallback(notifications);
+        mycallback(new_notifications);
       }
     };
 
@@ -834,7 +860,6 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
-    let is_notification = 0;
 
     //
     // avoid errors
@@ -849,33 +874,25 @@ class RedSquare extends ModTemplate {
     // NOTE -- addNotification() duplicates while avoiding this.tweets insertion
     //
     if (tx.isTo(this.publicKey)) {
-      //console.log("RS: Processing Tweet/Like directed to me");
-
       //
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.publicKey)) {
-        //console.log("Not from me");
-
-        let insertion_index = 0;
-        if (prepend == false) {
-          for (let i = 0; i < this.notifications.length; i++) {
-            if (this.notifications[i].updated_at > tweet.updated_at) {
-              insertion_index++;
-              break;
-            } else {
-              insertion_index++;
-            }
-          }
-        }
-
-        is_notification = 1;
-
         //
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
-          console.log("new notification");
+          let insertion_index = 0;
+          if (prepend == false) {
+            for (let i = 0; i < this.notifications.length; i++) {
+              if (this.notifications[i].updated_at > tweet.updated_at) {
+                insertion_index++;
+                break;
+              } else {
+                insertion_index++;
+              }
+            }
+          }
 
           //
           // insert / update
@@ -884,7 +901,7 @@ class RedSquare extends ModTemplate {
           this.notifications_sigs_hmap[tweet.tx.signature] = 1;
 
           //
-          // increment notifications in menu unless is our own
+          // increment notifications in side-bar menu unless is our own
           //
           if (tx.timestamp > this.notifications_last_viewed_ts) {
             this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
@@ -895,25 +912,17 @@ class RedSquare extends ModTemplate {
     }
 
     //
-    // if this is a like, we can avoid adding it to our tweet index
+    // if this is a like or flag tx, it isn't anything to add to the feed so stop here
     //
     let txmsg = tx.returnMessage();
-    if (txmsg.request === "like tweet") {
+    if (txmsg.request === "like tweet" || txmsg.request === "flag tweet") {
       return 0;
     }
 
-    let inserted = 0;
-
-    //
-    // add tweet to tweet and tweets_sigs_hmap for easy-reference
-    //
     //
     // this is a post
     //
     if (!tweet.tx.optional.parent_id) {
-      tweet.tx.optional.parent_id = "";
-    }
-    if (tweet.tx.optional.parent_id === "") {
       //
       // we do not have this tweet indexed, it's new
       //
@@ -941,44 +950,46 @@ class RedSquare extends ModTemplate {
         }
 
         //
-        // add unknown children if possible
-        //
-        for (let i = 0; i < this.unknown_children.length; i++) {
-          if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.signature) {
-            if (this.tweets.length > insertion_index) {
-              if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
-                this.unknown_children.splice(i, 1);
-                i--;
-              }
-            }
-          }
-        }
-
-        //
-        // and insert it
+        // Insert tweet into feed
         //
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.signature] = 1;
 
-        return 1;
+        //
+        // Check if this new tweet is the parent of any unknown children (reply tweets)
+        //
+        for (let i = 0; i < this.unknown_children.length; i++) {
+          if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.signature) {
+            if (tweet.addTweet(this.unknown_children[i]) == 1) {
+              this.unknown_children.splice(i, 1);
+              i--;
+            }
+          }
+        }
+
+        return 1; // We have a new (top-level) tweet in the feed
       } else {
         //
         // Update the stats for this tweet we already have in memory
         //
         let t = this.returnTweet(tweet.tx.signature);
+        if (!t) {
+          console.error("Tweet indexed in hash, but not in memory");
+          return 0;
+        }
+
         if (tweet.tx.optional) {
           if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
             t.tx.optional.num_replies = tweet.tx.optional.num_replies;
-            t.rerenderControls();
           }
           if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
             t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-            t.rerenderControls();
           }
           if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
             t.tx.optional.num_likes = tweet.tx.optional.num_likes;
-            t.rerenderControls();
           }
+
+          t.rerenderControls();
         }
       }
     } else {
@@ -988,11 +999,6 @@ class RedSquare extends ModTemplate {
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
-          console.log("#");
-          console.log("#");
-          console.log("# our comment is " + tweet.text);
-          console.log("# we think this is comment on " + this.tweets[i].text);
-          console.log(this.tweets[i].tx.signature + " -- " + tweet.tx.optional.thread_id);
           if (this.tweets[i].addTweet(tweet)) {
             this.tweets_sigs_hmap[tweet.tx.signature] = 1;
 
@@ -1014,44 +1020,27 @@ class RedSquare extends ModTemplate {
 
     return 0;
   }
+
   //
-  // addTweets adds to notifications, but we have a separate function here
+  // addTweets adds notifications, but we have a separate function here
   // for cached notifications, because we don't want to show all of the
-  // cached notifications in the main thread automatically, which is what
-  // will happen if we use addTweet() on loading.
+  // cached notifications in the main thread automatically, and we want a
+  // dedicated function that tells us if this notification is new or not
   //
-  async addNotification(tx, prepend = false) {
+  addNotification(tx) {
     let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
-    let is_notification = 1;
 
-    console.log("#");
-    console.log("# note: " + tweet.text);
-    console.log("#");
-
-    if (!tweet.tx) {
-      return;
-    }
-
-    //
-    // avoid errors
-    //
-    if (!tweet) {
-      return;
-    }
-    if (!tweet.tx) {
-      return;
-    }
-    if (!tweet.tx.optional) {
-      tweet.tx.optional = {};
+    if (!tweet?.tx) {
+      return 0;
     }
 
     if (tx.isTo(this.publicKey)) {
-      //
-      // notify of other people's actions, but not ours
-      //
       if (!tx.isFrom(this.publicKey)) {
-        let insertion_index = 0;
-        if (prepend == false) {
+        //
+        // only insert notification if doesn't already exist
+        //
+        if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
+          let insertion_index = 0;
           for (let i = 0; i < this.notifications.length; i++) {
             if (this.notifications[i].updated_at > tweet.updated_at) {
               insertion_index++;
@@ -1060,33 +1049,24 @@ class RedSquare extends ModTemplate {
               insertion_index++;
             }
           }
-        }
 
-        is_notification = 1;
-
-        //
-        // only insert notification if doesn't already exist
-        //
-        if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
           //
           // insert / update
           //
           this.notifications.splice(insertion_index, 0, tweet);
           this.notifications_sigs_hmap[tweet.tx.signature] = 1;
 
-          if (!this.notifications_last_viewed_ts && !(this.notifications_last_viewed_ts < 1)) {
-            this.loadOptions();
-          }
-
           if (tx.timestamp > this.notifications_last_viewed_ts) {
             this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
             this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
           }
+
+          return 1;
         }
       }
     }
 
-    return;
+    return 0;
   }
 
   returnTweet(tweet_sig = null) {
@@ -1104,6 +1084,24 @@ class RedSquare extends ModTemplate {
       }
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
         return this.tweets[i].returnChildTweet(tweet_sig);
+      }
+    }
+
+    return null;
+  }
+
+  returnNotification(tweet_sig = null) {
+    if (tweet_sig == null) {
+      return null;
+    }
+
+    if (!this.notifications_sigs_hmap[tweet_sig]) {
+      return null;
+    }
+
+    for (let i = 0; i < this.notifications.length; i++) {
+      if (this.notifications[i].tx.signature === tweet_sig) {
+        return this.notifications[i];
       }
     }
 
@@ -1711,6 +1709,7 @@ console.log("profile cache load: " + t.text);
     } else {
       this.saveOptions();
     }
+
   }
 
   saveOptions() {

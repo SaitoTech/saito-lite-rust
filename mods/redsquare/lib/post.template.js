@@ -1,8 +1,6 @@
 module.exports = (app, mod, post) => {
   let placeholder = "What's happening";
-  if (post.source == "Retweet / Share") {
-    placeholder = "Optional comment?";
-  }
+
 
   return `
 
@@ -21,7 +19,7 @@ module.exports = (app, mod, post) => {
           <div class="tweet-overlay-content-controls-spacer"></div>
 
         </div-->
-          <div class="saito-button-primary post-tweet-button" id="post-tweet-button">Post</div>
+          <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
       </div>
 
       <input type="hidden" id="parent_id" name="parent_id" value="${post.parent_id}" />

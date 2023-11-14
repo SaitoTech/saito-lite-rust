@@ -60,6 +60,9 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       history.replaceState(null, null, ' ');
       this.app.connection.emit("redsquare-home-render-request");
@@ -146,6 +149,13 @@ class RedSquareMenu {
         }
       }
     }
+
+    //
+    // Send a signal so that if we are in mobile and have notifications in the hamburger menu
+    // We can display the notification there
+    // ...would be easier if we didn't rely on attaching invisible elements to mobile dom and faking click events
+    // but fixing that would be such a pain
+    this.app.connection.emit("redsquare-update-notification-hamburger", notifications);
   }
 }
 

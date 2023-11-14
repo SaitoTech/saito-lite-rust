@@ -19,12 +19,12 @@ class Post {
       this.mod,
       `.tweet-overlay-header`,
       this.mod.publicKey,
-      "create a text-tweet or drag-and-drop images..."
+      `create a text-tweet${app.browser.isMobileBrowser() ? "" : " or drag-and-drop images"}...`
     );
 
     this.render_after_submit = 0;
     this.file_event_added = false;
-    this.source = "Tweet";
+    this.source = "Post";
   }
 
   render() {
