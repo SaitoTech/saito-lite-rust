@@ -67,7 +67,11 @@
 .tweet-body {
   display: grid;
   grid-template-columns: 4.5rem 1fr;
+  /*
+  I'm not sure we want this (or at least not here), for one line tweets, 
+  the tweet controls end up with a big gap between them and the tweet divider
   min-height: 10rem;
+  */
 }
 
 
