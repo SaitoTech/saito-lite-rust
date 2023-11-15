@@ -32,21 +32,21 @@ module.exports = (app, mod, tweet) => {
 
   let controls = `
               <div class="tweet-controls">
-                <div class="tweet-tool tweet-tool-comment">
+                <div class="tweet-tool tweet-tool-comment" title="Reply/Comment">
                   <span class="tweet-tool-comment-count ${is_replied_css}">${num_replies}</span> <i class="far fa-comment ${is_replied_css}"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count ${is_retweeted_css}">${num_retweets}</span>
+                <div class="tweet-tool tweet-tool-retweet" title="Retweet/Quote-tweet"><span class="tweet-tool-retweet-count ${is_retweeted_css}">${num_retweets}</span>
                   <i class="fa fa-repeat ${is_retweeted_css}"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count ${is_liked_css}">${num_likes}</span> <div class="tweet-like-button">
+                <div class="tweet-tool tweet-tool-like" title="Like tweet"><span class="tweet-tool-like-count ${is_liked_css}">${num_likes}</span> <div class="tweet-like-button">
                 <div class="heart-bg">
                   <div class="heart-icon ${is_liked_css}"></div>
                 </div>
               </div></div>
                     
-                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i>
+                <div class="tweet-tool tweet-tool-share" title="Copy link to tweet"><i class="fa fa-arrow-up-from-bracket"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+                <div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>
               </div>`;
 
   let html = `

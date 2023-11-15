@@ -131,7 +131,6 @@ class Tweet {
     this.show_controls = 1;
     this.force_long_tweet = false;
     this.is_long_tweet = false;
-    this.is_retweet = false;
     this.parent_id = "";
     this.thread_id = "";
 
@@ -164,7 +163,6 @@ class Tweet {
         newtx,
         this.container + `> .tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
       );
-      this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
     }
 
@@ -183,6 +181,18 @@ class Tweet {
 
     // We will use this as a flag to know there were no breaking failures in the constructor
     this.noerrors = true;
+  }
+
+  isRetweet(){
+    let txmsg = this.tx.returnMessage();
+    if (txmsg.request != "create tweet") {
+      return false;
+    }
+    if (!txmsg.data?.text && !txmsg.data?.images) {
+      return true;
+    } 
+
+    return false;
   }
 
   isPost() {
@@ -304,12 +314,14 @@ class Tweet {
       let t = this.mod.returnTweet(this.retweet.tx.signature);
       if (t) {
         t.notice = this.retweet.notice;
+        t.user.notice = t.user.notice.replace("new", "original");
         t.render(prepend);
         t.attachEvents();
       } else {
-        (this.retweet.user.container =
-          this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
-          this.retweet.render(prepend);
+        console.log("Rendering a new retweet");
+        this.retweet.user.container = this.container + `> .tweet-${this.tx.signature} > .tweet-header`;
+        this.retweet.user.notice = this.retweet.user.notice.replace("new", "original");
+        this.retweet.render(prepend);
         this.retweet.attachEvents();
       }
       return;
