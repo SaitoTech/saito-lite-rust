@@ -508,7 +508,6 @@ class Server {
             peer = peers[i];
             break;
           }
-          peers[i].free();
         } catch (error) {
           console.error(error);
         }
@@ -520,7 +519,6 @@ class Server {
         if (!keylist.includes(pkey)) {
           keylist.push(pkey);
         }
-        peer.free();
       }
 
       //
@@ -548,7 +546,6 @@ class Server {
           "Content-Transfer-Encoding": "utf8",
         });
         const liteblock = block.generateLiteBlock(keylist);
-        block.free();
 
         // console.log(
         //   `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
@@ -558,10 +555,8 @@ class Server {
         //     liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
         // );
         // liteblock.transactions.forEach((tx) => {
-        //   tx.free();
         // });
         const buffer = Buffer.from(liteblock.serialize());
-        liteblock.free();
         res.end(buffer, "utf8");
         return;
       }
@@ -586,7 +581,6 @@ class Server {
         let blk = new Block();
         blk.deserialize(buffer);
         const newblk = blk.generateLiteBlock(keylist);
-        blk.free();
         // console.log(
         //   `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
         // );
@@ -604,7 +598,6 @@ class Server {
           "Content-Transfer-Encoding": "utf8",
         });
         const buffer2 = Buffer.from(newblk.serialize());
-        newblk.free();
         res.end(buffer2);
         return;
       } catch (error) {
@@ -633,7 +626,6 @@ class Server {
           return res.sendStatus(404); // Not Found
         }
         let buffer = block.serialize();
-        block.free();
 
         res.status(200);
         res.end(buffer);
@@ -660,7 +652,6 @@ class Server {
         const snapshot = await S.getInstance().getBalanceSnapshot(keys);
         res.setHeader("Content-Disposition", "attachment; filename=" + snapshot.file_name);
         res.end(snapshot.toString());
-        snapshot.free();
       } catch (error) {
         console.error(error);
         res.sendStatus(404);
