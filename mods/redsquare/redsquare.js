@@ -1346,7 +1346,7 @@ class RedSquare extends ModTemplate {
       // Includes retweeted tweet
       //
       if (tweet.retweet_tx != null) {
-        other_tweet = this.returnTweet(tweet.thread_id);
+        other_tweet = this.returnTweet(tweet.signature);
 
         if (other_tweet) {
           if (!other_tweet.tx.optional) {
@@ -1365,7 +1365,7 @@ class RedSquare extends ModTemplate {
           // servers load from themselves
           //
           await this.app.storage.loadTransactions(
-            { sig: tweet.thread_id, field1: "RedSquare" },
+            { sig: tweet.signature, field1: "RedSquare" },
             async (txs) => {
               if (txs?.length) {
                 //Only update the first copy??
