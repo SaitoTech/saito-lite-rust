@@ -77,10 +77,10 @@ class Mods {
   ) {
     let have_responded = false;
     let request = "";
-    try{
+    try {
       let txmsg = tx.returnMessage();
       request = txmsg?.request;
-    }catch(err){}
+    } catch (err) {}
     for (let iii = 0; iii < this.mods.length; iii++) {
       //console.log(`peer request (${request}), hpt into... ` + this.mods[iii].name);
       try {
@@ -97,7 +97,6 @@ class Mods {
         mycallback({});
       }
     }
-    return;
   }
 
   async initialize() {
@@ -485,8 +484,8 @@ class Mods {
     return null;
   }
 
-  async onUpgrade(type, privatekey, walletfile){
-    for(let i=0; i<this.app.modules.mods.length; i++) {
+  async onUpgrade(type, privatekey, walletfile) {
+    for (let i = 0; i < this.app.modules.mods.length; i++) {
       await this.app.modules.mods[i].onUpgrade(type, privatekey, walletfile);
     }
   }

@@ -31,7 +31,7 @@ class Spam extends ModTemplate {
       setInterval(() => {
         this.nodeSpamLoop(app, this);
       }, 13000);
-      }
+    }
   }
 
   async render() {
