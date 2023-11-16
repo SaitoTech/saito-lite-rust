@@ -106,7 +106,7 @@ console.log("!");
       // units / armies
       //
       for (let i = 0; i < space.units.length; i++) {
-        html += this.returnUnitImage(key, i);
+        html += this.returnUnitImageInSpaceWithIndex(key, i);
       }
 
       //

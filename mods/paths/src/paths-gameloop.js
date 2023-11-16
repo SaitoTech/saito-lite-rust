@@ -462,7 +462,7 @@ console.log(JSON.stringify(this.game.state.combat));
 
 	  let power = mv[1];
 	  let player = 1;
-	  let loss_factor = 1;
+	  let loss_factor = 0;
 
 	  if (power == "attacker") { 
 	    player = this.returnPlayerOfFaction(this.game.state.combat.attacker_power);
@@ -475,8 +475,16 @@ console.log(JSON.stringify(this.game.state.combat));
 
 	  alert(power + " assign losses of " + loss_factor);
 
+	  if (this.game.player === player) {
+	    this.combat_overlay.hide();
+	    this.loss_overlay.render();
+	  } else {
+	    this.combat_overlay.hide();
+	    this.updateStatus("Opponent Assigning Losses");
+	  }
+
 	  this.game.queue.splice(qe, 1);
-	  return;
+	  return 0;
 
 	}
 
@@ -529,6 +537,33 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+
+	if (mv[0] === "damage") {
+
+	  let spacekey = mv[1];
+	  let idx = parseInt(mv[2]);
+
+	  let unit = this.game.spaces[spacekey].units[idx];
+	  if (unit.damaged == false) { unit.damaged = true; } else { unit.destroyed = true; }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "add") {
+
+	  let spacekey = mv[1];
+	  let unitkey = mv[2];
+
+	  let unit = this.cloneUnit(unitkey);
+	  unit.spacekey = spacekey;
+	  this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
 
 
 

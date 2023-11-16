@@ -8,6 +8,7 @@
     return this.game.deck[this.game.player-1].hand;
   }
 
+  returnFactionName(faction="") { return this.returnPlayerName(faction); }
   returnPlayerName(faction="") {
     if (faction == "central") { return "Central Powers"; }
     return "Allies";
@@ -177,7 +178,6 @@
 	(key) => {
 
 	  if (key === "skip") {
-alert("trying to SKIP the attack stage...");
 	    paths_self.addMove("resolve\tplayer_play_combat");
 	    paths_self.removeSelectable();
 	    paths_self.endTurn();
@@ -246,7 +246,6 @@ for (let z = 0; z < selected.length; z++) {
 	      paths_self.addMove("resolve\tplayer_play_combat");
 	      paths_self.endTurn();
 	    }
-	    alert("launching or skipping attack: " + JSON.stringify(selected));
 	    return;
 	  }
 
