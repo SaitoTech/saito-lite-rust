@@ -77,6 +77,7 @@
 }
 
 .rowbox.nomoves {
+    transition: filter 1s;
     filter: brightness(0.5);
 }
 
