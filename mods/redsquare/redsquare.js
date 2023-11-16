@@ -195,7 +195,7 @@ class RedSquare extends ModTemplate {
           event: function (id) {
             this_mod.app.connection.on("redsquare-update-notification-hamburger", (unread) => {
               let elem = document.getElementById(id);
-              console.log("Redsquare notifications event, update", elem);
+              //console.log("Redsquare notifications event, update", elem);
               if (elem) {
                 if (unread) {
                   if (elem.querySelector(".saito-notification-dot")) {
@@ -349,6 +349,7 @@ class RedSquare extends ModTemplate {
         let txmsg = tx.returnMessage();
         if (txmsg && txmsg.module == this.name) {
           if (txmsg.request === "create tweet") {
+            this.addNotification(tx);
             this.addTweet(tx);
           }
         }
@@ -356,6 +357,18 @@ class RedSquare extends ModTemplate {
     } catch (err) {
       console.log("Error while checking pending txs: ");
       console.log(err);
+    }
+
+    //
+    // Add auto-polling for new tweets, on a 5 minute interval
+    // 1000 * 60 * 5
+
+    if (this.browser_active) {
+      setInterval(() => {
+        this.loadTweets("later", (tx_count) => {
+          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        });
+      }, 300000);
     }
   }
 
@@ -524,7 +537,7 @@ class RedSquare extends ModTemplate {
   // network functions //
   ///////////////////////
   async onConfirmation(blk, tx, conf) {
-    try {
+    //try {
       let txmsg = tx.returnMessage();
 
       if (conf == 0) {
@@ -550,9 +563,9 @@ class RedSquare extends ModTemplate {
           await this.receiveFlagTransaction(blk, tx, conf, this.app);
         }
       }
-    } catch (err) {
-      console.log("ERROR in RedSquare onConfirmation: " + err);
-    }
+    //} catch (err) {
+    //  console.log("ERROR in RedSquare onConfirmation: " + err);
+    //}
   }
 
   ///////////////////////////////
@@ -573,7 +586,7 @@ class RedSquare extends ModTemplate {
   //
 
   loadTweets(created_at = "earlier", mycallback) {
-    console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
+    //console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
 
     for (let i = 0; i < this.peers.length; i++) {
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
@@ -598,9 +611,7 @@ class RedSquare extends ModTemplate {
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
-            console.log(
-              `${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`
-            );
+            //console.log(`${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
 
             //
             // Instead of just passing the txs to the callback, we count how many of these txs
@@ -627,23 +638,34 @@ class RedSquare extends ModTemplate {
                   this.peers[i].tweets_latest_ts = txs[z].updated_at;
                 }
 
-                //
+                this.addNotification(txs[z]);
+
+                // (---------  false  --------- )
                 // only add if this is a new tweet, it might be an
                 // old tweet, or one of the tweets that we have sent
                 // out onto the chain and then are now re-fetching
                 // but have already added -- no need for the load new
                 // tweet buttons in that case!
                 //
-                if (!this.tweets_sigs_hmap[txs[z].signature]) {
-                  count += this.addTweet(txs[z]);
-                }
+
+                // RE: addTweet returns 0 if it isn't a "new" tweet
+                // but the tweet may have been updated by other people interaction
+                // with it so we want to process it in addTweet to get the new
+                // number of likes/replies/retweets updated
+                //
+                // Trust me, this won't accidentally trigger the "load new tweets"
+                // button!!!
+                count += this.addTweet(txs[z]);
 
                 let tweet = this.returnTweet(txs[z].signature);
+
                 if (tweet) {
                   //
                   // Update our local archive with any updated metadata
                   //
                   this.app.storage.updateTransaction(tweet.tx, null, "localhost");
+                } else {
+                  console.warn("How did we not add the tweet????");
                 }
               }
 
@@ -651,13 +673,13 @@ class RedSquare extends ModTemplate {
               // we aren't caching old tweets, so don't incur the costs of deleting and saving!
               //
               if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
-                console.log("RS: " + this.peers[i].publicKey + " -- " + this.publicKey);
+                //console.log("RS: " + this.peers[i].publicKey + " -- " + this.publicKey);
                 console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
                 this.saveLocalTweets();
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
-              console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
+              //console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
             //
@@ -771,6 +793,7 @@ class RedSquare extends ModTemplate {
           if (txs.length > 0) {
             for (let z = 0; z < txs.length; z++) {
               txs[z].decryptMessage(this.app);
+              this.addNotification(txs[z]);
               this.addTweet(txs[z]);
             }
           }
@@ -793,7 +816,6 @@ class RedSquare extends ModTemplate {
   //  so that we can avoid callback hell when we really want to get that tweet to process something on it
   //
   loadTweetWithSig(sig, mycallback = null) {
-
     let redsquare_self = this;
 
     if (mycallback == null) {
@@ -857,6 +879,14 @@ class RedSquare extends ModTemplate {
   //
   addTweet(tx, prepend = false) {
     //
+    // if this is a like or flag tx, it isn't anything to add to the feed so stop here
+    //
+    let txmsg = tx.returnMessage();
+    if (txmsg.request === "like tweet" || txmsg.request === "flag tweet") {
+      return 0;
+    }
+
+    //
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
@@ -865,57 +895,6 @@ class RedSquare extends ModTemplate {
     // avoid errors
     //
     if (!tweet?.tx) {
-      return 0;
-    }
-
-    //
-    // maybe this needs to go into notifications too
-    //
-    // NOTE -- addNotification() duplicates while avoiding this.tweets insertion
-    //
-    if (tx.isTo(this.publicKey)) {
-      //
-      // notify of other people's actions, but not ours
-      //
-      if (!tx.isFrom(this.publicKey)) {
-        //
-        // only insert notification if doesn't already exist
-        //
-        if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
-          let insertion_index = 0;
-          if (prepend == false) {
-            for (let i = 0; i < this.notifications.length; i++) {
-              if (this.notifications[i].updated_at > tweet.updated_at) {
-                insertion_index++;
-                break;
-              } else {
-                insertion_index++;
-              }
-            }
-          }
-
-          //
-          // insert / update
-          //
-          this.notifications.splice(insertion_index, 0, tweet);
-          this.notifications_sigs_hmap[tweet.tx.signature] = 1;
-
-          //
-          // increment notifications in side-bar menu unless is our own
-          //
-          if (tx.timestamp > this.notifications_last_viewed_ts) {
-            this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
-            this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
-          }
-        }
-      }
-    }
-
-    //
-    // if this is a like or flag tx, it isn't anything to add to the feed so stop here
-    //
-    let txmsg = tx.returnMessage();
-    if (txmsg.request === "like tweet" || txmsg.request === "flag tweet") {
       return 0;
     }
 
@@ -978,6 +957,8 @@ class RedSquare extends ModTemplate {
           return 0;
         }
 
+        console.log(`Updating tweet stats: ${t.tx.optional.num_replies}->${tx.optional.num_replies}, ${t.tx.optional.num_retweets}->${tx.optional.num_retweets}, ${t.tx.optional.num_likes}->${tx.optional.num_likes}`);
+
         if (tweet.tx.optional) {
           if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
             t.tx.optional.num_replies = tweet.tx.optional.num_replies;
@@ -991,6 +972,8 @@ class RedSquare extends ModTemplate {
 
           t.rerenderControls();
         }
+
+
       }
     } else {
       //
@@ -1013,7 +996,7 @@ class RedSquare extends ModTemplate {
       // I wonder if maybe we should just add these to the feed as if they were original posts...
       //
 
-      console.log("RS: pushed onto unknown children: ", tweet.text);
+      //console.log("RS: pushed onto unknown children: ", tweet.text);
       this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
     }
@@ -1028,31 +1011,31 @@ class RedSquare extends ModTemplate {
   // dedicated function that tells us if this notification is new or not
   //
   addNotification(tx) {
-    let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
-
-    if (!tweet?.tx) {
-      return 0;
-    }
-
     if (tx.isTo(this.publicKey)) {
       if (!tx.isFrom(this.publicKey)) {
         //
         // only insert notification if doesn't already exist
         //
-        if (this.notifications_sigs_hmap[tweet.tx.signature] != 1) {
+        if (this.notifications_sigs_hmap[tx.signature] != 1) {
+          //
+          // Turn TX into a "Tweet" and insert into notification array
+          //
+          let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
+
+          if (!tweet?.tx) {
+            return 0;
+          }
+
           let insertion_index = 0;
+
           for (let i = 0; i < this.notifications.length; i++) {
-            if (this.notifications[i].updated_at > tweet.updated_at) {
-              insertion_index++;
+            if (tweet.updated_at > this.notifications[i].updated_at) {
+              insertion_index = i;
               break;
-            } else {
-              insertion_index++;
             }
           }
 
-          //
-          // insert / update
-          //
+
           this.notifications.splice(insertion_index, 0, tweet);
           this.notifications_sigs_hmap[tweet.tx.signature] = 1;
 
@@ -1084,6 +1067,12 @@ class RedSquare extends ModTemplate {
       }
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
         return this.tweets[i].returnChildTweet(tweet_sig);
+      }
+    }
+
+    for (let j = 0; j < this.unknown_children.length; j++) {
+      if (this.unknown_children[j].tx.signature === tweet_sig) {
+        return this.unknown_children[j];
       }
     }
 
@@ -1181,7 +1170,7 @@ class RedSquare extends ModTemplate {
     //
 
     if (liked_tweet?.tx) {
-      //console.log("I have liked tweet locally");
+      
 
       if (!liked_tweet.tx.optional) {
         liked_tweet.tx.optional = {};
@@ -1192,9 +1181,11 @@ class RedSquare extends ModTemplate {
       }
       liked_tweet.tx.optional.num_likes++;
 
+      console.log("Increment likes: ", liked_tweet.tx.optional.num_likes);
+      
       await this.app.storage.updateTransaction(liked_tweet.tx, {}, "localhost");
 
-      liked_tweet.renderLikes();
+      liked_tweet.rerenderControls();
     } else {
       //
       // fetch original
@@ -1236,15 +1227,7 @@ class RedSquare extends ModTemplate {
     // browsers
     //
     if (app.BROWSER == 1) {
-      //
-      // save my likes
-      //
-      if (tx.isTo(this.publicKey)) {
-        //
-        // convert like into tweet and addTweet to get notifications working
-        //
-        this.addTweet(tx, true);
-      }
+      this.addNotification(tx);
     }
 
     //
@@ -1254,7 +1237,7 @@ class RedSquare extends ModTemplate {
     //
     await this.app.storage.saveTransaction(tx, { field1: "RedSquareLike" }, "localhost");
 
-    console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
+    //console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
 
     return;
   }
@@ -1298,7 +1281,8 @@ class RedSquare extends ModTemplate {
       // browsers keep a list in memory of processed tweets
       //
       if (app.BROWSER == 1) {
-        this.addTweet(tx, 1);
+        this.addNotification(tx);
+        this.addTweet(tx, true);
       }
 
       //
@@ -1356,8 +1340,9 @@ class RedSquare extends ModTemplate {
             other_tweet.tx.optional.num_retweets = 0;
           }
           other_tweet.tx.optional.num_retweets++;
+          console.log("Increment retweets ", other_tweet.tx.optional.num_retweets);
           await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
-          other_tweet.renderRetweets();
+          other_tweet.rerenderControls();
         } else {
           //
           // fetch archived copy
@@ -1403,8 +1388,8 @@ class RedSquare extends ModTemplate {
             other_tweet.tx.optional.num_replies = 0;
           }
           other_tweet.tx.optional.num_replies++;
+          console.log("Increment replies ", other_tweet.tx.optional.num_replies);
           other_tweet.rerenderControls();
-          other_tweet.renderReplies();
 
           await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
         } else {
@@ -1603,10 +1588,11 @@ class RedSquare extends ModTemplate {
     this.app.storage.loadTransactions(
       { field1: "RedSquare", limit: 20 },
       (txs) => {
-        console.log(`${txs.length} tweets from local DB loaded`);
+        //console.log(`${txs.length} tweets from local DB loaded`);
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
+            this.addNotification(txs[z]);
             this.addTweet(txs[z]);
           }
         }
@@ -1624,62 +1610,6 @@ class RedSquare extends ModTemplate {
       },
       "localhost"
     );
-
-    /*if (this.app.browser.returnURLParameter("tweet_id")) {
-      return;
-    }
-
-    localforage.getItem(`notifications_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-            this.addNotification(newtx);
-          } catch (err) {}
-        }
-      }
-    });
-    localforage.getItem(`profile_posts_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-      let t = new Tweet(this.app, this, newtx, ".tweet-manager");
-console.log("profile cache load: " + t.text);
-            this.manager.profile_posts.push(t); // the tweet
-          } catch (err) {}
-        }
-      }
-    });
-    localforage.getItem(`profile_replies_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-      let t = new Tweet(this.app, this, newtx, ".tweet-manager");
-console.log("profile cache load: " + t.text);
-            this.manager.profile_replies.push(t); // the tweet
-          } catch (err) {}
-        }
-      }
-    });
-    localforage.getItem(`tweet_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-            this.addTweet(newtx);
-          } catch (err) {}
-        }
-      }
-      //Run these regardless of results
-      this.app.connection.emit("redsquare-home-render-request");
-      this.app.connection.emit("redsquare-insert-loading-message");
-    });*/
   }
 
   /////////////////////////////////////
@@ -1709,7 +1639,6 @@ console.log("profile cache load: " + t.text);
     } else {
       this.saveOptions();
     }
-
   }
 
   saveOptions() {
