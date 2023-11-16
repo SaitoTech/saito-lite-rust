@@ -127,6 +127,15 @@ class Archive extends ModTemplate {
     }
   }
 
+
+// ////////////////////////////////////////////////////////////////////////////////////////////
+// "Ownership" doesn't matter in terms of your localhost storage... You host, you own it.
+// So for cloud-like applications with remote archiving (e.g. handlePeerTransactions), we 
+// should be checking if the record is open (owner = "") or we are processing on behalf of 
+// the owner (owner = requesting_publicKey). Otherwise, we should return/pass an error object
+// into the callback
+// ////////////////////////////////////////////////////////////////////////////////////////////
+
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
       return 0;
@@ -383,6 +392,10 @@ class Archive extends ModTemplate {
     }
 
     sql = sql.substring(0, sql.length - 4);
+
+    //
+    // Should we be ordering by time stamp instead of id?
+    //
 
     sql += timestamp_limiting_clause + ` ORDER BY archives.id DESC LIMIT $limit`;
 

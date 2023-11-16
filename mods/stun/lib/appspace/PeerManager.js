@@ -636,11 +636,8 @@ class PeerManager {
       } else if (average <= threshold) {
         has_mike = false;
       }
-
-      //requestAnimationFrame(update);
     }
     this.audioStreamAnalysis = setInterval(update, 1000);
-    //requestAnimationFrame(update);
   }
 
   async recordCall() {
@@ -685,23 +682,39 @@ class PeerManager {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const totalVideos = 1 + remoteVideos.length;
+
       const cols = Math.ceil(Math.sqrt(totalVideos));
       const rows = Math.ceil(totalVideos / cols);
+      const localVideoRatio = localVideo.videoWidth / localVideo.videoHeight;
       const videoWidth = canvas.width / cols;
-      const videoHeight = canvas.height / rows;
 
-      // Draw the local video.
+      let videoHeight;
+      if (totalVideos == 2) {
+        videoHeight = videoWidth / localVideoRatio;
+      } else {
+        videoHeight = canvas.height / rows;
+      }
+
       ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
 
-      // Draw the remote videos.
-      remoteVideos.forEach((remoteVideo, index) => {
-        // Calculate the x and y position for each video.
-        // Adding 1 to index because local video is at index 0.
-        const x = ((index + 1) % cols) * videoWidth;
-        const y = Math.floor((index + 1) / cols) * videoHeight;
+      if (totalVideos === 2) {
+        remoteVideos.forEach((remoteVideo, index) => {
+          const remoteVideoRatio = remoteVideo.videoWidth / remoteVideo.videoHeight;
+          const x = ((index + 1) % cols) * videoWidth;
+          let y = Math.floor((index + 1) / cols) * videoHeight;
 
-        ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
-      });
+          const adjustedHeight = videoWidth / remoteVideoRatio;
+          y += (videoHeight - adjustedHeight) / 2;
+
+          ctx.drawImage(remoteVideo, x, y, videoWidth, adjustedHeight);
+        });
+      } else {
+        remoteVideos.forEach((remoteVideo, index) => {
+          const x = ((index + 1) % cols) * videoWidth;
+          const y = Math.floor((index + 1) / cols) * videoHeight;
+          ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
+        });
+      }
 
       requestAnimationFrame(draw);
     };
