@@ -305,12 +305,16 @@ try {
 	if (mv[0] === "combat") {
 
 	  let key = mv[1];
-	  let selected = mv[2];
+	  let selected = JSON.parse(mv[2]);
+
+console.log("SELECTED: " + JSON.stringify(selected));
 
 	  this.game.state.combat = {};
 	  this.game.state.combat.key = key;
-	  this.game.state.combat.attacker = JSON.parse(selected);
-	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_spacekey].units[0]);
+	  this.game.state.combat.attacker = selected;
+	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_sourcekey].units[0]);
+
+console.log("moving forward with combat!");
 
 	  //
 	  // remove this from the queue
@@ -356,8 +360,6 @@ try {
 //11. Defender Retreat
 //12. Attacker Advance
 
-alert("COMBAT: " + JSON.stringify(this.game.state.combat));
-
 	  this.combat_overlay.render();
 	  this.combat_overlay.pullHudOverOverlay();
 
@@ -366,6 +368,10 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	}
 
 	if (mv[0] == "combat_play_combat_cards") {
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
 	}
 
 	if (mv[0] == "combat_determine_outcome") {
@@ -381,6 +387,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  let defender_modified_roll = 0;
 	  let attacker_power = "allies";
 	  let defender_power = "central";
+	  let attacker_combat_power = 0;
+	  let defender_combat_power = 0;
 
 	  let attacker_table = "corps";
 	  let defender_table = "corps";
@@ -396,8 +404,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
 	  }
 
-	  attacker_roll = this.rollDice(6);
-	  defender_roll = this.rollDice(6);
+	  attacker_roll = this.rollDice();
+	  defender_roll = this.rollDice();
 
 	  attacker_modified_roll = attacker_roll + attacker_drm;
 	  defender_modified_roll = defender_roll + defender_drm;
@@ -407,16 +415,25 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  if (attacker_modified_roll < 1) { attacker_modified_roll = 1; }
 	  if (defender_modified_roll < 1) { defender_modified_roll = 1; }
 
+	  this.game.state.combat.attacker_table = attacker_table;
+	  this.game.state.combat.defender_table = defender_table;
 	  this.game.state.combat.attacker_power = attacker_power;
 	  this.game.state.combat.defender_power = defender_power;
 	  this.game.state.combat.attacker_drm = attacker_drm;
 	  this.game.state.combat.defender_drm = defender_drm;
-	  this.game.state.combat.attacker_roll = attacker_drm;
-	  this.game.state.combat.defender_roll = defender_drm;
+	  this.game.state.combat.attacker_roll = attacker_roll;
+	  this.game.state.combat.defender_roll = defender_roll;
 	  this.game.state.combat.attacker_modified_roll = attacker_modified_roll;
 	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
-	  this.game.state.combat.attacker_loss_factor = 1;
-	  this.game.state.combat.defender_loss_factor = 1;
+	  this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
+	  this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log(JSON.stringify(this.game.state.combat));
+
 
 	  if (this.game.state.combat.flank_attack == "attacker") {
 	    this.game.queue.push(`combat_assign_hits\tattacker`);
@@ -456,7 +473,7 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    loss_factor = this.game.state.combat.defender_loss_factor;
 	  }
 
-	  alert(power + " assign losses of " + loss_number);
+	  alert(power + " assign losses of " + loss_factor);
 
 	  this.game.queue.splice(qe, 1);
 	  return;
@@ -488,12 +505,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	if (mv[0] == "combat_evaluate_flank_attack") {
 
-	  this.game.splice(qe, 1);
+	  this.game.queue.splice(qe, 1);
 
 	  let is_attacking_from_multiple_spaces = false;
 	  let defending_space_valid = false;
 
-	  let space = this.game.space[this.game.state.combat.key];
+	  let space = this.game.spaces[this.game.state.combat.key];
 
 	  //
 	  // if swamp or mountain return
@@ -632,7 +649,6 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let key = mv[2];
 	  let idx = parseInt(mv[3]);
 
-alert("entrench here!");
 	  this.game.spaces[key].units[idx].moved = 1;
 
 	  this.game.queue.splice(qe, 1);

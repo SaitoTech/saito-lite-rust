@@ -220,12 +220,12 @@ alert("trying to SKIP the attack stage...");
 	  let unit = paths_self.game.spaces[idx.unit_sourcekey].units[idx.unit_idx];
 	  let already_selected = false;
 	  for (let z = 0; z < selected.length; z++) {
-	     if (JSON.stringify(idx) == selected[z]) { already_selected = true; }
+	     if (paths_self.app.crypto.stringToBase64(JSON.stringify(idx)) === selected[z]) { already_selected = true; }
 	  }
 	  if (already_selected) {
-  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey} ***</li>`;
+  	    return `<li class="option" id='${paths_self.app.crypto.stringToBase64(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey} ***</li>`;
 	  } else {
-  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey}</li>`;
+  	    return `<li class="option" id='${paths_self.app.crypto.stringToBase64(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey}</li>`;
 	  }
 	},
 	(idx) => {
@@ -236,7 +236,11 @@ alert("trying to SKIP the attack stage...");
 	  if (idx === "skip") {
 	    let finished = false;
 	    if (selected.length > 0) {
-	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(selected)}`);
+let s = [];
+for (let z = 0; z < selected.length; z++) {
+  s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
+}
+	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
 	      paths_self.addMove("resolve\tplayer_play_combat");
@@ -249,18 +253,17 @@ alert("trying to SKIP the attack stage...");
 	  //
 	  // or our JSON object
 	  //
-	  idx = JSON.parse(unescape(idx));
+	  let pidx = JSON.parse(paths_self.app.crypto.base64ToString(idx));
 
-	  let key = idx.key;
-	  let unit_sourcekey = idx.unit_sourcekey;
-	  let unit_idx = idx.unit_idx;
+	  let key = pidx.key;
+	  let unit_sourcekey = pidx.unit_sourcekey;
+	  let unit_idx = pidx.unit_idx;
 
-	  if (selected.includes(JSON.stringify(idx))) {
-	    selected.splice(selected.indexOf(JSON.stringify(idx)), 1);
+	  if (selected.includes(idx)) {
+	    selected.splice(selected.indexOf(idx), 1);
 	  } else {
-	    selected.push(JSON.stringify(idx));
+	    selected.push(idx);
 	  }
-
 
           attackInterface(original_key, options, selected, mainInterface, attackInterface);
 

@@ -2013,6 +2013,80 @@ console.log("\n\n\n\n");
 
 
 
+  returnDefenderCombatPower() {
+    let x = 0;
+    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
+      let unit = this.game.spaces[this.game.state.combat.key].units[i];
+      x += unit.combat;
+    }
+console.log("DCP: " + x);
+    return x;
+  }
+
+  returnAttackerCombatPower() {
+    let x = 0;
+    for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
+      let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
+      x += unit.combat;
+    }
+console.log("ACP: " + x);
+    return x;
+  }
+
+  returnDefenderLossFactor() {
+    let cp = this.returnDefenderCombatPower();
+    let hits = this.returnArmyFireTable();
+    if (this.game.state.combat.defender_table === "corps") { hits = this.returnCorpsFireTable(); }
+    for (let i = hits.length-1; i >= 0; i--) {
+      if (hits[i].max >= cp && hits[i].min <= cp) {
+        return hits[i][this.game.state.combat.defender_modified_roll];
+      }
+    }
+    return 0;
+  }
+
+  returnAttackerLossFactor() {
+    let cp = this.returnAttackerCombatPower();
+    let hits = this.returnArmyFireTable();
+    if (this.game.state.combat.attacker_table === "corps") { hits = this.returnCorpsFireTable(); }
+    for (let i = hits.length-1; i >= 0; i--) {
+      if (hits[i].max >= cp && hits[i].min <= cp) {
+        return hits[i][this.game.state.combat.attacker_modified_roll];
+      }
+    }
+    return 0;
+  }
+
+  returnArmyFireTable() {
+    let hits = [];
+    hits.push({ min : 1,  max : 1,   1 : 0 , 2 : 1 , 3 : 1 , 4 : 1 , 5 : 2 , 6 : 2 })
+    hits.push({ min : 2,  max : 2,   1 : 1 , 2 : 1 , 3 : 2 , 4 : 2 , 5 : 3 , 6 : 3 })
+    hits.push({ min : 3,  max : 3,   1 : 1 , 2 : 2 , 3 : 2 , 4 : 3 , 5 : 3 , 6 : 4 })
+    hits.push({ min : 4,  max : 4,   1 : 2 , 2 : 2 , 3 : 3 , 4 : 3 , 5 : 4 , 6 : 4 })
+    hits.push({ min : 5,  max : 5,   1 : 2 , 2 : 3 , 3 : 3 , 4 : 4 , 5 : 4 , 6 : 5 })
+    hits.push({ min : 6,  max : 8,   1 : 3 , 2 : 3 , 3 : 4 , 4 : 4 , 5 : 5 , 6 : 5 })
+    hits.push({ min : 9,  max : 11,  1 : 3 , 2 : 4 , 3 : 4 , 4 : 5 , 5 : 5 , 6 : 7 })
+    hits.push({ min : 12, max : 14,  1 : 4 , 2 : 4 , 3 : 5 , 4 : 5 , 5 : 7 , 6 : 7 })
+    hits.push({ min : 15, max : 15,  1 : 4 , 2 : 5 , 3 : 5 , 4 : 7 , 5 : 7 , 6 : 7 })
+    hits.push({ min : 16, max : 100, 1 : 5 , 2 : 5 , 3 : 7 , 4 : 7 , 5 : 7 , 6 : 7 })
+    return hits;
+  }
+
+  returnCorpsFireTable() {
+    let hits = [];
+    hits.push({ min : 0, max : 0, 1 : 0 , 2 : 0 , 3 : 0 , 4 : 0 , 5 : 1 , 6 : 1 })
+    hits.push({ min : 1, max : 1, 1 : 0 , 2 : 0 , 3 : 0 , 4 : 1 , 5 : 1 , 6 : 1 })
+    hits.push({ min : 2, max : 2, 1 : 0 , 2 : 1 , 3 : 1 , 4 : 1 , 5 : 1 , 6 : 1 })
+    hits.push({ min : 3, max : 3, 1 : 1 , 2 : 1 , 3 : 1 , 4 : 1 , 5 : 2 , 6 : 2 })
+    hits.push({ min : 4, max : 4, 1 : 1 , 2 : 1 , 3 : 1 , 4 : 2 , 5 : 2 , 6 : 2 })
+    hits.push({ min : 5, max : 5, 1 : 1 , 2 : 1 , 3 : 2 , 4 : 2 , 5 : 2 , 6 : 3 })
+    hits.push({ min : 6, max : 6, 1 : 1 , 2 : 1 , 3 : 2 , 4 : 2 , 5 : 3 , 6 : 3 })
+    hits.push({ min : 7, max : 7, 1 : 1 , 2 : 2 , 3 : 2 , 4 : 3 , 5 : 3 , 6 : 4 })
+    hits.push({ min : 8, max : 100, 1 : 2 , 2 : 2 , 3 : 3 , 4 : 3 , 5 : 4 , 6 : 4 })
+    return hits;
+  }
+
+
   hideOverlays() {
     this.zoom_overlay.hide();
   }
@@ -5537,12 +5611,16 @@ try {
 	if (mv[0] === "combat") {
 
 	  let key = mv[1];
-	  let selected = mv[2];
+	  let selected = JSON.parse(mv[2]);
+
+console.log("SELECTED: " + JSON.stringify(selected));
 
 	  this.game.state.combat = {};
 	  this.game.state.combat.key = key;
-	  this.game.state.combat.attacker = JSON.parse(selected);
-	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_spacekey].units[0]);
+	  this.game.state.combat.attacker = selected;
+	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_sourcekey].units[0]);
+
+console.log("moving forward with combat!");
 
 	  //
 	  // remove this from the queue
@@ -5588,8 +5666,6 @@ try {
 //11. Defender Retreat
 //12. Attacker Advance
 
-alert("COMBAT: " + JSON.stringify(this.game.state.combat));
-
 	  this.combat_overlay.render();
 	  this.combat_overlay.pullHudOverOverlay();
 
@@ -5598,6 +5674,10 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	}
 
 	if (mv[0] == "combat_play_combat_cards") {
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
 	}
 
 	if (mv[0] == "combat_determine_outcome") {
@@ -5613,6 +5693,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  let defender_modified_roll = 0;
 	  let attacker_power = "allies";
 	  let defender_power = "central";
+	  let attacker_combat_power = 0;
+	  let defender_combat_power = 0;
 
 	  let attacker_table = "corps";
 	  let defender_table = "corps";
@@ -5628,8 +5710,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
 	  }
 
-	  attacker_roll = this.rollDice(6);
-	  defender_roll = this.rollDice(6);
+	  attacker_roll = this.rollDice();
+	  defender_roll = this.rollDice();
 
 	  attacker_modified_roll = attacker_roll + attacker_drm;
 	  defender_modified_roll = defender_roll + defender_drm;
@@ -5639,16 +5721,25 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  if (attacker_modified_roll < 1) { attacker_modified_roll = 1; }
 	  if (defender_modified_roll < 1) { defender_modified_roll = 1; }
 
+	  this.game.state.combat.attacker_table = attacker_table;
+	  this.game.state.combat.defender_table = defender_table;
 	  this.game.state.combat.attacker_power = attacker_power;
 	  this.game.state.combat.defender_power = defender_power;
 	  this.game.state.combat.attacker_drm = attacker_drm;
 	  this.game.state.combat.defender_drm = defender_drm;
-	  this.game.state.combat.attacker_roll = attacker_drm;
-	  this.game.state.combat.defender_roll = defender_drm;
+	  this.game.state.combat.attacker_roll = attacker_roll;
+	  this.game.state.combat.defender_roll = defender_roll;
 	  this.game.state.combat.attacker_modified_roll = attacker_modified_roll;
 	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
-	  this.game.state.combat.attacker_loss_factor = 1;
-	  this.game.state.combat.defender_loss_factor = 1;
+	  this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
+	  this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log(JSON.stringify(this.game.state.combat));
+
 
 	  if (this.game.state.combat.flank_attack == "attacker") {
 	    this.game.queue.push(`combat_assign_hits\tattacker`);
@@ -5688,7 +5779,7 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    loss_factor = this.game.state.combat.defender_loss_factor;
 	  }
 
-	  alert(power + " assign losses of " + loss_number);
+	  alert(power + " assign losses of " + loss_factor);
 
 	  this.game.queue.splice(qe, 1);
 	  return;
@@ -5720,12 +5811,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	if (mv[0] == "combat_evaluate_flank_attack") {
 
-	  this.game.splice(qe, 1);
+	  this.game.queue.splice(qe, 1);
 
 	  let is_attacking_from_multiple_spaces = false;
 	  let defending_space_valid = false;
 
-	  let space = this.game.space[this.game.state.combat.key];
+	  let space = this.game.spaces[this.game.state.combat.key];
 
 	  //
 	  // if swamp or mountain return
@@ -5864,7 +5955,6 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let key = mv[2];
 	  let idx = parseInt(mv[3]);
 
-alert("entrench here!");
 	  this.game.spaces[key].units[idx].moved = 1;
 
 	  this.game.queue.splice(qe, 1);
@@ -6171,12 +6261,12 @@ alert("trying to SKIP the attack stage...");
 	  let unit = paths_self.game.spaces[idx.unit_sourcekey].units[idx.unit_idx];
 	  let already_selected = false;
 	  for (let z = 0; z < selected.length; z++) {
-	     if (JSON.stringify(idx) == selected[z]) { already_selected = true; }
+	     if (paths_self.app.crypto.stringToBase64(JSON.stringify(idx)) === selected[z]) { already_selected = true; }
 	  }
 	  if (already_selected) {
-  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey} ***</li>`;
+  	    return `<li class="option" id='${paths_self.app.crypto.stringToBase64(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey} ***</li>`;
 	  } else {
-  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey}</li>`;
+  	    return `<li class="option" id='${paths_self.app.crypto.stringToBase64(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey}</li>`;
 	  }
 	},
 	(idx) => {
@@ -6187,7 +6277,11 @@ alert("trying to SKIP the attack stage...");
 	  if (idx === "skip") {
 	    let finished = false;
 	    if (selected.length > 0) {
-	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(selected)}`);
+let s = [];
+for (let z = 0; z < selected.length; z++) {
+  s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
+}
+	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
 	      paths_self.addMove("resolve\tplayer_play_combat");
@@ -6200,18 +6294,17 @@ alert("trying to SKIP the attack stage...");
 	  //
 	  // or our JSON object
 	  //
-	  idx = JSON.parse(unescape(idx));
+	  let pidx = JSON.parse(paths_self.app.crypto.base64ToString(idx));
 
-	  let key = idx.key;
-	  let unit_sourcekey = idx.unit_sourcekey;
-	  let unit_idx = idx.unit_idx;
+	  let key = pidx.key;
+	  let unit_sourcekey = pidx.unit_sourcekey;
+	  let unit_idx = pidx.unit_idx;
 
-	  if (selected.includes(JSON.stringify(idx))) {
-	    selected.splice(selected.indexOf(JSON.stringify(idx)), 1);
+	  if (selected.includes(idx)) {
+	    selected.splice(selected.indexOf(idx), 1);
 	  } else {
-	    selected.push(JSON.stringify(idx));
+	    selected.push(idx);
 	  }
-
 
           attackInterface(original_key, options, selected, mainInterface, attackInterface);
 
