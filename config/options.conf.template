@@ -9,7 +9,7 @@
       "protocol": "http"
     },
     "verification_threads": 4,
-    "channel_size": 10000,
+    "channel_size": 10001,
     "stat_timer_in_ms": 5000,
     "reconnection_wait_time": 10000,
     "thread_sleep_time_in_ms": 10,
