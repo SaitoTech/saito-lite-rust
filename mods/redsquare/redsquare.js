@@ -1622,63 +1622,6 @@ class RedSquare extends ModTemplate {
       "localhost"
     );
 
-
-    /*if (this.app.browser.returnURLParameter("tweet_id")) {
-      return;
-    }
-
-    localforage.getItem(`notifications_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-            this.addNotification(newtx);
-          } catch (err) {}
-        }
-      }
-    });
-    localforage.getItem(`profile_posts_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-      let t = new Tweet(this.app, this, newtx, ".tweet-manager");
-console.log("profile cache load: " + t.text);
-            this.manager.profile_posts.push(t); // the tweet
-          } catch (err) {}
-        }
-      }
-    });
-    localforage.getItem(`profile_replies_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-      let t = new Tweet(this.app, this, newtx, ".tweet-manager");
-console.log("profile cache load: " + t.text);
-            this.manager.profile_replies.push(t); // the tweet
-          } catch (err) {}
-        }
-      }
-    });
-    localforage.getItem(`tweet_history`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-          try {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, tx);
-            this.addTweet(newtx);
-          } catch (err) {}
-        }
-      }
-      //Run these regardless of results
-      this.app.connection.emit("redsquare-home-render-request");
-      this.app.connection.emit("redsquare-insert-loading-message");
-    });*/
-
   }
 
   /////////////////////////////////////
