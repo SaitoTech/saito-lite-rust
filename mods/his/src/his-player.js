@@ -1605,8 +1605,20 @@ console.log("and calling callback...");
     this.addMove("remove\t"+faction+"\t"+card);
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
-    this.addMove("RESETCONFIRMSNEEDED\tall");
+
+    // counter_or_acknowledge if the player is the Protestants and Wartburg is not in the discard pile as
+    // the Protestants might have it. Otherwise ACKNOWLEDGE to ensure players know what is happening but
+    // don't halt the game for the player moving.
+
+    // wartburg is 037
+    if (faction !== "protestant" && !this.game.deck[0].discards["037"]) {
+      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+      this.addMove("RESETCONFIRMSNEEDED\tall");
+    } else {
+      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
+    }
+//    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+//    this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
 

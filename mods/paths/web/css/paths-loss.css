@@ -1,0 +1,47 @@
+
+.loss-overlay {
+  min-width: 1131px;
+  min-height: 827px;
+  max-height: 90vh;
+  max-width: 90vw;
+  border-radius: 2rem;
+  background-image: url('/paths/img/backgrounds/mark_iv_tank.jpg');
+  background-size: cover;
+}
+
+
+.loss-overlay .help {
+    background: #0009;
+    width: 100%;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.4rem;
+    padding: 0.75rem;
+    max-width: 100%;
+    padding: 1rem;
+    line-height: 3.4rem;
+    text-align: center;
+}
+
+.loss-overlay-unit {
+  height: 15rem;
+  width: 15rem;
+  position: relative;
+  display: block;
+}
+
+
+.loss-overlay .units {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr) );
+  padding: 4rem;
+  justify-items: center;
+  justify-content: space-evenly;
+  row-gap: 5rem;
+  column-gap: 2rem;
+
+}
+
+
+

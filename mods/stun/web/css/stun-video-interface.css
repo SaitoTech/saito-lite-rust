@@ -230,12 +230,13 @@
 }
 
 .stun-chatbox .side-videos {
-  display: grid;
+  display: flex;
   gap: 1rem;
   width: 25%;
   height: 100%;
   max-height: 100%;
   flex: 1;
+  flex-direction: column;
 }
 
 .stun-chatbox .b-btngrid {
@@ -896,6 +897,7 @@
   .stun-chatbox .side-videos {
     width: 100%;
     max-height: 50%;
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, auto));
     grid-gap: 0.5rem;
   }

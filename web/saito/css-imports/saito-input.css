@@ -24,8 +24,7 @@
 	height: fit-content;
 }
 
-
-.saito-input-selection-box{
+.saito-input-selection-box {
 	position: absolute;
 	height: 46rem;
 	width: 36rem;
@@ -44,17 +43,25 @@
 	background-color: var(--saito-background-color);
 }
 
+.saito-mention {
+	cursor: default;
+	font-weight: bold;
+	font-style: italic;
+	user-select: none;
+}
+
 .selection-box-window {
 	position: relative;
 	width: 100%;
-	height: 100%
+	height: 100%;
 }
 
 .photo-window {
 	font-size: 3rem;
-    text-align: center;
-    padding: 4rem;
-    cursor: pointer;
+	text-align: center;
+	padding: 4rem;
+	cursor: pointer;
+	opacity: 0.5;
 }
 
 .selection-box-pane {
@@ -78,10 +85,10 @@
 	width: 100%;
 	height: 5rem;
 	background-color: var(--saito-background-color);
-    border-top: 1px solid var(--saito-border-color);
+	border-top: 1px solid var(--saito-border-color);
 }
 
-.selection-box-tabs i { 
+.selection-box-tabs i {
 	/*text-shadow: 1px 1px 3px var(--saito-black-faded);*/
 }
 
@@ -92,10 +99,9 @@
 	line-height: 1rem;
 }
 
-.saito-box-tab:hover{
+.saito-box-tab:hover {
 	color: var(--saito-secondary);
 }
-
 
 /* override definitions from giphy.css */
 .selection-box-window .saito-gif-container {
@@ -103,33 +109,31 @@
 }
 
 emoji-picker {
-  --emoji-size: 2.5rem;
-  --emoji-padding: 0.5rem;
-  z-index: 2;
+	display: none;
+	--emoji-size: 2.5rem;
+	--emoji-padding: 0.5rem;
+	z-index: 2;
 }
 
 .saito-emoji {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  padding: 0.8rem 0.5rem;
-  color: var(--saito-primary);
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 2rem;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	padding: 0.8rem 0.5rem;
+	color: var(--saito-primary);
+	cursor: pointer;
+	transition: all 0.2s;
+	font-size: 2rem;
 }
 
 .selection-box-window emoji-picker {
 	width: 100%;
 	height: 100%;
-}
-
-.photo-window {
-    opacity: 0.5;
+	display: flex;
 }
 
 .saito-input-large .selection-box-tabs {
-	width: 16rem;
+	width: 20rem;
 	border-top: unset;
 	background-color: unset;
 	align-items: flex-end;
@@ -141,6 +145,45 @@ emoji-picker {
 	bottom: 1rem;
 }
 
+.at-window {
+	padding: 2rem;
+	flex-direction: column;
+	justify-content: flex-start;
+	gap: 1rem;
+}
+
+.saito-input-mention-header {
+	font-size: 2.2rem;
+}
+
+.saito-input-contact-list {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1rem;
+	font-size: 1.8rem;
+	overflow: auto;
+	flex: 1;
+}
+
+.saito-input-contact {
+	cursor: pointer;
+	display: flex;
+	gap: 0.5rem;
+	width: 100%;
+	align-items: center;
+	height: 3rem;
+}
+
+.saito-input-contact-identicon{
+	width: 2.5rem;
+	height: 2.5rem;
+}
+
+.saito-input-contact:hover{
+	background-color: var(--saito-primary);
+}
 
 /*** Fix Redsquare Post ***/
 .tweet-overlay-content {
@@ -152,7 +195,6 @@ emoji-picker {
 	right: 1rem;
 	bottom: 1rem;
 }
-
 
 .saito-input-quote {
 	display: grid;
@@ -167,7 +209,7 @@ emoji-picker {
 }
 
 .saito-input-quote blockquote {
-	background-color: rgba(250,250,250,0.1);
+	background-color: rgba(250, 250, 250, 0.1);
 	cursor: default;
 }
 
@@ -175,22 +217,16 @@ emoji-picker {
 	cursor: pointer;
 }
 
-.saito-input-quote i:hover{
+.saito-input-quote i:hover {
 	transform: unset;
 }
 
-
 @media only screen and (max-width: 768px) {
-
-	.saito-input-selection-box{
-		
+	.saito-input-selection-box {
 	}
-
 }
 
-
 @media only screen and (max-width: 525px) {
-
 	.tweet-overlay-content {
 		margin-bottom: unset;
 	}

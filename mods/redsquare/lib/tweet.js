@@ -43,12 +43,7 @@ class Tweet {
     if (!this.tx.optional) {
       this.tx.optional = {};
     }
-    if (this.tx.optional.parent_id) {
-      this.parent_id = this.tx.optional.parent_id;
-    }
-    if (this.tx.optional.thread_id) {
-      this.thread_id = this.tx.optional.thread_id;
-    }
+
     if (!this.tx.optional.num_replies) {
       this.tx.optional.num_replies = 0;
     }
@@ -131,7 +126,6 @@ class Tweet {
     this.show_controls = 1;
     this.force_long_tweet = false;
     this.is_long_tweet = false;
-    this.is_retweet = false;
     this.parent_id = "";
     this.thread_id = "";
 
@@ -164,7 +158,6 @@ class Tweet {
         newtx,
         this.container + `> .tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
       );
-      this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
     }
 
@@ -183,6 +176,18 @@ class Tweet {
 
     // We will use this as a flag to know there were no breaking failures in the constructor
     this.noerrors = true;
+  }
+
+  isRetweet(){
+    let txmsg = this.tx.returnMessage();
+    if (txmsg.request != "create tweet") {
+      return false;
+    }
+    if (!txmsg.data?.text && !txmsg.data?.images) {
+      return true;
+    } 
+
+    return false;
   }
 
   isPost() {
@@ -304,15 +309,21 @@ class Tweet {
       let t = this.mod.returnTweet(this.retweet.tx.signature);
       if (t) {
         t.notice = this.retweet.notice;
+        t.user.notice = t.user.notice.replace("new", "original");
         t.render(prepend);
         t.attachEvents();
       } else {
-        (this.retweet.user.container =
-          this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
-          this.retweet.render(prepend);
+        console.log("Rendering a new retweet");
+        this.retweet.user.container = this.container + `> .tweet-${this.tx.signature} > .tweet-header`;
+        this.retweet.user.notice = this.retweet.user.notice.replace("new", "original");
+        this.retweet.render(prepend);
         this.retweet.attachEvents();
       }
       return;
+    }
+
+    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions){
+      this.notice = "You were mentioned in this tweet";      
     }
 
     if (this.render_after_selector) {
@@ -407,9 +418,19 @@ class Tweet {
   }
 
   rerenderControls() {
-    this.renderLikes();
-    this.renderRetweets();
-    this.renderReplies();
+    //
+    // just make sure our updated tx.optional values propagate to the tweet properties
+    //
+    //console.log(JSON.parse(JSON.stringify(this.tx.optional)));
+
+    this.setKeys(this.tx.optional);    
+    //console.log(this.num_replies, this.num_retweets, this.num_likes);
+
+    // like, retweet, comment
+    this.refreshStat("like", this.num_likes);
+    this.refreshStat("retweet", this.num_retweets);
+    this.refreshStat("comment", this.num_replies);
+
   }
 
   forceRenderWithCriticalChild() {
@@ -875,16 +896,19 @@ class Tweet {
     }
   }
 
+
+  //
+  // I am using this function to reset the this.num_likes, etc
+  // from an updated tx that we either received on chain or through an archive query
+  // (both of which manually increment the stats in tx.optional)
+  //
   setKeys(obj) {
     for (let key in obj) {
       if (typeof obj[key] !== "undefined") {
-        if (
-          this[key] === 0 ||
-          this[key] === "" ||
-          this[key] === null ||
-          typeof this[key] === "undefined"
-        ) {
+        if (!this[key]){
           this[key] = obj[key];
+        }else if (typeof this[key] === "number"){
+          this[key] = Math.max(this[key], obj[key]);
         }
       }
     }
@@ -1182,59 +1206,20 @@ class Tweet {
     return this;
   }
 
-  renderLikes() {
+  // like, retweet, comment
+  refreshStat(stat, newCount){
     // some edge cases where tweet won't have rendered
     try {
-      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`;
-      let likes = this.tx?.optional?.num_likes || 0;
-      let existing = likes;
-      if (document.querySelector(qs)) {
-        existing = parseInt(document.querySelector(qs).innerHTML);
-      }
-      for (let obj of Array.from(document.querySelectorAll(qs))) {
-        if (likes > existing) {
-          obj.innerHTML = likes;
+      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-${stat} .tweet-tool-${stat}-count`;
+      Array.from(document.querySelectorAll(qs)).forEach(obj => {
+        let existing = parseInt(obj.innerHTML) || 0;
+        if (newCount > existing) {
+          obj.innerHTML = newCount;
         }
-      }
+      }); 
     } catch (err) {
-      console.log("ERROR UPDATING LIKES: " + err);
+      console.log(`ERROR UPDATING ${stat}: ` + err);
     }
-  }
-
-  renderRetweets() {
-    // some edge cases where tweet won't have rendered
-    //console.log("RenderRetweets");
-    try {
-      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
-      let retweets = this.tx?.optional?.num_retweets || 0;
-      let existing = retweets;
-      if (document.querySelector(qs)) {
-        existing = parseInt(document.querySelector(qs).innerHTML);
-      }
-      for (let obj of Array.from(document.querySelectorAll(qs))) {
-        if (retweets > existing) {
-          obj.innerHTML = retweets;
-        }
-      }
-    } catch (err) {}
-  }
-
-  renderReplies() {
-    // some edge cases where tweet won't have rendered
-    //console.log("RenderReplies");
-    try {
-      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
-      let replies = this.tx?.optional?.num_replies || 0;
-      let existing = replies;
-      if (document.querySelector(qs)) {
-        existing = parseInt(document.querySelector(qs).innerHTML);
-      }
-      for (let obj of Array.from(document.querySelectorAll(qs))) {
-        if (replies > existing) {
-          obj.innerHTML = replies;
-        }
-      }
-    } catch (err) {}
   }
 
   returnTransactionsInThread(limit = 10) {

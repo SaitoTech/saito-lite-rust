@@ -8,17 +8,13 @@ module.exports = (app, mod, post) => {
       <div class="tweet-overlay-content">
         <div class="tweet-overlay-header"></div>
 
-        <!--textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="${placeholder}" cols="60"></textarea-->
-  
+        <!-- ***************************************************
+             TEXT AREA and controls are inserted by saito-input 
+        *******************************************************-->
+        
         <div id="post-tweet-img-preview-container" class="post-tweet-img-preview-container"></div>
 
-        <!--div class="tweet-overlay-content-controls">
-          <div class="post-tweet-img-icon" id="post-tweet-img-icon"><i class="fa-solid fa-image"></i></div>
-          <div class="saito-gif-icon-container"><div class="saito-gif gif-icon"></div></div>
-          <div class="saito-emoji-icon-container"></div>
-          <div class="tweet-overlay-content-controls-spacer"></div>
 
-        </div-->
           <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
       </div>
 

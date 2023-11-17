@@ -120,7 +120,11 @@
 	if (f == "england" && (this.game.state.leaders.henry_viii != 1 && this.game.state.leaders.edward_vi != 1 && this.game.state.leaders.elizabeth_i != 1)) {
           if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
 	} else {
-          if (this.returnFactionLandUnitsInSpace(f, space)) { return false; }
+	  if (f == "england") {
+            if (this.returnFactionLandUnitsInSpace(f, space)) { return false; }
+	  } else {
+            if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
+	  }
 	}
       }
     }
@@ -647,15 +651,7 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
-if (space.key === "agram") {
-  console.log(space.type + " -- " + space.fortified);
-}
-
     if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space]; }
-
-if (faction == "venice") {
-  console.log("getting res for: " + space.key);
-}
 
     let original_spacekey = space.key;
     let his_self = this;
@@ -667,14 +663,18 @@ if (faction == "venice") {
 
       // fortified spaces
       function(spacekey) {
+
+	// non-protestants can't move into electorates, so they aren't friendly fortified spaces 
+	// for anyone at this point.
+	if (faction !== "protestant" && his_self.game.state.events.schmalkaldic_league != 1) {
+	  if (his_self.isElectorate(spacekey)) { return 0; }
+	}
+
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
-console.log(spacekey + " -- is fortified");
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
-console.log("and controlled");
 	    return 1;
 	  }
 	  if (his_self.isSpaceFriendly(spacekey, faction)) {
-console.log("and friendly");
 	    return 1;
 	  }
 	}

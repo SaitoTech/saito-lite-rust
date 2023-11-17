@@ -543,8 +543,6 @@
 	  // also remove protestant card (which is next)
           his_self.game.queue.splice(qe-1, 1);
 	
-console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue));
-  
 	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
 
    	    let msg = "Choose Protestant Card:";
@@ -609,6 +607,12 @@ console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue)
           html += `<li class="option" id="discard">discard ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
           html += `<li class="option" id="swap">swap ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
     	  html += '</ul>';
+
+
+	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+	    his_self.updateStatus("Protestants playing Diplomatic Pressure");
+	    return 0;
+	  }
 
           his_self.updateStatusWithOptions(msg, html);
 
@@ -965,8 +969,6 @@ console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue)
 
         if (mv[0] == "plague") {
 
-console.log("hitting plague in loop...");
-
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
 	  let player = his_self.returnPlayerOfFaction(faction);
@@ -980,8 +982,6 @@ console.log("hitting plague in loop...");
 	  if (num == 1) { num = "1st"; }
 	  if (num == 2) { num = "2nd"; }
 	  if (num == 3) { num = "3rd"; }
-
-console.log("about to select space or naval space with filter...");
 
           his_self.playerSelectSpaceOrNavalSpaceWithFilter(
 
@@ -1005,8 +1005,6 @@ console.log("about to select space or naval space with filter...");
             },
 
             function(spacekey) {
-
-console.log("plague select space done: " + spacekey);
 
 	      let land_or_sea = "land";
 	      let space = null;
@@ -1039,14 +1037,11 @@ console.log("plague select space done: " + spacekey);
               if (space.units["independent"].length) { u++; html += '<li class="option" id="independent">independent</li>'; }
     	      html += '</ul>';
 
-console.log("about to update status with options");
-
               his_self.updateStatusWithOptions(msg, html);
 
    	      $('.option').off();
 	      $('.option').on('click', function () {
 
-console.log("in parent click function in plague...");
    	        $('.option').off();
 
 	        let faction_to_destroy = $(this).attr("id");
@@ -1071,8 +1066,6 @@ console.log("in parent click function in plague...");
 
    	        $('.option').off();
 	        $('.option').on('click', function () {
-
-console.log("in click function from plague...");
 
    	          $('.option').off();
 	          let unittype = $(this).attr("id");
@@ -1100,23 +1093,12 @@ console.log("in click function from plague...");
 		});
 
 		// auto-submit if only 1 choice
-		if (du > -1) { 
-
-console.log("du is > -1 so autoclick nonskip");
-
-$('.nonskip').click(); }
+		if (du > -1) { $('.nonskip').click(); }
 
               });
 
 	      // auto-submit if only 1 choice
-	      if (u == 1) {
-
-console.log("u is 1 so autoclick option");
-
- $('.option').click(); 
-
-console.log("done u=1 autoclick");
-}
+	      if (u == 1) { $('.option').click(); }
 
 	    },
 
@@ -2844,8 +2826,9 @@ alert("is_commited = " + is_committed);
 	his_self.game.state.wittenberg_electoral_bonus = 1;
 
 	his_self.game.queue.push("hide_overlay\ttheses");
-        his_self.game.queue.push("counter_or_acknowledge\tThe Reformation has begun!");
-        his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
+        //his_self.game.queue.push("counter_or_acknowledge\tThe Reformation has begun!");
+        //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");

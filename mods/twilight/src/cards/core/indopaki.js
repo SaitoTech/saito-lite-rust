@@ -30,7 +30,8 @@
           twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls: ${die}, adjusted: ${die-modifications}`);
 
           if (die >= target + modifications) { //Successful Invasion
-            winner = (invaded == "pakistan")? "India invades Pakistan!": "Pakistan invades India";
+            //winner = (invaded == "pakistan")? "India invades Pakistan!": "Pakistan invades India";
+            winner = "Invasion Succeeds!";
 	    success = 1;
 
             let influence_change = 0;
@@ -49,7 +50,8 @@
             twilight_self.addMove(`vp\t${player}\t2`);
 
           } else { //India fails invasion
-            winner = (invaded == "pakistan")? "Pakistan repels India!": "India repels Pakistan!";
+            //winner = (invaded == "pakistan")? "Pakistan repels India!": "India repels Pakistan!";
+            winner = "Invasion Fails!";
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
             } else {

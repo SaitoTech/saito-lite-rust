@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const ZoomOverlay = require('./lib/ui/overlays/zoom');
 const CombatOverlay = require('./lib/ui/overlays/combat');
+const LossOverlay = require('./lib/ui/overlays/loss');
 
 const PathsRules = require('./lib/core/rules.template');
 const PathsOptions = require('./lib/core/advanced-options.template');
@@ -35,6 +36,7 @@ class PathsOfGlory extends GameTemplate {
     //
     this.zoom_overlay = new ZoomOverlay(this.app, this); 
     this.combat_overlay = new CombatOverlay(this.app, this); 
+    this.loss_overlay = new LossOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining

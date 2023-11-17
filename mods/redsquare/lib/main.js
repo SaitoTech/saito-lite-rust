@@ -3,10 +3,9 @@ const TweetManager = require("./manager");
 const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class RedSquareMain {
-  constructor(app, mod, container = "") {
+  constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.container = container;
     this.name = "RedSquareMain";
 
     this.components = {};
@@ -158,13 +157,6 @@ class RedSquareMain {
 
       this.manager.renderProfile(publicKey);
 
-      // clicked on profile from profile
-      if (this.manager) {
-        if (this.manager.tab == "replies") {
-          this.manager.switchToPosts();
-        }
-      }
-
       document.querySelectorAll(".optional-menu-item").forEach((item) => {
         item.style.display = "none";
       });
@@ -244,7 +236,7 @@ class RedSquareMain {
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), ".saito-container");
     } else {
-      this.app.browser.addElementToSelector(RedSquareMainTemplate(), this.container);
+      this.app.browser.addElementToDom(RedSquareMainTemplate());
     }
     this.manager.render();
     this.attachEvents();
