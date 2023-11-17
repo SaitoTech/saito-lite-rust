@@ -55,6 +55,7 @@ class Post {
     this.input.callbackOnReturn = () => {
       this.postTweet();
     };
+
     this.input.callbackOnUpload = async (file) => {
       if (this.images.length >= 4) {
         salert("Maximum 4 images allowed per tweet.");
@@ -138,7 +139,7 @@ class Post {
 
   async postTweet() {
     let post_self = this;
-    let text = document.getElementById("post-tweet-textarea").value;
+    let text = this.input.getInput();
     let parent_id = document.getElementById("parent_id").value;
     let thread_id = document.getElementById("thread_id").value;
     let source = document.getElementById("source").value;
@@ -154,20 +155,20 @@ class Post {
     //
     // extract keys from text AND then tweet
     //
-    keys = post_self.app.browser.extractKeys(text);
-    identifiers = post_self.app.browser.extractIdentifiers(text);
-
+    //keys = post_self.app.browser.extractKeys(text);
+    //identifiers = post_self.app.browser.extractIdentifiers(text);
     //
     // add identifiers as available
     //
-    for (let i = 0; i < identifiers.length; i++) {
-      let key = this.app.keychain.returnPublicKeyByIdentifier(identifiers[i]);
-      if (key) {
-        if (!keys.includes(key)) {
-          keys.push(key);
-        }
-      }
-    }
+    //for (let i = 0; i < identifiers.length; i++) {
+    //  let key = this.app.keychain.returnPublicKeyByIdentifier(identifiers[i]);
+    //  if (key) {
+    //    if (!keys.includes(key)) {
+    //      keys.push(key);
+    //    }
+    //  }
+    //}
+    keys = this.input.getMentions();
 
     //
     // any previous recipients get added to "to"
@@ -217,6 +218,10 @@ class Post {
 
     if (post_self.images.length > 0) {
       data["images"] = post_self.images;
+    }
+
+    if (keys.length > 0) {
+      data["mentions"] = 1;
     }
 
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);

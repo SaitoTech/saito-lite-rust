@@ -3007,7 +3007,6 @@ if (this.game.players.length > 2) {
   returnDiplomaticDeck() {
 
     let deck = {};
-/***
 
     deck['201'] = { 
       img : "cards/HIS-201.svg" , 
@@ -3433,7 +3432,6 @@ if (this.game.players.length > 2) {
 	return 0;
       },
     }
-**HACK**/
     deck['205'] = { 
       img : "cards/HIS-205.svg" , 
       name : "Diplomatic Pressure" ,
@@ -3486,8 +3484,6 @@ if (this.game.players.length > 2) {
 	  // also remove protestant card (which is next)
           his_self.game.queue.splice(qe-1, 1);
 	
-console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue));
-  
 	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
 
    	    let msg = "Choose Protestant Card:";
@@ -3552,6 +3548,12 @@ console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue)
           html += `<li class="option" id="discard">discard ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
           html += `<li class="option" id="swap">swap ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
     	  html += '</ul>';
+
+
+	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+	    his_self.updateStatus("Protestants playing Diplomatic Pressure");
+	    return 0;
+	  }
 
           his_self.updateStatusWithOptions(msg, html);
 
@@ -3890,7 +3892,6 @@ console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue)
 	return 1;	
       }
     }
-/***** HACK
     deck['209'] = { 
       img : "cards/HIS-209.svg" , 
       name : "Plague" ,
@@ -3909,8 +3910,6 @@ console.log("before I broadcast move is: " + JSON.stringify(his_self.game.queue)
 
         if (mv[0] == "plague") {
 
-console.log("hitting plague in loop...");
-
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
 	  let player = his_self.returnPlayerOfFaction(faction);
@@ -3924,8 +3923,6 @@ console.log("hitting plague in loop...");
 	  if (num == 1) { num = "1st"; }
 	  if (num == 2) { num = "2nd"; }
 	  if (num == 3) { num = "3rd"; }
-
-console.log("about to select space or naval space with filter...");
 
           his_self.playerSelectSpaceOrNavalSpaceWithFilter(
 
@@ -3949,8 +3946,6 @@ console.log("about to select space or naval space with filter...");
             },
 
             function(spacekey) {
-
-console.log("plague select space done: " + spacekey);
 
 	      let land_or_sea = "land";
 	      let space = null;
@@ -3983,14 +3978,11 @@ console.log("plague select space done: " + spacekey);
               if (space.units["independent"].length) { u++; html += '<li class="option" id="independent">independent</li>'; }
     	      html += '</ul>';
 
-console.log("about to update status with options");
-
               his_self.updateStatusWithOptions(msg, html);
 
    	      $('.option').off();
 	      $('.option').on('click', function () {
 
-console.log("in parent click function in plague...");
    	        $('.option').off();
 
 	        let faction_to_destroy = $(this).attr("id");
@@ -4015,8 +4007,6 @@ console.log("in parent click function in plague...");
 
    	        $('.option').off();
 	        $('.option').on('click', function () {
-
-console.log("in click function from plague...");
 
    	          $('.option').off();
 	          let unittype = $(this).attr("id");
@@ -4044,23 +4034,12 @@ console.log("in click function from plague...");
 		});
 
 		// auto-submit if only 1 choice
-		if (du > -1) { 
-
-console.log("du is > -1 so autoclick nonskip");
-
-$('.nonskip').click(); }
+		if (du > -1) { $('.nonskip').click(); }
 
               });
 
 	      // auto-submit if only 1 choice
-	      if (u == 1) {
-
-console.log("u is 1 so autoclick option");
-
- $('.option').click(); 
-
-console.log("done u=1 autoclick");
-}
+	      if (u == 1) { $('.option').click(); }
 
 	    },
 
@@ -4961,7 +4940,6 @@ console.log("done u=1 autoclick");
 
       },
     }
-**HACK***/
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }
@@ -5789,8 +5767,9 @@ alert("is_commited = " + is_committed);
 	his_self.game.state.wittenberg_electoral_bonus = 1;
 
 	his_self.game.queue.push("hide_overlay\ttheses");
-        his_self.game.queue.push("counter_or_acknowledge\tThe Reformation has begun!");
-        his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
+        //his_self.game.queue.push("counter_or_acknowledge\tThe Reformation has begun!");
+        //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
@@ -11689,7 +11668,11 @@ console.log("TESTING: " + JSON.stringify(space.units));
 	if (f == "england" && (this.game.state.leaders.henry_viii != 1 && this.game.state.leaders.edward_vi != 1 && this.game.state.leaders.elizabeth_i != 1)) {
           if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
 	} else {
-          if (this.returnFactionLandUnitsInSpace(f, space)) { return false; }
+	  if (f == "england") {
+            if (this.returnFactionLandUnitsInSpace(f, space)) { return false; }
+	  } else {
+            if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
+	  }
 	}
       }
     }
@@ -12216,15 +12199,7 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
-if (space.key === "agram") {
-  console.log(space.type + " -- " + space.fortified);
-}
-
     if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space]; }
-
-if (faction == "venice") {
-  console.log("getting res for: " + space.key);
-}
 
     let original_spacekey = space.key;
     let his_self = this;
@@ -12236,14 +12211,18 @@ if (faction == "venice") {
 
       // fortified spaces
       function(spacekey) {
+
+	// non-protestants can't move into electorates, so they aren't friendly fortified spaces 
+	// for anyone at this point.
+	if (faction !== "protestant" && this.game.state.events.schmalkaldic_league != 1) {
+	  if (his_self.isElectorate(spacekey)) { return 0; }
+	}
+
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
-console.log(spacekey + " -- is fortified");
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
-console.log("and controlled");
 	    return 1;
 	  }
 	  if (his_self.isSpaceFriendly(spacekey, faction)) {
-console.log("and friendly");
 	    return 1;
 	  }
 	}
@@ -16619,9 +16598,10 @@ this.updateLog(`###############`);
 	  this.game.queue.push("victory_determination_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
-	  this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
-	  this.game.queue.push("show_overlay\twinter");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
+	  //this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
+	  //this.game.queue.push("show_overlay\twinter");
+	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
@@ -18723,8 +18703,9 @@ console.log("2. insert index: " + index_to_insert_moves);
 	    }
   	    this.game.queue.push("STATUS\tProtestants selecting towns to convert...\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
-  	    this.game.queue.push("counter_or_acknowledge\tProtestants win Diet of Worms");
-  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+  	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
+  	    //this.game.queue.push("counter_or_acknowledge\tProtestants win Diet of Worms");
+  	    //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  } else {
 	    if (protestant_hits < papacy_hits) {
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
@@ -18735,16 +18716,18 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      }
   	      this.game.queue.push("STATUS\tPapacy selecting towns to convert...\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
-  	      this.game.queue.push("counter_or_acknowledge\tPapacy wins Diet of Worms");
-  	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+  	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
+  	      //this.game.queue.push("counter_or_acknowledge\tPapacy wins Diet of Worms");
+  	      //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    } else {
   	      //
               // report results
               //
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
-  	      this.game.queue.push("counter_or_acknowledge\tDiet of Worms ends in a Stalemate");
-  	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+  	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
+  	      //this.game.queue.push("counter_or_acknowledge\tDiet of Worms ends in a Stalemate");
+  	      //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    }
 	  }
 
@@ -24171,11 +24154,11 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  //
 	  // everyone gets a minimum of one roll
 	  //
-	  if (p_rolls == 0) {
+	  if (p_rolls == 0 && p_neighbours == 0) {
 	    p_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
 	    p_rolls++;
 	  }
-	  if (c_rolls == 0) {
+	  if (c_rolls == 0 && c_neighbours == 0) {
 	    c_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
 	    c_rolls++;
 	  }
@@ -26122,8 +26105,20 @@ console.log("and calling callback...");
     this.addMove("remove\t"+faction+"\t"+card);
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
-    this.addMove("RESETCONFIRMSNEEDED\tall");
+
+    // counter_or_acknowledge if the player is the Protestants and Wartburg is not in the discard pile as
+    // the Protestants might have it. Otherwise ACKNOWLEDGE to ensure players know what is happening but
+    // don't halt the game for the player moving.
+
+    // wartburg is 037
+    if (faction !== "protestant" && !this.game.deck[0].discards["037"]) {
+      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+      this.addMove("RESETCONFIRMSNEEDED\tall");
+    } else {
+      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
+    }
+//    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+//    this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
 
