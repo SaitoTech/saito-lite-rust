@@ -43,6 +43,9 @@ class TweetManager {
               mod.loadTweets("earlier", (tx_count) => {
                 console.log(`${tx_count} new tweets`);
 
+                // hide "loading new tweet.."
+                this.app.connection.emit("redsquare-home-cached-loader-hide-request");
+                
                 this.hideLoader();
 
                 if (this.mode !== "tweets") {
