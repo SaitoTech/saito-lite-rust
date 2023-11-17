@@ -52,12 +52,26 @@
 }
 
 .nomoves .card-stack-array {
-  filter: brightness(0.5);
+  transition: filter 1s 1s;
+  filter: brightness(0.4);
 }
 
+
+/* ANIMATIONS */
 .nomoves .draw-pile {
-  box-shadow: 0 0 15px 5px whitesmoke;
+  animation: 1s linear 0.25s infinite alternate undulate;
 }
+
+@keyframes undulate{
+  from{
+    box-shadow: 0 0 2px 2px whitesmoke;
+    } 
+  to{
+    box-shadow: 0 0 15px 10px whitesmoke;
+  }
+}
+
+
 
 #helper, #helper:hover{
   position: absolute;

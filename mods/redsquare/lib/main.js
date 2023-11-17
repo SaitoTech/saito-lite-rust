@@ -167,13 +167,6 @@ class RedSquareMain {
 
       this.manager.renderProfile(publicKey);
 
-      // clicked on profile from profile
-      if (this.manager) {
-        if (this.manager.tab == "replies") {
-          this.manager.switchToPosts();
-        }
-      }
-
       document.querySelectorAll(".optional-menu-item").forEach((item) => {
         item.style.display = "none";
       });

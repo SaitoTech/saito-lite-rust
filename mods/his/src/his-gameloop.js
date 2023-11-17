@@ -45,9 +45,10 @@ this.updateLog(`###############`);
 	  this.game.queue.push("victory_determination_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
-	  this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
-	  this.game.queue.push("show_overlay\twinter");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
+	  //this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
+	  //this.game.queue.push("show_overlay\twinter");
+	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
@@ -2149,8 +2150,9 @@ console.log("2. insert index: " + index_to_insert_moves);
 	    }
   	    this.game.queue.push("STATUS\tProtestants selecting towns to convert...\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
-  	    this.game.queue.push("counter_or_acknowledge\tProtestants win Diet of Worms");
-  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+  	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
+  	    //this.game.queue.push("counter_or_acknowledge\tProtestants win Diet of Worms");
+  	    //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  } else {
 	    if (protestant_hits < papacy_hits) {
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
@@ -2161,16 +2163,18 @@ console.log("2. insert index: " + index_to_insert_moves);
 	      }
   	      this.game.queue.push("STATUS\tPapacy selecting towns to convert...\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
-  	      this.game.queue.push("counter_or_acknowledge\tPapacy wins Diet of Worms");
-  	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+  	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
+  	      //this.game.queue.push("counter_or_acknowledge\tPapacy wins Diet of Worms");
+  	      //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    } else {
   	      //
               // report results
               //
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
-  	      this.game.queue.push("counter_or_acknowledge\tDiet of Worms ends in a Stalemate");
-  	      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+  	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
+  	      //this.game.queue.push("counter_or_acknowledge\tDiet of Worms ends in a Stalemate");
+  	      //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    }
 	  }
 
@@ -7597,11 +7601,11 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	  //
 	  // everyone gets a minimum of one roll
 	  //
-	  if (p_rolls == 0) {
+	  if (p_rolls == 0 && p_neighbours == 0) {
 	    p_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
 	    p_rolls++;
 	  }
-	  if (c_rolls == 0) {
+	  if (c_rolls == 0 && c_neighbours == 0) {
 	    c_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
 	    c_rolls++;
 	  }

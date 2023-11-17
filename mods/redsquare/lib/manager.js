@@ -11,7 +11,6 @@ class TweetManager {
     this.container = container;
 
     this.mode = "loading";
-    this.tab = "posts"; // replies
     this.profile_posts = [];
     this.profile_replies = [];
 
@@ -112,6 +111,14 @@ class TweetManager {
                 this.hideLoader();
               });
             }
+
+            /////////////////////////////////////////////////
+            //
+            // So right now, we are fetching earlier stuff from the intersection observer
+            // We will fetch the 100 most recent tweets/likes, so we'll see if people start complaining
+            // about not having enough history available
+            //
+            //////////////////////////////////////////////////
 
             //
             // load more profile tweets
@@ -282,6 +289,9 @@ class TweetManager {
       if (this.profile.replies.length > 0) {
         this.app.connection.emit("update-profile-stats", "replies", this.profile.replies.length);
       }
+      if (this.profile.retweets.length > 0){
+       this.app.connection.emit("update-profile-stats", "retweets", this.profile.retweets.length); 
+      }
 
       this.hideLoader();
       this.profile.render();
@@ -397,6 +407,10 @@ class TweetManager {
     for (let z = 0; z < txs.length; z++) {
       let tweet = new Tweet(this.app, this.mod, txs[z]);
       if (tweet?.noerrors) {
+        if (tweet.isRetweet()){
+         this.profile.insertTweet(tweet, this.profile.retweets);
+         return; 
+        }
         if (tweet.isPost()) {
           this.profile.insertTweet(tweet, this.profile.posts);
         }

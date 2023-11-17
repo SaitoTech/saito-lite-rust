@@ -21,9 +21,12 @@ class DeckOverlay {
 
 	let cardlist = "";
 	if (this.mod.game.saito_cards_added.length > 0) { cardlist += this.mod.returnCardList(this.mod.game.saito_cards_added); }
-	if (this.mod.game.saito_cards_removed.length > 0) { cardlist += this.mod.returnCardList(this.mod.game.saito_cards_removed); }
+//
+// simplify by not showing removed
+//
+//	if (this.mod.game.saito_cards_removed.length > 0) { cardlist += this.mod.returnCardList(this.mod.game.saito_cards_removed); }
 
-	this.app.browser.addElementToSelector(`<h1>deck updates: round ${this.mod.game.state.round}</h1>`,'.deck-overlay');
+	this.app.browser.addElementToSelector(`<h1>New Cards: Round ${this.mod.game.state.round}</h1>`,'.deck-overlay');
 	this.app.browser.addElementToSelector(`<div class="cardlist-container">${cardlist}</div>`, '.deck-overlay');
 
 	let child = 0;
@@ -36,14 +39,17 @@ class DeckOverlay {
 	    this.app.browser.addElementToSelector(`<div class="desc">${this.mod.game.saito_cards_added_reason[i]}</div>`, qs);
           }
         }
-	for (let i = 0; i < this.mod.game.saito_cards_removed.length; i++) {
-	  child++;
-	  let qs = `.deck-overlay .cardlist-container .card:nth-child(${child})`;
-	  if (this.mod.game.saito_cards_removed_reason.length > i) {
-	    document.querySelector(qs).classList.add("card_removed");
-	    this.app.browser.addElementToSelector(`<div class="desc">${this.mod.game.saito_cards_removed_reason[i]}</div>`, qs);
-          }
-        }
+//
+// simplify by not showing removed
+//
+//	for (let i = 0; i < this.mod.game.saito_cards_removed.length; i++) {
+//	  child++;
+//	  let qs = `.deck-overlay .cardlist-container .card:nth-child(${child})`;
+//	  if (this.mod.game.saito_cards_removed_reason.length > i) {
+//	    document.querySelector(qs).classList.add("card_removed");
+//	    this.app.browser.addElementToSelector(`<div class="desc">${this.mod.game.saito_cards_removed_reason[i]}</div>`, qs);
+//          }
+//        }
 
         this.attachEvents();
     }

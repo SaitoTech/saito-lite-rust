@@ -33,6 +33,8 @@
     if (!obj.rmovement)	{ obj.rmovement = 3; }
 
     if (!obj.damaged)	{ obj.damaged = false; }
+    if (!obj.destroyed)	{ obj.destroyed = false; }
+    if (!obj.spacekey)  { obj.spacekey = ""; }
 
     this.game.units[key] = obj;
 
@@ -44,21 +46,23 @@
     this.game.spaces[sourcekey].units.splice(sourceidx, 1);
     if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
     this.game.spaces[destinationkey].units.push(unit);
+    unit.spacekey = destinationkey;
     this.displaySpace(sourcekey);
     this.displaySpace(destinationkey);
   }
 
-  returnUnitImage(spacekey, idx) {
-
-    let unit = this.game.spaces[spacekey].units[idx];
+  
+  returnUnitImage(unit) {
     let key = unit.key;
-
     if (unit.damaged) {
       return `<img src="/paths/img/army/${key}_back.png" class="army-tile" />`;
     } else {
       return `<img src="/paths/img/army/${key}.png" class="army-tile" />`;
     }
-
+  }
+  returnUnitImageInSpaceWithIndex(spacekey, idx) {
+    let unit = this.game.spaces[spacekey].units[idx];
+    return this.returnUnitImage(unit);
   }
 
   cloneUnit(unitkey) {
@@ -66,7 +70,9 @@
   }
 
   addUnitToSpace(unitkey, spacekey) {
-    this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
+    let unit = this.cloneUnit(unitkey);
+    unit.spacekey = spacekey;
+    this.game.spaces[spacekey].units.push(unit);
   }
 
   damageUnitInSpace(unitkey, spacekey) {
