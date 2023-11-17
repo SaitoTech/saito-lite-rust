@@ -37,6 +37,7 @@ class Post {
 
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, ".tweet-overlay-content");
+      this.input.enable_mentions = true;
     }
 
     this.input.display = "large";
@@ -77,6 +78,7 @@ class Post {
     this.user.render();
 
     this.input.render();
+    this.input.focus(true);
 
     this.attachEvents();
   }
