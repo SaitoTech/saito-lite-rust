@@ -42,7 +42,7 @@ class LossOverlay {
 
 console.log("^");
 console.log("^");
-console.log("^");
+console.log("^ lf: " + this.loss_factor);
 console.log(JSON.stringify(x));
 
       for (let i = 0; i < x.length; i++) {
@@ -148,14 +148,20 @@ console.log(" - " + JSON.stringify(x));
 
     render(faction="") {
 
-alert("render loss overlay");
       this.faction = faction;
 
       let units;
       let qs = ".loss-overlay .units";
 
-      if (faction == this.mod.game.state.combat.attacker_faction) {
-        units = this.mod.returnAttackerUnits();
+alert(this.mod.game.state.combat.attacking_faction + " -- " + faction);
+
+      if (faction == this.mod.game.state.combat.attacking_faction || faction === "attacker") {
+        let x = this.mod.returnAttackerUnits();
+console.log("attacker units: " + JSON.stringify(x));
+	units = [];
+	for (let z = 0; z < x.length; z++) {
+	  units.push(this.mod.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);
+	}
         this.loss_factor = this.mod.game.state.combat.attacker_loss_factor;
       } else {
         units = this.mod.returnDefenderUnits();
@@ -195,13 +201,19 @@ console.log("MIN LOSS FACTOR: " + this.loss_factor_maximum);
     attachEvents() {
 
       if (!this.canTakeMoreLosses()) {
-        alert("You cannot take more losses? Click to Continue");
-	for (let i = 0; i < this.moves.length; i++) {
-	  this.mod.addMove(this.moves[i]);
+        let c = confirm("Maximum Losses Sustained: Submit?");
+	if (c) {
+	  for (let i = 0; i < this.moves.length; i++) {
+	    this.mod.addMove(this.moves[i]);
+	  }
+          this.mod.endTurn();
+	  this.hide();
+	  return;
+        } else {
+	  this.moves = [];
+	  this.render(this.faction);
+	  return;
 	}
-        this.mod.endTurn();
-	this.hide();
-	return;
       }
 
 
@@ -234,32 +246,16 @@ console.log("MIN LOSS FACTOR: " + this.loss_factor_maximum);
 	    if (unit.key.indexOf("army")) {
 	      let corpskey = unit.key.split("_")[0] + "_corps";
 	      this.units.push(this.mod.cloneUnit(corpskey));
-
+	      this.units[this.units.length-1].spacekey = unit.spacekey;
 	      this.moves.push(`add\t${unit.spacekey}\t${corpskey}`);
-
 	      let html = `<div class="loss-overlay-unit" id="${this.units.length-1}">${this.mod.returnUnitImage(this.units[this.units.length-1])}</div>`;
       	      let qs = ".loss-overlay .units";
 	      this.app.browser.addElementToSelector(html, qs);
 	      this.attachEvents();
+
 	    }
 
 	    this.updateLossesRequired(this.loss_factor);
-
-            if (!this.canTakeMoreLosses()) {
-	      let c = confirm("Maximum Losses Sustained: Submit?");
-	      if (!c) {
-	        for (let i = 0; i < this.moves.length; i++) {
-		  this.mod.addMove(this.moves[i]);
-		}
-		this.mod.endTurn();
-		this.hide();
-		return;
-	      } else {
-		this.moves = [];
-		this.render(this.faction);
-		return;
-	      }
-            }
 
 
 	  } else {
@@ -271,16 +267,35 @@ console.log("MIN LOSS FACTOR: " + this.loss_factor_maximum);
 
 	  }
 
+
+          if (!this.canTakeMoreLosses()) {
+            document.querySelectorAll(".loss-overlay-unit").forEach((el) => {
+	      el.onclick = (e) => {};
+	    });
+	    setTimeout(() => {
+	      let c = confirm("Maximum Losses Sustained: Submit?");
+	      if (c) {
+	        for (let i = 0; i < this.moves.length; i++) {
+	          this.mod.addMove(this.moves[i]);
+	        }
+	        this.mod.endTurn();
+	        this.hide();
+	        return;
+	      } else {
+	        this.moves = [];
+	        this.render(this.faction);
+	        return;
+	      }
+	    }, 50);
+          }
+
+
 	}
       });
       
 
     }
 
-
-    canTakeFurtherLosses() {
-
-    }
 }
 
 module.exports = LossOverlay;

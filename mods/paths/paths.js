@@ -2020,7 +2020,8 @@ console.log("\n\n\n\n");
   }
 
   returnAttackerUnits() {
-    return this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units;
+console.log(JSON.stringify(this.game.state.combat));
+    return this.game.state.combat.attacker;
   }
 
   returnDefenderCombatPower() {
@@ -5786,8 +5787,6 @@ console.log(JSON.stringify(this.game.state.combat));
 	    player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
 	    loss_factor = this.game.state.combat.defender_loss_factor;
 	  }
-
-	  alert(power + " assign losses of " + loss_factor);
 
 	  if (this.game.player === player) {
 	    this.combat_overlay.hide();

@@ -473,8 +473,6 @@ console.log(JSON.stringify(this.game.state.combat));
 	    loss_factor = this.game.state.combat.defender_loss_factor;
 	  }
 
-	  alert(power + " assign losses of " + loss_factor);
-
 	  if (this.game.player === player) {
 	    this.combat_overlay.hide();
 	    this.loss_overlay.render(power);

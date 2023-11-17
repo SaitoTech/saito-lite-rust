@@ -4,7 +4,8 @@
   }
 
   returnAttackerUnits() {
-    return this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units;
+console.log(JSON.stringify(this.game.state.combat));
+    return this.game.state.combat.attacker;
   }
 
   returnDefenderCombatPower() {
