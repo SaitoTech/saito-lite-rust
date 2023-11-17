@@ -527,6 +527,7 @@ class RedSquare extends ModTemplate {
         }
       }
 
+      this.app.connection.emit("redsquare-insert-loading-message");
       this.loadTweets("later", (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
@@ -589,7 +590,19 @@ class RedSquare extends ModTemplate {
     //console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
 
     for (let i = 0; i < this.peers.length; i++) {
-      if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
+
+      //
+      // We have two stop conditions, 
+      // 1) when our peer has been tapped out on earlier tweets, we stop querying them.
+      // 2) if we are our peer, don't look for later tweets
+      // the second should keep the "loading" message flashing longer
+      // though this is a hack and we will need to fix once we are loading from multiple remote peers
+      // it is just a bit of a pain because we have triply nested callbacks...
+      //
+
+      if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") && 
+        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)) {
+        
         let obj = {
           field1: "RedSquare",
           limit: this.peers[i].tweets_limit,
@@ -1607,7 +1620,6 @@ class RedSquare extends ModTemplate {
 
         //Run these regardless of results
         this.app.connection.emit("redsquare-home-render-request");
-        this.app.connection.emit("redsquare-insert-loading-message");
       },
       "localhost"
     );

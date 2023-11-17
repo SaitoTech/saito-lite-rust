@@ -564,7 +564,7 @@ class Browser {
 
   replaceElementById(html, id = null) {
     if (id == null) {
-      console.warn("no id provided to replace, so adding direct to DOM");
+      console.warn("no id provided to replaceElementById, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
@@ -576,7 +576,7 @@ class Browser {
 
   addElementToId(html, id = null) {
     if (id == null) {
-      console.warn(`no id provided to add to, so adding to DOM`);
+      console.warn(`no id provided to addElementToId, so adding to DOM`);
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
@@ -588,7 +588,7 @@ class Browser {
 
   addElementAfterId(html, id = null) {
     if (id == null) {
-      console.warn(`no id provided to add to, so adding to DOM`);
+      console.warn(`no id provided to addElementAfterId, so adding to DOM`);
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementAfterId(id);
@@ -600,7 +600,7 @@ class Browser {
 
   prependElementToId(html, id = null) {
     if (id == null) {
-      console.warn(`no id provided to prepend to, so adding to DOM`);
+      console.warn(`no id provided to prependElementToId, so adding to DOM`);
       this.app.browser.prependElementToDom(html);
     } else {
       let obj = document.getElementById(id);
@@ -619,7 +619,7 @@ class Browser {
 
   replaceElementBySelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to replace, so adding direct to DOM");
+      console.warn("no selector provided to replaceElementBySelector, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
@@ -631,7 +631,7 @@ class Browser {
 
   replaceElementContentBySelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to replace, so adding direct to DOM");
+      console.warn("no selector provided to replaceElementContentBySelector, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
@@ -643,7 +643,7 @@ class Browser {
 
   addElementToSelectorOrDom(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to addElementToSelectorOrDom, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -658,9 +658,10 @@ class Browser {
 
   addElementToSelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to addElementToSelector, so adding direct to DOM");
+      console.log(html);
       this.app.browser.addElementToDom(html);
-    } else {
+    }else{
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
@@ -672,9 +673,10 @@ class Browser {
 
   addElementAfterSelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to addElementAfterSelector, so adding direct to DOM");
+      console.log(html);
       this.app.browser.addElementToDom(html);
-    } else {
+    }else{
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementAfterElement(html, container);
@@ -684,7 +686,7 @@ class Browser {
 
   prependElementToSelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to prepend to, so adding direct to DOM");
+      console.warn("no selector provided to prependElementToSelector, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -696,7 +698,7 @@ class Browser {
 
   replaceElementByClass(html, classname = "") {
     if (classname === "") {
-      console.warn("no classname provided to replace, so adding direct to DOM");
+      console.warn("no classname provided to replaceElementByClass, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let classname = "." + classname;
@@ -709,7 +711,7 @@ class Browser {
 
   addElementToClass(html, classname = "") {
     if (classname === "") {
-      console.warn("no classname provided to add to, so adding direct to DOM");
+      console.warn("no classname provided to addElementToClass, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       classname = "." + classname;
@@ -722,7 +724,7 @@ class Browser {
 
   prependElementToClass(html, classname = "") {
     if (classname === "") {
-      console.warn("no classname provided to prepend to, so adding direct to DOM");
+      console.warn("no classname provided to prependElementToClass, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       classname = "." + classname;
@@ -1385,6 +1387,7 @@ class Browser {
   }
 
   sanitize(text) {
+    //console.log("Sanitize: ", text);
     try {
       if (text !== "") {
         text = marked.parseInline(text);
