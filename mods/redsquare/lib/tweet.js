@@ -322,6 +322,10 @@ class Tweet {
       return;
     }
 
+    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions){
+      this.notice = "You were mentioned in this tweet";      
+    }
+
     if (this.render_after_selector) {
       //
       // remove if selector does not exist
@@ -417,10 +421,10 @@ class Tweet {
     //
     // just make sure our updated tx.optional values propagate to the tweet properties
     //
-    console.log(JSON.parse(JSON.stringify(this.tx.optional)));
+    //console.log(JSON.parse(JSON.stringify(this.tx.optional)));
 
     this.setKeys(this.tx.optional);    
-    console.log(this.num_replies, this.num_retweets, this.num_likes);
+    //console.log(this.num_replies, this.num_retweets, this.num_likes);
 
     // like, retweet, comment
     this.refreshStat("like", this.num_likes);

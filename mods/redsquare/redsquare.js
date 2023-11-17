@@ -957,7 +957,7 @@ class RedSquare extends ModTemplate {
           return 0;
         }
 
-        console.log(`Updating tweet stats: ${t.tx.optional.num_replies}->${tx.optional.num_replies}, ${t.tx.optional.num_retweets}->${tx.optional.num_retweets}, ${t.tx.optional.num_likes}->${tx.optional.num_likes}`);
+        //console.log(`Updating tweet stats: ${t.tx.optional.num_replies}->${tx.optional.num_replies}, ${t.tx.optional.num_retweets}->${tx.optional.num_retweets}, ${t.tx.optional.num_likes}->${tx.optional.num_likes}`);
 
         if (tweet.tx.optional) {
           if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
@@ -1259,6 +1259,7 @@ class RedSquare extends ModTemplate {
 
     for (let i = 0; i < keys.length; i++) {
       if (keys[i] !== this.publicKey) {
+        console.log("Send tweet to: " + keys[i]);
         newtx.addTo(keys[i]);
       }
     }
