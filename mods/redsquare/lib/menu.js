@@ -77,6 +77,7 @@ class RedSquareMenu {
       //
       this.mod.loadTweets('later', (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        this.app.connection.emit("redsquare-home-cached-loader-hide-request"); 
       });   
 
     }

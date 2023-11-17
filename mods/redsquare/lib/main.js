@@ -67,53 +67,44 @@ class RedSquareMain {
         }
       }
 
+      
       //
-      // remove "loading new tweets" notice...
-      // we use a timeout so that there is a minimum interval where the notice is displayed
-      // and you don't get horrible flashing on the DOM
+      // check if we can refresh page (show tweets immediately) or show prompt / button
       //
-      setTimeout(() => {
-        if (document.querySelector(".saito-cached-loader")) {
-          document.querySelector(".saito-cached-loader").remove();
-        }
+      if (num_tweets > 0) {
 
         //
-        // check if we can refresh page (show tweets immediately) or show prompt / button
+        // Don't insert new tweets or button if looking at a tweet or profile
         //
-        if (num_tweets > 0) {
-
-          //
-          // Don't insert new tweets or button if looking at a tweet or profile
-          //
-          if (this.manager.mode == "tweets") {
-            if (this.canRefreshPage()) {
-              console.log("postcache-render-request: refresh the page automatically!");
-              try {
-                document.querySelector(".saito-main").innerHTML = "";
-              } catch (err) {
-                console.errors(err);
-              }
-              this.manager.render("tweets");
-            } else {
-              console.log("postcache-render-request: CANNOT refresh the page!");
-
-              if (!document.getElementById("saito-new-tweets")) {
-                this.app.browser.prependElementToSelector(
-                  `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
-                  ".saito-main"
-                );
-              }
-
-              document.getElementById("saito-new-tweets").onclick = (e) => {
-                this.app.connection.emit("redsquare-home-render-request", true);
-              };
+        if (this.manager.mode == "tweets") {
+          if (this.canRefreshPage()) {
+            console.log("postcache-render-request: refresh the page automatically!");
+            try {
+              document.querySelector(".saito-main").innerHTML = "";
+            } catch (err) {
+              console.errors(err);
             }
+            this.manager.render("tweets");
+          } else {
+            console.log("postcache-render-request: CANNOT refresh the page!");
+
+            if (!document.getElementById("saito-new-tweets")) {
+              this.app.browser.prependElementToSelector(
+                `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
+                ".saito-main"
+              );
+            }
+
+            document.getElementById("saito-new-tweets").onclick = (e) => {
+              this.app.connection.emit("redsquare-home-render-request", true);
+            };
           }
-
-          // So it will automatically insert new tweets if we navigate back to the main feed from looking at something else??
-
         }
-      }, 1000);
+
+        // So it will automatically insert new tweets if we navigate back to the main feed from looking at something else??
+
+      }
+
     });
 
     this.app.connection.on("redsquare-insert-loading-message", () => {
@@ -186,6 +177,16 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-home-loader-hide-request", () => {
       this.manager.hideLoader();
+    });
+
+    this.app.connection.on("redsquare-home-cached-loader-hide-request", () => {
+      // hide with timeout of 1 sec so that it doesnt hide abrubtly
+      setTimeout(() => {
+
+        if (document.querySelector(".saito-cached-loader")) {
+          document.querySelector(".saito-cached-loader").remove();
+        }
+      }, 1000);
     });
 
     //

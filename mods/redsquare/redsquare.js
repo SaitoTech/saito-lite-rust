@@ -516,6 +516,7 @@ class RedSquare extends ModTemplate {
 
       this.loadTweets("later", (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        this.app.connection.emit("redsquare-home-cached-loader-hide-request");
       });
     }
   }
@@ -575,6 +576,12 @@ class RedSquare extends ModTemplate {
   loadTweets(created_at = "earlier", mycallback) {
     console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
 
+    //
+    // Instead of just passing the txs to the callback, we count how many of these txs
+    // are new to us so we can have a better UX
+    //
+    let count = 0;
+
     for (let i = 0; i < this.peers.length; i++) {
       if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
         let obj = {
@@ -601,12 +608,6 @@ class RedSquare extends ModTemplate {
             console.log(
               `${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`
             );
-
-            //
-            // Instead of just passing the txs to the callback, we count how many of these txs
-            // are new to us so we can have a better UX
-            //
-            let count = 0;
 
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
@@ -660,18 +661,15 @@ class RedSquare extends ModTemplate {
               console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
-            //
-            // There is a UX question of whether we want to run the callback on completion
-            // of each "peer", or just collect the returned txs and run the callback after they
-            // have all returned results
-            //
-            if (mycallback) {
-              mycallback(count);
-            }
           },
           this.peers[i].peer
         );
       }
+    }
+
+    // execute callback when all txs are fetched from all peers
+    if (mycallback) {
+      mycallback(count);
     }
   }
 
@@ -1624,6 +1622,7 @@ class RedSquare extends ModTemplate {
       },
       "localhost"
     );
+
 
     /*if (this.app.browser.returnURLParameter("tweet_id")) {
       return;
