@@ -2,7 +2,7 @@ import Server, { NodeSharedMethods } from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
 import S, { initialize as initS } from "saito-js/index.node";
-import mods_config from "./config/modules.config";
+import mods_config from "./config/modules.config.js";
 import process from "process";
 import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";

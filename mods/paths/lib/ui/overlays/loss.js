@@ -8,6 +8,7 @@ class LossOverlay {
         this.mod = mod;
 	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod, false, true, false);
+	this.faction = "";
         this.units = null;
         this.loss_factor = 0;
         this.starting_units = null;
@@ -22,13 +23,15 @@ class LossOverlay {
 
     canTakeMoreLosses() {
 
+      if (this.loss_factor == 0) { return false; } 
+
       let x = [];
       for (let i = 0; i < this.units.length; i++) {
         x.push([]);
 	if (this.units[i].damaged == false) { x[i].push(this.units[i].loss); }
 	if (this.units[i].destroyed == false) {
 	  x[i].push(this.units[i].rloss);
-	  if (this.units[i].key.indexOf("army")) {
+	  if (this.units[i].key.indexOf("army") > 0) {
 	    let corpskey = this.units[i].key.split("_")[0] + "_corps";
 	    let cunit = this.mod.cloneUnit(corpskey);
 	    x[i].push(cunit.loss);
@@ -62,7 +65,7 @@ console.log("UNITS: " + JSON.stringify(this.units));
         x.push([]);
 	if (this.units[i].damaged == false) { x[i].push(this.units[i].loss); }
 	x[i].push(this.units[i].rloss);
-	if (this.units[i].key.indexOf("army")) {
+	if (this.units[i].key.indexOf("army") > 0) {
 	  let corpskey = this.units[i].key.split("_")[0] + "_corps";
 	  let cunit = this.mod.cloneUnit(corpskey);
 	  x[i].push(cunit.loss);
@@ -146,6 +149,7 @@ console.log(" - " + JSON.stringify(x));
     render(faction="") {
 
 alert("render loss overlay");
+      this.faction = faction;
 
       let units;
       let qs = ".loss-overlay .units";
@@ -249,6 +253,10 @@ console.log("MIN LOSS FACTOR: " + this.loss_factor_maximum);
 		}
 		this.mod.endTurn();
 		this.hide();
+		return;
+	      } else {
+		this.moves = [];
+		this.render(this.faction);
 		return;
 	      }
             }

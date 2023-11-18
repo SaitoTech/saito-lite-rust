@@ -666,7 +666,7 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 
 	// non-protestants can't move into electorates, so they aren't friendly fortified spaces 
 	// for anyone at this point.
-	if (faction !== "protestant" && this.game.state.events.schmalkaldic_league != 1) {
+	if (faction !== "protestant" && his_self.game.state.events.schmalkaldic_league != 1) {
 	  if (his_self.isElectorate(spacekey)) { return 0; }
 	}
 

@@ -527,8 +527,10 @@ class RedSquare extends ModTemplate {
         }
       }
 
+      this.app.connection.emit("redsquare-insert-loading-message");
       this.loadTweets("later", (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        this.app.connection.emit("redsquare-home-cached-loader-hide-request");
       });
     }
   }
@@ -588,8 +590,26 @@ class RedSquare extends ModTemplate {
   loadTweets(created_at = "earlier", mycallback) {
     //console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
 
+    //
+    // Instead of just passing the txs to the callback, we count how many of these txs
+    // are new to us so we can have a better UX
+    //
+    let count = 0;
+
     for (let i = 0; i < this.peers.length; i++) {
-      if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
+
+      //
+      // We have two stop conditions, 
+      // 1) when our peer has been tapped out on earlier tweets, we stop querying them.
+      // 2) if we are our peer, don't look for later tweets
+      // the second should keep the "loading" message flashing longer
+      // though this is a hack and we will need to fix once we are loading from multiple remote peers
+      // it is just a bit of a pain because we have triply nested callbacks...
+      //
+
+      if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") && 
+        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)) {
+        
         let obj = {
           field1: "RedSquare",
           limit: this.peers[i].tweets_limit,
@@ -612,12 +632,6 @@ class RedSquare extends ModTemplate {
           obj,
           (txs) => {
             //console.log(`${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
-
-            //
-            // Instead of just passing the txs to the callback, we count how many of these txs
-            // are new to us so we can have a better UX
-            //
-            let count = 0;
 
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
@@ -682,18 +696,15 @@ class RedSquare extends ModTemplate {
               //console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
-            //
-            // There is a UX question of whether we want to run the callback on completion
-            // of each "peer", or just collect the returned txs and run the callback after they
-            // have all returned results
-            //
-            if (mycallback) {
-              mycallback(count);
-            }
           },
           this.peers[i].peer
         );
       }
+    }
+
+    // execute callback when all txs are fetched from all peers
+    if (mycallback) {
+      mycallback(count);
     }
   }
 
@@ -1607,10 +1618,10 @@ class RedSquare extends ModTemplate {
 
         //Run these regardless of results
         this.app.connection.emit("redsquare-home-render-request");
-        this.app.connection.emit("redsquare-insert-loading-message");
       },
       "localhost"
     );
+
   }
 
   /////////////////////////////////////

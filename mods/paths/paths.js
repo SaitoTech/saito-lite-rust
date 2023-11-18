@@ -5791,7 +5791,7 @@ console.log(JSON.stringify(this.game.state.combat));
 
 	  if (this.game.player === player) {
 	    this.combat_overlay.hide();
-	    this.loss_overlay.render();
+	    this.loss_overlay.render(power);
 	  } else {
 	    this.combat_overlay.hide();
 	    this.updateStatus("Opponent Assigning Losses");
