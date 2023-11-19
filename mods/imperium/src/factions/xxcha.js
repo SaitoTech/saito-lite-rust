@@ -3,7 +3,7 @@
       id		:	"faction3" ,
       name		: 	"XXCha Kingdom",
       nickname		: 	"XXCha",
-      homeworld		: 	"sector51",
+      homeworld		: 	"sector38",
       space_units	: 	["carrier","cruiser","cruiser","fighter","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","pds","spacedock"],
       //action_cards	:	["assassinate-representative","diplomatic-scandal"],

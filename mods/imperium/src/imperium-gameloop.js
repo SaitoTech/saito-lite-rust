@@ -3,7 +3,7 @@
   /////////////////////
   // Core Game Logic //
   /////////////////////
-  handleGameLoop(msg=null) {
+  async handleGameLoop(msg=null) {
 
     //
     // set to 1 to speed-up game init for testing

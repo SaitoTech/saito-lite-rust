@@ -3,7 +3,7 @@
       id		:	"faction4" ,
       name		: 	"Sardakk N'Orr",
       nickname		: 	"Sardakk",
-      homeworld		: 	"sector53",
+      homeworld		: 	"sector40",
       space_units	: 	["carrier","carrier","cruiser"],
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["faction4-unrelenting", "faction4-exotrireme-i", "faction4-flagship"],

@@ -2,7 +2,7 @@ this.importFaction("faction8", {
   id: "faction8",
   name: "Emirates of Hacan",
   nickname: "Hacan",
-  homeworld: "sector40",
+  homeworld: "sector41",
   space_units: ["carrier", "carrier", "cruiser", "fighter", "fighter"],
   ground_units: ["infantry", "infantry", "infantry", "infantry", "spacedock"],
   tech: [

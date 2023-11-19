@@ -3,7 +3,7 @@
       id		:	"faction6" ,
       name		: 	"Yssaril Tribes",
       nickname		: 	"Yssaril",
-      homeworld		: 	"sector75",
+      homeworld		: 	"sector37",
       space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","pds","spacedock"],
       //action_cards	:	["leadership-rider", "trade-rider"],
