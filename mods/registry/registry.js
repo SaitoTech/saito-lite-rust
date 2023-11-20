@@ -66,7 +66,7 @@ class Registry extends ModTemplate {
             delete this.cached_keys[i];
           }
         }
-        console.log("REGISTRY: reset cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
+        //console.log("REGISTRY: reset cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
       }
 
       for (let i = 0; i < keys.length; i++) {
@@ -266,7 +266,7 @@ class Registry extends ModTemplate {
       await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
 
-      console.log("REGISTRY tx: ", newtx);
+      //console.log("REGISTRY tx: ", newtx);
 
       // sucessful send
       return true;
@@ -316,29 +316,22 @@ class Registry extends ModTemplate {
         this.registry_publickey = peer.publicKey;
       }
 
-      console.log(
-        `Registry connected: ${peer.publicKey} and/but using: ${this.registry_publickey}`
-      );
+      //console.log(`Registry connected: ${peer.publicKey} and/but using: ${this.registry_publickey}`);
 
       let myKey = app.keychain.returnKey(this.publicKey, true);
       if (myKey?.identifier) {
         let registry_self = this;
 
         this.queryKeys(peer, [this.publicKey], function (identifiers) {
-          console.log(
-            `REGISTRY lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `,
-            identifiers
-          );
+          //console.log(`REGISTRY lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `, identifiers);
           for (let key in identifiers) {
             if (key == myKey.publicKey) {
               if (identifiers[key] !== myKey.identifier) {
                 console.log("REGISTRY: Identifier mismatch...");
-                console.log(
-                  `REGISTRY: Expecting ${myKey.identifier}, but Registry has ${identifiers[key]}`
-                );
+                console.log(`REGISTRY: Expecting ${myKey.identifier}, but Registry has ${identifiers[key]}`);
                 //Maybe we do an update here???
               } else {
-                console.log("REGISTRY: Identifier checks out");
+                //console.log("REGISTRY: Identifier checks out");
                 //Identifier checks out!
               }
               return;

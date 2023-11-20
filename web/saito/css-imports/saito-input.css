@@ -133,16 +133,24 @@ emoji-picker {
 }
 
 .saito-input-large .selection-box-tabs {
-	width: 20rem;
+	width: 16rem;
 	border-top: unset;
 	background-color: unset;
 	align-items: flex-end;
+	margin-left: 1rem;
+	justify-content: space-between;
 }
 
 .post-tweet-img-preview-container {
 	position: absolute;
-	left: 17rem;
-	bottom: 1rem;
+	left: 19.5rem;
+	bottom: 1.1rem;
+	width: calc(100% - 42rem);
+	height: 6rem;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 1rem;
+	align-items: center;
 }
 
 .at-window {
