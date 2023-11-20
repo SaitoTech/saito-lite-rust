@@ -2020,7 +2020,12 @@ console.log("\n\n\n\n");
   }
 
   returnAttackerUnits() {
-    return this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units;
+    let x = this.game.state.combat.attacker;
+    let units = [];
+    for (let z = 0; z < x.length; z++) {
+      units.push(this.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);   
+    }
+    return units;
   }
 
   returnDefenderCombatPower() {
@@ -5266,14 +5271,18 @@ spaces['athens'] = {
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
 
-
     for (let key in this.game.spaces) {
+      let redisplay = false;
+      if (this.game.spaces[key].activated_for_combat || this.game.spaces[key].activated_for_movement) {
+        redisplay = true;
+      }
       this.game.spaces[key].activated_for_combat = 0;
       this.game.spaces[key].activated_for_movement = 0;
       for (let z = 0; z < this.game.spaces[key].units.length; z++) {
 	this.game.spaces[key].units[z].moved = 0;
 	this.game.spaces[key].units[z].attacked = 0;
       }
+      if (redisplay) { this.displaySpace(key); }
     }
 
   }
@@ -5420,10 +5429,12 @@ console.log("PLAYER: " + this.game.player);
 console.log("LIve: " + player);
 console.log("HAND: " + JSON.stringify(hand));
 
+	  this.onNewTurn();
+
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards(`${name} is picking a card`, hand);
+	    this.updateStatusAndListCards(`${name} Turn`, hand);
 	  }
 	  
 	  return 0;
@@ -5567,7 +5578,21 @@ try {
 	  return 1;
 	}
 
+        if (mv[0] === "resolve") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  let cmd = "";
+	  if (mv[1]) { cmd = mv[1]; }
+	  if (this.game.queue.length >= 1) {
+	    if (this.game.queue[qe-1].split("\t")[0] === cmd) {
+	      this.game.queue.splice(qe-1, 1);
+	    }
+	  }
+
+	  return 1;
+
+	}
 
         if (mv[0] === "card") {
 
@@ -5593,7 +5618,6 @@ try {
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
 	  //
-	  //this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
@@ -5787,13 +5811,12 @@ console.log(JSON.stringify(this.game.state.combat));
 	    loss_factor = this.game.state.combat.defender_loss_factor;
 	  }
 
-	  alert(power + " assign losses of " + loss_factor);
-
 	  if (this.game.player === player) {
 	    this.combat_overlay.hide();
 	    this.loss_overlay.render(power);
 	  } else {
 	    this.combat_overlay.hide();
+	    this.unbindBackButtonFunction();
 	    this.updateStatus("Opponent Assigning Losses");
 	  }
 
@@ -5851,6 +5874,40 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+	if (mv[0] === "post_combat_cleanup") {
+
+	  let spacekey = this.game.state.combat.key;
+	  for (let i = this.game.spaces[spacekey].units.length-1; i >= 0; i--) {
+	    let u = this.game.spaces[spacekey].units[i];
+	    if (u.destroyed == true) {
+	      this.game.spaces[spacekey].units.splice(i, 1);
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+
+	  let x = this.returnAttackerUnits();
+	  let spacekeys = [];
+	  for (let z = 0; z < x.length; z++) {
+	    if (!spacekeys.includes(x[z].spacekey)) {
+	      spacekeys.push(x[z].spacekey);
+	    }
+	  }
+
+	  for (let z = 0; z < spacekeys.length; z++) {
+	    for (let i = this.game.spaces[spacekeys[z]].units.length-1; i >= 0; i--) {
+	      let u = this.game.spaces[spacekeys[z]].units[i];
+	      if (u.destroyed == true) {
+	        this.game.spaces[spacekeys[z]].units.splice(i, 1);
+	      }
+	    }
+	    this.displaySpace(spacekeys[z]);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
 
 	if (mv[0] === "damage") {
 
@@ -5952,10 +6009,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let faction = mv[1];
 	  let card = mv[2];
 	  let cost = parseInt(mv[3]);
+	  let skipend = 0;
+	  if (mv[4]) { skipend = parseInt(mv[4]); }
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  if (this.game.player == player) {
-	    this.playerPlayOps(faction, card, cost);    
+	    this.playerPlayOps(faction, card, cost, skipend);    
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " playing OPS");
 	  }
@@ -6213,6 +6272,7 @@ console.log("handle defender retreat if attacker won and has any full strength u
       if (options.length == 0) {
 	paths_self.updateStatus("combat finished...");
 	paths_self.addMove("resolve\tplayer_play_combat");
+	paths_self.addMove("post_combat_cleanup");
 	paths_self.endTurn();
 	return;
       }
@@ -6240,6 +6300,7 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	paths_self.removeSelectable();
 	paths_self.updateStatus("acknowledge...");
 	paths_self.addMove("resolve\tplayer_play_combat");
+	paths_self.addMove("post_combat_cleanup");
 	paths_self.endTurn();
       }
 
@@ -6263,6 +6324,7 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	  if (key === "skip") {
 	    paths_self.addMove("resolve\tplayer_play_combat");
+	    paths_self.addMove("post_combat_cleanup");
 	    paths_self.removeSelectable();
 	    paths_self.endTurn();
 	    return;
@@ -6319,15 +6381,19 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  //
 	  if (idx === "skip") {
 	    let finished = false;
+	    paths_self.updateStatusWithOptions("attacking...", "");
 	    if (selected.length > 0) {
-let s = [];
-for (let z = 0; z < selected.length; z++) {
-  s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
-}
+	      let s = [];
+	      for (let z = 0; z < selected.length; z++) {
+  		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
+	      }
+	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
 	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.endTurn();
 	    }
 	    return;
@@ -6529,10 +6595,12 @@ for (let z = 0; z < selected.length; z++) {
 
   }
 
-  playerPlayOps(faction, card, cost) {
+  playerPlayOps(faction, card, cost, skipend=0) {
 
-    this.addMove("player_play_combat\t"+faction);
-    this.addMove("player_play_movement\t"+faction);
+    if (!skipend) {
+      this.addMove("player_play_combat\t"+faction);
+      this.addMove("player_play_movement\t"+faction);
+    }
 
     let targets = this.returnNumberOfSpacesWithFilter((key) => {
       if (cost < this.returnActivationCost(key)) { return 0; }
@@ -6595,7 +6663,7 @@ for (let z = 0; z < selected.length; z++) {
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
 	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
 	    }
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
 	    this.endTurn();
@@ -6631,7 +6699,7 @@ for (let z = 0; z < selected.length; z++) {
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
 	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
 	    }
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
 	    this.endTurn();
@@ -6838,7 +6906,6 @@ for (let z = 0; z < selected.length; z++) {
 	  (idx) => {
 	    let unit = paths_self.game.spaces[key].units[idx];
 	    paths_self.game.spaces[key].units[idx].moved = 1;
-alert("redeploying this unit!");
 	  },
           false
         );
@@ -6857,6 +6924,8 @@ alert("redeploying this unit!");
 
     let name = this.returnPlayerName(faction);
     let hand = this.returnPlayerHand();
+
+    this.addMove("resolve\tplay");
 
     this.updateStatusAndListCards(`${name}: pick a card`, hand);
     this.attachCardboxEvents((card) => {

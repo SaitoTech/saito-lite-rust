@@ -3,7 +3,7 @@
       id		:	"faction6" ,
       name		: 	"Yssaril Tribes",
       nickname		: 	"Yssaril",
-      homeworld		: 	"sector75",
+      homeworld		: 	"sector37",
       space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","pds","spacedock"],
       //action_cards	:	["leadership-rider", "trade-rider"],
@@ -12,7 +12,7 @@
       background	: 	'faction6.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne","faction6-promissary"],
       commodity_limit	:	3,
-      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
+      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
     });
 
 

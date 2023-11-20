@@ -2,7 +2,7 @@ this.importFaction("faction8", {
   id: "faction8",
   name: "Emirates of Hacan",
   nickname: "Hacan",
-  homeworld: "sector40",
+  homeworld: "sector41",
   space_units: ["carrier", "carrier", "cruiser", "fighter", "fighter"],
   ground_units: ["infantry", "infantry", "infantry", "infantry", "spacedock"],
   tech: [
@@ -16,7 +16,7 @@ this.importFaction("faction8", {
   background: "faction8.jpg",
   promissary_notes: ["trade", "political", "ceasefire", "throne", "faction8-promissary"],
   commodity_limit: 6,
-  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`,
+  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`,
 });
 
 this.importTech("faction8-flagship", {
@@ -196,9 +196,9 @@ this.importTech("faction8-merchant-class", {
             imperium_self.game.state.players_info[player - 1].commodity_limit
           ) {
             imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+              "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
             );
-            imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+            imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
             imperium_self.endTurn();
             imperium_self.updateLog(
               "Hacan already refreshed, do not need to play faction ability."
@@ -220,9 +220,9 @@ this.importTech("faction8-merchant-class", {
             $(this).hide();
             if (id != "yes") {
               imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+                "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
               );
-              imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.addMove(
                 "purchase\t" +
                   imperium_self.game.player +
@@ -236,9 +236,9 @@ this.importTech("faction8-merchant-class", {
               return;
             } else {
               imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+                "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
               );
-              imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
             }
           });

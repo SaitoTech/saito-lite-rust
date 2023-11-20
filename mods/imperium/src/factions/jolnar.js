@@ -2,7 +2,7 @@ this.importFaction("faction2", {
   id: "faction2",
   name: "Universities of Jol Nar",
   nickname: "Jol Nar",
-  homeworld: "sector50",
+  homeworld: "sector39",
   space_units: ["carrier", "carrier", "dreadnaught", "fighter"],
   ground_units: ["infantry", "infantry", "pds", "spacedock"],
   // is_testing -- you can use this to preseed action cards and objectives
@@ -29,7 +29,7 @@ this.importFaction("faction2", {
   background: "faction2.jpg",
   promissary_notes: ["trade", "political", "ceasefire", "throne", "faction2-promissary"],
   commodity_limit: 4,
-  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`,
+  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`,
 });
 
 this.importTech("faction2-flagship", {

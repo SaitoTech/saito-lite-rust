@@ -53,9 +53,9 @@ this.importStrategyCard("technology", {
             " unable to play Technology secondary"
         );
         imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+          "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
         );
-        imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.endTurn();
         return 0;
       }
@@ -102,9 +102,9 @@ this.importStrategyCard("technology", {
             player - 1
           ].temporary_research_technology_card_must_not_spend_resources = 0;
           imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+            "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
           );
-          imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.playerSelectResources(resources_to_spend, function (success) {
             if (success == 1) {
               imperium_self.playerResearchTechnology(function (tech) {
@@ -119,9 +119,9 @@ this.importStrategyCard("technology", {
         }
         if (id === "no") {
           imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+            "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
           );
-          imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }
@@ -169,8 +169,8 @@ this.importStrategyCard("technology", {
         if (id == "yes") {
           imperium_self.game.state.players_info[imperium_self.game.player - 1]
             .temporary_research_technology_card_must_not_spend_resources == 0;
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.playerSelectResources(resources_to_spend, function (success) {
             if (success == 1) {
               imperium_self.playerResearchTechnology(function (tech) {
@@ -184,8 +184,8 @@ this.importStrategyCard("technology", {
           });
         }
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }

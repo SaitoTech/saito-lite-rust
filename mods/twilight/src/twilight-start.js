@@ -1819,7 +1819,6 @@ console.log("restoring B");
       this.game.queue.splice(qe, 1);
 
       if (this.game.options.deck !== "saito") {
-console.log("DECK IS: " + this.game.options.deck);
 	return 1;
       }
 
@@ -3250,9 +3249,9 @@ try {
 	      this.game.state.events.bayofpigs_added = 1;
 	      this.addCardToDeck('bayofpigs', "New Card");
 	    }
+	    this.addCardToDeck('fischerspassky', "New Card");
+	    this.addCardToDeck('fallofsaigon', "New Card");
 	  }
-	  this.addCardToDeck('fischerspassky', "New Card");
-	  this.addCardToDeck('fallofsaigon', "New Card");
 	}
 
 	if (this.game.state.round == 6) {
@@ -3264,6 +3263,17 @@ try {
 
 	if (this.game.state.round == 7) {
           if (this.game.options.deck === "saito") {
+	    let euc =  this.isControlled("us", "italy");
+	        euc += this.isControlled("us", "france");
+	        euc += this.isControlled("us", "westgermany");
+	        euc += this.isControlled("us", "eastgermany");
+	        euc += this.isControlled("us", "poland");
+	    // USSR gets balance if US controls 1 or fewer European
+	    // battlegrounds. This provides a slight check against 
+	    // the lack of a US bonus early-war.
+	    if (euc < 2) {
+	      this.addCardToDeck('khrushchevthaw', "European Domination");
+	    }
 	  }
 	}
 
@@ -3371,13 +3381,17 @@ try {
 
 	if (this.game.state.round == 9) {
           if (this.game.options.deck === "saito") {
-	    this.addCardToDeck('argo', "New Card");
+	    if (this.isControlled("us", "canada")) {
+	      this.addCardToDeck('argo', "New Card");
+	    }
 	  }
 	}
 
 	if (this.game.state.round == 10) {
           if (this.game.options.deck === "saito") {
-	    this.addCardToDeck('antiapartheid', "New Card");
+	   if (this.isControlled("us", "southafrica")) {
+	     this.addCardToDeck('antiapartheid', "New Card");
+	    }
 	  }
 	}
 
@@ -9371,6 +9385,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       if (this.game.state.round >= 8) {
         this.cancelEvent("cambridge");
       }
+
       // wargames, if decon is 2
       if (this.game.state.defcon != 2) {
         this.cancelEvent("wargames");
@@ -9442,6 +9457,14 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       this.addCardToDeck("samotlor", "Double Bear Trap");
       this.game.state.events.samotlor_added = 1;
     }
+
+
+    // SUMMIT remains in the game, although not likely to be added because who events Nuclear Test Ban Treaty ?
+    if (this.game.state.events.nucleartestbantreaty == 1 && this.game.state.events.summit_added != 1) {
+      this.game.state.events.summit_added = 1;
+      this.addCardToDeck("summit", "Nuclear Treaty in Play");
+    }
+
 
     //
     // if USSR controls Cuba

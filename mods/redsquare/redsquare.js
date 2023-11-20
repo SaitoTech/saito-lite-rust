@@ -342,15 +342,18 @@ class RedSquare extends ModTemplate {
 
     // check tweets in pending txs
     try {
-      let pending = await app.wallet.getPendingTxs();
-      for (let i = 0; i < pending.length; i++) {
-        let tx = pending[i];
-
-        let txmsg = tx.returnMessage();
-        if (txmsg && txmsg.module == this.name) {
-          if (txmsg.request === "create tweet") {
-            this.addNotification(tx);
-            this.addTweet(tx);
+      let user_id = this.app.browser.returnURLParameter("user_id");
+      let tweet_id = this.app.browser.returnURLParameter("tweet_id");
+      if (!tweet_id || !user_id) {
+        let pending = await app.wallet.getPendingTxs();
+        for (let i = 0; i < pending.length; i++) {
+          let tx = pending[i];
+          let txmsg = tx.returnMessage();
+          if (txmsg && txmsg.module == this.name) {
+            if (txmsg.request === "create tweet") {
+              //this.addNotification(tx);
+              this.addTweet(tx);
+            }
           }
         }
       }

@@ -16,7 +16,6 @@
   }
   returnFactionName(imperium_self, player) {
     let factions = imperium_self.returnFactions();
-console.log("return faction name of: " + player);
     return factions[imperium_self.game.state.players_info[player-1].faction].name;
   }
   returnPlayerOfFaction(faction) {
@@ -2439,8 +2438,12 @@ console.log(JSON.stringify(ship));
   returnSectorAndPlanets(pid) {
 
     let sys = null;
+
+console.log("pid: " + pid);
+console.log("board: " + JSON.stringify(this.game.board));
     
     if (this.game.board[pid] == null) {
+console.log("A");
       //
       // then this must be the name of a sector
       //
@@ -2450,7 +2453,9 @@ console.log(JSON.stringify(ship));
         return;
       }
     } else {
+console.log("B");
       if (this.game.board[pid].tile == null) {
+console.log("C");
         return;
       } else {
         sys = this.game.sectors[this.game.board[pid].tile];

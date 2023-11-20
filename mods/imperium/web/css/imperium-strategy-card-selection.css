@@ -80,3 +80,7 @@
   z-index: 20 !important;
 }
 
+.strategy-card-selection-controls .strategy-card.strategy-card-popup.opaque {
+  visibility: hidden;
+}
+

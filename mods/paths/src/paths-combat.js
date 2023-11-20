@@ -4,7 +4,12 @@
   }
 
   returnAttackerUnits() {
-    return this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units;
+    let x = this.game.state.combat.attacker;
+    let units = [];
+    for (let z = 0; z < x.length; z++) {
+      units.push(this.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);   
+    }
+    return units;
   }
 
   returnDefenderCombatPower() {

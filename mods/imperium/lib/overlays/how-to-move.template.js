@@ -14,7 +14,7 @@ module.exports = ImperiumHowToMoveTemplate = (imperium_self, units) => {
 
 	  <li>
 	    <div class="title">move ships</div>
-	    <div class="desc">select ships within range to move</div>
+	    <div class="desc">select ships within range</div>
 	  </li>
 
 	  <li>
@@ -51,7 +51,7 @@ module.exports = ImperiumHowToMoveTemplate = (imperium_self, units) => {
         </div>
 
         <div class="how-to-move-example-desc">
-	  NOTE: move value indicates how many hexes a ship can travel - only units from inactivated sectors may be moved.
+	  NOTE: value is how many hexes ships can move - only units from inactivated sectors may move.
         </div>
 
     </div>

@@ -8,14 +8,18 @@
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
 
-
     for (let key in this.game.spaces) {
+      let redisplay = false;
+      if (this.game.spaces[key].activated_for_combat || this.game.spaces[key].activated_for_movement) {
+        redisplay = true;
+      }
       this.game.spaces[key].activated_for_combat = 0;
       this.game.spaces[key].activated_for_movement = 0;
       for (let z = 0; z < this.game.spaces[key].units.length; z++) {
 	this.game.spaces[key].units[z].moved = 0;
 	this.game.spaces[key].units[z].attacked = 0;
       }
+      if (redisplay) { this.displaySpace(key); }
     }
 
   }

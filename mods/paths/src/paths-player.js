@@ -129,6 +129,7 @@
       if (options.length == 0) {
 	paths_self.updateStatus("combat finished...");
 	paths_self.addMove("resolve\tplayer_play_combat");
+	paths_self.addMove("post_combat_cleanup");
 	paths_self.endTurn();
 	return;
       }
@@ -156,6 +157,7 @@
 	paths_self.removeSelectable();
 	paths_self.updateStatus("acknowledge...");
 	paths_self.addMove("resolve\tplayer_play_combat");
+	paths_self.addMove("post_combat_cleanup");
 	paths_self.endTurn();
       }
 
@@ -179,6 +181,7 @@
 
 	  if (key === "skip") {
 	    paths_self.addMove("resolve\tplayer_play_combat");
+	    paths_self.addMove("post_combat_cleanup");
 	    paths_self.removeSelectable();
 	    paths_self.endTurn();
 	    return;
@@ -235,15 +238,19 @@
 	  //
 	  if (idx === "skip") {
 	    let finished = false;
+	    paths_self.updateStatusWithOptions("attacking...", "");
 	    if (selected.length > 0) {
-let s = [];
-for (let z = 0; z < selected.length; z++) {
-  s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
-}
+	      let s = [];
+	      for (let z = 0; z < selected.length; z++) {
+  		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
+	      }
+	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
 	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.endTurn();
 	    }
 	    return;
@@ -445,10 +452,12 @@ for (let z = 0; z < selected.length; z++) {
 
   }
 
-  playerPlayOps(faction, card, cost) {
+  playerPlayOps(faction, card, cost, skipend=0) {
 
-    this.addMove("player_play_combat\t"+faction);
-    this.addMove("player_play_movement\t"+faction);
+    if (!skipend) {
+      this.addMove("player_play_combat\t"+faction);
+      this.addMove("player_play_movement\t"+faction);
+    }
 
     let targets = this.returnNumberOfSpacesWithFilter((key) => {
       if (cost < this.returnActivationCost(key)) { return 0; }
@@ -511,7 +520,7 @@ for (let z = 0; z < selected.length; z++) {
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
 	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
 	    }
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
 	    this.endTurn();
@@ -547,7 +556,7 @@ for (let z = 0; z < selected.length; z++) {
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
 	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
 	    }
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
 	    this.endTurn();
@@ -754,7 +763,6 @@ for (let z = 0; z < selected.length; z++) {
 	  (idx) => {
 	    let unit = paths_self.game.spaces[key].units[idx];
 	    paths_self.game.spaces[key].units[idx].moved = 1;
-alert("redeploying this unit!");
 	  },
           false
         );
@@ -773,6 +781,8 @@ alert("redeploying this unit!");
 
     let name = this.returnPlayerName(faction);
     let hand = this.returnPlayerHand();
+
+    this.addMove("resolve\tplay");
 
     this.updateStatusAndListCards(`${name}: pick a card`, hand);
     this.attachCardboxEvents((card) => {

@@ -9,7 +9,7 @@ this.importStrategyCard("trade", {
 
       imperium_self.addMove("resolve\tstrategy");
       imperium_self.addMove("strategy\t" + "trade" + "\t" + strategy_card_player + "\t2");
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
       imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
       imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tgoods\t3");
       imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
@@ -44,7 +44,7 @@ this.importStrategyCard("trade", {
     if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) {
 
       if (imperium_self.game.state.players_info[player - 1].commodities == imperium_self.game.state.players_info[player - 1].commodity_limit) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
         imperium_self.updateLog(imperium_self.returnFaction(player) + " skips the Trade secondary as they have already refreshed commodities");
         imperium_self.endTurn();
         return 1;
@@ -62,8 +62,8 @@ this.importStrategyCard("trade", {
 
 
       if (imperium_self.game.state.players_info[imperium_self.game.player - 1].commodities == imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " already has commodities and skips trade secondary");
         imperium_self.endTurn();
         return 0;
@@ -87,15 +87,15 @@ this.importStrategyCard("trade", {
         let id = $(this).attr("id");
 
         if (id == "yes") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
           imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
           imperium_self.endTurn();
         }
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }

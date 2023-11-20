@@ -2439,8 +2439,6 @@
               let is_committed = $(this).attr("id");
 	      if (is_committed == "uncommitted") { is_committed = 0; } else { is_committed = 1; }
 
-alert("is_commited = " + is_committed);
-
               let msg = "Leigzip Debate Format?";
               let html = '<ul>';
               html += '<li class="option" id="select">Pick My Debater</li>';
