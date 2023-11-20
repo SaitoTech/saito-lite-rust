@@ -40,11 +40,6 @@ class LossOverlay {
 	}
       }
 
-console.log("^");
-console.log("^");
-console.log("^ lf: " + this.loss_factor);
-console.log(JSON.stringify(x));
-
       for (let i = 0; i < x.length; i++) {
 	if (this.loss_factor >= x[i][0]) { return true; }
       }
@@ -54,8 +49,6 @@ console.log(JSON.stringify(x));
     }
 
     returnMaxLossPossible() {
-
-console.log("UNITS: " + JSON.stringify(this.units));
 
       //
       // associative array with all stepwise losses
@@ -72,14 +65,6 @@ console.log("UNITS: " + JSON.stringify(this.units));
 	  x[i].push(cunit.rloss);
 	}
       }
-
-
-console.log("!");
-console.log("!");
-console.log("!");
-console.log("RETURN MAX LOSS POSSIBLE: ");
-console.log(" - " + JSON.stringify(x));
-
 
       //
       // start recursive algorithm at step 0, 0
@@ -153,15 +138,8 @@ console.log(" - " + JSON.stringify(x));
       let units;
       let qs = ".loss-overlay .units";
 
-alert(this.mod.game.state.combat.attacking_faction + " -- " + faction);
-
       if (faction == this.mod.game.state.combat.attacking_faction || faction === "attacker") {
-        let x = this.mod.returnAttackerUnits();
-console.log("attacker units: " + JSON.stringify(x));
-	units = [];
-	for (let z = 0; z < x.length; z++) {
-	  units.push(this.mod.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);
-	}
+        units = this.mod.returnAttackerUnits();
         this.loss_factor = this.mod.game.state.combat.attacker_loss_factor;
       } else {
         units = this.mod.returnDefenderUnits();
@@ -176,9 +154,6 @@ console.log("attacker units: " + JSON.stringify(x));
       // calculate max losses we can take
       //
       this.loss_factor_maximum = this.returnMaxLossPossible();
-
-console.log("MIN LOSS FACTOR: " + this.loss_factor);
-console.log("MIN LOSS FACTOR: " + this.loss_factor_maximum);
 
       this.moves = [];
 
@@ -203,7 +178,7 @@ console.log("MIN LOSS FACTOR: " + this.loss_factor_maximum);
       if (!this.canTakeMoreLosses()) {
         let c = confirm("Maximum Losses Sustained: Submit?");
 	if (c) {
-	  for (let i = 0; i < this.moves.length; i++) {
+	  for (let i = this.moves.length-1; i >= 0; i--) {
 	    this.mod.addMove(this.moves[i]);
 	  }
           this.mod.endTurn();
@@ -275,7 +250,7 @@ console.log("MIN LOSS FACTOR: " + this.loss_factor_maximum);
 	    setTimeout(() => {
 	      let c = confirm("Maximum Losses Sustained: Submit?");
 	      if (c) {
-	        for (let i = 0; i < this.moves.length; i++) {
+	        for (let i = this.moves.length-1; i >= 0; i--) {
 	          this.mod.addMove(this.moves[i]);
 	        }
 	        this.mod.endTurn();

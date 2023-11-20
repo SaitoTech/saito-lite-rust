@@ -362,11 +362,12 @@ returnPlanetInformationHTML(planet) {
     html += '<div class="planet_spacedock_count_label">Spacedock</div><div class="planet_spacedock_count">'+sonp+'</div>';
   }
 
-  if (this.game.planets[planet].bonus != "") {
-    html += '<div class="planet_tech_label tech_'+this.game.planets[planet].bonus+' bold">'+this.game.planets[planet].bonus+' TECH</div><div></div>';
-  }
+//  if (this.game.planets[planet].bonus != "") {
+//    html += '<div class="planet_tech_label tech_'+this.game.planets[planet].bonus+' bold">'+this.game.planets[planet].bonus+' TECH</div><div></div>';
+//  }
 
-  if (ponp+sonp+ionp > 0 || this.game.planets[planet].bonus != "") {
+//  if (ponp+sonp+ionp > 0 || this.game.planets[planet].bonus != "") {
+  if (ponp+sonp+ionp > 0) {
     html = `<div class="sector_information_planetname ${powner}">${p.name}</div><div class="sector_information_planet_content">` + html + `</div>`;
   } else {
     html = `<div class="sector_information_planetname ${powner}">${p.name}</div>`;

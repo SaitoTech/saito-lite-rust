@@ -600,8 +600,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 //    if (tech_attach_menu_events == 0 && ac.length == 0) {
 //      if (imperium_self.game.state.action_card_order === "simultaneous") {
 //console.log("BROADCASTING MOVES 1: " + JSON.stringify(this.moves));
-//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-//        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+//        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
 //      }
 //      imperium_self.endTurn();
 //      return;
@@ -649,8 +649,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
         // resolve action card simultaneous
         //
         if (imperium_self.game.state.action_card_order === "simultaneous") {
-          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         }
         imperium_self.endTurn();
       }
@@ -667,8 +667,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
     this.playerAcknowledgeNotice(notice, function () { 
       if (imperium_self.game.state.action_card_order === "simultaneous") {
-        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       }
       imperium_self.endTurn(); 
     });
@@ -2560,7 +2560,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
     this.updateLog("You skip the initiative secondary, as you lack adequate influence...");
     this.updateStatus("Skipping purchase of tokens as insufficient influence...");
     if (resolve == 1) {
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
     }
     this.endTurn();
     return 0;
@@ -2599,7 +2599,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "skip") {
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
       }
       imperium_self.endTurn();
       return;
@@ -2610,8 +2610,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
       total_cost = 3 * (fleet_supply + command_tokens + strategy_tokens);
 
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       }
 
       imperium_self.playerSelectInfluence(total_cost, function (success) {
@@ -2691,8 +2691,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " gets action cards");
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\taction_cards\t2");
       imperium_self.addMove("DEAL\t2\t" + imperium_self.game.player + "\t2");
@@ -2703,8 +2703,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -2741,8 +2741,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\tsecret_objective\t1");
       imperium_self.addMove("DEAL\t6\t" + imperium_self.game.player + "\t1");
       imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
@@ -2752,8 +2752,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -3328,8 +3328,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
         imperium_self.addMove("resolve\tplay");
         imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
       }
 
@@ -3558,9 +3558,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         offer_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
 
+
       let html = "<div class='status-header-text'>Make an Offer: </div><ul>";
-      html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
-      html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
+      if (imperium_self.game.state.players_info[imperium_self.game.player-1].commodities > 0 || imperium_self.game.state.players_info[imperium_self.game.player-1].goods > 0) {
+        html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
+      }
+      if (imperium_self.game.state.players_info[player-1].commodities > 0 || imperium_self.game.state.players_info[player-1].goods > 0) {
+        html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
+      }
       if (imperium_self.game.state.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.state.players_info[player-1].may_trade_action_cards == 1) {
         html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
         //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
@@ -6252,7 +6257,7 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
         if (obj.new_tokens == 0) {
           if (resolve_needed == 1) {
             if (imperium_self.game.confirms_needed > 0 && leadership_primary == 0) {
-              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.getPublicKey());
             } else {
               imperium_self.addMove("resolve\ttokenallocation");
             }

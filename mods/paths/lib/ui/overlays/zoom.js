@@ -126,8 +126,6 @@ console.log("qs: " + qs);
 } else {
 	document.querySelector(qs).onclick = (e) => {
 
-alert("clicked on space: " + key);
-
 	  let space_id = e.currentTarget.id;
 	  //
 	  // we have clicked on a space. if there is a callback attached to the 

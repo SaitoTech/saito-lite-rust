@@ -16,7 +16,7 @@ this.importStrategyCard("diplomacy", {
 
         imperium_self.addMove("resolve\tstrategy");
         imperium_self.addMove("strategy\t" + "diplomacy" + "\t" + strategy_card_player + "\t2");
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
         imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
         imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " uses Diplomacy to activate " + imperium_self.game.sectors[sector].name);
 
@@ -106,8 +106,8 @@ this.importStrategyCard("diplomacy", {
             let action2 = $(this).attr("id");
 
             if (action2 === "cancel") {
-              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
               return;
             }
@@ -129,8 +129,8 @@ this.importStrategyCard("diplomacy", {
             $(divid).css('opacity', '0.2');
 
             if (choices_selected >= max_choices) {
-              imperium_self.prependMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.prependMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
               imperium_self.endTurn();
             }
@@ -139,8 +139,8 @@ this.importStrategyCard("diplomacy", {
         }
 
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }

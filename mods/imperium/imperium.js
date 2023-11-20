@@ -138,6 +138,8 @@ class Imperium extends GameTemplate {
   
   }
   
+  getPublicKey() { return this.publicKey; }
+
   //
   // this function is CLOSED in imperium-initialize
   //
@@ -1466,7 +1468,7 @@ this.importFaction("faction8", {
   background: "faction8.jpg",
   promissary_notes: ["trade", "political", "ceasefire", "throne", "faction8-promissary"],
   commodity_limit: 6,
-  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`,
+  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`,
 });
 
 this.importTech("faction8-flagship", {
@@ -1646,9 +1648,9 @@ this.importTech("faction8-merchant-class", {
             imperium_self.game.state.players_info[player - 1].commodity_limit
           ) {
             imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+              "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
             );
-            imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+            imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
             imperium_self.endTurn();
             imperium_self.updateLog(
               "Hacan already refreshed, do not need to play faction ability."
@@ -1670,9 +1672,9 @@ this.importTech("faction8-merchant-class", {
             $(this).hide();
             if (id != "yes") {
               imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+                "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
               );
-              imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.addMove(
                 "purchase\t" +
                   imperium_self.game.player +
@@ -1686,9 +1688,9 @@ this.importTech("faction8-merchant-class", {
               return;
             } else {
               imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+                "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
               );
-              imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
             }
           });
@@ -2070,7 +2072,7 @@ this.importFaction("faction2", {
   background: "faction2.jpg",
   promissary_notes: ["trade", "political", "ceasefire", "throne", "faction2-promissary"],
   commodity_limit: 4,
-  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`,
+  intro: `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`,
 });
 
 this.importTech("faction2-flagship", {
@@ -2470,7 +2472,7 @@ this.importPromissary("faction2-promissary", {
       background	: 	'faction7.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne","faction7-promissary"],
       commodity_limit	:	4,
-      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Embers of Muaat, a faction which forges its instruments of war in the heat of lava-powered furnaces and whose technical research expands to conquering the heat of the very starts themselves. Goodl luck!</div>`
+      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Embers of Muaat, a faction which forges its instruments of war in the heat of lava-powered furnaces and whose technical research expands to conquering the heat of the very starts themselves. Goodl luck!</div>`
     });
 
 
@@ -2751,7 +2753,7 @@ this.importPromissary("faction2-promissary", {
       background	: 	'faction4.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne","faction4-promissary"],
       commodity_limit	:	3,
-      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sardaak N'Orr, an overpowered faction known for its raw strength in combat. Your brutal power makes you an intimidating faction on the board. Good luck!</div>`
+      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Sardaak N'Orr, an overpowered faction known for its raw strength in combat. Your brutal power makes you an intimidating faction on the board. Good luck!</div>`
     });
 
 
@@ -3198,7 +3200,7 @@ this.importPromissary("faction2-promissary", {
       background	: 	"faction1.jpg",
       promissary_notes	:	["trade","political","ceasefire","throne","faction1-promissary"],
       commodity_limit	:	4,
-      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sol Federation. a Terran faction under cellular military government. Your reinforced infantry and tactical flexibility will be important in your fight for the Imperial Throne. Good luck!</div>`
+      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Sol Federation. a Terran faction under cellular military government. Your reinforced infantry and tactical flexibility will be important in your fight for the Imperial Throne. Good luck!</div>`
     });
  
 
@@ -3441,7 +3443,7 @@ this.importPromissary("faction2-promissary", {
       background	: 	'faction3.jpg',
       commodity_limit	:	4,
       promissary_notes	:	["trade","political","ceasefire","throne","faction3-promissary"],
-      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the XXCha Kingdom, a faction which excels in diplomacy and defensive weaponry. With the proper alliances and political maneuvers your faction you can be a contender for the Imperial Throne. Good luck!</div>`
+      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the XXCha Kingdom, a faction which excels in diplomacy and defensive weaponry. With the proper alliances and political maneuvers your faction you can be a contender for the Imperial Throne. Good luck!</div>`
     });
   
 
@@ -3896,7 +3898,7 @@ this.importPromissary("faction2-promissary", {
       background	: 	'faction5.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne","faction5-promissary"],
       commodity_limit	:	2,
-      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yin Brotherhood, a monastic order of religious zealots whose eagerness to sacrifice their lives for the collective good makes them terrifying in one-on-one combat. Direct their self-destructive passion and you can win the Imperial Throne. Good luck!</div>`
+      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Yin Brotherhood, a monastic order of religious zealots whose eagerness to sacrifice their lives for the collective good makes them terrifying in one-on-one combat. Direct their self-destructive passion and you can win the Imperial Throne. Good luck!</div>`
     });
 
 
@@ -4337,7 +4339,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       background	: 	'faction6.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne","faction6-promissary"],
       commodity_limit	:	3,
-      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
+      intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="line-height:2.8rem;margin-top:10px;margin-bottom:0px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
     });
 
 
@@ -4831,7 +4833,7 @@ this.importStrategyCard("diplomacy", {
 
         imperium_self.addMove("resolve\tstrategy");
         imperium_self.addMove("strategy\t" + "diplomacy" + "\t" + strategy_card_player + "\t2");
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
         imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
         imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " uses Diplomacy to activate " + imperium_self.game.sectors[sector].name);
 
@@ -4921,8 +4923,8 @@ this.importStrategyCard("diplomacy", {
             let action2 = $(this).attr("id");
 
             if (action2 === "cancel") {
-              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
               return;
             }
@@ -4944,8 +4946,8 @@ this.importStrategyCard("diplomacy", {
             $(divid).css('opacity', '0.2');
 
             if (choices_selected >= max_choices) {
-              imperium_self.prependMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.prependMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
               imperium_self.endTurn();
             }
@@ -4954,8 +4956,8 @@ this.importStrategyCard("diplomacy", {
         }
 
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }
@@ -5171,7 +5173,7 @@ this.importStrategyCard("construction", {
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
       imperium_self.addMove("resolve\tstrategy");
       imperium_self.addMove("strategy\t" + "construction" + "\t" + strategy_card_player + "\t2");
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
       imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
       imperium_self.playerAcknowledgeNotice("You have played Construction. First you will have the option of producing a PDS or Space Dock. Then you will have the option of producing an additional PDS if you so choose.", function() {
         imperium_self.playerBuildInfrastructure((sector) => {
@@ -5217,8 +5219,8 @@ this.importStrategyCard("construction", {
         let id = $(this).attr("id");
 
         if (id == "yes") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
           imperium_self.playerBuildInfrastructure((sector) => {
             imperium_self.addMove("activate\t" + imperium_self.game.player + "\t" + sector);
@@ -5227,8 +5229,8 @@ this.importStrategyCard("construction", {
           }, 1);
         }
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }
@@ -5250,7 +5252,7 @@ this.importStrategyCard("trade", {
 
       imperium_self.addMove("resolve\tstrategy");
       imperium_self.addMove("strategy\t" + "trade" + "\t" + strategy_card_player + "\t2");
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
       imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
       imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tgoods\t3");
       imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
@@ -5285,7 +5287,7 @@ this.importStrategyCard("trade", {
     if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) {
 
       if (imperium_self.game.state.players_info[player - 1].commodities == imperium_self.game.state.players_info[player - 1].commodity_limit) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
         imperium_self.updateLog(imperium_self.returnFaction(player) + " skips the Trade secondary as they have already refreshed commodities");
         imperium_self.endTurn();
         return 1;
@@ -5303,8 +5305,8 @@ this.importStrategyCard("trade", {
 
 
       if (imperium_self.game.state.players_info[imperium_self.game.player - 1].commodities == imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " already has commodities and skips trade secondary");
         imperium_self.endTurn();
         return 0;
@@ -5328,15 +5330,15 @@ this.importStrategyCard("trade", {
         let id = $(this).attr("id");
 
         if (id == "yes") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
           imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
           imperium_self.endTurn();
         }
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }
@@ -5363,7 +5365,7 @@ this.importStrategyCard("trade", {
 
             imperium_self.addMove("resolve\tstrategy");
             imperium_self.addMove("strategy\t"+"warfare"+"\t"+strategy_card_player+"\t2");
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
+            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.getPublicKey());
             imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
             imperium_self.addMove("rearrange_tokens\t"+strategy_card_player);
             imperium_self.addMove("deactivate\t"+strategy_card_player+"\t"+sector);
@@ -5383,8 +5385,8 @@ this.importStrategyCard("trade", {
 	  //
 	  if (imperium_self.game.state.players_info[player-1].strategy_tokens == 0 || (imperium_self.returnAvailableResources(player) == 0 && imperium_self.game.state.players_info[player-1].goods == 0 && imperium_self.game.state.players_info[player-1].sarween_tools != 1)) {
 	    imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Warfare secondary"); 
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.getPublicKey());
+            imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
             imperium_self.endTurn();
 	    return 0;
 	  }
@@ -5410,8 +5412,8 @@ this.importStrategyCard("trade", {
               imperium_self.playerProduceUnits(imperium_self.game.state.players_info[imperium_self.game.player-1].homeworld, 0, 0, 2, 1); // final is warfare card
             }
             if (id == "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -5476,9 +5478,9 @@ this.importStrategyCard("technology", {
             " unable to play Technology secondary"
         );
         imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+          "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
         );
-        imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.endTurn();
         return 0;
       }
@@ -5525,9 +5527,9 @@ this.importStrategyCard("technology", {
             player - 1
           ].temporary_research_technology_card_must_not_spend_resources = 0;
           imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+            "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
           );
-          imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.playerSelectResources(resources_to_spend, function (success) {
             if (success == 1) {
               imperium_self.playerResearchTechnology(function (tech) {
@@ -5542,9 +5544,9 @@ this.importStrategyCard("technology", {
         }
         if (id === "no") {
           imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + (await imperium_self.app.wallet.getPublicKey())
+            "resolve\tstrategy\t1\t" + (imperium_self.getPublicKey())
           );
-          imperium_self.addPublickeyConfirm(await imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }
@@ -5592,8 +5594,8 @@ this.importStrategyCard("technology", {
         if (id == "yes") {
           imperium_self.game.state.players_info[imperium_self.game.player - 1]
             .temporary_research_technology_card_must_not_spend_resources == 0;
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.playerSelectResources(resources_to_spend, function (success) {
             if (success == 1) {
               imperium_self.playerResearchTechnology(function (tech) {
@@ -5607,8 +5609,8 @@ this.importStrategyCard("technology", {
           });
         }
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }
@@ -14300,7 +14302,7 @@ handleSystemsMenuItem() {
 	if (lmv[1] != undefined) {
 	  if (lmv[1] === "tokenallocation") {
 	    if (lmv[2] != undefined) {
-	      if (lmv[2] === await this.app.wallet.getPublicKey()) {
+	      if (lmv[2] === this.getPublicKey()) {
 		this.playing_token_allocation = 0;
 	      }
 	    }
@@ -14312,7 +14314,7 @@ handleSystemsMenuItem() {
 	//
 	if (mv[1] === "strategy") {
 	  if (mv[3]) {
-	    if (mv[3] === await this.app.wallet.getPublicKey()) {
+	    if (mv[3] === this.getPublicKey()) {
               this.game.state.playing_strategy_card_secondary = 0;
 	    }
 	  }
@@ -14384,7 +14386,7 @@ console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
-		  if (this.game.players[z] === await this.app.wallet.getPublicKey()) { am_i_still_to_move = 1; }
+		  if (this.game.players[z] === this.getPublicKey()) { am_i_still_to_move = 1; }
 console.log("WHO - IDX " + z);
 console.log("WHO - PLAYER " + (z+1));
 console.log("WHO: " + this.game.players[z]);
@@ -14414,7 +14416,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      // the last one....
 	      //
 	      if (mv[3] != undefined) {
-	        if (!this.game.confirms_players.includes(await this.app.wallet.getPublicKey())) {
+	        if (!this.game.confirms_players.includes(this.getPublicKey())) {
 	  	  return 1;
 	        }
                 if (mv[1] == "agenda") {
@@ -14878,7 +14880,7 @@ console.log("WHO: " + this.returnFaction(z+1));
   	let stage = parseInt(mv[3]);
 
 	if (this.game.state.playing_strategy_card_secondary == 1) {
-	  if (this.game.confirms_players.includes(this.app.wallet.getPublicKey()) || this.game.tmp_confirms_players.includes(this.app.wallet.getPublicKey())) {
+	  if (this.game.confirms_players.includes(this.getPublicKey()) || this.game.tmp_confirms_players.includes(this.getPublicKey())) {
 	    return 0;
 	  } else {
 	    //
@@ -15442,7 +15444,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  // if the player has a rider, we skip the interactive voting and submit an abstention
 	  //
 	  if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
+	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.getPublicKey());
 	    imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+"abstain"+"\t"+"0");
 	    imperium_self.endTurn();
 	    return 0;
@@ -15510,7 +15512,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    if (vote == "abstain") {
 
-	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
+	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -15532,7 +15534,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
               votes = $(this).attr("id");
 
-  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
+  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -15609,7 +15611,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  // if the player has a rider, we skip the interactive voting and submit an abstention
 	  //
 	  if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
+	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.getPublicKey());
 	    imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+"abstain"+"\t"+"0");
 	    imperium_self.endTurn();
 	    return 0;
@@ -15678,7 +15680,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    if (vote == "abstain") {
 
-	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
+	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -15706,7 +15708,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
               votes = $(this).attr("id");
 
-  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
+  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -20216,26 +20218,26 @@ console.log("HIDING SPACE COMBAT OVERLAY!");
 	if (this.game.player == action_card_player) {
     	  //this.game.queue.splice(qe, 1);
 	  this.updateStatus("Your opponents are being notified you have played " + this.action_cards[action_card].name);
-	  if (this.hasPlayerConfirmed(this.app.wallet.getPublicKey())) {
+	  if (this.hasPlayerConfirmed(this.getPublicKey())) {
 	    if (action_card.indexOf("sabotage") != 0) {
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
 	    } else {
 	      // sabotage doesn't need resolve, it happily resolves itself
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
             }
           } else {
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
               imperium_self.endTurn();
 	  }
 	  return 0;
 	} else {
 	  // sabotage is a special case where we want to show the menu even if we have already confirmed
-	  if (this.hasPlayerConfirmed(this.app.wallet.getPublicKey()) && action_card.indexOf("sabotage") != 0) {
+	  if (this.hasPlayerConfirmed(this.getPublicKey()) && action_card.indexOf("sabotage") != 0) {
   	    this.updateStatus("Waiting for players to respond to "+this.action_cards[action_card].name);
 	  } else {
     	    //this.game.queue.splice(qe, 1);
@@ -21093,8 +21095,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 //    if (tech_attach_menu_events == 0 && ac.length == 0) {
 //      if (imperium_self.game.state.action_card_order === "simultaneous") {
 //console.log("BROADCASTING MOVES 1: " + JSON.stringify(this.moves));
-//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-//        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+//        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
 //      }
 //      imperium_self.endTurn();
 //      return;
@@ -21142,8 +21144,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
         // resolve action card simultaneous
         //
         if (imperium_self.game.state.action_card_order === "simultaneous") {
-          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         }
         imperium_self.endTurn();
       }
@@ -21160,8 +21162,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
     this.playerAcknowledgeNotice(notice, function () { 
       if (imperium_self.game.state.action_card_order === "simultaneous") {
-        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       }
       imperium_self.endTurn(); 
     });
@@ -23053,7 +23055,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
     this.updateLog("You skip the initiative secondary, as you lack adequate influence...");
     this.updateStatus("Skipping purchase of tokens as insufficient influence...");
     if (resolve == 1) {
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
     }
     this.endTurn();
     return 0;
@@ -23092,7 +23094,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "skip") {
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
       }
       imperium_self.endTurn();
       return;
@@ -23103,8 +23105,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
       total_cost = 3 * (fleet_supply + command_tokens + strategy_tokens);
 
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       }
 
       imperium_self.playerSelectInfluence(total_cost, function (success) {
@@ -23184,8 +23186,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " gets action cards");
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\taction_cards\t2");
       imperium_self.addMove("DEAL\t2\t" + imperium_self.game.player + "\t2");
@@ -23196,8 +23198,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -23234,8 +23236,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\tsecret_objective\t1");
       imperium_self.addMove("DEAL\t6\t" + imperium_self.game.player + "\t1");
       imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
@@ -23245,8 +23247,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -23821,8 +23823,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
         imperium_self.addMove("resolve\tplay");
         imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
       }
 
@@ -24051,9 +24053,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         offer_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
 
+
       let html = "<div class='status-header-text'>Make an Offer: </div><ul>";
-      html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
-      html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
+      if (imperium_self.game.state.players_info[imperium_self.game.player-1].commodities > 0 || imperium_self.game.state.players_info[imperium_self.game.player-1].goods > 0) {
+        html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
+      }
+      if (imperium_self.game.state.players_info[player-1].commodities > 0 || imperium_self.game.state.players_info[player-1].goods > 0) {
+        html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
+      }
       if (imperium_self.game.state.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.state.players_info[player-1].may_trade_action_cards == 1) {
         html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
         //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
@@ -26745,7 +26752,7 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
         if (obj.new_tokens == 0) {
           if (resolve_needed == 1) {
             if (imperium_self.game.confirms_needed > 0 && leadership_primary == 0) {
-              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.getPublicKey());
             } else {
               imperium_self.addMove("resolve\ttokenallocation");
             }
@@ -27452,56 +27459,47 @@ playerDiscardActionCards(num, mycallback=null) {
     var sectors = {};
 
     // empty space
-    sectors['sector1']         = { img : "/imperium/img/sectors/sector1.png" , 	   name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector2']         = { img : "/imperium/img/sectors/sector2.png" , 	   name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
-    sectors['sector3']         = { img : "/imperium/img/sectors/sector3.png" , 	   name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector4']         = { img : "/imperium/img/sectors/sector4.png" , 	   name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector5']         = { img : "/imperium/img/sectors/sector5.png" , 	   name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-
-    // empty space with wormholes
-    sectors['sector6']         = { img : "/imperium/img/sectors/sector6.png" , 	   name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector7']         = { img : "/imperium/img/sectors/sector7.png" , 	   name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
-
-    // hazardous sectors
-    sectors['sector8']         = { img : "/imperium/img/sectors/sector8.png" , 	   name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector9']         = { img : "/imperium/img/sectors/sector9.png" , 	   name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector10']        = { img : "/imperium/img/sectors/sector10.png" , 	   name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
-    sectors['sector11']        = { img : "/imperium/img/sectors/sector11.png" , 	   name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
-    sectors['sector12']        = { img : "/imperium/img/sectors/sector12.png" , 	   name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-
-    // planet systems
-    sectors['sector13']        = { img : "/imperium/img/sectors/sector13.png" , 	   name : "Crystalis / Troth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['crystalis','troth'] }
-    sectors['sector14']        = { img : "/imperium/img/sectors/sector14.png" , 	   name : "Londrak / Citadel" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['londrak','citadel'] }
-    sectors['sector15']        = { img : "/imperium/img/sectors/sector15.png" , 	   name : "Calthrex / Soundra IV" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['calthrex','soundra-iv'] }
-    sectors['sector16']        = { img : "/imperium/img/sectors/sector16.png" , 	   name : "Udon" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['udon-i','udon-ii'] }
-    sectors['sector17']        = { img : "/imperium/img/sectors/sector17.png" , 	   name : "Olympia / Granton Mex" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['olympia','granton-mex'] }
-    sectors['sector18']        = { img : "/imperium/img/sectors/sector18.png" , 	   name : "New Illia / Siren's End" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['new-illia','sirens-end'] }
-    sectors['sector19']        = { img : "/imperium/img/sectors/sector19.png" , 	   name : "Lazak's Curse / Riftview" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['lazaks-curse','riftview'] }
-    sectors['sector20']        = { img : "/imperium/img/sectors/sector20.png" , 	   name : "Broughton / Singharta" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['broughton','singharta'] }
-    sectors['sector21']        = { img : "/imperium/img/sectors/sector21.png" , 	   name : "Nova Klondike" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['nova-klondike'] }
-    sectors['sector22']        = { img : "/imperium/img/sectors/sector22.png" , 	   name : "Grox Towers" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['grox-towers'] }
-    sectors['sector23']        = { img : "/imperium/img/sectors/sector23.png" , 	   name : "Gravity's Edge / Vespar" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['gravitys-edge','vespar'] }
-    sectors['sector24']        = { img : "/imperium/img/sectors/sector24.png" , 	   name : "Craw Populi / Hope's Lure" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['craw-populi','hopes-lure'] }
-    sectors['sector25']        = { img : "/imperium/img/sectors/sector25.png" , 	   name : "Incarth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['incarth'] }
-    sectors['sector26']        = { img : "/imperium/img/sectors/sector26.png" , 	   name : "Quandam / Quandor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['quandam','quandor'] }
-    sectors['sector27']        = { img : "/imperium/img/sectors/sector27.png" , 	   name : "Virgil" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['virgil'] }
-    sectors['sector28']        = { img : "/imperium/img/sectors/sector28.png" , 	   name : "Contouri" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['contouri-i'] }
-    sectors['sector29']        = { img : "/imperium/img/sectors/sector29.png" , 	   name : "Shriva / Vigor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['shriva','vigor'] }
-    sectors['sector30']        = { img : "/imperium/img/sectors/sector30.png" , 	   name : "Xerxes" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['xerxes'] }
-    sectors['sector31']        = { img : "/imperium/img/sectors/sector31.png" , 	   name : "Unsulla" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['unsulla'] }
-    sectors['sector32']        = { img : "/imperium/img/sectors/sector32.png" , 	   name : "Panther" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['panther'] }
-
-    // diplomatic
-    sectors['new-byzantium']        = { img : "/imperium/img/sectors/sector33.png" , 	   name : "New Byzantium" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['new-byzantium'] }
-
-    sectors['sector34']        = { img : "/imperium/img/sectors/sector34.png" ,    name : "Sol Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['terra'] }
-    sectors['sector35']        = { img : "/imperium/img/sectors/sector35.png" ,    name : "Yin Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['sigurds-cradle'] }
-    sectors['sector36']        = { img : "/imperium/img/sectors/sector36.png" ,    name : "Muaat Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['kroeber'] }
-    sectors['sector37']        = { img : "/imperium/img/sectors/sector37.png" ,    name : "Ysarril Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['miranda','fischer'] }
-    sectors['sector38']        = { img : "/imperium/img/sectors/sector38.png" ,    name : "XXCha Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['giants-drink','otho'] }
-    sectors['sector39']        = { img : "/imperium/img/sectors/sector39.png" ,    name : "Jol Nar Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['startide','evenflow'] }
-    sectors['sector40']        = { img : "/imperium/img/sectors/sector40.png" ,    name : "Sardaak Homeworld" , type : 0 , hw : 1 , wormhole: 0 , mr : 0 , planets : ['aandor','brest'] } 
-    sectors['sector41']        = { img : "/imperium/img/sectors/sector41.png" ,    name : "Hacan Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['hiraeth','quartil','surriel'] }
+    sectors['sector1']         = { img : "/imperium/img/sectors/sector1.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector2']         = { img : "/imperium/img/sectors/sector2.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
+    sectors['sector3']         = { img : "/imperium/img/sectors/sector3.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector4']         = { img : "/imperium/img/sectors/sector4.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector5']         = { img : "/imperium/img/sectors/sector5.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector6']         = { img : "/imperium/img/sectors/sector6.png" , 	name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector7']         = { img : "/imperium/img/sectors/sector7.png" , 	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
+    sectors['sector8']         = { img : "/imperium/img/sectors/sector8.png" , 	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector9']         = { img : "/imperium/img/sectors/sector9.png" , 	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector10']        = { img : "/imperium/img/sectors/sector10.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
+    sectors['sector11']        = { img : "/imperium/img/sectors/sector11.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
+    sectors['sector12']        = { img : "/imperium/img/sectors/sector12.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector13']        = { img : "/imperium/img/sectors/sector13.png" , name : "Crystalis / Troth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['crystalis','troth'] }
+    sectors['sector14']        = { img : "/imperium/img/sectors/sector14.png" , name : "Londrak / Citadel" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['londrak','citadel'] }
+    sectors['sector15']        = { img : "/imperium/img/sectors/sector15.png" , name : "Calthrex / Soundra IV" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['calthrex','soundra-iv'] }
+    sectors['sector16']        = { img : "/imperium/img/sectors/sector16.png" , name : "Udon" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['udon-i','udon-ii'] }
+    sectors['sector17']        = { img : "/imperium/img/sectors/sector17.png" , name : "Olympia / Granton Mex" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['olympia','granton-mex'] }
+    sectors['sector18']        = { img : "/imperium/img/sectors/sector18.png" , name : "New Illia / Siren's End" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['new-illia','sirens-end'] }
+    sectors['sector19']        = { img : "/imperium/img/sectors/sector19.png" , name : "Lazak's Curse / Riftview" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['lazaks-curse','riftview'] }
+    sectors['sector20']        = { img : "/imperium/img/sectors/sector20.png" , name : "Broughton / Singharta" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['broughton','singharta'] }
+    sectors['sector21']        = { img : "/imperium/img/sectors/sector21.png" , name : "Nova Klondike" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['nova-klondike'] }
+    sectors['sector22']        = { img : "/imperium/img/sectors/sector22.png" , name : "Grox Towers" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['grox-towers'] }
+    sectors['sector23']        = { img : "/imperium/img/sectors/sector23.png" , name : "Gravity's Edge / Vespar" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['gravitys-edge','vespar'] }
+    sectors['sector24']        = { img : "/imperium/img/sectors/sector24.png" , name : "Craw Populi / Hope's Lure" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['craw-populi','hopes-lure'] }
+    sectors['sector25']        = { img : "/imperium/img/sectors/sector25.png" , name : "Incarth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['incarth'] }
+    sectors['sector26']        = { img : "/imperium/img/sectors/sector26.png" , name : "Quandam / Quandor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['quandam','quandor'] }
+    sectors['sector27']        = { img : "/imperium/img/sectors/sector27.png" , name : "Virgil" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['virgil'] }
+    sectors['sector28']        = { img : "/imperium/img/sectors/sector28.png" , name : "Contouri" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['contouri-i'] }
+    sectors['sector29']        = { img : "/imperium/img/sectors/sector29.png" , name : "Shriva / Vigor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['shriva','vigor'] }
+    sectors['sector30']        = { img : "/imperium/img/sectors/sector30.png" , name : "Xerxes" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['xerxes'] }
+    sectors['sector31']        = { img : "/imperium/img/sectors/sector31.png" , name : "Unsulla" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['unsulla'] }
+    sectors['sector32']        = { img : "/imperium/img/sectors/sector32.png" , name : "Panther" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['panther'] }
+    sectors['new-byzantium']   = { img : "/imperium/img/sectors/sector33.png" , name : "New Byzantium" , type : 0 , hw : 0 , wormhole : 0, mr : 1 , planets : ['new-byzantium'] }
+    sectors['sector34']        = { img : "/imperium/img/sectors/sector34.png" , name : "Sol Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['terra'] }
+    sectors['sector35']        = { img : "/imperium/img/sectors/sector35.png" , name : "Yin Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['sigurds-cradle'] }
+    sectors['sector36']        = { img : "/imperium/img/sectors/sector36.png" , name : "Muaat Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['kroeber'] }
+    sectors['sector37']        = { img : "/imperium/img/sectors/sector37.png" , name : "Ysarril Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['miranda','fischer'] }
+    sectors['sector38']        = { img : "/imperium/img/sectors/sector38.png" , name : "XXCha Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['giants-drink','otho'] }
+    sectors['sector39']        = { img : "/imperium/img/sectors/sector39.png" , name : "Jol Nar Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['startide','evenflow'] }
+    sectors['sector40']        = { img : "/imperium/img/sectors/sector40.png" , name : "Sardaak Homeworld" , type : 0 , hw : 1 , wormhole: 0 , mr : 0 , planets : ['aandor','brest'] } 
+    sectors['sector41']        = { img : "/imperium/img/sectors/sector41.png" , name : "Hacan Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['hiraeth','quartil','surriel'] }
     //sectors['sector42']        = { img : "/imperium/img/sectors/sector42.png" ,    name : "Arborec Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['som'] }
     //sectors['sector43']        = { img : "/imperium/img/sectors/sector43.png" ,    name : "Naalu Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['som'] }
     //sectors['sector44']        = { img : "/imperium/img/sectors/sector44.png" ,    name : "Letnev Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['som'] }
@@ -32081,11 +32079,12 @@ returnPlanetInformationHTML(planet) {
     html += '<div class="planet_spacedock_count_label">Spacedock</div><div class="planet_spacedock_count">'+sonp+'</div>';
   }
 
-  if (this.game.planets[planet].bonus != "") {
-    html += '<div class="planet_tech_label tech_'+this.game.planets[planet].bonus+' bold">'+this.game.planets[planet].bonus+' TECH</div><div></div>';
-  }
+//  if (this.game.planets[planet].bonus != "") {
+//    html += '<div class="planet_tech_label tech_'+this.game.planets[planet].bonus+' bold">'+this.game.planets[planet].bonus+' TECH</div><div></div>';
+//  }
 
-  if (ponp+sonp+ionp > 0 || this.game.planets[planet].bonus != "") {
+//  if (ponp+sonp+ionp > 0 || this.game.planets[planet].bonus != "") {
+  if (ponp+sonp+ionp > 0) {
     html = `<div class="sector_information_planetname ${powner}">${p.name}</div><div class="sector_information_planet_content">` + html + `</div>`;
   } else {
     html = `<div class="sector_information_planetname ${powner}">${p.name}</div>`;

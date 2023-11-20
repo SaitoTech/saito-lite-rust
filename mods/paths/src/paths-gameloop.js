@@ -106,10 +106,12 @@ console.log("PLAYER: " + this.game.player);
 console.log("LIve: " + player);
 console.log("HAND: " + JSON.stringify(hand));
 
+	  this.onNewTurn();
+
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards(`${name} is picking a card`, hand);
+	    this.updateStatusAndListCards(`${name} Turn`, hand);
 	  }
 	  
 	  return 0;
@@ -253,7 +255,21 @@ try {
 	  return 1;
 	}
 
+        if (mv[0] === "resolve") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  let cmd = "";
+	  if (mv[1]) { cmd = mv[1]; }
+	  if (this.game.queue.length >= 1) {
+	    if (this.game.queue[qe-1].split("\t")[0] === cmd) {
+	      this.game.queue.splice(qe-1, 1);
+	    }
+	  }
+
+	  return 1;
+
+	}
 
         if (mv[0] === "card") {
 
@@ -279,7 +295,6 @@ try {
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
 	  //
-	  //this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
@@ -478,6 +493,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	    this.loss_overlay.render(power);
 	  } else {
 	    this.combat_overlay.hide();
+	    this.unbindBackButtonFunction();
 	    this.updateStatus("Opponent Assigning Losses");
 	  }
 
@@ -535,6 +551,40 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+	if (mv[0] === "post_combat_cleanup") {
+
+	  let spacekey = this.game.state.combat.key;
+	  for (let i = this.game.spaces[spacekey].units.length-1; i >= 0; i--) {
+	    let u = this.game.spaces[spacekey].units[i];
+	    if (u.destroyed == true) {
+	      this.game.spaces[spacekey].units.splice(i, 1);
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+
+	  let x = this.returnAttackerUnits();
+	  let spacekeys = [];
+	  for (let z = 0; z < x.length; z++) {
+	    if (!spacekeys.includes(x[z].spacekey)) {
+	      spacekeys.push(x[z].spacekey);
+	    }
+	  }
+
+	  for (let z = 0; z < spacekeys.length; z++) {
+	    for (let i = this.game.spaces[spacekeys[z]].units.length-1; i >= 0; i--) {
+	      let u = this.game.spaces[spacekeys[z]].units[i];
+	      if (u.destroyed == true) {
+	        this.game.spaces[spacekeys[z]].units.splice(i, 1);
+	      }
+	    }
+	    this.displaySpace(spacekeys[z]);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
 
 	if (mv[0] === "damage") {
 
@@ -636,10 +686,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let faction = mv[1];
 	  let card = mv[2];
 	  let cost = parseInt(mv[3]);
+	  let skipend = 0;
+	  if (mv[4]) { skipend = parseInt(mv[4]); }
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  if (this.game.player == player) {
-	    this.playerPlayOps(faction, card, cost);    
+	    this.playerPlayOps(faction, card, cost, skipend);    
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " playing OPS");
 	  }
