@@ -1431,10 +1431,11 @@ class Browser {
           "img",
           "marquee",
           "pre",
+          "a"
         ],
         allowedAttributes: {
           div: ["class", "id"],
-          a: ["href", "name", "target", "class", "id"],
+          a: ["href", "name", "target", "class", "id", "data-id"],
           img: ["src", "class"],
           blockquote: ["href"],
         },
