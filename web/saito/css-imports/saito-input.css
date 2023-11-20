@@ -48,6 +48,7 @@
 	font-weight: bold;
 	font-style: italic;
 	user-select: none;
+	margin: 0 8px;
 }
 
 .selection-box-window {
@@ -154,7 +155,7 @@ emoji-picker {
 }
 
 .at-window {
-	padding: 2rem;
+	padding: 2rem 1rem;
 	flex-direction: column;
 	justify-content: flex-start;
 	gap: 1rem;
@@ -169,8 +170,8 @@ emoji-picker {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 1rem;
-	font-size: 1.8rem;
+	gap: 0.5rem;
+	font-size: 2rem;
 	overflow: auto;
 	flex: 1;
 }
@@ -181,13 +182,10 @@ emoji-picker {
 	gap: 0.5rem;
 	width: 100%;
 	align-items: center;
-	height: 3rem;
+	height: 4rem;
+	padding: 0.25rem;
 }
 
-.saito-input-contact-identicon{
-	width: 2.5rem;
-	height: 2.5rem;
-}
 
 .saito-input-contact:hover{
 	background-color: var(--saito-primary);
