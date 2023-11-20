@@ -48,6 +48,7 @@
 	font-weight: bold;
 	font-style: italic;
 	user-select: none;
+	margin: 0 8px;
 }
 
 .selection-box-window {
@@ -133,20 +134,28 @@ emoji-picker {
 }
 
 .saito-input-large .selection-box-tabs {
-	width: 20rem;
+	width: 16rem;
 	border-top: unset;
 	background-color: unset;
 	align-items: flex-end;
+	margin-left: 1rem;
+	justify-content: space-between;
 }
 
 .post-tweet-img-preview-container {
 	position: absolute;
-	left: 17rem;
-	bottom: 1rem;
+	left: 19.5rem;
+	bottom: 1.1rem;
+	width: calc(100% - 42rem);
+	height: 6rem;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 1rem;
+	align-items: center;
 }
 
 .at-window {
-	padding: 2rem;
+	padding: 2rem 1rem;
 	flex-direction: column;
 	justify-content: flex-start;
 	gap: 1rem;
@@ -161,8 +170,8 @@ emoji-picker {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 1rem;
-	font-size: 1.8rem;
+	gap: 0.5rem;
+	font-size: 2rem;
 	overflow: auto;
 	flex: 1;
 }
@@ -173,13 +182,10 @@ emoji-picker {
 	gap: 0.5rem;
 	width: 100%;
 	align-items: center;
-	height: 3rem;
+	height: 4rem;
+	padding: 0.25rem;
 }
 
-.saito-input-contact-identicon{
-	width: 2.5rem;
-	height: 2.5rem;
-}
 
 .saito-input-contact:hover{
 	background-color: var(--saito-primary);

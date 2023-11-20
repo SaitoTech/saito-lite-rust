@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.498;
+  version = 5.499;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
