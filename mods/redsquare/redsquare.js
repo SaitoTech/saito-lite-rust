@@ -1843,8 +1843,11 @@ class RedSquare extends ModTemplate {
                 let publicKey = tx.from[0].publicKey;
                 let user = app.keychain.returnIdentifierByPublicKey(publicKey, true);
 
-                redsquare_self.social.twitter_description = text;
-                redsquare_self.social.og_description = text;
+                //
+                // We need adequate protection here
+                //
+                redsquare_self.social.twitter_description = ""; //text;
+                redsquare_self.social.og_description = ""; //text;
                 redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
 
                 let image = (redsquare_self.social.og_url =
