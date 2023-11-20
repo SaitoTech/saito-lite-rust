@@ -315,7 +315,8 @@
   position: relative;
 }
 
-.chat-settings-preview video {
+/* When staring at self, be like a mirror */
+.chat-settings-preview video, video#local {
   transform: rotateY(180deg);
 }
 
@@ -606,7 +607,8 @@
   transform: scale(1.2);
 }
 
-.control-list .disconnect_btn {
+.icon_click_area:hover i.disconnect_btn{
+  transform: rotate(45deg);
   color: var(--saito-primary);
 }
 
