@@ -540,31 +540,31 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   async onConfirmation(blk, tx, conf) {
     //try {
-      let txmsg = tx.returnMessage();
+    let txmsg = tx.returnMessage();
 
-      if (conf == 0) {
-        if (this.debug) {
-          console.log("%%");
-          console.log("NEW TRANSACTION RECEIVED!");
-          if (txmsg.data.images) {
-            let new_obj = JSON.parse(JSON.stringify(txmsg));
-            new_obj.data.images = "[image tweet]";
-            console.log("txmsg: " + JSON.stringify(new_obj));
-          } else {
-            console.log("txmsg: " + JSON.stringify(txmsg));
-          }
-        }
-
-        if (txmsg.request === "create tweet") {
-          await this.receiveTweetTransaction(blk, tx, conf, this.app);
-        }
-        if (txmsg.request === "like tweet") {
-          await this.receiveLikeTransaction(blk, tx, conf, this.app);
-        }
-        if (txmsg.request === "flag tweet") {
-          await this.receiveFlagTransaction(blk, tx, conf, this.app);
+    if (conf == 0) {
+      if (this.debug) {
+        console.log("%%");
+        console.log("NEW TRANSACTION RECEIVED!");
+        if (txmsg.data.images) {
+          let new_obj = JSON.parse(JSON.stringify(txmsg));
+          new_obj.data.images = "[image tweet]";
+          console.log("txmsg: " + JSON.stringify(new_obj));
+        } else {
+          console.log("txmsg: " + JSON.stringify(txmsg));
         }
       }
+
+      if (txmsg.request === "create tweet") {
+        await this.receiveTweetTransaction(blk, tx, conf, this.app);
+      }
+      if (txmsg.request === "like tweet") {
+        await this.receiveLikeTransaction(blk, tx, conf, this.app);
+      }
+      if (txmsg.request === "flag tweet") {
+        await this.receiveFlagTransaction(blk, tx, conf, this.app);
+      }
+    }
     //} catch (err) {
     //  console.log("ERROR in RedSquare onConfirmation: " + err);
     //}
@@ -588,18 +588,23 @@ class RedSquare extends ModTemplate {
   //
 
   loadTweets(created_at = "earlier", mycallback) {
-    //console.log(`RS: load ${created_at} tweets with num peers: ${this.peers.length}`);
+    
+    //Count peers
+    let peer_count = 0;
+    for (let i = 0; i < this.peers.length; i++) {
+      if (
+        !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
+        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)
+      ) {
+        peer_count++;
+      }
+    }
 
-    //
-    // Instead of just passing the txs to the callback, we count how many of these txs
-    // are new to us so we can have a better UX
-    //
-    let count = 0;
+    console.log(`RS: load ${created_at} tweets with num peers: ${peer_count}`);
 
     for (let i = 0; i < this.peers.length; i++) {
-
       //
-      // We have two stop conditions, 
+      // We have two stop conditions,
       // 1) when our peer has been tapped out on earlier tweets, we stop querying them.
       // 2) if we are our peer, don't look for later tweets
       // the second should keep the "loading" message flashing longer
@@ -607,9 +612,10 @@ class RedSquare extends ModTemplate {
       // it is just a bit of a pain because we have triply nested callbacks...
       //
 
-      if (!(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") && 
-        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)) {
-        
+      if (
+        !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
+        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)
+      ) {
         let obj = {
           field1: "RedSquare",
           limit: this.peers[i].tweets_limit,
@@ -632,6 +638,13 @@ class RedSquare extends ModTemplate {
           obj,
           (txs) => {
             //console.log(`${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
+            //
+            // Instead of just passing the txs to the callback, we count how many of these txs
+            // are new to us so we can have a better UX
+            //
+            let count = 0;
+
+            peer_count--;
 
             if (txs.length > 0) {
               for (let z = 0; z < txs.length; z++) {
@@ -696,15 +709,14 @@ class RedSquare extends ModTemplate {
               //console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
+            // execute callback when all txs are fetched from all peers
+            if (peer_count == 0 && mycallback) {
+              mycallback(count);
+            }
           },
           this.peers[i].peer
         );
       }
-    }
-
-    // execute callback when all txs are fetched from all peers
-    if (mycallback) {
-      mycallback(count);
     }
   }
 
@@ -983,8 +995,6 @@ class RedSquare extends ModTemplate {
 
           t.rerenderControls();
         }
-
-
       }
     } else {
       //
@@ -1045,7 +1055,6 @@ class RedSquare extends ModTemplate {
               break;
             }
           }
-
 
           this.notifications.splice(insertion_index, 0, tweet);
           this.notifications_sigs_hmap[tweet.tx.signature] = 1;
@@ -1181,8 +1190,6 @@ class RedSquare extends ModTemplate {
     //
 
     if (liked_tweet?.tx) {
-      
-
       if (!liked_tweet.tx.optional) {
         liked_tweet.tx.optional = {};
       }
@@ -1193,7 +1200,7 @@ class RedSquare extends ModTemplate {
       liked_tweet.tx.optional.num_likes++;
 
       console.log("Increment likes: ", liked_tweet.tx.optional.num_likes);
-      
+
       await this.app.storage.updateTransaction(liked_tweet.tx, {}, "localhost");
 
       liked_tweet.rerenderControls();
@@ -1621,7 +1628,6 @@ class RedSquare extends ModTemplate {
       },
       "localhost"
     );
-
   }
 
   /////////////////////////////////////

@@ -170,7 +170,18 @@ class Post {
     //    }
     //  }
     //}
+    //
+    // tweet data
+    //
+    let data = { text: text };
+    let is_reply = false;
+
+
     keys = this.input.getMentions();
+
+    if (keys.length > 0) {
+      data["mentions"] = 1;
+    }
 
     //
     // any previous recipients get added to "to"
@@ -190,11 +201,6 @@ class Post {
     post_self.overlay.closebox = false;
     post_self.overlay.show('<div class="saito-loader"></div>');
 
-    //
-    // tweet data
-    //
-    let data = { text: text };
-    let is_reply = false;
 
     //Replies
     if (parent_id !== "") {
@@ -222,9 +228,6 @@ class Post {
       data["images"] = post_self.images;
     }
 
-    if (keys.length > 0) {
-      data["mentions"] = 1;
-    }
 
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
