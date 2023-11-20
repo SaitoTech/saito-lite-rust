@@ -49,6 +49,11 @@
 	font-style: italic;
 	user-select: none;
 	margin: 0 8px;
+	width: fit-content;
+}
+
+.saito-mention.saito-address {
+	overflow: visible;
 }
 
 .selection-box-window {
@@ -186,8 +191,7 @@ emoji-picker {
 	padding: 0.25rem;
 }
 
-
-.saito-input-contact:hover{
+.saito-input-contact:hover {
 	background-color: var(--saito-primary);
 }
 
