@@ -9,6 +9,7 @@ const PeerManager = require("./lib/appspace/PeerManager");
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
 const { default: Transaction } = require("../../lib/saito/transaction");
+const StreamManager = require("./lib/appspace/StreamManager");
 const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
@@ -54,6 +55,8 @@ class Stun extends ModTemplate {
     ];
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
+
+    this.streamManager = new StreamManager(app, this);
 
     //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
@@ -246,6 +249,41 @@ class Stun extends ModTemplate {
                 stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
               },
             },
+            {
+              parent: "game-chat",
+              text: "Record Stream",
+              id: "record-stream",
+              class: "record-stream",
+            },
+            {
+              parent: "record-stream",
+              text: "Record with camera",
+              id: "record-with-camera",
+              class: "record-with-camera",
+              callback: function (app, game_mod) {
+                stun_self.streamManager.recordGameStream(true);
+              },
+            },
+            {
+              parent: "record-stream",
+              text: "Record without camera",
+              id: "record-without-camera",
+              class: "record-without-camera",
+              callback: function (app, game_mod) {
+                // game_mod.addMenuOption("stop-record-stream", "Stop recording");
+                stun_self.streamManager.recordGameStream();
+              },
+            },
+            {
+              parent: "record-stream",
+              text: "Stop recording",
+              id: "stop-recording",
+              class: "stop-recording",
+              callback: function (app, game_mod) {
+                // game_mod.addMenuOption("stop-record-stream", "Stop recording");
+                stun_self.streamManager.stopRecordGameStream();
+              },
+            },
           ],
         };
       }
@@ -325,8 +363,8 @@ class Stun extends ModTemplate {
       return;
     }
     let txmsg = tx.returnMessage();
-//    if (txmsg.data.module === "Stun") {
-      if (txmsg.request.substring(0,5) == "stun-") {
+    //    if (txmsg.data.module === "Stun") {
+    if (txmsg.request.substring(0, 5) == "stun-") {
       if (this.app.BROWSER === 1) {
         if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
           if (
