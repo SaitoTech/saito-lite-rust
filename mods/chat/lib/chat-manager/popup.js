@@ -73,6 +73,10 @@ class ChatPopup {
     //let input_id = "chat-input-" + this.group.id;
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
+
+      if (this.group.name == this.mod.communityGroupName){
+        this.input.enable_mentions = true;
+      }
     }
 
     let existing_input = this.input.getInput();

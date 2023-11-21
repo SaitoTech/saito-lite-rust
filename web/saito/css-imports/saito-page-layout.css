@@ -10,12 +10,13 @@
   top: var(--saito-header-height);
   overflow-y: auto;
   overflow-x: hidden;
+
 }
 
 .saito-main {
   padding: 2rem 0;
   min-width: 54rem;
-  margin: 0 1rem;
+  margin: 0 2rem;
   position: relative;
 }
 

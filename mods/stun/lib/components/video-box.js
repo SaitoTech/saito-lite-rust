@@ -4,7 +4,7 @@ const { setTextRange } = require("typescript");
 // import {applyVideoBackground } from 'virtual-bg';
 
 class VideoBox {
-  constructor(app, mod, peer, container_class, isPresentation) {
+  constructor(app, mod, peer, container_class = "", isPresentation = false) {
     this.app = app;
     this.mod = mod;
     this.stream = null;

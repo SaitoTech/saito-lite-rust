@@ -1846,8 +1846,8 @@ class RedSquare extends ModTemplate {
                 //
                 // We need adequate protection here
                 //
-                redsquare_self.social.twitter_description = ""; //text;
-                redsquare_self.social.og_description = ""; //text;
+                redsquare_self.social.twitter_description = app.browser.stripHtml(text);
+                redsquare_self.social.og_description = app.browser.stripHtml(text);
                 redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
 
                 let image = (redsquare_self.social.og_url =

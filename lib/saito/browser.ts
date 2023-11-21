@@ -71,7 +71,7 @@ class Browser {
 
         const channel = new BroadcastChannel("saito");
         if (!document.hidden) {
-          channel.postMessage({active: 1, publicKey: publicKey});
+          channel.postMessage({ active: 1, publicKey: publicKey });
         }
 
         /* channel.onmessage = async (e) => {
@@ -100,10 +100,10 @@ class Browser {
           () => {
             if (document.hidden) {
               this.setActiveTab(0);
-              channel.postMessage({active: 0, publicKey: publicKey});
+              channel.postMessage({ active: 0, publicKey: publicKey });
             } else {
               this.setActiveTab(1);
-              channel.postMessage({active: 1, publicKey: publicKey});
+              channel.postMessage({ active: 1, publicKey: publicKey });
             }
           },
           false
@@ -574,6 +574,19 @@ class Browser {
     }
   }
 
+  replaceElementByIdOrAddToDom(html, id = null) {
+    if (id == null) {
+      console.warn("no id provided to replaceElementById, so ignoring");
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
   addElementToId(html, id = null) {
     if (id == null) {
       console.warn(`no id provided to addElementToId, so adding to DOM`);
@@ -631,7 +644,9 @@ class Browser {
 
   replaceElementContentBySelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to replaceElementContentBySelector, so adding direct to DOM");
+      console.warn(
+        "no selector provided to replaceElementContentBySelector, so adding direct to DOM"
+      );
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
@@ -661,7 +676,7 @@ class Browser {
       console.warn("no selector provided to addElementToSelector, so adding direct to DOM");
       console.log(html);
       this.app.browser.addElementToDom(html);
-    }else{
+    } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
@@ -676,7 +691,7 @@ class Browser {
       console.warn("no selector provided to addElementAfterSelector, so adding direct to DOM");
       console.log(html);
       this.app.browser.addElementToDom(html);
-    }else{
+    } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementAfterElement(html, container);
@@ -1397,6 +1412,8 @@ class Browser {
         //text = text.replace(/[\r<br>]+$/, "");
       }
 
+      console.log("Sanitize");
+
       text = sanitizeHtml(text, {
         allowedTags: [
           "h1",
@@ -1430,11 +1447,11 @@ class Browser {
           "pre",
           "marquee",
           "pre",
-          "a"
+          "span",
         ],
         allowedAttributes: {
           div: ["class", "id"],
-          a: ["href", "name", "target", "class", "id", "data-id"],
+          span: ["class", "id", "data-id"],
           img: ["src", "class"],
           blockquote: ["href"],
         },
@@ -1443,22 +1460,19 @@ class Browser {
         allowedSchemesByTag: {},
         allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
-        transformTags: {
-          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
-        },
       });
 
       /* wrap link in <a> tag */
       let urlPattern =
         /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
       text = text.replace(urlPattern, function (url) {
-        return `<a ${url.includes(window.location.host)?"":"target='_blank' "}class='saito-treated-link' href='${
-          url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()
-        }'>${url.trim()}</a>`;
+        return `<a ${
+          url.includes(window.location.host) ? "" : "target='_blank' "
+        }class='saito-treated-link' href='${url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
       });
 
-      //trim lines at start and end 
-      text = text.replace(/^\s+|\s+$/g, '');
+      //trim lines at start and end
+      text = text.replace(/^\s+|\s+$/g, "");
 
       text = emoji.emojify(text);
 
@@ -1531,9 +1545,12 @@ class Browser {
   }
 
   stripHtml(html) {
-    let tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
+
+    //let tmp = document.createElement("DIV");
+    //tmp.innerHTML = html;
+    //return tmp.textContent || tmp.innerText || "";
+
+    return html.replace( /(<([^>]+)>)/ig, '');
   }
 
   attachWindowFunctions() {
@@ -1578,9 +1595,9 @@ class Browser {
                     </div>`;
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
-//        setTimeout(() => {
-//          document.querySelector("#saito-alert-box").style.top = "0";
-//        }, 100);
+        //        setTimeout(() => {
+        //          document.querySelector("#saito-alert-box").style.top = "0";
+        //        }, 100);
         document.querySelector("#alert-ok").focus();
         document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
           if (event.keyCode === 13) {
@@ -1615,9 +1632,9 @@ class Browser {
                       </div>`;
           wrapper.innerHTML = html;
           document.body.appendChild(wrapper);
-//          setTimeout(() => {
-//            document.getElementById("saito-alert-box").style.top = "0";
-//          }, 100);
+          //          setTimeout(() => {
+          //            document.getElementById("saito-alert-box").style.top = "0";
+          //          }, 100);
           document.getElementById("alert-ok").focus();
           //document.getElementById('alert-ok').select();
           document.getElementById("saito-alert-shim").onclick = (event) => {
@@ -1660,9 +1677,9 @@ class Browser {
           document.body.appendChild(wrapper);
           document.querySelector("#promptval").focus();
           document.querySelector("#promptval").select();
-//          setTimeout(() => {
-//            document.querySelector("#saito-alert-box").style.top = "0";
-//          }, 100);
+          //          setTimeout(() => {
+          //            document.querySelector("#saito-alert-box").style.top = "0";
+          //          }, 100);
           document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
             if (event.keyCode === 13) {
               event.preventDefault();
@@ -1695,7 +1712,7 @@ class Browser {
         }
         let wrapper = document.createElement("div");
         wrapper.id = "message-wrapper";
-        if (callback){
+        if (callback) {
           wrapper.classList.add("message-clickable");
         }
         wrapper.innerHTML = `<div class="message-message">${browser_self.sanitize(message)}</div>`;
@@ -1709,7 +1726,7 @@ class Browser {
         document.querySelector("#message-wrapper").addEventListener(
           "click",
           () => {
-            if (callback){
+            if (callback) {
               callback();
             }
             wrapper.remove();
