@@ -4,6 +4,9 @@ const JsStore = require("jsstore");
 const JSON = require("json-bigint");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
+const ArchiveTemplate = require("./lib/archive.template.js");
+const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const jsonTree = require("json-tree-viewer");
 
 //
 // HOW THE ARCHIVE SAVES TXS
@@ -21,7 +24,6 @@ const PeerService = require("saito-js/lib/peer_service").default;
 //    ---> peers fetch from DB, return via callback or return TX
 //
 
-
 class Archive extends ModTemplate {
   constructor(app) {
     super(app);
@@ -31,7 +33,22 @@ class Archive extends ModTemplate {
     this.categories = "Utilities Core";
 
     this.localDB = null;
-    this.schema = ["id", "user_id", "publickey", "owner", "sig", "field1", "field2", "field3", "block_id", "block_hash", "created_at", "updated_at", "tx", "preserve"];
+    this.schema = [
+      "id",
+      "user_id",
+      "publickey",
+      "owner",
+      "sig",
+      "field1",
+      "field2",
+      "field3",
+      "block_id",
+      "block_hash",
+      "created_at",
+      "updated_at",
+      "tx",
+      "preserve",
+    ];
     //
     //
     //
@@ -92,8 +109,53 @@ class Archive extends ModTemplate {
       } else {
         console.log("ARCHIVE: Connection is opened");
       }
-
     }
+  }
+
+  async render() {
+    let rows = await this.localDB.select({
+      from: "archives",
+      order: { by: "id", type: "desc" },
+    });
+
+    this.app.browser.replaceElementBySelector(`<div class="local-archive-table"></div>`, ".main");
+    this.app.browser.addElementToSelector(ArchiveTemplate(this.app, null), ".local-archive-table");
+
+    for (let row of rows) {
+      this.app.browser.addElementToSelector(ArchiveTemplate(this.app, row), ".local-archive-table");
+    }
+
+    this.attachEvents();
+  }
+
+  attachEvents() {
+    document.querySelectorAll(".archive-button").forEach((tx_handle) => {
+      tx_handle.onclick = (e) => {
+        let tx_json = e.currentTarget.dataset.tx;
+
+        let tx = new Transaction();
+        tx.deserialize_from_web(this.app, tx_json);
+
+        let overlay = new SaitoOverlay(this.app, this);
+        overlay.show(`<div class="tx_overlay"></div>`);
+
+        let txmsg = tx.returnMessage();
+
+        //debug info
+        let el = document.querySelector(".tx_overlay");
+
+        var tree = jsonTree.create(txmsg, el);
+        tree.expand(function(node){
+          return node.label !== "images";
+        });
+
+        if (tx?.optional){
+          let tree2 = jsonTree.create(tx.optional, el);
+          tree2.expand();
+        }
+
+      };
+    });
   }
 
   returnServices() {
@@ -112,29 +174,27 @@ class Archive extends ModTemplate {
     // save all on-chain transactions -- but only the service node...
     //
     if (conf == 0 && this.archive.index_blockchain == 1) {
-
       let block_id = blk?.id || 0;
       let block_hash = blk?.hash || "";
 
-      setTimeout(async ()=> {
-        let txs = await this.loadTransactions({signature: tx.signature});
-        if (txs?.length > 0){
-          this.updateTransaction(tx, { block_id, block_hash });    
-        }else{
-          this.saveTransaction(tx, { block_id, block_hash });  
+      setTimeout(async () => {
+        let txs = await this.loadTransactions({ signature: tx.signature });
+        if (txs?.length > 0) {
+          this.updateTransaction(tx, { block_id, block_hash });
+        } else {
+          this.saveTransaction(tx, { block_id, block_hash });
         }
-      }, 10000)
+      }, 10000);
     }
   }
 
-
-// ////////////////////////////////////////////////////////////////////////////////////////////
-// "Ownership" doesn't matter in terms of your localhost storage... You host, you own it.
-// So for cloud-like applications with remote archiving (e.g. handlePeerTransactions), we 
-// should be checking if the record is open (owner = "") or we are processing on behalf of 
-// the owner (owner = requesting_publicKey). Otherwise, we should return/pass an error object
-// into the callback
-// ////////////////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////////
+  // "Ownership" doesn't matter in terms of your localhost storage... You host, you own it.
+  // So for cloud-like applications with remote archiving (e.g. handlePeerTransactions), we
+  // should be checking if the record is open (owner = "") or we are processing on behalf of
+  // the owner (owner = requesting_publicKey). Otherwise, we should return/pass an error object
+  // into the callback
+  // ////////////////////////////////////////////////////////////////////////////////////////////
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
@@ -201,7 +261,7 @@ class Archive extends ModTemplate {
 
     newObj.publicKey = obj?.publicKey || tx.from[0].publicKey;
     newObj.owner = obj?.owner || "";
-    newObj.signature = obj?.signature || tx.signature;
+    newObj.sig = obj?.signature || tx.signature;
     //Field1-3 are set by default in app.storage
     newObj.field1 = obj?.field1 || "";
     newObj.field2 = obj?.field2 || "";
@@ -257,7 +317,7 @@ class Archive extends ModTemplate {
       let params = {
         $publickey: newObj.publicKey,
         $owner: newObj.owner,
-        $sig: newObj.signature,
+        $sig: newObj.sig,
         $field1: newObj.field1,
         $field2: newObj.field2,
         $field3: newObj.field3,
@@ -286,7 +346,7 @@ class Archive extends ModTemplate {
     newObj.tx = tx.serialize_to_web(this.app);
     newObj.updated_at = new Date().getTime();
 
-    if (!newObj.signature){
+    if (!newObj.signature) {
       console.warn("No tx signature for archive update:", tx);
     }
 
@@ -294,15 +354,15 @@ class Archive extends ModTemplate {
     // update index
     //
     let sql = `UPDATE archives SET updated_at = $updated_at, tx = $tx`;
-          
+
     let params = {
       $updated_at: newObj.updated_at,
       $tx: newObj.tx,
       $sig: newObj.signature,
     };
 
-    for (let key in obj){
-      if (this.schema.includes(key)){
+    for (let key in obj) {
+      if (this.schema.includes(key)) {
         sql += `, ${key} = $${key}`;
         params[`$${key}`] = obj[key];
       }
@@ -310,10 +370,7 @@ class Archive extends ModTemplate {
 
     sql += ` WHERE sig = $sig`;
 
-    console.log(params);
-
-    let result = await this.app.storage.executeDatabase(sql, params, "archive");
-    console.log(result);
+    await this.app.storage.executeDatabase(sql, params, "archive");
 
     if (this.app.BROWSER) {
       let results = await this.localDB.update({
@@ -326,7 +383,6 @@ class Archive extends ModTemplate {
           sig: newObj.signature,
         },
       });
-      console.log(`Updated ${results} TXS`);
     }
 
     return 1;
@@ -385,8 +441,8 @@ class Archive extends ModTemplate {
 
     let params = { $limit: limit };
 
-    for (let key in obj){
-      if (this.schema.includes(key)){
+    for (let key in obj) {
+      if (this.schema.includes(key)) {
         sql += ` archives.${key} = $${key} AND`;
         params[`$${key}`] = obj[key];
         where_obj[key] = obj[key];
@@ -418,7 +474,6 @@ class Archive extends ModTemplate {
     }
 
     return rows;
-
   }
 
   ////////////
@@ -474,7 +529,7 @@ class Archive extends ModTemplate {
   //
   async deleteTransactions(obj = {}) {
     let rows = [];
-    
+
     let timestamp_limiting_clause = " archives.preserve = 0";
     let where_obj1 = {};
 
@@ -509,31 +564,31 @@ class Archive extends ModTemplate {
     let sql = `DELETE FROM archives WHERE `;
     let sql_substring = "";
     let params = {};
-    let where_obj2 = { };
+    let where_obj2 = {};
     let param_ct = 0;
 
-    for (let key in obj){
-      if (this.schema.includes(key)){
+    for (let key in obj) {
+      if (this.schema.includes(key)) {
         sql_substring += `archives.${key} = $${key} OR `;
         params[`$${key}`] = obj[key];
         if (param_ct++ > 0) {
-          if (where_obj2["or"]){
+          if (where_obj2["or"]) {
             where_obj2.or[key] = obj[key];
-          }else{
-            where_obj2["or"] = { };
+          } else {
+            where_obj2["or"] = {};
             where_obj2.or[key] = obj[key];
           }
-        }else{
-          where_obj2[key] = obj[key];  
+        } else {
+          where_obj2[key] = obj[key];
         }
       }
     }
 
     sql_substring = sql_substring.substring(0, sql_substring.length - 4);
 
-    if (param_ct > 1){
+    if (param_ct > 1) {
       sql += `(${sql_substring})`;
-    }else{
+    } else {
       sql += sql_substring;
     }
 
@@ -546,7 +601,7 @@ class Archive extends ModTemplate {
     } else {
       where_obj = where_obj1;
       sql += timestamp_limiting_clause;
-    }    
+    }
 
     rows = await this.app.storage.executeDatabase(sql, params, "archive");
 
@@ -617,7 +672,6 @@ class Archive extends ModTemplate {
     params = { $ts: ts };
     await this.app.storage.executeDatabase(sql, params, "archive");
 
-
     //
     // localDB
     //
@@ -634,8 +688,6 @@ class Archive extends ModTemplate {
       });
       console.log(rows, "automatically pruned from local archive");
     }
-
-
 
     x = Math.random();
     // 90% of prunings don't vacuum
@@ -677,7 +729,7 @@ class Archive extends ModTemplate {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
-    if (type == 'nuke' && this.localDB) {
+    if (type == "nuke" && this.localDB) {
       await this.localDB.clear("archives");
     }
     return 1;

@@ -162,10 +162,12 @@ class RedSquareMain {
     });
 
     this.app.connection.on("redsquare-insert-loading-message", () => {
-      this.app.browser.prependElementToSelector(
-        `<div class="saito-cached-loader">loading new tweets...</div>`,
-        ".saito-main"
-      );
+      if (!document.querySelector(".saito-cached-loader")){
+        this.app.browser.prependElementToSelector(
+          `<div class="saito-cached-loader">loading new tweets...</div>`,
+          ".saito-main"
+        );
+      }
     });
 
     this.app.connection.on("redsquare-remove-loading-message", () => {

@@ -857,6 +857,14 @@ class Browser {
     return { year, month, day, hours, minutes };
   }
 
+  prettifyTimeStamp(timestamp, short_month = false) {
+    let object = this.formatDate(timestamp);
+
+    let timeString = (short_month) ? object.month.substr(0,3) : object.month;
+    timeString += ` ${object.day}, ${object.hours}:${object.minutes}`;
+    return timeString;
+  }
+
   addDragAndDropFileUploadToElement(
     id,
     handleFileDrop = null,

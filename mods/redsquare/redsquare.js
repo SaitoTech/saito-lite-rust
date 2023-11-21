@@ -590,7 +590,6 @@ class RedSquare extends ModTemplate {
   //
 
   loadTweets(created_at = "earlier", mycallback) {
-    
     //Count peers
     let peer_count = 0;
     for (let i = 0; i < this.peers.length; i++) {
@@ -1199,13 +1198,17 @@ class RedSquare extends ModTemplate {
       if (!liked_tweet.tx.optional.num_likes) {
         liked_tweet.tx.optional.num_likes = 0;
       }
-      liked_tweet.tx.optional.num_likes++;
 
-      console.log("Increment likes: ", liked_tweet.tx.optional.num_likes);
+      if (tx.timestamp > liked_tweet.updated_at) {
+        liked_tweet.tx.optional.num_likes++;
+        console.log("Increment likes: ", liked_tweet.tx.optional.num_likes);
 
-      await this.app.storage.updateTransaction(liked_tweet.tx, {}, "localhost");
+        await this.app.storage.updateTransaction(liked_tweet.tx, {}, "localhost");
 
-      liked_tweet.rerenderControls();
+        liked_tweet.rerenderControls();
+      } else {
+        console.log("Like transaction received after tweet fetch");
+      }
     } else {
       //
       // fetch original
@@ -1360,10 +1363,15 @@ class RedSquare extends ModTemplate {
           if (!other_tweet.tx.optional.num_retweets) {
             other_tweet.tx.optional.num_retweets = 0;
           }
-          other_tweet.tx.optional.num_retweets++;
-          console.log("Increment retweets ", other_tweet.tx.optional.num_retweets);
-          await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
-          other_tweet.rerenderControls();
+
+          if (tx.timestamp > other_tweet.updated_at) {
+            other_tweet.tx.optional.num_retweets++;
+            console.log("Increment retweets ", other_tweet.tx.optional.num_retweets);
+            await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
+            other_tweet.rerenderControls();
+          } else {
+            console.log("Nope out of retweet incrementing");
+          }
         } else {
           //
           // fetch archived copy
@@ -1408,11 +1416,16 @@ class RedSquare extends ModTemplate {
           if (!other_tweet.tx.optional.num_replies) {
             other_tweet.tx.optional.num_replies = 0;
           }
-          other_tweet.tx.optional.num_replies++;
-          console.log("Increment replies ", other_tweet.tx.optional.num_replies);
-          other_tweet.rerenderControls();
 
-          await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
+          if (tx.timestamp > other_tweet.updated_at) {
+            other_tweet.tx.optional.num_replies++;
+            console.log("Increment replies ", other_tweet.tx.optional.num_replies);
+            other_tweet.rerenderControls();
+
+            await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
+          } else {
+            console.log("Nope out of reply count incrementing");
+          }
         } else {
           //
           // ...otherwise, hit up the archive first
