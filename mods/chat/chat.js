@@ -1123,9 +1123,17 @@ class Chat extends ModTemplate {
           let sender = "";
           let msg = "";
           for (let z = 0; z < block.length; z++) {
-            const replyButton = `<div data-id="${block[z].signature}" data-href="${
-              sender + ts
-            }" class="saito-userline-reply"><div>reply <i class="fas fa-reply"></i></div></div>`;  
+            const replyButton = `
+              <div data-id="${block[z].signature}" data-href="${sender + ts}" class="saito-userline-reply">
+                <div><i class="fas fa-copy"></i></div>
+                <div><i class="fas fa-reply"></i></div>
+                <div class="saito-chat-line-controls">
+                <span class="saito-chat-line-timestamp">
+                  ${this.app.browser.returnTime(ts)}
+                </span>
+              </div>
+
+              </div>`;  
             msg += `<div class="chat-message-line message-${block[z].signature}">`;
             sender = block[z].from[0];
             if (block[z].msg.indexOf("<img") != 0) {
@@ -1133,7 +1141,9 @@ class Chat extends ModTemplate {
             } else {
               msg += block[z].msg.substring(0, block[z].msg.indexOf(">") + 1);
             }
-            msg += `${replyButton}</div>`
+            msg += `
+                ${replyButton}
+              </div>`;
             ts = ts || block[z].timestamp;
           }
 
@@ -1142,10 +1152,7 @@ class Chat extends ModTemplate {
             app: this.app,
             publicKey: sender,
             notice: msg,
-            fourthelem:
-              `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
-              this.app.browser.returnTime(ts) +
-              `</span></div>`,
+            fourthelem: "",
             id: sender + ts,
           })}`;
         }

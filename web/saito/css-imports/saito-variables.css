@@ -62,6 +62,7 @@ font imports
   --saito-border-radius: 0.5rem;
   --saito-background-color: #fff;
   --saito-background-light: #f4f4f4;
+  --saito-sidebar-element-background: #efefef66;
   --saito-gray-transparent: #5555550a;
   --saito-hover-background: #00000045;
   --saito-black-faded: #1c1c23b5;
@@ -94,6 +95,7 @@ html[data-theme="dark"] {
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
   --saito-background-light: #333;
+  --saito-sidebar-element-background: #2f2c35a6;
   --saito-gray-transparent: #88888818;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
@@ -120,6 +122,7 @@ html[data-theme="sangre"] {
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #1f1a1b;
   --saito-background-light: #333;
+  --saito-sidebar-element-background: #2f2c35a6;
   --saito-gray-transparent: #88888818;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
