@@ -13,7 +13,7 @@
 	cursor: text;
 	border: 1px solid transparent;
 	font-size: 1.6rem;
-	line-height: 1.6rem;
+	line-height: 2rem;
 	outline: none;
 	background: var(--saito-arcade-background);
 	max-height: 15rem;
