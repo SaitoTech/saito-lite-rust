@@ -72,6 +72,7 @@ class RedSquareMain {
       //
       if (num_tweets > 0) {
 
+        this.app.connection.emit("redsquare-remove-loading-message");
         //
         // Don't insert new tweets or button if looking at a tweet or profile
         //
@@ -102,15 +103,12 @@ class RedSquareMain {
 
         // So it will automatically insert new tweets if we navigate back to the main feed from looking at something else??
 
+      }else{
+        setTimeout(()=>{
+          this.app.connection.emit("redsquare-remove-loading-message");
+        }, 1000);
       }
 
-    });
-
-    this.app.connection.on("redsquare-insert-loading-message", () => {
-      this.app.browser.prependElementToSelector(
-        `<div class="saito-cached-loader">loading new tweets...</div>`,
-        ".saito-main"
-      );
     });
 
     //
@@ -163,22 +161,17 @@ class RedSquareMain {
       document.querySelector(".redsquare-menu-home").style.display = "flex";
     });
 
-    this.app.connection.on("redsquare-home-loader-render-request", () => {
-      this.manager.showLoader();
+    this.app.connection.on("redsquare-insert-loading-message", () => {
+      this.app.browser.prependElementToSelector(
+        `<div class="saito-cached-loader">loading new tweets...</div>`,
+        ".saito-main"
+      );
     });
 
-    this.app.connection.on("redsquare-home-loader-hide-request", () => {
-      this.manager.hideLoader();
-    });
-
-    this.app.connection.on("redsquare-home-cached-loader-hide-request", () => {
-      // hide with timeout of 1 sec so that it doesnt hide abrubtly
-      setTimeout(() => {
-
-        if (document.querySelector(".saito-cached-loader")) {
-          document.querySelector(".saito-cached-loader").remove();
-        }
-      }, 1000);
+    this.app.connection.on("redsquare-remove-loading-message", () => {
+      if (document.querySelector(".saito-cached-loader")) {
+        document.querySelector(".saito-cached-loader").remove();
+      }
     });
 
     //

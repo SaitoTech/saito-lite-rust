@@ -533,7 +533,6 @@ class RedSquare extends ModTemplate {
       this.app.connection.emit("redsquare-insert-loading-message");
       this.loadTweets("later", (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
-        this.app.connection.emit("redsquare-home-cached-loader-hide-request");
       });
     }
   }
