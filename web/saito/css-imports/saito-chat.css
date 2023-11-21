@@ -115,10 +115,10 @@
   background: var(--saito-arcade-background);
   color: var(--saito-font-color);
   max-height: calc(99vh - var(--saito-header-height));
-  overflow: hidden;
-  resize: both;
   min-width: 300px;
   min-height: 150px;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .chat-popup {
