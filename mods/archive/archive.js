@@ -293,9 +293,7 @@ class Archive extends ModTemplate {
     //
     // update index
     //
-    let sql = `UPDATE archives
-           SET updated_at = $updated_at,
-               tx  = $tx`;
+    let sql = `UPDATE archives SET updated_at = $updated_at, tx = $tx`;
           
     let params = {
       $updated_at: newObj.updated_at,
@@ -312,10 +310,13 @@ class Archive extends ModTemplate {
 
     sql += ` WHERE sig = $sig`;
 
-    await this.app.storage.executeDatabase(sql, params, "archive");
+    console.log(params);
+
+    let result = await this.app.storage.executeDatabase(sql, params, "archive");
+    console.log(result);
 
     if (this.app.BROWSER) {
-      await this.localDB.update({
+      let results = await this.localDB.update({
         in: "archives",
         set: {
           updated_at: newObj.updated_at,
@@ -325,6 +326,7 @@ class Archive extends ModTemplate {
           sig: newObj.signature,
         },
       });
+      console.log(`Updated ${results} TXS`);
     }
 
     return 1;
