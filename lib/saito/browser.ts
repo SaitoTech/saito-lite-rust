@@ -1412,6 +1412,8 @@ class Browser {
         //text = text.replace(/[\r<br>]+$/, "");
       }
 
+      console.log("Sanitize");
+
       text = sanitizeHtml(text, {
         allowedTags: [
           "h1",
@@ -1445,11 +1447,11 @@ class Browser {
           "pre",
           "marquee",
           "pre",
-          "a",
+          "span",
         ],
         allowedAttributes: {
           div: ["class", "id"],
-          a: ["href", "name", "target", "class", "id", "data-id"],
+          span: ["class", "id", "data-id"],
           img: ["src", "class"],
           blockquote: ["href"],
         },
@@ -1458,9 +1460,6 @@ class Browser {
         allowedSchemesByTag: {},
         allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
-        transformTags: {
-          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
-        },
       });
 
       /* wrap link in <a> tag */
@@ -1546,9 +1545,12 @@ class Browser {
   }
 
   stripHtml(html) {
-    let tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
+
+    //let tmp = document.createElement("DIV");
+    //tmp.innerHTML = html;
+    //return tmp.textContent || tmp.innerText || "";
+
+    return html.replace( /(<([^>]+)>)/ig, '');
   }
 
   attachWindowFunctions() {

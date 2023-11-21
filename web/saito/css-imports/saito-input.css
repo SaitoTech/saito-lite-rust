@@ -44,8 +44,8 @@
 }
 
 .saito-mention {
-	cursor: default;
-	font-weight: bold;
+	cursor: pointer;
+	color: var(--saito-primary);
 	font-style: italic;
 	user-select: none;
 	margin: 0 8px;
