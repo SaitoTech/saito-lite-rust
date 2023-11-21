@@ -1412,8 +1412,6 @@ class Browser {
         //text = text.replace(/[\r<br>]+$/, "");
       }
 
-      console.log("Sanitize");
-
       text = sanitizeHtml(text, {
         allowedTags: [
           "h1",

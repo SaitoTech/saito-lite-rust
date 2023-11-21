@@ -248,7 +248,7 @@ class ChatPopup {
         //this.input.insertRange(quote.replaceAll("\n", "<br/>"));
         this.input.insertQuote(quote.replaceAll("\n", "<br/>"));
 
-        this.input.focus();
+        this.input.focus(true);
       });
     });
 
