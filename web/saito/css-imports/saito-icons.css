@@ -5,3 +5,29 @@
   width: 26px;
 }
 
+.resize-icon {
+  position: absolute;
+  left: 0rem;
+  top: -0.2rem;
+  width: 0.8rem;
+  height: 1.3rem;
+  cursor: nw-resize;
+  transform: rotate(45deg);
+  border-right: 1px solid;
+  z-index: 20;
+}
+
+.resize-icon::after {
+  content: "";
+  width: 0.6rem;
+  height: 0.6rem;
+  cursor: nw-resize;
+  border-right: 1px solid;
+  z-index: 21;
+  position: absolute;
+  top: 0rem;
+  left: 0.25rem;
+  top: 0.4rem;
+  width: 0.1rem;
+  height: 0.5rem;
+}
