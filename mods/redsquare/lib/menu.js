@@ -7,7 +7,7 @@ class RedSquareMenu {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMenu";
-
+    this.increments = 0;
   }
 
   render() {
@@ -60,6 +60,9 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       history.replaceState(null, null, ' ');
       this.app.connection.emit("redsquare-home-render-request");
@@ -72,11 +75,9 @@ class RedSquareMenu {
       //
       // and load any NEW tweets at the top
       //
-      this.mod.loadTweets('later', (txs) => {
-        this.app.connection.emit("redsquare-home-postcache-render-request", txs.length);
-        if (txs.length > 0) {
-          this.mod.saveLocalTweets();
-        }   
+      this.mod.loadTweets('later', (tx_count) => {
+        this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        this.app.connection.emit("redsquare-home-cached-loader-hide-request"); 
       });   
 
     }
@@ -111,7 +112,10 @@ class RedSquareMenu {
   }
 
   incrementNotifications(menu_item, notifications = -1) {
+
     let qs = `.redsquare-menu-${menu_item}`;
+
+    if (notifications < this.increments && notifications != -1) { notifications = this.increments; }
 
     if (document.querySelector(qs)) {
       qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
@@ -146,6 +150,13 @@ class RedSquareMenu {
         }
       }
     }
+
+    //
+    // Send a signal so that if we are in mobile and have notifications in the hamburger menu
+    // We can display the notification there
+    // ...would be easier if we didn't rely on attaching invisible elements to mobile dom and faking click events
+    // but fixing that would be such a pain
+    this.app.connection.emit("redsquare-update-notification-hamburger", notifications);
   }
 }
 

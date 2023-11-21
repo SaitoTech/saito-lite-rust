@@ -240,7 +240,13 @@ Scrollbars
 .message-message {
   font-size: 2rem;
   color: var(--saito-white);
+  cursor: default;
 }
+
+.message-clickable, .message-clickable .message-message{
+  cursor: pointer;
+}
+
 
 /* ----------------------------------------------------------------
  Scrollbars 

@@ -19,18 +19,7 @@ class LessonManager {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-
             this.showLoader();
-/**
-            mod.loadMoreLessons(null, (txs) => {
-                this.hideLoader();
-                if (document.querySelector("#popup-intersection")) {
-                  this.intersectionObserver.unobserve(
-                    document.querySelector("#popup-intersection")
-                  );
-                }
-            });
-**/
           }
         });
       },

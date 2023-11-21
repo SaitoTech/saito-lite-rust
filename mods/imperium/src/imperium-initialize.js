@@ -490,12 +490,16 @@
       //
       // add starting units to player homewords
       //
+console.log(JSON.stringify(hwsectors)); 
       for (let i = 0; i < this.totalPlayers; i++) {
-  
+
         let sys = this.returnSectorAndPlanets(hwsectors[i]); 
   
         let strongest_planet = 0;
         let strongest_planet_resources = 0;
+
+console.log("sys: " + JSON.stringify(sys));
+
         for (z = 0; z < sys.p.length; z++) {
   	  sys.p[z].owner = (i+1);
    	  if (sys.p[z].resources > strongest_planet_resources) {

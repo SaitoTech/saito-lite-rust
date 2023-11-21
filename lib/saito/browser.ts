@@ -71,7 +71,7 @@ class Browser {
 
         const channel = new BroadcastChannel("saito");
         if (!document.hidden) {
-          channel.postMessage({active: 1, publicKey: publicKey});
+          channel.postMessage({ active: 1, publicKey: publicKey });
         }
 
         /* channel.onmessage = async (e) => {
@@ -100,10 +100,10 @@ class Browser {
           () => {
             if (document.hidden) {
               this.setActiveTab(0);
-              channel.postMessage({active: 0, publicKey: publicKey});
+              channel.postMessage({ active: 0, publicKey: publicKey });
             } else {
               this.setActiveTab(1);
-              channel.postMessage({active: 1, publicKey: publicKey});
+              channel.postMessage({ active: 1, publicKey: publicKey });
             }
           },
           false
@@ -564,7 +564,7 @@ class Browser {
 
   replaceElementById(html, id = null) {
     if (id == null) {
-      console.warn("no id provided to replace, so adding direct to DOM");
+      console.warn("no id provided to replaceElementById, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
@@ -574,9 +574,22 @@ class Browser {
     }
   }
 
+  replaceElementByIdOrAddToDom(html, id = null) {
+    if (id == null) {
+      console.warn("no id provided to replaceElementById, so ignoring");
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
   addElementToId(html, id = null) {
     if (id == null) {
-      console.warn(`no id provided to add to, so adding to DOM`);
+      console.warn(`no id provided to addElementToId, so adding to DOM`);
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
@@ -588,7 +601,7 @@ class Browser {
 
   addElementAfterId(html, id = null) {
     if (id == null) {
-      console.warn(`no id provided to add to, so adding to DOM`);
+      console.warn(`no id provided to addElementAfterId, so adding to DOM`);
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementAfterId(id);
@@ -600,7 +613,7 @@ class Browser {
 
   prependElementToId(html, id = null) {
     if (id == null) {
-      console.warn(`no id provided to prepend to, so adding to DOM`);
+      console.warn(`no id provided to prependElementToId, so adding to DOM`);
       this.app.browser.prependElementToDom(html);
     } else {
       let obj = document.getElementById(id);
@@ -619,7 +632,7 @@ class Browser {
 
   replaceElementBySelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to replace, so adding direct to DOM");
+      console.warn("no selector provided to replaceElementBySelector, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
@@ -631,7 +644,9 @@ class Browser {
 
   replaceElementContentBySelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to replace, so adding direct to DOM");
+      console.warn(
+        "no selector provided to replaceElementContentBySelector, so adding direct to DOM"
+      );
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
@@ -643,7 +658,7 @@ class Browser {
 
   addElementToSelectorOrDom(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to addElementToSelectorOrDom, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -658,7 +673,8 @@ class Browser {
 
   addElementToSelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to addElementToSelector, so adding direct to DOM");
+      console.log(html);
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -672,7 +688,8 @@ class Browser {
 
   addElementAfterSelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to addElementAfterSelector, so adding direct to DOM");
+      console.log(html);
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -684,7 +701,7 @@ class Browser {
 
   prependElementToSelector(html, selector = "") {
     if (selector === "") {
-      console.warn("no selector provided to prepend to, so adding direct to DOM");
+      console.warn("no selector provided to prependElementToSelector, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -696,7 +713,7 @@ class Browser {
 
   replaceElementByClass(html, classname = "") {
     if (classname === "") {
-      console.warn("no classname provided to replace, so adding direct to DOM");
+      console.warn("no classname provided to replaceElementByClass, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let classname = "." + classname;
@@ -709,7 +726,7 @@ class Browser {
 
   addElementToClass(html, classname = "") {
     if (classname === "") {
-      console.warn("no classname provided to add to, so adding direct to DOM");
+      console.warn("no classname provided to addElementToClass, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       classname = "." + classname;
@@ -722,7 +739,7 @@ class Browser {
 
   prependElementToClass(html, classname = "") {
     if (classname === "") {
-      console.warn("no classname provided to prepend to, so adding direct to DOM");
+      console.warn("no classname provided to prependElementToClass, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       classname = "." + classname;
@@ -1385,6 +1402,7 @@ class Browser {
   }
 
   sanitize(text) {
+    //console.log("Sanitize: ", text);
     try {
       if (text !== "") {
         text = marked.parseInline(text);
@@ -1393,6 +1411,8 @@ class Browser {
         // because of above marked parsing
         //text = text.replace(/[\r<br>]+$/, "");
       }
+
+      console.log("Sanitize");
 
       text = sanitizeHtml(text, {
         allowedTags: [
@@ -1425,13 +1445,13 @@ class Browser {
           "th",
           "td",
           "pre",
-          "img",
           "marquee",
           "pre",
+          "span",
         ],
         allowedAttributes: {
           div: ["class", "id"],
-          a: ["href", "name", "target", "class", "id"],
+          span: ["class", "id", "data-id"],
           img: ["src", "class"],
           blockquote: ["href"],
         },
@@ -1440,22 +1460,19 @@ class Browser {
         allowedSchemesByTag: {},
         allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
-        transformTags: {
-          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
-        },
       });
 
       /* wrap link in <a> tag */
       let urlPattern =
         /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
       text = text.replace(urlPattern, function (url) {
-        return `<a ${url.includes(window.location.host)?"":'target="_blank" '}class="saito-treated-link" href="${
-          url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()
-        }">${url.trim()}</a>`;
+        return `<a ${
+          url.includes(window.location.host) ? "" : "target='_blank' "
+        }class='saito-treated-link' href='${url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
       });
 
-      //trim lines at start and end 
-      text = text.replace(/^\s+|\s+$/g, '');
+      //trim lines at start and end
+      text = text.replace(/^\s+|\s+$/g, "");
 
       text = emoji.emojify(text);
 
@@ -1528,9 +1545,12 @@ class Browser {
   }
 
   stripHtml(html) {
-    let tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
+
+    //let tmp = document.createElement("DIV");
+    //tmp.innerHTML = html;
+    //return tmp.textContent || tmp.innerText || "";
+
+    return html.replace( /(<([^>]+)>)/ig, '');
   }
 
   attachWindowFunctions() {
@@ -1575,9 +1595,9 @@ class Browser {
                     </div>`;
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
-//        setTimeout(() => {
-//          document.querySelector("#saito-alert-box").style.top = "0";
-//        }, 100);
+        //        setTimeout(() => {
+        //          document.querySelector("#saito-alert-box").style.top = "0";
+        //        }, 100);
         document.querySelector("#alert-ok").focus();
         document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
           if (event.keyCode === 13) {
@@ -1612,9 +1632,9 @@ class Browser {
                       </div>`;
           wrapper.innerHTML = html;
           document.body.appendChild(wrapper);
-//          setTimeout(() => {
-//            document.getElementById("saito-alert-box").style.top = "0";
-//          }, 100);
+          //          setTimeout(() => {
+          //            document.getElementById("saito-alert-box").style.top = "0";
+          //          }, 100);
           document.getElementById("alert-ok").focus();
           //document.getElementById('alert-ok').select();
           document.getElementById("saito-alert-shim").onclick = (event) => {
@@ -1657,9 +1677,9 @@ class Browser {
           document.body.appendChild(wrapper);
           document.querySelector("#promptval").focus();
           document.querySelector("#promptval").select();
-//          setTimeout(() => {
-//            document.querySelector("#saito-alert-box").style.top = "0";
-//          }, 100);
+          //          setTimeout(() => {
+          //            document.querySelector("#saito-alert-box").style.top = "0";
+          //          }, 100);
           document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
             if (event.keyCode === 13) {
               event.preventDefault();
@@ -1686,12 +1706,15 @@ class Browser {
         });
       };
 
-      window.siteMessage = function (message, killtime = 9999999) {
+      window.siteMessage = function (message, killtime = 9999999, callback = null) {
         if (document.getElementById("message-wrapper")) {
           document.getElementById("message-wrapper").remove();
         }
         let wrapper = document.createElement("div");
         wrapper.id = "message-wrapper";
+        if (callback) {
+          wrapper.classList.add("message-clickable");
+        }
         wrapper.innerHTML = `<div class="message-message">${browser_self.sanitize(message)}</div>`;
 
         document.body.appendChild(wrapper);
@@ -1703,6 +1726,9 @@ class Browser {
         document.querySelector("#message-wrapper").addEventListener(
           "click",
           () => {
+            if (callback) {
+              callback();
+            }
             wrapper.remove();
             clearTimeout(timeout);
           },

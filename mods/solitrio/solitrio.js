@@ -40,8 +40,8 @@ class Solitrio extends OnePlayerGameTemplate {
       this.game.queue.push("READY");
     } else {
       this.game.state = Object.assign(this.returnState(), this.game.state);
-      if (this.game.state.game_started){
-        this.game.queue = ["play"];  
+      if (this.game.state.game_started) {
+        this.game.queue = ["play"];
       }
     }
 
@@ -183,6 +183,7 @@ class Solitrio extends OnePlayerGameTemplate {
         }
       } else {
         this.shuffleFlash();
+        $("#hint").css("display", "none");
       }
     }
   }
@@ -547,12 +548,11 @@ class Solitrio extends OnePlayerGameTemplate {
       }
 
       if (mv[0] === "play") {
-        
         if (this.browser_active) {
           this.game.queue.splice(qe, 1);
           this.game.queue.push("play\t90");
 
-          let pause = (mv[1]) ? parseInt(mv[1]) : 0;
+          let pause = mv[1] ? parseInt(mv[1]) : 0;
           this.displayUserInterface();
           this.handToBoard();
           setTimeout(async () => {
@@ -638,6 +638,14 @@ class Solitrio extends OnePlayerGameTemplate {
             .fadeOut(10 * timeInterval);
         }
       }
+
+      //
+      // We will provide hints automatically until you win at least twice
+      //
+      if (this.game.state.lifetime.wins < 1){
+        this.provideHint();  
+      }
+      
     } catch (err) {}
   }
 
@@ -648,7 +656,7 @@ no status atm, but this is to update the hud
     let solitrio_self = this;
 
     let html =
-      '<span>Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>';
+      "<span>Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>";
     let option = `<ul><li class="option"`;
     if (this.game.state.recycles_remaining > 0) {
       html += "<span>You may shuffle the unarranged cards ";
@@ -662,6 +670,7 @@ no status atm, but this is to update the hud
     } else {
       option += ` id="quit">Start New Game`;
     }
+    option += `</li><li class="option" id="hint">Hint`;
     if (this.moves.length > 0) {
       option += `</li><li class="option" id="undo">Undo`;
     }
@@ -696,13 +705,17 @@ no status atm, but this is to update the hud
         solitrio_self.undoMove();
         return;
       }
+      if (action == "hint") {
+        solitrio_self.provideHint();
+        return;
+      }
     });
   }
 
   returnCardImageHTML(name) {
     if (name[0] == "E") {
       return "";
-    } else { 
+    } else {
       return `<img src="${this.card_img_dir}/${name}.png" />`;
     }
   }
@@ -802,6 +815,36 @@ no status atm, but this is to update the hud
       this.endTurn();
     }
     return winningGame;
+  }
+
+  async provideHint() {
+    let emptySlots = [];
+    for (let i in this.game.board) {
+      if (this.game.board[i][0] == "E") {
+        emptySlots.push(i);
+      }
+    }
+
+    let targets = [];
+
+    for (let slot of emptySlots) {
+      let predecessor = this.getPredecessor(slot);
+      if (predecessor) {
+        let cardValue = parseInt(this.returnCardNumber(predecessor)) + 1;
+        if (cardValue < 11){
+          targets.push(this.returnCardSuite(predecessor)+cardValue);
+        }
+      } else {
+        targets = targets.concat(["D2", "H2", "S2", "C2"]);
+      }
+    }
+
+    for (let i in this.game.board) {
+      if (targets.includes(this.game.board[i])){
+        $(`#${i}`).toggleClass("misclick")
+        await this.timeout(250);
+      }
+    }
   }
 
   returnCardSuite(slot) {

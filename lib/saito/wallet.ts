@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.493;
+  version = 5.501;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -323,8 +323,6 @@ export default class Wallet extends SaitoWallet {
     await this.saveWallet();
 
     console.log("new wallet : " + (await this.getPublicKey()));
-
-    
   }
 
   /**
@@ -968,20 +966,17 @@ export default class Wallet extends SaitoWallet {
     }
   }
 
-  public async onUpgrade(type="", privatekey="", walletfile=null)  {
+  public async onUpgrade(type = "", privatekey = "", walletfile = null) {
     let publicKey = await this.getPublicKey();
 
-    if (type == 'nuke') {
-       this.reset()
-       this.app.blockchain.resetBlockchain();
-       this.app.storage.resetOptions();
-       await this.fetchBalanceSnapshot(publicKey);
-
-    } else if (type == 'import') {
-
-      // wallet file used for importing 
+    if (type == "nuke") {
+      this.reset();
+      this.app.blockchain.resetBlockchain();
+      this.app.storage.resetOptions();
+      await this.fetchBalanceSnapshot(publicKey);
+    } else if (type == "import") {
+      // wallet file used for importing
       if (walletfile != null) {
-
         let decryption_secret = "";
         let decrypted_wallet = walletfile.result.toString();
         try {
@@ -1000,14 +995,12 @@ export default class Wallet extends SaitoWallet {
 
           await this.app.blockchain.resetBlockchain();
           await this.fetchBalanceSnapshot(publicKey);
-
         } catch (err) {
           console.log(err);
           return err.name;
         }
-
       } else if (privatekey != "") {
-        // privatekey used for wallet importing 
+        // privatekey used for wallet importing
         try {
           publicKey = this.app.crypto.generatePublicKey(privatekey);
           await this.setPublicKey(publicKey);
@@ -1024,12 +1017,11 @@ export default class Wallet extends SaitoWallet {
           return err.name;
         }
       }
-
-    } else if (type == 'upgrade') {
+    } else if (type == "upgrade") {
       // purge old slips
       this.app.options.wallet.slips = [];
-      this.app.storage.resetOptions();
-
+      await this.app.blockchain.resetBlockchain();
+      //this.app.storage.resetOptions();
       await this.fetchBalanceSnapshot(publicKey);
     }
 

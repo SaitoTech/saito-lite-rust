@@ -31,6 +31,27 @@
   z-index: 3;
 }
 
+.tweet.has-reply-disconnected {
+  border-bottom: none;
+}
+
+.tweet.has-reply-disconnected::before {
+  content: "\299A";
+  position: absolute;
+  font-size: 3rem;
+  font-family: monospace;
+  color: var(--saito-border-color);
+  background-color: var(--saito-background-color);
+  z-index: 99;
+  top: calc(50% + 1rem);
+  left: 32px;
+  line-height: 4.5rem;
+}
+
+.tweet:hover.has-reply-disconnected::before {
+  background: var(--saito-background-light);
+}
+
 .tweet.has-reply-disconnected::after {
   content: "";
   position: absolute;
@@ -50,13 +71,26 @@
 .tweet-body {
   display: grid;
   grid-template-columns: 4.5rem 1fr;
+  /*
+  I'm not sure we want this (or at least not here), for one line tweets, 
+  the tweet controls end up with a big gap between them and the tweet divider
   min-height: 10rem;
+  */
 }
 
+.tweet-overlay .tweet {
+  border-bottom: none;
+}
+
+.tweet-overlay .tweet-body {
+  height: min-content;
+  min-height: auto;
+}
 
 .tweet-overlay .tweet-main {
   overflow-y: auto;
   max-height: calc(95vh - 40rem);
+  height: min-content;
 }
 
 .tweet-notice {
@@ -122,11 +156,12 @@
 .tweet-preview {
   margin-top: 2rem;
 }
+
 .tweet-text.full~.tweet-preview {
   margin-top: 1rem;
 }
 
-.tweet-text.preview{
+.tweet-text.preview {
   position: relative;
 }
 
@@ -230,12 +265,12 @@
 
 .tweet-picture>img {
   width: 100%;
-  max-width: 52rem; /* Often set inline, but maybe a good standard */
+  max-width: 52rem;
+  /* Often set inline, but maybe a good standard */
   max-height: max(52rem, 70vh);
   height: auto;
   border-radius: 0.5rem;
   object-fit: cover;
-
 }
 
 .tweet-img-icon {
@@ -313,7 +348,6 @@
   margin-left: 6px;
 }
 
-
 .link-img {
   width: 100%;
   height: 25rem;
@@ -344,14 +378,12 @@
 
 .link-description {
   color: var(--saito-font-color-light);
-
 }
 
 @media screen and (max-width: 1280px) {
   .tweet-picture {
     grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   }
-
   /*
   Height should always follow width, no?
    .tweet-picture>img {
@@ -374,7 +406,6 @@
   .tweet-notice .saito-address {
     max-width: 70%;
   }
-
   .tweet-overlay .tweet-main {
     max-height: calc(90vh - 40rem);
   }

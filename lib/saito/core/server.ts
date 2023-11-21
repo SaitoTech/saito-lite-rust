@@ -547,13 +547,15 @@ class Server {
         });
         const liteblock = block.generateLiteBlock(keylist);
 
-        console.log(
-          `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
-        );
-        console.log(
-          "valid txs : " +
-            liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
-        );
+        // console.log(
+        //   `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
+        // );
+        // console.log(
+        //   "valid txs : " +
+        //     liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
+        // );
+        // liteblock.transactions.forEach((tx) => {
+        // });
         const buffer = Buffer.from(liteblock.serialize());
         res.end(buffer, "utf8");
         return;
@@ -624,11 +626,8 @@ class Server {
           return res.sendStatus(404); // Not Found
         }
         let buffer = block.serialize();
-        // let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
-        // console.info("### write from server.ts:600");
-        // console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");

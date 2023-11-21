@@ -1,0 +1,133 @@
+
+.review-overlay {
+  background-color: white;
+  padding: 1rem;
+  min-width: 850px;
+  min-height: 600px;
+  border-radius: 1.5rem;
+}
+
+.test_container {
+ width:850px;
+ margin-left:auto;
+ margin-right:auto;
+}
+.instructions {
+ font-size:1.3em;
+ text-align:center;
+}
+.question_space {
+ float: left;
+ min-height:300px;
+ width: 435px;
+ border-right: 1px dashed #D7D7D7;
+}
+.question_text {
+ font-size: 10em;
+ padding-top: 125px;
+ margin-right: auto;
+ margin-left: auto;
+ line-height:1em;
+ text-align: center;
+ vertical-align: middle;
+}
+.question_hint {
+ font-size: 3em;
+ margin-right: auto;
+ margin-left: auto;
+ text-align: center;
+ vertical-align: middle;
+}
+.answer_space {
+ display: none;
+ float: left;
+ min-height:300px;
+ width: 400px;
+ #border: 1px solid red;
+}
+.answer_space .option {
+ background-color: #F7F7F7;
+ border: 1px solid #D7D7D7;
+ clear: both;
+ color: #333333;
+ display: block;
+ font-family: "Arial","Kai";
+ font-size: 26px;
+ line-height: 36px;
+ margin: 9px;
+ padding: 12px 14px;
+ cursor: pointer;
+ width:340px;
+
+ -moz-border-radius-topleft: 5px;
+ -webkit-border-top-left-radius: 5px;
+ border-top-left-radius: 5px;
+
+ -moz-border-radius-topright: 5px;
+ -webkit-border-top-right-radius: 5px;
+ border-top-right-radius: 5px; 
+
+ -moz-border-radius-bottomleft: 5px;
+ -webkit-border-top-bottom-radius: 5px;
+ border-bottom-right-radius: 5px;
+
+ -moz-border-radius-bottomright: 5px;
+ -webkit-bottom-right-radius: 5px;
+ border-bottom-left-radius: 5px; 
+
+}
+.option_correct {
+ background-color: #EBFFD6;
+}
+.option_incorrect {
+ background-color: #FFD6CC;
+}
+.answer_space .option_hover {
+ background-color: #F7F7F7;
+ border: 1px solid #9C1010;
+ clear: both;
+ color: #333333;
+ display: block;
+ font-family: "Arial","Kai";
+ font-size: 26px;
+ line-height: 36px;
+ margin: 9px;
+ padding: 12px 14px;
+
+ -moz-border-radius-topleft: 5px;
+ -webkit-border-top-left-radius: 5px;
+ border-top-left-radius: 5px;
+
+ -moz-border-radius-topright: 5px;
+ -webkit-border-top-right-radius: 5px;
+ border-top-right-radius: 5px; 
+
+ -moz-border-radius-bottomleft: 5px;
+ -webkit-border-top-bottom-radius: 5px;
+ border-bottom-right-radius: 5px;
+
+ -moz-border-radius-bottomright: 5px;
+ -webkit-bottom-right-radius: 5px;
+ border-bottom-left-radius: 5px; 
+
+ -moz-box-shadow: 0 0 8px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255,255,255,0.8) inset;
+ -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255,255,255,0.8) inset;
+}
+.lightbox_header {
+clear:both;
+margin-top:5px;
+margin-bottom:15px;
+font-size:2.3em;
+color:#888;
+text-align:center;
+width:100%;
+min-height:25px;
+}
+#feedback {
+cursor:pointer;
+margin-top:10px;
+text-align:center;
+width:100%;
+color:#9C1010;
+}
+

@@ -5,6 +5,9 @@
     //////////////////////
     if (card == "nucleartestban") {
 
+      this.game.state.events.nucleartestbantreaty = 1;
+
+
       let vpchange = this.game.state.defcon-2;
       if (vpchange < 0) { vpchange = 0; }
       this.game.state.defcon = this.game.state.defcon+2;

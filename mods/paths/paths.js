@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const ZoomOverlay = require('./lib/ui/overlays/zoom');
 const CombatOverlay = require('./lib/ui/overlays/combat');
+const LossOverlay = require('./lib/ui/overlays/loss');
 
 const PathsRules = require('./lib/core/rules.template');
 const PathsOptions = require('./lib/core/advanced-options.template');
@@ -35,6 +36,7 @@ class PathsOfGlory extends GameTemplate {
     //
     this.zoom_overlay = new ZoomOverlay(this.app, this); 
     this.combat_overlay = new CombatOverlay(this.app, this); 
+    this.loss_overlay = new LossOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining
@@ -2013,6 +2015,91 @@ console.log("\n\n\n\n");
 
 
 
+  returnDefenderUnits() {
+    return this.game.spaces[this.game.state.combat.key].units;
+  }
+
+  returnAttackerUnits() {
+    let x = this.game.state.combat.attacker;
+    let units = [];
+    for (let z = 0; z < x.length; z++) {
+      units.push(this.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);   
+    }
+    return units;
+  }
+
+  returnDefenderCombatPower() {
+    let x = 0;
+    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
+      let unit = this.game.spaces[this.game.state.combat.key].units[i];
+      x += unit.combat;
+    }
+    return x;
+  }
+
+  returnAttackerCombatPower() {
+    let x = 0;
+    for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
+      let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
+      x += unit.combat;
+    }
+    return x;
+  }
+
+  returnAttackerLossFactor() {
+    let cp = this.returnDefenderCombatPower();
+    let hits = this.returnArmyFireTable();
+    if (this.game.state.combat.defender_table === "corps") { hits = this.returnCorpsFireTable(); }
+    for (let i = hits.length-1; i >= 0; i--) {
+      if (hits[i].max >= cp && hits[i].min <= cp) {
+        return hits[i][this.game.state.combat.defender_modified_roll];
+      }
+    }
+    return 0;
+  }
+
+  returnDefenderLossFactor() {
+    let cp = this.returnAttackerCombatPower();
+    let hits = this.returnArmyFireTable();
+    if (this.game.state.combat.attacker_table === "corps") { hits = this.returnCorpsFireTable(); }
+    for (let i = hits.length-1; i >= 0; i--) {
+      if (hits[i].max >= cp && hits[i].min <= cp) {
+        return hits[i][this.game.state.combat.attacker_modified_roll];
+      }
+    }
+    return 0;
+  }
+
+  returnArmyFireTable() {
+    let hits = [];
+    hits.push({ min : 1,  max : 1,   1 : 0 , 2 : 1 , 3 : 1 , 4 : 1 , 5 : 2 , 6 : 2 })
+    hits.push({ min : 2,  max : 2,   1 : 1 , 2 : 1 , 3 : 2 , 4 : 2 , 5 : 3 , 6 : 3 })
+    hits.push({ min : 3,  max : 3,   1 : 1 , 2 : 2 , 3 : 2 , 4 : 3 , 5 : 3 , 6 : 4 })
+    hits.push({ min : 4,  max : 4,   1 : 2 , 2 : 2 , 3 : 3 , 4 : 3 , 5 : 4 , 6 : 4 })
+    hits.push({ min : 5,  max : 5,   1 : 2 , 2 : 3 , 3 : 3 , 4 : 4 , 5 : 4 , 6 : 5 })
+    hits.push({ min : 6,  max : 8,   1 : 3 , 2 : 3 , 3 : 4 , 4 : 4 , 5 : 5 , 6 : 5 })
+    hits.push({ min : 9,  max : 11,  1 : 3 , 2 : 4 , 3 : 4 , 4 : 5 , 5 : 5 , 6 : 7 })
+    hits.push({ min : 12, max : 14,  1 : 4 , 2 : 4 , 3 : 5 , 4 : 5 , 5 : 7 , 6 : 7 })
+    hits.push({ min : 15, max : 15,  1 : 4 , 2 : 5 , 3 : 5 , 4 : 7 , 5 : 7 , 6 : 7 })
+    hits.push({ min : 16, max : 100, 1 : 5 , 2 : 5 , 3 : 7 , 4 : 7 , 5 : 7 , 6 : 7 })
+    return hits;
+  }
+
+  returnCorpsFireTable() {
+    let hits = [];
+    hits.push({ min : 0, max : 0, 1 : 0 , 2 : 0 , 3 : 0 , 4 : 0 , 5 : 1 , 6 : 1 })
+    hits.push({ min : 1, max : 1, 1 : 0 , 2 : 0 , 3 : 0 , 4 : 1 , 5 : 1 , 6 : 1 })
+    hits.push({ min : 2, max : 2, 1 : 0 , 2 : 1 , 3 : 1 , 4 : 1 , 5 : 1 , 6 : 1 })
+    hits.push({ min : 3, max : 3, 1 : 1 , 2 : 1 , 3 : 1 , 4 : 1 , 5 : 2 , 6 : 2 })
+    hits.push({ min : 4, max : 4, 1 : 1 , 2 : 1 , 3 : 1 , 4 : 2 , 5 : 2 , 6 : 2 })
+    hits.push({ min : 5, max : 5, 1 : 1 , 2 : 1 , 3 : 2 , 4 : 2 , 5 : 2 , 6 : 3 })
+    hits.push({ min : 6, max : 6, 1 : 1 , 2 : 1 , 3 : 2 , 4 : 2 , 5 : 3 , 6 : 3 })
+    hits.push({ min : 7, max : 7, 1 : 1 , 2 : 2 , 3 : 2 , 4 : 3 , 5 : 3 , 6 : 4 })
+    hits.push({ min : 8, max : 100, 1 : 2 , 2 : 2 , 3 : 3 , 4 : 3 , 5 : 4 , 6 : 4 })
+    return hits;
+  }
+
+
   hideOverlays() {
     this.zoom_overlay.hide();
   }
@@ -2120,7 +2207,7 @@ console.log("!");
       // units / armies
       //
       for (let i = 0; i < space.units.length; i++) {
-        html += this.returnUnitImage(key, i);
+        html += this.returnUnitImageInSpaceWithIndex(key, i);
       }
 
       //
@@ -5184,14 +5271,18 @@ spaces['athens'] = {
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
 
-
     for (let key in this.game.spaces) {
+      let redisplay = false;
+      if (this.game.spaces[key].activated_for_combat || this.game.spaces[key].activated_for_movement) {
+        redisplay = true;
+      }
       this.game.spaces[key].activated_for_combat = 0;
       this.game.spaces[key].activated_for_movement = 0;
       for (let z = 0; z < this.game.spaces[key].units.length; z++) {
 	this.game.spaces[key].units[z].moved = 0;
 	this.game.spaces[key].units[z].attacked = 0;
       }
+      if (redisplay) { this.displaySpace(key); }
     }
 
   }
@@ -5338,10 +5429,12 @@ console.log("PLAYER: " + this.game.player);
 console.log("LIve: " + player);
 console.log("HAND: " + JSON.stringify(hand));
 
+	  this.onNewTurn();
+
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards(`${name} is picking a card`, hand);
+	    this.updateStatusAndListCards(`${name} Turn`, hand);
 	  }
 	  
 	  return 0;
@@ -5485,7 +5578,21 @@ try {
 	  return 1;
 	}
 
+        if (mv[0] === "resolve") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  let cmd = "";
+	  if (mv[1]) { cmd = mv[1]; }
+	  if (this.game.queue.length >= 1) {
+	    if (this.game.queue[qe-1].split("\t")[0] === cmd) {
+	      this.game.queue.splice(qe-1, 1);
+	    }
+	  }
+
+	  return 1;
+
+	}
 
         if (mv[0] === "card") {
 
@@ -5511,7 +5618,6 @@ try {
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
 	  //
-	  //this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
@@ -5537,12 +5643,16 @@ try {
 	if (mv[0] === "combat") {
 
 	  let key = mv[1];
-	  let selected = mv[2];
+	  let selected = JSON.parse(mv[2]);
+
+console.log("SELECTED: " + JSON.stringify(selected));
 
 	  this.game.state.combat = {};
 	  this.game.state.combat.key = key;
-	  this.game.state.combat.attacker = JSON.parse(selected);
-	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_spacekey].units[0]);
+	  this.game.state.combat.attacker = selected;
+	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_sourcekey].units[0]);
+
+console.log("moving forward with combat!");
 
 	  //
 	  // remove this from the queue
@@ -5588,8 +5698,6 @@ try {
 //11. Defender Retreat
 //12. Attacker Advance
 
-alert("COMBAT: " + JSON.stringify(this.game.state.combat));
-
 	  this.combat_overlay.render();
 	  this.combat_overlay.pullHudOverOverlay();
 
@@ -5598,6 +5706,10 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	}
 
 	if (mv[0] == "combat_play_combat_cards") {
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
 	}
 
 	if (mv[0] == "combat_determine_outcome") {
@@ -5613,6 +5725,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  let defender_modified_roll = 0;
 	  let attacker_power = "allies";
 	  let defender_power = "central";
+	  let attacker_combat_power = 0;
+	  let defender_combat_power = 0;
 
 	  let attacker_table = "corps";
 	  let defender_table = "corps";
@@ -5628,8 +5742,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
 	  }
 
-	  attacker_roll = this.rollDice(6);
-	  defender_roll = this.rollDice(6);
+	  attacker_roll = this.rollDice();
+	  defender_roll = this.rollDice();
 
 	  attacker_modified_roll = attacker_roll + attacker_drm;
 	  defender_modified_roll = defender_roll + defender_drm;
@@ -5639,16 +5753,25 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  if (attacker_modified_roll < 1) { attacker_modified_roll = 1; }
 	  if (defender_modified_roll < 1) { defender_modified_roll = 1; }
 
+	  this.game.state.combat.attacker_table = attacker_table;
+	  this.game.state.combat.defender_table = defender_table;
 	  this.game.state.combat.attacker_power = attacker_power;
 	  this.game.state.combat.defender_power = defender_power;
 	  this.game.state.combat.attacker_drm = attacker_drm;
 	  this.game.state.combat.defender_drm = defender_drm;
-	  this.game.state.combat.attacker_roll = attacker_drm;
-	  this.game.state.combat.defender_roll = defender_drm;
+	  this.game.state.combat.attacker_roll = attacker_roll;
+	  this.game.state.combat.defender_roll = defender_roll;
 	  this.game.state.combat.attacker_modified_roll = attacker_modified_roll;
 	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
-	  this.game.state.combat.attacker_loss_factor = 1;
-	  this.game.state.combat.defender_loss_factor = 1;
+	  this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
+	  this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log(JSON.stringify(this.game.state.combat));
+
 
 	  if (this.game.state.combat.flank_attack == "attacker") {
 	    this.game.queue.push(`combat_assign_hits\tattacker`);
@@ -5677,7 +5800,7 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 
 	  let power = mv[1];
 	  let player = 1;
-	  let loss_factor = 1;
+	  let loss_factor = 0;
 
 	  if (power == "attacker") { 
 	    player = this.returnPlayerOfFaction(this.game.state.combat.attacker_power);
@@ -5688,10 +5811,17 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    loss_factor = this.game.state.combat.defender_loss_factor;
 	  }
 
-	  alert(power + " assign losses of " + loss_number);
+	  if (this.game.player === player) {
+	    this.combat_overlay.hide();
+	    this.loss_overlay.render(power);
+	  } else {
+	    this.combat_overlay.hide();
+	    this.unbindBackButtonFunction();
+	    this.updateStatus("Opponent Assigning Losses");
+	  }
 
 	  this.game.queue.splice(qe, 1);
-	  return;
+	  return 0;
 
 	}
 
@@ -5720,12 +5850,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	if (mv[0] == "combat_evaluate_flank_attack") {
 
-	  this.game.splice(qe, 1);
+	  this.game.queue.splice(qe, 1);
 
 	  let is_attacking_from_multiple_spaces = false;
 	  let defending_space_valid = false;
 
-	  let space = this.game.space[this.game.state.combat.key];
+	  let space = this.game.spaces[this.game.state.combat.key];
 
 	  //
 	  // if swamp or mountain return
@@ -5744,6 +5874,67 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+	if (mv[0] === "post_combat_cleanup") {
+
+	  let spacekey = this.game.state.combat.key;
+	  for (let i = this.game.spaces[spacekey].units.length-1; i >= 0; i--) {
+	    let u = this.game.spaces[spacekey].units[i];
+	    if (u.destroyed == true) {
+	      this.game.spaces[spacekey].units.splice(i, 1);
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+
+	  let x = this.returnAttackerUnits();
+	  let spacekeys = [];
+	  for (let z = 0; z < x.length; z++) {
+	    if (!spacekeys.includes(x[z].spacekey)) {
+	      spacekeys.push(x[z].spacekey);
+	    }
+	  }
+
+	  for (let z = 0; z < spacekeys.length; z++) {
+	    for (let i = this.game.spaces[spacekeys[z]].units.length-1; i >= 0; i--) {
+	      let u = this.game.spaces[spacekeys[z]].units[i];
+	      if (u.destroyed == true) {
+	        this.game.spaces[spacekeys[z]].units.splice(i, 1);
+	      }
+	    }
+	    this.displaySpace(spacekeys[z]);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "damage") {
+
+	  let spacekey = mv[1];
+	  let idx = parseInt(mv[2]);
+
+	  let unit = this.game.spaces[spacekey].units[idx];
+	  if (unit.damaged == false) { unit.damaged = true; } else { unit.destroyed = true; }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "add") {
+
+	  let spacekey = mv[1];
+	  let unitkey = mv[2];
+
+	  let unit = this.cloneUnit(unitkey);
+	  unit.spacekey = spacekey;
+	  this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
 
 
 
@@ -5818,10 +6009,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let faction = mv[1];
 	  let card = mv[2];
 	  let cost = parseInt(mv[3]);
+	  let skipend = 0;
+	  if (mv[4]) { skipend = parseInt(mv[4]); }
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  if (this.game.player == player) {
-	    this.playerPlayOps(faction, card, cost);    
+	    this.playerPlayOps(faction, card, cost, skipend);    
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " playing OPS");
 	  }
@@ -5864,7 +6057,6 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let key = mv[2];
 	  let idx = parseInt(mv[3]);
 
-alert("entrench here!");
 	  this.game.spaces[key].units[idx].moved = 1;
 
 	  this.game.queue.splice(qe, 1);
@@ -5959,6 +6151,7 @@ alert("entrench here!");
     return this.game.deck[this.game.player-1].hand;
   }
 
+  returnFactionName(faction="") { return this.returnPlayerName(faction); }
   returnPlayerName(faction="") {
     if (faction == "central") { return "Central Powers"; }
     return "Allies";
@@ -6079,6 +6272,7 @@ alert("entrench here!");
       if (options.length == 0) {
 	paths_self.updateStatus("combat finished...");
 	paths_self.addMove("resolve\tplayer_play_combat");
+	paths_self.addMove("post_combat_cleanup");
 	paths_self.endTurn();
 	return;
       }
@@ -6106,6 +6300,7 @@ alert("entrench here!");
 	paths_self.removeSelectable();
 	paths_self.updateStatus("acknowledge...");
 	paths_self.addMove("resolve\tplayer_play_combat");
+	paths_self.addMove("post_combat_cleanup");
 	paths_self.endTurn();
       }
 
@@ -6128,8 +6323,8 @@ alert("entrench here!");
 	(key) => {
 
 	  if (key === "skip") {
-alert("trying to SKIP the attack stage...");
 	    paths_self.addMove("resolve\tplayer_play_combat");
+	    paths_self.addMove("post_combat_cleanup");
 	    paths_self.removeSelectable();
 	    paths_self.endTurn();
 	    return;
@@ -6171,12 +6366,12 @@ alert("trying to SKIP the attack stage...");
 	  let unit = paths_self.game.spaces[idx.unit_sourcekey].units[idx.unit_idx];
 	  let already_selected = false;
 	  for (let z = 0; z < selected.length; z++) {
-	     if (JSON.stringify(idx) == selected[z]) { already_selected = true; }
+	     if (paths_self.app.crypto.stringToBase64(JSON.stringify(idx)) === selected[z]) { already_selected = true; }
 	  }
 	  if (already_selected) {
-  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey} ***</li>`;
+  	    return `<li class="option" id='${paths_self.app.crypto.stringToBase64(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey} ***</li>`;
 	  } else {
-  	    return `<li class="option" id='${escape(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey}</li>`;
+  	    return `<li class="option" id='${paths_self.app.crypto.stringToBase64(JSON.stringify(idx))}'>${unit.name} / ${idx.unit_sourcekey}</li>`;
 	  }
 	},
 	(idx) => {
@@ -6186,32 +6381,38 @@ alert("trying to SKIP the attack stage...");
 	  //
 	  if (idx === "skip") {
 	    let finished = false;
+	    paths_self.updateStatusWithOptions("attacking...", "");
 	    if (selected.length > 0) {
-	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(selected)}`);
+	      let s = [];
+	      for (let z = 0; z < selected.length; z++) {
+  		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
+	      }
+	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("post_combat_cleanup");
+	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
 	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.endTurn();
 	    }
-	    alert("launching or skipping attack: " + JSON.stringify(selected));
 	    return;
 	  }
 
 	  //
 	  // or our JSON object
 	  //
-	  idx = JSON.parse(unescape(idx));
+	  let pidx = JSON.parse(paths_self.app.crypto.base64ToString(idx));
 
-	  let key = idx.key;
-	  let unit_sourcekey = idx.unit_sourcekey;
-	  let unit_idx = idx.unit_idx;
+	  let key = pidx.key;
+	  let unit_sourcekey = pidx.unit_sourcekey;
+	  let unit_idx = pidx.unit_idx;
 
-	  if (selected.includes(JSON.stringify(idx))) {
-	    selected.splice(selected.indexOf(JSON.stringify(idx)), 1);
+	  if (selected.includes(idx)) {
+	    selected.splice(selected.indexOf(idx), 1);
 	  } else {
-	    selected.push(JSON.stringify(idx));
+	    selected.push(idx);
 	  }
-
 
           attackInterface(original_key, options, selected, mainInterface, attackInterface);
 
@@ -6394,10 +6595,12 @@ alert("trying to SKIP the attack stage...");
 
   }
 
-  playerPlayOps(faction, card, cost) {
+  playerPlayOps(faction, card, cost, skipend=0) {
 
-    this.addMove("player_play_combat\t"+faction);
-    this.addMove("player_play_movement\t"+faction);
+    if (!skipend) {
+      this.addMove("player_play_combat\t"+faction);
+      this.addMove("player_play_movement\t"+faction);
+    }
 
     let targets = this.returnNumberOfSpacesWithFilter((key) => {
       if (cost < this.returnActivationCost(key)) { return 0; }
@@ -6460,7 +6663,7 @@ alert("trying to SKIP the attack stage...");
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
 	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
 	    }
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
 	    this.endTurn();
@@ -6496,7 +6699,7 @@ alert("trying to SKIP the attack stage...");
 	    cost -= cost_paid;
 	    if (cost < 0) { cost = 0; }
 	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}}`);
+	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
 	    }
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
 	    this.endTurn();
@@ -6703,7 +6906,6 @@ alert("trying to SKIP the attack stage...");
 	  (idx) => {
 	    let unit = paths_self.game.spaces[key].units[idx];
 	    paths_self.game.spaces[key].units[idx].moved = 1;
-alert("redeploying this unit!");
 	  },
           false
         );
@@ -6722,6 +6924,8 @@ alert("redeploying this unit!");
 
     let name = this.returnPlayerName(faction);
     let hand = this.returnPlayerHand();
+
+    this.addMove("resolve\tplay");
 
     this.updateStatusAndListCards(`${name}: pick a card`, hand);
     this.attachCardboxEvents((card) => {
@@ -6766,6 +6970,8 @@ alert("redeploying this unit!");
     if (!obj.rmovement)	{ obj.rmovement = 3; }
 
     if (!obj.damaged)	{ obj.damaged = false; }
+    if (!obj.destroyed)	{ obj.destroyed = false; }
+    if (!obj.spacekey)  { obj.spacekey = ""; }
 
     this.game.units[key] = obj;
 
@@ -6777,21 +6983,23 @@ alert("redeploying this unit!");
     this.game.spaces[sourcekey].units.splice(sourceidx, 1);
     if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
     this.game.spaces[destinationkey].units.push(unit);
+    unit.spacekey = destinationkey;
     this.displaySpace(sourcekey);
     this.displaySpace(destinationkey);
   }
 
-  returnUnitImage(spacekey, idx) {
-
-    let unit = this.game.spaces[spacekey].units[idx];
+  
+  returnUnitImage(unit) {
     let key = unit.key;
-
     if (unit.damaged) {
       return `<img src="/paths/img/army/${key}_back.png" class="army-tile" />`;
     } else {
       return `<img src="/paths/img/army/${key}.png" class="army-tile" />`;
     }
-
+  }
+  returnUnitImageInSpaceWithIndex(spacekey, idx) {
+    let unit = this.game.spaces[spacekey].units[idx];
+    return this.returnUnitImage(unit);
   }
 
   cloneUnit(unitkey) {
@@ -6799,7 +7007,9 @@ alert("redeploying this unit!");
   }
 
   addUnitToSpace(unitkey, spacekey) {
-    this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
+    let unit = this.cloneUnit(unitkey);
+    unit.spacekey = spacekey;
+    this.game.spaces[spacekey].units.push(unit);
   }
 
   damageUnitInSpace(unitkey, spacekey) {

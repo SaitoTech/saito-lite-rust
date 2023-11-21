@@ -136,7 +136,7 @@ class Storage {
     return { err: "Save Transaction failed" };
   }
 
-  loadTransactions(obj = {}, mycallback, peer = null) {
+  async loadTransactions(obj = {}, mycallback, peer = null) {
     let storage_self = this;
 
     const message = "archive";
@@ -154,6 +154,9 @@ class Storage {
         for (let i = 0; i < res.length; i++) {
           let tx = new Transaction();
           tx.deserialize_from_web(storage_self.app, res[i].tx);
+
+          tx["updated_at"] = res[i].updated_at;
+
           txs.push(tx);
         }
       }
@@ -163,11 +166,10 @@ class Storage {
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-        archive_mod.loadTransactionsWithCallback(obj, (res) => {
+        return archive_mod.loadTransactionsWithCallback(obj, (res) => {
           internal_callback(res);
         });
       }
-      return;
     }
 
     if (peer != null) {
@@ -189,15 +191,51 @@ class Storage {
     }
   }
 
-  deleteTransactions(obj = {}, mycallback = null, peer = null) {
+  async deleteTransaction(tx = null, mycallback = null, peer = null) {
+
+    if (tx == null) { return; }
+
     const message = "archive";
     let data: any = {};
     data.request = "delete";
+
+    if (peer === "localhost") {
+      let archive_mod = this.app.modules.returnModule("Archive");
+      if (archive_mod) {
+        await archive_mod.deleteTransaction(tx);
+      }
+      return;
+    }
+
+    if (peer != null) {
+      this.app.network.sendRequestAsTransaction(message, data, function () {
+        if (mycallback != null) { mycallback(); }
+      });
+    }
+
+  }
+
+  async deleteTransactions(obj = {}, mycallback = null , peer = null) {
+    const message = "archive";
+    let data: any = {};
+    data.request = "multidelete";
     data = Object.assign(data, obj);
 
-    this.app.network.sendRequestAsTransaction(message, data, function (obj) {
-      mycallback();
-    });
+    if (peer === "localhost") {
+      let archive_mod = this.app.modules.returnModule("Archive");
+      if (archive_mod) {
+        await archive_mod.deleteTransactions(obj);
+        if (mycallback != null) { mycallback(); }
+      }
+      return;
+    }
+
+    if (peer != null) {
+      this.app.network.sendRequestAsTransaction(message, data, function (obj) {
+        if (mycallback != null) { mycallback(); }
+      });
+    }
+
   }
 
   async resetOptions() {

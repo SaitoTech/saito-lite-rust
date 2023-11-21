@@ -3,10 +3,15 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const PopupLesson = require("./lib/lesson");
 const PopupMenu = require("./lib/menu");
+const PopupVocab = require("./lib/vocab");
+const PopupReview = require("./lib/review");
 const PopupMain = require("./lib/main");
 const PopupLessonManager = require("./lib/manager");
 const PeerService = require("saito-js/lib/peer_service").default;
 const localforage = require("localforage");
+const JsStore = require("jsstore");
+
+
 
 class Popup extends ModTemplate {
 
@@ -20,8 +25,12 @@ class Popup extends ModTemplate {
     this.icon_fa = "fa-solid fa-language";
 
     this.styles = ["/popup/style.css"];
-
     this.peers = [];
+
+    // in browser db
+    this.localDB = null;
+    this.schema = ["id", "user_id", "publickey", "owner", "sig", "field1", "field2", "field3", "block_id", "block_hash", "created_at", "updated_at", "tx", "preserve"];
+
 
     this.social = {
       twitter_card: "summary",
@@ -66,6 +75,15 @@ class Popup extends ModTemplate {
     await super.initialize(app);
 
     //
+    // create in-browser DB
+    //
+    await this.initializeDatabase();
+
+
+console.log(JSON.stringify(this.returnVocab()));
+
+
+    //
     // fetch content from options file
     //
     this.load();
@@ -89,6 +107,8 @@ class Popup extends ModTemplate {
       this.main = new PopupMain(this.app, this);
       this.manager = new PopupLessonManager(this.app, this);
       this.lesson = new PopupLesson(this.app, this);
+      this.review = new PopupReview(this.app, this);
+      this.vocab = new PopupVocab(this.app, this);
 
       this.addComponent(this.header);
       this.addComponent(this.main);
@@ -118,6 +138,17 @@ class Popup extends ModTemplate {
   // fetch language content //
   ////////////////////////////
   async onPeerServiceUp(app, peer, service = {}) {
+
+    let popup_self = this;
+
+    //
+    // override functions called by non-Saito JS
+    //
+    if (this.app.BROWSER == 1) {
+      add_to_vocab = function(field1="", field2="", field3="", field4="", field5="", label="") {
+        popup_self.addVocab(field1, field2, field3, field4, field5, label);
+      }
+    }
 
     //
     // avoid network overhead if in other apps
@@ -308,6 +339,18 @@ console.log(sql);
     if (!this.app.options.popup) {
       this.app.options.popup = {};
     }
+    if (!this.app.options.popup.display) {
+      this.app.options.popup.display = {}
+      this.app.options.popup.display.simplified = 1;
+      this.app.options.popup.display.traditional = 0;
+      this.app.options.popup.display.pinyin = 1;
+      this.app.options.popup.display.english = 1;
+      this.app.options.popup.display.part_of_speech = 0;
+    }
+    if (!this.app.options.popup.review) {
+      this.app.options.popup.review = {};
+      this.app.options.popup.review.enable = 1;
+    }
 
     localforage.getItem(`popup_vocabulary`, (error, value) => {
       if (value && value.length > 0) {
@@ -326,12 +369,101 @@ console.log(sql);
 
   save() {
 
-    if (!this.app.options?.redsquare) {
-      this.app.options.redsquare = {};
+    if (!this.app.options?.popup) {
+      this.app.options.popup = {};
+      this.app.options.popup.display = {}
+      this.app.options.popup.display.simplified = 1;
+      this.app.options.popup.display.traditional = 1;
+      this.app.options.popup.display.pinyin = 1;
+      this.app.options.popup.display.english = 1;
+      this.app.options.popup.display.part_of_speech = 1;
+      this.app.options.popup.review = {};
+      this.app.options.popup.review.enable = 1;
     }
 
     this.saveOptions();
 
+  }
+
+  async initializeDatabase() {
+
+    if (this.app.BROWSER) {
+
+      this.localDB = new JsStore.Connection(new Worker("/saito/lib/jsstore/jsstore.worker.js"));
+
+      //
+      // create Local database
+      //
+      let vocabulary = {
+        name: "vocabulary",
+        columns: {
+          id: { primaryKey: true, autoIncrement: true },
+          field1: { dataType: "string", default: "" },
+          field2: { dataType: "string", default: "" },
+          field3: { dataType: "string", default: "" },
+          field4: { dataType: "string", default: "" },
+          field5: { dataType: "string", default: "" },
+          label: { dataType: "string", default: "" },
+          lesson_id: { dataType: "number", default: 0 },
+          created_at: { dataType: "number", default: 0 },
+          updated_at: { dataType: "number", default: 0 },
+        },
+      };
+
+      let db = {
+        name: "vocabulary_db",
+        tables: [vocabulary],
+      };
+
+      var isDbCreated = await this.localDB.initDb(db);
+      if (isDbCreated) {
+        console.log("POPUP: db created and connection opened");
+      } else {
+        console.log("POPUP: connection opened");
+      }
+    }
+
+    return;
+  }
+
+
+  async addVocab(field1 = "", field2 = "", field3 = "", field4 = "", field5 = "", label = "", lesson_id = "") {
+
+    let obj = {};
+    obj.field1 = field1;
+    obj.field2 = field2;
+    obj.field3 = field3;
+    obj.field4 = field4;
+    obj.field5 = field5;
+    obj.lesson_id = lesson_id;
+    obj.label = label;
+    obj.created_at = new Date().getTime();
+    obj.updated_at = new Date().getTime();
+
+    if (this.app.BROWSER) {
+      let numRows = await this.localDB.insert({
+        into: "vocabulary",
+        values: [obj],
+      });
+    }
+
+	let v = await this.returnVocab();
+console.log("POST INSERT: " + JSON.stringify(v));
+
+  }
+
+  async returnVocab(offset = 0) {
+
+    if (!this.app.BROWSER) { return; }
+
+    let rows = await this.localDB.select({
+      from: "vocabulary" ,
+      //where: where_obj,
+      order: { by: "id", type: "desc" },
+    });
+          
+    return rows; 
+   
   }
 
 }

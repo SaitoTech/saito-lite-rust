@@ -51,7 +51,7 @@ module.exports = ImperiumHowToProduceOverlayTemplate = (imperium_self, units) =>
         </div>
 
         <div class="how-to-produce-example-desc">
-          NOTE: use Warfare to de-activate a sector after production to move those units immediately
+          NOTE: play Warfare after production to move units same turn
         </div>
 
     </div>

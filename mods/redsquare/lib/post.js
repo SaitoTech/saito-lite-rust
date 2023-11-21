@@ -19,12 +19,12 @@ class Post {
       this.mod,
       `.tweet-overlay-header`,
       this.mod.publicKey,
-      "create a text-tweet or drag-and-drop images..."
+      `create a text-tweet${app.browser.isMobileBrowser() ? "" : " or drag-and-drop images"}...`
     );
 
     this.render_after_submit = 0;
     this.file_event_added = false;
-    this.source = "Tweet";
+    this.source = "Post";
   }
 
   render() {
@@ -37,6 +37,7 @@ class Post {
 
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, ".tweet-overlay-content");
+      this.input.enable_mentions = true;
     }
 
     this.input.display = "large";
@@ -55,6 +56,7 @@ class Post {
     this.input.callbackOnReturn = () => {
       this.postTweet();
     };
+
     this.input.callbackOnUpload = async (file) => {
       if (this.images.length >= 4) {
         salert("Maximum 4 images allowed per tweet.");
@@ -76,6 +78,7 @@ class Post {
     this.user.render();
 
     this.input.render();
+    this.input.focus(true);
 
     this.attachEvents();
   }
@@ -138,7 +141,7 @@ class Post {
 
   async postTweet() {
     let post_self = this;
-    let text = document.getElementById("post-tweet-textarea").value;
+    let text = sanitize(this.input.getInput());
     let parent_id = document.getElementById("parent_id").value;
     let thread_id = document.getElementById("thread_id").value;
     let source = document.getElementById("source").value;
@@ -154,19 +157,30 @@ class Post {
     //
     // extract keys from text AND then tweet
     //
-    keys = post_self.app.browser.extractKeys(text);
-    identifiers = post_self.app.browser.extractIdentifiers(text);
-
+    //keys = post_self.app.browser.extractKeys(text);
+    //identifiers = post_self.app.browser.extractIdentifiers(text);
     //
     // add identifiers as available
     //
-    for (let i = 0; i < identifiers.length; i++) {
-      let key = this.app.keychain.returnPublicKeyByIdentifier(identifiers[i]);
-      if (key) {
-        if (!keys.includes(key)) {
-          keys.push(key);
-        }
-      }
+    //for (let i = 0; i < identifiers.length; i++) {
+    //  let key = this.app.keychain.returnPublicKeyByIdentifier(identifiers[i]);
+    //  if (key) {
+    //    if (!keys.includes(key)) {
+    //      keys.push(key);
+    //    }
+    //  }
+    //}
+    //
+    // tweet data
+    //
+    let data = { text: text };
+    let is_reply = false;
+
+
+    keys = this.input.getMentions();
+
+    if (keys.length > 0) {
+      data["mentions"] = 1;
     }
 
     //
@@ -187,28 +201,33 @@ class Post {
     post_self.overlay.closebox = false;
     post_self.overlay.show('<div class="saito-loader"></div>');
 
-    //
-    // tweet data
-    //
-    let data = { text: text };
-    let is_reply = false;
-    let is_retweet = false;
 
     //Replies
     if (parent_id !== "") {
       is_reply = true;
+      this.mod.replyTweet(this.tweet.tx.signature);
       data = { text: text, parent_id: parent_id, thread_id: thread_id, signature: parent_id };
+
+      // We temporarily increase the number of replies, this affects the next rendering
+      // but only adjust tx.optional when we get confirmation from the blockchain
+      this.tweet.num_replies++;
     }
     //Retweets
     if (source == "Retweet") {
-      is_retweet = true;
       data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
       data.signature = post_self.tweet.tx.signature;
+      //save the tweet I am retweeting or replying to to my local archive
+      this.mod.retweetTweet(this.tweet.tx.signature);
+
+      // We temporarily increase the number of retweets, this affects the next rendering
+      // but only adjust tx.optional when we get confirmation from the blockchain
+      this.tweet.num_retweets++;
     }
 
     if (post_self.images.length > 0) {
       data["images"] = post_self.images;
     }
+
 
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
@@ -220,37 +239,39 @@ class Post {
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx, ".tweet-manager");
     //console.log("New tweet:", posted_tweet);
 
-    if (is_reply) {
-      this.mod.replyTweet(data.signature);
-    }
-    if (is_retweet) {
-      this.mod.retweetTweet(data.signature);
+    //
+    // go back to tweets list if needed
+    //
+    if (this.mod.manager) {
+      if (this.mod.manager.mode != "tweets") {
+        this.mod.manager.render("tweets"); // switches
+      }
     }
 
     let rparent = this.tweet;
     if (rparent) {
+      console.log("Rerender feed with temp stats");
+      
       if (posted_tweet.retweet_tx) {
+
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
       } else {
+
         this.mod.addTweet(newtx, true);
         if (rparent.parent_id != "") {
-	  let t = this.mod.returnTweet(rparent.parent_id);
-	  if (t) {
-	    t.critical_child = posted_tweet;
-	  }
+          let t = this.mod.returnTweet(rparent.parent_id);
+          if (t) {
+            t.critical_child = posted_tweet;
+          }
         }
+
         rparent.critical_child = posted_tweet;
-console.log("FORCE RENDERING WITH CRITICAL CHILD!");
         rparent.forceRenderWithCriticalChild();
-//
-// oct 26 - not needed...
-//
-//	let obj = document.querySelector(`.tweet-${rparent.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
-//	try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
       }
     } else {
+
       this.mod.addTweet(newtx, true);
       posted_tweet.render(true);
     }
@@ -258,7 +279,17 @@ console.log("FORCE RENDERING WITH CRITICAL CHILD!");
     //We let the loader run for a half second to show we are sending the tweet
     setTimeout(() => {
       post_self.overlay.remove();
-      post_self.mod.main.scrollFeed(0);
+      
+      /*
+      This is Really f*cking annoying... I want to stay where I am in the feed if replying to someone, 
+      not autoscroll to the top, but retweeting pushes the retweet at the top, and ditto for a new tweet...
+      It's an art, not a science
+      */
+      
+      if (!is_reply) {
+        post_self.mod.main.scrollFeed(0);  
+      }
+
     }, 800);
   }
 

@@ -3,6 +3,8 @@
  *
  */
 
+const localforage = require("localforage");
+
 class PeerManager {
   constructor(app, mod) {
     this.app = app;
@@ -13,7 +15,7 @@ class PeerManager {
 
     this.videoEnabled = true;
     this.audioEnabled = true;
-
+    this.recording = false;
     this.app.connection.on("stun-peer-manager-update-room-details", (room_obj) => {
       this.room_obj = room_obj;
     });
@@ -634,11 +636,147 @@ class PeerManager {
       } else if (average <= threshold) {
         has_mike = false;
       }
-
-      //requestAnimationFrame(update);
     }
     this.audioStreamAnalysis = setInterval(update, 1000);
-    //requestAnimationFrame(update);
+  }
+
+  async recordCall() {
+    localforage.config({
+      driver: localforage.INDEXEDDB,
+      name: "VideoCall",
+      storeName: "keyvaluepairs",
+      description: "Video Chunks data store",
+    });
+    const start_recording = await sconfirm("Are you sure you want to start recording?");
+    console.log(start_recording);
+    if (!start_recording) return false;
+    this.recording = true;
+    this.chunks = [];
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 1280;
+    canvas.height = 720;
+
+    const audioContext = new AudioContext();
+    const audioDestination = audioContext.createMediaStreamDestination();
+
+    const localVideo = document.createElement("video");
+    localVideo.srcObject = this.localStream;
+    localVideo.muted = true;
+    localVideo.onloadedmetadata = () => localVideo.play();
+
+    const remoteVideos = [];
+    Array.from(this.remoteStreams.values()).forEach((c, index) => {
+      const remoteVideo = document.createElement("video");
+      remoteVideo.srcObject = c.remoteStream;
+      remoteVideo.muted = true;
+      remoteVideo.onloadedmetadata = () => remoteVideo.play();
+      remoteVideos.push(remoteVideo);
+    });
+
+    const draw = () => {
+      if (!this.recording) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const totalVideos = 1 + remoteVideos.length;
+
+      const cols = Math.ceil(Math.sqrt(totalVideos));
+      const rows = Math.ceil(totalVideos / cols);
+      const localVideoRatio = localVideo.videoWidth / localVideo.videoHeight;
+      const videoWidth = canvas.width / cols;
+
+      let videoHeight;
+      if (totalVideos == 2) {
+        videoHeight = videoWidth / localVideoRatio;
+      } else {
+        videoHeight = canvas.height / rows;
+      }
+
+      ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
+
+      if (totalVideos === 2) {
+        remoteVideos.forEach((remoteVideo, index) => {
+          const remoteVideoRatio = remoteVideo.videoWidth / remoteVideo.videoHeight;
+          const x = ((index + 1) % cols) * videoWidth;
+          let y = Math.floor((index + 1) / cols) * videoHeight;
+
+          const adjustedHeight = videoWidth / remoteVideoRatio;
+          y += (videoHeight - adjustedHeight) / 2;
+
+          ctx.drawImage(remoteVideo, x, y, videoWidth, adjustedHeight);
+        });
+      } else {
+        remoteVideos.forEach((remoteVideo, index) => {
+          const x = ((index + 1) % cols) * videoWidth;
+          const y = Math.floor((index + 1) / cols) * videoHeight;
+          ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
+        });
+      }
+
+      requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    [
+      this.localStream,
+      ...Array.from(this.remoteStreams.values()).map((c) => c.remoteStream),
+    ].forEach((stream) => {
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(audioDestination);
+    });
+
+    const combinedStream = new MediaStream([
+      ...audioDestination.stream.getTracks(),
+      ...canvas.captureStream(30).getTracks(),
+    ]);
+
+    this.mediaRecorder = new MediaRecorder(combinedStream);
+
+    this.mediaRecorder.start();
+    this.mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        this.chunks.push(e.data);
+      }
+    };
+
+    this.mediaRecorder.onstop = async () => {
+      const blob = new Blob(this.chunks, { type: "video/webm" });
+      const defaultFileName = "recorded_call.webm";
+      const fileName =
+        (await sprompt("Please enter a recording name", "recorded_call")) || defaultFileName;
+
+      // Create an object URL for the Blob
+      const videoUrl = window.URL.createObjectURL(blob);
+
+      const downloadLink = document.createElement("a");
+      document.body.appendChild(downloadLink);
+      downloadLink.style = "display: none";
+      downloadLink.href = videoUrl;
+      downloadLink.download = fileName;
+      downloadLink.click();
+
+      window.URL.revokeObjectURL(videoUrl);
+      downloadLink.remove();
+      // Stop the audio context
+      if (audioContext.state !== "closed") {
+        audioContext.close();
+      }
+
+      // Reset recording flag
+      this.recording = false;
+    };
+
+    return true;
+  }
+
+  stopRecordCall() {
+    this.mediaRecorder.stop();
+    this.recording = false;
+    console.log(this.mediaRecorder.state);
   }
 }
 

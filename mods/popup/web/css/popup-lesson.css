@@ -13,9 +13,14 @@ audio {
 }
 
 .lesson-container .discussion {
-  font-size: 1.8rem;
-  line-height: 2.3rem;
+  font-size: 2rem;
+  line-height: 2.6rem;
   margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.lesson-container .discussion p {
+  margin-top: 2rem;
 }
 
 .lesson-container .transcript {

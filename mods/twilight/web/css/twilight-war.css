@@ -51,7 +51,7 @@
 .brushwar-war {
     background-size: cover;
     background-position-y: top;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/brushwar-bg.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/brushwar-alternate.jpg);
 }
 .iraniraq-war {
     background-size: cover;

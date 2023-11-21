@@ -11,33 +11,30 @@
         this.addMove("resolve\tbayofpigs");
         let twilight_self = this;
 
-        let holding_voa = false;
-        let holding_gs = false;
+	let available = [];
+	let ac = this.returnAllCards(true);
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-          if (this.game.deck[0].hand[i] == "grainsales") { holding_gs = true; }
-          if (this.game.deck[0].hand[i] == "voiceofamerica") { holding_voa = true; }
+	  let c = this.game.deck[0].cards[this.game.deck[0].hand[i]];
+	  if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], "ussr") == 2 && c.player === "us") {
+	    available.push(this.game.deck[0].hand[i]);
+	  }
         }
 
         let html = `<ul>`;
-        if (holding_voa == true) { html += `<li class="option" id="voa">discard Voice of America</li>`; }
-        if (holding_gs == true) { html += `<li class="option" id="gs">discard Grain Sales</li>`; }
-        html += `<li class="option" id="skip">do not discard</li>`;
+        for (let i = 0; i < available.length; i++) {
+          html += `<li class="option" id="${available[i]}">${ac[available[i]].name}</li>`;
+        }
+	html += `<li class="option" id="skip">do not discard</li>`;
         html += `</ul>`;
 
-        this.updateStatusWithOptions(`${this.cardToText(card)}:`, html, function(action2) {
+        this.updateStatusWithOptions(`${this.cardToText(card)} discard:`, html, function(action2) {
 
 	  let discarded = false;
 
-	  if (action2 === "voa") {
-            twilight_self.removeCardFromHand("voiceofamerica");
-	    twilight_self.addMove("discard\tussr\tvoiceofamerica");
-	    discarded = true;
-	  }
-
-	  if (action2 === "gs") {
-            twilight_self.removeCardFromHand("voiceofamerica");
-	    twilight_self.addMove("discard\tussr\tgrainsales");
+	  if (action2 !== "skip") {
+            twilight_self.removeCardFromHand(discarded);
+	    twilight_self.addMove("discard\tussr\t"+discarded);
 	    discarded = true;
 	  }
 
@@ -62,7 +59,6 @@
               twilight_self.updateLog("Shuffling discarded cards back into the deck...");
 
 	    }
-
 	  }
 
 	  twilight_self.endTurn();

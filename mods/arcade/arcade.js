@@ -111,7 +111,7 @@ class Arcade extends ModTemplate {
       if (this.app.options.games) {
         this.purgeBadGamesFromWallet();
 
-        console.log("Processing games from app.options:");
+        //console.log("Processing games from app.options:");
 
         for (let game of this.app.options.games) {
           if (game.players.includes(this.publicKey) || game.accepted.includes(this.publicKey)) {
@@ -138,7 +138,7 @@ class Arcade extends ModTemplate {
         }
       }
 
-      console.log(JSON.parse(JSON.stringify(this.games)));
+      //console.log(JSON.parse(JSON.stringify(this.games)));
       this.app.connection.emit("arcade-invite-manager-render-request");
     }
 

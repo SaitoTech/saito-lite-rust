@@ -20,6 +20,7 @@ cat ./src/paths-setup.js >> ./paths.js
 # and initialize
 #
 cat ./src/paths-cards.js >> ./paths.js
+cat ./src/paths-combat.js >> ./paths.js
 cat ./src/paths-display.js >> ./paths.js
 cat ./src/paths-events.js >> ./paths.js
 cat ./src/paths-spaces.js >> ./paths.js

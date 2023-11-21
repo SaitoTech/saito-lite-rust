@@ -9,7 +9,7 @@ this.importStrategyCard("construction", {
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
       imperium_self.addMove("resolve\tstrategy");
       imperium_self.addMove("strategy\t" + "construction" + "\t" + strategy_card_player + "\t2");
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
       imperium_self.addMove("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
       imperium_self.playerAcknowledgeNotice("You have played Construction. First you will have the option of producing a PDS or Space Dock. Then you will have the option of producing an additional PDS if you so choose.", function() {
         imperium_self.playerBuildInfrastructure((sector) => {
@@ -55,8 +55,8 @@ this.importStrategyCard("construction", {
         let id = $(this).attr("id");
 
         if (id == "yes") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
           imperium_self.playerBuildInfrastructure((sector) => {
             imperium_self.addMove("activate\t" + imperium_self.game.player + "\t" + sector);
@@ -65,8 +65,8 @@ this.importStrategyCard("construction", {
           }, 1);
         }
         if (id == "no") {
-          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
         }

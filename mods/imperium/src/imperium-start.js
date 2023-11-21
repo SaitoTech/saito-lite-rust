@@ -138,6 +138,8 @@ class Imperium extends GameTemplate {
   
   }
   
+  getPublicKey() { return this.publicKey; }
+
   //
   // this function is CLOSED in imperium-initialize
   //

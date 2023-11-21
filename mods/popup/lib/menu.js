@@ -21,10 +21,56 @@ class PopupMenu {
 
   attachEvents() {
 
-    document.querySelector(".podcast-archives").onclick = (e) => {
+    document.querySelector(".popup-lessons").onclick = (e) => {
       window.history.pushState({}, document.title, "/lessons");
       history.replaceState(null, null, ' ');
       this.app.connection.emit("popup-lessons-render-request", ("all"));
+    }
+
+    document.querySelector(".popup-vocab").onclick = (e) => {
+      window.history.pushState({}, document.title, "/vocab");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-vocab-render-request", (""));
+    }
+
+    document.querySelector(".popup-review").onclick = (e) => {
+      window.history.pushState({}, document.title, "/review");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-review-render-request", (""));
+    }
+
+    document.querySelector(".absolute-beginners").onclick = (e) => {
+      window.history.pushState({}, document.title, "/lessons/absolute-beginners");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-lessons-render-request", ("absolute-beginners"));
+    }
+
+    document.querySelector(".elementary").onclick = (e) => {
+      window.history.pushState({}, document.title, "/lessons/elementary");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-lessons-render-request", ("elementary"));
+    }
+
+    document.querySelector(".intermediate").onclick = (e) => {
+      window.history.pushState({}, document.title, "/lessons/intermediate");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-lessons-render-request", ("intermediate"));
+    }
+
+    document.querySelector(".advanced").onclick = (e) => {
+      window.history.pushState({}, document.title, "/lessons/advanced");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-lessons-render-request", ("advanced"));
+    }
+
+    document.querySelector(".short-stories").onclick = (e) => {
+      window.history.pushState({}, document.title, "/lessons/short-stories");
+      history.replaceState(null, null, ' ');
+      this.app.connection.emit("popup-lessons-render-request", ("short-stories"));
+    }
+
+    document.querySelector(".popup-review").onclick = (e) => {
+      this.app.connection.emit("popup-review-render-request", (""));
     }
 
 /***

@@ -43,12 +43,7 @@ class Tweet {
     if (!this.tx.optional) {
       this.tx.optional = {};
     }
-    if (this.tx.optional.parent_id) {
-      this.parent_id = this.tx.optional.parent_id;
-    }
-    if (this.tx.optional.thread_id) {
-      this.thread_id = this.tx.optional.thread_id;
-    }
+
     if (!this.tx.optional.num_replies) {
       this.tx.optional.num_replies = 0;
     }
@@ -131,7 +126,6 @@ class Tweet {
     this.show_controls = 1;
     this.force_long_tweet = false;
     this.is_long_tweet = false;
-    this.is_retweet = false;
     this.parent_id = "";
     this.thread_id = "";
 
@@ -140,12 +134,10 @@ class Tweet {
     //
     try {
       this.setKeys(txmsg.data);
-    } catch (err) {
-    }
+    } catch (err) {}
     try {
       this.setKeys(tx.optional);
-    } catch (err) {
-    }
+    } catch (err) {}
 
     //
     //This is async and won't necessarily finish before running the following code!
@@ -166,7 +158,6 @@ class Tweet {
         newtx,
         this.container + `> .tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
       );
-      this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
     }
 
@@ -185,6 +176,40 @@ class Tweet {
 
     // We will use this as a flag to know there were no breaking failures in the constructor
     this.noerrors = true;
+  }
+
+  isRetweet(){
+    let txmsg = this.tx.returnMessage();
+    if (txmsg.request != "create tweet") {
+      return false;
+    }
+    if (!txmsg.data?.text && !txmsg.data?.images) {
+      return true;
+    } 
+
+    return false;
+  }
+
+  isPost() {
+    let txmsg = this.tx.returnMessage();
+    if (txmsg.request != "create tweet") {
+      return false;
+    }
+    if (this.parent_id == "") {
+      return true;
+    }
+    return false;
+  }
+
+  isReply() {
+    let txmsg = this.tx.returnMessage();
+    if (txmsg.request != "create tweet") {
+      return false;
+    }
+    if (this.parent_id != "") {
+      return true;
+    }
+    return false;
   }
 
   formatDate(ts = 0) {
@@ -211,7 +236,6 @@ class Tweet {
   }
 
   render(prepend = false, render_with_children = true) {
-
     //
     // handle if link
     //
@@ -238,7 +262,7 @@ class Tweet {
     //
     // we might be re-rendering when critical child is on screen, so check if the
     // class exists and flag if so. the class indicates that a critical child exists
-    // and by flagging it we will be able to re-add the class to the re-rendered 
+    // and by flagging it we will be able to re-add the class to the re-rendered
     // tweet and preserve the CSS so the visual connector between the tweets does not
     // disappear.
     //
@@ -285,15 +309,21 @@ class Tweet {
       let t = this.mod.returnTweet(this.retweet.tx.signature);
       if (t) {
         t.notice = this.retweet.notice;
+        t.user.notice = t.user.notice.replace("new", "original");
         t.render(prepend);
         t.attachEvents();
       } else {
-        (this.retweet.user.container =
-          this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
-          this.retweet.render(prepend);
-	  this.retweet.attachEvents();
+        console.log("Rendering a new retweet");
+        this.retweet.user.container = this.container + `> .tweet-${this.tx.signature} > .tweet-header`;
+        this.retweet.user.notice = this.retweet.user.notice.replace("new", "original");
+        this.retweet.render(prepend);
+        this.retweet.attachEvents();
       }
       return;
+    }
+
+    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions){
+      this.notice = "You were mentioned in this tweet";      
     }
 
     if (this.render_after_selector) {
@@ -308,10 +338,10 @@ class Tweet {
       //
       let preview_selector = ".tweet-preview " + this.render_after_selector;
       if (document.querySelector(preview_selector)) {
-	//
-	//
-	//
-	this.render_after_selector = "";
+        //
+        //
+        //
+        this.render_after_selector = "";
       }
     }
 
@@ -322,7 +352,6 @@ class Tweet {
         TweetTemplate(this.app, this.mod, this),
         this.container
       );
-
     } else if (this.render_after_selector) {
       this.app.browser.addElementAfterSelector(
         TweetTemplate(this.app, this.mod, this),
@@ -389,17 +418,25 @@ class Tweet {
   }
 
   rerenderControls() {
-    this.renderLikes();
-    this.renderRetweets();
-    this.renderReplies();
+    //
+    // just make sure our updated tx.optional values propagate to the tweet properties
+    //
+    //console.log(JSON.parse(JSON.stringify(this.tx.optional)));
+
+    this.setKeys(this.tx.optional);    
+    //console.log(this.num_replies, this.num_retweets, this.num_likes);
+
+    // like, retweet, comment
+    this.refreshStat("like", this.num_likes);
+    this.refreshStat("retweet", this.num_retweets);
+    this.refreshStat("comment", this.num_replies);
+
   }
 
   forceRenderWithCriticalChild() {
-
     this.render();
 
     if (this.critical_child) {
-
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
       this.critical_child.render();
 
@@ -415,10 +452,8 @@ class Tweet {
     }
 
     this.attachEvents();
-
   }
   renderWithCriticalChild() {
-
     let does_tweet_already_exist_on_page = false;
     if (document.querySelector(`.tweet-${this.tx.signature}`)) {
       does_tweet_already_exist_on_page = true;
@@ -429,6 +464,12 @@ class Tweet {
     }
 
     if (this.critical_child && does_tweet_already_exist_on_page == false) {
+      //
+      // does child already exist on page
+      //
+      if (document.querySelector(`.tweet-${this.critical_child.tx.signature}`)) {
+        return;
+      }
 
       this.critical_child.render_after_selector = ".tweet-" + this.tx.signature;
       this.critical_child.render();
@@ -447,10 +488,15 @@ class Tweet {
       // if no replies are listed, but we are showing a reply... show least one to avoid confusion
       //
       if (this.tx.optional.num_replies == 0) {
-        let obj = document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`);
-        try { obj.innerHTML++; } catch (err) { console.log("err: " + err); }
+        let obj = document.querySelector(
+          `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`
+        );
+        try {
+          obj.innerHTML++;
+        } catch (err) {
+          console.log("err: " + err);
+        }
       }
-
     }
 
     this.attachEvents();
@@ -544,6 +590,7 @@ class Tweet {
       // tweet does not exist? exit
       //
       let this_tweet = document.querySelector(`.tweet-${this.tx.signature}`);
+
       if (!this_tweet) {
         return;
       }
@@ -556,21 +603,20 @@ class Tweet {
       // to be true before running attachEvents(); this will avoid it getting compressed
       // with full / preview toggle.
       //
-      let el = document.querySelector(
+      let tweet_text = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-text`
       );
-      if (!el) {
-        return;
-      }
-      if (!this.force_long_tweet) {
-        if (el.clientHeight < el.scrollHeight) {
-          el.classList.add("preview");
-          this.is_long_tweet = true;
+      if (tweet_text) {
+        if (!this.force_long_tweet) {
+          if (tweet_text.clientHeight < tweet_text.scrollHeight) {
+            tweet_text.classList.add("preview");
+            this.is_long_tweet = true;
+          } else {
+            tweet_text.classList.add("full");
+          }
         } else {
-          el.classList.add("full");
+          tweet_text.classList.add("full");
         }
-      } else {
-        el.classList.add("full");
       }
 
       /////////////////
@@ -594,11 +640,10 @@ class Tweet {
             return;
           }
 
-          let tweet_text = document.querySelector(
-            `.tweet-${this.tx.signature} > .tweet-body > .tweet-main > .tweet-text`
-          );
-
-          if (this.is_long_tweet) {
+          //
+          // Expand tweet preview for long tweets
+          //
+          if (this.is_long_tweet && tweet_text) {
             if (!tweet_text.classList.contains("full")) {
               tweet_text.classList.remove("preview");
               tweet_text.classList.add("full");
@@ -648,22 +693,6 @@ class Tweet {
                   ).innerHTML = parent_replies;
                 }
               }, 50);
-
-              this.mod.loadAndRenderTweetChildren(null, this.tx.signature, (txs) => {
-                for (let z = 0; z < txs.length; z++) {
-                  let tweet = this.mod.returnTweet(txs[z].signature);
-                  if (tweet) {
-                    tweet.render();
-                  }
-                  // hide manager loader
-                  this.mod.manager.hideLoader();
-                }
-              });
-
-
-              //
-              // otherwise re-load
-              //
             } else {
               window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
             }
@@ -689,80 +718,87 @@ class Tweet {
               app.connection.emit("redsquare-tweet-render-request", this.retweet);
             }
           }
-
         });
       });
 
       ///////////
       // reply //
       ///////////
-      document.querySelector(
+      let reply = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`
-      ).onclick = (e) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+      );
+      if (reply) {
+        reply.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
 
-        let post = new Post(this.app, this.mod, this);
-        post.parent_id = this.tx.signature;
-        post.thread_id = this.thread_id;
+          let post = new Post(this.app, this.mod, this);
+          post.parent_id = this.tx.signature;
+          post.thread_id = this.thread_id;
 
-        post.source = "Reply";
-        post.render();
-        this.app.browser.prependElementToSelector(
-          `<div id="post-tweet-preview-${this.tx.signature}" class="post-tweet-preview" data-id="${this.tx.signature}"></div>`,
-          ".tweet-overlay"
-        );
+          post.source = "Reply";
+          post.render();
+          this.app.browser.prependElementToSelector(
+            `<div id="post-tweet-preview-${this.tx.signature}" class="post-tweet-preview" data-id="${this.tx.signature}"></div>`,
+            ".tweet-overlay"
+          );
 
-        //
-        //Show quoted tweet in the post
-        //
-        let newtx = new Transaction(undefined, this.tx.toJson());
-        newtx.signature =
-          this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
+          //
+          //Show quoted tweet in the post
+          //
+          let newtx = new Transaction(undefined, this.tx.toJson());
+          newtx.signature =
+            this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
 
-        let new_tweet = new Tweet(
-          this.app,
-          this.mod,
-          newtx,
-          `#post-tweet-preview-${this.tx.signature}`
-        );
-        new_tweet.show_controls = 0;
-        new_tweet.render();
-      };
+          let new_tweet = new Tweet(
+            this.app,
+            this.mod,
+            newtx,
+            `#post-tweet-preview-${this.tx.signature}`
+          );
+          new_tweet.show_controls = 0;
+          new_tweet.render();
+          document.querySelector("#post-tweet-textarea").focus();
+        };
+      }
 
       /////////////
       // retweet //
       /////////////
-      document.querySelector(
+      let retweet = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet`
-      ).onclick = (e) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+      );
 
-        let post = new Post(this.app, this.mod, this);
+      if (retweet) {
+        retweet.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
 
-        post.source = "Retweet";
-        post.render();
+          let post = new Post(this.app, this.mod, this);
 
-        this.app.browser.prependElementToSelector(
-          `<div id="post-tweet-preview-${this.tx.signature}" class="post-tweet-preview" data-id="${this.tx.signature}"></div>`,
-          ".tweet-overlay"
-        );
+          post.source = "Retweet";
+          post.render();
 
-        //Insert this tweet as a new Tweet in the post window
-        let newtx = new Transaction(undefined, this.tx.toJson());
-        newtx.signature =
-          this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
+          this.app.browser.prependElementToSelector(
+            `<div id="post-tweet-preview-${this.tx.signature}" class="post-tweet-preview" data-id="${this.tx.signature}"></div>`,
+            ".tweet-overlay"
+          );
 
-        let new_tweet = new Tweet(
-          this.app,
-          this.mod,
-          newtx,
-          `#post-tweet-preview-${this.tx.signature}`
-        );
-        new_tweet.show_controls = 0;
-        new_tweet.render();
-      };
+          //Insert this tweet as a new Tweet in the post window
+          let newtx = new Transaction(undefined, this.tx.toJson());
+          newtx.signature =
+            this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
+
+          let new_tweet = new Tweet(
+            this.app,
+            this.mod,
+            newtx,
+            `#post-tweet-preview-${this.tx.signature}`
+          );
+          new_tweet.show_controls = 0;
+          new_tweet.render();
+        };
+      }
 
       //////////
       // like //
@@ -770,96 +806,115 @@ class Tweet {
       const heartIcon = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-like-button .heart-icon`
       );
-      heartIcon.onclick = async (e) => {
-        if (!heartIcon.classList.contains("liked")) {
-          heartIcon.classList.add("liked");
-          this.mod.likeTweet(this.tx.signature);
-        } else {
-          setTimeout(() => {
-            heartIcon.classList.remove("liked");
+      if (heartIcon) {
+        heartIcon.onclick = async (e) => {
+          if (!heartIcon.classList.contains("liked")) {
             heartIcon.classList.add("liked");
-          }, 5);
-        }
-
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-        await this.mod.sendLikeTransaction(
-          this.app,
-          this.mod,
-          { signature: this.tx.signature },
-          this.tx
-        );
-
-        //
-        // increase num likes
-        //
-        let obj = document.querySelector(
-          `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`
-        );
-        if (obj) {
-          obj.innerHTML = parseInt(obj.innerHTML) + 1;
-          if (!obj.classList.contains("liked")) {
-            obj.classList.add("liked");
+            this.mod.likeTweet(this.tx.signature);
+          } else {
+            setTimeout(() => {
+              heartIcon.classList.remove("liked");
+              heartIcon.classList.add("liked");
+            }, 5);
           }
-        }
-      };
+
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          await this.mod.sendLikeTransaction(
+            this.app,
+            this.mod,
+            { signature: this.tx.signature },
+            this.tx
+          );
+
+          //
+          // increase num likes
+          //
+          let obj = document.querySelector(
+            `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`
+          );
+          if (obj) {
+            obj.innerHTML = parseInt(obj.innerHTML) + 1;
+            if (!obj.classList.contains("liked")) {
+              obj.classList.add("liked");
+            }
+          }
+        };
+      }
 
       ///////////
       // share //
       ///////////
-      document.querySelector(
+      let share = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-share`
-      ).onclick = (e) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+      );
+      if (share) {
+        share.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
 
-        let tweetUrl =
-          window.location.origin + window.location.pathname + "?tweet_id=" + this.tx.signature;
-        navigator.clipboard.writeText(tweetUrl).then(() => {
-          siteMessage("Link copied to clipboard.", 2000);
-        });
-      };
+          let tweetUrl =
+            window.location.origin + window.location.pathname + "?tweet_id=" + this.tx.signature;
+          navigator.clipboard.writeText(tweetUrl).then(() => {
+            siteMessage("Link copied to clipboard.", 2000);
+          });
+        };
+      }
 
       //////////
       // flag //
       //////////
-      document.querySelector(
+      let flag = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-flag`
-      ).onclick = (e) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+      );
+      if (flag) {
+        flag.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
 
-        this.mod.sendFlagTransaction(this.app, this.mod, { signature: this.tx.signature });
-        this.flagged = 1;
+          this.mod.sendFlagTransaction(
+            this.app,
+            this.mod,
+            { signature: this.tx.signature },
+            this.tx
+          );
+          this.flagged = 1;
 
-        let obj = document.querySelector(`.tweet-${this.tx.signature}`);
-        if (obj) {
-          obj.style.display = "none";
-        }
-        salert("Tweet reported to moderators successfully.");
-      };
+          // Okay, sure we can delete our local copy of it...
+          this.app.storage.deleteTransaction(this.tx, null, "localhost");
+
+          let obj = document.querySelector(`.tweet-${this.tx.signature}`);
+          if (obj) {
+            obj.style.display = "none";
+          }
+          siteMessage("Reporting tweet to moderators...", 5000);
+        };
+      }
     } catch (err) {
       console.log("ERROR attaching events to tweet: " + err);
     }
   }
 
+
+  //
+  // I am using this function to reset the this.num_likes, etc
+  // from an updated tx that we either received on chain or through an archive query
+  // (both of which manually increment the stats in tx.optional)
+  //
   setKeys(obj) {
     for (let key in obj) {
       if (typeof obj[key] !== "undefined") {
-        if (
-          this[key] === 0 ||
-          this[key] === "" ||
-          this[key] === null ||
-          typeof this[key] === "undefined"
-        ) {
+        if (!this[key]){
           this[key] = obj[key];
+        }else if (typeof this[key] === "number"){
+          this[key] = Math.max(this[key], obj[key]);
         }
       }
     }
   }
 
-  async addTweet(tweet, levels_deep = 0) {
+  addTweet(tweet, levels_deep = 0) {
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here
@@ -879,7 +934,6 @@ class Tweet {
         this.user.notice = "new reply on " + this.formatDate(tweet.created_at);
       }
     } else {
-
     }
 
     //
@@ -1152,59 +1206,20 @@ class Tweet {
     return this;
   }
 
-  renderLikes() {
+  // like, retweet, comment
+  refreshStat(stat, newCount){
     // some edge cases where tweet won't have rendered
     try {
-      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`;
-      let likes = this.tx?.optional?.num_likes || 0;
-      let existing = likes;
-      if (document.querySelector(qs)) {
-        existing = parseInt(document.querySelector(qs).innerHTML);
-      }
-      for (let obj of Array.from(document.querySelectorAll(qs))) {
-        if (likes > existing) {
-          obj.innerHTML = likes;
+      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-${stat} .tweet-tool-${stat}-count`;
+      Array.from(document.querySelectorAll(qs)).forEach(obj => {
+        let existing = parseInt(obj.innerHTML) || 0;
+        if (newCount > existing) {
+          obj.innerHTML = newCount;
         }
-      }
+      }); 
     } catch (err) {
-      console.log("ERROR UPDATING LIKES: " + err);
+      console.log(`ERROR UPDATING ${stat}: ` + err);
     }
-  }
-
-  renderRetweets() {
-    // some edge cases where tweet won't have rendered
-    //console.log("RenderRetweets");
-    try {
-      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
-      let retweets = this.tx?.optional?.num_retweets || 0;
-      let existing = retweets;
-      if (document.querySelector(qs)) {
-        existing = parseInt(document.querySelector(qs).innerHTML);
-      }
-      for (let obj of Array.from(document.querySelectorAll(qs))) {
-        if (retweets > existing) {
-          obj.innerHTML = retweets;
-        }
-      }
-    } catch (err) {}
-  }
-
-  renderReplies() {
-    // some edge cases where tweet won't have rendered
-    //console.log("RenderReplies");
-    try {
-      let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
-      let replies = this.tx?.optional?.num_replies || 0;
-      let existing = replies;
-      if (document.querySelector(qs)) {
-        existing = parseInt(document.querySelector(qs).innerHTML);
-      }
-      for (let obj of Array.from(document.querySelectorAll(qs))) {
-        if (replies > existing) {
-          obj.innerHTML = replies;
-        }
-      }
-    } catch (err) {}
   }
 
   returnTransactionsInThread(limit = 10) {

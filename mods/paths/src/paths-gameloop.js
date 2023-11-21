@@ -106,10 +106,12 @@ console.log("PLAYER: " + this.game.player);
 console.log("LIve: " + player);
 console.log("HAND: " + JSON.stringify(hand));
 
+	  this.onNewTurn();
+
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards(`${name} is picking a card`, hand);
+	    this.updateStatusAndListCards(`${name} Turn`, hand);
 	  }
 	  
 	  return 0;
@@ -253,7 +255,21 @@ try {
 	  return 1;
 	}
 
+        if (mv[0] === "resolve") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  let cmd = "";
+	  if (mv[1]) { cmd = mv[1]; }
+	  if (this.game.queue.length >= 1) {
+	    if (this.game.queue[qe-1].split("\t")[0] === cmd) {
+	      this.game.queue.splice(qe-1, 1);
+	    }
+	  }
+
+	  return 1;
+
+	}
 
         if (mv[0] === "card") {
 
@@ -279,7 +295,6 @@ try {
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
 	  //
-	  //this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
@@ -305,12 +320,16 @@ try {
 	if (mv[0] === "combat") {
 
 	  let key = mv[1];
-	  let selected = mv[2];
+	  let selected = JSON.parse(mv[2]);
+
+console.log("SELECTED: " + JSON.stringify(selected));
 
 	  this.game.state.combat = {};
 	  this.game.state.combat.key = key;
-	  this.game.state.combat.attacker = JSON.parse(selected);
-	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_spacekey].units[0]);
+	  this.game.state.combat.attacker = selected;
+	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_sourcekey].units[0]);
+
+console.log("moving forward with combat!");
 
 	  //
 	  // remove this from the queue
@@ -356,8 +375,6 @@ try {
 //11. Defender Retreat
 //12. Attacker Advance
 
-alert("COMBAT: " + JSON.stringify(this.game.state.combat));
-
 	  this.combat_overlay.render();
 	  this.combat_overlay.pullHudOverOverlay();
 
@@ -366,6 +383,10 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	}
 
 	if (mv[0] == "combat_play_combat_cards") {
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
 	}
 
 	if (mv[0] == "combat_determine_outcome") {
@@ -381,6 +402,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  let defender_modified_roll = 0;
 	  let attacker_power = "allies";
 	  let defender_power = "central";
+	  let attacker_combat_power = 0;
+	  let defender_combat_power = 0;
 
 	  let attacker_table = "corps";
 	  let defender_table = "corps";
@@ -396,8 +419,8 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
 	  }
 
-	  attacker_roll = this.rollDice(6);
-	  defender_roll = this.rollDice(6);
+	  attacker_roll = this.rollDice();
+	  defender_roll = this.rollDice();
 
 	  attacker_modified_roll = attacker_roll + attacker_drm;
 	  defender_modified_roll = defender_roll + defender_drm;
@@ -407,16 +430,25 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	  if (attacker_modified_roll < 1) { attacker_modified_roll = 1; }
 	  if (defender_modified_roll < 1) { defender_modified_roll = 1; }
 
+	  this.game.state.combat.attacker_table = attacker_table;
+	  this.game.state.combat.defender_table = defender_table;
 	  this.game.state.combat.attacker_power = attacker_power;
 	  this.game.state.combat.defender_power = defender_power;
 	  this.game.state.combat.attacker_drm = attacker_drm;
 	  this.game.state.combat.defender_drm = defender_drm;
-	  this.game.state.combat.attacker_roll = attacker_drm;
-	  this.game.state.combat.defender_roll = defender_drm;
+	  this.game.state.combat.attacker_roll = attacker_roll;
+	  this.game.state.combat.defender_roll = defender_roll;
 	  this.game.state.combat.attacker_modified_roll = attacker_modified_roll;
 	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
-	  this.game.state.combat.attacker_loss_factor = 1;
-	  this.game.state.combat.defender_loss_factor = 1;
+	  this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
+	  this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log(JSON.stringify(this.game.state.combat));
+
 
 	  if (this.game.state.combat.flank_attack == "attacker") {
 	    this.game.queue.push(`combat_assign_hits\tattacker`);
@@ -445,7 +477,7 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 
 	  let power = mv[1];
 	  let player = 1;
-	  let loss_factor = 1;
+	  let loss_factor = 0;
 
 	  if (power == "attacker") { 
 	    player = this.returnPlayerOfFaction(this.game.state.combat.attacker_power);
@@ -456,10 +488,17 @@ alert("COMBAT: " + JSON.stringify(this.game.state.combat));
 	    loss_factor = this.game.state.combat.defender_loss_factor;
 	  }
 
-	  alert(power + " assign losses of " + loss_number);
+	  if (this.game.player === player) {
+	    this.combat_overlay.hide();
+	    this.loss_overlay.render(power);
+	  } else {
+	    this.combat_overlay.hide();
+	    this.unbindBackButtonFunction();
+	    this.updateStatus("Opponent Assigning Losses");
+	  }
 
 	  this.game.queue.splice(qe, 1);
-	  return;
+	  return 0;
 
 	}
 
@@ -488,12 +527,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	if (mv[0] == "combat_evaluate_flank_attack") {
 
-	  this.game.splice(qe, 1);
+	  this.game.queue.splice(qe, 1);
 
 	  let is_attacking_from_multiple_spaces = false;
 	  let defending_space_valid = false;
 
-	  let space = this.game.space[this.game.state.combat.key];
+	  let space = this.game.spaces[this.game.state.combat.key];
 
 	  //
 	  // if swamp or mountain return
@@ -512,6 +551,67 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+	if (mv[0] === "post_combat_cleanup") {
+
+	  let spacekey = this.game.state.combat.key;
+	  for (let i = this.game.spaces[spacekey].units.length-1; i >= 0; i--) {
+	    let u = this.game.spaces[spacekey].units[i];
+	    if (u.destroyed == true) {
+	      this.game.spaces[spacekey].units.splice(i, 1);
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+
+	  let x = this.returnAttackerUnits();
+	  let spacekeys = [];
+	  for (let z = 0; z < x.length; z++) {
+	    if (!spacekeys.includes(x[z].spacekey)) {
+	      spacekeys.push(x[z].spacekey);
+	    }
+	  }
+
+	  for (let z = 0; z < spacekeys.length; z++) {
+	    for (let i = this.game.spaces[spacekeys[z]].units.length-1; i >= 0; i--) {
+	      let u = this.game.spaces[spacekeys[z]].units[i];
+	      if (u.destroyed == true) {
+	        this.game.spaces[spacekeys[z]].units.splice(i, 1);
+	      }
+	    }
+	    this.displaySpace(spacekeys[z]);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "damage") {
+
+	  let spacekey = mv[1];
+	  let idx = parseInt(mv[2]);
+
+	  let unit = this.game.spaces[spacekey].units[idx];
+	  if (unit.damaged == false) { unit.damaged = true; } else { unit.destroyed = true; }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "add") {
+
+	  let spacekey = mv[1];
+	  let unitkey = mv[2];
+
+	  let unit = this.cloneUnit(unitkey);
+	  unit.spacekey = spacekey;
+	  this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
 
 
 
@@ -586,10 +686,12 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let faction = mv[1];
 	  let card = mv[2];
 	  let cost = parseInt(mv[3]);
+	  let skipend = 0;
+	  if (mv[4]) { skipend = parseInt(mv[4]); }
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  if (this.game.player == player) {
-	    this.playerPlayOps(faction, card, cost);    
+	    this.playerPlayOps(faction, card, cost, skipend);    
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " playing OPS");
 	  }
@@ -632,7 +734,6 @@ console.log("handle defender retreat if attacker won and has any full strength u
 	  let key = mv[2];
 	  let idx = parseInt(mv[3]);
 
-alert("entrench here!");
 	  this.game.spaces[key].units[idx].moved = 1;
 
 	  this.game.queue.splice(qe, 1);

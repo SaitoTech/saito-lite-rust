@@ -1,10 +1,9 @@
-
-.stun-overlay-container{
+.stun-overlay-container {
   position: fixed;
   z-index: 100;
 }
 
-.stun-overlay-container + .chat-container{
+.stun-overlay-container + .chat-container {
   z-index: 101;
 }
 
@@ -19,7 +18,8 @@
   transition: all 0.2s;
 }
 
-.stun-chatbox .minimizer, .stun-chatbox .maximizer {
+.stun-chatbox .minimizer,
+.stun-chatbox .maximizer {
   position: absolute;
   right: 1.8rem;
   top: 1.5rem;
@@ -119,8 +119,8 @@
   margin-right: 1rem;
 }
 
-
-.stun-chatbox .minimizer:hover i, .stun-chatbox .maximizer:hover i {
+.stun-chatbox .minimizer:hover i,
+.stun-chatbox .maximizer:hover i {
   color: var(--saito-primary);
   transform: scale(1.1);
 }
@@ -230,12 +230,13 @@
 }
 
 .stun-chatbox .side-videos {
-  display: grid;
+  display: flex;
   gap: 1rem;
   width: 25%;
   height: 100%;
   max-height: 100%;
   flex: 1;
+  flex-direction: column;
 }
 
 .stun-chatbox .b-btngrid {
@@ -314,7 +315,8 @@
   position: relative;
 }
 
-.chat-settings-preview video {
+/* When staring at self, be like a mirror */
+.chat-settings-preview video, video#local {
   transform: rotateY(180deg);
 }
 
@@ -605,7 +607,8 @@
   transform: scale(1.2);
 }
 
-.control-list .disconnect_btn {
+.icon_click_area:hover i.disconnect_btn{
+  transform: rotate(45deg);
   color: var(--saito-primary);
 }
 
@@ -671,7 +674,7 @@
 }
 
 @media screen and (max-width: 600px) {
-  .control-panel{
+  .control-panel {
     padding: 4rem 0;
   }
 
@@ -896,6 +899,7 @@
   .stun-chatbox .side-videos {
     width: 100%;
     max-height: 50%;
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, auto));
     grid-gap: 0.5rem;
   }
@@ -960,4 +964,28 @@
 
 .stun-chatbox.minimize .chat-static {
   display: none;
+}
+
+.fa-record-vinyl.recording {
+  color: red;
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.recording {
+  color: red;
+  animation: pulsate 1s ease-in-out infinite;
 }

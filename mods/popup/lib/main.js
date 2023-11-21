@@ -25,6 +25,16 @@ class PopupMain {
       this.mod.lesson.render(lesson_id);
     });
 
+    this.app.connection.on("popup-vocab-render-request", (review_id) => {
+      document.querySelector(".popup-content").innerHTML = "";
+      this.mod.vocab.render(review_id);
+    });
+
+    this.app.connection.on("popup-review-render-request", (review_id) => {
+      document.querySelector(".popup-content").innerHTML = "";
+      this.mod.review.render(review_id);
+    });
+
   }
 
   render() {
