@@ -84,7 +84,7 @@ class BuildOverlay {
               let cost = this_self.mod.priceList[purchase];
               for (let resource of cost) {
                 //Put the spends on the front of the move, so we can maybe cancel the building action
-                this_self.mod.prependMove(
+                this_self.mod.addMove(
                   "spend_resource\t" + this_self.mod.game.player + "\t" + resource
                 );
 

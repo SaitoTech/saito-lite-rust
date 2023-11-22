@@ -222,12 +222,23 @@ class SettlersGameloop {
       /* Building Actions */
       if (mv[0] == "undo_build") {
         this.game.queue.splice(qe, 1);
-        let last_mv = this.game.queue.pop();
-        while (last_mv.split("\t")[0] == "spend_resource") {
-          console.log(last_mv);
-          last_mv = this.game.queue.pop();
+        let player = parseInt(mv[1]);
+        let purchase = parseInt(mv[2]);
+
+        let key = this.r.name;
+        if (purchase == 1){
+          key = this.c1.name;
         }
-        this.game.queue.push(last_mv);
+        if (purchase == 2){
+          key = this.c2.name;
+        }
+        this.updateLog(`${this.formatPlayer(player)} decided against building a ${key}`);
+
+        let cost = this.priceList[purchase];
+        for (let resource of cost) {
+          this.game.state.players[player-1].resources.push(resource);  
+        }
+
         return 1;
       }
 
