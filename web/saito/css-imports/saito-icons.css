@@ -7,14 +7,15 @@
 
 .resize-icon {
   position: absolute;
-  left: 0rem;
-  top: -0.2rem;
+  left: -0.3rem;
+  top: -0.4rem;
   width: 0.8rem;
   height: 1.3rem;
   cursor: nw-resize;
   transform: rotate(45deg);
   border-right: 1px solid;
   z-index: 20;
+  padding: 0.5rem;
 }
 
 .resize-icon::after {
@@ -26,8 +27,9 @@
   z-index: 21;
   position: absolute;
   top: 0rem;
-  left: 0.25rem;
-  top: 0.4rem;
+  left: 0.45rem;
+  top: -0.45rem;
   width: 0.1rem;
-  height: 0.5rem;
+  height: 2rem;
+  padding: 0.5rem;
 }
