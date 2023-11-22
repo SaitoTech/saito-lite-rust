@@ -857,6 +857,14 @@ class Browser {
     return { year, month, day, hours, minutes };
   }
 
+  prettifyTimeStamp(timestamp, short_month = false) {
+    let object = this.formatDate(timestamp);
+
+    let timeString = (short_month) ? object.month.substr(0,3) : object.month;
+    timeString += ` ${object.day}, ${object.hours}:${object.minutes}`;
+    return timeString;
+  }
+
   addDragAndDropFileUploadToElement(
     id,
     handleFileDrop = null,
@@ -1254,6 +1262,42 @@ class Browser {
     }
   }
 
+  makeResizeable (target_div, icon_div, unique_id) {
+    let d = document;
+    let target = d.querySelector(target_div);
+    this.addElementToSelector(`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`, icon_div);
+    let pullTab = d.getElementById(`resize-icon-${unique_id}`);
+    let dimensions = target.getBoundingClientRect();
+
+    let ht = dimensions.height; let wd = dimensions.width;
+    let x = 0; let y = 0;
+    let dx = 0; let dy = 0;
+
+    let resize  = (evt) => {
+        dx = evt.screenX - x;
+        dy = evt.screenY - y;
+        x = evt.screenX;
+        y = evt.screenY;
+        wd -= dx;
+        ht -= dy;
+        target.style.width = wd + "px";
+        target.style.height = ht + "px";
+    }
+
+    let resizeFn = resize.bind(this);
+    pullTab.addEventListener("mousedown", (evt) => {
+        x = evt.screenX;
+        y = evt.screenY;
+      
+        d.body.addEventListener("mousemove", resizeFn);
+      
+        d.body.addEventListener("mouseup", () => {
+            d.body.removeEventListener("mousemove", resizeFn);
+        });
+    });
+
+  }
+
   returnAddressHTML(key) {
     return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
       key,
@@ -1411,8 +1455,6 @@ class Browser {
         // because of above marked parsing
         //text = text.replace(/[\r<br>]+$/, "");
       }
-
-      console.log("Sanitize");
 
       text = sanitizeHtml(text, {
         allowedTags: [

@@ -217,7 +217,7 @@
 .tweet-controls {
   display: flex;
   justify-content: space-between;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   width: 100%;
   margin-top: 1rem;
   padding-bottom: 1rem;
@@ -243,11 +243,10 @@
   display: inline-block;
   font-weight: bold;
   z-index: 1;
-  font-size: 1.5rem;
 }
 
 .tweet-controls i {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   margin: 0 1rem;
   text-align: center;
 }
@@ -295,19 +294,14 @@
   background: var(--saito-heart-animation);
   cursor: pointer;
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 55px;
   background-size: cover;
   /* margin-right: .5rem; */
 }
 
-.tweet-like-button .heart-icon:hover {
-  background: var(--saito-heart-animation-clicked);
-  cursor: pointer;
-  position: absolute;
-  background-size: cover;
-  width: 60px;
-  height: 60px;
+.tweet-tool-like:hover .heart-icon {
+  animation: like-anim 0s steps(28) forwards;
 }
 
 .tweet-like-button .heart-icon.liked {

@@ -181,6 +181,8 @@ class ChatPopup {
     //
     let popup_id = "chat-popup-" + this.group.id;
     let popup_qs = "#chat-popup-" + this.group.id;
+    let resize_id = "chat-resize-" + this.group.id;
+    let header_qs = "#chat-header-" + this.group.id;
     this_self = this;
 
     let chatPopup = document.querySelector(".chat-container" + popup_qs);
@@ -198,6 +200,7 @@ class ChatPopup {
         // make draggable
         //
         this.app.browser.makeDraggable(popup_id, header_id, true);
+        this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
       }
 
       //
@@ -245,7 +248,7 @@ class ChatPopup {
         //this.input.insertRange(quote.replaceAll("\n", "<br/>"));
         this.input.insertQuote(quote.replaceAll("\n", "<br/>"));
 
-        this.input.focus();
+        this.input.focus(true);
       });
     });
 
