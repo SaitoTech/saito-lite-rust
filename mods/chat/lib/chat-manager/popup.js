@@ -272,7 +272,7 @@ class ChatPopup {
             text += child.textContent;
           }
           //We may want to also pull inner text from element nodes as long as they aren't the hidden buttons
-          if (child.nodeType === 1 && !child.classList.contains("saito-userline-reply")) {
+          if (child.nodeType === 1 && !child.classList.contains("saito-userline-reply") && child.nodeName !== "BLOCKQUOTE") {
             text += child.innerText;
           }
         }
