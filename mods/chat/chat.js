@@ -1123,30 +1123,37 @@ class Chat extends ModTemplate {
           let sender = "";
           let msg = "";
           for (let z = 0; z < block.length; z++) {
-            if (z > 0) {
-              msg += "<br>";
-            }
+            ts = ts || block[z].timestamp;
             sender = block[z].from[0];
+            
+            const replyButton = `
+              <div data-id="${block[z].signature}" data-href="${sender + ts}" class="saito-userline-reply">
+                <div class="chat-copy"><i class="fas fa-copy"></i></div>
+                <div class="chat-reply"><i class="fas fa-reply"></i></div>
+                <div class="saito-chat-line-controls">
+                <span class="saito-chat-line-timestamp">
+                  ${this.app.browser.returnTime(ts)}
+                </span>
+              </div>
+
+              </div>`;  
+            msg += `<div class="chat-message-line message-${block[z].signature}">`;
             if (block[z].msg.indexOf("<img") != 0) {
               msg += this.app.browser.sanitize(block[z].msg);
             } else {
               msg += block[z].msg.substring(0, block[z].msg.indexOf(">") + 1);
             }
-            ts = ts || block[z].timestamp;
+            msg += `
+                ${replyButton}
+              </div>`;
           }
 
           //Use FA 5 so compatible in games (until we upgrade everything to FA6)
-          const replyButton = `<div data-id="${group_id}" data-href="${
-            sender + ts
-          }" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
           html += `${SaitoUserTemplate({
             app: this.app,
             publicKey: sender,
             notice: msg,
-            fourthelem:
-              `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
-              this.app.browser.returnTime(ts) +
-              `</span>${replyButton}</div>`,
+            fourthelem: "",
             id: sender + ts,
           })}`;
         }

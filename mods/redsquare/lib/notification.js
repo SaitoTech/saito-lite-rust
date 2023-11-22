@@ -18,7 +18,6 @@ class RedSquareNotification {
         '<div class="saito-end-of-redsquare">no notifications</div>';
     } else {
       let html = "";
-      let from = this.tx.from[0].publicKey;
 
       let txmsg = this.tx.returnMessage();
 
@@ -58,6 +57,7 @@ class RedSquareNotification {
   }
 
   renderNotificationTweet(txmsg, tweet_tx) {
+
     if (txmsg.data.mentions) {
       console.log("Hi mention!");
       this.tweet = new Tweet(this.app, this.mod, tweet_tx);
@@ -69,17 +69,17 @@ class RedSquareNotification {
           this.app,
           this.mod,
           tweet_tx,
-          `.tweet-notif-fav.notification-item-${from}-${txmsg.data.signature} .tweet-body .tweet-main .tweet-preview`
+          `.tweet-notif-fav.notification-item-${this.tx.from[0].publicKey}-${txmsg.data.signature} .tweet-body .tweet-main .tweet-preview`
         );
 
         this.user = new SaitoUser(
           this.app,
           this.mod,
-          `.notification-item-${from}-${txmsg.data.signature} > .tweet-header`,
+          `.notification-item-${this.tx.from[0].publicKey}-${txmsg.data.signature} > .tweet-header`,
           this.tx.from[0].publicKey
         );
 
-        let qs = `.tweet-notif-fav.notification-item-${from}-${txmsg.data.signature}`;
+        let qs = `.tweet-notif-fav.notification-item-${this.tx.from[0].publicKey}-${txmsg.data.signature}`;
         let obj = document.querySelector(qs);
         if (obj) {
           obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
@@ -116,13 +116,26 @@ class RedSquareNotification {
         // retweet
         //
         if (txmsg.data.retweet_tx) {
-          this.user.notice = "<span class='notification-type'>retweeted your tweet</span>";
+          let msg = "retweeted your tweet";
+
+          if (this.mod.publicKey != tweet_tx.from[0].publicKey) {
+            msg = "retweeted a tweet concerning you";
+          }
+
+          this.user.notice = `<span class='notification-type'>${msg}</span>`;
 
           //
           // or reply
           //
         } else {
-          this.user.notice = "<span class='notification-type'>replied to your tweet</span>";
+          let msg = "replied to your tweet";
+
+          if (this.mod.publicKey != tweet_tx.from[0].publicKey) {
+            msg = "replied to a tweet concerning you";
+          }
+
+          this.user.notice = `<span class='notification-type'>${msg}</span>`;
+          
         }
       } else {
         console.log("Unknown Notification type: ", txmsg.request);

@@ -2,7 +2,7 @@
   width: 100vw;
   height: calc(100% - var(--saito-header-height));
   display: grid;
-  grid-template-columns: min-content 5fr 3fr;
+  grid-template-columns: 32rem 5fr 32rem;
   padding: 0 calc((100vw - var(--saito-width)) / 2);
   z-index: 0;
   margin: 0;
@@ -39,7 +39,6 @@
 .saito-sidebar.left {
   position: sticky;
   height: calc(100 * var(--saito-vh) - var(--saito-header-height));
-  width: 25rem;
   top: 0;
   /*margin: 0 0 0 ;*/
   padding: 1.5rem 1rem 0 0;
@@ -57,6 +56,12 @@
   min-width: 30rem;
   height: max-content;
 
+}
+
+.saito-sidebar-element {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--saito-sidebar-element-background);
 }
 
 @media screen and (max-width: 1200px) {
