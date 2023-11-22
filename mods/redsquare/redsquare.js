@@ -652,8 +652,10 @@ class RedSquare extends ModTemplate {
                 txs[z].decryptMessage(this.app);
 
                 //timestamp is the original timestamp of the create tweet transaction
-                if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
-                  this.peers[i].tweets_earliest_ts = txs[z].timestamp;
+                if (created_at === "earlier"){
+                  if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
+                    this.peers[i].tweets_earliest_ts = txs[z].timestamp;
+                  }
                 }
 
                 //
@@ -662,8 +664,10 @@ class RedSquare extends ModTemplate {
                 // initial limited load and what we had saved locally...
                 //
 
-                if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
-                  this.peers[i].tweets_latest_ts = txs[z].updated_at;
+                if (created_at === "later"){
+                  if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
+                    this.peers[i].tweets_latest_ts = txs[z].updated_at;
+                  }
                 }
 
                 this.addNotification(txs[z]);
@@ -1323,6 +1327,7 @@ class RedSquare extends ModTemplate {
       //
       let opt = {
         field1: "RedSquare", //defaults to module.name, but just to make sure we match the capitalization with our loadTweets
+        preserve: 1
       };
 
       if (tx.isTo(this.publicKey)) {
