@@ -209,6 +209,9 @@ class ChatPopup {
       if (chat_bubble) {
         if (!this.mod.chat_manager_overlay) {
           chat_bubble.onclick = (e) => {
+
+            chat_bubble.classList.toggle("fa-window-minimize");
+            chat_bubble.classList.toggle("fa-window-restore");
             if (chatPopup.classList.contains("minimized")) {
               this.restorePopup(chatPopup);
             } else {
