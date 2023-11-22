@@ -149,6 +149,7 @@ html[data-theme="arcade"] {
   --saito-border-color: #426;
   --saito-background-color: #180c24;
   --saito-background-light: #140a1e;
+  --saito-sidebar-element-background: #3693;
   --saito-hover-background: #6395; /* A slightly transparent version of saito-primary, good contrast to normal background */
   --saito-gray-transparent: #88888818;
   --saito-background-shim: #0008;
