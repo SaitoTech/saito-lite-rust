@@ -73,7 +73,7 @@ class ChatPopup {
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
 
-      if (this.group.name == this.mod.communityGroupName){
+      if (this.group.name == this.mod.communityGroupName) {
         this.input.enable_mentions = true;
       }
     }
@@ -197,10 +197,17 @@ class ChatPopup {
 
       if (!this.mod.chat_manager_overlay) {
         //
-        // make draggable
+        // make draggable and resizable, but no in mobile/main - page
         //
         this.app.browser.makeDraggable(popup_id, header_id, true);
-        this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
+        this.app.browser.makeResizeable(popup_qs, header_qs, group_id, () => {
+          let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
+          if (chat_bubble) {
+            chat_bubble.classList.add("fa-window-minimize");
+            chat_bubble.classList.remove("fa-window-restore");
+            this.restorePopup(chatPopup);
+          }
+        });
       }
 
       //
@@ -209,15 +216,14 @@ class ChatPopup {
       if (chat_bubble) {
         if (!this.mod.chat_manager_overlay) {
           chat_bubble.onclick = (e) => {
-
             chat_bubble.classList.toggle("fa-window-minimize");
             chat_bubble.classList.toggle("fa-window-restore");
             if (chatPopup.classList.contains("minimized")) {
               this.restorePopup(chatPopup);
             } else {
-              this.width = chatPopup.style.width;
+              //this.width = chatPopup.style.width;
               this.height = chatPopup.style.height;
-              chatPopup.style.width = "";
+              //chatPopup.style.width = "";
               chatPopup.style.height = "";
               chatPopup.classList.add("minimized");
               chatPopup.classList.remove("active");
@@ -231,12 +237,10 @@ class ChatPopup {
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
-
         //Sanitize wipes dataset
         let quote = `<blockquote href="${el.parentElement.dataset.href}">`;
         if (el.parentElement.parentElement.innerText.length > 25) {
-          quote +=
-            "..." + el.parentElement.parentElement.innerText.slice(-25);
+          quote += "..." + el.parentElement.parentElement.innerText.slice(-25);
         } else {
           quote += el.parentElement.parentElement.innerText;
         }
@@ -249,9 +253,8 @@ class ChatPopup {
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-copy`).forEach((el) => {
       el.addEventListener("click", (e) => {
-
         let icon_element = e.currentTarget.firstElementChild;
-        if (icon_element){
+        if (icon_element) {
           icon_element.classList.toggle("fa-copy");
           icon_element.classList.toggle("fa-check");
 
@@ -264,23 +267,21 @@ class ChatPopup {
         let parent = el.parentElement.parentElement;
         let text = "";
 
-        for (let child of parent.childNodes){
-          if (child.nodeType === 3){
+        for (let child of parent.childNodes) {
+          if (child.nodeType === 3) {
             text += child.textContent;
           }
           //We may want to also pull inner text from element nodes as long as they aren't the hidden buttons
-          if (child.nodeType === 1 && !child.classList.contains("saito-userline-reply")){
+          if (child.nodeType === 1 && !child.classList.contains("saito-userline-reply")) {
             text += child.innerText;
           }
         }
 
         text = text.replace(/^\s+|\s+$/g, "");
-        
+
         navigator.clipboard.writeText(text);
       });
     });
-
-
 
     document.querySelectorAll(`${popup_qs} blockquote`).forEach((el) => {
       el.onclick = (e) => {
