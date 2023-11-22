@@ -49,7 +49,6 @@ class ChatPopup {
   }
 
   render() {
-
     //
     // exit if group unset
     //
@@ -210,6 +209,9 @@ class ChatPopup {
       if (chat_bubble) {
         if (!this.mod.chat_manager_overlay) {
           chat_bubble.onclick = (e) => {
+
+            chat_bubble.classList.toggle("fa-window-minimize");
+            chat_bubble.classList.toggle("fa-window-restore");
             if (chatPopup.classList.contains("minimized")) {
               this.restorePopup(chatPopup);
             } else {
@@ -227,44 +229,68 @@ class ChatPopup {
 
     // add reply functionality
 
-    document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
+    document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
-        
-        /*let copy = el.parentElement.parentElement.cloneNode(true);
-        copy.querySelector(".saito-userline-reply").remove();
-        let quote = `<blockquote>${copy.outerHTML}</blockquote>`;*/
 
         //Sanitize wipes dataset
-        let quote = `<blockquote href="${el.dataset.href}">`;
-        if (el.parentElement.previousElementSibling.innerText.length > 25) {
+        let quote = `<blockquote href="${el.parentElement.dataset.href}">`;
+        if (el.parentElement.parentElement.innerText.length > 25) {
           quote +=
-            "..." + el.parentElement.previousElementSibling.innerText.slice(-25) + "<br/><em>";
+            "..." + el.parentElement.parentElement.innerText.slice(-25);
         } else {
-          quote += el.parentElement.previousElementSibling.innerText + "<br/><em>";
+          quote += el.parentElement.parentElement.innerText;
         }
-        //Add the time stamp of the original message
-        quote +=
-          el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML +
-          "</em></blockquote>";
-        
 
-        //this.input.insertRange(quote.replaceAll("\n", "<br/>"));
         this.input.insertQuote(quote.replaceAll("\n", "<br/>"));
 
         this.input.focus(true);
       });
     });
 
+    document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-copy`).forEach((el) => {
+      el.addEventListener("click", (e) => {
+
+        let icon_element = e.currentTarget.firstElementChild;
+        if (icon_element){
+          icon_element.classList.toggle("fa-copy");
+          icon_element.classList.toggle("fa-check");
+
+          setTimeout(() => {
+            icon_element.classList.toggle("fa-copy");
+            icon_element.classList.toggle("fa-check");
+          }, 800);
+        }
+
+        let parent = el.parentElement.parentElement;
+        let text = "";
+
+        for (let child of parent.childNodes){
+          if (child.nodeType === 3){
+            text += child.textContent;
+          }
+          //We may want to also pull inner text from element nodes as long as they aren't the hidden buttons
+          if (child.nodeType === 1 && !child.classList.contains("saito-userline-reply")){
+            text += child.innerText;
+          }
+        }
+
+        text = text.replace(/^\s+|\s+$/g, "");
+        
+        navigator.clipboard.writeText(text);
+      });
+    });
+
+
+
     document.querySelectorAll(`${popup_qs} blockquote`).forEach((el) => {
       el.onclick = (e) => {
         let href = el.getAttribute("href");
 
         let myAnchor = document.querySelector(popup_qs + " #" + href);
-        if (myAnchor){
-          myAnchor.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"});
+        if (myAnchor) {
+          myAnchor.scrollIntoView({ block: "end", inline: "nearest", behavior: "smooth" });
         }
-        
-      }
+      };
     });
 
     if (document.querySelector(popup_qs + " #load-older-chats")) {
@@ -274,16 +300,15 @@ class ChatPopup {
     }
 
     let myBody = document.querySelector(popup_qs + " .chat-body");
-    if (myBody){
+    if (myBody) {
       myBody.addEventListener("scroll", (e) => {
         let chatHeight = myBody.getBoundingClientRect().height;
 
-        if (myBody.scrollHeight - chatHeight - myBody.scrollTop > chatHeight){
+        if (myBody.scrollHeight - chatHeight - myBody.scrollTop > chatHeight) {
           this.is_scrolling = true;
-        }else{
+        } else {
           this.is_scrolling = false;
         }
-        
       });
     }
 
@@ -372,10 +397,10 @@ class ChatPopup {
     chatPopup.classList.remove("minimized");
     chatPopup.classList.add("active");
     if (this.width) {
-      chatPopup.style.width = this.width;  
+      chatPopup.style.width = this.width;
     }
     if (this.height) {
-      chatPopup.style.height = this.height;  
+      chatPopup.style.height = this.height;
     }
   }
 }
