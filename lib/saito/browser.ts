@@ -1262,7 +1262,7 @@ class Browser {
     }
   }
 
-  makeResizeable (target_div, icon_div, unique_id) {
+  makeResizeable (target_div, icon_div, unique_id, callback = null) {
     let d = document;
     let target = d.querySelector(target_div);
     this.addElementToSelector(`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`, icon_div);
@@ -1289,6 +1289,10 @@ class Browser {
         x = evt.screenX;
         y = evt.screenY;
       
+        if (callback){
+          callback();
+        }
+        
         d.body.addEventListener("mousemove", resizeFn);
       
         d.body.addEventListener("mouseup", () => {
