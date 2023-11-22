@@ -1291,15 +1291,16 @@ class Browser {
         x = evt.screenX;
         y = evt.screenY;
       
-        if (callback){
-          callback();
-        }
-        
         d.body.addEventListener("mousemove", resizeFn);
       
         d.body.addEventListener("mouseup", () => {
             d.body.removeEventListener("mousemove", resizeFn);
         });
+
+        if (callback){
+          callback();
+        }
+        
     });
 
   }
