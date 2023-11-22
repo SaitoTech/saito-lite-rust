@@ -158,7 +158,10 @@
 }
 
 .chat-body img {
-  max-width: 100%;
+  /* If a small image, we don't want to zoom in
+  but the width: 100% should keep it from being to big
+   */
+  max-width: fit-content;
 }
 
 .chat-container img.img-prev {
