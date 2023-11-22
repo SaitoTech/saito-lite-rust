@@ -149,7 +149,7 @@ class SettlersPlayer {
           $(".rhover").off();
           $(".rhover").removeClass("rhover");
 
-          settlers_self.addMove("undo_build");
+          settlers_self.addMove(`undo_build\t${settlers_self.game.player}\t1`);
           settlers_self.endTurn();
         });
       }
@@ -237,7 +237,7 @@ class SettlersPlayer {
           $(".rhover").removeClass("rhover");
           $(".road.empty").removeAttr("style");
 
-          settlers_self.addMove(`undo_build`);
+          settlers_self.addMove(`undo_build\t${settlers_self.game.player}\t0`);
           settlers_self.endTurn();
         });
       }
@@ -283,7 +283,7 @@ class SettlersPlayer {
         $(".chover").off();
         $(".chover").removeClass("chover");
 
-        settlers_self.addMove("undo_build");
+        settlers_self.addMove(`undo_build\t${settlers_self.game.player}\t2`);
         settlers_self.endTurn();
       });
     }

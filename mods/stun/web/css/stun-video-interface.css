@@ -608,8 +608,8 @@
 }
 
 .icon_click_area:hover i.disconnect_btn{
-  transform: rotate(45deg);
-  color: var(--saito-primary);
+  transform: rotate(135deg);
+  color: var(--saito-red);
 }
 
 .control-list .add_users {
