@@ -194,6 +194,12 @@
   color: var(--saito-white);
 }
 
+.chat-header > i.noclick:hover {
+  background-color: revert;
+  color: var(--saito-primary);
+  cursor: revert;
+}
+
 .chat-header > i.chat-sizing-icon {
   padding: 1.2rem 0.6rem;
 }
