@@ -860,7 +860,7 @@ class Browser {
   prettifyTimeStamp(timestamp, short_month = false) {
     let object = this.formatDate(timestamp);
 
-    let timeString = (short_month) ? object.month.substr(0,3) : object.month;
+    let timeString = short_month ? object.month.substr(0, 3) : object.month;
     timeString += ` ${object.day}, ${object.hours}:${object.minutes}`;
     return timeString;
   }
@@ -919,6 +919,7 @@ class Browser {
           "paste",
           (e) => {
             console.log("Pasting into area where we accept files");
+
             let drag_and_drop = false;
             const files = e.clipboardData.files;
             [...files].forEach(function (file) {
@@ -934,12 +935,21 @@ class Browser {
               }
             });
 
-            if (drag_and_drop){
-              this.preventDefaults(e);
+            this.preventDefaults(e);
+
+            if (!drag_and_drop) {
+              let paste = (e.clipboardData || window.clipboardData).getData("text");
+              const selection = window.getSelection();
+              if (!selection.rangeCount) return;
+              selection.deleteFromDocument();
+              selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+              selection.collapseToEnd();
             }
           },
           false
         );
+
+        dropArea.classList.add("paste_event");
       }
       const input = document.getElementById(`hidden_file_element_${id}`);
       if (click_to_upload == true) {
@@ -1264,27 +1274,33 @@ class Browser {
     }
   }
 
-  makeResizeable (target_div, icon_div, unique_id, callback = null) {
+  makeResizeable(target_div, icon_div, unique_id, callback = null) {
     let d = document;
     let target = d.querySelector(target_div);
-    this.addElementToSelector(`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`, icon_div);
+    this.addElementToSelector(
+      `<div class="resize-icon" id="resize-icon-${unique_id}"></div>`,
+      icon_div
+    );
     let pullTab = d.getElementById(`resize-icon-${unique_id}`);
     let dimensions = target.getBoundingClientRect();
 
-    let ht = dimensions.height; let wd = dimensions.width;
-    let x = 0; let y = 0;
-    let dx = 0; let dy = 0;
+    let ht = dimensions.height;
+    let wd = dimensions.width;
+    let x = 0;
+    let y = 0;
+    let dx = 0;
+    let dy = 0;
 
-    let resize  = (evt) => {
-        dx = evt.screenX - x;
-        dy = evt.screenY - y;
-        x = evt.screenX;
-        y = evt.screenY;
-        wd -= dx;
-        ht -= dy;
-        target.style.width = wd + "px";
-        target.style.height = ht + "px";
-    }
+    let resize = (evt) => {
+      dx = evt.screenX - x;
+      dy = evt.screenY - y;
+      x = evt.screenX;
+      y = evt.screenY;
+      wd -= dx;
+      ht -= dy;
+      target.style.width = wd + "px";
+      target.style.height = ht + "px";
+    };
 
     let resizeFn = resize.bind(this);
     pullTab.addEventListener("mousedown", (evt) => {
@@ -1594,12 +1610,11 @@ class Browser {
   }
 
   stripHtml(html) {
-
     //let tmp = document.createElement("DIV");
     //tmp.innerHTML = html;
     //return tmp.textContent || tmp.innerText || "";
 
-    return html.replace( /(<([^>]+)>)/ig, '');
+    return html.replace(/(<([^>]+)>)/gi, "");
   }
 
   attachWindowFunctions() {
