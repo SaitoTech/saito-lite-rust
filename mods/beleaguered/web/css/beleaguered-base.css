@@ -63,7 +63,10 @@
   cursor: pointer;
   border-top: 1px solid;
   border-radius: 0px;
-  padding: 10px 0;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content:  center;
 }
 
 .status_option:hover{
@@ -147,11 +150,32 @@
 @media screen and (orientation: portrait) and (max-width: 550px) {
   .gameboard{
     grid-template-columns: unset;
-    grid-template-rows: 50px auto;
+    grid-template-rows: auto 100px;
+  }
+
+  .rowbox {
+    order: 1;
   }
 
   .logobox {
-    margin-top: 30px;
+    margin-top: unset;
+    order: 2;
+    max-width: 90vw;
+  }
+
+  .status {
+    padding: 0.5rem;
+  }
+
+  .status_option {
+    border-top: unset;
+    border-left: 1px solid;
+    width: min(80px, 30vw);
+    height: 100%;
+  }
+
+  .status_option:first-child{
+    border-left: unset;
   }
 
   .hidable {
@@ -159,6 +183,9 @@
   }
   .controls {
     margin-top: 0;
+    display: flex;
+    flex-direction: row;
+    height: 70px;
   }
 
   .controls > .status_option:first-child {

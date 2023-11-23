@@ -668,7 +668,7 @@ no status atm, but this is to update the hud
       html += "</span>";
       option += ` id="shuffle">Shuffle cards`;
     } else {
-      option += ` id="quit">Start New Game`;
+      option += ` id="quit">New Game`;
     }
     option += `</li><li class="option" id="hint">Hint`;
     if (this.moves.length > 0) {

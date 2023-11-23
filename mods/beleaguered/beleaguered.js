@@ -16,7 +16,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.description = "Stack all cards by suit from aces to kings to win this game";
     this.categories = "Games Cardgame One-player";
     this.publisher_message =
-      "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
+      "created by Pawel (twitter: @PawelPawlak14) with contributions from Saito team. Feel free to pm me with any suggestions/feedback";
 
     this.animationSpeed = 700;
     this.card_img_dir = "/saito/img/arcade/cards";
@@ -469,7 +469,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       Any card can be placed on the empty side stack.</div>
       <div class="controls">`;
 
-    html += `<div class="new_game status_option">Start New Game</div></div>`;  
+    html += `<div class="new_game status_option">New Game</div>`;  
 
     if (this.moves.length > 0){
       html += `<div class="undo_last status_option">Undo</div>`;
