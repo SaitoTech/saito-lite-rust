@@ -2,7 +2,7 @@
   width: 100vw;
   height: calc(100% - var(--saito-header-height));
   display: grid;
-  grid-template-columns: 32rem 5fr 32rem;
+  grid-template-columns: 33rem 5fr 33rem;
   padding: 0 calc((100vw - var(--saito-width)) / 2);
   z-index: 0;
   margin: 0;

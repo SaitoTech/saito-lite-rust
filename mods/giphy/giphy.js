@@ -207,7 +207,10 @@ class Giphy extends ModTemplate {
         e.currentTarget.select();
       }
       
-      gif_input_search.focus({ focusVisible: true });
+      if (!this.app.browser.isMobileBrowser()) {
+        gif_input_search.focus({ focusVisible: true });  
+      }
+      
     }
 
   }

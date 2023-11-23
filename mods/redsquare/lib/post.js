@@ -97,7 +97,7 @@ class Post {
 
     if (post_self.file_event_added == false) {
       post_self.app.browser.addDragAndDropFileUploadToElement(
-        "tweet-overlay",
+        "post-tweet-textarea",
         async (file) => {
           if (post_self.images.length >= 4) {
             salert("Maximum 4 images allowed per tweet.");

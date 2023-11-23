@@ -917,12 +917,12 @@ class Browser {
       if (!dropArea.classList.contains("paste_event")) {
         dropArea.addEventListener(
           "paste",
-          function (e) {
-            console.info("Paste Event");
-            console.info(e);
-
+          (e) => {
+            console.log("Pasting into area where we accept files");
+            let drag_and_drop = false;
             const files = e.clipboardData.files;
             [...files].forEach(function (file) {
+              drag_and_drop = true;
               const reader = new FileReader();
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
@@ -933,8 +933,10 @@ class Browser {
                 reader.readAsDataURL(file);
               }
             });
-            console.info(dropArea.innerHTML);
-            console.info(dropArea.innerText);
+
+            if (drag_and_drop){
+              this.preventDefaults(e);
+            }
           },
           false
         );
@@ -1262,7 +1264,7 @@ class Browser {
     }
   }
 
-  makeResizeable (target_div, icon_div, unique_id) {
+  makeResizeable (target_div, icon_div, unique_id, callback = null) {
     let d = document;
     let target = d.querySelector(target_div);
     this.addElementToSelector(`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`, icon_div);
@@ -1294,6 +1296,11 @@ class Browser {
         d.body.addEventListener("mouseup", () => {
             d.body.removeEventListener("mousemove", resizeFn);
         });
+
+        if (callback){
+          callback();
+        }
+        
     });
 
   }
