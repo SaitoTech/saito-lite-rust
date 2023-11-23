@@ -104,8 +104,8 @@ html[data-theme="dark"] {
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-arcade-header-background: var(--saito-background-color);
   --saito-button-background: var(--saito-primary);
-  --saito-bubble-dark: #0008;
-  --saito-bubble-light: #4444;
+  --saito-bubble-dark: #1b1525;
+  --saito-bubble-light: #302a34;
   --saito-modal-background: #2e2636;
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #bdbaba;

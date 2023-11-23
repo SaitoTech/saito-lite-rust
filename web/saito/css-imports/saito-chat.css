@@ -178,7 +178,7 @@
   font-size: 2rem;
 }
 
-.chat-header > i {
+.chat-header>i {
   margin: 0;
   padding: 1.2rem;
   color: var(--saito-primary);
@@ -189,12 +189,12 @@
   cursor: pointer;
 }
 
-.chat-header > i:hover {
+.chat-header>i:hover {
   background-color: var(--saito-primary);
   color: var(--saito-white);
 }
 
-.chat-header > i.chat-sizing-icon {
+.chat-header>i.chat-sizing-icon {
   padding: 1.2rem 0.6rem;
 }
 
@@ -236,20 +236,44 @@
 .chat-body .saito-userline {
   font-size: 1.7rem;
   padding: 1rem;
-  border-radius: 0.5rem 0.5rem 0.5rem 0;
-  background: var(--saito-bubble);
+  border-radius: 1.5rem 1.5rem 1.5rem 0;
+  background: var(--saito-background-color);
+  border: 1px solid var(--saito-border-color);
 }
+
+.chat-body .saito-user-self .saito-userline {
+  border-color: var(--saito-primary);
+}
+
+
+/*
+.chat-body .saito-userline::before {
+  content: " ";
+  height: 1px;
+  width: 20rem;
+  background: linear-gradient(90deg, var(--saito-border-color), transparent);
+  position: absolute;
+  bottom: 1rem;
+  left: 4rem;
+  z-index: 9;
+}
+
+.chat-body .saito-user-self .saito-userline::before {
+  background: linear-gradient(90deg, var(--saito-primary), transparent);
+}
+*/
 
 .chat-body .saito-address {
   margin: 0.5rem 0;
 }
 
+/*
 .chat-body .saito-userline::after {
   background: var(--saito-bubble-dark);
   content: " ";
   position: absolute;
   width: 1.5rem;
-  height: 2rem;
+  height: 1rem;
   bottom: 1rem;
   left: 4rem;
   clip-path: polygon(100% 0, 0 100%, 100% 100%);
@@ -258,6 +282,7 @@
 .chat-body .saito-userline {
   overflow-wrap: anywhere;
 }
+*/
 
 .chat-body .saito-identicon-box {
   align-self: end;
@@ -312,6 +337,7 @@
 .chat-body .saito-userline {
   width: unset;
   min-width: 20rem;
+  max-width: 600px;
 }
 
 .chat-message-line:hover .saito-userline-reply {
