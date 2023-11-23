@@ -222,7 +222,6 @@
   /*height: calc(100% - 9rem);*/
   height: 100%;
   overflow: clip auto;
-  background-color: #bbb1;
   background-image: url(/saito/img/tiled-logo.svg);
 }
 
@@ -237,8 +236,8 @@
 .chat-body .saito-userline {
   font-size: 1.7rem;
   padding: 1rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(45deg, #222, #44444444);
+  border-radius: 0.5rem 0.5rem 0.5rem 0;
+  background: var(--saito-bubble);
 }
 
 .chat-body .saito-address {
@@ -246,10 +245,10 @@
 }
 
 .chat-body .saito-userline::after {
-  background: #222;
+  background: var(--saito-bubble-dark);
   content: " ";
   position: absolute;
-  width: 2rem;
+  width: 1.5rem;
   height: 2rem;
   bottom: 1rem;
   left: 4rem;
