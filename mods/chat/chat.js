@@ -331,9 +331,12 @@ class Chat extends ModTemplate {
             ) {
               this.app.connection.emit("chat-manager-request-no-interrupts");
               return;
-            }else{
-              this.app.connection.emit("chat-popup-render-request");
             }
+            /*
+            Let's see if not auto opening community chat makes for a better UX
+             else{
+              this.app.connection.emit("chat-popup-render-request");
+            }*/
           }
         });
       }
@@ -937,6 +940,7 @@ class Chat extends ModTemplate {
         this.inTransitImageMsgSig = tx.signature;
       }
     }
+
     let peers = await app.network.getPeers();
 
     if (peers.length > 0) {
@@ -959,7 +963,7 @@ class Chat extends ModTemplate {
     }
   }
 
-  async createChatTransaction(group_id, msg = "") {
+  async createChatTransaction(group_id, msg = "", to_keys = []) {
     let newtx = await this.app.wallet.createUnsignedTransaction(
       this.publicKey,
       BigInt(0),
@@ -972,8 +976,15 @@ class Chat extends ModTemplate {
 
     let secret_holder = "";
 
+    //
+    //I'm not sure we need either of these...
+    //
     newtx.addFrom(this.publicKey);
     newtx.addTo(this.publicKey);
+
+    for (let mention of to_keys){
+      newtx.addTo(mention);      
+    }
 
     let members = this.returnMembers(group_id);
 
@@ -1131,13 +1142,12 @@ class Chat extends ModTemplate {
                 <div class="chat-copy"><i class="fas fa-copy"></i></div>
                 <div class="chat-reply"><i class="fas fa-reply"></i></div>
                 <div class="saito-chat-line-controls">
-                <span class="saito-chat-line-timestamp">
-                  ${this.app.browser.returnTime(ts)}
-                </span>
-              </div>
-
+                  <span class="saito-chat-line-timestamp">
+                    ${this.app.browser.returnTime(ts)}
+                  </span>
+                </div>
               </div>`;  
-            msg += `<div class="chat-message-line message-${block[z].signature}">`;
+            msg += `<div class="chat-message-line message-${block[z].signature}${block[z].flag_message ? " user-mentioned-in-chat-line":""}">`;
             if (block[z].msg.indexOf("<img") != 0) {
               msg += this.app.browser.sanitize(block[z].msg);
             } else {
@@ -1161,6 +1171,7 @@ class Chat extends ModTemplate {
     }
 
     group.unread = 0;
+    group.mentioned = false;
 
     //Save the status that we have read these messages
     this.saveChatGroup(group);
@@ -1240,6 +1251,12 @@ class Chat extends ModTemplate {
       from: [],
       msg: content,
     };
+
+    if (tx.isTo(this.publicKey) && this.app.BROWSER && !tx.isFrom(this.publicKey) && group.members.length !== 2){
+      console.log("CHAT MESSAGE DIRECTED TO ME!!!!");
+      group.mentioned = true;
+      new_message.flag_message = true;
+    }
 
     //Keep the from array just in case....
     for (let sender of tx.from) {

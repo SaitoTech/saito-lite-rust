@@ -48,8 +48,12 @@
 	color: var(--saito-primary);
 	font-style: italic;
 	user-select: none;
-	margin: 0 8px;
+	margin-right: 8px;
 	width: fit-content;
+}
+
+* + .saito-mention {
+	margin-left: 8px;
 }
 
 .saito-mention.saito-address {

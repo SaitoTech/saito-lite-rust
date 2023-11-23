@@ -41,8 +41,10 @@ module.exports = ChatTeaser = (app, mod, group) => {
     group.name
   }</div>
     <div class="saito-userline">${last_msg}</div>
-    ${time && `<div class="saito-datetime">${time}</div>`}
-    ${group.unread > 0 ? `<div class="saito-notification-dot">${group.unread}</div>` : ""}
+    <div class="saito-chat-notifications">
+      ${group.mentioned ? `<div class="saito-notification-dot">@</div>` : ""}
+      ${group.unread > 0 ? `<div class="saito-notification-dot">${group.unread}</div>` : ""}
+    </div>
     <div class="online-status-indicator"></div>
   </div>
   `;
