@@ -36,3 +36,23 @@
   min-height: 5rem;
   overflow-y: hidden;
 }
+
+.saito-chat-notifications{
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  display: flex;
+  right: 0;
+  top: 0;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+
+.saito-chat-notifications .saito-notification-dot {
+  position: relative;
+  bottom: unset;
+  left: unset;
+  height: 3rem;
+  width: 3rem;
+}

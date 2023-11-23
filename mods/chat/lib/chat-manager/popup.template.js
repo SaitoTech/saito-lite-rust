@@ -18,7 +18,7 @@ module.exports = (app, mod, group, isStatic = false) => {
     for (let member of group.members) {
       if (member !== mod.publicKey) {
         if (app.keychain.hasSharedSecret(member)) {
-          is_encrypted = `<i class="fa-solid fa-lock"></i>`;
+          is_encrypted = `<i class="fa-solid fa-lock noclick"></i>`;
         }
       }
     }

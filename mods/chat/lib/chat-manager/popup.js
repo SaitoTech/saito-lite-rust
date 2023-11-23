@@ -78,7 +78,7 @@ class ChatPopup {
       }
     }
 
-    let existing_input = this.input.getInput();
+    //let existing_input = this.input.getInput();
 
     //
     // calculate some values to determine position on screen...
@@ -237,6 +237,10 @@ class ChatPopup {
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
+        let src_obj = el.parentElement.parentElement.parentElement;
+        
+        console.log("reply:", src_obj);
+
         //Sanitize wipes dataset
         let quote = `<blockquote href="${el.parentElement.dataset.href}">`;
         if (el.parentElement.parentElement.innerText.length > 25) {
@@ -245,7 +249,7 @@ class ChatPopup {
           quote += el.parentElement.parentElement.innerText;
         }
 
-        this.input.insertQuote(quote.replaceAll("\n", "<br/>"));
+        this.input.insertQuote(quote.replaceAll("\n", "<br/>"), src_obj.dataset.id);
 
         this.input.focus(true);
       });
@@ -332,10 +336,11 @@ class ChatPopup {
         if (new_msg.trim() == "") {
           return;
         }
-        let newtx = await mod.createChatTransaction(group_id, message);
+
+        let newtx = await mod.createChatTransaction(group_id, message, this.input.getMentions());
         await mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(newtx);
-        this.input.setInput("");
+        this.input.clear();
         if (document.querySelector(popup_qs + " .chat-body")) {
           this.is_scrolling = false;
           document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
@@ -374,7 +379,7 @@ class ChatPopup {
           let newtx = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
           await mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(newtx);
-          this.input.setInput("");
+          this.input.clear();
         },
         false
       ); // false = no drag-and-drop image click
