@@ -2,19 +2,19 @@ module.exports = ChatTeaser = (app, mod, group) => {
   let id = group.id;
 
   let last_msg = "<em>new chat</em>";
-  let last_ts = new Date().getTime();
   let time = "";
 
   if (group.txs.length > 0) {
     let tx = group.txs[group.txs.length - 1];
     last_msg = tx.msg.indexOf("<img") == 0 ? "<em>[image]</em>" : app.browser.sanitize(tx.msg);
-    const regex = /<blockquote>.*<\/blockquote>/is;
-    last_msg = last_msg.replace(regex, "<em>reply</em>: ").replace("<br>", "");
+
+    const regex = /<blockquote.*<\/blockquote>/is;
+    last_msg = last_msg.replace(regex, "<em>RE:</em> ").replace("<br>", "");
     const regex2 = /<a[^>]+>/i;
     last_msg = last_msg.replace(regex2, "").replace("</a>", "");
-    last_ts = tx.timestamp;
-    let x = app.browser.formatDate(last_ts);
-    time = x.hours + ":" + x.minutes;
+
+    last_msg = last_msg.replace("saito-mention saito-address treated", "");
+
   }
 
   let identicon_source = id;

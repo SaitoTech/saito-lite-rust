@@ -239,17 +239,24 @@ class ChatPopup {
       el.addEventListener("click", (e) => {
         let src_obj = el.parentElement.parentElement.parentElement;
         
-        console.log("reply:", src_obj);
+        let quote = "";
 
-        //Sanitize wipes dataset
-        let quote = `<blockquote href="${el.parentElement.dataset.href}">`;
-        if (el.parentElement.parentElement.innerText.length > 25) {
-          quote += "..." + el.parentElement.parentElement.innerText.slice(-25);
-        } else {
-          quote += el.parentElement.parentElement.innerText;
+        for (let child of el.parentElement.parentElement.childNodes) {
+          if (child.nodeType === 3) {
+            quote += child.textContent.replace(/^\s+|\s+$/g, "<br>");
+          }
+          //We may want to also pull inner text from element nodes as long as they aren't the hidden buttons
+          if (child.nodeType === 1 && child.nodeName !== "BLOCKQUOTE") {
+            quote += child.innerText.replace(/^\s+|\s+$/g, "<br>");
+          }
         }
 
-        this.input.insertQuote(quote.replaceAll("\n", "<br/>"), src_obj.dataset.id);
+        if (quote.length > 30){
+          quote = "..." + quote.slice(-30);
+        }
+
+        let quoteHTML = `<blockquote href="${el.parentElement.dataset.href}">${quote}</blockquote>`;
+        this.input.insertQuote(quoteHTML, src_obj.dataset.id);
 
         this.input.focus(true);
       });
@@ -332,6 +339,11 @@ class ChatPopup {
       // submit
       //
       this.input.callbackOnReturn = async (message) => {
+        if (message.trim() == `${this.input.quote}`){
+          console.log("Reply with no content");
+          return;
+        }
+
         let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
         if (new_msg.trim() == "") {
           return;

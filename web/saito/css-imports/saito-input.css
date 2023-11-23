@@ -229,11 +229,26 @@ emoji-picker {
 
 .saito-input-quote .cancel-quote {
 	cursor: pointer;
+	font-size: 2.5rem;
+	width: 40px;
+	height: 40px;
+	border-radius: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.saito-input-quote i:hover {
+
+.chat-footer .saito-input-quote i:hover {
 	transform: unset;
 }
+
+.chat-footer .saito-input-quote i.cancel-quote:hover {
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
+}
+
+ 
 
 @media only screen and (max-width: 768px) {
 	.saito-input-selection-box {
