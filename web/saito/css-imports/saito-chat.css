@@ -40,6 +40,16 @@
   border-radius: 0.5rem;
 }
 
+.chat-manager-list .saito-address {
+  font-size: 1.3rem;
+  line-height: 1.8rem;
+}
+
+.chat-manager-list .saito-userline {
+  font-size: 1.5rem;
+}
+
+
 /* We have a chat-manager click event on saito-user */
 
 .chat-manager-list .saito-user {
@@ -272,6 +282,7 @@
 
 .chat-body .saito-address {
   margin: 0.5rem 0;
+  font-size: 1.3rem;
 }
 
 /*

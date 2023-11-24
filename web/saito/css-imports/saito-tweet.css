@@ -6,6 +6,11 @@
   position: relative;
 }
 
+.tweet .saito-address, .tweet .saito-userline {
+  font-size: 1.3rem;
+  margin: 0.175rem;
+}
+
 .tweet-preview .tweet .tweet-body {
   min-height: 4rem;
 }
@@ -111,7 +116,7 @@
   margin-right: 0.3rem;
   margin-left: 0.3rem;
   font-weight: bold;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--saito-font-color-light);
 }
 
