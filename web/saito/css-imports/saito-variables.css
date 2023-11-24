@@ -51,9 +51,7 @@ font imports
   --saito-black: #000;
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
   /* variable colors overridden in themes */
-  --saito-bubble-dark: #0008;
-  --saito-bubble-light: #4444;
-  --saito-bubble: linear-gradient(45deg, var(--saito-bubble-dark), var(--saito-bubble-light));
+  --saito-bubble-shadow: #0006;
   --saito-font-color: #3d3d3d;
   --saito-font-color-heavy: #222;
   --saito-font-color-light: #888;
@@ -87,7 +85,7 @@ font imports
 
 html[data-theme="dark"] {
   --saito-primary: #e05b08;
-  --saito-secondary: #c17a00;
+  --saito-secondary: #c1aa00;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
@@ -104,8 +102,7 @@ html[data-theme="dark"] {
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-arcade-header-background: var(--saito-background-color);
   --saito-button-background: var(--saito-primary);
-  --saito-bubble-dark: #1b1525;
-  --saito-bubble-light: #302a34;
+  --saito-bubble-shadow: #000c;
   --saito-modal-background: #2e2636;
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #bdbaba;
@@ -116,7 +113,7 @@ html[data-theme="dark"] {
 
 html[data-theme="sangre"] {
   --saito-primary: #b70b0b;
-  --saito-secondary: #c90c0c;
+  --saito-secondary: #ff8235;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
@@ -133,6 +130,7 @@ html[data-theme="sangre"] {
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-arcade-header-background: var(--saito-background-color);
   --saito-button-background: var(--saito-primary);
+  --saito-bubble-shadow: #000c;
   --saito-modal-background: #2e2636;
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #bdbaba;
@@ -163,6 +161,7 @@ html[data-theme="arcade"] {
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
+  --saito-bubble-shadow: #000c;
   --saito-arcade-header-background: transparent;
   --saito-modal-background: var(--saito-background-light);
   --saito-font-color-dark-modal: #efefef;
