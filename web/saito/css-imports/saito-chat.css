@@ -178,7 +178,7 @@
   font-size: 2rem;
 }
 
-.chat-header > i {
+.chat-header>i {
   margin: 0;
   padding: 1.2rem;
   color: var(--saito-primary);
@@ -189,7 +189,7 @@
   cursor: pointer;
 }
 
-.chat-header > i:hover {
+.chat-header>i:hover {
   background-color: var(--saito-primary);
   color: var(--saito-white);
 }
@@ -228,7 +228,6 @@
   /*height: calc(100% - 9rem);*/
   height: 100%;
   overflow: clip auto;
-  background-color: #bbb1;
   background-image: url(/saito/img/tiled-logo.svg);
 }
 
@@ -237,14 +236,63 @@
   cursor: default;
   grid-template-rows: min-content 1fr;
   min-height: 5.5rem;
+  gap: 0 2rem;
 }
 
-.chat-body>.saito-user>.saito-userline {
+.chat-body .saito-userline {
   font-size: 1.7rem;
+  padding: 1rem;
+  border-radius: 0.5rem 0.5rem 0.5rem 0;
+  background: var(--saito-background-color);
+  /*border: 1px solid var(--saito-border-color);*/
+  box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -6px 0px 1px -4px var(--saito-secondary);
+}
+
+.chat-body .saito-user-self .saito-userline {
+  box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -6px 0px 1px -4px var(--saito-primary);
+}
+
+
+/*
+.chat-body .saito-userline::before {
+  content: " ";
+  height: 1px;
+  width: 20rem;
+  background: linear-gradient(90deg, var(--saito-border-color), transparent);
+  position: absolute;
+  bottom: 1rem;
+  left: 4rem;
+  z-index: 9;
+}
+
+.chat-body .saito-user-self .saito-userline::before {
+  background: linear-gradient(90deg, var(--saito-primary), transparent);
+}
+*/
+
+.chat-body .saito-address {
+  margin: 0.5rem 0;
+}
+
+/*
+.chat-body .saito-userline::after {
+  background: var(--saito-bubble-dark);
+  content: " ";
+  position: absolute;
+  width: 1.5rem;
+  height: 1rem;
+  bottom: 1rem;
+  left: 4rem;
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
 }
 
 .chat-body .saito-userline {
   overflow-wrap: anywhere;
+}
+*/
+
+.chat-body .saito-identicon-box {
+  align-self: end;
 }
 
 /*
@@ -287,7 +335,6 @@
 
 .chat-message-line {
   position: relative;
-  padding: 0 0 1rem;
 }
 
 .saito-userline-reply {
@@ -295,7 +342,9 @@
 }
 
 .chat-body .saito-userline {
-  width: 100%;
+  width: unset;
+  min-width: 20rem;
+  max-width: 600px;
 }
 
 .chat-message-line:hover .saito-userline-reply {

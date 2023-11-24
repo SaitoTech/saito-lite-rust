@@ -13,14 +13,14 @@
   height: 1.3rem;
   cursor: nw-resize;
   transform: rotate(45deg);
-  border-right: 1px solid;
+  border-right: 1px solid var(--saito-border-color);
   z-index: 20;
 }
 
 .resize-icon::after {
   content: "";
   cursor: nw-resize;
-  border-right: 1px solid;
+  border-right: 1px solid var(--saito-border-color);
   z-index: 21;
   position: absolute;
   top: -0.8rem;
