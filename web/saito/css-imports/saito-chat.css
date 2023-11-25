@@ -36,7 +36,6 @@
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  background: #2f2c35a6;
   border-radius: 0.5rem;
 }
 
@@ -283,6 +282,12 @@
 .chat-body .saito-address {
   margin: 0.5rem 0;
   font-size: 1.3rem;
+  color: var(--saito-secondary);
+}
+
+
+.chat-body .saito-user-self .saito-address {
+  color: var(--saito-primary);
 }
 
 /*

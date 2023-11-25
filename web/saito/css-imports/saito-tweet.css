@@ -9,6 +9,7 @@
 .tweet .saito-address, .tweet .saito-userline {
   font-size: 1.3rem;
   margin: 0.175rem;
+  color: var(--saito-font-color-light);
 }
 
 .tweet-preview .tweet .tweet-body {
