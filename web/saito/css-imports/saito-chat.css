@@ -48,7 +48,6 @@
   font-size: 1.5rem;
 }
 
-
 /* We have a chat-manager click event on saito-user */
 
 .chat-manager-list .saito-user {
@@ -203,13 +202,13 @@
   color: var(--saito-white);
 }
 
-.chat-header > i.noclick:hover {
+.chat-header>i.noclick:hover {
   background-color: revert;
   color: var(--saito-primary);
   cursor: revert;
 }
 
-.chat-header > i.chat-sizing-icon {
+.chat-header>i.chat-sizing-icon {
   padding: 1.2rem 0.6rem;
 }
 
@@ -254,13 +253,8 @@
   border-radius: 0.5rem 0.5rem 0.5rem 0;
   background: var(--saito-background-color);
   /*border: 1px solid var(--saito-border-color);*/
-  box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -6px 0px 1px -4px var(--saito-secondary);
+  box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -6px 0px 1px -4px var(--key-color);
 }
-
-.chat-body .saito-user-self .saito-userline {
-  box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -6px 0px 1px -4px var(--saito-primary);
-}
-
 
 /*
 .chat-body .saito-userline::before {
@@ -284,7 +278,6 @@
   font-size: 1.3rem;
   color: var(--saito-secondary);
 }
-
 
 .chat-body .saito-user-self .saito-address {
   color: var(--saito-primary);

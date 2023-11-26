@@ -405,13 +405,22 @@ class Keychain {
     return "data:image/" + img_format + "+xml;base64," + data;
   }
 
-  returnIdenticonColor(publicKey) {
+  returnIdenticonColorRGB(publicKey) {
     const hue = parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) / 0xfffffff;
     const saturation = 0.7;
     const brightness = 0.5;
     const values = this.hsl2rgb(hue, saturation, brightness).map(Math.round);
     return `rgba(${values.join(",")})`;
   }
+
+  returnIdenticonColor(publicKey) {
+    const hue = parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) / 0xfffffff;
+    const saturation = 0.7;
+    const brightness = 0.5;
+    const values = this.hsl2rgb(hue, saturation, brightness).map(Math.round);
+    const toHex = c => ('0' + c.toString(16)).slice(-2);
+    return '#' + toHex(values[0]) + toHex(values[1]) + toHex(values[2]);  }
+
 
   hsl2rgb(h, s, b) {
     h *= 6;
@@ -430,6 +439,8 @@ class Keychain {
       s[(h | 8) % 6] * 255, // blue
     ];
   }
+
+  
 
   returnPublicKeyByIdentifier(identifier: string) {
     let key = this.returnKey({ identifier: identifier });
