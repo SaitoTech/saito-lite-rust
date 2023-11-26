@@ -299,6 +299,10 @@ class Tweet {
     // then pass-through and render the sub-tweet directly.
     //
     if (this.retweet_tx && !this.text && !this.img_preview) {
+
+      console.log("this is a retweet case /////");
+      console.log(this.retweet_tx);
+
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
@@ -313,8 +317,7 @@ class Tweet {
         t.render(prepend);
         t.attachEvents();
       } else {
-        console.log("Rendering a new retweet");
-        this.retweet.user.container = this.container + `> .tweet-${this.tx.signature} > .tweet-header`;
+        this.retweet.user.container = this.container + `> .tweet-${this.retweet.tx.signature} > .tweet-header`;
         this.retweet.user.notice = this.retweet.user.notice.replace("new", "original");
         this.retweet.render(prepend);
         this.retweet.attachEvents();

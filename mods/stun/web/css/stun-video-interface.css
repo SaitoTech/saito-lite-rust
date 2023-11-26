@@ -989,3 +989,52 @@
   color: red;
   animation: pulsate 1s ease-in-out infinite;
 }
+
+
+
+/*
+
+  videocall settings
+
+*/
+
+.videocall-setting-grid {
+  border: 1px solid #333;
+  height: auto;
+  width: fit-content;
+  padding: 1rem;
+}
+
+
+.videocall-setting-option {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 1rem; 
+}
+
+.display-option-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.display-option-label {
+  display: grid;
+  grid-template-columns: auto 1.5fr auto;
+  gap: 1rem;
+  align-items: center;
+  width: 20rem;
+  cursor: pointer;
+}
+
+.display-option-name {
+  line-height: 3rem;
+  font-size: 1.5rem;
+}
+
+.display-option-img {
+  height: 3rem;
+}
+
+.display-option-input {
+  line-height: 3rem
+}
