@@ -63,7 +63,7 @@
   width: 100%;
   min-height: fit-content;
   height: 100%;
-  top: 24px;
+  top: 4rem;
   background-color: var(--saito-background-color);
   padding-left: 1rem;
   display: flex;
