@@ -151,9 +151,9 @@ function reset_nonpersistent {
   fi
 
   if [ -f ./config/options.conf ]; then
-    cp .config/options.conf .config/options
+    cp ./config/options.conf .config/options
   else
-    cp .config/options.conf.template .config/options
+    cp ./config/options.conf.template .config/options
   fi
 }
 
