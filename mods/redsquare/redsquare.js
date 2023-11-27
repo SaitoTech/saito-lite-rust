@@ -592,6 +592,12 @@ class RedSquare extends ModTemplate {
   loadTweets(created_at = "earlier", mycallback) {
     //Count peers
     let peer_count = 0;
+    //
+    // Instead of just passing the txs to the callback, we count how many of these txs
+    // are new to us so we can have a better UX
+    //
+    let count = 0;
+
     for (let i = 0; i < this.peers.length; i++) {
       if (
         !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
@@ -637,17 +643,12 @@ class RedSquare extends ModTemplate {
           console.error("Unsupported time restraint in rS");
         }
 
-
+        console.log(i);
 
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
-            //console.log(`${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
-            //
-            // Instead of just passing the txs to the callback, we count how many of these txs
-            // are new to us so we can have a better UX
-            //
-            let count = 0;
+            console.log(`${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
 
             peer_count--;
 
@@ -720,7 +721,7 @@ class RedSquare extends ModTemplate {
 
             // execute callback when all txs are fetched from all peers
             if (peer_count == 0 && mycallback) {
-              console.log(`Run callback on ${count} newly loaded tweets (out of ${txs.length} return txs)`);
+              console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
               mycallback(count);
             }
           },
@@ -916,6 +917,7 @@ class RedSquare extends ModTemplate {
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet" || txmsg.request === "flag tweet") {
+      console.log("Add tweet fail: Like TX");
       return 0;
     }
 
@@ -928,17 +930,45 @@ class RedSquare extends ModTemplate {
     // avoid errors
     //
     if (!tweet?.tx) {
+      console.log("Add tweet fail: not a RS tx");
       return 0;
     }
+
+    if (this.tweets_sigs_hmap[tweet.tx.signature]) {
+        //
+        // Update the stats for this tweet we already have in memory
+        //
+        let t = this.returnTweet(tweet.tx.signature);
+        if (!t) {
+          console.error("Tweet indexed in hash, but not in memory");
+          return 0;
+        }
+
+        //console.log(`Updating tweet stats: ${t.tx.optional.num_replies}->${tx.optional.num_replies}, ${t.tx.optional.num_retweets}->${tx.optional.num_retweets}, ${t.tx.optional.num_likes}->${tx.optional.num_likes}`);
+
+        if (tweet.tx.optional) {
+          if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
+            t.tx.optional.num_replies = tweet.tx.optional.num_replies;
+          }
+          if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
+            t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+          }
+          if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
+            t.tx.optional.num_likes = tweet.tx.optional.num_likes;
+          }
+
+          t.rerenderControls();
+        }
+
+      console.log("Add tweet fail: Already have this tweet");
+      return 0;
+    }
+
 
     //
     // this is a post
     //
     if (!tweet.tx.optional.parent_id) {
-      //
-      // we do not have this tweet indexed, it's new
-      //
-      if (!this.tweets_sigs_hmap[tweet.tx.signature]) {
         //
         // check where we insert the tweet
         //
@@ -980,32 +1010,6 @@ class RedSquare extends ModTemplate {
         }
 
         return 1; // We have a new (top-level) tweet in the feed
-      } else {
-        //
-        // Update the stats for this tweet we already have in memory
-        //
-        let t = this.returnTweet(tweet.tx.signature);
-        if (!t) {
-          console.error("Tweet indexed in hash, but not in memory");
-          return 0;
-        }
-
-        //console.log(`Updating tweet stats: ${t.tx.optional.num_replies}->${tx.optional.num_replies}, ${t.tx.optional.num_retweets}->${tx.optional.num_retweets}, ${t.tx.optional.num_likes}->${tx.optional.num_likes}`);
-
-        if (tweet.tx.optional) {
-          if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
-            t.tx.optional.num_replies = tweet.tx.optional.num_replies;
-          }
-          if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
-            t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-          }
-          if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
-            t.tx.optional.num_likes = tweet.tx.optional.num_likes;
-          }
-
-          t.rerenderControls();
-        }
-      }
     } else {
       //
       // this is a comment / reply
@@ -1030,9 +1034,12 @@ class RedSquare extends ModTemplate {
       //console.log("RS: pushed onto unknown children: ", tweet.text);
       this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+
+      console.log("Add tweet fail: reply");
+      return 0;
+    
     }
 
-    return 0;
   }
 
   //

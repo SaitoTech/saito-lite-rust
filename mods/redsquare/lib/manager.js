@@ -31,6 +31,8 @@ class TweetManager {
             //
             // single tweet mode should hide loader immediately
             //
+            // TODO: we probably want to show the loader until the whole tweet thread is returned
+            //
             if (this.mode === "tweet") {
               this.hideLoader();
               return;
@@ -40,52 +42,7 @@ class TweetManager {
             // load more tweets -- from local and remote sources
             //
             if (this.mode === "tweets") {
-              mod.loadTweets("earlier", (tx_count) => {
-                console.log(`${tx_count} new tweets`);
-                
-                this.hideLoader();
-
-                if (this.mode !== "tweets") {
-                  console.log("Not on main feed anymore");
-                  return;
-                }
-
-                for (let i = 0; i < this.mod.tweets.length; i++) {
-                  let tweet = this.mod.tweets[i];
-                  if (!tweet.isRendered()) {
-                    tweet.renderWithCriticalChild();
-                  }
-                }
-
-                if (tx_count == 0) {
-                  if (!document.querySelector(".saito-end-of-redsquare")) {
-                    this.app.browser.addElementToSelector(
-                      `<div class="saito-end-of-redsquare">no more tweets</div>`,
-                      ".tweet-manager"
-                    );
-                  }
-                  if (document.querySelector("#redsquare-intersection")) {
-                    this.intersectionObserver.unobserve(
-                      document.querySelector("#redsquare-intersection")
-                    );
-                  }
-                }else{
-                  //
-                  // It is possible that the local archive pull comes back with nothing
-                  // So we need logic to keep the intersection observer going if the remote
-                  // pull comes back a few seconds later with older tweets
-                  //
-                  if (document.querySelector(".saito-end-of-redsquare")) {
-                    document.querySelector(".saito-end-of-redsquare").remove();
-                  }
-                  if (document.querySelector("#redsquare-intersection")) {
-                    this.intersectionObserver.observe(
-                      document.querySelector("#redsquare-intersection")
-                    );
-                  }
-
-                }
-              });
+              this.fetchOlderTweets();
             }
 
             //
@@ -105,7 +62,9 @@ class TweetManager {
                   notification.render(".tweet-manager");
 
                   if (document.querySelector("#redsquare-intersection")) {
-                    this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
+                    this.intersectionObserver.unobserve(
+                      document.querySelector("#redsquare-intersection")
+                    );
                   }
                 }
                 this.hideLoader();
@@ -207,7 +166,6 @@ class TweetManager {
     // tweets //
     ////////////
     if (this.mode == "tweets") {
-      
       //if (holder) {
       //  let kids = holder.children;
       //  managerElem.replaceChildren(...kids);
@@ -250,20 +208,63 @@ class TweetManager {
           notification.render(".tweet-manager");
 
           if (document.querySelector("#redsquare-intersection")) {
-            this.intersectionObserver.unobserve(
-              document.querySelector("#redsquare-intersection")
-            );
+            this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
           }
         }
         this.hideLoader();
 
         //Fire up the intersection observer after the callback completes...
         this.attachEvents();
-
       });
-
     }
+  }
 
+  fetchOlderTweets() {
+    this.mod.loadTweets("earlier", (tx_count) => {
+      if (this.mode !== "tweets") {
+        console.log("Not on main feed anymore");
+        return;
+      }
+
+      if (tx_count == 0) {
+        //
+        // So we didn't get any new renderable tweets, but that doesn't mean we
+        // should quit just yet
+        //
+        let out_of_content = true;
+        for (let i = 0; i < this.mod.peers.length; i++) {
+          if (this.mod.peers[i].tweets_earliest_ts) {
+            out_of_content = false;
+          }
+        }
+
+        if (out_of_content) {
+          this.hideLoader();
+
+          if (!document.querySelector(".saito-end-of-redsquare")) {
+            this.app.browser.addElementToSelector(
+              `<div class="saito-end-of-redsquare">no more tweets</div>`,
+              ".tweet-manager"
+            );
+          }
+          if (document.querySelector("#redsquare-intersection")) {
+            this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
+          }
+        } else {
+          console.log("Keep looking for tweets");
+          this.fetchOlderTweets();
+        }
+      } else {
+        this.hideLoader();
+
+        for (let i = 0; i < this.mod.tweets.length; i++) {
+          let tweet = this.mod.tweets[i];
+          if (!tweet.isRendered()) {
+            tweet.renderWithCriticalChild();
+          }
+        }
+      }
+    });
   }
 
   renderProfile(publicKey) {
@@ -289,8 +290,8 @@ class TweetManager {
       if (this.profile.replies.length > 0) {
         this.app.connection.emit("update-profile-stats", "replies", this.profile.replies.length);
       }
-      if (this.profile.retweets.length > 0){
-       this.app.connection.emit("update-profile-stats", "retweets", this.profile.retweets.length); 
+      if (this.profile.retweets.length > 0) {
+        this.app.connection.emit("update-profile-stats", "retweets", this.profile.retweets.length);
       }
 
       this.hideLoader();
@@ -407,9 +408,9 @@ class TweetManager {
     for (let z = 0; z < txs.length; z++) {
       let tweet = new Tweet(this.app, this.mod, txs[z]);
       if (tweet?.noerrors) {
-        if (tweet.isRetweet()){
-         this.profile.insertTweet(tweet, this.profile.retweets);
-         return; 
+        if (tweet.isRetweet()) {
+          this.profile.insertTweet(tweet, this.profile.retweets);
+          return;
         }
         if (tweet.isPost()) {
           this.profile.insertTweet(tweet, this.profile.posts);
