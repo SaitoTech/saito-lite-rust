@@ -231,6 +231,40 @@ class ChatPopup {
           };
         }
       }
+
+
+      //
+      // maximize
+      let mximize_icon = document.querySelector(`${popup_qs} .chat-header .chat-maximizer-icon`);
+      if (mximize_icon) {
+        if (!this.mod.chat_manager_overlay) {
+          mximize_icon.onclick = (e) => {
+
+
+            
+            mximize_icon.classList.toggle("fa-square");
+            mximize_icon.classList.toggle("fa-window-restore");
+            
+            if (chatPopup.classList.contains("maximized")) {
+              this.restorePopup(chatPopup);
+              console.log("normal size"); 
+              chatPopup.classList.remove("maximized");
+           } else {
+              console.log("maximizing");
+              chatPopup.style.width = window.innerWidth + 'px';
+              chatPopup.style.height = window.innerHeight + 'px';
+              chatPopup.style.left = 0;
+              chatPopup.style.top = 0;
+
+              //chatPopup.style.height = "";
+              chatPopup.classList.add("maximized");
+            }
+
+
+          };
+        }
+      }
+
     }
 
     // add reply functionality
