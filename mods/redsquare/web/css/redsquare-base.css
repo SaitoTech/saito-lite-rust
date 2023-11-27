@@ -121,12 +121,20 @@
   z-index: 3;
 }
 
+.redsquare-page-active {
+  font-weight: bolder;
+}
+
+.saito-menu .redsquare-page-active i::before {
+  -webkit-text-stroke: var(--saito-font-color) 2px;
+}
+
 .redsquare-menu-home .fa-house::before  {
   transition: all 0.15s ease-in-out;
 }
 
 
-.redsquare-menu-home:hover .fa-house::before {
+.redsquare-menu-home.redsquare-page-active:hover .fa-house::before {
   content: "\f021";
 }
 

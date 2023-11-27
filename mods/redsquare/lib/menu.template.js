@@ -9,7 +9,7 @@ module.exports = () => {
           <li class="redsquare-menu-home">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
-<!--            <i class="fa-solid fa-rotate"></i> -->
+
           </li>
           <li class="redsquare-menu-notifications">
             <i class="fas fa-bell"></i>

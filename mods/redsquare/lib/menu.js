@@ -8,6 +8,12 @@ class RedSquareMenu {
     this.container = container;
     this.name = "RedSquareMenu";
     this.increments = 0;
+
+    app.connection.on("redsquare-clear-menu-highlighting", () => {
+      document.querySelectorAll(".redsquare-page-active").forEach(el => {
+        el.classList.remove("redsquare-page-active");
+      });
+    });
   }
 
   render() {

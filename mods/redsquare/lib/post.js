@@ -274,6 +274,13 @@ class Post {
 
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
+    if (this.mod.manager) {
+      if (!this.mod.manager.mode.includes("tweet")) {
+        return;
+      }
+    }
+
+
     //
     // This makes no sense. If you require at the top of the file, it fails with a
     // new Tweet is not a constructor error!!! ???
@@ -282,14 +289,6 @@ class Post {
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx, ".tweet-manager");
     //console.log("New tweet:", posted_tweet);
 
-    //
-    // go back to tweets list if needed
-    //
-    if (this.mod.manager) {
-      if (this.mod.manager.mode != "tweets") {
-        this.mod.manager.render("tweets"); // switches
-      }
-    }
 
     let rparent = this.tweet;
     if (rparent) {

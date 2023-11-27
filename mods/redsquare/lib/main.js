@@ -37,6 +37,10 @@ class RedSquareMain {
 
       this.manager.render("tweets");
 
+      if (document.querySelector(".redsquare-menu-home")){
+        document.querySelector(".redsquare-menu-home").classList.add("redsquare-page-active");
+      }
+
       let behavior = "auto";
 
       if (scroll_to_top) {
@@ -82,6 +86,12 @@ class RedSquareMain {
           if (this.canRefreshPage()) {
             console.log("postcache-render-request: refresh the page automatically!");
             this.manager.render("tweets");
+            
+            if (document.querySelector(".redsquare-menu-home")){
+              document.querySelector(".redsquare-menu-home").classList.add("redsquare-page-active");
+            }
+
+
           } else {
             console.log("postcache-render-request: CANNOT refresh the page!");
 
@@ -119,7 +129,6 @@ class RedSquareMain {
         this.app.connection.emit("redsquare-home-render-request");
       });
 
-      document.querySelector(".redsquare-menu-home").style.display = "flex";
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
@@ -134,7 +143,10 @@ class RedSquareMain {
         this.app.connection.emit("redsquare-home-render-request");
       });
 
-      document.querySelector(".redsquare-menu-home").style.display = "flex";
+      if (document.querySelector(".redsquare-menu-notifications")){
+        document.querySelector(".redsquare-menu-notifications").classList.add("redsquare-page-active");
+      }
+
     });
 
     //
@@ -148,13 +160,18 @@ class RedSquareMain {
         publicKey = this.mod.publicKey;
       }
 
+      this.manager.render("profile")
+
       this.manager.renderProfile(publicKey);
 
       this.app.connection.emit("saito-header-replace-logo", (e) => {
         this.app.connection.emit("redsquare-home-render-request");
       });
 
-      document.querySelector(".redsquare-menu-home").style.display = "flex";
+      if (document.querySelector(".redsquare-menu-profile")){
+        document.querySelector(".redsquare-menu-profile").classList.add("redsquare-page-active");
+      }
+
     });
 
     this.app.connection.on("redsquare-insert-loading-message", () => {
