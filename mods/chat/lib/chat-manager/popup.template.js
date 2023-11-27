@@ -33,7 +33,7 @@ module.exports = (app, mod, group, isStatic = false) => {
       group.name
     }</div>
             <i class="fa-solid fa-window-minimize chat-sizing-icon chat-minimizer-icon"></i>
-            <!--i class="fa-solid fa-window-maximize chat-sizing-icon chat-maximizer-icon"></i-->
+            <i class="fa-regular fa-square chat-sizing-icon chat-maximizer-icon"></i>
             <i id="chat-container-close" class="chat-container-close fas fa-times"></i>
           </div>
 
