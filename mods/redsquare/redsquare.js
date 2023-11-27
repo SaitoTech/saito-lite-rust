@@ -624,6 +624,8 @@ class RedSquare extends ModTemplate {
 
         if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
+          console.log(`Load tweets from ${this.peers[i].publicKey}, created earlier than ${this.app.browser.prettifyTimeStamp(this.peers[i].tweets_earliest_ts)}`);
+
         } else if (created_at == "later") {
           //
           // For "new" tweets we maybe want to look at updated, not created
@@ -634,6 +636,8 @@ class RedSquare extends ModTemplate {
         } else {
           console.error("Unsupported time restraint in rS");
         }
+
+
 
         this.app.storage.loadTransactions(
           obj,
@@ -711,11 +715,12 @@ class RedSquare extends ModTemplate {
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
-              //console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
+              console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
             // execute callback when all txs are fetched from all peers
             if (peer_count == 0 && mycallback) {
+              console.log(`Run callback on ${count} newly loaded tweets (out of ${txs.length} return txs)`);
               mycallback(count);
             }
           },

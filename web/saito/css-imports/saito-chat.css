@@ -62,7 +62,7 @@
   width: 100%;
   min-height: fit-content;
   height: 100%;
-  top: 24px;
+  top: 4rem;
   background-color: var(--saito-background-color);
   padding-left: 1rem;
   display: flex;
@@ -169,9 +169,6 @@
   but the width: 100% should keep it from being to big
    */
   max-width: fit-content;
-}
-
-.chat-container img.img-prev {
   width: 100%;
 }
 
@@ -279,8 +276,15 @@
   color: var(--saito-secondary);
 }
 
+/* Show my name in red */
 .chat-body .saito-user-self .saito-address {
   color: var(--saito-primary);
+}
+
+/* Hide user names in 2-person chats */
+.saito-dm-chat .chat-body .saito-address {
+  visibility: hidden;
+  height: 0;
 }
 
 /*
