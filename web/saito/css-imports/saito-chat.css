@@ -275,10 +275,23 @@
   color: var(--saito-secondary);
 }
 
+
+.chat-body .saito-user-self.saito-user {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Show my name in red */
 .chat-body .saito-user-self .saito-address {
   color: var(--saito-primary);
+  height: 0;
+  width: 0;
 }
+
+.chat-body .saito-user-self.saito-user .saito-identicon-box {
+  display: none;
+}
+
 
 /* Hide user names in 2-person chats */
 .saito-dm-chat .chat-body .saito-address {
