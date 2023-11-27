@@ -143,12 +143,16 @@ class Tweet {
     //
     // maybe anything is updated
     //
-    if (this.tx.optional.updated_tx) {
-console.log("TESTING: this tx.optional.updated_tx");
+    if (this.tx.optional.update_tx) {
+      console.log("TESTING: this tx.optional.update_tx");
       let newtx = new Transaction();
-      newtx.deserialize_from_web(this.app, this.tx.optional.updated_tx);
+      newtx.deserialize_from_web(this.app, this.tx.optional.update_tx);
       let newtxmsg = newtx.returnMessage();
-      this.setKeys(newtxmsg.data, true);
+      
+      console.log(this.text, newtxmsg.data.text);
+      this.text = newtxmsg.data.text;
+      //Not updating more than text
+      //this.setKeys(newtxmsg.data, true);
     }
 
     //
@@ -338,6 +342,10 @@ console.log("TESTING: this tx.optional.updated_tx");
       this.notice = "You were mentioned in this tweet";      
     }
 
+    if (this.tx.optional?.update_tx){
+      this.notice = "This tweet was edited at " + this.formatDate(this.updated_at);
+    }
+
     if (this.render_after_selector) {
       //
       // remove if selector does not exist
@@ -358,6 +366,7 @@ console.log("TESTING: this tx.optional.updated_tx");
     }
 
     if (document.querySelector(myqs)) {
+      console.log("Re-render tweet in place");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(

@@ -216,33 +216,30 @@ class Post {
     // saito-loader
     //
     post_self.overlay.hide();
-    post_self.overlay.closebox = false;
-    if (!delete_tweet && source !== "Edit") {
-      post_self.overlay.show('<div class="saito-loader"></div>');
-    }
 
     //Delete
     if (delete_tweet) {
-      this.mod.replyTweet(this.tweet.tx.signature);
-      data = { text: text, tweet_id : this.tweet.tx.signature };
-      let qs = `.tweet-${this.tweet.tx.signature}`;
-      let obj = document.querySelector(qs);
-      if (obj) { obj.remove(); }
-      let newtx = await post_self.mod.sendEditTransaction(post_self.app, post_self.mod, data, keys);
+
+      data = { tweet_id : this.tweet.tx.signature };
+      this.tweet.remove();
+      let newtx = await post_self.mod.sendDeleteTransaction(post_self.app, post_self.mod, data, keys);
       return;
     }
 
     //Edit
     if (source === "Edit") {
-      is_reply = true;
-      this.mod.replyTweet(this.tweet.tx.signature);
       data = { text: text, tweet_id : this.tweet.tx.signature };
+      
       let qs = `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
       let obj = document.querySelector(qs);
       if (obj) { obj.innerHTML = text; }
+      
       let newtx = await post_self.mod.sendEditTransaction(post_self.app, post_self.mod, data, keys);
       return;
     }
+
+    post_self.overlay.closebox = false;
+    post_self.overlay.show('<div class="saito-loader"></div>');
 
     //Replies
     if (parent_id !== "") {

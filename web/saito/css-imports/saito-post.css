@@ -92,9 +92,11 @@
   background: var(--saito-background-color);
 }
 
-.post-tweet-button {
+.post-tweet-button, .post-delete-button {
   width: 20rem;
   margin-right: 0;
+  line-height: 4.5rem;
+  font-size: 2.2rem;
 }
 
 
