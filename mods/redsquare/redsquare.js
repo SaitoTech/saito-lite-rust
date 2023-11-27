@@ -812,6 +812,14 @@ class RedSquare extends ModTemplate {
         },
         "localhost"
       );
+    }else{
+      //
+      // Just return empty array if we don't query the peers again
+      //
+      if (mycallback) {
+        mycallback([]);
+      }
+
     }
   }
 
