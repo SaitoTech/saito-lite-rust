@@ -4,6 +4,13 @@ module.exports = (app, mod, tweet) => {
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
 
+  console.log(tweet);
+  if (tweet.tx.update_tx){
+    console.log("Tweet Template == Rendering edited TX");
+    console.log(text);  
+  }
+  
+
   if (!text && !notice && tweet.retweet_tx) {
     notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
   }
