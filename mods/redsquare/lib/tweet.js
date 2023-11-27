@@ -144,7 +144,6 @@ class Tweet {
     // maybe anything is updated
     //
     if (this.tx.optional.updated_tx) {
-console.log("TESTING: this tx.optional.updated_tx");
       let newtx = new Transaction();
       newtx.deserialize_from_web(this.app, this.tx.optional.updated_tx);
       let newtxmsg = newtx.returnMessage();
@@ -901,26 +900,36 @@ console.log("TESTING: this tx.optional.updated_tx");
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-flag`
       );
       if (flag) {
-        flag.onclick = (e) => {
+        flag.onclick = async (e) => {
           e.preventDefault();
           e.stopImmediatePropagation();
 
-          this.mod.sendFlagTransaction(
-            this.app,
-            this.mod,
-            { signature: this.tx.signature },
-            this.tx
-          );
-          this.flagged = 1;
+	  let wallet_balance = await this.app.wallet.getBalance("SAITO");
 
-          // Okay, sure we can delete our local copy of it...
-          this.app.storage.deleteTransaction(this.tx, null, "localhost");
+	  // restrict moderation
+	  if (wallet_balance == 0 && this.app.BROWSER == 1) {
+            siteMessage("Purchase SAITO to Moderate...", 3000);
+	    return;
+	  } else {
+	  
+            this.mod.sendFlagTransaction(
+              this.app,
+              this.mod,
+              { signature: this.tx.signature },
+              this.tx
+            );
+            this.flagged = 1;
 
-          let obj = document.querySelector(`.tweet-${this.tx.signature}`);
-          if (obj) {
-            obj.style.display = "none";
+            // Okay, sure we can delete our local copy of it...
+            this.app.storage.deleteTransaction(this.tx, null, "localhost");
+
+            let obj = document.querySelector(`.tweet-${this.tx.signature}`);
+            if (obj) {
+              obj.style.display = "none";
+            }
+            siteMessage("Reporting tweet to moderators...", 5000);
+
           }
-          siteMessage("Reporting tweet to moderators...", 5000);
         };
       }
     } catch (err) {

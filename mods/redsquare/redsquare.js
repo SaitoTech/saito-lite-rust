@@ -1415,9 +1415,11 @@ console.log("2 publickeys: " + oldtx.from[0].publicKey + " -- " + tx.from[0].pub
                     oldtx.optional = {};
                   }
 		  oldtx.optional.updated_tx = tx.serialize_to_web(this.app);
-console.log("UPDATING OLD TRANSACTION with edit");
+console.log("UPDATING OLD TRANSACTION with edit 1");
                   await this.app.storage.updateTransaction(oldtx, {}, "localhost");
+console.log("UPDATING OLD TRANSACTION with edit 2");
 		}
+
           }
         },
         "localhost"
@@ -1818,6 +1820,15 @@ console.log("we will permit users to delete if they penned the tx");
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
+let txmsg = txs[z].returnMessage();
+console.log("TWEET TEXT: " + txmsg.data.text);
+if (txs[z].optional) {
+  console.log("TWEET OPTIONAL EXISTS!");
+  if (txs[z].optional.updated_tx) {
+    console.log("TWEET OPTIONAL UPDATED TX EXISTS!");
+  }
+}
+
             this.addNotification(txs[z]);
             this.addTweet(txs[z]);
           }
