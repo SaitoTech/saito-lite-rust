@@ -159,7 +159,8 @@ class Post {
   async postTweet(delete_tweet = 0) {
 
     let post_self = this;
-    let text = sanitize(this.input.getInput());
+    let text = this.mod.filterText(this.input.getRawInput());
+    text = sanitize(text);
     let parent_id = document.getElementById("parent_id").value;
     let thread_id = document.getElementById("thread_id").value;
     let source = document.getElementById("source").value;

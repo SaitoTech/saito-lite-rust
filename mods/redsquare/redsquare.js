@@ -1724,6 +1724,19 @@ class RedSquare extends ModTemplate {
     return;
   }
 
+  //////////////////////
+  // helper functions //
+  //////////////////////
+  filterText(text="") {
+    text = text.replace(/^\s+$/gm, '');
+    text = text.replace(/^\n+$/gm, '');
+    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, '<div><br></div>');
+    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, '');
+    return text;
+  }
+
+
+
   /////////////////////////////////////
   // saving and loading wallet state //
   /////////////////////////////////////
@@ -1800,8 +1813,6 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-    console.log("Load Local Tweets");
-
     this.app.storage.loadTransactions(
       { field1: "RedSquare", limit: 20 },
       (txs) => {
@@ -1809,15 +1820,6 @@ class RedSquare extends ModTemplate {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
-let txmsg = txs[z].returnMessage();
-console.log("TWEET TEXT: " + txmsg.data.text);
-if (txs[z].optional) {
-  console.log("TWEET OPTIONAL EXISTS!");
-  if (txs[z].optional.updated_tx) {
-    console.log("TWEET OPTIONAL UPDATED TX EXISTS!");
-  }
-}
-
             this.addNotification(txs[z]);
             this.addTweet(txs[z]);
           }
