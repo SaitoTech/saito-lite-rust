@@ -364,6 +364,11 @@ class PlaceUI {
       button.style.backgroundRepeat = "no-repeat";
       button.style.backgroundPosition = "center";
       button.style.boxShadow = "0px 6px 3px 0px rgba(0, 0, 0, 0.5)";
+
+      // Overrides Saito default button style
+      button.style.padding  = "0rem 0rem";
+      button.style.minWidth = "0rem";
+      button.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
     }
     this.colorButton.style.boxShadow = "0px 6px 3px 0px rgba(0, 0, 0, 0)";
 
