@@ -5,7 +5,7 @@ module.exports = () => {
 
         <div id="new-tweet" class="saito-button-primary">New Post</div>
 
-        <ul class="saito-menu-list">
+        <ul class="saito-menu-list saito-sidebar-element">
           <li class="redsquare-menu-home">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>

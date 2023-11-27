@@ -348,6 +348,10 @@
   margin-left: 6px;
 }
 
+.link-preview {
+  margin: 0.5rem 0;
+}
+
 .link-img {
   width: 100%;
   height: 25rem;

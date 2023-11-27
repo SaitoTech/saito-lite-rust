@@ -35,8 +35,7 @@
   gap: 1.5rem;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  max-height: calc(100% - 5rem);
 }
 
 .chat-manager-list .saito-address {
@@ -237,6 +236,7 @@
   height: 100%;
   overflow: clip auto;
   background-image: url(/saito/img/tiled-logo.svg);
+  background-color: #111;
 }
 
 .chat-body>.saito-user {

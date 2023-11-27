@@ -38,13 +38,13 @@
 
 .saito-sidebar.left {
   position: sticky;
-  height: calc(100 * var(--saito-vh) - var(--saito-header-height));
+  height: calc(100 * var(--saito-vh) - var(--saito-header-height) - 2rem);
   top: 0;
-  /*margin: 0 0 0 ;*/
   padding: 1.5rem 1rem 0 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin: 0 0 1rem 0;
 }
 
 .saito-sidebar.right {
@@ -58,9 +58,14 @@
 
 }
 
+.saito-sidebar h5 {
+  margin: 0;
+}
+
 .saito-sidebar-element {
   padding: 1rem;
   border-radius: 0.5rem;
+  box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
   background-color: var(--saito-sidebar-element-background);
 }
 
