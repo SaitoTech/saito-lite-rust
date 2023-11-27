@@ -637,7 +637,7 @@ class RedSquare extends ModTemplate {
 
         if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
-          console.log(`Load tweets from ${this.peers[i].publicKey}, created earlier than ${this.app.browser.prettifyTimeStamp(this.peers[i].tweets_earliest_ts)}`);
+          //console.log(`Load tweets from ${this.peers[i].publicKey}, created earlier than ${this.app.browser.prettifyTimeStamp(this.peers[i].tweets_earliest_ts)}`);
 
         } else if (created_at == "later") {
           //
@@ -650,12 +650,10 @@ class RedSquare extends ModTemplate {
           console.error("Unsupported time restraint in rS");
         }
 
-        console.log(i);
-
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
-            console.log(`${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
+            //console.log(`${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
 
             peer_count--;
 
@@ -718,17 +716,17 @@ class RedSquare extends ModTemplate {
               //
               if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
                 //console.log("RS: " + this.peers[i].publicKey + " -- " + this.publicKey);
-                console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
+                //console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
                 this.saveLocalTweets();
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
-              console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
+              //console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
             // execute callback when all txs are fetched from all peers
             if (peer_count == 0 && mycallback) {
-              console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
+              //console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
               mycallback(count);
             }
           },
@@ -924,7 +922,6 @@ class RedSquare extends ModTemplate {
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet" || txmsg.request === "flag tweet") {
-      console.log("Add tweet fail: Like TX");
       return 0;
     }
 
@@ -937,7 +934,6 @@ class RedSquare extends ModTemplate {
     // avoid errors
     //
     if (!tweet?.tx) {
-      console.log("Add tweet fail: not a RS tx");
       return 0;
     }
 
@@ -967,7 +963,6 @@ class RedSquare extends ModTemplate {
           t.rerenderControls();
         }
 
-      console.log("Add tweet fail: Already have this tweet");
       return 0;
     }
 
@@ -1042,9 +1037,7 @@ class RedSquare extends ModTemplate {
       this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
 
-      console.log("Add tweet fail: reply");
       return 0;
-    
     }
 
   }

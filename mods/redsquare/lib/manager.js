@@ -26,17 +26,11 @@ class TweetManager {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            this.showLoader();
-
-            //
-            // single tweet mode should hide loader immediately
-            //
-            // TODO: we probably want to show the loader until the whole tweet thread is returned
-            //
             if (this.mode === "tweet") {
-              this.hideLoader();
               return;
             }
+
+            this.showLoader();
 
             //
             // load more tweets -- from local and remote sources

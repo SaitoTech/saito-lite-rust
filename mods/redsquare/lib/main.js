@@ -118,9 +118,7 @@ class RedSquareMain {
       this.scrollFeed(0);
       document.querySelector(".saito-main").innerHTML = "";
       this.manager.renderTweet(tweet);
-      document.querySelectorAll(".optional-menu-item").forEach((item) => {
-        item.style.display = "none";
-      });
+
       document.querySelector(".redsquare-menu-home").style.display = "flex";
     });
 
@@ -132,10 +130,6 @@ class RedSquareMain {
       this.mod.saveOptions();
       this.mod.menu.incrementNotifications("notifications", 0);
       this.manager.render("notifications");
-
-      document.querySelectorAll(".optional-menu-item").forEach((item) => {
-        item.style.display = "none";
-      });
 
       document.querySelector(".redsquare-menu-home").style.display = "flex";
     });
@@ -155,9 +149,6 @@ class RedSquareMain {
 
       this.manager.renderProfile(publicKey);
 
-      document.querySelectorAll(".optional-menu-item").forEach((item) => {
-        item.style.display = "none";
-      });
       document.querySelector(".redsquare-menu-home").style.display = "flex";
     });
 
