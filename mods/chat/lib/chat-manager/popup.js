@@ -21,6 +21,8 @@ class ChatPopup {
 
     this.overlay = new SaitoOverlay(app, mod);
 
+    this.dimensions = {}
+
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
         this.no_older_messages = true;
@@ -240,24 +242,27 @@ class ChatPopup {
         if (!this.mod.chat_manager_overlay) {
           mximize_icon.onclick = (e) => {
 
-
-            
             mximize_icon.classList.toggle("fa-square");
             mximize_icon.classList.toggle("fa-window-restore");
             
             if (chatPopup.classList.contains("maximized")) {
-              this.restorePopup(chatPopup);
-              console.log("normal size"); 
+              chatPopup.style.width = this_self.dimensions.width + 'px';
+              chatPopup.style.height = this_self.dimensions.height + 'px';
+              chatPopup.style.left = this_self.dimensions.left + 'px';;
+              chatPopup.style.top = this_self.dimensions.top + 'px';;
+
               chatPopup.classList.remove("maximized");
+              document.querySelector(".resize-icon").style.display = 'block';
            } else {
-              console.log("maximizing");
+              this_self.savePopupDimensions(chatPopup);
+
               chatPopup.style.width = window.innerWidth + 'px';
               chatPopup.style.height = window.innerHeight + 'px';
-              chatPopup.style.left = 0;
-              chatPopup.style.top = 0;
+              chatPopup.style.left = '0px';
+              chatPopup.style.top = '0px';
 
-              //chatPopup.style.height = "";
               chatPopup.classList.add("maximized");
+              document.querySelector(".resize-icon").style.display = 'none';
             }
 
 
@@ -454,6 +459,10 @@ class ChatPopup {
     if (this.height) {
       chatPopup.style.height = this.height;
     }
+  }
+
+  savePopupDimensions(chatPopup){
+    this.dimensions = chatPopup.getBoundingClientRect();
   }
 }
 
