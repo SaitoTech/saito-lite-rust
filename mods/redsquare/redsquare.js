@@ -329,7 +329,7 @@ class RedSquare extends ModTemplate {
               let newtx = new Transaction();
               newtx.deserialize_from_web(this.app, window.tweets[z]);
               //console.log(newtx);
-              this.addTweet(newtx);
+//              this.addTweet(newtx);
             }
           }
         } catch (err) {
@@ -557,6 +557,13 @@ class RedSquare extends ModTemplate {
         }
       }
 
+      if (txmsg.request === "delete tweet") {
+        await this.receiveDeleteTransaction(blk, tx, conf, this.app);
+      }
+      if (txmsg.request === "edit tweet") {
+        await this.receiveEditTransaction(blk, tx, conf, this.app);
+        this.updateTweetsCacheForBrowsers();
+      }
       if (txmsg.request === "create tweet") {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
       }
@@ -1254,7 +1261,6 @@ class RedSquare extends ModTemplate {
             }
             tx.optional.num_likes++;
 
-            //console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
             await this.app.storage.updateTransaction(tx, {}, "localhost");
           }
         },
@@ -1279,6 +1285,63 @@ class RedSquare extends ModTemplate {
     //console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
 
     return;
+  }
+
+  async sendEditTransaction(app, mod, data, keys = []) {
+    let redsquare_self = this;
+
+    let obj = {
+      module: redsquare_self.name,
+      request: "edit tweet",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] !== this.publicKey) {
+        console.log("Send tweet to: " + keys[i]);
+        newtx.addTo(keys[i]);
+      }
+    }
+
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
+  }
+
+
+  async sendDeleteTransaction(app, mod, data, keys = []) {
+    let redsquare_self = this;
+
+    let obj = {
+      module: redsquare_self.name,
+      request: "delete tweet",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] !== this.publicKey) {
+        console.log("Send tweet to: " + keys[i]);
+        newtx.addTo(keys[i]);
+      }
+    }
+
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
   }
 
   async sendTweetTransaction(app, mod, data, keys = []) {
@@ -1308,6 +1371,118 @@ class RedSquare extends ModTemplate {
 
     return newtx;
   }
+
+
+  async receiveEditTransaction(blk, tx, conf, app) {
+
+    try {
+
+      let txmsg = tx.returnMessage();
+
+console.log("about to receive edit tx 1");
+
+      if (!txmsg.data) { return; }
+      if (!txmsg.data.tweet_id) { return; }
+
+console.log("about to receive edit tx 2");
+
+      //
+      // we are editing a tweet with a specific tweet_id / transaction_id. 
+      //
+      let opt = {
+        sig: txmsg.data.tweet_id, // the signature of the transaction is the one we want to edit
+      }
+
+
+      await this.app.storage.loadTransactions(
+        { sig: txmsg.data.tweet_id, field1: "RedSquare" , owner : this.publicKey },
+        async (txs) => {
+          if (txs?.length) {
+
+console.log("about to receive edit tx 3");
+
+		//
+                // only update first copy??
+		//
+                let oldtx = txs[0];
+
+		//
+		// save the tx
+		//
+console.log("2 publickeys: " + oldtx.from[0].publicKey + " -- " + tx.from[0].publicKey);
+		if (oldtx.from[0].publicKey === tx.from[0].publicKey) {
+                  if (!oldtx.optional) {
+                    oldtx.optional = {};
+                  }
+		  oldtx.optional.updated_tx = tx.serialize_to_web(this.app);
+console.log("UPDATING OLD TRANSACTION with edit");
+                  await this.app.storage.updateTransaction(oldtx, {}, "localhost");
+		}
+          }
+        },
+        "localhost"
+      );
+
+    } catch (err) {
+    }
+  }
+
+
+
+  async receiveDeleteTransaction(blk, tx, conf, app) {
+
+    console.log("RS: receive edit transaction!");
+
+    try {
+
+      let txmsg = tx.returnMessage();
+
+      if (!txmsg.data) { return; }
+      if (!txmsg.data.tweet_id) { return; }
+
+      //
+      // we are editing a tweet with a specific tweet_id / transaction_id. 
+      //
+      let opt = {
+        sig: txmsg.data.tweet_id, // the signature of the transaction is the one we want to edit
+      }
+
+      await this.app.storage.loadTransactions(
+        { sig: tweet.signature, field1: "RedSquare" },
+        async (txs) => {
+          if (txs?.length) {
+
+		//
+                // only update first copy??
+		//
+                let oldtx = txs[0];
+
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("* DELETE TX");
+console.log("*");
+console.log("we will permit users to delete if they penned the tx");
+		
+		//
+		// save the tx
+		//
+		if (oldtx.from[0].publicKey === tx.from[0].publicKey) {
+                  await this.app.storage.deleteTransaction(oldtx, {}, "localhost");
+		}
+          }
+        },
+        "localhost"
+      );
+
+    } catch (err) {
+    }
+  }
+
+
+
+
+
 
   async receiveTweetTransaction(blk, tx, conf, app) {
     console.log("RS: receive tweet transaction!");
@@ -1830,6 +2005,14 @@ class RedSquare extends ModTemplate {
               for (let i = 0; i < txs.length; i++) {
                 let thisfile = filename + i + ".js";
                 const fd = fs.openSync(thisfile, "w");
+//
+// the tweets might have been edited, so we check the optional field for any updated_tx
+//
+if (txs[i].optional) {
+if (txs[i].optional.updated_tx) {
+console.log("TXS MSG: " + JSON.stringify(  txs[i].msg   ));
+}
+}
                 html += `  tweets.push(\`${txs[i].serialize_to_web(this.app)}\`);   `;
                 fs.writeSync(fd, html);
                 fs.fsyncSync(fd);

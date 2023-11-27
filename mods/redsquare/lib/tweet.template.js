@@ -28,9 +28,13 @@ module.exports = (app, mod, tweet) => {
               </div></div>
                     
                 <div class="tweet-tool tweet-tool-share" title="Copy link to tweet"><i class="fa fa-arrow-up-from-bracket"></i>
-                </div>
-                <div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>
-              </div>`;
+                </div>`;
+  if (tweet.tx.from[0].publicKey === mod.publicKey) {
+    controls += `<div class="tweet-tool tweet-tool-edit" title="Edit your tweet"><i class="fas fa-edit"></i></div>`;
+  } else {
+    controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
+  }
+  controls += `           </div>`;
 
   let html = `
         <div class="tweet tweet-${tweet.tx.signature}" data-id="${tweet.tx.signature}">

@@ -48,6 +48,11 @@ class Post {
       this.user.notice = "add a comment to your retweet or just click submit...";
     }
 
+    if (this.source == "Edit") {
+      this.input.placeholder = this.tweet.text;
+      this.user.notice = "tweets are editable for a brief period after posting...";
+    }
+
     if (this.source == "Reply") {
       this.input.placeholder = "my reply...";
       this.user.notice = "add your comment to the tweet...";
@@ -79,6 +84,10 @@ class Post {
 
     this.input.render();
     this.input.focus(true);
+
+    if (this.source == "Edit") {
+      document.querySelector(".post-tweet-textarea").innerHTML = this.tweet.text;
+    }
 
     this.attachEvents();
   }
@@ -133,13 +142,22 @@ class Post {
         e.preventDefault();
       }
     });
-
+    try {
+      document.getElementById("post-delete-button").addEventListener("click", (e) => {
+        this.deleteTweet();
+      });
+    } catch (err) {}
     document.getElementById("post-tweet-button").addEventListener("click", (e) => {
       this.postTweet();
     });
   }
 
-  async postTweet() {
+  async deleteTweet() {
+    this.postTweet(1);
+  }
+
+  async postTweet(delete_tweet = 0) {
+
     let post_self = this;
     let text = sanitize(this.input.getInput());
     let parent_id = document.getElementById("parent_id").value;
@@ -199,8 +217,32 @@ class Post {
     //
     post_self.overlay.hide();
     post_self.overlay.closebox = false;
-    post_self.overlay.show('<div class="saito-loader"></div>');
+    if (!delete_tweet && source !== "Edit") {
+      post_self.overlay.show('<div class="saito-loader"></div>');
+    }
 
+    //Delete
+    if (delete_tweet) {
+      this.mod.replyTweet(this.tweet.tx.signature);
+      data = { text: text, tweet_id : this.tweet.tx.signature };
+      let qs = `.tweet-${this.tweet.tx.signature}`;
+      let obj = document.querySelector(qs);
+      if (obj) { obj.remove(); }
+      let newtx = await post_self.mod.sendEditTransaction(post_self.app, post_self.mod, data, keys);
+      return;
+    }
+
+    //Edit
+    if (source === "Edit") {
+      is_reply = true;
+      this.mod.replyTweet(this.tweet.tx.signature);
+      data = { text: text, tweet_id : this.tweet.tx.signature };
+      let qs = `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
+      let obj = document.querySelector(qs);
+      if (obj) { obj.innerHTML = text; }
+      let newtx = await post_self.mod.sendEditTransaction(post_self.app, post_self.mod, data, keys);
+      return;
+    }
 
     //Replies
     if (parent_id !== "") {
@@ -212,6 +254,7 @@ class Post {
       // but only adjust tx.optional when we get confirmation from the blockchain
       this.tweet.num_replies++;
     }
+
     //Retweets
     if (source == "Retweet") {
       data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);

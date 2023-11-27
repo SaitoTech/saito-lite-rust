@@ -9,6 +9,7 @@ const Transaction = require("../../../lib/saito/transaction").default;
 
 class Tweet {
   constructor(app, mod, tx, container = ".tweet-manager") {
+
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -138,6 +139,17 @@ class Tweet {
     try {
       this.setKeys(tx.optional);
     } catch (err) {}
+
+    //
+    // maybe anything is updated
+    //
+    if (this.tx.optional.updated_tx) {
+console.log("TESTING: this tx.optional.updated_tx");
+      let newtx = new Transaction();
+      newtx.deserialize_from_web(this.app, this.tx.optional.updated_tx);
+      let newtxmsg = newtx.returnMessage();
+      this.setKeys(newtxmsg.data, true);
+    }
 
     //
     //This is async and won't necessarily finish before running the following code!
@@ -863,6 +875,26 @@ class Tweet {
       }
 
       //////////
+      // edit //
+      //////////
+      let edit = document.querySelector(
+        `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-edit`
+      );
+      if (edit) {
+        edit.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          let post = new Post(this.app, this.mod, this);
+
+          post.source = "Edit";
+          post.render();
+
+        };
+      }
+
+
+      //////////
       // flag //
       //////////
       let flag = document.querySelector(
@@ -902,13 +934,21 @@ class Tweet {
   // from an updated tx that we either received on chain or through an archive query
   // (both of which manually increment the stats in tx.optional)
   //
-  setKeys(obj) {
+  setKeys(obj, force=false) {
     for (let key in obj) {
       if (typeof obj[key] !== "undefined") {
-        if (!this[key]){
-          this[key] = obj[key];
-        }else if (typeof this[key] === "number"){
-          this[key] = Math.max(this[key], obj[key]);
+	if (force) {
+          if (typeof this[key] === "number"){
+            this[key] = Math.max(this[key], obj[key]);
+          } else {
+            this[key] = obj[key];
+	  }
+	} else {
+          if (!this[key]){
+            this[key] = obj[key];
+          } else if (typeof this[key] === "number"){
+            this[key] = Math.max(this[key], obj[key]);
+          }
         }
       }
     }
