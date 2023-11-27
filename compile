@@ -150,7 +150,7 @@ function reset_nonpersistent {
     cp ./config/modules.default.js ./config/modules.config.js
   fi
 
-  if [ -f config/options.conf ]; then
+  if [ -f ./config/options.conf ]; then
     cp .config/options.conf .config/options
   else
     cp .config/options.conf.template .config/options
