@@ -111,7 +111,13 @@
   position: relative;
 }
 
-.chat-static .chat-container-close, .chat-static .fa-comment-dots {
+/* hide minimize,maximze and close icons when
+ viewing chat from /chat 
+*/
+.chat-static .chat-minimizer-icon,
+.chat-static .chat-maximizer-icon,
+.chat-static .chat-container-close, 
+.chat-static .fa-comment-dots {
   display: none;
 }
 
@@ -234,7 +240,7 @@
   height: 100%;
   overflow: clip auto;
   background-image: url(/saito/img/tiled-logo.svg);
-  background-color: #111;
+  background-color: var(--saito-bubble-background);
 }
 
 .chat-body>.saito-user {

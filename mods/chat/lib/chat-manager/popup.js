@@ -256,9 +256,16 @@ class ChatPopup {
            } else {
               this_self.savePopupDimensions(chatPopup);
 
-              chatPopup.style.width = window.innerWidth + 'px';
+              chatPopup.style.width = '800px';
               chatPopup.style.height = window.innerHeight + 'px';
-              chatPopup.style.left = '0px';
+
+              // decide to maximize to left or right
+              if (this.dimensions.left < Math.floor(window.innerWidth/2)) {
+                chatPopup.style.left = '0px';  
+              } else {
+                chatPopup.style.left = (window.innerWidth-800) + 'px';
+              }
+
               chatPopup.style.top = '0px';
 
               chatPopup.classList.add("maximized");
