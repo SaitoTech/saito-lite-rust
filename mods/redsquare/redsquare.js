@@ -632,12 +632,13 @@ class RedSquare extends ModTemplate {
       ) {
         let obj = {
           field1: "RedSquare",
+          flagged: 0,
+          tx_size_less_than: 1000000,
           limit: this.peers[i].tweets_limit,
         };
 
         if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
-          //console.log(`Load tweets from ${this.peers[i].publicKey}, created earlier than ${this.app.browser.prettifyTimeStamp(this.peers[i].tweets_earliest_ts)}`);
         } else if (created_at == "later") {
           //
           // For "new" tweets we maybe want to look at updated, not created
@@ -714,13 +715,10 @@ class RedSquare extends ModTemplate {
               // we aren't caching old tweets, so don't incur the costs of deleting and saving!
               //
               if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
-                //console.log("RS: " + this.peers[i].publicKey + " -- " + this.publicKey);
-                //console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
                 this.saveLocalTweets();
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
-              //console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
             // execute callback when all txs are fetched from all peers

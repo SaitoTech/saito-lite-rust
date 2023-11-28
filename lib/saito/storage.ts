@@ -80,6 +80,13 @@ class Storage {
 
       data = Object.assign(data, obj);
 
+      //
+      // defaults
+      //
+      // - field1 = module
+      // - field2 = sender
+      // - field3 = receiver
+      //
       if (!data.field1) {
         data.field1 = txmsg.module;
       }
