@@ -167,7 +167,23 @@ class Post {
     let keys = [];
     let identifiers = [];
 
+    //
+    // sanity check
+    //
+    let wallet_balance = await this.app.wallet.getBalance("SAITO");
+
+    // restrict moderation
+console.log("TEXT LENGTH: " + text.length);
+    if (wallet_balance == 0 && this.app.BROWSER == 1 && text.length > 5000) {
+      siteMessage("Purchase SAITO to Enable Oversized Posts...", 3000);
+      return;
+    }
+
+
+
+    //
     //don't send empty posts
+    //
     if (post_self.images.length == 0 && text.trim().length == 0 && post_self.source != "Retweet") {
       siteMessage("Post Empty", 1000);
       return;
@@ -269,7 +285,7 @@ class Post {
       data["images"] = post_self.images;
     }
 
-
+    
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     if (this.mod.manager) {
