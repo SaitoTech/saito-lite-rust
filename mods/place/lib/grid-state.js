@@ -63,7 +63,7 @@ class GridState {
       default:
         console.error("Unexpected tile status: " + tileStatus);
     }
-    return [i, j, this.state[i][j]];
+    return {i: i, j: j, state: this.state[i][j]};
   }
 }
 

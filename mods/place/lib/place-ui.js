@@ -819,15 +819,16 @@ class PlaceUI {
     return zoomFactor;
   }
 
-  updateTileRendering(i, j, updatedTileState) {
-    if (updatedTileState.drafted !== null) {
-      this.drawTile(i, j, updatedTileState.drafted.color);
-      this.drawDraftMark(i, j, updatedTileState.drafted.color);
-    } else if (updatedTileState.pending !== null) {
-      this.drawTile(i, j, updatedTileState.pending.color);
-      this.drawHourglass(i, j, updatedTileState.pending.color);
-    } else if (updatedTileState.confirmed !== null) {
-      this.drawTile(i, j, updatedTileState.confirmed.color);
+  updateTileRendering(newLocatedState) {
+    const {i: i, j: j, state: newState} = newLocatedState;
+    if (newState.drafted !== null) {
+      this.drawTile(i, j, newState.drafted.color);
+      this.drawDraftMark(i, j, newState.drafted.color);
+    } else if (newState.pending !== null) {
+      this.drawTile(i, j, newState.pending.color);
+      this.drawHourglass(i, j, newState.pending.color);
+    } else if (newState.confirmed !== null) {
+      this.drawTile(i, j, newState.confirmed.color);
     } else {
       this.drawTile(i, j, this.blankTileColor);
     }

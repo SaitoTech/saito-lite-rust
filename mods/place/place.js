@@ -125,9 +125,7 @@ class Place extends ModTemplate {
 
   async receivePaintingTransaction(tx) {
     const txOrdinal = this.transactionOrdinal(tx);
-    for (const tile of tx.returnMessage().data) {
-      await this.updateTile(tile, "confirmed", txOrdinal);
-    }
+    await this.updateTiles(tx.returnMessage().data, "confirmed", txOrdinal);
   }
 
   // orders transactions in case they have tiles in common and timestamps are equal
@@ -138,18 +136,27 @@ class Place extends ModTemplate {
   }
 
   async updateTile(tile, status, ordinal=null) {
-    const [i, j, updatedTileState] = this.gridState.updateTile(tile, status, ordinal);
+    await this.updateTiles([tile], status, ordinal)
+  }
+
+  async updateTiles(tileArray, status, ordinal=null) {
+    const locatedStateArray = [];
+    for (const tile of tileArray) {
+      locatedStateArray.push(this.gridState.updateTile(tile, status, ordinal));
+    }
     if (this.app.BROWSER) {
-      this.placeUI.updateTileRendering(i, j, updatedTileState);
+      for (const locatedState of locatedStateArray) {
+        this.placeUI.updateTileRendering(locatedState);
+      }
     } else if (status === "confirmed") {
-      const sql = `REPLACE INTO tiles (i, j, red, green, blue, ordinal)
-                   VALUES ($i, $j, $red, $green, $blue, $ordinal)`;
-      const components = this.colorToComponents(updatedTileState.confirmed.color);
-      const params = {
-        $i: i, $j: j,
-        $red: components[0], $green: components[1], $blue: components[2], $ordinal: ordinal,
-      };
-      await this.app.storage.executeDatabase(sql, params, "place");
+      let i, j, state, components, sql = "";
+      for (const locatedState of locatedStateArray) {
+        ({i: i, j: j, state: state} = locatedState);
+        components = this.colorToComponents(state.confirmed.color);
+        sql += `REPLACE INTO tiles (i, j, red, green, blue, ordinal)
+                VALUES (${i}, ${j}, ${components[0]}, ${components[1]}, ${components[2]}, ${ordinal});\n`;
+      }
+      await this.app.storage.executeDatabase(sql, {}, "place");
     }
   }
 
