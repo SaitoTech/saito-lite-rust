@@ -9,7 +9,7 @@
   overflow: hidden;
   width: 13rem;
   white-space: nowrap;
-  height: 1.9rem;
+  height: 1.7rem;
 }
 
 .chat-manager .saito-userline .img-prev {
@@ -111,7 +111,13 @@
   position: relative;
 }
 
-.chat-static .chat-container-close, .chat-static .fa-comment-dots {
+/* hide minimize,maximze and close icons when
+ viewing chat from /chat 
+*/
+.chat-static .chat-minimizer-icon,
+.chat-static .chat-maximizer-icon,
+.chat-static .chat-container-close, 
+.chat-static .fa-comment-dots {
   display: none;
 }
 
@@ -132,11 +138,12 @@
   border: 1px solid var(--saito-border-color);
   background: var(--saito-arcade-background);
   color: var(--saito-font-color);
-  max-height: calc(99vh - var(--saito-header-height));
+  max-height: 100vh;
   min-width: 300px;
   min-height: 150px;
   overflow-x: hidden;
   overflow-y: hidden;
+  transition: all 0.2s ease-in-out;
 }
 
 .chat-popup {
@@ -275,10 +282,23 @@
   color: var(--saito-secondary);
 }
 
+
+.chat-body .saito-user-self.saito-user {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Show my name in red */
 .chat-body .saito-user-self .saito-address {
   color: var(--saito-primary);
+  height: 0;
+  width: 0;
 }
+
+.chat-body .saito-user-self.saito-user .saito-identicon-box {
+  display: none;
+}
+
 
 /* Hide user names in 2-person chats */
 .saito-dm-chat .chat-body .saito-address {

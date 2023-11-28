@@ -9,6 +9,7 @@ const Transaction = require("../../../lib/saito/transaction").default;
 
 class Tweet {
   constructor(app, mod, tx, container = ".tweet-manager") {
+
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -140,6 +141,21 @@ class Tweet {
     } catch (err) {}
 
     //
+    // maybe anything is updated
+    //
+    if (this.tx.optional.update_tx) {
+      console.log("TESTING: this tx.optional.update_tx");
+      let newtx = new Transaction();
+      newtx.deserialize_from_web(this.app, this.tx.optional.update_tx);
+      let newtxmsg = newtx.returnMessage();
+      
+      console.log(this.text, newtxmsg.data.text);
+      this.text = newtxmsg.data.text;
+      //Not updating more than text
+      //this.setKeys(newtxmsg.data, true);
+    }
+
+    //
     //This is async and won't necessarily finish before running the following code!
     //
 
@@ -236,6 +252,9 @@ class Tweet {
   }
 
   render(prepend = false, render_with_children = true) {
+
+console.log("shift into render: " + this.container);
+
     //
     // handle if link
     //
@@ -299,6 +318,13 @@ class Tweet {
     // then pass-through and render the sub-tweet directly.
     //
     if (this.retweet_tx && !this.text && !this.img_preview) {
+
+console.log("!");
+console.log("!");
+console.log("! retweet !");
+console.log("!");
+console.log(this.user.publicKey);
+
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
@@ -308,15 +334,27 @@ class Tweet {
 
       let t = this.mod.returnTweet(this.retweet.tx.signature);
       if (t) {
+
+console.log("1 ORIG TWEET TEXT: " + t.text);
+console.log("1 ORIG TWEET USER: " + t.user.publicKey);
+console.log("1 ORIG TWEET CONTAINER: " + t.user.container);
+
         t.notice = this.retweet.notice;
         t.user.notice = t.user.notice.replace("new", "original");
         t.render(prepend);
+        t.user.render();
         t.attachEvents();
       } else {
+
+console.log("2 ORIG TWEET TEXT: " + this.retweet.text);
+console.log("2 ORIG TWEET USER: " + this.retweet.user.publicKey);
+console.log("2 ORIG TWEET CONTAINER: " + this.retweet.user.container);
+
         console.log("Rendering a new retweet");
         this.retweet.user.container = this.container + `> .tweet-${this.tx.signature} > .tweet-header`;
         this.retweet.user.notice = this.retweet.user.notice.replace("new", "original");
         this.retweet.render(prepend);
+        this.retweet.user.render();
         this.retweet.attachEvents();
       }
       return;
@@ -324,6 +362,10 @@ class Tweet {
 
     if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions){
       this.notice = "You were mentioned in this tweet";      
+    }
+
+    if (this.tx.optional?.update_tx){
+      this.notice = "This tweet was edited at " + this.formatDate(this.updated_at);
     }
 
     if (this.render_after_selector) {
@@ -346,6 +388,7 @@ class Tweet {
     }
 
     if (document.querySelector(myqs)) {
+      console.log("Re-render tweet in place");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(
@@ -398,6 +441,7 @@ class Tweet {
       }
     }
 
+console.log("rendering user!");
     this.user.render();
 
     if (this.img_preview != null) {
@@ -863,32 +907,62 @@ class Tweet {
       }
 
       //////////
+      // edit //
+      //////////
+      let edit = document.querySelector(
+        `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-edit`
+      );
+      if (edit) {
+        edit.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          let post = new Post(this.app, this.mod, this);
+
+          post.source = "Edit";
+          post.render();
+
+        };
+      }
+
+
+      //////////
       // flag //
       //////////
       let flag = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-flag`
       );
       if (flag) {
-        flag.onclick = (e) => {
+        flag.onclick = async (e) => {
           e.preventDefault();
           e.stopImmediatePropagation();
 
-          this.mod.sendFlagTransaction(
-            this.app,
-            this.mod,
-            { signature: this.tx.signature },
-            this.tx
-          );
-          this.flagged = 1;
+	  let wallet_balance = await this.app.wallet.getBalance("SAITO");
 
-          // Okay, sure we can delete our local copy of it...
-          this.app.storage.deleteTransaction(this.tx, null, "localhost");
+	  // restrict moderation
+	  if (wallet_balance == 0 && this.app.BROWSER == 1) {
+            siteMessage("Purchase SAITO to Moderate...", 3000);
+	    return;
+	  } else {
+	  
+            this.mod.sendFlagTransaction(
+              this.app,
+              this.mod,
+              { signature: this.tx.signature },
+              this.tx
+            );
+            this.flagged = 1;
 
-          let obj = document.querySelector(`.tweet-${this.tx.signature}`);
-          if (obj) {
-            obj.style.display = "none";
+            // Okay, sure we can delete our local copy of it...
+            this.app.storage.deleteTransaction(this.tx, null, "localhost");
+
+            let obj = document.querySelector(`.tweet-${this.tx.signature}`);
+            if (obj) {
+              obj.style.display = "none";
+            }
+            siteMessage("Reporting tweet to moderators...", 5000);
+
           }
-          siteMessage("Reporting tweet to moderators...", 5000);
         };
       }
     } catch (err) {
@@ -902,13 +976,21 @@ class Tweet {
   // from an updated tx that we either received on chain or through an archive query
   // (both of which manually increment the stats in tx.optional)
   //
-  setKeys(obj) {
+  setKeys(obj, force=false) {
     for (let key in obj) {
       if (typeof obj[key] !== "undefined") {
-        if (!this[key]){
-          this[key] = obj[key];
-        }else if (typeof this[key] === "number"){
-          this[key] = Math.max(this[key], obj[key]);
+	if (force) {
+          if (typeof this[key] === "number"){
+            this[key] = Math.max(this[key], obj[key]);
+          } else {
+            this[key] = obj[key];
+	  }
+	} else {
+          if (!this[key]){
+            this[key] = obj[key];
+          } else if (typeof this[key] === "number"){
+            this[key] = Math.max(this[key], obj[key]);
+          }
         }
       }
     }

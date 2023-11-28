@@ -329,7 +329,7 @@ class RedSquare extends ModTemplate {
               let newtx = new Transaction();
               newtx.deserialize_from_web(this.app, window.tweets[z]);
               //console.log(newtx);
-              this.addTweet(newtx);
+              //              this.addTweet(newtx);
             }
           }
         } catch (err) {
@@ -557,6 +557,13 @@ class RedSquare extends ModTemplate {
         }
       }
 
+      if (txmsg.request === "delete tweet") {
+        await this.receiveDeleteTransaction(blk, tx, conf, this.app);
+      }
+      if (txmsg.request === "edit tweet") {
+        await this.receiveEditTransaction(blk, tx, conf, this.app);
+        this.updateTweetsCacheForBrowsers();
+      }
       if (txmsg.request === "create tweet") {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
       }
@@ -630,8 +637,7 @@ class RedSquare extends ModTemplate {
 
         if (created_at == "earlier") {
           obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
-          console.log(`Load tweets from ${this.peers[i].publicKey}, created earlier than ${this.app.browser.prettifyTimeStamp(this.peers[i].tweets_earliest_ts)}`);
-
+          //console.log(`Load tweets from ${this.peers[i].publicKey}, created earlier than ${this.app.browser.prettifyTimeStamp(this.peers[i].tweets_earliest_ts)}`);
         } else if (created_at == "later") {
           //
           // For "new" tweets we maybe want to look at updated, not created
@@ -643,12 +649,10 @@ class RedSquare extends ModTemplate {
           console.error("Unsupported time restraint in rS");
         }
 
-        console.log(i);
-
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
-            console.log(`${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
+            //console.log(`${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
 
             peer_count--;
 
@@ -657,7 +661,7 @@ class RedSquare extends ModTemplate {
                 txs[z].decryptMessage(this.app);
 
                 //timestamp is the original timestamp of the create tweet transaction
-                if (created_at === "earlier"){
+                if (created_at === "earlier") {
                   if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
                     this.peers[i].tweets_earliest_ts = txs[z].timestamp;
                   }
@@ -669,7 +673,7 @@ class RedSquare extends ModTemplate {
                 // initial limited load and what we had saved locally...
                 //
 
-                if (created_at === "later"){
+                if (created_at === "later") {
                   if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
                     this.peers[i].tweets_latest_ts = txs[z].updated_at;
                   }
@@ -711,17 +715,17 @@ class RedSquare extends ModTemplate {
               //
               if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
                 //console.log("RS: " + this.peers[i].publicKey + " -- " + this.publicKey);
-                console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
+                //console.log("SAVING LOCAL TWEETS AS NEW ONES FETCHED...!");
                 this.saveLocalTweets();
               }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
-              console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
+              //console.log(`Peer ${this.peers[i].publicKey} doesn't have any ${created_at} tweets`);
             }
 
             // execute callback when all txs are fetched from all peers
             if (peer_count == 0 && mycallback) {
-              console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
+              //console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
               mycallback(count);
             }
           },
@@ -807,6 +811,13 @@ class RedSquare extends ModTemplate {
         },
         "localhost"
       );
+    } else {
+      //
+      // Just return empty array if we don't query the peers again
+      //
+      if (mycallback) {
+        mycallback([]);
+      }
     }
   }
 
@@ -917,7 +928,11 @@ class RedSquare extends ModTemplate {
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet" || txmsg.request === "flag tweet") {
-      console.log("Add tweet fail: Like TX");
+      return 0;
+    }
+
+    if (txmsg.request === "delete tweet" && this.app.BROWSER){
+      this.receiveDeleteTransaction(0, tx, 0, this.app);
       return 0;
     }
 
@@ -930,86 +945,86 @@ class RedSquare extends ModTemplate {
     // avoid errors
     //
     if (!tweet?.tx) {
-      console.log("Add tweet fail: not a RS tx");
       return 0;
     }
 
     if (this.tweets_sigs_hmap[tweet.tx.signature]) {
-        //
-        // Update the stats for this tweet we already have in memory
-        //
-        let t = this.returnTweet(tweet.tx.signature);
-        if (!t) {
-          console.error("Tweet indexed in hash, but not in memory");
-          return 0;
+      //
+      // Update the stats for this tweet we already have in memory
+      //
+      let t = this.returnTweet(tweet.tx.signature);
+      if (!t) {
+        console.error("Tweet indexed in hash, but not in memory");
+        return 0;
+      }
+
+      if (tweet.tx.optional) {
+        if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
+          t.tx.optional.num_replies = tweet.tx.optional.num_replies;
+        }
+        if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
+          t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+        }
+        if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
+          t.tx.optional.num_likes = tweet.tx.optional.num_likes;
+        }
+        if (tweet.tx.optional.update_tx) {
+          console.log("We have an updated tweet");
+          t.tx.optional.update_tx = tweet.tx.optional.update_tx; 
+          tweet.render();
         }
 
-        //console.log(`Updating tweet stats: ${t.tx.optional.num_replies}->${tx.optional.num_replies}, ${t.tx.optional.num_retweets}->${tx.optional.num_retweets}, ${t.tx.optional.num_likes}->${tx.optional.num_likes}`);
+        t.rerenderControls();
+      }
 
-        if (tweet.tx.optional) {
-          if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
-            t.tx.optional.num_replies = tweet.tx.optional.num_replies;
-          }
-          if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
-            t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-          }
-          if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
-            t.tx.optional.num_likes = tweet.tx.optional.num_likes;
-          }
-
-          t.rerenderControls();
-        }
-
-      console.log("Add tweet fail: Already have this tweet");
       return 0;
     }
-
 
     //
     // this is a post
     //
     if (!tweet.tx.optional.parent_id) {
-        //
-        // check where we insert the tweet
-        //
-        let insertion_index = 0;
-        if (prepend == false) {
-          for (let i = 0; i < this.tweets.length; i++) {
-            let target = this.tweets[i].created_at;
-            if (this.tweets[i].updated_at > target) {
-              target = this.tweets[i].updated_at;
-            }
-            let ttarget = tweet.created_at;
-            if (tweet.updated_at > ttarget) {
-              ttarget = tweet.updated_at;
-            }
-            if (target > ttarget) {
-              insertion_index++;
-            } else {
-              break;
-            }
+      //
+      // check where we insert the tweet
+      //
+      let insertion_index = 0;
+      if (prepend == false) {
+        for (let i = 0; i < this.tweets.length; i++) {
+          let target = this.tweets[i].created_at;
+          if (this.tweets[i].updated_at > target) {
+            target = this.tweets[i].updated_at;
+          }
+          let ttarget = tweet.created_at;
+          if (tweet.updated_at > ttarget) {
+            ttarget = tweet.updated_at;
+          }
+          if (target > ttarget) {
+            insertion_index++;
+          } else {
+            break;
           }
         }
+      }
 
-        //
-        // Insert tweet into feed
-        //
-        this.tweets.splice(insertion_index, 0, tweet);
-        this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+      //
+      // Insert tweet into feed
+      //
+      this.tweets.splice(insertion_index, 0, tweet);
+      this.tweets_sigs_hmap[tweet.tx.signature] = 1;
 
-        //
-        // Check if this new tweet is the parent of any unknown children (reply tweets)
-        //
-        for (let i = 0; i < this.unknown_children.length; i++) {
-          if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.signature) {
-            if (tweet.addTweet(this.unknown_children[i]) == 1) {
-              this.unknown_children.splice(i, 1);
-              i--;
-            }
+      //
+      // Check if this new tweet is the parent of any unknown children (reply tweets)
+      //
+      for (let i = 0; i < this.unknown_children.length; i++) {
+        if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.signature) {
+          if (tweet.addTweet(this.unknown_children[i]) == 1) {
+            this.unknown_children.splice(i, 1);
+            i--;
           }
         }
+      }
 
-        return 1; // We have a new (top-level) tweet in the feed
+      return 1; // We have a new (top-level) tweet in the feed
     } else {
       //
       // this is a comment / reply
@@ -1035,11 +1050,8 @@ class RedSquare extends ModTemplate {
       this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
 
-      console.log("Add tweet fail: reply");
       return 0;
-    
     }
-
   }
 
   //
@@ -1114,6 +1126,31 @@ class RedSquare extends ModTemplate {
     }
 
     return null;
+  }
+
+  removeTweet(tweet_sig = null) {
+    if (!tweet_sig || !this.tweets_sigs_hmap[tweet_sig]) {
+      return;
+    }
+
+    for (let i = 0; i < this.tweets.length; i++) {
+      //if (this.tweets[i].hasChildTweet(tweet_sig)) {
+      //  return this.tweets[i].returnChildTweet(tweet_sig);
+      //}
+
+      if (this.tweets[i].tx.signature === tweet_sig) {
+        this.tweets[i].remove();
+        this.tweets.splice(i, 1);
+        return;
+      }
+    }
+
+    for (let j = 0; j < this.unknown_children.length; j++) {
+      if (this.unknown_children[j].tx.signature === tweet_sig) {
+        this.unknown_children.splice(j, 1);
+        return;
+      }
+    }
   }
 
   returnNotification(tweet_sig = null) {
@@ -1254,7 +1291,6 @@ class RedSquare extends ModTemplate {
             }
             tx.optional.num_likes++;
 
-            //console.log("Archive found liked tweet:", tx.msg.data.text, tx.optional.num_likes);
             await this.app.storage.updateTransaction(tx, {}, "localhost");
           }
         },
@@ -1279,6 +1315,56 @@ class RedSquare extends ModTemplate {
     //console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
 
     return;
+  }
+
+  async sendEditTransaction(app, mod, data, keys = []) {
+    let redsquare_self = this;
+
+    let obj = {
+      module: redsquare_self.name,
+      request: "edit tweet",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+
+    for (let i = 0; i < keys.length; i++) {
+      newtx.addTo(keys[i]);
+    }
+
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
+  }
+
+  async sendDeleteTransaction(app, mod, data, keys = []) {
+    let redsquare_self = this;
+
+    let obj = {
+      module: redsquare_self.name,
+      request: "delete tweet",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+
+    for (let i = 0; i < keys.length; i++) {
+      newtx.addTo(keys[i]);
+    }
+
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
   }
 
   async sendTweetTransaction(app, mod, data, keys = []) {
@@ -1307,6 +1393,86 @@ class RedSquare extends ModTemplate {
     await redsquare_self.app.network.propagateTransaction(newtx);
 
     return newtx;
+  }
+
+  async receiveEditTransaction(blk, tx, conf, app) {
+
+      let txmsg = tx.returnMessage();
+
+      if (!txmsg.data?.tweet_id) {
+        return;
+      }
+
+      await this.app.storage.loadTransactions(
+        { sig: txmsg.data.tweet_id, field1: "RedSquare" },
+        async (txs) => {
+          if (txs?.length) {
+            console.log("about to receive edit tx 3");
+
+            //
+            // only update first copy??
+            //
+            let oldtx = txs[0];
+
+            //
+            // save the tx
+            //
+            console.log("2 publickeys: " + oldtx.from[0].publicKey + " -- " + tx.from[0].publicKey);
+            if (oldtx.from[0].publicKey === tx.from[0].publicKey) {
+              if (!oldtx.optional) {
+                oldtx.optional = {};
+              }
+              oldtx.optional.update_tx = tx.serialize_to_web(this.app);
+              console.log("UPDATING OLD TRANSACTION with edit");
+              await this.app.storage.updateTransaction(oldtx, {}, "localhost");
+            }
+
+          }
+        },
+        "localhost"
+      );
+
+  }
+
+  async receiveDeleteTransaction(blk, tx, conf, app) {
+    console.log("RS: receive delete transaction!");
+
+    let txmsg = tx.returnMessage();
+
+    if (!txmsg.data) {
+      return;
+    }
+    if (!txmsg.data.tweet_id) {
+      return;
+    }
+
+    this.removeTweet(txmsg.data.tweet_id);
+
+    await this.app.storage.loadTransactions(
+      { sig: txmsg.data.tweet_id },
+      async (txs) => {
+        if (txs?.length) {
+          //
+          // only update first copy??
+          //
+          let oldtx = txs[0];
+
+          //
+          // save the tx
+          //
+          if (oldtx.from[0].publicKey === tx.from[0].publicKey) {
+            await this.app.storage.deleteTransaction(oldtx, {}, "localhost");
+          }
+        }
+      },
+      "localhost"
+    );
+
+    //Save the transaction with command to delete
+    if (!app.BROWSER){
+      await this.app.storage.saveTransaction(tx, {field1: "RedSquare"}, "localhost");  
+    }
+      
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
@@ -1339,7 +1505,7 @@ class RedSquare extends ModTemplate {
       //
       let opt = {
         field1: "RedSquare", //defaults to module.name, but just to make sure we match the capitalization with our loadTweets
-        preserve: 1
+        preserve: 1,
       };
 
       if (tx.isTo(this.publicKey)) {
@@ -1643,6 +1809,15 @@ class RedSquare extends ModTemplate {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
+let txmsg = txs[z].returnMessage();
+console.log("TWEET TEXT: " + txmsg.data.text);
+if (txs[z].optional) {
+  console.log("TWEET OPTIONAL EXISTS!");
+  if (txs[z].optional.updated_tx) {
+    console.log("TWEET OPTIONAL UPDATED TX EXISTS!");
+  }
+}
+
             this.addNotification(txs[z]);
             this.addTweet(txs[z]);
           }
@@ -1830,6 +2005,14 @@ class RedSquare extends ModTemplate {
               for (let i = 0; i < txs.length; i++) {
                 let thisfile = filename + i + ".js";
                 const fd = fs.openSync(thisfile, "w");
+                //
+                // the tweets might have been edited, so we check the optional field for any edited tx
+                //
+                if (txs[i].optional) {
+                  if (txs[i].optional.update_tx) {
+                    console.log("TXS MSG: " + JSON.stringify(txs[i].msg));
+                  }
+                }
                 html += `  tweets.push(\`${txs[i].serialize_to_web(this.app)}\`);   `;
                 fs.writeSync(fd, html);
                 fs.fsyncSync(fd);

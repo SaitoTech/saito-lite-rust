@@ -11,6 +11,15 @@
   color: var(--saito-primary);;
 }
 
+.post-delete-button {
+    width: 20rem;
+    margin-right: 0;
+    position: absolute;
+    right: 22rem;
+    bottom: 1rem;
+    line-height: 4.5rem;
+}
+
 .redsquare-home {
   margin: -2.5rem 0 0 0;
 }
@@ -112,18 +121,21 @@
   z-index: 3;
 }
 
+.redsquare-page-active {
+  font-weight: bolder;
+}
+
+.saito-menu .redsquare-page-active i::before {
+  -webkit-text-stroke: var(--saito-font-color) 2px;
+}
+
 .redsquare-menu-home .fa-house::before  {
   transition: all 0.15s ease-in-out;
 }
 
 
-.redsquare-menu-home:hover .fa-house::before {
+.redsquare-menu-home.redsquare-page-active:hover .fa-house::before {
   content: "\f021";
-}
-
-
-.optional-menu-item {
-  display: none;
 }
 
 

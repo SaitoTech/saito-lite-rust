@@ -26,17 +26,11 @@ class TweetManager {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            this.showLoader();
-
-            //
-            // single tweet mode should hide loader immediately
-            //
-            // TODO: we probably want to show the loader until the whole tweet thread is returned
-            //
             if (this.mode === "tweet") {
-              this.hideLoader();
               return;
             }
+
+            this.showLoader();
 
             //
             // load more tweets -- from local and remote sources
@@ -118,6 +112,8 @@ class TweetManager {
   }
 
   render(new_mode = "") {
+
+    this.app.connection.emit("redsquare-clear-menu-highlighting");
     //
     // remove notification at end
     //
@@ -125,16 +121,6 @@ class TweetManager {
       document.querySelector(".saito-end-of-redsquare").remove();
     }
 
-    //
-    // if someone asks the manager to render with a mode that is not currently
-    // set, we want to update our mode and proceed with it.
-    //
-    if (new_mode && new_mode != this.mode) {
-      this.mode = new_mode;
-    }
-    if (!this.mode) {
-      this.mode = "tweets";
-    }
 
     let myqs = `.tweet-manager`;
 
@@ -150,7 +136,7 @@ class TweetManager {
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
-      if (this.mode == "tweets") {
+      if (this.mode == "tweets" && new_mode !== "tweets") {
         let kids = managerElem.children;
         holder.replaceChildren(...kids);
       } else {
@@ -160,20 +146,34 @@ class TweetManager {
       }
     }
 
+    //
+    // if someone asks the manager to render with a mode that is not currently
+    // set, we want to update our mode and proceed with it.
+    //
+    if (new_mode && new_mode != this.mode) {
+      this.mode = new_mode;
+    }
+    if (!this.mode) {
+      this.mode = "tweets";
+    }
+
+
     this.showLoader();
 
     ////////////
     // tweets //
     ////////////
     if (this.mode == "tweets") {
-      //if (holder) {
-      //  let kids = holder.children;
-      //  managerElem.replaceChildren(...kids);
-      //}
+      if (holder) {
+        let kids = holder.children;
+        managerElem.replaceChildren(...kids);
+      }
 
       for (let i = 0; i < this.mod.tweets.length; i++) {
         let tweet = this.mod.tweets[i];
-        tweet.renderWithCriticalChild();
+        if (!tweet.isRendered()) {
+          tweet.renderWithCriticalChild();
+        }
       }
 
       setTimeout(() => {
@@ -443,21 +443,9 @@ class TweetManager {
       this.hideLoader();
     });
 
-    //
-    //Mobile/Desktop back button (when left navigation bar hidden!)
-    //
-
-    this.app.connection.emit("saito-header-replace-logo", (e) => {
-      this.app.connection.emit("redsquare-home-render-request", false);
-    });
   }
 
   attachEvents() {
-    if (this.mode !== "tweets") {
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request", false);
-      });
-    }
     //
     // dynamic content loading
     //

@@ -2,7 +2,7 @@ module.exports = (app, mod, post) => {
   let placeholder = "What's happening";
 
 
-  return `
+  let html = `
 
     <div class="tweet-overlay hide-scrollbar" id="tweet-overlay">
       <div class="tweet-overlay-content">
@@ -14,8 +14,20 @@ module.exports = (app, mod, post) => {
         
         <div id="post-tweet-img-preview-container" class="post-tweet-img-preview-container"></div>
 
+   
+  `;
+  if (post.source === "Edit") {
+    html += `
+      <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
+      <div class="saito-button-primary post-delete-button" id="post-delete-button">Delete</div>
+    `;
+  } else {
+    html += `
+      <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
+    `;
+  }
 
-          <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
+  html += `
       </div>
 
       <input type="hidden" id="parent_id" name="parent_id" value="${post.parent_id}" />
@@ -29,4 +41,6 @@ module.exports = (app, mod, post) => {
     </div>
 
   `;
+
+  return html;
 };

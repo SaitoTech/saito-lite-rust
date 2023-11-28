@@ -21,6 +21,8 @@ class ChatPopup {
 
     this.overlay = new SaitoOverlay(app, mod);
 
+    this.dimensions = {}
+
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
         this.no_older_messages = true;
@@ -231,6 +233,50 @@ class ChatPopup {
           };
         }
       }
+
+
+      //
+      // maximize
+      let mximize_icon = document.querySelector(`${popup_qs} .chat-header .chat-maximizer-icon`);
+      if (mximize_icon) {
+        if (!this.mod.chat_manager_overlay) {
+          mximize_icon.onclick = (e) => {
+
+            mximize_icon.classList.toggle("fa-square");
+            mximize_icon.classList.toggle("fa-window-restore");
+            
+            if (chatPopup.classList.contains("maximized")) {
+              chatPopup.style.width = this_self.dimensions.width + 'px';
+              chatPopup.style.height = this_self.dimensions.height + 'px';
+              chatPopup.style.left = this_self.dimensions.left + 'px';;
+              chatPopup.style.top = this_self.dimensions.top + 'px';;
+
+              chatPopup.classList.remove("maximized");
+              document.querySelector(".resize-icon").style.display = 'block';
+           } else {
+              this_self.savePopupDimensions(chatPopup);
+
+              chatPopup.style.width = '800px';
+              chatPopup.style.height = window.innerHeight + 'px';
+
+              // decide to maximize to left or right
+              if (this.dimensions.left < Math.floor(window.innerWidth/2)) {
+                chatPopup.style.left = '0px';  
+              } else {
+                chatPopup.style.left = (window.innerWidth-800) + 'px';
+              }
+
+              chatPopup.style.top = '0px';
+
+              chatPopup.classList.add("maximized");
+              document.querySelector(".resize-icon").style.display = 'none';
+            }
+
+
+          };
+        }
+      }
+
     }
 
     // add reply functionality
@@ -420,6 +466,10 @@ class ChatPopup {
     if (this.height) {
       chatPopup.style.height = this.height;
     }
+  }
+
+  savePopupDimensions(chatPopup){
+    this.dimensions = chatPopup.getBoundingClientRect();
   }
 }
 
