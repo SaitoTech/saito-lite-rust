@@ -1685,7 +1685,7 @@ class RedSquare extends ModTemplate {
       if (flagged_tweet?.tx) {
         await this.app.storage.updateTransaction(
           flagged_tweet.tx,
-          { field1: "RedSquareFlag" },
+          { flagged: 1 },
           "localhost"
         );
       } else {
@@ -1696,7 +1696,7 @@ class RedSquare extends ModTemplate {
               let tx = txs[0];
               await this.app.storage.updateTransaction(
                 tx,
-                { field1: "RedSquareFlag" },
+                { flagged: 1 },
                 "localhost"
               );
             }
