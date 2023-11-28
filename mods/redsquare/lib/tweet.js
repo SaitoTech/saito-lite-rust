@@ -253,8 +253,6 @@ class Tweet {
 
   render(prepend = false, render_with_children = true) {
 
-console.log("shift into render: " + this.container);
-
     //
     // handle if link
     //
@@ -318,40 +316,21 @@ console.log("shift into render: " + this.container);
     // then pass-through and render the sub-tweet directly.
     //
     if (this.retweet_tx && !this.text && !this.img_preview) {
-
-console.log("!");
-console.log("!");
-console.log("! retweet !");
-console.log("!");
-console.log(this.user.publicKey);
-
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
         " " +
         this.formatDate();
       this.retweet.container = ".tweet-manager";
-
       let t = this.mod.returnTweet(this.retweet.tx.signature);
       if (t) {
-
-console.log("1 ORIG TWEET TEXT: " + t.text);
-console.log("1 ORIG TWEET USER: " + t.user.publicKey);
-console.log("1 ORIG TWEET CONTAINER: " + t.user.container);
-
         t.notice = this.retweet.notice;
         t.user.notice = t.user.notice.replace("new", "original");
         t.render(prepend);
         t.user.render();
         t.attachEvents();
       } else {
-
-console.log("2 ORIG TWEET TEXT: " + this.retweet.text);
-console.log("2 ORIG TWEET USER: " + this.retweet.user.publicKey);
-console.log("2 ORIG TWEET CONTAINER: " + this.retweet.user.container);
-
-        console.log("Rendering a new retweet");
-        this.retweet.user.container = this.container + `> .tweet-${this.tx.signature} > .tweet-header`;
+        this.retweet.user.container = this.container + `> .tweet-${this.retweet.tx.signature} > .tweet-header`;
         this.retweet.user.notice = this.retweet.user.notice.replace("new", "original");
         this.retweet.render(prepend);
         this.retweet.user.render();
@@ -441,7 +420,6 @@ console.log("2 ORIG TWEET CONTAINER: " + this.retweet.user.container);
       }
     }
 
-console.log("rendering user!");
     this.user.render();
 
     if (this.img_preview != null) {

@@ -964,6 +964,7 @@ class Chat extends ModTemplate {
   }
 
   async createChatTransaction(group_id, msg = "", to_keys = []) {
+
     let newtx = await this.app.wallet.createUnsignedTransaction(
       this.publicKey,
       BigInt(0),
@@ -1003,6 +1004,16 @@ class Chat extends ModTemplate {
       message: msg,
       timestamp: new Date().getTime(),
     };
+
+    // sanity check
+    let wallet_balance = await this.app.wallet.getBalance("SAITO");
+    
+    // restrict radix-spam
+    if (wallet_balance == 0 && this.app.BROWSER == 1 && msg.length >= 800) {
+      siteMessage("Purchase SAITO to Send Large Messages in Community Chat...", 3000);
+      return;
+    }
+
 
     let group = this.returnGroup(group_id);
     if (group) {

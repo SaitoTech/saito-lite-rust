@@ -3,12 +3,11 @@
 module.exports = (app, mod, tweet) => {
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
+  text = mod.filterText(text);
 
-  console.log(tweet);
-  if (tweet.tx.update_tx){
-    console.log("Tweet Template == Rendering edited TX");
-    console.log(text);  
-  }
+  //if (tweet.tx.update_tx){
+  //  console.log("Tweet Template == Rendering edited TX");
+  //}
   
 
   if (!text && !notice && tweet.retweet_tx) {
