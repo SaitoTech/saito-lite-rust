@@ -1,3 +1,4 @@
+const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require("saito-js/lib/peer_service").default;
 const PlaceUI     = require('./lib/place-ui');
@@ -65,16 +66,52 @@ class Place extends ModTemplate {
     });
   }
 
+  async handlePeerTransaction(app, newtx=null, peer, mycallback=null) {
+    if (newtx === null) { return 0; }
+    const message = newtx.returnMessage();
+    if (message?.data && message?.request === "place update") {
+      if (this.app.BROWSER) {
+        const tx = new Transaction(undefined, message.data);
+        const txmsg = tx.returnMessage();
+        if (txmsg.module === this.name && txmsg.request === "paint") {
+          this.publicKey = await this.app.wallet.getPublicKey();
+          if (!tx.isFrom(this.publicKey)) {
+            console.log("*+* (handlePeerTransaction) Receiving painting transaction...");
+            await this.receivePaintingTransaction(tx);
+          }
+        }
+      }
+      return 1;
+    }
+    return super.handlePeerTransaction(app, newtx, peer, mycallback);
+  }
+
+
   async onConfirmation(blk, tx, conf) {
+    console.log("*+* Place.onConfirmation called");
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
-        if (txmsg.request === "paint") {
-          this.receivePaintingTransaction(tx);
+        if (txmsg.module === this.name && txmsg.request === "paint") {
+          console.log("*+* (onConfirmation) Receiving painting transaction...");
+          await this.receivePaintingTransaction(tx);
+          if (!this.app.BROWSER) {
+            console.log("*+* (onConfirmation) Notifying peers...");
+            this.notifyPeers(tx);
+          }
         }
       }
     } catch (err) {
       console.error("In " + this.name + ".onConfirmation: " + err);
+    }
+  }
+
+  async notifyPeers(tx) {
+    const peers = await this.app.network.getPeers();
+    for (const peer of peers) {
+      if (peer.synctype === "lite") {
+        this.app.network.sendRequestAsTransaction("place update", tx.toJson(), null, peer.peerIndex);
+      }
     }
   }
 
@@ -86,10 +123,10 @@ class Place extends ModTemplate {
     return this.transactionOrdinal(newtx);
   }
 
-  receivePaintingTransaction(tx) {
+  async receivePaintingTransaction(tx) {
     const txOrdinal = this.transactionOrdinal(tx);
     for (const tile of tx.returnMessage().data) {
-      this.updateTile(tile, "confirmed", txOrdinal);
+      await this.updateTile(tile, "confirmed", txOrdinal);
     }
   }
 
