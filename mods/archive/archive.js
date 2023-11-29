@@ -33,6 +33,8 @@ class Archive extends ModTemplate {
     this.categories = "Utilities Core";
 
     this.localDB = null;
+    this.localDB_purge = false;
+
     this.schema = [
       "id",
       "user_id",
@@ -73,51 +75,74 @@ class Archive extends ModTemplate {
     }
   }
 
+
   async initialize(app) {
+
     await super.initialize(app);
     this.load();
 
     if (app.BROWSER) {
+
+      await this.initInBrowserDatabase();
+
       //
-      //Create Local DB schema
+      // dedicated logic for purges
       //
-      let archives = {
-        name: "archives",
-        columns: {
-          id: { primaryKey: true, autoIncrement: true },
-          user_id: { dataType: "number", default: 0 },
-          publicKey: { dataType: "string", default: "" },
-          owner: { dataType: "string", default: "" },
-          sig: { dataType: "string", default: "" },
-          field1: { dataType: "string", default: "" },
-          field2: { dataType: "string", default: "" },
-          field3: { dataType: "string", default: "" },
-          field4: { dataType: "string", default: "" },
-          field5: { dataType: "string", default: "" },
-          block_id: { dataType: "number", default: 0 },
-          block_hash: { dataType: "string", default: "" },
-          created_at: { dataType: "number", default: 0 },
-          updated_at: { dataType: "number", default: 0 },
-          tx: { dataType: "string", default: "" },
-          tx_size: { dataType: "number", default: "" },
-          flagged: { dataType: "number", default: 0 },
-          preserve: { dataType: "number", default: 0 },
-        },
-      };
-
-      let db = {
-        name: "archive_db",
-        tables: [archives],
-      };
-
-      var isDbCreated = await this.localDB.initDb(db);
-
-      if (isDbCreated) {
-        console.log("ARCHIVE: Db Created & connection is opened");
-      } else {
-        console.log("ARCHIVE: Connection is opened");
+      // if version is below 5.555, then reset in-browser DB
+      // 
+      if (app.options.archive) {
+        let wv = app.options.archive.wallet_version;
+        try { wv = wv.toString(); wv = parseInt(wv.replace(/\./g, '')); } catch (err) { wv = 0; }
+        if (wv <= 5555) {
+          await this.localDB.dropDb();
+          await this.initInBrowserDatabase();
+        }
       }
     }
+
+  }
+
+  async initInBrowserDatabase() {
+    //
+    // Create Local DB schema
+    //
+    let archives = {
+      name: "archives",
+      columns: {
+        id: { primaryKey: true, autoIncrement: true },
+        user_id: { dataType: "number", default: 0 },
+        publicKey: { dataType: "string", default: "" },
+        owner: { dataType: "string", default: "" },
+        sig: { dataType: "string", default: "" },
+        field1: { dataType: "string", default: "" },
+        field2: { dataType: "string", default: "" },
+        field3: { dataType: "string", default: "" },
+        field4: { dataType: "string", default: "" },
+        field5: { dataType: "string", default: "" },
+        block_id: { dataType: "number", default: 0 },
+        block_hash: { dataType: "string", default: "" },
+        created_at: { dataType: "number", default: 0 },
+        updated_at: { dataType: "number", default: 0 },
+        tx: { dataType: "string", default: "" },
+        tx_size: { dataType: "number", default: "" },
+        flagged: { dataType: "number", default: 0 },
+        preserve: { dataType: "number", default: 0 },
+      },
+    };
+
+    let db = {
+      name: "archive_db",
+      tables: [archives],
+    };
+
+    var isDbCreated = await this.localDB.initDb(db);
+
+    if (isDbCreated) {
+      console.log("ARCHIVE: Db Created & connection is opened");
+    } else {
+      console.log("ARCHIVE: Connection is opened");
+    }
+
   }
 
   async render() {
@@ -760,18 +785,10 @@ class Archive extends ModTemplate {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
-try {
-  alert("in module onUpgrade testing");
-} catch (err) {
-  console.log("onUpgrade");
-}
-    if (type == "upgrade" && this.localDB) {
-      await this.localDB.clear("archives");
-    }
     if (type == "nuke" && this.localDB) {
-      // await this.localDB.clear("archives");
-      // Do this in a way that you can get the new schema
       await this.localDB.dropDb();
+      await this.initInBrowserDatabase();
+      //await this.localDB.clear("archives");
     }
     return 1;
   }

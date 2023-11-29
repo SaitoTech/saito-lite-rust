@@ -73,6 +73,7 @@ class Saito {
       //
       await hash_loader(this);
 
+      // NOV 29, changes to wallet, does it have app on init?
       await this.wallet.initialize();
       await this.keychain.initialize();
 
