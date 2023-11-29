@@ -205,8 +205,6 @@ class ChatPopup {
       this.app.browser.makeResizeable(popup_qs, header_qs, group_id, () => {
         let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
         if (chat_bubble) {
-          chat_bubble.classList.add("fa-window-minimize");
-          chat_bubble.classList.remove("fa-window-restore");
           this.restorePopup(chatPopup);
         }
       });
@@ -220,13 +218,9 @@ class ChatPopup {
     if (chat_bubble && mximize_icon && !this.mod.chat_manager_overlay) {
       chat_bubble.onclick = (e) => {
         if (chatPopup.classList.contains("minimized")) {
-          chat_bubble.classList.add("fa-window-minimize");
-          chat_bubble.classList.remove("fa-window-restore");
           this.restorePopup(chatPopup);
         } else {
           if (chatPopup.classList.contains("maximized")) {
-            mximize_icon.classList.add("fa-square");
-            mximize_icon.classList.remove("fa-window-restore");
             chatPopup.classList.remove("maximized");
           } else {
             //only update if not also maximized
@@ -242,8 +236,6 @@ class ChatPopup {
 
           chatPopup.classList.add("minimized");
           chatPopup.classList.remove("active");
-          chat_bubble.classList.remove("fa-window-minimize");
-          chat_bubble.classList.add("fa-window-restore");
           chatPopup.querySelector(".resize-icon").style.display = "none";
         }
       };
@@ -253,21 +245,14 @@ class ChatPopup {
 
       mximize_icon.onclick = (e) => {
         if (chatPopup.classList.contains("maximized")) {
-          mximize_icon.classList.add("fa-square");
-          mximize_icon.classList.remove("fa-window-restore");
           this.restorePopup(chatPopup);
         } else {
           if (chatPopup.classList.contains("minimized")) {
-            chat_bubble.classList.add("fa-window-minimize");
-            chat_bubble.classList.remove("fa-window-restore");
             chatPopup.classList.remove("minimized");
           }else{
             this.savePopupDimensions(chatPopup);            
           }
-
-          mximize_icon.classList.remove("fa-square");
-          mximize_icon.classList.add("fa-window-restore");
-
+          
           chatPopup.style.width = "800px";
           chatPopup.style.height = window.innerHeight + "px";
 
