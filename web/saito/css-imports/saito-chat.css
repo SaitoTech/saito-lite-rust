@@ -575,6 +575,11 @@
   .chat-manager-title {
     display: none;
   }
+
+  .chat-header>i.chat-sizing-icon {
+    display: none;
+  }
+
 }
 
 @media screen and (max-width: 600px) {
