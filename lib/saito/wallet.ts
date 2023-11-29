@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.510;
+  version = 5.520;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -165,10 +165,14 @@ export default class Wallet extends SaitoWallet {
     this.saitoCrypto = new SaitoCrypto(this.app);
 
     if (this.app.options.wallet != null) {
+
       /////////////
       // upgrade //
       /////////////
       if (this.app.options.wallet.version < this.version) {
+
+alert("wallet version upgrade");
+
         if (this.app.BROWSER === 1) {
           console.log("upgrading wallet version to : " + this.version);
           let tmpprivkey = this.app.options.wallet.privateKey;
@@ -205,7 +209,16 @@ export default class Wallet extends SaitoWallet {
           await this.setPublicKey(tmppubkey);
 
           // let modules purge stuff
-          await this.app.wallet.onUpgrade("upgrade");
+console.log("!!!");
+console.log("!!!");
+console.log("!!!");
+console.log("!!! modules upgrade");
+console.log("!!!");
+console.log("!!!");
+console.log("!!!");
+alert("BEFORE ON UPGRADE!");
+          await this.onUpgrade("upgrade");
+alert("JUST ON UPGRADE!");
 
           // re-specify after reset
           await this.setPrivateKey(tmpprivkey);
@@ -967,14 +980,24 @@ export default class Wallet extends SaitoWallet {
   }
 
   public async onUpgrade(type = "", privatekey = "", walletfile = null) {
+
     let publicKey = await this.getPublicKey();
 
+try {
+  alert("onUpgrade in wallet onUpgrade...");
+} catch (err) {
+}
+
+
     if (type == "nuke") {
+
       this.reset();
       this.app.blockchain.resetBlockchain();
       this.app.storage.resetOptions();
       await this.fetchBalanceSnapshot(publicKey);
+
     } else if (type == "import") {
+
       // wallet file used for importing
       if (walletfile != null) {
         let decryption_secret = "";
@@ -996,6 +1019,10 @@ export default class Wallet extends SaitoWallet {
           await this.app.blockchain.resetBlockchain();
           await this.fetchBalanceSnapshot(publicKey);
         } catch (err) {
+try {
+  alert("error: " + JSON.stringify(err));
+} catch (err) {
+}
           console.log(err);
           return err.name;
         }
@@ -1025,8 +1052,21 @@ export default class Wallet extends SaitoWallet {
       await this.fetchBalanceSnapshot(publicKey);
     }
 
-    await this.app.wallet.saveWallet();
+try {
+  alert("about to saveWallet!");
+} catch (err) {
+}
+
+    await this.saveWallet();
+try {
+  alert("about to trigger modules to upgrade");
+} catch (err) {
+}
     await this.app.modules.onUpgrade(type, privatekey, walletfile);
+try {
+  alert("about to return true");
+} catch (err) {
+}
     return true;
   }
 }

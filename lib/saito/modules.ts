@@ -485,8 +485,16 @@ class Mods {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      await this.app.modules.mods[i].onUpgrade(type, privatekey, walletfile);
+if (this.app.BROWSER == 1) {
+  alert("into modules upgrade...");
+}
+    for (let i = 0; i < this.mods.length; i++) {
+if (this.mods[i].name === "Archive") {
+  if (this.app.BROWSER) {
+alert("in modules onUpgrade heading into Archive");
+  }
+}
+      await this.mods[i].onUpgrade(type, privatekey, walletfile);
     }
   }
 }

@@ -759,6 +759,14 @@ class Archive extends ModTemplate {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
+try {
+  alert("in module onUpgrade testing");
+} catch (err) {
+  console.log("onUpgrade");
+}
+    if (type == "upgrade" && this.localDB) {
+      await this.localDB.clear("archives");
+    }
     if (type == "nuke" && this.localDB) {
       await this.localDB.clear("archives");
     }
