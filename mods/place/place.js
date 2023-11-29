@@ -1,3 +1,4 @@
+const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require("saito-js/lib/peer_service").default;
 const PlaceUI     = require('./lib/place-ui');
@@ -65,16 +66,52 @@ class Place extends ModTemplate {
     });
   }
 
+  async handlePeerTransaction(app, newtx=null, peer, mycallback=null) {
+    if (newtx === null) { return 0; }
+    const message = newtx.returnMessage();
+    if (message?.data && message?.request === "place update") {
+      if (this.app.BROWSER) {
+        const tx = new Transaction(undefined, message.data);
+        const txmsg = tx.returnMessage();
+        if (txmsg.module === this.name && txmsg.request === "paint") {
+          this.publicKey = await this.app.wallet.getPublicKey();
+          if (!tx.isFrom(this.publicKey)) {
+            console.log("*+* (handlePeerTransaction) Receiving painting transaction...");
+            await this.receivePaintingTransaction(tx);
+          }
+        }
+      }
+      return 1;
+    }
+    return super.handlePeerTransaction(app, newtx, peer, mycallback);
+  }
+
+
   async onConfirmation(blk, tx, conf) {
+    console.log("*+* Place.onConfirmation called");
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
-        if (txmsg.request === "paint") {
-          this.receivePaintingTransaction(tx);
+        if (txmsg.module === this.name && txmsg.request === "paint") {
+          console.log("*+* (onConfirmation) Receiving painting transaction...");
+          await this.receivePaintingTransaction(tx);
+          if (!this.app.BROWSER) {
+            console.log("*+* (onConfirmation) Notifying peers...");
+            this.notifyPeers(tx);
+          }
         }
       }
     } catch (err) {
       console.error("In " + this.name + ".onConfirmation: " + err);
+    }
+  }
+
+  async notifyPeers(tx) {
+    const peers = await this.app.network.getPeers();
+    for (const peer of peers) {
+      if (peer.synctype === "lite") {
+        this.app.network.sendRequestAsTransaction("place update", tx.toJson(), null, peer.peerIndex);
+      }
     }
   }
 
@@ -86,11 +123,9 @@ class Place extends ModTemplate {
     return this.transactionOrdinal(newtx);
   }
 
-  receivePaintingTransaction(tx) {
+  async receivePaintingTransaction(tx) {
     const txOrdinal = this.transactionOrdinal(tx);
-    for (const tile of tx.returnMessage().data) {
-      this.updateTile(tile, "confirmed", txOrdinal);
-    }
+    await this.updateTiles(tx.returnMessage().data, "confirmed", txOrdinal);
   }
 
   // orders transactions in case they have tiles in common and timestamps are equal
@@ -101,18 +136,27 @@ class Place extends ModTemplate {
   }
 
   async updateTile(tile, status, ordinal=null) {
-    const [i, j, updatedTileState] = this.gridState.updateTile(tile, status, ordinal);
+    await this.updateTiles([tile], status, ordinal)
+  }
+
+  async updateTiles(tileArray, status, ordinal=null) {
+    const locatedStateArray = [];
+    for (const tile of tileArray) {
+      locatedStateArray.push(this.gridState.updateTile(tile, status, ordinal));
+    }
     if (this.app.BROWSER) {
-      this.placeUI.updateTileRendering(i, j, updatedTileState);
+      for (const locatedState of locatedStateArray) {
+        this.placeUI.updateTileRendering(locatedState);
+      }
     } else if (status === "confirmed") {
-      const sql = `REPLACE INTO tiles (i, j, red, green, blue, ordinal)
-                   VALUES ($i, $j, $red, $green, $blue, $ordinal)`;
-      const components = this.colorToComponents(updatedTileState.confirmed.color);
-      const params = {
-        $i: i, $j: j,
-        $red: components[0], $green: components[1], $blue: components[2], $ordinal: ordinal,
-      };
-      await this.app.storage.executeDatabase(sql, params, "place");
+      let i, j, state, components, sql = "";
+      for (const locatedState of locatedStateArray) {
+        ({i: i, j: j, state: state} = locatedState);
+        components = this.colorToComponents(state.confirmed.color);
+        sql += `REPLACE INTO tiles (i, j, red, green, blue, ordinal)
+                VALUES (${i}, ${j}, ${components[0]}, ${components[1]}, ${components[2]}, ${ordinal});\n`;
+      }
+      await this.app.storage.executeDatabase(sql, {}, "place");
     }
   }
 
