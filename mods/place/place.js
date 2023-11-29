@@ -149,13 +149,14 @@ class Place extends ModTemplate {
         this.placeUI.updateTileRendering(locatedState);
       }
     } else if (status === "confirmed") {
-      let i, j, state, components, sql = "";
+      let i, j, state, components;
+      const sqlValues = [];
       for (const locatedState of locatedStateArray) {
         ({i: i, j: j, state: state} = locatedState);
         components = this.colorToComponents(state.confirmed.color);
-        sql += `REPLACE INTO tiles (i, j, red, green, blue, ordinal)
-                VALUES (${i}, ${j}, ${components[0]}, ${components[1]}, ${components[2]}, ${ordinal});\n`;
+        sqlValues.push(`(${i}, ${j}, ${components[0]}, ${components[1]}, ${components[2]}, ${ordinal})`);
       }
+      const sql = "REPLACE INTO tiles (i, j, red, green, blue, ordinal) VALUES\n" + sqlValues.join(",\n");
       await this.app.storage.executeDatabase(sql, {}, "place");
     }
   }
