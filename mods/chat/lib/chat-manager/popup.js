@@ -365,7 +365,6 @@ class ChatPopup {
       });
     }
 
-    try {
       //
       // close
       //
@@ -373,6 +372,7 @@ class ChatPopup {
         this.manually_closed = true;
         this.is_rendered = false;
         document.querySelector(`${popup_qs}`).remove();
+        this.app.connection.emit("chat-manager-render-request");
         app.storage.saveOptions();
       };
 
@@ -447,9 +447,6 @@ class ChatPopup {
           this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
         };
       });
-    } catch (err) {
-      //console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
-    }
   }
 
   restorePopup(chatPopup) {

@@ -30,6 +30,7 @@
 .chat-main-container .saito-sidebar.left {
 	width: 30rem;
 	border-right: 1px solid var(--saito-border-color);
+	padding: 1rem;
 }
 
 .chat-main-container .chat-header {
@@ -50,11 +51,11 @@
 }
 
 .chat-main-container .chat-body {
-	width: 100%;
+	width: 99%;
 	padding: 0 calc(50% - 30rem);
-	/*height: calc(100% - 11rem);*/
 	height: 100%;
 	margin: auto;
+	margin-left: 1%;
 }
 
 .text-input {

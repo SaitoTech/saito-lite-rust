@@ -1,4 +1,4 @@
-module.exports = ChatTeaser = (app, mod, group) => {
+module.exports = ChatTeaser = (app, mod, group, chat_open) => {
   let id = group.id;
 
   let last_msg = "<em>new chat</em>";
@@ -32,7 +32,7 @@ module.exports = ChatTeaser = (app, mod, group) => {
   return `
   <div class="saito-user${
     group?.online ? " online" : ""
-  }" id="saito-user-${id}" data-id="${id}" data-disable="true">
+  } ${chat_open? " saito-chat-active" :""}" id="saito-user-${id}" data-id="${id}" data-disable="true">
     <div class="saito-identicon-box">
       <img class="saito-identicon" src="${imgsrc}" data-disable="true"/>
     
