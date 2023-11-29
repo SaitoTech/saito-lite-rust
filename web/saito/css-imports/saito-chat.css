@@ -575,6 +575,12 @@
   .chat-manager-title {
     display: none;
   }
+
+  .chat-header>i.chat-sizing-icon {
+    padding: 1.2rem 0.6rem;
+    display: none;
+  }
+
 }
 
 @media screen and (max-width: 600px) {
