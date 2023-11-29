@@ -96,7 +96,7 @@ class ChatPopup {
 
     if (document.querySelector(popup_qs)) {
       am_i_on_page = 1;
-      this.restorePopup(document.querySelector(popup_qs));
+      this.restorePopup(document.querySelector(popup_qs), true);
     }
 
     //
@@ -464,7 +464,7 @@ class ChatPopup {
     });
   }
 
-  restorePopup(chatPopup) {
+  restorePopup(chatPopup,isRender=false) {
     chatPopup.classList.remove("minimized");
     chatPopup.classList.remove("maximized");
     chatPopup.classList.add("active");
@@ -474,8 +474,10 @@ class ChatPopup {
     chatPopup.style.left = this.dimensions.left + "px";
     chatPopup.style.top = this.dimensions.top + "px";
 
-    chatPopup.style.bottom = "unset";
-    chatPopup.style.right = "unset";
+    if(!isRender) {
+      chatPopup.style.bottom = "unset";
+      chatPopup.style.right = "unset";
+    }
 
     chatPopup.querySelector(".resize-icon").style.display = "block";
   }
