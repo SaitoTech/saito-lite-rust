@@ -371,7 +371,7 @@ class Archive extends ModTemplate {
     //
     // update index
     //
-    let sql = `UPDATE archives SET updated_at = $updated_at, tx = $tx`;
+    let sql = `UPDATE archives SET updated_at = $updated_at, tx = $tx, tx_size = $tx_size`;
 
     let params = {
       $updated_at: newObj.updated_at,
@@ -397,6 +397,7 @@ class Archive extends ModTemplate {
         set: {
           updated_at: newObj.updated_at,
           tx: newObj.tx,
+          tx_size: newObj.tx_size,
         },
         where: {
           sig: newObj.signature,
@@ -760,7 +761,9 @@ class Archive extends ModTemplate {
 
   async onUpgrade(type, privatekey, walletfile) {
     if (type == "nuke" && this.localDB) {
-      await this.localDB.clear("archives");
+      // await this.localDB.clear("archives");
+      // Do this in a way that you can get the new schema
+      await this.localDB.dropDb();
     }
     return 1;
   }
