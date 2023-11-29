@@ -4,12 +4,13 @@ const CallInterfaceVideoTemplate = require("./call-interface-video.template");
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
 const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
+const VideocallSettings = require("../overlays/videocall-settings");
 
 class CallInterfaceVideo {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.switchDisplay = new SwitchDisplay(app, mod);
+    this.videocall_settings = new VideocallSettings(app, mod);
     this.effectsMenu = new Effects(app, mod);
     this.users_on_call = 0;
     this.peers = []; //people in the call
@@ -264,14 +265,11 @@ class CallInterfaceVideo {
 
     document.querySelectorAll(".display-control").forEach((item) => {
       item.onclick = () => {
-        this.switchDisplay.render(this.display_mode);
+        this.videocall_settings.display_mode = this.display_mode;
+        this.videocall_settings.render();
       };
     });
-    document.querySelectorAll(".share-control").forEach((item) => {
-      item.onclick = () => {
-        this.app.connection.emit("begin-share-screen");
-      };
-    });
+    
     document.querySelectorAll(".video-control").forEach((item) => {
       item.onclick = () => {
         this.toggleVideo();
