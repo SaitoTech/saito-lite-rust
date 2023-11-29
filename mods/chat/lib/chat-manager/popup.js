@@ -190,13 +190,6 @@ class ChatPopup {
       return;
     }
 
-    chatPopup.onmouseover = (e) => {
-      document.querySelectorAll(".chat-container").forEach((el) => {
-        el.classList.remove("active");
-      });
-      e.currentTarget.classList.add("active");
-    };
-
     if (!this.mod.chat_manager_overlay) {
       //
       // make draggable and resizable, but no in mobile/main - page
