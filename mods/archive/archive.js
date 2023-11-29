@@ -33,6 +33,8 @@ class Archive extends ModTemplate {
     this.categories = "Utilities Core";
 
     this.localDB = null;
+    this.localDB_purge = false;
+
     this.schema = [
       "id",
       "user_id",
@@ -42,11 +44,15 @@ class Archive extends ModTemplate {
       "field1",
       "field2",
       "field3",
+      "field4",
+      "field5",
       "block_id",
       "block_hash",
       "created_at",
       "updated_at",
       "tx",
+      "tx_size",
+      "flagged",
       "preserve",
     ];
     //
@@ -69,47 +75,74 @@ class Archive extends ModTemplate {
     }
   }
 
+
   async initialize(app) {
+
     await super.initialize(app);
     this.load();
 
     if (app.BROWSER) {
+
+      await this.initInBrowserDatabase();
+
       //
-      //Create Local DB schema
+      // dedicated logic for purges
       //
-      let archives = {
-        name: "archives",
-        columns: {
-          id: { primaryKey: true, autoIncrement: true },
-          user_id: { dataType: "number", default: 0 },
-          publicKey: { dataType: "string", default: "" },
-          owner: { dataType: "string", default: "" },
-          sig: { dataType: "string", default: "" },
-          field1: { dataType: "string", default: "" },
-          field2: { dataType: "string", default: "" },
-          field3: { dataType: "string", default: "" },
-          block_id: { dataType: "number", default: 0 },
-          block_hash: { dataType: "string", default: "" },
-          created_at: { dataType: "number", default: 0 },
-          updated_at: { dataType: "number", default: 0 },
-          tx: { dataType: "string", default: "" },
-          preserve: { dataType: "number", default: 0 },
-        },
-      };
-
-      let db = {
-        name: "archive_db",
-        tables: [archives],
-      };
-
-      var isDbCreated = await this.localDB.initDb(db);
-
-      if (isDbCreated) {
-        console.log("ARCHIVE: Db Created & connection is opened");
-      } else {
-        console.log("ARCHIVE: Connection is opened");
+      // if version is below 5.555, then reset in-browser DB
+      // 
+      if (app.options.archive) {
+        let wv = app.options.archive.wallet_version;
+        try { wv = wv.toString(); wv = parseInt(wv.replace(/\./g, '')); } catch (err) { wv = 0; }
+        if (wv <= 5555) {
+          await this.localDB.dropDb();
+          await this.initInBrowserDatabase();
+        }
       }
     }
+
+  }
+
+  async initInBrowserDatabase() {
+    //
+    // Create Local DB schema
+    //
+    let archives = {
+      name: "archives",
+      columns: {
+        id: { primaryKey: true, autoIncrement: true },
+        user_id: { dataType: "number", default: 0 },
+        publicKey: { dataType: "string", default: "" },
+        owner: { dataType: "string", default: "" },
+        sig: { dataType: "string", default: "" },
+        field1: { dataType: "string", default: "" },
+        field2: { dataType: "string", default: "" },
+        field3: { dataType: "string", default: "" },
+        field4: { dataType: "string", default: "" },
+        field5: { dataType: "string", default: "" },
+        block_id: { dataType: "number", default: 0 },
+        block_hash: { dataType: "string", default: "" },
+        created_at: { dataType: "number", default: 0 },
+        updated_at: { dataType: "number", default: 0 },
+        tx: { dataType: "string", default: "" },
+        tx_size: { dataType: "number", default: "" },
+        flagged: { dataType: "number", default: 0 },
+        preserve: { dataType: "number", default: 0 },
+      },
+    };
+
+    let db = {
+      name: "archive_db",
+      tables: [archives],
+    };
+
+    var isDbCreated = await this.localDB.initDb(db);
+
+    if (isDbCreated) {
+      console.log("ARCHIVE: Db Created & connection is opened");
+    } else {
+      console.log("ARCHIVE: Connection is opened");
+    }
+
   }
 
   async render() {
@@ -188,15 +221,8 @@ class Archive extends ModTemplate {
     }
   }
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////
-  // "Ownership" doesn't matter in terms of your localhost storage... You host, you own it.
-  // So for cloud-like applications with remote archiving (e.g. handlePeerTransactions), we
-  // should be checking if the record is open (owner = "") or we are processing on behalf of
-  // the owner (owner = requesting_publicKey). Otherwise, we should return/pass an error object
-  // into the callback
-  // ////////////////////////////////////////////////////////////////////////////////////////////
-
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+
     if (tx == null) {
       return 0;
     }
@@ -266,12 +292,16 @@ class Archive extends ModTemplate {
     newObj.field1 = obj?.field1 || "";
     newObj.field2 = obj?.field2 || "";
     newObj.field3 = obj?.field3 || "";
+    newObj.field4 = obj?.field4 || "";
+    newObj.field5 = obj?.field5 || "";
     newObj.block_id = obj?.block_id || 0;
     newObj.block_hash = obj?.block_hash || "";
+    newObj.flagged = 0;
     newObj.preserve = obj?.preserve || 0;
     newObj.created_at = obj?.created_at || tx.timestamp;
     newObj.updated_at = obj?.updated_at || tx.timestamp;
     newObj.tx = tx.serialize_to_web(this.app);
+    newObj.tx_size = newObj.tx.length;
 
     if (this.app.BROWSER) {
       let numRows = await this.localDB.insert({
@@ -294,11 +324,15 @@ class Archive extends ModTemplate {
                     field1, 
                     field2, 
                     field3, 
+                    field4, 
+                    field5, 
                     block_id, 
                     block_hash, 
                     created_at, 
                     updated_at, 
                     tx,
+                    tx_size,
+                    flagged,
                     preserve
                   ) VALUES (
                   $publickey,
@@ -307,11 +341,15 @@ class Archive extends ModTemplate {
                   $field1,
                   $field2,
                   $field3,
+                  $field4,
+                  $field5,
                   $block_id,
                   $block_hash,
                   $created_at,
                   $updated_at,
                   $tx,
+                  $tx_size,
+                  $flagged,
                   $preserve
                   )`;
       let params = {
@@ -321,11 +359,15 @@ class Archive extends ModTemplate {
         $field1: newObj.field1,
         $field2: newObj.field2,
         $field3: newObj.field3,
+        $field4: newObj.field4,
+        $field5: newObj.field5,
         $block_id: newObj.block_id,
         $block_hash: newObj.block_hash,
         $created_at: newObj.created_at,
         $updated_at: newObj.updated_at,
         $tx: newObj.tx,
+        $tx_size: newObj.tx_size,
+        $flagged: newObj.flagged,
         $preserve: newObj.preserve,
       };
 
@@ -344,6 +386,7 @@ class Archive extends ModTemplate {
 
     newObj.signature = obj?.signature || obj?.sig || tx?.signature || "";
     newObj.tx = tx.serialize_to_web(this.app);
+    newObj.tx_size = newObj.tx.length;
     newObj.updated_at = new Date().getTime();
 
     if (!newObj.signature) {
@@ -353,11 +396,12 @@ class Archive extends ModTemplate {
     //
     // update index
     //
-    let sql = `UPDATE archives SET updated_at = $updated_at, tx = $tx`;
+    let sql = `UPDATE archives SET updated_at = $updated_at, tx = $tx, tx_size = $tx_size`;
 
     let params = {
       $updated_at: newObj.updated_at,
       $tx: newObj.tx,
+      $tx_size: newObj.tx_size,
       $sig: newObj.signature,
     };
 
@@ -378,6 +422,7 @@ class Archive extends ModTemplate {
         set: {
           updated_at: newObj.updated_at,
           tx: newObj.tx,
+          tx_size: newObj.tx_size,
         },
         where: {
           sig: newObj.signature,
@@ -404,21 +449,33 @@ class Archive extends ModTemplate {
 
     let where_obj = {}; //For JS-Store
 
-    if (obj.created_later_than) {
-      timestamp_limiting_clause = " AND created_at > " + parseInt(obj.created_later_than);
+    if (obj.created_later_than || obj.hasOwnProperty("created_later_than")) {
+      timestamp_limiting_clause += " AND created_at > " + parseInt(obj.created_later_than);
       where_obj = { created_at: { ">": parseInt(obj.created_later_than) } };
     }
-    if (obj.created_earlier_than) {
-      timestamp_limiting_clause = " AND created_at < " + parseInt(obj.created_earlier_than);
+    if (obj.created_earlier_than || obj.hasOwnProperty("created_earlier_than")) {
+      timestamp_limiting_clause += " AND created_at < " + parseInt(obj.created_earlier_than);
       where_obj = { created_at: { "<": parseInt(obj.created_earlier_than) } };
     }
-    if (obj.updated_later_than) {
-      timestamp_limiting_clause = " AND updated_at > " + parseInt(obj.updated_later_than);
+    if (obj.tx_size_greater_than) {
+      timestamp_limiting_clause += " AND tx_size > " + parseInt(obj.tx_size_greater_than);
+      where_obj = { tx_size: { ">": parseInt(obj.tx_size_greater_than) } };
+    }
+    if (obj.tx_size_less_than) {
+      timestamp_limiting_clause += " AND tx_size < " + parseInt(obj.tx_size_less_than);
+      where_obj = { tx_size: { "<": parseInt(obj.tx_size_less_than) } };
+    }
+    if (obj.updated_later_than || obj.hasOwnProperty("updated_later_than")) {
+      timestamp_limiting_clause += " AND updated_at > " + parseInt(obj.updated_later_than);
       where_obj = { updated_at: { ">": parseInt(obj.updated_later_than) } };
     }
-    if (obj.updated_earlier_than) {
-      timestamp_limiting_clause = " AND updated_at < " + parseInt(obj.updated_earlier_than);
+    if (obj.updated_earlier_than || obj.hasOwnProperty("updated_earlier_than")) {
+      timestamp_limiting_clause += " AND updated_at < " + parseInt(obj.updated_earlier_than);
       where_obj = { updated_at: { "<": parseInt(obj.updated_earlier_than) } };
+    }
+    if (obj.flagged) {
+      timestamp_limiting_clause += " AND flagged = " + parseInt(obj.flagged);
+      where_obj = { flagged: { "=": parseInt(obj.flagged) } };
     }
 
     //
@@ -461,7 +518,6 @@ class Archive extends ModTemplate {
     // SEARCH BASED ON CRITERIA PROVIDED
     // Run SQL queries for full nodes, with JS-Store fallback for browsers
     //
-
     let rows = await this.app.storage.queryDatabase(sql, params, "archive");
 
     if (this.app.BROWSER && !rows?.length) {
@@ -730,7 +786,9 @@ class Archive extends ModTemplate {
 
   async onUpgrade(type, privatekey, walletfile) {
     if (type == "nuke" && this.localDB) {
-      await this.localDB.clear("archives");
+      await this.localDB.dropDb();
+      await this.initInBrowserDatabase();
+      //await this.localDB.clear("archives");
     }
     return 1;
   }

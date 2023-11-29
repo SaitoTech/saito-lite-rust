@@ -989,3 +989,77 @@
   color: red;
   animation: pulsate 1s ease-in-out infinite;
 }
+
+
+/*
+  settings overlay
+*/
+
+.videocall-setting-grid-item {
+  display: grid;
+  gap: 1.5rem;
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+}
+
+.videocall-option-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.videocall-setting-title {
+  font-size: 2.2rem;
+}
+
+.videocall-option-label {
+  display: grid;
+  grid-template-columns: 0.07fr 1fr 0.1fr;
+  gap: 1.5rem;
+  align-items: center;
+  cursor: pointer;
+}
+
+.videocall-option-label:hover,
+.videocall-option-label.active {
+  background: var(--saito-background-light);
+}
+
+.videocall-option-name {
+  line-height: 4rem;
+  font-size: 2rem;
+}
+
+.videocall-option-label i {
+  font-size: 4rem;
+  color: var(--saito-font-color);
+}
+
+.videocall-option-label i.fa-table-cells {
+  font-size: 4.5rem;
+  margin-left: 0.5rem;
+}
+
+.videocall-option-label i.fa-user {
+  font-size: 3.5rem;
+  margin-left: 2rem;
+}
+
+.videocall-option-input {
+  line-height: 4rem
+}
+
+.videocall-setting-icon {
+  width: fit-content;
+}
+
+.videocall-setting-icon i {
+  font-size: 4rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  color: var(--saito-font-color);
+}
+
+.videocall-setting-icon:hover i {
+  transform: scale(1.2);
+}
+

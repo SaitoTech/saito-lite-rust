@@ -7,6 +7,7 @@ class Mods {
   public mods: any;
   public uimods: any;
   public mods_list: any;
+  public is_initialized: any;
   public lowest_sync_bid: any;
 
   constructor(app: Saito, config) {
@@ -14,7 +15,7 @@ class Mods {
     this.mods = [];
     this.uimods = [];
     this.mods_list = config;
-
+    this.is_initialized = false;
     this.lowest_sync_bid = -1;
   }
 
@@ -61,12 +62,6 @@ class Mods {
         callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
         callbackIndexArray.push(txindex);
       }
-      // } else {
-      //   if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
-      //     callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-      //     callbackIndexArray.push(txindex);
-      //   }
-      // }
     }
   }
 
@@ -100,6 +95,7 @@ class Mods {
   }
 
   async initialize() {
+
     //
     // remove any disabled / inactive modules
     //
@@ -236,6 +232,8 @@ class Mods {
       this.onConnectionStable(peer);
     });
 
+    this.is_initialized = true;
+
     //
     // .. and setup active module
     //
@@ -245,6 +243,7 @@ class Mods {
       await this.app.modules.initializeHTML();
       await this.app.modules.attachEvents();
     }
+
   }
 
   async render() {
@@ -485,8 +484,8 @@ class Mods {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      await this.app.modules.mods[i].onUpgrade(type, privatekey, walletfile);
+    for (let i = 0; i < this.mods.length; i++) {
+      await this.mods[i].onUpgrade(type, privatekey, walletfile);
     }
   }
 }

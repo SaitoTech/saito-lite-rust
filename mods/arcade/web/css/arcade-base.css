@@ -19,9 +19,16 @@
   row-gap: 1rem;
 }
 
+.arcade-game-list-container{
+  max-height: 60%;
+}
+
+.arcade-game-list-container h5 {
+  padding: 0 0.5rem;
+}
+
 .arcade-menu {
-  max-height: calc(60% - 2rem);
-  margin-left: 1rem;
+  max-height: calc(100% - 3rem);
 }
 
 button, .saito-button-primary, .saito-button-secondary:hover {

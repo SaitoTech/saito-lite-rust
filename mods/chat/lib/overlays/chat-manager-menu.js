@@ -29,7 +29,7 @@ class ChatManagerMenu {
   }
 
   async render() {
-   this.app.browser.addElementToSelector(chatMenuTemplate(this.app, this.mod), ".chat-manager"); 
+   this.app.browser.addElementToSelector(chatMenuTemplate(this.app, this.mod), ".chat-manager-list"); 
    this.active = true;
 
     this.attachEvents();

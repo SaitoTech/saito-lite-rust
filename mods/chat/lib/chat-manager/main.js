@@ -265,7 +265,11 @@ class ChatManager {
         }
       }
 
-      let html = ChatTeaser(this.app, this.mod, group);
+      let group_status = false;
+      if (this.popups[group.id]?.is_rendered){
+        group_status = true;
+      }
+      let html = ChatTeaser(this.app, this.mod, group, group_status);
       let divid = "saito-user-" + group.id;
 
       let obj = document.getElementById(divid);

@@ -29,18 +29,20 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
               <label>Settings</label>
               <i class="fa-solid fa-cog"></i>
             </span>
-            ${
-              mod.CallInterface.display_mode !== "presentation" &&
-              `<span class="share-control icon_click_area">
-                  <label>Screenshare</label>
-                  <i class="fa-solid fa-display"></i>
-                </span>`
-            }
           
             <span class="chat_control_container icon_click_area">
               <label>Chat</label>
               <i class="chat_control fa-regular fa-comments"></i>
             </span>
+
+             ${
+              mod.app.browser.isMobileBrowser === true
+              ? ``
+              : `<span class="record-control mini_okay icon_click_area" id="record-icon">
+                  <label>Record</label>
+                  <i class="fa-solid fa-record-vinyl"></i>
+                </span>`
+              }
             
             <span class="spacer"></span>
 
@@ -48,14 +50,7 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
               <label>Audio</label>
               <i class="fa ${audioEnabled ? "fa-microphone" : "fa-microphone-slash"}"> </i>
             </span>
-          ${
-            mod.app.browser.isMobileBrowser === true
-              ? ``
-              : `<span class="record-control mini_okay icon_click_area" id="record-icon">
-        <label>Record</label>
-        <i class="fa-solid fa-record-vinyl"></i>
-      </span>`
-          }
+         
           
             <span class="video-control mini_okay icon_click_area${videoEnabled ? "" : " disabled"}">
               <label>Video</label>

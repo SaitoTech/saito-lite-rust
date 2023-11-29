@@ -12,7 +12,7 @@ module.exports = ChatManagerTemplate = (app, mod) => {
       </div>
       <div class="chat-manager-options"><i class="fa-solid fa-ellipsis"></i></div>
     </div>
-    <div class="chat-manager-list hide-scrollbar saito-sidebar-element">
+    <div class="chat-manager-list hide-scrollbar${mod.browser_active ? "" : " saito-sidebar-element"}">
     </div>
   </div>`;
 
