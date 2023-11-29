@@ -218,8 +218,6 @@ class ChatPopup {
       if (chat_bubble) {
         if (!this.mod.chat_manager_overlay) {
           chat_bubble.onclick = (e) => {
-            chat_bubble.classList.toggle("fa-window-minimize");
-            chat_bubble.classList.toggle("fa-window-restore");
             if (chatPopup.classList.contains("minimized")) {
               this.restorePopup(chatPopup);
             } else {
@@ -241,9 +239,6 @@ class ChatPopup {
       if (mximize_icon) {
         if (!this.mod.chat_manager_overlay) {
           mximize_icon.onclick = (e) => {
-
-            mximize_icon.classList.toggle("fa-square");
-            mximize_icon.classList.toggle("fa-window-restore");
             
             if (chatPopup.classList.contains("maximized")) {
               chatPopup.style.width = this_self.dimensions.width + 'px';
