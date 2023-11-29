@@ -572,6 +572,12 @@
   font-size: 20px;
 }
 
+@media screen and (max-width: 786px) {
+  .chat-manager-title {
+    display: none;
+  }
+}
+
 @media screen and (max-width: 600px) {
   .chat-manager-overlay {
     background-color: var(--saito-background-color);

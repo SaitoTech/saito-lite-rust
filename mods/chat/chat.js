@@ -363,6 +363,7 @@ class Chat extends ModTemplate {
         }
         return this.chat_manager;
       case "saito-header":
+      case "saito-floating-menu":
         //
         // In mobile, we use the hamburger menu to open chat (without leaving the page)
         //
