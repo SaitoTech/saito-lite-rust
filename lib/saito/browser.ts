@@ -1274,9 +1274,9 @@ class Browser {
     }
   }
 
-  /** 
+  /**
    * Callback is called on mousedown
-   */ 
+   */
   makeResizeable(target_div, icon_div, unique_id, callback = null) {
     let d = document;
     let target = d.querySelector(target_div);
@@ -1305,41 +1305,39 @@ class Browser {
       let dimensions = target.getBoundingClientRect();
       ht = dimensions.height;
       wd = dimensions.width;
-  
+
       //
       // Draggable elements may have top/left set, but we want the bottom/right to be fixed
       //
       target.style.top = "";
       target.style.left = "";
-      target.style.bottom = (window.innerHeight - dimensions.bottom) + "px";
-      target.style.right = (window.innerWidth - dimensions.right) + "px";
-    }
+      target.style.bottom = window.innerHeight - dimensions.bottom + "px";
+      target.style.right = window.innerWidth - dimensions.right + "px";
+    };
 
     pullTab.addEventListener("mousedown", (evt) => {
-        x = evt.screenX;
-        y = evt.screenY;
-      
-        evt.stopImmediatePropagation();
-        evt.preventDefault();
+      x = evt.screenX;
+      y = evt.screenY;
 
-        prepareToResize();
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
 
-        //Get rid of any animation delays
-        target.style.transition = "unset";
+      prepareToResize();
 
-        d.body.addEventListener("mousemove", resizeFn);
-      
-        d.body.addEventListener("mouseup", () => {
-            d.body.removeEventListener("mousemove", resizeFn);
-            target.style.transition = "";
-        });
+      //Get rid of any animation delays
+      target.style.transition = "unset";
 
-        if (callback){
-          callback();
-        }
-        
+      d.body.addEventListener("mousemove", resizeFn);
+
+      d.body.addEventListener("mouseup", () => {
+        d.body.removeEventListener("mousemove", resizeFn);
+        target.style.transition = "";
+      });
+
+      if (callback) {
+        callback();
+      }
     });
-
   }
 
   returnAddressHTML(key) {
@@ -1549,9 +1547,13 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?/gi;
+  //  let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^\s>]*)?(?!>)/gi;
+      let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+
       text = text.replace(urlPattern, function (url) {
-        return `<a ${url.includes(window.location.host) ? "" : "target='_blank' "} class='saito-treated-link' href='${!url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
+        return `<a ${
+          url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
+        } class='saito-treated-link' href='${!url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
       });
 
       //trim lines at start and end
