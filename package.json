@@ -14,7 +14,7 @@
     "reset": " ./compile reset",
     "compile": " ./compile recompile",
     "old": " webpack --config ./webpack/old/.config.js",
-    "test": "jest",
+    "test": "cd tests && npm run test",
     "analyze": " --config ./webpack/old/webpack.analyze.js",
     "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
     "pretty": "npx prettier --write .",
