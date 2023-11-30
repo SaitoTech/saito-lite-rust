@@ -103,6 +103,11 @@ class RedSquareMain {
             }
 
             document.getElementById("saito-new-tweets").onclick = (e) => {
+
+              // We usually don't want to wipe out the rendered feed, but this is going to be 
+              // the easiest way to get rid of the button and make sure the new tweets show up on 
+              // top 
+              document.querySelector(".saito-main").innerHTML = "";
               this.app.connection.emit("redsquare-home-render-request", true);
             };
           }

@@ -96,7 +96,7 @@ class ChatPopup {
 
     if (document.querySelector(popup_qs)) {
       am_i_on_page = 1;
-      this.restorePopup(document.querySelector(popup_qs));
+      //this.restorePopup(document.querySelector(popup_qs));
     }
 
     //
@@ -202,14 +202,7 @@ class ChatPopup {
       // make draggable and resizable, but no in mobile/main - page
       //
       this.app.browser.makeDraggable(popup_id, header_id, true);
-      this.app.browser.makeResizeable(popup_qs, header_qs, group_id, () => {
-        let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
-        if (chat_bubble) {
-          chat_bubble.classList.add("fa-window-minimize");
-          chat_bubble.classList.remove("fa-window-restore");
-          this.restorePopup(chatPopup);
-        }
-      });
+      this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
     }
 
     //
@@ -220,30 +213,31 @@ class ChatPopup {
     if (chat_bubble && mximize_icon && !this.mod.chat_manager_overlay) {
       chat_bubble.onclick = (e) => {
         if (chatPopup.classList.contains("minimized")) {
-          chat_bubble.classList.add("fa-window-minimize");
-          chat_bubble.classList.remove("fa-window-restore");
           this.restorePopup(chatPopup);
         } else {
           if (chatPopup.classList.contains("maximized")) {
-            mximize_icon.classList.add("fa-square");
-            mximize_icon.classList.remove("fa-window-restore");
             chatPopup.classList.remove("maximized");
           } else {
             //only update if not also maximized
             this.savePopupDimensions(chatPopup);
           }
 
+          //Undo any drag styling
           chatPopup.style.top = "";
           chatPopup.style.left = "";
+
+          //Return to default bottom=0 from css
           chatPopup.style.bottom = "";
-          chatPopup.style.right = "";
-          chatPopup.style.width = "";
+
+          //Undo any manual resizing
           chatPopup.style.height = "";
+
+          if (parseInt(window.getComputedStyle(chatPopup).width) > 360) {
+            chatPopup.style.width = "";  
+          }
 
           chatPopup.classList.add("minimized");
           chatPopup.classList.remove("active");
-          chat_bubble.classList.remove("fa-window-minimize");
-          chat_bubble.classList.add("fa-window-restore");
           chatPopup.querySelector(".resize-icon").style.display = "none";
         }
       };
@@ -253,32 +247,30 @@ class ChatPopup {
 
       mximize_icon.onclick = (e) => {
         if (chatPopup.classList.contains("maximized")) {
-          mximize_icon.classList.add("fa-square");
-          mximize_icon.classList.remove("fa-window-restore");
           this.restorePopup(chatPopup);
         } else {
           if (chatPopup.classList.contains("minimized")) {
-            chat_bubble.classList.add("fa-window-minimize");
-            chat_bubble.classList.remove("fa-window-restore");
             chatPopup.classList.remove("minimized");
           }else{
             this.savePopupDimensions(chatPopup);            
           }
+          
+          //Undo any drag styling
+          chatPopup.style.top = "";
+          chatPopup.style.left = "";
 
-          mximize_icon.classList.remove("fa-square");
-          mximize_icon.classList.add("fa-window-restore");
-
-          chatPopup.style.width = "800px";
+          chatPopup.style.width = "750px";
           chatPopup.style.height = window.innerHeight + "px";
+
+          //Return to default bottom=0 from css
+          chatPopup.style.bottom = "";
 
           // decide to maximize to left or right
           if (this.dimensions.left < Math.floor(window.innerWidth / 2)) {
-            chatPopup.style.left = "0px";
+            chatPopup.style.right = window.innerWidth - 750 + "px";
           } else {
-            chatPopup.style.left = window.innerWidth - 800 + "px";
+            chatPopup.style.right = "0px";
           }
-
-          chatPopup.style.top = "0px";
 
           chatPopup.classList.add("maximized");
           chatPopup.querySelector(".resize-icon").style.display = "none";
@@ -469,19 +461,46 @@ class ChatPopup {
     chatPopup.classList.remove("maximized");
     chatPopup.classList.add("active");
 
-    chatPopup.style.width = this.dimensions.width + "px";
-    chatPopup.style.height = this.dimensions.height + "px";
-    chatPopup.style.left = this.dimensions.left + "px";
-    chatPopup.style.top = this.dimensions.top + "px";
+    //console.log("Restore: ", this.dimensions);
+    if (Object.keys(this.dimensions).length > 0) {
 
-    chatPopup.style.bottom = "unset";
-    chatPopup.style.right = "unset";
+      chatPopup.style.width = this.dimensions.width + "px";
+      chatPopup.style.height = this.dimensions.height + "px";
 
+      if (chatPopup.style.left){
+        //Moved after minimized or maximized
+        chatPopup.style.left = "";
+        chatPopup.style.top = "";
+      }
+
+      chatPopup.style.bottom = this.dimensions.bottom + "px";
+      chatPopup.style.right = this.dimensions.right + "px";
+
+    }
+
+    this.dimensions = {};
     chatPopup.querySelector(".resize-icon").style.display = "block";
   }
 
   savePopupDimensions(chatPopup) {
-    this.dimensions = chatPopup.getBoundingClientRect();
+    //
+    // You need to copy into a new object!!!!
+    //
+    let obj = chatPopup.getBoundingClientRect();
+    this.dimensions.width = obj.width;
+    this.dimensions.height = obj.height;
+    this.dimensions.left = obj.left;
+    this.dimensions.top = obj.top;
+    this.dimensions.bottom = window.innerHeight - obj.bottom;
+    this.dimensions.right = window.innerWidth - obj.right;
+    
+    //console.log("Save: ", this.dimensions);
+
+    if (chatPopup.style.top){
+      // Will revert to bottom/right coordinates for animation to be anchored
+      chatPopup.style.bottom = this.dimensions.bottom + "px";
+      chatPopup.style.right = this.dimensions.right + "px";
+    }
   }
 }
 

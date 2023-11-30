@@ -3,7 +3,7 @@ module.exports = ChatManagerTemplate = (app, mod) => {
   return `
   <div class="chat-manager">
     <div class="chat-manager-header">
-      <div>
+      <div class="chat-manager-title">
         <h5>Chats</h5>
       </div>
       <div class="close-chat-manager">
