@@ -96,7 +96,7 @@ class ChatPopup {
 
     if (document.querySelector(popup_qs)) {
       am_i_on_page = 1;
-      this.restorePopup(document.querySelector(popup_qs), true);
+      this.restorePopup(document.querySelector(popup_qs));
     }
 
     //
@@ -442,7 +442,7 @@ class ChatPopup {
     });
   }
 
-  restorePopup(chatPopup,isRender=false) {
+  restorePopup(chatPopup) {
     chatPopup.classList.remove("minimized");
     chatPopup.classList.remove("maximized");
     chatPopup.classList.add("active");
@@ -452,10 +452,11 @@ class ChatPopup {
     chatPopup.style.left = this.dimensions.left + "px";
     chatPopup.style.top = this.dimensions.top + "px";
 
-    if(!isRender) {
-      chatPopup.style.bottom = "unset";
-      chatPopup.style.right = "unset";
-    }
+    /*
+      removed bottom and left unset
+      it shifts chat popup to top-left on re-render & when resizing for first time
+      maximize/minimze seems to work fine without it so there wasnt much of need
+    */
 
     chatPopup.querySelector(".resize-icon").style.display = "block";
   }
