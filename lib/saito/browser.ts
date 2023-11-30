@@ -1274,6 +1274,9 @@ class Browser {
     }
   }
 
+  /** 
+   * Callback is called on mousedown
+   */ 
   makeResizeable(target_div, icon_div, unique_id, callback = null) {
     let d = document;
     let target = d.querySelector(target_div);
@@ -1282,16 +1285,10 @@ class Browser {
       icon_div
     );
     let pullTab = d.getElementById(`resize-icon-${unique_id}`);
-    let dimensions = target.getBoundingClientRect();
 
-    let ht = dimensions.height;
-    let wd = dimensions.width;
-    let x = 0;
-    let y = 0;
-    let dx = 0;
-    let dy = 0;
+    let ht, wd, x, y, dx, dy;
 
-    let resize = (evt) => {
+    const resize = (evt) => {
       dx = evt.screenX - x;
       dy = evt.screenY - y;
       x = evt.screenX;
@@ -1302,15 +1299,41 @@ class Browser {
       target.style.height = ht + "px";
     };
 
-    let resizeFn = resize.bind(this);
+    const resizeFn = resize.bind(this);
+
+    const prepareToResize = () => {
+      let dimensions = target.getBoundingClientRect();
+      ht = dimensions.height;
+      wd = dimensions.width;
+  
+      //
+      // Draggable elements may have top/left set, but we want the bottom/right to be fixed
+      //
+      target.style.top = "";
+      target.style.left = "";
+      target.style.bottom = (window.innerHeight - dimensions.bottom) + "px";
+      target.style.right = (window.innerWidth - dimensions.right) + "px";
+    }
+
     pullTab.addEventListener("mousedown", (evt) => {
         x = evt.screenX;
         y = evt.screenY;
       
+        console.log("Click on resizing tab", evt.currentTarget, evt);
+
+        evt.stopImmediatePropagation();
+        evt.preventDefault();
+
+        prepareToResize();
+
+        //Get rid of any animation delays
+        target.style.transition = "unset";
+
         d.body.addEventListener("mousemove", resizeFn);
       
         d.body.addEventListener("mouseup", () => {
             d.body.removeEventListener("mousemove", resizeFn);
+            target.style.transition = "";
         });
 
         if (callback){
