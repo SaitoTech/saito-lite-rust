@@ -21,22 +21,22 @@
 
 .saito-game-identicons {
     min-width: min-content;
-    backdrop-filter: blur(1px);
     padding: 1rem;
+}
+
+.saito-sidebar .saito-game-identicons {
+    padding: 0.5rem;
+    column-gap: 0.75rem;
 }
 
 .saito-game-identicons div {
     height: 3.5rem;
+    backdrop-filter: blur(3px);
 }
 
 .saito-game-identicons .requested_player {
     opacity: 0.6;
     filter: grayscale(0.7);
-}
-
-.game-type {
-    font-size: 1.4rem;
-    font-weight: 400;
 }
 
 .identicon-needed {
