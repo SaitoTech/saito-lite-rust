@@ -13,12 +13,13 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
-    - name: Install dependencies
+    - name: Install root dependencies
       run: npm ci
     - name: Deploy Application
       run: npm run go
     - name: Install test dependencies
       run: npm ci
+      working-directory: tests
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
       working-directory: tests
