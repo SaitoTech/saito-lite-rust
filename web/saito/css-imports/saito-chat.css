@@ -627,6 +627,13 @@
     height: calc(100% - var(--saito-header-height));
     max-height: none;
     border-radius: 0;
+
+    /* For the keyboard */
+    right: 0;
+    bottom: 0;
+    top: var(--saito-header-height);
+    left: 0;
+
   }
   .chat-manager-overlay+.chat-container {
     height: 100vh;
