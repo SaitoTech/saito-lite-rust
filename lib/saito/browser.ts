@@ -1528,12 +1528,9 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      let urlPattern =
-        /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+      let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.\w+\b/gi;
       text = text.replace(urlPattern, function (url) {
-        return `<a ${
-          url.includes(window.location.host) ? "" : "target='_blank' "
-        }class='saito-treated-link' href='${url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
+        return `<a ${url.includes(window.location.host) ? "" : "target='_blank' "} class='saito-treated-link' href='${!url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
       });
 
       //trim lines at start and end
