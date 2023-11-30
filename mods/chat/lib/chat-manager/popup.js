@@ -454,11 +454,12 @@ class ChatPopup {
     chatPopup.classList.remove("maximized");
     chatPopup.classList.add("active");
 
-    chatPopup.style.width = this.dimensions.width + "px";
-    chatPopup.style.height = this.dimensions.height + "px";
-    chatPopup.style.left = this.dimensions.left + "px";
-    chatPopup.style.top = this.dimensions.top + "px";
-
+    if (Object.keys(this.dimensions).length > 0) {
+      chatPopup.style.width = this.dimensions.width + "px";
+      chatPopup.style.height = this.dimensions.height + "px";
+      chatPopup.style.left = this.dimensions.left + "px";
+      chatPopup.style.top = this.dimensions.top + "px";
+    }
     /*
       removed bottom and left unset
       it shifts chat popup to top-left on re-render & when resizing for first time
