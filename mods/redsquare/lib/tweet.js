@@ -1214,15 +1214,20 @@ class Tweet {
     
     const links = dom.getElementsByTagName('a');
 
-    const hrefs = Array.from(links).map(link => link.href);
+    //const hrefs = Array.from(links).map(link => link.href);
 
     let link, urlParams;
 
-    if (hrefs != null && hrefs.length > 0) {
+    if (links != null && links.length > 0) {
       //
       // save the first link
       //
-      let first_link = hrefs[0];
+      const regex = /href\s*=\s*['"]([^'"]+)['"]/i;
+      let first_link = links[0].toString().match(regex)[1];
+
+      if (typeof first_link == "undefined") {
+        return this;
+      }
 
       try {
         link = new URL(first_link);
