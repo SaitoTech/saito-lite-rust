@@ -133,7 +133,6 @@
 /* Free floating chat container */
 
 .chat-container {
-  margin-right: 1.6rem;
   height: 50rem;
   width: 36rem;
   border-radius: 0.5rem;
@@ -143,7 +142,7 @@
   the child (slidein menu) inherits it */
   position: fixed;
   bottom: 0px;
-  right: 0px;
+  right: 1.5rem;
   border: 1px solid var(--saito-border-color);
   background: var(--saito-arcade-background);
   color: var(--saito-font-color);
@@ -152,7 +151,11 @@
   min-height: 150px;
   overflow-x: hidden;
   overflow-y: hidden;
-  transition: all 0.1s ease-in-out;
+  
+}
+
+.chat-container, .chat-container .chat-body, .chat-container .chat-footer{
+  transition: all 0.15s ease-in-out;   
 }
 
 .chat-popup {
@@ -167,18 +170,23 @@
 }
 
 .chat-container.minimized {
-  height: unset;
+  height: 45px;
   min-height: unset;
-  resize: unset;
 }
 
-.chat-container.minimized .chat-body {
+.chat-container.minimized .chat-body, .chat-container.minimized .chat-footer {
+  height: 0;
+  min-height: unset;
+  overflow: hidden;
+  padding: 0;
+  opacity: 0;
+
+  /*
+  This works but is a little abrupt
   display: none;
+  */
 }
 
-.chat-container.minimized .chat-footer {
-  display: none;
-}
 
 .chat-body img {
   /* If a small image, we don't want to zoom in
@@ -619,7 +627,6 @@
     height: calc(100% - var(--saito-header-height));
     max-height: none;
     border-radius: 0;
-    resize: unset;
   }
   .chat-manager-overlay+.chat-container {
     height: 100vh;

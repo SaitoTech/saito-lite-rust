@@ -1319,8 +1319,6 @@ class Browser {
         x = evt.screenX;
         y = evt.screenY;
       
-        console.log("Click on resizing tab", evt.currentTarget, evt);
-
         evt.stopImmediatePropagation();
         evt.preventDefault();
 
