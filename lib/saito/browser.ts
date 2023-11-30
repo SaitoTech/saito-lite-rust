@@ -1549,7 +1549,7 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.\w+\b/gi;
+      let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?/gi;
       text = text.replace(urlPattern, function (url) {
         return `<a ${url.includes(window.location.host) ? "" : "target='_blank' "} class='saito-treated-link' href='${!url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
       });
