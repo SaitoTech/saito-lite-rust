@@ -152,7 +152,7 @@
   min-height: 150px;
   overflow-x: hidden;
   overflow-y: hidden;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
 }
 
 .chat-popup {
@@ -572,7 +572,7 @@
   font-size: 20px;
 }
 
-@media screen and (max-width: 786px) {
+@media screen and (max-width: 720px) {
   .chat-manager-title {
     display: none;
   }
