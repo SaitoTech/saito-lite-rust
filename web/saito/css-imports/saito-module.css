@@ -1,8 +1,7 @@
 .saito-module {
     display: flex;
     flex-wrap: wrap;
-    column-gap: 1rem;
-    row-gap: 2rem;
+    row-gap: 1rem;
     flex-direction: row;
     justify-content: space-between;
     position: relative;
@@ -17,9 +16,10 @@
 }
 
 .saito-module-titlebar {
-    font-size: 1.8rem;
     background-color: var(--saito-background-color);
-    padding: 1rem;
+    padding: 0.5rem;
+    max-width: 18rem;
+    min-width: 12rem;
     width: 18rem;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -28,8 +28,18 @@
     opacity: 0.80;
 }
 
+.saito-module-titlebar > div {
+    margin: 0.25rem;
+}
+
 .saito-module-titlebar-title {
     color: var(--saito-font-color-heavy);
+    font-size: 2rem;
+}
+
+.saito-module-titlebar-details {
+    font-size: 1.4rem;
+    text-transform: uppercase;
 }
 
 .saito-module-details {
@@ -43,4 +53,20 @@
 
 .saito-module-identicon {
     border: none;
+}
+
+
+/*
+    Small tweaks for when the saito-module is crammed into a sidebar
+*/
+.saito-sidebar .saito-module {
+    padding: 0.5rem;
+}
+
+.saito-sidebar .saito-module-titlebar {
+    width: unset;
+}
+
+.saito-sidebar .saito-module-titlebar-details {
+    font-size: 1.2rem;
 }
