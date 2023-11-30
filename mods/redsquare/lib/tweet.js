@@ -6,6 +6,8 @@ const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
 const Transaction = require("../../../lib/saito/transaction").default;
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
 class Tweet {
   constructor(app, mod, tx, container = ".tweet-manager") {
@@ -1207,19 +1209,21 @@ class Tweet {
       return this;
     }
 
-    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-    let links = this.text.match(expression);
+    //let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+    const dom = new JSDOM(this.text);
+    const doc = dom.window.document;
+    
+    const links = doc.querySelectorAll('a');
+
+    const hrefs = Array.from(links).map(link => link.href);
 
     let link, urlParams;
 
-    if (links != null && links.length > 0) {
+    if (hrefs != null && hrefs.length > 0) {
       //
       // save the first link
       //
-      let first_link = links[0];
-      if (first_link.indexOf("http") == -1) {
-        first_link = "http://" + first_link;
-      }
+      let first_link = hrefs[0];
 
       try {
         link = new URL(first_link);
