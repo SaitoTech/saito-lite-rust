@@ -354,20 +354,28 @@ class Chat extends ModTemplate {
 
   respondTo(type, obj = null) {
     let chat_self = this;
+    let force = false;
 
     switch (type) {
       case "chat-manager":
         if (this.chat_manager == null) {
-          //console.log("Respond to");
           this.chat_manager = new ChatManager(this.app, this);
         }
         return this.chat_manager;
+      case "saito-game-menu":
+        // Need to make sure this is created so we can listen for requests to open chat popups
+        if (this.chat_manager == null) {
+          this.chat_manager = new ChatManager(this.app, this);
+        }
+        // Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
+        force = true;
+
       case "saito-header":
       case "saito-floating-menu":
         //
         // In mobile, we use the hamburger menu to open chat (without leaving the page)
         //
-        if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
+        if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600) || force) {
           if (this.chat_manger) {
             //Don't want mobile chat auto popping up
             this.chat_manager.render_popups_to_screen = 0;
@@ -381,6 +389,7 @@ class Chat extends ModTemplate {
               text: "Chat",
               icon: "fas fa-comments",
               callback: function (app, id) {
+                console.log("Render Chat manager overlay");
                 chat_self.chat_manager_overlay.render();
               },
               event: function(id){
@@ -388,7 +397,7 @@ class Chat extends ModTemplate {
                 chat_self.app.connection.on("chat-manager-render-request", ()=> {
                 
                   let elem = document.getElementById(id);
-                  console.log("Chat event, update", elem);
+                  //console.log("Chat event, update", elem);
                   if (elem){
                     let unread = 0;
                     for (let group of chat_self.groups){
@@ -1312,7 +1321,16 @@ class Chat extends ModTemplate {
       console.log(JSON.parse(JSON.stringify(new_message)));
     }
 
+    //
+    // Flag the group that there is a new message
+    // This is so we can add an animation effect on rerender
+    // and will be reset there
+    //
+    group.notification = true;
+
     if (/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(this.publicKey)) {
+      
+      //Send System notification
       if (this.enable_notifications) {
         let sender = this.app.keychain.returnIdentifierByPublicKey(new_message.from[0], true);
         if (group.unread > 1) {
@@ -1327,7 +1345,10 @@ class Chat extends ModTemplate {
         this.app.browser.sendNotification(sender, new_msg, `chat-message-${group.id}`);
       }
 
+      //Flash new message in browser tab
       this.startTabNotification();
+
+      //Add liveness indicator to group
       this.app.connection.emit("group-is-active", group);
     }
 
@@ -1337,6 +1358,8 @@ class Chat extends ModTemplate {
     } else {
       console.warn(`Not saving because in loading mode (${this.loading})`);
     }
+
+
   }
 
   ///////////////////
