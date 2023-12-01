@@ -26,6 +26,9 @@ class ChatManagerOverlay {
       this.mod.chat_manager.render_popups_to_screen = 0;
     }
 
+    // Make sure we can render chat manager within the overlay
+    this.mod.chat_manager.render_manager_to_screen = 1;
+
     this.mod.chat_manager.container = ".chat-manager-overlay";
 
     this.app.connection.emit("chat-manager-render-request");
@@ -42,6 +45,10 @@ class ChatManagerOverlay {
         document.querySelector(".chat-manager-overlay").style.visibility = "hidden";
       }
     };
+
+    if (document.querySelector(".floating-cm-overlay")) {
+      this.app.browser.makeDraggable("chat-manager-overlay", "chat-manager-header");
+    }
 
     /*
     let sh = document.getElementById("saito-header");
