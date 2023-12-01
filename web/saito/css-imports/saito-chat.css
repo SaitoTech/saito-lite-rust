@@ -49,13 +49,13 @@
   font-size: 1.5rem;
 }
 
-.chat-manager-list .new-notification {
+.new-notification {
   background: linear-gradient(90deg, #0003 47%, var(--saito-primary), #0003 53%);
   background-size: 300%;
   animation: notificationAnimation 1.8s ease;
 }
 
-.chat-manager-list .new-notification .saito-chat-notifications {
+.new-notification .saito-chat-notifications {
   visibility: hidden;
 }
 
