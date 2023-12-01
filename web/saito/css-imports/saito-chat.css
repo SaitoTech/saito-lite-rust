@@ -27,7 +27,8 @@
   border-radius: 0.5rem;
 }
 
-.chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
+.chat-manager .saito-user:hover,
+.chat-manager .saito-user:hover .saito-address {
   background-color: var(--saito-primary);
   color: var(--saito-background-color);
 }
@@ -68,7 +69,7 @@
   }
 }
 
-.saito-chat-active{
+.saito-chat-active {
   background-color: var(--saito-gray-transparent);
 }
 
@@ -102,12 +103,12 @@
   transform: rotate(90deg);
 }
 
-.chat-manager-menu>div {
+.chat-manager-menu > div {
   cursor: pointer;
   padding: 0.5rem;
 }
 
-.chat-manager-menu>div:hover {
+.chat-manager-menu > div:hover {
   background-color: var(--saito-primary);
   color: var(--saito-background-color);
 }
@@ -124,7 +125,7 @@
   font-size: 16px;
 }
 
-.chat-manager-menu>div.notice:hover {
+.chat-manager-menu > div.notice:hover {
   color: var(--saito-font-color);
   background-color: var(--saito-background-color);
 }
@@ -144,7 +145,7 @@
 */
 .chat-static .chat-minimizer-icon,
 .chat-static .chat-maximizer-icon,
-.chat-static .chat-container-close, 
+.chat-static .chat-container-close,
 .chat-static .fa-comment-dots {
   display: none;
 }
@@ -170,11 +171,12 @@
   min-height: 150px;
   overflow-x: hidden;
   overflow-y: hidden;
-  
 }
 
-.chat-container, .chat-container .chat-body, .chat-container .chat-footer{
-  transition: all 0.15s ease-in-out;   
+.chat-container,
+.chat-container .chat-body,
+.chat-container .chat-footer {
+  transition: all 0.15s ease-in-out;
 }
 
 .chat-popup {
@@ -193,7 +195,8 @@
   min-height: unset;
 }
 
-.chat-container.minimized .chat-body, .chat-container.minimized .chat-footer {
+.chat-container.minimized .chat-body,
+.chat-container.minimized .chat-footer {
   height: 0;
   min-height: unset;
   overflow: hidden;
@@ -205,7 +208,6 @@
   display: none;
   */
 }
-
 
 .chat-body img {
   /* If a small image, we don't want to zoom in
@@ -225,7 +227,7 @@
   font-size: 2rem;
 }
 
-.chat-header>i {
+.chat-header > i {
   margin: 0;
   padding: 1.2rem;
   color: var(--saito-primary);
@@ -236,29 +238,29 @@
   cursor: pointer;
 }
 
-.chat-header>i:hover {
+.chat-header > i:hover {
   background-color: var(--saito-primary);
   color: var(--saito-white);
 }
 
-.chat-header>i.noclick:hover {
+.chat-header > i.noclick:hover {
   background-color: revert;
   color: var(--saito-primary);
   cursor: revert;
 }
 
-.chat-header>i.chat-sizing-icon {
+.chat-header > i.chat-sizing-icon {
   padding: 1.2rem 0.6rem;
 }
 
-.chat-header>i:last-child {
+.chat-header > i:last-child {
   padding-bottom: 1.3rem;
   cursor: pointer;
 }
 
-.chat-header>i:last-child:hover {
+/*.chat-header > i:last-child:hover {
   transform: rotate(90deg) scale(1.1);
-}
+}*/
 
 .chat-header .chat-group {
   max-width: 95%;
@@ -279,7 +281,7 @@
   background-color: var(--saito-bubble-background);
 }
 
-.chat-body>.saito-user {
+.chat-body > .saito-user {
   padding-bottom: 1rem;
   cursor: default;
   grid-template-rows: min-content 1fr;
@@ -320,7 +322,6 @@
   color: var(--saito-secondary);
 }
 
-
 .chat-body .saito-user-self.saito-user {
   display: flex;
   justify-content: flex-end;
@@ -336,7 +337,6 @@
 .chat-body .saito-user-self.saito-user .saito-identicon-box {
   display: none;
 }
-
 
 /* Hide user names in 2-person chats */
 .saito-dm-chat .chat-body .saito-address {
@@ -479,7 +479,7 @@
 
 /* This is the submit paper airplane icon */
 
-.chat-footer>i {
+.chat-footer > i {
   color: var(--saito-primary);
   cursor: pointer;
   z-index: 2;
@@ -493,25 +493,25 @@
 }
 
 .dockedLeft {
-  border-left: 3px solid var(--saito-primary)!important;
+  border-left: 3px solid var(--saito-primary) !important;
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
 
 .dockedRight {
-  border-right: 3px solid var(--saito-primary)!important;
+  border-right: 3px solid var(--saito-primary) !important;
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
 
 .dockedTop {
-  border-top: 3px solid var(--saito-primary)!important;
+  border-top: 3px solid var(--saito-primary) !important;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
 }
 
 .dockedBottom {
-  border-bottom: 3px solid var(--saito-primary)!important;
+  border-bottom: 3px solid var(--saito-primary) !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
@@ -537,7 +537,7 @@
   margin: 0;
 }
 
-.chat-manager-header>div {
+.chat-manager-header > div {
   width: fit-content;
   cursor: pointer;
   transition: transform 0.4s;
@@ -580,6 +580,7 @@
   margin-right: auto;
   display: none;
   position: relative;
+  height: 100%;
 }
 
 .chat-manager-overlay .close-chat-manager {
@@ -595,8 +596,38 @@
   font-size: 24px;
 }
 
-.chat-manager-overlay .chat-manager-header, .chat-manager-overlay .chat-manager-menu {
+.chat-manager-overlay .chat-manager-header,
+.chat-manager-overlay .chat-manager-menu {
   font-size: 20px;
+}
+
+.chat-manager-overlay {
+  background-color: var(--saito-background-color);
+  position: absolute;
+  left: 0;
+  top: var(--saito-header-height);
+  z-index: 15;
+  width: 300px;
+  height: fit-content;
+}
+
+
+
+.floating-cm-overlay .chat-manager-header {
+  cursor: grab;
+}
+
+
+.alternate-close-button, .floating-cm-overlay .chat-manager-options, .chat-manager-overlay.floating-cm-overlay .close-chat-manager {
+  display: none;
+}
+
+.floating-cm-overlay .alternate-close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 30px;
 }
 
 @media screen and (max-width: 720px) {
@@ -604,17 +635,13 @@
     display: none;
   }
 
-  .chat-header>i.chat-sizing-icon {
+  .chat-header > i.chat-sizing-icon {
     display: none;
   }
-
 }
 
 @media screen and (max-width: 600px) {
   .chat-manager-overlay {
-    background-color: var(--saito-background-color);
-    position: absolute;
-    left: 0;
     top: 0;
     height: calc(100 * var(--saito-vh));
     width: 100vw;
@@ -630,16 +657,17 @@
     height: fit-content;
     max-height: 100%;
   }
-  .chat-manager-overlay .chat-manager-menu {
-    top: var(--saito-header-height);
-  }
+
+
   .chat-manager-overlay .chat-manager-menu i {
     width: 40px;
     height: 40px;
   }
+
   .chat-manager-overlay .chat-manager-header {
     height: var(--saito-header-height);
   }
+
   .chat-container {
     margin: 0;
     width: 100vw;
@@ -652,9 +680,8 @@
     bottom: 0;
     top: 0;
     left: 0;
-
   }
-  .chat-manager-overlay+.chat-container {
+  .chat-manager-overlay + .chat-container {
     height: 100vh;
     height: calc(var(--saito-vh) * 100);
   }
