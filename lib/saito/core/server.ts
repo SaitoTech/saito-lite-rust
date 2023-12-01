@@ -150,11 +150,11 @@ export class NodeSharedMethods extends CustomSharedMethods {
         return res.arrayBuffer();
       })
       .then((buffer: ArrayBuffer) => {
-        // console.log("block data fetched for " + url + " with size : " + buffer.byteLength);
+        console.log("block data fetched for " + url + " with size : " + buffer.byteLength);
         return new Uint8Array(buffer);
       })
       .catch((err) => {
-        console.error("Error fetching block: ", err);
+        console.error("Error fetching block: " + url, err);
         throw "failed fetching block";
       });
   }
@@ -220,6 +220,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
     result.forEach((s) => list.push(s));
     return list;
   }
+
+  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void {}
 }
 
 /**

@@ -9,6 +9,7 @@ import Browser from "../../lib/saito/browser";
 import Wallet from "../../lib/saito/wallet";
 import Keychain from "../../lib/saito/keychain";
 import Storage from "../../lib/saito/storage";
+import S from "saito-js/saito";
 
 import Network from "../../lib/saito/network";
 
@@ -84,6 +85,13 @@ class Saito {
         x.dirname = path.dirname(mod_path);
         return x;
       });
+
+      console.log("setting current version : " + this.wallet.version);
+      await S.getInstance().setWalletVersion(
+        0,
+        Math.floor(this.wallet.version),
+        (this.wallet.version * 1000) % 1000
+      );
 
       // browser sets active module
       await this.browser.initialize(this);
