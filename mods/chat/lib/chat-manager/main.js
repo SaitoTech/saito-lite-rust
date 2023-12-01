@@ -9,7 +9,7 @@ class ChatManager {
   constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
-    this.container = container || ".chat-manager";
+    this.container = container;
 
     //
     // some apps may want chat manager quietly in background
@@ -35,6 +35,8 @@ class ChatManager {
         // and updating unread message notifications
         //
         this.render();
+      }else{
+        console.log(" ! render manager to screen ");
       }
     });
 
@@ -209,7 +211,7 @@ class ChatManager {
     //
     if (document.querySelector(this.container + ".chat-manager")) {
       this.app.browser.replaceElementBySelector(
-        ChatManagerTemplate(this.app, this.mod),
+        ChatManagerTemplate(this),
         ".chat-manager"
       );
     } else {
@@ -218,7 +220,7 @@ class ChatManager {
       }
 
       this.app.browser.addElementToSelectorOrDom(
-        ChatManagerTemplate(this.app, this.mod),
+        ChatManagerTemplate(this),
         this.container
       );
     }
@@ -361,6 +363,12 @@ class ChatManager {
 
     if (document.querySelector(".close-chat-manager")) {
       document.querySelector(".close-chat-manager").onclick = (e) => {
+        this.app.connection.emit("close-chat-manager-overlay");
+      };
+    }
+
+    if (document.querySelector(".alternate-close-button")) {
+      document.querySelector(".alternate-close-button").onclick = (e) => {
         this.app.connection.emit("close-chat-manager-overlay");
       };
     }
