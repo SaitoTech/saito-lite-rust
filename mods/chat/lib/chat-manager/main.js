@@ -71,7 +71,7 @@ class ChatManager {
         //
         // We use an event so that other components can piggy back off this request
         //
-        this.app.connection.emit("chat-manager-render-request");
+        this.app.connection.emit("chat-manager-render-request");  
       }
     });
 
@@ -91,6 +91,19 @@ class ChatManager {
       }
     });
 
+    app.connection.on("chat-manager-animation-request", (group = null) => {
+      let cm_handle = document.getElementById(`saito-user-${group?.id}`);
+      if (cm_handle) {
+        if (!cm_handle.classList.contains("new-notification")) {
+          cm_handle.classList.add("new-notification");
+          setTimeout(() => {
+            cm_handle.classList.remove("new-notification");
+            this.app.connection.emit("chat-manager-render-request");  
+          }, 1000);
+        }
+      }
+    });
+
     // This is a short cut for any other UI components to trigger the chat-popup window
     // (in the absence of a proper chat-manager listing the groups/contacts)
 
@@ -106,8 +119,7 @@ class ChatManager {
       if (!data) {
         group = this.mod.returnCommunityChat();
       } else {
-
-        if (data.key){
+        if (data.key) {
           if (Array.isArray(data.key)) {
             group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
           } else {
@@ -121,13 +133,11 @@ class ChatManager {
         //Other modules can specify a chat group id (maybe linked to game_id or league_id)
         if (data.id) {
           let group2 = this.mod.returnGroup(data.id);
-          if (!group2 && group){
+          if (!group2 && group) {
             group.id = data.id;
-          }else{
+          } else {
             group = group2;
           }
-
-          
         }
         if (data.admin) {
           //
@@ -266,7 +276,7 @@ class ChatManager {
       }
 
       let group_status = false;
-      if (this.popups[group.id]?.is_rendered){
+      if (this.popups[group.id]?.is_rendered) {
         group_status = true;
       }
       let html = ChatTeaser(this.app, this.mod, group, group_status);
@@ -279,7 +289,12 @@ class ChatManager {
         if (document.querySelector(".chat-manager-list")) {
           this.app.browser.addElementToSelector(html, ".chat-manager-list");
         }
+        obj = document.getElementById(divid);
       }
+
+      setTimeout(()=> {
+        obj.classList.remove("new-notification")
+      }, 1000);
     }
 
     this.attachEvents();
@@ -326,11 +341,11 @@ class ChatManager {
         this.popups[gid].render();
         //
         // We would want to force this if juggling multiple chat popups on a desktop
-        // because the user is choosing to open the popup, otherwise there are safety 
+        // because the user is choosing to open the popup, otherwise there are safety
         // catches to keep the focus on the already open text window
         //
-        if (!this.app.browser.isMobileBrowser()){
-          this.popups[gid].input.focus(true);  
+        if (!this.app.browser.isMobileBrowser()) {
+          this.popups[gid].input.focus(true);
         }
 
         this.app.connection.emit("chat-manager-render-request");
@@ -356,21 +371,19 @@ class ChatManager {
       });
     }*/
 
-
     if (document.querySelector(".chat-manager-options")) {
       document.querySelector(".chat-manager-options").onclick = (e) => {
-        if (!this.chatManagerMenu){
+        if (!this.chatManagerMenu) {
           this.chatManagerMenu = new ChatManagerMenu(this.app, this.mod);
         }
-        if (this.chatManagerMenu.active){
+        if (this.chatManagerMenu.active) {
           this.chatManagerMenu.hide();
-        }else{
-          this.chatManagerMenu.render();  
+        } else {
+          this.chatManagerMenu.render();
         }
         document.querySelector(".chat-manager-options").classList.toggle("active");
-      }
+      };
     }
-
   }
 }
 

@@ -24,6 +24,7 @@
 
 .chat-manager .saito-user {
   padding: 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
@@ -48,9 +49,27 @@
   font-size: 1.5rem;
 }
 
+.chat-manager-list .new-notification {
+  background: linear-gradient(90deg, #0003 47%, var(--saito-primary), #0003 53%);
+  background-size: 300%;
+  animation: notificationAnimation 1.8s ease;
+}
+
+.chat-manager-list .new-notification .saito-chat-notifications {
+  visibility: hidden;
+}
+
+@keyframes notificationAnimation {
+  0% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: 0%;
+  }
+}
+
 .saito-chat-active{
   background-color: var(--saito-gray-transparent);
-  border-radius: 0.5rem;
 }
 
 /* We have a chat-manager click event on saito-user */
