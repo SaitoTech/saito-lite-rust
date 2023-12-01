@@ -631,7 +631,7 @@
     /* For the keyboard */
     right: 0;
     bottom: 0;
-    top: var(--saito-header-height);
+    top: 0;
     left: 0;
 
   }
