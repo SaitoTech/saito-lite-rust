@@ -53,7 +53,10 @@ class Browser {
     if (this.app.BROWSER != 1) {
       return 0;
     }
-
+    this.app.connection.on("new-version-detected", (version, peerIndex) => {
+      console.log("new version detected : " + version);
+      window.location.reload();
+    });
     try {
       if (!document.hidden) {
         await this.setActiveTab(1);
@@ -1555,13 +1558,14 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-  //  let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^\s>]*)?(?!>)/gi;
-      let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+      //  let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^\s>]*)?(?!>)/gi;
+      let urlPattern =
+        /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
       text = text.replace(urlPattern, function (url) {
         return `<a ${
           url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
-        } class='saito-treated-link' href='${!url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
+        } class="saito-treated-link" href="${!url.includes("http") ? `http://${url.trim()}` : url.trim()}">${url.trim()}</a>`;
       });
 
       //trim lines at start and end

@@ -59,6 +59,14 @@ class WebMethods extends WebSharedMethods {
     this.app.connection.emit("add-block-success", { hash, blockId });
   }
 
+  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void {
+    console.log(`emit : new-version-detected ${major}:${minor}:${patch}`);
+    this.app.connection.emit("new-version-detected", {
+      version: `${major}.${minor}.${patch}`,
+      peerIndex: peerIndex,
+    });
+  }
+
   sendWalletUpdate() {
     this.app.connection.emit("wallet-updated");
   }
