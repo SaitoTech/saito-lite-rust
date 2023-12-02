@@ -1274,6 +1274,9 @@ class Browser {
     }
   }
 
+  /**
+   * Callback is called on mousedown
+   */
   makeResizeable(target_div, icon_div, unique_id, callback = null) {
     let d = document;
     let target = d.querySelector(target_div);
@@ -1282,16 +1285,10 @@ class Browser {
       icon_div
     );
     let pullTab = d.getElementById(`resize-icon-${unique_id}`);
-    let dimensions = target.getBoundingClientRect();
 
-    let ht = dimensions.height;
-    let wd = dimensions.width;
-    let x = 0;
-    let y = 0;
-    let dx = 0;
-    let dy = 0;
+    let ht, wd, x, y, dx, dy;
 
-    let resize = (evt) => {
+    const resize = (evt) => {
       dx = evt.screenX - x;
       dy = evt.screenY - y;
       x = evt.screenX;
@@ -1302,23 +1299,45 @@ class Browser {
       target.style.height = ht + "px";
     };
 
-    let resizeFn = resize.bind(this);
+    const resizeFn = resize.bind(this);
+
+    const prepareToResize = () => {
+      let dimensions = target.getBoundingClientRect();
+      ht = dimensions.height;
+      wd = dimensions.width;
+
+      //
+      // Draggable elements may have top/left set, but we want the bottom/right to be fixed
+      //
+      target.style.top = "";
+      target.style.left = "";
+      target.style.bottom = window.innerHeight - dimensions.bottom + "px";
+      target.style.right = window.innerWidth - dimensions.right + "px";
+    };
+
     pullTab.addEventListener("mousedown", (evt) => {
-        x = evt.screenX;
-        y = evt.screenY;
-      
-        d.body.addEventListener("mousemove", resizeFn);
-      
-        d.body.addEventListener("mouseup", () => {
-            d.body.removeEventListener("mousemove", resizeFn);
-        });
+      x = evt.screenX;
+      y = evt.screenY;
 
-        if (callback){
-          callback();
-        }
-        
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+
+      prepareToResize();
+
+      //Get rid of any animation delays
+      target.style.transition = "unset";
+
+      d.body.addEventListener("mousemove", resizeFn);
+
+      d.body.addEventListener("mouseup", () => {
+        d.body.removeEventListener("mousemove", resizeFn);
+        target.style.transition = "";
+      });
+
+      if (callback) {
+        callback();
+      }
     });
-
   }
 
   returnAddressHTML(key) {
@@ -1528,12 +1547,13 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      let urlPattern =
-        /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+  //  let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^\s>]*)?(?!>)/gi;
+      let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+
       text = text.replace(urlPattern, function (url) {
         return `<a ${
-          url.includes(window.location.host) ? "" : "target='_blank' "
-        }class='saito-treated-link' href='${url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
+          url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
+        } class='saito-treated-link' href='${!url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
       });
 
       //trim lines at start and end

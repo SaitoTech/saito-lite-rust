@@ -227,11 +227,11 @@ class Stun extends ModTemplate {
       super.render(this.app, this);
       if (obj?.game?.players?.length > 1) {
         return {
-          id: "game-chat",
+          id: "game-social",
           text: "Voice Chat",
           submenus: [
             {
-              parent: "game-chat",
+              parent: "game-social",
               text: "Voice Chat",
               id: "group-voice-chat",
               class: "group-voice-chat",
@@ -250,7 +250,7 @@ class Stun extends ModTemplate {
               },
             },
             {
-              parent: "game-chat",
+              parent: "game-social",
               text: "Record Stream",
               id: "record-stream",
               class: "record-stream",

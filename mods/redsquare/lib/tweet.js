@@ -6,6 +6,7 @@ const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
 const Transaction = require("../../../lib/saito/transaction").default;
+const HTMLParser = require("node-html-parser");
 
 class Tweet {
   constructor(app, mod, tx, container = ".tweet-manager") {
@@ -1207,8 +1208,13 @@ class Tweet {
       return this;
     }
 
-    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-    let links = this.text.match(expression);
+    //let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+
+    let dom = HTMLParser.parse(this.text);
+    
+    const links = dom.getElementsByTagName('a');
+
+    //const hrefs = Array.from(links).map(link => link.href);
 
     let link, urlParams;
 
@@ -1216,9 +1222,11 @@ class Tweet {
       //
       // save the first link
       //
-      let first_link = links[0];
-      if (first_link.indexOf("http") == -1) {
-        first_link = "http://" + first_link;
+      const regex = /href\s*=\s*['"]([^'"]+)['"]/i;
+      let first_link = links[0].toString().match(regex)[1];
+
+      if (typeof first_link == "undefined") {
+        return this;
       }
 
       try {
@@ -1227,7 +1235,7 @@ class Tweet {
         this.link = link.toString();
       } catch (err) {
         console.error(err);
-        this.link = first_link;
+        this.link = first_link; 
       }
 
       //

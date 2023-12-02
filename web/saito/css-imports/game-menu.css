@@ -116,10 +116,18 @@
   display: none;
 }
 
-.game-menu .notification::after{
-  content: "◉";
-  color: var(--saito-primary);
-  margin-left: 1rem;
+.game-menu .notification::before{
+  content: "!";
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+  border-radius: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  line-height: 20px;
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
