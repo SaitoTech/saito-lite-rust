@@ -19,6 +19,34 @@
     return 2;
   }
 
+  playerPlayGunsOfAugust() {
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="guns">Guns of August</li>`;
+    html    += `<li class="card" id="other">other card</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Choose Your Seventh Card:`, html);
+    this.guns_overlay.render();
+
+    this.attachCardboxEvents((action) => {
+
+      this.updateStatus("selected");
+
+      if (action === "guns") {
+        this.game.deck[0].hand.push("cp01");
+	this.endTurn();
+      }
+
+      if (action === "other") {
+        this.addMove("DEAL\t1\t1\t1"); // player chooses random other card
+	this.endTurn();
+      }
+
+    });
+
+  }
+
   playerPlayFlankAttack() {
 
     //

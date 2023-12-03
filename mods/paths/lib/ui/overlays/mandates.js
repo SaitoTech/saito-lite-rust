@@ -14,8 +14,16 @@ class WelcomeOverlay {
     }
 
     render(obj) {
+
       this.overlay.show(MandatesTemplate(obj));
       this.attachEvents();
+
+      let highlight_allied = ".allies .r" + obj.allies;
+      let highlight_central = ".central .r" + obj.central;
+
+      document.querySelector(highlight_allied).style.backgroundColor = "yellow";
+      document.querySelector(highlight_central).style.backgroundColor = "yellow";
+
     }
 
     attachEvents() {}
