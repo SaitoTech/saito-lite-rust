@@ -222,22 +222,19 @@ class Stun extends ModTemplate {
     //Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
     //
     if (type == "game-menu") {
-      console.log("game-menu");
       this.attachStyleSheets();
       super.render(this.app, this);
       if (obj?.game?.players?.length > 1) {
         return {
           id: "game-social",
-          text: "Voice Chat",
+          text: "Social",
           submenus: [
             {
               parent: "game-social",
               text: "Voice Chat",
               id: "group-voice-chat",
               class: "group-voice-chat",
-              callback: function (app, game_mod) {
-                //this.showSubMenu("start-group-video-chat");
-              },
+              callback: null,
             },
             {
               parent: "group-voice-chat",
@@ -246,6 +243,7 @@ class Stun extends ModTemplate {
               class: "start-group-video-chat",
               callback: function (app, game_mod) {
                 //Start Call
+                game_mod.menu.hideSubMenus();
                 stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
               },
             },
@@ -261,6 +259,7 @@ class Stun extends ModTemplate {
               id: "record-with-camera",
               class: "record-with-camera",
               callback: function (app, game_mod) {
+                game_mod.menu.hideSubMenus();
                 stun_self.streamManager.recordGameStream(true);
               },
             },
@@ -270,6 +269,7 @@ class Stun extends ModTemplate {
               id: "record-without-camera",
               class: "record-without-camera",
               callback: function (app, game_mod) {
+                game_mod.menu.hideSubMenus();
                 // game_mod.addMenuOption("stop-record-stream", "Stop recording");
                 stun_self.streamManager.recordGameStream();
               },
@@ -280,6 +280,7 @@ class Stun extends ModTemplate {
               id: "stop-recording",
               class: "stop-recording",
               callback: function (app, game_mod) {
+                game_mod.menu.hideSubMenus();
                 // game_mod.addMenuOption("stop-record-stream", "Stop recording");
                 stun_self.streamManager.stopRecordGameStream();
               },

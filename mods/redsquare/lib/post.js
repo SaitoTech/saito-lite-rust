@@ -288,12 +288,18 @@ console.log("TEXT LENGTH: " + text.length);
     
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
-    if (this.mod.manager) {
-      if (!this.mod.manager.mode.includes("tweet")) {
-        return;
-      }
-    }
+    //We let the loader run for a half second to show we are sending the tweet
+    setTimeout(() => {
+      post_self.overlay.remove();
 
+      if (!this.mod.browser_active){
+        siteMessage("Tweet sent", 1000);
+      }
+    }, 600);
+
+    if (!this.mod?.manager?.mode?.includes("tweet")) {
+      return;
+    }
 
     //
     // This makes no sense. If you require at the top of the file, it fails with a
@@ -332,10 +338,7 @@ console.log("TEXT LENGTH: " + text.length);
       posted_tweet.render(true);
     }
 
-    //We let the loader run for a half second to show we are sending the tweet
-    setTimeout(() => {
-      post_self.overlay.remove();
-      
+
       /*
       This is Really f*cking annoying... I want to stay where I am in the feed if replying to someone, 
       not autoscroll to the top, but retweeting pushes the retweet at the top, and ditto for a new tweet...
@@ -346,7 +349,6 @@ console.log("TEXT LENGTH: " + text.length);
         post_self.mod.main.scrollFeed(0);  
       }
 
-    }, 800);
   }
 
   addImg(img) {
