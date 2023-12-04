@@ -157,7 +157,6 @@ class Post {
   }
 
   async postTweet(delete_tweet = 0) {
-
     let post_self = this;
     let text = this.mod.filterText(this.input.getRawInput());
     text = sanitize(text);
@@ -173,13 +172,11 @@ class Post {
     let wallet_balance = await this.app.wallet.getBalance("SAITO");
 
     // restrict moderation
-console.log("TEXT LENGTH: " + text.length);
+    console.log("TEXT LENGTH: " + text.length);
     if (wallet_balance == 0 && this.app.BROWSER == 1 && text.length > 5000) {
       siteMessage("Purchase SAITO to Enable Oversized Posts...", 3000);
       return;
     }
-
-
 
     //
     //don't send empty posts
@@ -211,7 +208,6 @@ console.log("TEXT LENGTH: " + text.length);
     let data = { text: text };
     let is_reply = false;
 
-
     keys = this.input.getMentions();
 
     if (keys.length > 0) {
@@ -236,27 +232,37 @@ console.log("TEXT LENGTH: " + text.length);
 
     //Delete
     if (delete_tweet) {
-
-      data = { tweet_id : this.tweet.tx.signature };
+      data = { tweet_id: this.tweet.tx.signature };
       this.tweet.remove();
-      let newtx = await post_self.mod.sendDeleteTransaction(post_self.app, post_self.mod, data, keys);
+      let newtx = await post_self.mod.sendDeleteTransaction(
+        post_self.app,
+        post_self.mod,
+        data,
+        keys
+      );
       return;
     }
 
     //Edit
     if (source === "Edit") {
-      data = { text: text, tweet_id : this.tweet.tx.signature };
-      
+      data = { text: text, tweet_id: this.tweet.tx.signature };
+
       let qs = `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
       let obj = document.querySelector(qs);
-      if (obj) { obj.innerHTML = text; }
-      
+      if (obj) {
+        obj.innerHTML = text;
+      }
+
       let newtx = await post_self.mod.sendEditTransaction(post_self.app, post_self.mod, data, keys);
       return;
     }
 
     post_self.overlay.closebox = false;
     post_self.overlay.show('<div class="saito-loader"></div>');
+
+    if (post_self.images.length > 0) {
+      data["images"] = post_self.images;
+    }
 
     //Replies
     if (parent_id !== "") {
@@ -269,9 +275,21 @@ console.log("TEXT LENGTH: " + text.length);
       this.tweet.num_replies++;
     }
 
+    //
+    // We let the loader run for a half second to show we are sending the tweet
+    // Start it up here because we may nope out of some rendering code for a pure retweet
+    //
+    setTimeout(() => {
+      post_self.overlay.remove();
+
+      if (!this.mod.browser_active) {
+        siteMessage("Tweet sent", 1000);
+      }
+    }, 600);
+
+
     //Retweets
     if (source == "Retweet") {
-      data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
       data.signature = post_self.tweet.tx.signature;
       //save the tweet I am retweeting or replying to to my local archive
       this.mod.retweetTweet(this.tweet.tx.signature);
@@ -279,48 +297,55 @@ console.log("TEXT LENGTH: " + text.length);
       // We temporarily increase the number of retweets, this affects the next rendering
       // but only adjust tx.optional when we get confirmation from the blockchain
       this.tweet.num_retweets++;
+
+      if (data?.text || data?.images) {
+        //
+        // This is a quote tweet, treat as a sendTweet and attach original tweet as part of its content
+        //
+        data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);  
+      }else{
+        //
+        // This is a pure retweet, treat similar to a like and send a specialize tx to update stats only
+        //
+
+        post_self.mod.sendRetweetTransaction(post_self.app, post_self.mod, data, this.tweet.tx);
+        this.tweet.retweeters.unshift(post_self.mod.publicKey);
+
+        if (this.mod?.manager?.mode?.includes("tweet")) {
+          this.tweet.render();
+        }
+  
+        return;
+      }
+      
     }
 
-    if (post_self.images.length > 0) {
-      data["images"] = post_self.images;
-    }
 
-    
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
-    //We let the loader run for a half second to show we are sending the tweet
-    setTimeout(() => {
-      post_self.overlay.remove();
-
-      if (!this.mod.browser_active){
-        siteMessage("Tweet sent", 1000);
-      }
-    }, 600);
-
-    if (!this.mod?.manager?.mode?.includes("tweet")) {
-      return;
+    if (this.mod?.manager?.mode?.includes("tweet")) {
+      this.renderNewTweet(newtx);
     }
+  }
 
+  renderNewTweet(newtx) {
     //
     // This makes no sense. If you require at the top of the file, it fails with a
     // new Tweet is not a constructor error!!! ???
     //
     const Tweet = require("./tweet");
-    let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx, ".tweet-manager");
+    let posted_tweet = new Tweet(this.app, this.mod, newtx, ".tweet-manager");
     //console.log("New tweet:", posted_tweet);
-
 
     let rparent = this.tweet;
     if (rparent) {
       console.log("Rerender feed with temp stats");
-      
-      if (posted_tweet.retweet_tx) {
 
+      if (posted_tweet.retweet_tx) {
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
       } else {
-
         this.mod.addTweet(newtx, true);
         if (rparent.parent_id != "") {
           let t = this.mod.returnTweet(rparent.parent_id);
@@ -333,22 +358,19 @@ console.log("TEXT LENGTH: " + text.length);
         rparent.forceRenderWithCriticalChild();
       }
     } else {
-
       this.mod.addTweet(newtx, true);
       posted_tweet.render(true);
     }
 
-
-      /*
+    /*
       This is Really f*cking annoying... I want to stay where I am in the feed if replying to someone, 
       not autoscroll to the top, but retweeting pushes the retweet at the top, and ditto for a new tweet...
       It's an art, not a science
       */
-      
-      if (!is_reply) {
-        post_self.mod.main.scrollFeed(0);  
-      }
 
+    if (!is_reply) {
+      this.mod.main.scrollFeed(0);
+    }
   }
 
   addImg(img) {
