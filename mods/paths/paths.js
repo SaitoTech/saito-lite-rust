@@ -7092,6 +7092,8 @@ console.log("moving forward with combat!");
 	  //
 	  // now show overlay and 
 	  //
+	  this.game.queue.push("combat_attacker_advance");
+	  this.game.queue.push("combat_defender_retreat");
 	  this.game.queue.push("combat_determine_outcome");
 	  this.game.queue.push("combat_play_combat_cards");
 	  this.game.queue.push("combat_evaluate_flank_attack");
@@ -7257,6 +7259,18 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+
+	if (mv[0] === "combat_defender_retreat") {
+console.log("Defender Retreats!");
+	  this.game.queue.splice(qe, 1);
+	  return;
+	}
+
+	if (mv[0] === "combat_attacker_advance") {
+console.log("Attacker Advances!");
+	  this.game.queue.splice(qe, 1);
+	  return;
+	}
 
 
 	if (mv[0] == "combat_evaluate_flank_attack") {

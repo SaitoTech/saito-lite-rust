@@ -403,6 +403,8 @@ console.log("moving forward with combat!");
 	  //
 	  // now show overlay and 
 	  //
+	  this.game.queue.push("combat_attacker_advance");
+	  this.game.queue.push("combat_defender_retreat");
 	  this.game.queue.push("combat_determine_outcome");
 	  this.game.queue.push("combat_play_combat_cards");
 	  this.game.queue.push("combat_evaluate_flank_attack");
@@ -568,6 +570,38 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+
+	if (mv[0] === "combat_defender_retreat") {
+
+	  this.game.queue.splice(qe, 1);
+	  let units = this.mod.returnAttackerUnits();
+	  let does_defender_retreat = false;
+
+	  for (let i = 0; i < units.length; i++) {
+	    if (units[i].key.indexOf("army") > 0 && units[i].damaged == false) {
+	      does_defender_retreat = true;
+	    }
+	  }
+
+	  if (does_defender_retreat) {
+	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
+	    if (this.game.player == player) {
+	      this.playerPlayPostCombatRetreat();
+	    } else {
+	      this.updateStatus("Opponent Retreating...");
+	    }
+	    return 0;
+	  } else {
+	    return 1;
+	  }
+
+	}
+
+	if (mv[0] === "combat_attacker_advance") {
+console.log("Attacker Advances!");
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
 
 
 	if (mv[0] == "combat_evaluate_flank_attack") {

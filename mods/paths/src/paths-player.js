@@ -19,6 +19,14 @@
     return 2;
   }
 
+  playerPlayPostCombatRetreat() {
+
+alert("Player Playing Post Combat Retreat!");
+    this.endTurn();
+
+  }
+
+
   playerPlayGunsOfAugust() {
 
     let html = `<ul>`;
