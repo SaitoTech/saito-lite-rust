@@ -27468,8 +27468,12 @@ playerDiscardActionCards(num, mycallback=null) {
     sectors['sector7']         = { img : "/imperium/img/sectors/sector7.png" , 	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
     sectors['sector8']         = { img : "/imperium/img/sectors/sector8.png" , 	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
     sectors['sector9']         = { img : "/imperium/img/sectors/sector9.png" , 	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector10']        = { img : "/imperium/img/sectors/sector10.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
-    sectors['sector11']        = { img : "/imperium/img/sectors/sector11.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
+    //sectors['sector10']        = { img : "/imperium/img/sectors/sector10.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    //sectors['sector11']        = { img : "/imperium/img/sectors/sector11.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector42']        = { img : "/imperium/img/sectors/sector42.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    //sectors['sector43']        = { img : "/imperium/img/sectors/sector43.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector44']        = { img : "/imperium/img/sectors/sector44.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+
     sectors['sector12']        = { img : "/imperium/img/sectors/sector12.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
     sectors['sector13']        = { img : "/imperium/img/sectors/sector13.png" , name : "Crystalis / Troth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['crystalis','troth'] }
     sectors['sector14']        = { img : "/imperium/img/sectors/sector14.png" , name : "Londrak / Citadel" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['londrak','citadel'] }
