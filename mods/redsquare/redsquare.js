@@ -596,6 +596,9 @@ class RedSquare extends ModTemplate {
       if (txmsg.request === "flag tweet") {
         await this.receiveFlagTransaction(blk, tx, conf, this.app);
       }
+      if (txmsg.request === "retweet") {
+       await this.receiveRetweetTransaction(blk, tx, conf, this.app); 
+      }
     }
     //} catch (err) {
     //  console.log("ERROR in RedSquare onConfirmation: " + err);
@@ -976,6 +979,7 @@ class RedSquare extends ModTemplate {
       let t = this.returnTweet(tweet.tx.signature);
       if (!t) {
         console.error("Tweet indexed in hash, but not in memory");
+        console.log(tweet?.text);
         return 0;
       }
 
@@ -985,6 +989,7 @@ class RedSquare extends ModTemplate {
         }
         if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
           t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+          t.tx.optional.retweeters = tweet.tx.optional.retweeters;
         }
         if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
           t.tx.optional.num_likes = tweet.tx.optional.num_likes;
@@ -1223,6 +1228,9 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
+
+
+
   async sendLikeTransaction(app, mod, data, tx) {
     let redsquare_self = this;
 
@@ -1337,6 +1345,111 @@ class RedSquare extends ModTemplate {
 
     return;
   }
+
+
+  async sendRetweetTransaction(app, mod, data, tx) {
+    let redsquare_self = this;
+
+    let obj = {
+      module: redsquare_self.name,
+      request: "retweet",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(tx.from[0]?.publicKey);
+
+    //
+    // All tweets include the sender in the to, but add the from first so they are in first position
+    //
+    for (let i = 0; i < tx.to.length; i++) {
+      if (tx.to[i].publicKey !== this.publicKey) {
+        newtx.addTo(tx.to[i].publicKey);
+      }
+    }
+
+    newtx.msg = obj;
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
+
+    console.log("Send Pure Retweet", newtx.msg);
+
+    return newtx;
+  }
+
+  async incrementRetweets(localTx, receivedTx){
+      if (!localTx.optional) {
+        localTx.optional = {};
+      }
+
+      if (!localTx.optional.num_retweets) {
+        localTx.optional.num_retweets = 0;
+      }
+      if (!localTx.optional.retweeters) {
+        localTx.optional.retweeters = [];
+      }
+
+      if (receivedTx.timestamp > localTx.updated_at) {
+        localTx.optional.num_retweets++;
+
+        if (!localTx.optional.retweeters.includes(receivedTx.from[0].publicKey)){
+          localTx.optional.retweeters.unshift(receivedTx.from[0].publicKey);
+        }
+
+        console.log("Increment retweets: ", localTx.optional);
+
+        await this.app.storage.updateTransaction(localTx, {}, "localhost");
+      } else {
+        console.log("Retweet transaction received after tweet fetch");
+      }
+
+  }
+
+  async receiveRetweetTransaction(blk, tx, conf, app) {
+    console.log("RS: receive retweet!");
+
+    let txmsg = tx.returnMessage();
+
+    let retweeted_tweet = this.returnTweet(txmsg.data.signature);
+
+    //
+    // save optional likes
+    //
+
+    if (retweeted_tweet?.tx) {
+        await this.incrementRetweets(retweeted_tweet.tx, tx);
+        retweeted_tweet.rerenderControls();
+        retweeted_tweet.render();
+    } else {
+      //
+      // fetch original to update
+      //
+      console.log("looking for tweet in archive");
+      await this.app.storage.loadTransactions(
+        { sig: txmsg.data.signature, field1: "RedSquare" },
+        async (txs) => {
+          if (txs?.length > 0) {
+            this.incrementRetweets(txs[0], tx);
+          }else{
+            console.log("Original tweet not found");
+          }
+        },
+        "localhost"
+      );
+    }
+
+    //
+    // browsers
+    //
+    if (app.BROWSER == 1) {
+      this.addNotification(tx);
+    }
+
+    return;
+  }
+
 
   async sendEditTransaction(app, mod, data, keys = []) {
     let redsquare_self = this;

@@ -64,6 +64,9 @@ class Tweet {
     if (!this.tx.optional.thread_id) {
       this.tx.optional.thread_id = "";
     }
+    if (!this.tx.optional.retweeters) {
+      this.tx.optional.retweeters = [];
+    }
 
     //
     // If I am not part of a thread, become my own thread
@@ -121,7 +124,6 @@ class Tweet {
     this.render_after_selector = ""; //Used to attach replies to the original tweet
 
     this.retweet = null;
-    this.retweeters = [];
     this.retweet_tx = null;
     this.links = [];
     this.link = null;
@@ -339,6 +341,14 @@ class Tweet {
       }
       return;
     }
+
+    //
+    // New way for retweets we don't put the new ones in the feed, just update the originals and sort them higher up
+    //
+    if (this.retweeters?.length > 0 && this.container == ".tweet-manager") {
+      this.notice = `retweeted by ${this.app.browser.returnAddressHTML(this.retweeters[0])} ${this.formatDate()}`;
+    }
+
 
     if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions){
       this.notice = "You were mentioned in this tweet";      
