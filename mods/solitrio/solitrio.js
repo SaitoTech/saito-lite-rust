@@ -97,9 +97,7 @@ class Solitrio extends OnePlayerGameTemplate {
       text: "Play Mode",
       id: "game-play",
       class: "game-play",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubSubMenu("game-play");
-      },
+      callback: null,
     });
 
     this.menu.addSubMenuOption("game-play", {

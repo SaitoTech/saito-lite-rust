@@ -1019,7 +1019,7 @@ ul.horizontal_list li.iconoption {
 }
 
 .game-menu-sub-option, .game-menu-sub-sub-option {
-  background-color: #d3c38dee;
+  background-color: #d3c38df1;
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {

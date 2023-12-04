@@ -91,15 +91,6 @@ class Beleaguered extends OnePlayerGameTemplate {
         game_mod.endTurn();
       },
     });
-    /*this.menu.addSubMenuOption("game-game", {
-      text: "Play Mode",
-      id: "game-play",
-      class: "game-play",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubSubMenu("game-play");
-      }
-    });
-    */
 
     this.menu.addSubMenuOption("game-game", {
       text: "How to Play",
