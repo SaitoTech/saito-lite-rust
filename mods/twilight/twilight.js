@@ -229,9 +229,7 @@ class Twilight extends GameTemplate {
       text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
-      callback : function(app, game_mod) {
-         game_mod.menu.showSubSubMenu("game-confirm");
-      }
+      callback : null
     });
 
     this.menu.addSubMenuOption("game-confirm",{
@@ -290,9 +288,7 @@ class Twilight extends GameTemplate {
       text: "Cards",
       id: "game-cards",
       class: "game-cards",
-      callback: function(app, game_mod){
-        game_mod.menu.showSubSubMenu("game-cards");
-      }
+      callback: null
     });
     this.menu.addSubMenuOption("game-cards",{
       text: "My Hand",
@@ -336,9 +332,7 @@ class Twilight extends GameTemplate {
       text: "Language",
       id: "game-language",
       class: "game-language",
-      callback: function(app, game_mod){
-        game_mod.menu.showSubSubMenu("game-language");
-      }
+      callback: null
     });
 
     this.menu.addSubMenuOption("game-language", {

@@ -194,9 +194,7 @@ class Pandemic extends GameTemplate {
       text: "Theme",
       id: "game-theme",
       class: "game-theme",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubSubMenu("game-theme");
-      },
+      callback: null,
     });
     this.menu.addSubMenuOption("game-theme", {
       text: `Classic ${this.game.options.theme == "classic" ? "✔" : ""}`,
