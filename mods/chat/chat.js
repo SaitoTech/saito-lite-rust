@@ -1017,11 +1017,11 @@ class Chat extends ModTemplate {
 
     // sanity check
     let wallet_balance = await this.app.wallet.getBalance("SAITO");
-    
+
     // restrict radix-spam
-    if (wallet_balance == 0 && this.app.BROWSER == 1 && msg.length >= 800) {
+    if (wallet_balance == 0 && this.app.BROWSER == 1 && this.app.browser.stripHtml(msg).length >= 400) {
       siteMessage("Purchase SAITO to Send Large Messages in Community Chat...", 3000);
-      return;
+      return null;
     }
 
 

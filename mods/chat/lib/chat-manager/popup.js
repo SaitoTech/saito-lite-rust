@@ -391,8 +391,10 @@ class ChatPopup {
       }
 
       let newtx = await mod.createChatTransaction(group_id, message, this.input.getMentions());
-      await mod.sendChatTransaction(app, newtx);
-      mod.receiveChatTransaction(newtx);
+      if (newtx){
+        await mod.sendChatTransaction(app, newtx);
+        mod.receiveChatTransaction(newtx);
+      }
       this.input.clear();
       if (document.querySelector(popup_qs + " .chat-body")) {
         this.is_scrolling = false;
@@ -400,7 +402,8 @@ class ChatPopup {
       }
     };
 
-    this.input.callbackOnUpload = (filesrc) => {
+    this.input.callbackOnUpload = async (filesrc) => {
+      filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
       let img = document.createElement("img");
       img.classList.add("img-prev");
       img.src = filesrc;
@@ -421,19 +424,7 @@ class ChatPopup {
 
     app.browser.addDragAndDropFileUploadToElement(
       popup_id,
-      async (filesrc) => {
-        filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
-
-        let img = document.createElement("img");
-        img.classList.add("img-prev");
-        img.src = filesrc;
-        let msg = img.outerHTML;
-
-        let newtx = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
-        await mod.sendChatTransaction(app, newtx);
-        mod.receiveChatTransaction(newtx);
-        this.input.clear();
-      },
+      this.input.callbackOnUpload,
       false
     ); // false = no drag-and-drop image click
 
