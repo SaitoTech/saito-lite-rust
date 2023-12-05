@@ -706,7 +706,7 @@ class Registry extends ModTemplate {
     signer = "",
     lc = 1
   ) {
-    let sql = `INSERT INTO records (identifier,
+    let sql = `INSERT OR IGNORE INTO records (identifier,
                                     publickey,
                                     unixtime,
                                     bid,
