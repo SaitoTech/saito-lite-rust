@@ -375,7 +375,11 @@ class Chat extends ModTemplate {
         //
         // In mobile, we use the hamburger menu to open chat (without leaving the page)
         //
-        if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600) || force) {
+        if (
+          this.app.browser.isMobileBrowser() ||
+          (this.app.BROWSER && window.innerWidth < 600) ||
+          force
+        ) {
           if (this.chat_manger) {
             //Don't want mobile chat auto popping up
             this.chat_manager.render_popups_to_screen = 0;
@@ -392,36 +396,36 @@ class Chat extends ModTemplate {
                 console.log("Render Chat manager overlay");
                 chat_self.chat_manager_overlay.render();
               },
-              event: function(id){
-
-                chat_self.app.connection.on("chat-manager-render-request", ()=> {
-                
+              event: function (id) {
+                chat_self.app.connection.on("chat-manager-render-request", () => {
                   let elem = document.getElementById(id);
                   //console.log("Chat event, update", elem);
-                  if (elem){
+                  if (elem) {
                     let unread = 0;
-                    for (let group of chat_self.groups){
+                    for (let group of chat_self.groups) {
                       unread += group.unread;
                     }
 
-                    if (unread){
-                      if (elem.querySelector(".saito-notification-dot")){
+                    if (unread) {
+                      if (elem.querySelector(".saito-notification-dot")) {
                         elem.querySelector(".saito-notification-dot").innerHTML = unread;
-                      }else{
-                        chat_self.app.browser.addElementToId(`<div class="saito-notification-dot">${unread}</div>`, id);
+                      } else {
+                        chat_self.app.browser.addElementToId(
+                          `<div class="saito-notification-dot">${unread}</div>`,
+                          id
+                        );
                       }
-                    }else{
-                      if (elem.querySelector(".saito-notification-dot")){
+                    } else {
+                      if (elem.querySelector(".saito-notification-dot")) {
                         elem.querySelector(".saito-notification-dot").remove();
                       }
                     }
                   }
-
                 });
 
                 //Trigger my initial display
                 chat_self.app.connection.emit("chat-manager-render-request");
-              }
+              },
             },
           ];
         } else if (!chat_self.browser_active) {
@@ -533,7 +537,6 @@ class Chat extends ModTemplate {
   // or addressed to me
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-
     if (tx == null) {
       return 0;
     }
@@ -569,7 +572,6 @@ class Chat extends ModTemplate {
       }
 
       return 0;
-
     }
 
     if (txmsg.request === "chat message") {
@@ -584,8 +586,7 @@ class Chat extends ModTemplate {
       }
 
       return 0;
-
-    } 
+    }
 
     if (txmsg.request === "chat message broadcast") {
       let inner_tx = new Transaction(undefined, txmsg.data);
@@ -629,7 +630,6 @@ class Chat extends ModTemplate {
       }
 
       return 0;
-
     }
 
     return super.handlePeerTransaction(app, tx, peer, mycallback);
@@ -974,7 +974,6 @@ class Chat extends ModTemplate {
   }
 
   async createChatTransaction(group_id, msg = "", to_keys = []) {
-
     let newtx = await this.app.wallet.createUnsignedTransaction(
       this.publicKey,
       BigInt(0),
@@ -993,8 +992,8 @@ class Chat extends ModTemplate {
     newtx.addFrom(this.publicKey);
     newtx.addTo(this.publicKey);
 
-    for (let mention of to_keys){
-      newtx.addTo(mention);      
+    for (let mention of to_keys) {
+      newtx.addTo(mention);
     }
 
     let members = this.returnMembers(group_id);
@@ -1019,11 +1018,14 @@ class Chat extends ModTemplate {
     let wallet_balance = await this.app.wallet.getBalance("SAITO");
 
     // restrict radix-spam
-    if (wallet_balance == 0 && this.app.BROWSER == 1 && this.app.browser.stripHtml(msg).length >= 400) {
+    if (
+      wallet_balance == 0 &&
+      this.app.BROWSER == 1 &&
+      this.app.browser.stripHtml(msg).length >= 400
+    ) {
       siteMessage("Purchase SAITO to Send Large Messages in Community Chat...", 3000);
       return null;
     }
-
 
     let group = this.returnGroup(group_id);
     if (group) {
@@ -1157,9 +1159,11 @@ class Chat extends ModTemplate {
           for (let z = 0; z < block.length; z++) {
             ts = ts || block[z].timestamp;
             sender = block[z].from[0];
-            
+
             const replyButton = `
-              <div data-id="${block[z].signature}" data-href="${sender + ts}" class="saito-userline-reply">
+              <div data-id="${block[z].signature}" data-href="${
+              sender + ts
+            }" class="saito-userline-reply">
                 <div class="chat-copy"><i class="fas fa-copy"></i></div>
                 <div class="chat-reply"><i class="fas fa-reply"></i></div>
                 <div class="saito-chat-line-controls">
@@ -1167,8 +1171,10 @@ class Chat extends ModTemplate {
                     ${this.app.browser.returnTime(ts)}
                   </span>
                 </div>
-              </div>`;  
-            msg += `<div class="chat-message-line message-${block[z].signature}${block[z].flag_message ? " user-mentioned-in-chat-line":""}">`;
+              </div>`;
+            msg += `<div class="chat-message-line message-${block[z].signature}${
+              block[z].flag_message ? " user-mentioned-in-chat-line" : ""
+            }">`;
             if (block[z].msg.indexOf("<img") != 0) {
               msg += this.app.browser.sanitize(block[z].msg);
             } else {
@@ -1273,7 +1279,12 @@ class Chat extends ModTemplate {
       msg: content,
     };
 
-    if (tx.isTo(this.publicKey) && this.app.BROWSER && !tx.isFrom(this.publicKey) && group.members.length !== 2){
+    if (
+      tx.isTo(this.publicKey) &&
+      this.app.BROWSER &&
+      !tx.isFrom(this.publicKey) &&
+      group.members.length !== 2
+    ) {
       console.log("CHAT MESSAGE DIRECTED TO ME!!!!");
       group.mentioned = true;
       new_message.flag_message = true;
@@ -1321,15 +1332,14 @@ class Chat extends ModTemplate {
       console.log(JSON.parse(JSON.stringify(new_message)));
     }
 
-    //
-    // Flag the group that there is a new message
-    // This is so we can add an animation effect on rerender
-    // and will be reset there
-    //
-    group.notification = true;
-
     if (/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(this.publicKey)) {
-      
+      //
+      // Flag the group that there is a new message
+      // This is so we can add an animation effect on rerender
+      // and will be reset there
+      //
+      group.notification = true;
+
       //Send System notification
       if (this.enable_notifications) {
         let sender = this.app.keychain.returnIdentifierByPublicKey(new_message.from[0], true);
@@ -1358,8 +1368,6 @@ class Chat extends ModTemplate {
     } else {
       console.warn(`Not saving because in loading mode (${this.loading})`);
     }
-
-
   }
 
   ///////////////////
@@ -1671,7 +1679,7 @@ class Chat extends ModTemplate {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
-    if (type == 'nuke') {
+    if (type == "nuke") {
       for (let i = 0; i < this.groups.length; i++) {
         await localforage.removeItem(`chat_${this.groups[i].id}`);
       }
