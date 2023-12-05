@@ -450,7 +450,7 @@ class Tweet {
     this.attachEvents();
   }
 
-  rerenderControls() {
+  rerenderControls(complete_rerender = false) {
     //
     // just make sure our updated tx.optional values propagate to the tweet properties
     //
@@ -459,11 +459,14 @@ class Tweet {
     this.setKeys(this.tx.optional);    
     //console.log(this.num_replies, this.num_retweets, this.num_likes);
 
-    // like, retweet, comment
-    this.refreshStat("like", this.num_likes);
-    this.refreshStat("retweet", this.num_retweets);
-    this.refreshStat("comment", this.num_replies);
-
+    if (complete_rerender){
+      this.render();
+    }else{
+      // like, retweet, comment
+      this.refreshStat("like", this.num_likes);
+      this.refreshStat("retweet", this.num_retweets);
+      this.refreshStat("comment", this.num_replies);
+    }
   }
 
   forceRenderWithCriticalChild() {

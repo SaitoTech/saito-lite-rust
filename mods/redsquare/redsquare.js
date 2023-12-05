@@ -951,7 +951,7 @@ class RedSquare extends ModTemplate {
     // if this is a like or flag tx, it isn't anything to add to the feed so stop here
     //
     let txmsg = tx.returnMessage();
-    if (txmsg.request === "like tweet" || txmsg.request === "flag tweet") {
+    if (txmsg.request === "like tweet" || txmsg.request === "flag tweet" || txmsg.request === "retweet") {
       return 0;
     }
 
@@ -984,12 +984,15 @@ class RedSquare extends ModTemplate {
       }
 
       if (tweet.tx.optional) {
+        let should_rerender = false;
+
         if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
           t.tx.optional.num_replies = tweet.tx.optional.num_replies;
         }
         if (tweet.tx.optional.num_retweets > t.tx.optional.num_retweets) {
           t.tx.optional.num_retweets = tweet.tx.optional.num_retweets;
           t.tx.optional.retweeters = tweet.tx.optional.retweeters;
+          should_rerender = true;  
         }
         if (tweet.tx.optional.num_likes > t.tx.optional.num_likes) {
           t.tx.optional.num_likes = tweet.tx.optional.num_likes;
@@ -1000,7 +1003,8 @@ class RedSquare extends ModTemplate {
           tweet.render();
         }
 
-        t.rerenderControls();
+        t.rerenderControls(should_rerender);
+
       }
 
       return 0;
