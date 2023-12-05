@@ -234,8 +234,18 @@ class Registry extends ModTemplate {
 
           return null;
         },
+        returnKeys: () => {
+          keyList = [];
+
+          for (let key in this.cached_keys) {
+            keyList.push({ publicKey: key, identifier: this.cached_keys[key]});
+          }
+
+          return keyList;
+        },
       };
     }
+
 
     return super.respondTo(type);
   }
