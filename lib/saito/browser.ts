@@ -1630,9 +1630,11 @@ class Browser {
   }
 
   stripHtml(html) {
-    //let tmp = document.createElement("DIV");
-    //tmp.innerHTML = html;
-    //return tmp.textContent || tmp.innerText || "";
+    if (this.app.BROWSER){
+      let tmp = document.createElement("DIV");
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || "";
+    }
 
     return html.replace(/(<([^>]+)>)/gi, "");
   }
