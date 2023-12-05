@@ -175,14 +175,20 @@ emoji-picker {
 }
 
 .saito-input-contact-list {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 0.5rem;
-	font-size: 2rem;
-	overflow: auto;
-	flex: 1;
+	width: calc(100% - 2px);
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 0.5rem;
+	padding: 1rem;
+    font-size: 2rem;
+    overflow: auto;
+    flex: 1;
+    max-height: 300px;
+    position: absolute;
+    bottom: 0;
+    background: var(--saito-background-color);
+    border-radius: 0.5rem;
 }
 
 .saito-input-contact {
