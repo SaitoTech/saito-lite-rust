@@ -167,6 +167,7 @@ emoji-picker {
 	align-items: center;
 }
 
+
 .at-window {
 	padding: 2rem 1rem;
 	flex-direction: column;
@@ -193,6 +194,12 @@ emoji-picker {
     bottom: 0;
     background: var(--saito-background-color);
     border-radius: 0.5rem;
+}
+
+.at-window .saito-input-contact-list {
+    bottom: unset;
+	top: 5rem;
+	max-height: 409px;
 }
 
 .saito-input-contact {
