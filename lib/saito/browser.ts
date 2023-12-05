@@ -1639,6 +1639,18 @@ class Browser {
     return html.replace(/(<([^>]+)>)/gi, "");
   }
 
+  //////////////////////
+  // helper functions //
+  //////////////////////
+  filterText(text="") {
+    text = text.replace(/^\s+$/gm, '');
+    text = text.replace(/^\n+$/gm, '');
+    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, '<div><br></div>');
+    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, '');
+    return text;
+  }
+
+
   attachWindowFunctions() {
     if (typeof window !== "undefined") {
       let browser_self = this;

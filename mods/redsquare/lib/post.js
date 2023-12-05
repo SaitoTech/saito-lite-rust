@@ -158,8 +158,8 @@ class Post {
 
   async postTweet(delete_tweet = 0) {
     let post_self = this;
-    let text = this.mod.filterText(this.input.getRawInput());
-    text = sanitize(text);
+    let text = this.input.getInput(false);
+
     let parent_id = document.getElementById("parent_id").value;
     let thread_id = document.getElementById("thread_id").value;
     let source = document.getElementById("source").value;
@@ -172,6 +172,7 @@ class Post {
     let wallet_balance = await this.app.wallet.getBalance("SAITO");
 
     // restrict moderation
+    console.log(text);
     console.log("TEXT LENGTH: " + text.length);
     if (wallet_balance == 0 && this.app.BROWSER == 1 && text.length > 5000) {
       siteMessage("Purchase SAITO to Enable Oversized Posts...", 3000);
@@ -187,22 +188,6 @@ class Post {
     }
 
     //
-    // extract keys from text AND then tweet
-    //
-    //keys = post_self.app.browser.extractKeys(text);
-    //identifiers = post_self.app.browser.extractIdentifiers(text);
-    //
-    // add identifiers as available
-    //
-    //for (let i = 0; i < identifiers.length; i++) {
-    //  let key = this.app.keychain.returnPublicKeyByIdentifier(identifiers[i]);
-    //  if (key) {
-    //    if (!keys.includes(key)) {
-    //      keys.push(key);
-    //    }
-    //  }
-    //}
-    //
     // tweet data
     //
     let data = { text: text };
@@ -211,7 +196,7 @@ class Post {
     keys = this.input.getMentions();
 
     if (keys.length > 0) {
-      data["mentions"] = 1;
+      data["mentions"] = keys;
     }
 
     //
@@ -325,6 +310,16 @@ class Post {
 
     if (this.mod?.manager?.mode?.includes("tweet")) {
       this.renderNewTweet(newtx);
+      /*
+        This is Really f*cking annoying... I want to stay where I am in the feed if replying to someone, 
+        not autoscroll to the top, but retweeting pushes the retweet at the top, and ditto for a new tweet...
+        It's an art, not a science
+        */
+
+      if (!is_reply) {
+        this.mod.main.scrollFeed(0);
+      }
+
     }
   }
 
@@ -362,15 +357,6 @@ class Post {
       posted_tweet.render(true);
     }
 
-    /*
-      This is Really f*cking annoying... I want to stay where I am in the feed if replying to someone, 
-      not autoscroll to the top, but retweeting pushes the retweet at the top, and ditto for a new tweet...
-      It's an art, not a science
-      */
-
-    if (!is_reply) {
-      this.mod.main.scrollFeed(0);
-    }
   }
 
   addImg(img) {

@@ -58,8 +58,7 @@ class RedSquareNotification {
 
   renderNotificationTweet(txmsg, tweet_tx) {
 
-    if (txmsg.data.mentions) {
-      console.log("Hi mention!");
+    if (txmsg.data.mentions.includes(this.mod.publicKey)) {
       this.tweet = new Tweet(this.app, this.mod, tweet_tx);
     } else {
       if (txmsg.request == "like tweet" || txmsg.request == "retweet") {

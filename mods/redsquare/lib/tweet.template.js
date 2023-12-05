@@ -3,12 +3,15 @@
 module.exports = (app, mod, tweet) => {
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
-  text = mod.filterText(text);
 
-  //if (tweet.tx.update_tx){
-  //  console.log("Tweet Template == Rendering edited TX");
-  //}
-  
+  if (tweet.mentions) {
+    console.log("Tweet has mentions");
+
+    for (let m of tweet.mentions) {
+      text = text.replace(`[[${app.keychain.returnUsername(m)}]]`, `<span class="saito-mention saito-address" data-id="${m}" data-disable="true" contenteditable="false">${app.keychain.returnUsername(m)}</span>`);
+    }
+  }
+
 
   if (!text && !notice && tweet.retweet_tx) {
     notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
