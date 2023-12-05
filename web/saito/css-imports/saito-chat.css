@@ -297,6 +297,7 @@
   box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -4px 0px 2px -2px var(--key-color);
   margin-right: 1rem;
   height: fit-content;
+  overflow: visible;
 }
 
 /*
@@ -424,12 +425,12 @@
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  right: 0;
+  right: -2rem;
   bottom: 0;
   z-index: 9;
-  background: var(--saito-border-color-dark);
-  padding: 0.25rem 0.25rem 0.25rem 2rem;
-  border-radius: 5rem 0.5rem 0.5rem 5rem;
+  background: var(--saito-background-color);
+  padding: 5px 7px 2px;
+  border-radius: 0.5rem;
   border: 1px solid var(--saito-border-color);
   font-size: 1.4rem;
 }

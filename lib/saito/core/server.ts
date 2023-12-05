@@ -61,7 +61,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
     if (peerData.protocol === "https") {
       protocol = "wss";
     }
-    let url = protocol + "://" + peerData.host + ":" + peerData.port + "/wsopen";
+    let url = protocol + "://" + peerData.host + ":" + peerData.port;
 
     try {
       console.log("connecting to " + url + "....");
@@ -271,6 +271,7 @@ class Server {
     webserver.on("upgrade", (request: any, socket: any, head: any) => {
       // console.debug("connection upgrade ----> " + request.url);
       const { pathname } = parse(request.url);
+      console.info('### upgrade pathname: ' + pathname);
       if (pathname === "/wsopen") {
         wss.handleUpgrade(request, socket, head, (websocket: any) => {
           wss.emit("connection", websocket, request);
@@ -283,6 +284,8 @@ class Server {
       console.error("error on express : ", error);
     });
     wss.on("connection", (socket: any, request: any) => {
+      const { pathname } = parse(request.url);
+      console.info('### connection pathname: ' + pathname);
       let index = S.getInstance().addNewSocket(socket);
       socket.on("message", (buffer: any) => {
         S.getLibInstance()
@@ -739,6 +742,7 @@ class Server {
       //
       // caching in prod
       //
+      /* Not needed as handled by nginx.
       const caching =
         process.env.NODE_ENV === "prod"
           ? "private max-age=31536000"
@@ -746,6 +750,7 @@ class Server {
       res.setHeader("Cache-Control", caching);
       res.setHeader("expires", "-1");
       res.setHeader("pragma", "no-cache");
+      */
       res.sendFile(this.web_dir + "/saito/saito.js");
       return;
     });
