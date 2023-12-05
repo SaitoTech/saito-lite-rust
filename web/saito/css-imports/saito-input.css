@@ -142,6 +142,10 @@ emoji-picker {
 	display: flex;
 }
 
+.saito-input-large {
+	margin-bottom: 2rem;
+}
+
 .saito-input-large .selection-box-tabs {
 	width: 16rem;
 	border-top: unset;
@@ -206,9 +210,6 @@ emoji-picker {
 }
 
 /*** Fix Redsquare Post ***/
-.tweet-overlay-content {
-	margin-bottom: 2rem;
-}
 
 .post-tweet-button {
 	position: absolute;
@@ -257,25 +258,22 @@ emoji-picker {
  
 
 @media only screen and (max-width: 768px) {
-	.saito-input-selection-box {
-	}
-}
-
-@media only screen and (max-width: 525px) {
-	.tweet-overlay-content {
-		margin-bottom: unset;
-	}
-
-	.post-tweet-button {
-		position: static;
-		justify-self: flex-end;
+	.saito-input-large {
+		margin-bottom: 0rem;
 	}
 
 	.saito-input-large .selection-box-tabs {
-		align-items: flex-start;
+		align-items: center;
+		height: 6rem;
+		width: 18rem;
 	}
 
-	.post-tweet-img-preview-container {
-		bottom: 7.5rem;
+	.saito-box-tab {
+		font-size: 3rem;
+	}
+	.gif-icon {
+		height: 3rem;
+		width: 3rem;
 	}
 }
+

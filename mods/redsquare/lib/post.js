@@ -362,18 +362,17 @@ class Post {
   addImg(img) {
     post_self = this;
     this.app.browser.addElementToDom(
-      `<div class="post-tweet-img-preview"><img src="${img}"
-           /><i data-id="${
-             this.images.length - 1
-           }" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
-           </div>`,
+      `<div class="post-tweet-img-preview">
+        <img src="${img}"/>
+        <i class="fa fa-times"></i>
+       </div>`,
       document.getElementById("post-tweet-img-preview-container")
     );
     this.images.push(img);
 
     // attach img preview event
     // event added here because img-prievew is added dynamically
-    let sel = ".post-tweet-img-preview-close";
+    let sel = ".post-tweet-img-preview";
     document.querySelectorAll(sel).forEach((elem) => {
       elem.addEventListener("click", function (e) {
         e.preventDefault();
@@ -382,7 +381,7 @@ class Post {
         let array_position = e.target.getAttribute("data-id");
         e.target.parentNode.remove();
         post_self.images.splice(array_position, 1);
-        document.querySelectorAll(".post-tweet-img-preview-close").forEach((el2) => {
+        document.querySelectorAll(".post-tweet-img-preview").forEach((el2) => {
           let array_position2 = el2.getAttribute("data-id");
           if (array_position2 > array_position) {
             el2.setAttribute("data-id", array_position2 - 1);
