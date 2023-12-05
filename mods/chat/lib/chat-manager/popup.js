@@ -77,8 +77,6 @@ class ChatPopup {
       }
     }
 
-    //let existing_input = this.input.getInput();
-
     //
     // calculate some values to determine position on screen...
     //

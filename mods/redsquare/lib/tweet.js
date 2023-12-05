@@ -350,7 +350,7 @@ class Tweet {
     }
 
 
-    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions){
+    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions.includes(this.mod.publicKey)){
       this.notice = "You were mentioned in this tweet";      
     }
 

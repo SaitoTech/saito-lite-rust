@@ -195,7 +195,7 @@ emoji-picker {
 	padding: 0.25rem;
 }
 
-.saito-input-contact:hover {
+.saito-input-contact:hover, .saito-input-contact:focus-visible {
 	background-color: var(--saito-primary);
 }
 
