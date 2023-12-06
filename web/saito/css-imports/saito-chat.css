@@ -2,6 +2,8 @@
   height: 25%;
   flex: 1;
   position: relative;
+  display: grid;
+  grid-template-rows: 40px 1fr;
 }
 
 .chat-manager .saito-userline {
@@ -93,7 +95,6 @@
   /*padding-left: 1rem;*/
   display: flex;
   flex-direction: column;
-  font-size: 18px;
   padding: 1rem;
   gap: 0.5rem;
 }

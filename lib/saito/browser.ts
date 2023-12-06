@@ -935,16 +935,18 @@ class Browser {
               }
             });
 
-            this.preventDefaults(e);
-
-            if (!drag_and_drop) {
+            if (drag_and_drop){
+              this.preventDefaults(e);  
+            }
+            
+            /*if (!drag_and_drop) {
               let paste = (e.clipboardData || window.clipboardData).getData("text");
               const selection = window.getSelection();
               if (!selection.rangeCount) return;
               selection.deleteFromDocument();
               selection.getRangeAt(0).insertNode(document.createTextNode(paste));
               selection.collapseToEnd();
-            }
+            }*/
           },
           false
         );

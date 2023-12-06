@@ -202,7 +202,7 @@ class Chat extends ModTemplate {
     }
     this.chat_manager.container = ".saito-sidebar.left";
 
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 599) {
+    if (!(this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth < 750) && window.innerWidth > 599) {
       this.chat_manager.chat_popup_container = ".saito-main";
       //Main Chat Application doesn't use popups as such...
       this.chat_manager.render_popups_to_screen = 0;
