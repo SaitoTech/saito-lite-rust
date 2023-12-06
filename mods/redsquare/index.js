@@ -64,7 +64,7 @@ module.exports = (app, mod) => {
       height: 100vh;
       width: 100vw;
       /* hardcode bg colors used because saito-variables arent accessible here */
-      background-color: #180c24; 
+      background-color: #211f25; 
       background-image: url('/saito/img/tiled-logo.svg');
       transition: all 1s ease-in-out;
       -webkit-transition: all 1s ease-in-out;

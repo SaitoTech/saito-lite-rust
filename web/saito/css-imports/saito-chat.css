@@ -327,9 +327,14 @@
   display: none !important
 }
 
+.saito-mention.saito-address.treated {
+  display: inline-block !important;
+}
+
 .chat-body .saito-user-self.saito-user .saito-identicon-box {
   display: none;
 }
+
 
 /* Hide user names in 2-person chats */
 
