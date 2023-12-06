@@ -1223,22 +1223,17 @@ class Tweet {
       return this;
     }
 
-    //let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+    let expression = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
-    let dom = HTMLParser.parse(this.text);
-    
-    const links = dom.getElementsByTagName('a');
 
-    //const hrefs = Array.from(links).map(link => link.href);
-
-    let link, urlParams;
+    let links = this.text.match(expression);
 
     if (links != null && links.length > 0) {
       //
       // save the first link
       //
-      const regex = /href\s*=\s*['"]([^'"]+)['"]/i;
-      let first_link = links[0].toString().match(regex)[1];
+      let first_link = links[0].toString();
+      console.log(first_link);
 
       if (typeof first_link == "undefined") {
         return this;
