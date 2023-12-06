@@ -113,7 +113,7 @@ class TweetManager {
 
   render(new_mode = "") {
 
-    this.app.connection.emit("redsquare-clear-menu-highlighting");
+    this.app.connection.emit("redsquare-clear-menu-highlighting", new_mode);
     //
     // remove notification at end
     //
