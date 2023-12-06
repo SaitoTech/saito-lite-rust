@@ -88,3 +88,8 @@ Saito User
 .saito-user-fourth-elem-large {
   grid-row: span 2;
 }
+
+
+.saito-overlay .saito-user {
+  max-width: 90vw;
+}
