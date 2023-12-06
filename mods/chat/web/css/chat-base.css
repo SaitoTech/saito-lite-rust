@@ -94,7 +94,7 @@
 	}
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
 	.chat-main-container.saito-container {
 		grid-template-columns: 1fr;
 	}
