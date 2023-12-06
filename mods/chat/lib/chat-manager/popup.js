@@ -203,6 +203,13 @@ class ChatPopup {
       this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
     }
 
+    chatPopup.onclick = (e) => {
+      document.querySelectorAll(".chat-container").forEach((el) => {
+        el.classList.remove("active");
+      });
+      e.currentTarget.classList.add("active");
+    }
+
     //
     // minimize
     let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
