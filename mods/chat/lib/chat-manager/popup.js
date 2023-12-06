@@ -188,12 +188,6 @@ class ChatPopup {
       return;
     }
 
-    chatPopup.onmouseover = (e) => {
-      document.querySelectorAll(".chat-container").forEach((el) => {
-        el.classList.remove("active");
-      });
-      e.currentTarget.classList.add("active");
-    };
 
     if (!this.mod.chat_manager_overlay) {
       //
@@ -201,6 +195,13 @@ class ChatPopup {
       //
       this.app.browser.makeDraggable(popup_id, header_id, true);
       this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
+    }
+
+    chatPopup.onclick = (e) => {
+      document.querySelectorAll(".chat-container").forEach((el) => {
+        el.classList.remove("active");
+      });
+      e.currentTarget.classList.add("active");
     }
 
     //
