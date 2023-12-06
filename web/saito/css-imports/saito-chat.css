@@ -322,7 +322,7 @@
 
 /* hide my own name */
 
-.chat-body .saito-user-self .saito-address {
+.chat-body .saito-user-self > .saito-address {
   color: var(--saito-primary);
   display: none !important
 }
