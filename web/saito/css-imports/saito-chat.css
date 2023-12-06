@@ -183,6 +183,18 @@
 
 .chat-container.active {
   z-index: 16;
+  animation: highlight 1s ease;
+  -webkit-animation: highlight 1s ease;
+}
+
+
+@keyframes highlight {
+  0% {
+    border: 3px solid var(--saito-primary);
+  }
+  100% {
+    border: 1px solid var(--saito-border-color);
+  }
 }
 
 .chat-container.minimized {
