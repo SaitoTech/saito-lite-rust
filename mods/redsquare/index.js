@@ -46,10 +46,33 @@ module.exports = (app, mod) => {
   <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
 
   <title>Saito RedSquare</title>
+  <style type="text/css">
+    /* css for fade-out bg effect while content is loading */
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      opacity: 1;
+      z-index: 16; /*saito-header has z-index:15 */
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      height: 100vh;
+      width: 100vw;
+      /* hardcode bg colors used because saito-variables arent accessible here */
+      background-color: #180c24; 
+      background-image: url('/saito/img/tiled-logo.svg');
+      transition: all 1s ease-in-out;
+      -webkit-transition: all 1s ease-in-out;
+    }
+  </style>
 </head>
 
-<body style="opacity: 0; transition: opacity 1s;">
-
+<body>
 
 </body>
 <script id="saito" type="text/javascript" src="/redsquare/tweets.0.js?x=${new Date().getTime()}"></script>
