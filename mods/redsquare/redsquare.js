@@ -747,9 +747,10 @@ class RedSquare extends ModTemplate {
               this.peers[i].tweets_earliest_ts = 0;
             }
 
+            console.log(`${this.peers[i].publicKey} returned ${txs.length}, ${count} are new to the feed`);
+
             // execute callback when all txs are fetched from all peers
             if (peer_count == 0 && mycallback) {
-              console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
               mycallback(count);
             }
           },
