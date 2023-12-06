@@ -350,8 +350,10 @@ class Tweet {
     }
 
 
-    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions.includes(this.mod.publicKey)){
-      this.notice = "You were mentioned in this tweet";      
+    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey)) {
+      if (this.mentions == 1 || this.mentions?.includes(this.mod.publicKey)) {
+        this.notice = "You were mentioned in this tweet";      
+      }
     }
 
     if (this.tx.optional?.update_tx){
