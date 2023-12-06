@@ -61,7 +61,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
     if (peerData.protocol === "https") {
       protocol = "wss";
     }
-    let url = protocol + "://" + peerData.host + ":" + peerData.port;
+    let url = protocol + "://" + peerData.host + ":" + peerData.port + "/wsopen";
 
     try {
       console.log("connecting to " + url + "....");
