@@ -234,6 +234,7 @@ class TweetManager {
         let out_of_content = true;
         for (let i = 0; i < this.mod.peers.length; i++) {
           if (this.mod.peers[i].tweets_earliest_ts) {
+            console.log(`${this.mod.peers[i].publicKey} still has tweets as early as ${this.mod.peers[i].tweets_earliest_ts}`);
             out_of_content = false;
           }
         }

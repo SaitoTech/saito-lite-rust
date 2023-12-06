@@ -447,15 +447,23 @@ class Archive extends ModTemplate {
     let limit = 10;
     let timestamp_limiting_clause = "";
 
-    let where_obj = {}; //For JS-Store
+    let order_clause = " ORDER BY archives.id";
+
+    //For JS-Store
+    let order_obj = { by: "id", type: "desc" };
+    let where_obj = {}; 
 
     if (obj.created_later_than || obj.hasOwnProperty("created_later_than")) {
       timestamp_limiting_clause += " AND created_at > " + parseInt(obj.created_later_than);
       where_obj = { created_at: { ">": parseInt(obj.created_later_than) } };
+      order_clause = " ORDER BY archives.created_at";
+      order_obj.by = "created_at";
     }
     if (obj.created_earlier_than || obj.hasOwnProperty("created_earlier_than")) {
       timestamp_limiting_clause += " AND created_at < " + parseInt(obj.created_earlier_than);
       where_obj = { created_at: { "<": parseInt(obj.created_earlier_than) } };
+      order_clause = " ORDER BY archives.created_at";
+      order_obj.by = "created_at";
     }
     if (obj.tx_size_greater_than) {
       timestamp_limiting_clause += " AND tx_size > " + parseInt(obj.tx_size_greater_than);
@@ -468,10 +476,14 @@ class Archive extends ModTemplate {
     if (obj.updated_later_than || obj.hasOwnProperty("updated_later_than")) {
       timestamp_limiting_clause += " AND updated_at > " + parseInt(obj.updated_later_than);
       where_obj = { updated_at: { ">": parseInt(obj.updated_later_than) } };
+      order_clause = " ORDER BY archives.updated_at";
+      order_obj.by = "updated_at";
     }
     if (obj.updated_earlier_than || obj.hasOwnProperty("updated_earlier_than")) {
       timestamp_limiting_clause += " AND updated_at < " + parseInt(obj.updated_earlier_than);
       where_obj = { updated_at: { "<": parseInt(obj.updated_earlier_than) } };
+      order_clause = " ORDER BY archives.updated_at";
+      order_obj.by = "updated_at";
     }
     if (obj.flagged) {
       timestamp_limiting_clause += " AND flagged = " + parseInt(obj.flagged);
@@ -512,7 +524,7 @@ class Archive extends ModTemplate {
     // Should we be ordering by time stamp instead of id?
     //
 
-    sql += timestamp_limiting_clause + ` ORDER BY archives.id DESC LIMIT $limit`;
+    sql += timestamp_limiting_clause + order_clause + ` DESC LIMIT $limit`;
 
     //
     // SEARCH BASED ON CRITERIA PROVIDED
@@ -524,7 +536,7 @@ class Archive extends ModTemplate {
       rows = await this.localDB.select({
         from: "archives",
         where: where_obj,
-        order: { by: "id", type: "desc" },
+        order: order_obj,
         limit,
       });
     }

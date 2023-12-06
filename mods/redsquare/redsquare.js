@@ -664,7 +664,7 @@ class RedSquare extends ModTemplate {
         };
 
         if (created_at == "earlier") {
-          obj.created_earlier_than = this.peers[i].tweets_earliest_ts;
+          obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
         } else if (created_at == "later") {
           //
           // For "new" tweets we maybe want to look at updated, not created
@@ -749,7 +749,7 @@ class RedSquare extends ModTemplate {
 
             // execute callback when all txs are fetched from all peers
             if (peer_count == 0 && mycallback) {
-              //console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
+              console.log(`Run callback on ${count} newly added tweets (out of ${txs.length} returned txs)`);
               mycallback(count);
             }
           },
