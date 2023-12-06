@@ -1,3 +1,4 @@
-body {
-    opacity: 1 !important;
+body::before {
+   opacity: 0 !important;
+   z-index: -2 !important;
 }
