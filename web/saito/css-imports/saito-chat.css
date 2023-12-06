@@ -627,6 +627,11 @@
   .chat-header>i.chat-sizing-icon {
     display: none;
   }
+
+  .close-chat-manager i {
+    height: var(--saito-header-height);
+    line-height: 5rem;
+  }
 }
 
 @media screen and (max-width: 600px) {
