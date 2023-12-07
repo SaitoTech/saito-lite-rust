@@ -150,7 +150,7 @@ class Place extends ModTemplate {
       }
     } else if (status === "confirmed") {
       let i, j, state, components;
-      const sqlValues = [];
+      const sqlValues = [], params = {};
       for (let k = 0; k < locatedStateArray.length; k++) {
         sqlValues.push(`($i${k}, $j${k}, $red${k}, $green${k}, $blue${k}, $ordinal${k})`);
         ({i: i, j: j, state: state} = locatedStateArray[k]);
