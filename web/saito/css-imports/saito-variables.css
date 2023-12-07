@@ -50,6 +50,7 @@ font imports
   --saito-white: #fff;
   --saito-black: #000;
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
+  --saito-primary-background: linear-gradient(45deg, var(--saito-primary) 0%, var(--saito-secondary) 55%, var(--saito-primary) 100%) transparent no-repeat left top / 400% auto;
   --saito-primary-transparent: #f71f3d88;
   /* variable colors overridden in themes */
   --saito-bubble-shadow: #0006;

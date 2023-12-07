@@ -26,7 +26,6 @@ body {
   font-size: 1.6rem;
   font-weight: 400;
   position: fixed; /* why relative? */
-  height: 100vh;
   height: calc(var(--saito-vh) * 100);
   width: 100vw;
   max-height: -webkit-fill-available;
