@@ -129,53 +129,42 @@
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .game-menu {
-    width: unset;
-    height: unset;
+    left: -46%;
     border: unset;
     box-shadow: unset;
     background-color: unset;
+    border-radius: 0 0 1rem 0;
   }
 
-  .game-menu > ul {
-    flex-direction: column;
+  .game-menu.mobile-visible {
+    left: 0;
   }
 
-  .game-menu > ul li,
-  .game-menu > ul li.game-menu-icon {
-    display: none;
-    background-color: whitesmoke;
-    box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-    background-color: #f5f5f5ee;
-    height: 60px;
-    width: 80px;
-    margin: 0.5rem;
-    line-height: 62px;
-    border-radius: 0.5rem;
+  .game-menu-sub-option .game-menu-option-label {
+    height: 40px;
+    line-height: 40px;
   }
 
-  .game-menu-sub-options {
+  .game-menu .game-menu-mobile-toggle {
+    display: flex;
+    position: absolute;
+    top: 0;
     left: 100%;
-    top: -100%;
-  }
-
-  .game-menu-sub-option {
-    min-width: fit-content;
-    white-space: nowrap;
-  }
-
-  .game-menu.mobile-visible > ul li {
-    display: list-item;
-  }
-  .game-menu > ul li.game-menu-mobile-toggle {
-    display: block;
+    width: 40px;
+    height: 40px;
+    font-size: 3rem;
+    color: inherit;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 1rem 1rem 0;
   }
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
   .game-menu {
-    width: 75vw;
+    width: 250px;
     height: 100vh;
-    left: -76vw;
+    left: -251px;
     border: unset;
     box-shadow: unset;
     background-color: unset;
@@ -199,7 +188,7 @@
   .game-menu ul.game-menu-sub-options li {
     border-bottom: unset;
   }
-  
+
   .game-menu ul li .game-menu-option-label,
   .game-menu > ul li.game-menu-icon {
     box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);

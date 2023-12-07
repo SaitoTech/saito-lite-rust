@@ -215,3 +215,16 @@
     display: none;
   }
 }
+
+@media screen and (max-height: 550px) {
+  .arcade-game-overlay {
+    max-height: 98vh;
+    grid-gap: 1rem;
+    padding: 1rem;
+  }
+
+  .arcade-game-controls .saito-button{
+    height: 6rem;
+    line-height: 4rem;
+  }
+}
