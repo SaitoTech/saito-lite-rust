@@ -66,6 +66,18 @@
 
 }
 
+.post-tweet-img-preview-container {
+  position: absolute;
+  left: 19.5rem;
+  bottom: 1.1rem;
+  width: calc(100% - 42rem);
+  height: 6rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1rem;
+  align-items: center;
+}
+
 .post-tweet-img-preview {
   position: relative;
   height: auto;
