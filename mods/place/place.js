@@ -162,33 +162,10 @@ class Place extends ModTemplate {
         params[`$blue${k}`]  = components[2];
         params[`$ordinal${k}`] = ordinal;
       }
-      console.log(params);
       const sql = "REPLACE INTO tiles (i, j, red, green, blue, ordinal) VALUES\n" + sqlValues.join(",\n");
       await this.app.storage.executeDatabase(sql, params, "place");
     }
   }
-
-  // async updateTiles(tileArray, status, ordinal=null) {
-  //   const locatedStateArray = [];
-  //   for (const tile of tileArray) {
-  //     locatedStateArray.push(this.gridState.updateTile(tile, status, ordinal));
-  //   }
-  //   if (this.app.BROWSER) {
-  //     for (const locatedState of locatedStateArray) {
-  //       this.placeUI.updateTileRendering(locatedState);
-  //     }
-  //   } else if (status === "confirmed") {
-  //     let i, j, state, components;
-  //     const sqlValues = [];
-  //     for (const locatedState of locatedStateArray) {
-  //       ({i: i, j: j, state: state} = locatedState);
-  //       components = this.colorToComponents(state.confirmed.color);
-  //       sqlValues.push(`(${i}, ${j}, ${components[0]}, ${components[1]}, ${components[2]}, ${ordinal})`);
-  //     }
-  //     const sql = "REPLACE INTO tiles (i, j, red, green, blue, ordinal) VALUES\n" + sqlValues.join(",\n");
-  //     await this.app.storage.executeDatabase(sql, {}, "place");
-  //   }
-  // }
 
   colorToComponents(color) {
     const hexComponents = [0, 1, 2].map(k => color.substring(2*k+1, 2*k+3));
