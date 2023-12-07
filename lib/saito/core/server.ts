@@ -296,7 +296,7 @@ class Server {
         const filePath = path.join(__dirname, 'config/options');
         fs.watch('config/options', (eventType, filename) => {
           if (filename) {
-            console.log(`_build.json was modified: ${eventType}`);
+            console.log(`options was modified: ${eventType}`);
             checkBuildNumber();
           }
         });
@@ -312,7 +312,6 @@ class Server {
           }
           try {
             const jsonData = JSON.parse(data);
-            console.log(jsonData);
             const buildNumber = BigInt(jsonData.build_number);
             const buffer = Buffer.alloc(33);
             buffer[0] = 7;

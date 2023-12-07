@@ -46,19 +46,18 @@ class WebMethods extends WebSharedMethods {
       let index = S.getInstance().addNewSocket(socket);
 
       function updateSaitoScript(buildNumber) {
-        // Find the existing saito.js script tag by id
         const existingScript = document.getElementById('saito');
 
         if (existingScript?.parentNode) {
-          // Remove the existing script tag
+
           existingScript.parentNode.removeChild(existingScript);
 
-          // Create a new script tag with the updated src
+
           const newScript = document.createElement('script');
-          newScript.id = 'saito';  // Reuse the same id
+          newScript.id = 'saito';
           newScript.type = 'text/javascript';
           newScript.src = `/saito/saito.js?v=${buildNumber}`;
-          // Add the new script tag to the document
+
           document.body.appendChild(newScript);
           window.location.reload();
         } else {
@@ -78,16 +77,12 @@ class WebMethods extends WebSharedMethods {
             buildNumber = (buildNumber << BigInt(8)) | BigInt(buffer[i]);
           }
           console.log('Decoded BigInt:', buildNumber.toString());
-
-          // Retrieve the stored build number, defaulting to 0 if not present
           const storedBuildNumber = BigInt(localStorage.getItem('buildNumber') || '0');
           console.log('Stored Build Number:', storedBuildNumber.toString());
           console.log('New Build Number:', buildNumber.toString());
-
-          // Compare and update if necessary
           if (buildNumber > storedBuildNumber) {
             localStorage.setItem('buildNumber', buildNumber.toString());
-            // Usage: call this function with the new build number
+
             updateSaitoScript(buildNumber);
           }
         }
