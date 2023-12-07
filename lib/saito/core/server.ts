@@ -65,8 +65,11 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
     try {
       console.log("connecting to " + url + "....");
+
       let socket = new ws.WebSocket(url);
       let index = S.getInstance().addNewSocket(socket);
+
+
 
       socket.on("message", (buffer: any) => {
         try {
@@ -287,12 +290,48 @@ class Server {
     });
     wss.on("connection", (socket: any, request: any) => {
       const { pathname } = parse(request.url);
+      console.log('connection established')
       console.info('### connection pathname: ' + pathname);
       let index = S.getInstance().addNewSocket(socket);
+
+      function watchBuildFile() {
+        const filePath = path.join(__dirname, 'config/options');
+        fs.watch('config/options', (eventType, filename) => {
+          if (filename) {
+            console.log(`_build.json was modified: ${eventType}`);
+            checkBuildNumber();
+          }
+        });
+      }
+      watchBuildFile()
+
+      function checkBuildNumber() {
+        const filePath = path.join(__dirname, 'config/options');
+        fs.readFile('config/options', 'utf8', (err, data) => {
+          if (err) {
+            console.error('Error reading options file:', err);
+            return;
+          }
+          try {
+            const jsonData = JSON.parse(data);
+            console.log(jsonData);
+            const buildNumber = BigInt(jsonData.build_number);
+            const buffer = Buffer.alloc(33);
+            buffer[0] = 7;
+            for (let i = 0; i < 32; i++) {
+              buffer[32 - i] = Number((buildNumber >> BigInt(i * 8)) & BigInt(0xFF));
+            }
+            socket.send(buffer);
+          } catch (e) {
+            console.error('Error parsing JSON from options file:', e);
+          }
+        });
+      }
+
       socket.on("message", (buffer: any) => {
         S.getLibInstance()
           .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-          .then(() => {});
+          .then(() => { });
       });
       socket.on("close", () => {
         S.getLibInstance().process_peer_disconnection(index);
@@ -595,7 +634,7 @@ class Server {
         console.log(`liteblock : ${bsh} from disk txs count = : ${newblk.transactions.length}`);
         console.log(
           "valid txs : " +
-            newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
+          newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
         );
 
         res.writeHead(200, {

@@ -187,7 +187,7 @@ class Relay extends ModTemplate {
                   async function () {
                     if (mycallback != null) {
                       mycallback({ err: "", success: 1 });
-		                }
+                    }
                     return 1;
                   },
                   peers[i].peerIndex
@@ -209,7 +209,6 @@ class Relay extends ModTemplate {
     }
 
     return 0;
-
   }
 }
 

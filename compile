@@ -343,9 +343,8 @@ if [ "$1" == "recompile" ]; then
   echo ""
   echo ""
 
-
   # making sure we have some modules defined.
-  if [ ! -f ./config/modules.config.js ]; then
+  if [ es.config.js ]; then
     cp ./config/modules.default.js ./config/modules.config.js
   fi
 
@@ -354,6 +353,18 @@ if [ "$1" == "recompile" ]; then
   time node webpack/webpack.config.cjs $2 $3
 
   post_compile
+
+  echo "  Updating build number in options file"
+  currentTime=$(date +%s) 
+  echo "  Current Timestamp: $currentTime"
+  if [ -f ./config/options ]; then
+
+    tmpFile=$(mktemp)
+    jq '.build_number = "'$currentTime'"' ./config/options > "$tmpFile" && mv "$tmpFile" ./config/options
+    echo "  Build number updated in options.json"
+  else
+    echo "  Error: options.json not found"
+  fi
 
 fi
 
