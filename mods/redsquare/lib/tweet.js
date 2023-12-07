@@ -1233,14 +1233,19 @@ class Tweet {
       // save the first link
       //
       let first_link = links[0].toString();
+      if (!first_link.startsWith('http')) {
+        first_link = "http://" + first_link;
+      }
       console.log(first_link);
 
       if (typeof first_link == "undefined") {
         return this;
       }
 
+      let urlParams = null;
+
       try {
-        link = new URL(first_link);
+        let link = new URL(first_link);
         urlParams = new URLSearchParams(link.search);
         this.link = link.toString();
       } catch (err) {
