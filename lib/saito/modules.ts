@@ -75,7 +75,7 @@ class Mods {
     try {
       let txmsg = tx.returnMessage();
       request = txmsg?.request;
-    } catch (err) {}
+    } catch (err) { }
     for (let iii = 0; iii < this.mods.length; iii++) {
       //console.log(`peer request (${request}), hpt into... ` + this.mods[iii].name);
       try {

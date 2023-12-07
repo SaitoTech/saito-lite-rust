@@ -1,6 +1,9 @@
 import { Saito } from "../core";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+const fs = require('fs');
+const EventEmitter = require('events');
+
 import mods_config from "../../config/modules.config";
 import { initialize as initSaito } from "saito-js/index.web";
 import S from "saito-js/saito";
@@ -21,6 +24,104 @@ class WebMethods extends WebSharedMethods {
     super();
     this.app = app;
   }
+
+  lastBuildNumber = null;
+
+
+
+
+  connectToPeer(peerData: any): void {
+    console.log('god')
+    let protocol = "ws";
+    if (peerData.protocol === "https") {
+      protocol = "wss";
+    }
+    let url = protocol + "://" + peerData.host + ":" + peerData.port + "/wsopen";
+
+
+    try {
+      console.log("connecting to " + url + "....");
+      let socket = new WebSocket(url);
+      socket.binaryType = "arraybuffer";
+      let index = S.getInstance().addNewSocket(socket);
+
+      function updateSaitoScript(buildNumber) {
+        // Find the existing saito.js script tag by id
+        const existingScript = document.getElementById('saito');
+
+        if (existingScript?.parentNode) {
+          // Remove the existing script tag
+          existingScript.parentNode.removeChild(existingScript);
+
+          // Create a new script tag with the updated src
+          const newScript = document.createElement('script');
+          newScript.id = 'saito';  // Reuse the same id
+          newScript.type = 'text/javascript';
+          newScript.src = `/saito/saito.js?v=${buildNumber}`;
+          // Add the new script tag to the document
+          document.body.appendChild(newScript);
+          window.location.reload();
+        } else {
+          console.error('Saito script tag not found');
+        }
+      }
+
+      socket.onmessage = (event: MessageEvent) => {
+        console.log(event, "event senters");
+        const buffer = new Uint8Array(event.data);
+        const messageType = buffer[0];
+        console.log('Message Type:', messageType);
+
+        if (messageType === 7) {
+          let buildNumber = BigInt(0);
+          for (let i = 1; i <= 32; i++) {
+            buildNumber = (buildNumber << BigInt(8)) | BigInt(buffer[i]);
+          }
+          console.log('Decoded BigInt:', buildNumber.toString());
+
+          // Retrieve the stored build number, defaulting to 0 if not present
+          const storedBuildNumber = BigInt(localStorage.getItem('buildNumber') || '0');
+          console.log('Stored Build Number:', storedBuildNumber.toString());
+          console.log('New Build Number:', buildNumber.toString());
+
+          // Compare and update if necessary
+          if (buildNumber > storedBuildNumber) {
+            localStorage.setItem('buildNumber', buildNumber.toString());
+            // Usage: call this function with the new build number
+            updateSaitoScript(buildNumber);
+          }
+        }
+
+        try {
+          S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(event.data), index);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      socket.onopen = () => {
+        try {
+          S.getLibInstance().process_new_peer(index, peerData);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      socket.onclose = () => {
+        try {
+          console.log("socket.onclose : " + index);
+          S.getLibInstance().process_peer_disconnection(index);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+
+      console.log("connected to : " + url + " with peer index : " + index);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
 
   async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
     // console.log(
