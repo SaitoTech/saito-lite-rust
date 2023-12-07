@@ -129,15 +129,21 @@
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .game-menu {
-    left: -46%;
     border: unset;
     box-shadow: unset;
     background-color: unset;
     border-radius: 0 0 1rem 0;
+    transform: translateX(-101%);
+    transition: transform 0.3s;
+  }
+
+  .game-menu > ul {
+    border: none;
+    border-radius: unset;
   }
 
   .game-menu.mobile-visible {
-    left: 0;
+    transform: unset;
   }
 
   .game-menu-sub-option .game-menu-option-label {
@@ -169,6 +175,7 @@
     box-shadow: unset;
     background-color: unset;
     border-radius: 0 0 1rem 0;
+    transition: left 0.3s;
   }
 
   .game-menu ul {
@@ -210,7 +217,6 @@
   .game-menu.mobile-visible {
     left: 0;
     background-color: #222d;
-    transition: all 0.3s;
   }
 
   .game-menu .game-menu-mobile-toggle {
