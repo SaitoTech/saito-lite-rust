@@ -253,7 +253,7 @@ class Post {
     if (parent_id !== "") {
       is_reply = true;
       this.mod.replyTweet(this.tweet.tx.signature);
-      data = { text: text, parent_id: parent_id, thread_id: thread_id, signature: parent_id };
+      data = Object.assign(data, { parent_id: parent_id, thread_id: thread_id, signature: parent_id });
 
       // We temporarily increase the number of replies, this affects the next rendering
       // but only adjust tx.optional when we get confirmation from the blockchain
