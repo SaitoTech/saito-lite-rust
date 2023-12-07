@@ -102,9 +102,10 @@ class Mixin extends ModTemplate {
           let sessionId = m.session_id;
           let privateKey = m.private_key;
 
-          this.request(appId, sessionId, privateKey, method, uri, body)
+          await this.request(appId, sessionId, privateKey, method, uri, body)
             .then((res) => {
               let d = res.data;
+
               // send response to browser
               if (mycallback) {
                 mycallback(d);
@@ -665,7 +666,7 @@ class Mixin extends ModTemplate {
     this.mixin.privatekey = original_user_private_key;
     this.mixin.user_id = "";
     this.mixin.session_id = "";
-
+    
     //
     // process directly if ENV variable set
     //
@@ -755,8 +756,8 @@ class Mixin extends ModTemplate {
     return digest.subarray(0, 32);
   }
 
-  requestByTokenNoData(method, path, accessToken) {
-    return axios({
+  async requestByTokenNoData(method, path, accessToken) {
+    return await axios({
       method,
       url: "https://mixin-api.zeromesh.net" + path,
       headers: {
@@ -766,8 +767,8 @@ class Mixin extends ModTemplate {
     });
   }
 
-  requestByToken(method, path, data, accessToken) {
-    return axios({
+  async requestByToken(method, path, data, accessToken) {
+    return await axios({
       method,
       url: "https://mixin-api.zeromesh.net" + path,
       data,
@@ -778,12 +779,12 @@ class Mixin extends ModTemplate {
     });
   }
 
-  request(uid, sid, privateKey, method, path, data = null) {
+  async request(uid, sid, privateKey, method, path, data = null) {
     console.log("Mixin Request: " + path);
     let accessToken = "";
     if (data == null) {
       accessToken = this.signAuthenticationToken(uid, sid, privateKey, method, path);
-      return this.requestByTokenNoData(method, path, accessToken);
+      return await this.requestByTokenNoData(method, path, accessToken);
     } else {
       accessToken = this.signAuthenticationToken(
         uid,
@@ -793,7 +794,7 @@ class Mixin extends ModTemplate {
         path,
         JSON.stringify(data)
       );
-      return this.requestByToken(method, path, data, accessToken);
+      return await this.requestByToken(method, path, data, accessToken);
     }
   }
 
