@@ -1,3 +1,7 @@
+:root {
+  --game-menu-background: #f5f5f5ed;
+}
+
 .game-menu {
   position: fixed;
   top: 0px;
@@ -15,7 +19,7 @@
 .game-menu ul,
 .game-menu-mobile-toggle {
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-  background-color: #f5f5f5ed;
+  background-color: var(--game-menu-background);
 }
 
 .game-menu ul li {
@@ -131,7 +135,6 @@
   .game-menu {
     border: unset;
     box-shadow: unset;
-    background-color: unset;
     border-radius: 0 0 1rem 0;
     transform: translateX(-101%);
     transition: transform 0.3s;
@@ -159,7 +162,6 @@
     width: 40px;
     height: 40px;
     font-size: 3rem;
-    color: inherit;
     align-items: center;
     justify-content: center;
     border-radius: 0 1rem 1rem 0;
@@ -173,7 +175,6 @@
     left: -251px;
     border: unset;
     box-shadow: unset;
-    background-color: unset;
     border-radius: 0 0 1rem 0;
     transition: left 0.3s;
   }
@@ -199,7 +200,7 @@
   .game-menu ul li .game-menu-option-label,
   .game-menu > ul li.game-menu-icon {
     box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-    background-color: #f5f5f5ee;
+    background-color: var(--game-menu-background);
     border-radius: 0.5rem;
     height: 40px !important;
     line-height: 40px !important;
@@ -227,7 +228,6 @@
     width: 40px;
     height: 40px;
     font-size: 3rem;
-    color: inherit;
     align-items: center;
     justify-content: center;
     border-radius: 0 1rem 1rem 0;
