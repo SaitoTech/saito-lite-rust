@@ -114,7 +114,8 @@ div.h3{
 @media screen and (max-width: 768px) {
   .chat-container {
     max-height: 50vh !important;
-    height: 230px !important;
+    height: 280px !important;
+    top: unset;
   }
 }
 

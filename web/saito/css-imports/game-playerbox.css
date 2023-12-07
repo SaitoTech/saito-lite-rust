@@ -142,6 +142,8 @@
     justify-content: space-between;
     bottom: 1px;
     top: unset;
+    right: unset;
+    gap: 2rem;
     margin-bottom: 1px;
     position: absolute;
     height: max-content;
