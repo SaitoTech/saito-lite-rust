@@ -350,8 +350,10 @@ class Tweet {
     }
 
 
-    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey) && this.mentions.includes(this.mod.publicKey)){
-      this.notice = "You were mentioned in this tweet";      
+    if (this.tx.isTo(this.mod.publicKey) && !this.tx.isFrom(this.mod.publicKey)) {
+      if (this.mentions == 1 || this.mentions?.includes(this.mod.publicKey)) {
+        this.notice = "You were mentioned in this tweet";      
+      }
     }
 
     if (this.tx.optional?.update_tx){
@@ -1221,29 +1223,29 @@ class Tweet {
       return this;
     }
 
-    //let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+    let expression = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
-    let dom = HTMLParser.parse(this.text);
-    
-    const links = dom.getElementsByTagName('a');
 
-    //const hrefs = Array.from(links).map(link => link.href);
-
-    let link, urlParams;
+    let links = this.text.match(expression);
 
     if (links != null && links.length > 0) {
       //
       // save the first link
       //
-      const regex = /href\s*=\s*['"]([^'"]+)['"]/i;
-      let first_link = links[0].toString().match(regex)[1];
+      let first_link = links[0].toString();
+      if (!first_link.startsWith('http')) {
+        first_link = "http://" + first_link;
+      }
+      console.log(first_link);
 
       if (typeof first_link == "undefined") {
         return this;
       }
 
+      let urlParams = null;
+
       try {
-        link = new URL(first_link);
+        let link = new URL(first_link);
         urlParams = new URLSearchParams(link.search);
         this.link = link.toString();
       } catch (err) {

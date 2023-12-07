@@ -37,10 +37,6 @@ class RedSquareMain {
 
       this.manager.render("tweets");
 
-      if (document.querySelector(".redsquare-menu-home")){
-        document.querySelector(".redsquare-menu-home").classList.add("redsquare-page-active");
-      }
-
       let behavior = "auto";
 
       if (scroll_to_top) {
@@ -87,10 +83,6 @@ class RedSquareMain {
             console.log("postcache-render-request: refresh the page automatically!");
             this.manager.render("tweets");
             
-            if (document.querySelector(".redsquare-menu-home")){
-              document.querySelector(".redsquare-menu-home").classList.add("redsquare-page-active");
-            }
-
 
           } else {
             console.log("postcache-render-request: CANNOT refresh the page!");
@@ -148,9 +140,6 @@ class RedSquareMain {
         this.app.connection.emit("redsquare-home-render-request");
       });
 
-      if (document.querySelector(".redsquare-menu-notifications")){
-        document.querySelector(".redsquare-menu-notifications").classList.add("redsquare-page-active");
-      }
 
     });
 
@@ -172,10 +161,6 @@ class RedSquareMain {
       this.app.connection.emit("saito-header-replace-logo", (e) => {
         this.app.connection.emit("redsquare-home-render-request");
       });
-
-      if (document.querySelector(".redsquare-menu-profile")){
-        document.querySelector(".redsquare-menu-profile").classList.add("redsquare-page-active");
-      }
 
     });
 

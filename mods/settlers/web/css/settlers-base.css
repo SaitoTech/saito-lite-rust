@@ -1024,7 +1024,8 @@ ul.horizontal_list li.iconoption {
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
   #game-hexgrid {
-    padding: 75px 45px 125px;
+    margin-top: 40px;
+    padding: 100px 45px 125px;
     border-radius: 300px;
   }
 

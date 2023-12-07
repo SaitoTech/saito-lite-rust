@@ -169,14 +169,23 @@ emoji-picker {
 
 
 .at-window {
-	padding: 2rem 1rem;
+
 	flex-direction: column;
 	justify-content: flex-start;
-	gap: 1rem;
 }
 
-.saito-input-mention-header {
+.at-window .saito-input-mention-header {
 	font-size: 2.2rem;
+	width: 100%;
+	display: grid;
+	align-items: center;
+	grid-gap: 1rem;
+	grid-template-columns: 1fr 2rem;
+	padding: 1rem;
+}
+
+.at-window .saito-input-mention-header input {
+	margin-bottom: 0;
 }
 
 .saito-input-contact-list {
@@ -185,8 +194,7 @@ emoji-picker {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.5rem;
-	padding: 1rem;
+	padding: 0.5rem;
     font-size: 2rem;
     overflow: auto;
     flex: 1;
@@ -202,6 +210,7 @@ emoji-picker {
     bottom: unset;
 	top: 5rem;
 	max-height: calc(100% - 4.5rem);
+	position: static;
 }
 
 .saito-input-contact {
@@ -211,7 +220,7 @@ emoji-picker {
 	width: 100%;
 	align-items: center;
 	height: 4rem;
-	padding: 0.25rem;
+	padding: 0.75rem;
 }
 
 .saito-input-contact:hover, .saito-input-contact:focus {

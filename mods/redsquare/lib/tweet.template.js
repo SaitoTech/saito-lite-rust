@@ -4,9 +4,7 @@ module.exports = (app, mod, tweet) => {
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
 
-  if (tweet.mentions) {
-    console.log("Tweet has mentions");
-
+  if (tweet.mentions && tweet.mentions !== 1) {
     for (let m of tweet.mentions) {
       text = text.replace(`[[${app.keychain.returnUsername(m)}]]`, `<span class="saito-mention saito-address" data-id="${m}" data-disable="true" contenteditable="false">${app.keychain.returnUsername(m)}</span>`);
     }
