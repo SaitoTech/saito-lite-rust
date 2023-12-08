@@ -1,3 +1,6 @@
+:root {
+  --game-menu-background: #f9efdf;
+}
 
 .log-lock .mobile-log-tab {
     background-color: #222d;
