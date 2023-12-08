@@ -150,14 +150,20 @@ class Place extends ModTemplate {
       }
     } else if (status === "confirmed") {
       let i, j, state, components;
-      const sqlValues = [];
-      for (const locatedState of locatedStateArray) {
-        ({i: i, j: j, state: state} = locatedState);
+      const sqlValues = [], params = {};
+      for (let k = 0; k < locatedStateArray.length; k++) {
+        sqlValues.push(`($i${k}, $j${k}, $red${k}, $green${k}, $blue${k}, $ordinal${k})`);
+        ({i: i, j: j, state: state} = locatedStateArray[k]);
         components = this.colorToComponents(state.confirmed.color);
-        sqlValues.push(`(${i}, ${j}, ${components[0]}, ${components[1]}, ${components[2]}, ${ordinal})`);
+        params[`$i${k}`] = i;
+        params[`$j${k}`] = j;
+        params[`$red${k}`]   = components[0];
+        params[`$green${k}`] = components[1];
+        params[`$blue${k}`]  = components[2];
+        params[`$ordinal${k}`] = ordinal;
       }
       const sql = "REPLACE INTO tiles (i, j, red, green, blue, ordinal) VALUES\n" + sqlValues.join(",\n");
-      await this.app.storage.executeDatabase(sql, {}, "place");
+      await this.app.storage.executeDatabase(sql, params, "place");
     }
   }
 
