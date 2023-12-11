@@ -2170,6 +2170,29 @@ class RedSquare extends ModTemplate {
     expressapp.get("/" + encodeURI(this.returnSlug()), async function (req, res) {
       let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
 
+      //
+      // Reset OG params which can be overwritten for specific tweets if we have query parameters
+      //
+      redsquare_self.social = {
+        twitter_card: "summary",
+        twitter_site: "@SaitoOfficial",
+        twitter_creator: "@SaitoOfficial",
+        twitter_title: "🟥 Saito Red Square",
+        twitter_url: "https://saito.io/redsquare/",
+        twitter_description: "Saito RedSquare - Web3 Social.",
+        twitter_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+        og_title: "🟥 Saito Red Square",
+        og_url: "https://saito.io/redsquare",
+        og_type: "website",
+        og_description: "Peer to peer social and more",
+        og_site_name: "🟥 Saito Red Square",
+        og_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+        og_image_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+        og_image_secure_url:
+          "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+      };
+
+
       try {
         if (Object.keys(req.query).length > 0) {
           let query_params = req.query;

@@ -49,7 +49,7 @@ class Post {
     }
 
     if (this.source == "Edit") {
-      this.input.placeholder = this.tweet.text;
+      this.input.placeholder = this.tweet.text || "";
       this.user.notice = "tweets are editable for a brief period after posting...";
     }
 
@@ -153,10 +153,23 @@ class Post {
   }
 
   async deleteTweet() {
-    this.postTweet(1);
+    let keys = [];
+    if (this?.tweet?.tx) {
+      for (let i = 0; i < this.tweet.tx.to.length; i++) {
+        if (!keys.includes(this.tweet.tx.to[i].publicKey)) {
+          keys.push(this.tweet.tx.to[i].publicKey);
+        }
+      }
+    }
+
+    this.overlay.remove();
+
+    data = { tweet_id: this.tweet.tx.signature };
+    this.tweet.remove();
+    let newtx = await this.mod.sendDeleteTransaction(this.app, this.mod, data, keys);
   }
 
-  async postTweet(delete_tweet = 0) {
+  async postTweet() {
     let post_self = this;
     let text = this.input.getInput(false);
 
@@ -213,20 +226,7 @@ class Post {
     //
     // saito-loader
     //
-    post_self.overlay.hide();
-
-    //Delete
-    if (delete_tweet) {
-      data = { tweet_id: this.tweet.tx.signature };
-      this.tweet.remove();
-      let newtx = await post_self.mod.sendDeleteTransaction(
-        post_self.app,
-        post_self.mod,
-        data,
-        keys
-      );
-      return;
-    }
+    post_self.overlay.remove();
 
     //Edit
     if (source === "Edit") {
@@ -253,7 +253,11 @@ class Post {
     if (parent_id !== "") {
       is_reply = true;
       this.mod.replyTweet(this.tweet.tx.signature);
-      data = Object.assign(data, { parent_id: parent_id, thread_id: thread_id, signature: parent_id });
+      data = Object.assign(data, {
+        parent_id: parent_id,
+        thread_id: thread_id,
+        signature: parent_id,
+      });
 
       // We temporarily increase the number of replies, this affects the next rendering
       // but only adjust tx.optional when we get confirmation from the blockchain
@@ -272,7 +276,6 @@ class Post {
       }
     }, 600);
 
-
     //Retweets
     if (source == "Retweet") {
       data.signature = post_self.tweet.tx.signature;
@@ -287,8 +290,8 @@ class Post {
         //
         // This is a quote tweet, treat as a sendTweet and attach original tweet as part of its content
         //
-        data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);  
-      }else{
+        data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
+      } else {
         //
         // This is a pure retweet, treat similar to a like and send a specialize tx to update stats only
         //
@@ -299,12 +302,10 @@ class Post {
         if (this.mod?.manager?.mode?.includes("tweet")) {
           this.tweet.render();
         }
-  
+
         return;
       }
-      
     }
-
 
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
@@ -319,7 +320,6 @@ class Post {
       if (!is_reply) {
         this.mod.main.scrollFeed(0);
       }
-
     }
   }
 
@@ -356,7 +356,6 @@ class Post {
       this.mod.addTweet(newtx, true);
       posted_tweet.render(true);
     }
-
   }
 
   addImg(img) {
