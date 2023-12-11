@@ -188,6 +188,10 @@
   -webkit-animation: highlight 1s ease;
 }
 
+.chat-container.dragging {
+  z-index: 17;
+}
+
 
 @keyframes highlight {
   0% {

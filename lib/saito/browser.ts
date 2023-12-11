@@ -1082,6 +1082,10 @@ class Browser {
                 window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
             }
 
+            if (element_to_move.classList.contains("dragging")) {
+              element_to_move.classList.remove("dragging");
+            }
+
             timeout = setTimeout(() => {
               element_to_move.classList.remove("dockedBottom");
               element_to_move.classList.remove("dockedTop");
@@ -1112,6 +1116,8 @@ class Browser {
           if (adjustmentX !== 0 || adjustmentY !== 0) {
             element_moved = true;
           }
+
+          element_to_move.classList.add("dragging");
 
           let newPosX = element_start_left + adjustmentX;
           let newPosY = element_start_top + adjustmentY;
