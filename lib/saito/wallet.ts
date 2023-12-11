@@ -924,15 +924,40 @@ export default class Wallet extends SaitoWallet {
     // limits in NodeJS!
     //
     try {
+      // REMOVE
+      /* This code can allow plaintext propagation if nested conditionals both fail
+
       if (recipient == "") {
         if (this.app.keychain.hasSharedSecret(tx.to[0].publicKey)) {
           tx.msg = this.app.keychain.encryptMessage(tx.to[0].publicKey, tx.msg);
         }
-      } else {
+      }
+      else {
         if (this.app.keychain.hasSharedSecret(recipient)) {
           tx.msg = this.app.keychain.encryptMessage(recipient, tx.msg);
         }
       }
+      */
+      // REMOVE
+
+      // Empty placeholder protects data in case encryption fails to fire
+      let encryptedMessage = ""
+
+      // if recipient input has a shared secret in keychain
+      if (this.app.keychain.hasSharedSecret(recipient)) {
+        encryptedMessage = this.app.keychain.encryptMessage(recipient, tx.msg);
+      }
+      // if tx sendee's public address has shared secret
+      else if (this.app.keychain.hasSharedSecret(tx.to[0].publicKey)) {
+        encryptedMessage = this.app.keychain.encryptMessage(tx.to[0].publicKey, tx.msg);
+      }
+      // if encryption fails to occur, abort
+      else {
+        throw new Error('Failed to find shared secret. Aborting.');
+      }
+
+      tx.msg = encryptedMessage;
+
 
       //
       // nov 25 2022 - eliminate base64 formatting for TXS
