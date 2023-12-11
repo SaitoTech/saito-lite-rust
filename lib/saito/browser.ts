@@ -938,10 +938,10 @@ class Browser {
               }
             });
 
-            if (drag_and_drop){
-              this.preventDefaults(e);  
+            if (drag_and_drop) {
+              this.preventDefaults(e);
             }
-            
+
             /*if (!drag_and_drop) {
               let paste = (e.clipboardData || window.clipboardData).getData("text");
               const selection = window.getSelection();
@@ -1000,6 +1000,41 @@ class Browser {
     console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
+  }
+
+  makeRefreshable(selector, mycallback = null) {
+    let touchStartY = 0;
+    let triggerRefresh = false;
+
+    let element = document.querySelector(selector);
+
+    if (!element){
+      console.error("browser/makeRefreshable: Element doesn't exist!");
+      return;
+    }
+
+    element.addEventListener("touchstart", (e) => {
+      touchStartY = e.touches[0].clientY;
+      triggerRefresh = false;
+    });
+
+    element.addEventListener("touchmove", (e) => {
+      const touchY = e.touches[0].clientY;
+      const touchDiff = touchY - touchStartY;
+      if (touchDiff > 100 && window.scrollY === 0) {
+        triggerRefresh = true;
+      }
+    });
+
+    element.addEventListener("touchend", (e) => {
+      if (triggerRefresh){
+        if (mycallback) {
+          mycallback();
+        } else {
+          alert("Pull to refresh");
+        }
+      }
+    });
   }
 
   makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
@@ -1642,7 +1677,7 @@ class Browser {
   }
 
   stripHtml(html) {
-    if (this.app.BROWSER){
+    if (this.app.BROWSER) {
       let tmp = document.createElement("DIV");
       tmp.innerHTML = html;
       return tmp.textContent || tmp.innerText || "";
@@ -1654,14 +1689,13 @@ class Browser {
   //////////////////////
   // helper functions //
   //////////////////////
-  filterText(text="") {
-    text = text.replace(/^\s+$/gm, '');
-    text = text.replace(/^\n+$/gm, '');
-    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, '<div><br></div>');
-    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, '');
+  filterText(text = "") {
+    text = text.replace(/^\s+$/gm, "");
+    text = text.replace(/^\n+$/gm, "");
+    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, "<div><br></div>");
+    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, "");
     return text;
   }
-
 
   attachWindowFunctions() {
     if (typeof window !== "undefined") {

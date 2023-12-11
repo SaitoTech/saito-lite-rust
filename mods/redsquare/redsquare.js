@@ -10,7 +10,6 @@ const fetch = require("node-fetch");
 const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
-const RedSquareHammerSwipe = require("./lib/redsquare-hammer-swipe/redsquare-hammer-swipe");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
@@ -444,11 +443,6 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
 
-      if (this.app.browser.isMobileBrowser()){
-        this.hammer = new RedSquareHammerSwipe(this.app, this);
-        this.addComponent(this.hammer);
-      }
-
       //
       // chat manager can insert itself into left-sidebar if exists
       //
@@ -462,6 +456,16 @@ class RedSquare extends ModTemplate {
 
     await super.render();
     this.rendered = true;
+
+    if (this.app.browser.isMobileBrowser()){
+      this.app.browser.makeRefreshable(".saito-main", ()=> {
+        this.app.connection.emit("redsquare-insert-loading-message");
+        this.loadTweets("later", (tx_count) => {
+          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        });
+      });
+    }
+
 
     this.loadLocalTweets();
   }
