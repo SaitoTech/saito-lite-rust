@@ -146,22 +146,28 @@ class Keychain {
   decryptMessage(publicKey: string, encrypted_msg) {
     // submit JSON parsed object after unencryption
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publicKey === publicKey) {
-        if (this.keys[x].aes_secret) {
-          console.log(encrypted_msg, "------>");
-          const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
-          if (tmpmsg != null) {
-            console.log(tmpmsg);
-            const tmpx = JSON.parse(tmpmsg);
-            if (tmpx.module != null) {
-              return tmpx;
-            }
-          } 
+      // check for matching public key && see if it has an aes_secret
+      if (this.keys[x].publicKey === publicKey && this.keys[x].aes_secret) {
+        console.log(encrypted_msg, "------>");
+
+        const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
+        if (tmpmsg == null) {
+          console.log("Failed decryption with aes_secret")
+          return encrypted_msg;
         }
+
+        console.log(tmpmsg);
+
+        const decrypted_msg = JSON.parse(tmpmsg);
+        if (tmpx.module == null) {
+          console.log("Failed to JSON.parse decrypted message")
+          return encrypted_msg;
+        }
+        // Succesful decryption and parsing returns here
+        return decrypted_msg;
       }
     }
     console.log("Key not found, cannot decrypt");
-    // or return original
     return encrypted_msg;
   }
 
