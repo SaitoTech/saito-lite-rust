@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.563;
+  version = 5.564;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -749,10 +749,10 @@ export default class Wallet extends SaitoWallet {
     return this.app.crypto.hash(
       Buffer.from(
         JSON.stringify(senders) +
-          JSON.stringify(receivers) +
-          JSON.stringify(amounts) +
-          unique_hash +
-          ticker,
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        unique_hash +
+        ticker,
         "utf-8"
       )
     );
@@ -937,9 +937,9 @@ export default class Wallet extends SaitoWallet {
         encryptedMessage = this.app.keychain.encryptMessage(tx.to[0].publicKey, tx.msg);
       }
 
-      if (encryptedMessage){
-        tx.msg = encryptedMessage;  
-      }else{
+      if (encryptedMessage) {
+        tx.msg = encryptedMessage;
+      } else {
         console.warn("Not encrypting transaction because don't have shared key with recipient");
       }
 
@@ -1011,7 +1011,7 @@ export default class Wallet extends SaitoWallet {
         } catch (err) {
           try {
             alert("error: " + JSON.stringify(err));
-          } catch (err) {}
+          } catch (err) { }
           console.log(err);
           return err.name;
         }
