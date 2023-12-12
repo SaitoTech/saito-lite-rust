@@ -45,10 +45,12 @@
       height: 100vh;
       overflow: hidden;
     }
+
     body::before {
       content: "";
       opacity: 1;
-      z-index: 16; /*saito-header has z-index:15 */
+      z-index: 16;
+      /*saito-header has z-index:15 */
       position: absolute;
       top: 0;
       left: 0;
@@ -56,13 +58,42 @@
       height: 100vh;
       width: 100vw;
       /* hardcode bg colors used because saito-variables arent accessible here */
-      background-color: #180c24; 
+      background-color: #180c24;
       background-image: url('/saito/img/tiled-logo.svg');
       transition: all 1s ease-in-out;
       -webkit-transition: all 1s ease-in-out;
     }
   </style>
 </head>
+
 <body class="dark"></body>
-<script id="saito" type="text/javascript" src="/saito/saito.js"></script>
+<script id="saito" type="text/javascript">
+  function loadSaitoScript() {
+    let buildNumber = localStorage.getItem('build_number') || 'defaultBuild';
+    let walletVersion = localStorage.getItem('wallet_version');
+
+    if (walletVersion) {
+      try {
+        let parsedWalletVersion = JSON.parse(walletVersion);
+        walletVersion = parsedWalletVersion.version || 'defaultWallet';
+      } catch (e) {
+        console.error('Error parsing wallet_version:', e);
+        walletVersion = 'defaultWallet';
+      }
+    } else {
+      walletVersion = 'defaultWallet';
+    }
+
+
+    let script = document.createElement('script');
+    script.id = 'saito';
+    script.type = 'text/javascript';
+    script.src = `/saito/saito.js?version=${walletVersion}&build=${buildNumber}`;
+    document.head.appendChild(script);
+  }
+
+  loadSaitoScript();
+
+</script>
+
 </html>
