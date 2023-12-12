@@ -1014,6 +1014,7 @@ class Chat extends ModTemplate {
       timestamp: new Date().getTime(),
     };
 
+
     // sanity check
     let wallet_balance = await this.app.wallet.getBalance("SAITO");
 
@@ -1021,7 +1022,7 @@ class Chat extends ModTemplate {
     if (
       wallet_balance == 0 &&
       this.app.BROWSER == 1 &&
-      this.app.browser.stripHtml(msg).length >= 400
+      this.app.browser.stripHtml(msg).length >= 1000
     ) {
       siteMessage("Purchase SAITO to Send Large Messages in Community Chat...", 3000);
       return null;

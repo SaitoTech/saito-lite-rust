@@ -1598,9 +1598,24 @@ class Browser {
         /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
       text = text.replace(urlPattern, function (url) {
+        let url1 = url.trim();
+        let url2 = url1;
+        if (url2.length > 42){
+          if (url2.indexOf("http") == 0 && url2.includes("://")){
+            let temp = url2.split("://");
+            url2 = temp[1];
+          }
+          if (url2.indexOf("www.") == 0){
+            url2 = url2.substr(4);
+          }
+          if (url2.length > 40){
+            url2 = url2.substr(0, 37) + "...";  
+          }
+        }
+
         return `<a ${
           url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
-        } class="saito-treated-link" href="${!url.includes("http") ? `http://${url.trim()}` : url.trim()}">${url.trim()}</a>`;
+        } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
       });
 
       //trim lines at start and end
