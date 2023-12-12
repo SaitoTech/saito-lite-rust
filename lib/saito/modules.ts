@@ -1,6 +1,8 @@
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
 import Transaction from "./transaction";
+import path from "path";
+import fs from 'fs'
 
 class Mods {
   public app: Saito;
@@ -95,6 +97,47 @@ class Mods {
   }
 
   async initialize() {
+
+    // function watchBuildFile(app) {
+    //   const filePath = path.join(__dirname, 'config/options');
+
+    //   fs.watch('config/options', (eventType, filename) => {
+    //     if (filename) {
+    //       console.log(`options was modified: ${eventType}`);
+    //       checkBuildNumber(app);
+    //     }
+    //   });
+    // }
+
+    if (this.app.BROWSER === 0) {
+      // watchBuildFile(this.app)
+    }
+
+
+    function checkBuildNumber(app) {
+      path
+      const filePath = path.join(__dirname, 'config/options');
+      fs.readFile('config/options', 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading options file:', err);
+          return;
+        }
+        try {
+          const jsonData = JSON.parse(data);
+          const buildNumber = BigInt(jsonData.build_number);
+          app.connection.emit("new_software_version_detected", buildNumber)
+          // const buffer = Buffer.alloc(33);
+          // buffer[0] = 7;
+          // for (let i = 0; i < 32; i++) {
+          //   buffer[32 - i] = Number((buildNumber >> BigInt(i * 8)) & BigInt(0xFF));
+          // }
+          // socket.send(buffer);
+        } catch (e) {
+          console.error('Error parsing JSON from options file:', e);
+        }
+      });
+    }
+
 
     //
     // remove any disabled / inactive modules
@@ -230,6 +273,10 @@ class Mods {
       console.log("peer_connect received for : " + peerIndex);
       let peer = await this.app.network.getPeer(peerIndex);
       this.onConnectionStable(peer);
+    });
+
+    this.app.connection.on("new_software_version_detected", async (peerIndex: bigint, version) => {
+      console.log("new version detected " + peerIndex, version);
     });
 
     this.is_initialized = true;

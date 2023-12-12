@@ -24,6 +24,7 @@ const JSON = require("json-bigint");
 const expressApp = express();
 const webserver = new Ser(expressApp);
 
+
 export class NodeSharedMethods extends CustomSharedMethods {
   public app: Saito;
 
@@ -55,6 +56,49 @@ export class NodeSharedMethods extends CustomSharedMethods {
       }
     });
   }
+
+  pollConfigFile(peerIndex): void {
+    const checkBuildNumber = async () => {
+      const filePath = path.join(__dirname, 'config/options');
+      fs.readFile('config/options', 'utf8', async (err, data) => {
+        if (err) {
+          console.error('Error reading options file:', err);
+          return;
+        }
+        try {
+          const jsonData = JSON.parse(data);
+          const buildNumber = BigInt(jsonData.build_number);
+          console.log(buildNumber)
+          let buffer = { buildNumber, peerIndex };
+          let jsonString = JSON.stringify(buffer);
+          let uint8Array = new Uint8Array(jsonString.length);
+          for (let i = 0; i < jsonString.length; i++) {
+            uint8Array[i] = jsonString.charCodeAt(i);
+          }
+          await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
+        } catch (e) {
+          console.error('Error parsing JSON from options file:', e);
+        }
+      })
+    }
+
+    // console.log('polling config file', peerIndex)
+    const filePath = path.join(__dirname, 'config/options');
+    fs.watch('config/options', (eventType, filename) => {
+      if (filename) {
+        // console.log(`options was modified: ${eventType}`);
+      }
+      checkBuildNumber()
+    });
+
+
+
+  }
+
+  updateSoftware(buffer: Uint8Array): void {
+    // console.log('updating software')
+  }
+
 
   connectToPeer(peerData: any): void {
     let protocol = "ws";
@@ -184,6 +228,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
       console.error(error);
       newtx.msg = buffer;
     }
+
+
     await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
   }
 
@@ -294,39 +340,6 @@ class Server {
       console.info('### connection pathname: ' + pathname);
       let index = S.getInstance().addNewSocket(socket);
 
-      function watchBuildFile() {
-        const filePath = path.join(__dirname, 'config/options');
-        fs.watch('config/options', (eventType, filename) => {
-          if (filename) {
-            console.log(`options was modified: ${eventType}`);
-            checkBuildNumber();
-          }
-        });
-      }
-      watchBuildFile()
-
-      function checkBuildNumber() {
-        const filePath = path.join(__dirname, 'config/options');
-        fs.readFile('config/options', 'utf8', (err, data) => {
-          if (err) {
-            console.error('Error reading options file:', err);
-            return;
-          }
-          try {
-            const jsonData = JSON.parse(data);
-            const buildNumber = BigInt(jsonData.build_number);
-            const buffer = Buffer.alloc(33);
-            buffer[0] = 7;
-            for (let i = 0; i < 32; i++) {
-              buffer[32 - i] = Number((buildNumber >> BigInt(i * 8)) & BigInt(0xFF));
-            }
-            socket.send(buffer);
-          } catch (e) {
-            console.error('Error parsing JSON from options file:', e);
-          }
-        });
-      }
-
       socket.on("message", (buffer: any) => {
         S.getLibInstance()
           .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
@@ -338,7 +351,11 @@ class Server {
       socket.on("error", (error) => {
         console.error("error on socket : " + index, error);
       });
+
+
       S.getLibInstance().process_new_peer(index, null);
+
+      // watch build file
     });
     // app.on("upgrade", (request, socket, head) => {
     //   server.handleUpgrade(request, socket, head, (websocket) => {

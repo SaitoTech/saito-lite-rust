@@ -27,8 +27,25 @@ class WebMethods extends WebSharedMethods {
 
   lastBuildNumber = null;
 
+  updateSoftware(buffer: Uint8Array): void {
+    console.log('updating software', buffer)
+    let newtx = new Transaction();
+    try {
+      // console.log("buffer length : " + buffer.byteLength, buffer);
+      newtx.deserialize(buffer);
+      // newtx.unpackData();
+    } catch (error) {
+      console.error(error);
+      newtx.msg = buffer;
+    }
 
+    console.log(newtx)
 
+  }
+
+  pollConfigFile(peerIndex: BigInt): void {
+
+  }
 
   connectToPeer(peerData: any): void {
     console.log('god')
@@ -46,18 +63,19 @@ class WebMethods extends WebSharedMethods {
       let index = S.getInstance().addNewSocket(socket);
 
       function updateSaitoScript(buildNumber) {
+        // Find the existing saito.js script tag by id
         const existingScript = document.getElementById('saito');
 
         if (existingScript?.parentNode) {
-
+          // Remove the existing script tag
           existingScript.parentNode.removeChild(existingScript);
 
-
+          // Create a new script tag with the updated src
           const newScript = document.createElement('script');
-          newScript.id = 'saito';
+          newScript.id = 'saito';  // Reuse the same id
           newScript.type = 'text/javascript';
           newScript.src = `/saito/saito.js?v=${buildNumber}`;
-
+          // Add the new script tag to the document
           document.body.appendChild(newScript);
           window.location.reload();
         } else {
@@ -66,26 +84,28 @@ class WebMethods extends WebSharedMethods {
       }
 
       socket.onmessage = (event: MessageEvent) => {
-        console.log(event, "event senters");
+        console.log('event senter', event)
         const buffer = new Uint8Array(event.data);
         const messageType = buffer[0];
-        console.log('Message Type:', messageType);
+        // if (messageType === 7) {
+        //   let buildNumber = BigInt(0);
+        //   for (let i = 1; i <= 32; i++) {
+        //     buildNumber = (buildNumber << BigInt(8)) | BigInt(buffer[i]);
+        //   }
+        //   console.log('Decoded BigInt:', buildNumber.toString());
 
-        if (messageType === 7) {
-          let buildNumber = BigInt(0);
-          for (let i = 1; i <= 32; i++) {
-            buildNumber = (buildNumber << BigInt(8)) | BigInt(buffer[i]);
-          }
-          console.log('Decoded BigInt:', buildNumber.toString());
-          const storedBuildNumber = BigInt(localStorage.getItem('buildNumber') || '0');
-          console.log('Stored Build Number:', storedBuildNumber.toString());
-          console.log('New Build Number:', buildNumber.toString());
-          if (buildNumber > storedBuildNumber) {
-            localStorage.setItem('buildNumber', buildNumber.toString());
+        //   // Retrieve the stored build number, defaulting to 0 if not present
+        //   const storedBuildNumber = BigInt(localStorage.getItem('buildNumber') || '0');
+        //   console.log('Stored Build Number:', storedBuildNumber.toString());
+        //   console.log('New Build Number:', buildNumber.toString());
 
-            updateSaitoScript(buildNumber);
-          }
-        }
+        //   // Compare and update if necessary
+        //   if (buildNumber > storedBuildNumber) {
+        //     localStorage.setItem('buildNumber', buildNumber.toString());
+        //     // Usage: call this function with the new build number
+        //     updateSaitoScript(buildNumber);
+        //   }
+        // }
 
         try {
           S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(event.data), index);
@@ -119,9 +139,7 @@ class WebMethods extends WebSharedMethods {
 
 
   async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
-    // console.log(
-    //   "WebMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
-    // );
+
     const mycallback = async (response_object) => {
       try {
         await S.getInstance().sendApiSuccess(
@@ -143,6 +161,9 @@ class WebMethods extends WebSharedMethods {
       console.error(error);
       newtx.msg = buffer;
     }
+
+    console.log(newtx, "new transaction")
+    // handle 
     await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
   }
 
@@ -150,6 +171,7 @@ class WebMethods extends WebSharedMethods {
     // console.log("web shared methods . emit : " + event, this.app.connection);
     this.app.connection.emit(event, peerIndex);
   }
+
 
   sendBlockSuccess(hash: string, blockId: bigint) {
     this.app.connection.emit("add-block-success", { hash, blockId });
