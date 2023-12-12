@@ -33,7 +33,6 @@ class WebMethods extends WebSharedMethods {
   }
 
   connectToPeer(peerData: any): void {
-    console.log('god')
     let protocol = "ws";
     if (peerData.protocol === "https") {
       protocol = "wss";
@@ -107,7 +106,6 @@ class WebMethods extends WebSharedMethods {
       newtx.msg = buffer;
     }
 
-    console.log(newtx, "new transaction")
     // handle 
     await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
   }
