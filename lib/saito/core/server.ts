@@ -27,7 +27,9 @@ const webserver = new Ser(expressApp);
 
 export class NodeSharedMethods extends CustomSharedMethods {
   public app: Saito;
-
+  currentBuildNumber: bigint = BigInt(0);
+  isWatchingConfigFile = false;
+  fileWatcher: any;
   constructor(app: Saito) {
     super();
     this.app = app;
@@ -59,8 +61,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
   pollConfigFile(peerIndex): void {
     const checkBuildNumber = async () => {
-      const filePath = path.join(__dirname, 'config/options');
-      fs.readFile('config/options', 'utf8', async (err, data) => {
+      const filePath = path.join(__dirname, '/config/build.json');
+      fs.readFile('config/build.json', 'utf8', async (err, data) => {
         if (err) {
           console.error('Error reading options file:', err);
           return;
@@ -68,29 +70,45 @@ export class NodeSharedMethods extends CustomSharedMethods {
         try {
           const jsonData = JSON.parse(data);
           const buildNumber = BigInt(jsonData.build_number);
-          console.log(buildNumber)
-          let buffer = { buildNumber, peerIndex };
-          let jsonString = JSON.stringify(buffer);
-          let uint8Array = new Uint8Array(jsonString.length);
-          for (let i = 0; i < jsonString.length; i++) {
-            uint8Array[i] = jsonString.charCodeAt(i);
+
+          if (Number(this.currentBuildNumber) < Number(buildNumber)) {
+            let buffer = { buildNumber, peerIndex };
+            let jsonString = JSON.stringify(buffer);
+            let uint8Array = new Uint8Array(jsonString.length);
+            for (let i = 0; i < jsonString.length; i++) {
+              uint8Array[i] = jsonString.charCodeAt(i);
+            }
+            await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
+            this.currentBuildNumber = buildNumber;
+
+            console.log('Updated build number to:', this.currentBuildNumber);
+          } else {
+            console.log("Current build number is up-to-date or higher");
           }
-          await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
+
         } catch (e) {
           console.error('Error parsing JSON from options file:', e);
         }
-      })
+      });
+    };
+
+    const filePath = path.join(__dirname, 'config/build.json');
+
+
+    console.log('Setting up watcher for config file');
+    if (this.fileWatcher) {
+      this.fileWatcher.close();
+      this.fileWatcher = null;
+      console.log('Previous file watcher closed');
     }
 
-    // console.log('polling config file', peerIndex)
-    const filePath = path.join(__dirname, 'config/options');
-    fs.watch('config/options', (eventType, filename) => {
-      if (filename) {
-        // console.log(`options was modified: ${eventType}`);
-      }
-      checkBuildNumber()
-    });
 
+    fs.watch('config/build.json', (eventType, prev) => {
+      // if (eventType === 'change' && filename) {
+      // console.log(`File change detected: ${current}`);
+      checkBuildNumber();
+      // }
+    });
 
 
   }

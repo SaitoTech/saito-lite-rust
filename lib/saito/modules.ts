@@ -72,12 +72,23 @@ class Mods {
     peer: Peer,
     mycallback: (any) => Promise<void> = null
   ) {
+
+
     let have_responded = false;
     let request = "";
     try {
       let txmsg = tx.returnMessage();
       request = txmsg?.request;
+
+      if (txmsg?.request === "software-update") {
+        console.log('resetting software');
+      }
+
     } catch (err) { }
+
+
+
+
     for (let iii = 0; iii < this.mods.length; iii++) {
       //console.log(`peer request (${request}), hpt into... ` + this.mods[iii].name);
       try {
