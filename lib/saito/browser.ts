@@ -54,9 +54,11 @@ class Browser {
       return 0;
     }
     this.app.connection.on("new-version-detected", (version, peerIndex) => {
-      console.log("new version detected : " + version);
+      console.log("New wallet version detected: " + version);
+      localStorage.setItem('wallet_version', JSON.stringify(version));
       window.location.reload();
     });
+
     try {
       if (!document.hidden) {
         await this.setActiveTab(1);
@@ -221,7 +223,7 @@ class Browser {
       };
 
       window.addEventListener("resize", debounce(updateViewHeight, 200));
-      setTimeout(()=> {updateViewHeight();}, 200); 
+      setTimeout(() => { updateViewHeight(); }, 200);
     } catch (err) {
       if (err == "ReferenceError: document is not defined") {
         console.log("non-browser detected: " + err);
@@ -384,7 +386,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {}
+    } catch (err) { }
     return "";
   }
 
@@ -395,7 +397,7 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) {}
+    } catch (err) { }
     return "en";
   }
 
@@ -1008,7 +1010,7 @@ class Browser {
 
     let element = document.querySelector(selector);
 
-    if (!element){
+    if (!element) {
       console.error("browser/makeRefreshable: Element doesn't exist!");
       return;
     }
@@ -1027,7 +1029,7 @@ class Browser {
     });
 
     element.addEventListener("touchend", (e) => {
-      if (triggerRefresh){
+      if (triggerRefresh) {
         if (mycallback) {
           mycallback();
         } else {
@@ -1177,8 +1179,8 @@ class Browser {
             if (
               Math.abs(
                 element_to_move.getBoundingClientRect().x +
-                  element_to_move.getBoundingClientRect().width -
-                  window.innerWidth
+                element_to_move.getBoundingClientRect().width -
+                window.innerWidth
               ) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
@@ -1189,8 +1191,8 @@ class Browser {
             if (
               Math.abs(
                 element_to_move.getBoundingClientRect().y +
-                  element_to_move.getBoundingClientRect().height -
-                  window.innerHeight
+                element_to_move.getBoundingClientRect().height -
+                window.innerHeight
               ) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
@@ -1600,22 +1602,21 @@ class Browser {
       text = text.replace(urlPattern, function (url) {
         let url1 = url.trim();
         let url2 = url1;
-        if (url2.length > 42){
-          if (url2.indexOf("http") == 0 && url2.includes("://")){
+        if (url2.length > 42) {
+          if (url2.indexOf("http") == 0 && url2.includes("://")) {
             let temp = url2.split("://");
             url2 = temp[1];
           }
-          if (url2.indexOf("www.") == 0){
+          if (url2.indexOf("www.") == 0) {
             url2 = url2.substr(4);
           }
-          if (url2.length > 40){
-            url2 = url2.substr(0, 37) + "...";  
+          if (url2.length > 40) {
+            url2 = url2.substr(0, 37) + "...";
           }
         }
 
-        return `<a ${
-          url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
-        } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
+        return `<a ${url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
+          } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
       });
 
       //trim lines at start and end
@@ -2012,7 +2013,7 @@ class Browser {
       } else {
         return true;
       }
-    } catch (err) {}
+    } catch (err) { }
     return false;
   }
 }
