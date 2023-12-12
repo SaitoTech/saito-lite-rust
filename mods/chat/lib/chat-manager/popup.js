@@ -74,6 +74,12 @@ class ChatPopup {
       if (this.group.name == this.mod.communityGroupName) {
         this.input.enable_mentions = true;
       }
+
+      if (this.container){
+        this.input.display = "medium";
+      }else{
+        this.input.display = "small";
+      }
     }
 
     //
