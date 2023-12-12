@@ -38,6 +38,7 @@
   gap: 0.5rem;
   display: flex;
   flex-direction: column;
+  min-height: 22rem;
   max-height: calc(100% - 5rem);
   position: relative;
 }
@@ -87,7 +88,7 @@
 .chat-manager-menu {
   position: absolute;
   width: 100%;
-  min-height: fit-content;
+  min-height: 22rem;
   height: 100%;
   top: 0;
   left: 0;
@@ -665,6 +666,7 @@
     max-width: -webkit-fill-available;
     z-index: 15;
   }
+
   .chat-manager-overlay .chat-manager {
     margin-left: auto;
     margin-right: auto;
@@ -672,7 +674,9 @@
     min-height: 25rem;
     height: fit-content;
     max-height: 100%;
+    grid-template-rows: var(--saito-header-height) 1fr;
   }
+
   .chat-manager-overlay .chat-manager-menu i {
     width: 40px;
     height: 40px;
