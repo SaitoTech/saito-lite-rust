@@ -48,7 +48,7 @@ class WebMethods extends WebSharedMethods {
       let index = S.getInstance().addNewSocket(socket);
 
       socket.onmessage = (event: MessageEvent) => {
-        console.log('event senter', event)
+
         const buffer = new Uint8Array(event.data);
         const messageType = buffer[0];
 

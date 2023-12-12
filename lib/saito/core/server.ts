@@ -83,7 +83,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
             console.log('Updated build number to:', this.currentBuildNumber);
           } else {
-            console.log("Current build number is up-to-date or higher");
+            // console.log("Current build number is up-to-date or higher");
           }
 
         } catch (e) {
@@ -113,9 +113,90 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
   }
 
+  // pollConfigFile(peerIndex): void {
+  //   const checkBuildNumber = async () => {
+  //     const filePath = path.join(__dirname, 'config/build.json');
+  //     fs.readFile('config/build.json', 'utf8', async (err, data) => {
+  //       if (err) {
+  //         console.error('Error reading options file:', err);
+  //         return;
+  //       }
+  //       try {
+  //         const jsonData = JSON.parse(data);
+  //         const buildNumber = BigInt(jsonData.build_number);
+  //         console.log(buildNumber)
+  //         let buffer = { buildNumber, peerIndex };
+  //         let jsonString = JSON.stringify(buffer);
+  //         let uint8Array = new Uint8Array(jsonString.length);
+  //         for (let i = 0; i < jsonString.length; i++) {
+  //           uint8Array[i] = jsonString.charCodeAt(i);
+  //         }
+  //         await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
+  //       } catch (e) {
+  //         console.error('Error parsing JSON from options file:', e);
+  //       }
+  //     })
+  //   }
+
+  //   // console.log('polling config file', peerIndex)
+  //   const filePath = path.join(__dirname, 'config/build.json');
+  //   fs.watch('config/build.json', (eventType, filename) => {
+  //     if (filename) {
+  //       // console.log(`options was modified: ${eventType}`);
+  //     }
+  //     checkBuildNumber()
+  //   });
+
+  // }
+
   updateSoftware(buffer: Uint8Array): void {
     // console.log('updating software')
   }
+
+
+
+  // pollConfigFile(peerIndex) {
+  //   const filePath = path.join(__dirname, 'config/build.json');
+  //   let lastModifiedTime = 0;
+  //   const checkBuildNumber = async () => {
+  //     const filePath = path.join(__dirname, 'config/build.json');
+  //     fs.readFile('config/build.json', 'utf8', async (err, data) => {
+  //       if (err) {
+  //         console.error('Error reading options file:', err);
+  //         return;
+  //       }
+  //       try {
+  //         const jsonData = JSON.parse(data);
+  //         const buildNumber = BigInt(jsonData.build_number);
+  //         console.log(buildNumber)
+  //         let buffer = { buildNumber, peerIndex };
+  //         let jsonString = JSON.stringify(buffer);
+  //         let uint8Array = new Uint8Array(jsonString.length);
+  //         for (let i = 0; i < jsonString.length; i++) {
+  //           uint8Array[i] = jsonString.charCodeAt(i);
+  //         }
+  //         await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
+  //       } catch (e) {
+  //         console.error('Error parsing JSON from options file:', e);
+  //       }
+  //     })
+  //   }
+
+  //   const pollInterval = 1000; // Poll every 5000 milliseconds (5 seconds)
+
+  //   fs.watchFile(filePath, { interval: pollInterval }, (curr, prev) => {
+  //     console.log(curr)
+  //     if (curr.mtime.getTime() !== lastModifiedTime) {
+  //       lastModifiedTime = curr.mtime.getTime();
+  //       console.log(`Detected change in ${filePath}`);
+  //       checkBuildNumber();
+  //     }
+  //   });
+
+  //   console.log(`Started polling ${filePath} every ${pollInterval} milliseconds`);
+  // }
+
+
 
 
   connectToPeer(peerData: any): void {

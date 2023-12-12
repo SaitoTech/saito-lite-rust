@@ -354,15 +354,23 @@ if [ "$1" == "recompile" ]; then
 
   post_compile
 
-      echo "  Updating build number in options file"
-    currentTime=$(date +%s) 
-    echo "  Current Timestamp: $currentTime"
-    if [ -f ./config/build.json ]; then
-        jq '.build_number = "'$currentTime'"' ./config/build.json | sponge ./config/build.json
-        echo "  Build number updated in build.json"
-    else
-        echo "  Error: build.json not found"
-    fi
+     echo "  Updating build number in options file"
+currentTime=$(date +%s)
+echo "  Current Timestamp: $currentTime"
+
+
+buildJsonFile="./config/build.json"
+
+
+if [ ! -f "$buildJsonFile" ]; then
+    echo "  build.json not found, creating file..."
+    mkdir -p ./config
+    echo '{"build_number": "0"}' > "$buildJsonFile"
+fi
+
+
+jq '.build_number = "'$currentTime'"' "$buildJsonFile" | sponge "$buildJsonFile"
+echo "  Build number updated in build.json"
 
 fi
 

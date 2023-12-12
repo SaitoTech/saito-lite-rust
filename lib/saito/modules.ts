@@ -81,8 +81,10 @@ class Mods {
       request = txmsg?.request;
 
       if (txmsg?.request === "software-update") {
-        console.log('resetting software');
+        let receivedBuildNumber = tx.msg.data.build_number;
+        this.app.connection.emit("new_software_version", receivedBuildNumber);
       }
+
 
     } catch (err) { }
 
@@ -122,31 +124,6 @@ class Mods {
 
     if (this.app.BROWSER === 0) {
       // watchBuildFile(this.app)
-    }
-
-
-    function checkBuildNumber(app) {
-      path
-      const filePath = path.join(__dirname, 'config/options');
-      fs.readFile('config/options', 'utf8', (err, data) => {
-        if (err) {
-          console.error('Error reading options file:', err);
-          return;
-        }
-        try {
-          const jsonData = JSON.parse(data);
-          const buildNumber = BigInt(jsonData.build_number);
-          app.connection.emit("new_software_version_detected", buildNumber)
-          // const buffer = Buffer.alloc(33);
-          // buffer[0] = 7;
-          // for (let i = 0; i < 32; i++) {
-          //   buffer[32 - i] = Number((buildNumber >> BigInt(i * 8)) & BigInt(0xFF));
-          // }
-          // socket.send(buffer);
-        } catch (e) {
-          console.error('Error parsing JSON from options file:', e);
-        }
-      });
     }
 
 
@@ -286,8 +263,8 @@ class Mods {
       this.onConnectionStable(peer);
     });
 
-    this.app.connection.on("new_software_version_detected", async (peerIndex: bigint, version) => {
-      console.log("new version detected " + peerIndex, version);
+    this.app.connection.on("new_software_version", async (receivedBuildNumber) => {
+      this.app.browser.updateSoftwareVersion(receivedBuildNumber)
     });
 
     this.is_initialized = true;
