@@ -80,7 +80,11 @@ module.exports = (app, mod, build_number) => {
 <script id="saito" type="text/javascript" src="/redsquare/tweets.2.js?x=${new Date().getTime()}"></script>
 <script id="saito" type="text/javascript" src="/redsquare/tweets.3.js?x=${new Date().getTime()}"></script>
 <script id="saito" type="text/javascript" src="/redsquare/tweets.4.js?x=${new Date().getTime()}"></script>
-<script type="text/javascript" src="/saito/saito.js"
+<script type="text/javascript", src="/saito/saito.js?version=${JSON.stringify(
+    app.options.wallet.version
+  )}?build=${build_number}">
+
+</script>
 </html>
 
 `;

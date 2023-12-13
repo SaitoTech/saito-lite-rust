@@ -89,6 +89,10 @@ class WebMethods extends WebSharedMethods {
     throw new Error("Method not implemented.");
   }
 
+  async pollConfigFile(peerIndex: BigInt) {
+
+  }
+
   getMyServices() {
     let list = new PeerServiceList();
     let result = this.app.network.getServices();
