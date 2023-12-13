@@ -1,6 +1,8 @@
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
 import Transaction from "./transaction";
+import path from "path";
+import fs from 'fs'
 
 class Mods {
   public app: Saito;
@@ -70,14 +72,21 @@ class Mods {
     peer: Peer,
     mycallback: (any) => Promise<void> = null
   ) {
+
+
     let have_responded = false;
     let request = "";
     try {
       let txmsg = tx.returnMessage();
       request = txmsg?.request;
+      if (txmsg?.request === "software-update") {
+        let receivedBuildNumber = tx.msg.data.build_number;
+        this.app.connection.emit("new_software_version", receivedBuildNumber);
+      }
+
     } catch (err) { }
+
     for (let iii = 0; iii < this.mods.length; iii++) {
-      //console.log(`peer request (${request}), hpt into... ` + this.mods[iii].name);
       try {
         if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
           have_responded = true;
@@ -95,6 +104,22 @@ class Mods {
   }
 
   async initialize() {
+
+    // function watchBuildFile(app) {
+    //   const filePath = path.join(__dirname, 'config/options');
+
+    //   fs.watch('config/options', (eventType, filename) => {
+    //     if (filename) {
+    //       console.log(`options was modified: ${eventType}`);
+    //       checkBuildNumber(app);
+    //     }
+    //   });
+    // }
+
+    if (this.app.BROWSER === 0) {
+      // watchBuildFile(this.app)
+    }
+
 
     //
     // remove any disabled / inactive modules
@@ -232,7 +257,17 @@ class Mods {
       this.onConnectionStable(peer);
     });
 
+    this.app.connection.on("new_software_version", async (receivedBuildNumber) => {
+      this.app.browser.updateSoftwareVersion(receivedBuildNumber)
+    });
+
+
     this.is_initialized = true;
+
+    if (this.app.BROWSER === 0) {
+      await this.app.modules.getBuildNumber();
+    }
+
 
     //
     // .. and setup active module
@@ -486,6 +521,12 @@ class Mods {
   async onUpgrade(type, privatekey, walletfile) {
     for (let i = 0; i < this.mods.length; i++) {
       await this.mods[i].onUpgrade(type, privatekey, walletfile);
+    }
+  }
+
+  async getBuildNumber() {
+    for (let i = 0; i < this.mods.length; i++) {
+      await this.mods[i].getBuildNumber()
     }
   }
 }
