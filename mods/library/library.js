@@ -10,6 +10,10 @@ const PeerService = require("saito-js/lib/peer_service").default;
 // my peers for items they have indexed in the same collections, and fetches those
 // records on load.
 //
+// the library abstracts away the storage and ownership of the content, assigning 
+// control across the distributed network to whichever publickey is in possession
+// of the rights to use.
+//
 // this.collections = [
 //   {
 //     module 		: "Nwasm" ,
@@ -42,6 +46,7 @@ const PeerService = require("saito-js/lib/peer_service").default;
 // start indexing and serving those materials to peers on request.
 //
 class Library extends ModTemplate {
+
   constructor(app) {
     super(app);
 
@@ -511,6 +516,54 @@ alert("ABOUT TO CHECKOUT!");
     this.library = {};
     this.save();
   }
+
+
+  createBorrowTransaction(data) {
+
+    let library_self = this;
+    
+    let obj = {
+      module: "Library",
+      request: "borrow",
+      data: {
+        return_tx: library_self.createReturnTransaction(data);
+      },
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+    
+    let newtx = await library_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
+      
+    return newtx;
+  }
+
+  
+  createReturnTransaction(data) {
+
+    let library_self = this;
+    
+    let obj = {
+      module: "Library",
+      request: "",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+    
+    let newtx = await library_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
+      
+    return newtx;
+  }
+
+  
 
 }
 
