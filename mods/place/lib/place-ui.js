@@ -819,6 +819,12 @@ class PlaceUI {
     return zoomFactor;
   }
 
+  updateTilesRendering(locatedStateArray) {
+    for (const locatedState of locatedStateArray) {
+      this.updateTileRendering(locatedState);
+    }
+  }
+
   updateTileRendering(newLocatedState) {
     const {i: i, j: j, state: newState} = newLocatedState;
     if (newState.drafted !== null) {
