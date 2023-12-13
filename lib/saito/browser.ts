@@ -1617,6 +1617,7 @@ class Browser {
 
         return `<a ${url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
           } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
+
       });
 
       //trim lines at start and end
@@ -1710,6 +1711,7 @@ class Browser {
     text = text.replace(/^\n+$/gm, "");
     text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, "<div><br></div>");
     text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, "");
+
     return text;
   }
 
@@ -2016,6 +2018,21 @@ class Browser {
     } catch (err) { }
     return false;
   }
+
+
+  updateSoftwareVersion(receivedBuildNumber: number) {
+    let savedBuildNumber = localStorage.getItem('build_number');
+    let currentBuildNumber = savedBuildNumber ? BigInt(Number(savedBuildNumber)) : BigInt(0);
+    console.log(`Received build number: ${BigInt(Number(receivedBuildNumber))}, Current build number: ${currentBuildNumber}`);
+    if (receivedBuildNumber > currentBuildNumber) {
+      console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
+      window.location.reload(true);
+
+    } else {
+    }
+  }
+
+
 }
 
 export default Browser;

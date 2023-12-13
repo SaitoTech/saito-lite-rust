@@ -62,6 +62,7 @@ class StorageCore extends Storage {
       }
     }
     try {
+      //@ts-ignore
       const db = await sqlite.open(this.data_dir + "/" + dbname + ".sq3");
 
       this.dbname.push(dbname);
@@ -87,10 +88,10 @@ class StorageCore extends Storage {
     try {
       if (fs.existsSync(filename)) {
         const data = fs.readFileSync(filename);
-  //       const block = new Block(this.app);
+        //       const block = new Block(this.app);
         const block = new Block();
         block.deserialize(data);
-  //       block.generateMetadata();
+        //       block.generateMetadata();
         return block;
       }
     } catch (error) {
@@ -426,7 +427,7 @@ class StorageCore extends Storage {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  resetOptions() {}
+  resetOptions() { }
 
   ///////////////////////
   // saveClientOptions //
