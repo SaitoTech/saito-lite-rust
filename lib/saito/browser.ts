@@ -54,9 +54,11 @@ class Browser {
       return 0;
     }
     this.app.connection.on("new-version-detected", (version, peerIndex) => {
-      console.log("new version detected : " + version);
+      console.log("New wallet version detected: " + version);
+      localStorage.setItem('wallet_version', JSON.stringify(version));
       window.location.reload();
     });
+
     try {
       if (!document.hidden) {
         await this.setActiveTab(1);
@@ -216,12 +218,12 @@ class Browser {
       const updateViewHeight = () => {
         let vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty("--saito-vh", `${vh}px`);
-        //console.log("Update view height");
+        console.log(`Update view height ${vh}px`);
         //siteMessage(`Update: ${vh}px`);
       };
 
       window.addEventListener("resize", debounce(updateViewHeight, 200));
-      updateViewHeight();
+      setTimeout(() => { updateViewHeight(); }, 200);
     } catch (err) {
       if (err == "ReferenceError: document is not defined") {
         console.log("non-browser detected: " + err);
@@ -384,7 +386,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {}
+    } catch (err) { }
     return "";
   }
 
@@ -395,7 +397,7 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) {}
+    } catch (err) { }
     return "en";
   }
 
@@ -938,10 +940,10 @@ class Browser {
               }
             });
 
-            if (drag_and_drop){
-              this.preventDefaults(e);  
+            if (drag_and_drop) {
+              this.preventDefaults(e);
             }
-            
+
             /*if (!drag_and_drop) {
               let paste = (e.clipboardData || window.clipboardData).getData("text");
               const selection = window.getSelection();
@@ -1000,6 +1002,41 @@ class Browser {
     console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
+  }
+
+  makeRefreshable(selector, mycallback = null) {
+    let touchStartY = 0;
+    let triggerRefresh = false;
+
+    let element = document.querySelector(selector);
+
+    if (!element) {
+      console.error("browser/makeRefreshable: Element doesn't exist!");
+      return;
+    }
+
+    element.addEventListener("touchstart", (e) => {
+      touchStartY = e.touches[0].clientY;
+      triggerRefresh = false;
+    });
+
+    element.addEventListener("touchmove", (e) => {
+      const touchY = e.touches[0].clientY;
+      const touchDiff = touchY - touchStartY;
+      if (touchDiff > 100 && window.scrollY === 0) {
+        triggerRefresh = true;
+      }
+    });
+
+    element.addEventListener("touchend", (e) => {
+      if (triggerRefresh) {
+        if (mycallback) {
+          mycallback();
+        } else {
+          alert("Pull to refresh");
+        }
+      }
+    });
   }
 
   makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
@@ -1142,8 +1179,8 @@ class Browser {
             if (
               Math.abs(
                 element_to_move.getBoundingClientRect().x +
-                  element_to_move.getBoundingClientRect().width -
-                  window.innerWidth
+                element_to_move.getBoundingClientRect().width -
+                window.innerWidth
               ) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
@@ -1154,8 +1191,8 @@ class Browser {
             if (
               Math.abs(
                 element_to_move.getBoundingClientRect().y +
-                  element_to_move.getBoundingClientRect().height -
-                  window.innerHeight
+                element_to_move.getBoundingClientRect().height -
+                window.innerHeight
               ) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
@@ -1563,9 +1600,23 @@ class Browser {
         /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
       text = text.replace(urlPattern, function (url) {
-        return `<a ${
-          url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
-        } class="saito-treated-link" href="${!url.includes("http") ? `http://${url.trim()}` : url.trim()}">${url.trim()}</a>`;
+        let url1 = url.trim();
+        let url2 = url1;
+        if (url2.length > 42) {
+          if (url2.indexOf("http") == 0 && url2.includes("://")) {
+            let temp = url2.split("://");
+            url2 = temp[1];
+          }
+          if (url2.indexOf("www.") == 0) {
+            url2 = url2.substr(4);
+          }
+          if (url2.length > 40) {
+            url2 = url2.substr(0, 37) + "...";
+          }
+        }
+
+        return `<a ${url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
+          } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
       });
 
       //trim lines at start and end
@@ -1642,7 +1693,7 @@ class Browser {
   }
 
   stripHtml(html) {
-    if (this.app.BROWSER){
+    if (this.app.BROWSER) {
       let tmp = document.createElement("DIV");
       tmp.innerHTML = html;
       return tmp.textContent || tmp.innerText || "";
@@ -1654,14 +1705,13 @@ class Browser {
   //////////////////////
   // helper functions //
   //////////////////////
-  filterText(text="") {
-    text = text.replace(/^\s+$/gm, '');
-    text = text.replace(/^\n+$/gm, '');
-    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, '<div><br></div>');
-    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, '');
+  filterText(text = "") {
+    text = text.replace(/^\s+$/gm, "");
+    text = text.replace(/^\n+$/gm, "");
+    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, "<div><br></div>");
+    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, "");
     return text;
   }
-
 
   attachWindowFunctions() {
     if (typeof window !== "undefined") {
@@ -1963,7 +2013,7 @@ class Browser {
       } else {
         return true;
       }
-    } catch (err) {}
+    } catch (err) { }
     return false;
   }
 }

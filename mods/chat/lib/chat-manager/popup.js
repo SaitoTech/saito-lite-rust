@@ -68,12 +68,17 @@ class ChatPopup {
     let popup_id = "chat-popup-" + this.group.id;
     let popup_qs = "#" + popup_id;
 
-    //let input_id = "chat-input-" + this.group.id;
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
 
       if (this.group.name == this.mod.communityGroupName) {
         this.input.enable_mentions = true;
+      }
+
+      if (this.container){
+        this.input.display = "medium";
+      }else{
+        this.input.display = "small";
       }
     }
 
@@ -170,7 +175,6 @@ class ChatPopup {
     let app = this.app;
     let mod = this.mod;
     let group_id = this.group.id;
-    let input_id = "chat-input-" + this.group.id;
     let header_id = "chat-header-" + this.group.id;
 
     //
@@ -182,9 +186,10 @@ class ChatPopup {
     let header_qs = "#chat-header-" + this.group.id;
     this_self = this;
 
-    let chatPopup = document.querySelector(".chat-container" + popup_qs);
+    let chatPopup = document.querySelector(popup_qs);
 
     if (!chatPopup) {
+      console.error("No Chat Popup to attach events to");
       return;
     }
 

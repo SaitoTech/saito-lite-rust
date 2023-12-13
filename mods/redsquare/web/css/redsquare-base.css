@@ -1,3 +1,7 @@
+html, body {
+  overscroll-behavior: none;
+}
+
 .saito-new-tweets {
   position: sticky;
   top: 5px;

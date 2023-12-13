@@ -31,9 +31,12 @@
   max-height: calc(100% - 3rem);
 }
 
-button, .saito-button-primary, .saito-button-secondary:hover {
+
+/*button, .saito-button-primary, .saito-button-secondary:hover {*/
+.saito-button-secondary:hover {
   background: var(--saito-button-background);
 }
+
 
 .saito-button-secondary {
   color: var(--saito-font-color);

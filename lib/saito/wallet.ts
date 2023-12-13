@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.559;
+  version = 5.565;
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -749,10 +749,10 @@ export default class Wallet extends SaitoWallet {
     return this.app.crypto.hash(
       Buffer.from(
         JSON.stringify(senders) +
-          JSON.stringify(receivers) +
-          JSON.stringify(amounts) +
-          unique_hash +
-          ticker,
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        unique_hash +
+        ticker,
         "utf-8"
       )
     );
@@ -924,14 +924,23 @@ export default class Wallet extends SaitoWallet {
     // limits in NodeJS!
     //
     try {
-      if (recipient == "") {
-        if (this.app.keychain.hasSharedSecret(tx.to[0].publicKey)) {
-          tx.msg = this.app.keychain.encryptMessage(tx.to[0].publicKey, tx.msg);
-        }
+
+      // Empty placeholder protects data in case encryption fails to fire
+      let encryptedMessage = ""
+
+      // if recipient input has a shared secret in keychain
+      if (this.app.keychain.hasSharedSecret(recipient)) {
+        encryptedMessage = this.app.keychain.encryptMessage(recipient, tx.msg);
+      }
+      // if tx sendee's public address has shared secret
+      else if (this.app.keychain.hasSharedSecret(tx.to[0].publicKey)) {
+        encryptedMessage = this.app.keychain.encryptMessage(tx.to[0].publicKey, tx.msg);
+      }
+
+      if (encryptedMessage) {
+        tx.msg = encryptedMessage;
       } else {
-        if (this.app.keychain.hasSharedSecret(recipient)) {
-          tx.msg = this.app.keychain.encryptMessage(recipient, tx.msg);
-        }
+        console.warn("Not encrypting transaction because don't have shared key with recipient");
       }
 
       //
@@ -1002,7 +1011,7 @@ export default class Wallet extends SaitoWallet {
         } catch (err) {
           try {
             alert("error: " + JSON.stringify(err));
-          } catch (err) {}
+          } catch (err) { }
           console.log(err);
           return err.name;
         }

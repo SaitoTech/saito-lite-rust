@@ -919,6 +919,24 @@ class Tweet {
         };
       }
 
+      //////////
+      // trash //
+      //////////
+      let trash = document.querySelector(
+        `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-delete`
+      );
+      if (trash) {
+        trash.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          let post = new Post(this.app, this.mod, this);
+
+          post.deleteTweet();
+
+        };
+      }
+
 
       //////////
       // flag //
