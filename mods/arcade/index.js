@@ -72,7 +72,7 @@ module.exports = (app, mod, build_number) => {
   <body>
   
   </body>
-  <script type="text/javascript" src="/saito/saito.js?version=${app.wallet.version}&build=${build_number}" >
+  <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
 </script>
   </html>
   

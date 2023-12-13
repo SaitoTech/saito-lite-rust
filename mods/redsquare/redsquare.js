@@ -2148,6 +2148,7 @@ class RedSquare extends ModTemplate {
   // webserver //
   ///////////////
   webServer(app, expressapp, express) {
+    console.log("this is my home");
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
     let redsquare_self = this;
 
