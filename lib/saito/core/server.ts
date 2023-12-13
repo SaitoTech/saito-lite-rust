@@ -24,9 +24,12 @@ const JSON = require("json-bigint");
 const expressApp = express();
 const webserver = new Ser(expressApp);
 
+
 export class NodeSharedMethods extends CustomSharedMethods {
   public app: Saito;
-
+  currentBuildNumber: bigint = BigInt(0);
+  isWatchingConfigFile = false;
+  fileWatcher: any;
   constructor(app: Saito) {
     super();
     this.app = app;
@@ -56,6 +59,70 @@ export class NodeSharedMethods extends CustomSharedMethods {
     });
   }
 
+  pollConfigFile(peerIndex): void {
+    const checkBuildNumber = async () => {
+      const filePath = path.join(__dirname, '/config/build.json');
+      fs.readFile('config/build.json', 'utf8', async (err, data) => {
+        if (err) {
+          console.error('Error reading options file:', err);
+          return;
+        }
+        try {
+          const jsonData = JSON.parse(data);
+          const buildNumber = BigInt(jsonData.build_number);
+
+          if (Number(this.currentBuildNumber) < Number(buildNumber)) {
+            let buffer = { buildNumber, peerIndex };
+            let jsonString = JSON.stringify(buffer);
+            let uint8Array = new Uint8Array(jsonString.length);
+            for (let i = 0; i < jsonString.length; i++) {
+              uint8Array[i] = jsonString.charCodeAt(i);
+            }
+            await this.app.modules.getBuildNumber();
+            await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
+            this.currentBuildNumber = buildNumber;
+
+            console.log('Updated build number to:', this.currentBuildNumber);
+          } else {
+            // console.log("Current build number is up-to-date or higher");
+          }
+
+        } catch (e) {
+          console.error('Error parsing JSON from options file:', e);
+        }
+      });
+    };
+
+    const filePath = path.join(__dirname, 'config/build.json');
+
+
+    console.log('Setting up watcher for config file');
+    if (this.fileWatcher) {
+      this.fileWatcher.close();
+      this.fileWatcher = null;
+      console.log('Previous file watcher closed');
+    }
+
+
+    fs.watch('config/build.json', (eventType, prev) => {
+      checkBuildNumber();
+      // }
+    });
+
+
+  }
+
+
+  updateSoftware(buffer: Uint8Array): void {
+
+  }
+
+
+
+
+
+
+
   connectToPeer(peerData: any): void {
     let protocol = "ws";
     if (peerData.protocol === "https") {
@@ -65,8 +132,11 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
     try {
       console.log("connecting to " + url + "....");
+
       let socket = new ws.WebSocket(url);
       let index = S.getInstance().addNewSocket(socket);
+
+
 
       socket.on("message", (buffer: any) => {
         try {
@@ -181,6 +251,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
       console.error(error);
       newtx.msg = buffer;
     }
+
+
     await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
   }
 
@@ -221,7 +293,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
     return list;
   }
 
-  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void {}
+  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void { }
 }
 
 /**
@@ -287,12 +359,14 @@ class Server {
     });
     wss.on("connection", (socket: any, request: any) => {
       const { pathname } = parse(request.url);
+      console.log('connection established')
       console.info('### connection pathname: ' + pathname);
       let index = S.getInstance().addNewSocket(socket);
+
       socket.on("message", (buffer: any) => {
         S.getLibInstance()
           .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-          .then(() => {});
+          .then(() => { });
       });
       socket.on("close", () => {
         S.getLibInstance().process_peer_disconnection(index);
@@ -300,7 +374,11 @@ class Server {
       socket.on("error", (error) => {
         console.error("error on socket : " + index, error);
       });
+
+
       S.getLibInstance().process_new_peer(index, null);
+
+      // watch build file
     });
     // app.on("upgrade", (request, socket, head) => {
     //   server.handleUpgrade(request, socket, head, (websocket) => {
@@ -595,7 +673,7 @@ class Server {
         console.log(`liteblock : ${bsh} from disk txs count = : ${newblk.transactions.length}`);
         console.log(
           "valid txs : " +
-            newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
+          newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
         );
 
         res.writeHead(200, {
@@ -724,6 +802,13 @@ class Server {
       return;
     });
 
+    // expressApp.get("/check-build", (req, res) => {
+    //   // res.sendFile(this.web_dir);
+    //   this.app.modules.webServer(expressApp, express);
+    //   res.send()
+    // })
+
+
     expressApp.get("/saito/saito.js", (req, res) => {
       //
       // may be useful in the future, if we gzip
@@ -769,6 +854,9 @@ class Server {
     // res.write -- have to use res.end()
     // res.send --- is combination of res.write() and res.end()
     //
+
+
+
     this.app.modules.webServer(expressApp, express);
 
     expressApp.get("*", (req, res) => {
