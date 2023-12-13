@@ -2029,11 +2029,14 @@ class Browser {
       console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
 
       localStorage.setItem('build_number', receivedBuildNumber.toString());
-      // let existingScript = document.getElementById('saito');
+
       window.location.reload();
 
+      // let existingScript = document.getElementById('saito');
       // if (existingScript) {
-      //   // existingScript.parentElement.removeChild(existingScript);
+      //   existingScript.parentElement.removeChild(existingScript);
+
+      // }
 
       //   // let script = document.createElement('script');
       //   // script.id = 'saito';

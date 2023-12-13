@@ -1,5 +1,7 @@
 import Peer from "./peer";
 
+const fs = require('fs');
+
 const getUuid = require("uuid-by-string");
 const ModalSelectCrypto = require("./ui/modals/select-crypto/select-crypto");
 import Transaction from "./transaction";
@@ -22,7 +24,8 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = 0;
 
-  version = 5.565;
+  version = 5.59;
+  build_number = "0";
 
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
@@ -58,11 +61,19 @@ export default class Wallet extends SaitoWallet {
 
   async initialize() {
     console.log("wallet.initialize");
-
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
     this.publicKey = publicKey;
     console.log("public key = " + publicKey, " / private key ? " + (privateKey !== ""));
+
+    if (this.app.BROWSER === 0) {
+      this.getBuildNumber().then((build_number: string) => {
+        this.app.wallet.build_number = build_number;
+        console.log('build number', this.build_number)
+      })
+
+    }
+
 
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
@@ -328,6 +339,7 @@ export default class Wallet extends SaitoWallet {
 
     console.log("new wallet : " + (await this.getPublicKey()));
   }
+
 
   /**
    * Saves the current wallet state to local storage.
@@ -1045,4 +1057,27 @@ export default class Wallet extends SaitoWallet {
     await this.app.modules.onUpgrade(type, privatekey, walletfile);
     return true;
   }
+
+  async getBuildNumber() {
+    return new Promise((resolve, reject) => {
+      fs.readFile('config/build.json', 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading the file:', err);
+          return;
+        }
+        try {
+          const buildJson = JSON.parse(data);
+          let build_number = buildJson.build_number;
+          resolve(build_number)
+        } catch (parseError) {
+          console.error('Error parsing JSON:', parseError);
+          reject(0)
+        }
+      });
+
+    })
+
+  }
+
+
 }

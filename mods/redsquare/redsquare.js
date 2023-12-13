@@ -646,7 +646,7 @@ class RedSquare extends ModTemplate {
 
     console.log(`RS: load ${created_at} tweets with num peers: ${peer_count}`);
 
-    if (peer_count == 0){
+    if (peer_count == 0) {
       console.log(this.peers);
       mycallback(0);
       return;
@@ -2224,6 +2224,7 @@ class RedSquare extends ModTemplate {
 
               res.setHeader("Content-type", "text/html");
               res.charset = "UTF-8";
+
               res.send(redsquareHome(app, redsquare_self));
             });
 
@@ -2279,6 +2280,7 @@ class RedSquare extends ModTemplate {
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
+      console.log(app.wallet, "this is the app wallet");
       res.send(redsquareHome(app, redsquare_self));
       return;
     });
