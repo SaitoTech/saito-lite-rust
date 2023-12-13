@@ -10,6 +10,7 @@ const fetch = require("node-fetch");
 const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
+//const RedSquareHammerSwipe = require("./lib/redsquare-hammer-swipe/redsquare-hammer-swipe");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
@@ -442,6 +443,11 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
 
+      //      if (this.app.browser.isMobileBrowser()){
+      //        this.hammer = new RedSquareHammerSwipe(this.app, this);
+      //        this.addComponent(this.hammer);
+      //      }
+
       //
       // chat manager can insert itself into left-sidebar if exists
       //
@@ -456,15 +462,6 @@ class RedSquare extends ModTemplate {
     await super.render();
     this.rendered = true;
 
-    if (this.app.browser.isMobileBrowser()) {
-      this.app.browser.makeRefreshable(".saito-main", () => {
-        this.app.connection.emit("redsquare-insert-loading-message");
-        this.loadTweets("later", (tx_count) => {
-          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
-        });
-      });
-    }
-
     this.loadLocalTweets();
   }
 
@@ -476,8 +473,6 @@ class RedSquare extends ModTemplate {
     let publicKey = peer?.publicKey || this.publicKey;
 
     let peer_idx = -1;
-
-    console.log("Add RS Peer: ", peer);
 
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].publicKey === publicKey) {
@@ -515,7 +510,7 @@ class RedSquare extends ModTemplate {
       //
       // or fetch tweets (load tweets "earlier")
       //
-      this.addPeer(peer);
+      this.addPeer(peer, "tweets");
 
       //
       // if viewing a specific tweet
@@ -646,12 +641,6 @@ class RedSquare extends ModTemplate {
 
     console.log(`RS: load ${created_at} tweets with num peers: ${peer_count}`);
 
-    if (peer_count == 0){
-      console.log(this.peers);
-      mycallback(0);
-      return;
-    }
-
     for (let i = 0; i < this.peers.length; i++) {
       //
       // We have two stop conditions,
@@ -663,114 +652,112 @@ class RedSquare extends ModTemplate {
       //
 
       if (
-        (this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") ||
-        (created_at == "later" && this.peers[i].publicKey == this.publicKey)
+        !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
+        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)
       ) {
-        continue;
-      }
+        let obj = {
+          field1: "RedSquare",
+          flagged: 0,
+          tx_size_less_than: 1000000,
+          limit: this.peers[i].tweets_limit,
+        };
 
-      let obj = {
-        field1: "RedSquare",
-        flagged: 0,
-        tx_size_less_than: 1000000,
-        limit: this.peers[i].tweets_limit,
-      };
+        if (created_at == "earlier") {
+          obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
+        } else if (created_at == "later") {
+          //
+          // For "new" tweets we maybe want to look at updated, not created
+          // this should allow us to pull fresh stats for tweets that aren't
+          // otherwise directed at us
+          //
+          obj.updated_later_than = this.peers[i].tweets_latest_ts;
+        } else {
+          console.error("Unsupported time restraint in rS");
+        }
 
-      if (created_at == "earlier") {
-        obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
-      } else if (created_at == "later") {
-        //
-        // For "new" tweets we maybe want to look at updated, not created
-        // this should allow us to pull fresh stats for tweets that aren't
-        // otherwise directed at us
-        //
-        obj.updated_later_than = this.peers[i].tweets_latest_ts;
-      } else {
-        console.error("Unsupported time restraint in rS");
-      }
+        this.app.storage.loadTransactions(
+          obj,
+          (txs) => {
+            //console.log(`${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
 
-      this.app.storage.loadTransactions(
-        obj,
-        (txs) => {
-          //console.log(`${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
+            peer_count--;
 
-          peer_count--;
+            if (txs.length > 0) {
+              for (let z = 0; z < txs.length; z++) {
+                txs[z].decryptMessage(this.app);
 
-          if (txs.length > 0) {
-            for (let z = 0; z < txs.length; z++) {
-              txs[z].decryptMessage(this.app);
+                //timestamp is the original timestamp of the create tweet transaction
+                if (created_at === "earlier") {
+                  if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
+                    this.peers[i].tweets_earliest_ts = txs[z].timestamp;
+                  }
+                }
 
-              //timestamp is the original timestamp of the create tweet transaction
-              if (created_at === "earlier") {
-                if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) {
-                  this.peers[i].tweets_earliest_ts = txs[z].timestamp;
+                //
+                // If we have a large gap of time, where are 200 new tweets are later than our local tweets,
+                // but those get processed and set our earliest timestamp, then we miss everything between the
+                // initial limited load and what we had saved locally...
+                //
+
+                if (created_at === "later") {
+                  if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
+                    this.peers[i].tweets_latest_ts = txs[z].updated_at;
+                  }
+                }
+
+                this.addNotification(txs[z]);
+
+                // (---------  false  --------- )
+                // only add if this is a new tweet, it might be an
+                // old tweet, or one of the tweets that we have sent
+                // out onto the chain and then are now re-fetching
+                // but have already added -- no need for the load new
+                // tweet buttons in that case!
+                //
+
+                // RE: addTweet returns 0 if it isn't a "new" tweet
+                // but the tweet may have been updated by other people interaction
+                // with it so we want to process it in addTweet to get the new
+                // number of likes/replies/retweets updated
+                //
+                // Trust me, this won't accidentally trigger the "load new tweets"
+                // button!!!
+                count += this.addTweet(txs[z]);
+
+                let tweet = this.returnTweet(txs[z].signature);
+
+                if (tweet) {
+                  //
+                  // Update our local archive with any updated metadata
+                  //
+                  this.app.storage.updateTransaction(tweet.tx, null, "localhost");
+                } else {
+                  console.warn("How did we not add the tweet????");
                 }
               }
 
               //
-              // If we have a large gap of time, where are 200 new tweets are later than our local tweets,
-              // but those get processed and set our earliest timestamp, then we miss everything between the
-              // initial limited load and what we had saved locally...
+              // we aren't caching old tweets, so don't incur the costs of deleting and saving!
               //
-
-              if (created_at === "later") {
-                if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
-                  this.peers[i].tweets_latest_ts = txs[z].updated_at;
-                }
+              if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
+                this.saveLocalTweets();
               }
-
-              this.addNotification(txs[z]);
-
-              // (---------  false  --------- )
-              // only add if this is a new tweet, it might be an
-              // old tweet, or one of the tweets that we have sent
-              // out onto the chain and then are now re-fetching
-              // but have already added -- no need for the load new
-              // tweet buttons in that case!
-              //
-
-              // RE: addTweet returns 0 if it isn't a "new" tweet
-              // but the tweet may have been updated by other people interaction
-              // with it so we want to process it in addTweet to get the new
-              // number of likes/replies/retweets updated
-              //
-              // Trust me, this won't accidentally trigger the "load new tweets"
-              // button!!!
-              count += this.addTweet(txs[z]);
-
-              let tweet = this.returnTweet(txs[z].signature);
-
-              if (tweet) {
-                //
-                // Update our local archive with any updated metadata
-                //
-                this.app.storage.updateTransaction(tweet.tx, null, "localhost");
-              } else {
-                console.warn("How did we not add the tweet????");
-              }
+            } else {
+              this.peers[i].tweets_earliest_ts = 0;
             }
 
-            //
-            // we aren't caching old tweets, so don't incur the costs of deleting and saving!
-            //
-            if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
-              this.saveLocalTweets();
+            console.log(
+              `${this.peers[i].publicKey} returned ${txs.length}, ${count} are new to the feed`
+            );
+
+            // execute callback when all txs are fetched from all peers
+            if (peer_count == 0 && mycallback) {
+              mycallback(count);
             }
-          } else {
-            this.peers[i].tweets_earliest_ts = 0;
-          }
-
-          console.log(
-            `${this.peers[i].publicKey} returned ${txs.length}, ${count} are new to the feed`
-          );
-
-          // execute callback when all txs are fetched from all peers
-          if (peer_count == 0 && mycallback) {
-            mycallback(count);
-          }
-        },
-        this.peers[i].peer
-      );
+          },
+          this.peers[i].peer
+        );
+      }
     }
   }
 
@@ -2167,28 +2154,6 @@ class RedSquare extends ModTemplate {
     expressapp.get("/" + encodeURI(this.returnSlug()), async function (req, res) {
       let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
 
-      //
-      // Reset OG params which can be overwritten for specific tweets if we have query parameters
-      //
-      redsquare_self.social = {
-        twitter_card: "summary",
-        twitter_site: "@SaitoOfficial",
-        twitter_creator: "@SaitoOfficial",
-        twitter_title: "🟥 Saito Red Square",
-        twitter_url: "https://saito.io/redsquare/",
-        twitter_description: "Saito RedSquare - Web3 Social.",
-        twitter_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-        og_title: "🟥 Saito Red Square",
-        og_url: "https://saito.io/redsquare",
-        og_type: "website",
-        og_description: "Peer to peer social and more",
-        og_site_name: "🟥 Saito Red Square",
-        og_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-        og_image_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-        og_image_secure_url:
-          "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      };
-
       try {
         if (Object.keys(req.query).length > 0) {
           let query_params = req.query;
@@ -2224,7 +2189,7 @@ class RedSquare extends ModTemplate {
 
               res.setHeader("Content-type", "text/html");
               res.charset = "UTF-8";
-              res.send(redsquareHome(app, redsquare_self));
+              res.send(redsquareHome(app, redsquare_self, redsquare_self.build_number));
             });
 
             return;
@@ -2279,7 +2244,7 @@ class RedSquare extends ModTemplate {
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self));
+      res.send(redsquareHome(app, redsquare_self, redsquare_self.build_number));
       return;
     });
 
