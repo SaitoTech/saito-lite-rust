@@ -78,6 +78,7 @@ class Saito {
       await this.wallet.initialize();
       await this.keychain.initialize();
 
+
       this.modules.mods = this.modules.mods_list.map((mod_path) => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const Module = require(`./../../mods/${mod_path}`);
@@ -96,6 +97,8 @@ class Saito {
       // browser sets active module
       await this.browser.initialize(this);
       await this.modules.initialize();
+
+
 
       // blockchain after modules create dbs
       await this.blockchain.initialize();

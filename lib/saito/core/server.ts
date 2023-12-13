@@ -78,6 +78,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
             for (let i = 0; i < jsonString.length; i++) {
               uint8Array[i] = jsonString.charCodeAt(i);
             }
+            await this.app.modules.getBuildNumber();
             await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
             this.currentBuildNumber = buildNumber;
 
@@ -104,8 +105,6 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
 
     fs.watch('config/build.json', (eventType, prev) => {
-      // if (eventType === 'change' && filename) {
-      // console.log(`File change detected: ${current}`);
       checkBuildNumber();
       // }
     });
@@ -113,88 +112,13 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
   }
 
-  // pollConfigFile(peerIndex): void {
-  //   const checkBuildNumber = async () => {
-  //     const filePath = path.join(__dirname, 'config/build.json');
-  //     fs.readFile('config/build.json', 'utf8', async (err, data) => {
-  //       if (err) {
-  //         console.error('Error reading options file:', err);
-  //         return;
-  //       }
-  //       try {
-  //         const jsonData = JSON.parse(data);
-  //         const buildNumber = BigInt(jsonData.build_number);
-  //         console.log(buildNumber)
-  //         let buffer = { buildNumber, peerIndex };
-  //         let jsonString = JSON.stringify(buffer);
-  //         let uint8Array = new Uint8Array(jsonString.length);
-  //         for (let i = 0; i < jsonString.length; i++) {
-  //           uint8Array[i] = jsonString.charCodeAt(i);
-  //         }
-  //         await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
-  //       } catch (e) {
-  //         console.error('Error parsing JSON from options file:', e);
-  //       }
-  //     })
-  //   }
-
-  //   // console.log('polling config file', peerIndex)
-  //   const filePath = path.join(__dirname, 'config/build.json');
-  //   fs.watch('config/build.json', (eventType, filename) => {
-  //     if (filename) {
-  //       // console.log(`options was modified: ${eventType}`);
-  //     }
-  //     checkBuildNumber()
-  //   });
-
-  // }
 
   updateSoftware(buffer: Uint8Array): void {
-    // console.log('updating software')
+
   }
 
 
 
-  // pollConfigFile(peerIndex) {
-  //   const filePath = path.join(__dirname, 'config/build.json');
-  //   let lastModifiedTime = 0;
-  //   const checkBuildNumber = async () => {
-  //     const filePath = path.join(__dirname, 'config/build.json');
-  //     fs.readFile('config/build.json', 'utf8', async (err, data) => {
-  //       if (err) {
-  //         console.error('Error reading options file:', err);
-  //         return;
-  //       }
-  //       try {
-  //         const jsonData = JSON.parse(data);
-  //         const buildNumber = BigInt(jsonData.build_number);
-  //         console.log(buildNumber)
-  //         let buffer = { buildNumber, peerIndex };
-  //         let jsonString = JSON.stringify(buffer);
-  //         let uint8Array = new Uint8Array(jsonString.length);
-  //         for (let i = 0; i < jsonString.length; i++) {
-  //           uint8Array[i] = jsonString.charCodeAt(i);
-  //         }
-  //         await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
-  //       } catch (e) {
-  //         console.error('Error parsing JSON from options file:', e);
-  //       }
-  //     })
-  //   }
-
-  //   const pollInterval = 1000; // Poll every 5000 milliseconds (5 seconds)
-
-  //   fs.watchFile(filePath, { interval: pollInterval }, (curr, prev) => {
-  //     console.log(curr)
-  //     if (curr.mtime.getTime() !== lastModifiedTime) {
-  //       lastModifiedTime = curr.mtime.getTime();
-  //       console.log(`Detected change in ${filePath}`);
-  //       checkBuildNumber();
-  //     }
-  //   });
-
-  //   console.log(`Started polling ${filePath} every ${pollInterval} milliseconds`);
-  // }
 
 
 
@@ -369,7 +293,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
     return list;
   }
 
-  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void {}
+  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void { }
 }
 
 /**
@@ -878,6 +802,13 @@ class Server {
       return;
     });
 
+    // expressApp.get("/check-build", (req, res) => {
+    //   // res.sendFile(this.web_dir);
+    //   this.app.modules.webServer(expressApp, express);
+    //   res.send()
+    // })
+
+
     expressApp.get("/saito/saito.js", (req, res) => {
       //
       // may be useful in the future, if we gzip
@@ -923,6 +854,9 @@ class Server {
     // res.write -- have to use res.end()
     // res.send --- is combination of res.write() and res.end()
     //
+
+
+
     this.app.modules.webServer(expressApp, express);
 
     expressApp.get("*", (req, res) => {

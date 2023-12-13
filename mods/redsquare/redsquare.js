@@ -2280,8 +2280,8 @@ class RedSquare extends ModTemplate {
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      console.log(app.wallet, "this is the app wallet");
-      res.send(redsquareHome(app, redsquare_self));
+      // console.log(app.wallet, "this is the app wallet");
+      res.send(redsquareHome(app, redsquare_self, redsquare_self.build_number));
       return;
     });
 

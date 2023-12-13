@@ -79,20 +79,14 @@ class Mods {
     try {
       let txmsg = tx.returnMessage();
       request = txmsg?.request;
-
       if (txmsg?.request === "software-update") {
         let receivedBuildNumber = tx.msg.data.build_number;
         this.app.connection.emit("new_software_version", receivedBuildNumber);
       }
 
-
     } catch (err) { }
 
-
-
-
     for (let iii = 0; iii < this.mods.length; iii++) {
-      //console.log(`peer request (${request}), hpt into... ` + this.mods[iii].name);
       try {
         if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
           have_responded = true;
@@ -267,7 +261,13 @@ class Mods {
       this.app.browser.updateSoftwareVersion(receivedBuildNumber)
     });
 
+
     this.is_initialized = true;
+
+    if (this.app.BROWSER === 0) {
+      await this.app.modules.getBuildNumber();
+    }
+
 
     //
     // .. and setup active module
@@ -521,6 +521,12 @@ class Mods {
   async onUpgrade(type, privatekey, walletfile) {
     for (let i = 0; i < this.mods.length; i++) {
       await this.mods[i].onUpgrade(type, privatekey, walletfile);
+    }
+  }
+
+  async getBuildNumber() {
+    for (let i = 0; i < this.mods.length; i++) {
+      await this.mods[i].getBuildNumber()
     }
   }
 }

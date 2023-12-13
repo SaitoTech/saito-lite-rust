@@ -2024,33 +2024,11 @@ class Browser {
     let savedBuildNumber = localStorage.getItem('build_number');
     let currentBuildNumber = savedBuildNumber ? BigInt(Number(savedBuildNumber)) : BigInt(0);
     console.log(`Received build number: ${BigInt(Number(receivedBuildNumber))}, Current build number: ${currentBuildNumber}`);
-
     if (receivedBuildNumber > currentBuildNumber) {
       console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
-
-      localStorage.setItem('build_number', receivedBuildNumber.toString());
-
-      window.location.reload();
-
-      // let existingScript = document.getElementById('saito');
-      // if (existingScript) {
-      //   existingScript.parentElement.removeChild(existingScript);
-
-      // }
-
-      //   // let script = document.createElement('script');
-      //   // script.id = 'saito';
-      //   // script.type = 'text/javascript';
-      //   // script.src = `/saito/saito.js?build=${receivedBuildNumber}`;
-      //   // document.head.appendChild(script);
-      //   console.log('saito.js updated. Refreshing...');
-      //   // Optionally refresh the page if needed
-
-      // }
-
+      window.location.reload(true);
 
     } else {
-      console.log(`No new software update. Current build: ${currentBuildNumber}, Received build: ${receivedBuildNumber}`);
     }
   }
 
