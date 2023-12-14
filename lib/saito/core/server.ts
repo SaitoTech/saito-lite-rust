@@ -27,9 +27,6 @@ const webserver = new Ser(expressApp);
 
 export class NodeSharedMethods extends CustomSharedMethods {
   public app: Saito;
-  currentBuildNumber: bigint = BigInt(0);
-  isWatchingConfigFile = false;
-  fileWatcher: any;
   constructor(app: Saito) {
     super();
     this.app = app;
@@ -59,64 +56,58 @@ export class NodeSharedMethods extends CustomSharedMethods {
     });
   }
 
-  pollConfigFile(peerIndex): void {
-    const checkBuildNumber = async () => {
-      const filePath = path.join(__dirname, '/config/build.json');
-      fs.readFile('config/build.json', 'utf8', async (err, data) => {
-        if (err) {
-          console.error('Error reading options file:', err);
-          return;
-        }
-        try {
-          const jsonData = JSON.parse(data);
-          const buildNumber = BigInt(jsonData.build_number);
+  // pollConfigFile(peerIndex): void {
+  //   const checkBuildNumber = async () => {
+  //     const filePath = path.join(__dirname, '/config/build.json');
+  //     fs.readFile('config/build.json', 'utf8', async (err, data) => {
+  //       if (err) {
+  //         console.error('Error reading options file:', err);
+  //         return;
+  //       }
+  //       try {
+  //         const jsonData = JSON.parse(data);
+  //         const buildNumber = BigInt(jsonData.build_number);
 
-          if (Number(this.currentBuildNumber) < Number(buildNumber)) {
-            let buffer = { buildNumber, peerIndex };
-            let jsonString = JSON.stringify(buffer);
-            let uint8Array = new Uint8Array(jsonString.length);
-            for (let i = 0; i < jsonString.length; i++) {
-              uint8Array[i] = jsonString.charCodeAt(i);
-            }
-            await this.app.modules.getBuildNumber();
-            await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
-            this.currentBuildNumber = buildNumber;
+  //         if (Number(this.currentBuildNumber) < Number(buildNumber)) {
+  //           let buffer = { buildNumber, peerIndex };
+  //           let jsonString = JSON.stringify(buffer);
+  //           let uint8Array = new Uint8Array(jsonString.length);
+  //           for (let i = 0; i < jsonString.length; i++) {
+  //             uint8Array[i] = jsonString.charCodeAt(i);
+  //           }
+  //           await this.app.modules.getBuildNumber();
+  //           await S.getInstance().sendSoftwareUpdate(peerIndex, buildNumber);
+  //           this.currentBuildNumber = buildNumber;
 
-            console.log('Updated build number to:', this.currentBuildNumber);
-          } else {
-            // console.log("Current build number is up-to-date or higher");
-          }
+  //           console.log('Updated build number to:', this.currentBuildNumber);
+  //         } else {
+  //           // console.log("Current build number is up-to-date or higher");
+  //         }
 
-        } catch (e) {
-          console.error('Error parsing JSON from options file:', e);
-        }
-      });
-    };
+  //       } catch (e) {
+  //         console.error('Error parsing JSON from options file:', e);
+  //       }
+  //     });
+  //   };
 
-    const filePath = path.join(__dirname, 'config/build.json');
-
-
-    console.log('Setting up watcher for config file');
-    if (this.fileWatcher) {
-      this.fileWatcher.close();
-      this.fileWatcher = null;
-      console.log('Previous file watcher closed');
-    }
+  //   const filePath = path.join(__dirname, 'config/build.json');
 
 
-    fs.watch('config/build.json', (eventType, prev) => {
-      checkBuildNumber();
-      // }
-    });
+  //   console.log('Setting up watcher for config file');
+  //   if (this.fileWatcher) {
+  //     this.fileWatcher.close();
+  //     this.fileWatcher = null;
+  //     console.log('Previous file watcher closed');
+  //   }
 
 
-  }
+  //   fs.watch('config/build.json', (eventType, prev) => {
+  //     checkBuildNumber();
+  //     // }
+  //   });
 
 
-  updateSoftware(buffer: Uint8Array): void {
-
-  }
-
+  // }
 
 
 
@@ -321,6 +312,9 @@ class Server {
   public host: string;
   public port: number;
   public protocol: string;
+  currentBuildNumber: bigint = BigInt(0);
+  isWatchingConfigFile = false;
+  fileWatcher: any;
 
   constructor(app: Saito) {
     this.app = app;
@@ -398,9 +392,14 @@ class Server {
   initialize() {
     const server_self = this;
 
+
+
+
     if (this.app.BROWSER === 1) {
       return;
     }
+
+    this.pollConfigFile()
 
     //
     // update server information from options file
@@ -876,6 +875,64 @@ class Server {
     // try webserver.listen(this.server.port, {cookie: false});
     this.webserver = webserver;
   }
+
+  pollConfigFile(): void {
+    const checkBuildNumber = async () => {
+      const filePath = path.join(__dirname, '/config/build.json');
+      fs.readFile('config/build.json', 'utf8', async (err, data) => {
+        if (err) {
+          console.error('Error reading options file:', err);
+          return;
+        }
+        try {
+          const jsonData = JSON.parse(data);
+          const buildNumber = BigInt(jsonData.build_number);
+          if (Number(this.currentBuildNumber) < Number(buildNumber)) {
+            let buffer = { buildNumber };
+            let jsonString = JSON.stringify(buffer);
+            let uint8Array = new Uint8Array(jsonString.length);
+            for (let i = 0; i < jsonString.length; i++) {
+              uint8Array[i] = jsonString.charCodeAt(i);
+            }
+            // await this.app.modules.getBuildNumber();
+            let peers = await this.app.network.getPeers();
+            console.log('peers', peers)
+            peers.forEach(peer => {
+              this.app.network.sendRequest("software-update", data, peer);
+            })
+
+            this.currentBuildNumber = buildNumber;
+
+            console.log('Updated build number to:', this.currentBuildNumber);
+          } else {
+            // console.log("Current build number is up-to-date or higher");
+          }
+
+        } catch (e) {
+          console.error('Error parsing JSON from options file:', e);
+        }
+      });
+    };
+
+    const filePath = path.join(__dirname, 'config/build.json');
+
+
+    console.log('Setting up watcher for config file');
+    if (this.fileWatcher) {
+      this.fileWatcher.close();
+      this.fileWatcher = null;
+      console.log('Previous file watcher closed');
+    }
+
+
+    fs.watch('config/build.json', (eventType, prev) => {
+      checkBuildNumber();
+      // }
+    });
+
+
+  }
+
 
   close() {
     this.webserver.close();
