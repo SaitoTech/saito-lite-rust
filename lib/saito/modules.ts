@@ -224,7 +224,7 @@ class Mods {
     this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
       // await this.app.network.propagateServices(peerIndex);
       let peer = await this.app.network.getPeer(BigInt(peerIndex));
-      console.log("handshake complete");
+      console.log("handshake completing");
       await onPeerHandshakeComplete(peer);
     });
 
