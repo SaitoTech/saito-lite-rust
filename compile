@@ -344,7 +344,7 @@ if [ "$1" == "recompile" ]; then
   echo ""
 
   # making sure we have some modules defined.
-  if [ es.config.js ]; then
+  if [ -f config/modules.config.js ]; then
     cp ./config/modules.default.js ./config/modules.config.js
   fi
 
