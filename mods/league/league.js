@@ -767,7 +767,7 @@ class League extends ModTemplate {
       $data: new_data,
     };
 
-    await this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.runDatabase(sql, params, "league");
   }
 
   async createUpdatePlayerTransaction(league_id, publicKey, new_data, field = "email") {
@@ -829,7 +829,7 @@ class League extends ModTemplate {
       $publickey: publicKey,
     };
 
-    await this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.runDatabase(sql, params, "league");
   }
 
   ///////////////////
@@ -871,7 +871,7 @@ class League extends ModTemplate {
     //  }
     //}
 
-    await this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.runDatabase(sql, params, "league");
 
     await this.removeLeaguePlayer(txmsg.league_id, txmsg.publicKey);
   }
@@ -919,14 +919,14 @@ class League extends ModTemplate {
       };
     }
 
-    let result = await this.app.storage.executeDatabase(sql1, params1, "league");
+    let result = await this.app.storage.runDatabase(sql1, params1, "league");
 
     let sql2 = `UPDATE players
                 SET deleted = 1
                 WHERE league_id = $league_id`;
     let params2 = { $league_id: txmsg.league_id };
 
-    result = await this.app.storage.executeDatabase(sql2, params2, "league");
+    result = await this.app.storage.runDatabase(sql2, params2, "league");
 
     await this.removeLeague(txmsg.league_id);
   }
@@ -1326,7 +1326,7 @@ class League extends ModTemplate {
       $league_id: league_id,
     };
 
-    await this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.runDatabase(sql, params, "league");
     return 1;
   }
 
@@ -1360,7 +1360,7 @@ class League extends ModTemplate {
       $league_id: league_id,
     };
 
-    await this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.runDatabase(sql, params, "league");
     return 1;
   }
 
@@ -1666,7 +1666,7 @@ class League extends ModTemplate {
       $default_score: obj.default_score,
     };
 
-    await this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.runDatabase(sql, params, "league");
 
     return;
   }
@@ -1689,7 +1689,7 @@ class League extends ModTemplate {
 
     //console.log("Insert player:", params);
 
-    await this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.runDatabase(sql, params, "league");
     return;
   }
 
@@ -1702,7 +1702,7 @@ class League extends ModTemplate {
                SET deleted = 1
                WHERE players.timestamp < ?`;
     let cutoff = new Date().getTime() - this.inactive_player_cutoff;
-    await this.app.storage.executeDatabase(sql, [cutoff], "league");
+    await this.app.storage.runDatabase(sql, [cutoff], "league");
   }
 }
 

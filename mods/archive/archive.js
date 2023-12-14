@@ -371,7 +371,7 @@ class Archive extends ModTemplate {
         $preserve: newObj.preserve,
       };
 
-      await this.app.storage.insertDatabase(sql, params, "archive");
+      await this.app.storage.runDatabase(sql, params, "archive");
     }
   }
 
@@ -414,7 +414,7 @@ class Archive extends ModTemplate {
 
     sql += ` WHERE sig = $sig`;
 
-    await this.app.storage.executeDatabase(sql, params, "archive");
+    await this.app.storage.runDatabase(sql, params, "archive");
 
     if (this.app.BROWSER) {
       let results = await this.localDB.update({
@@ -568,7 +568,7 @@ class Archive extends ModTemplate {
 
     sql = `DELETE FROM archives WHERE archives.sig = $sig`;
     params = { $sig: tx.signature };
-    await this.app.storage.executeDatabase(sql, params, "archive");
+    await this.app.storage.runDatabase(sql, params, "archive");
     where_obj["sig"] = tx.signature;
 
     //
@@ -671,7 +671,7 @@ class Archive extends ModTemplate {
       sql += timestamp_limiting_clause;
     }
 
-    rows = await this.app.storage.executeDatabase(sql, params, "archive");
+    rows = await this.app.storage.runDatabase(sql, params, "archive");
 
     //
     // browsers handle with localDB search
@@ -730,7 +730,7 @@ class Archive extends ModTemplate {
     //
     let sql = `DELETE FROM archives WHERE owner = "" AND updated_at < $ts AND preserve = 0`;
     let params = { $ts: ts };
-    await this.app.storage.executeDatabase(sql, params, "archive");
+    await this.app.storage.runDatabase(sql, params, "archive");
 
     //
     // delete private transactions
@@ -738,7 +738,7 @@ class Archive extends ModTemplate {
     ts = new Date().getTime() - this.prune_private_ts;
     sql = `DELETE FROM archives WHERE owner != "" AND updated_at < $ts AND preserve = 0`;
     params = { $ts: ts };
-    await this.app.storage.executeDatabase(sql, params, "archive");
+    await this.app.storage.runDatabase(sql, params, "archive");
 
     //
     // localDB
@@ -765,7 +765,7 @@ class Archive extends ModTemplate {
 
     let sql5 = "VACUUM";
     let params5 = {};
-    await this.app.storage.executeDatabase(sql5, params5, "archive");
+    await this.app.storage.executeDatabase(sql5, "archive");
   }
 
   //////////////////////////
