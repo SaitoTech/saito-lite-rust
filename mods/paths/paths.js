@@ -3480,6 +3480,16 @@ deck['cp65'] = {
 
     let paths_self = this;
 
+    paths_self.displayTurnTrack();
+    paths_self.displayGeneralRecordsTrack();
+    paths_self.displayActionRoundTracks();
+    paths_self.displayMandatedOffensiveTracks();
+    paths_self.displayUSCommitmentTrack();
+    paths_self.displayRussianCapitulationTrack();
+    paths_self.displayReserveBoxes();
+    paths_self.displayEliminatedUnitsBoxes();
+
+
     //
     // display the spaces on the board
     //
@@ -3720,6 +3730,43 @@ alert("display detailed space!");
     }
 
   }
+
+
+
+  displayTurnTrack() {
+
+  }
+
+  displayGeneralRecordsTrack() {
+
+  }
+
+  displayActionRoundTracks() {
+
+  }
+
+  displayMandatedOffensiveTracks() {
+
+  }
+
+  displayUSCommitmentTrack() {
+
+  }
+
+  displayRussianCapitulationTrack() {
+
+  }
+
+  displayReserveBoxes() {
+
+  }
+
+  displayEliminatedUnitsBoxes() {
+
+  }
+
+
+
 
 
 

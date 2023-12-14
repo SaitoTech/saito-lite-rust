@@ -1,6 +1,8 @@
 
 .turn-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .turn-track-1 {
   top: 213px;
@@ -86,7 +88,9 @@
 
 
 .general-records-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .general-records-track-1 {
   top: 2707px;
@@ -255,7 +259,9 @@
 
 
 .central-action-round-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .central-action-roundtrack-1 {
   top: 130px;
@@ -301,7 +307,9 @@
 
 
 .allies-action-round-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .allies-action-roundtrack-1 {
   top: 2819px;
@@ -356,7 +364,9 @@
 
 
 .central-mandated-offensive-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .central-mandated-offensive-track-1 {
   top: 136px;
@@ -383,7 +393,9 @@
 
 
 .allies-mandated-offensive-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .allies-mandated-offensive-track-1 {
   top: 3078px;
@@ -410,7 +422,9 @@
 
 
 .us-commitment-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .us-commitment-track-1 {
   top: 2316px;
@@ -433,7 +447,9 @@
 
 
 .russian-capitulation-track {
-
+  position: absolute;
+  height: 100px;
+  width: 100px;
 }
 .russian-capitulation-track-1 {
   top: 2507px;
