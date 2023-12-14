@@ -61,7 +61,7 @@ class Saito {
     this.network = new Network(this);
     // this.networkApi = new NetworkAPI(this);
     // this.blockchain = new Blockchain(undefined);
-  }
+  }.
 
   async init() {
     try {
