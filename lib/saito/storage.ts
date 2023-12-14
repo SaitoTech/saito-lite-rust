@@ -9,6 +9,8 @@ class Storage {
   public active_tab: any;
   public timeout: any;
 
+
+
   constructor(app) {
     this.app = app || {};
     this.active_tab = 1; // TODO - only active tab saves, move to Browser class
@@ -17,6 +19,8 @@ class Storage {
 
   async initialize() {
     await this.loadOptions();
+
+
     return;
   }
 
@@ -222,7 +226,7 @@ class Storage {
 
   }
 
-  async deleteTransactions(obj = {}, mycallback = null , peer = null) {
+  async deleteTransactions(obj = {}, mycallback = null, peer = null) {
     const message = "archive";
     let data: any = {};
     data.request = "multidelete";
@@ -321,7 +325,7 @@ class Storage {
   /**
    * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
    **/
-  deleteBlockFromDisk(filename) {}
+  deleteBlockFromDisk(filename) { }
 
   async loadBlockById(bid): Promise<Block> {
     return null;
@@ -355,29 +359,31 @@ class Storage {
     return "";
   }
 
-  saveClientOptions() {}
+  saveClientOptions() { }
 
   async returnDatabaseByName(dbname) {
     return null;
   }
 
-  async returnBlockFilenameByHash(block_hash, mycallback) {}
+  async returnBlockFilenameByHash(block_hash, mycallback) { }
 
   returnTokenSupplySlipsFromDisk(): any {
     return [];
   }
 
-  returnBlockFilenameByHashPromise(block_hash: string) {}
+  returnBlockFilenameByHashPromise(block_hash: string) { }
 
-  async queryDatabase(sql, params, database) {}
+  async queryDatabase(sql, params, database) { }
 
-  async runDatabase(sql, params, database, mycallback = null) {}
+  async runDatabase(sql, params, database, mycallback = null) { }
 
-  async executeDatabase(sql, database) {}
+  async executeDatabase(sql, database) { }
 
   generateBlockFilename(block: Block): string {
     return ""; // empty
   }
+
+
 }
 
 export default Storage;

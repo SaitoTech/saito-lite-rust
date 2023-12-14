@@ -73,15 +73,14 @@ class Mods {
     mycallback: (any) => Promise<void> = null
   ) {
 
-
     let have_responded = false;
     let request = "";
     try {
       let txmsg = tx.returnMessage();
       request = txmsg?.request;
       if (txmsg?.request === "software-update") {
-        let receivedBuildNumber = tx.msg.data.build_number;
-        this.app.connection.emit("new_software_version", receivedBuildNumber);
+        let receivedBuildNumber = JSON.parse(tx.msg.data).build_number;
+        this.app.browser.updateSoftwareVersion(receivedBuildNumber)
       }
 
     } catch (err) { }
@@ -105,20 +104,6 @@ class Mods {
 
   async initialize() {
 
-    // function watchBuildFile(app) {
-    //   const filePath = path.join(__dirname, 'config/options');
-
-    //   fs.watch('config/options', (eventType, filename) => {
-    //     if (filename) {
-    //       console.log(`options was modified: ${eventType}`);
-    //       checkBuildNumber(app);
-    //     }
-    //   });
-    // }
-
-    if (this.app.BROWSER === 0) {
-      // watchBuildFile(this.app)
-    }
 
 
     //
@@ -257,9 +242,6 @@ class Mods {
       this.onConnectionStable(peer);
     });
 
-    this.app.connection.on("new_software_version", async (receivedBuildNumber) => {
-      this.app.browser.updateSoftwareVersion(receivedBuildNumber)
-    });
 
 
     this.is_initialized = true;

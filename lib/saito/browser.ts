@@ -2027,7 +2027,6 @@ class Browser {
     if (receivedBuildNumber > currentBuildNumber) {
       console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
       window.location.reload(true);
-
     } else {
     }
   }
