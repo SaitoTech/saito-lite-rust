@@ -33,6 +33,8 @@ class Registry extends ModTemplate {
     // servers will periodically remove content
     //
     this.cached_keys = {};
+    this.keys_to_look_up = [];
+    this.identifier_timeout = null;
 
     //
     // we keep a copy of our own publicKey for convenience. this is set in
@@ -55,12 +57,11 @@ class Registry extends ModTemplate {
     // process by showing a popup. The first is the entry point for most applications.
     //
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", async (keys) => {
-      let unidentified_keys = [];
-
+      
       //
-      // every 1 in 200 times, clear cache of anonymous keys to requery
+      // every 1 in 20 times, clear cache of anonymous keys to requery
       //
-      if (Math.random() < 0.005) {
+      if (Math.random() < 0.05) {
         for (let i of Object.keys(this.cached_keys)) {
           if (i == this.cached_keys[i]) {
             delete this.cached_keys[i];
@@ -73,39 +74,52 @@ class Registry extends ModTemplate {
         if (this.cached_keys[keys[i]]) {
           this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
         } else {
-          unidentified_keys.push(keys[i]);
+          if (!this.keys_to_look_up.includes(keys[i])){
+            this.keys_to_look_up.push(keys[i]);  
+          }
         }
       }
 
-      this.fetchManyIdentifiers(unidentified_keys, (answer) => {
-        //
-        // This callback is run in the browser
-        // 
-        //console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
-        Object.entries(answer).forEach(([key, value]) => {
-          if (value !== this.publicKey) {
-            //
-            // if this is a key that is stored in our keychain, then we want
-            // to update the cached value that we have stored there as well
-            //
-            if (this.app.keychain.returnKey(key, true) && key !== value) {
-              this.app.keychain.addKey({ publicKey: key, identifier: value });
-            }
+      if (this.identifier_timeout){
+        clearTimeout(this.identifier_timeout);
+      }
 
-            this.app.browser.updateAddressHTML(key, value);
+      this.identifier_timeout = setTimeout( ()=> {
+        let unidentified_keys = Array.from(this.keys_to_look_up);
+        this.keys_to_look_up = [];
+
+        this.fetchManyIdentifiers(unidentified_keys, (answer) => {
+          //
+          // This callback is run in the browser
+          // 
+          //console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
+          Object.entries(answer).forEach(([key, value]) => {
+            if (value !== this.publicKey) {
+              //
+              // if this is a key that is stored in our keychain, then we want
+              // to update the cached value that we have stored there as well
+              //
+              if (this.app.keychain.returnKey(key, true) && key !== value) {
+                this.app.keychain.addKey({ publicKey: key, identifier: value });
+              }
+
+              this.app.browser.updateAddressHTML(key, value);
+            }
+          });
+
+          //
+          // save all keys queried to cache so even if we get nothing
+          // back we won't query the server again for them.
+          //
+          for (let i = 0; i < unidentified_keys.length; i++) {
+            if (!this.cached_keys[unidentified_keys[i]]) {
+              this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
+            }
           }
         });
 
-        //
-        // save all keys queried to cache so even if we get nothing
-        // back we won't query the server again for them.
-        //
-        for (let i = 0; i < unidentified_keys.length; i++) {
-          if (!this.cached_keys[unidentified_keys[i]]) {
-            this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
-          }
-        }
-      });
+      }, 250);
+
     });
 
     this.app.connection.on("register-username-or-login", (obj) => {
