@@ -5,7 +5,9 @@ import Storage from "../storage";
 import fs from "fs-extra";
 import * as JSON from "json-bigint";
 import path from "path";
-import sqlite from "sqlite";
+import { open } from "sqlite";
+import sqlite3 from "sqlite3";
+
 import { Saito } from "../../../apps/core";
 import Block from "../block";
 import Slip from "../slip";
@@ -62,14 +64,18 @@ class StorageCore extends Storage {
       }
     }
     try {
-      const db = await sqlite.open(this.data_dir + "/" + dbname + ".sq3");
+      const db = await open({
+        filename: this.data_dir + "/" + dbname + ".sq3",
+        driver: sqlite3.Database,
+      });
 
       this.dbname.push(dbname);
       this.db.push(db);
 
       return this.db[this.db.length - 1];
     } catch (err) {
-      console.log("Error creating database for db-name: " + dbname);
+      console.error("Error creating database for db-name: " + dbname);
+      console.error(err);
       return null;
     }
   }
@@ -551,15 +557,13 @@ class StorageCore extends Storage {
    * @param {*} params
    * @param {*} callback
    */
-  async insertDatabase(sql, params, database, mycallback = null) {
+  async runDatabase(sql, params, database, mycallback = null) {
     try {
       const db = await this.returnDatabaseByName(database);
       if (mycallback == null) {
-        let res = await db.run(sql, params);
-        return res.lastID;
+        return await db.run(sql, params);
       } else {
-        let res = await db.run(sql, params, mycallback);
-        return res.lastID;
+        return await db.run(sql, params, mycallback);
       }
     } catch (err) {
       console.log("sql : ", sql);
@@ -573,15 +577,11 @@ class StorageCore extends Storage {
    * @param {*} params
    * @param {*} callback
    */
-  async executeDatabase(sql, params, database, mycallback = null) {
+  async executeDatabase(sql, database) {
     try {
       // console.log("executeDatabase : " + sql);
       const db = await this.returnDatabaseByName(database);
-      if (mycallback == null) {
-        return await db.run(sql, params);
-      } else {
-        return await db.run(sql, params, mycallback);
-      }
+      return await db.exec(sql);
     } catch (err) {
       console.log("sql : ", sql);
       console.log(err);

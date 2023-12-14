@@ -195,7 +195,7 @@ class Recovery extends ModTemplate {
     console.log("Backup Transaction");
     console.log("********************");
 
-    let res = await this.app.storage.executeDatabase(sql, params, "recovery");
+    let res = await this.app.storage.runDatabase(sql, params, "recovery");
 
     if (this.publicKey === publickey) {
       this.backup_overlay.success();

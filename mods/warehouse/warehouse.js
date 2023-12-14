@@ -120,7 +120,7 @@ class Warehouse extends ModTemplate {
               $name: tname,
               $module: tmodule,
             };
-            await this.app.storage.executeDatabase(sql, params, "warehouse");
+            await this.app.storage.runDatabase(sql, params, "warehouse");
 //          }
  //       }
       }

@@ -577,20 +577,20 @@ class AppStore extends ModTemplate {
 
       if (name != "unknown") {
         try {
-          await this.app.storage.executeDatabase(sql, params, "appstore");
+          await this.app.storage.runDatabase(sql, params, "appstore");
         } catch (err) {}
 
         if (this.featured_apps.includes(name) && tx.isFrom(this.publicKey)) {
           sql = "UPDATE modules SET featured = 0 WHERE name = $name";
           params = { $name: name };
-          await this.app.storage.executeDatabase(sql, params, "appstore");
+          await this.app.storage.runDatabase(sql, params, "appstore");
 
           sql = "UPDATE modules SET featured = 1 WHERE name = $name AND version = $version";
           params = {
             $name: name,
             $version: this.app.crypto.hash(`${tx.timestamp}-${tx.signature}`),
           };
-          await this.app.storage.executeDatabase(sql, params, "appstore");
+          await this.app.storage.runDatabase(sql, params, "appstore");
 
           //
           // RESET CACHE
@@ -728,7 +728,7 @@ class AppStore extends ModTemplate {
         $script: bundle_binary,
       };
 
-      await this.app.storage.executeDatabase(sql, params, "appstore");
+      await this.app.storage.runDatabase(sql, params, "appstore");
 
       //
       //
