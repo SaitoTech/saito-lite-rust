@@ -262,6 +262,21 @@ class Poker extends GameTableTemplate {
   }
 
   initializeGame() {
+
+    //
+    // test crypto hand scoring
+    //
+    //let hand1 = ["H4","D12","H2","H5","H12","C11","H1"];
+    //let hand2 = ["H7","H13","H2","H5","H12","C11","H1"];
+    //console.log("TESTING HAND SCORING");
+    //let score1 = this.scoreHand(hand1);
+    //let score2 = this.scoreHand(hand2);
+    //let winner = this.pickWinner(score1, score2);
+    //console.log("score1: " + JSON.stringify(score1));
+    //console.log("score2: " + JSON.stringify(score2));
+    //console.log("winner: " + JSON.stringify(winner));
+
+
     super.initializeGame(); //Update max players
 
     //
@@ -2371,6 +2386,7 @@ class Poker extends GameTableTemplate {
     if (this.isFlush(suite, val) != "") {
       let x = this.isFlush(suite, val);
       let y = [];
+      let has_ace = false;
 
       for (let i = 0; i < val.length; i++) {
         if (suite[i] == x) {
@@ -2378,8 +2394,10 @@ class Poker extends GameTableTemplate {
         }
       }
 
-      // y now contians onyl in-suite vals
+      // y now contains only in-suite vals
       y.sort((a, b) => a - b);
+      // aces high, shift manually if needed
+      if (y[0] === 1) { y.push(1); y.splice(0, 1); }
       y.splice(0, y.length - 5);
       for (let i = y.length - 1; i >= 0; i--) {
         cards_to_score.push(x + y[i]);
