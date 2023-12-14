@@ -736,7 +736,7 @@ class Registry extends ModTemplate {
       $lc: lc,
     };
 
-    let res = await this.app.storage.executeDatabase(sql, params, "registry");
+    let res = await this.app.storage.runDatabase(sql, params, "registry");
 
     return res?.stmt?.changes;
   }
@@ -744,7 +744,7 @@ class Registry extends ModTemplate {
   async onChainReorganization(bid, bsh, lc) {
     var sql = "UPDATE records SET lc = $lc WHERE bid = $bid AND bsh = $bsh";
     var params = { $bid: bid, $bsh: bsh };
-    await this.app.storage.executeDatabase(sql, params, "registry");
+    await this.app.storage.runDatabase(sql, params, "registry");
     return;
   }
 
