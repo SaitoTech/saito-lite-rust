@@ -8,6 +8,10 @@
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
 
+    this.game.state.mandated_offensives = {};
+    this.game.state.mandated_offensives.central = "";
+    this.game.state.mandated_offensives.allies = "";
+
     for (let key in this.game.spaces) {
       let redisplay = false;
       if (this.game.spaces[key].activated_for_combat || this.game.spaces[key].activated_for_movement) {
@@ -31,9 +35,13 @@
     state.events = {};
     state.players = [];
     state.removed = []; // removed cards
-    state.turn = 1;
+    state.turn = 0;
     state.skip_counter_or_acknowledge = 0; // don't skip
     state.cards_left = {};
+
+    state.mandated_offensives = {};
+    state.mandated_offensives.central = "";
+    state.mandated_offensives.allies = "";
 
     state.reserves = {};
     state.reserves['central'] = [];

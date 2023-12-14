@@ -53,6 +53,32 @@ this.updateLog(`###############`);
           this.game.queue.push("attrition_phase");
           this.game.queue.push("action_phase");
           this.game.queue.push("mandated_offensive_phase");
+
+	  if (this.game.state.turn === 1) {
+            this.game.queue.push("guns_of_august");
+	  }
+
+
+	}
+
+	if (mv[0] === "guns_of_august") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.player === this.returnPlayerOfFaction("central")) {
+	    if (this.game.deck[0].hand.includes("cp01")) {
+	      this.addMove("Central Powers start with Guns of August");
+              this.addMove("DEAL\t1\t1\t1"); // deal random other card
+	      this.endTurn()
+	    } else {
+	      this.playerPlayGunsOfAugust();
+	    }
+	  } else {
+	    this.updateStatus("Central Powers considering Guns of August");
+	  }
+
+	  return 0;
+
 	}
 
  	if (mv[0] == "draw_strategy_card_phase") {
@@ -87,7 +113,26 @@ this.updateLog(`###############`);
 	  return 1;
 	}
  	if (mv[0] == "mandated_offensive_phase") {
+
+	  let central = this.rollDice();
+	  let allies = this.rollDice();
+	
+ 	  if (central == 1) { this.game.state.mandated_offensives.central = "AH"; }
+ 	  if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
+ 	  if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
+ 	  if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
+ 	  if (central == 5) { this.game.state.mandated_offensives.central = ""; }
+ 	  if (central == 6) { this.game.state.mandated_offensives.central = ""; }
+ 	  if (allies == 1)  { this.game.state.mandated_offensives.allies = "FR"; }
+ 	  if (allies == 2)  { this.game.state.mandated_offensives.allies = "FR"; }
+ 	  if (allies == 3)  { this.game.state.mandated_offensives.allies = "BR"; }
+ 	  if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
+ 	  if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
+ 	  if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
+
+	  this.mandates_overlay.render({ central : central, allies : allies });
           this.game.queue.splice(qe, 1);
+
 	  return 1;
 	}
 
@@ -358,6 +403,8 @@ console.log("moving forward with combat!");
 	  //
 	  // now show overlay and 
 	  //
+	  this.game.queue.push("combat_attacker_advance");
+	  this.game.queue.push("combat_defender_retreat");
 	  this.game.queue.push("combat_determine_outcome");
 	  this.game.queue.push("combat_play_combat_cards");
 	  this.game.queue.push("combat_evaluate_flank_attack");
@@ -523,6 +570,38 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	}
 
+
+	if (mv[0] === "combat_defender_retreat") {
+
+	  this.game.queue.splice(qe, 1);
+	  let units = this.mod.returnAttackerUnits();
+	  let does_defender_retreat = false;
+
+	  for (let i = 0; i < units.length; i++) {
+	    if (units[i].key.indexOf("army") > 0 && units[i].damaged == false) {
+	      does_defender_retreat = true;
+	    }
+	  }
+
+	  if (does_defender_retreat) {
+	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
+	    if (this.game.player == player) {
+	      this.playerPlayPostCombatRetreat();
+	    } else {
+	      this.updateStatus("Opponent Retreating...");
+	    }
+	    return 0;
+	  } else {
+	    return 1;
+	  }
+
+	}
+
+	if (mv[0] === "combat_attacker_advance") {
+console.log("Attacker Advances!");
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
 
 
 	if (mv[0] == "combat_evaluate_flank_attack") {
