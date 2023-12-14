@@ -280,9 +280,72 @@ alert("display detailed space!");
 
   displayTurnTrack() {
 
+    try {
+
+      document.querySelectorAll(".turn-track").forEach((el) => { el.classList.remove("active"); });
+
+      if (this.game.state.turn_track == 1) { document.querySelector(".turn-track-1").classList.add("active"); }
+      if (this.game.state.turn_track == 2) { document.querySelector(".turn-track-2").classList.add("active"); }
+      if (this.game.state.turn_track == 3) { document.querySelector(".turn-track-3").classList.add("active"); }
+      if (this.game.state.turn_track == 4) { document.querySelector(".turn-track-4").classList.add("active"); }
+      if (this.game.state.turn_track == 5) { document.querySelector(".turn-track-5").classList.add("active"); }
+      if (this.game.state.turn_track == 6) { document.querySelector(".turn-track-6").classList.add("active"); }
+      if (this.game.state.turn_track == 7) { document.querySelector(".turn-track-7").classList.add("active"); }
+      if (this.game.state.turn_track == 8) { document.querySelector(".turn-track-8").classList.add("active"); }
+      if (this.game.state.turn_track == 9) { document.querySelector(".turn-track-9").classList.add("active"); }
+      if (this.game.state.turn_track == 10) { document.querySelector(".turn-track-10").classList.add("active"); }
+      if (this.game.state.turn_track == 11) { document.querySelector(".turn-track-11").classList.add("active"); }
+      if (this.game.state.turn_track == 12) { document.querySelector(".turn-track-12").classList.add("active"); }
+      if (this.game.state.turn_track == 13) { document.querySelector(".turn-track-13").classList.add("active"); }
+      if (this.game.state.turn_track == 14) { document.querySelector(".turn-track-14").classList.add("active"); }
+      if (this.game.state.turn_track == 15) { document.querySelector(".turn-track-15").classList.add("active"); }
+      if (this.game.state.turn_track == 16) { document.querySelector(".turn-track-16").classList.add("active"); }
+      if (this.game.state.turn_track == 17) { document.querySelector(".turn-track-17").classList.add("active"); }
+      if (this.game.state.turn_track == 18) { document.querySelector(".turn-track-18").classList.add("active"); }
+      if (this.game.state.turn_track == 19) { document.querySelector(".turn-track-19").classList.add("active"); }
+      if (this.game.state.turn_track == 20) { document.querySelector(".turn-track-20").classList.add("active"); }
+
+    } catch (err) {
+
+    }
+
   }
 
   displayGeneralRecordsTrack() {
+
+    try {
+
+      let rp_ge     = `<img src="/paths/img/rp_allied.png" />`;
+      let rp_ah     = `<img src="/paths/img/rp_allied.png" />`;
+      let rp_allied = `<img src="/paths/img/rp_allied.png" />`;
+      let rp_br     = `<img src="/paths/img/rp_br.png" />`;
+      let rp_fr     = `<img src="/paths/img/rp_fr.png" />`;
+      let rp_ru     = `<img src="/paths/img/rp_ru.png" />`;
+      let vp_button = `<img src="/paths/img/vp_button.png" />`;
+      let allies_war_status = `<img src="/paths/img/warstatus_ap.png" />`;
+      let central_war_status = `<img src="/paths/img/warstatus_cp.png" />`;
+      let combined_war_status = `<img src="/paths/img/warstatus_combined.png" />`;
+      let current_cp_russian_vp = `<img src="/paths/img/current_cp_russian_vp.png" />`;
+
+      document.querySelectorAll(".general-records-track").forEach((el) => { el.classList.remove("vp"); el.innerHTML = ""; });
+
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += vp_button;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.allies_war_status}`).innerHTML += allies_war_status;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.central_war_status}`).innerHTML += central_war_status;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.combined_war_status}`).innerHTML += combined_war_status;
+
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ge_replacements}`).innerHTML += rp_ge;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ah_replacements}`).innerHTML += rp_ah;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.allied_replacements}`).innerHTML += rp_allied;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.br_replacements}`).innerHTML += rp_br;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.fr_replacements}`).innerHTML += rp_fr;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ru_replacements}`).innerHTML += rp_ru;
+
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.current_cp_russian_vp}`).innerHTML += current_cp_russian_vp;
+
+    } catch (err) {
+      console.log(err);
+    }
 
   }
 
@@ -291,27 +354,131 @@ alert("display detailed space!");
   }
 
   displayMandatedOffensiveTracks() {
+/***
+    if (this.game.state.mandated_offensives.central == "AH") {
 
+    }
+          if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
+          if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
+          if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
+          if (central == 5) { this.game.state.mandated_offensives.central = ""; }
+          if (central == 6) { this.game.state.mandated_offensives.central = ""; }
+          if (allies == 1)  { this.game.state.mandated_offensives.allies = "FR"; }
+          if (allies == 2)  { this.game.state.mandated_offensives.allies = "FR"; }
+          if (allies == 3)  { this.game.state.mandated_offensives.allies = "BR"; }
+          if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
+          if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
+          if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
+***/
   }
 
   displayUSCommitmentTrack() {
+
+    try {
+
+      document.querySelectorAll(".us-commitment-track").forEach((el) => { el.classList.remove("active"); });
+
+      if (this.game.state.us_commitment_track == 1) { 
+        document.querySelector(".us-commitment-track-1").classList.add("active");
+      }
+      if (this.game.state.us_commitment_track == 2) { 
+        document.querySelector(".us-commitment-track-2").classList.add("active");
+      }
+      if (this.game.state.us_commitment_track == 3) { 
+        document.querySelector(".us-commitment-track-3").classList.add("active");
+      }
+      if (this.game.state.us_commitment_track == 4) { 
+        document.querySelector(".us-commitment-track-4").classList.add("active");
+      }
+
+    } catch (err) {
+
+    }
 
   }
 
   displayRussianCapitulationTrack() {
 
+    try {
+
+      document.querySelectorAll(".russian-capitulation-track").forEach((el) => { el.classList.remove("active"); });
+
+      if (this.game.state.russian_capitulation_track == 1) { 
+        document.querySelector(".russian-capitulation-track-1").classList.add("active");
+      }
+      if (this.game.state.russian_capitulation_track == 2) { 
+        document.querySelector(".russian-capitulation-track-2").classList.add("active");
+      }
+      if (this.game.state.russian_capitulation_track == 3) { 
+        document.querySelector(".russian-capitulation-track-3").classList.add("active");
+      }
+      if (this.game.state.russian_capitulation_track == 4) { 
+        document.querySelector(".russian-capitulation-track-4").classList.add("active");
+      }
+      if (this.game.state.russian_capitulation_track == 5) { 
+        document.querySelector(".russian-capitulation-track-5").classList.add("active");
+      }
+      if (this.game.state.russian_capitulation_track == 6) { 
+        document.querySelector(".russian-capitulation-track-6").classList.add("active");
+      }
+      if (this.game.state.russian_capitulation_track == 7) { 
+        document.querySelector(".russian-capitulation-track-7").classList.add("active");
+      }
+      if (this.game.state.russian_capitulation_track == 8) { 
+        document.querySelector(".russian-capitulation-track-8").classList.add("active");
+      }
+
+    } catch (err) {
+
+    }
+
+
   }
 
   displayReserveBoxes() {
+
+    try {
+
+      let arb = document.querySelector(".allies-reserve-box");
+      let crb = document.querySelector(".central-reserve-box");
+
+      arb.innerHTML = "";
+      crb.innerHTML = "";
+
+      for (let z = 0; z < this.game.state.reserves['allies'].length; z++) {
+        arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['allies'][z]}.png" />`;
+      }
+      for (let z = 0; z < this.game.state.reserves['central'].length; z++) {
+        crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['central'][z]}.png" />`;
+      }
+
+    } catch (err) {
+
+    }
 
   }
 
   displayEliminatedUnitsBoxes() {
 
+    try {
+
+      let arb = document.querySelector(".allies-eliminated-units-box");
+      let crb = document.querySelector(".central-eliminated-units-box");
+
+      arb.innerHTML = "";
+      crb.innerHTML = "";
+
+      for (let z = 0; z < this.game.state.eliminated['allies'].length; z++) {
+        arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.eliminated['allies'][z]}.png" />`;
+      }
+      for (let z = 0; z < this.game.state.eliminated['central'].length; z++) {
+        crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.eliminated['central'][z]}.png" />`;
+      }
+
+    } catch (err) {
+
+    }
+
   }
-
-
-
-
 
 

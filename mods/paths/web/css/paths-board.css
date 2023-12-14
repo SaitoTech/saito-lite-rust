@@ -4,6 +4,10 @@
   height: 100px;
   width: 100px;
 }
+.turn-track.active {
+  background-image: url('/paths/img/turn.png');
+  background-size: cover;
+}
 .turn-track-1 {
   top: 213px;
   left: 143px;
@@ -91,6 +95,55 @@
   position: absolute;
   height: 100px;
   width: 100px;
+}
+.general-records-track img {
+  height: 100px;
+  width: 100px;
+  position: absolute;
+}
+.general-records-track img:nth-child(1) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track img:nth-child(2) {
+  top: 0px;
+  left: 0px;
+}
+.general-records-track img:nth-child(3) {
+  top: 10px;
+  left: 10px;
+}
+.general-records-track img:nth-child(4) {
+  top: 20px;
+  left: 20px;
+}
+.general-records-track img:nth-child(5) {
+  top: 30px;
+  left: 30px;
+}
+.general-records-track img:nth-child(6) {
+  top: 40px;
+  left: 40px;
+}
+.general-records-track img:nth-child(7) {
+  top: 50px;
+  left: 50px;
+}
+.general-records-track img:nth-child(8) {
+  top: 60px;
+  left: 60px;
+}
+.general-records-track img:nth-child(9) {
+  top: 70px;
+  left: 70px;
+}
+.general-records-track img:nth-child(10) {
+  top: 80px;
+  left: 80px;
+}
+.general-records-track-0 {
+  top: 2707px;
+  left: 125px;
 }
 .general-records-track-1 {
   top: 2707px;
@@ -426,6 +479,10 @@
   height: 100px;
   width: 100px;
 }
+.us-commitment-track.active {
+  background-image: url('/paths/img/us_entry.png');
+  background-size: cover;
+}
 .us-commitment-track-1 {
   top: 2316px;
   left: 129px;
@@ -450,6 +507,10 @@
   position: absolute;
   height: 100px;
   width: 100px;
+}
+.russian-capitulation-track.active {
+  background-image: url('/paths/img/russian_capit.png');
+  background-size: cover;
 }
 .russian-capitulation-track-1 {
   top: 2507px;
@@ -488,23 +549,60 @@
 
 
 .allies-reserve-box {
-  top: 1461px;
-  left: 4605px;
+  top: 1310px;
+  left: 4275px;
+  position: absolute;
+  height: 340px;
+  width: 700px;
+  display: flex;
+  flex-direction: rows;
 }
+
 .central-reserve-box {
-  top: 1006px;
-  left: 4605px;
+  top: 870px;
+  left: 4275px;
+  position: absolute;
+  height: 340px;
+  width: 700px;
+  display: flex;
+  flex-direction: rows;
 }
 
+.allies-reserve-box .army-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 100px;
+  max-height: 100px;
+}
 
+.central-reserve-box .army-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 100px;
+  max-height: 100px;
+}
 
 .allies-eliminated-units-box
-  top: 3036px;
-  left: 2060px;
+  top: 2950px;
+  left: 1890px;
+  position: absolute;
+  height: 240px;
+  width: 410px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
+
 .central-eliminated-units-box {
-  top: 209px;
-  left: 1226px;
+  top: 130px;
+  left: 1060px;
+  position: absolute;
+  height: 240px;
+  width: 410px;
+  display: flex;
+  flex-direction: column;
 }
 
 

@@ -43,9 +43,31 @@
     state.mandated_offensives.central = "";
     state.mandated_offensives.allies = "";
 
+    state.general_records_track = {};
+    state.general_records_track.vp = 10;
+    state.general_records_track.allies_war_status = 0;
+    state.general_records_track.central_war_status = 0;
+    state.general_records_track.combined_war_status = 0;
+
+    state.general_records_track.ge_replacements = 0;
+    state.general_records_track.ah_replacements = 0;
+    state.general_records_track.allied_replacements = 0;
+    state.general_records_track.br_replacements = 0;
+    state.general_records_track.fr_replacements = 0;
+    state.general_records_track.ru_replacements = 0;
+
+    state.general_records_track.current_cp_russian_vp = 0;
+
+    state.us_commitment_track = 1;
+    state.russian_capitulation_track = 1;
+
     state.reserves = {};
-    state.reserves['central'] = [];
-    state.reserves['allies'] = [];
+    state.reserves['central'] = ["ah_corps","ah_corps","ah_corps","ah_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps"];
+    state.reserves['allies'] = ["it_corps","it_corps","it_corps","it_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","br_corps","bef_corps","ru_corps","ru_corps","ru_corps","ru_corps","ru_corps","be_corps","sb_corps","sb_corps"];
+
+    state.eliminated = {};
+    state.eliminated['central'] = [];
+    state.eliminated['allies'] = [];
 
     state.rp = {};
     state.rp['central'] = {};
