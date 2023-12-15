@@ -3,7 +3,23 @@
 echo "Builing Lite Client ($1 $2)"
 echo ""
 
+     echo "  Updating build number in options file"
+currentTime=$(date +%s)
+echo "  Current Timestamp: $currentTime"
 
+
+buildJsonFile="./config/build.json"
+
+
+if [ ! -f "$buildJsonFile" ]; then
+    echo "  build.json not found, creating file..."
+    mkdir -p ./config
+    echo '{"build_number": "0"}' > "$buildJsonFile"
+fi
+
+
+jq '.build_number = "'$currentTime'"' "$buildJsonFile" | sponge "$buildJsonFile"
+echo "  Build number updated in build.json"
 
 echo "Consolidaging CSS files"
 echo ""
@@ -382,24 +398,6 @@ if [ "$1" == "recompile" ]; then
   time node webpack/webpack.config.cjs $2 $3
 
   post_compile
-
-       echo "  Updating build number in options file"
-currentTime=$(date +%s)
-echo "  Current Timestamp: $currentTime"
-
-
-buildJsonFile="./config/build.json"
-
-
-if [ ! -f "$buildJsonFile" ]; then
-    echo "  build.json not found, creating file..."
-    mkdir -p ./config
-    echo '{"build_number": "0"}' > "$buildJsonFile"
-fi
-
-
-jq '.build_number = "'$currentTime'"' "$buildJsonFile" | sponge "$buildJsonFile"
-echo "  Build number updated in build.json"
 
 
 fi
