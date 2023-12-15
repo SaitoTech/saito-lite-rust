@@ -100,7 +100,7 @@ class RedSquare extends ModTemplate {
 
     this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
 
-    this.scripts = ["/saito/lib/virtual-bg/virtual-bg.js", "/saito/lib/hammer/hammer.min.js"];
+    this.scripts = ["/saito/lib/hammer/hammer.min.js"];
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 

@@ -1,8 +1,6 @@
 const videoBoxTemplate = require("./video-box.template");
 const { setTextRange } = require("typescript");
 
-// import {applyVideoBackground } from 'virtual-bg';
-
 class VideoBox {
   constructor(app, mod, peer, container_class = "", isPresentation = false) {
     this.app = app;
