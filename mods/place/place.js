@@ -48,20 +48,20 @@ class Place extends ModTemplate {
       return;
     }
     if (service.service === "place") {
-      this.loadTilegridFromPeer(peer);
+      await this.loadGridFromPeer(peer);
     }
   }
 
-  loadTilegridFromPeer(peer) {
-    const sql = "SELECT * FROM tiles";
-    this.sendPeerDatabaseRequestWithFilter(this.name, sql, (res) => {
+  async loadGridFromPeer(peer) {
+    const sql = `SELECT * FROM tiles WHERE i < ${this.gridSize} AND j < ${this.gridSize}`;
+    this.sendPeerDatabaseRequestWithFilter(this.name, sql, async (res) => {
       if (res.rows) {
-        res.rows.forEach((row) => {
-          this.updateTile(
+        for (const row of res.rows) {
+          await this.updateTile(
             {i: row.i, j: row.j, color: this.componentsToColor([row.red, row.green, row.blue])},
             "confirmed", row.ordinal
           );
-        });
+        }
       }
     });
   }
@@ -136,22 +136,29 @@ class Place extends ModTemplate {
   }
 
   async updateTile(tile, status, ordinal=null) {
-    await this.updateTiles([tile], status, ordinal)
+    await this.updateTiles([tile], status, ordinal);
   }
 
   async updateTiles(tileArray, status, ordinal=null) {
-    const locatedStateArray = [];
-    for (const tile of tileArray) {
-      locatedStateArray.push(this.gridState.updateTile(tile, status, ordinal));
-    }
+    const locatedStateArray = tileArray.map((tile) => this.gridState.updateTile(tile, status, ordinal));
     if (this.app.BROWSER) {
-      for (const locatedState of locatedStateArray) {
-        this.placeUI.updateTileRendering(locatedState);
-      }
+      this.placeUI.updateTilesRendering(locatedStateArray);
     } else if (status === "confirmed") {
-      let i, j, state, components;
-      const sqlValues = [], params = {};
-      for (let k = 0; k < locatedStateArray.length; k++) {
+      await this.updateTilesInDatabase(locatedStateArray, ordinal);
+    }
+  }
+
+  async updateTilesInDatabase(locatedStateArray, ordinal) {
+    const maxSqlValueNumber = 999, nbSqlColumns = 6;
+    const nbTilesPerStatement = Math.ceil(maxSqlValueNumber / nbSqlColumns) - 1;
+    const nbTiles = locatedStateArray.length;
+    const nbStatements = Math.ceil(nbTiles / nbTilesPerStatement);
+    let kMin, kMax, sqlValues, params, i, j, state, components;
+    for (let n = 0; n < nbStatements; n++) {
+      kMin = n * nbTilesPerStatement;
+      kMax = Math.min(nbTiles, (n+1) * nbTilesPerStatement);
+      sqlValues = [], params = {};
+      for (let k = kMin; k < kMax; k++) {
         sqlValues.push(`($i${k}, $j${k}, $red${k}, $green${k}, $blue${k}, $ordinal${k})`);
         ({i: i, j: j, state: state} = locatedStateArray[k]);
         components = this.colorToComponents(state.confirmed.color);
