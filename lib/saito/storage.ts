@@ -430,7 +430,7 @@ class Storage {
       });
     };
 
-    fs.watchFile('config/build.json', { interval: 1000 }, (curr, prev) => {
+    fs.watchFile('web/saito/saito.js', { interval: 1000 }, (curr, prev) => {
       checkBuildNumber();
     });
 
