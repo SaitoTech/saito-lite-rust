@@ -52,7 +52,7 @@ module.exports = (app, mod, build_number) => {
     body::before {
       content: "";
       opacity: 1;
-      z-index: 16;
+      z-index: 160;
       /*saito-header has z-index:15 */
       position: absolute;
       top: 0;
@@ -63,8 +63,6 @@ module.exports = (app, mod, build_number) => {
       /* hardcode bg colors used because saito-variables arent accessible here */
       background-color: #180c24;
       background-image: url('/saito/img/tiled-logo.svg');
-      transition: all 1s ease-in-out;
-      -webkit-transition: all 1s ease-in-out;
     }
   </style>
   </head>
