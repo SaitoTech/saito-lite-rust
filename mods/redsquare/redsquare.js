@@ -351,7 +351,7 @@ class RedSquare extends ModTemplate {
               let newtx = new Transaction();
               newtx.deserialize_from_web(this.app, window.tweets[z]);
               //console.log(newtx);
-              //              this.addTweet(newtx);
+              this.addTweet(newtx);
             }
           }
         } catch (err) {
