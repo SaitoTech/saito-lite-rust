@@ -2032,7 +2032,7 @@ class Browser {
       siteMessage(`New software update found: ${receivedBuildNumber}. Updating...`);
       setTimeout(function () {
         window.location.reload();
-      }, 1000);
+      }, 3000);
     }
   }
 }
