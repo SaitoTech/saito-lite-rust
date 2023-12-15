@@ -183,10 +183,13 @@ function reset_nonpersistent {
   fi
 
   if [ ! -f ./config/modules.config.js ]; then
+    echo "copying modules from default list"
+    echo ""
     cp ./config/modules.default.js ./config/modules.config.js
   fi
 
   if [ -f ./config/options.conf ]; then
+    echo "copying options from defaults"
     cp ./config/options.conf ./config/options
   else
     cp ./config/options.conf.template ./config/options
@@ -381,9 +384,14 @@ if [ "$1" == "recompile" ]; then
   echo ""
 
   # making sure we have some modules defined.
-  if [ -f config/modules.config.js ]; then
+
+  if [ ! -f ./config/modules.config.js ]; then
+    echo "copying modules from default list"
+    echo ""
     cp ./config/modules.default.js ./config/modules.config.js
   fi
+
+
 
   reset_bundler
 
