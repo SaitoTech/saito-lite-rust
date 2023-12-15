@@ -18,6 +18,7 @@ config/options.*
 config/modules.config.js
 config/runtime.config.js
 config/mixin-credentials.js
+config/build.json
 
 .gitignore
 compile-e

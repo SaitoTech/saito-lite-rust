@@ -224,7 +224,12 @@ class Mods {
     this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
       // await this.app.network.propagateServices(peerIndex);
       let peer = await this.app.network.getPeer(BigInt(peerIndex));
-      console.log("handshake completing");
+      if (this.app.BROWSER == 0) {
+        let data = `{"build_number": "${this.app.build_number}"}`;
+        console.info(data);
+        this.app.network.sendRequest("software-update", data, null, peer);
+      }
+      console.log("handshake complete");
       await onPeerHandshakeComplete(peer);
     });
 
@@ -246,8 +251,9 @@ class Mods {
 
     this.is_initialized = true;
 
+    //deprecated as build number now an app property
     if (this.app.BROWSER === 0) {
-      await this.app.modules.getBuildNumber();
+      //await this.app.modules.getBuildNumber();
     }
 
 
@@ -506,11 +512,13 @@ class Mods {
     }
   }
 
+  /*
   async getBuildNumber() {
     for (let i = 0; i < this.mods.length; i++) {
       await this.mods[i].getBuildNumber()
     }
   }
+  */
 }
 
 export default Mods;

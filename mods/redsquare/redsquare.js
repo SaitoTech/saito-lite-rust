@@ -2190,7 +2190,7 @@ class RedSquare extends ModTemplate {
 
               res.setHeader("Content-type", "text/html");
               res.charset = "UTF-8";
-              res.send(redsquareHome(app, redsquare_self, redsquare_self.build_number));
+              res.send(redsquareHome(app, redsquare_self, app.build_number));
             });
 
             return;
@@ -2245,7 +2245,7 @@ class RedSquare extends ModTemplate {
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self, redsquare_self.build_number));
+      res.send(redsquareHome(app, redsquare_self, app.build_number));
       return;
     });
 

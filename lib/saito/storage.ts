@@ -408,7 +408,8 @@ class Storage {
             for (let i = 0; i < jsonString.length; i++) {
               uint8Array[i] = jsonString.charCodeAt(i);
             }
-            await this.app.modules.getBuildNumber();
+            //await this.app.modules.getBuildNumber();
+            this.app.build_number = Number(buildNumber);
             let peers = await this.app.network.getPeers();
             console.log('peers', peers)
             peers.forEach(peer => {
@@ -429,7 +430,7 @@ class Storage {
       });
     };
 
-    fs.watchFile('config/build.json', { interval: 1000 }, (curr, prev) => {
+    fs.watchFile('web/saito/saito.js', { interval: 1000 }, (curr, prev) => {
       checkBuildNumber();
     });
 
