@@ -46,6 +46,10 @@ module.exports = (app, mod, build_number) => {
   <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
   <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
 
+  <script src="/saito/lib/pace/pace.min.js"></script>
+  <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
+
+
   <title>Saito RedSquare</title>
   <style type="text/css">
     /* css for fade-out bg effect while content is loading */
