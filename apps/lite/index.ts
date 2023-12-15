@@ -2,6 +2,7 @@ import { Saito } from "../core";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import mods_config from "../../config/modules.config";
+import build from "../../config/build.json";
 import { initialize as initSaito } from "saito-js/index.web";
 import S from "saito-js/saito";
 import WebSharedMethods from "saito-js/lib/custom/shared_methods.web";
@@ -105,6 +106,9 @@ async function init() {
 
   saito.options.browser_mode = true;
   saito.options.spv_mode = true;
+  saito.build_number = parseInt(build.build_number);
+  console.info("Build Number: " + saito.build_number);
+
 
   // saito.storage.convertOptionsBigInt(saito.options);
 

@@ -9,7 +9,7 @@ echo ""
 for d in mods/*/ ;
 do
   if [ -d "$d"/web/css ]; then
-    if [ "$1" == "dev" ] | [ "$2" == "dev" ]; then
+    if [ "$1" == "dev" ] || [ "$2" == "dev" ]; then
       echo "link module css in $d"
       find "$d"web/css/ -type f -name '*.css' 2>/dev/null | sed 's/mods.*web\///' | sed 's/^/@import url(".\//' | sed 's/$/");/' > "$d"web/style.css 
     else
@@ -24,7 +24,7 @@ done
 
 echo ""
 
-if [ "$1" == "dev" ] | [ "$2" == "dev" ]; then
+if [ "$1" == "dev" ] || [ "$2" == "dev" ]; then
   echo "linking game-*.css files into game.css"
   find ./web/saito/ -type f -name 'game-*.css' | sed 's/\.\/web/@import url("/' | sed 's/$/");/' > ./web/saito/game.css
   echo "linking saito-*.css files into saito.css"
@@ -48,11 +48,26 @@ echo ""
 echo "CSS complete"
 echo ""
 
+if [ "$1" == "dev" ] || [ "$2" == "dev" ]; then
+  echo ""
+  echo "Dev build - don't update build number"
+  echo ""
+else 
+  echo ""
+  echo "Updating Build Number"
+  currentTime=$(date +%s)
+  echo '{"build_number": "'$currentTime'"}' > ./config/build.json
+  cat ./config/build.json | sed 's/_/\ /' | sed 's/[{}"]//g'
+  echo ""
+fi
+
+
 function post_compile {
 
   cp ./lib/saito/boot.js ./web/saito/saito2.js
   cat ./web/saito/saito.js >> ./web/saito/saito2.js
   mv -f ./web/saito/saito2.js ./web/saito/saito.js
+
   echo -e "\ndone!"
 }
 
@@ -306,6 +321,7 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   reset_nonpersistent
   reset_persistent
   reset_bundler
+
   time node webpack/webpack.config.cjs $2 $3
 
   post_compile
@@ -354,25 +370,22 @@ if [ "$1" == "recompile" ]; then
 
   post_compile
 
-     echo "  Updating build number in options file"
-currentTime=$(date +%s)
-echo "  Current Timestamp: $currentTime"
-
-
-buildJsonFile="./config/build.json"
-
-
-if [ ! -f "$buildJsonFile" ]; then
-    echo "  build.json not found, creating file..."
-    mkdir -p ./config
-    echo '{"build_number": "0"}' > "$buildJsonFile"
-fi
-
-
-jq '.build_number = "'$currentTime'"' "$buildJsonFile" | sponge "$buildJsonFile"
-echo "  Build number updated in build.json"
 
 fi
+
+#buildJsonFile="./config/build.json"
+
+#if [ ! -f "$buildJsonFile" ]; then
+#    echo "  build.json not found, creating file..."
+#    mkdir -p ./config
+#    echo '{"build_number": "0"}' > "$buildJsonFile"
+#fi
+
+
+#jq '.build_number = "'$currentTime'"' "$buildJsonFile" | sponge "$buildJsonFile"
+#echo "  Build number updated in build.json"
+
+#fi
 
 
 

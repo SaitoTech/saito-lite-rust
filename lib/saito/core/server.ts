@@ -275,13 +275,12 @@ class Server {
 
     const wss = new ws.Server({
       noServer: true,
-      // port:5001, // TODO : setup this correctly
       path: "/wsopen",
+
     });
     webserver.on("upgrade", (request: any, socket: any, head: any) => {
       // console.debug("connection upgrade ----> " + request.url);
       const { pathname } = parse(request.url);
-      console.info('### upgrade pathname: ' + pathname);
       if (pathname === "/wsopen") {
         wss.handleUpgrade(request, socket, head, (websocket: any) => {
           wss.emit("connection", websocket, request);
@@ -296,7 +295,6 @@ class Server {
     wss.on("connection", (socket: any, request: any) => {
       const { pathname } = parse(request.url);
       console.log('connection established')
-      console.info('### connection pathname: ' + pathname);
       let index = S.getInstance().addNewSocket(socket);
 
       socket.on("message", (buffer: any) => {

@@ -13,7 +13,7 @@ module.exports = (app, mod, build_number) => {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
   
     <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css?build=${build_number}"" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
   
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
