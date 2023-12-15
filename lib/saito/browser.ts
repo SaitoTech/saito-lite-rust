@@ -55,8 +55,8 @@ class Browser {
     }
     this.app.connection.on("new-version-detected", (version, peerIndex) => {
       console.log("New wallet version detected: " + version);
-      localStorage.setItem('wallet_version', JSON.stringify(version));
-      //window.location.reload();
+      //localStorage.setItem('wallet_version', JSON.stringify(version));
+      window.location.reload();
     });
 
     try {
