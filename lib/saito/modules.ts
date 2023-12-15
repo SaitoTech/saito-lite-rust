@@ -224,6 +224,11 @@ class Mods {
     this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
       // await this.app.network.propagateServices(peerIndex);
       let peer = await this.app.network.getPeer(BigInt(peerIndex));
+      if (this.app.BROWSER == 0) {
+        let data = `{"build_number": "${this.app.build_number}"}`;
+        console.info(data);
+        this.app.network.sendRequest("software-update", data, null, peer);
+      }
       console.log("handshake complete");
       await onPeerHandshakeComplete(peer);
     });

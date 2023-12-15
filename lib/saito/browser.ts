@@ -223,7 +223,9 @@ class Browser {
       };
 
       window.addEventListener("resize", debounce(updateViewHeight, 200));
-      setTimeout(() => { updateViewHeight(); }, 200);
+      setTimeout(() => {
+        updateViewHeight();
+      }, 200);
     } catch (err) {
       if (err == "ReferenceError: document is not defined") {
         console.log("non-browser detected: " + err);
@@ -386,7 +388,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) { }
+    } catch (err) {}
     return "";
   }
 
@@ -397,7 +399,7 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) { }
+    } catch (err) {}
     return "en";
   }
 
@@ -1179,8 +1181,8 @@ class Browser {
             if (
               Math.abs(
                 element_to_move.getBoundingClientRect().x +
-                element_to_move.getBoundingClientRect().width -
-                window.innerWidth
+                  element_to_move.getBoundingClientRect().width -
+                  window.innerWidth
               ) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
@@ -1191,8 +1193,8 @@ class Browser {
             if (
               Math.abs(
                 element_to_move.getBoundingClientRect().y +
-                element_to_move.getBoundingClientRect().height -
-                window.innerHeight
+                  element_to_move.getBoundingClientRect().height -
+                  window.innerHeight
               ) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
@@ -1615,9 +1617,9 @@ class Browser {
           }
         }
 
-        return `<a ${url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
-          } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
-
+        return `<a ${
+          url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
+        } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
       });
 
       //trim lines at start and end
@@ -2015,23 +2017,24 @@ class Browser {
       } else {
         return true;
       }
-    } catch (err) { }
+    } catch (err) {}
     return false;
   }
 
-
   updateSoftwareVersion(receivedBuildNumber: number) {
-    let savedBuildNumber = localStorage.getItem('build_number');
-    let currentBuildNumber = savedBuildNumber ? BigInt(Number(savedBuildNumber)) : BigInt(0);
-    console.log(`Received build number: ${BigInt(Number(receivedBuildNumber))}, Current build number: ${currentBuildNumber}`);
-    if (receivedBuildNumber > currentBuildNumber) {
+    console.log(
+      `Received build number: ${Number(receivedBuildNumber)}, Current build number: ${
+        this.app.build_number
+      }`
+    );
+    if (receivedBuildNumber > this.app.build_number) {
       console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
-      window.location.reload(true);
-    } else {
+      siteMessage(`New software update found: ${receivedBuildNumber}. Updating...`);
+      setTimeout(function () {
+        window.location.reload();
+      }, 1000);
     }
   }
-
-
 }
 
 export default Browser;
