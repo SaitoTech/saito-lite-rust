@@ -364,9 +364,9 @@ class Storage {
 
   async queryDatabase(sql, params, database) {}
 
-  async insertDatabase(sql, params, database, mycallback = null) {}
+  async runDatabase(sql, params, database, mycallback = null) {}
 
-  async executeDatabase(sql, params, database, mycallback = null) {}
+  async executeDatabase(sql, database) {}
 
   generateBlockFilename(block: Block): string {
     return ""; // empty

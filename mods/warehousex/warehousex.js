@@ -91,7 +91,7 @@ class Warehousex extends ModTemplate {
                     $tx_msg: tx_msg,
                 }
                 // console.log(params);
-                await this.app.storage.executeDatabase(sql, params, "warehousex");
+                await this.app.storage.runDatabase(sql, params, "warehousex");
 
                 /*
                 TODO: if tx_module is a game(s) or redsquare... 

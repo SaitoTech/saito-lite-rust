@@ -170,7 +170,7 @@ class Place extends ModTemplate {
         params[`$ordinal${k}`] = ordinal;
       }
       const sql = "REPLACE INTO tiles (i, j, red, green, blue, ordinal) VALUES\n" + sqlValues.join(",\n");
-      await this.app.storage.executeDatabase(sql, params, "place");
+      await this.app.storage.runDatabase(sql, params, "place");
     }
   }
 

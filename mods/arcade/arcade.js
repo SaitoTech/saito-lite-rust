@@ -794,7 +794,7 @@ class Arcade extends ModTemplate {
       $created_at: created_at,
       $winner: "",
     };
-    await this.app.storage.executeDatabase(sql, params, "arcade");
+    await this.app.storage.runDatabase(sql, params, "arcade");
   }
 
   ////////////
@@ -970,7 +970,7 @@ class Arcade extends ModTemplate {
                SET status = $status
                WHERE game_id = $game_id`;
     let params = { $status: newStatus, $game_id: game_id };
-    await this.app.storage.executeDatabase(sql, params, "arcade");
+    await this.app.storage.runDatabase(sql, params, "arcade");
   }
 
   //////////////
@@ -1010,7 +1010,7 @@ class Arcade extends ModTemplate {
       $timestamp: txmsg.timestamp,
       $game_id: txmsg.game_id,
     };
-    await this.app.storage.executeDatabase(sql, params, "arcade");
+    await this.app.storage.runDatabase(sql, params, "arcade");
 
     if (this.debug) {
       console.log("Winner updated in arcade");
@@ -1040,7 +1040,7 @@ class Arcade extends ModTemplate {
         $step: JSON.stringify(txmsg.step),
         $game_id: txmsg.game_id,
       };
-      await this.app.storage.executeDatabase(sql, params, "arcade");
+      await this.app.storage.runDatabase(sql, params, "arcade");
 
       await this.app.storage.saveTransaction(tx, { field1: txmsg.module + "_" + txmsg.game_id }, "localhost");
     }
@@ -1439,7 +1439,7 @@ class Arcade extends ModTemplate {
         $game_id: id,
       };
 
-      await this.app.storage.executeDatabase(sql, params, "arcade");
+      await this.app.storage.runDatabase(sql, params, "arcade");
     }
   }
 
