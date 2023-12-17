@@ -1,6 +1,8 @@
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
 import Transaction from "./transaction";
+import path from "path";
+import fs from 'fs'
 
 class Mods {
   public app: Saito;
@@ -70,14 +72,20 @@ class Mods {
     peer: Peer,
     mycallback: (any) => Promise<void> = null
   ) {
+
     let have_responded = false;
     let request = "";
     try {
       let txmsg = tx.returnMessage();
       request = txmsg?.request;
+      if (txmsg?.request === "software-update") {
+        let receivedBuildNumber = JSON.parse(tx.msg.data).build_number;
+        this.app.browser.updateSoftwareVersion(receivedBuildNumber)
+      }
+
     } catch (err) { }
+
     for (let iii = 0; iii < this.mods.length; iii++) {
-      //console.log(`peer request (${request}), hpt into... ` + this.mods[iii].name);
       try {
         if (await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback)) {
           have_responded = true;
@@ -95,6 +103,8 @@ class Mods {
   }
 
   async initialize() {
+
+
 
     //
     // remove any disabled / inactive modules
@@ -214,6 +224,11 @@ class Mods {
     this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
       // await this.app.network.propagateServices(peerIndex);
       let peer = await this.app.network.getPeer(BigInt(peerIndex));
+      if (this.app.BROWSER == 0) {
+        let data = `{"build_number": "${this.app.build_number}"}`;
+        console.info(data);
+        this.app.network.sendRequest("software-update", data, null, peer);
+      }
       console.log("handshake complete");
       await onPeerHandshakeComplete(peer);
     });
@@ -232,7 +247,15 @@ class Mods {
       this.onConnectionStable(peer);
     });
 
+
+
     this.is_initialized = true;
+
+    //deprecated as build number now an app property
+    if (this.app.BROWSER === 0) {
+      //await this.app.modules.getBuildNumber();
+    }
+
 
     //
     // .. and setup active module
@@ -488,6 +511,14 @@ class Mods {
       await this.mods[i].onUpgrade(type, privatekey, walletfile);
     }
   }
+
+  /*
+  async getBuildNumber() {
+    for (let i = 0; i < this.mods.length; i++) {
+      await this.mods[i].getBuildNumber()
+    }
+  }
+  */
 }
 
 export default Mods;

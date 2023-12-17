@@ -3,11 +3,16 @@ import Transaction from "./transaction";
 import { Saito } from "../../apps/core";
 import Block from "./block";
 const localforage = require("localforage");
-
+import fs from "fs";
+import path from "path";
 class Storage {
   public app: Saito;
   public active_tab: any;
   public timeout: any;
+  currentBuildNumber: bigint = BigInt(0);
+
+
+
 
   constructor(app) {
     this.app = app || {};
@@ -17,6 +22,12 @@ class Storage {
 
   async initialize() {
     await this.loadOptions();
+
+    if (this.app.BROWSER === 0) {
+      this.watchBuildFile()
+    }
+
+
     return;
   }
 
@@ -222,7 +233,7 @@ class Storage {
 
   }
 
-  async deleteTransactions(obj = {}, mycallback = null , peer = null) {
+  async deleteTransactions(obj = {}, mycallback = null, peer = null) {
     const message = "archive";
     let data: any = {};
     data.request = "multidelete";
@@ -321,7 +332,7 @@ class Storage {
   /**
    * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
    **/
-  deleteBlockFromDisk(filename) {}
+  deleteBlockFromDisk(filename) { }
 
   async loadBlockById(bid): Promise<Block> {
     return null;
@@ -355,29 +366,88 @@ class Storage {
     return "";
   }
 
-  saveClientOptions() {}
+  saveClientOptions() { }
 
   async returnDatabaseByName(dbname) {
     return null;
   }
 
-  async returnBlockFilenameByHash(block_hash, mycallback) {}
+  async returnBlockFilenameByHash(block_hash, mycallback) { }
 
   returnTokenSupplySlipsFromDisk(): any {
     return [];
   }
 
-  returnBlockFilenameByHashPromise(block_hash: string) {}
+  returnBlockFilenameByHashPromise(block_hash: string) { }
 
-  async queryDatabase(sql, params, database) {}
+  async queryDatabase(sql, params, database) { }
 
-  async insertDatabase(sql, params, database, mycallback = null) {}
+  async runDatabase(sql, params, database, mycallback = null) { }
 
-  async executeDatabase(sql, params, database, mycallback = null) {}
+  async executeDatabase(sql, database) { }
 
   generateBlockFilename(block: Block): string {
     return ""; // empty
   }
+
+  watchBuildFile(): void {
+    const checkBuildNumber = async () => {
+      const filePath = path.join(__dirname, '/config/build.json');
+      fs.readFile('config/build.json', 'utf8', async (err, data) => {
+        if (err) {
+          console.error('Error reading options file:', err);
+          return;
+        }
+        try {
+          const jsonData = JSON.parse(data);
+          const buildNumber = BigInt(jsonData.build_number);
+          if (Number(this.currentBuildNumber) < Number(buildNumber)) {
+            let buffer = { buildNumber };
+            let jsonString = JSON.stringify(buffer);
+            let uint8Array = new Uint8Array(jsonString.length);
+            for (let i = 0; i < jsonString.length; i++) {
+              uint8Array[i] = jsonString.charCodeAt(i);
+            }
+            //await this.app.modules.getBuildNumber();
+            this.app.build_number = Number(buildNumber);
+            let peers = await this.app.network.getPeers();
+            console.log('peers', peers)
+            peers.forEach(peer => {
+              this.app.network.sendRequest("software-update", data, null, peer);
+            })
+
+            this.currentBuildNumber = buildNumber;
+
+            console.log('Updated build number to:', this.currentBuildNumber);
+          } else {
+            // console.log("Current build number is up-to-date or higher");
+          }
+
+
+        } catch (e) {
+          console.error('Error parsing JSON from options file:', e);
+        }
+      });
+    };
+
+    fs.watchFile('web/saito/saito.js', { interval: 1000 }, (curr, prev) => {
+      checkBuildNumber();
+    });
+
+
+    const filePath = path.join(__dirname, 'config/build.json');
+
+
+
+
+
+
+
+
+  }
+
+
+
 }
 
 export default Storage;

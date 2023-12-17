@@ -87,7 +87,6 @@ class ChatPopup {
     //
     let x_offset = 1000000;
     let popups_on_page = 0;
-    let am_i_on_page = 0;
 
     document.querySelectorAll(".chat-container").forEach((el) => {
       popups_on_page++;
@@ -97,15 +96,10 @@ class ChatPopup {
       }
     });
 
-    if (document.querySelector(popup_qs)) {
-      am_i_on_page = 1;
-      //this.restorePopup(document.querySelector(popup_qs));
-    }
-
     //
     // insert or replace popup on page
     //
-    if (am_i_on_page == 1) {
+    if (document.querySelector(popup_qs)) {
       let html = `<div class="chat-body">
                     ${
                       this?.no_older_messages
@@ -194,7 +188,7 @@ class ChatPopup {
     }
 
 
-    if (!this.mod.chat_manager_overlay) {
+    if (!this.mod.browser_active && !this.app.browser.isMobileBrowser()) {
       //
       // make draggable and resizable, but no in mobile/main - page
       //
@@ -214,7 +208,7 @@ class ChatPopup {
     let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
     let mximize_icon = document.querySelector(`${popup_qs} .chat-header .chat-maximizer-icon`);
 
-    if (chat_bubble && mximize_icon && !this.mod.chat_manager_overlay) {
+    if (chat_bubble && mximize_icon /*&& !this.mod.chat_manager_overlay*/) {
       chat_bubble.onclick = (e) => {
         if (chatPopup.classList.contains("minimized")) {
           this.restorePopup(chatPopup);

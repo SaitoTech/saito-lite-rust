@@ -210,6 +210,8 @@ class Chat extends ModTemplate {
 
     this.chat_manager.render_manager_to_screen = 1;
 
+    this.styles = ["/saito/saito.css", "/chat/style.css"];
+
     await super.render();
   }
 
