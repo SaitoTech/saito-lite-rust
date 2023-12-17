@@ -2,6 +2,10 @@ html, body {
   overscroll-behavior: none;
 }
 
+.tweet-text a {
+  position: absolute;
+}
+
 .saito-new-tweets {
   position: sticky;
   top: 5px;
