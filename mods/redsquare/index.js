@@ -1,6 +1,5 @@
-module.exports = (app, mod, build_number) => {
-  return `
-    
+module.exports = (app, mod, build_number, recent_tweets = []) => {
+  let html = `
 
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -76,17 +75,20 @@ module.exports = (app, mod, build_number) => {
 </head>
 
 <body>
+</body>`;
 
-</body>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.0.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.1.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.2.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.3.js?x=${new Date().getTime()}"></script>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.4.js?x=${new Date().getTime()}"></script>
-<script type="text/javascript", src="/saito/saito.js?build=${build_number}">
+  html += `<script type="text/javascript">
+  if (!tweets) { 
+    var tweets = [];
+  }`;
 
-</script>
-</html>
+  for (let tweet of recent_tweets) {
+    html += ` tweets.push(\`${tweet}\`);`;
+  }
+  html += `</script>
 
-`;
+<script type="text/javascript" src="/saito/saito.js?build=${build_number}"></script>
+</html>`;
+
+  return html;
 };
