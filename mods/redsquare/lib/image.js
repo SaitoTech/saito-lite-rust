@@ -72,7 +72,7 @@ class RedSquareImage {
 
   attachEvents() {
     let sel =
-      ".tweet-" + this.sig + " > .tweet-body .tweet-preview .tweet-picture > img";
+      ".tweet-" + this.sig + " > .tweet-body .tweet-preview .tweet-picture img";
 
     if (document.querySelectorAll(sel)) {
       document.querySelectorAll(sel).forEach((image) => {
