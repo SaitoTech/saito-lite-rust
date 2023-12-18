@@ -439,7 +439,9 @@ class Archive extends ModTemplate {
   async loadTransactionsWithCallback(obj = {}, callback = null) {
     let txs = await this.loadTransactions(obj);
     if (callback) {
-      callback(txs);
+      return callback(txs);
+    }else{
+      return txs;
     }
   }
 
