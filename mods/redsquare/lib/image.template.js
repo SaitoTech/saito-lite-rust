@@ -5,7 +5,7 @@ module.exports = (app, mod, images) => {
   if (images.length > 1) {
     tweet_picture_height = "200px"
   }
-  if (image.length > 2) {
+  if (images.length > 2) {
     multi_max_height = "150px";
   }
 

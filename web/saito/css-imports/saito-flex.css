@@ -21,6 +21,7 @@
     max-width: 100%;
     min-width: 100%;
     vertical-align: bottom;
+    max-height: var(--multi-max-height);
 }
 
 .saito-img-flex.saito-img-flex-margin {
