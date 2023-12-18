@@ -12,6 +12,7 @@
     height: var(--image-height);
     margin: 2.5px;
     flex-grow: 1;
+    max-height: var(--multi-max-height);
 }
 
 .saito-img-flex>*>img {
