@@ -19,14 +19,15 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
             <div class="league-overlay-header">
                 <div class="league-overlay-header-image" style="background-image: url('${img}')"></div>
                 <div class="league-overlay-header-title-box">
-                    <div class="league-overlay-header-title-box-title">${league.name}</div>
+                    <div class="league-overlay-header-title-box-title ${league.name.length > 15 ? "oversize-load": ""}">${league.name}</div>
                     <div class="league-overlay-header-title-box-desc">${
                       league.admin ? `${game_name} league` : key_words
                     }</div>
                 </div>
                 <div class="league-overlay-controls">
                     <div id="home" class="menu-icon active-tab"><i class="fas fa-house"></i><div class="menu-text">Home</div></div>
-                    <div id="games" class="menu-icon"><i class="fas fa-history"></i><div class="menu-text">Activity</div></div>`;
+                    <div id="games" class="menu-icon"><i class="fas fa-history"></i><div class="menu-text">Activity</div></div>
+                    <div id="rankings" class="menu-icon mobile-only"><i class="fa-solid fa-list-ol"></i><div class="menu-text">Rankings</div></div>`;
 
   if (league.admin) {
     html +=
@@ -111,7 +112,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
              </div>
 
             </div>
-                <div class="league-overlay-leaderboard league-overlay-content-box"></div>
+                <div class="league-overlay-leaderboard league-overlay-content-box hide-scrollbar mobile-hide"></div>
             </div>
         </div>
     </div>
