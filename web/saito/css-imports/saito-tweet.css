@@ -26,7 +26,7 @@
   border-bottom: none;
 }
 
-.tweet.has-reply::after {
+.tweet.has-reply::after, .tweet.has-reply-disconnected::after {
   content: "";
   position: absolute;
   width: 0rem;
@@ -50,7 +50,7 @@
   background-color: var(--saito-background-color);
   z-index: 99;
   top: calc(50% + 1rem);
-  left: 32px;
+  left: 3.2rem;
   line-height: 4.5rem;
 }
 
@@ -58,16 +58,6 @@
   background: var(--saito-background-light);
 }
 
-.tweet.has-reply-disconnected::after {
-  content: "";
-  position: absolute;
-  width: 0rem;
-  height: 100%;
-  top: 5.5rem;
-  left: 3.5rem;
-  border-left: 5px dotted var(--saito-border-color);
-  z-index: 50;
-}
 
 .tweet-header .saito-user .saito-identicon-box .saito-identicon {
   z-index: 51;
@@ -394,10 +384,15 @@
   .tweet {
     padding: 1rem 0 0;
   }
-  .tweet.has-reply::after {
+  .tweet.has-reply::after, .tweet.has-reply-disconnected::after {
     top: 4.5rem;
     left: 1.55rem;
   }
+
+  .tweet.has-reply-disconnected::before {
+    left: 1.3rem;
+  }
+
   .tweet-text {
     padding-bottom: 0;
     line-height: 2rem;
