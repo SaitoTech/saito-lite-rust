@@ -171,13 +171,11 @@ class RedSquareNotification {
   }
 
   attachEvents() {
-    let qs = ".notification-item-" + this.tx.signature;
-    let obj = document.querySelector(qs);
 
-    if (obj) {
+    Array.from(document.querySelectorAll(".tweet-notification")).forEach(obj => {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-        let tweet = this.mod.returnTweet(this.tx.signature);
+        let tweet = this.mod.returnTweet(sig);
 
         if (tweet) {
           this.app.connection.emit("redsquare-tweet-render-request", tweet);
@@ -188,13 +186,14 @@ class RedSquareNotification {
           //
           console.log("Notification tweet not found...");
 
-          this.mod.loadTweetWithSig(this.tx.signature, () => {
-            let tweet = this.mod.returnTweet(this.tx.signature);
+          this.mod.loadTweetWithSig(sig, () => {
+            let tweet = this.mod.returnTweet(sig);
             this.app.connection.emit("redsquare-tweet-render-request", tweet);
           });
         }
       };
-    }
+    });
+
   }
 
   isRendered() {
