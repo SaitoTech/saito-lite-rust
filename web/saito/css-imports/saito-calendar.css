@@ -134,6 +134,6 @@
 }
 
 .today {
-    background-color: var(--saito-primary);
+    background-color: var(--saito-primary--background);
     color: var(--saito-white);
 }

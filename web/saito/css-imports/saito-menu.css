@@ -18,15 +18,16 @@
   align-items: center;
   font-size: 1.92rem;
   position: relative;
+  border-radius: 0.5rem;
 }
 
-
+/*
 .saito-menu>ul>li:hover {
   background: var(--saito-primary-background);
   color: var(--saito-white);
   border-radius: 0.5rem;
 }
-
+*/
 .saito-menu>ul>li:hover p {
   background-color: var(--saito-background-color);
   color: var(--saito-font-color);

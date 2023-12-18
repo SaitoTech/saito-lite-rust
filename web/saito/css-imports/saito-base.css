@@ -313,3 +313,27 @@ Media Queries
     font-size: 1.4rem;
   }
 }
+
+/* ----------------------------------------------------------------
+Highlights and backgrounds
+-----------------------------------------------------------------*/
+
+.saito-highlight {
+  background: var(--saito-primary-background);
+  transition: 0.5s;
+  background-size: 400% auto;
+}
+
+.saito-highlight:hover{
+  background-position: right bottom; /* change the direction of the change here */
+}
+
+.saito-mouseover {
+  transition: background-position 0.5s;
+  background-size: 400% auto;
+}
+
+.saito-mouseover:hover {
+  background: var(--saito-primary-background);
+  background-position: right bottom; /* change the direction of the change here */
+}
