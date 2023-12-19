@@ -19,6 +19,28 @@
     return 2;
   }
 
+  playerPlayAdvance() {
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="advance">advance</li>`;
+    html    += `<li class="card" id="refuse">do not advance</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Advance Full-Strength Units?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "advance") {
+	this.endTurn();
+      }
+
+      if (action === "refuse") {
+	this.endTurn();
+      }
+
+    });
+
+  }
+
   playerPlayPostCombatRetreat() {
 
 alert("Player Playing Post Combat Retreat!");

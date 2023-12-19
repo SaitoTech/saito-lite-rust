@@ -19,9 +19,9 @@
 
         twilight_self.addMove("resolve\tsocgov");
 
-        var ops_to_purge = 3;
-        var ops_purged = {};
-        var available_targets = 0;
+        let ops_to_purge = 3;
+        let ops_purged = {};
+        let available_targets = 0;
 
         const europeanCountries = ["italy", "turkey", "greece", "spain", "france", "westgermany", "uk", "canada", "benelux", "finland", "austria", "denmark", "norway", "sweden"]; 
 

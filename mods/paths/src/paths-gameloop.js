@@ -562,8 +562,6 @@ console.log(JSON.stringify(this.game.state.combat));
 	    // both players lose
 	  }
 
-console.log("handle defender retreat if attacker won and has any full strength units...");
-
 	  this.game.queue.splice(qe, 1);
 
 	  return 1;
@@ -599,8 +597,17 @@ console.log("handle defender retreat if attacker won and has any full strength u
 
 	if (mv[0] === "combat_attacker_advance") {
 console.log("Attacker Advances!");
+
 	  this.game.queue.splice(qe, 1);
-	  return 1;
+
+	  let player = this.returnPlayerOfFaction(this.game.state.combat.attacker_power);
+	  if (this.game.player == player) {
+	    this.playerPlayAdvance();
+	  } else {
+	    this.updateStatus("Opponent deciding on advance...");
+	  }
+
+	  return 0;
 	}
 
 
