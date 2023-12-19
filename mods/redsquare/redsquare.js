@@ -1090,6 +1090,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
+
   //
   // addTweets adds notifications, but we have a separate function here
   // for cached notifications, because we don't want to show all of the
@@ -2160,9 +2161,9 @@ class RedSquare extends ModTemplate {
       (txs) => {
         for (let i = 0; i < txs.length; i++) {
           if (txs[i]?.optional?.update_tx) {
-            // hex_values.push(txs[i]?.optional?.update_tx.serialize_to_web(this.app));
+            hex_values.push(txs[i]?.optional?.update_tx.serialize_to_web(this.app));
           } else {
-            // hex_values.push(txs[i].serialize_to_web(this.app));
+            hex_values.push(txs[i].serialize_to_web(this.app));
           }
         }
 
