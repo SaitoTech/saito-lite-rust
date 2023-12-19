@@ -114,6 +114,11 @@ class TweetManager {
   render(new_mode = "") {
 
     this.app.connection.emit("redsquare-clear-menu-highlighting", new_mode);
+
+    if (document.querySelector(".highlight-tweet")){
+      document.querySelector(".highlight-tweet").classList.remove("highlight-tweet");
+    }
+
     //
     // remove notification at end
     //
@@ -430,9 +435,14 @@ class TweetManager {
   renderTweet(tweet) {
     this.render("tweet");
 
+
     // show the basic tweet first
     if (!tweet.parent_id) {
       tweet.renderWithChildren();
+
+      if (document.querySelector(`.tweet-${tweet.tx.signature}`)){
+        document.querySelector(`.tweet-${tweet.tx.signature}`).classList.add("highlight-tweet");
+      }
     }
 
     // query the whole thread
@@ -441,6 +451,11 @@ class TweetManager {
     this.mod.loadTweetThread(thread_id, () => {
       let root_tweet = this.mod.returnTweet(thread_id);
       root_tweet.renderWithChildrenWithTweet(tweet);
+
+      if (document.querySelector(`.tweet-${tweet.tx.signature}`)){
+        document.querySelector(`.tweet-${tweet.tx.signature}`).classList.add("highlight-tweet");
+      }
+
       this.hideLoader();
     });
 

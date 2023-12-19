@@ -59,6 +59,23 @@
 }
 
 
+.tweet.is-reply{
+  left: 5%;
+  width: 95%;
+}
+
+.tweet.is-reply::after{
+  content: "";
+  position: absolute;
+  width: 0rem;
+  height: 99%;
+  top: 0;
+  left: 0.2rem;
+  border-left: 3px dotted var(--saito-border-color-dark);
+  z-index: 3;
+
+}
+
 .tweet-header .saito-user .saito-identicon-box .saito-identicon {
   z-index: 51;
   position: absolute;
@@ -202,7 +219,7 @@
   display: flex;
 }
 
-.tweet:hover {
+.tweet:hover, .tweet.highlight-tweet {
   background-color: var(--saito-background-light);
 }
 

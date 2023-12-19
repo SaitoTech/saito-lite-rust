@@ -522,7 +522,8 @@ class RedSquare extends ModTemplate {
       // if viewing a specific tweet
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
-      if (tweet_id != "") {
+      if (tweet_id) {
+        console.log("Load tweet on onPeerServiceUp");
         this.loadTweetWithSig(tweet_id, (txs) => {
           for (let z = 0; z < txs.length; z++) {
             this.addTweet(txs[z]);
@@ -1057,10 +1058,9 @@ class RedSquare extends ModTemplate {
       //
       for (let i = 0; i < this.unknown_children.length; i++) {
         if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.signature) {
-          if (tweet.addTweet(this.unknown_children[i]) == 1) {
-            this.unknown_children.splice(i, 1);
-            i--;
-          }
+          tweet.addTweet(this.unknown_children[i]);
+          this.unknown_children.splice(i, 1);
+          i--;
         }
       }
 
@@ -1072,13 +1072,9 @@ class RedSquare extends ModTemplate {
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
-          if (this.tweets[i].addTweet(tweet)) {
-            this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-
-            // We don't want to return 1 here, because most replies will be "quiet"
-            // so it doesn't help to announce new tweets and then have it just be a reply down somewhere
-            // in the feed.... unless we attach the reply, and move the parent up to the top of the feed...
-          }
+          this.tweets[i].addTweet(tweet);
+          this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+          return 0;
         }
       }
 
@@ -1093,6 +1089,7 @@ class RedSquare extends ModTemplate {
       return 0;
     }
   }
+
 
   //
   // addTweets adds notifications, but we have a separate function here
