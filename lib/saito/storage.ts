@@ -178,14 +178,14 @@ class Storage {
           txs.push(tx);
         }
       }
-      mycallback(txs);
+      return mycallback(txs);
     };
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
         return archive_mod.loadTransactionsWithCallback(obj, (res) => {
-          internal_callback(res);
+          return internal_callback(res);
         });
       }
     }

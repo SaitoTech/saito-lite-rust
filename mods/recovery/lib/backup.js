@@ -33,6 +33,10 @@ class Backup {
 
   attachEvents() {
 
+    document.querySelector('#backup-template .saito-overlay-form-cancel').onclick = (e) => {
+      this.modal_overlay.remove();
+    }
+    
     document.querySelector('#backup-template .saito-overlay-form-submit').onclick = (e) => {
       e.preventDefault();
       let email = document.querySelector("#backup-template .saito-overlay-form-email").value;

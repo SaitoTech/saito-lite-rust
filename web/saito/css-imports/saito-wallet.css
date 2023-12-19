@@ -466,13 +466,21 @@
   margin-top: 1rem;
 }
 
-#saito-overlay-submit {
+.saito-overlay-form-submit, .saito-overlay-form-cancel {
   display: block;
-  height: 3rem;
+  height: 3rem !important;
   padding: 0rem;
   line-height: 0rem;
   min-width: 15rem;
   width: auto;
+}
+
+.saito-overlay-form-submit, .saito-overlay-form-subtext {
+  grid-column: span 2;
+}
+
+#backup-template .saito-overlay-subform {
+  gap: 2rem 1rem;
 }
 
 .input-elements-container {

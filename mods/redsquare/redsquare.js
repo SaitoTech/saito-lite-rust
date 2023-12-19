@@ -329,11 +329,13 @@ class RedSquare extends ModTemplate {
     //
     this.loadOptions();
 
-    //
-    // servers update their cache for browsers
-    //
     if (app.BROWSER == 0) {
-      this.updateTweetsCacheForBrowsers();
+      // We don't need to do anything here ...
+      // We used to update the tweets cache
+      // The service node doesn't keep any tweets in memory,
+      // but it may be a good idea in the future to do a quick load of the 10 most recent tweets here
+      // And have the service node process the addTweet function (with a lot of pruning), to keep the most
+      // recent tweets in memory, ready to serve up on a page load request...
     } else {
       //Add myself as a peer...
       this.addPeer("localhost");
@@ -341,24 +343,28 @@ class RedSquare extends ModTemplate {
       //
       // New browser fetch from server cache
       //
-      if (this.browser_active && this.tweet_count == 0) {
-        try {
-          //Prefer our locally cached tweets to the webServer ones
-          if (window?.tweets?.length > 0) {
-            console.log("Using Server Cached Tweets");
-            for (let z = 0; z < window.tweets.length; z++) {
-              //console.log(window.tweets[z]);
-              let newtx = new Transaction();
-              newtx.deserialize_from_web(this.app, window.tweets[z]);
-              //console.log(newtx);
-              this.addTweet(newtx);
+      if (this.browser_active) {
+        if (this.tweet_count == 0) {
+          try {
+            //Prefer our locally cached tweets to the webServer ones
+            if (window?.tweets?.length > 0) {
+              console.log("REDSQUARE: Using Server Cached Tweets");
+              for (let z = 0; z < window.tweets.length; z++) {
+                //console.log(window.tweets[z]);
+                let newtx = new Transaction();
+                newtx.deserialize_from_web(this.app, window.tweets[z]);
+                //console.log(newtx);
+                this.addTweet(newtx);
+              }
             }
+          } catch (err) {
+            console.log("error in initial redsquare post fetch: " + err);
           }
-        } catch (err) {
-          console.log("error in initial redsquare post fetch: " + err);
+          this.tweet_count = 1;
+          this.saveOptions();
+        } else {
+          console.log("REDSQUARE: Ignoring Server Cached Tweets for My Local Archive");
         }
-        this.tweet_count = 1;
-        this.saveOptions();
       }
     }
 
@@ -516,7 +522,8 @@ class RedSquare extends ModTemplate {
       // if viewing a specific tweet
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
-      if (tweet_id != "") {
+      if (tweet_id) {
+        console.log("Load tweet on onPeerServiceUp");
         this.loadTweetWithSig(tweet_id, (txs) => {
           for (let z = 0; z < txs.length; z++) {
             this.addTweet(txs[z]);
@@ -584,7 +591,6 @@ class RedSquare extends ModTemplate {
       }
       if (txmsg.request === "edit tweet") {
         await this.receiveEditTransaction(blk, tx, conf, this.app);
-        this.updateTweetsCacheForBrowsers();
       }
       if (txmsg.request === "create tweet") {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
@@ -1052,10 +1058,9 @@ class RedSquare extends ModTemplate {
       //
       for (let i = 0; i < this.unknown_children.length; i++) {
         if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.signature) {
-          if (tweet.addTweet(this.unknown_children[i]) == 1) {
-            this.unknown_children.splice(i, 1);
-            i--;
-          }
+          tweet.addTweet(this.unknown_children[i]);
+          this.unknown_children.splice(i, 1);
+          i--;
         }
       }
 
@@ -1067,13 +1072,9 @@ class RedSquare extends ModTemplate {
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
-          if (this.tweets[i].addTweet(tweet)) {
-            this.tweets_sigs_hmap[tweet.tx.signature] = 1;
-
-            // We don't want to return 1 here, because most replies will be "quiet"
-            // so it doesn't help to announce new tweets and then have it just be a reply down somewhere
-            // in the feed.... unless we attach the reply, and move the parent up to the top of the feed...
-          }
+          this.tweets[i].addTweet(tweet);
+          this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+          return 0;
         }
       }
 
@@ -1088,6 +1089,7 @@ class RedSquare extends ModTemplate {
       return 0;
     }
   }
+
 
   //
   // addTweets adds notifications, but we have a separate function here
@@ -1766,11 +1768,6 @@ class RedSquare extends ModTemplate {
           );
         }
       }
-
-      //
-      // update cache
-      //
-      this.updateTweetsCacheForBrowsers();
     } catch (err) {
       console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
     }
@@ -2095,13 +2092,11 @@ class RedSquare extends ModTemplate {
 
   //
   // writes the latest 10 tweets to tweets.js
-  //
+  // --- DEPRECATED
   async updateTweetsCacheForBrowsers() {
     if (this.app.BROWSER) {
       return;
     }
-
-    let hex_entries = [];
 
     this.app.storage.loadTransactions(
       { field1: "RedSquare" },
@@ -2139,6 +2134,40 @@ class RedSquare extends ModTemplate {
             console.error("ERROR 2832329: error tweet cache to disk. ", err);
           }
         }
+      },
+      "localhost"
+    );
+  }
+
+  //
+  // Instead of writing 10 tweets.js files to the server FS, we will just dynamically load the 10 most recent tweets
+  // every time we get a webServer request for /redsquare and input that content directly into the index.js template
+  // This should save us a lot of file I/O and the extra network requests to download those 10 js scripts
+  //
+  // This may be (even) faster if we ditch the general storage/archive logic and just directly use SQL
+  //
+  async fetchRecentTweets() {
+    if (this.app.BROWSER) {
+      return;
+    }
+
+    let hex_values = [];
+
+    return this.app.storage.loadTransactions(
+      {
+        field1: "RedSquare",
+        limit: 20,
+      },
+      (txs) => {
+        for (let i = 0; i < txs.length; i++) {
+          if (txs[i]?.optional?.update_tx) {
+            hex_values.push(txs[i]?.optional?.update_tx.serialize_to_web(this.app));
+          } else {
+            hex_values.push(txs[i].serialize_to_web(this.app));
+          }
+        }
+
+        return hex_values;
       },
       "localhost"
     );
@@ -2242,10 +2271,13 @@ class RedSquare extends ModTemplate {
         console.log("Loading OG data failed with error: " + err);
       }
 
+      //Insert recent tweets into the index template directly
+      let recent_tweets = await redsquare_self.fetchRecentTweets();
+
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self, app.build_number));
+      res.send(redsquareHome(app, redsquare_self, app.build_number, recent_tweets));
       return;
     });
 

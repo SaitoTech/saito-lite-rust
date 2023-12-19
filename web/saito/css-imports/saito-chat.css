@@ -643,6 +643,10 @@
   width: 30px;
 }
 
+.chat-manager-header > div.chat-manager-title {
+  cursor: default;
+}
+
 @media screen and (max-width: 720px) {
   .chat-manager-title {
     display: none;

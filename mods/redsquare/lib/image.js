@@ -25,7 +25,7 @@ class RedSquareImage {
 
     for (let i = 0; i < this.images.length; i++) {
       var img = new Image();
-
+      /*
       img.onload = function () {
         //console.log("Image load");
         let available_width_qs = ".tweet-" + sig + " > .tweet-body .tweet-main";
@@ -54,6 +54,7 @@ class RedSquareImage {
           //console.log(obj.style.maxWidth + ", " + obj.style.maxHeight);
         }
       };
+      */
       img.src = this.images[i];
     }
     if (document.querySelector(element)) {
@@ -71,7 +72,7 @@ class RedSquareImage {
 
   attachEvents() {
     let sel =
-      ".tweet-" + this.sig + " > .tweet-body .tweet-preview .tweet-picture > img";
+      ".tweet-" + this.sig + " > .tweet-body .tweet-preview .tweet-picture img";
 
     if (document.querySelectorAll(sel)) {
       document.querySelectorAll(sel).forEach((image) => {
