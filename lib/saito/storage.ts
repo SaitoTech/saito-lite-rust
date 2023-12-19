@@ -401,6 +401,14 @@ class Storage {
         try {
           const jsonData = JSON.parse(data);
           const buildNumber = BigInt(jsonData.build_number);
+          if (typeof this.currentBuildNumber == "undefined") {
+            console.info('Build number undefined');
+            return false;
+          }
+          if (typeof buildNumber == "undefined") {
+            console.info('Error reading build number from file');
+            return false;
+          }
           if (Number(this.currentBuildNumber) < Number(buildNumber)) {
             let buffer = { buildNumber };
             let jsonString = JSON.stringify(buffer);
