@@ -329,11 +329,11 @@ Highlights and backgrounds
 }
 
 .saito-mouseover {
-  transition: background-position 0.5s;
-  background-size: 400% auto;
+  transition: background-position 0.5s !important;
+  background-size: 400% auto !important;
 }
 
 .saito-mouseover:hover {
-  background: var(--saito-primary-background);
-  background-position: right bottom; /* change the direction of the change here */
+  background: var(--saito-primary-background) !important;
+  background-position: right bottom !important;
 }

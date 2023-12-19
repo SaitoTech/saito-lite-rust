@@ -41,7 +41,7 @@ class LeagueRankings {
 
         if (l.rank > 0) {
           html += `
-	          <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
+	          <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking saito-mouseover">
               <div class="saito-table-gamename">${l.name}</div>
               <div class="saito-table-rank">${l.rank}</div>
             </div>
@@ -56,7 +56,7 @@ class LeagueRankings {
       leagues.forEach(l => {
         if (l.rank <= 0) {
           html += `
-	    <div data-id="${l.id}" data-game="${l.game}" class="saito-table-row league-leaderboard-ranking">
+	    <div data-id="${l.id}" data-game="${l.game}" class="saito-table-row league-leaderboard-ranking saito-mouseover">
               <div class="saito-table-gamename">${l.name}</div>
               <div class="saito-table-rank saito-deemphasize">…</div>
             </div>`;

@@ -29,10 +29,12 @@
   border-radius: 0.5rem;
 }
 
+/*
 .chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
   background-color: var(--saito-primary);
   color: var(--saito-background-color);
 }
+*/
 
 .chat-manager-list {
   gap: 0.5rem;

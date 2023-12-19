@@ -17,7 +17,7 @@ class ArcadeMenu {
       let game_mod = this.mod.arcade_games[i];
       gamelist.push([
         game_mod.categories,
-        `<li class="arcade-menu-item" id="${game_mod.name}">${game_mod.returnName()}</li>`,
+        `<li class="arcade-menu-item saito-mouseover" id="${game_mod.name}">${game_mod.returnName()}</li>`,
       ]);
     }
     if (!this.mod.manual_ordering) {

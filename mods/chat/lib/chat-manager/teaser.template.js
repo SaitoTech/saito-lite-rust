@@ -33,7 +33,7 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
   let imgsrc = app.keychain.returnIdenticon(identicon_source);
 
   return `
-  <div class="saito-user ${notification}
+  <div class="saito-user saito-mouseover ${notification}
       ${ group?.online ? " online" : ""} 
       ${ chat_open ? " saito-chat-active" :""}" id="saito-user-${id}" data-id="${id}" data-disable="true">
     <div class="saito-identicon-box">

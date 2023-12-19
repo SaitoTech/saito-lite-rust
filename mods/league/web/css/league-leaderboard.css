@@ -21,10 +21,11 @@
   border-radius: 0.5rem;
 }
 
+/*
 .saito-table-row.league-leaderboard-ranking:hover {
   background: var(--saito-primary);
 }
-
+/*
 .my-leaderboard-position{
   border: 1px solid var(--saito-primary);
 }
