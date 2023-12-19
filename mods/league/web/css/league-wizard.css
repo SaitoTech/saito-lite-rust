@@ -128,7 +128,7 @@
 }
 
 
-input[type="text"], textarea {
+.league-wizard-overlay input[type="text"], textarea {
   margin-bottom: 1rem;
   width: 100%;
   padding: 1rem;
