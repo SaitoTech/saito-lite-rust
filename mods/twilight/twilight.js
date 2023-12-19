@@ -531,8 +531,9 @@ initializeGame(game_id) {
       this.game.options.fallofsaigon = 1;
       this.game.options.fischerspassky = 1;
 
+      this.placeInfluence("turkey", 2, "us");
+      this.placeInfluence("cuba", 3, "ussr");
 /***
-      this.placeInfluence("mexico", 2, "us");
       this.placeInfluence("cuba", 3, "ussr");
       this.placeInfluence("panama", 4, "ussr");
       this.placeInfluence("costarica", 3, "us");
@@ -2717,9 +2718,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["marine", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["defectors", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["cubanmissile", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3244,7 +3245,10 @@ try {
 	      this.addCardToDeck('bayofpigs', "New Card");
 	    }
 	    this.addCardToDeck('fischerspassky', "New Card");
-	    this.addCardToDeck('fallofsaigon', "New Card");
+	    if (this.game.state.events.vietname_revolts == 1 && this.game.state.events.fallofsaigon_added == 0) {
+	      this.game.state.events.fallofsaigon_added = 1;
+	      this.addCardToDeck('fallofsaigon', "New Card");
+	    }
 	  }
 	}
 
@@ -4458,6 +4462,7 @@ console.log("getPrivateKey(): " + privateKey);
 
       //
       // Cuban Missile Crisis
+      //
       if (card === "cancel cuban missile crisis") {
         twilight_self.cancelCubanMissileCrisis();
         return 0;
@@ -11300,9 +11305,9 @@ if (card == "defectors") {
 
         var twilight_self = this;
 
-        var ops_to_purge = (this.game.state.round > 7)? 2: 1;
-        var countries_to_purge = 3;
-        var options_purge = [];
+        let ops_to_purge = (this.game.state.round > 7)? 2: 1;
+        let countries_to_purge = 3;
+        let options_purge = [];
 
         twilight_self.addMove("resolve\teasteuropean");
 
@@ -13716,9 +13721,9 @@ if (card == "defectors") {
 
         twilight_self.addMove("resolve\tsocgov");
 
-        var ops_to_purge = 3;
-        var ops_purged = {};
-        var available_targets = 0;
+        let ops_to_purge = 3;
+        let ops_purged = {};
+        let available_targets = 0;
 
         const europeanCountries = ["italy", "turkey", "greece", "spain", "france", "westgermany", "uk", "canada", "benelux", "finland", "austria", "denmark", "norway", "sweden"]; 
 
@@ -14002,9 +14007,9 @@ if (card == "defectors") {
         twilight_self.addMove("resolve\tsuezcrisis");
         twilight_self.updateStatus("Remove four influence from Israel, UK or France");
 
-        var ops_to_purge = 4;
-        var options_purge = [];
-        var options_available = 0;
+        let ops_to_purge = 4;
+        let options_purge = [];
+        let options_available = 0;
         let options_purged = {};
 
         var israel_ops = twilight_self.countries['israel'].us;
@@ -14640,8 +14645,8 @@ if (card == "defectors") {
     if (card == "voiceofamerica") {
 
 
-      var ops_to_purge = 4;
-      var ops_removable = 0;
+      let ops_to_purge = 4;
+      let ops_removable = 0;
 
       for (var i in this.countries) { if (this.countries[i].ussr > 0) { ops_removable += this.countries[i].ussr; } }
       if (ops_to_purge > ops_removable) { ops_to_purge = ops_removable; }

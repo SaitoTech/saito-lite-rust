@@ -10,9 +10,9 @@
 
         var twilight_self = this;
 
-        var ops_to_purge = (this.game.state.round > 7)? 2: 1;
-        var countries_to_purge = 3;
-        var options_purge = [];
+        let ops_to_purge = (this.game.state.round > 7)? 2: 1;
+        let countries_to_purge = 3;
+        let options_purge = [];
 
         twilight_self.addMove("resolve\teasteuropean");
 
