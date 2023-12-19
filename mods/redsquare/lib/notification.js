@@ -178,6 +178,7 @@ class RedSquareNotification {
         let tweet = this.mod.returnTweet(sig);
 
         if (tweet) {
+          window.history.pushState({}, document.title, `/redsquare?tweet_id=${tweet.thread_id}`);
           this.app.connection.emit("redsquare-tweet-render-request", tweet);
         } else {
           //
