@@ -2160,11 +2160,7 @@ class RedSquare extends ModTemplate {
       (txs) => {
         for (let i = 0; i < txs.length; i++) {
           try {
-            if (txs[i]?.optional?.update_tx) {
-              hex_values.push(txs[i]?.optional?.update_tx?.serialize_to_web(this.app));
-            } else {
-              hex_values.push(txs[i]?.serialize_to_web(this.app));
-            }
+              hex_values.push(txs[i].serialize_to_web(this.app));
           } catch (err) {
             console.log(err);
           }
