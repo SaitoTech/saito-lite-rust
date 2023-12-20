@@ -400,7 +400,6 @@ class ChatPopup {
             document.querySelector(popup_qs + " .saito-notification-dot").remove();
           }
         }
-        console.log(this.is_scrolling);
       };
 
       myBody.addEventListener("scroll", debounce(pollScrollHeight, 100));
@@ -438,7 +437,7 @@ class ChatPopup {
       }
       this.input.clear();
       if (document.querySelector(popup_qs + " .chat-body")) {
-        this.is_scrolling = false;
+        this.is_scrolling = null;
         document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
       }
     };
