@@ -1128,7 +1128,8 @@ class Tweet {
         return 1;
       }
     }
-    return 0;
+
+    return this.unknown_children_sigs_hmap[tweet_sig];
   }
 
   returnChildTweet(tweet_sig) {
@@ -1140,7 +1141,45 @@ class Tweet {
         return this.children[i].returnChildTweet(tweet_sig);
       }
     }
+
+    if (this.unknown_children_sigs_hmap[tweet_sig]){
+      for (let i = 0; i < this.unknown_children.length; i++){
+        if (this.unknown_children[i].tx.signature == tweet_sig){
+          return this.unknown_children[i];
+        }
+      }
+    }
+
     return null;
+  }
+
+  removeChildTweet(tweet_sig){
+    for (let i = 0; i < this.children.length; i++) {
+      if (this.children[i].tx.signature === tweet_sig) {
+        this.children[i].remove();
+        this.children[i].splice(i, 1);
+        this.children_sigs_hmap[tweet_sig] = 0;
+        return;
+      }
+    }
+
+    if (this.unknown_children_sigs_hmap[tweet_sig]){
+      for (let i = 0; i < this.unknown_children.length; i++){
+        if (this.unknown_children[i].tx.signature == tweet_sig){
+          this.unknown_children[i].remove();
+          this.unknown_children[i].splice(i, 1);
+          this.unknown_children_sigs_hmap[tweet_sig] = 0;
+          return;
+        }
+      }
+    }
+
+    //Recursive search if not already found and deleted
+    for (let i = 0; i < this.children.length; i++) {
+      if (this.children[i].hasChildTweet(tweet_sig)){
+        this.children[i].removeChildTweet(tweet_sig);
+      }
+    }
   }
 
   addUnknownChild(tweet) {

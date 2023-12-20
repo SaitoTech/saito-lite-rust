@@ -711,9 +711,8 @@ class Archive extends ModTemplate {
   // the future if it is abused.
   //
   async onNewBlock() {
-    let x = Math.random();
     // 90% of blocks don't try to delete anything
-    if (x < 0.95) {
+    if (Math.random() < 0.95) {
       return;
     }
 
@@ -759,14 +758,12 @@ class Archive extends ModTemplate {
       console.log(rows, "automatically pruned from local archive");
     }
 
-    x = Math.random();
     // 90% of prunings don't vacuum
-    if (x < 0.9) {
+    if (Math.random() < 0.9) {
       return;
     }
 
-    let sql5 = "VACUUM";
-    await this.app.storage.executeDatabase(sql5, "archive");
+    await this.app.storage.executeDatabase("VACCUM", "archive");
   }
 
   //////////////////////////
