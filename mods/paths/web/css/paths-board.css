@@ -1,0 +1,610 @@
+
+.turn-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.turn-track.active {
+  background-image: url('/paths/img/turn.png');
+  background-size: cover;
+}
+.turn-track-1 {
+  top: 213px;
+  left: 143px;
+}
+.turn-track-2 {
+  top: 213px;
+  left: 261px;
+}
+.turn-track-3 {
+  top: 213px;
+  left: 379px;
+}
+.turn-track-4 {
+  top: 213px;
+  left: 498px;
+}
+.turn-track-5 {
+  top: 213px;
+  left: 617px;
+}
+.turn-track-6 {
+  top: 399px;
+  left: 143px;
+}
+.turn-track-7 {
+  top: 399px;
+  left: 261px;
+}
+.turn-track-8 {
+  top: 399px;
+  left: 379px;
+}
+.turn-track-9 {
+  top: 399px;
+  left: 498px;
+}
+.turn-track-10 {
+  top: 399px;
+  left: 616px;
+}
+.turn-track-11 {
+  top: 583px;
+  left: 143px;
+}
+.turn-track-12 {
+  top: 583px;
+  left: 262px;
+}
+.turn-track-13 {
+  top: 583px;
+  left: 379px;
+}
+.turn-track-14 {
+  top: 583px;
+  left: 498px;
+}
+.turn-track-15 {
+  top: 583px;
+  left: 617px;
+}
+.turn-track-16 {
+  top: 768px;
+  left: 144px;
+}
+.turn-track-17 {
+  top: 768px;
+  left: 262px;
+}
+.turn-track-18 {
+  top: 768px;
+  left: 381px;
+}
+.turn-track-19 {
+  top: 768px;
+  left: 498px;
+}
+.turn-track-20 {
+  top: 768px;
+  left: 616px;
+}
+
+
+
+.general-records-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.general-records-track img {
+  height: 100px;
+  width: 100px;
+  position: absolute;
+}
+.general-records-track img:nth-child(1) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track img:nth-child(2) {
+  top: 0px;
+  left: 0px;
+}
+.general-records-track img:nth-child(3) {
+  top: 10px;
+  left: 10px;
+}
+.general-records-track img:nth-child(4) {
+  top: 20px;
+  left: 20px;
+}
+.general-records-track img:nth-child(5) {
+  top: 30px;
+  left: 30px;
+}
+.general-records-track img:nth-child(6) {
+  top: 40px;
+  left: 40px;
+}
+.general-records-track img:nth-child(7) {
+  top: 50px;
+  left: 50px;
+}
+.general-records-track img:nth-child(8) {
+  top: 60px;
+  left: 60px;
+}
+.general-records-track img:nth-child(9) {
+  top: 70px;
+  left: 70px;
+}
+.general-records-track img:nth-child(10) {
+  top: 80px;
+  left: 80px;
+}
+.general-records-track-0 {
+  top: 2707px;
+  left: 125px;
+}
+.general-records-track-1 {
+  top: 2707px;
+  left: 237px;
+}
+.general-records-track-2 {
+  top: 2707px;
+  left: 348px;
+}
+.general-records-track-3 {
+  top: 2707px;
+  left: 461px;
+}
+.general-records-track-4 {
+  top: 2707px;
+  left: 574px;
+}
+.general-records-track-5 {
+  top: 2707px;
+  left: 685px;
+}
+.general-records-track-6 {
+  top: 2707px;
+  left: 798px;
+}
+.general-records-track-7 {
+  top: 2707px;
+  left: 911px;
+}
+.general-records-track-8 {
+  top: 2707px;
+  left: 1023px;
+}
+.general-records-track-9 {
+  top: 2707px;
+  left: 1131px;
+}
+.general-records-track-10 {
+  top: 2833px;
+  left: 125px;
+}
+.general-records-track-11 {
+  top: 2833px;
+  left: 235px;
+}
+.general-records-track-12 {
+  top: 2833px;
+  left: 348px;
+}
+.general-records-track-13 {
+  top: 2833px;
+  left: 460px;
+}
+.general-records-track-14 {
+  top: 2833px;
+  left: 573px;
+}
+.general-records-track-15 {
+  top: 2833px;
+  left: 686px;
+}
+.general-records-track-16 {
+  top: 2833px;
+  left: 798px;
+}
+.general-records-track-17 {
+  top: 2833px;
+  left: 911px;
+}
+.general-records-track-18 {
+  top: 2833px;
+  left: 1022px;
+}
+.general-records-track-19 {
+  top: 2833px;
+  left: 1131px;
+}
+.general-records-track-20 {
+  top: 2964px;
+  left: 126px;
+
+}
+.general-records-track-21 {
+  top: 2964px;
+  left: 236px;
+}
+.general-records-track-22 {
+  top: 2964px;
+  left: 349px;
+}
+.general-records-track-23 {
+  top: 2964px;
+  left: 461px;
+}
+.general-records-track-24 {
+  top: 2964px;
+  left: 573px;
+}
+.general-records-track-25 {
+  top: 2964px;
+  left: 686px;
+}
+.general-records-track-26 {
+  top: 2964px;
+  left: 798px;
+}
+.general-records-track-27 {
+  top: 2964px;
+  left: 911px;
+}
+.general-records-track-28 {
+  top: 2964px;
+  left: 1024px;
+}
+.general-records-track-29 {
+  top: 2964px;
+  left: 1131px;
+}
+.general-records-track-30 {
+  top: 3087px;
+  left: 125px;
+}
+.general-records-track-31 {
+  top: 3087px;
+  left: 237px;
+}
+.general-records-track-32 {
+  top: 3087px;
+  left: 347px;
+}
+.general-records-track-33 {
+  top: 3087px;
+  left: 461px;
+}
+.general-records-track-34 {
+  top: 3087px;
+  left: 573px;
+}
+.general-records-track-35 {
+  top: 3087px;
+  left: 686px;
+}
+.general-records-track-36 {
+  top: 3087px;
+  left: 799px;
+}
+.general-records-track-37 {
+  top: 3087px;
+  left: 911px;
+}
+.general-records-track-38 {
+  top: 3087px;
+  left: 1024px;
+}
+.general-records-track-39 {
+  top: 3087px;
+  left: 1139px;
+}
+.general-records-track-40 {
+  top: 3091px;
+  left: 1245px;
+}
+
+
+
+
+
+.central-action-round-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.central-action-roundtrack-1 {
+  top: 130px;
+  left: 1584px;
+}
+.central-action-roundtrack-2 {
+  top: 220px;
+  left: 1584px;
+}
+.central-action-roundtrack-3 {
+  top: 220px;
+  left: 1669px;
+}
+.central-action-roundtrack-4 {
+  top: 220px;
+  left: 1751px;
+}
+.central-action-roundtrack-5 {
+  top: 315px;
+  left: 1584px;
+}
+.central-action-roundtrack-6 {
+  top: 315px;
+  left: 1670px;
+}
+.central-action-roundtrack-7 {
+  top: 407px;
+  left: 1584px;
+}
+.central-action-roundtrack-8 {
+  top: 407px;
+  left: 1667px;
+}
+.central-action-roundtrack-9 {
+  top: 407px;
+  left: 1752px;
+}
+.central-action-roundtrack-10 {
+  top: 407px;
+  left: 1837px;
+}
+
+
+
+.allies-action-round-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.allies-action-roundtrack-1 {
+  top: 2819px;
+  left: 1396px;
+}
+.allies-action-roundtrack-2 {
+  top: 2914px;
+  left: 1396px;
+}
+.allies-action-roundtrack-3 {
+  top: 2914px;
+  left: 1481px;
+}
+.allies-action-roundtrack-4 {
+  top: 29140px;
+  left: 1564px;
+}
+.allies-action-roundtrack-5 {
+  top: 2914px;
+  left: 1650px;
+}
+.allies-action-roundtrack-6 {
+  top: 2914px;
+  left: 1734px;
+}
+.allies-action-roundtrack-7 {
+  top: 3007px;
+  left: 1395px;
+}
+.allies-action-roundtrack-8 {
+  top: 3007px;
+  left: 1477px;
+}
+.allies-action-roundtrack-9 {
+  top: 3102px;
+  left: 1396px;
+}
+.allies-action-roundtrack-10 {
+  top: 3102px;
+  left: 1479px;
+}
+.allies-action-roundtrack-11 {
+  top: 3102px;
+  left: 1564px;
+}
+.allies-action-roundtrack-12 {
+  top: 3102px;
+  left: 1650px;
+}
+
+
+
+
+.central-mandated-offensive-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.central-mandated-offensive-track-1 {
+  top: 136px;
+  left: 2088px;
+}
+.central-mandated-offensive-track-2 {
+  top: 136px;
+  left: 2171px;
+}
+.central-mandated-offensive-track-3 {
+  top: 136px;
+  left: 2257px;
+}
+.central-mandated-offensive-track-4 {
+  top: 136px;
+  left: 2341px;
+}
+.central-mandated-offensive-track-5 {
+  top: 136px;
+  left: 2418px;
+}
+
+
+
+
+.allies-mandated-offensive-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.allies-mandated-offensive-track-1 {
+  top: 3078px;
+  left: 2347px;
+}
+.allies-mandated-offensive-track-2 {
+  top: 3078px;
+  left: 2431px;
+}
+.allies-mandated-offensive-track-3 {
+  top: 3078px;
+  left: 2515px;
+}
+.allies-mandated-offensive-track-4 {
+  top: 3078px;
+  left: 2600px;
+}
+.allies-mandated-offensive-track-5 {
+  top: 3078px;
+  left: 2681px;
+}
+
+
+
+
+.us-commitment-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.us-commitment-track.active {
+  background-image: url('/paths/img/us_entry.png');
+  background-size: cover;
+}
+.us-commitment-track-1 {
+  top: 2316px;
+  left: 129px;
+}
+.us-commitment-track-2 {
+  top: 2316px;
+  left: 233px;
+}
+.us-commitment-track-3 {
+  top: 2316px;
+  left: 337px;
+}
+.us-commitment-track-4 {
+  top: 2316px;
+  left: 442px;
+}
+
+
+
+
+.russian-capitulation-track {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+}
+.russian-capitulation-track.active {
+  background-image: url('/paths/img/russian_capit.png');
+  background-size: cover;
+}
+.russian-capitulation-track-1 {
+  top: 2507px;
+  left: 146px;
+}
+.russian-capitulation-track-2 {
+  top: 2507px;
+  left: 251px;
+}
+.russian-capitulation-track-3 {
+  top: 2507px;
+  left: 354px;
+}
+.russian-capitulation-track-4 {
+  top: 2507px;
+  left: 459px;
+}
+.russian-capitulation-track-5 {
+  top: 2507px;
+  left: 562px;
+}
+.russian-capitulation-track-6 {
+  top: 2507px;
+  left: 667px;
+}
+.russian-capitulation-track-7 {
+  top: 2507px;
+  left: 771px;
+}
+.russian-capitulation-track-8 {
+  top: 2507px;
+  left: 875px;
+}
+
+
+
+
+.allies-reserve-box {
+  top: 1310px;
+  left: 4275px;
+  position: absolute;
+  height: 340px;
+  width: 700px;
+  display: flex;
+  flex-direction: rows;
+}
+
+.central-reserve-box {
+  top: 870px;
+  left: 4275px;
+  position: absolute;
+  height: 340px;
+  width: 700px;
+  display: flex;
+  flex-direction: rows;
+}
+
+.allies-reserve-box .army-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.central-reserve-box .army-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.allies-eliminated-units-box
+  top: 2950px;
+  left: 1890px;
+  position: absolute;
+  height: 240px;
+  width: 410px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.central-eliminated-units-box {
+  top: 130px;
+  left: 1060px;
+  position: absolute;
+  height: 240px;
+  width: 410px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+

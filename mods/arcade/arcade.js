@@ -15,7 +15,7 @@ const GameInvitationLink = require("./../../lib/saito/ui/modals/saito-link/saito
 const Invite = require("./lib/invite");
 const JoinGameOverlay = require("./lib/overlays/join-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-
+const arcadeHome = require("./index");
 class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
@@ -1042,7 +1042,11 @@ class Arcade extends ModTemplate {
       };
       await this.app.storage.runDatabase(sql, params, "arcade");
 
-      await this.app.storage.saveTransaction(tx, { field1: txmsg.module + "_" + txmsg.game_id }, "localhost");
+      await this.app.storage.saveTransaction(
+        tx,
+        { field1: txmsg.module + "_" + txmsg.game_id },
+        "localhost"
+      );
     }
   }
 
@@ -1782,6 +1786,40 @@ class Arcade extends ModTemplate {
     return true;
   }
 
+  webServer(app, expressapp, express) {
+    let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+    let arcade_self = this;
+
+    expressapp.get("/" + encodeURI(this.returnSlug()), async function (req, res) {
+      let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
+
+      arcade_self.social = {
+        arcade_card: "summary",
+        arcade_site: "@SaitoOfficial",
+        arcade_creator: "@SaitoOfficial",
+        arcade_title: "Saito Arcade",
+        twitter_url: "https://saito.io/redsquare/",
+        twitter_description: "Play games on the blockchain",
+        twitter_image: " https://saito.io/website/img/arcade-banner3.jpg",
+        og_title: "Saito Arcade",
+        og_url: "https://saito.io/arcade",
+        og_type: "website",
+        og_description: "Peer to peer social and more",
+        og_site_name: "Saito Arcade",
+        og_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+        og_image_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+        og_image_secure_url:
+          "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+      };
+
+      res.setHeader("Content-type", "text/html");
+      res.charset = "UTF-8";
+      res.send(arcadeHome(app, arcade_self, arcade_self.build_number));
+      return;
+    });
+
+    expressapp.use("/" + encodeURI(this.returnSlug()), express.static(webdir));
+  }
   showShareLink(game_sig) {
     let data = {};
     let accepted_game = null;

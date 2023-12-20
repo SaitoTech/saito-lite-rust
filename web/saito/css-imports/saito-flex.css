@@ -1,0 +1,43 @@
+.saito-img-flex {
+    /*--image-height: 200px;*/
+    display: flex;
+    overflow: hidden;
+    flex-wrap: wrap;
+    margin: -2.5px;
+}
+
+.saito-img-flex>* {
+    position: relative;
+    display: block;
+    height: var(--image-height);
+    margin: 2.5px;
+    flex-grow: 1;
+    max-height: var(--multi-max-height);
+}
+
+.saito-img-flex>*>img {
+    height: var(--image-height);
+    object-fit: cover;
+    max-width: 100%;
+    min-width: 100%;
+    vertical-align: bottom;
+    max-height: var(--multi-max-height);
+}
+
+.saito-img-flex.saito-img-flex-margin {
+    margin: 2.5px;
+}
+
+@media (max-width: 980px) {
+    .saito-img-flex>*, .saito-img-flex>*>img {
+        height: calc(var(--image-height) * 0.75);
+    }
+}
+
+@media (max-width: 400px) {
+    .saito-img-flex>*, .saito-img-flex>*>img {
+        height: calc(var(--image-height) * 0.5);
+    }
+}
+
+/* borrowing heavily from flexbin */

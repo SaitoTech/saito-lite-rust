@@ -64,7 +64,7 @@ class LeagueRankings {
       });
     }
 
-    this.app.browser.addElementToSelector(html, ".league-rankings .saito-table-body");
+    this.app.browser.addElementToSelector(html, ".league-rankings  .saito-table-body");
 
     this.attachEvents();
 

@@ -7,7 +7,7 @@
   text-align: center;
   padding: 8px;
   text-transform: capitalize;
-  margin: 3px 0;
+  margin-bottom: 3px;
 }
 
 .saito-table-header { 
@@ -15,6 +15,14 @@
   top: 0px;
   background: var(--saito-background-light);
   z-index: 3;
+}
+
+.saito-table-row.league-leaderboard-ranking {
+  border-radius: 0.5rem;
+}
+
+.saito-table-row.league-leaderboard-ranking:hover {
+  background: var(--saito-primary);
 }
 
 .my-leaderboard-position{

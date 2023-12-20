@@ -1,9 +1,4 @@
 
-.game-playerbox-manager {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
 
 .game-playerbox {
     background: #f9efdf;

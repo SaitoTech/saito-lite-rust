@@ -58,12 +58,12 @@ class RedSquareNotification {
 
   renderNotificationTweet(txmsg, tweet_tx) {
 
-    if (txmsg.data.mentions) {
-      console.log("Hi mention!");
+    if (txmsg.data?.mentions?.includes(this.mod.publicKey) || txmsg.data?.mentions == 1) {
       this.tweet = new Tweet(this.app, this.mod, tweet_tx);
     } else {
-      if (txmsg.request == "like tweet") {
+      if (txmsg.request == "like tweet" || txmsg.request == "retweet") {
         //Process as normal
+        let keyword = (txmsg.request == "like tweet") ? "liked" : "retweeted";
 
         this.tweet = new Tweet(
           this.app,
@@ -82,16 +82,16 @@ class RedSquareNotification {
         let qs = `.tweet-notif-fav.notification-item-${this.tx.from[0].publicKey}-${txmsg.data.signature}`;
         let obj = document.querySelector(qs);
         if (obj) {
-          obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
+          obj.innerHTML = obj.innerHTML.replace(`${keyword} `, `really ${keyword} `);
 
           //We process multiple likes from same person of same tweet, just update html in situ and quit
           return;
         } else {
           html = LikeNotificationTemplate(this.app, this.mod, this.tx);
-          let msg = "liked your tweet";
+          let msg = `${keyword} your tweet`;
 
           if (this.mod.publicKey != tweet_tx.from[0].publicKey) {
-            msg = "liked a tweet sent to you";
+            msg = `${keyword} a tweet sent to you`;
           }
 
           this.user.notice = `</i> <span class='notification-type'>${msg}</span>`;
@@ -137,7 +137,7 @@ class RedSquareNotification {
           this.user.notice = `<span class='notification-type'>${msg}</span>`;
           
         }
-      } else {
+      }else{
         console.log("Unknown Notification type: ", txmsg.request);
         return null;
       }
@@ -171,15 +171,14 @@ class RedSquareNotification {
   }
 
   attachEvents() {
-    let qs = ".notification-item-" + this.tx.signature;
-    let obj = document.querySelector(qs);
 
-    if (obj) {
+    Array.from(document.querySelectorAll(".tweet-notification")).forEach(obj => {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-        let tweet = this.mod.returnTweet(this.tx.signature);
+        let tweet = this.mod.returnTweet(sig);
 
         if (tweet) {
+          window.history.pushState({}, document.title, `/redsquare?tweet_id=${tweet.thread_id}`);
           this.app.connection.emit("redsquare-tweet-render-request", tweet);
         } else {
           //
@@ -188,13 +187,14 @@ class RedSquareNotification {
           //
           console.log("Notification tweet not found...");
 
-          this.mod.loadTweetWithSig(this.tx.signature, () => {
-            let tweet = this.mod.returnTweet(this.tx.signature);
+          this.mod.loadTweetWithSig(sig, () => {
+            let tweet = this.mod.returnTweet(sig);
             this.app.connection.emit("redsquare-tweet-render-request", tweet);
           });
         }
       };
-    }
+    });
+
   }
 
   isRendered() {

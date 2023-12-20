@@ -19,6 +19,64 @@
     return 2;
   }
 
+  playerPlayAdvance() {
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="advance">advance</li>`;
+    html    += `<li class="card" id="refuse">do not advance</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Advance Full-Strength Units?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "advance") {
+	this.endTurn();
+      }
+
+      if (action === "refuse") {
+	this.endTurn();
+      }
+
+    });
+
+  }
+
+  playerPlayPostCombatRetreat() {
+
+alert("Player Playing Post Combat Retreat!");
+    this.endTurn();
+
+  }
+
+
+  playerPlayGunsOfAugust() {
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="guns">Guns of August</li>`;
+    html    += `<li class="card" id="other">other card</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Choose Your Seventh Card:`, html);
+    this.guns_overlay.render();
+
+    this.attachCardboxEvents((action) => {
+
+      this.updateStatus("selected");
+
+      if (action === "guns") {
+        this.game.deck[0].hand.push("cp01");
+	this.endTurn();
+      }
+
+      if (action === "other") {
+        this.addMove("DEAL\t1\t1\t1"); // player chooses random other card
+	this.endTurn();
+      }
+
+    });
+
+  }
+
   playerPlayFlankAttack() {
 
     //

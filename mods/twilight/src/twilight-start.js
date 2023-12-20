@@ -229,9 +229,7 @@ class Twilight extends GameTemplate {
       text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
-      callback : function(app, game_mod) {
-         game_mod.menu.showSubSubMenu("game-confirm");
-      }
+      callback : null
     });
 
     this.menu.addSubMenuOption("game-confirm",{
@@ -290,9 +288,7 @@ class Twilight extends GameTemplate {
       text: "Cards",
       id: "game-cards",
       class: "game-cards",
-      callback: function(app, game_mod){
-        game_mod.menu.showSubSubMenu("game-cards");
-      }
+      callback: null
     });
     this.menu.addSubMenuOption("game-cards",{
       text: "My Hand",
@@ -336,9 +332,7 @@ class Twilight extends GameTemplate {
       text: "Language",
       id: "game-language",
       class: "game-language",
-      callback: function(app, game_mod){
-        game_mod.menu.showSubSubMenu("game-language");
-      }
+      callback: null
     });
 
     this.menu.addSubMenuOption("game-language", {
@@ -537,8 +531,9 @@ initializeGame(game_id) {
       this.game.options.fallofsaigon = 1;
       this.game.options.fischerspassky = 1;
 
+      this.placeInfluence("turkey", 2, "us");
+      this.placeInfluence("cuba", 3, "ussr");
 /***
-      this.placeInfluence("mexico", 2, "us");
       this.placeInfluence("cuba", 3, "ussr");
       this.placeInfluence("panama", 4, "ussr");
       this.placeInfluence("costarica", 3, "us");
@@ -2723,9 +2718,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["marine", "cubanmissile","saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["defectors", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["cubanmissile", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3250,7 +3245,10 @@ try {
 	      this.addCardToDeck('bayofpigs', "New Card");
 	    }
 	    this.addCardToDeck('fischerspassky', "New Card");
-	    this.addCardToDeck('fallofsaigon', "New Card");
+	    if (this.game.state.events.vietname_revolts == 1 && this.game.state.events.fallofsaigon_added == 0) {
+	      this.game.state.events.fallofsaigon_added = 1;
+	      this.addCardToDeck('fallofsaigon', "New Card");
+	    }
 	  }
 	}
 
@@ -4464,6 +4462,7 @@ console.log("getPrivateKey(): " + privateKey);
 
       //
       // Cuban Missile Crisis
+      //
       if (card === "cancel cuban missile crisis") {
         twilight_self.cancelCubanMissileCrisis();
         return 0;

@@ -202,13 +202,15 @@ class Chat extends ModTemplate {
     }
     this.chat_manager.container = ".saito-sidebar.left";
 
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 599) {
+    if (!(this.app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth < 750) && window.innerWidth > 599) {
       this.chat_manager.chat_popup_container = ".saito-main";
       //Main Chat Application doesn't use popups as such...
       this.chat_manager.render_popups_to_screen = 0;
     }
 
     this.chat_manager.render_manager_to_screen = 1;
+
+    this.styles = ["/saito/saito.css", "/chat/style.css"];
 
     await super.render();
   }
@@ -354,19 +356,32 @@ class Chat extends ModTemplate {
 
   respondTo(type, obj = null) {
     let chat_self = this;
+    let force = false;
 
     switch (type) {
       case "chat-manager":
         if (this.chat_manager == null) {
-          //console.log("Respond to");
           this.chat_manager = new ChatManager(this.app, this);
         }
         return this.chat_manager;
+      case "saito-game-menu":
+        // Need to make sure this is created so we can listen for requests to open chat popups
+        if (this.chat_manager == null) {
+          this.chat_manager = new ChatManager(this.app, this);
+        }
+        // Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
+        force = true;
+
       case "saito-header":
+      case "saito-floating-menu":
         //
         // In mobile, we use the hamburger menu to open chat (without leaving the page)
         //
-        if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
+        if (
+          this.app.browser.isMobileBrowser() ||
+          (this.app.BROWSER && window.innerWidth < 600) ||
+          force
+        ) {
           if (this.chat_manger) {
             //Don't want mobile chat auto popping up
             this.chat_manager.render_popups_to_screen = 0;
@@ -380,38 +395,39 @@ class Chat extends ModTemplate {
               text: "Chat",
               icon: "fas fa-comments",
               callback: function (app, id) {
+                console.log("Render Chat manager overlay");
                 chat_self.chat_manager_overlay.render();
               },
-              event: function(id){
-
-                chat_self.app.connection.on("chat-manager-render-request", ()=> {
-                
+              event: function (id) {
+                chat_self.app.connection.on("chat-manager-render-request", () => {
                   let elem = document.getElementById(id);
-                  console.log("Chat event, update", elem);
-                  if (elem){
+                  //console.log("Chat event, update", elem);
+                  if (elem) {
                     let unread = 0;
-                    for (let group of chat_self.groups){
+                    for (let group of chat_self.groups) {
                       unread += group.unread;
                     }
 
-                    if (unread){
-                      if (elem.querySelector(".saito-notification-dot")){
+                    if (unread) {
+                      if (elem.querySelector(".saito-notification-dot")) {
                         elem.querySelector(".saito-notification-dot").innerHTML = unread;
-                      }else{
-                        chat_self.app.browser.addElementToId(`<div class="saito-notification-dot">${unread}</div>`, id);
+                      } else {
+                        chat_self.app.browser.addElementToId(
+                          `<div class="saito-notification-dot">${unread}</div>`,
+                          id
+                        );
                       }
-                    }else{
-                      if (elem.querySelector(".saito-notification-dot")){
+                    } else {
+                      if (elem.querySelector(".saito-notification-dot")) {
                         elem.querySelector(".saito-notification-dot").remove();
                       }
                     }
                   }
-
                 });
 
                 //Trigger my initial display
                 chat_self.app.connection.emit("chat-manager-render-request");
-              }
+              },
             },
           ];
         } else if (!chat_self.browser_active) {
@@ -523,7 +539,6 @@ class Chat extends ModTemplate {
   // or addressed to me
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-
     if (tx == null) {
       return 0;
     }
@@ -559,7 +574,6 @@ class Chat extends ModTemplate {
       }
 
       return 0;
-
     }
 
     if (txmsg.request === "chat message") {
@@ -574,8 +588,7 @@ class Chat extends ModTemplate {
       }
 
       return 0;
-
-    } 
+    }
 
     if (txmsg.request === "chat message broadcast") {
       let inner_tx = new Transaction(undefined, txmsg.data);
@@ -619,7 +632,6 @@ class Chat extends ModTemplate {
       }
 
       return 0;
-
     }
 
     return super.handlePeerTransaction(app, tx, peer, mycallback);
@@ -982,8 +994,8 @@ class Chat extends ModTemplate {
     newtx.addFrom(this.publicKey);
     newtx.addTo(this.publicKey);
 
-    for (let mention of to_keys){
-      newtx.addTo(mention);      
+    for (let mention of to_keys) {
+      newtx.addTo(mention);
     }
 
     let members = this.returnMembers(group_id);
@@ -1003,6 +1015,20 @@ class Chat extends ModTemplate {
       message: msg,
       timestamp: new Date().getTime(),
     };
+
+
+    // sanity check
+    let wallet_balance = await this.app.wallet.getBalance("SAITO");
+
+    // restrict radix-spam
+    if (
+      wallet_balance == 0 &&
+      this.app.BROWSER == 1 &&
+      this.app.browser.stripHtml(msg).length >= 1000
+    ) {
+      siteMessage("Purchase SAITO to Send Large Messages in Community Chat...", 3000);
+      return null;
+    }
 
     let group = this.returnGroup(group_id);
     if (group) {
@@ -1136,9 +1162,11 @@ class Chat extends ModTemplate {
           for (let z = 0; z < block.length; z++) {
             ts = ts || block[z].timestamp;
             sender = block[z].from[0];
-            
+
             const replyButton = `
-              <div data-id="${block[z].signature}" data-href="${sender + ts}" class="saito-userline-reply">
+              <div data-id="${block[z].signature}" data-href="${
+              sender + ts
+            }" class="saito-userline-reply">
                 <div class="chat-copy"><i class="fas fa-copy"></i></div>
                 <div class="chat-reply"><i class="fas fa-reply"></i></div>
                 <div class="saito-chat-line-controls">
@@ -1146,8 +1174,10 @@ class Chat extends ModTemplate {
                     ${this.app.browser.returnTime(ts)}
                   </span>
                 </div>
-              </div>`;  
-            msg += `<div class="chat-message-line message-${block[z].signature}${block[z].flag_message ? " user-mentioned-in-chat-line":""}">`;
+              </div>`;
+            msg += `<div class="chat-message-line message-${block[z].signature}${
+              block[z].flag_message ? " user-mentioned-in-chat-line" : ""
+            }">`;
             if (block[z].msg.indexOf("<img") != 0) {
               msg += this.app.browser.sanitize(block[z].msg);
             } else {
@@ -1252,7 +1282,12 @@ class Chat extends ModTemplate {
       msg: content,
     };
 
-    if (tx.isTo(this.publicKey) && this.app.BROWSER && !tx.isFrom(this.publicKey) && group.members.length !== 2){
+    if (
+      tx.isTo(this.publicKey) &&
+      this.app.BROWSER &&
+      !tx.isFrom(this.publicKey) &&
+      group.members.length !== 2
+    ) {
       console.log("CHAT MESSAGE DIRECTED TO ME!!!!");
       group.mentioned = true;
       new_message.flag_message = true;
@@ -1301,6 +1336,14 @@ class Chat extends ModTemplate {
     }
 
     if (/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(this.publicKey)) {
+      //
+      // Flag the group that there is a new message
+      // This is so we can add an animation effect on rerender
+      // and will be reset there
+      //
+      group.notification = true;
+
+      //Send System notification
       if (this.enable_notifications) {
         let sender = this.app.keychain.returnIdentifierByPublicKey(new_message.from[0], true);
         if (group.unread > 1) {
@@ -1315,7 +1358,10 @@ class Chat extends ModTemplate {
         this.app.browser.sendNotification(sender, new_msg, `chat-message-${group.id}`);
       }
 
+      //Flash new message in browser tab
       this.startTabNotification();
+
+      //Add liveness indicator to group
       this.app.connection.emit("group-is-active", group);
     }
 
@@ -1636,7 +1682,7 @@ class Chat extends ModTemplate {
   }
 
   async onUpgrade(type, privatekey, walletfile) {
-    if (type == 'nuke') {
+    if (type == "nuke") {
       for (let i = 0; i < this.groups.length; i++) {
         await localforage.removeItem(`chat_${this.groups[i].id}`);
       }

@@ -24,9 +24,9 @@ const JSON = require("json-bigint");
 const expressApp = express();
 const webserver = new Ser(expressApp);
 
+
 export class NodeSharedMethods extends CustomSharedMethods {
   public app: Saito;
-
   constructor(app: Saito) {
     super();
     this.app = app;
@@ -56,6 +56,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
     });
   }
 
+
+
   connectToPeer(peerData: any): void {
     let protocol = "ws";
     if (peerData.protocol === "https") {
@@ -65,8 +67,11 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
     try {
       console.log("connecting to " + url + "....");
+
       let socket = new ws.WebSocket(url);
       let index = S.getInstance().addNewSocket(socket);
+
+
 
       socket.on("message", (buffer: any) => {
         try {
@@ -150,11 +155,11 @@ export class NodeSharedMethods extends CustomSharedMethods {
         return res.arrayBuffer();
       })
       .then((buffer: ArrayBuffer) => {
-        // console.log("block data fetched for " + url + " with size : " + buffer.byteLength);
+        console.log("block data fetched for " + url + " with size : " + buffer.byteLength);
         return new Uint8Array(buffer);
       })
       .catch((err) => {
-        console.error("Error fetching block: ", err);
+        console.error("Error fetching block: " + url, err);
         throw "failed fetching block";
       });
   }
@@ -181,6 +186,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
       console.error(error);
       newtx.msg = buffer;
     }
+
+
     await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
   }
 
@@ -220,6 +227,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
     result.forEach((s) => list.push(s));
     return list;
   }
+
+  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void { }
 }
 
 /**
@@ -248,6 +257,7 @@ class Server {
   public port: number;
   public protocol: string;
 
+
   constructor(app: Saito) {
     this.app = app;
 
@@ -265,8 +275,8 @@ class Server {
 
     const wss = new ws.Server({
       noServer: true,
-      // port:5001, // TODO : setup this correctly
       path: "/wsopen",
+
     });
     webserver.on("upgrade", (request: any, socket: any, head: any) => {
       // console.debug("connection upgrade ----> " + request.url);
@@ -283,11 +293,14 @@ class Server {
       console.error("error on express : ", error);
     });
     wss.on("connection", (socket: any, request: any) => {
+      const { pathname } = parse(request.url);
+      console.log('connection established')
       let index = S.getInstance().addNewSocket(socket);
+
       socket.on("message", (buffer: any) => {
         S.getLibInstance()
           .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-          .then(() => {});
+          .then(() => { });
       });
       socket.on("close", () => {
         S.getLibInstance().process_peer_disconnection(index);
@@ -295,7 +308,10 @@ class Server {
       socket.on("error", (error) => {
         console.error("error on socket : " + index, error);
       });
+
+
       S.getLibInstance().process_new_peer(index, null);
+
     });
     // app.on("upgrade", (request, socket, head) => {
     //   server.handleUpgrade(request, socket, head, (websocket) => {
@@ -315,9 +331,16 @@ class Server {
   initialize() {
     const server_self = this;
 
+
+
+
     if (this.app.BROWSER === 1) {
       return;
     }
+
+
+
+
 
     //
     // update server information from options file
@@ -389,6 +412,8 @@ class Server {
     this.app.options.server = Object.assign(this.app.options.server, this.server);
     console.log("SAVE OPTIONS IN SERVER 2");
     this.app.storage.saveOptions();
+
+
 
     //
     // enable cross origin polling for socket.io
@@ -590,7 +615,7 @@ class Server {
         console.log(`liteblock : ${bsh} from disk txs count = : ${newblk.transactions.length}`);
         console.log(
           "valid txs : " +
-            newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
+          newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
         );
 
         res.writeHead(200, {
@@ -719,6 +744,13 @@ class Server {
       return;
     });
 
+    // expressApp.get("/check-build", (req, res) => {
+    //   // res.sendFile(this.web_dir);
+    //   this.app.modules.webServer(expressApp, express);
+    //   res.send()
+    // })
+
+
     expressApp.get("/saito/saito.js", (req, res) => {
       //
       // may be useful in the future, if we gzip
@@ -739,6 +771,7 @@ class Server {
       //
       // caching in prod
       //
+      /* Not needed as handled by nginx.
       const caching =
         process.env.NODE_ENV === "prod"
           ? "private max-age=31536000"
@@ -746,6 +779,7 @@ class Server {
       res.setHeader("Cache-Control", caching);
       res.setHeader("expires", "-1");
       res.setHeader("pragma", "no-cache");
+      */
       res.sendFile(this.web_dir + "/saito/saito.js");
       return;
     });
@@ -762,6 +796,9 @@ class Server {
     // res.write -- have to use res.end()
     // res.send --- is combination of res.write() and res.end()
     //
+
+
+
     this.app.modules.webServer(expressApp, express);
 
     expressApp.get("*", (req, res) => {
@@ -781,6 +818,9 @@ class Server {
     // try webserver.listen(this.server.port, {cookie: false});
     this.webserver = webserver;
   }
+
+
+
 
   close() {
     this.webserver.close();

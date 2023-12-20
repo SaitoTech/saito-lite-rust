@@ -67,7 +67,7 @@ class StorageCore extends Storage {
       const db = await open({
         filename: this.data_dir + "/" + dbname + ".sq3",
         driver: sqlite3.Database,
-      })
+      });
 
       this.dbname.push(dbname);
       this.db.push(db);
@@ -432,7 +432,7 @@ class StorageCore extends Storage {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  resetOptions() {}
+  resetOptions() { }
 
   ///////////////////////
   // saveClientOptions //

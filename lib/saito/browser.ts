@@ -53,6 +53,11 @@ class Browser {
     if (this.app.BROWSER != 1) {
       return 0;
     }
+    this.app.connection.on("new-version-detected", (version, peerIndex) => {
+      console.log("New wallet version detected: " + version);
+      //localStorage.setItem('wallet_version', JSON.stringify(version));
+      window.location.reload();
+    });
 
     try {
       if (!document.hidden) {
@@ -213,12 +218,14 @@ class Browser {
       const updateViewHeight = () => {
         let vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty("--saito-vh", `${vh}px`);
-        //console.log("Update view height");
+        console.log(`Update view height ${vh}px`);
         //siteMessage(`Update: ${vh}px`);
       };
 
       window.addEventListener("resize", debounce(updateViewHeight, 200));
-      updateViewHeight();
+      setTimeout(() => {
+        updateViewHeight();
+      }, 200);
     } catch (err) {
       if (err == "ReferenceError: document is not defined") {
         console.log("non-browser detected: " + err);
@@ -935,16 +942,18 @@ class Browser {
               }
             });
 
-            this.preventDefaults(e);
+            if (drag_and_drop) {
+              this.preventDefaults(e);
+            }
 
-            if (!drag_and_drop) {
+            /*if (!drag_and_drop) {
               let paste = (e.clipboardData || window.clipboardData).getData("text");
               const selection = window.getSelection();
               if (!selection.rangeCount) return;
               selection.deleteFromDocument();
               selection.getRangeAt(0).insertNode(document.createTextNode(paste));
               selection.collapseToEnd();
-            }
+            }*/
           },
           false
         );
@@ -995,6 +1004,41 @@ class Browser {
     console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
+  }
+
+  makeRefreshable(selector, mycallback = null) {
+    let touchStartY = 0;
+    let triggerRefresh = false;
+
+    let element = document.querySelector(selector);
+
+    if (!element) {
+      console.error("browser/makeRefreshable: Element doesn't exist!");
+      return;
+    }
+
+    element.addEventListener("touchstart", (e) => {
+      touchStartY = e.touches[0].clientY;
+      triggerRefresh = false;
+    });
+
+    element.addEventListener("touchmove", (e) => {
+      const touchY = e.touches[0].clientY;
+      const touchDiff = touchY - touchStartY;
+      if (touchDiff > 100 && window.scrollY === 0) {
+        triggerRefresh = true;
+      }
+    });
+
+    element.addEventListener("touchend", (e) => {
+      if (triggerRefresh) {
+        if (mycallback) {
+          mycallback();
+        } else {
+          alert("Pull to refresh");
+        }
+      }
+    });
   }
 
   makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
@@ -1080,6 +1124,10 @@ class Browser {
                 window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
             }
 
+            if (element_to_move.classList.contains("dragging")) {
+              element_to_move.classList.remove("dragging");
+            }
+
             timeout = setTimeout(() => {
               element_to_move.classList.remove("dockedBottom");
               element_to_move.classList.remove("dockedTop");
@@ -1110,6 +1158,8 @@ class Browser {
           if (adjustmentX !== 0 || adjustmentY !== 0) {
             element_moved = true;
           }
+
+          element_to_move.classList.add("dragging");
 
           let newPosX = element_start_left + adjustmentX;
           let newPosY = element_start_top + adjustmentY;
@@ -1274,6 +1324,9 @@ class Browser {
     }
   }
 
+  /**
+   * Callback is called on mousedown
+   */
   makeResizeable(target_div, icon_div, unique_id, callback = null) {
     let d = document;
     let target = d.querySelector(target_div);
@@ -1282,16 +1335,10 @@ class Browser {
       icon_div
     );
     let pullTab = d.getElementById(`resize-icon-${unique_id}`);
-    let dimensions = target.getBoundingClientRect();
 
-    let ht = dimensions.height;
-    let wd = dimensions.width;
-    let x = 0;
-    let y = 0;
-    let dx = 0;
-    let dy = 0;
+    let ht, wd, x, y, dx, dy;
 
-    let resize = (evt) => {
+    const resize = (evt) => {
       dx = evt.screenX - x;
       dy = evt.screenY - y;
       x = evt.screenX;
@@ -1302,23 +1349,45 @@ class Browser {
       target.style.height = ht + "px";
     };
 
-    let resizeFn = resize.bind(this);
+    const resizeFn = resize.bind(this);
+
+    const prepareToResize = () => {
+      let dimensions = target.getBoundingClientRect();
+      ht = dimensions.height;
+      wd = dimensions.width;
+
+      //
+      // Draggable elements may have top/left set, but we want the bottom/right to be fixed
+      //
+      target.style.top = "";
+      target.style.left = "";
+      target.style.bottom = window.innerHeight - dimensions.bottom + "px";
+      target.style.right = window.innerWidth - dimensions.right + "px";
+    };
+
     pullTab.addEventListener("mousedown", (evt) => {
-        x = evt.screenX;
-        y = evt.screenY;
-      
-        d.body.addEventListener("mousemove", resizeFn);
-      
-        d.body.addEventListener("mouseup", () => {
-            d.body.removeEventListener("mousemove", resizeFn);
-        });
+      x = evt.screenX;
+      y = evt.screenY;
 
-        if (callback){
-          callback();
-        }
-        
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+
+      prepareToResize();
+
+      //Get rid of any animation delays
+      target.style.transition = "unset";
+
+      d.body.addEventListener("mousemove", resizeFn);
+
+      d.body.addEventListener("mouseup", () => {
+        d.body.removeEventListener("mousemove", resizeFn);
+        target.style.transition = "";
+      });
+
+      if (callback) {
+        callback();
+      }
     });
-
   }
 
   returnAddressHTML(key) {
@@ -1528,12 +1597,29 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
+      //  let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^\s>]*)?(?!>)/gi;
       let urlPattern =
-        /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+        /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+
       text = text.replace(urlPattern, function (url) {
+        let url1 = url.trim();
+        let url2 = url1;
+        if (url2.length > 42) {
+          if (url2.indexOf("http") == 0 && url2.includes("://")) {
+            let temp = url2.split("://");
+            url2 = temp[1];
+          }
+          if (url2.indexOf("www.") == 0) {
+            url2 = url2.substr(4);
+          }
+          if (url2.length > 40) {
+            url2 = url2.substr(0, 37) + "...";
+          }
+        }
+
         return `<a ${
-          url.includes(window.location.host) ? "" : "target='_blank' "
-        }class='saito-treated-link' href='${url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()}'>${url.trim()}</a>`;
+          url.includes(window.location.host) ? "" : "target='_blank' rel='noopener noreferrer' "
+        } class="saito-treated-link" href="${!url.includes("http") ? `http://${url1}` : url1}">${url2}</a>`;
       });
 
       //trim lines at start and end
@@ -1610,11 +1696,25 @@ class Browser {
   }
 
   stripHtml(html) {
-    //let tmp = document.createElement("DIV");
-    //tmp.innerHTML = html;
-    //return tmp.textContent || tmp.innerText || "";
+    if (this.app.BROWSER) {
+      let tmp = document.createElement("DIV");
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || "";
+    }
 
     return html.replace(/(<([^>]+)>)/gi, "");
+  }
+
+  //////////////////////
+  // helper functions //
+  //////////////////////
+  filterText(text = "") {
+    text = text.replace(/^\s+$/gm, "");
+    text = text.replace(/^\n+$/gm, "");
+    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, "<div><br></div>");
+    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, "");
+
+    return text;
   }
 
   attachWindowFunctions() {
@@ -1919,6 +2019,21 @@ class Browser {
       }
     } catch (err) {}
     return false;
+  }
+
+  updateSoftwareVersion(receivedBuildNumber: number) {
+    console.log(
+      `Received build number: ${Number(receivedBuildNumber)}, Current build number: ${
+        this.app.build_number
+      }`
+    );
+    if (receivedBuildNumber > this.app.build_number) {
+      console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
+      siteMessage(`New software update found: ${receivedBuildNumber}. Updating...`);
+      setTimeout(function () {
+        window.location.reload();
+      }, 3000);
+    }
   }
 }
 

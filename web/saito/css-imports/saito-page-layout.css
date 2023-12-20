@@ -2,7 +2,7 @@
   width: 100vw;
   height: calc(100% - var(--saito-header-height));
   display: grid;
-  grid-template-columns: 33rem 5fr 33rem;
+  grid-template-columns: 30rem 5fr 33rem;
   padding: 0 calc((100vw - var(--saito-width)) / 2);
   z-index: 0;
   margin: 0;
@@ -40,11 +40,11 @@
   position: sticky;
   height: calc(100 * var(--saito-vh) - var(--saito-header-height));
   top: 0;
-  /*margin: 0 0 0 ;*/
-  padding: 1.5rem 1rem 0 0;
+  padding: 1.5rem 1rem 1rem 0.5rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .saito-sidebar.right {
@@ -58,9 +58,14 @@
 
 }
 
+.saito-sidebar h5 {
+  margin: 0;
+}
+
 .saito-sidebar-element {
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 0.5rem;
+  box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
   background-color: var(--saito-sidebar-element-background);
 }
 

@@ -182,6 +182,9 @@ class LeagueOverlay {
                 document.querySelector("#admin-widget").classList.remove("hidden");
                 document.querySelector(".league-overlay-leaderboard").classList.add("hidden");
                 this.loadPlayersUI();
+                break;
+              case "rankings":
+                document.querySelector(".league-overlay-leaderboard").classList.add("hidden");
             }
           } catch (err) {
             console.error("dom selection in league overlay", err);

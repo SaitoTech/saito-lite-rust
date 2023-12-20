@@ -50,7 +50,11 @@ font imports
   --saito-white: #fff;
   --saito-black: #000;
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
+  --saito-primary-background: linear-gradient(45deg, var(--saito-primary) 0%, var(--saito-secondary) 55%, var(--saito-primary) 100%) transparent no-repeat left top / 400% auto;
+  --saito-primary-transparent: #f71f3d88;
   /* variable colors overridden in themes */
+  --saito-bubble-shadow: #0006;
+  --saito-bubble-background: #efefef;
   --saito-font-color: #3d3d3d;
   --saito-font-color-heavy: #222;
   --saito-font-color-light: #888;
@@ -84,7 +88,8 @@ font imports
 
 html[data-theme="dark"] {
   --saito-primary: #e05b08;
-  --saito-secondary: #c17a00;
+  --saito-primary-transparent: #e05b0888;
+  --saito-secondary: #c1aa00;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
@@ -95,12 +100,14 @@ html[data-theme="dark"] {
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
   --saito-background-light: #333;
-  --saito-sidebar-element-background: #2f2c35a6;
+  --saito-sidebar-element-background: #0003;
   --saito-gray-transparent: #88888818;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-arcade-header-background: var(--saito-background-color);
   --saito-button-background: var(--saito-primary);
+  --saito-bubble-background: #111;
+  --saito-bubble-shadow: #000c;
   --saito-modal-background: #2e2636;
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #bdbaba;
@@ -111,7 +118,8 @@ html[data-theme="dark"] {
 
 html[data-theme="sangre"] {
   --saito-primary: #b70b0b;
-  --saito-secondary: #c90c0c;
+  --saito-primary-transparent: #b70b0b88;
+  --saito-secondary: #ff8235;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
@@ -122,12 +130,14 @@ html[data-theme="sangre"] {
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #1f1a1b;
   --saito-background-light: #333;
-  --saito-sidebar-element-background: #2f2c35a6;
+  --saito-sidebar-element-background: #0003;
   --saito-gray-transparent: #88888818;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-arcade-header-background: var(--saito-background-color);
   --saito-button-background: var(--saito-primary);
+  --saito-bubble-shadow: #000c;
+  --saito-bubble-background: #111;
   --saito-modal-background: #2e2636;
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #bdbaba;
@@ -138,6 +148,7 @@ html[data-theme="sangre"] {
 html[data-theme="arcade"] {
   --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
   --saito-primary: #639;
+  --saito-primary-transparent: #6397;
   /* --dreamscape: #84a; */
   --saito-secondary: #85b;
   --saito-font-color: #dedede;
@@ -149,7 +160,7 @@ html[data-theme="arcade"] {
   --saito-border-color: #426;
   --saito-background-color: #180c24;
   --saito-background-light: #140a1e;
-  --saito-sidebar-element-background: #3693;
+  --saito-sidebar-element-background: #0004;
   --saito-hover-background: #6395; /* A slightly transparent version of saito-primary, good contrast to normal background */
   --saito-gray-transparent: #88888818;
   --saito-background-shim: #0008;
@@ -158,6 +169,8 @@ html[data-theme="arcade"] {
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
+  --saito-bubble-shadow: #000c;
+  --saito-bubble-background: #213;
   --saito-arcade-header-background: transparent;
   --saito-modal-background: var(--saito-background-light);
   --saito-font-color-dark-modal: #efefef;

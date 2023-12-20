@@ -12,14 +12,13 @@ class ChatPopup {
     this.manually_closed = false;
     this.is_rendered = false;
 
-    this.width = "";
-    this.height = "";
-
     this.group = null;
 
     this.is_scrolling = false;
 
     this.overlay = new SaitoOverlay(app, mod);
+
+    this.dimensions = {};
 
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
@@ -69,23 +68,25 @@ class ChatPopup {
     let popup_id = "chat-popup-" + this.group.id;
     let popup_qs = "#" + popup_id;
 
-    //let input_id = "chat-input-" + this.group.id;
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
 
       if (this.group.name == this.mod.communityGroupName) {
         this.input.enable_mentions = true;
       }
-    }
 
-    //let existing_input = this.input.getInput();
+      if (this.container){
+        this.input.display = "medium";
+      }else{
+        this.input.display = "small";
+      }
+    }
 
     //
     // calculate some values to determine position on screen...
     //
     let x_offset = 1000000;
     let popups_on_page = 0;
-    let am_i_on_page = 0;
 
     document.querySelectorAll(".chat-container").forEach((el) => {
       popups_on_page++;
@@ -95,15 +96,10 @@ class ChatPopup {
       }
     });
 
-    if (document.querySelector(popup_qs)) {
-      am_i_on_page = 1;
-      this.restorePopup(document.querySelector(popup_qs));
-    }
-
     //
     // insert or replace popup on page
     //
-    if (am_i_on_page == 1) {
+    if (document.querySelector(popup_qs)) {
       let html = `<div class="chat-body">
                     ${
                       this?.no_older_messages
@@ -173,7 +169,6 @@ class ChatPopup {
     let app = this.app;
     let mod = this.mod;
     let group_id = this.group.id;
-    let input_id = "chat-input-" + this.group.id;
     let header_id = "chat-header-" + this.group.id;
 
     //
@@ -185,60 +180,107 @@ class ChatPopup {
     let header_qs = "#chat-header-" + this.group.id;
     this_self = this;
 
-    let chatPopup = document.querySelector(".chat-container" + popup_qs);
+    let chatPopup = document.querySelector(popup_qs);
 
-    if (chatPopup) {
-      chatPopup.onmouseover = (e) => {
-        document.querySelectorAll(".chat-container").forEach((el) => {
-          el.classList.remove("active");
-        });
-        e.currentTarget.classList.add("active");
-      };
-
-      if (!this.mod.chat_manager_overlay) {
-        //
-        // make draggable and resizable, but no in mobile/main - page
-        //
-        this.app.browser.makeDraggable(popup_id, header_id, true);
-        this.app.browser.makeResizeable(popup_qs, header_qs, group_id, () => {
-          let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
-          if (chat_bubble) {
-            chat_bubble.classList.add("fa-window-minimize");
-            chat_bubble.classList.remove("fa-window-restore");
-            this.restorePopup(chatPopup);
-          }
-        });
-      }
-
-      //
-      // minimize
-      let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
-      if (chat_bubble) {
-        if (!this.mod.chat_manager_overlay) {
-          chat_bubble.onclick = (e) => {
-            chat_bubble.classList.toggle("fa-window-minimize");
-            chat_bubble.classList.toggle("fa-window-restore");
-            if (chatPopup.classList.contains("minimized")) {
-              this.restorePopup(chatPopup);
-            } else {
-              //this.width = chatPopup.style.width;
-              this.height = chatPopup.style.height;
-              //chatPopup.style.width = "";
-              chatPopup.style.height = "";
-              chatPopup.classList.add("minimized");
-              chatPopup.classList.remove("active");
-            }
-          };
-        }
-      }
+    if (!chatPopup) {
+      console.error("No Chat Popup to attach events to");
+      return;
     }
 
+
+    if (!this.mod.browser_active && !this.app.browser.isMobileBrowser()) {
+      //
+      // make draggable and resizable, but no in mobile/main - page
+      //
+      this.app.browser.makeDraggable(popup_id, header_id, true);
+      this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
+    }
+
+    chatPopup.onclick = (e) => {
+      document.querySelectorAll(".chat-container").forEach((el) => {
+        el.classList.remove("active");
+      });
+      e.currentTarget.classList.add("active");
+    }
+
+    //
+    // minimize
+    let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
+    let mximize_icon = document.querySelector(`${popup_qs} .chat-header .chat-maximizer-icon`);
+
+    if (chat_bubble && mximize_icon /*&& !this.mod.chat_manager_overlay*/) {
+      chat_bubble.onclick = (e) => {
+        if (chatPopup.classList.contains("minimized")) {
+          this.restorePopup(chatPopup);
+        } else {
+          if (chatPopup.classList.contains("maximized")) {
+            chatPopup.classList.remove("maximized");
+          } else {
+            //only update if not also maximized
+            this.savePopupDimensions(chatPopup);
+          }
+
+          //Undo any drag styling
+          chatPopup.style.top = "";
+          chatPopup.style.left = "";
+
+          //Return to default bottom=0 from css
+          chatPopup.style.bottom = "";
+
+          //Undo any manual resizing
+          chatPopup.style.height = "";
+
+          if (parseInt(window.getComputedStyle(chatPopup).width) > 360) {
+            chatPopup.style.width = "";  
+          }
+
+          chatPopup.classList.add("minimized");
+          chatPopup.classList.remove("active");
+          chatPopup.querySelector(".resize-icon").style.display = "none";
+        }
+      };
+
+      //
+      // maximize
+
+      mximize_icon.onclick = (e) => {
+        if (chatPopup.classList.contains("maximized")) {
+          this.restorePopup(chatPopup);
+        } else {
+          if (chatPopup.classList.contains("minimized")) {
+            chatPopup.classList.remove("minimized");
+          }else{
+            this.savePopupDimensions(chatPopup);            
+          }
+          
+          //Undo any drag styling
+          chatPopup.style.top = "";
+          chatPopup.style.left = "";
+
+          chatPopup.style.width = "750px";
+          chatPopup.style.height = window.innerHeight + "px";
+
+          //Return to default bottom=0 from css
+          chatPopup.style.bottom = "";
+
+          // decide to maximize to left or right
+          if (this.dimensions.left < Math.floor(window.innerWidth / 2)) {
+            chatPopup.style.right = window.innerWidth - 750 + "px";
+          } else {
+            chatPopup.style.right = "0px";
+          }
+
+          chatPopup.classList.add("maximized");
+          chatPopup.querySelector(".resize-icon").style.display = "none";
+        }
+      };
+    }
     // add reply functionality
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
         let src_obj = el.parentElement.parentElement.parentElement;
-        
+
         let quote = "";
 
         for (let child of el.parentElement.parentElement.childNodes) {
@@ -251,7 +293,7 @@ class ChatPopup {
           }
         }
 
-        if (quote.length > 30){
+        if (quote.length > 30) {
           quote = "..." + quote.slice(-30);
         }
 
@@ -283,7 +325,11 @@ class ChatPopup {
             text += child.textContent;
           }
           //We may want to also pull inner text from element nodes as long as they aren't the hidden buttons
-          if (child.nodeType === 1 && !child.classList.contains("saito-userline-reply") && child.nodeName !== "BLOCKQUOTE") {
+          if (
+            child.nodeType === 1 &&
+            !child.classList.contains("saito-userline-reply") &&
+            child.nodeName !== "BLOCKQUOTE"
+          ) {
             text += child.innerText;
           }
         }
@@ -324,101 +370,125 @@ class ChatPopup {
       });
     }
 
-    try {
-      //
-      // close
-      //
-      document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
-        this.manually_closed = true;
-        this.is_rendered = false;
-        document.querySelector(`${popup_qs}`).remove();
-        app.storage.saveOptions();
-      };
+    //
+    // close
+    //
+    document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
+      this.manually_closed = true;
+      this.is_rendered = false;
+      document.querySelector(`${popup_qs}`).remove();
+      this.app.connection.emit("chat-manager-render-request");
+      app.storage.saveOptions();
+    };
 
-      //
-      // submit
-      //
-      this.input.callbackOnReturn = async (message) => {
-        if (message.trim() == `${this.input.quote}`){
-          console.log("Reply with no content");
-          return;
-        }
+    //
+    // submit
+    //
+    this.input.callbackOnReturn = async (message) => {
+      if (message.trim() == `${this.input.quote}`) {
+        console.log("Reply with no content");
+        return;
+      }
 
-        let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
-        if (new_msg.trim() == "") {
-          return;
-        }
+      let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
+      if (new_msg.trim() == "") {
+        return;
+      }
 
-        let newtx = await mod.createChatTransaction(group_id, message, this.input.getMentions());
+      let newtx = await mod.createChatTransaction(group_id, message, this.input.getMentions());
+      if (newtx){
         await mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(newtx);
-        this.input.clear();
-        if (document.querySelector(popup_qs + " .chat-body")) {
-          this.is_scrolling = false;
-          document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
-        }
+      }
+      this.input.clear();
+      if (document.querySelector(popup_qs + " .chat-body")) {
+        this.is_scrolling = false;
+        document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
+      }
+    };
+
+    this.input.callbackOnUpload = async (filesrc) => {
+      filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
+      let img = document.createElement("img");
+      img.classList.add("img-prev");
+      img.src = filesrc;
+      let msg = img.outerHTML;
+      this.input.callbackOnReturn(msg);
+    };
+
+    //
+    // submit (button)
+    //
+    document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
+      this.input.callbackOnReturn(this.input.getInput());
+    };
+
+    //
+    // drag and drop images into chat window
+    //
+
+    app.browser.addDragAndDropFileUploadToElement(
+      popup_id,
+      this.input.callbackOnUpload,
+      false
+    ); // false = no drag-and-drop image click
+
+    document.querySelectorAll(`.img-prev`).forEach(function (img, key) {
+      img.onclick = (e) => {
+        e.preventDefault();
+
+        let img = e.currentTarget;
+        let src = img.getAttribute("src");
+
+        this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
       };
-
-      this.input.callbackOnUpload = (filesrc) => {
-        let img = document.createElement("img");
-        img.classList.add("img-prev");
-        img.src = filesrc;
-        let msg = img.outerHTML;
-        this.input.callbackOnReturn(msg);
-      };
-
-      //
-      // submit (button)
-      //
-      document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
-        this.input.callbackOnReturn(this.input.getInput());
-      };
-
-      //
-      // drag and drop images into chat window
-      //
-
-      app.browser.addDragAndDropFileUploadToElement(
-        popup_id,
-        async (filesrc) => {
-          filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
-
-          let img = document.createElement("img");
-          img.classList.add("img-prev");
-          img.src = filesrc;
-          let msg = img.outerHTML;
-
-          let newtx = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
-          await mod.sendChatTransaction(app, newtx);
-          mod.receiveChatTransaction(newtx);
-          this.input.clear();
-        },
-        false
-      ); // false = no drag-and-drop image click
-
-      document.querySelectorAll(`.img-prev`).forEach(function (img, key) {
-        img.onclick = (e) => {
-          e.preventDefault();
-
-          let img = e.currentTarget;
-          let src = img.getAttribute("src");
-
-          this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
-        };
-      });
-    } catch (err) {
-      //console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
-    }
+    });
   }
 
   restorePopup(chatPopup) {
     chatPopup.classList.remove("minimized");
+    chatPopup.classList.remove("maximized");
     chatPopup.classList.add("active");
-    if (this.width) {
-      chatPopup.style.width = this.width;
+
+    //console.log("Restore: ", this.dimensions);
+    if (Object.keys(this.dimensions).length > 0) {
+
+      chatPopup.style.width = this.dimensions.width + "px";
+      chatPopup.style.height = this.dimensions.height + "px";
+
+      if (chatPopup.style.left){
+        //Moved after minimized or maximized
+        chatPopup.style.left = "";
+        chatPopup.style.top = "";
+      }
+
+      chatPopup.style.bottom = this.dimensions.bottom + "px";
+      chatPopup.style.right = this.dimensions.right + "px";
+
     }
-    if (this.height) {
-      chatPopup.style.height = this.height;
+
+    this.dimensions = {};
+    chatPopup.querySelector(".resize-icon").style.display = "block";
+  }
+
+  savePopupDimensions(chatPopup) {
+    //
+    // You need to copy into a new object!!!!
+    //
+    let obj = chatPopup.getBoundingClientRect();
+    this.dimensions.width = obj.width;
+    this.dimensions.height = obj.height;
+    this.dimensions.left = obj.left;
+    this.dimensions.top = obj.top;
+    this.dimensions.bottom = window.innerHeight - obj.bottom;
+    this.dimensions.right = window.innerWidth - obj.right;
+    
+    //console.log("Save: ", this.dimensions);
+
+    if (chatPopup.style.top){
+      // Will revert to bottom/right coordinates for animation to be anchored
+      chatPopup.style.bottom = this.dimensions.bottom + "px";
+      chatPopup.style.right = this.dimensions.right + "px";
     }
   }
 }

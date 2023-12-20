@@ -2,8 +2,8 @@
     if (card == "voiceofamerica") {
 
 
-      var ops_to_purge = 4;
-      var ops_removable = 0;
+      let ops_to_purge = 4;
+      let ops_removable = 0;
 
       for (var i in this.countries) { if (this.countries[i].ussr > 0) { ops_removable += this.countries[i].ussr; } }
       if (ops_to_purge > ops_removable) { ops_to_purge = ops_removable; }

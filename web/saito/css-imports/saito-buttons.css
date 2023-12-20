@@ -4,8 +4,9 @@ buttons
 
 button,
 .saito-button-primary {
-  background: var(--saito-primary);
-  text-align: center;
+  background: var(--saito-primary-background);
+  transition: 0.5s;
+  background-size: 400% auto;
   padding: 1rem 1.5rem;
   text-align: center;
   letter-spacing: 1px;
@@ -33,13 +34,16 @@ button,
   background: var(--saito-background-color);
 }
 
-.saito-button-primary:hover, .saito-button-primary.disabled {
-  background: var(--saito-background-color);
-  color: var(--saito-primary);
-  border: 1px solid var(--saito-primary);
+button:hover, .saito-button-primary:hover{
+  background-position: right bottom; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
 }
 
 .saito-button-primary.disabled {
+  background: var(--saito-background-color);
+  color: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
   cursor: unset;
   pointer-events: none;
 }

@@ -1,15 +1,16 @@
-
-.local-archive-table{
-	padding: 1rem;
+.local-archive-table {
+	padding: 1rem 2rem;
 	width: 100vw;
+	max-height: calc(100vh - 2rem);
+	overflow: auto;
 }
 
-.archive-header{
+.archive-header {
 	font-size: 1.6rem;
 	font-weight: bold;
 }
 
-.archive-row{
+.archive-row {
 	display: grid;
 	grid-template-columns: 30px repeat(7, 150px) 50px 60px;
 	grid-gap: 0.5rem;
@@ -39,5 +40,5 @@
 }
 
 .jsontree_node {
-  list-style: none;
+	list-style: none;
 }

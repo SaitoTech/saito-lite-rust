@@ -1,15 +1,14 @@
 :root {
-  --p1-color: #BB233B; /* redish */
+  --p1-color: #bb233b; /* redish */
   --p2-color: #004193; /* bluish */
-  --p3-color: #ADCE14; /* yellowish */
+  --p3-color: #adce14; /* yellowish */
   --p4-color: #644700; /* brown */
   --text-color: #331800;
 
-  --p1-color-lite: #BB233BE9; /* redish */
-  --p2-color-lite: #004193E9; /* bluish */
-  --p3-color-lite: #ADCE14E9; /* yellowish */
-  --p4-color-lite: #644700E9; /* brown */
-
+  --p1-color-lite: #bb233be9; /* redish */
+  --p2-color-lite: #004193e9; /* bluish */
+  --p3-color-lite: #adce14e9; /* yellowish */
+  --p4-color-lite: #644700e9; /* brown */
 }
 
 .mobile-log-tab {
@@ -44,7 +43,7 @@ p {
   position: relative;
 }
 
-.settlers-userline>.saito-userline {
+.settlers-userline > .saito-userline {
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 2;
@@ -83,7 +82,6 @@ span.tip {
   padding: 5px;
 }
 
-
 /* Building costs as cardbox overlay */
 
 .game-cardbox {
@@ -91,7 +89,6 @@ span.tip {
   width: fit-content;
   background-color: rgba(245, 245, 245, 0.95);
 }
-
 
 .cardfan {
   top: 45vh;
@@ -135,7 +132,7 @@ dt {
 /*Richard background*/
 
 /* !-- background moved to body so board is resizable */
-/* gameboard == ocean, the "board" that gets resized is #hexgrid */ 
+/* gameboard == ocean, the "board" that gets resized is #hexgrid */
 .gameboard {
   position: absolute;
   width: 100%;
@@ -160,7 +157,7 @@ dt {
 }
 
 .player-box {
-  background-color: #444E;
+  background-color: #444e;
   z-index: 3;
   max-width: 25vw;
   padding: 1rem 2rem !important;
@@ -174,7 +171,8 @@ dt {
   flex: 1;
 }
 
-.plog .status-text-menu ul, .plog .status-text-menu ul li {
+.plog .status-text-menu ul,
+.plog .status-text-menu ul li {
   background-color: unset;
 }
 
@@ -201,7 +199,6 @@ dt {
   background-color: #e7e7e7;
 }
 
-
 .status-message {
   box-shadow: unset !important;
 }
@@ -213,7 +210,7 @@ dt {
   position: absolute;
 }
 
-.devcards+.rescards {
+.devcards + .rescards {
   top: 2vh;
   position: absolute;
 }
@@ -248,7 +245,8 @@ dt {
   z-index: 1000;
 }
 
-.chover:hover, .city.chover:hover {
+.chover:hover,
+.city.chover:hover {
   /*fill: whitesmoke;
   stroke: whitesmoke;*/
   background-color: whitesmoke;
@@ -261,7 +259,8 @@ dt {
   border: 3px dotted purple;
 }
 
-.rhover:hover, .city.empty.rhover:hover {
+.rhover:hover,
+.city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
   cursor: pointer;
@@ -273,7 +272,7 @@ dt {
   white-space: nowrap;
 }
 
-.ship>.icon {
+.ship > .icon {
   position: relative;
   top: -20%;
   width: 85%;
@@ -351,7 +350,7 @@ dt {
   border-radius: 10px;
 }
 
-.road:after{
+.road:after {
   top: -50%;
   left: 0;
   width: 100%;
@@ -414,14 +413,16 @@ dt {
   scale: 1.6;
 }
 
-.city img, .village img {
+.city img,
+.village img {
   transform: scale(1.4);
   margin: 0 0 3rem;
   position: relative;
   top: -2px;
 }
 
-.city>svg, .city>img {
+.city > svg,
+.city > img {
   width: 93%;
   padding: 0px;
 }
@@ -434,7 +435,6 @@ dt {
 .mobile-trading-container .flexline {
   min-width: 16rem;
 }
-
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
@@ -479,8 +479,6 @@ dt {
   color: var(--p4-color);
   background-color: unset;
 }
-
-
 
 .game-playerbox .saito-identicon-box {
   border: 5px solid;
@@ -633,7 +631,7 @@ input[type="checkbox"] {
 }
 
 .bandit {
-  color: #FFF9;
+  color: #fff9;
   background-image: url(/settlers/img/icons/bandit.png);
   background-size: cover;
   overflow: visible;
@@ -668,8 +666,6 @@ input[type="checkbox"] {
   color: var(--p4-color);
 }
 
-
-
 /* Disable resource selection in trade overlays */
 
 .noselect .icon {
@@ -698,14 +694,14 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
-
 .horizontal_list {
   display: flex;
   flex-wrap: wrap;
   border-top: 1px solid var(--saito-skyline-grey);
 }
 
-.horizontal_list .option .icon, .bank .option .icon {
+.horizontal_list .option .icon,
+.bank .option .icon {
   margin: 0 0.25em;
   width: 2em;
   vertical-align: middle;
@@ -734,7 +730,7 @@ ul.horizontal_list li.iconoption {
 
 /*Sit graphic on top of playerbox*/
 
-.me>.player-box-graphic {
+.me > .player-box-graphic {
   position: absolute;
   left: calc(100% + 12px);
   top: 5px;
@@ -743,7 +739,7 @@ ul.horizontal_list li.iconoption {
   transform: translateX(-50%);*/
 }
 
-.notme>.player-box-graphic {
+.notme > .player-box-graphic {
   position: absolute;
   top: 50%;
   right: calc(100% + 12px);
@@ -762,7 +758,7 @@ ul.horizontal_list li.iconoption {
   margin: 0 auto;
   border: 2px solid black;
   border-radius: 5px;
-  background-color: #222B;
+  background-color: #222b;
   /*width: min(12vw,110px);
   padding: min(0.5vw,5px) 0;
   flex-direction: row;*/
@@ -847,7 +843,6 @@ ul.horizontal_list li.iconoption {
   min-width: 15rem;
 }
 
-
 /*SVG token coloring*/
 
 .token {
@@ -913,7 +908,6 @@ ul.horizontal_list li.iconoption {
   border-radius: 5px;
 }
 
-
 .player-notice {
   display: flex;
   flex-direction: row;
@@ -925,7 +919,6 @@ ul.horizontal_list li.iconoption {
   font-size: 20px;
   padding: 8px;
 }
-
 
 .player-notice ul {
   margin-top: 0.5em;
@@ -940,7 +933,7 @@ ul.horizontal_list li.iconoption {
 }
 ******/
 
-.opponents>.player-box {
+.opponents > .player-box {
   position: relative;
   right: unset;
   top: unset;
@@ -983,7 +976,6 @@ ul.horizontal_list li.iconoption {
 }
 *****/
 
-
 .flash {
   animation-name: flash;
   animation-duration: 1.8s;
@@ -999,8 +991,8 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-
-.saitoa, #saito-alert-box {
+.saitoa,
+#saito-alert-box {
   border: 5px solid #424143;
   background-color: #d3c38df5;
   border-image: url(/settlers/img/border.png);
@@ -1012,17 +1004,34 @@ ul.horizontal_list li.iconoption {
   color: var(--text-color);
 }
 
+/* Overwrite the menu color */
+:root {
+  --game-menu-background: #d3c38df5;
+}
 
 .game-menu {
-  background-color: #d3c38df5;
   color: var(--text-color);
 }
 
-.game-menu-sub-option, .game-menu-sub-sub-option {
-  background-color: #d3c38dee;
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  #game-hexgrid {
+    margin-top: 40px;
+    padding: 100px 45px 125px;
+    border-radius: 300px;
+  }
+
+  .player-notice {
+    font-size: 18px;
+  }
+
+  .saitoa {
+    border-image-width: 15px;
+    border-image-outset: 3px;
+    border-width: 3px;
+  }
 }
 
-@media screen and (orientation: portrait) and (max-width: 600px) {
+@media screen and (orientation: landscape) and (max-height: 600px) {
   #game-hexgrid {
     padding: 75px 45px 125px;
     border-radius: 300px;
@@ -1033,32 +1042,11 @@ ul.horizontal_list li.iconoption {
   }
 
   .saitoa {
-  border-image-width: 15px;
-  border-image-outset: 3px;
-  border-width: 3px;
-}
-
-}
-
-@media screen and (orientation: landscape) and (max-height: 600px) {
-  #game-hexgrid{
-    padding: 75px 45px 125px;
-    border-radius: 300px;
+    border-image-width: 15px;
+    border-image-outset: 3px;
+    border-width: 3px;
   }
-
-  .player-notice {
-    font-size: 18px;
-  }
-
-
-.saitoa {
-  border-image-width: 15px;
-  border-image-outset: 3px;
-  border-width: 3px;
 }
-
-}
-
 
 .game-playerbox-icons .army img {
   width: 4rem;
@@ -1075,7 +1063,8 @@ ul.horizontal_list li.iconoption {
   width: 4rem;
 }
 
-.victory_point_cards, .longest-road {
+.victory_point_cards,
+.longest-road {
   display: flex;
   gap: 1rem;
   flex-direction: row;
@@ -1095,22 +1084,25 @@ ul.horizontal_list li.iconoption {
   align-items: center;
 }
 
-.game-playerbox-icons .token img, .game-playerbox-icons .token svg {
+.game-playerbox-icons .token img,
+.game-playerbox-icons .token svg {
   transition: all ease-in-out 300ms;
   border-radius: 50%;
   border: 2px solid #fff8;
   background-color: #456;
 }
 
-.game-playerbox-icons .token img:hover, .game-playerbox-icons .token svg:hover {
+.game-playerbox-icons .token img:hover,
+.game-playerbox-icons .token svg:hover {
   transform: scale(1.3);
 }
 
-.token.largest.army, .longest-road, .victory_point_cards {
+.token.largest.army,
+.longest-road,
+.victory_point_cards {
   position: relative;
   margin: 0 -4rem 0 0;
 }
-
 
 .vproundel {
   position: relative;
@@ -1142,7 +1134,6 @@ ul.horizontal_list li.iconoption {
   gap: 1rem;
 }
 
-
 #cleartrade {
   cursor: pointer;
   font-size: 24px;
@@ -1157,5 +1148,3 @@ ul.horizontal_list li.iconoption {
 #cleartrade:hover {
   transform: scale(1.3);
 }
-
-

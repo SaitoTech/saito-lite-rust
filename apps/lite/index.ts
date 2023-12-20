@@ -2,6 +2,7 @@ import { Saito } from "../core";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import mods_config from "../../config/modules.config";
+import build from "../../config/build.json";
 import { initialize as initSaito } from "saito-js/index.web";
 import S from "saito-js/saito";
 import WebSharedMethods from "saito-js/lib/custom/shared_methods.web";
@@ -59,6 +60,14 @@ class WebMethods extends WebSharedMethods {
     this.app.connection.emit("add-block-success", { hash, blockId });
   }
 
+  sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void {
+    console.log(`emit : new-version-detected ${major}:${minor}:${patch}`);
+    this.app.connection.emit("new-version-detected", {
+      version: `${major}.${minor}.${patch}`,
+      peerIndex: peerIndex,
+    });
+  }
+
   sendWalletUpdate() {
     this.app.connection.emit("wallet-updated");
   }
@@ -81,6 +90,7 @@ class WebMethods extends WebSharedMethods {
     throw new Error("Method not implemented.");
   }
 
+
   getMyServices() {
     let list = new PeerServiceList();
     let result = this.app.network.getServices();
@@ -96,6 +106,9 @@ async function init() {
 
   saito.options.browser_mode = true;
   saito.options.spv_mode = true;
+  saito.build_number = parseInt(build.build_number);
+  console.info("Build Number: " + saito.build_number);
+
 
   // saito.storage.convertOptionsBigInt(saito.options);
 

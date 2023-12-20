@@ -3,7 +3,7 @@
   color: var(--saito-font-color-dark-modal);
   background: #181818;
   border-radius: 0.5rem;
-  min-width: 40rem;
+  width: 40rem;
   min-height: 15rem;
   display: flex;
   padding: 1.5rem;
@@ -128,7 +128,7 @@
 }
 
 
-input[type="text"], textarea {
+.league-wizard-overlay input[type="text"], textarea {
   margin-bottom: 1rem;
   width: 100%;
   padding: 1rem;

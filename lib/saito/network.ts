@@ -28,9 +28,9 @@ export default class Network {
     return S.getInstance().getPeer(index);
   }
 
-  public async sendRequest(message: string, data: any = "", peer: Peer = null) {
+  public async sendRequest(message: string, data: any = "", callback: null, peer: Peer = null) {
     let buffer = Buffer.from(JSON.stringify(data), "utf-8");
-    return S.getInstance().sendRequest(message, data, peer ? peer.peerIndex : undefined);
+    return S.getInstance().sendRequest(message, data, callback, peer ? peer.peerIndex : undefined);
   }
 
   public async sendTransactionWithCallback(
@@ -48,13 +48,13 @@ export default class Network {
   public async sendRequestAsTransaction(
     message: string,
     data: any = "",
-    callback?: any, 
+    callback?: any,
     peerIndex?: bigint
   ) {
     return S.getInstance().sendRequest(message, data, callback, peerIndex);
   }
 
-  public close() {}
+  public close() { }
 
   addStunPeer() {
     throw new Error("not implemented");
@@ -64,9 +64,9 @@ export default class Network {
     throw new Error("not implemented");
   }
 
-  returnPeersWithService() {}
+  returnPeersWithService() { }
 
-  updatePeersWithWatchedPublicKeys() {}
+  updatePeersWithWatchedPublicKeys() { }
 
   public getServices(): PeerService[] {
     let my_services = [];

@@ -6,6 +6,12 @@
   position: relative;
 }
 
+.tweet .saito-address, .tweet .saito-userline {
+  font-size: 1.3rem;
+  margin: 0.175rem;
+  color: var(--saito-font-color-light);
+}
+
 .tweet-preview .tweet .tweet-body {
   min-height: 4rem;
 }
@@ -20,7 +26,7 @@
   border-bottom: none;
 }
 
-.tweet.has-reply::after {
+.tweet.has-reply::after, .tweet.has-reply-disconnected::after {
   content: "";
   position: absolute;
   width: 0rem;
@@ -44,7 +50,7 @@
   background-color: var(--saito-background-color);
   z-index: 99;
   top: calc(50% + 1rem);
-  left: 32px;
+  left: 3.2rem;
   line-height: 4.5rem;
 }
 
@@ -52,16 +58,43 @@
   background: var(--saito-background-light);
 }
 
-.tweet.has-reply-disconnected::after {
+
+.tweet.is-reply{
+  left: 2.5rem;
+  width: calc(100% - 2.5rem);
+}
+
+.tweet.is-reply::after{
   content: "";
   position: absolute;
   width: 0rem;
-  height: 100%;
-  top: 5.5rem;
-  left: 3.5rem;
-  border-left: 5px dotted var(--saito-border-color);
-  z-index: 50;
+  height: 75%;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.75rem;
+  border-left: 1px solid var(--saito-primary);
+  z-index: 3;
 }
+
+/*.tweet.is-reply::after{
+  content: "";
+  position: absolute;
+  width: 2rem;
+  height: 100%;
+  bottom: calc(100% - 4rem);
+  left: -0.5rem;
+  border-left: 1px solid var(--saito-border-color-dark);
+  border-bottom: 1px solid var(--saito-border-color-dark);
+  z-index: 3;
+}
+.tweet.highlight-tweet .tweet-body {
+  grid-template-columns: 0 1fr;
+}
+
+*/
+
+
+
 
 .tweet-header .saito-user .saito-identicon-box .saito-identicon {
   z-index: 51;
@@ -111,7 +144,7 @@
   margin-right: 0.3rem;
   margin-left: 0.3rem;
   font-weight: bold;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--saito-font-color-light);
 }
 
@@ -206,7 +239,7 @@
   display: flex;
 }
 
-.tweet:hover {
+.tweet:hover, .tweet.highlight-tweet {
   background-color: var(--saito-background-light);
 }
 
@@ -285,11 +318,6 @@
   flex-grow: 1;
 }
 
-.post-tweet-button {
-  line-height: 4.5rem;
-  font-size: 2.2rem;
-}
-
 .tweet-like-button .heart-icon {
   background: var(--saito-heart-animation);
   cursor: pointer;
@@ -342,6 +370,10 @@
   margin-left: 6px;
 }
 
+.link-preview {
+  margin: 0.5rem 0;
+}
+
 .link-img {
   width: 100%;
   height: 25rem;
@@ -389,10 +421,20 @@
   .tweet {
     padding: 1rem 0 0;
   }
-  .tweet.has-reply::after {
+
+  .tweet.is-reply::after{
+    left: -1rem;
+  }
+
+  .tweet.has-reply::after, .tweet.has-reply-disconnected::after {
     top: 4.5rem;
     left: 1.55rem;
   }
+
+  .tweet.has-reply-disconnected::before {
+    left: 1.3rem;
+  }
+
   .tweet-text {
     padding-bottom: 0;
     line-height: 2rem;

@@ -9,6 +9,8 @@ import Browser from "../../lib/saito/browser";
 import Wallet from "../../lib/saito/wallet";
 import Keychain from "../../lib/saito/keychain";
 import Storage from "../../lib/saito/storage";
+import build from "../../config/build.json";
+import S from "saito-js/saito";
 
 import Network from "../../lib/saito/network";
 
@@ -19,6 +21,7 @@ const path = require("path");
 class Saito {
   BROWSER: number;
   SPVMODE: number;
+  build_number: number;
   options: any = {};
   // config: any = {};
   modules: Mods;
@@ -38,6 +41,7 @@ class Saito {
   constructor(config = {}) {
     this.BROWSER = 1;
     this.SPVMODE = 0;
+    this.build_number = Number(build.build_number);
     this.options = config;
     this.newSaito();
 
@@ -73,6 +77,7 @@ class Saito {
       //
       await hash_loader(this);
 
+      // NOV 29, changes to wallet, does it have app on init?
       await this.wallet.initialize();
       await this.keychain.initialize();
 
@@ -83,6 +88,14 @@ class Saito {
         x.dirname = path.dirname(mod_path);
         return x;
       });
+
+      console.log("setting current version : " + this.wallet.version);
+
+      await S.getInstance().setWalletVersion(
+        0,
+        Math.floor(this.wallet.version),
+        (this.wallet.version * 1000) % 1000
+      );
 
       // browser sets active module
       await this.browser.initialize(this);

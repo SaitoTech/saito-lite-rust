@@ -4,6 +4,13 @@ module.exports = (app, mod, tweet) => {
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
 
+  if (tweet.mentions && tweet.mentions !== 1) {
+    for (let m of tweet.mentions) {
+      text = text.replace(`[[${app.keychain.returnUsername(m)}]]`, `<span class="saito-mention saito-address" data-id="${m}" data-disable="true" contenteditable="false">${app.keychain.returnUsername(m)}</span>`);
+    }
+  }
+
+
   if (!text && !notice && tweet.retweet_tx) {
     notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
   }
@@ -28,9 +35,17 @@ module.exports = (app, mod, tweet) => {
               </div></div>
                     
                 <div class="tweet-tool tweet-tool-share" title="Copy link to tweet"><i class="fa fa-arrow-up-from-bracket"></i>
-                </div>
-                <div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>
-              </div>`;
+                </div>`;
+  if (tweet.tx.from[0].publicKey === mod.publicKey) {
+    if (tweet.created_at + 10 * 60 * 1000 > new Date().getTime()){
+      controls += `<div class="tweet-tool tweet-tool-edit" title="Edit your tweet"><i class="fas fa-edit"></i></div>`;  
+    } else {
+      controls += `<div class="tweet-tool tweet-tool-delete" title="Delete your tweet"><i class="fas fa-trash"></i></div>`;  
+    }
+  } else {
+    controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
+  }
+  controls += `           </div>`;
 
   let html = `
         <div class="tweet tweet-${tweet.tx.signature}" data-id="${tweet.tx.signature}">

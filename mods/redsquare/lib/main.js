@@ -27,10 +27,9 @@ class RedSquareMain {
     //
     // HOME-RENDER-REQUEST render the main thread from scratch
     //
-    this.app.connection.on("redsquare-home-render-request", (scroll_to_top = true) => {
+    this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       window.location.hash = "#home";
-      document.querySelector(".saito-main").innerHTML = "";
 
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
@@ -38,13 +37,16 @@ class RedSquareMain {
 
       this.manager.render("tweets");
 
+      let behavior = "auto";
+
       if (scroll_to_top) {
         this.scroll_depth = 0;
         this.hasScrolledDown = false;
         this.idleTime = 10;
+        behavior = "smooth";
       }
 
-      this.scrollFeed(this.scroll_depth, "smooth");
+      this.scrollFeed(this.scroll_depth, behavior);
     });
 
     //
@@ -79,12 +81,9 @@ class RedSquareMain {
         if (this.manager.mode == "tweets") {
           if (this.canRefreshPage()) {
             console.log("postcache-render-request: refresh the page automatically!");
-            try {
-              document.querySelector(".saito-main").innerHTML = "";
-            } catch (err) {
-              console.errors(err);
-            }
             this.manager.render("tweets");
+            
+
           } else {
             console.log("postcache-render-request: CANNOT refresh the page!");
 
@@ -96,6 +95,11 @@ class RedSquareMain {
             }
 
             document.getElementById("saito-new-tweets").onclick = (e) => {
+
+              // We usually don't want to wipe out the rendered feed, but this is going to be 
+              // the easiest way to get rid of the button and make sure the new tweets show up on 
+              // top 
+              document.querySelector(".saito-main").innerHTML = "";
               this.app.connection.emit("redsquare-home-render-request", true);
             };
           }
@@ -116,36 +120,33 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
       this.scrollFeed(0);
-      document.querySelector(".saito-main").innerHTML = "";
       this.manager.renderTweet(tweet);
-      document.querySelectorAll(".optional-menu-item").forEach((item) => {
-        item.style.display = "none";
+
+      this.app.connection.emit("saito-header-replace-logo", (e) => {
+        this.app.connection.emit("redsquare-home-render-request");
       });
-      document.querySelector(".redsquare-menu-home").style.display = "flex";
+
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.scrollFeed(0);
-      document.querySelector(".saito-main").innerHTML = "";
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
       this.mod.saveOptions();
       this.mod.menu.incrementNotifications("notifications", 0);
       this.manager.render("notifications");
 
-      document.querySelectorAll(".optional-menu-item").forEach((item) => {
-        item.style.display = "none";
+      this.app.connection.emit("saito-header-replace-logo", (e) => {
+        this.app.connection.emit("redsquare-home-render-request");
       });
 
-      document.querySelector(".redsquare-menu-home").style.display = "flex";
+
     });
 
     //
     // Replace RS with a user's profile (collection of their tweets)
     //
     this.app.connection.on("redsquare-profile-render-request", (publicKey = "") => {
-      // reset main
-      document.querySelector(".saito-main").innerHTML = "";
 
       this.scrollFeed(0);
 
@@ -153,12 +154,14 @@ class RedSquareMain {
         publicKey = this.mod.publicKey;
       }
 
+      this.manager.render("profile")
+
       this.manager.renderProfile(publicKey);
 
-      document.querySelectorAll(".optional-menu-item").forEach((item) => {
-        item.style.display = "none";
+      this.app.connection.emit("saito-header-replace-logo", (e) => {
+        this.app.connection.emit("redsquare-home-render-request");
       });
-      document.querySelector(".redsquare-menu-home").style.display = "flex";
+
     });
 
     this.app.connection.on("redsquare-insert-loading-message", () => {
