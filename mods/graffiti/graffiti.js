@@ -70,7 +70,12 @@ class Graffiti extends ModTemplate {
     if (newtx === null) { return 0; }
     const message = newtx.returnMessage();
     if (message?.data && message?.request === "graffiti update") {
-      if (this.app.BROWSER) {
+      
+      //
+      // We can ignore rebroadcast transactions if we aren't in the graffiti space
+      // because we will fetch the up to date one on load
+      //
+      if (this.app.BROWSER && this.browser_active) {
         const tx = new Transaction(undefined, message.data);
         const txmsg = tx.returnMessage();
         if (txmsg.module === this.name && txmsg.request === "paint") {
