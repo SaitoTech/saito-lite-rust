@@ -20,6 +20,8 @@ class ChatPopup {
 
     this.dimensions = {};
 
+    this.events_attached = false;
+
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
         this.no_older_messages = true;
@@ -166,6 +168,13 @@ class ChatPopup {
   }
 
   attachEvents() {
+    /* avoids re-adding of events to same element, to fix issues with resizing */
+    if (this.events_attached == false) {
+      this.events_attached = true;
+    } else {
+      return;
+    }
+
     let app = this.app;
     let mod = this.mod;
     let group_id = this.group.id;
@@ -376,6 +385,7 @@ class ChatPopup {
     document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
       this.manually_closed = true;
       this.is_rendered = false;
+      this.events_attached = false;
       document.querySelector(`${popup_qs}`).remove();
       this.app.connection.emit("chat-manager-render-request");
       app.storage.saveOptions();
@@ -443,6 +453,8 @@ class ChatPopup {
         this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
       };
     });
+
+
   }
 
   restorePopup(chatPopup) {
