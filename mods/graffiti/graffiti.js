@@ -1,26 +1,26 @@
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require("saito-js/lib/peer_service").default;
-const PlaceUI     = require('./lib/place-ui');
+const GraffitiUI  = require('./lib/graffiti-ui');
 const GridState   = require('./lib/grid-state');
 const createHash  = require('crypto').createHash;
 const GameMenu    = require('../../lib/saito/ui/game-menu/game-menu');
 
-class Place extends ModTemplate {
+class Graffiti extends ModTemplate {
   constructor(app) {
     super(app);
     this.app = app;
-    this.name = "Place";
+    this.name = "Graffiti";
 
     this.gridSize = 40;
 
-    this.gridState = new GridState(this);
-    this.placeUI   = new PlaceUI(this);
+    this.gridState  = new GridState(this);
+    this.graffitiUI = new GraffitiUI(this);
     this.menu = new GameMenu(app, this);
   }
 
   returnServices() {
-    return [new PeerService(null, "place", "place tilegrid")];
+    return [new PeerService(null, "graffiti", "graffiti tilegrid")];
   }
 
   async render(app) {
@@ -28,7 +28,7 @@ class Place extends ModTemplate {
       return;
     }
     await super.render(app);
-    this.placeUI.render();
+    this.graffitiUI.render();
 
     this.menu.addMenuOption("game-game", "Menu");
     this.menu.debug = false;
@@ -47,7 +47,7 @@ class Place extends ModTemplate {
     if (!this.browser_active) {
       return;
     }
-    if (service.service === "place") {
+    if (service.service === "graffiti") {
       await this.loadGridFromPeer(peer);
     }
   }
@@ -69,7 +69,7 @@ class Place extends ModTemplate {
   async handlePeerTransaction(app, newtx=null, peer, mycallback=null) {
     if (newtx === null) { return 0; }
     const message = newtx.returnMessage();
-    if (message?.data && message?.request === "place update") {
+    if (message?.data && message?.request === "graffiti update") {
       if (this.app.BROWSER) {
         const tx = new Transaction(undefined, message.data);
         const txmsg = tx.returnMessage();
@@ -88,7 +88,7 @@ class Place extends ModTemplate {
 
 
   async onConfirmation(blk, tx, conf) {
-    console.log("*+* Place.onConfirmation called");
+    console.log("*+* Graffiti.onConfirmation called");
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
@@ -110,7 +110,7 @@ class Place extends ModTemplate {
     const peers = await this.app.network.getPeers();
     for (const peer of peers) {
       if (peer.synctype === "lite") {
-        this.app.network.sendRequestAsTransaction("place update", tx.toJson(), null, peer.peerIndex);
+        this.app.network.sendRequestAsTransaction("graffiti update", tx.toJson(), null, peer.peerIndex);
       }
     }
   }
@@ -142,7 +142,7 @@ class Place extends ModTemplate {
   async updateTiles(tileArray, status, ordinal=null) {
     const locatedStateArray = tileArray.map((tile) => this.gridState.updateTile(tile, status, ordinal));
     if (this.app.BROWSER) {
-      this.placeUI.updateTilesRendering(locatedStateArray);
+      this.graffitiUI.updateTilesRendering(locatedStateArray);
     } else if (status === "confirmed") {
       await this.updateTilesInDatabase(locatedStateArray, ordinal);
     }
@@ -170,7 +170,7 @@ class Place extends ModTemplate {
         params[`$ordinal${k}`] = ordinal;
       }
       const sql = "REPLACE INTO tiles (i, j, red, green, blue, ordinal) VALUES\n" + sqlValues.join(",\n");
-      await this.app.storage.executeDatabase(sql, params, "place");
+      await this.app.storage.runDatabase(sql, params, "graffiti");
     }
   }
 
@@ -185,4 +185,4 @@ class Place extends ModTemplate {
   }
 }
 
-module.exports = Place;
+module.exports = Graffiti;

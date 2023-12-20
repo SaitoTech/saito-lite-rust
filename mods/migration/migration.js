@@ -205,7 +205,7 @@ class Migration extends ModTemplate {
 	      $email: txmsg.data.email,
 	      $created_at: tx.timestamp
 	    };
-	    await this.app.storage.executeDatabase(sql, params, "migration");
+	    await this.app.storage.runDatabase(sql, params, "migration");
   	} catch (err) {
   		console.log("ERROR in saving migration data to db: " + err);
   	}

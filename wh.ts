@@ -235,7 +235,7 @@ async function initCLI() {
                 $name: tname,
                 $module: tmodule,
               };
-              await app.storage.executeDatabase(sql, params, "warehouse");
+              await app.storage.runDatabase(sql, params, "warehouse");
             }
           }
         }

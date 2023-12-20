@@ -1,7 +1,7 @@
 const createHash = require('crypto').createHash;
 const RBTree     = require('bintrees').RBTree;
 
-class PlaceUI {
+class GraffitiUI {
 
   constructor(mod) {
     this.mod = mod;
@@ -897,4 +897,4 @@ class PlaceUI {
   }
 }
 
-module.exports = PlaceUI;
+module.exports = GraffitiUI;
