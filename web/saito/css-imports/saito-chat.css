@@ -71,6 +71,23 @@
   }
 }
 
+.chat-popup .saito-notification-dot {
+  width: 3.5rem;
+  height: 3.5rem;
+  bottom: 6rem;
+  left: unset;
+  right: 2rem;
+  cursor: pointer;
+}
+
+.chat-popup .saito-notification-dot i, .chat-popup .saito-notification-dot:hover .new-message-count {
+  display: none;
+}
+
+.chat-popup .saito-notification-dot:hover i {
+  display: block;
+}
+
 .saito-chat-active {
   background-color: var(--saito-gray-transparent);
 }
