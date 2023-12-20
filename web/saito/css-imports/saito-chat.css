@@ -676,6 +676,13 @@
     height: var(--saito-header-height);
     line-height: 5rem;
   }
+  
+  .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+  }
 }
 
 @media screen and (max-width: 600px) {
