@@ -14,7 +14,6 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
   let newPlayer = league.admin && !key.email && league.admin !== mod.publicKey;
 
   let html = `
-    <div class="league-overlay-container">
         <div class="league-overlay">
             <div class="league-overlay-header">
                 <div class="league-overlay-header-image" style="background-image: url('${img}')"></div>
@@ -115,7 +114,6 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                 <div class="league-overlay-leaderboard league-overlay-content-box hide-scrollbar mobile-hide"></div>
             </div>
         </div>
-    </div>
  
     `;
 

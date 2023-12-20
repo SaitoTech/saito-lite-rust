@@ -1,12 +1,7 @@
-.league-overlay-container {
-  background: var(--saito-arcade-background);
-  width: 90vw;
-  height: max-content;
-  max-width: 140rem;
-  border-radius: 0.5rem;
-}
 
 .league-overlay {
+  background: var(--saito-arcade-background);
+  width: 90vw;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
@@ -373,9 +368,9 @@ span.attention {
     margin: 0;
   }
 
-  .league-overlay-container {
+  .league-overlay {
     width: 100vw;
-    max-height: 95vh;
+    max-height: calc(95 * var(--saito-vh));
   }
   .contactAdminWarning {
     min-height: 0;
