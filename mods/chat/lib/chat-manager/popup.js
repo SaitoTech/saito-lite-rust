@@ -1,6 +1,7 @@
 const SaitoInput = require("../../../../lib/saito/ui/saito-input/saito-input");
 const ChatPopupTemplate = require("./popup.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const debounce = require("lodash/debounce");
 
 class ChatPopup {
   constructor(app, mod, container = "") {
@@ -14,11 +15,13 @@ class ChatPopup {
 
     this.group = null;
 
-    this.is_scrolling = false;
+    this.is_scrolling = null;
 
     this.overlay = new SaitoOverlay(app, mod);
 
     this.dimensions = {};
+
+    this.events_attached = false;
 
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
@@ -75,9 +78,9 @@ class ChatPopup {
         this.input.enable_mentions = true;
       }
 
-      if (this.container){
+      if (this.container) {
         this.input.display = "medium";
-      }else{
+      } else {
         this.input.display = "small";
       }
     }
@@ -145,8 +148,28 @@ class ChatPopup {
     //
     // scroll to bottom
     //
-    if (document.querySelector(popup_qs + " .chat-body") && !this.is_scrolling) {
-      document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
+    let chatBody = document.querySelector(popup_qs + " .chat-body"); 
+    if (chatBody) {
+      if (this.is_scrolling == null) {
+        console.log("Scroll to bottom on chat popup render");
+        chatBody.scroll(0, 1000000000);
+      } else {
+        chatBody.scroll({ top: this.is_scrolling, left: 0 });
+        this.is_scrolling = null;
+
+        let notification = document.querySelector(
+          popup_qs + " .saito-notification-dot .new-message-count"
+        );
+        if (notification) {
+          let count = parseInt(notification.textContent) + 1;
+          notification.innerText = count;
+        } else {
+          this.app.browser.addElementToSelector(
+            `<div class="saito-notification-dot"><div class="new-message-count">1</div><i class="fa-solid fa-down-long"></i></div>`,
+            popup_qs
+          );
+        }
+      }
     }
 
     //
@@ -166,6 +189,13 @@ class ChatPopup {
   }
 
   attachEvents() {
+    /* avoids re-adding of events to same element, to fix issues with resizing */
+    if (this.events_attached == false) {
+      this.events_attached = true;
+    } else {
+      return;
+    }
+
     let app = this.app;
     let mod = this.mod;
     let group_id = this.group.id;
@@ -187,7 +217,6 @@ class ChatPopup {
       return;
     }
 
-
     if (!this.mod.browser_active && !this.app.browser.isMobileBrowser()) {
       //
       // make draggable and resizable, but no in mobile/main - page
@@ -201,7 +230,7 @@ class ChatPopup {
         el.classList.remove("active");
       });
       e.currentTarget.classList.add("active");
-    }
+    };
 
     //
     // minimize
@@ -231,7 +260,7 @@ class ChatPopup {
           chatPopup.style.height = "";
 
           if (parseInt(window.getComputedStyle(chatPopup).width) > 360) {
-            chatPopup.style.width = "";  
+            chatPopup.style.width = "";
           }
 
           chatPopup.classList.add("minimized");
@@ -249,10 +278,10 @@ class ChatPopup {
         } else {
           if (chatPopup.classList.contains("minimized")) {
             chatPopup.classList.remove("minimized");
-          }else{
-            this.savePopupDimensions(chatPopup);            
+          } else {
+            this.savePopupDimensions(chatPopup);
           }
-          
+
           //Undo any drag styling
           chatPopup.style.top = "";
           chatPopup.style.left = "";
@@ -357,17 +386,32 @@ class ChatPopup {
       };
     }
 
-    let myBody = document.querySelector(popup_qs + " .chat-body");
-    if (myBody) {
-      myBody.addEventListener("scroll", (e) => {
-        let chatHeight = myBody.getBoundingClientRect().height;
+    if (document.querySelector(popup_qs + " .saito-notification-dot")) {
+      document.querySelector(popup_qs + " .saito-notification-dot").onclick = (e) => {
+        document
+          .querySelector(popup_qs + " .chat-body")
+          .lastElementChild.scrollIntoView({ behavior: "smooth" });
+      };
+    }
 
-        if (myBody.scrollHeight - chatHeight - myBody.scrollTop > chatHeight) {
-          this.is_scrolling = true;
+    let myBody = document.querySelector(popup_qs + " .chat-body");
+    if (myBody && myBody?.lastElementChild) {
+      const pollScrollHeight = () => {
+        if (
+          myBody.lastElementChild.getBoundingClientRect().top >
+          myBody.getBoundingClientRect().bottom
+        ) {
+          this.is_scrolling = myBody.scrollTop;
         } else {
-          this.is_scrolling = false;
+          this.is_scrolling = null;
+
+          if (document.querySelector(popup_qs + " .saito-notification-dot")) {
+            document.querySelector(popup_qs + " .saito-notification-dot").remove();
+          }
         }
-      });
+      };
+
+      myBody.addEventListener("scroll", debounce(pollScrollHeight, 100));
     }
 
     //
@@ -376,6 +420,7 @@ class ChatPopup {
     document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
       this.manually_closed = true;
       this.is_rendered = false;
+      this.events_attached = false;
       document.querySelector(`${popup_qs}`).remove();
       this.app.connection.emit("chat-manager-render-request");
       app.storage.saveOptions();
@@ -396,13 +441,13 @@ class ChatPopup {
       }
 
       let newtx = await mod.createChatTransaction(group_id, message, this.input.getMentions());
-      if (newtx){
+      if (newtx) {
         await mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(newtx);
       }
       this.input.clear();
       if (document.querySelector(popup_qs + " .chat-body")) {
-        this.is_scrolling = false;
+        this.is_scrolling = null;
         document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
       }
     };
@@ -427,11 +472,7 @@ class ChatPopup {
     // drag and drop images into chat window
     //
 
-    app.browser.addDragAndDropFileUploadToElement(
-      popup_id,
-      this.input.callbackOnUpload,
-      false
-    ); // false = no drag-and-drop image click
+    app.browser.addDragAndDropFileUploadToElement(popup_id, this.input.callbackOnUpload, false); // false = no drag-and-drop image click
 
     document.querySelectorAll(`.img-prev`).forEach(function (img, key) {
       img.onclick = (e) => {
@@ -443,6 +484,8 @@ class ChatPopup {
         this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
       };
     });
+
+
   }
 
   restorePopup(chatPopup) {
@@ -452,11 +495,10 @@ class ChatPopup {
 
     //console.log("Restore: ", this.dimensions);
     if (Object.keys(this.dimensions).length > 0) {
-
       chatPopup.style.width = this.dimensions.width + "px";
       chatPopup.style.height = this.dimensions.height + "px";
 
-      if (chatPopup.style.left){
+      if (chatPopup.style.left) {
         //Moved after minimized or maximized
         chatPopup.style.left = "";
         chatPopup.style.top = "";
@@ -464,7 +506,6 @@ class ChatPopup {
 
       chatPopup.style.bottom = this.dimensions.bottom + "px";
       chatPopup.style.right = this.dimensions.right + "px";
-
     }
 
     this.dimensions = {};
@@ -482,10 +523,10 @@ class ChatPopup {
     this.dimensions.top = obj.top;
     this.dimensions.bottom = window.innerHeight - obj.bottom;
     this.dimensions.right = window.innerWidth - obj.right;
-    
+
     //console.log("Save: ", this.dimensions);
 
-    if (chatPopup.style.top){
+    if (chatPopup.style.top) {
       // Will revert to bottom/right coordinates for animation to be anchored
       chatPopup.style.bottom = this.dimensions.bottom + "px";
       chatPopup.style.right = this.dimensions.right + "px";

@@ -1814,7 +1814,7 @@ class Arcade extends ModTemplate {
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(arcadeHome(app, arcade_self, arcade_self.build_number));
+      res.send(arcadeHome(app, arcade_self, app.build_number));
       return;
     });
 

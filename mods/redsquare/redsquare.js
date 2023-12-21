@@ -10,7 +10,6 @@ const fetch = require("node-fetch");
 const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
-//const RedSquareHammerSwipe = require("./lib/redsquare-hammer-swipe/redsquare-hammer-swipe");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
@@ -99,8 +98,6 @@ class RedSquare extends ModTemplate {
     this.notifications_number_unviewed = 0;
 
     this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
-
-    this.scripts = ["/saito/lib/hammer/hammer.min.js"];
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
@@ -449,11 +446,6 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
 
-      //      if (this.app.browser.isMobileBrowser()){
-      //        this.hammer = new RedSquareHammerSwipe(this.app, this);
-      //        this.addComponent(this.hammer);
-      //      }
-
       //
       // chat manager can insert itself into left-sidebar if exists
       //
@@ -739,6 +731,7 @@ class RedSquare extends ModTemplate {
                   this.app.storage.updateTransaction(tweet.tx, null, "localhost");
                 } else {
                   console.warn("How did we not add the tweet????");
+                  console.log(txs[z]);
                 }
               }
 
@@ -990,8 +983,8 @@ class RedSquare extends ModTemplate {
       //
       let t = this.returnTweet(tweet.tx.signature);
       if (!t) {
-        console.error("Tweet indexed in hash, but not in memory");
-        console.log(tweet?.text);
+        console.warn("Tweet indexed in hash, but not in memory");
+        console.log(tweet);
         return 0;
       }
 
@@ -1169,16 +1162,21 @@ class RedSquare extends ModTemplate {
       return;
     }
 
+    this.tweets_sigs_hmap[tweet_sig] = 0;
+
     for (let i = 0; i < this.tweets.length; i++) {
-      //if (this.tweets[i].hasChildTweet(tweet_sig)) {
-      //  return this.tweets[i].returnChildTweet(tweet_sig);
-      //}
 
       if (this.tweets[i].tx.signature === tweet_sig) {
         this.tweets[i].remove();
         this.tweets.splice(i, 1);
         return;
       }
+
+      if (this.tweets[i].hasChildTweet(tweet_sig)) {
+        this.tweets[i].removeChildTweet(tweet_sig);
+        return;
+      }
+
     }
 
     for (let j = 0; j < this.unknown_children.length; j++) {
@@ -1863,9 +1861,10 @@ class RedSquare extends ModTemplate {
       { field1: "RedSquare", sig },
       (txs) => {
         if (txs?.length > 0) {
+          this.app.storage.updateTransaction(tweet.tx, { preserve: 1 }, "localhost");  
           return;
         }
-        this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare" }, "localhost");
+        this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve: 1 }, "localhost");
       },
       "localhost"
     );
@@ -1873,29 +1872,20 @@ class RedSquare extends ModTemplate {
 
   saveLocalTweets() {
     //
-    // randomly delete any REDSQUARECOMMUNITY-tagged RedSquare tweets
+    // save the last 4-5 tweets
     //
-    this.app.storage.deleteTransactions(
-      { field3: "REDSQUARECOMMUNITY" },
-      () => {
-        //
-        // save the last 4-5 tweets
-        //
-        for (let i = 0; i < this.tweets.length && i < 10; i++) {
-          //
-          // Don't save flagged tweets
-          //
-          if (!this.tweets[i].flagged) {
-            this.app.storage.saveTransaction(
-              this.tweets[i].tx,
-              { field1: "RedSquare", field3: "REDSQUARECOMMUNITY" },
-              "localhost"
-            );
-          }
-        }
-      },
-      "localhost"
-    );
+    for (let i = 0; i < this.tweets.length && i < 10; i++) {
+      //
+      // Don't save flagged tweets
+      //
+      if (!this.tweets[i].flagged) {
+        this.app.storage.saveTransaction(
+          this.tweets[i].tx,
+          { field1: "RedSquare", field3: this.tweets[i]?.thread_id },
+          "localhost"
+        );
+      }
+    }
   }
 
   saveLocalNotifications() {
@@ -1922,23 +1912,23 @@ class RedSquare extends ModTemplate {
       return;
     }
 
+    if (this.app.browser.returnURLParameter("tweet_id")) {
+      return;
+    }
+    if (this.app.browser.returnURLParameter("user_id")) {
+      return;
+    }
+
     this.app.storage.loadTransactions(
       { field1: "RedSquare", limit: 20 },
       (txs) => {
-        //console.log(`${txs.length} tweets from local DB loaded`);
+        console.log(`${txs.length} tweets from local DB loaded`);
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
             this.addNotification(txs[z]);
             this.addTweet(txs[z]);
           }
-        }
-
-        if (this.app.browser.returnURLParameter("tweet_id")) {
-          return;
-        }
-        if (this.app.browser.returnURLParameter("user_id")) {
-          return;
         }
 
         //Run these regardless of results
@@ -2160,7 +2150,7 @@ class RedSquare extends ModTemplate {
       (txs) => {
         for (let i = 0; i < txs.length; i++) {
           try {
-              hex_values.push(txs[i].serialize_to_web(this.app));
+            hex_values.push(txs[i].serialize_to_web(this.app));
           } catch (err) {
             console.log(err);
           }

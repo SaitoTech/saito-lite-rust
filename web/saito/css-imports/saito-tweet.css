@@ -161,13 +161,10 @@
 .tweet-text.full {
   transition: all 0.2s linear;
   max-height: 50rem;
-  overflow-y: hidden;
   margin-bottom: 1rem;
   max-width: 100%;
-}
-
-.tweet-text.full:hover {
-  overflow-y: auto;
+  overflow-y: scroll;
+  padding-right: 2rem;
 }
 
 .tweet-text.full::after {
@@ -196,6 +193,7 @@
 
 .tweet-text.preview {
   position: relative;
+  padding-right: 2rem;
 }
 
 .tweet-text.preview::before {

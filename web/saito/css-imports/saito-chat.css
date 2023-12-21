@@ -71,6 +71,23 @@
   }
 }
 
+.chat-popup .saito-notification-dot {
+  min-width: 3.5rem;
+  min-height: 3.5rem;
+  bottom: 6rem;
+  left: unset;
+  right: 2rem;
+  cursor: pointer;
+}
+
+.chat-popup .saito-notification-dot i, .chat-popup .saito-notification-dot:hover .new-message-count {
+  display: none;
+}
+
+.chat-popup .saito-notification-dot:hover i {
+  display: block;
+}
+
 .saito-chat-active {
   background-color: var(--saito-gray-transparent);
 }
@@ -658,6 +675,13 @@
   .close-chat-manager i {
     height: var(--saito-header-height);
     line-height: 5rem;
+  }
+  
+  .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
   }
 }
 
