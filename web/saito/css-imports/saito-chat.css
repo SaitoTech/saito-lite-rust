@@ -252,7 +252,7 @@
   border-bottom: 1px solid var(--saito-border-color);
   cursor: grab;
   height: 4.5rem;
-  font-size: 2rem;
+  font-size: 1.7rem;
 }
 
 .chat-header>i {
