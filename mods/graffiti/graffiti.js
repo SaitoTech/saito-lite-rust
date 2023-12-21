@@ -12,7 +12,7 @@ class Graffiti extends ModTemplate {
     this.app = app;
     this.name = "Graffiti";
 
-    this.gridSize = 40;
+    this.gridSize = 200;
 
     this.gridState  = new GridState(this);
     this.graffitiUI = new GraffitiUI(this);

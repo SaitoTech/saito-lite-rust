@@ -10,7 +10,7 @@ class GraffitiUI {
     this.gridState = this.mod.gridState;
 
     this.gridToFrameRatio = 10;
-    this.maxScale = 30;
+    this.maxScale = 15;
     this.zoomAbsoluteFactor = Math.sqrt(Math.sqrt(2));
     this.markSizeRatio = 0.1;
     this.hourglassHeightRatio = 0.5;
