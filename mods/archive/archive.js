@@ -763,7 +763,7 @@ class Archive extends ModTemplate {
       return;
     }
 
-    await this.app.storage.executeDatabase("VACCUM", "archive");
+    await this.app.storage.executeDatabase("VACUUM", "archive");
   }
 
   //////////////////////////
