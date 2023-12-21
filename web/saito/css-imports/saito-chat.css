@@ -72,8 +72,8 @@
 }
 
 .chat-popup .saito-notification-dot {
-  width: 3.5rem;
-  height: 3.5rem;
+  min-width: 3.5rem;
+  min-height: 3.5rem;
   bottom: 6rem;
   left: unset;
   right: 2rem;
