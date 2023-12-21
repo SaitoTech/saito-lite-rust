@@ -3296,10 +3296,10 @@ try {
 	    //
 	    // revolutions 1989
 	    //
-            if (this.isControlled("us", "southkorea") == 1 && this.game.state.events.revolutionsof1989_added != 1) {
-	    } else {
+            if (this.isControlled("ussr", "southkorea") == 1 && this.game.state.events.revolutionsof1989_added != 1) {
 	      delete late_war_cards['KAL007'];
 	      this.removeCardFromDeckNextDeal("KAL007", "Prerequisite Unmet");
+	    } else {
 	    }
 	    //
 	    // Star Wars
@@ -3349,10 +3349,10 @@ try {
 	    //
 	    // KAL007 or 1989
 	    //
-            if (this.isControlled("us", "southkorea") == 1 && this.game.state.events.revolutionsof1989_added != 1) {
-	    } else {
+            if (this.isControlled("ussr", "southkorea") == 1 && this.game.state.events.revolutionsof1989_added != 1) {
 	      this.game.state.events.revolutionsof1989_added = 1;
 	      this.addCardToDeck("revolutionsof1989", "Replacement for KAL007");
+	    } else {
 	    }
 
 	    //
