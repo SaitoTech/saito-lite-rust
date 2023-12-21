@@ -455,7 +455,12 @@ class SettlersGameloop {
             this.game.state.players[player - 1].cities--;
             this.game.state.players[player - 1].towns++;
             let divname = "#" + slot;
-            $(divname).html(this.c2.svg);
+
+            $(divname).children('img').eq(0).fadeOut(400, "linear", ()=> {
+              $(divname).html("");  
+            });
+            
+            $(this.c2.svg).hide().delay(600).appendTo(divname).fadeIn(1200);
             $(divname).addClass(`p${this.game.colors[player - 1]}`);
             return 1;
           }

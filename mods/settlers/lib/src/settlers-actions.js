@@ -120,11 +120,11 @@ class SettlersActions {
 
     //Put City on GUI Board
     let divname = "#" + slot;
-    let classname = "p" + this.game.colors[player - 1];
+    let owner = "p" + this.game.colors[player - 1];
 
-    $(divname).addClass(classname);
     $(divname).removeClass("empty");
-    $(divname).html(this.c1.svg);
+    $(this.c1.svg).hide().appendTo(divname).fadeIn(1200);
+    $(divname).addClass(owner);
 
     let blocks_me = false;
     let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
@@ -199,8 +199,8 @@ class SettlersActions {
       let roadInfo = slot.split("_");
       this.addRoadToGameboard(roadInfo[2] + "_" + roadInfo[3], roadInfo[1]);
     }
-    $(divname).addClass(owner);
     $(divname).removeClass("empty");
+    $(divname).addClass(owner);
     //console.log(`Build road at ${slot} for Player ${player}`);
     //Add adjacent road slots
     if (this.game.player == player) {
