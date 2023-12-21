@@ -199,9 +199,9 @@ class SettlersActions {
       let roadInfo = slot.split("_");
       this.addRoadToGameboard(roadInfo[2] + "_" + roadInfo[3], roadInfo[1]);
     }
-    $(divname).removeClass("empty");
-    $(divname).addClass(owner);
-    //console.log(`Build road at ${slot} for Player ${player}`);
+
+    $(divname).removeClass("empty").addClass(owner);
+
     //Add adjacent road slots
     if (this.game.player == player) {
       let v1 = this.hexgrid.verticesFromEdge(slot.replace("road_", ""));
@@ -228,13 +228,6 @@ class SettlersActions {
       }
     }
 
-    /* Store road in game state if not already*/
-    for (let i = 0; i < this.game.state.roads.length; i++) {
-      if (this.game.state.roads[i].slot == slot) {
-        return;
-      }
-    }
-    this.game.state.roads.push({ player: player, slot: slot });
   }
 
   /*

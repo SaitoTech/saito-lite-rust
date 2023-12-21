@@ -362,14 +362,13 @@ class SettlersState {
 
     addRoadToGameboard(hex, road_component) {
         let selector = "hex_bg_" + hex;
-        let hexobj = document.getElementById(selector);
         let road_id = "road_" + road_component + "_" + hex;
-        //console.log("Add road to gameboard: "+road_id);
-        if (!document.getElementById(road_id)) {
-            let road_html = `<div class="road road${road_component} empty" id="${road_id}"></div>`;
-            let road_obj = this.app.browser.htmlToElement(road_html);
-            if (hexobj) hexobj.after(road_obj);
-            //else console.log("Null selector: "+selector);
+
+        let hexobj = document.getElementById(selector);
+
+        if (hexobj && !document.getElementById(road_id)) {
+            console.log("Add road to gameboard: "+road_id);
+            $(hexobj).after(`<div class="road road${road_component} empty" id="${road_id}"></div>`);
         }
     }
 

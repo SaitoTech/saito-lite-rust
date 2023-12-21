@@ -412,7 +412,6 @@ dt {
   text-align: center;
   border-radius: 50%;
   scale: 1.6;
-  transition: background-color 1s;
 }
 
 .city img,
