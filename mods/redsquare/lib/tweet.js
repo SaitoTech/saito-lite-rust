@@ -146,12 +146,10 @@ class Tweet {
     // maybe anything is updated
     //
     if (this.tx.optional.update_tx) {
-      console.log("TESTING: this tx.optional.update_tx");
       let newtx = new Transaction();
       newtx.deserialize_from_web(this.app, this.tx.optional.update_tx);
       let newtxmsg = newtx.returnMessage();
 
-      console.log(this.text, newtxmsg.data.text);
       this.text = newtxmsg.data.text;
       //Not updating more than text
       //this.setKeys(newtxmsg.data, true);
@@ -382,7 +380,6 @@ class Tweet {
     }
 
     if (document.querySelector(myqs)) {
-      console.log("Re-render tweet in place");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(

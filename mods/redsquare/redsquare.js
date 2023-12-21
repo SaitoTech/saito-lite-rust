@@ -733,14 +733,13 @@ class RedSquare extends ModTemplate {
                   console.warn("How did we not add the tweet????");
                   console.log(txs[z]);
                 }
+
+                if (this.peers[i].publicKey != this.publicKey) {
+                  this.saveTweet(txs[z].signature, 0);
+                }
+
               }
 
-              //
-              // we aren't caching old tweets, so don't incur the costs of deleting and saving!
-              //
-              if (this.peers[i].publicKey != this.publicKey && created_at == "later") {
-                this.saveLocalTweets();
-              }
             } else {
               this.peers[i].tweets_earliest_ts = 0;
             }
@@ -1003,7 +1002,6 @@ class RedSquare extends ModTemplate {
           t.tx.optional.num_likes = tweet.tx.optional.num_likes;
         }
         if (tweet.tx.optional.update_tx) {
-          console.log("We have an updated tweet");
           t.tx.optional.update_tx = tweet.tx.optional.update_tx;
           tweet.render();
         }
@@ -1847,7 +1845,7 @@ class RedSquare extends ModTemplate {
   /////////////////////////////////////
   // saving and loading wallet state //
   /////////////////////////////////////
-  saveTweet(sig) {
+  saveTweet(sig, preserve = 1) {
     // When we interact with a tweet, we want to mark it as important to us and add it to our
     // local tweet cache .... maybe????
 
@@ -1861,31 +1859,15 @@ class RedSquare extends ModTemplate {
       { field1: "RedSquare", sig },
       (txs) => {
         if (txs?.length > 0) {
-          this.app.storage.updateTransaction(tweet.tx, { preserve: 1 }, "localhost");  
+          if (preserve){
+            this.app.storage.updateTransaction(tweet.tx, { preserve: 1 }, "localhost");    
+          }
           return;
         }
-        this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve: 1 }, "localhost");
+        this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve }, "localhost");
       },
       "localhost"
     );
-  }
-
-  saveLocalTweets() {
-    //
-    // save the last 4-5 tweets
-    //
-    for (let i = 0; i < this.tweets.length && i < 10; i++) {
-      //
-      // Don't save flagged tweets
-      //
-      if (!this.tweets[i].flagged) {
-        this.app.storage.saveTransaction(
-          this.tweets[i].tx,
-          { field1: "RedSquare", field3: this.tweets[i]?.thread_id },
-          "localhost"
-        );
-      }
-    }
   }
 
   saveLocalNotifications() {
@@ -1920,7 +1902,7 @@ class RedSquare extends ModTemplate {
     }
 
     this.app.storage.loadTransactions(
-      { field1: "RedSquare", limit: 20 },
+      { field1: "RedSquare", limit: 10 },
       (txs) => {
         console.log(`${txs.length} tweets from local DB loaded`);
         if (txs.length > 0) {
