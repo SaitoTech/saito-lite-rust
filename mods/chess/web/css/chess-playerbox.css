@@ -27,3 +27,28 @@
 
 
 
+@media screen and (orientation: portrait) and (max-width: 900px){
+ .game-playerbox-manager {
+    display: grid;
+    width: min(60vh, 90vw, 900px);
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: max-content;
+    justify-content: space-between;
+    bottom: 2rem;
+    top: unset;
+    right: unset;
+    gap: 2rem;
+    position: absolute;
+    height: max-content;
+    justify-items: center;
+    max-width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .game-playerbox {
+    max-width: max(30vw, 25rem);
+    min-width: unset;
+  }
+
+}
