@@ -1,11 +1,11 @@
-const ModTemplate  = require('../../lib/templates/modtemplate');
+const ModTemplate  = require("../../lib/templates/modtemplate");
 const Transaction  = require("../../lib/saito/transaction").default;
-const GameMenu     = require('../../lib/saito/ui/game-menu/game-menu');
+const GameMenu     = require("../../lib/saito/ui/game-menu/game-menu");
 const PeerService  = require("saito-js/lib/peer_service").default;
-const GraffitiUI   = require('./lib/graffiti-ui');
-const GridState    = require('./lib/grid-state');
+const GraffitiUI   = require("./lib/graffiti-ui");
+const GridState    = require("./lib/grid-state");
 const graffitiHTML = require("./index");
-const createHash   = require('crypto').createHash;
+const createHash   = require("crypto").createHash;
 
 class Graffiti extends ModTemplate {
   constructor(app) {

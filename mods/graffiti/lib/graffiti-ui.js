@@ -5,6 +5,7 @@ class GraffitiUI {
 
   constructor(mod) {
     this.mod = mod;
+    this.slug = this.mod.returnSlug();
     
     this.gridSize  = this.mod.gridSize;
     this.gridState = this.mod.gridState;
@@ -38,7 +39,7 @@ class GraffitiUI {
   renderBackground() {
     this.background = document.createElement("img");
     document.body.appendChild(this.background);
-    this.background.src = "img/wood-background.jpg";
+    this.background.src = `${this.slug}/img/wood-background.jpg`;
     this.background.style.width  = "100vw";
     this.background.style.height = "100vh";
     this.background.style.position = "absolute";
@@ -99,7 +100,7 @@ class GraffitiUI {
 
   renderFrame() {
     this.frameImage = document.createElement("img");
-    this.frameImage.src = "img/frame.jpg";
+    this.frameImage.src = `${this.slug}/img/frame.jpg`;
 
     this.frame = document.createElement("canvas");
     this.foreground.appendChild(this.frame);
@@ -387,27 +388,27 @@ class GraffitiUI {
   renderButtonImages() {
     this.paintButtonImage = document.createElement("img");
     this.paintButton.appendChild(this.paintButtonImage);
-    this.paintButtonImage.src = "img/brush-colors-mini.png";
+    this.paintButtonImage.src = `${this.slug}/img/brush-colors-mini.png`;
     this.paintButtonImage.style = "width: 35px; height: 35px";
 
     this.cancelButtonImage = document.createElement("img");
     this.cancelButton.appendChild(this.cancelButtonImage);
-    this.cancelButtonImage.src = "img/cancel-mini.png";
+    this.cancelButtonImage.src = `${this.slug}/img/cancel-mini.png`;
     this.cancelButtonImage.style = "width: 25px; height: 21px";
 
     this.undoButtonImage = document.createElement("img");
     this.undoButton.appendChild(this.undoButtonImage);
-    this.undoButtonImage.src = "img/undo-mini.png";
+    this.undoButtonImage.src = `${this.slug}/img/undo-mini.png`;
     this.undoButtonImage.style = "width: 40px; height: 34px";
 
     this.redoButtonImage = document.createElement("img");
     this.redoButton.appendChild(this.redoButtonImage);
-    this.redoButtonImage.src = "img/redo-mini.png";
+    this.redoButtonImage.src = `${this.slug}/img/redo-mini.png`;
     this.redoButtonImage.style = "width: 40px; height: 34px";
 
     this.confirmButtonImage = document.createElement("img");
     this.confirmButton.appendChild(this.confirmButtonImage);
-    this.confirmButtonImage.src = "img/confirm-mini.png";
+    this.confirmButtonImage.src = `${this.slug}/img/confirm-mini.png`;
     this.confirmButtonImage.style = "width: 25px; height: 21px";
   }
 
@@ -615,7 +616,7 @@ class GraffitiUI {
     this.baseHourglass = document.createElement("canvas");
     this.baseHourglassCtx = this.baseHourglass.getContext("2d", {willReadFrequently: true});
     this.baseHourglassImage = new Image();
-    this.baseHourglassImage.src = "img/hourglass-mini.png";
+    this.baseHourglassImage.src = `${this.slug}/img/hourglass-mini.png`;
 
     this.baseHourglassImage.onload = () => {
       console.assert(this.baseHourglassImage.width >= 1);

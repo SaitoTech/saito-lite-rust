@@ -43,4 +43,4 @@ module.exports = (app, mod, build_number, currentGridImageURL) => {
       </body>
     </html>`;
   return html;
-}
+};
