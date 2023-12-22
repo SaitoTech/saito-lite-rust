@@ -152,44 +152,16 @@
   padding: 0.5rem 0;
   line-height: 2.2rem;
   max-height: 17.7rem;
+  max-width: 100%;
   margin-bottom: 1rem;
+  transition: all 0.2s linear;
   overflow: hidden;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.tweet-text.full {
-  transition: all 0.2s linear;
-  max-height: 50rem;
-  margin-bottom: 1rem;
-  max-width: 100%;
-  overflow-y: scroll;
-  padding-right: 2rem;
-}
 
-.tweet-text.full::after {
-  content: "";
-  position: absolute;
-  bottom: 5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--saito-primary);
-  font-size: smaller;
-  padding: 0 0.5rem;
-  transition: all 0.2s linear;
-}
-
-.tweet-text a {
-  display: inherit;
-}
-
-.tweet-preview {
-  margin-top: 2rem;
-}
-
-.tweet-text.full~.tweet-preview {
-  margin-top: 1rem;
-}
+/* For overly long tweets, we crop and show that it can be expanded */
 
 .tweet-text.preview {
   position: relative;
@@ -205,10 +177,6 @@
   width: 100%;
   background: linear-gradient(180deg, transparent, var(--saito-background-color));
   transition: all 2s ease;
-}
-
-.tweet-main iframe {
-  max-width: 100% !important;
 }
 
 .tweet-text.preview:hover::after {
@@ -229,13 +197,26 @@
   transition: all 1s;
 }
 
-/*.tweet-text.preview~.tweet-controls {
-  display: none;
-}*/
-
-.tweet-text.full~.tweet-controls {
-  display: flex;
+.tweet-text.expanded {
+  max-height: 50rem;
+  overflow-y: scroll;
+  padding-right: 2rem;
 }
+
+.tweet-text a {
+  display: inherit;
+}
+
+
+.tweet-main iframe {
+  max-width: 100% !important;
+}
+
+
+.tweet-preview {
+  margin-top: 2rem;
+}
+
 
 .tweet:hover, .tweet.highlight-tweet {
   background-color: var(--saito-background-light);

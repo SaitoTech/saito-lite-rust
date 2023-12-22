@@ -12,7 +12,7 @@
 
 .archive-row {
 	display: grid;
-	grid-template-columns: 30px repeat(7, 150px) 50px 60px;
+	grid-template-columns: 40px repeat(7, 150px) 50px 60px;
 	grid-gap: 0.5rem;
 	margin-bottom: 0.25rem;
 }

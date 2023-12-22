@@ -151,7 +151,6 @@ class ChatPopup {
     let chatBody = document.querySelector(popup_qs + " .chat-body"); 
     if (chatBody) {
       if (this.is_scrolling == null) {
-        console.log("Scroll to bottom on chat popup render");
         chatBody.scroll(0, 1000000000);
       } else {
         chatBody.scroll({ top: this.is_scrolling, left: 0 });
@@ -189,12 +188,6 @@ class ChatPopup {
   }
 
   attachEvents() {
-    /* avoids re-adding of events to same element, to fix issues with resizing */
-    if (this.events_attached == false) {
-      this.events_attached = true;
-    } else {
-      return;
-    }
 
     let app = this.app;
     let mod = this.mod;
@@ -217,95 +210,9 @@ class ChatPopup {
       return;
     }
 
-    if (!this.mod.browser_active && !this.app.browser.isMobileBrowser()) {
-      //
-      // make draggable and resizable, but no in mobile/main - page
-      //
-      this.app.browser.makeDraggable(popup_id, header_id, true);
-      this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
-    }
 
-    chatPopup.onclick = (e) => {
-      document.querySelectorAll(".chat-container").forEach((el) => {
-        el.classList.remove("active");
-      });
-      e.currentTarget.classList.add("active");
-    };
 
-    //
-    // minimize
-    let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
-    let mximize_icon = document.querySelector(`${popup_qs} .chat-header .chat-maximizer-icon`);
-
-    if (chat_bubble && mximize_icon /*&& !this.mod.chat_manager_overlay*/) {
-      chat_bubble.onclick = (e) => {
-        if (chatPopup.classList.contains("minimized")) {
-          this.restorePopup(chatPopup);
-        } else {
-          if (chatPopup.classList.contains("maximized")) {
-            chatPopup.classList.remove("maximized");
-          } else {
-            //only update if not also maximized
-            this.savePopupDimensions(chatPopup);
-          }
-
-          //Undo any drag styling
-          chatPopup.style.top = "";
-          chatPopup.style.left = "";
-
-          //Return to default bottom=0 from css
-          chatPopup.style.bottom = "";
-
-          //Undo any manual resizing
-          chatPopup.style.height = "";
-
-          if (parseInt(window.getComputedStyle(chatPopup).width) > 360) {
-            chatPopup.style.width = "";
-          }
-
-          chatPopup.classList.add("minimized");
-          chatPopup.classList.remove("active");
-          chatPopup.querySelector(".resize-icon").style.display = "none";
-        }
-      };
-
-      //
-      // maximize
-
-      mximize_icon.onclick = (e) => {
-        if (chatPopup.classList.contains("maximized")) {
-          this.restorePopup(chatPopup);
-        } else {
-          if (chatPopup.classList.contains("minimized")) {
-            chatPopup.classList.remove("minimized");
-          } else {
-            this.savePopupDimensions(chatPopup);
-          }
-
-          //Undo any drag styling
-          chatPopup.style.top = "";
-          chatPopup.style.left = "";
-
-          chatPopup.style.width = "750px";
-          chatPopup.style.height = window.innerHeight + "px";
-
-          //Return to default bottom=0 from css
-          chatPopup.style.bottom = "";
-
-          // decide to maximize to left or right
-          if (this.dimensions.left < Math.floor(window.innerWidth / 2)) {
-            chatPopup.style.right = window.innerWidth - 750 + "px";
-          } else {
-            chatPopup.style.right = "0px";
-          }
-
-          chatPopup.classList.add("maximized");
-          chatPopup.querySelector(".resize-icon").style.display = "none";
-        }
-      };
-    }
     // add reply functionality
-
     document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`).forEach((el) => {
       el.addEventListener("click", (e) => {
         let src_obj = el.parentElement.parentElement.parentElement;
@@ -415,6 +322,120 @@ class ChatPopup {
     }
 
     //
+    // Click images to view full size
+    // 
+    document.querySelectorAll(`.img-prev`).forEach(function (img, key) {
+      img.onclick = (e) => {
+        e.preventDefault();
+
+        let img = e.currentTarget;
+        let src = img.getAttribute("src");
+
+        this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
+      };
+    });
+
+    /* 
+      avoids re-adding of events to same element, to fix issues with resizing 
+      The following events apply to the whole popup, its header or its footer, which
+      don't get rerendered... 
+    */
+    if (this.events_attached == false) {
+      this.events_attached = true;
+    } else {
+      return;
+    }
+
+    if (!this.mod.browser_active && !this.app.browser.isMobileBrowser()) {
+      //
+      // make draggable and resizable, but no in mobile/main - page
+      //
+      this.app.browser.makeDraggable(popup_id, header_id, true);
+      this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
+    }
+
+    chatPopup.onclick = (e) => {
+      document.querySelectorAll(".chat-container").forEach((el) => {
+        el.classList.remove("active");
+      });
+      e.currentTarget.classList.add("active");
+    };
+
+    //
+    // minimize
+    let chat_bubble = document.querySelector(`${popup_qs} .chat-header .chat-minimizer-icon`);
+    let mximize_icon = document.querySelector(`${popup_qs} .chat-header .chat-maximizer-icon`);
+
+    if (chat_bubble && mximize_icon /*&& !this.mod.chat_manager_overlay*/) {
+      chat_bubble.onclick = (e) => {
+        if (chatPopup.classList.contains("minimized")) {
+          this.restorePopup(chatPopup);
+        } else {
+          if (chatPopup.classList.contains("maximized")) {
+            chatPopup.classList.remove("maximized");
+          } else {
+            //only update if not also maximized
+            this.savePopupDimensions(chatPopup);
+          }
+
+          //Undo any drag styling
+          chatPopup.style.top = "";
+          chatPopup.style.left = "";
+
+          //Return to default bottom=0 from css
+          chatPopup.style.bottom = "";
+
+          //Undo any manual resizing
+          chatPopup.style.height = "";
+
+          if (parseInt(window.getComputedStyle(chatPopup).width) > 360) {
+            chatPopup.style.width = "";
+          }
+
+          chatPopup.classList.add("minimized");
+          chatPopup.classList.remove("active");
+          chatPopup.querySelector(".resize-icon").style.display = "none";
+        }
+      };
+
+      //
+      // maximize
+
+      mximize_icon.onclick = (e) => {
+        if (chatPopup.classList.contains("maximized")) {
+          this.restorePopup(chatPopup);
+        } else {
+          if (chatPopup.classList.contains("minimized")) {
+            chatPopup.classList.remove("minimized");
+          } else {
+            this.savePopupDimensions(chatPopup);
+          }
+
+          //Undo any drag styling
+          chatPopup.style.top = "";
+          chatPopup.style.left = "";
+
+          chatPopup.style.width = "750px";
+          chatPopup.style.height = window.innerHeight + "px";
+
+          //Return to default bottom=0 from css
+          chatPopup.style.bottom = "";
+
+          // decide to maximize to left or right
+          if (this.dimensions.left < Math.floor(window.innerWidth / 2)) {
+            chatPopup.style.right = window.innerWidth - 750 + "px";
+          } else {
+            chatPopup.style.right = "0px";
+          }
+
+          chatPopup.classList.add("maximized");
+          chatPopup.querySelector(".resize-icon").style.display = "none";
+        }
+      };
+    }
+
+
+    //
     // close
     //
     document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
@@ -474,16 +495,6 @@ class ChatPopup {
 
     app.browser.addDragAndDropFileUploadToElement(popup_id, this.input.callbackOnUpload, false); // false = no drag-and-drop image click
 
-    document.querySelectorAll(`.img-prev`).forEach(function (img, key) {
-      img.onclick = (e) => {
-        e.preventDefault();
-
-        let img = e.currentTarget;
-        let src = img.getAttribute("src");
-
-        this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
-      };
-    });
 
 
   }

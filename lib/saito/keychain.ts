@@ -144,7 +144,7 @@ class Keychain {
     for (let x = 0; x < this.keys.length; x++) {
       // check for matching public key && see if it has an aes_secret
       if (this.keys[x].publicKey === publicKey && this.keys[x].aes_secret) {
-        console.log(encrypted_msg, "------>");
+        //console.log(encrypted_msg, "------>");
 
         const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
         if (tmpmsg == null) {

@@ -572,7 +572,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	if (mv[0] === "combat_defender_retreat") {
 
 	  this.game.queue.splice(qe, 1);
-	  let units = this.mod.returnAttackerUnits();
+	  let units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
 
 	  for (let i = 0; i < units.length; i++) {
