@@ -27,7 +27,6 @@ class RedSquareNotification {
       //
 
       if (txmsg.data?.signature) {
-        console.log("Notification: " + txmsg.data?.signature);
 
         this.mod.loadTweetWithSig(txmsg.data.signature, (txs) => {
           if (!txs) {
