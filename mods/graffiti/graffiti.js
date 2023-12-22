@@ -1,10 +1,11 @@
-const Transaction = require("../../lib/saito/transaction").default;
-const ModTemplate = require('../../lib/templates/modtemplate');
-const PeerService = require("saito-js/lib/peer_service").default;
-const GraffitiUI  = require('./lib/graffiti-ui');
-const GridState   = require('./lib/grid-state');
-const createHash  = require('crypto').createHash;
-const GameMenu    = require('../../lib/saito/ui/game-menu/game-menu');
+const ModTemplate  = require('../../lib/templates/modtemplate');
+const Transaction  = require("../../lib/saito/transaction").default;
+const GameMenu     = require('../../lib/saito/ui/game-menu/game-menu');
+const PeerService  = require("saito-js/lib/peer_service").default;
+const GraffitiUI   = require('./lib/graffiti-ui');
+const GridState    = require('./lib/grid-state');
+const graffitiHTML = require("./index");
+const createHash   = require('crypto').createHash;
 
 class Graffiti extends ModTemplate {
   constructor(app) {
@@ -131,6 +132,22 @@ class Graffiti extends ModTemplate {
   async receivePaintingTransaction(tx) {
     const txOrdinal = this.transactionOrdinal(tx);
     await this.updateTiles(tx.returnMessage().data, "confirmed", txOrdinal);
+  }
+
+  webServer(app, expressapp, express) {
+    const webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+    const graffitiSelf = this;
+
+    expressapp.get("/" + encodeURI(this.returnSlug()), (req, res) => {
+      const currentGridImageURL = "";
+      const html = graffitiHTML(app, graffitiSelf, app.build_number, currentGridImageURL);
+
+      res.setHeader("Content-type", "text/html");
+      res.charset = "UTF-8";
+      res.send(html);
+    });
+
+    expressapp.use("/" + encodeURI(this.returnSlug()), express.static(webdir));
   }
 
   // orders transactions in case they have tiles in common and timestamps are equal
