@@ -1,9 +1,11 @@
 module.exports = (app, mod, images) => {
   let imgs = ``;
-  let tweet_picture_height = "450px";
-  let multi_max_height = "unset";
+  let tweet_picture_height = "unset";
+  let multi_max_height = "450px";
   if (images.length > 1) {
-    tweet_picture_height = "200px"
+    tweet_picture_height = "unset";
+    multi_max_height = "150px";
+
   }
   if (images.length > 2) {
     multi_max_height = "150px";
