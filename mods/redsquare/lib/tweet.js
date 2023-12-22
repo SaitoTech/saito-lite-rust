@@ -665,7 +665,7 @@ class Tweet {
       //
       // if you don't want a tweet to auto-contract on display, set this.is_long_tweet
       // to be true before running attachEvents(); this will avoid it getting compressed
-      // with full / preview toggle.
+      // with expanded / preview toggle.
       //
       let tweet_text = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-text`
@@ -675,11 +675,9 @@ class Tweet {
           if (tweet_text.clientHeight < tweet_text.scrollHeight) {
             tweet_text.classList.add("preview");
             this.is_long_tweet = true;
-          } else {
-            tweet_text.classList.add("full");
           }
         } else {
-          tweet_text.classList.add("full");
+          tweet_text.classList.add("expanded");
         }
       }
 
@@ -708,9 +706,9 @@ class Tweet {
           // Expand tweet preview for long tweets
           //
           if (this.is_long_tweet && tweet_text) {
-            if (!tweet_text.classList.contains("full")) {
+            if (tweet_text.classList.contains("preview")) {
               tweet_text.classList.remove("preview");
-              tweet_text.classList.add("full");
+              tweet_text.classList.add("expanded");
               this.force_long_tweet = true;
               return;
             }
