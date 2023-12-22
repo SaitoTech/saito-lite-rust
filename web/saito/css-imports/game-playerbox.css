@@ -8,6 +8,10 @@
     right: 3rem;
 }
 
+.game-playerbox-manager.reverse{
+  flex-direction: column-reverse;
+}
+
 .game-playerbox-manager.game-playerbox-seat-manager {
    position: absolute;
    display: block;
@@ -140,11 +144,10 @@
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: max-content;
     justify-content: space-between;
-    bottom: 1px;
+    bottom: 1rem;
     top: unset;
-    right: unset;
+    right: 2rem;
     gap: 2rem;
-    margin-bottom: 1px;
     position: absolute;
     height: max-content;
   }
