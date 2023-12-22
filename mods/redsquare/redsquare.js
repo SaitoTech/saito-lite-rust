@@ -728,16 +728,17 @@ class RedSquare extends ModTemplate {
                   //
                   // Update our local archive with any updated metadata
                   //
-                  this.app.storage.updateTransaction(tweet.tx, null, "localhost");
+                  if (this.peers[i].publicKey != this.publicKey) {
+                    this.saveTweet(txs[z].signature, 0);
+                  }
                 } else {
-                  console.warn("How did we not add the tweet????");
-                  console.log(txs[z]);
-                }
+                  // console.warn("How did we not add the tweet????");
+                  // console.log(txs[z]);
 
-                if (this.peers[i].publicKey != this.publicKey) {
-                  this.saveTweet(txs[z].signature, 0);
+                  // There are several legitimate ways that a received "Tweet Tx" is not a tweet tx
+                  // delete is saved as a RedSquare field1 by the server to make sure that people pull the 
+                  // delete command and scrub it from their local storage
                 }
-
               }
 
             } else {
