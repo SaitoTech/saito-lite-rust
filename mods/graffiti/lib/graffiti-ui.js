@@ -19,8 +19,6 @@ class GraffitiUI {
 
     this.buttonLightColor  = "#f7f7f7";
     this.buttonShadowColor = "#909090";
-
-    this.blankTileColor = "#ffffff";
   }
 
   render() {
@@ -92,7 +90,7 @@ class GraffitiUI {
 
     this.gridCtx = this.grid.getContext("2d");
     this.gridCtx.imageSmoothingEnabled = false;
-    this.gridCtx.fillStyle = this.blankTileColor;
+    this.gridCtx.fillStyle = this.mod.blankTileColor;
     this.gridCtx.fillRect(0, 0, this.grid.width, this.grid.height);
 
     this.setGridRendering();
@@ -837,7 +835,7 @@ class GraffitiUI {
     } else if (newState.confirmed !== null) {
       this.drawTile(i, j, newState.confirmed.color);
     } else {
-      this.drawTile(i, j, this.blankTileColor);
+      this.drawTile(i, j, this.mod.blankTileColor);
     }
   }
 

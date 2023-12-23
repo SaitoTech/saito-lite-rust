@@ -12,6 +12,10 @@ class GridState {
     }
   }
 
+  getTileColor(i, j) {
+    return this.state[i][j].confirmed;
+  }
+
   updateTile(tile, tileStatus, ordinal=null) {
     console.assert(tile !== null);
     const i = tile.i;

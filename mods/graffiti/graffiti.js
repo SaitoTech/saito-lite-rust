@@ -6,6 +6,8 @@ const GraffitiUI   = require("./lib/graffiti-ui");
 const GridState    = require("./lib/grid-state");
 const graffitiHTML = require("./index");
 const createHash   = require("crypto").createHash;
+const fs = require("fs").promises;
+
 
 class Graffiti extends ModTemplate {
   constructor(app) {
@@ -14,10 +16,62 @@ class Graffiti extends ModTemplate {
     this.name = "Graffiti";
 
     this.gridSize = 200;
+    this.blankTileColor = "#ffffff";
 
-    this.gridState  = new GridState(this);
-    this.graffitiUI = new GraffitiUI(this);
+    this.gridState = new GridState(this);
     this.menu = new GameMenu(app, this);
+
+    if (!this.app.BROWSER) {
+      this.webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+
+      this.previewUpdatingInterval  = 60;
+      this.creationDeletionInterval = 30;
+      this.previewImageWidth = 900;
+
+      this.deletionCreationInterval = this.previewUpdatingInterval - this.creationDeletionInterval;
+      this.previewImageHeight = Math.round(this.previewImageWidth / 2);
+
+      // Create a new image every 60 seconds.
+      // Delete the previous image 30 seconds after the new one is created.
+      this.Jimp = require("jimp");
+      this.generatePreviewImages();
+    }
+  }
+
+  async generatePreviewImages(oldFilePath=null) {
+    const filePath = await this.generatePreviewImage();
+    setTimeout(async () => {
+      if (oldFilePath !== null) {
+        await fs.unlink(oldFilePath);
+      }
+      setTimeout(() => this.generatePreviewImages(filePath), 1000 * this.deletionCreationInterval);
+    }, 1000 * this.creationDeletionInterval);
+  }
+
+  async generatePreviewImage() {
+    const gridImage = new this.Jimp(this.gridSize, this.gridSize);
+    for (let i = 0; i < this.gridSize; i++) {
+      for (let j = 0; j < this.gridSize; j++) {
+        const tileColor = this.gridState.getTileColor(i, j);
+        const [r, g, b] = this.colorToComponents((tileColor !== null) ? tileColor : this.blankTileColor);
+        gridImage.setPixelColor(this.Jimp.rgbaToInt(r, g, b, 255), i, j);
+      }
+    }
+    gridImage.scaleToFit(this.previewImageWidth, this.previewImageHeight);
+
+    const previewImage = new this.Jimp(this.previewImageWidth, this.previewImageHeight, 0x00000000);
+    const {gridImageWidth, gridImageHeight} = gridImage.bitmap;
+    const dx = (this.previewImageWidth  - gridImageWidth)  / 2;
+    const dy = (this.previewImageHeight - gridImageHeight) / 2;
+    previewImage.blit(gridImage, dx, dy);
+
+    const filePath = `${this.webdir}/img/grid/${this.currentTimestamp()}.png`;
+    await previewImage.writeAsync(filePath);
+    return filePath;
+  }
+
+  currentTimestamp() {
+    return (new Date()).getTime();
   }
 
   returnServices() {
@@ -29,6 +83,7 @@ class Graffiti extends ModTemplate {
       return;
     }
     await super.render(app);
+    this.graffitiUI = new GraffitiUI(this);
     this.graffitiUI.render();
 
     this.menu.addMenuOption("game-game", "Menu");
@@ -71,18 +126,14 @@ class Graffiti extends ModTemplate {
     if (newtx === null) { return 0; }
     const message = newtx.returnMessage();
     if (message?.data && message?.request === "graffiti update") {
-      
-      //
       // We can ignore rebroadcast transactions if we aren't in the graffiti space
       // because we will fetch the up to date one on load
-      //
       if (this.app.BROWSER && this.browser_active) {
         const tx = new Transaction(undefined, message.data);
         const txmsg = tx.returnMessage();
         if (txmsg.module === this.name && txmsg.request === "paint") {
           this.publicKey = await this.app.wallet.getPublicKey();
           if (!tx.isFrom(this.publicKey)) {
-            console.log("*+* (handlePeerTransaction) Receiving painting transaction...");
             await this.receivePaintingTransaction(tx);
           }
         }
@@ -94,15 +145,12 @@ class Graffiti extends ModTemplate {
 
 
   async onConfirmation(blk, tx, conf) {
-    console.log("*+* Graffiti.onConfirmation called");
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
         if (txmsg.module === this.name && txmsg.request === "paint") {
-          console.log("*+* (onConfirmation) Receiving painting transaction...");
           await this.receivePaintingTransaction(tx);
           if (!this.app.BROWSER) {
-            console.log("*+* (onConfirmation) Notifying peers...");
             this.notifyPeers(tx);
           }
         }
@@ -135,19 +183,16 @@ class Graffiti extends ModTemplate {
   }
 
   webServer(app, expressapp, express) {
-    const webdir = `${__dirname}/../../mods/${this.dirname}/web`;
-    const graffitiSelf = this;
-
     expressapp.get("/" + encodeURI(this.returnSlug()), (req, res) => {
       const currentGridImageURL = "";
-      const html = graffitiHTML(app, graffitiSelf, app.build_number, currentGridImageURL);
+      const html = graffitiHTML(app, this, app.build_number, currentGridImageURL);
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(html);
     });
 
-    expressapp.use("/" + encodeURI(this.returnSlug()), express.static(webdir));
+    expressapp.use("/" + encodeURI(this.returnSlug()), express.static(this.webdir));
   }
 
   // orders transactions in case they have tiles in common and timestamps are equal

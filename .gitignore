@@ -107,6 +107,7 @@ mods/mailrelay/lib/template-credentials.js
 mods/tutorial4/web/txid
 mods/redsquare/web/tweets.js
 mods/redsquare/web/tweets*
+mods/graffiti/web/img/grid/*
 
 extras/shashmap/build
 
