@@ -13,7 +13,11 @@ class GridState {
   }
 
   getTileColor(i, j) {
-    return this.state[i][j].confirmed;
+    if (this.state[i][j].confirmed !== null) {
+      return this.state[i][j].confirmed.color;
+    } else {
+      return null;
+    }
   }
 
   updateTile(tile, tileStatus, ordinal=null) {

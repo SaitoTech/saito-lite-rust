@@ -6,7 +6,8 @@ const GraffitiUI   = require("./lib/graffiti-ui");
 const GridState    = require("./lib/grid-state");
 const graffitiHTML = require("./index");
 const createHash   = require("crypto").createHash;
-const fs = require("fs").promises;
+const fs   = require("fs").promises;
+const path = require('path');
 
 
 class Graffiti extends ModTemplate {
@@ -14,68 +15,58 @@ class Graffiti extends ModTemplate {
     super(app);
     this.app = app;
     this.name = "Graffiti";
+    this.slug = "graffiti";
 
     this.gridSize = 200;
     this.blankTileColor = "#ffffff";
 
     this.gridState = new GridState(this);
     this.menu = new GameMenu(app, this);
+  }
 
+  async initialize(app) {
+    await super.initialize(app);
     if (!this.app.BROWSER) {
-      this.webdir = `${__dirname}/../../mods/${this.dirname}/web`;
-
-      this.previewUpdatingInterval  = 60;
-      this.creationDeletionInterval = 30;
-      this.previewImageWidth = 900;
-
-      this.deletionCreationInterval = this.previewUpdatingInterval - this.creationDeletionInterval;
-      this.previewImageHeight = Math.round(this.previewImageWidth / 2);
-
-      // Create a new image every 60 seconds.
-      // Delete the previous image 30 seconds after the new one is created.
-      this.Jimp = require("jimp");
-      this.generatePreviewImages();
+      await this.loadGridFromDatabase();
     }
-  }
-
-  async generatePreviewImages(oldFilePath=null) {
-    const filePath = await this.generatePreviewImage();
-    setTimeout(async () => {
-      if (oldFilePath !== null) {
-        await fs.unlink(oldFilePath);
-      }
-      setTimeout(() => this.generatePreviewImages(filePath), 1000 * this.deletionCreationInterval);
-    }, 1000 * this.creationDeletionInterval);
-  }
-
-  async generatePreviewImage() {
-    const gridImage = new this.Jimp(this.gridSize, this.gridSize);
-    for (let i = 0; i < this.gridSize; i++) {
-      for (let j = 0; j < this.gridSize; j++) {
-        const tileColor = this.gridState.getTileColor(i, j);
-        const [r, g, b] = this.colorToComponents((tileColor !== null) ? tileColor : this.blankTileColor);
-        gridImage.setPixelColor(this.Jimp.rgbaToInt(r, g, b, 255), i, j);
-      }
-    }
-    gridImage.scaleToFit(this.previewImageWidth, this.previewImageHeight);
-
-    const previewImage = new this.Jimp(this.previewImageWidth, this.previewImageHeight, 0x00000000);
-    const {gridImageWidth, gridImageHeight} = gridImage.bitmap;
-    const dx = (this.previewImageWidth  - gridImageWidth)  / 2;
-    const dy = (this.previewImageHeight - gridImageHeight) / 2;
-    previewImage.blit(gridImage, dx, dy);
-
-    const filePath = `${this.webdir}/img/grid/${this.currentTimestamp()}.png`;
-    await previewImage.writeAsync(filePath);
-    return filePath;
-  }
-
-  currentTimestamp() {
-    return (new Date()).getTime();
   }
 
   returnServices() {
     return [new PeerService(null, "graffiti", "graffiti tilegrid")];
+  }
+
+  async onPeerServiceUp(app, peer, service={}) {
+    if (!this.browser_active) {
+      return;
+    }
+    if (service.service === "graffiti") {
+      await this.loadGridFromPeer(peer);
+    }
+  }
+
+  async loadGridFromDatabase() {
+    const sql = `SELECT * FROM tiles WHERE i < ${this.gridSize} AND j < ${this.gridSize}`;
+    const rows = await this.app.storage.queryDatabase(sql, {}, "graffiti");
+    for (const row of rows) {
+      this.gridState.updateTile(
+        {i: row.i, j: row.j, color: this.componentsToColor([row.red, row.green, row.blue])},
+        "confirmed", row.ordinal
+      );
+    }
+  }
+
+  async loadGridFromPeer(peer) {
+    const sql = `SELECT * FROM tiles WHERE i < ${this.gridSize} AND j < ${this.gridSize}`;
+    this.sendPeerDatabaseRequestWithFilter(this.name, sql, async (res) => {
+      if (res.rows) {
+        for (const row of res.rows) {
+          await this.updateTile(
+            {i: row.i, j: row.j, color: this.componentsToColor([row.red, row.green, row.blue])},
+            "confirmed", row.ordinal
+          );
+        }
+      }
+    });
   }
 
   async render(app) {
@@ -99,28 +90,6 @@ class Graffiti extends ModTemplate {
   }
 
 
-  async onPeerServiceUp(app, peer, service={}) {
-    if (!this.browser_active) {
-      return;
-    }
-    if (service.service === "graffiti") {
-      await this.loadGridFromPeer(peer);
-    }
-  }
-
-  async loadGridFromPeer(peer) {
-    const sql = `SELECT * FROM tiles WHERE i < ${this.gridSize} AND j < ${this.gridSize}`;
-    this.sendPeerDatabaseRequestWithFilter(this.name, sql, async (res) => {
-      if (res.rows) {
-        for (const row of res.rows) {
-          await this.updateTile(
-            {i: row.i, j: row.j, color: this.componentsToColor([row.red, row.green, row.blue])},
-            "confirmed", row.ordinal
-          );
-        }
-      }
-    });
-  }
 
   async handlePeerTransaction(app, newtx=null, peer, mycallback=null) {
     if (newtx === null) { return 0; }
@@ -142,7 +111,6 @@ class Graffiti extends ModTemplate {
     }
     return super.handlePeerTransaction(app, newtx, peer, mycallback);
   }
-
 
   async onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
@@ -182,25 +150,98 @@ class Graffiti extends ModTemplate {
     await this.updateTiles(tx.returnMessage().data, "confirmed", txOrdinal);
   }
 
+  // Orders transactions in case they have tiles in common and timestamps are equal.
+  transactionOrdinal(tx) {
+    const orderPrecision = 10**6;
+    const sigHash = parseInt(createHash("md5").update(tx.signature).digest("hex"), 16) % orderPrecision;
+    return tx.timestamp * orderPrecision + sigHash;
+  }
+
+
+
   webServer(app, expressapp, express) {
-    expressapp.get("/" + encodeURI(this.returnSlug()), (req, res) => {
-      const currentGridImageURL = "";
-      const html = graffitiHTML(app, this, app.build_number, currentGridImageURL);
+    this.webdir = path.normalize(`${__dirname}/../../mods/${this.dirname}/web`);
+
+    this.handleSnapshots();
+
+    expressapp.get("/" + encodeURI(this.slug), (req, res) => {
+      let lastSnapshotPath = null;
+      if (this.lastSnapshotFileName !== null) {
+        lastSnapshotPath = `${this.snapshotsDirSubpath}/${this.lastSnapshotFileName}`;
+      }
+      const html = graffitiHTML(app.build_number, this.slug, lastSnapshotPath);
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(html);
     });
 
-    expressapp.use("/" + encodeURI(this.returnSlug()), express.static(this.webdir));
+    expressapp.use("/" + encodeURI(this.slug), express.static(this.webdir));
   }
 
-  // orders transactions in case they have tiles in common and timestamps are equal
-  transactionOrdinal(tx) {
-    const orderPrecision = 10**6;
-    const sigHash = parseInt(createHash("md5").update(tx.signature).digest("hex"), 16) % orderPrecision;
-    return tx.timestamp * orderPrecision + sigHash;
+  // Creates a new snapshot every 60 seconds.
+  // Deletes the previous snapshot 30 seconds after the new one is created.
+  async handleSnapshots() {
+    this.Jimp = require("jimp");
+
+    this.snapshotsDirSubpath = "img/snapshots";
+    this.snapshotUpdatingInterval = 60;
+    this.creationDeletionInterval = this.snapshotUpdatingInterval / 2;
+    this.snapshotWidth = 900;
+
+    this.deletionCreationInterval = this.snapshotUpdatingInterval - this.creationDeletionInterval;
+    this.snapshotHeight = Math.round(this.snapshotWidth / 2);
+    try {
+      await this.clearSnapshotsDirectory();
+      await this.loopSnapshots();
+    } catch (err) {
+      console.error("Error handling snapshot files:", err);
+    }
   }
+
+  async clearSnapshotsDirectory() {
+    const snapshotDirPath = `${this.webdir}/${this.snapshotsDirSubpath}`;
+    const snapshotFileNames = await fs.readdir(snapshotDirPath);
+    for (const snapshotFileName of snapshotFileNames) {
+      await fs.unlink(path.join(snapshotDirPath, snapshotFileName));
+    }
+  }
+
+  async loopSnapshots(oldSnapshotFilePath=null) {
+    const snapshotFilePath = await this.createSnapshot();
+    setTimeout(async () => {
+      if (oldSnapshotFilePath !== null) {
+        await fs.unlink(oldSnapshotFilePath);
+      }
+      setTimeout(() => this.loopSnapshots(snapshotFilePath), 1000 * this.deletionCreationInterval);
+    }, 1000 * this.creationDeletionInterval);
+  }
+
+  async createSnapshot() {
+    const gridImage = new this.Jimp(this.gridSize, this.gridSize);
+    for (let i = 0; i < this.gridSize; i++) {
+      for (let j = 0; j < this.gridSize; j++) {
+        const tileColor = this.gridState.getTileColor(i, j);
+        const [r, g, b] = this.colorToComponents((tileColor !== null) ? tileColor : this.blankTileColor);
+        gridImage.setPixelColor(this.Jimp.rgbaToInt(r, g, b, 255), i, j);
+      }
+    }
+    gridImage.scaleToFit(this.snapshotWidth, this.snapshotHeight);
+
+    const snapshot = new this.Jimp(this.snapshotWidth, this.snapshotHeight, 0x00000000);
+    const dx = Math.round((this.snapshotWidth  - gridImage.bitmap.width)  / 2);
+    const dy = Math.round((this.snapshotHeight - gridImage.bitmap.height) / 2);
+    snapshot.blit(gridImage, dx, dy);
+
+    this.lastSnapshotFileName = `${this.currentTimestamp()}.png`;
+    const snapshotFilePath = path.join(
+      this.webdir, this.snapshotsDirSubpath, this.lastSnapshotFileName
+    );
+    await snapshot.writeAsync(snapshotFilePath);
+    return snapshotFilePath;
+  }
+
+
 
   async updateTile(tile, status, ordinal=null) {
     await this.updateTiles([tile], status, ordinal);
@@ -241,6 +282,8 @@ class Graffiti extends ModTemplate {
     }
   }
 
+
+
   colorToComponents(color) {
     const hexComponents = [0, 1, 2].map(k => color.substring(2*k+1, 2*k+3));
     return hexComponents.map(hex => parseInt(hex, 16));
@@ -249,6 +292,10 @@ class Graffiti extends ModTemplate {
   componentsToColor(components) {
     const hexComponents = components.map(c => ((c < 16) ? "0" : "") + c.toString(16));
     return "#" + hexComponents.reduce((strAcc, str) => strAcc + str, "");
+  }
+
+  currentTimestamp() {
+    return (new Date()).getTime();
   }
 }
 
