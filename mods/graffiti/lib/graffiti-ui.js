@@ -5,7 +5,7 @@ class GraffitiUI {
 
   constructor(mod) {
     this.mod = mod;
-    this.slug = this.mod.returnSlug();
+    this.slug = this.mod.slug;
     
     this.gridSize  = this.mod.gridSize;
     this.gridState = this.mod.gridState;
@@ -121,7 +121,7 @@ class GraffitiUI {
     const dstThickness = this.frameThickness;
 
     const leftEdge = {src: {}, dst: {}};
-    leftEdge.dst.left   = this.gridApparentPosition.left - dstThickness;
+    leftEdge.dst.left   = this.gridApparentPosition.left - dstThickness + 1;
     leftEdge.dst.top    = Math.max(0, this.gridApparentPosition.top - 1);
     leftEdge.dst.bottom = Math.min(
       window.innerHeight,
@@ -142,7 +142,7 @@ class GraffitiUI {
     }
 
     const rightEdge = {src: {}, dst: {}};
-    rightEdge.dst.left   = this.gridApparentPosition.left + this.gridApparentSize;
+    rightEdge.dst.left   = this.gridApparentPosition.left + this.gridApparentSize - 1;
     rightEdge.dst.top    = Math.max(0, this.gridApparentPosition.top - 1);
     rightEdge.dst.bottom = Math.min(
       window.innerHeight,
@@ -168,7 +168,7 @@ class GraffitiUI {
       window.innerWidth,
       this.gridApparentPosition.left + this.gridApparentSize + 1
     );
-    topEdge.dst.top    = this.gridApparentPosition.top - dstThickness;
+    topEdge.dst.top    = this.gridApparentPosition.top - dstThickness + 1;
     topEdge.dst.width  = topEdge.dst.right - topEdge.dst.left;
     topEdge.dst.height = dstThickness;
     topEdge.src.left   = srcThickness;
@@ -188,7 +188,7 @@ class GraffitiUI {
     bottomEdge.dst.right  = Math.min(
       window.innerWidth, this.gridApparentPosition.left + this.gridApparentSize + 1
     );
-    bottomEdge.dst.top    = this.gridApparentPosition.top + this.gridApparentSize;
+    bottomEdge.dst.top    = this.gridApparentPosition.top + this.gridApparentSize - 1;
     bottomEdge.dst.width  = bottomEdge.dst.right - bottomEdge.dst.left;
     bottomEdge.dst.height = dstThickness;
     bottomEdge.src.left   = srcThickness;
@@ -208,8 +208,8 @@ class GraffitiUI {
     leftTopCorner.src.top    = 0;
     leftTopCorner.src.width  = srcThickness;
     leftTopCorner.src.height = srcThickness;
-    leftTopCorner.dst.left   = this.gridApparentPosition.left - dstThickness;
-    leftTopCorner.dst.top    = this.gridApparentPosition.top  - dstThickness;
+    leftTopCorner.dst.left   = this.gridApparentPosition.left - dstThickness + 1;
+    leftTopCorner.dst.top    = this.gridApparentPosition.top  - dstThickness + 1;
     leftTopCorner.dst.width  = dstThickness;
     leftTopCorner.dst.height = dstThickness;
     if (this.gridApparentPosition.left > 0 && this.gridApparentPosition.top > 0) {
@@ -227,8 +227,8 @@ class GraffitiUI {
     leftBottomCorner.src.top    = this.frameImage.height - srcThickness;
     leftBottomCorner.src.width  = srcThickness;
     leftBottomCorner.src.height = srcThickness;
-    leftBottomCorner.dst.left   = this.gridApparentPosition.left - dstThickness;
-    leftBottomCorner.dst.top    = this.gridApparentPosition.top  + this.gridApparentSize;
+    leftBottomCorner.dst.left   = this.gridApparentPosition.left - dstThickness + 1;
+    leftBottomCorner.dst.top    = this.gridApparentPosition.top  + this.gridApparentSize - 1;
     leftBottomCorner.dst.width  = dstThickness;
     leftBottomCorner.dst.height = dstThickness;
     if (   this.gridApparentPosition.left > 0
@@ -247,8 +247,8 @@ class GraffitiUI {
     rightTopCorner.src.top    = 0;
     rightTopCorner.src.width  = srcThickness;
     rightTopCorner.src.height = srcThickness;
-    rightTopCorner.dst.left   = this.gridApparentPosition.left + this.gridApparentSize;
-    rightTopCorner.dst.top    = this.gridApparentPosition.top  - dstThickness;
+    rightTopCorner.dst.left   = this.gridApparentPosition.left + this.gridApparentSize - 1;
+    rightTopCorner.dst.top    = this.gridApparentPosition.top  - dstThickness + 1;
     rightTopCorner.dst.width  = dstThickness;
     rightTopCorner.dst.height = dstThickness;
     if (   this.gridApparentPosition.left + this.gridApparentSize < window.innerWidth
@@ -267,8 +267,8 @@ class GraffitiUI {
     rightBottomCorner.src.top    = this.frameImage.height - srcThickness;
     rightBottomCorner.src.width  = srcThickness;
     rightBottomCorner.src.height = srcThickness;
-    rightBottomCorner.dst.left   = this.gridApparentPosition.left + this.gridApparentSize;
-    rightBottomCorner.dst.top    = this.gridApparentPosition.top  + this.gridApparentSize;
+    rightBottomCorner.dst.left   = this.gridApparentPosition.left + this.gridApparentSize - 1;
+    rightBottomCorner.dst.top    = this.gridApparentPosition.top  + this.gridApparentSize - 1;
     rightBottomCorner.dst.width  = dstThickness;
     rightBottomCorner.dst.height = dstThickness;
     if (   this.gridApparentPosition.left + this.gridApparentSize < window.innerWidth

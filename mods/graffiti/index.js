@@ -3,7 +3,7 @@ module.exports = (build_number, slug, lastSnapshotPath) => {
 
   let snapshotMetaTags = "";
   if (lastSnapshotPath !== null) {
-    const origin = "https://saito.io:12101";
+    const origin = "https://saito.io";
     const lastSnapshotURL = `${origin}/${slug}/${lastSnapshotPath}`;
   
     snapshotMetaTags += `
