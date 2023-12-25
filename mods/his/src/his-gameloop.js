@@ -52,6 +52,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("diplomacy_phase");
 
 
@@ -251,7 +252,13 @@ if (this.game.state.scenario != "is_testing") {
 
           let faction = mv[1];
           let cards_left = parseInt(mv[2]);
+console.log("setting cards_left to: " + cards_left + " for faction " + faction);
 	  this.game.state.cards_left[faction] = cards_left;
+
+
+	  this.displayCardsLeft();
+
+console.log("updating cards left to: " + faction + " -- " + cards_left);
 
           this.game.queue.splice(qe, 1);
 	  return 1;
@@ -261,9 +268,11 @@ if (this.game.state.scenario != "is_testing") {
 	if (mv[0] === "pass") {
  
           let faction = mv[1];
-          let cards_left = parseInt(mv[2]);
 	  let player = this.returnPlayerOfFaction(faction);
-	  this.game.state.cards_left[faction] = cards_left;
+	  if (mv[2]) {
+            let cards_left = parseInt(mv[2]);
+	    this.game.state.cards_left[faction] = cards_left;
+	  }
 
           for (let z = 0; z < this.game.state.players_info[player-1].factions.length; z++) {
 	    if (this.game.state.players_info[player-1].factions[z] == faction) {
@@ -547,7 +556,7 @@ if (this.game.state.scenario != "is_testing") {
 	        let space = this.game.navalspaces[i];
 		let res = this.returnNearestFactionControlledPorts(faction, space);
 		if (res.length == 1) {
-      	          moves.push("move\t"+faction+"\tport\t"+i+"\t"+res[0]);
+      	          moves.push("move\t"+faction+"\tport\t"+i+"\t"+res[0].key);
 		} else {
 		  moves.push("retreat_to_winter_ports_player_select\t"+key+"\t"+space.key+"\t"+JSON.stringify(res));
 		}
@@ -920,7 +929,6 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
-
 	  // winter retreat into port
 	  if (movetype === "port") {
 	    let units = this.game.navalspaces[source].units[faction];
@@ -1090,10 +1098,18 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	      }
 	    }
 
+	    //
+	    // did moving remove a siege? check
+	    //
+	    if (!this.isSpaceBesieged(source)) {
+	      this.removeSiege(source);
+	    }
+
 	    this.displaySpace(source);
 	    this.displaySpace(destination);
 
 	  }
+
 
           return 1;
 	}
@@ -1999,6 +2015,10 @@ console.log("2. insert index: " + index_to_insert_moves);
 
 	  let game_self = this;
 
+	  // first time it happens, lets update menu
+console.log("diet of worms cards_left");
+	  this.displayCardsLeft();
+
           game_self.game.queue.push("resolve_diet_of_worms");
 
 	  //
@@ -2078,6 +2098,8 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  this.game.queue.push("discard\tprotestant\t"+this.game.state.sp[protestant-1]);
 	  this.game.queue.push("discard\tpapacy\t"+this.game.state.sp[papacy-1]);
 	  this.game.queue.push("discard\tall\t"+hapsburg_card);
+
+
 
 	  //
 	  // 3. roll protestant dice: The Protestant player adds 4 to the CP value of his card.
@@ -2275,6 +2297,8 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  let menu_index = [];
 	  let menu_triggers = [];
 	  let attach_menu_events = 0;
+
+console.log("about to run into counter acknowledge");
 
     	  html += '<li class="option" id="ok">acknowledge</li>';
 
@@ -5368,6 +5392,9 @@ console.log("PROHIBITED PROTESTANT DEBATER: " + prohibited_protestant_debater);
 	    }
 	  }
 
+console.log("SELECTED DEBATER AT: " + this.game.state.theological_debate.attacker_debater);
+console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defender_debater);
+
           this.game.state.theological_debate.round1_attacker_debater = this.game.state.theological_debate.attacker_debater;
           this.game.state.theological_debate.round1_defender_debater = this.game.state.theological_debate.defender_debater;
 
@@ -5990,6 +6017,9 @@ defender_hits - attacker_hits;
 	  // show the winter overlay to let people know WTF is happening
 	  //this.winter_overlay.render();
 
+	  // unset any sieges
+	  this.removeSieges();
+
 	  // Remove loaned naval squadron markers
 	  this.returnLoanedUnits();
 
@@ -6408,12 +6438,14 @@ console.log("player: " + (i+1));
 console.log(JSON.stringify(this.game.state.players_info[i].factions));
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 
+console.log("cards left for faction examining: " + this.game.state.players_info[i].factions[z]);
+
 	      //
 	      // sanity check we are major power
 	      //
 	      let f = this.game.state.players_info[i].factions[z];
 
-	      if (f == "protestant" || f == "hapsburg" || f == "papacy" || f == "england" || f == "ottoman" || f == "france") {
+	      if (f === "protestant" || f === "hapsburg" || f === "papacy" || f === "england" || f === "ottoman" || f === "france") {
 
                 let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
@@ -6436,11 +6468,24 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
+console.log("pre cl: " + JSON.stringify(this.game.state.cards_left));
+
 	        // try to update cards_left
 	        if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
 	          this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
 	        }
 	        this.game.state.cards_left[this.game.state.players_info[i].factions[z]] += cardnum;
+
+		// home cards added later - in - add_home_card 
+console.log("post cl: " + JSON.stringify(this.game.state.cards_left));
+
+console.log("cards left for faction: " + this.game.state.players_info[i].factions[z]);
+console.log("cards left for faction: " + this.game.state.cards_left[this.game.state.players_info[i].factions[z]]);
+
+		//
+		// and display cards left
+		//
+		this.displayCardsLeft();
 
 	      }
 	    }
@@ -6788,6 +6833,21 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	      }
 	    }
 	  }
+
+console.log("in discard!");
+console.log("cards_left: " + JSON.stringify(this.game.state.cards_left));
+
+	  //
+	  // and update cards left
+	  //
+console.log("discarding card so hand shrinks from: " + this.game.state.cards_left[faction]);
+          if (this.game.state.cards_left[faction]) {
+            if (this.game.state.cards_left[faction] > 0) {
+	      this.game.state.cards_left[faction]--;
+	      this.displayCardsLeft();
+	    }
+	  }
+console.log("to: " + this.game.state.cards_left[faction]);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -7439,6 +7499,8 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	    }
 	  }
 
+	  this.displayCardsLeft();
+
 	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -7456,9 +7518,9 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	    this.playerPlayDiplomacyCard(faction);
 	  } else {
 	    if (faction == "papacy") {
-  	      this.updateStatusAndListCards("Papacy playing Diplomacy Card", this.game.deck[1].hand, () => {});
+  	      this.updateStatusAndListCards("Papacy playing their Diplomacy Card", this.game.deck[1].hand, () => {});
 	    } else {
-  	      this.updateStatusAndListCards("Protestants playing Diplomacy Card", this.game.deck[1].hand, () => {});
+  	      this.updateStatusAndListCards("Protestants playing their Diplomacy Card", this.game.deck[1].hand, () => {});
 	    }
 	  }
 
