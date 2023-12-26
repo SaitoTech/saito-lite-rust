@@ -5,9 +5,16 @@
     return spacekey;
   }
 
+
   resetBesiegedSpaces() {
     for (let space in this.game.spaces) {
       if (space.besieged == 2) { space.besieged = 1; }
+    }
+  }
+  removeBesiegedSpaces() { this.removeSieges(); }
+  removeSieges() {
+    for (let space in this.game.spaces) {
+      this.removeSiege(space);
     }
   }
   resetLockedTroops() {
@@ -23,6 +30,16 @@
   addUnrest(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.unrest = 1;
+  }
+
+  removeSiege(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.besieged = 0;
+    for (let key in space.units) {
+      for (let i = 0; i < space.units[key].length; i++) {
+        space.units[key][i].besieged = 0;
+      }
+    }
   }
 
   removeUnrest(space) {
@@ -46,6 +63,7 @@
     }
     return false;
   }
+
 
 
   hasProtestantLandUnits(space) {
@@ -138,7 +156,20 @@
     return this.areAllies(cf, faction);
   }
 
+  isSpaceHostileOrIndependent(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (this.isSpaceHostile(space, faction)) { return true; }
+    if (this.isSpaceIndependent(space)) { return true; }
+    return false;
+  }
+
+  isSpaceIndependent(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.home === "independent") { return true; }
+  }
+
   isSpaceHostile(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return false; }
     return this.areEnemies(cf, faction);
@@ -803,6 +834,21 @@ console.log("about to return waht?: " + JSON.stringify(res));
     // or whoever has home control
     if (space.owner != -1) { return space.owner; }
     return space.home;
+  }
+
+  returnHostileLandUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (this.areEnemies(faction, f)) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
+        }
+      }
+    }
+    return luis;
   }
 
   returnFriendlyLandUnitsInSpace(faction, space) {
@@ -1507,11 +1553,26 @@ console.log("searching for: " + sourcekey);
     return spaces_in_unrest;
   }
 
-  returnSpacesWithFactionInfantry(faction) {
+  returnSpacesWithAdjacentFactionInfantry(faction) {
+    return this.returnSpacesWithFactionInfantry(faction, true);
+  }
+
+  returnSpacesWithFactionInfantry(faction, adjacency_ok=false) {
     let spaces_with_infantry = [];
     for (let key in this.game.spaces) {
+      let added = false;
       if (this.game.spaces[key].units[faction].length > 0) {
         spaces_with_infantry.push(key);
+        added = true;
+      }
+      if (adjacency_ok == true && added == false) {
+        for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
+          let n = this.game.spaces[key].neighbours[i];
+	  if (added == false && this.game.spaces[n].units[faction].length > 0) {
+	    spaces_with_infantry.push(key);
+	    added = true;
+	  }
+	}
       }
     }
     return spaces_with_infantry;

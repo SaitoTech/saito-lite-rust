@@ -2,7 +2,7 @@ module.exports = (link) => {
 
     return `
 	<div class="link-preview">
-          <a target="_blank">
+          <a target="_blank" href="${link.url}">
             <div class=" link-container">
               <div class="link-img" style="background: url(${link.src}); background-position: center;"></div>
               <div class="link-info">
