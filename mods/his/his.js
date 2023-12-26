@@ -11248,6 +11248,10 @@ console.log("venetian informant!");
           let faction_taking = mv[1];
           let faction_giving = mv[2];
           let cards = JSON.parse(mv[3]);
+
+
+console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
+his_self.deck_overlay.render("Venetian Informant", cards);
           
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);
@@ -12387,9 +12391,9 @@ console.log("about to return waht?: " + JSON.stringify(res));
     for (let f in space.units) {
       if (this.areEnemies(faction, f)) {
         for (let i = 0; i < space.units[f].length; i++) {
-          if (space.units[faction][i].type === "regular") { luis++; }
-          if (space.units[faction][i].type === "mercenary") { luis++; }
-          if (space.units[faction][i].type === "cavalry") { luis++; }
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
         }
       }
     }
@@ -13099,7 +13103,7 @@ console.log("searching for: " + sourcekey);
   }
 
   returnSpacesWithAdjacentFactionInfantry(faction) {
-    return this.returnSpacesWithAdjacentFactionInfantry(faction, true);
+    return this.returnSpacesWithFactionInfantry(faction, true);
   }
 
   returnSpacesWithFactionInfantry(faction, adjacency_ok=false) {
@@ -22645,7 +22649,7 @@ defender_hits - attacker_hits;
         if (mv[0] === "winter_phase") {
 
 	  // show the winter overlay to let people know WTF is happening
-	  //this.winter_overlay.render();
+	  this.winter_overlay.render();
 
 	  // unset any sieges
 	  this.removeSieges();
@@ -26202,6 +26206,16 @@ console.log("and calling callback...");
 	//
 	if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
 
+	  //
+	  // skip if only 1 ops
+	  //
+	  if (ops == 1) {
+
+            menu[user_choice].fnct(this, this.game.player, faction, 1);
+            return;
+
+	  }
+
 	  let msg = "How many OPs to Spend: ";
           let html = `<ul>`;
 	  let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
@@ -28369,10 +28383,10 @@ console.log("naval move faction: " + faction);
     //
     for (let i = 0; i < conquerable_spaces.length; i++) {
       let removed_space = false;
-      let ns = this.game.spaces[conquerable_spaces[i]].neighbours;
+      let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
-        let n = this.game.spaces[ns[z]];
-        if (this.returnHostileLandUnitsInSpace(faction, n) > 0) {
+        let n = his_self.game.spaces[ns[z]];
+        if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           consequerable_spaces.splice(i, 1); // remove
           removed_space = true; // and stop loop
 	}
@@ -28457,10 +28471,10 @@ console.log("naval move faction: " + faction);
     //
     for (let i = 0; i < conquerable_spaces.length; i++) {
       let removed_space = false;
-      let ns = this.game.spaces[conquerable_spaces[i]].neighbours;
+      let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
-        let n = this.game.spaces[ns[z]];
-        if (this.returnHostileLandUnitsInSpace(faction, n) > 0) {
+        let n = his_self.game.spaces[ns[z]];
+        if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           consequerable_spaces.splice(i, 1); // remove
           removed_space = true; // and stop loop
 	}

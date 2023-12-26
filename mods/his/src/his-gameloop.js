@@ -6015,7 +6015,7 @@ defender_hits - attacker_hits;
         if (mv[0] === "winter_phase") {
 
 	  // show the winter overlay to let people know WTF is happening
-	  //this.winter_overlay.render();
+	  this.winter_overlay.render();
 
 	  // unset any sieges
 	  this.removeSieges();

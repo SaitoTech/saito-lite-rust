@@ -8307,6 +8307,10 @@ console.log("venetian informant!");
           let faction_taking = mv[1];
           let faction_giving = mv[2];
           let cards = JSON.parse(mv[3]);
+
+
+console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
+his_self.deck_overlay.render("Venetian Informant", cards);
           
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);

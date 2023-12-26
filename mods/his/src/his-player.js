@@ -1563,6 +1563,16 @@ console.log("and calling callback...");
 	//
 	if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
 
+	  //
+	  // skip if only 1 ops
+	  //
+	  if (ops == 1) {
+
+            menu[user_choice].fnct(this, this.game.player, faction, 1);
+            return;
+
+	  }
+
 	  let msg = "How many OPs to Spend: ";
           let html = `<ul>`;
 	  let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
@@ -3730,10 +3740,10 @@ console.log("naval move faction: " + faction);
     //
     for (let i = 0; i < conquerable_spaces.length; i++) {
       let removed_space = false;
-      let ns = this.game.spaces[conquerable_spaces[i]].neighbours;
+      let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
-        let n = this.game.spaces[ns[z]];
-        if (this.returnHostileLandUnitsInSpace(faction, n) > 0) {
+        let n = his_self.game.spaces[ns[z]];
+        if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           consequerable_spaces.splice(i, 1); // remove
           removed_space = true; // and stop loop
 	}
@@ -3818,10 +3828,10 @@ console.log("naval move faction: " + faction);
     //
     for (let i = 0; i < conquerable_spaces.length; i++) {
       let removed_space = false;
-      let ns = this.game.spaces[conquerable_spaces[i]].neighbours;
+      let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
-        let n = this.game.spaces[ns[z]];
-        if (this.returnHostileLandUnitsInSpace(faction, n) > 0) {
+        let n = his_self.game.spaces[ns[z]];
+        if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           consequerable_spaces.splice(i, 1); // remove
           removed_space = true; // and stop loop
 	}

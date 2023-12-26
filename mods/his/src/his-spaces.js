@@ -842,9 +842,9 @@ console.log("about to return waht?: " + JSON.stringify(res));
     for (let f in space.units) {
       if (this.areEnemies(faction, f)) {
         for (let i = 0; i < space.units[f].length; i++) {
-          if (space.units[faction][i].type === "regular") { luis++; }
-          if (space.units[faction][i].type === "mercenary") { luis++; }
-          if (space.units[faction][i].type === "cavalry") { luis++; }
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
         }
       }
     }
@@ -1554,7 +1554,7 @@ console.log("searching for: " + sourcekey);
   }
 
   returnSpacesWithAdjacentFactionInfantry(faction) {
-    return this.returnSpacesWithAdjacentFactionInfantry(faction, true);
+    return this.returnSpacesWithFactionInfantry(faction, true);
   }
 
   returnSpacesWithFactionInfantry(faction, adjacency_ok=false) {
