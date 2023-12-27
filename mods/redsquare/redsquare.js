@@ -377,7 +377,7 @@ class RedSquare extends ModTemplate {
           if (txmsg && txmsg.module == this.name) {
             if (txmsg.request === "create tweet") {
               //this.addNotification(tx);
-              this.addTweet(tx);
+              this.addTweet(tx, "pending_tx");
             }
           }
         }
@@ -518,7 +518,7 @@ class RedSquare extends ModTemplate {
         console.log("REDSQUARE: Load tweet on onPeerServiceUp");
         this.loadTweetWithSig(tweet_id, (txs) => {
           for (let z = 0; z < txs.length; z++) {
-            this.addTweet(txs[z]);
+            this.addTweet(txs[z], "url_sig");
           }
           let tweet = this.returnTweet(tweet_id);
           this.app.connection.emit("redsquare-tweet-render-request", tweet);
@@ -637,7 +637,7 @@ class RedSquare extends ModTemplate {
       }
     }
 
-    console.log(`REDSQUARE: load ${created_at} tweets with num peers: ${peer_count}`);
+    //console.log(`REDSQUARE: load ${created_at} tweets with num peers: ${peer_count}`);
 
     for (let i = 0; i < this.peers.length; i++) {
       //
@@ -676,8 +676,6 @@ class RedSquare extends ModTemplate {
         this.app.storage.loadTransactions(
           obj,
           (txs) => {
-            console.log(`REDSQUARE-${i}: ${txs?.length} ${created_at} tweets loaded from ${this.peers[i].publicKey}`);
-
             peer_count--;
 
             if (txs.length > 0) {
@@ -688,7 +686,6 @@ class RedSquare extends ModTemplate {
                 if (created_at === "earlier") {
                   if (txs[z].updated_at < this.peers[i].tweets_earliest_ts) {
                     this.peers[i].tweets_earliest_ts = txs[z].updated_at;
-                    console.log("REDSQUARE: New earliest timestamp -- " + this.peers[i].tweets_earliest_ts);
                   }
                 }
 
@@ -701,7 +698,6 @@ class RedSquare extends ModTemplate {
                 if (created_at === "later") {
                   if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
                     this.peers[i].tweets_latest_ts = txs[z].updated_at;
-                    console.log("REDSQUARE: New Latest timestamp -- " + this.peers[i].tweets_latest_ts);
                   }
                 }
 
@@ -722,7 +718,7 @@ class RedSquare extends ModTemplate {
                 //
                 // Trust me, this won't accidentally trigger the "load new tweets"
                 // button!!!
-                count += this.addTweet(txs[z]);
+                count += this.addTweet(txs[z], `${this.peers[i].publicKey}_${created_at}`);
 
                 let tweet = this.returnTweet(txs[z].signature);
 
@@ -748,7 +744,7 @@ class RedSquare extends ModTemplate {
             }
 
             console.log(
-              `REDSQUARE: ${this.peers[i].publicKey} returned ${txs.length}, ${count} are new to the feed`
+              `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${txs.length} ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(this.peers[i].tweets_earliest_ts)}`
             );
 
             // execute callback when all txs are fetched from all peers
@@ -866,7 +862,7 @@ class RedSquare extends ModTemplate {
             for (let z = 0; z < txs.length; z++) {
               txs[z].decryptMessage(this.app);
               this.addNotification(txs[z]);
-              this.addTweet(txs[z]);
+              this.addTweet(txs[z], "tweet_thread");
             }
           }
 
@@ -907,7 +903,7 @@ class RedSquare extends ModTemplate {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
-            this.addTweet(txs[z]);
+            this.addTweet(txs[z], "loadTweetSig_local");
           }
           mycallback(txs);
         } else {
@@ -919,7 +915,7 @@ class RedSquare extends ModTemplate {
                   if (txs.length > 0) {
                     for (let z = 0; z < txs.length; z++) {
                       txs[z].decryptMessage(this.app);
-                      this.addTweet(txs[z]);
+                      this.addTweet(txs[z], "loadTweetSig_peer");
                     }
                     mycallback(txs);
                   }
@@ -971,6 +967,7 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, tx, ".tweet-manager");
+    tweet.data_source = source;
 
     //
     // avoid errors
@@ -989,6 +986,8 @@ class RedSquare extends ModTemplate {
         console.log(tweet);
         return 0;
       }
+
+      t.data_renewal = source;
 
       if (tweet.tx.optional) {
         let should_rerender = false;
@@ -1601,7 +1600,7 @@ class RedSquare extends ModTemplate {
       //
       if (app.BROWSER == 1) {
         this.addNotification(tx);
-        this.addTweet(tx);
+        this.addTweet(tx, "receiveTweet");
       }
 
       //
@@ -1873,7 +1872,7 @@ class RedSquare extends ModTemplate {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
             this.addNotification(txs[z]);
-            this.addTweet(txs[z]);
+            this.addTweet(txs[z], "local_cache");
           }
         }
 
