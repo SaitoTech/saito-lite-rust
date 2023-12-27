@@ -1050,14 +1050,14 @@ export default class Wallet extends SaitoWallet {
     return true;
   }
 
-  public convertSaitoToNolan(amount="0.0"){
+   public convertSaitoToNolan(amount="0.0"){
     let nolan = 0;
-    amount = Number(amount);
+    let num = Number(amount);
 
-    if (amount != 'NaN' && amount > 0) {
-      nolan = amount * this.nolan_per_saito; // 100,000,000  
+    if (num > 0) {
+      nolan = num * this.nolan_per_saito; // 100,000,000 
     }
-    
+
     return BigInt(nolan);
   }
 
