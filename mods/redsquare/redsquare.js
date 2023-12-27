@@ -656,7 +656,7 @@ class RedSquare extends ModTemplate {
         let obj = {
           field1: "RedSquare",
           flagged: 0,
-          tx_size_less_than: 1000000,
+          tx_size_less_than: 1330000,
           limit: this.peers[i].tweets_limit,
         };
 
