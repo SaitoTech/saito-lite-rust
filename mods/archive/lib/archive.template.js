@@ -8,9 +8,9 @@ module.exports = (app, row) => {
 					<div>${row.field1}</div>
 					<div>${row.field2}</div>
 					<div>${row.field3}</div>
-					<div>${app.browser.prettifyTimeStamp(row.created_at)}</div>
-					<div>${app.browser.prettifyTimeStamp(row.updated_at)}</div>
-					<div>${row.tx_size}</div>
+					<div>${app.browser.saneDateTimeFromTimestamp(row.created_at)}</div>
+					<div>${app.browser.saneDateTimeFromTimestamp(row.updated_at)}</div>
+					<div class="number">${app.browser.formatNumberWithCommas(row.tx_size)}</div>
 					<div class="archive-button" data-tx='${row.tx}'>TX</div>
 					<div>${row.preserve}</div>
 				</div>`;
