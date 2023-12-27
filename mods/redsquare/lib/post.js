@@ -338,10 +338,10 @@ class Post {
 
       if (posted_tweet.retweet_tx) {
         rparent.render();
-        this.mod.addTweet(newtx, true);
+        this.mod.addTweet(newtx);
         posted_tweet.render(true);
       } else {
-        this.mod.addTweet(newtx, true);
+        this.mod.addTweet(newtx);
         if (rparent.parent_id != "") {
           let t = this.mod.returnTweet(rparent.parent_id);
           if (t) {
@@ -353,7 +353,7 @@ class Post {
         rparent.forceRenderWithCriticalChild();
       }
     } else {
-      this.mod.addTweet(newtx, true);
+      this.mod.addTweet(newtx);
       posted_tweet.render(true);
     }
   }

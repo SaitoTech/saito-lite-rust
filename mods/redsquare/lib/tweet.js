@@ -163,7 +163,7 @@ class Tweet {
     //if (this.updated_at > this.created_at) {
     if (this.tx.optional.num_replies > 0) {
       //console.log("Change user notice!");
-      this.user.notice = "posted on " + this.formatDate(this.created_at);
+      this.user.notice = "originally posted on " + this.formatDate(this.created_at);
     }
     //}
 
@@ -1038,7 +1038,7 @@ class Tweet {
   //
   // Add the given tweet somewhere, it may be a reply or a reply to a reply
   //
-  addTweet(tweet, levels_deep = 0) {
+  addTweet(tweet) {
     this.updated_at = tweet.updated_at;
 
     //
