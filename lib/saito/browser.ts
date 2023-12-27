@@ -1649,9 +1649,7 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      //  let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^\s>]*)?(?!>)/gi;
-      let urlPattern =
-        /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+      let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
       text = text.replace(urlPattern, function (url) {
         let url1 = url.trim();
