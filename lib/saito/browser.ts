@@ -284,6 +284,16 @@ class Browser {
     window.setHash = function (hash) {
       window.history.pushState("", "", `/redsquare/#${hash}`);
     };
+
+    //hide pace-js if its still active
+    setTimeout(function(){
+      if (document.querySelector(".pace")) {
+        let elem = document.querySelector(".pace");
+
+        elem.classList.remove("pace-active");
+        elem.classList.add("pace-inactive");
+      }
+    }, 1000);
   }
 
   extractIdentifiers(text = "") {
