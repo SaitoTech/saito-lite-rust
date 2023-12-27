@@ -872,6 +872,48 @@ class Browser {
     return timeString;
   }
 
+  saneDateFromTimestamp(timestamp) {
+    var date = new Date(timestamp);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1; // getMonth() returns month from 0-11
+    var day = date.getDate();
+
+    // Adding leading zeros for day and month if they are less than 10
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
+
+    return year + '-' + month + '-' + day;
+  }
+
+  saneTimeFromTimestamp(timestamp) {
+    var date = new Date(timestamp);
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+
+    // Adding leading zeros for hours, minutes, and seconds if they are less than 10
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    return hours + ':' + minutes + ':' + seconds;
+  }
+
+  saneDateTimeFromTimestamp(timestamp) {
+    return this.saneDateFromTimestamp(timestamp) + ":" + this.saneTimeFromTimestamp(timestamp);
+  }
+
+  formatNumberWithCommas(number){
+    // Split the number into integer and decimal parts
+    var parts = number.toString().split(".");
+
+    // Format the integer part with commas
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    // Return the combined formatted number
+    return parts.join(".");
+  }
+
   addDragAndDropFileUploadToElement(
     id,
     handleFileDrop = null,
