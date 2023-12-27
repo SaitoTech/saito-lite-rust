@@ -1054,7 +1054,7 @@ export default class Wallet extends SaitoWallet {
     let nolan = 0;
     amount = Number(amount);
 
-    if (amount != 'NaN' || amount > 0) {
+    if (amount != 'NaN' && amount > 0) {
       nolan = amount * this.nolan_per_saito; // 100,000,000  
     }
     
