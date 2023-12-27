@@ -201,6 +201,8 @@ class Graffiti extends ModTemplate {
 
   async clearSnapshotsDirectory() {
     const snapshotDirPath = `${this.webdir}/${this.snapshotsDirSubpath}`;
+    await fs.mkdir(snapshotDirPath, {recursive: true});
+
     const snapshotFileNames = await fs.readdir(snapshotDirPath);
     for (const snapshotFileName of snapshotFileNames) {
       await fs.unlink(path.join(snapshotDirPath, snapshotFileName));
