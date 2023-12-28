@@ -284,6 +284,16 @@ class Browser {
     window.setHash = function (hash) {
       window.history.pushState("", "", `/redsquare/#${hash}`);
     };
+
+    //hide pace-js if its still active
+    setTimeout(function(){
+      if (document.querySelector(".pace")) {
+        let elem = document.querySelector(".pace");
+
+        elem.classList.remove("pace-active");
+        elem.classList.add("pace-inactive");
+      }
+    }, 1000);
   }
 
   extractIdentifiers(text = "") {
@@ -870,6 +880,48 @@ class Browser {
     let timeString = short_month ? object.month.substr(0, 3) : object.month;
     timeString += ` ${object.day}, ${object.hours}:${object.minutes}`;
     return timeString;
+  }
+
+  saneDateFromTimestamp(timestamp) {
+    var date = new Date(timestamp);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1; // getMonth() returns month from 0-11
+    var day = date.getDate();
+
+    // Adding leading zeros for day and month if they are less than 10
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
+
+    return year + '-' + month + '-' + day;
+  }
+
+  saneTimeFromTimestamp(timestamp) {
+    var date = new Date(timestamp);
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+
+    // Adding leading zeros for hours, minutes, and seconds if they are less than 10
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    return hours + ':' + minutes + ':' + seconds;
+  }
+
+  saneDateTimeFromTimestamp(timestamp) {
+    return this.saneDateFromTimestamp(timestamp) + ":" + this.saneTimeFromTimestamp(timestamp);
+  }
+
+  formatNumberWithCommas(number){
+    // Split the number into integer and decimal parts
+    var parts = number.toString().split(".");
+
+    // Format the integer part with commas
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    // Return the combined formatted number
+    return parts.join(".");
   }
 
   addDragAndDropFileUploadToElement(
@@ -1597,9 +1649,7 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      //  let urlPattern = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^\s>]*)?(?!>)/gi;
-      let urlPattern =
-        /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+      let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
       text = text.replace(urlPattern, function (url) {
         let url1 = url.trim();

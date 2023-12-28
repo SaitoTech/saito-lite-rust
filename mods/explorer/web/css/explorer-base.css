@@ -36,11 +36,6 @@ h4, h5 {
     text-align: left;
 }
 
-.explorer-main a {
-    text-decoration: underscore;
-    display: inline-block;
-}
-
 .explorer-main h4 {
     display: inline-block;
     min-width: 200px;
@@ -93,19 +88,22 @@ a.button {
     grid-gap: 10px;
 }
 
-.elipsis {
-    overflow: elipsis;
+.blockchain-table div {
+    overflow: hidden;
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .blockchain-table {
     display: grid;
-    grid-template-columns: 0.5em 3em 39em 2.5em auto;
-    grid-gap: 10px;
+    grid-template-columns: 0.5em 3em auto 2.5em auto auto; 
+    grid-gap: 10px 20px;
 }
 
-.blockchain-table div {
-    overflow: hidden;
-}
 
 .table-header {
     font-weight: bold;

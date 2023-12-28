@@ -10,6 +10,13 @@ module.exports = (app, mod, tweet) => {
     }
   }
 
+  let html_markers = "";
+  if (tweet.data_source) {
+    html_markers += ` data-source="${tweet.data_source}"`;
+  }
+  if (tweet.data_renewal) {
+   html_markers += ` data-renewal="${tweet.data_renewal}"`; 
+  }
 
   if (!text && !notice && tweet.retweet_tx) {
     notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
@@ -48,7 +55,7 @@ module.exports = (app, mod, tweet) => {
   controls += `           </div>`;
 
   let html = `
-        <div class="tweet tweet-${tweet.tx.signature}" data-id="${tweet.tx.signature}">
+        <div class="tweet tweet-${tweet.tx.signature}" data-id="${tweet.tx.signature}"${html_markers}>
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">
