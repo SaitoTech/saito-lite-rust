@@ -1050,15 +1050,36 @@ export default class Wallet extends SaitoWallet {
     return true;
   }
 
-  public convertSaitoToNolan(amount="0.0"){
+  public convertSaitoToNolan(amount = "0.0"){
     let nolan = 0;
-    amount = Number(amount);
+    let num = Number(amount);
 
-    if (amount != 'NaN' && amount > 0) {
-      nolan = amount * this.nolan_per_saito; // 100,000,000  
+    if (num > 0) {
+      nolan = num * this.nolan_per_saito; // 100,000,000  
     }
     
     return BigInt(nolan);
   }
+
+  public convertNolanToSaito(amount = BigInt(0)){
+    let string = "0.00";
+    let num = 0;
+
+    if (typeof amount == 'bigint') {
+      // convert nolans to saito
+      num = num / this.nolan_per_saito;
+
+      // convert bigint to number
+      num = Number(amount);
+
+      // convert number to string
+      string = num.toString();
+    } else {
+      console.error(`convertNolanToSaito: Type ` + typeof amount + ` provided. BigInt required`);
+    }
+
+    return string;
+  }
+
 
 }
