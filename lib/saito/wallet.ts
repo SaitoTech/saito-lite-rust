@@ -24,8 +24,6 @@ export default class Wallet extends SaitoWallet {
 
   version = 5.575;
 
-  nolan_per_saito = 100000000;
-
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
 
@@ -101,11 +99,9 @@ export default class Wallet extends SaitoWallet {
       }
 
       async sendPayment(amount, to_address, unique_hash = "") {
-        amount = this.app.wallet.convertSaitoToNolan(amount);
-
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
           to_address,
-          amount
+          BigInt(amount)
         );
         await this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
@@ -1049,16 +1045,4 @@ export default class Wallet extends SaitoWallet {
     await this.app.modules.onUpgrade(type, privatekey, walletfile);
     return true;
   }
-
-   public convertSaitoToNolan(amount="0.0"){
-    let nolan = 0;
-    let num = Number(amount);
-
-    if (num > 0) {
-      nolan = num * this.nolan_per_saito; // 100,000,000 
-    }
-
-    return BigInt(nolan);
-  }
-
 }
