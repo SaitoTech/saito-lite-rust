@@ -2603,7 +2603,7 @@ return;
   }
 
 
-  playerEvaluateNavalRetreatOpportunity(faction, spacekey) {
+  playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="") {
 
     let his_self = this;
     let retreat_destination = "";
@@ -2615,7 +2615,7 @@ return;
     let neighbours = this.returnNavalAndPortNeighbours(spacekey);
     let retreat_options = 0;
     for (let i = 0; i < neighbours.length; i++) {
-      if (this.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
+      if (his_self.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
 	retreat_options++;
       }
     }
@@ -2634,7 +2634,9 @@ return;
     let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
       let html = "<ul>";
       for (let i = 0; i < neighbours.length; i++) {
-        if (this.canFactionNavalRetreatToSpace(defender, neighbours[i])) {
+console.log("neighbour is: " + neighbours[i]);
+        if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
+console.log("yes!");
           html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
 	}
       }
@@ -3744,7 +3746,7 @@ console.log("naval move faction: " + faction);
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
-          consequerable_spaces.splice(i, 1); // remove
+          conquerable_spaces.splice(i, 1); // remove
           removed_space = true; // and stop loop
 	}
       }
@@ -3832,7 +3834,7 @@ console.log("naval move faction: " + faction);
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
-          consequerable_spaces.splice(i, 1); // remove
+          conquerable_spaces.splice(i, 1); // remove
           removed_space = true; // and stop loop
 	}
       }

@@ -47,7 +47,7 @@ class NavalBattleOverlay {
     renderPostNavalBattle(res={}) {
       this.render(res);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
       obj.style.backgroundSize = "contain";
       this.updateInstructions("Naval Battle over in " + this.mod.game.spaces[res.spacekey].name);
     }
@@ -55,7 +55,7 @@ class NavalBattleOverlay {
     renderNavalBattle(res={}) {
       this.render(res);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
       obj.style.backgroundSize = "contain";
       this.updateInstructions("Naval Battle in " + this.mod.game.spaces[res.spacekey].name);
     }
@@ -63,7 +63,7 @@ class NavalBattleOverlay {
     renderPreNavalBattle(res={}) {
       this.render(res, 1);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
+      obj.style.backgroundImage = "url(/his/img/backgrounds/fnaval_battle.jpg)";
       obj.style.backgroundSize = "contain";
       this.updateInstructions("Naval Battle imminent in " + this.mod.game.spaces[res.spacekey].name);
     }
@@ -119,7 +119,7 @@ console.log("can I kill this guy? : " + can_i_kill_this_guy);
 
 	    el.remove();
 
-	    this.mod.addMove("field_battle_destroy_unit\t" + faction + "\t" + spacekey + "\t" + unit_type);
+	    this.mod.addMove("naval_battle_destroy_unit\t" + faction + "\t" + spacekey + "\t" + unit_type);
 	    if (hits_assigned == hits_to_assign || hits_assigned >= hits_assignable) {
               document.querySelectorAll(".hits-assignable").forEach((el) => { el.onclick = (e) => {}; });
 	      this.mod.endTurn();
@@ -143,7 +143,7 @@ console.log("can I kill this guy? : " + can_i_kill_this_guy);
       this.pushHudUnderOverlay();
       this.render(res, 0);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
       obj.style.backgroundSize = "contain";
       this.updateInstructions("Attackers Win - Close to Continue");
     }
@@ -152,7 +152,7 @@ console.log("can I kill this guy? : " + can_i_kill_this_guy);
       this.pushHudUnderOverlay();
       this.render(res, 0);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
       obj.style.backgroundSize = "contain";
       this.updateInstructions("Defenders Win - Close to Continue");
     }
