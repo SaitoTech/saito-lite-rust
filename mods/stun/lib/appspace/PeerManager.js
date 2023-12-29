@@ -16,13 +16,10 @@ class PeerManager {
     this.videoEnabled = true;
     this.audioEnabled = true;
     this.recording = false;
-    this.app.connection.on("stun-peer-manager-update-room-details", (room_obj) => {
-      this.room_obj = room_obj;
-    });
 
     app.connection.on("stun-event-message", (data) => {
-      console.log(data, this.room_obj);
-      if (data.room_code !== this.room_obj.room_code) {
+      console.log(data);
+      if (data.room_code !== this.mod.room_obj.room_code) {
         return;
       }
 
@@ -36,9 +33,9 @@ class PeerManager {
       } else if (data.type === "toggle-video") {
         app.connection.emit("toggle-peer-video-status", data);
       } else {
+        
         let peerConnection = this.peers.get(data.public_key);
 
-        // console.log("peers consoled", peerConnection);
         if (!peerConnection) {
           this.createPeerConnection(data.public_key);
           peerConnection = this.peers.get(data.public_key);
@@ -99,7 +96,7 @@ class PeerManager {
       }
 
       let data = {
-        room_code: this.room_obj.room_code,
+        room_code: this.mod.room_obj.room_code,
         type: "toggle-video",
         enabled: this.videoEnabled,
       };
@@ -119,7 +116,7 @@ class PeerManager {
       }
 
       let data = {
-        room_code: this.room_obj.room_code,
+        room_code: this.mod.room_obj.room_code,
         type: "toggle-audio",
         enabled: this.audioEnabled,
       };
@@ -158,7 +155,7 @@ class PeerManager {
     });
 
     //Launch the Stun call
-    app.connection.on("start-stun-call", async (isJoining) => {
+    app.connection.on("start-stun-call", async () => {
       console.log("start-stun-call");
       if (this.mod.ui_type == "voice") {
         this.videoEnabled = false;
@@ -188,8 +185,7 @@ class PeerManager {
         "show-call-interface",
         this.room_obj,
         this.videoEnabled,
-        this.audioEnabled,
-        isJoining
+        this.audioEnabled
       );
       this.app.connection.emit("add-local-stream-request", this.localStream);
 
@@ -235,7 +231,7 @@ class PeerManager {
         })
         .then(() => {
           let data = {
-            room_code: this.room_obj.room_code,
+            room_code: this.mod.room_obj.room_code,
             type: "renegotiate-answer",
             sdp: this.getPeerConnection(public_key).localDescription.sdp,
             targetPeerId: public_key,
@@ -277,7 +273,7 @@ class PeerManager {
       _peers.push(key);
     });
 
-    localStorage.setItem(this.room_obj.room_code, JSON.stringify(_peers));
+    localStorage.setItem(this.mod.room_obj.room_code, JSON.stringify(_peers));
 
     //Make sure you have a local Stream
     if (!this.localStream) {
@@ -293,7 +289,7 @@ class PeerManager {
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
         let data = {
-          room_code: this.room_obj.room_code,
+          room_code: this.mod.room_obj.room_code,
           type: "candidate",
           candidate: event.candidate,
           targetPeerId: peerId,
@@ -411,7 +407,7 @@ class PeerManager {
 
       this.app.connection.emit(
         "stun-update-connection-message",
-        this.room_obj.room_code,
+        this.mod.room_obj.room_code,
         peerId,
         peerConnection.connectionState
       );
@@ -520,7 +516,7 @@ class PeerManager {
       })
       .then(() => {
         let data = {
-          room_code: this.room_obj.room_code,
+          room_code: this.mod.room_obj.room_code,
           type: "renegotiate-offer",
           sdp: peerConnection.localDescription.sdp,
           targetPeerId: peerId,
@@ -536,12 +532,11 @@ class PeerManager {
   }
 
   async enterCall() {
-    console.log("entering call", this.room_obj);
 
-    if (this.room_obj.access_public_key === this.mod.publicKey) {
+    if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
       // get public key from other source
       console.log("cannot join with this link public key is the same");
-      let peers = localStorage.getItem(this.room_obj.room_code);
+      let peers = localStorage.getItem(this.mod.room_obj.room_code);
       if (peers) {
         console.log("peers, ", peers);
         peers = JSON.parse(peers);
@@ -549,7 +544,7 @@ class PeerManager {
         if (peers.length > 0) {
           for (let i = 0; i < peers.length; i++) {
             if (peers[i] !== this.mod.publicKey)
-              await this.mod.sendCallListRequestTransaction(peers[i], this.room_obj.room_code);
+              await this.mod.sendCallListRequestTransaction(peers[i], this.mod.room_obj.room_code);
             break;
           }
         }
@@ -560,10 +555,10 @@ class PeerManager {
 
     // send ping transaction
 
-    console.log("requesting call list from ", this.room_obj.access_public_key);
+    console.log("requesting call list from ", this.mod.room_obj.host_public_key);
     await this.mod.sendCallListRequestTransaction(
-      this.room_obj.access_public_key,
-      this.room_obj.room_code
+      this.mod.room_obj.host_public_key,
+      this.mod.room_obj.room_code
     );
     // this.mod.sendStunMessageToServerTransaction({
     //   type: "peer-joined",
@@ -574,7 +569,6 @@ class PeerManager {
   leave() {
     this.localStream.getTracks().forEach((track) => {
       track.stop();
-      // console.log(track);
       console.log("stopping track");
     });
     let keys = [];
@@ -590,12 +584,13 @@ class PeerManager {
     }
 
     let data = {
-      room_code: this.room_obj.room_code,
+      room_code: this.mod.room_obj.room_code,
       type: "peer-left",
       public_key: this.mod.publicKey,
     };
 
     this.mod.sendStunMessageToPeersTransaction(data, keys);
+
   }
 
   sendSignalingMessage(data) {}

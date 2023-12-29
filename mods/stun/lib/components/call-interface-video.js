@@ -15,7 +15,6 @@ class CallInterfaceVideo {
     this.users_on_call = 0;
     this.peers = []; //people in the call
     this.localStream;
-    this.room_code;
     this.video_boxes = {};
 
     this.local_container = "expanded-video";
@@ -29,18 +28,7 @@ class CallInterfaceVideo {
 
     this.app.connection.on(
       "show-call-interface",
-      async (room_obj, videoEnabled, audioEnabled, isJoining) => {
-        console.log("show-call-interface", room_obj);
-        this.room_code = room_obj.room_code;
-
-        //Why is this a blocking loader????
-        if (isJoining) {
-          this.loader.render(true);
-          setTimeout(() => {
-            this.loader.remove();
-          }, 60000);
-        }
-
+      async (videoEnabled, audioEnabled) => {
         console.log("Render Video Call Interface");
         //This will render the (full-screen) component
         if (!document.querySelector(".stun-chatbox")) {
@@ -71,7 +59,7 @@ class CallInterfaceVideo {
     });
 
     this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
-      if (room_code !== this.room_code) {
+      if (room_code !== this.mod.room_obj.room_code) {
         return;
       }
       let my_pub_key = this.app.wallet.getPublicKey();
@@ -92,9 +80,6 @@ class CallInterfaceVideo {
       } else if (status === "disconnected") {
         this.video_boxes[peer_id].video_box.renderPlaceholder("retrying connection");
       }
-    });
-    app.connection.on("stun-remove-loader", () => {
-      this.loader.remove();
     });
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
@@ -172,9 +157,9 @@ class CallInterfaceVideo {
     let cm = chat_mod.respondTo("chat-manager");
     let peer = (await this.app.network.getPeers())[0].publicKey;
     this.chat_group = {
-      id: this.room_code,
+      id: this.mod.room_obj.room_code,
       members: [peer],
-      name: `Video Chat ${this.room_code}`,
+      name: `Video Chat`,
       txs: [],
       unread: 0,
       //
@@ -188,7 +173,7 @@ class CallInterfaceVideo {
 
     //You should be able to just create a Chat Group, but we are duplicating the public chat server
     //so we need this hacky work around
-    //this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
+    //this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat`);
   }
 
   attachEvents() {
@@ -341,13 +326,7 @@ class CallInterfaceVideo {
   }
 
   createRoomLink() {
-    let obj = {
-      room_code: this.room_code,
-      access_public_key: this.public_key,
-    };
-
-    console.log(obj, "obj");
-    let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+    let base64obj = this.app.crypto.stringToBase64(JSON.stringify(this.mod.room_obj));
 
     let url1 = window.location.origin + "/videocall/";
     window.history.pushState({}, document.title, `${url1}?stun_video_chat=${base64obj}`);

@@ -14,7 +14,7 @@ class CallInterfaceAudio {
 
     this.app.connection.on(
       "show-call-interface",
-      (room_code, videoEnabled, audioEnabled) => {
+      (videoEnabled, audioEnabled) => {
         console.log("Render Audio Interface");
 
         try {
@@ -24,7 +24,6 @@ class CallInterfaceAudio {
         } catch (err) {}
 
         this.audioEnabled = audioEnabled;
-        this.room_code = room_code;
         this.render();
         this.attachEvents();
       }
@@ -39,7 +38,7 @@ class CallInterfaceAudio {
     });
 
     this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
-      if (room_code !== this.room_code) {
+      if (room_code !== this.mod.room_obj.room_code) {
         return;
       }
 

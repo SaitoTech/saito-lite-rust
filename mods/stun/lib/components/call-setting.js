@@ -27,7 +27,6 @@ class CallSetting {
       if (this.audioStream) {
         this.audioStream.getTracks().forEach((track) => {
           track.stop();
-          console.log(track);
           console.log("stopping audio track");
         });
       }
