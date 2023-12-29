@@ -78,7 +78,7 @@ export default class Wallet extends SaitoWallet {
       }
 
       async returnBalance() {
-        return parseFloat(await this.app.wallet.getBalance());
+        return this.convertNolanToSaito(await this.app.wallet.getBalance());
       }
 
       returnAddress() {
@@ -102,7 +102,6 @@ export default class Wallet extends SaitoWallet {
 
       async sendPayment(amount, to_address, unique_hash = "") {
         amount = this.app.wallet.convertSaitoToNolan(amount);
-
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
           to_address,
           amount
@@ -1053,7 +1052,6 @@ export default class Wallet extends SaitoWallet {
   public convertSaitoToNolan(amount = "0.0"){
     let nolan = 0;
     let num = Number(amount);
-
     if (num > 0) {
       nolan = num * this.nolan_per_saito; // 100,000,000  
     }
