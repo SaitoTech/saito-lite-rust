@@ -16,6 +16,7 @@ class Spam extends ModTemplate {
     this.period = 1000;
     this.interval = null;
     this.loop_count = 0;
+    this.nodeSpamPerSecond = 1000;
 
     this.styles = ["/spam/style.css", "/saito/saito.css"];
 
@@ -30,7 +31,7 @@ class Spam extends ModTemplate {
     if (this.app.BROWSER == 0) {
       setInterval(() => {
         this.nodeSpamLoop(app, this);
-      }, 13000);
+      }, 1000);
     }
   }
 
@@ -77,8 +78,10 @@ class Spam extends ModTemplate {
 
   nodeSpamLoop(app, mod) {
     console.info("Sending heartbeat spam tx: " + mod.loop_count);
-    mod.sendSpamTransaction(app, mod, { tx_num: mod.loop_count });
-    mod.loop_count++;
+    for (let i = 0; i < this.nodeSpamPerSecond; i++) {
+      mod.sendSpamTransaction(app, mod, { tx_num: mod.loop_count });
+      mod.loop_count++;  
+    }
   }
 
   changeLoopStatus() {

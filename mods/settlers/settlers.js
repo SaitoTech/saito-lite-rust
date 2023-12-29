@@ -29,7 +29,7 @@ class Settlers extends GameTemplate {
     this.app = app;
 
     this.name = "Settlers";
-    this.gamename = "Settlers of Saitoa";
+    this.gamename = "Maxan";
     this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
     this.categories = "Games Boardgame Strategy";
 
