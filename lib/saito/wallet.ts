@@ -78,7 +78,7 @@ export default class Wallet extends SaitoWallet {
       }
 
       async returnBalance() {
-        return this.convertNolanToSaito(await this.app.wallet.getBalance());
+        return this.app.wallet.convertNolanToSaito(await this.app.wallet.getBalance());
       }
 
       returnAddress() {
@@ -101,10 +101,11 @@ export default class Wallet extends SaitoWallet {
       }
 
       async sendPayment(amount, to_address, unique_hash = "") {
-        amount = this.app.wallet.convertSaitoToNolan(amount);
+        let nolan_amount = this.app.wallet.convertSaitoToNolan(amount);
+
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
           to_address,
-          amount
+          nolan_amount
         );
         await this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
@@ -1050,13 +1051,13 @@ export default class Wallet extends SaitoWallet {
   }
 
   public convertSaitoToNolan(amount = "0.0"){
-    let nolan = 0;
+    let nolan = BigInt(0);
     let num = Number(amount);
     if (num > 0) {
-      nolan = num * this.nolan_per_saito; // 100,000,000  
+      nolan = BigInt(num) * BigInt(this.nolan_per_saito); // 100,000,000  
     }
     
-    return BigInt(nolan);
+    return nolan;
   }
 
   public convertNolanToSaito(amount = BigInt(0)){
@@ -1064,8 +1065,9 @@ export default class Wallet extends SaitoWallet {
     let num = 0;
 
     if (typeof amount == 'bigint') {
+
       // convert nolans to saito
-      num = num / this.nolan_per_saito;
+      amount = amount / BigInt(this.nolan_per_saito);
 
       // convert bigint to number
       num = Number(amount);
