@@ -16,7 +16,7 @@ class Spam extends ModTemplate {
     this.period = 1000;
     this.interval = null;
     this.loop_count = 0;
-    this.nodeSpamPerSecond = 1000;
+    this.nodeSpamPerSecond = 5000;
 
     this.styles = ["/spam/style.css", "/saito/saito.css"];
 
