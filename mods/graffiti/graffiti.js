@@ -1,16 +1,21 @@
-const Transaction = require("../../lib/saito/transaction").default;
-const ModTemplate = require('../../lib/templates/modtemplate');
-const PeerService = require("saito-js/lib/peer_service").default;
-const GraffitiUI  = require('./lib/graffiti-ui');
-const GridState   = require('./lib/grid-state');
-const createHash  = require('crypto').createHash;
-const GameMenu    = require('../../lib/saito/ui/game-menu/game-menu');
+const PeerService  = require("saito-js/lib/peer_service").default;
+const Transaction  = require("../../lib/saito/transaction").default;
+const GameMenu     = require("../../lib/saito/ui/game-menu/game-menu");
+const ModTemplate  = require("../../lib/templates/modtemplate");
+const GraffitiUI   = require("./lib/graffiti-ui");
+const GridState    = require("./lib/grid-state");
+const graffitiHTML = require("./index");
+const createHash   = require("crypto").createHash;
+const cookieParser = require("cookie-parser");
+const path = require("path");
 
 class Graffiti extends ModTemplate {
   constructor(app) {
     super(app);
+
     this.app = app;
     this.name = "Graffiti";
+    this.slug = "graffiti";
 
     this.gridSize = 200;
 
@@ -36,12 +41,11 @@ class Graffiti extends ModTemplate {
   }
 
   exitGame() {
-    let homeModule = this.app.options.homeModule || "Arcade";
-    let mod = this.app.modules.returnModuleByName(homeModule);
-    let slug = mod?.returnSlug() || "arcade";
+    const homeModule = this.app.options.homeModule || "RedSquare";
+    const mod = this.app.modules.returnModuleByName(homeModule);
+    const slug = mod?.returnSlug() || "redsquare";
     window.location.href = "/" + slug;
   }
-
 
   async onPeerServiceUp(app, peer, service={}) {
     if (!this.browser_active) {
@@ -70,18 +74,14 @@ class Graffiti extends ModTemplate {
     if (newtx === null) { return 0; }
     const message = newtx.returnMessage();
     if (message?.data && message?.request === "graffiti update") {
-      
-      //
       // We can ignore rebroadcast transactions if we aren't in the graffiti space
       // because we will fetch the up to date one on load
-      //
       if (this.app.BROWSER && this.browser_active) {
         const tx = new Transaction(undefined, message.data);
         const txmsg = tx.returnMessage();
         if (txmsg.module === this.name && txmsg.request === "paint") {
           this.publicKey = await this.app.wallet.getPublicKey();
           if (!tx.isFrom(this.publicKey)) {
-            console.log("*+* (handlePeerTransaction) Receiving painting transaction...");
             await this.receivePaintingTransaction(tx);
           }
         }
@@ -93,15 +93,12 @@ class Graffiti extends ModTemplate {
 
 
   async onConfirmation(blk, tx, conf) {
-    console.log("*+* Graffiti.onConfirmation called");
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
         if (txmsg.module === this.name && txmsg.request === "paint") {
-          console.log("*+* (onConfirmation) Receiving painting transaction...");
           await this.receivePaintingTransaction(tx);
           if (!this.app.BROWSER) {
-            console.log("*+* (onConfirmation) Notifying peers...");
             this.notifyPeers(tx);
           }
         }
@@ -133,11 +130,31 @@ class Graffiti extends ModTemplate {
     await this.updateTiles(tx.returnMessage().data, "confirmed", txOrdinal);
   }
 
-  // orders transactions in case they have tiles in common and timestamps are equal
+  // Orders transactions in case they have tiles in common and timestamps are equal.
   transactionOrdinal(tx) {
     const orderPrecision = 10**6;
     const sigHash = parseInt(createHash("md5").update(tx.signature).digest("hex"), 16) % orderPrecision;
     return tx.timestamp * orderPrecision + sigHash;
+  }
+
+  webServer(app, expressapp, express) {
+    this.webdir = path.normalize(`${__dirname}/../../mods/${this.dirname}/web`);
+
+    expressapp.use(cookieParser());
+
+    expressapp.get("/" + encodeURI(this.slug), (req, res) => {
+      const isFirstTime = !req.cookies.notFirstTime;
+      if (isFirstTime) {
+        res.cookie("notFirstTime", 1, {maxAge: 10**12, httpOnly: true, secure: true});
+      }
+      const html = graffitiHTML(app.build_number, isFirstTime);
+
+      res.setHeader("Content-type", "text/html");
+      res.charset = "UTF-8";
+      res.send(html);
+    });
+
+    expressapp.use("/" + encodeURI(this.slug), express.static(this.webdir));
   }
 
   async updateTile(tile, status, ordinal=null) {
