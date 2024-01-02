@@ -20,6 +20,7 @@ class Graffiti extends ModTemplate {
 
     this.gridSize = 200;
     this.blankTileColor = "#ffffff";
+    this.txOrderPrecision = 6;
 
     this.gridState = new GridState(this);
     this.menu = new GameMenu(app, this);
@@ -153,9 +154,8 @@ class Graffiti extends ModTemplate {
 
   // Orders transactions in case they have tiles in common and timestamps are equal.
   transactionOrdinal(tx) {
-    const orderPrecision = 10**6;
-    const sigHash = parseInt(createHash("md5").update(tx.signature).digest("hex"), 16) % orderPrecision;
-    return tx.timestamp * orderPrecision + sigHash;
+    const sigHash = parseInt(createHash("md5").update(tx.signature).digest("hex"), 16) % (10 ** this.txOrderPrecision);
+    return tx.timestamp * (10 ** this.txOrderPrecision) + sigHash;
   }
 
 
@@ -298,7 +298,7 @@ class Graffiti extends ModTemplate {
 
   componentsToColor(components) {
     const hexComponents = components.map(c => ((c < 16) ? "0" : "") + c.toString(16));
-    return "#" + hexComponents.reduce((strAcc, str) => strAcc + str, "");
+    return "#" + hexComponents.join("");
   }
 
   currentTimestamp() {

@@ -31,9 +31,9 @@ class GraffitiUI {
     this.renderButtonElements();
     this.setMode("view");
 
-    if (window.isFirstTime) {
-      await this.runTour();
-    }
+    // if (window.isFirstTime) {
+    //   await this.runTour();
+    // }
 
     this.attachEventsToForeground();
     await this.loadBaseHourglass();
@@ -640,7 +640,7 @@ class GraffitiUI {
     } else if (newState.confirmed !== null) {
       this.drawTile(i, j, newState.confirmed.color);
     } else {
-      this.drawTile(i, j, this.blankTileColor);
+      this.drawTile(i, j, this.mod.blankTileColor);
     }
   }
 
