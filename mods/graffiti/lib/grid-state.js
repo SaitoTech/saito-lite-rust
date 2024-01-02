@@ -12,6 +12,57 @@ class GridState {
     }
   }
 
+  prettyPrint() {
+    const nbColorCharacters = 7;
+    const nbOrdinalDigits = 6;
+
+    const statusHeaderLength = 2;
+    const cellWidth = 1 + statusHeaderLength + 1 + nbColorCharacters + 1 + nbOrdinalDigits + 1;
+    const cellHorizontalBorder = "-".repeat(cellWidth);
+    const gridHorizontalBorder = new Array(this.gridSize + 1).fill("+").join(cellHorizontalBorder);
+
+    const centeredNullText = (width) => {
+      const nullText = "null";
+      const nullTextLeftRightPaddingLength = width - (statusHeaderLength + 1) - nullText.length;
+      const nullTextLeftPaddingLength  = Math.floor(nullTextLeftRightPaddingLength / 2);
+      const nullTextRightPaddingLength = nullTextLeftRightPaddingLength - nullTextLeftPaddingLength;
+      const nullTextLeftPaddingSpaces  = " ".repeat(nullTextLeftPaddingLength);
+      const nullTextRightPaddingSpaces = " ".repeat(nullTextRightPaddingLength);
+      return nullTextLeftPaddingSpaces + nullText + nullTextRightPaddingSpaces;
+    }
+
+    const ordinalToPrintedString = (ordinal) => {
+      if (ordinal !== null) {
+        return ordinal.toString().slice(- (nbOrdinalDigits + this.mod.txOrderPrecision), - this.mod.txOrderPrecision);
+      } else {
+        return centeredNullText(nbOrdinalDigits);
+      }
+    }
+
+    for (let j = 0; j < this.gridSize; j++) {
+      console.log(gridHorizontalBorder);
+      for (const status of ["confirmed", "pending", "drafted"]) {
+        const statusHeader = status[0] + ":";
+        let line = "|";
+        for (let i = 0; i < this.gridSize; i++) {
+          line += " " + statusHeader;
+          if (this.state[i][j][status] !== null) {
+            line += " " + this.state[i][j][status].color
+                  + " " + ordinalToPrintedString(this.state[i][j][status].ordinal)
+                  + " ";
+          } else {
+            line += centeredNullText(cellWidth);
+          }
+          line += "|";
+        }
+        console.log(line);
+      }
+    }
+    console.log(gridHorizontalBorder);
+    console.log(" ");
+    console.log(" ");
+  }
+
   getTileColor(i, j) {
     if (this.state[i][j].confirmed !== null) {
       return this.state[i][j].confirmed.color;

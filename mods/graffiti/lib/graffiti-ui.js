@@ -886,6 +886,7 @@ class GraffitiUI {
   }
 
   drawTile(i, j, color) {
+    this.mod.gridState.prettyPrint();
     this.gridCtx.fillStyle = color;
     this.gridCtx.fillRect(i * this.maxScale, j * this.maxScale, this.maxScale, this.maxScale);
   }
