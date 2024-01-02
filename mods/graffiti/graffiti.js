@@ -178,7 +178,7 @@ class Graffiti extends ModTemplate {
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(graffitiHTML(app.build_number, this.slug, lastSnapshotPath, isFirstTime));
+      res.send(graffitiHTML(app, this.slug, lastSnapshotPath, isFirstTime));
     });
 
     expressapp.use("/" + encodeURI(this.slug), express.static(this.webdir));
