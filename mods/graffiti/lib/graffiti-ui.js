@@ -27,7 +27,7 @@ class GraffitiUI {
     this.renderForeground();
     this.attachEventsToWindow();
     this.renderButtonElements();
-    this.setMode("view");
+    this.setMode("paint");
     this.attachEventsToForeground();
     await this.loadBaseHourglass();
     this.attachEventsToButtonElements();
@@ -651,7 +651,6 @@ class GraffitiUI {
 
   onMouseupOverCancelButton() {
     this.clearDraft();
-    this.setMode("view");
   }
 
   onMouseupOverConfirmButton() {
@@ -666,7 +665,6 @@ class GraffitiUI {
           this.mod.updateTile(tile, "pending", ordinal);
         }
         this.clearDraft();
-        this.setMode("view");
       });
     }
   }
