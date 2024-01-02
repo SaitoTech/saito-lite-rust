@@ -15,6 +15,7 @@ class GraffitiUI {
     this.markSizeRatio = 0.1;
     this.hourglassHeightRatio = 0.5;
     this.actionsPerSecond = 10;
+    this.draggableForeground = false;
 
     this.buttonLightColor  = "#f7f7f7";
     this.buttonShadowColor = "#909090";
@@ -625,7 +626,9 @@ class GraffitiUI {
     const j = Math.floor((event.clientY - this.gridApparentPosition.top)  / this.currentScale);
     if (this.mousedown) {
       if (this.mode == "view" || !this.lastMousedownInsideGrid) {
-        this.moveForeground(event);
+        if (this.draggableForeground) {
+          this.moveForeground(event);
+        }
       } else if (this.isInsideGrid({x: event.clientX, y: event.clientY})) {
         if (i !== this.mousePosition.i || j !== this.mousePosition.j) {
           this.actOnTile(i, j);
