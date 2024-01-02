@@ -17,35 +17,6 @@ class PeerManager {
     this.audioEnabled = true;
     this.recording = false;
 
-    app.connection.on("stun-event-message", (data) => {
-      console.log(data);
-      if (data.room_code !== this.mod.room_obj.room_code) {
-        return;
-      }
-
-      if (data.type === "peer-joined") {
-        this.createPeerConnection(data.public_key, "offer");
-      } else if (data.type === "peer-left") {
-        this.removePeerConnection(data.public_key);
-      } else if (data.type === "toggle-audio") {
-        // console.log(data);
-        app.connection.emit("toggle-peer-audio-status", data);
-      } else if (data.type === "toggle-video") {
-        app.connection.emit("toggle-peer-video-status", data);
-      } else {
-        
-        let peerConnection = this.peers.get(data.public_key);
-
-        if (!peerConnection) {
-          this.createPeerConnection(data.public_key);
-          peerConnection = this.peers.get(data.public_key);
-        }
-
-        if (peerConnection) {
-          this.handleSignalingMessage(data);
-        }
-      }
-    });
 
     app.connection.on("stun-disconnect", () => {
       this.leave();
@@ -181,12 +152,8 @@ class PeerManager {
       this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
 
       //Render the UI component
-      this.app.connection.emit(
-        "show-call-interface",
-        this.room_obj,
-        this.videoEnabled,
-        this.audioEnabled
-      );
+      this.app.connection.emit("show-call-interface", this.videoEnabled, this.audioEnabled);
+      //Plug local stream into UI component
       this.app.connection.emit("add-local-stream-request", this.localStream);
 
       //Send Message to peers
@@ -208,8 +175,31 @@ class PeerManager {
     });
   }
 
-  handleSignalingMessage(data) {
+  async handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
+
+    console.log(data);
+
+    if (type == "peer-joined"){
+      this.createPeerConnection(public_key, "offer");
+      return;
+    }
+
+    if (type == "peer-left") {
+      this.removePeerConnection(public_key);
+      return;
+    }
+
+    if (type == "toggle-audio" || type == "toggle-video"){
+      app.connection.emit(`peer-${type}-status`, data);
+      return;
+    }
+
+    let peerConnection = this.peers.get(public_key);
+
+    if (!peerConnection) {
+      await this.createPeerConnection(public_key);
+    }
 
     if (type === "renegotiate-offer" || type === "offer") {
       // if (
@@ -261,19 +251,30 @@ class PeerManager {
     }
   }
 
+  updatePeers(){
+    let _peers = [];
+    this.peers.forEach((value, key) => {
+      _peers.push(key);
+    });
+
+    this.app.options.stun = _peers;
+
+    console.log("My call list: ", _peers);
+    
+    this.app.storage.saveOptions();
+  }
+
   async createPeerConnection(peerId, type) {
+
+    console.log("Create Peer Connection with " + peerId);
+
     // check if peer connection already exists
     const peerConnection = new RTCPeerConnection({
       iceServers: this.mod.servers,
     });
 
     this.peers.set(peerId, peerConnection);
-    let _peers = [];
-    this.peers.forEach((value, key) => {
-      _peers.push(key);
-    });
-
-    localStorage.setItem(this.mod.room_obj.room_code, JSON.stringify(_peers));
+    this.updatePeers();
 
     //Make sure you have a local Stream
     if (!this.localStream) {
@@ -475,6 +476,9 @@ class PeerManager {
     }
 
     this.app.connection.emit("remove-peer-box", peerId);
+
+    this.updatePeers();
+
   }
 
   renegotiate(peerId, retryCount = 0) {
@@ -531,20 +535,19 @@ class PeerManager {
     // Implement renegotiation logic for reconnections and media stream restarts
   }
 
-  async enterCall() {
+  enterCall() {
 
+    //
+    // The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
+    // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
+    //
     if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
-      // get public key from other source
-      console.log("cannot join with this link public key is the same");
-      let peers = localStorage.getItem(this.mod.room_obj.room_code);
-      if (peers) {
-        console.log("peers, ", peers);
-        peers = JSON.parse(peers);
-        console.log("peers, ", peers);
-        if (peers.length > 0) {
-          for (let i = 0; i < peers.length; i++) {
-            if (peers[i] !== this.mod.publicKey)
-              await this.mod.sendCallListRequestTransaction(peers[i], this.mod.room_obj.room_code);
+
+      if (this.app.options?.stun) {
+        console.log("peers, ", this.app.options.stun);
+        for (peer of this.app.options.stun) {
+          if (peer !== this.mod.publicKey){
+            this.mod.sendCallListRequestTransaction(peer);
             break;
           }
         }
@@ -554,16 +557,8 @@ class PeerManager {
     }
 
     // send ping transaction
+    this.mod.sendCallListRequestTransaction();
 
-    console.log("requesting call list from ", this.mod.room_obj.host_public_key);
-    await this.mod.sendCallListRequestTransaction(
-      this.mod.room_obj.host_public_key,
-      this.mod.room_obj.room_code
-    );
-    // this.mod.sendStunMessageToServerTransaction({
-    //   type: "peer-joined",
-    //   room_code: this.room_obj.room_code,
-    // });
   }
 
   leave() {
@@ -578,6 +573,9 @@ class PeerManager {
     });
 
     this.peers = new Map();
+
+    this.app.options.stun = [];
+    this.app.storage.saveOptions();
 
     if (this.audioStreamAnalysis) {
       clearInterval(this.audioStreamAnalysis);

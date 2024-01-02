@@ -40,6 +40,7 @@ class CallLaunch {
     }
     if (this.container === ".saito-overlay") {
       this.overlay.show(StunLaunchTemplate(this.app, this.mod), () => {
+        //Stop the video if we close the overlay
         this.app.connection.emit("close-preview-window");
       });
     } else if (this.container === "body") {

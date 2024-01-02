@@ -90,6 +90,8 @@ class RedSquare extends ModTemplate {
     //
     this.manager = "";
 
+    this.possibleHome = 1;
+
     //
     // is this a notification?
     //

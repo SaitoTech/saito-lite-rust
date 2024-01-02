@@ -347,8 +347,11 @@ class CallInterfaceVideo {
     this.app.connection.emit("stun-disconnect");
     this.video_boxes = {};
 
-    let url = window.location.origin + window.location.pathname;
-
+    let homeModule = this.app.options?.homeModule || "Stun";
+    let mod = this.app.modules.returnModuleByName(homeModule);
+    let slug = mod?.returnSlug() || "videocall";
+    let url = "/" + slug;
+    
     setTimeout(() => {
       window.location.href = url;
     }, 2000);

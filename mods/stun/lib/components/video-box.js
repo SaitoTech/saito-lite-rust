@@ -10,7 +10,7 @@ class VideoBox {
     this.containerClass = container_class;
     this.isPresentation = isPresentation;
 
-    app.connection.on("toggle-peer-audio-status", ({ enabled, public_key }) => {
+    app.connection.on("peer-toggle-audio-status", ({ enabled, public_key }) => {
       if (public_key !== this.stream_id) return;
       const video_box = document.querySelector(`#stream${this.stream_id}`);
       if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
@@ -29,7 +29,7 @@ class VideoBox {
         }
       }
     });
-    app.connection.on("toggle-peer-video-status", ({ enabled, public_key }) => {
+    app.connection.on("peer-toggle-video-status", ({ enabled, public_key }) => {
       if (public_key !== this.stream_id) return;
       const video_box = document.querySelector(`#stream${this.stream_id}`);
       if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {

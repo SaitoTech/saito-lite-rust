@@ -24,7 +24,6 @@ class Stun extends ModTemplate {
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.isRelayConnected = false;
-    this.useRelay = true;
     this.hasReceivedData = {};
     this.servers = [
       {
@@ -279,8 +278,8 @@ class Stun extends ModTemplate {
 
         try {
           if (this.app.BROWSER === 1) {
-            if (this.room_obj.room_code !== message.data.room_code) {
-              console.log("Tab is not active");
+            if (!this?.room_obj?.room_code || this.room_obj.room_code !== message.data.room_code) {
+              console.log("OC: Tab is not active");
               return;
             }
             // if (document.hidden) {
@@ -301,9 +300,7 @@ class Stun extends ModTemplate {
 
               if (message.request === "stun-send-message-to-peers") {
                 console.log("OnConfirmation: stun-send-message-to-peers");
-                // console.log(tx.to, "to transactions");
-
-                this.receiveStunMessageToPeersTransaction(this.app, tx);
+                this.peerManager.handleSignalingMessage(tx.msg.data);
               }
 
               if (message.request === "stun-send-game-call-message") {
@@ -328,8 +325,8 @@ class Stun extends ModTemplate {
     if (txmsg.request.substring(0, 5) == "stun-") {
       if (this.app.BROWSER === 1) {
         if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
-          if (this.room_obj.room_code !== txmsg.data.room_code) {
-            console.log("Tab is not active");
+          if (!this?.room_obj?.room_code || this.room_obj.room_code !== txmsg.data.room_code) {
+            console.log("HPT: Tab is not active");
             return;
           }
 
@@ -346,7 +343,7 @@ class Stun extends ModTemplate {
 
           if (txmsg.request === "stun-send-message-to-peers") {
             console.log("HPT: stun-send-message-to-peers");
-            this.receiveStunMessageToPeersTransaction(app, tx);
+            this.peerManager.handleSignalingMessage(tx.msg.data);
           }
 
           if (txmsg.request === "stun-message-broadcast") {
@@ -392,7 +389,7 @@ class Stun extends ModTemplate {
       data: newtx.toJson(),
     };
 
-    if (this.useRelay) {
+    if (this.isRelayConnected) {
       this.app.connection.emit("relay-send-message", data);
     }
 
@@ -404,7 +401,7 @@ class Stun extends ModTemplate {
     let request = "stun-send-message-to-peers";
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    // newtx.addFrom(this.publicKey);
+
     if (recipients) {
       recipients.forEach((recipient) => {
         if (recipient) {
@@ -423,20 +420,13 @@ class Stun extends ModTemplate {
 
     await newtx.sign();
 
-    if (this.useRelay) {
+    if (this.isRelayConnected) {
       recipients.forEach((recipient) => {
         this.app.connection.emit("relay-send-message", { request, recipient, data: _data });
       });
     }
 
     await this.app.network.propagateTransaction(newtx);
-  }
-
-  receiveStunMessageToPeersTransaction(app, tx) {
-    let data = tx.msg.data;
-    // console.log("receiving stun message to peers", data);
-    app.connection.emit("stun-event-message", data);
-    // this.peerManager.handleStunEventMessage(data);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
@@ -621,25 +611,38 @@ class Stun extends ModTemplate {
     }
   }
 
-  async sendCallListRequestTransaction(public_key, room_code) {
-    let request = "stun-send-call-list-request";
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+  async sendCallListRequestTransaction(public_key = "") {
 
-    newtx.addTo(public_key);
+    if (!this.room_obj){
+      console.error("No room object");
+      return;
+    }
+
+    console.log("sendCallListRequest", this.room_obj);
+
+    if (!public_key){
+      public_key = this.room_obj?.host_public_key;
+    }
+
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(public_key);
+
+    let request = "stun-send-call-list-request";
+
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
-    let _data = {
-      room_code,
-      timestamp: Date.now(),
+
+    let data = {
+      room_code: this.room_obj.room_code,
     };
-    newtx.msg.data = _data;
+
+    newtx.msg.data = data;
     newtx.msg.data.module = "Stun";
     await newtx.sign();
 
-    if (this.useRelay) {
+    if (this.isRelayConnected) {
       this.app.connection.emit("relay-send-message", {
-        data: _data,
-        request: request,
+        data,
+        request,
         recipient: public_key,
       });
     }
@@ -649,14 +652,10 @@ class Stun extends ModTemplate {
   }
   async receiveCallListRequestTransaction(app, tx) {
     let txmsg = tx.returnMessage();
-    let data = txmsg.data;
 
-    let room_code = tx.returnMessage().data.room_code;
     let from = tx.from[0].publicKey;
-    // console.log(room_code);
     let call_list = [];
-    let peers = localStorage.getItem(room_code);
-    peers = JSON.parse(peers);
+    let peers = this.app.options?.stun;
 
     if (peers) {
       peers.forEach((key) => {
@@ -671,30 +670,31 @@ class Stun extends ModTemplate {
       call_list.push(this.publicKey);
     }
 
-    // console.log("call list", call_list);
+    console.log("call list", call_list);
 
-    await this.sendCallListResponseTransaction(from, call_list, room_code);
+    await this.sendCallListResponseTransaction(from, call_list);
   }
 
-  async sendCallListResponseTransaction(public_key, call_list, room_code) {
+  async sendCallListResponseTransaction(public_key, call_list) {
     let request = "stun-send-call-list-response";
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.addTo(public_key);
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(public_key);
+
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
-    let _data = {
+    let data = {
       call_list,
-      room_code,
-      timestamp: Date.now(),
+      room_code: this.room_obj.room_code,
     };
-    newtx.msg.data = _data;
+
+    newtx.msg.data = data;
     newtx.msg.data.module = "Stun";
+
     await newtx.sign();
 
-    if (this.useRelay) {
+    if (this.isRelayConnected) {
       this.app.connection.emit("relay-send-message", {
-        data: _data,
-        request: request,
+        data,
+        request,
         recipient: public_key,
       });
     }
@@ -722,10 +722,11 @@ class Stun extends ModTemplate {
   hasSeenTransaction(tx) {
     let txmsg = tx.returnMessage();
     let data = txmsg.data;
-    if (!data.timestamp) {
-      throw new Error("timestamp is not present in transaction data");
-    }
-    let hashed_data = this.app.crypto.stringToBase64(JSON.stringify(data) + String(data.timestamp));
+
+    //console.log("Check Transaction");
+    //console.log(tx, txmsg);
+
+    let hashed_data = this.app.crypto.stringToBase64(JSON.stringify(data));
     if (this.hasReceivedData[hashed_data]) {
       // console.log("already received this transaction");
       return true;
