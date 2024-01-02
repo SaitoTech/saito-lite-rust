@@ -14,28 +14,51 @@ class GridState {
 
   prettyPrint() {
     const nbColorCharacters = 7;
-    const nbOrdinalDigits = 6;
+    const nbOrdinalDigitsToPrint = 8;
 
     const statusHeaderLength = 2;
-    const cellWidth = 1 + statusHeaderLength + 1 + nbColorCharacters + 1 + nbOrdinalDigits + 1;
+    const cellWidth = 1 + statusHeaderLength + 1 + nbColorCharacters + 1 + nbOrdinalDigitsToPrint + 1;
     const cellHorizontalBorder = "-".repeat(cellWidth);
     const gridHorizontalBorder = new Array(this.gridSize + 1).fill("+").join(cellHorizontalBorder);
 
-    const centeredNullText = (width) => {
-      const nullText = "null";
-      const nullTextLeftRightPaddingLength = width - (statusHeaderLength + 1) - nullText.length;
-      const nullTextLeftPaddingLength  = Math.floor(nullTextLeftRightPaddingLength / 2);
-      const nullTextRightPaddingLength = nullTextLeftRightPaddingLength - nullTextLeftPaddingLength;
-      const nullTextLeftPaddingSpaces  = " ".repeat(nullTextLeftPaddingLength);
-      const nullTextRightPaddingSpaces = " ".repeat(nullTextRightPaddingLength);
-      return nullTextLeftPaddingSpaces + nullText + nullTextRightPaddingSpaces;
+    const alignedText = (text, alignementType, width) => {
+      const leftRightPaddingLength = width - text.length;
+      const leftPaddingLength  = Math.floor(leftRightPaddingLength / 2);
+      const rightPaddingLength = leftRightPaddingLength - leftPaddingLength;
+      const leftPaddingSpaces  = " ".repeat(leftPaddingLength);
+      const rightPaddingSpaces = " ".repeat(rightPaddingLength);
+      switch (alignementType) {
+        case "centered":
+          return leftPaddingSpaces + text + rightPaddingSpaces;
+        case "left":
+          return text + leftPaddingSpaces + rightPaddingSpaces;
+        case "right":
+          return leftPaddingSpaces + rightPaddingSpaces + text;
+      }
+    }
+
+    const colorName = (color) => {
+      const names = {
+        "#ff7800": "orange",
+        "#000000": "black",
+        "#e01b24": "red",
+        "#ffffff": "white",
+      }
+      if (names[color] !== undefined) {
+        return names[color];
+      } else {
+        return color;
+      }
     }
 
     const ordinalToPrintedString = (ordinal) => {
       if (ordinal !== null) {
-        return ordinal.toString().slice(- (nbOrdinalDigits + this.mod.txOrderPrecision), - this.mod.txOrderPrecision);
+        return ordinal.toString().slice(
+          - (nbOrdinalDigitsToPrint + 3 + this.mod.txOrderPrecision),
+          - (                         3 + this.mod.txOrderPrecision)
+        );
       } else {
-        return centeredNullText(nbOrdinalDigits);
+        return alignedText("null", "centered", nbOrdinalDigitsToPrint);
       }
     }
 
@@ -47,11 +70,11 @@ class GridState {
         for (let i = 0; i < this.gridSize; i++) {
           line += " " + statusHeader;
           if (this.state[i][j][status] !== null) {
-            line += " " + this.state[i][j][status].color
+            line += " " + alignedText(colorName(this.state[i][j][status].color), "left", nbColorCharacters)
                   + " " + ordinalToPrintedString(this.state[i][j][status].ordinal)
                   + " ";
           } else {
-            line += centeredNullText(cellWidth);
+            line += alignedText("null", "centered", cellWidth - (statusHeaderLength + 1));
           }
           line += "|";
         }
@@ -112,7 +135,7 @@ class GridState {
         if (this.state[i][j].drafted === null && tile.color === null) {
           // nothing
         } else if (this.state[i][j].drafted === null && tile.color !== null) {
-          this.state[i][j].drafted = {color: tile.color};
+          this.state[i][j].drafted = {color: tile.color, ordinal: null};
         } else if (this.state[i][j].drafted !== null && tile.color === null) {
           this.state[i][j].drafted = null;
         } else if (this.state[i][j].drafted !== null && tile.color !== null) {
