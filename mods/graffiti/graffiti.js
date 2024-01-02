@@ -6,7 +6,6 @@ const GraffitiUI   = require("./lib/graffiti-ui");
 const GridState    = require("./lib/grid-state");
 const graffitiHTML = require("./index");
 const createHash   = require("crypto").createHash;
-const cookieParser = require("cookie-parser");
 const path = require("path");
 const fs   = require("fs").promises;
 
@@ -165,20 +164,13 @@ class Graffiti extends ModTemplate {
 
     this.handleSnapshots();
 
-    expressapp.use(cookieParser());
-
     expressapp.get("/" + encodeURI(this.slug), (req, res) => {
       const lastSnapshotPath = (this.lastSnapshotFileName !== null) ?
         `${this.snapshotsDirSubpath}/${this.lastSnapshotFileName}` : null;
 
-      const isFirstTime = !req.cookies.notFirstTime;
-      if (isFirstTime) {
-        res.cookie("notFirstTime", 1, {maxAge: 10**12, httpOnly: true, secure: true});
-      }
-
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(graffitiHTML(app, this.slug, lastSnapshotPath, isFirstTime));
+      res.send(graffitiHTML(app, this.slug, lastSnapshotPath));
     });
 
     expressapp.use("/" + encodeURI(this.slug), express.static(this.webdir));

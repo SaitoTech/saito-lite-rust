@@ -1,4 +1,4 @@
-module.exports = (app, slug, lastSnapshotPath, isFirstTime) => {
+module.exports = (app, slug, lastSnapshotPath) => {
   const title = "Saito Graffiti";
 
   let snapshotMetaTags = "";
@@ -47,7 +47,6 @@ module.exports = (app, slug, lastSnapshotPath, isFirstTime) => {
       </head>
 
       <body>
-        <script>window.isFirstTime = ${isFirstTime};</script>
         <script id="saito" type="text/javascript" src="/saito/saito.js?build=${app.build_number}"></script>
       </body>
     </html>
