@@ -17,7 +17,6 @@ class PeerManager {
     this.audioEnabled = true;
     this.recording = false;
 
-
     app.connection.on("stun-disconnect", () => {
       this.leave();
     });
@@ -72,7 +71,7 @@ class PeerManager {
         enabled: this.videoEnabled,
       };
 
-      this.mod.sendStunMessageToServerTransaction(data);
+      //this.mod.sendStunMessageToServerTransaction(data);
     });
 
     app.connection.on("stun-toggle-audio", async () => {
@@ -91,7 +90,8 @@ class PeerManager {
         type: "toggle-audio",
         enabled: this.audioEnabled,
       };
-      this.mod.sendStunMessageToServerTransaction(data);
+
+      //this.mod.sendStunMessageToServerTransaction(data);
     });
 
     app.connection.on("begin-share-screen", async () => {
@@ -156,8 +156,24 @@ class PeerManager {
       //Plug local stream into UI component
       this.app.connection.emit("add-local-stream-request", this.localStream);
 
-      //Send Message to peers
-      this.enterCall();
+      //
+      // The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
+      // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
+      //
+      if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
+        if (this.app.options?.stun) {
+          console.log("my peers, ", this.app.options.stun);
+          for (peer of this.app.options.stun) {
+            if (peer !== this.mod.publicKey) {
+              this.mod.sendCallEntryTransaction(peer);
+              break;
+            }
+          }
+        }
+      } else {
+        // send ping transaction
+        this.mod.sendCallEntryTransaction();
+      }
 
       let sound = new Audio("/videocall/audio/enter-call.mp3");
       sound.play();
@@ -180,7 +196,7 @@ class PeerManager {
 
     console.log(data);
 
-    if (type == "peer-joined"){
+    if (type == "peer-joined") {
       this.createPeerConnection(public_key, "offer");
       return;
     }
@@ -190,7 +206,7 @@ class PeerManager {
       return;
     }
 
-    if (type == "toggle-audio" || type == "toggle-video"){
+    if (type == "toggle-audio" || type == "toggle-video") {
       app.connection.emit(`peer-${type}-status`, data);
       return;
     }
@@ -251,7 +267,7 @@ class PeerManager {
     }
   }
 
-  updatePeers(){
+  updatePeers() {
     let _peers = [];
     this.peers.forEach((value, key) => {
       _peers.push(key);
@@ -260,12 +276,11 @@ class PeerManager {
     this.app.options.stun = _peers;
 
     console.log("My call list: ", _peers);
-    
+
     this.app.storage.saveOptions();
   }
 
   async createPeerConnection(peerId, type) {
-
     console.log("Create Peer Connection with " + peerId);
 
     // check if peer connection already exists
@@ -478,7 +493,6 @@ class PeerManager {
     this.app.connection.emit("remove-peer-box", peerId);
 
     this.updatePeers();
-
   }
 
   renegotiate(peerId, retryCount = 0) {
@@ -535,32 +549,6 @@ class PeerManager {
     // Implement renegotiation logic for reconnections and media stream restarts
   }
 
-  enterCall() {
-
-    //
-    // The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
-    // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
-    //
-    if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
-
-      if (this.app.options?.stun) {
-        console.log("peers, ", this.app.options.stun);
-        for (peer of this.app.options.stun) {
-          if (peer !== this.mod.publicKey){
-            this.mod.sendCallListRequestTransaction(peer);
-            break;
-          }
-        }
-      }
-
-      return;
-    }
-
-    // send ping transaction
-    this.mod.sendCallListRequestTransaction();
-
-  }
-
   leave() {
     this.localStream.getTracks().forEach((track) => {
       track.stop();
@@ -588,7 +576,6 @@ class PeerManager {
     };
 
     this.mod.sendStunMessageToPeersTransaction(data, keys);
-
   }
 
   sendSignalingMessage(data) {}

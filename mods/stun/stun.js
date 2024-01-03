@@ -268,8 +268,6 @@ class Stun extends ModTemplate {
 
     if (conf === 0) {
       if (message.module === "Stun") {
-        console.log(tx, "transactipon");
-        console.log(message, "message");
 
         //
         // Do we even need/want to send messages on chain?
@@ -278,6 +276,8 @@ class Stun extends ModTemplate {
 
         try {
           if (this.app.BROWSER === 1) {
+            if (this.hasSeenTransaction(tx)) return;
+
             if (!this?.room_obj?.room_code || this.room_obj.room_code !== message.data.room_code) {
               console.log("OC: Tab is not active");
               return;
@@ -287,8 +287,8 @@ class Stun extends ModTemplate {
             //   return;
             // }
 
-            if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
-              if (this.hasSeenTransaction(tx)) return;
+            if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+
               if (message.request === "stun-send-call-list-request") {
                 console.log("OnConfirmation:  stun-send-call-list-request");
                 this.receiveCallListRequestTransaction(this.app, tx);
@@ -324,77 +324,44 @@ class Stun extends ModTemplate {
 
     if (txmsg.request.substring(0, 5) == "stun-") {
       if (this.app.BROWSER === 1) {
-        if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
+        if (this.hasSeenTransaction(tx)) return;
+
+        if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
           if (!this?.room_obj?.room_code || this.room_obj.room_code !== txmsg.data.room_code) {
             console.log("HPT: Tab is not active");
             return;
           }
 
-          if (this.hasSeenTransaction(tx)) return;
-
           if (txmsg.request === "stun-send-call-list-request") {
             console.log("HPT:  stun-send-call-list-request");
             this.receiveCallListRequestTransaction(this.app, tx);
+            return;
           }
           if (txmsg.request === "stun-send-call-list-response") {
             console.log("HPT:  stun-send-call-list-response");
             this.receiveCallListResponseTransaction(this.app, tx);
+            return;
           }
 
           if (txmsg.request === "stun-send-message-to-peers") {
             console.log("HPT: stun-send-message-to-peers");
             this.peerManager.handleSignalingMessage(tx.msg.data);
+            return;
           }
 
-          if (txmsg.request === "stun-message-broadcast") {
-            let inner_tx = new Transaction(undefined, txmsg.data);
-            let message = inner_tx.returnMessage();
-            try {
-              if (message.request === "stun-send-game-call-message") {
-                console.log("HPT: stun-send-game-call-message");
-                this.receiveGameCallMessageToPeers(app, inner_tx);
-              }
-            } catch (err) {
-              console.error("Stun Error:", err);
-            }
-          }
+          console.warn("Unprocessed request:");
+          console.log(txmsg);
         }
       }
     }
 
-    return await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   createRoomCode() {
     return this.app.crypto.generateRandomNumber().substring(0, 12);
   }
 
-  async sendStunMessageToServerTransaction(_data) {
-    let request = "stun-send-message-to-server";
-    let server = (await this.app.network.getPeers())[0];
-
-    // onchain
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.addFrom(this.publicKey);
-    newtx.addTo(server.publicKey);
-    newtx.msg.module = "Stun";
-    newtx.msg.request = request;
-    newtx.msg.data = _data;
-    newtx.msg.data.module = "Stun";
-    await newtx.sign();
-
-    let data = {
-      recipient: server.publicKey,
-      request: "stun-message-broadcast",
-      data: newtx.toJson(),
-    };
-
-    if (this.isRelayConnected) {
-      this.app.connection.emit("relay-send-message", data);
-    }
-
-    await this.app.network.propagateTransaction(newtx);
-  }
 
   async sendStunMessageToPeersTransaction(_data, recipients) {
     console.log("sending to peers ", recipients, " data ", _data);
@@ -416,17 +383,11 @@ class Stun extends ModTemplate {
 
     newtx.msg.data.timestamp = Date.now();
 
-    console.log(newtx, "new transaction");
-
     await newtx.sign();
 
-    if (this.isRelayConnected) {
-      recipients.forEach((recipient) => {
-        this.app.connection.emit("relay-send-message", { request, recipient, data: _data });
-      });
-    }
+    this.app.connection.emit("relay-transaction", newtx);
 
-    await this.app.network.propagateTransaction(newtx);
+    this.app.network.propagateTransaction(newtx);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
@@ -502,15 +463,7 @@ class Stun extends ModTemplate {
     newtx.msg.data.module = "Stun";
     await newtx.sign();
 
-    recipients.forEach((recipient) => {
-      let data = {
-        request: "stun-message-broadcast",
-        data: newtx.toJson(),
-        recipient,
-      };
-      this.app.connection.emit("relay-send-message", data);
-    });
-
+    this.app.connection.emit("relay-transaction", newtx);
     this.app.network.propagateTransaction(newtx);
   }
 
@@ -611,14 +564,12 @@ class Stun extends ModTemplate {
     }
   }
 
-  async sendCallListRequestTransaction(public_key = "") {
+  async sendCallEntryTransaction(public_key = "") {
 
     if (!this.room_obj){
       console.error("No room object");
       return;
     }
-
-    console.log("sendCallListRequest", this.room_obj);
 
     if (!public_key){
       public_key = this.room_obj?.host_public_key;
@@ -639,17 +590,10 @@ class Stun extends ModTemplate {
     newtx.msg.data.module = "Stun";
     await newtx.sign();
 
-    if (this.isRelayConnected) {
-      this.app.connection.emit("relay-send-message", {
-        data,
-        request,
-        recipient: public_key,
-      });
-    }
-
-    // console.log("propagating transaction");
-    await this.app.network.propagateTransaction(newtx);
+    this.app.connection.emit("relay-transaction", newtx);
+    this.app.network.propagateTransaction(newtx);
   }
+  
   async receiveCallListRequestTransaction(app, tx) {
     let txmsg = tx.returnMessage();
 
@@ -672,7 +616,7 @@ class Stun extends ModTemplate {
 
     console.log("call list", call_list);
 
-    await this.sendCallListResponseTransaction(from, call_list);
+    this.sendCallListResponseTransaction(from, call_list);
   }
 
   async sendCallListResponseTransaction(public_key, call_list) {
@@ -691,16 +635,12 @@ class Stun extends ModTemplate {
 
     await newtx.sign();
 
-    if (this.isRelayConnected) {
-      this.app.connection.emit("relay-send-message", {
-        data,
-        request,
-        recipient: public_key,
-      });
-    }
+    this.app.connection.emit("relay-transaction", newtx);
 
-    await this.app.network.propagateTransaction(newtx);
+    this.app.network.propagateTransaction(newtx);
+
   }
+
   async receiveCallListResponseTransaction(app, tx) {
     let txmsg = tx.returnMessage();
 
@@ -720,18 +660,20 @@ class Stun extends ModTemplate {
   }
 
   hasSeenTransaction(tx) {
-    let txmsg = tx.returnMessage();
-    let data = txmsg.data;
+    let hashed_data = tx.signature;
+    
+    // this.app.crypto.stringToBase64(txmsg.data) can be short or very long!
+    // signature = 128 characters
+    // running signature though stringToBase64 or stringToHex makes it longer (172, 256 respectively)
+    //
 
-    //console.log("Check Transaction");
-    //console.log(tx, txmsg);
-
-    let hashed_data = this.app.crypto.stringToBase64(JSON.stringify(data));
     if (this.hasReceivedData[hashed_data]) {
-      // console.log("already received this transaction");
+      console.log("already received this transaction");
       return true;
     }
     this.hasReceivedData[hashed_data] = true;
+
+    console.log(hashed_data, tx.returnMessage());
     return false;
   }
 }
