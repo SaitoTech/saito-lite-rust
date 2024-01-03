@@ -15,7 +15,9 @@ class GraffitiUI {
     this.markSizeRatio = 0.1;
     this.hourglassHeightRatio = 0.5;
     this.actionsPerSecond = 10;
-    this.draggableForeground = false;
+
+    this.draggable = false;
+    this.zoomable  = false;
 
     this.buttonLightColor  = "#f7f7f7";
     this.buttonShadowColor = "#909090";
@@ -598,13 +600,15 @@ class GraffitiUI {
   }
 
   onWheelOverForeground(event) {
-    event.preventDefault();
-    const zoomFactor = this.updateScale(
-      (event.deltaY < 0) ? this.zoomAbsoluteFactor : 1 / this.zoomAbsoluteFactor
-    );
-    this.gridApparentPosition.left = event.clientX + zoomFactor * (this.gridApparentPosition.left - event.clientX);
-    this.gridApparentPosition.top  = event.clientY + zoomFactor * (this.gridApparentPosition.top  - event.clientY);
-    this.updateForegroundRendering();
+    if (this.zoomable) {
+      event.preventDefault();
+      const zoomFactor = this.updateScale(
+        (event.deltaY < 0) ? this.zoomAbsoluteFactor : 1 / this.zoomAbsoluteFactor
+      );
+      this.gridApparentPosition.left = event.clientX + zoomFactor * (this.gridApparentPosition.left - event.clientX);
+      this.gridApparentPosition.top  = event.clientY + zoomFactor * (this.gridApparentPosition.top  - event.clientY);
+      this.updateForegroundRendering();
+    }
   }
 
   onMousedownOverForeground(event) {
@@ -626,7 +630,7 @@ class GraffitiUI {
     const j = Math.floor((event.clientY - this.gridApparentPosition.top)  / this.currentScale);
     if (this.mousedown) {
       if (this.mode == "view" || !this.lastMousedownInsideGrid) {
-        if (this.draggableForeground) {
+        if (this.draggable) {
           this.moveForeground(event);
         }
       } else if (this.isInsideGrid({x: event.clientX, y: event.clientY})) {
