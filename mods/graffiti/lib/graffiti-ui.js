@@ -1,4 +1,3 @@
-const Shepherd   = require("shepherd.js").default;
 const RBTree     = require("bintrees").RBTree;
 const createHash = require("crypto").createHash;
 
@@ -27,14 +26,8 @@ class GraffitiUI {
     this.renderBackground();
     this.renderForeground();
     this.attachEventsToWindow();
-
     this.renderButtonElements();
-    this.setMode("view");
-
-    if (window.isFirstTime) {
-      await this.runTour();
-    }
-
+    this.setMode("paint");
     this.attachEventsToForeground();
     await this.loadBaseHourglass();
     this.attachEventsToButtonElements();
@@ -238,59 +231,6 @@ class GraffitiUI {
     this.selectedColor.style.transform = "translate(-50%, -50%)";
     this.selectedColor.style.borderRadius = "50%";
     this.selectedColor.style.background = "#000000";
-  }
-
-  runTour() {
-    this.tour = new Shepherd.Tour({
-      useModalOverlay: true,
-      defaultStepOptions: {scrollTo: false}
-    });
-    this.tour.addStep({
-      id: "paint-button", text: "Start painting",
-      attachTo: {element: this.paintButton, on: "top"},
-      buttons: [{text: "Next", action: () => { this.setMode("paint"); this.tour.next(); }}]
-    });
-    this.tour.addStep({
-      id: "color-button", text: "Change color",
-      attachTo: {element: this.colorButton, on: "top"},
-      buttons: [
-        {text: "Back", action: () => { this.setMode("view"); this.tour.back(); }},
-        {text: "Next", action: this.tour.next}
-      ]
-    });
-    this.tour.addStep({
-      id: "grid", text: "Left click to paint<br />Right click to unpaint",
-      attachTo: {element: this.grid, on: "left"},
-      buttons: [{text: "Back", action: this.tour.back}, {text: "Next", action: this.tour.next}]
-    });
-    this.tour.addStep({
-      id: "undo-button", text: "Undo",
-      attachTo: {element: this.undoButton, on: "top"},
-      buttons: [{text: "Back", action: this.tour.back}, {text: "Next", action: this.tour.next}]
-    });
-    this.tour.addStep({
-      id: "redo-button", text: "Redo",
-      attachTo: {element: this.redoButton, on: "top"},
-      buttons: [{text: "Back", action: this.tour.back}, {text: "Next", action: this.tour.next}]
-    });
-    this.tour.addStep({
-      id: "cancel-button", text: "Cancel the draft",
-      attachTo: {element: this.cancelButton, on: "top"},
-      buttons: [{text: "Back", action: this.tour.back}, {text: "Next", action: this.tour.next}]
-    });
-    this.tour.addStep({
-      id: "confirm-button", text: "Submit the draft",
-      attachTo: {element: this.confirmButton, on: "top"},
-      buttons: [
-        {text: "Back", action: this.tour.back},
-        {text: "Get Started!", action: () => { this.setMode("view"); this.tour.complete(); }}
-      ]
-    });
-    this.tour.start();
-
-    return new Promise((resolve, reject) => {
-      Shepherd.on("complete", resolve);
-    });
   }
 
   attachEventsToWindow() {
@@ -640,7 +580,7 @@ class GraffitiUI {
     } else if (newState.confirmed !== null) {
       this.drawTile(i, j, newState.confirmed.color);
     } else {
-      this.drawTile(i, j, this.blankTileColor);
+      this.drawTile(i, j, this.mod.blankTileColor);
     }
   }
 
@@ -711,7 +651,6 @@ class GraffitiUI {
 
   onMouseupOverCancelButton() {
     this.clearDraft();
-    this.setMode("view");
   }
 
   onMouseupOverConfirmButton() {
@@ -726,7 +665,6 @@ class GraffitiUI {
           this.mod.updateTile(tile, "pending", ordinal);
         }
         this.clearDraft();
-        this.setMode("view");
       });
     }
   }

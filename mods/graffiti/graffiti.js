@@ -6,7 +6,6 @@ const GraffitiUI   = require("./lib/graffiti-ui");
 const GridState    = require("./lib/grid-state");
 const graffitiHTML = require("./index");
 const createHash   = require("crypto").createHash;
-const cookieParser = require("cookie-parser");
 const path = require("path");
 const fs   = require("fs").promises;
 
@@ -20,6 +19,7 @@ class Graffiti extends ModTemplate {
 
     this.gridSize = 200;
     this.blankTileColor = "#ffffff";
+    this.txOrderPrecision = 6;
 
     this.gridState = new GridState(this);
     this.menu = new GameMenu(app, this);
@@ -153,9 +153,8 @@ class Graffiti extends ModTemplate {
 
   // Orders transactions in case they have tiles in common and timestamps are equal.
   transactionOrdinal(tx) {
-    const orderPrecision = 10**6;
-    const sigHash = parseInt(createHash("md5").update(tx.signature).digest("hex"), 16) % orderPrecision;
-    return tx.timestamp * orderPrecision + sigHash;
+    const sigHash = parseInt(createHash("md5").update(tx.signature).digest("hex"), 16) % (10 ** this.txOrderPrecision);
+    return tx.timestamp * (10 ** this.txOrderPrecision) + sigHash;
   }
 
 
@@ -165,20 +164,13 @@ class Graffiti extends ModTemplate {
 
     this.handleSnapshots();
 
-    expressapp.use(cookieParser());
-
     expressapp.get("/" + encodeURI(this.slug), (req, res) => {
       const lastSnapshotPath = (this.lastSnapshotFileName !== null) ?
         `${this.snapshotsDirSubpath}/${this.lastSnapshotFileName}` : null;
 
-      const isFirstTime = !req.cookies.notFirstTime;
-      if (isFirstTime) {
-        res.cookie("notFirstTime", 1, {maxAge: 10**12, httpOnly: true, secure: true});
-      }
-
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(graffitiHTML(app, this.slug, lastSnapshotPath, isFirstTime));
+      res.send(graffitiHTML(app, this.slug, lastSnapshotPath));
     });
 
     expressapp.use("/" + encodeURI(this.slug), express.static(this.webdir));
@@ -298,7 +290,7 @@ class Graffiti extends ModTemplate {
 
   componentsToColor(components) {
     const hexComponents = components.map(c => ((c < 16) ? "0" : "") + c.toString(16));
-    return "#" + hexComponents.reduce((strAcc, str) => strAcc + str, "");
+    return "#" + hexComponents.join("");
   }
 
   currentTimestamp() {
