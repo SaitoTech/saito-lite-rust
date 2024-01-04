@@ -1063,17 +1063,16 @@ export default class Wallet extends SaitoWallet {
   public convertNolanToSaito(amount = BigInt(0)){
     let string = "0.00";
     let num = 0;
+    let bigint_divider = 100000000n;
 
     if (typeof amount == 'bigint') {
 
-      // convert nolans to saito
-      amount = amount / BigInt(this.nolan_per_saito);
-
       // convert bigint to number
-      num = Number(amount);
+      num = Number(amount * 100n / bigint_divider) / 100;
 
       // convert number to string
       string = num.toString();
+
     } else {
       console.error(`convertNolanToSaito: Type ` + typeof amount + ` provided. BigInt required`);
     }
