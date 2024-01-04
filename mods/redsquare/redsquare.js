@@ -727,7 +727,12 @@ class RedSquare extends ModTemplate {
                   // Update our local archive with any updated metadata
                   //
                   if (this.peers[i].publicKey != this.publicKey) {
-                    this.saveTweet(txs[z].signature, 0);
+                    //
+                    // Only cache top level tweets!!!!
+                    //
+                    if (!tweet.parent_id){
+                      this.saveTweet(txs[z].signature, 0);
+                    }
                   }
                 } else {
                   // console.warn("How did we not add the tweet????");
@@ -1833,6 +1838,7 @@ class RedSquare extends ModTemplate {
     let tweet = this.returnTweet(sig);
 
     if (!tweet) {
+      console.warn("Want to save a tweet not in our memory");
       return;
     }
 
@@ -1843,9 +1849,9 @@ class RedSquare extends ModTemplate {
           if (preserve){
             this.app.storage.updateTransaction(tweet.tx, { preserve: 1 }, "localhost");    
           }
-          return;
+        }else{
+          this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve }, "localhost");  
         }
-        this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve }, "localhost");
       },
       "localhost"
     );
