@@ -51,4 +51,4 @@ module.exports = (app, slug, lastSnapshotPath) => {
       </body>
     </html>
   `;
-}
+};

@@ -17,7 +17,8 @@ class Graffiti extends ModTemplate {
     this.name = "Graffiti";
     this.slug = "graffiti";
 
-    this.gridSize = 200;
+    this.gridWidth  = 175;
+    this.gridHeight = 100;
     this.blankTileColor = "#ffffff";
     this.txOrderPrecision = 6;
 
@@ -46,7 +47,7 @@ class Graffiti extends ModTemplate {
   }
 
   async loadGridFromDatabase() {
-    const sql = `SELECT * FROM tiles WHERE i < ${this.gridSize} AND j < ${this.gridSize}`;
+    const sql = `SELECT * FROM tiles WHERE i < ${this.gridWidth} AND j < ${this.gridHeight}`;
     const rows = await this.app.storage.queryDatabase(sql, {}, "graffiti");
     for (const row of rows) {
       this.gridState.updateTile(
@@ -57,7 +58,7 @@ class Graffiti extends ModTemplate {
   }
 
   async loadGridFromPeer(peer) {
-    const sql = `SELECT * FROM tiles WHERE i < ${this.gridSize} AND j < ${this.gridSize}`;
+    const sql = `SELECT * FROM tiles WHERE i < ${this.gridWidth} AND j < ${this.gridHeight}`;
     this.sendPeerDatabaseRequestWithFilter(this.name, sql, async (res) => {
       if (res.rows) {
         for (const row of res.rows) {
@@ -217,9 +218,9 @@ class Graffiti extends ModTemplate {
   }
 
   async createSnapshot() {
-    const gridImage = new this.Jimp(this.gridSize, this.gridSize);
-    for (let i = 0; i < this.gridSize; i++) {
-      for (let j = 0; j < this.gridSize; j++) {
+    const gridImage = new this.Jimp(this.gridWidth, this.gridHeight);
+    for (let i = 0; i < this.gridWidth; i++) {
+      for (let j = 0; j < this.gridHeight; j++) {
         const tileColor = this.gridState.getTileColor(i, j);
         const [r, g, b] = this.colorToComponents((tileColor !== null) ? tileColor : this.blankTileColor);
         gridImage.setPixelColor(this.Jimp.rgbaToInt(r, g, b, 255), i, j);

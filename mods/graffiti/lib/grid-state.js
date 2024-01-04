@@ -2,11 +2,12 @@ class GridState {
   constructor(mod) {
     this.mod = mod;
 
-    this.gridSize = this.mod.gridSize;
-    this.state = new Array(this.gridSize);
-    for (let i = 0; i < this.gridSize; i++) {
-      this.state[i] = new Array(this.gridSize);
-      for (let j = 0; j < this.gridSize; j++) {
+    this.gridWidth  = this.mod.gridWidth;
+    this.gridHeight = this.mod.gridHeight;
+    this.state = new Array(this.gridWidth);
+    for (let i = 0; i < this.gridWidth; i++) {
+      this.state[i] = new Array(this.gridHeight);
+      for (let j = 0; j < this.gridHeight; j++) {
         this.state[i][j] = {confirmed: null, pending: null, drafted: null};
       }
     }
@@ -19,7 +20,7 @@ class GridState {
     const statusHeaderLength = 2;
     const cellWidth = 1 + statusHeaderLength + 1 + nbColorCharacters + 1 + nbOrdinalDigitsToPrint + 1;
     const cellHorizontalBorder = "-".repeat(cellWidth);
-    const gridHorizontalBorder = new Array(this.gridSize + 1).fill("+").join(cellHorizontalBorder);
+    const gridHorizontalBorder = new Array(this.gridWidth + 1).fill("+").join(cellHorizontalBorder);
 
     const alignedText = (text, alignementType, width) => {
       const leftRightPaddingLength = width - text.length;
@@ -62,12 +63,12 @@ class GridState {
       }
     }
 
-    for (let j = 0; j < this.gridSize; j++) {
+    for (let j = 0; j < this.gridHeight; j++) {
       console.log(gridHorizontalBorder);
       for (const status of ["confirmed", "pending", "drafted"]) {
         const statusHeader = status[0] + ":";
         let line = "|";
-        for (let i = 0; i < this.gridSize; i++) {
+        for (let i = 0; i < this.gridWidth; i++) {
           line += " " + statusHeader;
           if (this.state[i][j][status] !== null) {
             line += " " + alignedText(colorName(this.state[i][j][status].color), "left", nbColorCharacters)
