@@ -127,11 +127,6 @@ class PeerManager {
 
     //Launch the Stun call
     app.connection.on("start-stun-call", async () => {
-      console.log("start-stun-call");
-      if (this.mod.ui_type == "voice") {
-        this.videoEnabled = false;
-      }
-
       //Get my local media
       try {
         this.localStream = await navigator.mediaDevices.getUserMedia({

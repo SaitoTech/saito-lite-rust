@@ -779,9 +779,7 @@
   padding: 1rem;
   border-radius: var(--saito-border-radius);
   width: 55rem;
-  max-width: 92vw;
-  max-height: 92vw;
-  /*min-height: 30rem;*/
+  max-width: 92%;
   display: flex;
 }
 

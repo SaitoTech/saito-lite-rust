@@ -1,8 +1,8 @@
-const CallInterfaceGameTemplate = require("./call-interface-audio-game.template");
-const CallInterfaceGenericTemplate = require("./call-interface-audio-generic.template");
+const CallInterfaceFloatTemplate = require("./call-interface-float.template");
 const AudioBox = require("./audio-box");
+const VideoBox = require("./video-box");
 
-class CallInterfaceAudio {
+class CallInterfaceFloat {
 
   constructor(app, mod) {
     this.app = app;
@@ -227,4 +227,4 @@ class CallInterfaceAudio {
 
 }
 
-module.exports = CallInterfaceAudio;
+module.exports = CallInterfaceFloat;

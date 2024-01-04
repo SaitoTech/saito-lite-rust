@@ -2,7 +2,8 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const StunLauncher = require("./lib/appspace/call-launch");
 const CallInterfaceVideo = require("./lib/components/call-interface-video");
-const CallInterfaceAudio = require("./lib/components/call-interface-audio");
+const CallInterfaceFloat = require("./lib/components/call-interface-float");
+const DialingInterface = require("./lib/appspace/dialer"); 
 const PeerManager = require("./lib/appspace/PeerManager");
 
 //Do these do anything???
@@ -56,6 +57,7 @@ class Stun extends ModTemplate {
 
     this.streamManager = new StreamManager(app, this);
     this.peerManager = new PeerManager(app, this);
+    this.dialer = new DialingInterface(app, this);
 
     //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-call-interface", (ui_type = "large") => {
@@ -64,12 +66,10 @@ class Stun extends ModTemplate {
         return;
       }
 
-      this.ui_type = ui_type;
-
       if (ui_type === "large") {
         this.CallInterface = new CallInterfaceVideo(app, this);
       } else {
-        this.CallInterface = new CallInterfaceAudio(app, this);
+        this.CallInterface = new CallInterfaceFloat(app, this);
       }
     });
   }
@@ -111,7 +111,6 @@ class Stun extends ModTemplate {
       }
 
       this.isRelayConnected = true;
-      this.ring_sound = new Audio("/videocall/audio/ring.mp3");
     }
   }
 
@@ -133,12 +132,6 @@ class Stun extends ModTemplate {
     }
   }
 
-  startRing() {
-    this.ring_sound.play();
-  }
-  stopRing() {
-    this.ring_sound.pause();
-  }
 
   respondTo(type = "") {
     // console.log(type, obj);
@@ -155,7 +148,7 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                stun_self.establishStunCallWithPeers("large", [public_key]);
+                stun_self.dialer.establishStunCallWithPeers("large", [public_key]);
               },
             },
           ];
@@ -210,7 +203,7 @@ class Stun extends ModTemplate {
               callback: function (app, game_mod) {
                 //Start Call
                 game_mod.menu.hideSubMenus();
-                stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
+                stun_self.dialer.establishStunCallWithPeers("voice", [...game_mod.game.players]);
               },
             },
             {
@@ -390,179 +383,6 @@ class Stun extends ModTemplate {
     this.app.network.propagateTransaction(newtx);
   }
 
-  async establishStunCallWithPeers(ui_type, recipients) {
-    // salert("Establishing a connection with your peers...");
-
-    // create a room
-    let room_code = this.createRoomCode();
-
-    // send the information to the other peers and ask them to join the call
-    recipients = recipients.filter((player) => {
-      return player !== this.publicKey;
-    });
-
-    let data = {
-      type: "connection-request",
-      room_code,
-      ui: ui_type,
-      sender: this.publicKey,
-      timestamp: Date.now(),
-    };
-
-    this.sendStunCallMessageToPeers(this.app, data, recipients);
-
-    this.dialing = setTimeout(() => {
-      // cancel the call after 30seconds
-      let data = {
-        type: "cancel-connection-request",
-        room_code,
-        ui: ui_type,
-        sender: this.publicKey,
-        timestamp: Date.now(),
-      };
-      this.sendStunCallMessageToPeers(this.app, data, recipients);
-      this.stopRing();
-      if (document.getElementById("saito-alert")) {
-        document
-          .getElementById("saito-alert")
-          .parentElement.removeChild(document.getElementById("saito-alert"));
-      }
-    }, 30000);
-
-    const result = await sconfirm("establishing connection with peers");
-    if (!result) {
-      // cancel the call
-      let data = {
-        type: "cancel-connection-request",
-        room_code,
-        timestamp: Date.now(),
-        ui: ui_type,
-        sender: this.publicKey,
-      };
-      clearTimeout(this.dialing);
-      this.dialing = null;
-      this.stopRing();
-      this.sendStunCallMessageToPeers(this.app, data, recipients);
-    }
-  }
-
-  async sendStunCallMessageToPeers(app, _data, recipients) {
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-
-    if (recipients) {
-      recipients.forEach((recipient) => {
-        if (recipient) {
-          newtx.addTo(recipient);
-        }
-      });
-    }
-
-    newtx.msg.module = "Stun";
-    newtx.msg.request = "stun-send-game-call-message";
-    newtx.msg.data = _data;
-    newtx.msg.data.module = "Stun";
-    await newtx.sign();
-
-    this.app.connection.emit("relay-transaction", newtx);
-    this.app.network.propagateTransaction(newtx);
-  }
-
-  async receiveGameCallMessageToPeers(app, tx) {
-    let txmsg = tx.returnMessage();
-    let data = tx.msg.data;
-
-    switch (data.type) {
-      case "connection-request":
-        let call_type = data.ui == "voice" ? "Voice" : "Video";
-        this.startRing();
-        let result = await sconfirm(`Accept Saito ${call_type} Call from ${data.sender}`);
-
-        if (result === true) {
-          // connect
-          // send to sender and inform
-          let _data = {
-            type: "connection-accepted",
-            room_code: data.room_code,
-            sender: app.wallet.publicKey,
-            timestamp: Date.now(),
-            ui: data.ui,
-          };
-
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
-
-          this.room_obj = {
-              room_code: data.room_code,
-              host_public_key: this.publicKey,
-            };
-
-          setTimeout(() => {
-            app.connection.emit("start-stun-call");
-          }, 2000);
-        } else {
-          //send to sender to stop connection
-          let _data = {
-            type: "connection-rejected",
-            room_code: data.room_code,
-            sender: app.wallet.publicKey,
-            timestamp: Date.now(),
-          };
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
-        }
-        this.stopRing();
-        // console.log(result);
-        break;
-
-      case "connection-accepted":
-        console.log("connection accepted");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
-
-        siteMessage(`${data.sender} accepted your call`, 2000);
-
-        if (this.dialing) {
-          clearTimeout(this.dialing);
-          this.dialing = null;
-        }
-
-        this.room_obj = {
-          room_code: data.room_code,
-          host_public_key: tx.from[0].publicKey,
-        };
-
-        this.app.connection.emit("start-stun-call");
-
-        break;
-      case "connection-rejected":
-        console.log("connection rejected");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
-
-        salert(`Call rejected by ${data.sender}`);
-        break;
-      case "cancel-connection-request":
-        // console.log("connection rejected");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
-
-        // salert(`Call cancelled by ${data.sender}`);
-        break;
-
-      default:
-        break;
-    }
-  }
 
   async sendCallEntryTransaction(public_key = "") {
 

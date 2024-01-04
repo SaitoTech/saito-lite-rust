@@ -1,10 +1,10 @@
 const CallSettingTemplate = require("./call-setting.template");
 
 /**
- * 
+ *
  * This is the part of the splash screen where you can check your camera
  * and mute your self before creating or joining a meeting
- * 
+ *
  * There are (currently disabled) functions to test your mic by recording a brief message
  */
 
@@ -22,8 +22,8 @@ class CallSetting {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-  
-    app.connection.on("close-preview-window", ()=>{
+
+    app.connection.on("close-preview-window", () => {
       if (this.audioStream) {
         this.audioStream.getTracks().forEach((track) => {
           track.stop();
@@ -66,71 +66,78 @@ class CallSetting {
     let audioProgress = document.getElementById("audio-progress");
     let togglePlayback = document.getElementById("toggle-playback");
 
-    testMicButton.addEventListener("click", () =>
-      this.testMicrophone(testMicButton, audioProgress)
-    );
+    if (testMicButton) {
+      testMicButton.addEventListener("click", () =>
+        this.testMicrophone(testMicButton, audioProgress)
+      );
+    }
 
-    toggleVideoButton.addEventListener("click", () => {
-      if(!this.videoStream) return;
-      if (this.videoEnabled) {
-        this.videoStream.getVideoTracks()[0].enabled = false;
-        toggleVideoButton.classList.remove("fa-video");
-        toggleVideoButton.classList.add("fa-video-slash");
-      } else {
-        this.videoStream.getVideoTracks()[0].enabled = true;
-        toggleVideoButton.classList.remove("fa-video-slash");
-        toggleVideoButton.classList.add("fa-video");
-      }
+    if (toggleVideoButton) {
+      toggleVideoButton.addEventListener("click", () => {
+        if (!this.videoStream) return;
+        if (this.videoEnabled) {
+          this.videoStream.getVideoTracks()[0].enabled = false;
+          toggleVideoButton.classList.remove("fa-video");
+          toggleVideoButton.classList.add("fa-video-slash");
+        } else {
+          this.videoStream.getVideoTracks()[0].enabled = true;
+          toggleVideoButton.classList.remove("fa-video-slash");
+          toggleVideoButton.classList.add("fa-video");
+        }
 
-      this.videoEnabled = !this.videoEnabled;
-      const notification = this.videoEnabled ? "Video enabled" : "Video disabled";
-      siteMessage(notification, 3000);
+        this.videoEnabled = !this.videoEnabled;
+        const notification = this.videoEnabled ? "Video enabled" : "Video disabled";
+        siteMessage(notification, 3000);
 
-      app.connection.emit("update-media-preference", "video", this.videoEnabled);
-    });
+        app.connection.emit("update-media-preference", "video", this.videoEnabled);
+      });
+    }
 
-    toggleAudioButton.addEventListener("click", () => {
-      if (this.audioEnabled) {
-        this.audioStream.getAudioTracks()[0].enabled = false;
-        toggleAudioButton.classList.remove("fa-microphone");
-        toggleAudioButton.classList.add("fa-microphone-slash");
-      } else {
-        this.audioStream.getAudioTracks()[0].enabled = true;
-        toggleAudioButton.classList.remove("fa-microphone-slash");
-        toggleAudioButton.classList.add("fa-microphone");
-      }
-      this.audioEnabled = !this.audioEnabled;
-      const notification = this.audioEnabled ? "Audio enabled" : "Audio disabled";
-      siteMessage(notification, 3000);
-      app.connection.emit("update-media-preference", "audio", this.audioEnabled);
-    });
+    if (toggleAudioButton) {
+      toggleAudioButton.addEventListener("click", () => {
+        if (this.audioEnabled) {
+          this.audioStream.getAudioTracks()[0].enabled = false;
+          toggleAudioButton.classList.remove("fa-microphone");
+          toggleAudioButton.classList.add("fa-microphone-slash");
+        } else {
+          this.audioStream.getAudioTracks()[0].enabled = true;
+          toggleAudioButton.classList.remove("fa-microphone-slash");
+          toggleAudioButton.classList.add("fa-microphone");
+        }
+        this.audioEnabled = !this.audioEnabled;
+        const notification = this.audioEnabled ? "Audio enabled" : "Audio disabled";
+        siteMessage(notification, 3000);
+        app.connection.emit("update-media-preference", "audio", this.audioEnabled);
+      });
+    }
 
     this.videoInput.addEventListener("change", () => this.updateMedia("video", videoElement));
     this.audioInput.addEventListener("change", () => this.updateMedia("audio", videoElement));
 
-    togglePlayback.addEventListener("click", () => {
-      const iconElement = document.getElementById("toggle-playback");
+    if (togglePlayback){
+      togglePlayback.addEventListener("click", () => {
+        const iconElement = document.getElementById("toggle-playback");
 
-      if (iconElement.classList.contains("fa-play")) {
-        iconElement.classList.remove("fa-play");
-        iconElement.classList.add("fa-pause");
+        if (iconElement.classList.contains("fa-play")) {
+          iconElement.classList.remove("fa-play");
+          iconElement.classList.add("fa-pause");
 
-        if (this.recordedAudio) {
-          this.recordedAudio.play();
-          this.updateAudioProgress(audioProgress);
+          if (this.recordedAudio) {
+            this.recordedAudio.play();
+            this.updateAudioProgress(audioProgress);
+          }
+        } else {
+          iconElement.classList.remove("fa-pause");
+          iconElement.classList.add("fa-play");
+          if (this.recordedAudio) {
+            this.recordedAudio.pause();
+          }
         }
-      } else {
-        iconElement.classList.remove("fa-pause");
-        iconElement.classList.add("fa-play");
-        if (this.recordedAudio) {
-          this.recordedAudio.pause();
-        }
-      }
-    });
+      });
+    }
 
     this.getUserMedia(videoElement);
   }
-
 
   async getUserMedia(videoElement) {
     try {
@@ -139,14 +146,14 @@ class CallSetting {
       console.error("Error accessing media devices.", error);
       salert("Error access media devices, please check your permissions");
     }
-    
+
     try {
       this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoElement.srcObject = this.videoStream;
-      this.videoEnabled = true
+      this.videoEnabled = true;
     } catch (error) {
       this.videoStream = null;
-      this.videoEnabled = false
+      this.videoEnabled = false;
       salert("Error access camera, using audio only mode ");
     }
     this.app.connection.emit("update-media-preference", "video", this.videoEnabled);
@@ -173,11 +180,11 @@ class CallSetting {
       kind === "video"
         ? { video: { deviceId: this.videoInput.value } }
         : { audio: { deviceId: this.audioInput.value } };
-        
+
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
     if (kind === "video") {
-      if(!this.videoStream ) return
+      if (!this.videoStream) return;
       this.videoStream.getVideoTracks()[0].stop();
       this.videoStream = stream;
       videoElement.srcObject = this.videoStream;
@@ -243,4 +250,3 @@ class CallSetting {
 }
 
 module.exports = CallSetting;
-
