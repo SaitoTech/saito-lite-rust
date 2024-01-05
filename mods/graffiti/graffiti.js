@@ -17,7 +17,7 @@ class Graffiti extends ModTemplate {
     this.name = "Graffiti";
     this.slug = "graffiti";
 
-    this.gridWidth  = 175;
+    this.gridWidth  = 200;
     this.gridHeight = 100;
     this.blankTileColor = "#ffffff";
     this.txOrderPrecision = 6;

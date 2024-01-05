@@ -16,6 +16,11 @@ class GraffitiUI {
     this.hourglassHeightRatio = 0.5;
     this.actionsPerSecond = 10;
 
+    this.foregroundLeftMarginRatio   = 0.00;
+    this.foregroundRightMarginRatio  = 0.00;
+    this.foregroundTopMarginRatio    = 0.08;
+    this.foregroundBottomMarginRatio = 0.14;
+
     this.draggable = false;
     this.zoomable  = false;
 
@@ -32,13 +37,18 @@ class GraffitiUI {
   }
 
   renderForeground() {
-    this.foreground_widthHeight_ratio = this.gridWidth / this.gridHeight;
-    this.wholeView_foregroundApparentWidth
-      = Math.min(window.innerWidth, window.innerHeight * this.foreground_widthHeight_ratio);
-    this.wholeView_foregroundApparentHeight
-      = Math.min(window.innerHeight, window.innerWidth / this.foreground_widthHeight_ratio);
+    this.foregroundMaxWidth  = (1 - this.foregroundLeftMarginRatio - this.foregroundRightMarginRatio) * window.innerWidth;
+    this.foregroundMaxHeight = (1 - this.foregroundTopMarginRatio - this.foregroundBottomMarginRatio) * window.innerHeight;
+    this.foregroundLeftMargin = this.foregroundLeftMarginRatio * window.innerWidth;
+    this.foregroundTopMargin  = this.foregroundTopMarginRatio  * window.innerHeight;
 
-    this.minScale = this.wholeView_foregroundApparentWidth / this.gridWidth;
+    this.foregroundWidth  = Math.min(this.foregroundMaxWidth, this.foregroundMaxHeight * this.gridWidth / this.gridHeight);
+    this.foregroundHeight = Math.min(this.foregroundMaxHeight, this.foregroundMaxWidth * this.gridHeight / this.gridWidth);
+    this.foregroundLeft = this.foregroundLeftMargin + (this.foregroundMaxWidth  - this.foregroundWidth)  / 2;
+    this.foregroundTop  = this.foregroundTopMargin  + (this.foregroundMaxHeight - this.foregroundHeight) / 2;
+
+
+    this.minScale = this.foregroundWidth / this.gridWidth;
     this.currentScale = this.minScale;
 
     
@@ -47,8 +57,6 @@ class GraffitiUI {
     this.gridRenderingWidth  = this.gridWidth  * this.maxScale;
     this.gridRenderingHeight = this.gridHeight * this.maxScale;
 
-    this.foregroundLeft = (window.innerWidth  - this.wholeView_foregroundApparentWidth)  / 2;
-    this.foregroundTop  = (window.innerHeight - this.wholeView_foregroundApparentHeight) / 2;
     this.gridApparentLeft = this.foregroundLeft;
     this.gridApparentTop  = this.foregroundTop;
     this.gridRenderingLeft = this.gridApparentLeft - (this.gridRenderingWidth  - this.gridApparentWidth)  / 2;
