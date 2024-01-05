@@ -163,10 +163,8 @@ class Graffiti extends ModTemplate {
   webServer(app, expressapp, express) {
     this.webdir = path.normalize(`${__dirname}/../../mods/${this.dirname}/web`);
 
-    this.handleSnapshots();
-
     expressapp.get("/" + encodeURI(this.slug), (req, res) => {
-      const lastSnapshotPath = (this.lastSnapshotFileName !== null) ?
+      const lastSnapshotPath = (this.lastSnapshotFileName != undefined) ?
         `${this.snapshotsDirSubpath}/${this.lastSnapshotFileName}` : null;
 
       res.setHeader("Content-type", "text/html");
