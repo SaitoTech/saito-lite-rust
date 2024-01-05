@@ -12,8 +12,8 @@ class GraffitiUI {
 
     this.maxScale = 15;
     this.zoomAbsoluteFactor = Math.sqrt(Math.sqrt(2));
-    this.markSizeRatio = 0.1;
-    this.hourglassHeightRatio = 0.5;
+    this.markSizeRatio = 0.15;
+    this.hourglassHeightRatio = 0.6;
     this.actionsPerSecond = 10;
 
     this.foregroundLeftMarginRatio   = 0.00;
