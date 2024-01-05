@@ -39,22 +39,22 @@ class GraffitiUI {
     this.wholeView_foregroundApparentHeight
       = Math.min(window.innerHeight, window.innerWidth / this.foreground_widthHeight_ratio);
 
-    this.wholeView_gridApparentWidth  = this.wholeView_foregroundApparentWidth;
-    this.wholeView_gridApparentHeight = this.wholeView_foregroundApparentHeight;
-
-    this.minScale = this.wholeView_gridApparentWidth / this.gridWidth;
+    this.minScale = this.wholeView_foregroundApparentWidth / this.gridWidth;
     this.currentScale = this.minScale;
 
+    
+    this.gridApparentWidth   = this.gridWidth  * this.currentScale;
+    this.gridApparentHeight  = this.gridHeight * this.currentScale;
     this.gridRenderingWidth  = this.gridWidth  * this.maxScale;
     this.gridRenderingHeight = this.gridHeight * this.maxScale;
-    this.gridApparentLeft = (window.innerWidth  - this.wholeView_gridApparentWidth)  / 2;
-    this.gridApparentTop  = (window.innerHeight - this.wholeView_gridApparentHeight) / 2;
 
-    this.gridApparentWidth  = this.gridWidth  * this.currentScale;
-    this.gridApparentHeight = this.gridHeight * this.currentScale;
+    this.foregroundLeft = (window.innerWidth  - this.wholeView_foregroundApparentWidth)  / 2;
+    this.foregroundTop  = (window.innerHeight - this.wholeView_foregroundApparentHeight) / 2;
+    this.gridApparentLeft = this.foregroundLeft;
+    this.gridApparentTop  = this.foregroundTop;
+    this.gridRenderingLeft = this.gridApparentLeft - (this.gridRenderingWidth  - this.gridApparentWidth)  / 2;
+    this.gridRenderingTop  = this.gridApparentTop  - (this.gridRenderingHeight - this.gridApparentHeight) / 2;
 
-    this.foregroundLeft = this.gridApparentLeft;
-    this.foregroundTop  = this.gridApparentTop;
 
     this.foreground = document.createElement("div");
     this.foreground.id = "foreground";
@@ -69,6 +69,9 @@ class GraffitiUI {
     this.foreground.appendChild(this.gridContainer);
     this.gridContainer.style.width  = `${this.gridRenderingWidth}px`;
     this.gridContainer.style.height = `${this.gridRenderingHeight}px`;
+    this.gridContainer.style.left = `${this.gridRenderingLeft - this.foregroundLeft}px`;
+    this.gridContainer.style.top  = `${this.gridRenderingTop  - this.foregroundTop}px`;
+    this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
 
     this.grid = document.createElement("canvas");
     this.grid.id = "grid";
@@ -80,13 +83,6 @@ class GraffitiUI {
     this.gridCtx.imageSmoothingEnabled = false;
     this.gridCtx.fillStyle = this.mod.blankTileColor;
     this.gridCtx.fillRect(0, 0, this.grid.width, this.grid.height);
-
-    this.gridRenderingLeft = this.gridApparentLeft - (this.gridRenderingWidth  - this.gridApparentWidth)  / 2;
-    this.gridRenderingTop  = this.gridApparentTop  - (this.gridRenderingHeight - this.gridApparentHeight) / 2;
-
-    this.gridContainer.style.left = `${this.gridRenderingLeft - this.foregroundLeft}px`;
-    this.gridContainer.style.top  = `${this.gridRenderingTop  - this.foregroundTop}px`;
-    this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
   }
 
   updateForegroundRendering() {
