@@ -123,13 +123,18 @@ class GraffitiUI {
   }
 
   renderButtons() {
-    this.cancelButton  = document.createElement("button");
-    this.undoButton    = document.createElement("button");
     this.colorButton   = document.createElement("button");
-    this.redoButton    = document.createElement("button");
+    this.cancelButton  = document.createElement("button");
     this.confirmButton = document.createElement("button");
+    this.undoButton    = document.createElement("button");
+    this.redoButton    = document.createElement("button");
 
     this.colorButton.id = "colorButton";
+
+    this.cancelButton.title  = "Erase the draft";
+    this.confirmButton.title = "Submit";
+    this.undoButton.title    = "Undo";
+    this.redoButton.title    = "Redo";
 
     this.buttons = [this.cancelButton, this.undoButton, this.colorButton, this.redoButton, this.confirmButton];
     for (const button of this.buttons) {
@@ -166,6 +171,7 @@ class GraffitiUI {
   renderColorPicker() {
     this.colorPickerButton = document.createElement("label");
     this.colorPickerButton.id = "colorPickerButton";
+    this.colorPickerButton.title = "Select color";
     this.colorPickerContainer.appendChild(this.colorPickerButton);
     this.colorPickerButton.htmlFor = "colorPickerInput";
     this.colorPickerButton.style.backgroundImage =
