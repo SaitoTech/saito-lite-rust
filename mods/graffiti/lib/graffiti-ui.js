@@ -26,7 +26,6 @@ class GraffitiUI {
   async render() {
     this.renderForeground();
     this.renderButtonElements();
-    this.setMode("paint");
     this.attachEventsToForeground();
     await this.loadBaseHourglass();
     this.attachEventsToButtonElements();
@@ -105,11 +104,10 @@ class GraffitiUI {
   }
 
   renderButtonContainers() {
-    this.viewModeButtonContainer  = document.createElement("div");
-    this.paintModeButtonContainer = document.createElement("div");
-    this.colorPickerContainer     = document.createElement("div");
+    this.allButtonsContainer  = document.createElement("div");
+    this.colorPickerContainer = document.createElement("div");
 
-    this.buttonContainers = [this.viewModeButtonContainer, this.paintModeButtonContainer, this.colorPickerContainer];
+    this.buttonContainers = [this.allButtonsContainer, this.colorPickerContainer];
     for (const buttonContainer of this.buttonContainers) {
       buttonContainer.classList.add("buttonContainer");
       document.body.appendChild(buttonContainer);
@@ -117,7 +115,6 @@ class GraffitiUI {
   }
 
   renderButtons() {
-    this.paintButton   = document.createElement("button");
     this.cancelButton  = document.createElement("button");
     this.undoButton    = document.createElement("button");
     this.colorButton   = document.createElement("button");
@@ -126,31 +123,15 @@ class GraffitiUI {
 
     this.colorButton.id = "colorButton";
 
-    this.buttons = [
-      this.paintButton, this.cancelButton, this.undoButton,
-      this.colorButton, this.redoButton, this.confirmButton
-    ];
+    this.buttons = [this.cancelButton, this.undoButton, this.colorButton, this.redoButton, this.confirmButton];
     for (const button of this.buttons) {
+      this.allButtonsContainer.appendChild(button);
       button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
-    }
-
-    this.viewModeButtons = [this.paintButton];
-    for (const button of this.viewModeButtons) {
-      this.viewModeButtonContainer.appendChild(button);
-    }
-    this.paintModeButtons = [this.cancelButton, this.undoButton, this.colorButton, this.redoButton, this.confirmButton];
-    for (const button of this.paintModeButtons) {
-      this.paintModeButtonContainer.appendChild(button);
     }
   }
 
   renderButtonImages() {
     const imageDir = `${this.slug}/img`;
-
-    this.paintButtonImage = document.createElement("img");
-    this.paintButton.appendChild(this.paintButtonImage);
-    this.paintButtonImage.src = `${imageDir}/brush-colors-mini.png`;
-    this.paintButtonImage.style = "width: 35px; height: 35px";
 
     this.cancelButtonImage = document.createElement("img");
     this.cancelButton.appendChild(this.cancelButtonImage);
@@ -236,7 +217,6 @@ class GraffitiUI {
   }
 
   attachFeatureEventsToButtonElements() {
-    this.paintButton.addEventListener("mouseup", () => { this.onMouseupOverPaintButton(); });
     this.cancelButton.addEventListener("mouseup", () => { this.onMouseupOverCancelButton(); });
     this.confirmButton.addEventListener("mouseup", () => { this.onMouseupOverConfirmButton(); });
 
@@ -281,13 +261,6 @@ class GraffitiUI {
     });
     this.redoButton.addEventListener("mouseup",    () => { clearInterval(redoIntervalId); });
     this.redoButton.addEventListener("mouseleave", () => { clearInterval(redoIntervalId); });
-  }
-
-  setMode(mode) {
-    this.mode = mode;
-    this.viewModeButtonContainer.style.display  = (this.mode === "view") ? "flex" : "none";
-    this.paintModeButtonContainer.style.display = (this.mode === "view") ? "none" : "flex";
-    this.colorPickerContainer.style.display     = (this.mode === "view") ? "none" : "flex";
   }
 
   updateScale(zoomFactor) {
@@ -356,7 +329,7 @@ class GraffitiUI {
       this.mousedown = true;
       const i = Math.floor((event.clientX - this.gridApparentLeft) / this.currentScale);
       const j = Math.floor((event.clientY - this.gridApparentTop)  / this.currentScale);
-      if (this.mode === "paint" && this.lastMousedownInsideGrid) {
+      if (this.lastMousedownInsideGrid) {
         this.actOnTile(i, j);
       }
       this.updateMousePosition(event, i, j);
@@ -367,7 +340,7 @@ class GraffitiUI {
     const i = Math.floor((event.clientX - this.gridApparentLeft) / this.currentScale);
     const j = Math.floor((event.clientY - this.gridApparentTop)  / this.currentScale);
     if (this.mousedown) {
-      if (this.mode == "view" || !this.lastMousedownInsideGrid) {
+      if (!this.lastMousedownInsideGrid) {
         if (this.draggable) {
           this.moveForeground(event);
         }
@@ -385,13 +358,7 @@ class GraffitiUI {
   }
 
   onContextMenuOverForeground(event) {
-    if (this.mode === "paint") {
-      event.preventDefault();
-    }
-  }
-
-  onMouseupOverPaintButton() {
-    this.setMode("paint");
+    event.preventDefault();
   }
 
   onMouseupOverCancelButton() {
