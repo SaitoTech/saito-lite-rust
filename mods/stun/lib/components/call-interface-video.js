@@ -26,28 +26,25 @@ class CallInterfaceVideo {
     this.loader = new SaitoLoader(app, mod);
     this.public_key = mod.publicKey;
 
-    this.app.connection.on(
-      "show-call-interface",
-      async (videoEnabled, audioEnabled) => {
-        console.log("Render Video Call Interface");
-        //This will render the (full-screen) component
-        if (!document.querySelector(".stun-chatbox")) {
-          this.render(videoEnabled, audioEnabled);
-        }
-
-        this.room_link = this.createRoomLink();
-
-        /* automatically copy invite link to clipboard for first user */
-        console.log(this.users_on_call);
-
-        if (this.users_on_call == 1) {
-          this.copyInviteLink();
-        }
-
-        // create chat group
-        await this.createRoomTextChat();
+    this.app.connection.on("show-call-interface", async (videoEnabled, audioEnabled) => {
+      console.log("Render Video Call Interface");
+      //This will render the (full-screen) component
+      if (!document.querySelector(".stun-chatbox")) {
+        this.render(videoEnabled, audioEnabled);
       }
-    );
+
+      this.room_link = this.createRoomLink();
+
+      /* automatically copy invite link to clipboard for first user */
+      console.log(this.users_on_call);
+
+      if (this.users_on_call == 1) {
+        this.copyInviteLink();
+      }
+
+      // create chat group
+      await this.createRoomTextChat();
+    });
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
       this.addLocalStream(localStream);
@@ -254,7 +251,7 @@ class CallInterfaceVideo {
         this.videocall_settings.render();
       };
     });
-    
+
     document.querySelectorAll(".video-control").forEach((item) => {
       item.onclick = () => {
         this.toggleVideo();
@@ -329,7 +326,9 @@ class CallInterfaceVideo {
     let base64obj = this.app.crypto.stringToBase64(JSON.stringify(this.mod.room_obj));
 
     let url1 = window.location.origin + "/videocall/";
-    window.history.pushState({}, document.title, `${url1}?stun_video_chat=${base64obj}`);
+    window.history.pushState({}, "", `${url1}?stun_video_chat=${base64obj}`);
+    this.old_title = document.title;
+    document.title = "Saito Talk";
 
     return `${url1}?stun_video_chat=${base64obj}`;
   }
@@ -347,14 +346,29 @@ class CallInterfaceVideo {
     this.app.connection.emit("stun-disconnect");
     this.video_boxes = {};
 
-    let homeModule = this.app.options?.homeModule || "Stun";
-    let mod = this.app.modules.returnModuleByName(homeModule);
-    let slug = mod?.returnSlug() || "videocall";
-    let url = "/" + slug;
-    
-    setTimeout(() => {
-      window.location.href = url;
-    }, 2000);
+    if (this.mod.browser_active) {
+      let homeModule = this.app.options?.homeModule || "Stun";
+      let mod = this.app.modules.returnModuleByName(homeModule);
+      let slug = mod?.returnSlug() || "videocall";
+      let url = "/" + slug;
+
+      setTimeout(() => {
+        window.location.href = url;
+      }, 2000);
+    } else {
+
+      //
+      // Hopefully we don't have to reload the page on the end of a stun call
+      // But keep on eye on this for errors and make sure all the components shut themselves down properly
+      //
+
+      if (document.getElementById("stun-chatbox")) {
+        document.getElementById("stun-chatbox").remove();
+        let am = this.app.modules.returnActiveModule();
+        window.history.pushState({}, "", window.location.origin + "/" + am.returnSlug());
+        document.title = this.old_title;
+      }
+    }
   }
 
   addRemoteStream(peer, remoteStream) {
