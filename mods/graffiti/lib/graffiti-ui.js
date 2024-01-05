@@ -57,31 +57,24 @@ class GraffitiUI {
     this.foregroundTop  = this.gridApparentTop;
 
     this.foreground = document.createElement("div");
+    this.foreground.id = "foreground";
     document.body.appendChild(this.foreground);
     this.foreground.style.width  = `${this.gridApparentWidth}px`;
     this.foreground.style.height = `${this.gridApparentHeight}px`;
-    this.foreground.style.position = "absolute";
     this.foreground.style.left = `${this.foregroundLeft}px`;
     this.foreground.style.top  = `${this.foregroundTop}px`;
-    this.foreground.style.boxShadow    = "0 4px 8px rgba(0, 0, 0, 0.1)";
-    this.foreground.style.borderRadius = "4px";
-    this.foreground.style.border       = "1px solid #cccccc";
-    this.foreground.style.overflow     = "hidden";
-    
-    this.gridContainer = document.createElement("div");
-    this.foreground.appendChild(this.gridContainer);
 
+    this.gridContainer = document.createElement("div");
+    this.gridContainer.id = "gridContainer";
+    this.foreground.appendChild(this.gridContainer);
     this.gridContainer.style.width  = `${this.gridRenderingWidth}px`;
     this.gridContainer.style.height = `${this.gridRenderingHeight}px`;
-    this.gridContainer.style.position = "absolute";
 
     this.grid = document.createElement("canvas");
+    this.grid.id = "grid";
     this.gridContainer.appendChild(this.grid);
     this.grid.width  = this.gridRenderingWidth;
     this.grid.height = this.gridRenderingHeight;
-    this.grid.style.position = "absolute";
-    this.grid.style.left = "0px";
-    this.grid.style.top  = "0px";
 
     this.gridCtx = this.grid.getContext("2d");
     this.gridCtx.imageSmoothingEnabled = false;
@@ -120,18 +113,10 @@ class GraffitiUI {
     this.paintModeButtonContainer = document.createElement("div");
     this.colorPickerContainer     = document.createElement("div");
 
-    this.buttonContainers = [
-      this.viewModeButtonContainer,
-      this.paintModeButtonContainer,
-      this.colorPickerContainer
-    ];
+    this.buttonContainers = [this.viewModeButtonContainer, this.paintModeButtonContainer, this.colorPickerContainer];
     for (const buttonContainer of this.buttonContainers) {
+      buttonContainer.classList.add("buttonContainer");
       document.body.appendChild(buttonContainer);
-      buttonContainer.style.position = "absolute";
-      buttonContainer.style.left   = "50%";
-      buttonContainer.style.bottom = "0px";
-      buttonContainer.style.transform = "translateX(-50%)";
-      buttonContainer.style.justifyContent = "space-between";
     }
   }
 
@@ -143,93 +128,66 @@ class GraffitiUI {
     this.redoButton    = document.createElement("button");
     this.confirmButton = document.createElement("button");
 
+    this.colorButton.id = "colorButton";
+
     this.buttons = [
       this.paintButton, this.cancelButton, this.undoButton,
       this.colorButton, this.redoButton, this.confirmButton
     ];
     for (const button of this.buttons) {
-      button.style.margin = "15px 10px";
-      button.style.width  = "65px";
-      button.style.height = "65px";
-      button.style.border = "0";
-      button.style.borderRadius = "50%";
-      button.style.backgroundImage =
-        `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
-      button.style.backgroundRepeat = "no-repeat";
-      button.style.backgroundPosition = "center";
-      button.style.boxShadow = "0px 6px 3px 0px rgba(0, 0, 0, 0.5)";
-      button.style.padding = "0rem 0rem";
-      button.style.minWidth = "0rem";
-      button.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
-      button.style.cursor = "auto";
+      button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
     }
-    this.colorButton.style.boxShadow = "0px 6px 3px 0px rgba(0, 0, 0, 0)";
 
     this.viewModeButtons = [this.paintButton];
     for (const button of this.viewModeButtons) {
       this.viewModeButtonContainer.appendChild(button);
     }
-    this.paintModeButtons = [
-      this.cancelButton, this.undoButton, this.colorButton, this.redoButton, this.confirmButton
-    ];
+    this.paintModeButtons = [this.cancelButton, this.undoButton, this.colorButton, this.redoButton, this.confirmButton];
     for (const button of this.paintModeButtons) {
       this.paintModeButtonContainer.appendChild(button);
     }
   }
 
   renderButtonImages() {
+    const imageDir = `${this.slug}/img`;
+
     this.paintButtonImage = document.createElement("img");
     this.paintButton.appendChild(this.paintButtonImage);
-    this.paintButtonImage.src = `${this.slug}/img/brush-colors-mini.png`;
+    this.paintButtonImage.src = `${imageDir}/brush-colors-mini.png`;
     this.paintButtonImage.style = "width: 35px; height: 35px";
 
     this.cancelButtonImage = document.createElement("img");
     this.cancelButton.appendChild(this.cancelButtonImage);
-    this.cancelButtonImage.src = `${this.slug}/img/cancel-mini.png`;
+    this.cancelButtonImage.src = `${imageDir}/cancel-mini.png`;
     this.cancelButtonImage.style = "width: 25px; height: 21px";
 
     this.undoButtonImage = document.createElement("img");
     this.undoButton.appendChild(this.undoButtonImage);
-    this.undoButtonImage.src = `${this.slug}/img/undo-mini.png`;
+    this.undoButtonImage.src = `${imageDir}/undo-mini.png`;
     this.undoButtonImage.style = "width: 40px; height: 34px";
 
     this.redoButtonImage = document.createElement("img");
     this.redoButton.appendChild(this.redoButtonImage);
-    this.redoButtonImage.src = `${this.slug}/img/redo-mini.png`;
+    this.redoButtonImage.src = `${imageDir}/redo-mini.png`;
     this.redoButtonImage.style = "width: 40px; height: 34px";
 
     this.confirmButtonImage = document.createElement("img");
     this.confirmButton.appendChild(this.confirmButtonImage);
-    this.confirmButtonImage.src = `${this.slug}/img/confirm-mini.png`;
+    this.confirmButtonImage.src = `${imageDir}/confirm-mini.png`;
     this.confirmButtonImage.style = "width: 25px; height: 21px";
   }
 
   renderColorPicker() {
     this.colorPickerButton = document.createElement("label");
+    this.colorPickerButton.id = "colorPickerButton";
     this.colorPickerContainer.appendChild(this.colorPickerButton);
-    this.colorPickerButton.htmlFor = "color-picker-input";
-    this.colorPickerButton.style.margin = "15px";
-    this.colorPickerButton.style.right  = "0px";
-    this.colorPickerButton.style.bottom = "0px";
-    this.colorPickerButton.style.width  = "65px";
-    this.colorPickerButton.style.height = "65px";
-    this.colorPickerButton.style.borderRadius = "50%";
+    this.colorPickerButton.htmlFor = "colorPickerInput";
     this.colorPickerButton.style.backgroundImage =
       `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
-    this.colorPickerButton.style.backgroundRepeat = "no-repeat";
-    this.colorPickerButton.style.backgroundPosition = "center";
-    this.colorPickerButton.style.boxShadow = "0px 6px 3px 0px rgba(0, 0, 0, 0.5)";
 
     this.selectedColor = document.createElement("div");
+    this.selectedColor.id = "selectedColor";
     this.colorPickerButton.appendChild(this.selectedColor);
-    this.selectedColor.style.position = "absolute";
-    this.selectedColor.style.left = "50%";
-    this.selectedColor.style.top = "50%";
-    this.selectedColor.style.width = "40px";
-    this.selectedColor.style.height = "40px";
-    this.selectedColor.style.transform = "translate(-50%, -50%)";
-    this.selectedColor.style.borderRadius = "50%";
-    this.selectedColor.style.background = "#000000";
   }
 
   attachEventsToForeground() {
@@ -258,16 +216,13 @@ class GraffitiUI {
     for (const button of this.buttons) {
       button.style.cursor = "pointer";
       button.addEventListener("mousedown", () => {
-        button.style.backgroundImage =
-          `linear-gradient(to bottom, ${this.buttonShadowColor}, ${this.buttonLightColor})`;
+        button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonShadowColor}, ${this.buttonLightColor})`;
       });
       button.addEventListener("mouseup", () => {
-        button.style.backgroundImage =
-          `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
+        button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
       });
       button.addEventListener("mouseleave", () => {
-        button.style.backgroundImage =
-          `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
+        button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
       });
     }
     this.colorPickerButton.style.cursor = "pointer";
@@ -277,11 +232,7 @@ class GraffitiUI {
     this.colorPickerInput = document.createElement("input");
     this.colorPickerContainer.appendChild(this.colorPickerInput);
     this.colorPickerInput.type = "color";
-    this.colorPickerInput.id = "color-picker-input";
-    this.colorPickerInput.style.position = "absolute";
-    this.colorPickerInput.style.left = "0px";
-    this.colorPickerInput.style.top  = "0px";
-    this.colorPickerInput.style.display = "none";
+    this.colorPickerInput.id = "colorPickerInput";
 
     this.colorPickerInput.addEventListener("input", () => {
       this.selectedColor.style.background = this.colorPickerInput.value;
