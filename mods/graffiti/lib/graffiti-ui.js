@@ -10,7 +10,6 @@ class GraffitiUI {
     this.gridHeight = this.mod.gridHeight;
     this.gridState  = this.mod.gridState;
 
-    this.gridToFrameMinRatio = 10;
     this.maxScale = 15;
     this.zoomAbsoluteFactor = Math.sqrt(Math.sqrt(2));
     this.markSizeRatio = 0.1;
@@ -25,11 +24,7 @@ class GraffitiUI {
   }
 
   async render() {
-    document.body.style.margin = "0";
-
-    this.renderBackground();
     this.renderForeground();
-    this.attachEventsToWindow();
     this.renderButtonElements();
     this.setMode("paint");
     this.attachEventsToForeground();
@@ -37,60 +32,42 @@ class GraffitiUI {
     this.attachEventsToButtonElements();
   }
 
-  renderBackground() {
-    this.background = document.createElement("img");
-    document.body.appendChild(this.background);
-    this.background.src = `${this.slug}/img/wood-background.jpg`;
-    this.background.style.width  = "100vw";
-    this.background.style.height = "100vh";
-    this.background.style.position = "absolute";
-    this.background.style.left = "0px";
-    this.background.style.top  = "0px";
-  }
-
-  renderForeground() { // foreground = grid + frame
-    this.foreground = document.createElement("div");
-    document.body.appendChild(this.foreground);
-    this.foreground.style.width  = "100vw";
-    this.foreground.style.height = "100vh";
-    this.foreground.style.position = "absolute";
-    this.foreground.style.left = "0px";
-    this.foreground.style.top  = "0px";
-
-    this.frameThickness_tileApparentSize_ratio =
-      Math.min(this.gridWidth, this.gridHeight) / this.gridToFrameMinRatio;
-    this.foregroundWidth_foregroundHeight_ratio =
-        (this.gridWidth  + 2 * this.frameThickness_tileApparentSize_ratio)
-      / (this.gridHeight + 2 * this.frameThickness_tileApparentSize_ratio);
-
+  renderForeground() {
+    this.foreground_widthHeight_ratio = this.gridWidth / this.gridHeight;
     this.wholeView_foregroundApparentWidth
-      = Math.min(window.innerWidth, window.innerHeight * this.foregroundWidth_foregroundHeight_ratio);
+      = Math.min(window.innerWidth, window.innerHeight * this.foreground_widthHeight_ratio);
     this.wholeView_foregroundApparentHeight
-      = Math.min(window.innerHeight, window.innerWidth / this.foregroundWidth_foregroundHeight_ratio);
+      = Math.min(window.innerHeight, window.innerWidth / this.foreground_widthHeight_ratio);
 
-    this.frameThickness = Math.min(
-      this.wholeView_foregroundApparentWidth, this.wholeView_foregroundApparentHeight
-    ) / (this.gridToFrameMinRatio + 2);
-
-    this.wholeView_gridApparentWidth  = this.wholeView_foregroundApparentWidth  - 2 * this.frameThickness;
-    this.wholeView_gridApparentHeight = this.wholeView_foregroundApparentHeight - 2 * this.frameThickness;
+    this.wholeView_gridApparentWidth  = this.wholeView_foregroundApparentWidth;
+    this.wholeView_gridApparentHeight = this.wholeView_foregroundApparentHeight;
 
     this.minScale = this.wholeView_gridApparentWidth / this.gridWidth;
     this.currentScale = this.minScale;
 
     this.gridRenderingWidth  = this.gridWidth  * this.maxScale;
     this.gridRenderingHeight = this.gridHeight * this.maxScale;
-    this.gridApparentPosition = {
-      left: (window.innerWidth  - this.wholeView_gridApparentWidth)  / 2,
-      top:  (window.innerHeight - this.wholeView_gridApparentHeight) / 2
-    }
+    this.gridApparentLeft = (window.innerWidth  - this.wholeView_gridApparentWidth)  / 2;
+    this.gridApparentTop  = (window.innerHeight - this.wholeView_gridApparentHeight) / 2;
 
-    this.setForegroundRendering();
-    this.renderBlankGrid();
-    this.renderFrame();
-  }
+    this.gridApparentWidth  = this.gridWidth  * this.currentScale;
+    this.gridApparentHeight = this.gridHeight * this.currentScale;
 
-  renderBlankGrid() {
+    this.foregroundLeft = this.gridApparentLeft;
+    this.foregroundTop  = this.gridApparentTop;
+
+    this.foreground = document.createElement("div");
+    document.body.appendChild(this.foreground);
+    this.foreground.style.width  = `${this.gridApparentWidth}px`;
+    this.foreground.style.height = `${this.gridApparentHeight}px`;
+    this.foreground.style.position = "absolute";
+    this.foreground.style.left = `${this.foregroundLeft}px`;
+    this.foreground.style.top  = `${this.foregroundTop}px`;
+    this.foreground.style.boxShadow    = "0 4px 8px rgba(0, 0, 0, 0.1)";
+    this.foreground.style.borderRadius = "4px";
+    this.foreground.style.border       = "1px solid #cccccc";
+    this.foreground.style.overflow     = "hidden";
+    
     this.gridContainer = document.createElement("div");
     this.foreground.appendChild(this.gridContainer);
 
@@ -111,23 +88,24 @@ class GraffitiUI {
     this.gridCtx.fillStyle = this.mod.blankTileColor;
     this.gridCtx.fillRect(0, 0, this.grid.width, this.grid.height);
 
-    this.setGridRendering();
+    this.gridRenderingLeft = this.gridApparentLeft - (this.gridRenderingWidth  - this.gridApparentWidth)  / 2;
+    this.gridRenderingTop  = this.gridApparentTop  - (this.gridRenderingHeight - this.gridApparentHeight) / 2;
+
+    this.gridContainer.style.left = `${this.gridRenderingLeft - this.foregroundLeft}px`;
+    this.gridContainer.style.top  = `${this.gridRenderingTop  - this.foregroundTop}px`;
+    this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
   }
 
-  renderFrame() {
-    this.frameImage = document.createElement("img");
-    this.frameImage.src = `${this.slug}/img/frame.jpg`;
+  updateForegroundRendering() {
+    this.gridApparentWidth  = this.gridWidth  * this.currentScale;
+    this.gridApparentHeight = this.gridHeight * this.currentScale;
 
-    this.frame = document.createElement("canvas");
-    this.foreground.appendChild(this.frame);
-    this.frame.style.position = "absolute";
+    this.gridRenderingLeft = this.gridApparentLeft - (this.gridRenderingWidth  - this.gridApparentWidth)  / 2;
+    this.gridRenderingTop  = this.gridApparentTop  - (this.gridRenderingHeight - this.gridApparentHeight) / 2;
 
-    this.frameCtx = this.frame.getContext("2d");
-    this.frameCtx.imageSmoothingEnabled = false;
-
-    this.frameImage.onload = () => {
-      this.setFrameRendering();
-    };
+    this.gridContainer.style.left = `${this.gridRenderingLeft - this.foregroundLeft}px`;
+    this.gridContainer.style.top  = `${this.gridRenderingTop  - this.foregroundTop}px`;
+    this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
   }
 
   renderButtonElements() {
@@ -254,12 +232,6 @@ class GraffitiUI {
     this.selectedColor.style.background = "#000000";
   }
 
-  attachEventsToWindow() {
-    window.addEventListener("resize", () => {
-      this.updateFrameRendering();
-    });
-  }
-
   attachEventsToForeground() {
     this.mousePosition = {x: null, y: null, i: null, j: null};
     this.mousedown = false;
@@ -371,206 +343,6 @@ class GraffitiUI {
     this.colorPickerContainer.style.display     = (this.mode === "view") ? "none" : "flex";
   }
 
-  setFrameRendering() {
-    this.frame.width  = window.innerWidth;
-    this.frame.height = window.innerHeight;
-    this.frameCtx.clearRect(0, 0, this.frame.width, this.frame.height);
-
-    const srcThickness = 100;
-    const dstThickness = this.frameThickness;
-
-    const leftEdge = {src: {}, dst: {}};
-    leftEdge.dst.left   = this.gridApparentPosition.left - dstThickness + 1;
-    leftEdge.dst.top    = Math.max(0, this.gridApparentPosition.top - 1);
-    leftEdge.dst.bottom = Math.min(
-      window.innerHeight,
-      this.gridApparentPosition.top + this.gridApparentHeight + 1
-    );
-    leftEdge.dst.width  = dstThickness;
-    leftEdge.dst.height = leftEdge.dst.bottom - leftEdge.dst.top;
-    leftEdge.src.left   = 0;
-    leftEdge.src.top    = srcThickness;
-    leftEdge.src.width  = srcThickness;
-    leftEdge.src.height = leftEdge.dst.height * srcThickness / dstThickness;
-    if (this.gridApparentPosition.left > 0) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        leftEdge.src.left, leftEdge.src.top, leftEdge.src.width, leftEdge.src.height,
-        leftEdge.dst.left, leftEdge.dst.top, leftEdge.dst.width, leftEdge.dst.height
-      )
-    }
-
-    const rightEdge = {src: {}, dst: {}};
-    rightEdge.dst.left   = this.gridApparentPosition.left + this.gridApparentWidth - 1;
-    rightEdge.dst.top    = Math.max(0, this.gridApparentPosition.top - 1);
-    rightEdge.dst.bottom = Math.min(
-      window.innerHeight,
-      this.gridApparentPosition.top + this.gridApparentHeight + 1
-    );
-    rightEdge.dst.width  = dstThickness;
-    rightEdge.dst.height = rightEdge.dst.bottom - rightEdge.dst.top;
-    rightEdge.src.left   = this.frameImage.width - srcThickness;
-    rightEdge.src.top    = srcThickness;
-    rightEdge.src.width  = srcThickness;
-    rightEdge.src.height = rightEdge.dst.height * srcThickness / dstThickness;
-    if (this.gridApparentPosition.left + this.gridApparentWidth < window.innerWidth) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        rightEdge.src.left, rightEdge.src.top, rightEdge.src.width, rightEdge.src.height,
-        rightEdge.dst.left, rightEdge.dst.top, rightEdge.dst.width, rightEdge.dst.height
-      );
-    }
-
-    const topEdge = {src: {}, dst: {}};
-    topEdge.dst.left   = Math.max(0, this.gridApparentPosition.left - 1);
-    topEdge.dst.right  = Math.min(
-      window.innerWidth,
-      this.gridApparentPosition.left + this.gridApparentWidth + 1
-    );
-    topEdge.dst.top    = this.gridApparentPosition.top - dstThickness + 1;
-    topEdge.dst.width  = topEdge.dst.right - topEdge.dst.left;
-    topEdge.dst.height = dstThickness;
-    topEdge.src.left   = srcThickness;
-    topEdge.src.top    = 0;
-    topEdge.src.width  = topEdge.dst.width * srcThickness / dstThickness;
-    topEdge.src.height = srcThickness;
-    if (this.gridApparentPosition.top > 0) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        topEdge.src.left, topEdge.src.top, topEdge.src.width, topEdge.src.height,
-        topEdge.dst.left, topEdge.dst.top, topEdge.dst.width, topEdge.dst.height
-      );
-    }
-
-    const bottomEdge = {src: {}, dst: {}};
-    bottomEdge.dst.left   = Math.max(0, this.gridApparentPosition.left - 1);
-    bottomEdge.dst.right  = Math.min(
-      window.innerWidth, this.gridApparentPosition.left + this.gridApparentWidth + 1
-    );
-    bottomEdge.dst.top    = this.gridApparentPosition.top + this.gridApparentHeight - 1;
-    bottomEdge.dst.width  = bottomEdge.dst.right - bottomEdge.dst.left;
-    bottomEdge.dst.height = dstThickness;
-    bottomEdge.src.left   = srcThickness;
-    bottomEdge.src.top    = this.frameImage.height - srcThickness;
-    bottomEdge.src.width  = bottomEdge.dst.width * srcThickness / dstThickness;
-    bottomEdge.src.height = srcThickness;
-    if (this.gridApparentPosition.top + this.gridApparentHeight < window.innerHeight) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        bottomEdge.src.left, bottomEdge.src.top, bottomEdge.src.width, bottomEdge.src.height,
-        bottomEdge.dst.left, bottomEdge.dst.top, bottomEdge.dst.width, bottomEdge.dst.height
-      );
-    }
-
-    const leftTopCorner = {src: {}, dst: {}};
-    leftTopCorner.src.left   = 0;
-    leftTopCorner.src.top    = 0;
-    leftTopCorner.src.width  = srcThickness;
-    leftTopCorner.src.height = srcThickness;
-    leftTopCorner.dst.left   = this.gridApparentPosition.left - dstThickness + 1;
-    leftTopCorner.dst.top    = this.gridApparentPosition.top  - dstThickness + 1;
-    leftTopCorner.dst.width  = dstThickness;
-    leftTopCorner.dst.height = dstThickness;
-    if (this.gridApparentPosition.left > 0 && this.gridApparentPosition.top > 0) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        leftTopCorner.src.left, leftTopCorner.src.top,
-        leftTopCorner.src.width, leftTopCorner.src.height,
-        leftTopCorner.dst.left, leftTopCorner.dst.top,
-        leftTopCorner.dst.width, leftTopCorner.dst.height
-      )
-    }
-
-    const leftBottomCorner = {src: {}, dst: {}};
-    leftBottomCorner.src.left   = 0;
-    leftBottomCorner.src.top    = this.frameImage.height - srcThickness;
-    leftBottomCorner.src.width  = srcThickness;
-    leftBottomCorner.src.height = srcThickness;
-    leftBottomCorner.dst.left   = this.gridApparentPosition.left - dstThickness + 1;
-    leftBottomCorner.dst.top    = this.gridApparentPosition.top  + this.gridApparentHeight - 1;
-    leftBottomCorner.dst.width  = dstThickness;
-    leftBottomCorner.dst.height = dstThickness;
-    if (   this.gridApparentPosition.left > 0
-        && this.gridApparentPosition.top + this.gridApparentHeight < window.innerHeight) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        leftBottomCorner.src.left, leftBottomCorner.src.top,
-        leftBottomCorner.src.width, leftBottomCorner.src.height,
-        leftBottomCorner.dst.left, leftBottomCorner.dst.top,
-        leftBottomCorner.dst.width, leftBottomCorner.dst.height
-      )
-    }
-
-    const rightTopCorner = {src: {}, dst: {}};
-    rightTopCorner.src.left   = this.frameImage.width - srcThickness;
-    rightTopCorner.src.top    = 0;
-    rightTopCorner.src.width  = srcThickness;
-    rightTopCorner.src.height = srcThickness;
-    rightTopCorner.dst.left   = this.gridApparentPosition.left + this.gridApparentWidth - 1;
-    rightTopCorner.dst.top    = this.gridApparentPosition.top  - dstThickness + 1;
-    rightTopCorner.dst.width  = dstThickness;
-    rightTopCorner.dst.height = dstThickness;
-    if (   this.gridApparentPosition.left + this.gridApparentWidth < window.innerWidth
-        && this.gridApparentPosition.top > 0) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        rightTopCorner.src.left, rightTopCorner.src.top,
-        rightTopCorner.src.width, rightTopCorner.src.height,
-        rightTopCorner.dst.left, rightTopCorner.dst.top,
-        rightTopCorner.dst.width, rightTopCorner.dst.height
-      )
-    }
-
-    const rightBottomCorner = {src: {}, dst: {}};
-    rightBottomCorner.src.left   = this.frameImage.width  - srcThickness;
-    rightBottomCorner.src.top    = this.frameImage.height - srcThickness;
-    rightBottomCorner.src.width  = srcThickness;
-    rightBottomCorner.src.height = srcThickness;
-    rightBottomCorner.dst.left   = this.gridApparentPosition.left + this.gridApparentWidth - 1;
-    rightBottomCorner.dst.top    = this.gridApparentPosition.top  + this.gridApparentHeight - 1;
-    rightBottomCorner.dst.width  = dstThickness;
-    rightBottomCorner.dst.height = dstThickness;
-    if (   this.gridApparentPosition.left + this.gridApparentWidth  < window.innerWidth
-        && this.gridApparentPosition.top  + this.gridApparentHeight < window.innerHeight) {
-      this.frameCtx.drawImage(
-        this.frameImage,
-        rightBottomCorner.src.left, rightBottomCorner.src.top,
-        rightBottomCorner.src.width, rightBottomCorner.src.height,
-        rightBottomCorner.dst.left, rightBottomCorner.dst.top,
-        rightBottomCorner.dst.width, rightBottomCorner.dst.height
-      )
-    }
-  }
-
-  setForegroundRendering() { // variables common to grid and frame
-    this.gridApparentWidth  = this.gridWidth  * this.currentScale
-    this.gridApparentHeight = this.gridHeight * this.currentScale;
-  }
-
-  setGridRendering() {
-    const gridRenderingPosition = {
-      left: this.gridApparentPosition.left - (this.gridRenderingWidth  - this.gridApparentWidth)  / 2,
-      top:  this.gridApparentPosition.top  - (this.gridRenderingHeight - this.gridApparentHeight) / 2
-    };
-    this.gridContainer.style.left = `${gridRenderingPosition.left}px`;
-    this.gridContainer.style.top  = `${gridRenderingPosition.top}px`;
-    this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
-  }
-
-  updateForegroundRendering() {
-    this.setForegroundRendering();
-    this.updateGridRendering();
-    this.updateFrameRendering();
-  }
-
-  updateGridRendering() {
-    this.setGridRendering();
-  }
-
-  updateFrameRendering() {
-    this.setFrameRendering();
-  }
-
   updateScale(zoomFactor) {
     const newScale = this.currentScale * zoomFactor;
     if (newScale < this.minScale) {
@@ -624,8 +396,8 @@ class GraffitiUI {
       const zoomFactor = this.updateScale(
         (event.deltaY < 0) ? this.zoomAbsoluteFactor : 1 / this.zoomAbsoluteFactor
       );
-      this.gridApparentPosition.left = event.clientX + zoomFactor * (this.gridApparentPosition.left - event.clientX);
-      this.gridApparentPosition.top  = event.clientY + zoomFactor * (this.gridApparentPosition.top  - event.clientY);
+      this.gridApparentLeft = event.clientX + zoomFactor * (this.gridApparentLeft - event.clientX);
+      this.gridApparentTop  = event.clientY + zoomFactor * (this.gridApparentTop  - event.clientY);
       this.updateForegroundRendering();
     }
   }
@@ -635,8 +407,8 @@ class GraffitiUI {
     this.lastMousedownInsideGrid = this.isInsideGrid({x: event.clientX, y: event.clientY});
     if (this.lastMousedownButton === 0 || this.lastMousedownButton === 2) {
       this.mousedown = true;
-      const i = Math.floor((event.clientX - this.gridApparentPosition.left) / this.currentScale);
-      const j = Math.floor((event.clientY - this.gridApparentPosition.top)  / this.currentScale);
+      const i = Math.floor((event.clientX - this.gridApparentLeft) / this.currentScale);
+      const j = Math.floor((event.clientY - this.gridApparentTop)  / this.currentScale);
       if (this.mode === "paint" && this.lastMousedownInsideGrid) {
         this.actOnTile(i, j);
       }
@@ -645,8 +417,8 @@ class GraffitiUI {
   }
 
   onMousemoveOverForeground(event) {
-    const i = Math.floor((event.clientX - this.gridApparentPosition.left) / this.currentScale);
-    const j = Math.floor((event.clientY - this.gridApparentPosition.top)  / this.currentScale);
+    const i = Math.floor((event.clientX - this.gridApparentLeft) / this.currentScale);
+    const j = Math.floor((event.clientY - this.gridApparentTop)  / this.currentScale);
     if (this.mousedown) {
       if (this.mode == "view" || !this.lastMousedownInsideGrid) {
         if (this.draggable) {
@@ -696,25 +468,25 @@ class GraffitiUI {
   }
 
   moveForeground(event) {
-    this.gridApparentPosition.left += event.clientX - this.mousePosition.x;
-    this.gridApparentPosition.top  += event.clientY - this.mousePosition.y;
-    if (this.gridApparentPosition.left > window.innerWidth / 2) {
-      this.gridApparentPosition.left = window.innerWidth / 2;
-    } else if (this.gridApparentPosition.top > window.innerHeight / 2) {
-      this.gridApparentPosition.top  = window.innerHeight / 2;
-    } else if (this.gridApparentPosition.left < window.innerWidth / 2 - this.gridApparentWidth) {
-      this.gridApparentPosition.left = window.innerWidth / 2 - this.gridApparentWidth;
-    } else if (this.gridApparentPosition.top  < window.innerHeight / 2 - this.gridApparentHeight) {
-      this.gridApparentPosition.top  = window.innerHeight / 2 - this.gridApparentHeight;
+    this.gridApparentLeft += event.clientX - this.mousePosition.x;
+    this.gridApparentTop  += event.clientY - this.mousePosition.y;
+    if (this.gridApparentLeft > window.innerWidth / 2) {
+      this.gridApparentLeft = window.innerWidth / 2;
+    } else if (this.gridApparentTop > window.innerHeight / 2) {
+      this.gridApparentTop  = window.innerHeight / 2;
+    } else if (this.gridApparentLeft < window.innerWidth / 2 - this.gridApparentWidth) {
+      this.gridApparentLeft = window.innerWidth / 2 - this.gridApparentWidth;
+    } else if (this.gridApparentTop  < window.innerHeight / 2 - this.gridApparentHeight) {
+      this.gridApparentTop  = window.innerHeight / 2 - this.gridApparentHeight;
     }
     this.updateForegroundRendering();
   }
 
   isInsideGrid(position) {
-    return position.x >= this.gridApparentPosition.left
-        && position.x < this.gridApparentWidth + this.gridApparentPosition.left
-        && position.y >= this.gridApparentPosition.top
-        && position.y < this.gridApparentHeight + this.gridApparentPosition.top;
+    return position.x >= this.gridApparentLeft
+        && position.x < this.gridApparentWidth + this.gridApparentLeft
+        && position.y >= this.gridApparentTop
+        && position.y < this.gridApparentHeight + this.gridApparentTop;
   }
 
   actOnTile(i, j) {

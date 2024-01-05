@@ -41,7 +41,7 @@ module.exports = (app, slug, lastSnapshotPath) => {
     
         <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
         <link rel="stylesheet" type="text/css" href="/saito/game.css" />
-        <link rel="stylesheet" type="text/css" href="/graffiti/shepherd.css" />
+        <link rel="stylesheet" type="text/css" href="/graffiti/style.css" />
 
         <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
       </head>
