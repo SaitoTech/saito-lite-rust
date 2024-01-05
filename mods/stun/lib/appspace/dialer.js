@@ -16,13 +16,15 @@ class Dialer {
     this.overlay = new SaitoOverlay(app, mod);
     this.callSetting = new CallSetting(app, this);
     this.receiver = null;
-
   }
 
-  render(call_receiver) {
-    this.ring_sound = new Audio("/videocall/audio/ring.mp3");
-    this.overlay.show(DialerTemplate(this.app, this.mod), ()=> {
-      this.app.connection.emit("close-preview-window");
+  render(call_receiver, making_call = true) {
+    this.overlay.show(DialerTemplate(this.app, this.mod, making_call), () => {
+      if (making_call) {
+        this.app.connection.emit("close-preview-window");
+      } else {
+        this.stopRing();
+      }
     });
 
     if (!this.receiver) {
@@ -40,83 +42,130 @@ class Dialer {
     this.attachEvents();
   }
 
-
   attachEvents() {
     let video_switch = document.getElementById("video_call_switch");
     let call_button = document.getElementById("startcall");
 
-    let recipients = this.receiver.publicKey;
+    let recipient = this.receiver.publicKey;
 
-    if (!video_switch || !call_button) {
-      console.error("Component not rendered");
-      return;
-    }
-
-    this.activateOptions();
-
-    call_button.onclick = (e) => {
-      let data = Object.assign({}, this.mod.room_obj);
-
-      data.ui = video_switch.checked ? "video" : "voice";
-
-      this.app.connection.emit("relay-send-message", {
-        recipients,
-        request: "stun-connection-request",
-        data,
-      });
-      this.startRing();
-      this.updateMessage("Dialing...");
-      this.deactivateOptions();
-
-      this.dialing = setTimeout(() => {
-        this.app.connection.emit("relay-send-message", {
-          recipients,
-          request: "stun-cancel-connection-request",
-          data,
-        });
-        this.stopRing();
-        call_button.innerHTML = "Call";
-        this.updateMessage("No answer");
-        this.attachEvents();
-      }, 30000);
-
-      call_button.innerHTML = "Cancel";
+    if (video_switch && call_button) {
+      this.activateOptions();
 
       call_button.onclick = (e) => {
-        clearTimeout(this.dialing);
+
+        let data = Object.assign({}, this.mod.room_obj);
+
+        data.ui = video_switch.checked ? "video" : "voice";
+
         this.app.connection.emit("relay-send-message", {
-          recipients,
-          request: "stun-cancel-connection-request",
+          recipient,
+          request: "stun-connection-request",
           data,
         });
+
+        //this.startRing();
+        this.updateMessage("Dialing...");
+        this.deactivateOptions();
+
+        this.dialing = setTimeout(() => {
+          this.app.connection.emit("relay-send-message", {
+            recipient,
+            request: "stun-cancel-connection-request",
+            data,
+          });
+          this.stopRing();
+          call_button.innerHTML = "Call";
+          this.updateMessage("No answer");
+          this.attachEvents();
+        }, 10000);
+
+        call_button.innerHTML = "Cancel";
+
+        call_button.onclick = (e) => {
+          clearTimeout(this.dialing);
+          this.app.connection.emit("relay-send-message", {
+            recipient,
+            request: "stun-cancel-connection-request",
+            data,
+          });
+          this.stopRing();
+          this.app.connection.emit("close-preview-window");
+          this.overlay.remove();
+        };
+      };
+    }
+
+    let answer_button = document.getElementById("answercall");
+    let reject_button = document.getElementById("rejectcall");
+
+    if (answer_button) {
+      answer_button.onclick = (e) => {
+        this.app.connection.emit("relay-send-message", {
+          recipient,
+          request: "stun-connection-accepted",
+          data: this.mod.room_obj,
+        });
+
         this.stopRing();
-        this.app.connection.emit("close-preview-window");
+        this.updateMessage("connecting...");
+        setTimeout(()=> {
+          this.app.connection.emit("stun-init-call-interface", "float");
+          this.app.connection.emit("start-stun-call");
+        }, 1000);
+
+      };
+    }
+
+    if (reject_button) {
+      reject_button.onclick = (e) => {
+        this.app.connection.emit("relay-send-message", {
+          recipient,
+          request: "stun-connection-rejected",
+          data: this.mod.room_obj,
+        });
+        this.stopRing();
+        this.mod.room_obj = null;
         this.overlay.remove();
       };
-    };
+    }
   }
 
   startRing() {
-    this.ring_sound.play();
+    try {
+      if (!this.ring_sound) {
+        this.ring_sound = new Audio("/videocall/audio/ring.mp3");
+      }
+      this.ring_sound.play();
+    } catch (err) {
+      console.error(err);
+    }
   }
   stopRing() {
-    this.ring_sound.pause();
+    try {
+      if (!this.ring_sound) {
+        this.ring_sound = new Audio("/videocall/audio/ring.mp3");
+      }
+      this.ring_sound.pause();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  updateMessage(message){
+  updateMessage(message) {
     let div = document.getElementById("stun-phone-notice");
     if (div) {
       div.innerHTML = message;
     }
   }
 
-  activateOptions(){
+  activateOptions() {
     let div = document.querySelector(".video_switch");
     if (div) {
       div.classList.remove("deactivated");
     }
 
-    let video_switch = document.getElementById("video_call_switch");    
+    let video_switch = document.getElementById("video_call_switch");
+
     video_switch.onchange = (e) => {
       if (video_switch.checked) {
         this.callSetting.render();
@@ -124,20 +173,17 @@ class Dialer {
         this.app.connection.emit("close-preview-window");
       }
     };
-
-
   }
 
-  deactivateOptions(){
+  deactivateOptions() {
     let div = document.querySelector(".video_switch");
     div.classList.add("deactivated");
 
-    let video_switch = document.getElementById("video_call_switch");    
+    let video_switch = document.getElementById("video_call_switch");
     video_switch.onchange = null;
   }
 
-
-  async establishStunCallWithPeers(ui_type, recipients) {
+  establishStunCallWithPeers(recipients) {
     // salert("Establishing a connection with your peers...");
 
     // create a room
@@ -153,103 +199,78 @@ class Dialer {
       return player !== this.publicKey;
     });
 
-    this.render(this.mod.publicKey, recipients);
+    //Temporary only 1 - 1 calls
+    this.render(recipients[0], true);
   }
 
-  async receiveGameCallMessageToPeers(app, tx) {
+  receiveStunCallMessageFromPeers(tx) {
     let txmsg = tx.returnMessage();
-    let data = tx.msg.data;
+    let sender = tx.from[0].publicKey;
+    let data = txmsg.data;
 
-    switch (data.type) {
-      case "connection-request":
-        let call_type = data.ui == "voice" ? "Voice" : "Video";
-        this.startRing();
-        let result = await sconfirm(`Accept Saito ${call_type} Call from ${data.sender}`);
+    switch (txmsg.request) {
+      case "stun-connection-request":
+        if (!this.mod.room_obj) {
+          this.mod.room_obj = txmsg.data;
+          this.render(sender, false);
+          this.startRing();
 
-        if (result === true) {
-          // connect
-          // send to sender and inform
-          let _data = {
-            type: "connection-accepted",
-            room_code: data.room_code,
-            sender: app.wallet.publicKey,
-            timestamp: Date.now(),
-            ui: data.ui,
-          };
-
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
-
-          this.room_obj = {
-            room_code: data.room_code,
-            host_public_key: this.publicKey,
-          };
-
-          setTimeout(() => {
-            app.connection.emit("start-stun-call");
-          }, 2000);
-        } else {
-          //send to sender to stop connection
-          let _data = {
-            type: "connection-rejected",
-            room_code: data.room_code,
-            sender: app.wallet.publicKey,
-            timestamp: Date.now(),
-          };
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
+          //
+          // Ping back to let caller know I am online
+          // 
+          this.app.connection.emit("relay-send-message", {recipient: sender, request: "stun-connection-ping", data});
+          break;
         }
+
+      case "stun-cancel-connection-request":
         this.stopRing();
-        // console.log(result);
+        this.overlay.remove();
+        this.mod.room_obj = null;
+        siteMessage(`${sender} hung up`);
         break;
 
-      case "connection-accepted":
-        console.log("connection accepted");
+      case "stun-connection-rejected":
         this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
+        this.updateMessage("did not answer");
+        this.activateOptions();
+        break;
 
-        siteMessage(`${data.sender} accepted your call`, 2000);
-
+      case "stun-connection-accepted":
+        this.stopRing();
         if (this.dialing) {
           clearTimeout(this.dialing);
           this.dialing = null;
         }
 
-        this.room_obj = {
-          room_code: data.room_code,
-          host_public_key: tx.from[0].publicKey,
-        };
+        this.updateMessage("connecting...");
 
-        this.app.connection.emit("start-stun-call");
+        setTimeout(()=> {
+          this.app.connection.emit("stun-init-call-interface", "float");
+          this.app.connection.emit("start-stun-call");
+        }, 1000);
 
         break;
-      case "connection-rejected":
-        console.log("connection rejected");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
+
+      case "stun-connection-ping":
+        if (this.dialing){
+          clearTimeout(this.dialing);
+          this.dialing = setTimeout(() => {
+            this.app.connection.emit("relay-send-message", {
+              recipient: sender,
+              request: "stun-cancel-connection-request",
+              data,
+            });
+            this.stopRing();
+
+            if (document.getElementById("startcall")){
+              document.getElementById("startcall").innerHTML = "Call";
+            }
+            this.updateMessage("No answer");
+            this.attachEvents();
+          }, 10000);
         }
-
-        salert(`Call rejected by ${data.sender}`);
-        break;
-      case "cancel-connection-request":
-        // console.log("connection rejected");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
-
-        // salert(`Call cancelled by ${data.sender}`);
-        break;
 
       default:
-        break;
     }
   }
 }

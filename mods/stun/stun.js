@@ -3,7 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const StunLauncher = require("./lib/appspace/call-launch");
 const CallInterfaceVideo = require("./lib/components/call-interface-video");
 const CallInterfaceFloat = require("./lib/components/call-interface-float");
-const DialingInterface = require("./lib/appspace/dialer"); 
+const DialingInterface = require("./lib/appspace/dialer");
 const PeerManager = require("./lib/appspace/PeerManager");
 
 //Do these do anything???
@@ -72,6 +72,11 @@ class Stun extends ModTemplate {
         this.CallInterface = new CallInterfaceFloat(app, this);
       }
     });
+
+
+    app.connection.on("stun-disconnect", () => {
+      this.room_obj = null;
+    });
   }
 
   /**
@@ -132,7 +137,6 @@ class Stun extends ModTemplate {
     }
   }
 
-
   respondTo(type = "") {
     // console.log(type, obj);
     let stun_self = this;
@@ -148,7 +152,7 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                stun_self.dialer.establishStunCallWithPeers("large", [public_key]);
+                stun_self.dialer.establishStunCallWithPeers([public_key]);
               },
             },
           ];
@@ -203,7 +207,7 @@ class Stun extends ModTemplate {
               callback: function (app, game_mod) {
                 //Start Call
                 game_mod.menu.hideSubMenus();
-                stun_self.dialer.establishStunCallWithPeers("voice", [...game_mod.game.players]);
+                stun_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);
               },
             },
             {
@@ -261,7 +265,6 @@ class Stun extends ModTemplate {
 
     if (conf === 0) {
       if (message.module === "Stun") {
-
         //
         // Do we even need/want to send messages on chain?
         // There are problems with double processing events...
@@ -281,7 +284,6 @@ class Stun extends ModTemplate {
             // }
 
             if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-
               if (message.request === "stun-send-call-list-request") {
                 console.log("OnConfirmation:  stun-send-call-list-request");
                 this.receiveCallListRequestTransaction(this.app, tx);
@@ -296,10 +298,6 @@ class Stun extends ModTemplate {
                 this.peerManager.handleSignalingMessage(tx.msg.data);
               }
 
-              if (message.request === "stun-send-game-call-message") {
-                console.log("OnConfirmation:  stun-send-game-call-message");
-                this.receiveGameCallMessageToPeers(this.app, tx);
-              }
             }
           }
         } catch (err) {
@@ -315,11 +313,13 @@ class Stun extends ModTemplate {
     }
     let txmsg = tx.returnMessage();
 
-    if (txmsg.request.substring(0, 5) == "stun-") {
-      if (this.app.BROWSER === 1) {
-        if (this.hasSeenTransaction(tx)) return;
+    if (this.app.BROWSER === 1) {
+      if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+        console.log(txmsg);
 
-        if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+        if (txmsg.request.substring(0, 10) == "stun-send-") {
+          if (this.hasSeenTransaction(tx)) return;
+
           if (!this?.room_obj?.room_code || this.room_obj.room_code !== txmsg.data.room_code) {
             console.log("HPT: Tab is not active");
             return;
@@ -344,6 +344,8 @@ class Stun extends ModTemplate {
 
           console.warn("Unprocessed request:");
           console.log(txmsg);
+        } else if (txmsg.request.substring(0, 5) == "stun-") {
+          this.dialer.receiveStunCallMessageFromPeers(tx);
         }
       }
     }
@@ -354,7 +356,6 @@ class Stun extends ModTemplate {
   createRoomCode() {
     return this.app.crypto.generateRandomNumber().substring(0, 12);
   }
-
 
   async sendStunMessageToPeersTransaction(_data, recipients) {
     console.log("sending to peers ", recipients, " data ", _data);
@@ -383,15 +384,13 @@ class Stun extends ModTemplate {
     this.app.network.propagateTransaction(newtx);
   }
 
-
   async sendCallEntryTransaction(public_key = "") {
-
-    if (!this.room_obj){
+    if (!this.room_obj) {
       console.error("No room object");
       return;
     }
 
-    if (!public_key){
+    if (!public_key) {
       public_key = this.room_obj?.host_public_key;
     }
 
@@ -413,7 +412,7 @@ class Stun extends ModTemplate {
     this.app.connection.emit("relay-transaction", newtx);
     this.app.network.propagateTransaction(newtx);
   }
-  
+
   async receiveCallListRequestTransaction(app, tx) {
     let txmsg = tx.returnMessage();
 
@@ -458,7 +457,6 @@ class Stun extends ModTemplate {
     this.app.connection.emit("relay-transaction", newtx);
 
     this.app.network.propagateTransaction(newtx);
-
   }
 
   async receiveCallListResponseTransaction(app, tx) {
@@ -481,7 +479,7 @@ class Stun extends ModTemplate {
 
   hasSeenTransaction(tx) {
     let hashed_data = tx.signature;
-    
+
     // this.app.crypto.stringToBase64(txmsg.data) can be short or very long!
     // signature = 128 characters
     // running signature though stringToBase64 or stringToHex makes it longer (172, 256 respectively)
