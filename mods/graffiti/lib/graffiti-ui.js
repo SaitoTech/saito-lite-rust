@@ -136,6 +136,7 @@ class GraffitiUI {
       this.allButtonsContainer.appendChild(button);
       button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
     }
+    this.setButtonsVisibility([this.cancelButton, this.confirmButton], "hidden");
   }
 
   renderButtonImages() {
@@ -269,6 +270,31 @@ class GraffitiUI {
     });
     this.redoButton.addEventListener("mouseup",    () => { clearInterval(redoIntervalId); });
     this.redoButton.addEventListener("mouseleave", () => { clearInterval(redoIntervalId); });
+  }
+
+  removeFromDraftedTiles(tile) {
+    this.draftedTiles.remove(tile);
+    if (this.draftedTiles.size === 0) {
+      this.setButtonsVisibility([this.cancelButton, this.confirmButton], "hidden");
+    }
+  }
+
+  insertToDraftedTiles(tile) {
+    if (this.draftedTiles.size === 0) {
+      this.setButtonsVisibility([this.cancelButton, this.confirmButton], "visible");
+    }
+    this.draftedTiles.insert(tile);
+  }
+
+  clearDraftedTiles() {
+    this.draftedTiles.clear();
+    this.setButtonsVisibility([this.cancelButton, this.confirmButton], "hidden");
+  }
+
+  setButtonsVisibility(buttons, visibility) {
+    for (const button of buttons) {
+      button.style.visibility = visibility;
+    }
   }
 
   updateScale(zoomFactor) {
@@ -427,11 +453,11 @@ class GraffitiUI {
     const reversedLastActionType = this.actionType(this.reversedAction(lastAction));
     const tile = {i: lastAction.i, j: lastAction.j};
     if (reversedLastActionType === "undraft" || reversedLastActionType === "redraft") {
-      this.draftedTiles.remove(tile);
+      this.removeFromDraftedTiles(tile);
     }
     if (reversedLastActionType === "draft"   || reversedLastActionType === "redraft") {
       tile.color = lastAction.oldDraftColor;
-      this.draftedTiles.insert(tile);
+      this.insertToDraftedTiles(tile);
     } else {
       tile.color = null;
     }
@@ -444,11 +470,11 @@ class GraffitiUI {
     const lastUndoneActionType = this.actionType(lastUndoneAction);
     const tile = {i: lastUndoneAction.i, j: lastUndoneAction.j};
     if (lastUndoneActionType === "undraft" || lastUndoneActionType === "redraft") {
-      this.draftedTiles.remove(tile);
+      this.removeFromDraftedTiles(tile);
     }
     if (lastUndoneActionType === "draft"   || lastUndoneActionType === "redraft") {
       tile.color = lastUndoneAction.newDraftColor;
-      this.draftedTiles.insert(tile);
+      this.insertToDraftedTiles(tile);
     } else {
       tile.color = null;
     }
@@ -479,7 +505,7 @@ class GraffitiUI {
     while ((draftedTile = it.next()) !== null) {
       this.mod.updateTile({i: draftedTile.i, j: draftedTile.j, color: null}, "drafted");
     }
-    this.draftedTiles.clear();
+    this.clearDraftedTiles();
   }
 
   tryAndDraftTile(i, j) {
@@ -488,7 +514,7 @@ class GraffitiUI {
       this.draftTile(i, j, null, this.colorPickerInput.value);
     } else {
       if (this.colorPickerInput.value !== alreadyDraftedTile.color) {
-        this.draftedTiles.remove(alreadyDraftedTile);
+        this.removeFromDraftedTiles(alreadyDraftedTile);
         this.draftTile(i, j, alreadyDraftedTile.color, this.colorPickerInput.value);
       }
     }
@@ -505,14 +531,14 @@ class GraffitiUI {
     this.undoStack.push({i: i, j: j, oldDraftColor: oldDraftColor, newDraftColor: newDraftColor});
     this.redoStack = [];
     const draftTile = {i: i, j: j, color: newDraftColor};
-    this.draftedTiles.insert(draftTile);
+    this.insertToDraftedTiles(draftTile);
     this.mod.updateTile(draftTile, "drafted");
   }
 
   undraftTile(i, j, oldDraftColor) {
     this.undoStack.push({i: i, j: j, oldDraftColor: oldDraftColor, newDraftColor: null});
     this.redoStack = [];
-    this.draftedTiles.remove({i: i, j: j});
+    this.removeFromDraftedTiles({i: i, j: j});
     this.mod.updateTile({i: i, j: j, color: null}, "drafted");
   }
 
