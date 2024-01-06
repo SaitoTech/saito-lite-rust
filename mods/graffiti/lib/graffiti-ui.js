@@ -340,7 +340,10 @@ class GraffitiUI {
 
   updateMousePosition(event, i, j) {
     if (this.isInsideGrid(this.mousePosition)) {
-      this.updateTileRendering({i: this.mousePosition.i, j: this.mousePosition.j, state: this.mod.gridState.state[i][j]});
+      this.updateTileRendering({
+        i: this.mousePosition.i, j: this.mousePosition.j,
+        state: this.mod.gridState.state[this.mousePosition.i][this.mousePosition.j]
+      });
     }
     this.mousePosition.x = event.clientX;
     this.mousePosition.y = event.clientY;
