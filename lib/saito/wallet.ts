@@ -164,6 +164,22 @@ export default class Wallet extends SaitoWallet {
           resolve(null);
         });
       }
+
+      async formatBalance(precision = 3) {
+        let balance = await this.returnBalance();
+
+        if (typeof(balance) == 'undefined') {
+          balance = 0.00;
+        }
+
+        let balance_as_float = parseFloat(balance);
+        if (balance_as_float < 9999) {
+          balance_as_float = balance_as_float.toPrecision(precision);
+        }
+
+        return balance_as_float.toString();
+        this.save();
+      }
     }
 
     this.saitoCrypto = new SaitoCrypto(this.app);
