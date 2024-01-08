@@ -31,9 +31,9 @@ class GraffitiUI {
   async render() {
     this.renderForeground();
     this.renderButtonElements();
+    this.attachEventsToButtonElements();
     this.attachEventsToForeground();
     await this.loadBaseHourglass();
-    this.attachEventsToButtonElements();
   }
 
   renderForeground() {
@@ -145,7 +145,7 @@ class GraffitiUI {
   }
 
   renderButtonImages() {
-    const imageDir = `${this.slug}/img`;
+    const imageDir = `/${this.slug}/img`;
 
     this.cancelButtonImage = document.createElement("img");
     this.cancelButton.appendChild(this.cancelButtonImage);
@@ -324,15 +324,16 @@ class GraffitiUI {
   }
 
   updateTileRendering(newLocatedState) {
-    const {i: i, j: j, state: newState} = newLocatedState;
-    if (newState.drafted !== null) {
-      this.drawTile(i, j, newState.drafted.color);
-      this.drawDraftMark(i, j, newState.drafted.color);
-    } else if (newState.pending !== null) {
-      this.drawTile(i, j, newState.pending.color);
-      this.drawHourglass(i, j, newState.pending.color);
-    } else if (newState.confirmed !== null) {
-      this.drawTile(i, j, newState.confirmed.color);
+    const {i, j, state} = newLocatedState;
+
+    if (state.drafted) {
+      this.drawTile(i, j, state.drafted.color);
+      this.drawDraftMark(i, j, state.drafted.color);
+    } else if (state.pending) {
+      this.drawTile(i, j, state.pending.color);
+      this.drawHourglass(i, j, state.pending.color);
+    } else if (state.confirmed) {
+      this.drawTile(i, j, state.confirmed.color);
     } else {
       this.drawTile(i, j, this.mod.blankTileColor);
     }
@@ -560,7 +561,7 @@ class GraffitiUI {
       this.baseHourglass = document.createElement("canvas");
       this.baseHourglassCtx = this.baseHourglass.getContext("2d", {willReadFrequently: true});
       this.baseHourglassImage = new Image();
-      this.baseHourglassImage.src = `${this.slug}/img/hourglass-mini.png`;
+      this.baseHourglassImage.src = `/${this.slug}/img/hourglass-mini.png`;
 
       this.baseHourglassImage.onload = () => {
         console.assert(this.baseHourglassImage.width >= 1);
