@@ -26,6 +26,7 @@ class Dialer {
         this.stopRing();
       }
     });
+    this.overlay.blockClose();
 
     if (!this.receiver) {
       this.receiver = new SaitoUser(

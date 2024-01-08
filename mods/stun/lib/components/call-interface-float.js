@@ -9,7 +9,9 @@ class CallInterfaceFloat {
     this.mod = mod;
     this.localStream = null;
     this.audio_boxes = {};
+    this.video_boxes = {};
     this.audioEnabled = true;
+    this.videoEnabled = (mod.room_obj.ui == "video");
 
     this.app.connection.on(
       "show-call-interface",
@@ -30,22 +32,19 @@ class CallInterfaceFloat {
 
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
-      this.addLocalStream(localStream);
+      this.localStream = localStream;
+      this.addStream("local", localStream);
     });
+
     this.app.connection.on("add-remote-stream-request", (peer, remoteStream) => {
-      this.addRemoteStream(peer, remoteStream);
+      this.addStream(peer, remoteStream);
     });
 
-    this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
-      if (room_code !== this.mod.room_obj.room_code) {
-        return;
-      }
-
+    this.app.connection.on("stun-update-connection-message", (peer_id, status) => {
       if (status === "connected") {
         this.startTimer();
       }
 
-      this.updateImages();
       siteMessage(status, 2000);
     });
 
@@ -54,7 +53,6 @@ class CallInterfaceFloat {
         if (this.audio_boxes[peer_id].audio_box.remove) {
           this.audio_boxes[peer_id].audio_box.remove();
           delete this.audio_boxes[peer_id];
-          this.updateImages();
         }
       }
     });
@@ -116,46 +114,33 @@ class CallInterfaceFloat {
     this.hide(true);
   }
 
-  addLocalStream(stream) {
-    this.localStream = stream;
-    this.addRemoteStream("local", stream);
+  addStream(peer, remoteStream) {
+
+    if (this.videoEnabled == "video" && peer !== "local") {
+      this.createVideoBox(peer, remoteStream);
+    }else{
+      this.createAudioBox(peer, remoteStream);
+    }
+
   }
 
-  addRemoteStream(peer, remoteStream) {
-    /// chat-manager-small-audio-container
-    let container = ".image-list";
-
+  createAudioBox(peer, remoteStream, container = ".image-list") {
     if (!this.audio_boxes[peer]) {
       const audioBox = new AudioBox(this.app, this.mod, peer, container);
       this.audio_boxes[peer] = { audio_box: audioBox, remote_stream: remoteStream };
     }
 
     this.audio_boxes[peer].audio_box.render(remoteStream);
-    this.updateImages();
 
   }
 
-  createAudioBox(peer, remoteStream, container) {
-    
-  }
-
-  updateImages() {
-    let images = ``;
-    let count = 0;
-    console.log(this.audio_boxes);
- 
-    for (let i in this.audio_boxes) {
-      count++;
+  createVideoBox(peer, remoteStream, container = ".video-container") {
+    if (!this.video_boxes[peer]) {
+      const videoBox = new VideoBox(this.app, this.mod, peer, container);
+      this.video_boxes[peer] = { video_box: videoBox };
     }
-
-    //Will fail for game mode
-    try{
-
-      document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
-    } catch(err){}
-    this.users_on_call = count;
+    this.video_boxes[peer].video_box.render(remoteStream);
   }
-
 
   toggleAudio() {
     console.log("toggling audio");
@@ -207,6 +192,7 @@ class CallInterfaceFloat {
     };
 
     this.timer_interval = setInterval(timer, 1000);
+    console.log("Start Call Timer");
   }
 
 

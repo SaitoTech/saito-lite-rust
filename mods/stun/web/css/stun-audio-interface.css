@@ -5,6 +5,7 @@
     position: absolute;
     z-index: 200;
     bottom: 0;
+    border: 1px solid var(--saito-border-color);
 }
 
 
@@ -14,6 +15,11 @@
     width: 100%;
 }
 
+
+.small-audio-chatbox .image-list img {
+    width: 3.5rem;
+    height: 3.5rem;
+}
 
 .audio-box.speaking {
     border-color: var(--saito-secondary);

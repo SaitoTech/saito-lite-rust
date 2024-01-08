@@ -405,7 +405,7 @@ class CallInterfaceVideo {
 
   addLocalStream(localStream) {
     this.createVideoBox("local", this.local_container);
-    this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
+    this.video_boxes["local"].video_box.render(localStream);
     this.localStream = localStream;
     this.updateImages();
 

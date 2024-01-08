@@ -418,7 +418,6 @@ class PeerManager {
 
       this.app.connection.emit(
         "stun-update-connection-message",
-        this.mod.room_obj.room_code,
         peerId,
         peerConnection.connectionState
       );
