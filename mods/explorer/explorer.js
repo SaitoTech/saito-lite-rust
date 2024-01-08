@@ -262,7 +262,7 @@ class ExplorerCore extends ModTemplate {
 
     var html = '<div class="blockchain-table">';
     html +=
-      '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div>';
+      '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div><div class="table-header">block creator</div>';
 
     for (var mb = latest_block_id; mb >= BigInt(0) && mb > latest_block_id - BigInt(200); mb--) {
       let longest_chain_hash = await explorer_self.app.blockchain.getLongestChainHashAtId(mb);
@@ -271,23 +271,27 @@ class ExplorerCore extends ModTemplate {
       for (let i = 0; i < hashes_at_block_id.length; i++) {
         let txs_in_block = 0;
         let previous_block_hash = "";
+        let block_creator = "";
 
         let block = await explorer_self.app.blockchain.getBlock(hashes_at_block_id[i]);
 
         if (block) {
+          let blk = JSON.parse(block.toJson());
           txs_in_block = block.transactions.length;
           previous_block_hash = block.previousBlockHash;
+          block_creator = blk.creator;
         }
         if (longest_chain_hash === hashes_at_block_id[i]) {
           html += "<div>*</div>";
         } else {
           html += "<div></div>";
         }
-        html += '<div><a href="/explorer/block?hash=' + block.hash + '">' + block.id + "</a></div>";
+        html += '<div class="ellipsis"><a href="/explorer/block?hash=' + block.hash + '">' + block.id + "</a></div>";
         html +=
-          '<div><a href="/explorer/block?hash=' + block.hash + '">' + block.hash + "</a></div>";
+          '<div class="ellipsis" title="' + block.hash + '"><a href="/explorer/block?hash=' + block.hash + '">' + block.hash + "</a></div>";
         html += "<div>" + txs_in_block + "</div>";
-        html += '<div class="elipsis">' + previous_block_hash + "</div>";
+        html += '<div class="ellipsis" title="' + previous_block_hash + '">' + previous_block_hash + "</div>";
+        html += '<div class="ellipsis" title="' + block_creator + '">' + block_creator + "</div>";
       }
     }
     html += "</div>";

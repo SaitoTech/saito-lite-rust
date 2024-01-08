@@ -720,7 +720,7 @@ deck['ap55'] = {
 
 deck['ap56'] = { 
         key : 'paristaxis',
-        img : "cards/card_ap56.svg" ,
+        img : "cards/card_ap56.png" ,
         name : "Paris Taxis" ,
         cc : false ,
         ops : 2 ,
@@ -732,7 +732,7 @@ deck['ap56'] = {
 
 deck['ap57'] = { 
         key : 'russiancavalry',
-        img : "cards/card_ap57.svg" ,
+        img : "cards/card_ap57.png" ,
         name : "Russian Cavalry" ,
         cc : false ,
         ops : 3 ,
@@ -744,7 +744,7 @@ deck['ap57'] = {
 
 deck['ap58'] = { 
         key : 'russianguards',
-        img : "cards/card_ap58.svg" ,
+        img : "cards/card_ap58.png" ,
         name : "Russian Guards" ,
         cc : true ,
         ops : 2 ,
@@ -756,7 +756,7 @@ deck['ap58'] = {
 
 deck['ap59'] = { 
         key : 'alpinetroops',
-        img : "cards/card_ap59.svg" ,
+        img : "cards/card_ap59.png" ,
         name : "Alpine Troops" ,
         cc : true ,
         ops : 2 ,
@@ -769,7 +769,7 @@ deck['ap59'] = {
 
 deck['ap60'] = { 
         key : 'czechlegion',
-        img : "cards/card_ap60.svg" ,
+        img : "cards/card_ap60.png" ,
         name : "Czech Legion" ,
         cc : false ,
         ops : 3 ,
@@ -781,7 +781,7 @@ deck['ap60'] = {
 
 deck['ap61'] = { 
         key : 'maude',
-        img : "cards/card_ap61.svg" ,
+        img : "cards/card_ap61.png" ,
         name : "Maude" ,
         cc : true ,
         ops : 4 ,
@@ -794,7 +794,7 @@ deck['ap61'] = {
 
 deck['ap62'] = { 
         key : 'Thesixtusaffair',
-        img : "cards/card_ap62.svg" ,
+        img : "cards/card_ap62.png" ,
         name : "The Sixtus Affair" ,
         cc : false ,
         ops : 2 ,
@@ -806,7 +806,7 @@ deck['ap62'] = {
 
 deck['ap63'] = { 
         key : 'backstothewall',
-        img : "cards/card_ap63.svg" ,
+        img : "cards/card_ap63.png" ,
         name : "Backs To The Wall" ,
         cc : true ,
         ops : 3 ,
@@ -818,7 +818,7 @@ deck['ap63'] = {
 
 deck['ap64'] = { 
         key : 'usareinforcements',
-        img : "cards/card_ap64.svg" ,
+        img : "cards/card_ap64.png" ,
         name : "Usa Reinforcements" ,
         cc : false ,
         ops : 3 ,
@@ -830,7 +830,7 @@ deck['ap64'] = {
 
 deck['ap65'] = { 
         key : 'influenza',
-        img : "cards/card_ap65.svg" ,
+        img : "cards/card_ap65.png" ,
         name : "Influenza" ,
         cc : false ,
         ops : 4 ,

@@ -1,8 +1,8 @@
 /*  alert  */
 
 .saito-notification-dot {
-  width: 2rem;
-  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
   border-radius: 0.5rem;
   background-color: var(--saito-primary);
   color: var(--saito-white);
@@ -11,8 +11,9 @@
   left: 3.5rem;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   font-size: 1.8rem;
+  line-height: 1.8rem;
 }
 
 .saito-header-appspace-option .saito-notification-dot {

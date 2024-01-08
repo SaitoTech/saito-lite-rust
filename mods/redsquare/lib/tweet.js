@@ -146,12 +146,10 @@ class Tweet {
     // maybe anything is updated
     //
     if (this.tx.optional.update_tx) {
-      console.log("TESTING: this tx.optional.update_tx");
       let newtx = new Transaction();
       newtx.deserialize_from_web(this.app, this.tx.optional.update_tx);
       let newtxmsg = newtx.returnMessage();
 
-      console.log(this.text, newtxmsg.data.text);
       this.text = newtxmsg.data.text;
       //Not updating more than text
       //this.setKeys(newtxmsg.data, true);
@@ -165,7 +163,7 @@ class Tweet {
     //if (this.updated_at > this.created_at) {
     if (this.tx.optional.num_replies > 0) {
       //console.log("Change user notice!");
-      this.user.notice = "posted on " + this.formatDate(this.created_at);
+      this.user.notice = "originally posted on " + this.formatDate(this.created_at);
     }
     //}
 
@@ -382,7 +380,6 @@ class Tweet {
     }
 
     if (document.querySelector(myqs)) {
-      console.log("Re-render tweet in place");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(
@@ -668,7 +665,7 @@ class Tweet {
       //
       // if you don't want a tweet to auto-contract on display, set this.is_long_tweet
       // to be true before running attachEvents(); this will avoid it getting compressed
-      // with full / preview toggle.
+      // with expanded / preview toggle.
       //
       let tweet_text = document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-text`
@@ -678,11 +675,9 @@ class Tweet {
           if (tweet_text.clientHeight < tweet_text.scrollHeight) {
             tweet_text.classList.add("preview");
             this.is_long_tweet = true;
-          } else {
-            tweet_text.classList.add("full");
           }
         } else {
-          tweet_text.classList.add("full");
+          tweet_text.classList.add("expanded");
         }
       }
 
@@ -691,6 +686,15 @@ class Tweet {
       /////////////////
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
+        
+        Array.from(this_tweet.querySelectorAll("a")).forEach(link => {
+          link.onclick = (e) => {
+            e.stopPropagation();
+            // We allow the link to redirect us (in a new tab) without
+            // targeting the general tweet click event
+          }
+        })
+
         this_tweet.onclick = (e) => {
           //
           // if we have selected text, then we are trying to copy and paste and
@@ -711,9 +715,9 @@ class Tweet {
           // Expand tweet preview for long tweets
           //
           if (this.is_long_tweet && tweet_text) {
-            if (!tweet_text.classList.contains("full")) {
+            if (tweet_text.classList.contains("preview")) {
               tweet_text.classList.remove("preview");
-              tweet_text.classList.add("full");
+              tweet_text.classList.add("expanded");
               this.force_long_tweet = true;
               return;
             }
@@ -1034,7 +1038,7 @@ class Tweet {
   //
   // Add the given tweet somewhere, it may be a reply or a reply to a reply
   //
-  addTweet(tweet, levels_deep = 0) {
+  addTweet(tweet) {
     this.updated_at = tweet.updated_at;
 
     //
@@ -1128,7 +1132,8 @@ class Tweet {
         return 1;
       }
     }
-    return 0;
+
+    return this.unknown_children_sigs_hmap[tweet_sig];
   }
 
   returnChildTweet(tweet_sig) {
@@ -1140,7 +1145,45 @@ class Tweet {
         return this.children[i].returnChildTweet(tweet_sig);
       }
     }
+
+    if (this.unknown_children_sigs_hmap[tweet_sig]){
+      for (let i = 0; i < this.unknown_children.length; i++){
+        if (this.unknown_children[i].tx.signature == tweet_sig){
+          return this.unknown_children[i];
+        }
+      }
+    }
+
     return null;
+  }
+
+  removeChildTweet(tweet_sig){
+    for (let i = 0; i < this.children.length; i++) {
+      if (this.children[i].tx.signature === tweet_sig) {
+        this.children[i].remove();
+        this.children[i].splice(i, 1);
+        this.children_sigs_hmap[tweet_sig] = 0;
+        return;
+      }
+    }
+
+    if (this.unknown_children_sigs_hmap[tweet_sig]){
+      for (let i = 0; i < this.unknown_children.length; i++){
+        if (this.unknown_children[i].tx.signature == tweet_sig){
+          this.unknown_children[i].remove();
+          this.unknown_children[i].splice(i, 1);
+          this.unknown_children_sigs_hmap[tweet_sig] = 0;
+          return;
+        }
+      }
+    }
+
+    //Recursive search if not already found and deleted
+    for (let i = 0; i < this.children.length; i++) {
+      if (this.children[i].hasChildTweet(tweet_sig)){
+        this.children[i].removeChildTweet(tweet_sig);
+      }
+    }
   }
 
   addUnknownChild(tweet) {

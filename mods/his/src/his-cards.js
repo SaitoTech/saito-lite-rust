@@ -600,6 +600,8 @@
 
         if (mv[0] === "diplomatic_pressure_results_protestant") {
 
+          his_self.game.queue.splice(qe, 1);
+
           let cards = JSON.parse(mv[1]);
 
  	  let msg = "Papal Card is "+his_self.popup(cards[0]);
@@ -637,7 +639,6 @@
 
 	  });
 
-          his_self.game.queue.splice(qe, 1);
           return 0;
 	}
 
@@ -733,13 +734,6 @@
 
                   "Select French Home Port",
 
-                  function(spacekey) {
-		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
-                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
-                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
-                    his_self.endTurn();
-                  },
-
                   function(space) {
                     if (space.ports.length > 0 && space.home == "france") {
                       return 1;
@@ -748,7 +742,6 @@
 
                   function(spacekey) {
 		    his_self.updateStatus("French add Squadrons in " + his_self.returnSpaceName(spacekey));
-                    his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.addMove("build\tland\tfrance\t"+"squadron"+"\t"+spacekey);
                     his_self.endTurn();
                   },
@@ -979,7 +972,7 @@
 
 	  if (his_self.game.player != player) { return 0; }
 
-	  if (num == 1) { num = "1st"; }
+	  if (num == 1) { num = "1st"; his_self.game.state.plague_already_removed = []; }
 	  if (num == 2) { num = "2nd"; }
 	  if (num == 3) { num = "3rd"; }
 
@@ -991,13 +984,15 @@
 	      let anything_here = false;
 	      for (let key in space.units) {
 		if (space.units[key].length > 0) {
-		  for (let z = 0; z < space.units[key].length; z++) {
-		    let u = space.units[key][z];
-		    if (u.type === "regular") { return 1; }
-		    if (u.type === "mercenary") { return 1; }
-		    if (u.type === "cavalry") { return 1; }
-		    if (u.type === "corsair") { return 1; }
-		    if (u.type === "squadron") { return 1; }
+		  if (!his_self.game.state.plague_already_removed.includes(space.key)) {
+		    for (let z = 0; z < space.units[key].length; z++) {
+		      let u = space.units[key][z];
+		      if (u.type === "regular") { return 1; }
+		      if (u.type === "mercenary") { return 1; }
+		      if (u.type === "cavalry") { return 1; }
+		      if (u.type === "corsair") { return 1; }
+		      if (u.type === "squadron") { return 1; }
+		    }
 		  }
 		}
 	      }
@@ -1078,6 +1073,9 @@
 		  }
 
           	  his_self.removeUnit(faction_to_destroy, spacekey, unittype);
+
+ 	          his_self.game.state.plague_already_removed.push(spacekey);
+
 		  his_self.displaySpace(spacekey);
 		  if (num === "3rd") { 
 		    his_self.updateStatus("submitted");
@@ -2604,7 +2602,7 @@
 
 	      if (action == "play") {
 
-		his_self.addMove("card\tprotestant\t"+action);
+		his_self.addMove("card\tprotestant\t"+card);
 		his_self.addMove("discard\tprotestant\t007");
 		his_self.endTurn();
 
@@ -8247,9 +8245,10 @@ console.log("TESTING: " + JSON.stringify(space.units));
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { return 1; },
+      canEvent : function(his_self, faction) { return 0; },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "pre_spring_deployment") {
+console.log("venetian informant!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('109')) {
@@ -8308,6 +8307,10 @@ console.log("TESTING: " + JSON.stringify(space.units));
           let faction_taking = mv[1];
           let faction_giving = mv[2];
           let cards = JSON.parse(mv[3]);
+
+
+console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
+his_self.deck_overlay.render("Venetian Informant", cards);
           
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);

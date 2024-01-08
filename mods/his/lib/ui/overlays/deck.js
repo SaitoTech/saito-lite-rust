@@ -37,12 +37,17 @@ class DeckOverlay {
 
 
   
-    render(deck="") {
-
-console.log("CL: " + JSON.stringify(this.mod.game.state.cards_left));
+    render(deck="", cards=[]) {
 
       let his_self = this.mod;
       this.overlay.show(DeckTemplate());
+
+      if (cards) { if (cards.length > 0) { 
+        for (let i = 0; i < cards.length; i++) {
+	  his_self.app.browser.addElementToSelector(`<div id="${cards[i]}" class="card ${cards[i]}"><img src="/his/img/cards/HIS-${cards[i]}.svg" /></div>`, ".deck-overlay"); 
+	}
+	return;
+      }};
 
       if (deck == "papacy") {
         let added = 0;

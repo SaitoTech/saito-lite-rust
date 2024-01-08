@@ -44,6 +44,7 @@ function listTransactions(blk, hash) {
   var html = '<div class="block-table">';
   html += "<div><h4>id</h4></div><div>" + blk.id + "</div>";
   html += "<div><h4>hash</h4></div><div>" + hash + "</div>";
+  html += "<div><h4>creator</h4></div><div>" + blk.creator + "</div>";
   html +=
     '<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
     hash +

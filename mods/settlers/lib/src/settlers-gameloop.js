@@ -294,11 +294,19 @@ class SettlersGameloop {
         let slot = mv[2];
         this.game.queue.splice(qe, 1);
 
-        this.buildRoad(player, slot);
+        console.log("Receive build road");
+
+        this.game.state.roads.push({ player: player, slot: slot });
+
+        let roadInfo = slot.split("_");
+        this.addRoadToGameboard(roadInfo[2] + "_" + roadInfo[3], roadInfo[1]);
+
+        setTimeout( ()=> { this.buildRoad(player, slot); }, 100); 
         this.updateLog(`${this.formatPlayer(player)} built a ${this.r.name}`);
         if (this.checkLongestRoad(player)) {
           console.log("Longest Road:", this.game.state.longestRoad.path);
         }
+
         return 1;
       }
 
@@ -455,7 +463,13 @@ class SettlersGameloop {
             this.game.state.players[player - 1].cities--;
             this.game.state.players[player - 1].towns++;
             let divname = "#" + slot;
-            $(divname).html(this.c2.svg);
+
+            $(divname).children('img').eq(0).fadeOut(400, "linear", ()=> {
+              $(divname).html("");  
+              $(this.c2.svg).hide().delay(600).appendTo(divname).fadeIn(1200);
+
+            });
+            
             $(divname).addClass(`p${this.game.colors[player - 1]}`);
             return 1;
           }

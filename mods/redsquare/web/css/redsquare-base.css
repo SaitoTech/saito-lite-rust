@@ -3,7 +3,7 @@ html, body {
 }
 
 .tweet-text a {
-  position: absolute;
+  display: inline;
 }
 
 .saito-new-tweets {

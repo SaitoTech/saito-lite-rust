@@ -1042,7 +1042,6 @@ if (limit === "build") {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => {
-console.log("playerSelectNavalSapceWithFilter -- before events off...");
 	    $('.option').off();
      	    $('.hextile').off();
     	    $('.space').off();
@@ -1055,7 +1054,6 @@ console.log("playerSelectNavalSapceWithFilter -- before events off...");
     	    if (callback_run == false) {
 	      callback_run = true;
     	      his_self.updateStatus("selected...");
-console.log("playerSelectNavalSapceWithFilter -- sending into callback");
 	      mycallback(key);
 	    }
 	  }
@@ -1467,26 +1465,38 @@ console.log("and calling callback...");
 	    //
 	    if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
 
-	      let msg = "How many OPs to Spend: ";
-              let html = `<ul>`;
-	      let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
-              for (let i = 1; i <= ops; i++) {
-                html += `<li class="card" id="${i}">${desc[i-1]}</li>`;
-              }
-              html += '</ul>';
+	      //
+	      // skip if only 1 ops
+	      //
+	      if (ops == 1) {
 
-              this.updateStatusWithOptions(msg, html, false);
-              this.attachCardboxEvents(async (uc) => {      
+                  menu[user_choice].fnct(this, this.game.player, faction, 1);
+                  return;
 
-	        let ops_to_spend = parseInt(uc);
-	        let ops_remaining = ops - ops_to_spend;
+	      } else {
 
-                if (ops_remaining > 0) {
-  	          this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
+	        let msg = "How many OPs to Spend: ";
+                let html = `<ul>`;
+	        let desc = ['one', 'two', 'three', 'four', 'five', 'six'];
+                for (let i = 1; i <= ops; i++) {
+                  html += `<li class="card" id="${i}">${desc[i-1]}</li>`;
                 }
-                menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
-                return;
-	      });
+                html += '</ul>';
+
+                this.updateStatusWithOptions(msg, html, false);
+                this.attachCardboxEvents(async (uc) => {      
+
+	          let ops_to_spend = parseInt(uc);
+	          let ops_remaining = ops - ops_to_spend;
+ 
+                  if (ops_remaining > 0) {
+    	            this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
+                  }
+                  menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+                  return;
+	        });
+
+	      }
 
 	    } else {
 
@@ -1552,6 +1562,16 @@ console.log("and calling callback...");
 	// sub-menu to simplify translations / st peters
 	//
 	if (menu[user_choice].name.indexOf("Peters") != -1 || menu[user_choice].name.indexOf("Translate") != -1) {
+
+	  //
+	  // skip if only 1 ops
+	  //
+	  if (ops == 1) {
+
+            menu[user_choice].fnct(this, this.game.player, faction, 1);
+            return;
+
+	  }
 
 	  let msg = "How many OPs to Spend: ";
           let html = `<ul>`;
@@ -1619,6 +1639,8 @@ console.log("and calling callback...");
     }
 //    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
 //    this.addMove("RESETCONFIRMSNEEDED\tall");
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
     this.endTurn();
   }
 
@@ -2581,7 +2603,7 @@ return;
   }
 
 
-  playerEvaluateNavalRetreatOpportunity(faction, spacekey) {
+  playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="") {
 
     let his_self = this;
     let retreat_destination = "";
@@ -2593,7 +2615,7 @@ return;
     let neighbours = this.returnNavalAndPortNeighbours(spacekey);
     let retreat_options = 0;
     for (let i = 0; i < neighbours.length; i++) {
-      if (this.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
+      if (his_self.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
 	retreat_options++;
       }
     }
@@ -2612,7 +2634,9 @@ return;
     let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
       let html = "<ul>";
       for (let i = 0; i < neighbours.length; i++) {
-        if (this.canFactionNavalRetreatToSpace(defender, neighbours[i])) {
+console.log("neighbour is: " + neighbours[i]);
+        if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
+console.log("yes!");
           html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
 	}
       }
@@ -3711,7 +3735,23 @@ console.log("naval move faction: " + faction);
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
-    let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
+    let conquerable_spaces = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
+
+    //
+    // remove spaces with adjacent other infantry
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let removed_space = false;
+      let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
+      for (let z = 0; removed_space == false && z < ns.length; z++) {
+        let n = his_self.game.spaces[ns[z]];
+        if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
+          conquerable_spaces.splice(i, 1); // remove
+          removed_space = true; // and stop loop
+	}
+      }
+    }
+
     for (let i = 0; i < spaces_in_unrest.length; i++) {
       if (!his_self.isSpaceControlled(spaces_in_unrest[i]), faction) { 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
@@ -3783,7 +3823,24 @@ console.log("naval move faction: " + faction);
 	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
       }
     }
-    let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
+    let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction, true); // include adjacency
+
+    //
+    // remove spaces with adjacent other infantry
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let removed_space = false;
+      let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
+      for (let z = 0; removed_space == false && z < ns.length; z++) {
+        let n = his_self.game.spaces[ns[z]];
+        if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
+          conquerable_spaces.splice(i, 1); // remove
+          removed_space = true; // and stop loop
+	}
+      }
+    }
+
+
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (his_self.isSpaceControlled(conquerable_spaces[i], faction) || his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || his_self.game.spaces[conquerable_spaces[i]].besieged == 2) {
 	conquerable_spaces.splice(i, 1);

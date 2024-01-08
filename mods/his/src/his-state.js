@@ -16,6 +16,9 @@
     this.game.state.debater_committed_this_impulse = {};
     
 
+    // display cards left
+    this.displayCardsLeft();
+
     //
     // remove gout
     //
@@ -71,6 +74,10 @@
     // allow stuff to move again
     //
     this.resetLockedTroops();
+    this.removeBesiegedSpaces();
+
+    this.displayCardsLeft();
+
 
   }
 
@@ -113,7 +120,19 @@
   }
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.besieged == 1 || space.besieged == 2 || space.besieged == true) { return true; }
+    if (space.besieged == 1 || space.besieged == 2 || space.besieged == true) {
+      //
+      // are we still besieged? will be unit
+      //
+      for (let f in space.units) {
+        for (let i = 0; i < space.units[f].length; i++) {
+  	  if (!space.units[f][i].besieged) {
+	    return true;
+	  }
+        }
+      }
+      return false; // no besieging units left!
+    }
     return false;
   }
   isBesieged(faction, unittype) {

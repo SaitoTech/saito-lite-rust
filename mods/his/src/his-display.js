@@ -52,6 +52,41 @@
 
   }
 
+  displayCardsLeft() {
+
+    for (let key in this.game.state.cards_left) {
+
+console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
+
+      let qs = ".game-factions .game-menu-sub-options ";
+      if (key === "hapsburgs") { 
+        qs += ".game-hapsburgs .game-menu-option-label";
+	document.querySelector(qs).innerHTML = `Hapsburgs (${this.game.state.cards_left[key]} cards)`;
+      }
+      if (key === "france") { 
+        qs += ".game-france .game-menu-option-label";
+	document.querySelector(qs).innerHTML = `France (${this.game.state.cards_left[key]} cards)`;
+      }
+      if (key === "ottoman") { 
+        qs += ".game-ottoman .game-menu-option-label";
+	document.querySelector(qs).innerHTML = `Ottoman (${this.game.state.cards_left[key]} cards)`;
+      }
+      if (key === "england") { 
+        qs += ".game-england .game-menu-option-label";
+	document.querySelector(qs).innerHTML = `England (${this.game.state.cards_left[key]} cards)`;
+      }
+      if (key === "protestants" || key == "protestant") { 
+        qs += ".game-protestants .game-menu-option-label";
+	document.querySelector(qs).innerHTML = `Protestants (${this.game.state.cards_left[key]} cards)`;
+      }
+      if (key === "papacy") { 
+        qs += ".game-papacy .game-menu-option-label";
+	document.querySelector(qs).innerHTML = `Papacy (${this.game.state.cards_left[key]} cards)`;
+      }
+    }
+
+  }
+
   displayWarBox() {
 
     let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];

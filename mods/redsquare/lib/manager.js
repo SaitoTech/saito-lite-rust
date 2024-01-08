@@ -450,7 +450,10 @@ class TweetManager {
 
     this.mod.loadTweetThread(thread_id, () => {
       let root_tweet = this.mod.returnTweet(thread_id);
-      root_tweet.renderWithChildrenWithTweet(tweet);
+
+      if (root_tweet){
+        root_tweet.renderWithChildrenWithTweet(tweet);
+      }
 
       if (document.querySelector(`.tweet-${tweet.tx.signature}`)){
         document.querySelector(`.tweet-${tweet.tx.signature}`).classList.add("highlight-tweet");

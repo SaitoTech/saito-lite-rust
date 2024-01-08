@@ -130,6 +130,10 @@ class Chessgame extends GameTemplate {
       );
     }
 
+    if (this.game.player == 1){
+      $(".game-playerbox-manager").addClass("reverse");
+    }
+
     window.onresize = () => this.board.resize();
   }
 
@@ -395,9 +399,8 @@ class Chessgame extends GameTemplate {
           this.returnCaptured(this.engine.fen()),
           this.game.player
         );
-        status = sanitize(captHTML) + status;
 
-        this.playerbox.updateBody(status, this.game.player);
+        this.playerbox.updateBody(captHTML + status, this.game.player);
       } else {
         for (let i = 1; i < 3; i++) {
           let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), i);
@@ -781,6 +784,8 @@ class Chessgame extends GameTemplate {
   returnCapturedHTML(acapt, player) {
     let captHTML = "";
 
+    console.log("CHESS:", acapt, player);
+
     if (player == 2) {
       for (var i = 0; i < acapt[0].length; i++) {
         captHTML += this.piecehtml(acapt[0][i], "w");
@@ -790,6 +795,8 @@ class Chessgame extends GameTemplate {
         captHTML += this.piecehtml(acapt[1][i], "b");
       }
     }
+
+    console.log(captHTML);
 
     if (captHTML) {
       return `<div class="trophies">${captHTML}</div>`;

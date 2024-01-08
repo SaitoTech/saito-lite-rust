@@ -501,9 +501,6 @@ class Stun extends ModTemplate {
     // create a room
     let room_code = await this.sendCreateRoomTransaction();
 
-    //Store room_code in PeerManager
-    // this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
-
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
       return player !== this.publicKey;
