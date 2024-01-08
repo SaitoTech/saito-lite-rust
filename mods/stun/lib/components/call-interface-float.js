@@ -7,7 +7,6 @@ class CallInterfaceFloat {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.container = "body"; //"#game-chat ul";
     this.localStream = null;
     this.audio_boxes = {};
     this.audioEnabled = true;
@@ -75,17 +74,15 @@ class CallInterfaceFloat {
 
 
   render() {
-    if (this.container == "body"){
+
+      console.log("Stun UI");
+      console.log(this.mod.room_obj);
+
       if (!document.getElementById("small-audio-chatbox")){
-        this.app.browser.addElementToDom(CallInterfaceGenericTemplate());
+        this.app.browser.addElementToDom(CallInterfaceFloatTemplate());
       }else{
-        this.app.browser.replaceElementById(CallInterfaceGenericTemplate(), "small-audio-chatbox");
+        this.app.browser.replaceElementById(CallInterfaceFloatTemplate(), "small-audio-chatbox");
       }
-    }else{
-      if (!document.querySelector(".chat-manager-small-extension")) {
-        this.app.browser.addElementToSelector(CallInterfaceGameTemplate(), this.container);
-      } 
-    }
   }
 
   attachEvents() {
@@ -107,19 +104,7 @@ class CallInterfaceFloat {
 
   }
 
-  hide(completely = false) {
-    try{
-      document.querySelectorAll(".chat-manager-small-extension").forEach((item) => {
-        item.remove();
-      });
-
-      if (completely) {
-        document.querySelector("#start-group-video-chat").style.display = "block";
-      }
-    }catch(err){
-
-    }
-
+  hide() {
     if (document.getElementById("small-audio-chatbox")){
       document.getElementById("small-audio-chatbox").remove();
     }

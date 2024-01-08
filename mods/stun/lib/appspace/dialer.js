@@ -39,6 +39,11 @@ class Dialer {
     }
 
     this.receiver.render();
+
+    if (this.mod?.room_obj?.ui === "video" && !making_call){
+      this.callSetting.render();
+    }
+
     this.attachEvents();
   }
 
@@ -57,6 +62,8 @@ class Dialer {
 
         data.ui = video_switch.checked ? "video" : "voice";
 
+        this.app.connection.emit("update-media-preference", "video", video_switch.checked);
+
         this.app.connection.emit("relay-send-message", {
           recipient,
           request: "stun-connection-request",
@@ -66,6 +73,8 @@ class Dialer {
         //this.startRing();
         this.updateMessage("Dialing...");
         this.deactivateOptions();
+
+
 
         this.dialing = setTimeout(() => {
           this.app.connection.emit("relay-send-message", {
@@ -100,6 +109,9 @@ class Dialer {
 
     if (answer_button) {
       answer_button.onclick = (e) => {
+
+        this.app.connection.emit("update-media-preference", "video", (this.mod.room_obj.ui == "video"));
+
         this.app.connection.emit("relay-send-message", {
           recipient,
           request: "stun-connection-accepted",
@@ -109,6 +121,8 @@ class Dialer {
         this.stopRing();
         this.updateMessage("connecting...");
         setTimeout(()=> {
+          this.app.connection.emit("close-preview-window");
+          this.overlay.remove();
           this.app.connection.emit("stun-init-call-interface", "float");
           this.app.connection.emit("start-stun-call");
         }, 1000);
@@ -245,6 +259,8 @@ class Dialer {
         this.updateMessage("connecting...");
 
         setTimeout(()=> {
+          this.app.connection.emit("close-preview-window");
+          this.overlay.remove();
           this.app.connection.emit("stun-init-call-interface", "float");
           this.app.connection.emit("start-stun-call");
         }, 1000);
