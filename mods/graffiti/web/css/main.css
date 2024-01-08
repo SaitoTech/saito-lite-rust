@@ -1,0 +1,84 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5 !important;
+}
+
+#foreground {
+  position: absolute;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  outline: 1px solid #cccccc;
+  overflow: hidden;
+}
+
+#gridContainer {
+  position: absolute;
+}
+
+#grid {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.buttonContainer {
+  position: absolute;
+  left: 50%;
+  bottom: 0px;
+  transform: translateX(-50%);
+  justify-content: space-between;
+  display: flex;
+}
+
+button {
+  margin: 15px 10px;
+  width: 65px;
+  height: 65px;
+  border: 0;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: 0px 6px 3px 0px rgba(0, 0, 0, 0.5);
+  padding: 0rem 0rem;
+  min-width: 0rem;
+  background-color: rgba(0, 0, 0, 0.0);
+  cursor: auto;
+}
+
+#colorButton {
+  box-shadow: 0px 6px 3px 0px rgba(0, 0, 0, 0);
+}
+
+#colorPickerButton { /* label */
+  margin: 15px;
+  right: 0px;
+  bottom: 0px;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: 0px 6px 3px 0px rgba(0, 0, 0, 0.5);
+}
+
+#selectedColor {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #000000;
+}
+
+#colorPickerInput {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  display: none;
+}
