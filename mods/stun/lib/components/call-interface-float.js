@@ -45,10 +45,15 @@ class CallInterfaceFloat {
         this.startTimer();
       }
 
-      siteMessage(status, 2000);
+      siteMessage(`Stun connection ${status}`, 2000);
     });
 
-    this.app.connection.on("remove-peer-box", (peer_id, disconnection) => {
+    this.app.connection.on("stun-disconnect", ()=> {
+      this.audio_boxes = {};
+      this.hide();
+    });
+
+    this.app.connection.on("remove-peer-box", (peer_id) => {
       if (this.audio_boxes[peer_id]?.audio_box) {
         if (this.audio_boxes[peer_id].audio_box.remove) {
           this.audio_boxes[peer_id].audio_box.remove();
@@ -88,7 +93,7 @@ class CallInterfaceFloat {
     
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.onclick = () => {
-        this.disconnect();
+        this.app.connection.emit("stun-disconnect");
       };
     });
 
@@ -108,11 +113,6 @@ class CallInterfaceFloat {
     }
   }
 
-  disconnect() {
-    this.app.connection.emit("stun-disconnect");
-    this.audio_boxes = {};
-    this.hide(true);
-  }
 
   addStream(peer, remoteStream) {
 
@@ -124,7 +124,7 @@ class CallInterfaceFloat {
 
   }
 
-  createAudioBox(peer, remoteStream, container = ".image-list") {
+  createAudioBox(peer, remoteStream, container = ".stun-identicon-list") {
     if (!this.audio_boxes[peer]) {
       const audioBox = new AudioBox(this.app, this.mod, peer, container);
       this.audio_boxes[peer] = { audio_box: audioBox, remote_stream: remoteStream };

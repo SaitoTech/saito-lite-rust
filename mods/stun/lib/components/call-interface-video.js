@@ -464,7 +464,7 @@ class CallInterfaceVideo {
       images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
       count++;
     }
-    document.querySelector(".users-on-call .image-list").innerHTML = images;
+    document.querySelector(".users-on-call .stun-identicon-list").innerHTML = images;
     document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
     this.users_on_call = count;
   }

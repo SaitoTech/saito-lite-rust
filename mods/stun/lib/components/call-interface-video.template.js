@@ -15,7 +15,7 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
             <div class="timer">
               <div class="counter"> 00.00 </div>
               <div class="users-on-call">
-                <div class="image-list"></div>
+                <div class="stun-identicon-list"></div>
                 <div class="users-on-call-text"><span class="users-on-call-count">1</span> on call</div>
               </div>
               <div class="add_users_container icon_click_area">

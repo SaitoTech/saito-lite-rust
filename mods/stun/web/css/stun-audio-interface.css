@@ -16,10 +16,17 @@
 }
 
 
-.small-audio-chatbox .image-list img {
+.small-audio-chatbox .stun-identicon-list img {
     width: 3.5rem;
     height: 3.5rem;
 }
+
+
+.small-audio-chatbox .control-panel .timer {
+    min-width: unset;
+}
+
+
 
 .audio-box.speaking {
     border-color: var(--saito-secondary);
@@ -38,7 +45,20 @@
   }
 
 
+@media screen and (max-width: 900px) {
+    .small-audio-chatbox .control-panel{
+        padding-bottom: unset;
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
 
+    .small-audio-chatbox .control-panel .control-list {
+        margin-bottom: unset;
+        gap: unset;
+        width: 100%;
+        justify-content: space-evenly;
+    }
+}
   
 
 

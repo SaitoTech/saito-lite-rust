@@ -17,6 +17,8 @@ class PeerManager {
     this.audioEnabled = true;
     this.recording = false;
 
+    this.remain_in_call = true;
+
     app.connection.on("stun-disconnect", () => {
       this.leave();
     });
@@ -182,6 +184,8 @@ class PeerManager {
         this.audioEnabled = state;
       } else if (kind === "video") {
         this.videoEnabled = state;
+      }else if (kind == "ondisconnect") {
+        this.remain_in_call = state;
       }
     });
   }
@@ -189,7 +193,7 @@ class PeerManager {
   async handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
 
-    console.log(data);
+    console.log("Stun Signal Message:", data);
 
     if (type == "peer-joined") {
       this.createPeerConnection(public_key, "offer");
@@ -197,6 +201,7 @@ class PeerManager {
     }
 
     if (type == "peer-left") {
+      console.log("PEER LEFT");
       this.removePeerConnection(public_key);
       return;
     }
@@ -487,6 +492,11 @@ class PeerManager {
     this.app.connection.emit("remove-peer-box", peerId);
 
     this.updatePeers();
+
+    if (this.peers.size < 1 && !this.remain_in_call) {
+      siteMessage(`${this.app.keychain.returnUsername(peerId)} hung up`, 2500);
+      this.app.connection.emit("stun-disconnect");
+    }
   }
 
   renegotiate(peerId, retryCount = 0) {

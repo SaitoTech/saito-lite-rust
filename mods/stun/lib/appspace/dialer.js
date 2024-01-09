@@ -64,6 +64,7 @@ class Dialer {
         data.ui = video_switch.checked ? "video" : "voice";
 
         this.app.connection.emit("update-media-preference", "video", video_switch.checked);
+        this.app.connection.emit("update-media-preference", "ondisconnect", false);
 
         this.app.connection.emit("relay-send-message", {
           recipient,
@@ -112,6 +113,7 @@ class Dialer {
       answer_button.onclick = (e) => {
 
         this.app.connection.emit("update-media-preference", "video", (this.mod.room_obj.ui == "video"));
+        this.app.connection.emit("update-media-preference", "ondisconnect", false);
 
         this.app.connection.emit("relay-send-message", {
           recipient,

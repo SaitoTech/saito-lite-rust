@@ -539,12 +539,12 @@
   gap: 1rem;
 }
 
-.users-on-call .image-list {
+.stun-identicon-list {
   display: flex;
   margin-right: 1rem;
 }
 
-.image-list img {
+.stun-identicon-list img {
   width: 4rem;
   height: 4rem;
   margin-right: 1rem;

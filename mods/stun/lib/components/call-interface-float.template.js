@@ -5,7 +5,7 @@ module.exports = CallInterfaceFloat = () => {
       <div class="control-panel">
         <div class="timer">
           <div class="counter"> 00.00 </div>
-          <div class="image-list"></div>
+          <div class="stun-identicon-list"></div>
         </div>  
         <div class="control-list">
           <span class="audio-control icon_click_area">
