@@ -119,16 +119,17 @@ class PeerManager {
           pc.addTrack(videoTrack);
 
           this.renegotiate(key);
-          //console.log("adding presentation video track to peer");
         });
       } catch (err) {
         console.error("Error accessing media devices.", err);
       }
-      // let sender = pc.addTrack(videoTrack);
+
     });
 
     //Launch the Stun call
     app.connection.on("start-stun-call", async () => {
+
+      console.log("STUN: start-stun-call");
       //Get my local media
       try {
         this.localStream = await navigator.mediaDevices.getUserMedia({
@@ -159,7 +160,7 @@ class PeerManager {
       //
       if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
         if (this.app.options?.stun) {
-          console.log("my peers, ", this.app.options.stun);
+          console.log("STUN: my peers, ", this.app.options.stun);
           for (peer of this.app.options.stun) {
             if (peer !== this.mod.publicKey) {
               this.mod.sendCallEntryTransaction(peer);
@@ -201,7 +202,7 @@ class PeerManager {
     }
 
     if (type == "peer-left") {
-      console.log("PEER LEFT");
+      console.log("STUN: PEER LEFT");
       this.removePeerConnection(public_key);
       return;
     }
@@ -281,7 +282,7 @@ class PeerManager {
   }
 
   async createPeerConnection(peerId, type) {
-    console.log("Create Peer Connection with " + peerId);
+    console.log("STUN: Create Peer Connection with " + peerId);
 
     // check if peer connection already exists
     const peerConnection = new RTCPeerConnection({
@@ -318,7 +319,7 @@ class PeerManager {
     const remoteStream = new MediaStream();
     peerConnection.addEventListener("track", (event) => {
       // console.log("trackss", event.track, "stream :", event.streams);
-      console.log("another remote stream added", event.track);
+      console.log("STUN: another remote stream added", event.track);
       if (this.trackIsPresentation) {
         const remoteStream = new MediaStream();
         remoteStream.addTrack(event.track);
@@ -354,7 +355,7 @@ class PeerManager {
     peerConnection.dc = dc;
 
     dc.onmessage = (event) => {
-      console.log("Message from data channel:", event.data);
+      console.log("STUN: Message from data channel:", event.data);
       switch (event.data) {
         case "presentation":
           this.trackIsPresentation = true;
@@ -368,20 +369,21 @@ class PeerManager {
     };
 
     dc.onopen = (event) => {
-      console.log("Data channel is open");
+      console.log("STUN: Data channel is open");
     };
 
     dc.onclose = (event) => {
-      console.log("Data channel is closed");
+      console.log("STUN: Data channel is closed");
     };
 
     peerConnection.addEventListener("datachannel", (event) => {
+      console.log("STUN: datachannel");
       let receiveChannel = event.channel;
 
       peerConnection.dc = receiveChannel;
 
       receiveChannel.onmessage = (event) => {
-        console.log("Message from data channel:", event.data);
+        console.log("STUN: Message from data channel:", event.data);
         switch (event.data) {
           case "presentation":
             this.trackIsPresentation = true;
@@ -395,23 +397,23 @@ class PeerManager {
       };
 
       receiveChannel.onopen = (event) => {
-        console.log("Data channel is open");
+        console.log("STUN: Data channel is open");
       };
 
       receiveChannel.onclose = (event) => {
-        console.log("Data channel is closed");
+        console.log("STUN: Data channel is closed");
       };
     });
 
     peerConnection.addEventListener("connectionstatechange", () => {
+      console.log("STUN: connectionstatechange -- " + peerConnection.connectionState);
       if (
         peerConnection.connectionState === "failed" ||
         peerConnection.connectionState === "disconnected"
       ) {
         setTimeout(() => {
-          // console.log('sending offer');
           this.reconnect(peerId, type);
-        }, 30000);
+        }, 5000);
       }
       if (peerConnection.connectionState === "connected") {
         let sound = new Audio("/videocall/audio/enter-call.mp3");
@@ -441,12 +443,12 @@ class PeerManager {
       const peerConnection = this.peers.get(peerId);
 
       if (!peerConnection) {
-        console.log(`No peerConnection found for peerId: ${peerId}`);
+        console.log(`STUN: No peerConnection found for peerId: ${peerId}`);
         return;
       }
 
       if (peerConnection.connectionState === "connected") {
-        console.log("Reconnection successful");
+        console.log("STUN: Reconnection successful");
         return;
       }
 
@@ -455,7 +457,7 @@ class PeerManager {
         peerConnection.connectionState !== "connected" &&
         peerConnection.connectionState !== "connecting"
       ) {
-        console.log(`Removing peerConnection with state: ${peerConnection.connectionState}`);
+        console.log(`STUN: Removing peerConnection with state: ${peerConnection.connectionState}`);
         this.removePeerConnection(peerId);
         if (type === "offer") {
           // this.createPeerConnection(peerId, "offer");
@@ -463,12 +465,12 @@ class PeerManager {
       }
 
       if (currentRetry === maxRetries) {
-        console.log("Reached maximum number of reconnection attempts, giving up");
+        console.log("STUN: Reached maximum number of reconnection attempts, giving up");
         return;
       }
 
       setTimeout(() => {
-        console.log(`Reconnection attempt ${currentRetry + 1}/${maxRetries}`);
+        console.log(`STUN: Reconnection attempt ${currentRetry + 1}/${maxRetries}`);
         attemptReconnect(currentRetry + 1);
       }, retryDelay);
     };
@@ -486,7 +488,7 @@ class PeerManager {
 
       let sound = new Audio("/videocall/audio/end-call.mp3");
       sound.play();
-      console.log("peer left");
+      console.log("STUN: peer left");
     }
 
     this.app.connection.emit("remove-peer-box", peerId);
@@ -508,12 +510,12 @@ class PeerManager {
       return;
     }
 
-    console.log("renegotiating with pc", peerConnection);
+    console.log("STUN: renegotiating with peer connection", peerConnection);
     // console.log('signalling state, ', peerConnection.signalingState)
     if (peerConnection.signalingState !== "stable") {
       if (retryCount < maxRetries) {
         console.log(
-          `Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${
+          `STUM: Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${
             retryCount + 1
           }/${maxRetries})`
         );
@@ -521,7 +523,7 @@ class PeerManager {
           this.renegotiate(peerId, retryCount + 1);
         }, retryDelay);
       } else {
-        console.log("Reached maximum number of renegotiation attempts, giving up");
+        console.log("STUN: Reached maximum number of renegotiation attempts, giving up");
       }
       return;
     }
@@ -556,7 +558,7 @@ class PeerManager {
   leave() {
     this.localStream.getTracks().forEach((track) => {
       track.stop();
-      console.log("stopping track");
+      console.log("STUN: stopping track to leave call");
     });
     let keys = [];
     this.peers.forEach((peerConnections, key) => {
@@ -603,8 +605,6 @@ class PeerManager {
     const threshold = 20;
 
     function update() {
-      //console.log("Update");
-
       analyser.getByteFrequencyData(dataArray);
       const average = dataArray.reduce((a, b) => a + b) / bufferLength;
 
@@ -632,7 +632,6 @@ class PeerManager {
       description: "Video Chunks data store",
     });
     const start_recording = await sconfirm("Are you sure you want to start recording?");
-    console.log(start_recording);
     if (!start_recording) return false;
     this.recording = true;
     this.chunks = [];
@@ -760,7 +759,6 @@ class PeerManager {
   stopRecordCall() {
     this.mediaRecorder.stop();
     this.recording = false;
-    console.log(this.mediaRecorder.state);
   }
 }
 

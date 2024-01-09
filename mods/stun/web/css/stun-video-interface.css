@@ -77,7 +77,6 @@
 
 .stun-chatbox.minimize .expanded-video {
   width: 100%;
-  margin-right: unset;
 }
 
 .stun-chatbox.minimize .side-videos {
@@ -153,6 +152,7 @@
   transition: all 0.5s ease;
   position: relative;
   padding: 1rem;
+  gap: 1rem;
 }
 
 .gallery {
@@ -169,7 +169,6 @@
 .expanded-video {
   width: 75%;
   height: 100%;
-  margin-right: 10px;
 }
 
 .expanded-video .video-box-container-large {
@@ -620,19 +619,16 @@
   .stun-chatbox .large-wrapper {
     grid-gap: 1rem;
     padding: 0;
-    height: 70%;
     background: black;
   }
-  .stun-chatbox .footer {
-    height: 30%;
-  }
+
   .control-panel {
-    padding-bottom: 5rem;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: start;
+    justify-content: end;
     align-items: center;
     gap: 3rem;
+    padding-bottom: 3rem;
   }
   .control-panel .control-list {
     margin-bottom: 1.7rem;
@@ -647,35 +643,14 @@
   .add_users_container label {
     display: none;
   }
+
 }
 
-@media screen and (max-height: 850px) {
-  .video-box-container-large:nth-child(2) {
-  }
-  .control-panel {
-    padding-bottom: 10rem;
-  }
-  .control-panel span {
-    width: 4rem;
-    height: 4rem;
-  }
-  .control-panel .timer {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-  }
-  .control-panel .timer .counter {
-    margin-left: 1rem;
-  }
-  .control-panel .timer .counter span {
-    color: orangered;
-    font-size: 2rem;
-  }
-}
+
 
 @media screen and (max-width: 600px) {
   .control-panel {
-    padding: 4rem 0;
+    padding: 4rem 1rem;
   }
 
   .control-panel .timer {
@@ -689,7 +664,7 @@
   .control-panel .control-list {
     gap: unset;
     width: 40rem;
-    max-width: 98vw;
+    max-width: 100%;
     justify-content: space-between;
   }
 }
@@ -726,6 +701,7 @@
   row-gap: 2rem;
   align-items: center;
   color: var(--saito-white);
+  max-width: 100vw;
 }
 
 .chat-settings-preview-section p {
@@ -865,13 +841,13 @@
     padding: 1rem;
   }
   .chat-settings-preview {
-    width: 40rem;
+    width: 45rem;
   }
 }
 
 @media screen and (max-width: 900px) {
   .chat-settings-preview {
-    width: 50rem;
+    width: 40rem;
   }
 }
 
@@ -902,8 +878,10 @@
     grid-gap: 0.5rem;
   }
 
-  .side-videos .video-box-container-large {
-    height: unset;
+  .side-videos .video-box-container-large, .expanded-video .video-box-container-large {
+    height: min(100vw, 37vh);
+    width: fit-content;
+    margin: auto;
   }
 
   .video-box-container-large > #connection-message {
@@ -921,7 +899,7 @@
   }
   .expanded-video {
     width: 100%;
-    margin-right: 0;
+    max-height: 50%;
   }
 }
 

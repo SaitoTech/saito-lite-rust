@@ -76,6 +76,7 @@ class Stun extends ModTemplate {
 
     app.connection.on("stun-disconnect", () => {
       this.room_obj = null;
+      this.CallInterface = null;
     });
   }
 
@@ -285,16 +286,16 @@ class Stun extends ModTemplate {
 
             if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
               if (message.request === "stun-send-call-list-request") {
-                console.log("OnConfirmation:  stun-send-call-list-request");
+                //console.log("OnConfirmation:  stun-send-call-list-request");
                 this.receiveCallListRequestTransaction(this.app, tx);
               }
               if (message.request === "stun-send-call-list-response") {
-                console.log("OnConfirmation:  stun-send-call-list-response");
+                //console.log("OnConfirmation:  stun-send-call-list-response");
                 this.receiveCallListResponseTransaction(this.app, tx);
               }
 
               if (message.request === "stun-send-message-to-peers") {
-                console.log("OnConfirmation: stun-send-message-to-peers");
+                //console.log("OnConfirmation: stun-send-message-to-peers");
                 this.peerManager.handleSignalingMessage(tx.msg.data);
               }
 
@@ -315,7 +316,7 @@ class Stun extends ModTemplate {
 
     if (this.app.BROWSER === 1) {
       if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-        console.log(txmsg);
+        //console.log(txmsg);
 
         if (txmsg.request.substring(0, 10) == "stun-send-") {
           if (this.hasSeenTransaction(tx)) return;
@@ -326,18 +327,18 @@ class Stun extends ModTemplate {
           }
 
           if (txmsg.request === "stun-send-call-list-request") {
-            console.log("HPT:  stun-send-call-list-request");
+            //console.log("HPT:  stun-send-call-list-request");
             this.receiveCallListRequestTransaction(this.app, tx);
             return;
           }
           if (txmsg.request === "stun-send-call-list-response") {
-            console.log("HPT:  stun-send-call-list-response");
+            //console.log("HPT:  stun-send-call-list-response");
             this.receiveCallListResponseTransaction(this.app, tx);
             return;
           }
 
           if (txmsg.request === "stun-send-message-to-peers") {
-            console.log("HPT: stun-send-message-to-peers");
+            //console.log("HPT: stun-send-message-to-peers");
             this.peerManager.handleSignalingMessage(tx.msg.data);
             return;
           }
@@ -358,7 +359,7 @@ class Stun extends ModTemplate {
   }
 
   async sendStunMessageToPeersTransaction(_data, recipients) {
-    console.log("sending to peers ", recipients, " data ", _data);
+    //console.log("sending to peers ", recipients, " data ", _data);
     let request = "stun-send-message-to-peers";
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -422,7 +423,6 @@ class Stun extends ModTemplate {
 
     if (peers) {
       peers.forEach((key) => {
-        console.log(key);
         if (!call_list.includes(key)) {
           call_list.push(key);
         }
@@ -433,7 +433,7 @@ class Stun extends ModTemplate {
       call_list.push(this.publicKey);
     }
 
-    console.log("call list", call_list);
+    console.log("STUN: call list", call_list);
 
     this.sendCallListResponseTransaction(from, call_list);
   }
@@ -486,12 +486,10 @@ class Stun extends ModTemplate {
     //
 
     if (this.hasReceivedData[hashed_data]) {
-      console.log("already received this transaction");
       return true;
     }
     this.hasReceivedData[hashed_data] = true;
 
-    console.log(hashed_data, tx.returnMessage());
     return false;
   }
 }

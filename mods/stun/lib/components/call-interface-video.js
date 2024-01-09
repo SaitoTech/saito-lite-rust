@@ -38,7 +38,7 @@ class CallInterfaceVideo {
       /* automatically copy invite link to clipboard for first user */
       console.log(this.users_on_call);
 
-      if (this.users_on_call == 1) {
+      if (this.users_on_call <= 1) {
         this.copyInviteLink();
       }
 
