@@ -391,7 +391,7 @@
   width: calc(100% - 1rem);
 }
 
-.video-call-info > p {
+.video-call-info .saito-address {
   font-size: 2rem;
   white-space: nowrap;
   overflow: hidden;
