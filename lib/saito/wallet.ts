@@ -169,16 +169,13 @@ export default class Wallet extends SaitoWallet {
         let balance = await this.returnBalance();
 
         if (typeof(balance) == 'undefined') {
-          balance = 0.00;
+          balance = "0.00";
         }
 
-        let balance_as_float = parseFloat(balance);
-        if (balance_as_float < 9999) {
-          balance_as_float = balance_as_float.toPrecision(precision);
-        }
+        balance = Number(balance);
+        let format_balance = balance.toPrecision(precision);
 
-        return balance_as_float.toString();
-        this.save();
+        return format_balance.toString();
       }
     }
 
