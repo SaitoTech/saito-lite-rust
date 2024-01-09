@@ -418,6 +418,9 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 		    if (res.length == 0) { no_loc = true; }		  
 
 		    if (no_loc) {
+
+console.log("NO LINE OF CONTROL FOUND IN: " + key + " -- " + i);
+
 		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
 		      if (this.game.players.length == 2) {
 		        this.game.spaces[i].units[key] = [];
@@ -426,9 +429,13 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 		        moves.push("winter_attrition\t"+key+"\t"+space.key);
 		      }
 		    } else {
+
+console.log("LOC for " + key + " is " + JSON.stringify(res));
+
 		      if (res.length > 1) {
 		        moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
 		      } else {
+console.log("auto-resolving in " + space.key);
 	                this.autoResolveWinterRetreat(key, space.key);
 		      }
 		    }
@@ -712,6 +719,7 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 	  this.addRegular("papacy", "siena", 1);
 
 	  this.setAllies("protestant", "france");
+	  this.setAllies("papacy", "genoa");
 	  this.setAllies("papacy", "venice");
 	  this.addRegular("venice", "ravenna", 1);
 	  this.setEnemies("papacy", "france");
@@ -5219,7 +5227,7 @@ console.log("ASSAULT: " + JSON.stringify(his_self.game.state.assault));
 	  }
 
 	  for (let i = 0; i < space.units[loser].length; i++) {
-	    this.captureLeader(loser, winner, spacekey, space.units[f][i]);
+	    this.captureLeader(loser, winner, spacekey, space.units[loser][i]);
 	  }
 
 	  space.units[loser] = [];
@@ -6622,23 +6630,11 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
         if (mv[0] === "card_draw_phase") {
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("CARD DRAW PHASE");
-
 	  //
 	  // deal cards and add home card
 	  //
 	  for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
-console.log("player: " + (i+1));
-console.log(JSON.stringify(this.game.state.players_info[i].factions));
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-
-console.log("cards left for faction examining: " + this.game.state.players_info[i].factions[z]);
 
 	      //
 	      // sanity check we are major power
@@ -6653,9 +6649,7 @@ console.log("cards left for faction examining: " + this.game.state.players_info[
 // is_testing
 //
 if (this.game.state.scenario == "is_testing") { cardnum = 1; }
-//
-//
-//
+
 	        //
 	        // fuggers card -1
 	        //
@@ -6668,19 +6662,11 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
-console.log("pre cl: " + JSON.stringify(this.game.state.cards_left));
-
 	        // try to update cards_left
 	        if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
 	          this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
 	        }
 	        this.game.state.cards_left[this.game.state.players_info[i].factions[z]] += cardnum;
-
-		// home cards added later - in - add_home_card 
-console.log("post cl: " + JSON.stringify(this.game.state.cards_left));
-
-console.log("cards left for faction: " + this.game.state.players_info[i].factions[z]);
-console.log("cards left for faction: " + this.game.state.cards_left[this.game.state.players_info[i].factions[z]]);
 
 		//
 		// and display cards left
@@ -7688,7 +7674,10 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
  	  let faction = mv[2];
  	  let hc = this.returnDeck();
 
-
+//
+// testing
+//
+if (this.game.state.scenario != "is_testing") {
 	  for (let key in hc) {
 	    if (hc[key].faction === faction) {
 	      if (!this.game.state.cards_left[faction]) { this.game.state.cards_left[faction] = 0; }
@@ -7698,10 +7687,11 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	      }
 	    }
 	  }
+}
 
 	  this.displayCardsLeft();
-
 	  this.game.queue.splice(qe, 1);
+
 	  return 1;
 
 	}

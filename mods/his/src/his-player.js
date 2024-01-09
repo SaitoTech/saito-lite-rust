@@ -434,11 +434,15 @@
 if (faction === "venice" && spacekey == "agram") {
   console.log("VENICE CHECK: " + JSON.stringify(res));
 }
+console.log("AUTO: " + JSON.stringify(res));
     if (res.length > 0) {
       let space = this.game.spaces[spacekey];
       let roll = this.rollDice(res.length);
-      let retreat_destination = res[roll-1].key;
-      his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+      if (res[roll-1].hops > 0) {
+        let retreat_destination = res[roll-1].key;
+console.log("RETREAT DESTINATION IS: " + retreat_destination);
+        his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+      }
     }
   }
 

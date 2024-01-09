@@ -202,7 +202,6 @@ console.log("faction: " + faction);
     // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == "") { return true; }
 
-console.log("A");
     // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == faction) { return true; }
 
@@ -212,11 +211,8 @@ console.log("A");
     // home spaces of other powers seized by the power.
     if (space.home !== faction && space.political === faction) { return true; }
 
-console.log("B");
     // home spaces of allied minor powers. 
     if (space.home !== faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
-
-console.log("C");
 
     return false;
   }
@@ -706,8 +702,6 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
-    if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space]; }
-
     let original_spacekey = space.key;
     let his_self = this;
     let already_routed_through = {};
@@ -743,7 +737,10 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	if (spacekey == original_spacekey) { return 1; }
 	return 0;
-      }
+      }, 
+
+
+      true , // include source
     );
 
     return res;

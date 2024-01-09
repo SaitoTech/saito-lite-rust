@@ -460,6 +460,20 @@
 	      }
 	    }
 	  }
+
+	  //
+	  // 2P modifications
+	  //
+          if (faction === "protestant") {
+	    if (!cd.includes("genoa") && his_self.returnAllyOfMinorPower("genoa") !== "genoa")  { cd.push("genoa"); }
+	    if (!cd.includes("venice") && his_self.returnAllyOfMinorPower("venice") !== "venice")  { cd.push("venice"); }
+	    if (!cd.includes("scotland") && his_self.returnAllyOfMinorPower("scotland") !== "scotland")  { cd.push("scotland"); }
+	    if (!cd.includes("venice")) { cd.push("venice"); }
+	    if (!cd.includes("genoa"))  { cd.push("scotland"); }
+	    if (!ca.includes("genoa"))  { ca.push("genoa"); }
+	    if (!ca.includes("venice")) { ca.push("venice"); }
+	  }
+
 	
 	  let msg = 'Activate or De-activate a Minor Power?';
     	  let html = '<ul>';
@@ -477,12 +491,28 @@
 
 	    let action = $(this).attr("id");
 
+
 	    if (action === "skip") { his_self.endTurn(); return 0; }
 
 	    if (ca.includes(action)) {
-	      his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+
+	      let finished = 0;
+
+	      if (faction === "protestant" && action === "genoa") {
+		his_self.addMove("activate_minor_power\thapsburg\tgenoa");
+		finished = 1;
+	      }
+	      if (faction === "protestant" && action === "venice") {
+		his_self.addMove("activate_minor_power\thapsburg\tvenice");
+		finished = 1;
+	      }
+	      if (finished == 0) {
+	        his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	      }
+
 	    } else {
-	      his_self.addMove("deactivate_minor_power\t"+faction+"\t"+action);
+
+	      his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
 	    }
 	    his_self.endTurn();
 	  });

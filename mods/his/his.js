@@ -3403,6 +3403,20 @@ if (this.game.players.length > 2) {
 	      }
 	    }
 	  }
+
+	  //
+	  // 2P modifications
+	  //
+          if (faction === "protestant") {
+	    if (!cd.includes("genoa") && his_self.returnAllyOfMinorPower("genoa") !== "genoa")  { cd.push("genoa"); }
+	    if (!cd.includes("venice") && his_self.returnAllyOfMinorPower("venice") !== "venice")  { cd.push("venice"); }
+	    if (!cd.includes("scotland") && his_self.returnAllyOfMinorPower("scotland") !== "scotland")  { cd.push("scotland"); }
+	    if (!cd.includes("venice")) { cd.push("venice"); }
+	    if (!cd.includes("genoa"))  { cd.push("scotland"); }
+	    if (!ca.includes("genoa"))  { ca.push("genoa"); }
+	    if (!ca.includes("venice")) { ca.push("venice"); }
+	  }
+
 	
 	  let msg = 'Activate or De-activate a Minor Power?';
     	  let html = '<ul>';
@@ -3420,12 +3434,28 @@ if (this.game.players.length > 2) {
 
 	    let action = $(this).attr("id");
 
+
 	    if (action === "skip") { his_self.endTurn(); return 0; }
 
 	    if (ca.includes(action)) {
-	      his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+
+	      let finished = 0;
+
+	      if (faction === "protestant" && action === "genoa") {
+		his_self.addMove("activate_minor_power\thapsburg\tgenoa");
+		finished = 1;
+	      }
+	      if (faction === "protestant" && action === "venice") {
+		his_self.addMove("activate_minor_power\thapsburg\tvenice");
+		finished = 1;
+	      }
+	      if (finished == 0) {
+	        his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	      }
+
 	    } else {
-	      his_self.addMove("deactivate_minor_power\t"+faction+"\t"+action);
+
+	      his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
 	    }
 	    his_self.endTurn();
 	  });
@@ -11753,7 +11783,6 @@ console.log("faction: " + faction);
     // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == "") { return true; }
 
-console.log("A");
     // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == faction) { return true; }
 
@@ -11763,11 +11792,8 @@ console.log("A");
     // home spaces of other powers seized by the power.
     if (space.home !== faction && space.political === faction) { return true; }
 
-console.log("B");
     // home spaces of allied minor powers. 
     if (space.home !== faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
-
-console.log("C");
 
     return false;
   }
@@ -12257,8 +12283,6 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
-    if (space.type == "fortress" || space.type == "electorate" || space.type == "key" || space.fortified == 1) { return [space]; }
-
     let original_spacekey = space.key;
     let his_self = this;
     let already_routed_through = {};
@@ -12294,7 +12318,10 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	if (spacekey == original_spacekey) { return 1; }
 	return 0;
-      }
+      }, 
+
+
+      true , // include source
     );
 
     return res;
@@ -15295,7 +15322,8 @@ console.log("searching for: " + sourcekey);
 
 
 
-  captureLeader(winning_faction, losing_faction, space, unit) {
+  captureLeader(winning_faction, losing_faction, space, unit = false) {
+    if (!unit) { return; }
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let p = this.returnPlayerOfFaction(winning_faction);
@@ -17105,6 +17133,9 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 		    if (res.length == 0) { no_loc = true; }		  
 
 		    if (no_loc) {
+
+console.log("NO LINE OF CONTROL FOUND IN: " + key + " -- " + i);
+
 		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
 		      if (this.game.players.length == 2) {
 		        this.game.spaces[i].units[key] = [];
@@ -17113,9 +17144,13 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 		        moves.push("winter_attrition\t"+key+"\t"+space.key);
 		      }
 		    } else {
+
+console.log("LOC for " + key + " is " + JSON.stringify(res));
+
 		      if (res.length > 1) {
 		        moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
 		      } else {
+console.log("auto-resolving in " + space.key);
 	                this.autoResolveWinterRetreat(key, space.key);
 		      }
 		    }
@@ -17399,6 +17434,7 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 	  this.addRegular("papacy", "siena", 1);
 
 	  this.setAllies("protestant", "france");
+	  this.setAllies("papacy", "genoa");
 	  this.setAllies("papacy", "venice");
 	  this.addRegular("venice", "ravenna", 1);
 	  this.setEnemies("papacy", "france");
@@ -21906,7 +21942,7 @@ console.log("ASSAULT: " + JSON.stringify(his_self.game.state.assault));
 	  }
 
 	  for (let i = 0; i < space.units[loser].length; i++) {
-	    this.captureLeader(loser, winner, spacekey, space.units[f][i]);
+	    this.captureLeader(loser, winner, spacekey, space.units[loser][i]);
 	  }
 
 	  space.units[loser] = [];
@@ -23309,23 +23345,11 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
         if (mv[0] === "card_draw_phase") {
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("CARD DRAW PHASE");
-
 	  //
 	  // deal cards and add home card
 	  //
 	  for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
-console.log("player: " + (i+1));
-console.log(JSON.stringify(this.game.state.players_info[i].factions));
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-
-console.log("cards left for faction examining: " + this.game.state.players_info[i].factions[z]);
 
 	      //
 	      // sanity check we are major power
@@ -23340,9 +23364,7 @@ console.log("cards left for faction examining: " + this.game.state.players_info[
 // is_testing
 //
 if (this.game.state.scenario == "is_testing") { cardnum = 1; }
-//
-//
-//
+
 	        //
 	        // fuggers card -1
 	        //
@@ -23355,19 +23377,11 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
-console.log("pre cl: " + JSON.stringify(this.game.state.cards_left));
-
 	        // try to update cards_left
 	        if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
 	          this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
 	        }
 	        this.game.state.cards_left[this.game.state.players_info[i].factions[z]] += cardnum;
-
-		// home cards added later - in - add_home_card 
-console.log("post cl: " + JSON.stringify(this.game.state.cards_left));
-
-console.log("cards left for faction: " + this.game.state.players_info[i].factions[z]);
-console.log("cards left for faction: " + this.game.state.cards_left[this.game.state.players_info[i].factions[z]]);
 
 		//
 		// and display cards left
@@ -24375,7 +24389,10 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
  	  let faction = mv[2];
  	  let hc = this.returnDeck();
 
-
+//
+// testing
+//
+if (this.game.state.scenario != "is_testing") {
 	  for (let key in hc) {
 	    if (hc[key].faction === faction) {
 	      if (!this.game.state.cards_left[faction]) { this.game.state.cards_left[faction] = 0; }
@@ -24385,10 +24402,11 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 	      }
 	    }
 	  }
+}
 
 	  this.displayCardsLeft();
-
 	  this.game.queue.splice(qe, 1);
+
 	  return 1;
 
 	}
@@ -25330,11 +25348,15 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 if (faction === "venice" && spacekey == "agram") {
   console.log("VENICE CHECK: " + JSON.stringify(res));
 }
+console.log("AUTO: " + JSON.stringify(res));
     if (res.length > 0) {
       let space = this.game.spaces[spacekey];
       let roll = this.rollDice(res.length);
-      let retreat_destination = res[roll-1].key;
-      his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+      if (res[roll-1].hops > 0) {
+        let retreat_destination = res[roll-1].key;
+console.log("RETREAT DESTINATION IS: " + retreat_destination);
+        his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
+      }
     }
   }
 

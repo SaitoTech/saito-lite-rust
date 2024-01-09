@@ -152,7 +152,8 @@
 
 
 
-  captureLeader(winning_faction, losing_faction, space, unit) {
+  captureLeader(winning_faction, losing_faction, space, unit = false) {
+    if (!unit) { return; }
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let p = this.returnPlayerOfFaction(winning_faction);
