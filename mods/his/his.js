@@ -17964,6 +17964,14 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  // if no-one is left to fortify
 	  //
 	  if (this.game.state.field_battle.defender_land_units_remaining <= 0) {
+	    //
+	    // immediately besiege if a key
+	    //
+	    if (space.type === "fortress" || space.type === "electorate" || space.type === "key") {
+              space.besieged = 2; // 2 = cannot attack this round
+              space.besieged_factions.push(faction);
+	    }
+	    this.displaySpace(spacekey);
 	    return 1;
 	  }
 
@@ -20703,7 +20711,11 @@ console.log("assign hits 3");
 	  // calculate units remaining
 	  //
           his_self.game.state.field_battle.attacker_land_units_remaining = his_self.game.state.field_battle.attacker_units.length - his_self.game.state.field_battle.defender_hits;
-	  his_self.game.state.field_battle.defender_land_units_remaining = his_self.game.state.field_battle.defender_units.length - his_self.game.state.field_battle.attacker_hits;
+	  let du = 0;
+	  for (let i = 0; i < his_self.game.state.field_battle.defender_units.length; i++) {
+	    if (his_self.game.state.field_battle.defender_units[i] != "defender") { du++; }
+	  }
+	  his_self.game.state.field_battle.defender_land_units_remaining = du - his_self.game.state.field_battle.attacker_hits;
 
 	  if (his_self.game.state.field_battle.attacker_land_units_remaining == 0 && his_self.game.state.field_battle.defender_land_units_remaining == 0) {
 	    if (his_self.game.state.field_battle.attacker_rolls > his_self.game.state.field_battle.defender_rolls) {
