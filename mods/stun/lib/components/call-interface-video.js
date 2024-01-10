@@ -12,7 +12,6 @@ class CallInterfaceVideo {
     this.mod = mod;
     this.videocall_settings = new VideocallSettings(app, mod);
     this.effectsMenu = new Effects(app, mod);
-    this.users_on_call = 0;
     this.peers = []; //people in the call
     this.localStream;
     this.video_boxes = {};
@@ -35,10 +34,7 @@ class CallInterfaceVideo {
 
       this.room_link = this.createRoomLink();
 
-      /* automatically copy invite link to clipboard for first user */
-      console.log(this.users_on_call);
-
-      if (this.users_on_call <= 1) {
+      if (this.mod.room_obj.host_public_key == this.mod.publicKey) {
         this.copyInviteLink();
       }
 
@@ -55,17 +51,7 @@ class CallInterfaceVideo {
       this.addRemoteStream(peer, remoteStream);
     });
 
-    this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
-      if (room_code !== this.mod.room_obj.room_code) {
-        return;
-      }
-      let my_pub_key = this.app.wallet.getPublicKey();
-      let container;
-      if (peer_id === my_pub_key) {
-        container = this.local_container;
-      }
-
-      this.createVideoBox(peer_id, container);
+    this.app.connection.on("stun-update-connection-message", (peer_id, status) => {
       if (status === "connecting") {
         this.loader.remove();
         this.video_boxes[peer_id].video_box.renderPlaceholder("connecting");
@@ -466,7 +452,6 @@ class CallInterfaceVideo {
     }
     document.querySelector(".users-on-call .stun-identicon-list").innerHTML = images;
     document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
-    this.users_on_call = count;
   }
 
   startTimer() {

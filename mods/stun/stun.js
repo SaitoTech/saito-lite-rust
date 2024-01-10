@@ -28,15 +28,9 @@ class Stun extends ModTemplate {
     this.hasReceivedData = {};
     this.servers = [
       {
-        urls: "stun:stun-sf.saito.io:3478",
-      },
-      {
         urls: "turn:stun-sf.saito.io:3478",
         username: "guest",
         credential: "somepassword",
-      },
-      {
-        urls: "stun:stun-sg.saito.io:3478",
       },
       {
         urls: "turn:stun-sg.saito.io:3478",
@@ -44,13 +38,28 @@ class Stun extends ModTemplate {
         credential: "somepassword",
       },
       {
-        urls: "stun:stun-de.saito.io:3478",
-      },
-      {
         urls: "turn:stun-de.saito.io:3478",
         username: "guest",
         credential: "somepassword",
       },
+
+      // Firefox gives a warning if you provide more than two servers and
+      // throws an error if you use 5 or more.
+      // is it redundant to have both turn and stun on the same server, since 
+      //
+      // " TURN (Traversal Using Relay NAT) is the more advanced solution that incorporates 
+      // the STUN protocols and most commercial WebRTC based services use a TURN server 
+      // for establishing connections between peers. "
+
+      /*{
+        urls: "stun:stun-sf.saito.io:3478",
+      },
+      {
+        urls: "stun:stun-sg.saito.io:3478",
+      },
+      {
+        urls: "stun:stun-de.saito.io:3478",
+      },*/
     ];
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
@@ -91,6 +100,8 @@ class Stun extends ModTemplate {
 
   async initialize(app) {
     await super.initialize(app);
+
+    console.log("STUN: " + this.publicKey);
 
     if (app.BROWSER) {
       if (app.browser.returnURLParameter("stun_video_chat")) {
@@ -319,6 +330,7 @@ class Stun extends ModTemplate {
         //console.log(txmsg);
 
         if (txmsg.request.substring(0, 10) == "stun-send-") {
+
           if (this.hasSeenTransaction(tx)) return;
 
           if (!this?.room_obj?.room_code || this.room_obj.room_code !== txmsg.data.room_code) {
@@ -327,26 +339,29 @@ class Stun extends ModTemplate {
           }
 
           if (txmsg.request === "stun-send-call-list-request") {
-            //console.log("HPT:  stun-send-call-list-request");
+            console.log("HPT:  stun-send-call-list-request");
             this.receiveCallListRequestTransaction(this.app, tx);
             return;
           }
           if (txmsg.request === "stun-send-call-list-response") {
-            //console.log("HPT:  stun-send-call-list-response");
+            console.log("HPT:  stun-send-call-list-response");
             this.receiveCallListResponseTransaction(this.app, tx);
             return;
           }
 
           if (txmsg.request === "stun-send-message-to-peers") {
-            //console.log("HPT: stun-send-message-to-peers");
+            console.log("HPT: stun-send-message-to-peers");
             this.peerManager.handleSignalingMessage(tx.msg.data);
             return;
           }
 
           console.warn("Unprocessed request:");
           console.log(txmsg);
+
         } else if (txmsg.request.substring(0, 5) == "stun-") {
+
           this.dialer.receiveStunCallMessageFromPeers(tx);
+
         }
       }
     }

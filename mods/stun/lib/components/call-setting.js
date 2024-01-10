@@ -148,7 +148,12 @@ class CallSetting {
     }
 
     try {
-      this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      this.videoStream = await navigator.mediaDevices.getUserMedia({ 
+        video: {
+          width: {min: 640, max: 1280 },
+          height: {min: 400, max: 720 },
+          aspectRatio: { ideal: 1.333333},
+        } });
       videoElement.srcObject = this.videoStream;
       this.videoEnabled = true;
     } catch (error) {
