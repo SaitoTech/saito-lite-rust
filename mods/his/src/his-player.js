@@ -1709,7 +1709,15 @@ return;
         //
         let msg = `How would you like to End the War?`;
         let opt = "<ul>";
-	if ((enemy == "hapsburg" && his_self.game.state.excommunicated_faction["hapsburg"] != 1) || (enemy == "france" && his_self.game.state.excommunicated_faction["france"] != 1)) {
+	let allow_bull = 0;
+
+	if (his_self.game.state.excommunicated_factions["hapsburg"]) {
+	  if (enemy == "hapsburg" && his_self.game.state.excommunicated_factions["hapsburg"] != 1) { allow_bull = 1; }
+	}
+	if (his_self.game.state.excommunicated_factions["hapsburg"]) {
+	  if (enemy == "france" && his_self.game.state.excommunicated_factions["france"] != 1) { allow_bull = 1; }
+	}
+	if (allow_bull) {
           opt += `<li class="option" id="005">Papal Bull</li>`;
 	}
         opt += `<li class="option" id="sue">sue for peace</li>`;
@@ -1821,10 +1829,10 @@ return;
                 let unittypes = [];
                 let html = '<ul>';
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
-                  if (space.units[faction_to_destroy][i].admin_rating == 0) {
-                    if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
-                      html += `<li class="option" id="${space.units[faction_to_destroy][i].unittype}">${space.units[faction_to_destroy][i].unittype}</li>`;
-                      unittypes.push(space.units[faction_to_destroy][i].unittype);
+                  if (space.units[faction_to_destroy][i].command_value == 0 && space.units[faction_to_destroy][i].personage != true) {
+                    if (!unittypes.includes(space.units[faction_to_destroy][i].key)) {
+                      html += `<li class="option" id="${space.units[faction_to_destroy][i].key}">${space.units[faction_to_destroy][i].key}</li>`;
+                      unittypes.push(space.units[faction_to_destroy][i].key);
                     }
                   }
                 }
@@ -1840,12 +1848,15 @@ return;
 	          // papacy removes 2 units
 	          //
                   his_self.playerSelectSpaceOrNavalSpaceWithFilter(
-                    `Select Space to Remove 1st Unit` ,
+                    `Select Space to Remove 2nd Unit` ,
                     function(space) {
 	              if (space.units["papacy"].length > 0) { return 1; }
 		      return 0;
                     },
                     function(spacekey) {
+
+		      his_self.updateStatus("removing units...");
+
 	              let land_or_sea = "land";
 	              let space = null;
 	              if (his_self.game.navalspaces[spacekey]) {
@@ -1863,10 +1874,10 @@ return;
                       let unittypes = [];
                       let html = '<ul>';
                       for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
-                        if (space.units[faction_to_destroy][i].admin_rating == 0) {
-                          if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
-                            html += `<li class="option" id="${space.units[faction_to_destroy][i].unittype}">${space.units[faction_to_destroy][i].unittype}</li>`;
-                            unittypes.push(space.units[faction_to_destroy][i].unittype);
+                        if (space.units[faction_to_destroy][i].personage != true && space.units[faction_to_destroy][i].battle_rating != 1) {
+                         if (!unittypes.includes(space.units[faction_to_destroy][i].key)) {
+                            html += `<li class="option" id="${space.units[faction_to_destroy][i].key}">${space.units[faction_to_destroy][i].key}</li>`;
+                            unittypes.push(space.units[faction_to_destroy][i].key);
                           }
                         }
                       }
@@ -1879,7 +1890,7 @@ return;
                         his_self.displaySpace(spacekey);
                         his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
 			let z = false;
-                        his_self.addMove("player_play_papacy_regain_spaces_for_vp");
+                        his_self.addMove("player_play_papacy_regain_spaces_for_vp\t"+enemy);
 		        his_self.endTurn();
 		      });
 	            },
@@ -1901,7 +1912,9 @@ return;
   }
 
   playerPlayPapacyRegainSpacesForVP(faction) {
- 
+
+    let his_self = this; 
+
     let spaces = his_self.returnSpacesWithFilter(
       function(spacekey) {
 	if (his_self.game.spaces[spacekey].home == "papacy" && his_self.game.spaces[spacekey].political == faction) { return true; }
@@ -1948,7 +1961,6 @@ return;
             his_self.addMove(`control\tpapacy\t${spacekey}`);
             his_self.addMove(`withdraw_to_nearest_fortified_space\t${faction}\t${spacekey}`);
 	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
-            his_self.addMove("player_play_papacy_regain_spaces_for_vp");
 	    his_self.endTurn();
 	  },
 
@@ -2845,19 +2857,33 @@ console.log("yes!");
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
+      let unmoved_units = [];
+      let moved_units = [];
+
       let max_formation_size = his_self.returnMaxFormationSize(units_to_move, defender, defender_spacekey);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 
+
       let html = "<ul>";
 
-      for (let i = 0; i < space.units[defender].length; i++) {
-        if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
-	  if (space.units[defender][i].locked != true) {
-            if (units_to_move.includes(parseInt(i))) {
-              html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
-            } else {
-              html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+      for (let key in space.units) {
+        if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
+          for (let i = 0; i < space.units[key].length; i++) {
+            if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
+              if (space.units[key][i].locked != true) {
+                let does_units_to_move_have_unit = false;
+                for (let z = 0; z < units_to_move.length; z++) {
+                  if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
+                }
+                if (does_units_to_move_have_unit) {
+                  html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
+	          moved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
+                } else {
+                  html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+	          unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
+                }
+              }
             }
           }
         }
@@ -2868,6 +2894,8 @@ console.log("yes!");
       his_self.updateStatusWithOptions(msg, html);
 
       let mobj = {
+	moved_units : moved_units ,
+	unmoved_units : unmoved_units ,
 	space : space ,
 	faction : defender ,
 	source : defender_spacekey ,
@@ -2905,7 +2933,7 @@ console.log("yes!");
     html    += `<li class="card" id="skip">skip</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Intercept from ${defender_spacekey}?`, html);
+    this.updateStatusWithOptions(`Intercept from ${this.returnSpaceName(defender_spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "intercept") {
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
@@ -2991,7 +3019,7 @@ console.log("yes!");
     html    += `<li class="card" id="skip">skip</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Intercept from ${defender_spacekey}?`, html);
+    this.updateStatusWithOptions(`Intercept from ${this.returnSpaceName(defender_spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "intercept") {
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);

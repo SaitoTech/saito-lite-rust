@@ -323,6 +323,7 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 	  let power = mv[2];
 
 	  this.activateMinorPower(faction, power);
+	  this.displayBoard();
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -335,6 +336,7 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 	  let power = mv[2];
 
 	  this.deactivateMinorPower(faction, power);
+	  this.displayBoard();
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -418,9 +420,6 @@ console.log("updating cards left to: " + faction + " -- " + cards_left);
 		    if (res.length == 0) { no_loc = true; }		  
 
 		    if (no_loc) {
-
-console.log("NO LINE OF CONTROL FOUND IN: " + key + " -- " + i);
-
 		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
 		      if (this.game.players.length == 2) {
 		        this.game.spaces[i].units[key] = [];
@@ -429,13 +428,9 @@ console.log("NO LINE OF CONTROL FOUND IN: " + key + " -- " + i);
 		        moves.push("winter_attrition\t"+key+"\t"+space.key);
 		      }
 		    } else {
-
-console.log("LOC for " + key + " is " + JSON.stringify(res));
-
 		      if (res.length > 1) {
 		        moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
 		      } else {
-console.log("auto-resolving in " + space.key);
 	                this.autoResolveWinterRetreat(key, space.key);
 		      }
 		    }
@@ -722,6 +717,7 @@ console.log("auto-resolving in " + space.key);
 	  this.setAllies("papacy", "genoa");
 	  this.setAllies("papacy", "venice");
 	  this.addRegular("venice", "ravenna", 1);
+	  this.addRegular("papacy", "turin", 4);
 	  this.setEnemies("papacy", "france");
 	  this.setEnemies("papacy", "hapsburg");
 	  this.setActivatedPower("protestant", "france");
@@ -1250,6 +1246,13 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
           let space = this.game.spaces[spacekey];
 
 	  //
+	  // if no-one is left to fortify
+	  //
+	  if (this.game.state.field_battle.defender_land_units_remaining <= 0) {
+	    return 1;
+	  }
+
+	  //
 	  // if this is not a fortified space, clear and continue
 	  //
 	  if (space.type !== "fortress" && space.type !== "electorate" && space.type !== "key") {
@@ -1486,8 +1489,11 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
 	            if (fluis > 0) {
-	              this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
-		      zz = neighbours.length;
+	              let x = "player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i];
+		      if (this.game.queue[this.game.queue.length-1] !== x) {
+	                this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
+		        zz = neighbours.length;
+		      }
 	            }
 	          }
 	        }
@@ -1502,8 +1508,11 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(ap, neighbours[zz], attacker_comes_from_this_spacekey);
 	            if (fluis > 0) {
-		      this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap);
-		      zz = neighbours.length;
+		      let x = "player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap;
+		      if (this.game.queue[this.game.queue.length-1] !== x) {
+		        this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap);
+		        zz = neighbours.length;
+	              }
 	            }
 	          }
 	        }
@@ -4039,7 +4048,9 @@ console.log("assign hits 3");
                 }
                 if (can_faction_retreat == 1) {
                   this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
-                  this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
+		  if (his_self.game.state.field_battle.attacker_land_units_remaining > 0) {
+                    this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
+                  }
                 }
 	        if (can_faction_retreat == 0) {
                   this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
@@ -4062,7 +4073,9 @@ console.log("assign hits 3");
                 }
                 if (can_faction_retreat == 1) {
                   this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
-                  this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
+		  if (his_self.game.state.field_battle.defender_land_units_remaining > 0) {
+		    this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
+                  }
                 }
               }
             }
@@ -6521,8 +6534,15 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
 	  this.game.queue.splice(qe, 1);
 
+          let enemies = [];
+	  let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
+	  for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); } }
+
 	  if (this.game.player == this.returnPlayerOfFaction("papacy")) {
-	    this.playerPlayPapacyDiplomacyPhaseSpecialTurn(enemies);
+//
+// HACK
+//
+	    this.playerPlayPapacyRegainSpacesForVP();
 	  } else {
 	    this.updateStatus("Papacy Considering Regaining Spaces");
 	  }

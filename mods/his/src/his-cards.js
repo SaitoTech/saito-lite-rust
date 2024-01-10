@@ -453,7 +453,7 @@
 
 	  for (let i = 0; i < mp.length; i++) {
 	    if (his_self.canFactionActivateMinorPower(faction, mp[i])) {
-	      if (his_self.returnAllyOfMinorPower(mp[i]) == faction) {
+	      if (!his_self.returnAllyOfMinorPower(mp[i]) == faction) {
 	        ca.push(mp[i]);
 	      } else {
 	        cd.push(mp[i]);
