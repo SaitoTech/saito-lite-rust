@@ -7,7 +7,7 @@ const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader"
 const VideocallSettings = require("../overlays/videocall-settings");
 
 class CallInterfaceVideo {
-  constructor(app, mod) {
+  constructor(app, mod, fullScreen = true) {
     this.app = app;
     this.mod = mod;
     this.videocall_settings = new VideocallSettings(app, mod);
@@ -24,9 +24,11 @@ class CallInterfaceVideo {
     this.speaker_candidate = null;
     this.loader = new SaitoLoader(app, mod);
     this.public_key = mod.publicKey;
+    this.full_screen = fullScreen;
 
     this.app.connection.on("show-call-interface", async (videoEnabled, audioEnabled) => {
       console.log("Render Video Call Interface");
+
       //This will render the (full-screen) component
       if (!document.querySelector(".stun-chatbox")) {
         this.render(videoEnabled, audioEnabled);
@@ -120,6 +122,19 @@ class CallInterfaceVideo {
     });
   }
 
+
+  destroy(){
+    this.app.connection.removeAllListeners("show-call-interface");
+    this.app.connection.removeAllListeners("add-local-stream-request");
+    this.app.connection.removeAllListeners("add-remote-stream-request");
+    this.app.connection.removeAllListeners("stun-update-connection-message");
+    this.app.connection.removeAllListeners("remove-peer-box");
+    this.app.connection.removeAllListeners("stun-new-speaker");
+    this.app.connection.removeAllListeners("stun-switch-view");
+
+  }
+
+
   render(videoEnabled, audioEnabled) {
     if (!document.querySelector("#stun-chatbox")) {
       this.app.browser.addElementToDom(
@@ -128,6 +143,14 @@ class CallInterfaceVideo {
     }
 
     this.attachEvents();
+
+    if (!this.full_screen){
+      try{
+        document.querySelector(".stun-chatbox .minimizer").click();  
+      }catch(err){
+        console.error(err);
+      }
+    }
   }
 
   async createRoomTextChat() {

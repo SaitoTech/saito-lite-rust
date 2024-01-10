@@ -520,15 +520,11 @@
   min-width: 35rem;
 }
 
-.timer p {
-  color: var(--saito-white);
-  margin-right: 1rem;
-}
-
 .timer .counter {
   color: orangered;
   font-size: 2rem;
   min-width: 9rem;
+  font-family: monospace;
 }
 
 .users-on-call {

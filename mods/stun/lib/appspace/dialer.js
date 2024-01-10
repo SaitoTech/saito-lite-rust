@@ -59,9 +59,9 @@ class Dialer {
 
       call_button.onclick = (e) => {
 
-        let data = Object.assign({}, this.mod.room_obj);
+        this.mod.room_obj.ui = video_switch.checked ? "video" : "voice";
 
-        data.ui = video_switch.checked ? "video" : "voice";
+        let data = Object.assign({}, this.mod.room_obj);
 
         this.app.connection.emit("update-media-preference", "video", video_switch.checked);
         this.app.connection.emit("update-media-preference", "ondisconnect", false);
@@ -126,7 +126,7 @@ class Dialer {
         setTimeout(()=> {
           this.app.connection.emit("close-preview-window");
           this.overlay.remove();
-          this.app.connection.emit("stun-init-call-interface", "float");
+          this.app.connection.emit("stun-init-call-interface", this.mod.room_obj.ui);
           this.app.connection.emit("start-stun-call");
         }, 1000);
 
@@ -264,7 +264,7 @@ class Dialer {
         setTimeout(()=> {
           this.app.connection.emit("close-preview-window");
           this.overlay.remove();
-          this.app.connection.emit("stun-init-call-interface", "float");
+          this.app.connection.emit("stun-init-call-interface", this.mod.room_obj.ui);
           this.app.connection.emit("start-stun-call");
         }, 1000);
 

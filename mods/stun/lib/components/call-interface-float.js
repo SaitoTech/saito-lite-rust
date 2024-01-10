@@ -1,6 +1,5 @@
 const CallInterfaceFloatTemplate = require("./call-interface-float.template");
 const AudioBox = require("./audio-box");
-const VideoBox = require("./video-box");
 
 class CallInterfaceFloat {
 
@@ -9,15 +8,14 @@ class CallInterfaceFloat {
     this.mod = mod;
     this.localStream = null;
     this.audio_boxes = {};
-    this.video_boxes = {};
     this.audioEnabled = true;
-    this.videoEnabled = (mod.room_obj.ui == "video");
 
     this.app.connection.on(
       "show-call-interface",
       (videoEnabled, audioEnabled) => {
-        console.log("Render Audio Interface");
+        console.log("STUN: Render Audio Interface");
 
+        //Update the game-menu if it exists
         try {
           if (document.querySelector("#start-group-video-chat")){
             document.querySelector("#start-group-video-chat").style.display = "none";
@@ -48,10 +46,7 @@ class CallInterfaceFloat {
       siteMessage(`Stun connection ${status}`, 2000);
     });
 
-    this.app.connection.on("stun-disconnect", ()=> {
-      this.audio_boxes = {};
-      this.hide();
-    });
+    this.app.connection.on("stun-disconnect", this.hide);
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
       if (this.audio_boxes[peer_id]?.audio_box) {
@@ -76,10 +71,19 @@ class CallInterfaceFloat {
   }
 
 
+  destroy(){
+    this.app.connection.removeAllListeners("show-call-interface");
+    this.app.connection.removeAllListeners("add-local-stream-request");
+    this.app.connection.removeAllListeners("add-remote-stream-request");
+    this.app.connection.removeAllListeners("stun-update-connection-message");
+    this.app.connection.off("stun-disconnect", this.hide);
+    this.app.connection.removeAllListeners("remove-peer-box");
+    this.app.connection.removeAllListeners("stun-new-speaker");
+  }
+
   render() {
 
-      console.log("Stun UI");
-      console.log(this.mod.room_obj);
+      console.log("Stun UI", this.mod.room_obj);
 
       if (!document.getElementById("small-audio-chatbox")){
         this.app.browser.addElementToDom(CallInterfaceFloatTemplate());
@@ -108,6 +112,9 @@ class CallInterfaceFloat {
   }
 
   hide() {
+
+    this.audio_boxes = {};
+
     if (document.getElementById("small-audio-chatbox")){
       document.getElementById("small-audio-chatbox").remove();
     }
@@ -115,13 +122,7 @@ class CallInterfaceFloat {
 
 
   addStream(peer, remoteStream) {
-
-    if (this.videoEnabled == "video" && peer !== "local") {
-      this.createVideoBox(peer, remoteStream);
-    }else{
-      this.createAudioBox(peer, remoteStream);
-    }
-
+    this.createAudioBox(peer, remoteStream);
   }
 
   createAudioBox(peer, remoteStream, container = ".stun-identicon-list") {
@@ -134,13 +135,6 @@ class CallInterfaceFloat {
 
   }
 
-  createVideoBox(peer, remoteStream, container = ".video-container") {
-    if (!this.video_boxes[peer]) {
-      const videoBox = new VideoBox(this.app, this.mod, peer, container);
-      this.video_boxes[peer] = { video_box: videoBox };
-    }
-    this.video_boxes[peer].video_box.render(remoteStream);
-  }
 
   toggleAudio() {
     console.log("toggling audio");

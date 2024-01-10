@@ -75,9 +75,13 @@ class Stun extends ModTemplate {
         return;
       }
 
+      console.log("STUN UI: " + ui_type);
+
       if (ui_type === "large") {
-        this.CallInterface = new CallInterfaceVideo(app, this);
-      } else {
+        this.CallInterface = new CallInterfaceVideo(app, this, true);
+      } else if (ui_type === "video") {
+        this.CallInterface = new CallInterfaceVideo(app, this, false);
+      } else{ 
         this.CallInterface = new CallInterfaceFloat(app, this);
       }
     });
@@ -85,6 +89,7 @@ class Stun extends ModTemplate {
 
     app.connection.on("stun-disconnect", () => {
       this.room_obj = null;
+      this.CallInterface.destroy();
       this.CallInterface = null;
     });
   }
@@ -113,6 +118,8 @@ class Stun extends ModTemplate {
         if (!this.browser_active) {
           this.renderInto(".saito-overlay");
         }
+      }else{
+        this.app.options.stun = [];
       }
     }
   }

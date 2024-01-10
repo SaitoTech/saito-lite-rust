@@ -140,7 +140,7 @@ class PeerManager {
       // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
       //
       if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
-        if (this.app.options?.stun) {
+        if (this.app.options?.stun && !this.mod.room_obj?.ui) {
           console.log("STUN: my peers, ", this.app.options.stun);
           for (peer of this.app.options.stun) {
             if (peer !== this.mod.publicKey) {

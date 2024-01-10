@@ -6,6 +6,7 @@
     z-index: 200;
     bottom: 0;
     border: 1px solid var(--saito-border-color);
+    cursor: grab;
 }
 
 
@@ -23,9 +24,12 @@
 
 
 .small-audio-chatbox .control-panel .timer {
-    min-width: unset;
+    min-width: 28rem;
 }
 
+.small-audio-chatbox .control-panel {
+     gap: 1.5rem;
+}
 
 
 .audio-box.speaking {
@@ -49,7 +53,6 @@
     .small-audio-chatbox .control-panel{
         padding-bottom: unset;
         padding: 1.5rem;
-        gap: 1.5rem;
     }
 
     .small-audio-chatbox .control-panel .control-list {
