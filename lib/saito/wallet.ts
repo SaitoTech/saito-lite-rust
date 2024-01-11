@@ -173,7 +173,7 @@ export default class Wallet extends SaitoWallet {
         });
       }
 
-      async formatBalance(precision = 3) {
+      async formatBalance(precision = 2) {
         let balance = await this.returnBalance();
 
         if (typeof(balance) == 'undefined') {
@@ -181,7 +181,7 @@ export default class Wallet extends SaitoWallet {
         }
 
         balance = Number(balance);
-        let format_balance = balance.toPrecision(precision);
+        let format_balance = balance.toFixed(precision);
 
         return format_balance.toString();
       }
