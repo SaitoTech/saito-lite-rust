@@ -113,46 +113,54 @@ export default class Wallet extends SaitoWallet {
       }
 
       async receivePayment(howMuch, from, to, timestamp) {
-        const from_from = 0;
-        const to_to = 0;
-        if (to == (await this.app.wallet.getPublicKey())) {
-          for (let i = 0; i < this.app.wallet.instance.inputs.length; i++) {
-            if (this.app.wallet.instance.inputs[i].amount === howMuch) {
-              if (parseInt(this.app.wallet.instance.inputs[i].timestamp) >= parseInt(timestamp)) {
-                if (this.app.wallet.instance.inputs[i].publicKey == to) {
-                  return true;
-                }
-              }
-            }
-          }
-          for (let i = 0; i < this.app.wallet.instance.outputs.length; i++) {
-            if (this.app.wallet.instance.outputs[i].amount === howMuch) {
-              if (parseInt(this.app.wallet.instance.outputs[i].timestamp) >= parseInt(timestamp)) {
-                if (this.app.wallet.instance.outputs[i].publicKey == to) {
-                  return true;
-                }
-              }
-            }
-          }
-          return false;
-        } else {
-          if (from == (await this.app.wallet.getPublicKey())) {
-            for (let i = 0; i < this.app.wallet.instance.outputs.length; i++) {
-              //console.log("OUTPUT");
-              //console.log(this.app.wallet.instance.outputs[i]);
-              if (this.app.wallet.instance.outputs[i].amount === howMuch) {
-                if (
-                  parseInt(this.app.wallet.instance.outputs[i].timestamp) >= parseInt(timestamp)
-                ) {
-                  if (this.app.wallet.instance.outputs[i].publicKey == to) {
-                    return true;
-                  }
-                }
-              }
-            }
-          }
-          return false;
-        }
+        
+        return false;
+
+        // Returning false temporarily for all cases now.
+        // Inputs and outputs arent used anymore, slips are used.
+        // Will add correct logic here once changes related to this are done
+        // at rust side.
+
+        // const from_from = 0;
+        // const to_to = 0;
+        // if (to == (await this.app.wallet.getPublicKey())) {
+        //   for (let i = 0; i < this.app.wallet.instance.inputs.length; i++) {
+        //     if (this.app.wallet.instance.inputs[i].amount === howMuch) {
+        //       if (parseInt(this.app.wallet.instance.inputs[i].timestamp) >= parseInt(timestamp)) {
+        //         if (this.app.wallet.instance.inputs[i].publicKey == to) {
+        //           return true;
+        //         }
+        //       }
+        //     }
+        //   }
+        //   for (let i = 0; i < this.app.wallet.instance.outputs.length; i++) {
+        //     if (this.app.wallet.instance.outputs[i].amount === howMuch) {
+        //       if (parseInt(this.app.wallet.instance.outputs[i].timestamp) >= parseInt(timestamp)) {
+        //         if (this.app.wallet.instance.outputs[i].publicKey == to) {
+        //           return true;
+        //         }
+        //       }
+        //     }
+        //   }
+        //   return false;
+        // } else {
+        //   if (from == (await this.app.wallet.getPublicKey())) {
+        //     for (let i = 0; i < this.app.wallet.instance.outputs.length; i++) {
+        //       //console.log("OUTPUT");
+        //       //console.log(this.app.wallet.instance.outputs[i]);
+        //       if (this.app.wallet.instance.outputs[i].amount === howMuch) {
+        //         if (
+        //           parseInt(this.app.wallet.instance.outputs[i].timestamp) >= parseInt(timestamp)
+        //         ) {
+        //           if (this.app.wallet.instance.outputs[i].publicKey == to) {
+        //             return true;
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+        //   return false;
+        // }
       }
 
       returnIsActivated() {
