@@ -1,10 +1,9 @@
 module.exports = CallInterfaceFloat = () => {
   return `
     <div class="small-audio-chatbox" id="small-audio-chatbox">
-      <div class="video-container"></div>
       <div class="control-panel">
         <div class="timer">
-          <div class="counter"> 00.00 </div>
+          <div class="counter"> 00:00 </div>
           <div class="stun-identicon-list"></div>
         </div>  
         <div class="control-list">

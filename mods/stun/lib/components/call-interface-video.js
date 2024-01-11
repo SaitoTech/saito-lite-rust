@@ -12,7 +12,6 @@ class CallInterfaceVideo {
     this.mod = mod;
     this.videocall_settings = new VideocallSettings(app, mod);
     this.effectsMenu = new Effects(app, mod);
-    this.peers = []; //people in the call
     this.localStream;
     this.video_boxes = {};
 
@@ -87,6 +86,9 @@ class CallInterfaceVideo {
         case "focus":
           this.switchDisplayToExpanded();
           break;
+        case "speaker":
+          this.switchDisplayToExpanded();
+          break;
         case "presentation":
           this.swicthDisplayToPresentation();
           break;
@@ -99,11 +101,14 @@ class CallInterfaceVideo {
     });
 
     app.connection.on("stun-new-speaker", (peer) => {
-      console.log("New Speaker: " + peer);
+
+      if (!this.full_screen){
+        return;
+      }
+
       document.querySelectorAll(".video-box-container-large").forEach((item) => {
         if (item.id === `stream${peer}`) {
           if (item.classList.contains("speaker")) {
-            console.log("Same speaker");
             return;
           }
 
@@ -111,6 +116,7 @@ class CallInterfaceVideo {
             this.display_mode == "speaker" &&
             !item.parentElement.classList.contains("expanded-video")
           ) {
+            console.log("New Speaker: " + peer);
             this.flipDisplay(peer);
           }
 
@@ -211,12 +217,6 @@ class CallInterfaceVideo {
       });
     });
 
-    document.querySelectorAll(".audio-control").forEach((item) => {
-      item.onclick = () => {
-        this.toggleAudio();
-      };
-    });
-
     document.getElementById("record-icon").onclick = async () => {
       const recordIcon = document.querySelector("#record-icon i");
       const recordLabel = document.querySelector("#record-icon label");
@@ -256,8 +256,7 @@ class CallInterfaceVideo {
 
     document.querySelectorAll(".display-control").forEach((item) => {
       item.onclick = () => {
-        this.videocall_settings.display_mode = this.display_mode;
-        this.videocall_settings.render();
+        this.videocall_settings.render(this.display_mode);
       };
     });
 
@@ -266,6 +265,13 @@ class CallInterfaceVideo {
         this.toggleVideo();
       };
     });
+
+    document.querySelectorAll(".audio-control").forEach((item) => {
+      item.onclick = () => {
+        this.toggleAudio();
+      };
+    });
+
 
     if (!this.mod.browser_active) {
       //
@@ -279,21 +285,24 @@ class CallInterfaceVideo {
         let chat_box = document.querySelector(".stun-chatbox");
 
         if (icon.classList.contains("fa-caret-down")) {
-          this.app.connection.emit("stun-switch-view", "speaker");
+          this.app.connection.emit("stun-switch-view", "focus");
           chat_box.classList.add("minimize");
           icon.classList.remove("fa-caret-down");
           icon.classList.add("fa-expand");
           this.app.browser.makeDraggable("stun-chatbox", "", true);
+          this.full_screen = false;
         } else {
           chat_box.classList.remove("minimize");
-          chat_box.style.top = "0";
+          chat_box.style.bottom = "0";
           chat_box.style.left = "0";
           chat_box.style.width = "";
           chat_box.style.height = "";
           icon.classList.remove("fa-expand");
           icon.classList.add("fa-caret-down");
           this.app.browser.cancelDraggable("stun-chatbox");
+          this.full_screen = true;
         }
+
       });
     } else {
       //
@@ -307,7 +316,7 @@ class CallInterfaceVideo {
       }
     }
 
-    document.querySelector(".large-wrapper").addEventListener("click", (e) => {
+    document.querySelector(".video-container-large").addEventListener("click", (e) => {
       if (this.display_mode == "gallery" || this.display_mode == "presentation") {
         return;
       }
@@ -335,9 +344,13 @@ class CallInterfaceVideo {
     let base64obj = this.app.crypto.stringToBase64(JSON.stringify(this.mod.room_obj));
 
     let url1 = window.location.origin + "/videocall/";
-    window.history.pushState({}, "", `${url1}?stun_video_chat=${base64obj}`);
+
     this.old_title = document.title;
-    document.title = "Saito Talk";
+ 
+    if (this.full_screen){
+      window.history.pushState({}, "", `${url1}?stun_video_chat=${base64obj}`);
+      document.title = "Saito Talk";
+    }
 
     return `${url1}?stun_video_chat=${base64obj}`;
   }
@@ -345,10 +358,6 @@ class CallInterfaceVideo {
   copyInviteLink() {
     navigator.clipboard.writeText(this.room_link);
     siteMessage("Invite link copied to clipboard", 1500);
-  }
-
-  removePeer(peer) {
-    this.peers = this.peers.filter((p) => peer !== p);
   }
 
   disconnect() {
@@ -383,33 +392,21 @@ class CallInterfaceVideo {
   addRemoteStream(peer, remoteStream) {
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(remoteStream);
-    if (!this.peers.includes(peer)) {
-      this.peers.push(peer);
+
+    console.log("Attempt to auto switch video focus to newest join");
+    let peer_elem = document.querySelector(`#stream${peer}`);
+    if (peer_elem) {
+      peer_elem.querySelector(".video-box").click();
     }
 
-    if (this.peers.length === 1) {
-      let peer = document.querySelector(`#stream${this.peers[0]}`);
-      if (peer) {
-        peer.querySelector(".video-box").click();
-      }
-    }
-    console.log(peer, "presentation?");
+    this.updateImages();
+
     if (peer.toLowerCase() === "presentation") {
       // switch mode to presentation
       this.app.connection.emit("stun-switch-view", "presentation");
-
       this.flipDisplay("presentation");
-
-      // // maximize presentation
-      // console.log(peer, "presentation?");
-      // if (!peer) return;
-
-      // let peer = document.querySelector(`#stream${peer}}`);
-      // console.log(peer, "presentation?");
-      // if (peer) {
-      //   peer.querySelector(".video-box").click();
-      // }
     }
+
   }
 
   addLocalStream(localStream) {
@@ -423,12 +420,8 @@ class CallInterfaceVideo {
   }
 
   createVideoBox(peer, container = this.remote_container) {
-    let isPresentation = false;
-    if (peer.toLowerCase() == "presentation") {
-      isPresentation = true;
-    }
     if (!this.video_boxes[peer]) {
-      const videoBox = new VideoBox(this.app, this.mod, peer, container, isPresentation);
+      const videoBox = new VideoBox(this.app, this.mod, peer, container);
       this.video_boxes[peer] = { video_box: videoBox };
     }
   }

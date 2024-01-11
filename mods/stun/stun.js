@@ -45,10 +45,10 @@ class Stun extends ModTemplate {
 
       // Firefox gives a warning if you provide more than two servers and
       // throws an error if you use 5 or more.
-      // is it redundant to have both turn and stun on the same server, since 
+      // is it redundant to have both turn and stun on the same server, since
       //
-      // " TURN (Traversal Using Relay NAT) is the more advanced solution that incorporates 
-      // the STUN protocols and most commercial WebRTC based services use a TURN server 
+      // " TURN (Traversal Using Relay NAT) is the more advanced solution that incorporates
+      // the STUN protocols and most commercial WebRTC based services use a TURN server
       // for establishing connections between peers. "
 
       /*{
@@ -81,11 +81,10 @@ class Stun extends ModTemplate {
         this.CallInterface = new CallInterfaceVideo(app, this, true);
       } else if (ui_type === "video") {
         this.CallInterface = new CallInterfaceVideo(app, this, false);
-      } else{ 
+      } else {
         this.CallInterface = new CallInterfaceFloat(app, this);
       }
     });
-
 
     app.connection.on("stun-disconnect", () => {
       this.room_obj = null;
@@ -118,7 +117,7 @@ class Stun extends ModTemplate {
         if (!this.browser_active) {
           this.renderInto(".saito-overlay");
         }
-      }else{
+      } else {
         this.app.options.stun = [];
       }
     }
@@ -195,7 +194,16 @@ class Stun extends ModTemplate {
           icon: this.icon,
           allowed_mods: ["redsquare", "arcade"],
           callback: function (app, id) {
-            stun_self.renderInto(".saito-overlay");
+            //stun_self.renderInto(".saito-overlay");
+
+            app.connection.emit("stun-init-call-interface", "video");
+            if (!stun_self.room_obj) {
+              stun_self.room_obj = {
+                room_code: stun_self.createRoomCode(),
+                host_public_key: stun_self.publicKey,
+              };
+            }
+            app.connection.emit("start-stun-call");
           },
         },
       ];
@@ -316,7 +324,6 @@ class Stun extends ModTemplate {
                 //console.log("OnConfirmation: stun-send-message-to-peers");
                 this.peerManager.handleSignalingMessage(tx.msg.data);
               }
-
             }
           }
         } catch (err) {
@@ -337,7 +344,6 @@ class Stun extends ModTemplate {
         //console.log(txmsg);
 
         if (txmsg.request.substring(0, 10) == "stun-send-") {
-
           if (this.hasSeenTransaction(tx)) return;
 
           if (!this?.room_obj?.room_code || this.room_obj.room_code !== txmsg.data.room_code) {
@@ -364,11 +370,8 @@ class Stun extends ModTemplate {
 
           console.warn("Unprocessed request:");
           console.log(txmsg);
-
         } else if (txmsg.request.substring(0, 5) == "stun-") {
-
           this.dialer.receiveStunCallMessageFromPeers(tx);
-
         }
       }
     }

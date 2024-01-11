@@ -6,11 +6,10 @@ class VideoCallSettings {
     this.app = app;
     this.mod = mod;
     this.saitoOverlay = new SaitoOverlay(app, mod);
-    this.display_mode = 'gallery'; // gallery, focus, speaker
   }
 
   render(display_mode) {
-    this.saitoOverlay.show(VideoCallSettingsTemplate(this.display_mode));
+    this.saitoOverlay.show(VideoCallSettingsTemplate(display_mode));
     this.attachEvents();
   }
 

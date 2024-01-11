@@ -2,18 +2,16 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
   let html = `
     <div class="stun-chatbox" id="stun-chatbox">
       <main>
-        <section class="large-wrapper">
-          <div class="video-container-large">
-            <div class="expanded-video"></div>
-            <div class="side-videos"></div>
-          </div>
+        <section class="video-container-large">
+          <div class="expanded-video"></div>
+          <div class="side-videos"></div>
         </section>
 
         <section class="footer">
 
           <div class="control-panel">
             <div class="timer">
-              <div class="counter"> 00.00 </div>
+              <div class="counter"> 00:00 </div>
               <div class="users-on-call">
                 <div class="stun-identicon-list"></div>
                 <div class="users-on-call-text"><span class="users-on-call-count">1</span> on call</div>
@@ -38,7 +36,7 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
              ${
               mod.app.browser.isMobileBrowser === true
               ? ``
-              : `<span class="record-control mini_okay icon_click_area" id="record-icon">
+              : `<span class="record-control icon_click_area" id="record-icon">
                   <label>Record</label>
                   <i class="fa-solid fa-record-vinyl"></i>
                 </span>`

@@ -309,6 +309,11 @@ class PeerManager {
   async createPeerConnection(peerId, should_offer = false) {
     console.log("STUN: Create Peer Connection with " + peerId);
 
+    if (peerId === this.mod.publicKey){
+      console.log("STUN: Attempting to create a peer Connection with myself!");
+      return;
+    }
+
     // check if peer connection already exists
     const peerConnection = new RTCPeerConnection({
       iceServers: this.mod.servers,

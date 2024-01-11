@@ -2,13 +2,12 @@ const videoBoxTemplate = require("./video-box.template");
 const { setTextRange } = require("typescript");
 
 class VideoBox {
-  constructor(app, mod, peer, container_class = "", isPresentation = false) {
+  constructor(app, mod, peer, container_class = "") {
     this.app = app;
     this.mod = mod;
     this.stream = null;
     this.stream_id = peer;
     this.containerClass = container_class;
-    this.isPresentation = isPresentation;
 
     app.connection.on("peer-toggle-audio-status", ({ enabled, public_key }) => {
       if (public_key !== this.stream_id) return;
@@ -83,7 +82,7 @@ class VideoBox {
   renderPlaceholder(placeholder_info = "negotiating peer connection") {
     if (!document.querySelector(`#stream${this.stream_id}`)) {
       this.app.browser.prependElementToClass(
-        videoBoxTemplate(this.stream_id, false, this.isPresentation),
+        videoBoxTemplate(this.stream_id, false),
         this.containerClass
       );
       // this.app.browser.makeDraggable(`stream${this.stream_id}`, `stream${this.stream_id}`);
