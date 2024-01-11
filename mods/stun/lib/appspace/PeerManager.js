@@ -70,9 +70,10 @@ class PeerManager {
         room_code: this.mod.room_obj.room_code,
         type: "toggle-video",
         enabled: this.videoEnabled,
+        public_key: this.mod.publicKey,
       };
 
-      //this.mod.sendStunMessageToServerTransaction(data);
+      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun);
     });
 
     app.connection.on("stun-toggle-audio", async () => {
@@ -88,10 +89,11 @@ class PeerManager {
       let data = {
         room_code: this.mod.room_obj.room_code,
         type: "toggle-audio",
+        public_key: this.mod.publicKey,
         enabled: this.audioEnabled,
       };
 
-      //this.mod.sendStunMessageToServerTransaction(data);
+      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun);
     });
 
     app.connection.on("begin-share-screen", async () => {
@@ -101,7 +103,7 @@ class PeerManager {
 
         videoTrack.onended = () => {
           console.log("Screen sharing stopped by user");
-          app.connection.emit("remove-peer-box", "presentation");
+          this.app.connection.emit("remove-peer-box", "presentation");
           this.app.connection.emit("stun-switch-view", "focus");
           this.peers.forEach((pc, key) => {
             pc.dc.send("remove-presentation-box");
@@ -203,7 +205,7 @@ class PeerManager {
     }
 
     if (type == "toggle-audio" || type == "toggle-video") {
-      app.connection.emit(`peer-${type}-status`, data);
+      this.app.connection.emit(`peer-${type}-status`, data);
       return;
     }
 
@@ -373,6 +375,7 @@ class PeerManager {
 
         this.remoteStreams.set(peerId, { remoteStream, peerConnection });
         this.app.connection.emit("add-remote-stream-request", peerId, remoteStream);
+
         this.analyzeAudio(remoteStream, peerId);
       }
     });
@@ -386,7 +389,7 @@ class PeerManager {
       ) {
         setTimeout(() => {
           console.log("Attempting Reconnection");
-          this.reconnect(peerId, type);
+          this.reconnect(peerId);
         }, 5000);
       }
       if (peerConnection.connectionState === "connected") {
@@ -443,9 +446,9 @@ class PeerManager {
 
   }
 
-  reconnect(peerId, type) {
+  reconnect(peerId) {
     const maxRetries = 2;
-    const retryDelay = 10000;
+    const retryDelay = 5000;
 
     const attemptReconnect = (currentRetry) => {
       const peerConnection = this.peers.get(peerId);
@@ -467,9 +470,6 @@ class PeerManager {
       ) {
         console.log(`STUN: Removing peerConnection with state: ${peerConnection.connectionState}`);
         this.removePeerConnection(peerId);
-        if (type === "offer") {
-          // this.createPeerConnection(peerId, "offer");
-        }
       }
 
       if (currentRetry === maxRetries) {

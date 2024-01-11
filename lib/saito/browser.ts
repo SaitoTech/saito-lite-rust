@@ -750,6 +750,8 @@ class Browser {
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.addElementToElement(html, container);
+      }else{
+        console.warn("Classname not found");
       }
     }
   }

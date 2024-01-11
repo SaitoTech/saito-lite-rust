@@ -194,9 +194,9 @@ class Stun extends ModTemplate {
           icon: this.icon,
           allowed_mods: ["redsquare", "arcade"],
           callback: function (app, id) {
-            //stun_self.renderInto(".saito-overlay");
+            stun_self.renderInto(".saito-overlay");
 
-            app.connection.emit("stun-init-call-interface", "video");
+            /*app.connection.emit("stun-init-call-interface", "video");
             if (!stun_self.room_obj) {
               stun_self.room_obj = {
                 room_code: stun_self.createRoomCode(),
@@ -204,6 +204,7 @@ class Stun extends ModTemplate {
               };
             }
             app.connection.emit("start-stun-call");
+            */
           },
         },
       ];
@@ -399,9 +400,6 @@ class Stun extends ModTemplate {
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
     newtx.msg.data = _data;
-    newtx.msg.data.module = "Stun";
-
-    newtx.msg.data.timestamp = Date.now();
 
     await newtx.sign();
 

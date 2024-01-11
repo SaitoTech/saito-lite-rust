@@ -28,6 +28,9 @@ class CallInterfaceVideo {
     this.app.connection.on("show-call-interface", async (videoEnabled, audioEnabled) => {
       console.log("Render Video Call Interface");
 
+      // create chat group
+      this.createRoomTextChat();
+
       //This will render the (full-screen) component
       if (!document.querySelector(".stun-chatbox")) {
         this.render(videoEnabled, audioEnabled);
@@ -39,8 +42,6 @@ class CallInterfaceVideo {
         this.copyInviteLink();
       }
 
-      // create chat group
-      await this.createRoomTextChat();
     });
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
@@ -79,6 +80,7 @@ class CallInterfaceVideo {
     // Change arrangement of video boxes (emitted from SwitchDisplay overlay)
     app.connection.on("stun-switch-view", (newView) => {
       this.display_mode = newView;
+      console.log("Switch view: " + newView);
       switch (newView) {
         case "gallery":
           this.switchDisplayToGallery();
@@ -285,7 +287,9 @@ class CallInterfaceVideo {
         let chat_box = document.querySelector(".stun-chatbox");
 
         if (icon.classList.contains("fa-caret-down")) {
-          this.app.connection.emit("stun-switch-view", "focus");
+          if (this.display_mode !== "focus"){
+            this.app.connection.emit("stun-switch-view", "focus");  
+          }
           chat_box.classList.add("minimize");
           icon.classList.remove("fa-caret-down");
           icon.classList.add("fa-expand");
@@ -393,11 +397,20 @@ class CallInterfaceVideo {
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(remoteStream);
 
-    console.log("Attempt to auto switch video focus to newest join");
-    let peer_elem = document.querySelector(`#stream${peer}`);
+    let peer_elem = document.getElementById(`stream_${peer}`);
     if (peer_elem) {
       peer_elem.querySelector(".video-box").click();
     }
+
+    /// <<<< test here for audio/vide >>>> 
+
+    console.log(remoteStream);
+
+    //Check for muted or disabled
+    //    console.log(`peer-toggle-${event.track.kind}-status`, event.track.enabled, event.track.muted);
+    //    if (!event.track.enabled){
+    //      this.app.connection.emit(`peer-toggle-${event.track.kind}-status`, {public_key: peerId, enabled: false});
+    //    }
 
     this.updateImages();
 
@@ -410,12 +423,13 @@ class CallInterfaceVideo {
   }
 
   addLocalStream(localStream) {
+    console.log("Add local stream");
     this.createVideoBox("local", this.local_container);
     this.video_boxes["local"].video_box.render(localStream);
     this.localStream = localStream;
     this.updateImages();
 
-    // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
+    // segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
     // applyBlur(7);
   }
 
@@ -424,6 +438,8 @@ class CallInterfaceVideo {
       const videoBox = new VideoBox(this.app, this.mod, peer, container);
       this.video_boxes[peer] = { video_box: videoBox };
     }
+
+    console.log(this.video_boxes);
   }
 
   toggleAudio() {
@@ -535,10 +551,6 @@ class CallInterfaceVideo {
     <div class="presentation-side-videos"></div>`;
     this.setDisplayContainers();
 
-    // let peer = document.querySelector(`#stream${peer}}`);
-    // if (peer) {
-    //   peer.querySelector(".video-box").click();
-    // }
   }
 
   setDisplayContainers() {
@@ -551,7 +563,7 @@ class CallInterfaceVideo {
         this.video_boxes[i].video_box.render(this.remote_streams.get(i));
       }
     }
-    this.chat_group.target_container = `.stun-chatbox .${this.remote_container}`;
+
   }
 }
 

@@ -16,7 +16,7 @@ module.exports = (streamId, app, mod) => {
   let name = app.keychain.returnIdentifierByPublicKey(key, true);
 
   return `
-    <div id="stream${streamId}"  class="video-box-container-large">
+    <div id="stream_${streamId}"  class="video-box-container-large">
       <video id="${streamId}" ${videoAttribute} autoplay playsinline class="video-box"></video>
       <div class="video-call-info">
         <div class="saito-address" data-id="${key}">${name}</div>

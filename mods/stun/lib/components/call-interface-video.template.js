@@ -2,7 +2,7 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
   let html = `
     <div class="stun-chatbox" id="stun-chatbox">
       <main>
-        <section class="video-container-large">
+        <section class="video-container-large split-view">
           <div class="expanded-video"></div>
           <div class="side-videos"></div>
         </section>
