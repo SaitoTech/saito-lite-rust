@@ -35,7 +35,7 @@ class GraffitiUI {
   async render() {
     this.renderForeground();
     this.renderSidebar();
-    this.renderColorPalette();
+    this.renderPalette();
     this.renderSubmitButton();
     this.attachEventsToForeground();
     this.attachEventsToButtons();
@@ -72,28 +72,28 @@ class GraffitiUI {
 
     this.foreground = document.createElement("div");
     this.foreground.id = "foreground";
-    document.body.appendChild(this.foreground);
     this.foreground.style.width  = `${this.gridApparentWidth}px`;
     this.foreground.style.height = `${this.gridApparentHeight}px`;
     this.foreground.style.left = `${this.foregroundLeft}px`;
     this.foreground.style.top  = `${this.foregroundTop}px`;
+    document.body.appendChild(this.foreground);
 
     this.gridContainer = document.createElement("div");
     this.gridContainer.id = "grid-container";
-    this.foreground.appendChild(this.gridContainer);
     this.gridContainer.style.width  = `${this.gridRenderingWidth}px`;
     this.gridContainer.style.height = `${this.gridRenderingHeight}px`;
     this.gridContainer.style.left = `${this.gridRenderingLeft - this.foregroundLeft}px`;
     this.gridContainer.style.top  = `${this.gridRenderingTop  - this.foregroundTop}px`;
     this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
+    this.foreground.appendChild(this.gridContainer);
 
 
     this.backgroundLayer = document.createElement("canvas");
     this.backgroundLayer.className = "grid-layer";
     this.backgroundLayer.id = "background-layer";
-    this.gridContainer.appendChild(this.backgroundLayer);
     this.backgroundLayer.width  = this.gridRenderingWidth;
     this.backgroundLayer.height = this.gridRenderingHeight;
+    this.gridContainer.appendChild(this.backgroundLayer);
 
     this.backgroundLayerCtx = this.backgroundLayer.getContext("2d");
     this.backgroundLayerCtx.imageSmoothingEnabled = false;
@@ -104,9 +104,9 @@ class GraffitiUI {
     this.confirmedLayer = document.createElement("canvas");
     this.confirmedLayer.className = "grid-layer";
     this.confirmedLayer.id = "confirmed-layer";
-    this.gridContainer.appendChild(this.confirmedLayer);
     this.confirmedLayer.width  = this.gridRenderingWidth;
     this.confirmedLayer.height = this.gridRenderingHeight;
+    this.gridContainer.appendChild(this.confirmedLayer);
 
     this.confirmedLayerCtx = this.confirmedLayer.getContext("2d");
     this.confirmedLayerCtx.imageSmoothingEnabled = false;
@@ -115,9 +115,9 @@ class GraffitiUI {
     this.pendingLayer = document.createElement("canvas");
     this.pendingLayer.className = "grid-layer";
     this.pendingLayer.id = "pending-layer";
-    this.gridContainer.appendChild(this.pendingLayer);
     this.pendingLayer.width  = this.gridRenderingWidth;
     this.pendingLayer.height = this.gridRenderingHeight;
+    this.gridContainer.appendChild(this.pendingLayer);
 
     this.pendingLayerCtx = this.pendingLayer.getContext("2d");
     this.pendingLayerCtx.imageSmoothingEnabled = false;
@@ -126,9 +126,9 @@ class GraffitiUI {
     this.draftedLayer = document.createElement("canvas");
     this.draftedLayer.className = "grid-layer";
     this.draftedLayer.id = "drafted-layer";
-    this.gridContainer.appendChild(this.draftedLayer);
     this.draftedLayer.width  = this.gridRenderingWidth;
     this.draftedLayer.height = this.gridRenderingHeight;
+    this.gridContainer.appendChild(this.draftedLayer);
 
     this.draftedLayerCtx = this.draftedLayer.getContext("2d");
     this.draftedLayerCtx.imageSmoothingEnabled = false;
@@ -137,9 +137,9 @@ class GraffitiUI {
     this.cursorLayer = document.createElement("canvas");
     this.cursorLayer.className = "grid-layer";
     this.cursorLayer.id = "cursor-layer";
-    this.gridContainer.appendChild(this.cursorLayer);
     this.cursorLayer.width  = this.gridRenderingWidth;
     this.cursorLayer.height = this.gridRenderingHeight;
+    this.gridContainer.appendChild(this.cursorLayer);
 
     this.cursorLayerCtx = this.cursorLayer.getContext("2d");
     this.cursorLayerCtx.imageSmoothingEnabled = false;
@@ -189,19 +189,19 @@ class GraffitiUI {
     
     this.undoButton = document.createElement("button");
     this.undoButton.title = "Undo";
+    this.undoButton.disabled = true;
     this.undoRedoCategory.appendChild(this.undoButton);
     this.undoIcon = document.createElement("i");
     this.undoIcon.className = "fas fa-undo-alt";
     this.undoButton.appendChild(this.undoIcon);
-    this.undoButton.disabled = true;
 
     this.redoButton = document.createElement("button");
     this.redoButton.title = "Undo";
+    this.redoButton.disabled = true;
     this.undoRedoCategory.appendChild(this.redoButton);
     this.redoIcon = document.createElement("i");
     this.redoIcon.className = "fas fa-redo-alt";
     this.redoButton.appendChild(this.redoIcon);
-    this.redoButton.disabled = true;
 
 
     this.colorCategory = document.createElement("div");
@@ -210,8 +210,8 @@ class GraffitiUI {
 
     this.colorPreview = document.createElement("div");
     this.colorPreview.id = "color-preview";
-    this.colorCategory.append(this.colorPreview);
     this.colorPreview.style.backgroundColor = this.defaultColor;
+    this.colorCategory.append(this.colorPreview);
 
 
     this.clearCategory = document.createElement("div");
@@ -220,36 +220,53 @@ class GraffitiUI {
 
     this.clearDraftButton = document.createElement("button");
     this.clearDraftButton.title = "Clear Draft";
+    this.clearDraftButton.disabled = true;
     this.clearCategory.appendChild(this.clearDraftButton);
     this.clearDraftIcon = document.createElement("i");
     this.clearDraftIcon.className = "fas fa-trash-alt";
     this.clearDraftButton.appendChild(this.clearDraftIcon);
-    this.clearDraftButton.disabled = true;
   }
 
-  renderColorPalette() {
-    this.colorPalette = document.createElement("div");
-    this.colorPalette.id = "color-palette";
-    document.body.appendChild(this.colorPalette);
-    this.colorPalette.style.display = "flex";
+  renderPalette() {
+    this.palette = document.createElement("div");
+    this.palette.id = "palette";
+    this.palette.style.display = "flex";
+    document.body.appendChild(this.palette);
 
     for (const color of this.presetColors) {
-      const colorOption = document.createElement("div");
-      colorOption.className = "color-option";
-      colorOption.style.backgroundColor = color;
-      colorOption.onclick = () => {
+      const presetColorOption = document.createElement("div");
+      presetColorOption.className = "color-option preset-color-option";
+      presetColorOption.style.backgroundColor = color;
+      this.palette.appendChild(presetColorOption);
+
+      presetColorOption.onclick = () => {
         this.setCurrentColor(color);
       };
-      this.colorPalette.appendChild(colorOption);
     }
 
-    this.customColorInput = document.createElement("input");
-    this.customColorInput.type = "color";
-    this.customColorInput.className = "color-picker";
-    this.customColorInput.onchange = () => {
-      this.setCurrentColor(this.customColorInput.value);
-    };
-    this.colorPalette.appendChild(this.customColorInput);
+    this.colorPicker = document.createElement("div");
+    this.colorPicker.className = "color-option";
+    this.colorPicker.id = "color-picker";
+    this.palette.appendChild(this.colorPicker);
+
+    this.colorPickerIcon = document.createElement("i");
+    this.colorPickerIcon.className = "fas fa-plus";
+    this.colorPicker.appendChild(this.colorPickerIcon);
+
+    this.colorPickerInput = document.createElement("input");
+    this.colorPickerInput.type = "color";
+    this.colorPickerInput.hidden = true;
+    this.colorPicker.appendChild(this.colorPickerInput);
+
+    
+    this.colorPicker.addEventListener("mouseup", (event) => {
+      event.stopPropagation();
+      this.colorPickerInput.click();
+    });
+
+    this.colorPickerInput.onchange = () => {
+      this.setCurrentColor(this.colorPickerInput.value);
+    }
   }
 
   renderSubmitButton() {
@@ -482,7 +499,7 @@ class GraffitiUI {
   }
 
   onMouseupOverColorPreview() {
-    this.colorPalette.style.display = (this.colorPalette.style.display === "none" ? "flex" : "none");
+    this.palette.style.display = (this.palette.style.display === "none" ? "flex" : "none");
   }
 
   onMouseupOverClearDraftButton() {

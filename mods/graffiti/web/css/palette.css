@@ -1,4 +1,4 @@
-#color-palette {
+#palette {
   position: absolute;
   top: 5px;
   left: 65px;
@@ -12,7 +12,7 @@
   z-index: 99;
 }
 
-#color-palette::after {
+#palette::after {
   display: block;
   width: 0;
   content: "";
@@ -26,15 +26,26 @@
 
 .color-option {
   width: 30px;
-  height: 19px;
   border-radius: 4px;
   margin: 2px 0;
   cursor: pointer;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  position: relative;
 }
 
-.color-picker {
-  width: 100%;
-  margin-top: 5px;
+.preset-color-option {
+  height: 19px;
+}
+
+#color-picker {
+  height: 30px;
+}
+
+#color-picker i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #555;
 }
