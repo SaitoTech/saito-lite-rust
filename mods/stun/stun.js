@@ -88,8 +88,10 @@ class Stun extends ModTemplate {
 
     app.connection.on("reset-stun", () => {
       this.room_obj = null;
-      this.CallInterface.destroy();
-      this.CallInterface = null;
+      if (this.CallInterface){
+        this.CallInterface.destroy();
+        this.CallInterface = null;
+      }
     });
   }
 
@@ -170,7 +172,11 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                stun_self.dialer.establishStunCallWithPeers([public_key]);
+                if (!stun_self.room_obj){
+                  stun_self.dialer.establishStunCallWithPeers([public_key]);  
+                }else{
+                  salert("Already in or establishing a call");
+                }
               },
             },
           ];
@@ -215,6 +221,15 @@ class Stun extends ModTemplate {
     if (type == "game-menu") {
       this.attachStyleSheets();
       super.render(this.app, this);
+
+      //Set listeners for stun events
+      this.app.connection.on("show-call-interface", ()=> {
+        document.getElementById("start-group-video-chat").style.display = "none";
+      });
+      this.app.connection.on("reset-stun", ()=> {
+        document.getElementById("start-group-video-chat").style = "";    
+      });
+
       if (obj?.game?.players?.length > 1) {
         return {
           id: "game-social",
@@ -222,20 +237,18 @@ class Stun extends ModTemplate {
           submenus: [
             {
               parent: "game-social",
-              text: "Voice Chat",
-              id: "group-voice-chat",
-              class: "group-voice-chat",
-              callback: null,
-            },
-            {
-              parent: "group-voice-chat",
-              text: "Start call",
+              text: "Start Call",
               id: "start-group-video-chat",
               class: "start-group-video-chat",
               callback: function (app, game_mod) {
                 //Start Call
                 game_mod.menu.hideSubMenus();
-                stun_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);
+
+                if (!stun_self.room_obj){
+                  stun_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);
+                }else{
+                  salert("Already in or establishing a call");
+                }
               },
             },
             {

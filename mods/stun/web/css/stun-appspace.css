@@ -29,6 +29,10 @@
   height: min(600px, 80vh);
 }
 
+.stun-minimal-appspace .saito-user > .saito-address {
+  color: #DDD;
+}
+
 .stun-button-row {
   display: flex;
   flex-direction: row;

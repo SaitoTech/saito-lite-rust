@@ -25,6 +25,7 @@ class Dialer {
       } else {
         this.stopRing();
       }
+      this.app.connection.emit("reset-stun");
     });
     this.overlay.blockClose();
 
@@ -141,7 +142,7 @@ class Dialer {
           data: this.mod.room_obj,
         });
         this.stopRing();
-        this.mod.room_obj = null;
+        this.app.connection.emit("reset-stun");
         this.overlay.remove();
       };
     }
@@ -242,7 +243,7 @@ class Dialer {
       case "stun-cancel-connection-request":
         this.stopRing();
         this.overlay.remove();
-        this.mod.room_obj = null;
+        this.app.connection.emit("reset-stun");
         siteMessage(`${sender} hung up`);
         break;
 

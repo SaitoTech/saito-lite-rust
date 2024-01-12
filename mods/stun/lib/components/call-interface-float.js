@@ -14,13 +14,6 @@ class CallInterfaceFloat {
       (videoEnabled, audioEnabled) => {
         console.log("STUN: Render Audio Interface");
 
-        //Update the game-menu if it exists
-        try {
-          if (document.querySelector("#start-group-video-chat")){
-            document.querySelector("#start-group-video-chat").style.display = "none";
-          }
-        } catch (err) {}
-
         this.render();
         this.attachEvents();
       }
@@ -96,7 +89,6 @@ class CallInterfaceFloat {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.onclick = () => {
         this.app.connection.emit("stun-disconnect");
-        this.app.connection.emit("reset-stun");
       };
     });
 
@@ -117,6 +109,9 @@ class CallInterfaceFloat {
     if (document.getElementById("small-audio-chatbox")){
       document.getElementById("small-audio-chatbox").remove();
     }
+
+    this.app.connection.emit("reset-stun");
+
   }
 
 
