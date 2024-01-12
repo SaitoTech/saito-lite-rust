@@ -1,6 +1,6 @@
 module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEnabled = true) => {
   let html = `
-    <div class="stun-chatbox" id="stun-chatbox">
+    <div class="stun-chatbox full-screen" id="stun-chatbox">
       <main>
         <section class="video-container-large split-view">
           <div class="expanded-video"></div>

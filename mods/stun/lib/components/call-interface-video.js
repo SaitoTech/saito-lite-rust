@@ -36,7 +36,7 @@ class CallInterfaceVideo {
 
       this.room_link = this.createRoomLink();
 
-      if (this.mod.room_obj.host_public_key == this.mod.publicKey) {
+      if (this.mod.room_obj.host_public_key == this.mod.publicKey && this.full_screen) {
         this.copyInviteLink();
       }
 
@@ -141,6 +141,7 @@ class CallInterfaceVideo {
 
 
   render(videoEnabled, audioEnabled) {
+    console.log("Render video interface");
     if (!document.querySelector("#stun-chatbox")) {
       this.app.browser.addElementToDom(
         CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled)
@@ -283,6 +284,8 @@ class CallInterfaceVideo {
         let icon = document.querySelector(".stun-chatbox .minimizer i");
         let chat_box = document.querySelector(".stun-chatbox");
 
+        chat_box.classList.toggle("full-screen");
+
         if (icon.classList.contains("fa-caret-down")) {
           if (this.display_mode !== "focus"){
             this.app.connection.emit("stun-switch-view", "focus");  
@@ -334,10 +337,14 @@ class CallInterfaceVideo {
   }
 
   flipDisplay(stream_id) {
-    console.log("flipDisplay");
-    let id = document.querySelector(`.${this.local_container}`).querySelector(".video-box").id;
-    this.video_boxes[id].video_box.containerClass = this.remote_container;
-    this.video_boxes[id].video_box.rerender();
+    console.log("flipDisplay: " + this.local_container);
+    let big_video = document.querySelector(`.${this.local_container} .video-box`);
+    if (!big_video){
+      return;
+    }
+    this.video_boxes[big_video.id].video_box.containerClass = this.remote_container;
+    this.video_boxes[big_video.id].video_box.rerender();
+
     this.video_boxes[stream_id].video_box.containerClass = this.local_container;
     this.video_boxes[stream_id].video_box.rerender();
   }
@@ -392,6 +399,8 @@ class CallInterfaceVideo {
   }
 
   addRemoteStream(peer, remoteStream) {
+    console.log("addRemoteStream")
+
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(remoteStream);
 
@@ -428,6 +437,8 @@ class CallInterfaceVideo {
   }
 
   addLocalStream(localStream) {
+
+    console.log("Add local stream");
 
     this.createVideoBox("local", this.local_container);
     this.video_boxes["local"].video_box.render(localStream);
@@ -518,7 +529,7 @@ class CallInterfaceVideo {
         secs = `0${secs}`;
       }
 
-      timerElement.innerHTML = `<span style="" >${hours}:${minutes}:${secs} </span>`;
+      timerElement.innerHTML = `${hours}:${minutes}:${secs}`;
     };
 
     this.timer_interval = setInterval(timer, 1000);

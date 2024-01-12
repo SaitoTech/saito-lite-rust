@@ -522,10 +522,15 @@
 }
 
 .timer .counter {
-  color: orangered;
+  color: var(--saito-primary);
   font-size: 2rem;
   min-width: 9rem;
   font-family: monospace;
+}
+
+.minimize .timer .counter {
+  font-size: 1.8rem;
+  min-width: unset;
 }
 
 .users-on-call {
@@ -539,6 +544,11 @@
   display: flex;
   gap: 1rem;
   margin-right: 1rem;
+}
+
+.minimize .stun-identicon-list{
+  gap: 0.6rem;
+  margin-right: 0.6rem;
 }
 
 .stun-identicon-list img {
@@ -613,11 +623,11 @@
 }
 
 @media screen and (max-width: 900px) {
-  .stun-chatbox main {
+  .stun-chatbox.full-screen main {
     grid-template-rows: 1fr minmax(200px, 20%);
   }
 
-  .control-panel {
+  .full-screen .control-panel {
     flex-direction: column;
     align-items: flex-start;
     justify-content: end;
@@ -625,10 +635,11 @@
     gap: 3rem;
     padding-bottom: 3rem;
   }
-  .control-panel .control-list {
+  .full-screen .control-panel .control-list {
     margin-bottom: 1.7rem;
     gap: 1.5rem;
   }
+
   .control-list span {
     margin: 0;
   }

@@ -176,7 +176,7 @@ class CallInterfaceFloat {
         secs = `0${secs}`;
       }
 
-      timerElement.innerHTML = `<span style="color:orangered; font-size: 3rem;" >${hours}:${minutes}:${secs} </span>`;
+      timerElement.innerHTML = `${hours}:${minutes}:${secs}`;
     };
 
     this.timer_interval = setInterval(timer, 1000);

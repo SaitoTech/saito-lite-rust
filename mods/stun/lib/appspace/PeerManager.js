@@ -132,10 +132,12 @@ class PeerManager {
     app.connection.on("start-stun-call", async () => {
       console.log("STUN: start-stun-call");
 
-      await this.getLocalMedia();
+      console.log("STUN: ", this.mod.room_obj, this.app.options.stun);
 
       //Render the UI component
       this.app.connection.emit("show-call-interface", this.videoEnabled, this.audioEnabled);
+
+      await this.getLocalMedia();
 
       //Plug local stream into UI component
       this.app.connection.emit("add-local-stream-request", this.localStream);
@@ -194,7 +196,7 @@ class PeerManager {
   async handleSignalingMessage(data) {
     const { type, sdp, iceCandidate, targetPeerId, public_key } = data;
 
-    //console.log("Stun Signal Message: " + type, data);
+    console.log("Stun Signal Message: " + type, data);
 
     if (type == "peer-joined") {
       this.createPeerConnection(public_key, true);
@@ -239,6 +241,8 @@ class PeerManager {
             targetPeerId: public_key,
             public_key: this.mod.publicKey,
           };
+
+          console.log("Stun: send answer to offer");
           this.mod.sendStunMessageToPeersTransaction(data, [public_key]);
         })
         .catch((error) => {
@@ -270,7 +274,8 @@ class PeerManager {
     //Get my local media
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: this.videoEnabled,
+        video: false,
+        //video: this.videoEnabled,
         audio: true,
       });
     } catch (err) {
@@ -360,8 +365,7 @@ class PeerManager {
     peerConnection.addEventListener("track", (event) => {
       const remoteStream = new MediaStream();
 
-      // console.log("trackss", event.track, "stream :", event.streams);
-      console.log("STUN: another remote stream added", event.track);
+      //console.log("STUN: another remote stream added", event.track);
       if (this.trackIsPresentation) {
         remoteStream.addTrack(event.track);
         //this.remoteStreams.set("Presentation", { remoteStream, peerConnection });

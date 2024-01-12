@@ -123,8 +123,8 @@ class Dialer {
 
         this.stopRing();
         this.updateMessage("connecting...");
+        this.app.connection.emit("close-preview-window");
         setTimeout(()=> {
-          this.app.connection.emit("close-preview-window");
           this.overlay.remove();
           this.app.connection.emit("stun-init-call-interface", this.mod.room_obj.ui);
           this.app.connection.emit("start-stun-call");
@@ -265,8 +265,8 @@ class Dialer {
 
         this.updateMessage("connecting...");
 
+        this.app.connection.emit("close-preview-window");
         setTimeout(()=> {
-          this.app.connection.emit("close-preview-window");
           this.overlay.remove();
           this.app.connection.emit("stun-init-call-interface", this.mod.room_obj.ui);
           this.app.connection.emit("start-stun-call");

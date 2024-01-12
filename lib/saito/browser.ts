@@ -751,7 +751,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       }else{
-        console.warn("Classname not found");
+        console.warn("Classname not found: " + classname);
       }
     }
   }
