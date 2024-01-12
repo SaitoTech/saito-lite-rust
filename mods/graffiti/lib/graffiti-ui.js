@@ -26,7 +26,7 @@ class GraffitiUI {
     this.presetColors = [
       "#000000", "#707070", "#bbbbbb", "#ffffff", "#ffff00", "#fcca43", "#ff7f00", "#f71f3d", "#b90303",
       "#965601", "#7f7f00", "#5d935d", "#007f7f", "#7f7fff", "#3ba4f8", "#00ffff", "#7fff7f", "#00ff00",
-      "#116d00", "#020b86", "#0000ff", "#ff00ff", "#b32ab2", "#7f007f", "#fc3f88", "#ff7f7f", "#fad099",
+      "#116d00", "#0000ff", "#ff00ff", "#b32ab2", "#7f007f", "#fc3f88", "#ff7f7f", "#fad099",
     ];
 
     this.defaultColor = "#f71f3d"; // Saito red
