@@ -10,7 +10,6 @@ class GraffitiUI {
     this.gridHeight = this.mod.gridHeight;
     this.gridState  = this.mod.gridState;
 
-    this.maxScale = 15;
     this.zoomAbsoluteFactor = Math.sqrt(Math.sqrt(2));
     this.markSizeRatio = 0.15;
     this.hourglassHeightRatio = 0.6;
@@ -40,7 +39,6 @@ class GraffitiUI {
     this.renderSubmitButton();
     this.attachEventsToForeground();
     this.attachEventsToButtons();
-    await this.loadBaseHourglass();
   }
 
   renderForeground() {
@@ -56,9 +54,10 @@ class GraffitiUI {
 
 
     this.minScale = this.foregroundWidth / this.gridWidth;
+    this.maxScale = Math.ceil(this.minScale);
     this.currentScale = this.minScale;
 
-    
+
     this.gridApparentWidth   = this.gridWidth  * this.currentScale;
     this.gridApparentHeight  = this.gridHeight * this.currentScale;
     this.gridRenderingWidth  = this.gridWidth  * this.maxScale;
@@ -68,6 +67,7 @@ class GraffitiUI {
     this.gridApparentTop  = this.foregroundTop;
     this.gridRenderingLeft = this.gridApparentLeft - (this.gridRenderingWidth  - this.gridApparentWidth)  / 2;
     this.gridRenderingTop  = this.gridApparentTop  - (this.gridRenderingHeight - this.gridApparentHeight) / 2;
+
 
 
     this.foreground = document.createElement("div");
@@ -87,16 +87,62 @@ class GraffitiUI {
     this.gridContainer.style.top  = `${this.gridRenderingTop  - this.foregroundTop}px`;
     this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
 
-    this.grid = document.createElement("canvas");
-    this.grid.id = "grid";
-    this.gridContainer.appendChild(this.grid);
-    this.grid.width  = this.gridRenderingWidth;
-    this.grid.height = this.gridRenderingHeight;
 
-    this.gridCtx = this.grid.getContext("2d");
-    this.gridCtx.imageSmoothingEnabled = false;
-    this.gridCtx.fillStyle = this.mod.blankTileColor;
-    this.gridCtx.fillRect(0, 0, this.grid.width, this.grid.height);
+    this.backgroundLayer = document.createElement("canvas");
+    this.backgroundLayer.className = "grid-layer";
+    this.backgroundLayer.id = "background-layer";
+    this.gridContainer.appendChild(this.backgroundLayer);
+    this.backgroundLayer.width  = this.gridRenderingWidth;
+    this.backgroundLayer.height = this.gridRenderingHeight;
+
+    this.backgroundLayerCtx = this.backgroundLayer.getContext("2d");
+    this.backgroundLayerCtx.imageSmoothingEnabled = false;
+    this.backgroundLayerCtx.fillStyle = this.mod.blankTileColor;
+    this.backgroundLayerCtx.fillRect(0, 0, this.backgroundLayer.width, this.backgroundLayer.height);
+
+
+    this.confirmedLayer = document.createElement("canvas");
+    this.confirmedLayer.className = "grid-layer";
+    this.confirmedLayer.id = "confirmed-layer";
+    this.gridContainer.appendChild(this.confirmedLayer);
+    this.confirmedLayer.width  = this.gridRenderingWidth;
+    this.confirmedLayer.height = this.gridRenderingHeight;
+
+    this.confirmedLayerCtx = this.confirmedLayer.getContext("2d");
+    this.confirmedLayerCtx.imageSmoothingEnabled = false;
+
+
+    this.pendingLayer = document.createElement("canvas");
+    this.pendingLayer.className = "grid-layer";
+    this.pendingLayer.id = "pending-layer";
+    this.gridContainer.appendChild(this.pendingLayer);
+    this.pendingLayer.width  = this.gridRenderingWidth;
+    this.pendingLayer.height = this.gridRenderingHeight;
+
+    this.pendingLayerCtx = this.pendingLayer.getContext("2d");
+    this.pendingLayerCtx.imageSmoothingEnabled = false;
+
+
+    this.draftedLayer = document.createElement("canvas");
+    this.draftedLayer.className = "grid-layer";
+    this.draftedLayer.id = "drafted-layer";
+    this.gridContainer.appendChild(this.draftedLayer);
+    this.draftedLayer.width  = this.gridRenderingWidth;
+    this.draftedLayer.height = this.gridRenderingHeight;
+
+    this.draftedLayerCtx = this.draftedLayer.getContext("2d");
+    this.draftedLayerCtx.imageSmoothingEnabled = false;
+
+
+    this.cursorLayer = document.createElement("canvas");
+    this.cursorLayer.className = "grid-layer";
+    this.cursorLayer.id = "cursor-layer";
+    this.gridContainer.appendChild(this.cursorLayer);
+    this.cursorLayer.width  = this.gridRenderingWidth;
+    this.cursorLayer.height = this.gridRenderingHeight;
+
+    this.cursorLayerCtx = this.cursorLayer.getContext("2d");
+    this.cursorLayerCtx.imageSmoothingEnabled = false;
   }
 
   updateForegroundRendering() {
@@ -120,6 +166,8 @@ class GraffitiUI {
     // `tileHash` to make sure likely adjacent drafted tiles have non-adjacent keys on average
     // to form a well-balanced red-black tree (perhaps not necessary).
     this.draftedTiles = new RBTree((a,b) => { return this.tileHash(a) - this.tileHash(b); });
+
+    this.currentColor = this.defaultColor;
 
     this.foreground.addEventListener("wheel",       (event) => { this.onWheelOverForeground(event);       });
     this.foreground.addEventListener("mousedown",   (event) => { this.onMousedownOverForeground(event);   });
@@ -190,7 +238,7 @@ class GraffitiUI {
       colorOption.className = "color-option";
       colorOption.style.backgroundColor = color;
       colorOption.onclick = () => {
-        this.colorPreview.style.backgroundColor = color;
+        this.setCurrentColor(color);
       };
       this.colorPalette.appendChild(colorOption);
     }
@@ -199,7 +247,7 @@ class GraffitiUI {
     this.customColorInput.type = "color";
     this.customColorInput.className = "color-picker";
     this.customColorInput.onchange = () => {
-      this.colorPreview.style.backgroundColor = this.customColorInput.value;
+      this.setCurrentColor(this.customColorInput.value);
     };
     this.colorPalette.appendChild(this.customColorInput);
   }
@@ -310,7 +358,12 @@ class GraffitiUI {
     else if (stack === this.redoStack) { this.redoStack = []; this.redoButton.disabled = true; }
   }
 
-  updateScale(zoomFactor) {
+  setCurrentColor(color) {
+    this.currentColor = color;
+    this.colorPreview.style.backgroundColor = color;
+  }
+
+  setScale(zoomFactor) {
     const newScale = this.currentScale * zoomFactor;
     if (newScale < this.minScale) {
       zoomFactor = this.minScale / this.currentScale;
@@ -324,51 +377,63 @@ class GraffitiUI {
     return zoomFactor;
   }
 
-  updateTilesRendering(locatedStateArray) {
+  setTilesRendering(locatedStateArray) {
     for (const locatedState of locatedStateArray) {
-      this.updateTileRendering(locatedState);
+      this.setTileRendering(locatedState);
     }
   }
 
-  updateTileRendering(newLocatedState) {
+  setTileRendering(newLocatedState) {
     const {i, j, state} = newLocatedState;
 
     if (state.drafted) {
-      this.drawTile(i, j, state.drafted.color);
+      this.drawTile(this.draftedLayerCtx, i, j, state.drafted.color);
       this.drawDraftMark(i, j, state.drafted.color);
-    } else if (state.pending) {
-      this.drawTile(i, j, state.pending.color);
-      this.drawHourglass(i, j, state.pending.color);
-    } else if (state.confirmed) {
-      this.drawTile(i, j, state.confirmed.color);
     } else {
-      this.drawTile(i, j, this.mod.blankTileColor);
+      this.drawTile(this.draftedLayerCtx, i, j, null);
+    }
+
+    if (state.pending) {
+      this.drawTile(this.pendingLayerCtx, i, j, state.pending.color);
+    } else {
+      this.drawTile(this.pendingLayerCtx, i, j, null);
+    }
+
+    if (state.confirmed) {
+      this.drawTile(this.confirmedLayerCtx, i, j, state.confirmed.color);
+    } else {
+      this.drawTile(this.confirmedLayerCtx, i, j, null);
     }
   }
 
   updateMousePosition(event, i, j) {
     if (this.isInsideGrid(this.mousePosition)) {
-      this.updateTileRendering({
-        i: this.mousePosition.i, j: this.mousePosition.j,
-        state: this.mod.gridState.state[this.mousePosition.i][this.mousePosition.j]
-      });
+      this.drawTile(this.cursorLayerCtx, this.mousePosition.i, this.mousePosition.j, null);
     }
     this.mousePosition.x = event.clientX;
     this.mousePosition.y = event.clientY;
     if (this.isInsideGrid(this.mousePosition)) {
       this.mousePosition.i = i;
       this.mousePosition.j = j;
-      this.drawTile(this.mousePosition.i, this.mousePosition.j, this.colorPreview.style.backgroundColor);
+      this.drawTile(this.cursorLayerCtx, this.mousePosition.i, this.mousePosition.j, this.currentColor);
     } else {
       this.mousePosition.i = null;
       this.mousePosition.j = null;
     }
   }
 
+  drawTile(ctx, i, j, color) {
+    ctx.clearRect(i * this.maxScale, j * this.maxScale, this.maxScale, this.maxScale);
+    if (color !== null) {
+      ctx.fillStyle = color;
+      ctx.fillRect(i * this.maxScale, j * this.maxScale, this.maxScale, this.maxScale);
+    }
+  }
+
   onWheelOverForeground(event) {
     if (this.zoomable) {
       event.preventDefault();
-      const zoomFactor = this.updateScale(
+      const zoomFactor = this.setScale(
         (event.deltaY < 0) ? this.zoomAbsoluteFactor : 1 / this.zoomAbsoluteFactor
       );
       this.gridApparentLeft = event.clientX + zoomFactor * (this.gridApparentLeft - event.clientX);
@@ -433,7 +498,7 @@ class GraffitiUI {
       }
       this.mod.sendPaintingTransaction(tilesToSend).then((ordinal) => {
         for (const tile of tilesToSend) {
-          this.mod.updateTile(tile, "pending", ordinal);
+          this.mod.setTile(tile, "pending", ordinal);
         }
         this.clearDraft();
       });
@@ -486,7 +551,7 @@ class GraffitiUI {
     } else {
       tile.color = null;
     }
-    this.mod.updateTile(tile, "drafted");
+    this.mod.setTile(tile, "drafted");
   }
 
   redo() {
@@ -503,7 +568,7 @@ class GraffitiUI {
     } else {
       tile.color = null;
     }
-    this.mod.updateTile(tile, "drafted");
+    this.mod.setTile(tile, "drafted");
   }
 
   actionType(action) {
@@ -528,7 +593,7 @@ class GraffitiUI {
   clearDraft() {
     const it = this.draftedTiles.iterator(); let draftedTile;
     while ((draftedTile = it.next()) !== null) {
-      this.mod.updateTile({i: draftedTile.i, j: draftedTile.j, color: null}, "drafted");
+      this.mod.setTile({i: draftedTile.i, j: draftedTile.j, color: null}, "drafted");
     }
     this.clearDraftedTiles();
     this.clearStack(this.undoStack);
@@ -538,11 +603,11 @@ class GraffitiUI {
   tryAndDraftTile(i, j) {
     const alreadyDraftedTile = this.draftedTiles.find({i: i, j: j});
     if (alreadyDraftedTile === null) {
-      this.draftTile(i, j, null, this.colorPreview.style.backgroundColor);
+      this.draftTile(i, j, null, this.currentColor);
     } else {
-      if (this.colorPreview.style.backgroundColor !== alreadyDraftedTile.color) {
+      if (this.currentColor !== alreadyDraftedTile.color) {
         this.removeFromDraftedTiles(alreadyDraftedTile);
-        this.draftTile(i, j, alreadyDraftedTile.color, this.colorPreview.style.backgroundColor);
+        this.draftTile(i, j, alreadyDraftedTile.color, this.currentColor);
       }
     }
   }
@@ -559,77 +624,23 @@ class GraffitiUI {
     this.clearStack(this.redoStack);
     const draftTile = {i: i, j: j, color: newDraftColor};
     this.insertToDraftedTiles(draftTile);
-    this.mod.updateTile(draftTile, "drafted");
+    this.mod.setTile(draftTile, "drafted");
   }
 
   undraftTile(i, j, oldDraftColor) {
     this.stackPush(this.undoStack, {i: i, j: j, oldDraftColor: oldDraftColor, newDraftColor: null});
     this.clearStack(this.redoStack);
     this.removeFromDraftedTiles({i: i, j: j});
-    this.mod.updateTile({i: i, j: j, color: null}, "drafted");
-  }
-
-  loadBaseHourglass() {
-    return new Promise((resolve, reject) => {
-      this.baseHourglass = document.createElement("canvas");
-      this.baseHourglassCtx = this.baseHourglass.getContext("2d", {willReadFrequently: true});
-      this.baseHourglassImage = new Image();
-      this.baseHourglassImage.src = `/${this.slug}/img/hourglass-mini.png`;
-
-      this.baseHourglassImage.onload = () => {
-        console.assert(this.baseHourglassImage.width >= 1);
-        this.hourglassWidthRatio  = this.hourglassHeightRatio
-                                    * this.baseHourglassImage.width / this.baseHourglassImage.height;
-        this.baseHourglass.width  = this.hourglassWidthRatio  * this.maxScale;
-        this.baseHourglass.height = this.hourglassHeightRatio * this.maxScale;
-        console.assert(this.baseHourglass.width >= 1);
-        console.assert(this.baseHourglass.height >= 1);
-        this.baseHourglassCtx.drawImage(
-          this.baseHourglassImage, 0, 0, this.baseHourglass.width, this.baseHourglass.height
-        );
-        resolve();
-      };
-
-      this.baseHourglassImage.onerror = () => {
-        reject();
-      };
-    });
-  }
-
-  drawTile(i, j, color) {
-    this.gridCtx.fillStyle = color;
-    this.gridCtx.fillRect(i * this.maxScale, j * this.maxScale, this.maxScale, this.maxScale);
+    this.mod.setTile({i: i, j: j, color: null}, "drafted");
   }
 
   drawDraftMark(i, j, tileColor) {
-    this.gridCtx.fillStyle = this.markColor(tileColor);
-    this.gridCtx.fillRect(
+    this.draftedLayerCtx.fillStyle = this.markColor(tileColor);
+    this.draftedLayerCtx.fillRect(
       (i + 0.5 - this.markSizeRatio / 2) * this.maxScale,
       (j + 0.5 - this.markSizeRatio / 2) * this.maxScale,
       this.markSizeRatio * this.maxScale,
       this.markSizeRatio * this.maxScale
-    );
-  }
-
-  drawHourglass(i, j, tileColor) {
-    console.assert(this.baseHourglass.width >= 1);
-    console.assert(this.baseHourglass.height >= 1);
-    const hourglassImageData = this.baseHourglassCtx.getImageData(
-      0, 0, this.baseHourglass.width, this.baseHourglass.height
-    );
-    const components = this.mod.colorToComponents(tileColor);
-    for (let s = 0; s < hourglassImageData.data.length; s += 4) {       
-      for (const k of [0, 1, 2]) {
-        hourglassImageData.data[s+k] = this.mixedComponent(
-          components[k], this.oppositeComponent(components[k]), hourglassImageData.data[s+3]
-        );
-      }
-      hourglassImageData.data[s+3] = 255;
-    }
-    this.gridCtx.putImageData(
-      hourglassImageData,
-      (i + 0.5 - this.hourglassWidthRatio  / 2) * this.maxScale,
-      (j + 0.5 - this.hourglassHeightRatio / 2) * this.maxScale,
     );
   }
 
@@ -641,10 +652,6 @@ class GraffitiUI {
 
   oppositeComponent(component) {
     return (component > 127) ? 0 : 255;
-  }
-
-  mixedComponent(component1, component2, alpha2) {
-    return Math.round(component1 + (alpha2 / 255) * (component2 - component1));
   }
 
   tileHash(tile) {

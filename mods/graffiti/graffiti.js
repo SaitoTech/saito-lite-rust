@@ -48,7 +48,7 @@ class Graffiti extends ModTemplate {
     const sql = `SELECT * FROM tiles WHERE i < ${this.gridWidth} AND j < ${this.gridHeight}`;
     const rows = await this.app.storage.queryDatabase(sql, {}, "graffiti");
     for (const row of rows) {
-      this.gridState.updateTile(
+      this.gridState.setTile(
         {i: row.i, j: row.j, color: this.componentsToColor([row.red, row.green, row.blue])},
         "confirmed", row.ordinal
       );
@@ -60,7 +60,7 @@ class Graffiti extends ModTemplate {
     this.sendPeerDatabaseRequestWithFilter(this.name, sql, async (res) => {
       if (res.rows) {
         for (const row of res.rows) {
-          await this.updateTile(
+          await this.setTile(
             {i: row.i, j: row.j, color: this.componentsToColor([row.red, row.green, row.blue])},
             "confirmed", row.ordinal
           );
@@ -138,7 +138,7 @@ class Graffiti extends ModTemplate {
     const data = tx.returnMessage().data;
     if (this.isValidTileArray(data)) {
       const txOrdinal = this.transactionOrdinal(tx);
-      await this.updateTiles(data, "confirmed", txOrdinal);
+      await this.setTiles(data, "confirmed", txOrdinal);
     }
   }
 
@@ -147,9 +147,9 @@ class Graffiti extends ModTemplate {
       return false;
     }
     for (const arrayElement of data) {
-      if (typeof arrayElement.i !== 'number' || !Number.isInteger(arrayElement.i) ||
-          typeof arrayElement.j !== 'number' || !Number.isInteger(arrayElement.j) ||
-          typeof arrayElement.color !== 'string') {
+      if (typeof arrayElement.i !== "number" || !Number.isInteger(arrayElement.i) ||
+          typeof arrayElement.j !== "number" || !Number.isInteger(arrayElement.j) ||
+          typeof arrayElement.color !== "string") {
         return false;
       }
       if (arrayElement.i < 0 || arrayElement.i >= this.gridWidth ||
@@ -253,20 +253,20 @@ class Graffiti extends ModTemplate {
 
 
 
-  async updateTile(tile, status, ordinal=null) {
-    await this.updateTiles([tile], status, ordinal);
+  async setTile(tile, status, ordinal=null) {
+    await this.setTiles([tile], status, ordinal);
   }
 
-  async updateTiles(tileArray, status, ordinal=null) {
-    const locatedStateArray = tileArray.map((tile) => this.gridState.updateTile(tile, status, ordinal));
+  async setTiles(tileArray, status, ordinal=null) {
+    const locatedStateArray = tileArray.map((tile) => this.gridState.setTile(tile, status, ordinal));
     if (this.app.BROWSER) {
-      this.graffitiUI.updateTilesRendering(locatedStateArray);
+      this.graffitiUI.setTilesRendering(locatedStateArray);
     } else if (status === "confirmed") {
-      await this.updateTilesInDatabase(locatedStateArray, ordinal);
+      await this.setTilesInDatabase(locatedStateArray, ordinal);
     }
   }
 
-  async updateTilesInDatabase(locatedStateArray, ordinal) {
+  async setTilesInDatabase(locatedStateArray, ordinal) {
     const maxSqlValueNumber = 999, nbSqlColumns = 6;
     const nbTilesPerStatement = Math.ceil(maxSqlValueNumber / nbSqlColumns) - 1;
     const nbTiles = locatedStateArray.length;

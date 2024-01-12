@@ -13,14 +13,14 @@ class GridState {
     }
   }
 
-  prettyPrint() {
+  prettyPrint(nbColumns, nbRows) {
     const nbColorCharacters = 7;
     const nbOrdinalDigitsToPrint = 8;
 
     const statusHeaderLength = 2;
     const cellWidth = 1 + statusHeaderLength + 1 + nbColorCharacters + 1 + nbOrdinalDigitsToPrint + 1;
     const cellHorizontalBorder = "-".repeat(cellWidth);
-    const gridHorizontalBorder = new Array(this.gridWidth + 1).fill("+").join(cellHorizontalBorder);
+    const gridHorizontalBorder = new Array(nbColumns + 1).fill("+").join(cellHorizontalBorder);
 
     const alignedText = (text, alignementType, width) => {
       const leftRightPaddingLength = width - text.length;
@@ -63,12 +63,12 @@ class GridState {
       }
     }
 
-    for (let j = 0; j < this.gridHeight; j++) {
+    for (let j = 0; j < nbRows; j++) {
       console.log(gridHorizontalBorder);
       for (const status of ["confirmed", "pending", "drafted"]) {
         const statusHeader = status[0] + ":";
         let line = "|";
-        for (let i = 0; i < this.gridWidth; i++) {
+        for (let i = 0; i < nbColumns; i++) {
           line += " " + statusHeader;
           if (this.state[i][j][status] !== null) {
             line += " " + alignedText(colorName(this.state[i][j][status].color), "left", nbColorCharacters)
@@ -95,7 +95,7 @@ class GridState {
     }
   }
 
-  updateTile(tile, tileStatus, ordinal=null) {
+  setTile(tile, tileStatus, ordinal=null) {
     console.assert(tile !== null);
     const i = tile.i;
     const j = tile.j;
