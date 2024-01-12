@@ -1,6 +1,5 @@
 const PeerService  = require("saito-js/lib/peer_service").default;
 const Transaction  = require("../../lib/saito/transaction").default;
-const GameMenu     = require("../../lib/saito/ui/game-menu/game-menu");
 const ModTemplate  = require("../../lib/templates/modtemplate");
 const GraffitiUI   = require("./lib/graffiti-ui");
 const GridState    = require("./lib/grid-state");
@@ -17,13 +16,12 @@ class Graffiti extends ModTemplate {
     this.name = "Graffiti";
     this.slug = "graffiti";
 
-    this.gridWidth  = 100;
-    this.gridHeight = 50;
+    this.gridWidth  = 80;
+    this.gridHeight = 60;
     this.blankTileColor = "#ffffff";
     this.txOrderPrecision = 6;
 
     this.gridState = new GridState(this);
-    this.menu = new GameMenu(app, this);
   }
 
   async initialize(app) {
@@ -78,17 +76,6 @@ class Graffiti extends ModTemplate {
     await super.render(app);
     this.graffitiUI = new GraffitiUI(this);
     this.graffitiUI.render();
-
-    this.menu.addMenuOption("game-game", "Menu");
-    this.menu.debug = false;
-    this.menu.render();
-  }
-
-  exitGame() {
-    const homeModule = this.app.options.homeModule || "RedSquare";
-    const mod = this.app.modules.returnModuleByName(homeModule);
-    const slug = mod?.returnSlug() || "redsquare";
-    window.location.href = "/" + slug;
   }
 
 
@@ -148,8 +135,33 @@ class Graffiti extends ModTemplate {
   }
 
   async receivePaintingTransaction(tx) {
-    const txOrdinal = this.transactionOrdinal(tx);
-    await this.updateTiles(tx.returnMessage().data, "confirmed", txOrdinal);
+    const data = tx.returnMessage().data;
+    if (this.isValidTileArray(data)) {
+      const txOrdinal = this.transactionOrdinal(tx);
+      await this.updateTiles(data, "confirmed", txOrdinal);
+    }
+  }
+
+  isValidTileArray(data) {
+    if (!Array.isArray(data)) {
+      return false;
+    }
+    for (const arrayElement of data) {
+      if (typeof arrayElement.i !== 'number' || !Number.isInteger(arrayElement.i) ||
+          typeof arrayElement.j !== 'number' || !Number.isInteger(arrayElement.j) ||
+          typeof arrayElement.color !== 'string') {
+        return false;
+      }
+      if (arrayElement.i < 0 || arrayElement.i >= this.gridWidth ||
+          arrayElement.j < 0 || arrayElement.j >= this.gridHeight) {
+        return false;
+      }
+      const hexColorPattern = /^#[0-9A-Fa-f]{6}$/;
+      if (!hexColorPattern.test(arrayElement.color)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // Orders transactions in case they have tiles in common and timestamps are equal.
@@ -266,7 +278,7 @@ class Graffiti extends ModTemplate {
       sqlValues = [], params = {};
       for (let k = kMin; k < kMax; k++) {
         sqlValues.push(`($i${k}, $j${k}, $red${k}, $green${k}, $blue${k}, $ordinal${k})`);
-        ({i: i, j: j, state: state} = locatedStateArray[k]);
+        ({i, j, state} = locatedStateArray[k]);
         components = this.colorToComponents(state.confirmed.color);
         params[`$i${k}`] = i;
         params[`$j${k}`] = j;

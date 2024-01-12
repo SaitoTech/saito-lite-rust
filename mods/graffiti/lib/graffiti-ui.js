@@ -18,21 +18,28 @@ class GraffitiUI {
 
     this.foregroundLeftMarginRatio   = 0.00;
     this.foregroundRightMarginRatio  = 0.00;
-    this.foregroundTopMarginRatio    = 0.08;
-    this.foregroundBottomMarginRatio = 0.14;
+    this.foregroundTopMarginRatio    = 0.01;
+    this.foregroundBottomMarginRatio = 0.01;
 
     this.draggable = false;
     this.zoomable  = false;
 
-    this.buttonLightColor  = "#f7f7f7";
-    this.buttonShadowColor = "#909090";
+    this.presetColors = [
+      "#000000", "#707070", "#bbbbbb", "#ffffff", "#ffff00", "#fcca43", "#ff7f00", "#ff0000", "#b90303",
+      "#965601", "#7f7f00", "#5d935d", "#007f7f", "#7f7fff", "#3ba4f8", "#00ffff", "#7fff7f", "#00ff00",
+      "#116d00", "#020b86", "#0000ff", "#ff00ff", "#b32ab2", "#7f007f", "#fc3f88", "#ff7f7f", "#fad099",
+    ];
+
+    this.defaultColor = "#f71f3d"; // Saito red
   }
 
   async render() {
     this.renderForeground();
-    this.renderButtonElements();
-    this.attachEventsToButtonElements();
+    this.renderSidebar();
+    this.renderColorPalette();
+    this.renderSubmitButton();
     this.attachEventsToForeground();
+    this.attachEventsToButtons();
     await this.loadBaseHourglass();
   }
 
@@ -72,7 +79,7 @@ class GraffitiUI {
     this.foreground.style.top  = `${this.foregroundTop}px`;
 
     this.gridContainer = document.createElement("div");
-    this.gridContainer.id = "gridContainer";
+    this.gridContainer.id = "grid-container";
     this.foreground.appendChild(this.gridContainer);
     this.gridContainer.style.width  = `${this.gridRenderingWidth}px`;
     this.gridContainer.style.height = `${this.gridRenderingHeight}px`;
@@ -104,84 +111,6 @@ class GraffitiUI {
     this.gridContainer.style.transform = `scale(${this.currentScale / this.maxScale})`;
   }
 
-  renderButtonElements() {
-    this.renderButtonContainers();
-    this.renderButtons();
-    this.renderButtonImages();
-    this.renderColorPicker();
-  }
-
-  renderButtonContainers() {
-    this.allButtonsContainer  = document.createElement("div");
-    this.colorPickerContainer = document.createElement("div");
-
-    this.buttonContainers = [this.allButtonsContainer, this.colorPickerContainer];
-    for (const buttonContainer of this.buttonContainers) {
-      buttonContainer.classList.add("buttonContainer");
-      document.body.appendChild(buttonContainer);
-    }
-  }
-
-  renderButtons() {
-    this.colorButton   = document.createElement("button");
-    this.cancelButton  = document.createElement("button");
-    this.confirmButton = document.createElement("button");
-    this.undoButton    = document.createElement("button");
-    this.redoButton    = document.createElement("button");
-
-    this.colorButton.id = "colorButton";
-
-    this.cancelButton.title  = "Erase the draft";
-    this.confirmButton.title = "Submit";
-    this.undoButton.title    = "Undo";
-    this.redoButton.title    = "Redo";
-
-    this.buttons = [this.cancelButton, this.undoButton, this.colorButton, this.redoButton, this.confirmButton];
-    for (const button of this.buttons) {
-      this.allButtonsContainer.appendChild(button);
-      button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
-    }
-    this.setButtonsVisibility([this.cancelButton, this.confirmButton], "hidden");
-  }
-
-  renderButtonImages() {
-    const imageDir = `/${this.slug}/img`;
-
-    this.cancelButtonImage = document.createElement("img");
-    this.cancelButton.appendChild(this.cancelButtonImage);
-    this.cancelButtonImage.src = `${imageDir}/cancel-mini.png`;
-    this.cancelButtonImage.style = "width: 25px; height: 21px";
-
-    this.undoButtonImage = document.createElement("img");
-    this.undoButton.appendChild(this.undoButtonImage);
-    this.undoButtonImage.src = `${imageDir}/undo-mini.png`;
-    this.undoButtonImage.style = "width: 40px; height: 34px";
-
-    this.redoButtonImage = document.createElement("img");
-    this.redoButton.appendChild(this.redoButtonImage);
-    this.redoButtonImage.src = `${imageDir}/redo-mini.png`;
-    this.redoButtonImage.style = "width: 40px; height: 34px";
-
-    this.confirmButtonImage = document.createElement("img");
-    this.confirmButton.appendChild(this.confirmButtonImage);
-    this.confirmButtonImage.src = `${imageDir}/confirm-mini.png`;
-    this.confirmButtonImage.style = "width: 25px; height: 21px";
-  }
-
-  renderColorPicker() {
-    this.colorPickerButton = document.createElement("label");
-    this.colorPickerButton.id = "colorPickerButton";
-    this.colorPickerButton.title = "Select color";
-    this.colorPickerContainer.appendChild(this.colorPickerButton);
-    this.colorPickerButton.htmlFor = "colorPickerInput";
-    this.colorPickerButton.style.backgroundImage =
-      `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
-
-    this.selectedColor = document.createElement("div");
-    this.selectedColor.id = "selectedColor";
-    this.colorPickerButton.appendChild(this.selectedColor);
-  }
-
   attachEventsToForeground() {
     this.mousePosition = {x: null, y: null, i: null, j: null};
     this.mousedown = false;
@@ -199,48 +128,107 @@ class GraffitiUI {
     this.foreground.addEventListener("contextmenu", (event) => { this.onContextMenuOverForeground(event); });
   }
 
-  attachEventsToButtonElements() {
-    this.attachStyleEventsToButtonElements();
-    this.attachFeatureEventsToButtonElements();
+  renderSidebar() {
+    this.sidebar = document.createElement("div");
+    this.sidebar.id = "sidebar";
+    document.body.appendChild(this.sidebar);
+
+
+
+    this.undoRedoCategory = document.createElement("div");
+    this.undoRedoCategory.className = "button-category";
+    this.sidebar.appendChild(this.undoRedoCategory);
+    
+    this.undoButton = document.createElement("button");
+    this.undoButton.title = "Undo";
+    this.undoRedoCategory.appendChild(this.undoButton);
+    this.undoIcon = document.createElement("i");
+    this.undoIcon.className = "fas fa-undo-alt";
+    this.undoButton.appendChild(this.undoIcon);
+    this.undoButton.disabled = true;
+
+    this.redoButton = document.createElement("button");
+    this.redoButton.title = "Undo";
+    this.undoRedoCategory.appendChild(this.redoButton);
+    this.redoIcon = document.createElement("i");
+    this.redoIcon.className = "fas fa-redo-alt";
+    this.redoButton.appendChild(this.redoIcon);
+    this.redoButton.disabled = true;
+
+
+    this.colorCategory = document.createElement("div");
+    this.colorCategory.className = "button-category";
+    this.sidebar.appendChild(this.colorCategory);
+
+    this.colorPreview = document.createElement("div");
+    this.colorPreview.id = "color-preview";
+    this.colorCategory.append(this.colorPreview);
+    this.colorPreview.style.backgroundColor = this.defaultColor;
+
+
+    this.clearCategory = document.createElement("div");
+    this.clearCategory.className = "button-category";
+    this.sidebar.appendChild(this.clearCategory);
+
+    this.clearDraftButton = document.createElement("button");
+    this.clearDraftButton.title = "Clear Draft";
+    this.clearCategory.appendChild(this.clearDraftButton);
+    this.clearDraftIcon = document.createElement("i");
+    this.clearDraftIcon.className = "fas fa-trash-alt";
+    this.clearDraftButton.appendChild(this.clearDraftIcon);
+    this.clearDraftButton.disabled = true;
   }
 
-  attachStyleEventsToButtonElements() {
-    for (const button of this.buttons) {
-      button.style.cursor = "pointer";
-      button.addEventListener("mousedown", () => {
-        button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonShadowColor}, ${this.buttonLightColor})`;
-      });
-      button.addEventListener("mouseup", () => {
-        button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
-      });
-      button.addEventListener("mouseleave", () => {
-        button.style.backgroundImage = `linear-gradient(to bottom, ${this.buttonLightColor}, ${this.buttonShadowColor})`;
-      });
+  renderColorPalette() {
+    this.colorPalette = document.createElement("div");
+    this.colorPalette.id = "color-palette";
+    document.body.appendChild(this.colorPalette);
+    this.colorPalette.style.display = "flex";
+
+    for (const color of this.presetColors) {
+      const colorOption = document.createElement("div");
+      colorOption.className = "color-option";
+      colorOption.style.backgroundColor = color;
+      colorOption.onclick = () => {
+        this.colorPreview.style.backgroundColor = color;
+      };
+      this.colorPalette.appendChild(colorOption);
     }
-    this.colorPickerButton.style.cursor = "pointer";
+
+    this.customColorInput = document.createElement("input");
+    this.customColorInput.type = "color";
+    this.customColorInput.className = "color-picker";
+    this.customColorInput.onchange = () => {
+      this.colorPreview.style.backgroundColor = this.customColorInput.value;
+    };
+    this.colorPalette.appendChild(this.customColorInput);
   }
 
-  attachFeatureEventsToColorPicker() {
-    this.colorPickerInput = document.createElement("input");
-    this.colorPickerContainer.appendChild(this.colorPickerInput);
-    this.colorPickerInput.type = "color";
-    this.colorPickerInput.id = "colorPickerInput";
+  renderSubmitButton() {
+    this.submitButton = document.createElement("button");
+    this.submitButton.id = "submit-button";
+    this.submitButton.title = "Submit Draft";
+    document.body.appendChild(this.submitButton);
+    this.submitIcon = document.createElement("i");
+    this.submitIcon.className = "fas fa-check";
+    this.submitButton.appendChild(this.submitIcon);
 
-    this.colorPickerInput.addEventListener("input", () => {
-      this.selectedColor.style.background = this.colorPickerInput.value;
-    });
+    this.submitButton.style.left = `${this.foregroundLeft + this.foregroundWidth}px`;
+    const submitButtonHeight = window.getComputedStyle(this.submitButton).height;
+    this.submitButton.style.top = `calc(${this.foregroundTop + this.foregroundHeight}px - ${submitButtonHeight})`;
+    this.submitButton.style.visibility = "hidden";
   }
 
-  attachFeatureEventsToButtonElements() {
-    this.cancelButton.addEventListener("mouseup", () => { this.onMouseupOverCancelButton(); });
-    this.confirmButton.addEventListener("mouseup", () => { this.onMouseupOverConfirmButton(); });
+  attachEventsToButtons() {
+    this.attachEventsToUndoButton();
+    this.attachEventsToRedoButton();
+    this.colorPreview.addEventListener("mouseup", () => { this.onMouseupOverColorPreview(); });
+    this.clearDraftButton.addEventListener("mouseup", () => { this.onMouseupOverClearDraftButton(); });
 
-    this.attachFeatureEventsToColorPicker();
-    this.attachFeatureEventsToUndoButton();
-    this.attachFeatureEventsToRedoButton();
+    this.submitButton.addEventListener("mouseup", () => { this.onMouseupOverSubmitButton(); });
   }
 
-  attachFeatureEventsToUndoButton() {
+  attachEventsToUndoButton() {
     this.undoStack = [];
     let undoIntervalId;
     this.undoButton.addEventListener("mousedown", () => {
@@ -259,7 +247,7 @@ class GraffitiUI {
     this.undoButton.addEventListener("mouseleave", () => { clearInterval(undoIntervalId); });
   }
 
-  attachFeatureEventsToRedoButton() {
+  attachEventsToRedoButton() {
     this.redoStack = [];
     let redoIntervalId;
     this.redoButton.addEventListener("mousedown", () => {
@@ -278,29 +266,48 @@ class GraffitiUI {
     this.redoButton.addEventListener("mouseleave", () => { clearInterval(redoIntervalId); });
   }
 
-  removeFromDraftedTiles(tile) {
-    this.draftedTiles.remove(tile);
-    if (this.draftedTiles.size === 0) {
-      this.setButtonsVisibility([this.cancelButton, this.confirmButton], "hidden");
-    }
-  }
-
   insertToDraftedTiles(tile) {
     if (this.draftedTiles.size === 0) {
-      this.setButtonsVisibility([this.cancelButton, this.confirmButton], "visible");
+      this.clearDraftButton.disabled = false;
+      this.submitButton.style.visibility = "visible";
     }
     this.draftedTiles.insert(tile);
   }
 
-  clearDraftedTiles() {
-    this.draftedTiles.clear();
-    this.setButtonsVisibility([this.cancelButton, this.confirmButton], "hidden");
+  removeFromDraftedTiles(tile) {
+    this.draftedTiles.remove(tile);
+    if (this.draftedTiles.size === 0) {
+      this.clearDraftButton.disabled = true;
+      this.submitButton.style.visibility = "hidden";
+    }
   }
 
-  setButtonsVisibility(buttons, visibility) {
-    for (const button of buttons) {
-      button.style.visibility = visibility;
+  clearDraftedTiles() {
+    this.draftedTiles.clear();
+    this.clearDraftButton.disabled = true;
+    this.submitButton.style.visibility = "hidden";
+  }
+
+  stackPush(stack, action) {
+    if (stack.length === 0) {
+      if      (stack === this.undoStack) { this.undoButton.disabled = false; }
+      else if (stack === this.redoStack) { this.redoButton.disabled = false; }
     }
+    stack.push(action);
+  }
+
+  stackPop(stack) {
+    const action = stack.pop();
+    if (stack.length === 0) {
+      if      (stack === this.undoStack) { this.undoButton.disabled = true; }
+      else if (stack === this.redoStack) { this.redoButton.disabled = true; }
+    }
+    return action;
+  }
+
+  clearStack(stack) {
+    if      (stack === this.undoStack) { this.undoStack = []; this.undoButton.disabled = true; }
+    else if (stack === this.redoStack) { this.redoStack = []; this.redoButton.disabled = true; }
   }
 
   updateScale(zoomFactor) {
@@ -351,7 +358,7 @@ class GraffitiUI {
     if (this.isInsideGrid(this.mousePosition)) {
       this.mousePosition.i = i;
       this.mousePosition.j = j;
-      this.drawTile(this.mousePosition.i, this.mousePosition.j, this.colorPickerInput.value);
+      this.drawTile(this.mousePosition.i, this.mousePosition.j, this.colorPreview.style.backgroundColor);
     } else {
       this.mousePosition.i = null;
       this.mousePosition.j = null;
@@ -409,11 +416,15 @@ class GraffitiUI {
     event.preventDefault();
   }
 
-  onMouseupOverCancelButton() {
+  onMouseupOverColorPreview() {
+    this.colorPalette.style.display = (this.colorPalette.style.display === "none" ? "flex" : "none");
+  }
+
+  onMouseupOverClearDraftButton() {
     this.clearDraft();
   }
 
-  onMouseupOverConfirmButton() {
+  onMouseupOverSubmitButton() {
     if (this.draftedTiles.size !== 0) {
       const tilesToSend = [];
       const it = this.draftedTiles.iterator(); let draftedTile;
@@ -462,8 +473,8 @@ class GraffitiUI {
   }
 
   undo() {
-    const lastAction = this.undoStack.pop();
-    this.redoStack.push(lastAction);
+    const lastAction = this.stackPop(this.undoStack);
+    this.stackPush(this.redoStack, lastAction);
     const reversedLastActionType = this.actionType(this.reversedAction(lastAction));
     const tile = {i: lastAction.i, j: lastAction.j};
     if (reversedLastActionType === "undraft" || reversedLastActionType === "redraft") {
@@ -479,8 +490,8 @@ class GraffitiUI {
   }
 
   redo() {
-    const lastUndoneAction = this.redoStack.pop();
-    this.undoStack.push(lastUndoneAction);
+    const lastUndoneAction = this.stackPop(this.redoStack);
+    this.stackPush(this.undoStack, lastUndoneAction);
     const lastUndoneActionType = this.actionType(lastUndoneAction);
     const tile = {i: lastUndoneAction.i, j: lastUndoneAction.j};
     if (lastUndoneActionType === "undraft" || lastUndoneActionType === "redraft") {
@@ -520,16 +531,18 @@ class GraffitiUI {
       this.mod.updateTile({i: draftedTile.i, j: draftedTile.j, color: null}, "drafted");
     }
     this.clearDraftedTiles();
+    this.clearStack(this.undoStack);
+    this.clearStack(this.redoStack);
   }
 
   tryAndDraftTile(i, j) {
     const alreadyDraftedTile = this.draftedTiles.find({i: i, j: j});
     if (alreadyDraftedTile === null) {
-      this.draftTile(i, j, null, this.colorPickerInput.value);
+      this.draftTile(i, j, null, this.colorPreview.style.backgroundColor);
     } else {
-      if (this.colorPickerInput.value !== alreadyDraftedTile.color) {
+      if (this.colorPreview.style.backgroundColor !== alreadyDraftedTile.color) {
         this.removeFromDraftedTiles(alreadyDraftedTile);
-        this.draftTile(i, j, alreadyDraftedTile.color, this.colorPickerInput.value);
+        this.draftTile(i, j, alreadyDraftedTile.color, this.colorPreview.style.backgroundColor);
       }
     }
   }
@@ -542,16 +555,16 @@ class GraffitiUI {
   }
 
   draftTile(i, j, oldDraftColor, newDraftColor) {
-    this.undoStack.push({i: i, j: j, oldDraftColor: oldDraftColor, newDraftColor: newDraftColor});
-    this.redoStack = [];
+    this.stackPush(this.undoStack, {i: i, j: j, oldDraftColor: oldDraftColor, newDraftColor: newDraftColor});
+    this.clearStack(this.redoStack);
     const draftTile = {i: i, j: j, color: newDraftColor};
     this.insertToDraftedTiles(draftTile);
     this.mod.updateTile(draftTile, "drafted");
   }
 
   undraftTile(i, j, oldDraftColor) {
-    this.undoStack.push({i: i, j: j, oldDraftColor: oldDraftColor, newDraftColor: null});
-    this.redoStack = [];
+    this.stackPush(this.undoStack, {i: i, j: j, oldDraftColor: oldDraftColor, newDraftColor: null});
+    this.clearStack(this.redoStack);
     this.removeFromDraftedTiles({i: i, j: j});
     this.mod.updateTile({i: i, j: j, color: null}, "drafted");
   }
