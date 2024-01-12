@@ -155,8 +155,6 @@
    
     // if a port, must be controlled by faction
     try { if (this.game.spaces[space]) { space = this.game.spaces[space];  } } catch (err) {}
-console.log("language: " + space.language);
-console.log("faction: " + faction);
     if (space.language != undefined) { return this.isSpaceControlled(space, faction); }
 
     // if naval space, must not have enemy of faction
@@ -188,11 +186,89 @@ console.log("faction: " + faction);
     if (space.home === "independent") { return true; }
   }
 
+  isSpaceHomeSpace(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.home === faction) { return true; }
+    return false;
+  }
+
+  doesSpaceHaveEnemyUnits(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (this.areEnemies(faction, f)) {
+        for (let i = 0; i < space.units[f].length; i++) {
+	  let u = space.units[f][i];
+	  if (i.army_leader || i.navy_leader) { return true; }
+	  if (i.personage == true) { return false; } else { return true; }
+        }
+      }
+    }
+    return false;
+  }
+
   isSpaceHostile(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return false; }
     return this.areEnemies(cf, faction);
+  }
+
+  doesSpaceHaveLineOfControl(space, faction) { return this.isSpaceInLineOfControl(space, faction); }
+  isSpaceInLineOfControl(space, faction) {
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+
+    //
+    // path of spaces and sea-zones from that space to friendly-controlled, 
+    // fortified space that is a home space for that power or one of its allies 
+    // (this even includes home spaces of minor powers allied to your major 
+    // power allies). All spaces on the path (except the space where the path 
+    // ends) must be:
+    //
+    // • friendly-controlled,
+    // • free of enemy units (including naval units and leaders)
+    // • free of unrest.
+    //
+    let res = this.returnNearestSpaceWithFilter(
+      space.key ,
+
+      // capitals are good destinations
+      function(spacekey) {
+        let invalid_choice = false;
+        if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { invalid_choice = true; }
+        if (!his_self.isSpaceFriendly(spacekey, faction)) { invalid_choice = false; }
+        return invalid_choice;
+      },
+
+      // route through this?
+      function(spacekey) {
+        if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+        if (his_self.isSpaceFriendly(spacekey, faction) && his_self.doesSpaceHaveEnemyUnits(spacekey, faction) == false && his_self.isSpaceInUnrest(spacekey) != true) {
+	  return 1;
+	}
+	return 0;
+      },
+
+      // transit passes? 0
+      1,
+
+      // transit seas? 1
+      1,
+
+      // faction? optional
+      faction,
+
+      // already crossed sea zone optional
+      0
+    );
+
+    return res.length;
+
   }
 
   isSpaceControlled(space, faction) {

@@ -1,7 +1,7 @@
 
   importUnit(name, obj) {
 
-    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.type == null)               { obj.type = name; }
     if (obj.name == null)               { obj.name = "Unit"; }
     if (obj.personage == null)          { obj.personage = false; }
     if (obj.debater == null)            { obj.debater = false; }

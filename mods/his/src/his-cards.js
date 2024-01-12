@@ -8278,7 +8278,6 @@ console.log("TESTING: " + JSON.stringify(space.units));
       canEvent : function(his_self, faction) { return 0; },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "pre_spring_deployment") {
-console.log("venetian informant!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('109')) {
@@ -8338,7 +8337,6 @@ console.log("venetian informant!");
           let faction_giving = mv[2];
           let cards = JSON.parse(mv[3]);
 
-
 console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
 his_self.deck_overlay.render("Venetian Informant", cards);
           
@@ -8365,26 +8363,42 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 
 	  if (player == his_self.game.player) {
 
-	    let powers = his_self.returnImpulseOrder();
-	    let msg = "View which Faction Cards?";
+	    if (his_self.game.players == 2) {
 
-            let html = '<ul>';
-	    for (let i = 0; i < powers.length; i++) {
-	      if (powers[i] != faction && his_self.returnPlayerOfFaction(powers[i]) > 0) {
-                html += `<li class="option" id="${powers[i]}">${his_self.returnFactionName(powers[i])}</li>`;
+	      if (faction === "protestant") {
+	        his_self.addMove("show_hand\tprotestant\tpapacy");
+	        his_self.endTurn();
+	      } else {
+	        his_self.addMove("show_hand\tpapacy\tprotestant");
+	        his_self.endTurn();
 	      }
-	    }
-            html += '</ul>';
 
-    	    his_self.updateStatusWithOptions(msg, html);
+	      return;
 
-	    $('.option').off();
-	    $('.option').on('click', function () {
+	    } else {
+
+	      let powers = his_self.returnImpulseOrder();
+	      let msg = "View which Faction Cards?";
+
+              let html = '<ul>';
+	      for (let i = 0; i < powers.length; i++) {
+	        if (powers[i] != faction && his_self.returnPlayerCommandingFaction(powers[i]) > 0) {
+                  html += `<li class="option" id="${powers[i]}">${his_self.returnFactionName(powers[i])}</li>`;
+	        }
+	      }
+              html += '</ul>';
+
+    	      his_self.updateStatusWithOptions(msg, html);
+
 	      $('.option').off();
-	      let action = $(this).attr("id");
-	      his_self.addMove("show_hand\t"+faction+"\t"+action);
-	      his_self.endTurn();
-	    });
+	      $('.option').on('click', function () {
+	        $('.option').off();
+	        let action = $(this).attr("id");
+	        his_self.addMove("show_hand\t"+faction+"\t"+action);
+	        his_self.endTurn();
+	      });
+
+	    }
 
 	  }
 
