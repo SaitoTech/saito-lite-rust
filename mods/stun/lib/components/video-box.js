@@ -1,5 +1,4 @@
 const videoBoxTemplate = require("./video-box.template");
-const { setTextRange } = require("typescript");
 
 class VideoBox {
   constructor(app, mod, peer, container_class = "") {
@@ -52,7 +51,7 @@ class VideoBox {
 
   attachEvents() {}
 
-  render(stream = null, placeholder_info = null) {
+  render(stream = null) {
     if (stream) {
       this.stream = stream;
 
@@ -63,12 +62,13 @@ class VideoBox {
       //Add Video Box
       if (!document.getElementById(`stream_${this.stream_id}`)) {
         this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, this.app, this.mod), this.containerClass);
-        const videoBox = document.getElementById(`stream_${this.stream_id}`);
-        videoBox.firstElementChild.srcObject = this.stream;
       }
 
+      const videoBox = document.getElementById(`stream_${this.stream_id}`);
+      videoBox.firstElementChild.srcObject = this.stream;
+
     } else {
-      this.renderPlaceholder(placeholder_info);
+      this.renderPlaceholder();
     }
 
     this.attachEvents();
@@ -83,7 +83,7 @@ class VideoBox {
   renderPlaceholder(placeholder_info = "negotiating peer connection") {
     if (!document.getElementById(`stream_${this.stream_id}`)) {
       this.app.browser.prependElementToClass(
-        videoBoxTemplate(this.stream_id, false),
+        videoBoxTemplate(this.stream_id, this.app, this.mod),
         this.containerClass
       );
     }

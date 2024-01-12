@@ -29,6 +29,18 @@
   height: min(600px, 80vh);
 }
 
+.stun-button-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.stun-button-row .saito-button-primary {
+  min-width: 15rem;
+}
+
 .stun-appspace-content {
   display: flex;
   justify-content: center;

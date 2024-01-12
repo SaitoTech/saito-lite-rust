@@ -3,7 +3,6 @@ const CallInterfaceVideoTemplate = require("./call-interface-video.template");
 
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
-const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 const VideocallSettings = require("../overlays/videocall-settings");
 
 class CallInterfaceVideo {
@@ -21,7 +20,6 @@ class CallInterfaceVideo {
     this.remote_streams = new Map();
     this.current_speaker = null;
     this.speaker_candidate = null;
-    this.loader = new SaitoLoader(app, mod);
     this.public_key = mod.publicKey;
     this.full_screen = fullScreen;
 
@@ -55,7 +53,6 @@ class CallInterfaceVideo {
 
     this.app.connection.on("stun-update-connection-message", (peer_id, status) => {
       if (status === "connecting") {
-        this.loader.remove();
         this.video_boxes[peer_id].video_box.renderPlaceholder("connecting");
       } else if (status === "connected") {
         this.video_boxes[peer_id].video_box.removeConnectionMessage();
@@ -297,6 +294,7 @@ class CallInterfaceVideo {
           this.full_screen = false;
         } else {
           chat_box.classList.remove("minimize");
+          chat_box.style.top = "";
           chat_box.style.bottom = "0";
           chat_box.style.left = "0";
           chat_box.style.width = "";
@@ -402,15 +400,22 @@ class CallInterfaceVideo {
       peer_elem.querySelector(".video-box").click();
     }
 
-    /// <<<< test here for audio/vide >>>> 
+    // 
+    // Check if newly added remote stream is muted
+    // TODO -- this doesn't pick up if the audio is disabled/muted for some GD reason!!!!
+    // 
+    if (remoteStream){
+      if (!remoteStream.getVideoTracks()?.length){
+        this.app.connection.emit(`peer-toggle-video-status`, {public_key: peer, enabled: false});
+      }
 
-    console.log(remoteStream);
-
-    //Check for muted or disabled
-    //    console.log(`peer-toggle-${event.track.kind}-status`, event.track.enabled, event.track.muted);
-    //    if (!event.track.enabled){
-    //      this.app.connection.emit(`peer-toggle-${event.track.kind}-status`, {public_key: peerId, enabled: false});
-    //    }
+      for (let track of remoteStream.getTracks()){
+        console.log(track);
+        if (!track.enabled){
+          this.app.connection.emit(`peer-toggle-${track.kind}-status`, {public_key: peer, enabled: false});
+        }
+      }  
+    }
 
     this.updateImages();
 
@@ -423,7 +428,7 @@ class CallInterfaceVideo {
   }
 
   addLocalStream(localStream) {
-    console.log("Add local stream");
+
     this.createVideoBox("local", this.local_container);
     this.video_boxes["local"].video_box.render(localStream);
     this.localStream = localStream;

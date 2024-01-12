@@ -26,8 +26,8 @@ module.exports = DialerTemplate = (app, mod, is_dialing = true) => {
 	}else{ 
 		html += `
 			<div class="stun-button-row">
-				<div class="saito-button-primary stunx-appspace-launch-call-btn" id="rejectcall">Reject</div>
-				<div class="saito-button-primary stunx-appspace-launch-call-btn" id="answercall">Answer</div>
+				<div class="saito-button-primary" id="rejectcall">Reject</div>
+				<div class="saito-button-primary" id="answercall">Answer</div>
 			</div>`;
     }  
     html +=  `</div>`;

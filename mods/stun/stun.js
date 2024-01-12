@@ -353,18 +353,18 @@ class Stun extends ModTemplate {
           }
 
           if (txmsg.request === "stun-send-call-list-request") {
-            console.log("HPT:  stun-send-call-list-request");
+            //console.log("HPT:  stun-send-call-list-request");
             this.receiveCallListRequestTransaction(this.app, tx);
             return;
           }
           if (txmsg.request === "stun-send-call-list-response") {
-            console.log("HPT:  stun-send-call-list-response");
+            //console.log("HPT:  stun-send-call-list-response");
             this.receiveCallListResponseTransaction(this.app, tx);
             return;
           }
 
           if (txmsg.request === "stun-send-message-to-peers") {
-            console.log("HPT: stun-send-message-to-peers");
+            //console.log("HPT: stun-send-message-to-peers");
             this.peerManager.handleSignalingMessage(tx.msg.data);
             return;
           }

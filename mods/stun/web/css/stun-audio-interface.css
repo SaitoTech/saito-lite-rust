@@ -7,19 +7,32 @@
     bottom: 0;
     border: 1px solid var(--saito-border-color);
     cursor: grab;
+    background: var(--saito-black);
 }
 
 
 .audio-box {
-    display: inline-block !important;
-    height: 100%;
-    width: 100%;
-}
-
-
-.small-audio-chatbox .stun-identicon-list img {
     width: 3.5rem;
     height: 3.5rem;
+    position: relative;
+}
+
+.audio-box.muted {
+    filter: grayscale(100%);
+}
+
+.audio-box i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: larger;
+    color: var(--saito-black);
+}
+
+.small-audio-chatbox .stun-identicon-list img {
+    height: 100%;
+    width: 100%;
 }
 
 

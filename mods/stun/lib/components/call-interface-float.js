@@ -8,7 +8,6 @@ class CallInterfaceFloat {
     this.mod = mod;
     this.localStream = null;
     this.audio_boxes = {};
-    this.audioEnabled = true;
 
     this.app.connection.on(
       "show-call-interface",
@@ -22,7 +21,6 @@ class CallInterfaceFloat {
           }
         } catch (err) {}
 
-        this.audioEnabled = audioEnabled;
         this.render();
         this.attachEvents();
       }
@@ -138,20 +136,16 @@ class CallInterfaceFloat {
 
   toggleAudio() {
     console.log("toggling audio");
-    if (this.audioEnabled === true) {
-      this.localStream.getAudioTracks()[0].enabled = false;
-      this.audioEnabled = false;
-      document.querySelectorAll(".audio-control i").forEach((item) => {
-        item.classList.remove("fa-microphone");
-        item.classList.add("fa-microphone-slash");
-      });
-    } else {
-      this.localStream.getAudioTracks()[0].enabled = true;
-      this.audioEnabled = true;
-      document.querySelectorAll(".audio-control i").forEach((item) => {
-        item.classList.remove("fa-microphone-slash");
-        item.classList.add("fa-microphone");
-      });
+
+    this.app.connection.emit("stun-toggle-audio");
+
+    //Update UI
+    try {
+      document.querySelector(".audio-control").classList.toggle("disabled");
+      document.querySelector(".audio-control i").classList.toggle("fa-microphone-slash");
+      document.querySelector(".audio-control i").classList.toggle("fa-microphone");
+    } catch (err) {
+      console.warn("Stun UI error", err);
     }
   }
 

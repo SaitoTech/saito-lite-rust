@@ -88,7 +88,7 @@ class Dialer {
           call_button.innerHTML = "Call";
           this.updateMessage("No answer");
           this.attachEvents();
-        }, 10000);
+        }, 3000);
 
         call_button.innerHTML = "Cancel";
 
@@ -248,8 +248,12 @@ class Dialer {
 
       case "stun-connection-rejected":
         this.stopRing();
+        clearTimeout(this.dialing);
         this.updateMessage("did not answer");
-        this.activateOptions();
+        if (document.getElementById("startcall")){
+          document.getElementById("startcall").innerHTML = "Call";
+        }
+        this.attachEvents();
         break;
 
       case "stun-connection-accepted":
@@ -271,6 +275,7 @@ class Dialer {
         break;
 
       case "stun-connection-ping":
+        console.log("Counter party available, remain on the line")
         if (this.dialing){
           clearTimeout(this.dialing);
           this.dialing = setTimeout(() => {
@@ -286,7 +291,7 @@ class Dialer {
             }
             this.updateMessage("No answer");
             this.attachEvents();
-          }, 10000);
+          }, 15000000);
         }
 
       default:
