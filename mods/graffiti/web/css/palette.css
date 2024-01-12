@@ -1,7 +1,8 @@
 #palette {
   position: absolute;
-  top: 5px;
+  top: 50%;
   left: 65px;
+  transform: translateY(-50%);
   flex-direction: column;
   align-items: center;
   padding: 5px;
@@ -12,16 +13,16 @@
   z-index: 99;
 }
 
-#palette::after {
-  display: block;
+#palette-arrow {
+  position: absolute;
+  top: 218px;
+  left: 55px;
   width: 0;
-  content: "";
-  border: 10px solid transparent;
-  left: -10px;
-  top: calc(21% + 4px);
+  height: 0;
+  border: 12px solid transparent;
   border-right-color: #ffffff;
   border-left: 0;
-  position: absolute;
+  z-index: 100;
 }
 
 .color-option {

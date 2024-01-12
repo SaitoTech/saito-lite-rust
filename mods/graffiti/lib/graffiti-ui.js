@@ -204,16 +204,6 @@ class GraffitiUI {
     this.redoButton.appendChild(this.redoIcon);
 
 
-    this.colorCategory = document.createElement("div");
-    this.colorCategory.className = "button-category";
-    this.sidebar.appendChild(this.colorCategory);
-
-    this.colorPreview = document.createElement("div");
-    this.colorPreview.id = "color-preview";
-    this.colorPreview.style.backgroundColor = this.defaultColor;
-    this.colorCategory.append(this.colorPreview);
-
-
     this.clearCategory = document.createElement("div");
     this.clearCategory.className = "button-category";
     this.sidebar.appendChild(this.clearCategory);
@@ -225,6 +215,16 @@ class GraffitiUI {
     this.clearDraftIcon = document.createElement("i");
     this.clearDraftIcon.className = "fas fa-trash-alt";
     this.clearDraftButton.appendChild(this.clearDraftIcon);
+
+
+    this.colorCategory = document.createElement("div");
+    this.colorCategory.className = "button-category";
+    this.sidebar.appendChild(this.colorCategory);
+
+    this.colorPreview = document.createElement("div");
+    this.colorPreview.id = "color-preview";
+    this.colorPreview.style.backgroundColor = this.defaultColor;
+    this.colorCategory.append(this.colorPreview);
   }
 
   renderPalette() {
@@ -232,6 +232,7 @@ class GraffitiUI {
     this.palette.id = "palette";
     this.palette.style.display = "flex";
     document.body.appendChild(this.palette);
+
 
     for (const color of this.presetColors) {
       const presetColorOption = document.createElement("div");
@@ -243,6 +244,7 @@ class GraffitiUI {
         this.setCurrentColor(color);
       };
     }
+
 
     this.colorPicker = document.createElement("div");
     this.colorPicker.className = "color-option";
@@ -258,15 +260,18 @@ class GraffitiUI {
     this.colorPickerInput.hidden = true;
     this.colorPicker.appendChild(this.colorPickerInput);
 
-    
     this.colorPicker.addEventListener("mouseup", (event) => {
       event.stopPropagation();
       this.colorPickerInput.click();
     });
-
     this.colorPickerInput.onchange = () => {
       this.setCurrentColor(this.colorPickerInput.value);
     }
+
+
+    this.paletteArrow = document.createElement("div");
+    this.paletteArrow.id = "palette-arrow";
+    document.body.appendChild(this.paletteArrow);
   }
 
   renderSubmitButton() {
