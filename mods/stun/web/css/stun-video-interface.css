@@ -96,12 +96,14 @@
 
 .stun-chatbox.minimize .control-panel {
   padding: 0.25rem;
+  gap: 0.5rem;
 }
 
 .stun-chatbox.minimize .timer{
   min-width: unset;
   gap: 0;
-  max-width: 50%;
+  /*max-width: 50%;*/
+  flex: 1;
 }
 
 .stun-chatbox.minimize .stun-identicon-list img.saito-identicon {
@@ -155,7 +157,6 @@
   width: 100%;
   height: 100%;
   max-height: 85vh;
-  cursor: pointer;
   transition: all 0.5s ease;
   position: relative;
   padding: 1rem;
@@ -177,14 +178,14 @@
 /*  video box */
 .presentation,
 .expanded-video {
-  resize: both;
+  /*resize: both;*/
   overflow: auto;
   max-height: 100%;
 }
 
 .stun-chatbox .side-videos {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(20vh, auto));
   gap: 1rem;
   max-height: 100%;
 }
@@ -197,18 +198,17 @@
   opacity: 0;
   animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
-  border: 2px solid var(--saito-border-color-dark);
 }
 
 .side-videos .video-box-container-large {
-  height: fit-content;
   max-height: 100%;
   overflow: clip;
-  border: 2px solid var(--saito-border-color-dark);
 }
 
 .stun-chatbox .video-box-container-large {
+  border: 2px solid var(--saito-border-color-dark);
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .presentation {
@@ -874,7 +874,7 @@
   }
 
   .video-container-large {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   .stun-chatbox .side-videos {
     width: 100%;
@@ -905,7 +905,6 @@
   }
   .expanded-video {
     width: 100%;
-    max-height: 50%;
   }
 }
 

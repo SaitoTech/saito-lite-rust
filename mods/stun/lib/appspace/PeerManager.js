@@ -274,8 +274,7 @@ class PeerManager {
     //Get my local media
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: false,
-        //video: this.videoEnabled,
+        video: this.videoEnabled,
         audio: true,
       });
     } catch (err) {
@@ -523,6 +522,8 @@ class PeerManager {
     if (this.peers.size < 1 && !this.remain_in_call) {
       siteMessage(`${this.app.keychain.returnUsername(peerId)} hung up`, 2500);
       this.app.connection.emit("stun-disconnect");
+    }else{
+      siteMessage(`${this.app.keychain.returnUsername(peerId)} left the meeting`, 2500);
     }
   }
 

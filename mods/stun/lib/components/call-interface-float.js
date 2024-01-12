@@ -96,6 +96,7 @@ class CallInterfaceFloat {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.onclick = () => {
         this.app.connection.emit("stun-disconnect");
+        this.app.connection.emit("reset-stun");
       };
     });
 

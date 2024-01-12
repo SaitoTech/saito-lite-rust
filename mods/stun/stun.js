@@ -86,7 +86,7 @@ class Stun extends ModTemplate {
       }
     });
 
-    app.connection.on("stun-disconnect", () => {
+    app.connection.on("reset-stun", () => {
       this.room_obj = null;
       this.CallInterface.destroy();
       this.CallInterface = null;

@@ -89,7 +89,7 @@ class CallInterfaceVideo {
           this.switchDisplayToExpanded();
           break;
         case "presentation":
-          this.swicthDisplayToPresentation();
+          this.switchDisplayToExpanded();
           break;
 
         default:
@@ -124,6 +124,36 @@ class CallInterfaceVideo {
           item.classList.remove("speaker");
         }
       });
+    });
+
+
+    app.connection.on("stun-disconnect", ()=>{
+      this.video_boxes = {};
+
+      if (this.mod.browser_active) {
+        let homeModule = this.app.options?.homeModule || "Stun";
+        let mod = this.app.modules.returnModuleByName(homeModule);
+        let slug = mod?.returnSlug() || "videocall";
+        let url = "/" + slug;
+
+        setTimeout(() => {
+          window.location.href = url;
+        }, 2000);
+      } else {
+
+        //
+        // Hopefully we don't have to reload the page on the end of a stun call
+        // But keep on eye on this for errors and make sure all the components shut themselves down properly
+        //
+        this.app.connection.emit("reset-stun");
+
+        if (document.getElementById("stun-chatbox")) {
+          document.getElementById("stun-chatbox").remove();
+          let am = this.app.modules.returnActiveModule();
+          window.history.pushState({}, "", window.location.origin + "/" + am.returnSlug());
+          document.title = this.old_title;
+        }
+      }
     });
   }
 
@@ -212,7 +242,7 @@ class CallInterfaceVideo {
         if (chat_module) {
           await chat_module.deleteChatGroup(this.chat_group);
         }
-        this.disconnect();
+        this.app.connection.emit("stun-disconnect");
         siteMessage("You have been disconnected", 3000);
       });
     });
@@ -369,34 +399,6 @@ class CallInterfaceVideo {
     siteMessage("Invite link copied to clipboard", 1500);
   }
 
-  disconnect() {
-    this.app.connection.emit("stun-disconnect");
-    this.video_boxes = {};
-
-    if (this.mod.browser_active) {
-      let homeModule = this.app.options?.homeModule || "Stun";
-      let mod = this.app.modules.returnModuleByName(homeModule);
-      let slug = mod?.returnSlug() || "videocall";
-      let url = "/" + slug;
-
-      setTimeout(() => {
-        window.location.href = url;
-      }, 2000);
-    } else {
-
-      //
-      // Hopefully we don't have to reload the page on the end of a stun call
-      // But keep on eye on this for errors and make sure all the components shut themselves down properly
-      //
-
-      if (document.getElementById("stun-chatbox")) {
-        document.getElementById("stun-chatbox").remove();
-        let am = this.app.modules.returnActiveModule();
-        window.history.pushState({}, "", window.location.origin + "/" + am.returnSlug());
-        document.title = this.old_title;
-      }
-    }
-  }
 
   addRemoteStream(peer, remoteStream) {
     console.log("addRemoteStream")
@@ -544,7 +546,11 @@ class CallInterfaceVideo {
     this.local_container = "gallery";
     this.remote_container = "gallery";
 
-    document.querySelector(".video-container-large").innerHTML = `<div class="gallery"></div>`;
+    let container = document.querySelector(".video-container-large");
+
+    container.innerHTML = ``;
+    container.classList.remove("split-view");
+    container.classList.add("gallery");
 
     this.setDisplayContainers();
   }
@@ -553,8 +559,12 @@ class CallInterfaceVideo {
     this.local_container = "expanded-video";
     this.remote_container = "side-videos";
 
-    document.querySelector(".video-container-large").innerHTML = `<div class="expanded-video"></div>
+    let container = document.querySelector(".video-container-large");
+
+    container.innerHTML = `<div class="expanded-video"></div>
     <div class="side-videos"></div>`;
+    container.classList.add("split-view");
+    container.classList.remove("gallery");
 
     this.setDisplayContainers();
   }
@@ -563,8 +573,14 @@ class CallInterfaceVideo {
     this.local_container = "presentation";
     this.remote_container = "presentation-side-videos";
 
-    document.querySelector(".video-container-large").innerHTML = `<div class="presentation"></div>
+    let container = document.querySelector(".video-container-large");
+
+    container.innerHTML = `<div class="presentation"></div>
     <div class="presentation-side-videos"></div>`;
+    container.classList.add("split-view");
+    container.classList.remove("gallery");
+
+
     this.setDisplayContainers();
 
   }
