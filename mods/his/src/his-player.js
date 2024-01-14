@@ -349,17 +349,25 @@
       let msg = "Hits Remaining: " + hits_to_assign;
       let html = "<ul>";
       let targets = 0;
+      let one_hit_targets = false;
       for (let i = 0; i < space.units[faction].length; i++) {
         if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
-          if (!units_to_destroy.includes(parseInt(i))) {
-	    targets++;
-            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+	  if (space.units[faction][i].personage == false) {
+            if (!units_to_destroy.includes(parseInt(i))) {
+  	      targets++;
+	      if (space.units[faction][i].type === "squadron") {
+                html += `<li class="option" id="${i}">${space.units[faction][i].name} (2 hits)</li>`;
+              } else {
+                html += `<li class="option" id="${i}">${space.units[faction][i].name} (1 hit)</li>`;
+		one_hit_targets = true;
+	      }
+            }
+            html += "</ul>";
           }
-          html += "</ul>";
         }
       }
 
-      if (targets <= 0 || hits_to_assign <= 0) {
+      if (targets <= 0 || hits_to_assign <= 0 || (hits_to_assign == 1 && one_hit_targets == false)) {
 	his_self.addMove("destroy_naval_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
 	his_self.endTurn();
 	return;
@@ -369,6 +377,8 @@
 
       $('.option').off();
       $('.option').on('click', function () {
+
+	his_self.updateStatus("assigning hits");
 
         let id = $(this).attr("id");
 
@@ -384,6 +394,7 @@
       });
     }
 
+    his_self.naval_battle_overlay.assignHits(his_self.game.state.naval_battle, faction);
     selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
 
     return 0;
@@ -1223,7 +1234,9 @@ console.log("and calling callback...");
 	  }
 
 	  for (let f in fa) {
-	    his_self.addMove("fortify_unit\t"+spacekey+"\t"+f+"\t"+JSON.stringify(fa[f]));
+	    if (his_self.returnPlayerCommandingFaction(f) == his_self.game.player) {
+	      his_self.addMove("fortify_unit\t"+spacekey+"\t"+f+"\t"+JSON.stringify(fa[f]));
+	    }
 	  }
 	  his_self.endTurn();
 
@@ -3463,8 +3476,6 @@ console.log("yes!");
 
     let units_to_move = [];
 
-console.log("naval move faction: " + faction);
-
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
@@ -3496,11 +3507,10 @@ console.log("naval move faction: " + faction);
 	  for (let i = 0; i < units_to_move.length; i++) {
 	    let unit = units_available[units_to_move[i]];
 	    if (!destinations[unit.destination]) {
-	      his_self.addMove("naval_interception_check\t"+faction+"\t"+unit.destination);
+	      his_self.addMove("naval_interception_check\t"+faction+"\t"+unit.destination+"\t"+unit.spacekey);
 	      destinations[unit.destination] = 1;
 	    }
 	  }
-
 
 	  let revised_units_to_move = [];
 	  let entries_to_loop = units_to_move.length;	
@@ -3526,6 +3536,7 @@ console.log("naval move faction: " + faction);
 	  //
 	  // revised units to move is
 	  //
+console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
 	  for (let i = 0; i < revised_units_to_move.length; i++) {
 	    let unit = revised_units_to_move[i];
             his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+revised_units_to_move[i].idx);

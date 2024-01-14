@@ -684,7 +684,7 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
     // include minor-activated factions
     //
     let fip = [];
-        fip.push(faction);
+    fip.push(faction);
     if (this.game.state.activated_powers[faction]) {
       for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
         fip.push(this.game.state.activated_powers[faction][i]);
@@ -720,19 +720,24 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 	  let leaders = [];
 	  for (let z = 0; z < this.game.spaces[key].units[fip[i]].length; z++) {
 
+console.log("NAVY LEADER: " + this.game.spaces[key].units[fip[i]][z].navy_leader);
+
 	    //
 	    // only add leaders if there is a ship in port
 	    //
 	    let u = this.game.spaces[key].units[fip[i]][z];
 	    u.idx = z;
-	    if (u.land_or_sea === "sea") {
-	      if (u.navy_leader == true) {
-		leaders.push(u);
-	      } else {
+
+	    if (u.navy_leader == true) {
+	      leaders.push(u);
+	    } else {
+	      if (u.land_or_sea === "sea" || u.land_or_sea === "both") {
 		ships.push(u);
 	      }
 	    }
 	  }
+
+console.log("leaders: " + JSON.stringify(leaders));
 
 	  //
 	  // add and include location
@@ -1059,6 +1064,25 @@ console.log("about to return waht?: " + JSON.stringify(res));
     }
     return 0;
   }
+
+  returnNavalFactionMap(space, faction1, faction2) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    let faction_map = {};
+
+    for (let f in space.units) {
+      if (f === faction1) {
+        faction_map[f] = faction1;
+      }
+      if (f === faction2) {
+        faction_map[f] = faction2;
+      }
+    }
+    return faction_map;
+  }
+
+
+  
 
   returnFactionMap(space, faction1, faction2) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}

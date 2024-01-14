@@ -2721,7 +2721,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["starwars", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3193,6 +3193,7 @@ try {
             if (this.game.state.events.cia == 1 && this.game.state.events.tsarbomba_added == 1) {
 	      this.game.state.events.tsarbomba_added = 1; // avoid getting re-added later
               this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
+	      this.cancelEvent("tsarbomba");
 	    }
 	    if (this.game.state.events.iranianultimatum != 1 && this.game.state.events.iranianultimatum_removed != 1) {
 	      this.game.state.events.iranianultimatum_removed = 1;
@@ -15239,6 +15240,7 @@ if (card == "defectors") {
       }
 
       twilight_self.game.state.events.energycrisis = 1;
+      twilight_self.cancelEvent("nixonshock");
 
       if (this.game.player == 2) {
 

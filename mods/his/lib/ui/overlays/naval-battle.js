@@ -40,32 +40,33 @@ class NavalBattleOverlay {
       this.render(res);
       let obj = document.querySelector(".naval-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/fortification.png)";
-      obj.style.backgroundSize = "contain";
-      this.updateInstructions("A Naval Battle imminent in "+ this.mod.game.spaces[res.spacekey].name+": Fortification?");
+      obj.style.backgroundSize = "cover";
+      this.updateInstructions("A Naval Battle imminent in "+ this.mod.returnSpaceName(res.spacekey)+": Fortification?");
     }
   
     renderPostNavalBattle(res={}) {
       this.render(res);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
-      obj.style.backgroundSize = "contain";
-      this.updateInstructions("Naval Battle over in " + this.mod.game.spaces[res.spacekey].name);
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.png)";
+      obj.style.backgroundSize = "cover";
+      this.updateInstructions("Naval Battle over in " + this.mod.returnSpaceName(res.spacekey));
     }
 
     renderNavalBattle(res={}) {
       this.render(res);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
-      obj.style.backgroundSize = "contain";
-      this.updateInstructions("Naval Battle in " + this.mod.game.spaces[res.spacekey].name);
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.png)";
+      obj.style.backgroundSize = "cover";
+      this.updateInstructions("Naval Battle in " + this.mod.returnSpaceName(res.spacekey));
     }
 
     renderPreNavalBattle(res={}) {
       this.render(res, 1);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/fnaval_battle.jpg)";
-      obj.style.backgroundSize = "contain";
-      this.updateInstructions("Naval Battle imminent in " + this.mod.game.spaces[res.spacekey].name);
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.png)";
+      obj.style.backgroundSize = "cover";
+console.log("spacekey: " + res.spacekey);
+      this.updateInstructions("Naval Battle imminent in " + this.mod.returnSpaceName(res.spacekey));
     }
 
     assignHits(res={}, faction="") {
@@ -75,8 +76,6 @@ class NavalBattleOverlay {
     }
 
     assignHitsManually(res={}, faction="", hits_to_assign=1) {
-
-console.log("Assign Hits Manually!");
 
       let hits_assignable = 0;
       let hits_assigned = 0;
@@ -96,18 +95,18 @@ console.log("Assign Hits Manually!");
 	if (factionspace === faction || his_self.returnAllyOfMinorPower(factionspace) === faction || his_self.game.player === his_self.returnPlayerCommandingFaction(faction)) {
 	  can_i_kill_this_guy = true;
 	}
-console.log("can I kill this guy? : " + can_i_kill_this_guy);
 
 	if (can_i_kill_this_guy) {
 
 	  if (factionspace) { factionspace.innerHTML += " (click to assign hit)"; }
 	  el.classList.add("hits-assignable-hover-effect");
 
-          hits_assignable++;
-	  el.onclick = (e) => {
+          let unit_type = el.getAttribute("data-unit-type");
 
-	    hits_assigned++;
-	    let hits_left = hits_to_assign - hits_assigned;
+          hits_assignable++;
+	  if (unit_type === "squadron") { hits_assignable++; }
+
+	  el.onclick = (e) => {
 
 	    document.querySelectorAll("hits_to_assign").forEach((el) => {
 	      el.innerHTML = hits_left;
@@ -117,10 +116,15 @@ console.log("can I kill this guy? : " + can_i_kill_this_guy);
 	    let faction = el.getAttribute("data-faction");
 	    let spacekey = res.spacekey;
 
+	    hits_assigned++;
+	     if (unit_type === "squadron") { hits_assigned++; }
+	    let hits_left = hits_to_assign - hits_assigned;
+
+
 	    el.remove();
 
 	    this.mod.addMove("naval_battle_destroy_unit\t" + faction + "\t" + spacekey + "\t" + unit_type);
-	    if (hits_assigned == hits_to_assign || hits_assigned >= hits_assignable) {
+	    if (hits_assigned == hits_to_assign || hits_assigned >= hits_assignable || (hits_to_assign == 1 && hits_assignable%2 == 0)) {
               document.querySelectorAll(".hits-assignable").forEach((el) => { el.onclick = (e) => {}; });
 	      this.mod.endTurn();
 	    }
@@ -143,8 +147,8 @@ console.log("can I kill this guy? : " + can_i_kill_this_guy);
       this.pushHudUnderOverlay();
       this.render(res, 0);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
-      obj.style.backgroundSize = "contain";
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.png)";
+      obj.style.backgroundSize = "cover";
       this.updateInstructions("Attackers Win - Close to Continue");
     }
 
@@ -152,8 +156,8 @@ console.log("can I kill this guy? : " + can_i_kill_this_guy);
       this.pushHudUnderOverlay();
       this.render(res, 0);
       let obj = document.querySelector(".naval-battle-overlay");
-      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.jpg)";
-      obj.style.backgroundSize = "contain";
+      obj.style.backgroundImage = "url(/his/img/backgrounds/naval_battle.png)";
+      obj.style.backgroundSize = "cover";
       this.updateInstructions("Defenders Win - Close to Continue");
     }
 
@@ -186,7 +190,7 @@ console.log("RES: " + JSON.stringify(res));
 	        unit_type = res.attacker_units[i];
 	        faction_name = res.attacker_units_faction[i];
 	      } else {
-		faction_name = "army leader present";
+		faction_name = "navy leader present";
 	        unit_type = "bonus";
 	      }
 	      let assignable = "";
@@ -223,7 +227,7 @@ console.log("RES: " + JSON.stringify(res));
 	        faction_name = res.defender_units_faction[i];
 	      } else {
 	        unit_type = "bonus";
-		faction_name = "army leader present";
+		faction_name = "navy leader present";
 	      }
 	      let rrclass = "";
 	      let assignable = "";

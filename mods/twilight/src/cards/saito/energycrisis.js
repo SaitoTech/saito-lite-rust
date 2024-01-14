@@ -9,6 +9,7 @@
       }
 
       twilight_self.game.state.events.energycrisis = 1;
+      twilight_self.cancelEvent("nixonshock");
 
       if (this.game.player == 2) {
 

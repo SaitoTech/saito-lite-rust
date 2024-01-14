@@ -53,7 +53,7 @@
     if (obj.debater == null)            { obj.debater = false; }
     if (obj.reformer == null)           { obj.reformer = false; }
     if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
-    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.army_leader == null)        { obj.army_leader = true; }
     if (obj.navy_leader == null)        { obj.navy_leader = false; }
     if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
     if (obj.command_value == null)      { obj.command_value = 0; }
@@ -80,9 +80,9 @@
     if (obj.personage == null)          { obj.personage = true; }
     if (obj.debater == null)            { obj.debater = false; }
     if (obj.reformer == null)           { obj.reformer = false; }
-    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "both"; }
     if (obj.army_leader == null)        { obj.army_leader = false; }
-    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = true; }
     if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
     if (obj.command_value == null)      { obj.command_value = 0; }
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
