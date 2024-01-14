@@ -11,7 +11,26 @@ import { LogLevel } from "saito-js/saito";
 
 // import Config from "saito-js/lib/config";
 
+function parseLogLevel(args: string[]): LogLevel {
+  console.log(args)
+  const logLevelArg = args.find(arg => arg.startsWith('--loglevel='));
+  if (logLevelArg) {
+    const logLevelString = logLevelArg.split('=')[1].toLowerCase();
+    switch (logLevelString) {
+      case 'error': return LogLevel.Error;
+      case 'warn': return LogLevel.Warn;
+      case 'info': return LogLevel.Info;
+      case 'debug': return LogLevel.Debug;
+      case 'trace': return LogLevel.Trace;
+      default: throw new Error('Invalid log level');
+    }
+  } else {
+    return LogLevel.Info;
+  }
+}
+
 async function initSaito() {
+  console.log(process.argv, "arguments");
   const app = new Saito({
     mod_paths: mods_config.core,
   });
@@ -29,12 +48,19 @@ async function initSaito() {
   await app.storage.initialize();
 
   let privateKey = app.options.wallet?.privateKey || "";
+
+  const args = process.argv.slice(2);
+  let logLevel = parseLogLevel(args);
+
+  console.log(logLevel, "loglevels")
+
+
   await initS(
     app.options,
     new NodeSharedMethods(app),
     new Factory(),
     privateKey,
-    LogLevel.Info
+    logLevel
   ).then(() => {
     console.log("saito wasm lib initialized");
   });
