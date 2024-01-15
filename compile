@@ -11,24 +11,38 @@ echo "  Current Timestamp: $currentTime"
 buildJsonFile="./config/build.json"
 
 
+
+
+
+#  handle loglevel
+default_log_level="info" 
+log_level="${SAITO_LOG_LEVEL:-$default_log_level}"
+
 temp_file=$(mktemp)
+
+to_lower() {
+    echo "$1" | tr '[:upper:]' '[:lower:]'
+}
+
 for arg in "$@"; do
-    key=$(echo $arg | cut -f1 -d'=')
-    value=$(echo $arg | cut -f2 -d'=')
-    echo $arg
-    if [[ $key != "recompile" && $key != "dev" ]]; then 
-        if [[ $key == "loglevel" ]]; then
-    value=$(echo "$value" | tr '[:upper:]' '[:lower:]')
-        fi
-        echo "\"$key\": \"$value\"," >> $temp_file
+    key=$(echo "$arg" | cut -f1 -d'=')
+    value=$(echo "$arg" | cut -f2 -d'=')
+
+    if [[ $key == "loglevel" || $key == "l" ]]; then
+        log_level=$(to_lower "$value")
+    elif [[ $key != "recompile" && $key != "dev" ]]; then
+        echo "\"$key\": \"$value\"," >> "$temp_file"
     fi
 done
+
+echo "\"loglevel\": \"$log_level\"," >> "$temp_file"
+
 {
     echo "{"
-    cat $temp_file | sed '$ s/,$//' 
+    cat "$temp_file" | sed '$ s/,$//'
     echo "}"
 } > ./config/args.json
-rm $temp_file
+rm "$temp_file"
 
 
 
