@@ -170,7 +170,7 @@ class PeerManager {
     });
   }
 
-  handleDataChannelMessage(data) {
+  handleDataChannelMessage(data, peerId) {
     console.log("STUN: Message from data channel:", data);
     switch (data) {
       case "start-presentation":
@@ -181,6 +181,9 @@ class PeerManager {
         this.mod.screen_share = false;
         this.app.connection.emit("remove-peer-box", "presentation");
         this.app.connection.emit("stun-switch-view", "focus");
+        break;
+      case "start-recording":
+        siteMessage(`${this.app.keychain.returnUsername(peerId)} is recording the call`, 2500);
       default:
         break;
     }
@@ -423,7 +426,7 @@ class PeerManager {
         peerConnection.dc = receiveChannel;
 
         receiveChannel.onmessage = (event) => {
-          this.handleDataChannelMessage(event.data);
+          this.handleDataChannelMessage(event.data, peerId);
         };
 
         receiveChannel.onopen = (event) => {
@@ -439,7 +442,7 @@ class PeerManager {
       peerConnection.dc = dc;
 
       dc.onmessage = (event) => {
-        this.handleDataChannelMessage(event.data);
+        this.handleDataChannelMessage(event.data, peerId);
       };
 
       dc.onopen = (event) => {
@@ -692,6 +695,10 @@ class PeerManager {
     this.recording = true;
     this.chunks = [];
 
+    this.peers.forEach((pc, key) => {
+      pc.dc.send("start-recording");
+    });
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -761,9 +768,10 @@ class PeerManager {
     draw();
 
     [
-      this.localStream,
+      this.localStream, 
       ...Array.from(this.remoteStreams.values()).map((c) => c.remoteStream),
     ].forEach((stream) => {
+
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(audioDestination);
     });
