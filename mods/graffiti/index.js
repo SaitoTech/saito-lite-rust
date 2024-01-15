@@ -39,8 +39,6 @@ module.exports = (app, slug, lastSnapshotPath) => {
         <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
     
-        <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
-        <link rel="stylesheet" type="text/css" href="/saito/game.css" />
         <link rel="stylesheet" type="text/css" href="/graffiti/style.css" />
 
         <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
