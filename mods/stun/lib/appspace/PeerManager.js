@@ -594,6 +594,8 @@ class PeerManager {
       track.stop();
       console.log("STUN: stopping track to leave call");
     });
+    this.localStream = null; //My Video Feed
+
     let keys = [];
     this.peers.forEach((peerConnections, key) => {
       keys.push(key);
@@ -608,6 +610,14 @@ class PeerManager {
     if (this.audioStreamAnalysis) {
       clearInterval(this.audioStreamAnalysis);
     }
+
+    //
+    // Reset parameters
+    //
+    this.videoEnabled = true;
+    this.audioEnabled = true;
+    this.recording = false;
+    this.remain_in_call = true;
 
     let data = {
       room_code: this.mod.room_obj.room_code,

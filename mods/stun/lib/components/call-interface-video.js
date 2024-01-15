@@ -227,7 +227,7 @@ class CallInterfaceVideo {
     }
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
-      this.app.connection.emit("open-chat-with", { id: this.chat_group.id });
+      this.app.connection.emit("open-chat-with", { id: this?.chat_group?.id });
     });
 
     if (document.querySelector(".effects-control")) {
@@ -239,7 +239,7 @@ class CallInterfaceVideo {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.addEventListener("click", async (e) => {
         let chat_module = this.app.modules.returnModule("Chat");
-        if (chat_module) {
+        if (chat_module && this.chat_group) {
           await chat_module.deleteChatGroup(this.chat_group);
         }
         this.app.connection.emit("stun-disconnect");
