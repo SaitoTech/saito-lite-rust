@@ -1390,19 +1390,6 @@ class Browser {
 
     let ht, wd, x, y, dx, dy;
 
-    const resize = (evt) => {
-      dx = evt.screenX - x;
-      dy = evt.screenY - y;
-      x = evt.screenX;
-      y = evt.screenY;
-      wd -= dx;
-      ht -= dy;
-      target.style.width = wd + "px";
-      target.style.height = ht + "px";
-    };
-
-    const resizeFn = resize.bind(this);
-
     const prepareToResize = () => {
       let dimensions = target.getBoundingClientRect();
       ht = dimensions.height;
@@ -1417,7 +1404,7 @@ class Browser {
       target.style.right = window.innerWidth - dimensions.right + "px";
     };
 
-    pullTab.addEventListener("mousedown", (evt) => {
+    pullTab.onmousedown = (evt) => {
       x = evt.screenX;
       y = evt.screenY;
 
@@ -1429,17 +1416,26 @@ class Browser {
       //Get rid of any animation delays
       target.style.transition = "unset";
 
-      d.body.addEventListener("mousemove", resizeFn);
+      d.body.onmousemove = (evt) => {
+        dx = evt.screenX - x;
+        dy = evt.screenY - y;
+        x = evt.screenX;
+        y = evt.screenY;
+        wd -= dx;
+        ht -= dy;
+        target.style.width = wd + "px";
+        target.style.height = ht + "px";
+      };
 
-      d.body.addEventListener("mouseup", () => {
-        d.body.removeEventListener("mousemove", resizeFn);
+      d.body.onmouseup = () => {
+        d.body.onmousemove = null;
         target.style.transition = "";
-      });
+      }
 
       if (callback) {
         callback();
       }
-    });
+    }
   }
 
   returnAddressHTML(key) {
