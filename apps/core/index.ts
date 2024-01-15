@@ -10,13 +10,39 @@ import Wallet from "../../lib/saito/wallet";
 import Keychain from "../../lib/saito/keychain";
 import Storage from "../../lib/saito/storage";
 import build from "../../config/build.json";
-import S from "saito-js/saito";
+import S, { LogLevel } from "saito-js/saito";
 
 import Network from "../../lib/saito/network";
 
 import hash_loader from "./hash-loader";
+import { writeFile, readFile } from 'fs/promises';
+
 
 const path = require("path");
+
+
+// let args = 
+
+export function parseLogLevel(logLevel): LogLevel {
+  if (logLevel) {
+    switch (logLevel) {
+      case 'error': return LogLevel.Error;
+      case 'warn': return LogLevel.Warn;
+      case 'info': return LogLevel.Info;
+      case 'debug': return LogLevel.Debug;
+      case 'trace': return LogLevel.Trace;
+      default: throw new Error('Invalid log level');
+    }
+  } else {
+    return LogLevel.Info
+  }
+}
+
+export type ArgType = {
+  loglevel?: string
+
+}
+
 
 class Saito {
   BROWSER: number;

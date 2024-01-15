@@ -1,4 +1,4 @@
-import { Saito } from "../core";
+import { ArgType, Saito, parseLogLevel } from "../core";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import mods_config from "../../config/modules.config";
@@ -13,7 +13,10 @@ import Blockchain from "../../lib/saito/blockchain";
 import PeerServiceList from "saito-js/lib/peer_service_list";
 import { LogLevel } from "saito-js/saito";
 
+import argConfig from '../../config/args.json'
+// import { args } from '../../start';
 // import Config from "saito-js/lib/config";
+
 
 class WebMethods extends WebSharedMethods {
   app: Saito;
@@ -101,6 +104,17 @@ class WebMethods extends WebSharedMethods {
 
 async function init() {
   console.log("lite init...");
+
+  let args: ArgType = argConfig
+
+  let logLevel = LogLevel.Info;
+
+  if (args && args.loglevel) {
+    logLevel = parseLogLevel(args.loglevel)
+  }
+
+
+
   const saito = new Saito({ mod_paths: mods_config.lite });
   await saito.storage.initialize();
 
@@ -119,7 +133,7 @@ async function init() {
       new WebMethods(saito),
       new Factory(),
       saito.options.wallet?.privateKey || "",
-      LogLevel.Info
+      logLevel
     );
   } catch (e) {
     console.error(e);
@@ -141,6 +155,7 @@ async function init() {
 
 // init();
 window.onload = async function () {
+  // console.log(args, "args")
   try {
     await init();
   } catch (error) {

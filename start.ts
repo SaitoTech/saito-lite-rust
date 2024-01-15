@@ -1,6 +1,6 @@
 import Server, { NodeSharedMethods } from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
-import { Saito } from "./apps/core";
+import { ArgType, Saito, parseLogLevel } from "./apps/core";
 import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config.js";
 import process from "process";
@@ -8,32 +8,17 @@ import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
 import { LogLevel } from "saito-js/saito";
+import argConfig from './config/args.json'
 
-// import Config from "saito-js/lib/config";
 
-function parseLogLevel(args: string[]): LogLevel {
-  console.log(args)
-  const logLevelArg = args.find(arg => arg.startsWith('--loglevel='));
-  if (logLevelArg) {
-    const logLevelString = logLevelArg.split('=')[1].toLowerCase();
-    switch (logLevelString) {
-      case 'error': return LogLevel.Error;
-      case 'warn': return LogLevel.Warn;
-      case 'info': return LogLevel.Info;
-      case 'debug': return LogLevel.Debug;
-      case 'trace': return LogLevel.Trace;
-      default: throw new Error('Invalid log level');
-    }
-  } else {
-    return LogLevel.Info;
-  }
-}
+
 
 async function initSaito() {
-  console.log(process.argv, "arguments");
+
   const app = new Saito({
     mod_paths: mods_config.core,
   });
+
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -41,18 +26,16 @@ async function initSaito() {
 
   app.BROWSER = 0;
   app.SPVMODE = 0;
-
   // set basedir
   global.__webdir = __dirname + "/lib/saito/web/";
-
   await app.storage.initialize();
-
   let privateKey = app.options.wallet?.privateKey || "";
 
-  const args = process.argv.slice(2);
-  let logLevel = parseLogLevel(args);
-
-  console.log(logLevel, "loglevels")
+  let args: ArgType = argConfig
+  let logLevel = LogLevel.Info;
+  if (args && args.loglevel) {
+    logLevel = parseLogLevel(args.loglevel)
+  }
 
 
   await initS(

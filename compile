@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Builing Lite Client ($1 $2)"
+echo "Builing Lite Client ($1 $2 $3)"
 echo ""
 
      echo "  Updating build number in options file"
@@ -11,6 +11,28 @@ echo "  Current Timestamp: $currentTime"
 buildJsonFile="./config/build.json"
 
 
+temp_file=$(mktemp)
+for arg in "$@"; do
+    key=$(echo $arg | cut -f1 -d'=')
+    value=$(echo $arg | cut -f2 -d'=')
+    echo $arg
+    if [[ $key != "recompile" && $key != "dev" ]]; then 
+        if [[ $key == "loglevel" ]]; then
+    value=$(echo "$value" | tr '[:upper:]' '[:lower:]')
+        fi
+        echo "\"$key\": \"$value\"," >> $temp_file
+    fi
+done
+{
+    echo "{"
+    cat $temp_file | sed '$ s/,$//' 
+    echo "}"
+} > ./config/args.json
+rm $temp_file
+
+
+
+
 if [ ! -f "$buildJsonFile" ]; then
     echo "  build.json not found, creating file..."
     mkdir -p ./config
@@ -19,6 +41,9 @@ fi
 
 echo "Consolidaging CSS files"
 echo ""
+
+
+
 
 for d in mods/*/ ;
 do
