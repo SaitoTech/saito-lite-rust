@@ -491,6 +491,11 @@ class CallInterfaceVideo {
     let images = ``;
     let count = 0;
     for (let i in this.video_boxes) {
+
+      if (i === "presentation"){
+        continue;
+      }
+
       let publickey = i;
       if (i === "local") {
         publickey = this.mod.publicKey;
@@ -521,8 +526,10 @@ class CallInterfaceVideo {
       // Get seconds
       let secs = Math.floor(seconds % 60);
 
-      if (hours < 10) {
-        hours = `0${hours}`;
+      if (hours > 0){
+        hours = `0${hours}:`;
+      }else{
+        hours = "";
       }
       if (minutes < 10) {
         minutes = `0${minutes}`;
@@ -531,7 +538,7 @@ class CallInterfaceVideo {
         secs = `0${secs}`;
       }
 
-      timerElement.innerHTML = `${hours}:${minutes}:${secs}`;
+      timerElement.innerHTML = `${hours}${minutes}:${secs}`;
     };
 
     this.timer_interval = setInterval(timer, 1000);

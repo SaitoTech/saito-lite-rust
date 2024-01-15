@@ -162,8 +162,10 @@ class CallInterfaceFloat {
       // Get seconds
       let secs = Math.floor(seconds % 60);
 
-      if (hours < 10) {
-        hours = `0${hours}`;
+      if (hours > 0){
+        hours = `0${hours}:`;
+      }else{
+        hours = "";
       }
       if (minutes < 10) {
         minutes = `0${minutes}`;
@@ -172,7 +174,7 @@ class CallInterfaceFloat {
         secs = `0${secs}`;
       }
 
-      timerElement.innerHTML = `${hours}:${minutes}:${secs}`;
+      timerElement.innerHTML = `${hours}${minutes}:${secs}`;
     };
 
     this.timer_interval = setInterval(timer, 1000);

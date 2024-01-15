@@ -11,6 +11,7 @@ class PeerManager {
     this.mod = mod;
     this.peers = new Map();
     this.localStream = null; //My Video Feed
+    this.presentationStream = null;
     this.remoteStreams = new Map(); //The video of the other parties
 
     this.videoEnabled = true;
@@ -101,27 +102,17 @@ class PeerManager {
 
     app.connection.on("begin-share-screen", async () => {
       try {
-        let stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-        let videoTrack = stream.getVideoTracks()[0];
+        this.presentationStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        let videoTrack = this.presentationStream.getVideoTracks()[0];
+        videoTrack.onended = this.stopSharing.bind(this);
 
-        videoTrack.onended = () => {
-          console.log("Screen sharing stopped by user");
-          this.app.connection.emit("remove-peer-box", "presentation");
-          this.app.connection.emit("stun-switch-view", "focus");
-          this.peers.forEach((pc, key) => {
-            pc.dc.send("remove-presentation-box");
-          });
-        };
-        let remoteStream = new MediaStream();
-        remoteStream.addTrack(videoTrack);
+        this.mod.screen_share = true;
 
         /// emit event to make presentation be the large screen and make presentation mode on
-        this.app.connection.emit("add-remote-stream-request", "presentation", remoteStream);
+        this.app.connection.emit("add-remote-stream-request", "presentation", this.presentationStream);
         this.peers.forEach((pc, key) => {
-          pc.dc.send("presentation");
+          pc.dc.send("start-presentation");
           pc.addTrack(videoTrack);
-
-          this.renegotiate(key);
         });
       } catch (err) {
         console.error("Error accessing media devices.", err);
@@ -182,10 +173,12 @@ class PeerManager {
   handleDataChannelMessage(data) {
     console.log("STUN: Message from data channel:", data);
     switch (data) {
-      case "presentation":
+      case "start-presentation":
         this.trackIsPresentation = true;
+        this.mod.screen_share = true;
         break;
-      case "remove-presentation-box":
+      case "stop-presentation":
+        this.mod.screen_share = false;
         this.app.connection.emit("remove-peer-box", "presentation");
         this.app.connection.emit("stun-switch-view", "focus");
       default:
@@ -364,11 +357,10 @@ class PeerManager {
     peerConnection.addEventListener("track", (event) => {
       const remoteStream = new MediaStream();
 
-      //console.log("STUN: another remote stream added", event.track);
+      console.log("STUN: another remote stream added", event.track);
+
       if (this.trackIsPresentation) {
         remoteStream.addTrack(event.track);
-        //this.remoteStreams.set("Presentation", { remoteStream, peerConnection });
-        //console.log(this.remoteStreams, "presentation stream");
         this.app.connection.emit("add-remote-stream-request", "presentation", remoteStream);
         setTimeout(() => {
           this.trackIsPresentation = false;
@@ -452,6 +444,13 @@ class PeerManager {
 
       dc.onopen = (event) => {
         console.log("STUN: Data channel is open");
+
+        if (this.presentationStream){
+          dc.send("start-presentation");
+          this.presentationStream.getTracks().forEach((track) => {
+            peerConnection.addTrack(track, this.presentationStream);
+          });
+        }
       };
 
       dc.onclose = (event) => {
@@ -583,6 +582,14 @@ class PeerManager {
   }
 
   leave() {
+
+    if (this.presentationStream){
+      this.presentationStream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      this.stopSharing();
+    }
+
     this.localStream.getTracks().forEach((track) => {
       track.stop();
       console.log("STUN: stopping track to leave call");
@@ -649,6 +656,18 @@ class PeerManager {
       }
     }
     this.audioStreamAnalysis = setInterval(update, 1000);
+  }
+
+  stopSharing(){
+    console.log("Screen sharing stopped by user");
+    this.app.connection.emit("remove-peer-box", "presentation");
+    this.app.connection.emit("stun-switch-view", "focus");
+    this.peers.forEach((pc, key) => {
+      pc.dc.send("stop-presentation");
+    });
+
+    this.mod.screen_share = false;
+    this.presentationStream = null;
   }
 
   async recordCall() {

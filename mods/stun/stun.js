@@ -26,6 +26,9 @@ class Stun extends ModTemplate {
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.isRelayConnected = false;
     this.hasReceivedData = {};
+
+    this.screen_share = false; 
+
     this.servers = [
       {
         urls: "turn:stun-sf.saito.io:3478",
