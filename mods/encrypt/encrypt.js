@@ -278,8 +278,10 @@ class Encrypt extends ModTemplate {
     let our_address = tx.to[0].publicKey;
     let alice_publicKey = txmsg.alice_publicKey;
 
-    siteMessage(`${this.app.keychain.returnUsername(remote_address, 8)} has added you as a friend`, 5000);
-    
+    if (this.app.BROWSER == 1) {
+      siteMessage(`${this.app.keychain.returnUsername(remote_address, 8)} has added you as a friend`, 5000);
+    }
+
     let fee = BigInt(tx.to[0].amount);
 
     let bob = this.app.crypto.createDiffieHellman();
@@ -346,7 +348,9 @@ class Encrypt extends ModTemplate {
       }
     }
 
-    siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
+    if (this.app.BROWSER == 1) {
+      siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
+    }
 
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
     let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
