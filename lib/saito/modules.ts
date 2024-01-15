@@ -80,7 +80,15 @@ class Mods {
       request = txmsg?.request;
       if (txmsg?.request === "software-update") {
         let receivedBuildNumber = JSON.parse(tx.msg.data).build_number;
-        this.app.browser.updateSoftwareVersion(receivedBuildNumber)
+
+        let active_mod = this.app.modules.returnActiveModule();
+        // check if not inside game
+        if (!active_mod.game) {
+          if (confirm(`Saito Upgrade: Upgrading to new version ${receivedBuildNumber}`)) {
+            this.app.browser.updateSoftwareVersion(receivedBuildNumber);
+          }
+        }
+        
       }
 
     } catch (err) { }
