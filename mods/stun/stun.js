@@ -2,7 +2,8 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const StunLauncher = require("./lib/appspace/call-launch");
 const CallInterfaceVideo = require("./lib/components/call-interface-video");
-const CallInterfaceAudio = require("./lib/components/call-interface-audio");
+const CallInterfaceFloat = require("./lib/components/call-interface-float");
+const DialingInterface = require("./lib/appspace/dialer");
 const PeerManager = require("./lib/appspace/PeerManager");
 
 //Do these do anything???
@@ -23,21 +24,13 @@ class Stun extends ModTemplate {
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
-    this.rooms = new Map();
     this.isRelayConnected = false;
-    this.useRelay = true;
     this.hasReceivedData = {};
     this.servers = [
-      {
-        urls: "stun:stun-sf.saito.io:3478",
-      },
       {
         urls: "turn:stun-sf.saito.io:3478",
         username: "guest",
         credential: "somepassword",
-      },
-      {
-        urls: "stun:stun-sg.saito.io:3478",
       },
       {
         urls: "turn:stun-sg.saito.io:3478",
@@ -45,47 +38,62 @@ class Stun extends ModTemplate {
         credential: "somepassword",
       },
       {
-        urls: "stun:stun-de.saito.io:3478",
-      },
-      {
         urls: "turn:stun-de.saito.io:3478",
         username: "guest",
         credential: "somepassword",
       },
+
+      // Firefox gives a warning if you provide more than two servers and
+      // throws an error if you use 5 or more.
+      // is it redundant to have both turn and stun on the same server, since
+      //
+      // " TURN (Traversal Using Relay NAT) is the more advanced solution that incorporates
+      // the STUN protocols and most commercial WebRTC based services use a TURN server
+      // for establishing connections between peers. "
+
+      /*{
+        urls: "stun:stun-sf.saito.io:3478",
+      },
+      {
+        urls: "stun:stun-sg.saito.io:3478",
+      },
+      {
+        urls: "stun:stun-de.saito.io:3478",
+      },*/
     ];
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
     this.streamManager = new StreamManager(app, this);
+    this.peerManager = new PeerManager(app, this);
+    this.dialer = new DialingInterface(app, this);
 
     //When StunLauncher is rendered or game-menu triggers it
-    app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
-      console.log("Init PeerManager and Set UI to " + ui_type);
-
+    app.connection.on("stun-init-call-interface", (ui_type = "large") => {
       if (this.CallInterface) {
         console.warn("Already instatiated a video/audio call manager");
         return;
       }
 
-      if (!this.peerManager) {
-        //Create the PeerManager, which includes listeners for events
-        this.peerManager = new PeerManager(app, this);
-      }
-
-      this.ui_type = ui_type;
+      console.log("STUN UI: " + ui_type);
 
       if (ui_type === "large") {
-        this.CallInterface = new CallInterfaceVideo(app, this);
+        this.CallInterface = new CallInterfaceVideo(app, this, true);
+      } else if (ui_type === "video") {
+        this.CallInterface = new CallInterfaceVideo(app, this, false);
       } else {
-        this.CallInterface = new CallInterfaceAudio(app, this);
+        this.CallInterface = new CallInterfaceFloat(app, this);
+      }
+    });
+
+    app.connection.on("reset-stun", () => {
+      this.room_obj = null;
+      if (this.CallInterface){
+        this.CallInterface.destroy();
+        this.CallInterface = null;
       }
     });
   }
-
-  // Just use inherited initialize, which sets this.publicKey
-  // async initialize(app)
-
-  onPeerHandshakeComplete(app, peer) {}
 
   /**
    * Stun will be rendered on
@@ -94,15 +102,33 @@ class Stun extends ModTemplate {
    *  - Saito-user-menu
    *  - game-menu options
    *
-   * This will trigger a "stun-init-peer-manager" event that leads to the creation of PeerManager
    */
+
+  async initialize(app) {
+    await super.initialize(app);
+
+    console.log("STUN: " + this.publicKey);
+
+    if (app.BROWSER) {
+      if (app.browser.returnURLParameter("stun_video_chat")) {
+        this.room_obj = JSON.parse(
+          app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
+        );
+
+        // JOIN THE ROOM
+        if (!this.browser_active) {
+          this.renderInto(".saito-overlay");
+        }
+      } else {
+        this.app.options.stun = [];
+      }
+    }
+  }
 
   async onPeerServiceUp(app, peer, service) {
     if (app.BROWSER !== 1) {
       return;
     }
-
-    // this.renderInto("body");
 
     if (service.service === "relay") {
       if (app.BROWSER !== 1) {
@@ -110,38 +136,15 @@ class Stun extends ModTemplate {
       }
 
       this.isRelayConnected = true;
-      this.ring_sound = new Audio("/videocall/audio/ring.mp3");
-      if (app.browser.returnURLParameter("stun_video_chat")) {
-        let room_obj = JSON.parse(
-          app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
-        );
-
-        // JOIN THE ROOM
-        if (this.browser_active) {
-          this.renderInto("body");
-        } else {
-          this.renderInto(".saito-overlay");
-        }
-
-        app.connection.emit("stun-to-join-room", room_obj);
-      } else {
-        // this.renderInto("body");
-      }
     }
   }
+
   render() {
     this.renderInto("body");
   }
 
-  canRenderInto(qs) {
-    if (qs === ".saito-overlay") {
-      return true;
-    }
-    return false;
-  }
-
   renderInto(qs) {
-    if (qs == ".saito-overlay") {
+    if (qs == ".saito-overlay" || qs == "body") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
@@ -152,24 +155,6 @@ class Stun extends ModTemplate {
       });
       this.renderedInto = qs;
     }
-    if (qs == "body") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
-      }
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => {
-        comp.render();
-      });
-      this.renderedInto = "body";
-    }
-  }
-
-  startRing() {
-    this.ring_sound.play();
-  }
-  stopRing() {
-    this.ring_sound.pause();
   }
 
   respondTo(type = "") {
@@ -187,10 +172,11 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                //stun_self.renderInto(".saito-overlay");
-                //salert("You still need to send an invitation link to the call (after you start it)");
-                stun_self.startRing();
-                stun_self.establishStunCallWithPeers("large", [public_key]);
+                if (!stun_self.room_obj){
+                  stun_self.dialer.establishStunCallWithPeers([public_key]);  
+                }else{
+                  salert("Already in or establishing a call");
+                }
               },
             },
           ];
@@ -203,6 +189,7 @@ class Stun extends ModTemplate {
       super.render(this.app, this);
       return new StunxInvite(this.app, this);
     }
+
     if (type === "saito-header") {
       this.attachStyleSheets();
       super.render(this.app, this);
@@ -214,6 +201,16 @@ class Stun extends ModTemplate {
           allowed_mods: ["redsquare", "arcade"],
           callback: function (app, id) {
             stun_self.renderInto(".saito-overlay");
+
+            /*app.connection.emit("stun-init-call-interface", "video");
+            if (!stun_self.room_obj) {
+              stun_self.room_obj = {
+                room_code: stun_self.createRoomCode(),
+                host_public_key: stun_self.publicKey,
+              };
+            }
+            app.connection.emit("start-stun-call");
+            */
           },
         },
       ];
@@ -224,32 +221,39 @@ class Stun extends ModTemplate {
     if (type == "game-menu") {
       this.attachStyleSheets();
       super.render(this.app, this);
+
+      //Set listeners for stun events
+      this.app.connection.on("show-call-interface", ()=> {
+        document.getElementById("start-group-video-chat").style.display = "none";
+      });
+      this.app.connection.on("reset-stun", ()=> {
+        document.getElementById("start-group-video-chat").style = "";    
+      });
+
       if (obj?.game?.players?.length > 1) {
         return {
           id: "game-social",
-          text: "Social",
+          text: "Chat / Social",
           submenus: [
             {
               parent: "game-social",
-              text: "Voice Chat",
-              id: "group-voice-chat",
-              class: "group-voice-chat",
-              callback: null,
-            },
-            {
-              parent: "group-voice-chat",
-              text: "Start call",
+              text: "Start Call",
               id: "start-group-video-chat",
               class: "start-group-video-chat",
               callback: function (app, game_mod) {
                 //Start Call
                 game_mod.menu.hideSubMenus();
-                stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
+
+                if (!stun_self.room_obj){
+                  stun_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);
+                }else{
+                  salert("Already in or establishing a call");
+                }
               },
             },
             {
               parent: "game-social",
-              text: "Record Stream",
+              text: "Record Game",
               id: "record-stream",
               class: "record-stream",
             },
@@ -290,22 +294,16 @@ class Stun extends ModTemplate {
       }
     }
 
-    if (type === "chat-popup") {
-      console.log("chat popup");
-    }
-
     return null;
   }
 
   onConfirmation(blk, tx, conf) {
-    console.log(tx, "transactipon");
     if (tx == null) {
       return;
     }
+
     let message = tx.returnMessage();
 
-    console.log(message, "message");
-    // console.log(tx.isTo(this.publicKey), "transaction");
     if (conf === 0) {
       if (message.module === "Stun") {
         //
@@ -315,12 +313,10 @@ class Stun extends ModTemplate {
 
         try {
           if (this.app.BROWSER === 1) {
-            if (
-              !this.peerManager ||
-              !this.peerManager.room_obj ||
-              this.peerManager.room_obj.room_code !== message.data.room_code
-            ) {
-              console.log("Tab is not active");
+            if (this.hasSeenTransaction(tx)) return;
+
+            if (!this?.room_obj?.room_code || this.room_obj.room_code !== message.data.room_code) {
+              console.log("OC: Tab is not active");
               return;
             }
             // if (document.hidden) {
@@ -328,8 +324,7 @@ class Stun extends ModTemplate {
             //   return;
             // }
 
-            if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
-              if (this.hasSeenTransaction(tx)) return;
+            if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
               if (message.request === "stun-send-call-list-request") {
                 console.log("OnConfirmation:  stun-send-call-list-request");
                 this.receiveCallListRequestTransaction(this.app, tx);
@@ -341,14 +336,7 @@ class Stun extends ModTemplate {
 
               if (message.request === "stun-send-message-to-peers") {
                 console.log("OnConfirmation: stun-send-message-to-peers");
-                // console.log(tx.to, "to transactions");
-
-                this.receiveStunMessageToPeersTransaction(this.app, tx);
-              }
-
-              if (message.request === "stun-send-game-call-message") {
-                console.log("OnConfirmation:  stun-send-game-call-message");
-                this.receiveGameCallMessageToPeers(this.app, tx);
+                this.peerManager.handleSignalingMessage(tx.msg.data);
               }
             }
           }
@@ -364,103 +352,57 @@ class Stun extends ModTemplate {
       return;
     }
     let txmsg = tx.returnMessage();
-    //    if (txmsg.data.module === "Stun") {
-    if (txmsg.request.substring(0, 5) == "stun-") {
-      if (this.app.BROWSER === 1) {
-        if (tx.isTo(this.publicKey) && tx.from[0].publicKey !== this.publicKey) {
-          if (
-            !this.peerManager ||
-            !this.peerManager.room_obj ||
-            this.peerManager.room_obj.room_code !== txmsg.data.room_code
-          ) {
-            console.log("Tab is not active");
+
+    if (this.app.BROWSER === 1) {
+      if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+        //console.log(txmsg);
+
+        if (txmsg.request.substring(0, 10) == "stun-send-") {
+          if (this.hasSeenTransaction(tx)) return;
+
+          if (!this?.room_obj?.room_code || this.room_obj.room_code !== txmsg.data.room_code) {
+            console.log("HPT: Tab is not active");
             return;
           }
-          // if (document.hidden) {
-          //   console.log("tab is not active");
-          //   return;
-          // }
-          if (this.hasSeenTransaction(tx)) return;
+
           if (txmsg.request === "stun-send-call-list-request") {
             console.log("HPT:  stun-send-call-list-request");
             this.receiveCallListRequestTransaction(this.app, tx);
+            return;
           }
           if (txmsg.request === "stun-send-call-list-response") {
             console.log("HPT:  stun-send-call-list-response");
             this.receiveCallListResponseTransaction(this.app, tx);
+            return;
           }
 
           if (txmsg.request === "stun-send-message-to-peers") {
-            console.log("HPT: stun-send-message-to-peers");
-            this.receiveStunMessageToPeersTransaction(app, tx);
+            //console.log("HPT: stun-send-message-to-peers");
+            this.peerManager.handleSignalingMessage(tx.msg.data);
+            return;
           }
 
-          if (txmsg.request === "stun-message-broadcast") {
-            let inner_tx = new Transaction(undefined, txmsg.data);
-            let message = inner_tx.returnMessage();
-            try {
-              if (message.request === "stun-send-game-call-message") {
-                console.log("HPT: stun-send-game-call-message");
-                this.receiveGameCallMessageToPeers(app, inner_tx);
-              }
-            } catch (err) {
-              console.error("Stun Error:", err);
-            }
-          }
+          console.warn("Unprocessed request:");
+          console.log(txmsg);
+        } else if (txmsg.request.substring(0, 5) == "stun-") {
+          this.dialer.receiveStunCallMessageFromPeers(tx);
         }
       }
     }
 
-    return await super.handlePeerTransaction(app, tx, peer, mycallback);
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  async sendCreateRoomTransaction(room_code = null, callback = null) {
-    if (!room_code) {
-      room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
-    }
-
-    return room_code;
-  }
-
-  // server receives this
-  async receiveCreateRoomTransaction(app, tx) {
-    let txmsg = tx.returnMessage();
-    this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
-  }
-
-  async sendStunMessageToServerTransaction(_data) {
-    let request = "stun-send-message-to-server";
-    let server = (await this.app.network.getPeers())[0];
-
-    // onchain
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.addFrom(this.publicKey);
-    newtx.addTo(server.publicKey);
-    newtx.msg.module = "Stun";
-    newtx.msg.request = request;
-    newtx.msg.data = _data;
-    newtx.msg.data.module = "Stun";
-    await newtx.sign();
-
-    let data = {
-      recipient: server.publicKey,
-      request: "stun-message-broadcast",
-      data: newtx.toJson(),
-    };
-
-    if (this.useRelay) {
-      this.app.connection.emit("relay-send-message", data);
-    }
-
-    await this.app.network.propagateTransaction(newtx);
+  createRoomCode() {
+    return this.app.crypto.generateRandomNumber().substring(0, 12);
   }
 
   async sendStunMessageToPeersTransaction(_data, recipients) {
-    console.log("sending to peers ", recipients, " data ", _data);
+    //console.log("sending to peers ", recipients, " data ", _data);
     let request = "stun-send-message-to-peers";
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    // newtx.addFrom(this.publicKey);
+
     if (recipients) {
       recipients.forEach((recipient) => {
         if (recipient) {
@@ -471,259 +413,52 @@ class Stun extends ModTemplate {
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
     newtx.msg.data = _data;
-    newtx.msg.data.module = "Stun";
-
-    newtx.msg.data.timestamp = Date.now();
-
-    console.log(newtx, "new transaction");
 
     await newtx.sign();
 
-    if (this.useRelay) {
-      recipients.forEach((recipient) => {
-        this.app.connection.emit("relay-send-message", { request, recipient, data: _data });
-      });
-    }
-
-    await this.app.network.propagateTransaction(newtx);
-  }
-
-  receiveStunMessageToPeersTransaction(app, tx) {
-    let data = tx.msg.data;
-    // console.log("receiving stun message to peers", data);
-    app.connection.emit("stun-event-message", data);
-    // this.peerManager.handleStunEventMessage(data);
-  }
-
-  async establishStunCallWithPeers(ui_type, recipients) {
-    // salert("Establishing a connection with your peers...");
-
-    // create a room
-    let room_code = await this.sendCreateRoomTransaction();
-
-    // send the information to the other peers and ask them to join the call
-    recipients = recipients.filter((player) => {
-      return player !== this.publicKey;
-    });
-
-    let data = {
-      type: "connection-request",
-      room_code,
-      ui: ui_type,
-      sender: this.publicKey,
-      timestamp: Date.now(),
-    };
-
-    this.sendStunCallMessageToPeers(this.app, data, recipients);
-
-    this.dialing = setTimeout(() => {
-      // cancel the call after 30seconds
-      let data = {
-        type: "cancel-connection-request",
-        room_code,
-        ui: ui_type,
-        sender: this.publicKey,
-        timestamp: Date.now(),
-      };
-      this.sendStunCallMessageToPeers(this.app, data, recipients);
-      this.stopRing();
-      if (document.getElementById("saito-alert")) {
-        document
-          .getElementById("saito-alert")
-          .parentElement.removeChild(document.getElementById("saito-alert"));
-      }
-    }, 30000);
-
-    const result = await sconfirm("establishing connection with peers");
-    if (!result) {
-      // cancel the call
-      let data = {
-        type: "cancel-connection-request",
-        room_code,
-        timestamp: Date.now(),
-        ui: ui_type,
-        sender: this.publicKey,
-      };
-      clearTimeout(this.dialing);
-      this.dialing = null;
-      this.stopRing();
-      this.sendStunCallMessageToPeers(this.app, data, recipients);
-    }
-  }
-
-  async sendStunCallMessageToPeers(app, _data, recipients) {
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-
-    if (recipients) {
-      recipients.forEach((recipient) => {
-        if (recipient) {
-          newtx.addTo(recipient);
-        }
-      });
-    }
-
-    newtx.msg.module = "Stun";
-    newtx.msg.request = "stun-send-game-call-message";
-    newtx.msg.data = _data;
-    newtx.msg.data.module = "Stun";
-    await newtx.sign();
-
-    recipients.forEach((recipient) => {
-      let data = {
-        request: "stun-message-broadcast",
-        data: newtx.toJson(),
-        recipient,
-      };
-      this.app.connection.emit("relay-send-message", data);
-    });
+    this.app.connection.emit("relay-transaction", newtx);
 
     this.app.network.propagateTransaction(newtx);
   }
 
-  async receiveGameCallMessageToPeers(app, tx) {
-    let txmsg = tx.returnMessage();
-    let data = tx.msg.data;
-
-    switch (data.type) {
-      case "connection-request":
-        let call_type = data.ui == "voice" ? "Voice" : "Video";
-        this.startRing();
-        let result = await sconfirm(`Accept Saito ${call_type} Call from ${data.sender}`);
-
-        if (result === true) {
-          // connect
-          // send to sender and inform
-          let _data = {
-            type: "connection-accepted",
-            room_code: data.room_code,
-            sender: app.wallet.publicKey,
-            timestamp: Date.now(),
-            ui: data.ui,
-          };
-
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
-
-          setTimeout(() => {
-            // init peer manager
-            let room_obj = {
-              room_code: data.room_code,
-              access_public_key: this.publicKey,
-            };
-            app.connection.emit("stun-init-peer-manager", data.ui);
-            app.connection.emit("stun-peer-manager-update-room-details", room_obj);
-
-            // send the information to the other peers and ask them to join the call
-            // show-call-interface
-            app.connection.emit("start-stun-call");
-          }, 2000);
-        } else {
-          //send to sender to stop connection
-          let _data = {
-            type: "connection-rejected",
-            room_code: data.room_code,
-            sender: app.wallet.publicKey,
-            timestamp: Date.now(),
-          };
-          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
-        }
-        this.stopRing();
-        // console.log(result);
-        break;
-
-      case "connection-accepted":
-        console.log("connection accepted");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
-
-        siteMessage(`${data.sender} accepted your call`, 2000);
-
-        if (this.dialing) {
-          clearTimeout(this.dialing);
-          this.dialing = null;
-        }
-
-        // init peer manager and chat manager through self event
-        this.app.connection.emit("stun-init-peer-manager", data.ui);
-        let room_obj = {
-          room_code: data.room_code,
-          access_public_key: tx.from[0].publicKey,
-        };
-        this.app.connection.emit("stun-peer-manager-update-room-details", room_obj);
-        this.app.connection.emit("start-stun-call");
-
-        break;
-      case "connection-rejected":
-        console.log("connection rejected");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
-
-        salert(`Call rejected by ${data.sender}`);
-        break;
-      case "cancel-connection-request":
-        // console.log("connection rejected");
-        this.stopRing();
-        if (document.getElementById("saito-alert")) {
-          document
-            .getElementById("saito-alert")
-            .parentElement.removeChild(document.getElementById("saito-alert"));
-        }
-
-        // salert(`Call cancelled by ${data.sender}`);
-        break;
-
-      default:
-        break;
+  async sendCallEntryTransaction(public_key = "") {
+    if (!this.room_obj) {
+      console.error("No room object");
+      return;
     }
-  }
 
-  async sendCallListRequestTransaction(public_key, room_code) {
+    if (!public_key) {
+      public_key = this.room_obj?.host_public_key;
+    }
+
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(public_key);
+
     let request = "stun-send-call-list-request";
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-    newtx.addTo(public_key);
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
-    let _data = {
-      room_code,
-      timestamp: Date.now(),
+
+    let data = {
+      room_code: this.room_obj.room_code,
     };
-    newtx.msg.data = _data;
+
+    newtx.msg.data = data;
     newtx.msg.data.module = "Stun";
     await newtx.sign();
 
-    if (this.useRelay) {
-      this.app.connection.emit("relay-send-message", {
-        data: _data,
-        request: request,
-        recipient: public_key,
-      });
-    }
-
-    // console.log("propagating transaction");
-    await this.app.network.propagateTransaction(newtx);
+    this.app.connection.emit("relay-transaction", newtx);
+    this.app.network.propagateTransaction(newtx);
   }
+
   async receiveCallListRequestTransaction(app, tx) {
     let txmsg = tx.returnMessage();
-    let data = txmsg.data;
 
-    let room_code = tx.returnMessage().data.room_code;
     let from = tx.from[0].publicKey;
-    // console.log(room_code);
     let call_list = [];
-    let peers = localStorage.getItem(room_code);
-    peers = JSON.parse(peers);
+    let peers = this.app.options?.stun;
 
     if (peers) {
       peers.forEach((key) => {
-        console.log(key);
         if (!call_list.includes(key)) {
           call_list.push(key);
         }
@@ -734,36 +469,32 @@ class Stun extends ModTemplate {
       call_list.push(this.publicKey);
     }
 
-    // console.log("call list", call_list);
+    console.log("STUN: call list", call_list);
 
-    await this.sendCallListResponseTransaction(from, call_list, room_code);
+    this.sendCallListResponseTransaction(from, call_list);
   }
 
-  async sendCallListResponseTransaction(public_key, call_list, room_code) {
+  async sendCallListResponseTransaction(public_key, call_list) {
     let request = "stun-send-call-list-response";
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.addTo(public_key);
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(public_key);
+
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
-    let _data = {
+    let data = {
       call_list,
-      room_code,
-      timestamp: Date.now(),
+      room_code: this.room_obj.room_code,
     };
-    newtx.msg.data = _data;
+
+    newtx.msg.data = data;
     newtx.msg.data.module = "Stun";
+
     await newtx.sign();
 
-    if (this.useRelay) {
-      this.app.connection.emit("relay-send-message", {
-        data: _data,
-        request: request,
-        recipient: public_key,
-      });
-    }
+    this.app.connection.emit("relay-transaction", newtx);
 
-    await this.app.network.propagateTransaction(newtx);
+    this.app.network.propagateTransaction(newtx);
   }
+
   async receiveCallListResponseTransaction(app, tx) {
     let txmsg = tx.returnMessage();
 
@@ -783,17 +514,18 @@ class Stun extends ModTemplate {
   }
 
   hasSeenTransaction(tx) {
-    let txmsg = tx.returnMessage();
-    let data = txmsg.data;
-    if (!data.timestamp) {
-      throw new Error("timestamp is not present in transaction data");
-    }
-    let hashed_data = this.app.crypto.stringToBase64(JSON.stringify(data) + String(data.timestamp));
+    let hashed_data = tx.signature;
+
+    // this.app.crypto.stringToBase64(txmsg.data) can be short or very long!
+    // signature = 128 characters
+    // running signature though stringToBase64 or stringToHex makes it longer (172, 256 respectively)
+    //
+
     if (this.hasReceivedData[hashed_data]) {
-      // console.log("already received this transaction");
       return true;
     }
     this.hasReceivedData[hashed_data] = true;
+
     return false;
   }
 }

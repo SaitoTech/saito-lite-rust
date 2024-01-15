@@ -96,7 +96,13 @@ class Mods {
     }
     if (have_responded == false) {
       if (mycallback) {
-        console.log("Execute null callback on " + request);
+
+        // 
+        // callback is defined in apps/lite/index.ts
+        // it runs sendApiSuccess() with the response object
+        // 
+
+        //console.log("Execute null callback on " + request);
         mycallback({});
       }
     }
