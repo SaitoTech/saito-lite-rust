@@ -187,6 +187,7 @@
   min-height: 150px;
   overflow-x: hidden;
   overflow-y: hidden;
+  border: 3px solid rgba(0,0,0,0);
 }
 
 .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
@@ -216,7 +217,7 @@
     border: 3px solid var(--saito-primary);
   }
   100% {
-    border: 1px solid var(--saito-border-color);
+    border: 3px solid rgba(0,0,0,0);
   }
 }
 
