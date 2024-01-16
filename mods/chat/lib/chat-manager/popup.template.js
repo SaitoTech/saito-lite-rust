@@ -28,13 +28,17 @@ module.exports = (app, mod, group, isStatic = false) => {
        <div class="${class_name} chat-popup ${(group.members.length == 2 ? "saito-dm-chat" : "")}" id="chat-popup-${group.id}">
 
           <div class="chat-header" id="chat-header-${group.id}">
-            ${is_encrypted}
-            <div id="chat-group-${group.id}" class="chat-group active-chat-tab saito-address" data-id="${group.name}" data-disable="true">${
-      group.name
-    }</div>
+            <div class="chat-header-nav">
+            
             <i class="fa-solid fa-window-minimize chat-sizing-icon chat-minimizer-icon"></i>
             <i class="fa-regular fa-square chat-sizing-icon chat-maximizer-icon"></i>
             <i id="chat-container-close" class="chat-container-close fas fa-times"></i>
+            </div>
+            <div class="chat-header-info">
+              ${is_encrypted}
+              <div id="chat-group-${group.id}" class="chat-group active-chat-tab saito-address" data-id="${group.name}" 
+              data-disable="true">${group.name}</div>
+            </div>
           </div>
 
           <div class="chat-body">
