@@ -249,6 +249,7 @@
   cursor: grab;
   height: 4.5rem;
   font-size: 1.7rem;
+  background: var(--saito-background-light);
 }
 
 .chat-header > .chat-header-nav > i {
@@ -259,7 +260,7 @@
   position: relative;
   transition: all 0.2s;
   cursor: pointer;
-  padding: 0.6rem 0.8rem;
+  padding: 0.7rem;
 }
 
 .chat-header > .chat-header-nav > i:hover {
@@ -283,9 +284,29 @@
   cursor: pointer;
 }
 
+
+
 .chat-header-info {
-  padding: 1rem 0rem;
+  padding: 1.2rem 1rem;
   background: var(--saito-arcade-background);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.chat-header-info  i {
+  font-size: 2rem;
+  color: var(--saito-faded-icon-font);
+}
+
+.chat-action-icons {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.chat-action-icons i {
+  cursor: pointer;
 }
 
 /*.chat-header > i:last-child:hover {
@@ -293,12 +314,37 @@
 }*/
 
 .chat-header .chat-group {
-  max-width: 95%;
+  max-width: 70%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  margin: auto;
   cursor: unset;
+  font-size: 1.7rem;
+}
+
+
+.chat-header-nav .chat-details,
+.chat-header-info .chat-details {
+  width: 71%;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.chat-header-nav .chat-details {
+  display: none;
+}
+
+.chat-header-nav .chat-details .chat-group {
+  max-width: 82%; 
+}
+
+.chat-popup.minimized .chat-header .chat-header-nav .chat-details {
+  display: flex;
+}
+
+.chat-popup.minimized .chat-header > .chat-header-nav > i {
+  padding: 1.2rem 0.8rem;
 }
 
 .chat-body {
@@ -602,6 +648,7 @@
   color: var(--saito-font-color-light);
   font-style: italic;
   font-size: 1.4rem;
+  margin-top: 3rem;
 }
 
 .saito-chat-button:hover {
@@ -670,7 +717,7 @@
   .chat-manager-title {
     display: none;
   }
-  .chat-header>i.chat-sizing-icon {
+  .chat-header i.chat-sizing-icon {
     display: none;
   }
 

@@ -371,6 +371,7 @@ class ChatPopup {
         if (chatPopup.classList.contains("minimized")) {
           this.restorePopup(chatPopup);
         } else {
+
           if (chatPopup.classList.contains("maximized")) {
             chatPopup.classList.remove("maximized");
           } else {
