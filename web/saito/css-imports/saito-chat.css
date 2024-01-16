@@ -187,7 +187,6 @@
   min-height: 150px;
   overflow-x: hidden;
   overflow-y: hidden;
-  border: 3px solid rgba(0,0,0,0);
 }
 
 .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
@@ -203,22 +202,10 @@
 
 .chat-container.active {
   z-index: 16;
-  animation: highlight 1s ease;
-  -webkit-animation: highlight 1s ease;
 }
 
 .chat-container.dragging {
   z-index: 17;
-}
-
-
-@keyframes highlight {
-  0% {
-    border: 3px solid var(--saito-primary);
-  }
-  100% {
-    border: 3px solid rgba(0,0,0,0);
-  }
 }
 
 .chat-container.minimized {
