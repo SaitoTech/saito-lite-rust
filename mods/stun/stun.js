@@ -27,7 +27,7 @@ class Stun extends ModTemplate {
     this.isRelayConnected = false;
     this.hasReceivedData = {};
 
-    this.screen_share = false; 
+    this.screen_share = false;
 
     this.servers = [
       {
@@ -67,7 +67,6 @@ class Stun extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
-    this.streamManager = new StreamManager(app, this);
     this.peerManager = new PeerManager(app, this);
     this.dialer = new DialingInterface(app, this);
 
@@ -91,7 +90,7 @@ class Stun extends ModTemplate {
 
     app.connection.on("reset-stun", () => {
       this.room_obj = null;
-      if (this.CallInterface){
+      if (this.CallInterface) {
         this.CallInterface.destroy();
         this.CallInterface = null;
       }
@@ -175,9 +174,9 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                if (!stun_self.room_obj){
-                  stun_self.dialer.establishStunCallWithPeers([public_key]);  
-                }else{
+                if (!stun_self.room_obj) {
+                  stun_self.dialer.establishStunCallWithPeers([public_key]);
+                } else {
                   salert("Already in or establishing a call");
                 }
               },
@@ -226,75 +225,61 @@ class Stun extends ModTemplate {
       super.render(this.app, this);
 
       //Set listeners for stun events
-      this.app.connection.on("show-call-interface", ()=> {
+      this.app.connection.on("show-call-interface", () => {
         document.getElementById("start-group-video-chat").style.display = "none";
       });
-      this.app.connection.on("reset-stun", ()=> {
-        document.getElementById("start-group-video-chat").style = "";    
+      this.app.connection.on("reset-stun", () => {
+        document.getElementById("start-group-video-chat").style = "";
       });
 
-      if (obj?.game?.players?.length > 1) {
-        return {
-          id: "game-social",
-          text: "Chat / Social",
-          submenus: [
-            {
-              parent: "game-social",
-              text: "Start Call",
-              id: "start-group-video-chat",
-              class: "start-group-video-chat",
-              callback: function (app, game_mod) {
-                //Start Call
-                game_mod.menu.hideSubMenus();
+      let menu_items = {
+        id: "game-social",
+        text: "Chat / Social",
+        submenus: [],
+      };
 
-                if (!stun_self.room_obj){
-                  stun_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);
-                }else{
-                  salert("Already in or establishing a call");
-                }
-              },
-            },
-            {
-              parent: "game-social",
-              text: "Record Game",
-              id: "record-stream",
-              class: "record-stream",
-            },
-            {
-              parent: "record-stream",
-              text: "Record with camera",
-              id: "record-with-camera",
-              class: "record-with-camera",
-              callback: function (app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                stun_self.streamManager.recordGameStream(true);
-              },
-            },
-            {
-              parent: "record-stream",
-              text: "Record without camera",
-              id: "record-without-camera",
-              class: "record-without-camera",
-              callback: function (app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                // game_mod.addMenuOption("stop-record-stream", "Stop recording");
-                stun_self.streamManager.recordGameStream();
-              },
-            },
-            {
-              parent: "record-stream",
-              text: "Stop recording",
-              id: "stop-recording",
-              class: "stop-recording",
-              callback: function (app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                // game_mod.addMenuOption("stop-record-stream", "Stop recording");
-                stun_self.streamManager.stopRecordGameStream();
-              },
-            },
-          ],
-        };
+      if (obj?.game?.players?.length > 1) {
+        menu_items["submenus"].push({
+          parent: "game-social",
+          text: "Start Call",
+          id: "start-group-video-chat",
+          class: "start-group-video-chat",
+          callback: function (app, game_mod) {
+            //Start Call
+            game_mod.menu.hideSubMenus();
+
+            if (!stun_self.room_obj) {
+              stun_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);
+            } else {
+              salert("Already in or establishing a call");
+            }
+          },
+        });
       }
+
+      menu_items["submenus"].push({
+        parent: "game-social",
+        text: "Record Game",
+        id: "record-stream",
+        class: "record-stream",
+        callback: function (app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          if (!stun_self.streamManager) {
+            stun_self.streamManager = new StreamManager(app, stun_self);
+          }
+          if (!stun_self?.recording) {
+            stun_self.streamManager.recordGameStream();
+            stun_self.recording = true;
+            document.getElementById("record-stream").textContent = "Stop Recording";
+          } else {
+            stun_self.streamManager.stopRecordGameStream();
+            stun_self.recording = false;
+            document.getElementById("record-stream").textContent = "Start Recording";
+          }
+        },
+      });
+
+      return menu_items;
     }
 
     return null;

@@ -684,14 +684,10 @@ class PeerManager {
   }
 
   async recordCall() {
-    localforage.config({
-      driver: localforage.INDEXEDDB,
-      name: "VideoCall",
-      storeName: "keyvaluepairs",
-      description: "Video Chunks data store",
-    });
+
     const start_recording = await sconfirm("Are you sure you want to start recording?");
     if (!start_recording) return false;
+
     this.recording = true;
     this.chunks = [];
 
