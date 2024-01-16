@@ -548,7 +548,7 @@ class RedSquare extends ModTemplate {
           case "#profile":
             this.app.connection.emit("redsquare-profile-render-request");
             break;
-          default: // #home
+          default: 
             break;
         }
       }

@@ -89,19 +89,25 @@ class RedSquareMenu {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      this.app.connection.emit("redsquare-home-render-request", true);
+      let should_refresh = window.location.hash == "";
 
-      //
-      // show loading new content message
-      //
-      this.app.connection.emit("redsquare-insert-loading-message");
+      if (should_refresh) {
+        this.app.connection.emit("redsquare-home-render-request", true);
 
-      //
-      // and load any NEW tweets at the top
-      //
-      this.mod.loadTweets("later", (tx_count) => {
-        this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
-      });
+        //
+        // show loading new content message
+        //
+        this.app.connection.emit("redsquare-insert-loading-message");
+
+        //
+        // and load any NEW tweets at the top
+        //
+        this.mod.loadTweets("later", (tx_count) => {
+          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        });
+      } else {
+        this.app.connection.emit("redsquare-home-render-request");
+      }
     };
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
