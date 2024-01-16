@@ -84,9 +84,7 @@ class Mods {
         let active_mod = this.app.modules.returnActiveModule();
         // check if not inside game
         if (!active_mod.game) {
-          if (confirm(`Saito Upgrade: Upgrading to new version ${receivedBuildNumber}`)) {
             this.app.browser.updateSoftwareVersion(receivedBuildNumber);
-          }
         }
         
       }

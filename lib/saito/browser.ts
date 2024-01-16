@@ -2076,11 +2076,13 @@ class Browser {
       }`
     );
     if (receivedBuildNumber > this.app.build_number) {
-      console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
-      siteMessage(`New software update found: ${receivedBuildNumber}. Updating...`);
-      setTimeout(function () {
-        window.location.reload();
-      }, 3000);
+      if (confirm(`Saito Upgrade: Upgrading to new version ${receivedBuildNumber}`)) {
+        console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
+        siteMessage(`New software update found: ${receivedBuildNumber}. Updating...`);
+        setTimeout(function () {
+          window.location.reload();
+        }, 3000);
+      }
     }
   }
 }
