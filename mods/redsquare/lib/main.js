@@ -29,8 +29,7 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
       window.history.pushState({}, document.title, "/" + this.mod.slug);
-      window.location.hash = "#home";
-
+      
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
       }
