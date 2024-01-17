@@ -11,6 +11,10 @@ echo "  Current Timestamp: $currentTime"
 buildJsonFile="./config/build.json"
 
 
+
+
+
+
 if [ ! -f "$buildJsonFile" ]; then
     echo "  build.json not found, creating file..."
     mkdir -p ./config
@@ -19,6 +23,9 @@ fi
 
 echo "Consolidaging CSS files"
 echo ""
+
+
+
 
 for d in mods/*/ ;
 do

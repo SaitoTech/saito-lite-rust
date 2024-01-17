@@ -1,17 +1,23 @@
 import Server, { NodeSharedMethods } from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
-import { Saito } from "./apps/core";
+import { Saito, parseLogLevel } from "./apps/core";
 import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config.js";
 import process from "process";
 import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
-import { LogLevel } from "saito-js/saito";
 
-// import Config from "saito-js/lib/config";
+
+function getCommandLineArg(key) {
+  const prefix = key + '=';
+  const arg = process.argv.find(arg => arg.startsWith(prefix));
+  return arg ? arg.slice(prefix.length) : null;
+}
+
 
 async function initSaito() {
+
   const app = new Saito({
     mod_paths: mods_config.core,
   });
@@ -22,19 +28,21 @@ async function initSaito() {
 
   app.BROWSER = 0;
   app.SPVMODE = 0;
-
   // set basedir
   global.__webdir = __dirname + "/lib/saito/web/";
-
   await app.storage.initialize();
-
   let privateKey = app.options.wallet?.privateKey || "";
+  let logLevelArg = getCommandLineArg('l') || getCommandLineArg('loglevel');
+  let envLogLevel = process.env.SAITO_LOG_LEVEL;
+  let logLevel = parseLogLevel(logLevelArg || envLogLevel || 'info');
+
+
   await initS(
     app.options,
     new NodeSharedMethods(app),
     new Factory(),
     privateKey,
-    LogLevel.Info
+    logLevel
   ).then(() => {
     console.log("saito wasm lib initialized");
   });
