@@ -33,7 +33,7 @@ body {
 .content {
   /* margin-top: 9rem; */
   width: 80%;
-  max-width: 700px;
+  max-width: 1200px;
   height: 90%;
   display: flex;
   justify-content: center;
@@ -51,12 +51,11 @@ body {
   text-align: center;
   background: #0008;
   padding: 0 3rem;
+  min-width: 700px;
 }
 
 .links {
-  text-align: center;
   display: flex;
-  justify-content: space-around;
   width: 100%;
   margin: 3rem 0 0 0;
   gap: 1rem;
@@ -212,5 +211,59 @@ hr {
   .links {
     display: flex;
     flex-flow: column;
+  }
+}
+
+
+.feature {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+body {
+  padding: 0;
+}
+
+.container {
+  border: 1px solid aqua;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.container>div {
+  border: 1px solid darkorange;
+  height: 500px;
+  width: 50%;
+  transition: width ease-in-out 1s, height ease-in-out 1s;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+}
+
+.container>div:hover {
+  width: 100%;
+}
+
+@media (max-aspect-ratio: 8/5) {
+  .container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .container>div {
+    width: 500px;
+    height: 50%;
+  }
+
+  .container>div:hover {
+    height: 100%;
+    width: 500px;
   }
 }
