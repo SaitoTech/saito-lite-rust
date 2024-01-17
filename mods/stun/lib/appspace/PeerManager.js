@@ -102,7 +102,15 @@ class PeerManager {
 
     app.connection.on("begin-share-screen", async () => {
       try {
-        this.presentationStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        this.presentationStream = await navigator.mediaDevices.getDisplayMedia({ 
+          video: {
+            displaySurface: "window",
+          }, 
+          preferCurrentTab: false,
+          selfBrowserSurface: "exclude",
+          surfaceSwitching: "include",
+          monitorTypeSurfaces: "exclude", 
+        });
         let videoTrack = this.presentationStream.getVideoTracks()[0];
         videoTrack.onended = this.stopSharing.bind(this);
 
@@ -695,14 +703,15 @@ class PeerManager {
       pc.dc.send("start-recording");
     });
 
+    const audioContext = new AudioContext();
+    const audioDestination = audioContext.createMediaStreamDestination();
+
+    /*
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
     canvas.width = 1280;
     canvas.height = 720;
-
-    const audioContext = new AudioContext();
-    const audioDestination = audioContext.createMediaStreamDestination();
 
     const localVideo = document.createElement("video");
     localVideo.srcObject = this.localStream;
@@ -762,7 +771,8 @@ class PeerManager {
     };
 
     draw();
-
+    */
+    
     [
       this.localStream, 
       ...Array.from(this.remoteStreams.values()).map((c) => c.remoteStream),
@@ -772,10 +782,22 @@ class PeerManager {
       source.connect(audioDestination);
     });
 
-    const combinedStream = new MediaStream([
+    /*const combinedStream = new MediaStream([
       ...audioDestination.stream.getTracks(),
       ...canvas.captureStream(30).getTracks(),
-    ]);
+    ]);*/
+
+
+    let screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+          video: {
+            displaySurface: "browser",
+          }, 
+          preferCurrentTab: true,
+          selfBrowserSurface: "include",
+          monitorTypeSurfaces: "exclude", 
+        });
+ 
+    const combinedStream = new MediaStream([...audioDestination.stream.getTracks(), ...screenStream.getTracks()]);
 
     this.mediaRecorder = new MediaRecorder(combinedStream);
 
@@ -808,6 +830,8 @@ class PeerManager {
       if (audioContext.state !== "closed") {
         audioContext.close();
       }
+
+      screenStream.getTracks().forEach(track => track.stop());
 
       // Reset recording flag
       this.recording = false;

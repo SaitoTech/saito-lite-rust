@@ -399,33 +399,6 @@ class Quake3 extends GameTemplate {
     });
 
     this.menu.addSubMenuOption("game-game", {
-      text: "Screenshot",
-      id: "game-post",
-      class: "game-post",
-      callback: async function (app, game_mod) {
-        let m = game_mod.app.modules.returnModule("RedSquare");
-        if (m) {
-          let log = document.getElementById("log-wrapper");
-          if (log && !log.classList.contains("log_lock")) {
-            log.style.display = "none";
-          }
-          let menu = document.getElementById("game-menu");
-          menu.style.display = "none";
-          await app.browser.screenshotCanvasElementById("viewport", function (image) {
-            if (log && !log.classList.contains("log_lock")) {
-              log.style.display = "block";
-            }
-            menu.style.display = "block";
-            SAITO_COMPONENT_ACTIVE = true;
-            SAITO_COMPONENT_CLICKED = true;
-            m.tweetImage(image);
-          });
-          game_mod.menu.hideSubMenus();
-        }
-      },
-    });
-
-    this.menu.addSubMenuOption("game-game", {
       text: "Update Name",
       id: "game-register",
       class: "game-register",

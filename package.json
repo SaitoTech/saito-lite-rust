@@ -8,7 +8,7 @@
     "dev-server": "./compile nuke ts-node-dev && npm run dev ",
     "cli": "ts-node cli.ts",
     "wh": "NODE_OPTIONS='--max-old-space-size=12288' ts-node wh.ts",
-    "start": "NODE_OPTIONS='--max-old-space-size=8192' ts-node -T --files start.ts",
+    "start": "NODE_OPTIONS='--max-old-space-size=8192' ts-node -T --files start.ts --",
     "init": "node ./scripts/install.js",
     "nuke": " ./compile nuke",
     "reset": " ./compile reset",
@@ -18,7 +18,7 @@
     "analyze": " --config ./webpack/old/webpack.analyze.js",
     "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
     "pretty": "npx prettier --write .",
-    "go": "npm run compile dev && npm start"
+    "go": "npm run compile dev $@ && npm run start --"
   },
   "author": "Team Saito",
   "license": "SAITO",
@@ -47,7 +47,6 @@
     "fastest-stable-stringify": "^2.0.2",
     "fs-extra": "^8.1.0",
     "html-prettify": "^1.0.7",
-    "html2canvas": "^1.4.1",
     "identicon.js": "^2.3.3",
     "image-resolver": "^0.6.1",
     "int64-buffer": "^1.0.1",

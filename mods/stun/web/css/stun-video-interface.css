@@ -71,7 +71,8 @@
 }
 
 .stun-chatbox.minimize main {
-  grid-template-rows: 1fr 40px;
+  /* Fixed grid layout */
+  grid-template-rows: calc(100% - 40px) 40px;
 }
 
 
@@ -524,7 +525,7 @@
 .timer .counter {
   color: var(--saito-primary);
   font-size: 2rem;
-  min-width: 9rem;
+  min-width: 7rem;
   font-family: monospace;
 }
 

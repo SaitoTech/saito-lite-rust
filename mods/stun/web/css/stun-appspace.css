@@ -23,9 +23,8 @@
   align-items: center;
   background-color: black;
   color: var(--saito-white);
-  padding: 3rem;
   justify-content: space-between;
-  width: min(400px, 90vw);
+  width: min(400px, 98vw);
   height: min(600px, 80vh);
 }
 
@@ -43,6 +42,7 @@
 
 .stun-button-row .saito-button-primary {
   min-width: 15rem;
+  padding: 1.5rem;
 }
 
 .stun-appspace-content {
@@ -259,4 +259,13 @@ input:checked + .slider:before {
     margin-bottom: 0;
     margin-top: 1rem;
   }
+
+  .stun-minimal-appspace{
+    padding: 1rem;
+  }
+
+  .stun-button-row .saito-button-primary {
+  min-width: 12rem;
+  }
+
 }
