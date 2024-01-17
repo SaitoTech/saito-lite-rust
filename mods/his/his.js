@@ -17483,19 +17483,24 @@ if (this.game.state.scenario != "is_testing") {
 	if (mv[0] === "is_testing") {
 
 	  // moar debaters
-          this.addDebater("protestant", "bullinger-debater");
-          this.addDebater("protestant", "oekolampadius-debater");
-          this.addDebater("protestant", "zwingli-debater");
-          this.addDebater("papacy", "caraffa-debater");
-          this.addDebater("papacy", "gardiner-debater");
-          this.addDebater("papacy", "loyola-debater");
-          this.addDebater("papacy", "pole-debater");
-          this.addDebater("papacy", "canisius-debater");
-          this.addDebater("papacy", "contarini-debater");
-          this.addDebater("papacy", "faber-debater");
-    	  this.addDebater("papacy", "bucer-debater");
-    	  this.addDebater("protestant", "aleander-debater");
-    	  this.addDebater("protestant", "campeggio-debater");  
+          //this.addDebater("protestant", "bullinger-debater");
+          //this.addDebater("protestant", "oekolampadius-debater");
+          //this.addDebater("protestant", "zwingli-debater");
+          //this.addDebater("papacy", "caraffa-debater");
+          //this.addDebater("papacy", "gardiner-debater");
+          //this.addDebater("papacy", "loyola-debater");
+          //this.addDebater("papacy", "pole-debater");
+          //this.addDebater("papacy", "canisius-debater");
+          //this.addDebater("papacy", "contarini-debater");
+          //this.addDebater("papacy", "faber-debater");
+    	  //this.addDebater("papacy", "bucer-debater");
+    	  //this.addDebater("protestant", "aleander-debater");
+    	  //this.addDebater("protestant", "campeggio-debater");  
+
+	  this.commitDebater("protestant", "bucer-debater", 0);
+	  this.commitDebater("protestant", "carlstadt-debater", 0);
+	  this.commitDebater("protestant", "melanchthon-debater", 0);
+
 
           this.addMercenary("papacy", "siena", 4);
           this.addArmyLeader("papacy", "ravenna", "renegade");
@@ -22403,6 +22408,9 @@ console.log("naval space units: " + JSON.stringify(space.units));
 	  let committed = this.game.state.theological_debate.committed;
 	  this.game.state.theological_debate.round++;
 
+          this.game.state.theological_debate.attacker_debater = ""; // resetting
+          this.game.state.theological_debate.defender_debater = "";
+
 	  let x = 0;
 
 	  //
@@ -22494,9 +22502,39 @@ console.log("naval space units: " + JSON.stringify(space.units));
           this.game.state.theological_debate.round2_attacker_debater = this.game.state.theological_debate.attacker_debater;
           this.game.state.theological_debate.round2_defender_debater = this.game.state.theological_debate.defender_debater;
 
+
 	  //
+	  // TODO -- remove if this can be safely removed. see comment above in first_round
 	  //
+	  // if Papal Bull removes the only uncommitted debater, then we can have a situation where
+	  // no debater is found for the defense and the game halts. We check against this edge case
+	  // by re-checking and picking a random committed debater in this case...
 	  //
+	  if (this.game.state.theological_debate.defender_debater === "") {
+	    dd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          dd++;
+	        }
+	      }
+	    }
+	    x = this.rollDice(dd) - 1;
+	    for (let i = 0, j = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          if (x === j) {
+		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+		    this.game.state.theological_debate.round2_defender_debater = this.game.state.debaters[i].type;
+	          }
+		  j++;
+	        }
+	      }
+	    }
+	  }
+	
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
@@ -22512,7 +22550,8 @@ console.log("naval space units: " + JSON.stringify(space.units));
 	  let defender = mv[2];
 	  let language_zone = mv[3];
 	  let committed = mv[4];
-	  if (parseInt(mv[4]) == 1) { committed = "committed"; } else { committed = "uncommitted"; }
+	  if (parseInt(mv[4]) === 1) { committed = "committed"; };
+	  if (parseInt(mv[4]) === 0) { committed = "uncommitted"; };
 	  let selected_papal_debater = "";
 	  if (mv[5]) { selected_papal_debater = mv[5]; }
 	  let prohibited_protestant_debater = "";
@@ -22547,8 +22586,6 @@ console.log("naval space units: " + JSON.stringify(space.units));
 
 	  let x = 0;
 
-console.log("PROHIBITED PROTESTANT DEBATER: " + prohibited_protestant_debater);
-
 	  //
 	  // Henry Petitions for Divorce pre-selects 
 	  //
@@ -22578,11 +22615,11 @@ console.log("PROHIBITED PROTESTANT DEBATER: " + prohibited_protestant_debater);
 	        }
 	      }
 	    }
-	     x = this.rollDice(ad) - 1;
+	    x = this.rollDice(ad) - 1;
 	    ad = 0;
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
 	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
-	        if (x === ad) {
+	        if (x == ad) {
 	  	  this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
 	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
@@ -22639,6 +22676,38 @@ console.log("PROHIBITED PROTESTANT DEBATER: " + prohibited_protestant_debater);
 	      }
 	    }
 	  }
+	  //
+	  // NOTE -- this bug may be fixed, but we are leaving the code in for now in order to avoid
+	  // potential issues while bugfixing. It can probably be safely removed though. TODO
+	  //
+	  // if Papal Bull removes the only uncommitted debater, then we can have a situation where
+	  // no debater is found for the defense and the game halts. We check against this edge case
+	  // by re-checking and picking a random committed debater in this case...
+	  //
+	  if (this.game.state.theological_debate.defender_debater === "") {
+	    dd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          dd++;
+	        }
+	      }
+	    }
+	    x = this.rollDice(dd) - 1;
+	    for (let i = 0, j = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          if (x === j) {
+		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+	          }
+		  j++;
+	        }
+	      }
+	    }
+	  }
+	
 
 console.log("SELECTED DEBATER AT: " + this.game.state.theological_debate.attacker_debater);
 console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defender_debater);
@@ -24726,7 +24795,7 @@ console.log("EVERYONE HAS PASSED!");
 //
 // testing
 //
-if (this.game.state.scenario != "is_testing") {
+//if (this.game.state.scenario != "is_testing") {
 	  for (let key in hc) {
 	    if (hc[key].faction === faction) {
 	      if (!this.game.state.cards_left[faction]) { this.game.state.cards_left[faction] = 0; }
@@ -24736,7 +24805,7 @@ if (this.game.state.scenario != "is_testing") {
 	      }
 	    }
 	  }
-}
+//}
 
 	  this.displayCardsLeft();
 	  this.game.queue.splice(qe, 1);
