@@ -22,12 +22,52 @@ class StreamManager {
       const videoElemScreen = document.createElement("video");
       const videoElemCamera = document.createElement("video");
 
+      let includeCamera = await sconfirm("Include webcam in stream?");
+
+      if (includeCamera) {
+        try {
+          this.localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true, // Capture microphone audio
+          });
+
+          
+          this.videoBox = new VideoBox(this.app, this.mod, "local");
+          this.videoBox.render(this.localStream);
+          let videoElement = document.querySelector(".video-box-container-large");
+          videoElement.style.position = "absolute";
+          videoElement.style.top = "100px";
+          videoElement.style.width = "350px";
+          videoElement.style.height = "350px";
+          this.app.browser.makeDraggable("stream_local");
+          
+
+          //"Play" the webcam output somewhere so it can be captured
+          videoElemCamera.srcObject = this.localStream;
+          videoElemCamera.muted = true;
+          videoElemCamera.play();
+          await new Promise((resolve) => (videoElemCamera.onloadedmetadata = resolve));
+
+        } catch (error) {
+          console.error("Access to camera denied: ", error);
+          salert("Gamecasting will continue without camera and/or microphone input");
+        }
+      }else{
+          this.localStream = await navigator.mediaDevices.getUserMedia({
+            audio: true, // Capture microphone audio
+          });
+      }
+
       // Attempt to get the screen stream
       try {
         screenStream = await navigator.mediaDevices.getDisplayMedia({
-          video: { mediaSource: "screen" },
+          video: {
+            displaySurface: "browser",
+          }, 
           audio: true,
           preferCurrentTab: true,
+          selfBrowserSurface: "include",
+          monitorTypeSurfaces: "exclude", 
         });
 
         videoElemScreen.srcObject = screenStream;
@@ -41,40 +81,9 @@ class StreamManager {
         return;
       }
 
-      let includeCamera = await sconfirm("Include webcam in stream?");
-
-      if (includeCamera) {
-        try {
-          this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true, // Capture microphone audio
-          });
-
-          /*
-          this.videoBox = new VideoBox(this.app, this.mod, "local");
-          this.videoBox.render(this.localStream);
-          let videoElement = document.querySelector(".video-box-container-large");
-          videoElement.style.position = "absolute";
-          videoElement.style.top = "100px";
-          videoElement.style.width = "350px";
-          videoElement.style.height = "350px";
-          this.app.browser.makeDraggable("stream_local");
-          */
-
-          //"Play" the webcam output somewhere so it can be captured
-          videoElemCamera.srcObject = this.localStream;
-          videoElemCamera.muted = true;
-          videoElemCamera.play();
-          await new Promise((resolve) => (videoElemCamera.onloadedmetadata = resolve));
-
-        } catch (error) {
-          console.error("Access to camera denied: ", error);
-          salert("Gamecasting will continue without camera and/or microphone input");
-        }
-      }
 
       // Now that we have the video dimensions, set up the canvas
-      const canvas = document.createElement("canvas");
+      /*const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       canvas.width = videoElemScreen.videoWidth + (includeCamera ? videoElemCamera.videoWidth : 0);
       canvas.height = Math.max(
@@ -94,29 +103,24 @@ class StreamManager {
 
       // Start the drawing loop
       drawCanvas();
+      this.canvasStream = canvas.captureStream();
+  
+      */
 
       // Set up the media recorder with the canvas stream
       // Create a new stream for the combined video and audio
       const combinedStream = new MediaStream();
 
       // Add the canvas' video stream to the combined stream
-      canvas
-        .captureStream()
-        .getVideoTracks()
-        .forEach((track) => {
-          combinedStream.addTrack(track);
-        });
+      //this.canvasStream.getVideoTracks().forEach((track) => { combinedStream.addTrack(track); });
 
       // Add the audio tracks from the screen and camera to the combined stream
-      if (screenStream.getAudioTracks().length > 0) {
-        combinedStream.addTrack(screenStream.getAudioTracks()[0]);
-      }
+      screenStream.getTracks().forEach(track => combinedStream.addTrack(track));
+
       if (this.localStream && this.localStream.getAudioTracks().length > 0) {
         combinedStream.addTrack(this.localStream.getAudioTracks()[0]);
       }
 
-      this.canvasStream = canvas.captureStream();
-      
       this.mediaRecorder = new MediaRecorder(combinedStream, {
         mimeType: "video/webm",
       });
@@ -131,6 +135,8 @@ class StreamManager {
       // When the recording stops, create a video file
       this.mediaRecorder.onstop = async () => {
         
+          screenStream.getTracks().forEach(track => track.stop());   
+
           const completeBlob = new Blob(this.chunks, { type: "video/webm" });
           const defaultFileName = "recorded_call.webm";
           const fileName =
@@ -148,7 +154,7 @@ class StreamManager {
           downloadLink.remove();
           window.URL.revokeObjectURL(videoURL);
      
-          this.chunks = [];   
+          this.chunks = [];
       };
 
       // Start recording
