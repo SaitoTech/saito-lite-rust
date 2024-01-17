@@ -20,11 +20,8 @@ class Dialer {
 
   render(call_receiver, making_call = true) {
     this.overlay.show(DialerTemplate(this.app, this.mod, making_call), () => {
-      if (making_call) {
-        this.app.connection.emit("close-preview-window");
-      } else {
-        this.stopRing();
-      }
+      this.app.connection.emit("close-preview-window");
+      this.stopRing();
       this.app.connection.emit("reset-stun");
     });
     this.overlay.blockClose();
@@ -102,6 +99,7 @@ class Dialer {
           });
           this.stopRing();
           this.app.connection.emit("close-preview-window");
+          this.app.connection.emit("reset-stun");
           this.overlay.remove();
         };
       };
@@ -142,6 +140,7 @@ class Dialer {
           data: this.mod.room_obj,
         });
         this.stopRing();
+        this.app.connection.emit("close-preview-window");
         this.app.connection.emit("reset-stun");
         this.overlay.remove();
       };
@@ -160,10 +159,9 @@ class Dialer {
   }
   stopRing() {
     try {
-      if (!this.ring_sound) {
-        this.ring_sound = new Audio("/videocall/audio/ring.mp3");
+      if (this.ring_sound) {
+        this.ring_sound.pause();
       }
-      this.ring_sound.pause();
     } catch (err) {
       console.error(err);
     }
@@ -214,10 +212,14 @@ class Dialer {
 
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
-      return player !== this.publicKey;
+      return player !== this.mod.publicKey;
     });
 
     //Temporary only 1 - 1 calls
+    if (recipients.length){
+      salert("P2P calling is currently limited to 2 parties");
+    }
+
     this.render(recipients[0], true);
   }
 

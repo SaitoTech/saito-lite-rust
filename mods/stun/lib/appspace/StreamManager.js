@@ -12,6 +12,11 @@ class StreamManager {
 
   async recordGameStream() {
 
+      if (this.mod.callInterface){
+        this.mod.peerManager.recordCall();
+        return;
+      }
+
       let screenStream = null;
 
       const videoElemScreen = document.createElement("video");
@@ -153,6 +158,11 @@ class StreamManager {
   // Function to stop recording
   stopRecordGameStream() {
     console.log("Stop recording!");
+
+    if (this.mod.callInterface){
+      this.mod.peerManager.stopRecordCall();
+      return;
+    }
 
     if (this.mediaRecorder) {
       this.mediaRecorder.stop();

@@ -37,7 +37,7 @@ class CallInterfaceFloat {
       siteMessage(`Stun connection ${status}`, 2000);
     });
 
-    this.app.connection.on("stun-disconnect", this.hide);
+    this.app.connection.on("stun-disconnect", this.hide.bind(this));
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
       if (this.audio_boxes[peer_id]?.audio_box) {

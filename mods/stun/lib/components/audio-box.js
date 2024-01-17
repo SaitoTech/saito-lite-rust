@@ -49,11 +49,10 @@ class AudioBox {
     }
     this.stream = stream;
     console.log(stream, "stream");
-    document.querySelectorAll("audio").forEach((audio) => {
-      if (audio.getAttribute("id") == this.stream_id && this.steam_id !== "local") {
-        audio.srcObject = this.stream;
-      }
-    });
+
+    const audioBox = document.getElementById(`audiostream_${this.stream_id}`);
+    audioBox.firstElementChild.srcObject = this.stream;
+
   }
 
   remove() {
