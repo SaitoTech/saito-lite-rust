@@ -155,7 +155,7 @@
    
     // if a port, must be controlled by faction
     try { if (this.game.spaces[space]) { space = this.game.spaces[space];  } } catch (err) {}
-    if (space.language != undefined) { return this.isSpaceControlled(space, faction); }
+    if (space.language != undefined) { return this.isSpaceFriendly(space, faction); }
 
     // if naval space, must not have enemy of faction
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
@@ -890,8 +890,10 @@ console.log("about to return waht?: " + JSON.stringify(res));
   canFactionRetreatToNavalSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-    if (this.isSpaceFriendly(space, faction) == 1) { console.log("space is friendly!"); return 1; }
+console.log("checking if: " + space.key + " is friendly to " + faction);
     if (this.isNavalSpaceFriendly(space, faction) == 1) { console.log("navalspace is friendly"); return 1; }
+    if (this.isSpaceFriendly(space, faction) == 1) { console.log("space is friendly!"); return 1; }
+console.log("no...");
     return 0;
   }
 

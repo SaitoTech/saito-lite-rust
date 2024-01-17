@@ -1473,7 +1473,7 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
     for (let z in space.units) {
       html += this.returnPersonagesTiles(z, space.key);
-      tile = html;
+      if (html != "") { tile = html; }
     }
 
     html += '</div>';
@@ -1500,6 +1500,8 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
 
   displaySpace(key) {
+
+    if (this.game.navalspaces[key]) { this.displayNavalSpace(key); return; }
 
     let ts = new Date().getTime();
     if (this.game.state.board_updated < ts + 20000) {
@@ -1575,6 +1577,7 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
   displayNavalSpace(key) {
 
+    if (this.game.spaces[key]) { this.displaySpace(key); return; }
     if (!this.game.navalspaces[key]) { return; }
 
     let obj = document.getElementById(key);
@@ -1588,8 +1591,8 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
     //
     // do not show under some conditions
     //
-
     if (show_tile === 1) {
+      obj.innerHTML = "";
       obj.innerHTML += this.returnNavies(space);
       obj.innerHTML += this.returnPersonages(space);
     }

@@ -261,6 +261,8 @@
         }
       }
     }
+    let z = this.returnPlayerCommandingFaction(faction);
+    if (z) { return this.game.players_info[z-1]; }
     return 0;
   }
 
@@ -959,7 +961,7 @@ if (limit === "build") {
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
         at_least_one_option = true;
-        html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
+        html += '<li class="option .'+key+'" id="' + key + '">' + his_self.returnSpaceName(key) + '</li>';
 
 	//
 	// the spaces that are selectable are clickable on the main board (whatever board shows)
@@ -2632,7 +2634,7 @@ return;
   }
 
 
-  playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="") {
+  playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="", post_battle=false) {
 
     let his_self = this;
     let retreat_destination = "";
@@ -2656,16 +2658,14 @@ return;
     }
 
     let onFinishSelect = function(his_self, destination_spacekey) {
-      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
+      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+destination_spacekey);
       his_self.endTurn();
     };
 
     let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
       let html = "<ul>";
       for (let i = 0; i < neighbours.length; i++) {
-console.log("neighbour is: " + neighbours[i]);
         if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
-console.log("yes!");
           html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
 	}
       }
@@ -2686,7 +2686,11 @@ console.log("yes!");
     html    += `<li class="card" id="skip">do not retreat</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Retreat from ${spacekey}?`, html);
+    if (post_battle) {
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)} loses the battle. Retreat?`, html);
+    } else {
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)} approaches ${this.returnSpaceName(spacekey)}. Retreat?`, html);
+    }
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -2811,7 +2815,7 @@ console.log("yes!");
     }
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Retreat from ${space_name}?`, html);
+    this.updateStatusWithOptions(`{this.returnFactionName(faction)} approaches ${this.returnSpaceName(space_name)}. Retreat?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -3488,7 +3492,7 @@ console.log("yes!");
         if (units_to_move.includes(parseInt(i))) {
           html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
-          html += `<li class="option" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
+          html += `<li class="option" id="${i}">${units_available[i].name} (${his_self.returnSpaceName(units_available[i].spacekey)})</li>`;
         }
       }
       html += `<li class="option" id="end">finish</li>`;
