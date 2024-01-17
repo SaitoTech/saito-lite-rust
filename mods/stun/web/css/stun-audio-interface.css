@@ -76,6 +76,18 @@
     }
 }
   
+@media screen and (max-width: 600px) {
+    .small-audio-chatbox .control-panel{
+        width: 100vw;
+    }
 
+    .small-audio-chatbox .control-panel .timer {
+        min-width: unset;
+    }
 
+    .small-audio-chatbox .control-panel .control-list {
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+}
 

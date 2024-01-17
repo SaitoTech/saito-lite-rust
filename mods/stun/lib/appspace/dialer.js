@@ -216,8 +216,9 @@ class Dialer {
     });
 
     //Temporary only 1 - 1 calls
-    if (recipients.length){
+    if (recipients.length > 1){
       salert("P2P calling is currently limited to 2 parties");
+      console.log(recipients);
     }
 
     this.render(recipients[0], true);
@@ -294,7 +295,7 @@ class Dialer {
             }
             this.updateMessage("No answer");
             this.attachEvents();
-          }, 15000000);
+          }, 29000);
         }
 
       default:
