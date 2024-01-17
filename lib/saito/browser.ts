@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import screenfull, { element } from "screenfull";
-import html2canvas from "html2canvas";
 import { getDiffieHellman } from "crypto";
 
 let marked = require("marked");
@@ -1549,40 +1548,12 @@ class Browser {
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  async captureScreenshot(callback = null) {
-    // svg needs converstion
-    let svgElements = document.body.querySelectorAll("svg");
-    svgElements.forEach(function (item) {
-      item.setAttribute("width", item.getBoundingClientRect().width);
-      item.setAttribute("height", item.getBoundingClientRect().height);
-      item.style.width = null;
-      item.style.height = null;
-    });
-
-    html2canvas(document.body).then(function (canvas) {
-      let img = canvas.toDataURL("image/jpeg", 0.35);
-      if (callback != null) {
-        callback(img);
-      }
-    });
-  }
-
-  async screenshotCanvasElementBySelector(selector = "", callback = null) {
-    let canvas = document.querySelector(selector);
-    if (canvas) {
-      let img = canvas.toDataURL("image/jpeg", 0.35);
-      if (callback != null) {
-        callback(img);
-      }
-    }
-  }
-
   async screenshotCanvasElementById(id = "", callback = null) {
     let canvas = document.getElementById(id);
     if (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
       if (callback != null) {
-        callback(img);
+        callback(img);d
       }
     }
   }
