@@ -1,13 +1,12 @@
 import Server, { NodeSharedMethods } from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
-import { ArgType, Saito, parseLogLevel } from "./apps/core";
+import { Saito, parseLogLevel } from "./apps/core";
 import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config.js";
 import process from "process";
 import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
-import { LogLevel } from "saito-js/saito";
 
 
 function getCommandLineArg(key) {
@@ -22,7 +21,6 @@ async function initSaito() {
   const app = new Saito({
     mod_paths: mods_config.core,
   });
-
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
