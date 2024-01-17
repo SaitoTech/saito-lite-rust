@@ -13,9 +13,6 @@ import Blockchain from "../../lib/saito/blockchain";
 import PeerServiceList from "saito-js/lib/peer_service_list";
 import { LogLevel } from "saito-js/saito";
 
-import argConfig from '../../config/args.json'
-// import { args } from '../../start';
-// import Config from "saito-js/lib/config";
 
 
 class WebMethods extends WebSharedMethods {
@@ -103,17 +100,6 @@ class WebMethods extends WebSharedMethods {
 }
 
 async function init() {
-  console.log("lite init...");
-
-  let args: ArgType = argConfig
-
-  let logLevel = LogLevel.Info;
-
-  if (args && args.loglevel) {
-    logLevel = parseLogLevel(args.loglevel)
-  }
-
-
 
   const saito = new Saito({ mod_paths: mods_config.lite });
   await saito.storage.initialize();
@@ -133,7 +119,7 @@ async function init() {
       new WebMethods(saito),
       new Factory(),
       saito.options.wallet?.privateKey || "",
-      logLevel
+      LogLevel.Info
     );
   } catch (e) {
     console.error(e);

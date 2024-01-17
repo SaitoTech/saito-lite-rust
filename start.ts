@@ -8,9 +8,13 @@ import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
 import { LogLevel } from "saito-js/saito";
-import argConfig from './config/args.json'
 
 
+function getCommandLineArg(key) {
+  const prefix = key + '=';
+  const arg = process.argv.find(arg => arg.startsWith(prefix));
+  return arg ? arg.slice(prefix.length) : null;
+}
 
 
 async function initSaito() {
@@ -30,12 +34,9 @@ async function initSaito() {
   global.__webdir = __dirname + "/lib/saito/web/";
   await app.storage.initialize();
   let privateKey = app.options.wallet?.privateKey || "";
-
-  let args: ArgType = argConfig
-  let logLevel = LogLevel.Info;
-  if (args && args.loglevel) {
-    logLevel = parseLogLevel(args.loglevel)
-  }
+  let logLevelArg = getCommandLineArg('l') || getCommandLineArg('loglevel');
+  let envLogLevel = process.env.SAITO_LOG_LEVEL;
+  let logLevel = parseLogLevel(logLevelArg || envLogLevel || 'info');
 
 
   await initS(
