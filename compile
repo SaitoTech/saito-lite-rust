@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Builing Lite Client ($1 $2 $3)"
+echo "Builing Lite Client ($1 $2)"
 echo ""
 
      echo "  Updating build number in options file"

@@ -100,6 +100,7 @@ class WebMethods extends WebSharedMethods {
 }
 
 async function init() {
+  console.log("lite init...");
 
   const saito = new Saito({ mod_paths: mods_config.lite });
   await saito.storage.initialize();
