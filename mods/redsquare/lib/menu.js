@@ -89,7 +89,7 @@ class RedSquareMenu {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      let should_refresh = window.location.hash == "#home";
+      let should_refresh = window.location.hash == "";
 
       if (should_refresh) {
         this.app.connection.emit("redsquare-home-render-request", true);

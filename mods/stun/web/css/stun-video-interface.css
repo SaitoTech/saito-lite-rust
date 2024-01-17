@@ -8,13 +8,13 @@
 }
 
 .stun-chatbox {
-  top: 0;
+  bottom: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   height: calc(100 * var(--saito-vh));
   position: fixed;
-  background-color: var(--saito-white) fff;
+  background-color: var(--saito-black);
   transition: all 0.2s;
 }
 
@@ -57,50 +57,62 @@
   }
 }
 
-.minimize {
+.stun-chatbox.minimize {
   width: 30rem;
-  height: 20rem;
+  height: 30rem;
   overflow: auto;
   resize: both;
   /* animation-name: minimize;
   animation-duration: 1s;
   animation-fill-mode: forwards; */
+
+  cursor: grab;
+  border-radius: 0.5rem;
 }
+
+.stun-chatbox.minimize main {
+  grid-template-rows: 1fr 40px;
+}
+
 
 .stun-chatbox.minimize .minimizer i {
   font-size: 2rem;
 }
 
-.stun-chatbox.minimize .video-box-container-large {
-  resize: unset;
+.stun-chatbox.minimize .video-container-large {
+  padding: 0.25rem;
+  grid-template-columns: 1fr;
 }
 
 .stun-chatbox.minimize .expanded-video {
   width: 100%;
-  margin-right: unset;
+  resize: unset;
 }
 
 .stun-chatbox.minimize .side-videos {
   display: none;
 }
 
-.stun-chatbox.minimize .large-wrapper {
-  height: 100%;
-}
-
-.stun-chatbox.minimize .footer {
-  position: absolute;
-  bottom: 1rem;
-  width: 100%;
-}
 
 .stun-chatbox.minimize .control-panel {
-  background-color: unset;
-  padding: 0.5rem;
-  align-items: flex-end;
+  padding: 0.25rem;
+  gap: 0.5rem;
 }
 
-.stun-chatbox.minimize .timer,
+.stun-chatbox.minimize .timer{
+  min-width: unset;
+  gap: 0;
+  /*max-width: 50%;*/
+  flex: 1;
+}
+
+.stun-chatbox.minimize .stun-identicon-list img.saito-identicon {
+  width: 3rem;
+  height: 3rem;
+}
+
+.stun-chatbox.minimize .users-on-call-text,
+.stun-chatbox.minimize .add_users_container,
 .stun-chatbox.minimize span,
 .stun-chatbox.minimize label {
   display: none;
@@ -115,8 +127,11 @@
   display: flex;
   width: 3rem;
   height: 3rem;
-  background-color: rgba(230, 230, 230, 0.8);
   margin-right: 1rem;
+}
+
+.stun-chatbox.minimize .icon_click_area i {
+  font-size: unset;
 }
 
 .stun-chatbox .minimizer:hover i,
@@ -128,49 +143,53 @@
 .stun-chatbox main {
   height: 100%;
   width: 100%;
+  display: grid;
+  grid-template-rows: 1fr minmax(150px, 15%);
 }
 
 .stun-chatbox .heading {
   padding: 1rem;
 }
 
-.stun-chatbox .large-wrapper {
-  grid-gap: 1rem;
-  /* padding: 1rem; */
-  height: 80%;
-  background: black;
-}
-
-.stun-chatbox .footer {
-  height: 20%;
-}
 
 .stun-chatbox .video-container-large {
-  display: flex;
+  display: grid;
   width: 100%;
   height: 100%;
-  cursor: pointer;
+  max-height: 85vh;
   transition: all 0.5s ease;
   position: relative;
   padding: 1rem;
+  gap: 1rem;
 }
 
 .gallery {
-  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
   grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
-  grid-gap: 1rem;
   height: fit-content;
   width: 100%;
   max-height: 100%;
-  background: black;
 }
 
-.expanded-video {
-  width: 75%;
-  height: 100%;
-  margin-right: 10px;
+.split-view {
+  grid-template-columns: 3fr 1fr;
 }
+
+/*  video box */
+.presentation,
+.expanded-video {
+  /*resize: both;*/
+  overflow: auto;
+  max-height: 100%;
+}
+
+.stun-chatbox .side-videos {
+  display: grid;
+  grid-template-rows: repeat(3, minmax(20vh, auto));
+  gap: 1rem;
+  max-height: 100%;
+}
+
 
 .expanded-video .video-box-container-large {
   width: 100%;
@@ -179,18 +198,17 @@
   opacity: 0;
   animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
-  border: 2px solid var(--saito-border-color-dark);
 }
 
 .side-videos .video-box-container-large {
-  height: fit-content;
   max-height: 100%;
   overflow: clip;
-  border: 2px solid var(--saito-border-color-dark);
 }
 
 .stun-chatbox .video-box-container-large {
+  border: 2px solid var(--saito-border-color-dark);
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .presentation {
@@ -229,15 +247,6 @@
   }
 }
 
-.stun-chatbox .side-videos {
-  display: flex;
-  gap: 1rem;
-  width: 25%;
-  height: 100%;
-  max-height: 100%;
-  flex: 1;
-  flex-direction: column;
-}
 
 .stun-chatbox .b-btngrid {
   border: none;
@@ -296,16 +305,8 @@
   }
 }
 
-/*  video box */
-.presentation,
-.expanded-video {
-  resize: both;
-  overflow: auto;
-  max-height: 100%;
-}
 
 .video-box-container-large {
-  background-color: black;
   display: flex;
   height: 100%;
   width: 100%;
@@ -392,7 +393,7 @@
   width: calc(100% - 1rem);
 }
 
-.video-call-info > p {
+.video-call-info .saito-address {
   font-size: 2rem;
   white-space: nowrap;
   overflow: hidden;
@@ -506,7 +507,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #060505;
   height: 100%;
   color: var(--saito-white);
 }
@@ -521,15 +521,16 @@
   min-width: 35rem;
 }
 
-.timer p {
-  color: var(--saito-white);
-  margin-right: 1rem;
-}
-
 .timer .counter {
-  color: orangered;
+  color: var(--saito-primary);
   font-size: 2rem;
   min-width: 9rem;
+  font-family: monospace;
+}
+
+.minimize .timer .counter {
+  font-size: 1.8rem;
+  min-width: unset;
 }
 
 .users-on-call {
@@ -539,15 +540,20 @@
   gap: 1rem;
 }
 
-.users-on-call .image-list {
+.stun-identicon-list {
   display: flex;
+  gap: 1rem;
   margin-right: 1rem;
 }
 
-.image-list img {
+.minimize .stun-identicon-list{
+  gap: 0.6rem;
+  margin-right: 0.6rem;
+}
+
+.stun-identicon-list img {
   width: 4rem;
   height: 4rem;
-  margin-right: 1rem;
 }
 
 .control-list {
@@ -617,27 +623,23 @@
 }
 
 @media screen and (max-width: 900px) {
-  .stun-chatbox .large-wrapper {
-    grid-gap: 1rem;
-    padding: 0;
-    height: 70%;
-    background: black;
+  .stun-chatbox.full-screen main {
+    grid-template-rows: 1fr minmax(200px, 20%);
   }
-  .stun-chatbox .footer {
-    height: 30%;
-  }
-  .control-panel {
-    padding-bottom: 5rem;
+
+  .full-screen .control-panel {
     flex-direction: column;
     align-items: flex-start;
-    justify-content: start;
+    justify-content: end;
     align-items: center;
     gap: 3rem;
+    padding-bottom: 3rem;
   }
-  .control-panel .control-list {
+  .full-screen .control-panel .control-list {
     margin-bottom: 1.7rem;
     gap: 1.5rem;
   }
+
   .control-list span {
     margin: 0;
   }
@@ -647,35 +649,14 @@
   .add_users_container label {
     display: none;
   }
+
 }
 
-@media screen and (max-height: 850px) {
-  .video-box-container-large:nth-child(2) {
-  }
-  .control-panel {
-    padding-bottom: 10rem;
-  }
-  .control-panel span {
-    width: 4rem;
-    height: 4rem;
-  }
-  .control-panel .timer {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-  }
-  .control-panel .timer .counter {
-    margin-left: 1rem;
-  }
-  .control-panel .timer .counter span {
-    color: orangered;
-    font-size: 2rem;
-  }
-}
+
 
 @media screen and (max-width: 600px) {
   .control-panel {
-    padding: 4rem 0;
+    padding: 4rem 1rem;
   }
 
   .control-panel .timer {
@@ -689,7 +670,7 @@
   .control-panel .control-list {
     gap: unset;
     width: 40rem;
-    max-width: 98vw;
+    max-width: 100%;
     justify-content: space-between;
   }
 }
@@ -726,6 +707,7 @@
   row-gap: 2rem;
   align-items: center;
   color: var(--saito-white);
+  max-width: 100vw;
 }
 
 .chat-settings-preview-section p {
@@ -779,9 +761,7 @@
   padding: 1rem;
   border-radius: var(--saito-border-radius);
   width: 55rem;
-  max-width: 92vw;
-  max-height: 92vw;
-  /*min-height: 30rem;*/
+  max-width: 92%;
   display: flex;
 }
 
@@ -867,13 +847,13 @@
     padding: 1rem;
   }
   .chat-settings-preview {
-    width: 40rem;
+    width: 45rem;
   }
 }
 
 @media screen and (max-width: 900px) {
   .chat-settings-preview {
-    width: 50rem;
+    width: 40rem;
   }
 }
 
@@ -894,18 +874,19 @@
   }
 
   .video-container-large {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   .stun-chatbox .side-videos {
     width: 100%;
-    max-height: 50%;
-    display: grid;
+    grid-template-rows: unset;
     grid-template-columns: repeat(auto-fit, minmax(100px, auto));
     grid-gap: 0.5rem;
   }
 
-  .side-videos .video-box-container-large {
-    height: unset;
+  .side-videos .video-box-container-large, .expanded-video .video-box-container-large {
+    height: min(100vw, 37vh);
+    width: fit-content;
+    margin: auto;
   }
 
   .video-box-container-large > #connection-message {
@@ -923,7 +904,6 @@
   }
   .expanded-video {
     width: 100%;
-    margin-right: 0;
   }
 }
 
@@ -933,10 +913,6 @@
   border-radius: 0.5rem;
   color: var(--saito-white);
 }
-
-/* .stun-chatbox .chat-static {
-  color: var(--saito-white);
-} */
 
 .stun-chatbox .saito-user:hover .saito-userline-reply {
   background-color: var(--saito-black);

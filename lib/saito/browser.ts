@@ -750,6 +750,8 @@ class Browser {
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.addElementToElement(html, container);
+      }else{
+        console.warn("Classname not found: " + classname);
       }
     }
   }
@@ -1390,19 +1392,6 @@ class Browser {
 
     let ht, wd, x, y, dx, dy;
 
-    const resize = (evt) => {
-      dx = evt.screenX - x;
-      dy = evt.screenY - y;
-      x = evt.screenX;
-      y = evt.screenY;
-      wd -= dx;
-      ht -= dy;
-      target.style.width = wd + "px";
-      target.style.height = ht + "px";
-    };
-
-    const resizeFn = resize.bind(this);
-
     const prepareToResize = () => {
       let dimensions = target.getBoundingClientRect();
       ht = dimensions.height;
@@ -1417,7 +1406,7 @@ class Browser {
       target.style.right = window.innerWidth - dimensions.right + "px";
     };
 
-    pullTab.addEventListener("mousedown", (evt) => {
+    pullTab.onmousedown = (evt) => {
       x = evt.screenX;
       y = evt.screenY;
 
@@ -1429,17 +1418,26 @@ class Browser {
       //Get rid of any animation delays
       target.style.transition = "unset";
 
-      d.body.addEventListener("mousemove", resizeFn);
+      d.body.onmousemove = (evt) => {
+        dx = evt.screenX - x;
+        dy = evt.screenY - y;
+        x = evt.screenX;
+        y = evt.screenY;
+        wd -= dx;
+        ht -= dy;
+        target.style.width = wd + "px";
+        target.style.height = ht + "px";
+      };
 
-      d.body.addEventListener("mouseup", () => {
-        d.body.removeEventListener("mousemove", resizeFn);
+      d.body.onmouseup = () => {
+        d.body.onmousemove = null;
         target.style.transition = "";
-      });
+      }
 
       if (callback) {
         callback();
       }
-    });
+    }
   }
 
   returnAddressHTML(key) {
@@ -2078,11 +2076,13 @@ class Browser {
       }`
     );
     if (receivedBuildNumber > this.app.build_number) {
-      console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
-      siteMessage(`New software update found: ${receivedBuildNumber}. Updating...`);
-      setTimeout(function () {
-        window.location.reload();
-      }, 3000);
+      if (confirm(`Saito Upgrade: Upgrading to new version ${receivedBuildNumber}`)) {
+        console.log(`New software update found: ${receivedBuildNumber}. Updating...`);
+        siteMessage(`New software update found: ${receivedBuildNumber}. Updating...`);
+        setTimeout(function () {
+          window.location.reload();
+        }, 3000);
+      }
     }
   }
 }

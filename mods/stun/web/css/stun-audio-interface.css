@@ -5,13 +5,43 @@
     position: absolute;
     z-index: 200;
     bottom: 0;
+    border: 1px solid var(--saito-border-color);
+    cursor: grab;
+    background: var(--saito-black);
 }
 
 
 .audio-box {
-    display: inline-block !important;
+    width: 3.5rem;
+    height: 3.5rem;
+    position: relative;
+}
+
+.audio-box.muted {
+    filter: grayscale(100%);
+}
+
+.audio-box i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: larger;
+    color: var(--saito-black);
+}
+
+.small-audio-chatbox .stun-identicon-list img {
     height: 100%;
     width: 100%;
+}
+
+
+.small-audio-chatbox .control-panel .timer {
+    min-width: 28rem;
+}
+
+.small-audio-chatbox .control-panel {
+     gap: 1.5rem;
 }
 
 
@@ -32,7 +62,19 @@
   }
 
 
+@media screen and (max-width: 900px) {
+    .small-audio-chatbox .control-panel{
+        padding-bottom: unset;
+        padding: 1.5rem;
+    }
 
+    .small-audio-chatbox .control-panel .control-list {
+        margin-bottom: unset;
+        gap: unset;
+        width: 100%;
+        justify-content: space-evenly;
+    }
+}
   
 
 

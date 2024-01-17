@@ -80,7 +80,13 @@ class Mods {
       request = txmsg?.request;
       if (txmsg?.request === "software-update") {
         let receivedBuildNumber = JSON.parse(tx.msg.data).build_number;
-        this.app.browser.updateSoftwareVersion(receivedBuildNumber)
+
+        let active_mod = this.app.modules.returnActiveModule();
+        // check if not inside game
+        if (!active_mod.game) {
+            this.app.browser.updateSoftwareVersion(receivedBuildNumber);
+        }
+        
       }
 
     } catch (err) { }
@@ -96,7 +102,13 @@ class Mods {
     }
     if (have_responded == false) {
       if (mycallback) {
-        console.log("Execute null callback on " + request);
+
+        // 
+        // callback is defined in apps/lite/index.ts
+        // it runs sendApiSuccess() with the response object
+        // 
+
+        //console.log("Execute null callback on " + request);
         mycallback({});
       }
     }

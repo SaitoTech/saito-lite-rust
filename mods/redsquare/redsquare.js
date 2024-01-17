@@ -90,6 +90,8 @@ class RedSquare extends ModTemplate {
     //
     this.manager = "";
 
+    this.possibleHome = 1;
+
     //
     // is this a notification?
     //
@@ -546,7 +548,7 @@ class RedSquare extends ModTemplate {
           case "#profile":
             this.app.connection.emit("redsquare-profile-render-request");
             break;
-          default: // #home
+          default: 
             break;
         }
       }

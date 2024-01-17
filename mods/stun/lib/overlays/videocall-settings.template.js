@@ -1,4 +1,7 @@
-const VideoCallSettingsTemplate = (display_mode) => {
+const VideoCallSettingsTemplate = (display_mode, mod) => {
+
+        console.log("----- ", display_mode);
+
         let html = `
           <div class="videocall-setting-grid-item saito-modal">
 
@@ -6,7 +9,7 @@ const VideoCallSettingsTemplate = (display_mode) => {
               <div class="videocall-setting-title">Change layout</div>
 
 
-              ${(display_mode === "presentation") ? `
+              ${(mod.screen_share) ? `
               <div class="videocall-option-container">
                 <label class="videocall-option-label active" for="videocall-option-input-presentation">
                   <input id="videocall-option-input-presentation" checked type="radio" value="presentation"
@@ -45,7 +48,7 @@ const VideoCallSettingsTemplate = (display_mode) => {
             </div>
 
 
-             ${(display_mode !== "presentation") ?
+             ${(!mod.screen_share) ?
               `<div class="videocall-option-grid">
                   <div class="videocall-setting-title">Screenshare</div>
                   <div class="videocall-setting-icon share-control">

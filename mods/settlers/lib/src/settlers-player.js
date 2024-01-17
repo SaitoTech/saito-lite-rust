@@ -176,6 +176,7 @@ class SettlersPlayer {
         }
 
         let slot = $(this).attr("id");
+        $(".rhover").css("background-color", "");
         settlers_self.confirmPlacement(slot, settlers_self.c1.name, () => {
           $(".rhover").off();
           $(".rhover").removeClass("rhover");
@@ -248,6 +249,7 @@ class SettlersPlayer {
       $(".road.empty").off();
       $(".road.empty").on("click", function () {
         let slot = $(this).attr("id");
+        $(".road.empty").removeAttr("style");
         settlers_self.confirmPlacement(slot, settlers_self.r.name, () => {
           $(".road.empty").off();
           $(".rhover").removeClass("rhover");
@@ -300,23 +302,30 @@ class SettlersPlayer {
     //$(selector).addClass('chover');
     $(".chover").off();
     $(".chover").on("click", function () {
-      $(".chover").off();
-      $(".chover").removeClass("chover");
-
+//>>>>>>>>>>>>>>>>>
       let slot = $(this).attr("id");
+      $(".chover").removeAttr("style");
 
-      for (let i = 0; i < settlers_self.game.state.cities.length; i++) {
-        if (
-          slot == settlers_self.game.state.cities[i].slot &&
-          settlers_self.game.state.cities[i].level == 1
-        ) {
-          settlers_self.addMove(`upgrade_city\t${settlers_self.game.player}\t${slot}`);
-          settlers_self.endTurn();
-          return;
+      $(this).css("border-color", "yellow");
+      settlers_self.confirmPlacement(slot, settlers_self.c2.name, () => {
+        $(".chover").removeAttr("style");
+        $(".chover").off();
+        $(".chover").removeClass("chover");
+        for (let i = 0; i < settlers_self.game.state.cities.length; i++) {
+          if (
+            slot == settlers_self.game.state.cities[i].slot &&
+            settlers_self.game.state.cities[i].level == 1
+          ) {
+            settlers_self.addMove(`upgrade_city\t${settlers_self.game.player}\t${slot}`);
+            settlers_self.endTurn();
+            return;
+          }
         }
-      }
-      //Something went wrong, try again
-      settlers_self.playerBuildCity(player);
+        //Something went wrong, try again
+        console.warn("Unexpected error in upgrading a city");
+        settlers_self.playerBuildCity(player);
+
+        });
     });
   }
 

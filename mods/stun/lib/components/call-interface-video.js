@@ -3,19 +3,15 @@ const CallInterfaceVideoTemplate = require("./call-interface-video.template");
 
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
-const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 const VideocallSettings = require("../overlays/videocall-settings");
 
 class CallInterfaceVideo {
-  constructor(app, mod) {
+  constructor(app, mod, fullScreen = true) {
     this.app = app;
     this.mod = mod;
     this.videocall_settings = new VideocallSettings(app, mod);
     this.effectsMenu = new Effects(app, mod);
-    this.users_on_call = 0;
-    this.peers = []; //people in the call
     this.localStream;
-    this.room_code;
     this.video_boxes = {};
 
     this.local_container = "expanded-video";
@@ -24,42 +20,27 @@ class CallInterfaceVideo {
     this.remote_streams = new Map();
     this.current_speaker = null;
     this.speaker_candidate = null;
-    this.loader = new SaitoLoader(app, mod);
     this.public_key = mod.publicKey;
+    this.full_screen = fullScreen;
 
-    this.app.connection.on(
-      "show-call-interface",
-      async (room_obj, videoEnabled, audioEnabled, isJoining) => {
-        console.log("show-call-interface", room_obj);
-        this.room_code = room_obj.room_code;
+    this.app.connection.on("show-call-interface", async (videoEnabled, audioEnabled) => {
+      console.log("Render Video Call Interface");
 
-        //Why is this a blocking loader????
-        if (isJoining) {
-          this.loader.render(true);
-          setTimeout(() => {
-            this.loader.remove();
-          }, 60000);
-        }
+      // create chat group
+      this.createRoomTextChat();
 
-        console.log("Render Video Call Interface");
-        //This will render the (full-screen) component
-        if (!document.querySelector(".stun-chatbox")) {
-          this.render(videoEnabled, audioEnabled);
-        }
-
-        this.room_link = this.createRoomLink();
-
-        /* automatically copy invite link to clipboard for first user */
-        console.log(this.users_on_call);
-
-        if (this.users_on_call == 1) {
-          this.copyInviteLink();
-        }
-
-        // create chat group
-        await this.createRoomTextChat();
+      //This will render the (full-screen) component
+      if (!document.querySelector(".stun-chatbox")) {
+        this.render(videoEnabled, audioEnabled);
       }
-    );
+
+      this.room_link = this.createRoomLink();
+
+      if (this.mod.room_obj.host_public_key == this.mod.publicKey && this.full_screen) {
+        this.copyInviteLink();
+      }
+
+    });
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
       this.addLocalStream(localStream);
@@ -70,19 +51,8 @@ class CallInterfaceVideo {
       this.addRemoteStream(peer, remoteStream);
     });
 
-    this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
-      if (room_code !== this.room_code) {
-        return;
-      }
-      let my_pub_key = this.app.wallet.getPublicKey();
-      let container;
-      if (peer_id === my_pub_key) {
-        container = this.local_container;
-      }
-
-      this.createVideoBox(peer_id, container);
+    this.app.connection.on("stun-update-connection-message", (peer_id, status) => {
       if (status === "connecting") {
-        this.loader.remove();
         this.video_boxes[peer_id].video_box.renderPlaceholder("connecting");
       } else if (status === "connected") {
         this.video_boxes[peer_id].video_box.removeConnectionMessage();
@@ -92,9 +62,6 @@ class CallInterfaceVideo {
       } else if (status === "disconnected") {
         this.video_boxes[peer_id].video_box.renderPlaceholder("retrying connection");
       }
-    });
-    app.connection.on("stun-remove-loader", () => {
-      this.loader.remove();
     });
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
@@ -110,6 +77,7 @@ class CallInterfaceVideo {
     // Change arrangement of video boxes (emitted from SwitchDisplay overlay)
     app.connection.on("stun-switch-view", (newView) => {
       this.display_mode = newView;
+      console.log("Switch view: " + newView);
       switch (newView) {
         case "gallery":
           this.switchDisplayToGallery();
@@ -117,8 +85,11 @@ class CallInterfaceVideo {
         case "focus":
           this.switchDisplayToExpanded();
           break;
+        case "speaker":
+          this.switchDisplayToExpanded();
+          break;
         case "presentation":
-          this.swicthDisplayToPresentation();
+          this.switchDisplayToExpanded();
           break;
 
         default:
@@ -129,11 +100,14 @@ class CallInterfaceVideo {
     });
 
     app.connection.on("stun-new-speaker", (peer) => {
-      console.log("New Speaker: " + peer);
+
+      if (!this.full_screen){
+        return;
+      }
+
       document.querySelectorAll(".video-box-container-large").forEach((item) => {
         if (item.id === `stream${peer}`) {
           if (item.classList.contains("speaker")) {
-            console.log("Same speaker");
             return;
           }
 
@@ -141,6 +115,7 @@ class CallInterfaceVideo {
             this.display_mode == "speaker" &&
             !item.parentElement.classList.contains("expanded-video")
           ) {
+            console.log("New Speaker: " + peer);
             this.flipDisplay(peer);
           }
 
@@ -150,9 +125,53 @@ class CallInterfaceVideo {
         }
       });
     });
+
+
+    app.connection.on("stun-disconnect", ()=>{
+      this.video_boxes = {};
+
+      if (this.mod.browser_active) {
+        let homeModule = this.app.options?.homeModule || "Stun";
+        let mod = this.app.modules.returnModuleByName(homeModule);
+        let slug = mod?.returnSlug() || "videocall";
+        let url = "/" + slug;
+
+        setTimeout(() => {
+          window.location.href = url;
+        }, 2000);
+      } else {
+
+        //
+        // Hopefully we don't have to reload the page on the end of a stun call
+        // But keep on eye on this for errors and make sure all the components shut themselves down properly
+        //
+        this.app.connection.emit("reset-stun");
+
+        if (document.getElementById("stun-chatbox")) {
+          document.getElementById("stun-chatbox").remove();
+          let am = this.app.modules.returnActiveModule();
+          window.history.pushState({}, "", window.location.origin + "/" + am.returnSlug());
+          document.title = this.old_title;
+        }
+      }
+    });
   }
 
+
+  destroy(){
+    this.app.connection.removeAllListeners("show-call-interface");
+    this.app.connection.removeAllListeners("add-local-stream-request");
+    this.app.connection.removeAllListeners("add-remote-stream-request");
+    this.app.connection.removeAllListeners("stun-update-connection-message");
+    this.app.connection.removeAllListeners("remove-peer-box");
+    this.app.connection.removeAllListeners("stun-new-speaker");
+    this.app.connection.removeAllListeners("stun-switch-view");
+
+  }
+
+
   render(videoEnabled, audioEnabled) {
+    console.log("Render video interface");
     if (!document.querySelector("#stun-chatbox")) {
       this.app.browser.addElementToDom(
         CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled)
@@ -160,6 +179,14 @@ class CallInterfaceVideo {
     }
 
     this.attachEvents();
+
+    if (!this.full_screen){
+      try{
+        document.querySelector(".stun-chatbox .minimizer").click();  
+      }catch(err){
+        console.error(err);
+      }
+    }
   }
 
   async createRoomTextChat() {
@@ -172,9 +199,9 @@ class CallInterfaceVideo {
     let cm = chat_mod.respondTo("chat-manager");
     let peer = (await this.app.network.getPeers())[0].publicKey;
     this.chat_group = {
-      id: this.room_code,
+      id: this.mod.room_obj.room_code,
       members: [peer],
-      name: `Video Chat ${this.room_code}`,
+      name: `Video Chat`,
       txs: [],
       unread: 0,
       //
@@ -188,7 +215,7 @@ class CallInterfaceVideo {
 
     //You should be able to just create a Chat Group, but we are duplicating the public chat server
     //so we need this hacky work around
-    //this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
+    //this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat`);
   }
 
   attachEvents() {
@@ -200,7 +227,7 @@ class CallInterfaceVideo {
     }
 
     document.querySelector(".chat_control").addEventListener("click", (e) => {
-      this.app.connection.emit("open-chat-with", { id: this.chat_group.id });
+      this.app.connection.emit("open-chat-with", { id: this?.chat_group?.id });
     });
 
     if (document.querySelector(".effects-control")) {
@@ -212,18 +239,12 @@ class CallInterfaceVideo {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.addEventListener("click", async (e) => {
         let chat_module = this.app.modules.returnModule("Chat");
-        if (chat_module) {
+        if (chat_module && this.chat_group) {
           await chat_module.deleteChatGroup(this.chat_group);
         }
-        this.disconnect();
+        this.app.connection.emit("stun-disconnect");
         siteMessage("You have been disconnected", 3000);
       });
-    });
-
-    document.querySelectorAll(".audio-control").forEach((item) => {
-      item.onclick = () => {
-        this.toggleAudio();
-      };
     });
 
     document.getElementById("record-icon").onclick = async () => {
@@ -265,16 +286,22 @@ class CallInterfaceVideo {
 
     document.querySelectorAll(".display-control").forEach((item) => {
       item.onclick = () => {
-        this.videocall_settings.display_mode = this.display_mode;
-        this.videocall_settings.render();
+        this.videocall_settings.render(this.display_mode);
       };
     });
-    
+
     document.querySelectorAll(".video-control").forEach((item) => {
       item.onclick = () => {
         this.toggleVideo();
       };
     });
+
+    document.querySelectorAll(".audio-control").forEach((item) => {
+      item.onclick = () => {
+        this.toggleAudio();
+      };
+    });
+
 
     if (!this.mod.browser_active) {
       //
@@ -287,22 +314,30 @@ class CallInterfaceVideo {
         let icon = document.querySelector(".stun-chatbox .minimizer i");
         let chat_box = document.querySelector(".stun-chatbox");
 
+        chat_box.classList.toggle("full-screen");
+
         if (icon.classList.contains("fa-caret-down")) {
-          this.app.connection.emit("stun-switch-view", "speaker");
+          if (this.display_mode !== "focus"){
+            this.app.connection.emit("stun-switch-view", "focus");  
+          }
           chat_box.classList.add("minimize");
           icon.classList.remove("fa-caret-down");
           icon.classList.add("fa-expand");
           this.app.browser.makeDraggable("stun-chatbox", "", true);
+          this.full_screen = false;
         } else {
           chat_box.classList.remove("minimize");
-          chat_box.style.top = "0";
+          chat_box.style.top = "";
+          chat_box.style.bottom = "0";
           chat_box.style.left = "0";
           chat_box.style.width = "";
           chat_box.style.height = "";
           icon.classList.remove("fa-expand");
           icon.classList.add("fa-caret-down");
           this.app.browser.cancelDraggable("stun-chatbox");
+          this.full_screen = true;
         }
+
       });
     } else {
       //
@@ -316,7 +351,7 @@ class CallInterfaceVideo {
       }
     }
 
-    document.querySelector(".large-wrapper").addEventListener("click", (e) => {
+    document.querySelector(".video-container-large").addEventListener("click", (e) => {
       if (this.display_mode == "gallery" || this.display_mode == "presentation") {
         return;
       }
@@ -332,25 +367,29 @@ class CallInterfaceVideo {
   }
 
   flipDisplay(stream_id) {
-    console.log("flipDisplay");
-    let id = document.querySelector(`.${this.local_container}`).querySelector(".video-box").id;
-    this.video_boxes[id].video_box.containerClass = this.remote_container;
-    this.video_boxes[id].video_box.rerender();
+    console.log("flipDisplay: " + this.local_container);
+    let big_video = document.querySelector(`.${this.local_container} .video-box`);
+    if (!big_video){
+      return;
+    }
+    this.video_boxes[big_video.id].video_box.containerClass = this.remote_container;
+    this.video_boxes[big_video.id].video_box.rerender();
+
     this.video_boxes[stream_id].video_box.containerClass = this.local_container;
     this.video_boxes[stream_id].video_box.rerender();
   }
 
   createRoomLink() {
-    let obj = {
-      room_code: this.room_code,
-      access_public_key: this.public_key,
-    };
-
-    console.log(obj, "obj");
-    let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+    let base64obj = this.app.crypto.stringToBase64(JSON.stringify(this.mod.room_obj));
 
     let url1 = window.location.origin + "/videocall/";
-    window.history.pushState({}, document.title, `${url1}?stun_video_chat=${base64obj}`);
+
+    this.old_title = document.title;
+ 
+    if (this.full_screen){
+      window.history.pushState({}, "", `${url1}?stun_video_chat=${base64obj}`);
+      document.title = "Saito Talk";
+    }
 
     return `${url1}?stun_video_chat=${base64obj}`;
   }
@@ -360,72 +399,65 @@ class CallInterfaceVideo {
     siteMessage("Invite link copied to clipboard", 1500);
   }
 
-  removePeer(peer) {
-    this.peers = this.peers.filter((p) => peer !== p);
-  }
-
-  disconnect() {
-    this.app.connection.emit("stun-disconnect");
-    this.video_boxes = {};
-
-    let url = window.location.origin + window.location.pathname;
-
-    setTimeout(() => {
-      window.location.href = url;
-    }, 2000);
-  }
 
   addRemoteStream(peer, remoteStream) {
+    console.log("addRemoteStream")
+
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(remoteStream);
-    if (!this.peers.includes(peer)) {
-      this.peers.push(peer);
+
+    let peer_elem = document.getElementById(`stream_${peer}`);
+    if (peer_elem) {
+      peer_elem.querySelector(".video-box").click();
     }
 
-    if (this.peers.length === 1) {
-      let peer = document.querySelector(`#stream${this.peers[0]}`);
-      if (peer) {
-        peer.querySelector(".video-box").click();
+    // 
+    // Check if newly added remote stream is muted
+    // TODO -- this doesn't pick up if the audio is disabled/muted for some GD reason!!!!
+    // 
+    if (remoteStream){
+      if (!remoteStream.getVideoTracks()?.length){
+        this.app.connection.emit(`peer-toggle-video-status`, {public_key: peer, enabled: false});
       }
+
+      for (let track of remoteStream.getTracks()){
+        console.log(track);
+        if (!track.enabled){
+          this.app.connection.emit(`peer-toggle-${track.kind}-status`, {public_key: peer, enabled: false});
+        }
+      }  
     }
-    console.log(peer, "presentation?");
+
+    this.updateImages();
+
     if (peer.toLowerCase() === "presentation") {
       // switch mode to presentation
       this.app.connection.emit("stun-switch-view", "presentation");
-
       this.flipDisplay("presentation");
-
-      // // maximize presentation
-      // console.log(peer, "presentation?");
-      // if (!peer) return;
-
-      // let peer = document.querySelector(`#stream${peer}}`);
-      // console.log(peer, "presentation?");
-      // if (peer) {
-      //   peer.querySelector(".video-box").click();
-      // }
     }
+
   }
 
   addLocalStream(localStream) {
+
+    console.log("Add local stream");
+
     this.createVideoBox("local", this.local_container);
-    this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
+    this.video_boxes["local"].video_box.render(localStream);
     this.localStream = localStream;
     this.updateImages();
 
-    // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
+    // segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
     // applyBlur(7);
   }
 
   createVideoBox(peer, container = this.remote_container) {
-    let isPresentation = false;
-    if (peer.toLowerCase() == "presentation") {
-      isPresentation = true;
-    }
     if (!this.video_boxes[peer]) {
-      const videoBox = new VideoBox(this.app, this.mod, peer, container, isPresentation);
+      const videoBox = new VideoBox(this.app, this.mod, peer, container);
       this.video_boxes[peer] = { video_box: videoBox };
     }
+
+    console.log(this.video_boxes);
   }
 
   toggleAudio() {
@@ -459,6 +491,11 @@ class CallInterfaceVideo {
     let images = ``;
     let count = 0;
     for (let i in this.video_boxes) {
+
+      if (i === "presentation"){
+        continue;
+      }
+
       let publickey = i;
       if (i === "local") {
         publickey = this.mod.publicKey;
@@ -468,9 +505,8 @@ class CallInterfaceVideo {
       images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
       count++;
     }
-    document.querySelector(".users-on-call .image-list").innerHTML = images;
+    document.querySelector(".users-on-call .stun-identicon-list").innerHTML = images;
     document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
-    this.users_on_call = count;
   }
 
   startTimer() {
@@ -490,8 +526,10 @@ class CallInterfaceVideo {
       // Get seconds
       let secs = Math.floor(seconds % 60);
 
-      if (hours < 10) {
-        hours = `0${hours}`;
+      if (hours > 0){
+        hours = `0${hours}:`;
+      }else{
+        hours = "";
       }
       if (minutes < 10) {
         minutes = `0${minutes}`;
@@ -500,7 +538,7 @@ class CallInterfaceVideo {
         secs = `0${secs}`;
       }
 
-      timerElement.innerHTML = `<span style="" >${hours}:${minutes}:${secs} </span>`;
+      timerElement.innerHTML = `${hours}${minutes}:${secs}`;
     };
 
     this.timer_interval = setInterval(timer, 1000);
@@ -515,7 +553,11 @@ class CallInterfaceVideo {
     this.local_container = "gallery";
     this.remote_container = "gallery";
 
-    document.querySelector(".video-container-large").innerHTML = `<div class="gallery"></div>`;
+    let container = document.querySelector(".video-container-large");
+
+    container.innerHTML = ``;
+    container.classList.remove("split-view");
+    container.classList.add("gallery");
 
     this.setDisplayContainers();
   }
@@ -524,8 +566,12 @@ class CallInterfaceVideo {
     this.local_container = "expanded-video";
     this.remote_container = "side-videos";
 
-    document.querySelector(".video-container-large").innerHTML = `<div class="expanded-video"></div>
+    let container = document.querySelector(".video-container-large");
+
+    container.innerHTML = `<div class="expanded-video"></div>
     <div class="side-videos"></div>`;
+    container.classList.add("split-view");
+    container.classList.remove("gallery");
 
     this.setDisplayContainers();
   }
@@ -534,14 +580,16 @@ class CallInterfaceVideo {
     this.local_container = "presentation";
     this.remote_container = "presentation-side-videos";
 
-    document.querySelector(".video-container-large").innerHTML = `<div class="presentation"></div>
+    let container = document.querySelector(".video-container-large");
+
+    container.innerHTML = `<div class="presentation"></div>
     <div class="presentation-side-videos"></div>`;
+    container.classList.add("split-view");
+    container.classList.remove("gallery");
+
+
     this.setDisplayContainers();
 
-    // let peer = document.querySelector(`#stream${peer}}`);
-    // if (peer) {
-    //   peer.querySelector(".video-box").click();
-    // }
   }
 
   setDisplayContainers() {
@@ -554,7 +602,7 @@ class CallInterfaceVideo {
         this.video_boxes[i].video_box.render(this.remote_streams.get(i));
       }
     }
-    this.chat_group.target_container = `.stun-chatbox .${this.remote_container}`;
+
   }
 }
 

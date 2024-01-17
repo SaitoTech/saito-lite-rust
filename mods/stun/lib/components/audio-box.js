@@ -15,26 +15,49 @@ class AudioBox {
     this.stream_id = stream_id;
     this.container = container;
     this.stream = null;
+
+    app.connection.on("peer-toggle-audio-status", ({ enabled, public_key }) => {
+      if (public_key !== this.stream_id) return;
+
+      console.log("peer-toggle-audio-status", enabled);
+
+      const audio_box = document.getElementById(`audiostream_${this.stream_id}`);
+      if (audio_box) {
+        let element = audio_box.querySelector(`.fa-microphone-slash`);
+
+        if (!enabled) {
+          if (!element){
+            audio_box.insertAdjacentHTML("beforeend", `<i class="fa fa-microphone-slash"></i>`);
+          }
+          audio_box.classList.add("muted");
+        } else {
+          if (element) {
+            element.remove();
+          }
+          audio_box.classList.remove("muted");
+        }
+      }
+    });
   }
 
   render(stream) {
-    if (!document.querySelector(`#audiostream${this.stream_id}`)) {
+    if (!document.getElementById(`audiostream_${this.stream_id}`)) {
       this.app.browser.addElementToSelector(
-        AudioBoxTemplate(this.app, this.stream_id),
+        AudioBoxTemplate(this.app, this.mod, this.stream_id),
         this.container
       );
     }
     this.stream = stream;
     console.log(stream, "stream");
     document.querySelectorAll("audio").forEach((audio) => {
-      if (audio.getAttribute("id") == this.stream_id) {
+      if (audio.getAttribute("id") == this.stream_id && this.steam_id !== "local") {
         audio.srcObject = this.stream;
       }
     });
   }
 
   remove() {
-    let audio_box = document.querySelector(`#audiostream${this.stream_id}`);
+    let audio_box = document.getElementById(`audiostream_${this.stream_id}`);
     if (audio_box) {
       audio_box.remove();
     }
