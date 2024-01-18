@@ -49,7 +49,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -1909,9 +1909,11 @@ console.log("restoring B");
             </ul>`;
         twilight_self.updateStatusWithOptions(user_message, html, function(action2) {
 	  if (action2 === "play") {
+	    twilight_self.addMove(`NOTIFY\tUS pulls and plays ${twilight_self.cardToText(card)}`);
             twilight_self.playerTurn(card);
           }
           if (action2 == "hand") {
+	    twilight_self.addMove(`NOTIFY\tUS hands ${twilight_self.cardToText(card)} to USSR`);
             twilight_self.addMove("hand\t"+opponent+"\t"+card);
             twilight_self.endTurn();
 	  }
@@ -2719,7 +2721,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["nixonshock", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["starwars", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
