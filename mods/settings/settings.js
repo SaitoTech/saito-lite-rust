@@ -47,7 +47,9 @@ class Settings extends ModTemplate {
         this.main = new SettingsAppspace(this.app, this);    
         this.attachStyleSheets();
       }
-      this.main.render();
+      // the slight delay gives us time to download and process the style sheets, 
+      // which is better than a flicker of unstyled html
+      setTimeout(()=> {this.main.render();}, 50);
     });
   }
 

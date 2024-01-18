@@ -83,21 +83,19 @@ class SettingsAppspace {
           let thisid = parseInt(e.currentTarget.id);
           let currentTarget = e.currentTarget;
 
-          if (e.currentTarget.checked == true) {
+          if (currentTarget.checked == true) {
             let sc = await sconfirm("Reactivate this module?");
             if (sc) {
               app.options.modules[thisid].active = 1;
               app.storage.saveOptions();
-              window.location = window.location;
-            } else {
-              window.location = window.location;
-            }
+            }else{
+              currentTarget.checked = false;
+            } 
           } else {
             let sc = await sconfirm("Remove this module?");
             if (sc) {
               app.options.modules[thisid].active = 0;
               app.storage.saveOptions();
-              window.location = window.location;
             } else {
               currentTarget.checked = true;
             }

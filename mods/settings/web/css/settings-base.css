@@ -2,90 +2,79 @@
   display: flex;
   flex-direction: column;
   row-gap: 3rem;
-  width: 95vw;
+  width: min(95vw, 100rem);
   height: 80vh;
   max-height: 80vh;
   overflow: auto;
   background: var(--saito-background-color);
   color: var(--saito-font-color);
   padding: 2rem;
-  margin: 2rem;
+  /*margin: 2rem;*/
+  border: 2px solid var(--saito-primary);
+  border-radius: 5px;
 }
 
-.settings-actions-buttons {
-  display: flex;
-  justify-content: flex-end;
+.settings-appspace-link {
+  cursor: pointer;
+}
+
+.settings-appspace-link:hover{
+  text-decoration: underline;
 }
 
 .settings-actions-container {
   display: flex;
   flex-flow: row-reverse;
-  right: 1rem;
-  margin-left: auto;
+  margin-right: 1rem;
+  gap: 1rem;
 }
 
 .settings-actions-container .saito-button-secondary {
-  margin-top: 0;
-  padding: 0.5rem 0.7rem 0.4rem 0.7rem;
+  margin: 0;
+  padding: 0.8rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
 .settings-appspace-user-details {
   display: grid;
-  grid-template-columns: minmax(8rem, auto) 1fr;
+  grid-template-columns: 8rem min-content;
+  grid-template-rows: repeat(3, 1fr);
   grid-column-gap: 1.5rem;
   grid-row-gap: 1.5rem;
   padding: 1rem;
-  border-radius: .5rem;
   max-width: 100%;
   overflow: auto;
 }
 
-.settings-appspace-user-details *{
-  height: 2.5rem;
-  line-height: 2.5rem;
-  max-width: 100%;
+.settings-appspace-user-details > div {
+  width: 100%;
+  min-width: 0;
+}
+
+.settings-appspace-user-details > div.register-identifier-btn {
+  width: fit-content;
 }
 
 .settings-appspace-user-details .pubkey-containter{
   justify-content: initial;
+  gap: 1rem;
 }
 
 .settings-appspace-user-details .profile-public-key{
-  width: min-content;
-  margin-right: 1rem;
+  width: 38rem;
 }
 
-
-.settings-appspace-user-actions {
-  display: grid;
-  grid-gap: 0.5rem;
-}
 
 .settings-appspace-modules {
   display: grid;
-  grid-gap: 1em;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  border-radius: .5rem;
-  padding: 1rem;
+  grid-gap: 1.5rem;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 1rem;
 }
 
-.settings-appspace-modules-modal {
-  display: grid;
-  grid-gap: 1em;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  border-radius: .5rem;
-  padding: 2rem 0 0 2rem;
-}
-
-.settings-appspace-modules-container {
-  margin-bottom: 4rem;
-}
-
-
-.settings-appspace-upload-button {
-  display: none;
-}
 
 .settings-appspace-app {
   line-height: 2rem;
@@ -103,85 +92,14 @@
   max-width: 13rem;
 }
 
-.settings-appspace-installed-app {
-  line-height: 2rem;
-  display: flex;
-  align-items: center;
-}
-
-.settings-appspace-installed-app label {
-  text-transform: none;
-  font-size: 1.6rem;
-  margin-right: .5rem;
-}
 
 label.treated {
   display: none;
 }
 
-.settings-appspace-versions-container {
-  margin-bottom: 4rem;
-}
-
-.settings-appspace-versions-container {}
-
-.settings-appspace-versions {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  margin-bottom: 2rem;
-  grid-column-gap: 1rem;
-  padding: 1rem;
-  grid-row-gap: 1.5rem;
-}
-
-.settings-appspace-icons {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-gap: 1.5rem;
-  padding: 2rem 1rem;
-  overflow: auto;
-}
-
-.settings-appspace-icons div, .settings-appspace-icons div a {
-  display: flex;
-  align-items: end;
-  cursor: pointer;
-}
-
-.settings-appspace-icons i {
-  color: var(--saito-primary);
-  font-size: 2rem;
-  margin: 0 1rem 0 0;
-}
-
-.settings-priv-key-text {
-  font-family: inherit !important;
-  overflow-y: clip;
-}
-
-
-@media only screen and (max-width: 768px) {
-  .settings-appspace {
-    padding: 1rem;
-  }
-
-}
-
-
-@media only screen and (max-width: 600px) {
-  .settings-appspace-modules {
-    grid-template-columns: 1fr 1fr;
-  }
-
-}
-
-
-
 
 .settings-appspace-debug-content {
   margin: 1rem 0;
-  padding: 1rem 0;
 }
 
 /*json tree */
@@ -189,3 +107,41 @@ label.treated {
 .jsontree_node {
   list-style: none;
 }
+
+
+@media only screen and (max-width: 900px) {
+  .settings-appspace {
+    padding: 1.5rem;
+  }
+  .settings-appspace-modules {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+}
+
+
+@media only screen and (max-width: 600px) {
+  .settings-appspace {
+    padding: 1rem;
+  }
+
+  .settings-appspace-modules {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .settings-appspace-user-details {
+   grid-template-columns: 8rem 1fr;
+  }
+
+.settings-actions-container {
+  gap: 0.6rem;
+  margin-right: 0.5rem;
+}
+.settings-actions-container .saito-button-secondary {
+  padding: 0.4rem 0.3rem;
+}
+
+}
+
+
+
