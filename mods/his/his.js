@@ -637,7 +637,6 @@ class HereIStand extends GameTemplate {
 
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
-            base -= game_mod.returnProtestantSpacesTrackVictoryPoints().unrest;
 
 	// burned papal debaters
 	for (let i = 0; i < game_mod.game.state.burned.length; i++) {
