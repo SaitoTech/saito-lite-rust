@@ -11,11 +11,6 @@ class SettingsAppspace {
     this.privateKey = null;
 
     this.overlay = new SaitoOverlay(app, mod);
-
-    this.app.connection.on("settings-overlay-render-request", async () => {
-      this.mod.attachStyleSheets();
-      await this.render();
-    });
   }
 
   async render() {
