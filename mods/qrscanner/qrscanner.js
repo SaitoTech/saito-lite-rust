@@ -65,6 +65,22 @@ class QRScanner extends ModTemplate {
     if (app.BROWSER == 1) { this.attachStyleSheets(); }
   }
 
+
+  respondTo(type = "") {
+    if (type === "saito-header") {
+      return [
+        {
+          text: "Scan",
+          icon: "fas fa-expand",
+          rank: 110,
+          callback: function (app, id) {
+            app.connection.emit("scanner-start-scanner", {});
+          },
+        }]
+    }
+  }
+
+
   attachEvents(app) {
     let scanner_self = this;
     document.querySelector('.launch-scanner').addEventListener('click', function (e) {
