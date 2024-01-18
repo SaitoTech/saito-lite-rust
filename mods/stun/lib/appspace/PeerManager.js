@@ -131,6 +131,8 @@ class PeerManager {
     app.connection.on("start-stun-call", async () => {
       console.log("STUN: start-stun-call");
 
+      this.firstConnect = true;
+
       console.log("STUN: ", this.mod.room_obj, this.app.options.stun);
 
       //Render the UI component
@@ -410,13 +412,13 @@ class PeerManager {
         peerConnection.connectionState === "disconnected"
       ) {
         setTimeout(() => {
-          console.log("Attempting Reconnection");
           this.reconnect(peerId);
-        }, 5000);
+        }, 3000);
       }
-      if (peerConnection.connectionState === "connected") {
+      if (this?.firstConnect && peerConnection.connectionState === "connected") {
         let sound = new Audio("/videocall/audio/enter-call.mp3");
         sound.play();
+        this.firstConnect = false;
       }
 
       this.app.connection.emit(
@@ -473,10 +475,8 @@ class PeerManager {
   }
 
   reconnect(peerId) {
-    const maxRetries = 2;
-    const retryDelay = 5000;
 
-    const attemptReconnect = (currentRetry) => {
+    const attemptReconnect = async (currentRetry, retryDelay = 5000) => {
       const peerConnection = this.peers.get(peerId);
 
       if (!peerConnection) {
@@ -489,27 +489,30 @@ class PeerManager {
         return;
       }
 
-      // Remove peer connection if its state is neither "connected" nor "connecting"
-      if (
-        peerConnection.connectionState !== "connected" &&
-        peerConnection.connectionState !== "connecting"
-      ) {
-        console.log(`STUN: Removing peerConnection with state: ${peerConnection.connectionState}`);
-        this.removePeerConnection(peerId);
-      }
-
-      if (currentRetry === maxRetries) {
-        console.log("STUN: Reached maximum number of reconnection attempts, giving up");
+      if (peerConnection.connectionState === "connecting"){
+        console.log("STUN: renogotiation/reconnection in progress");
         return;
       }
 
-      setTimeout(() => {
-        console.log(`STUN: Reconnection attempt ${currentRetry + 1}/${maxRetries}`);
-        attemptReconnect(currentRetry + 1);
-      }, retryDelay);
+      console.log("STUN: Attempting Reconnection");
+      this.renegotiate(peerId);
+
+      if (currentRetry > 0) {
+        setTimeout(() => {
+          console.log(`STUN: Reconnection attempt ${currentRetry}`);
+          attemptReconnect(currentRetry - 1);
+        }, retryDelay);
+      }else{
+        let c = await sconfirm("Stun connection failed, hang up?");
+        if (c){
+          this.removePeerConnection(peerId);
+        }else{
+          attemptReconnect(3);
+        }
+      }
     };
 
-    attemptReconnect(0);
+    attemptReconnect(3);
   }
 
   //This can get double processed by PeerTransaction and onConfirmation

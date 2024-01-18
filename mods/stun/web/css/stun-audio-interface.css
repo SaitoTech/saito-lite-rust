@@ -35,6 +35,9 @@
     width: 100%;
 }
 
+.paused-timer {
+    visibility: hidden;
+}
 
 .small-audio-chatbox .control-panel .timer {
     min-width: 28rem;
