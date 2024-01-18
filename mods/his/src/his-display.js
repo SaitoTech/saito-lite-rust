@@ -256,7 +256,9 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
     let num_protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "protestant") {
-        num_protestant_spaces++;
+	if (!this.game.spaces[key].unrest) {
+          num_protestant_spaces++;
+	}
       }
     }
     if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }

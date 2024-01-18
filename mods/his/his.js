@@ -637,6 +637,7 @@ class HereIStand extends GameTemplate {
 
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
+            base -= game_mod.returnProtestantSpacesTrackVictoryPoints().unrest;
 
 	// burned papal debaters
 	for (let i = 0; i < game_mod.game.state.burned.length; i++) {
@@ -31390,7 +31391,9 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
     let num_protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "protestant") {
-        num_protestant_spaces++;
+	if (!this.game.spaces[key].unrest) {
+          num_protestant_spaces++;
+	}
       }
     }
     if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
