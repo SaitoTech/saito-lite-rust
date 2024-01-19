@@ -77,26 +77,20 @@
 
 
 .settings-appspace-app {
-  line-height: 2rem;
   display: flex;
   align-items: center;
 }
 
-.settings-appspace-app label {
-  text-transform: none;
-  font-size: 1.6rem;
-  margin-right: 0.5rem;
+.settings-appspace-app div {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 13rem;
 }
 
-
 label.treated {
   display: none;
 }
-
 
 .settings-appspace-debug-content {
   margin: 1rem 0;

@@ -1,3 +1,14 @@
+/***
+ * 
+ * We have some name space confusion ....
+ * TODO: FIX !!!!
+ * 
+ * this css looks like it is for game invites in Arcade and the sidebar in RedSquare
+ * 
+ * maybe should change to saito-game...
+ * 
+ */ 
+
 .saito-module {
     display: flex;
     flex-wrap: wrap;
@@ -42,7 +53,7 @@
     text-transform: uppercase;
 }
 
-.saito-module-details {
+.saito-game-details {
     display: flex;
     flex-direction: row;
     column-gap: 1rem;
@@ -69,4 +80,67 @@
 
 .saito-sidebar .saito-module-titlebar-details {
     font-size: 1.2rem;
+}
+
+
+/***
+ * 
+ * Here is fresh code for actual saito-module stuff, a new (19 Jan 2024) UI component
+ * for handling generic module stuff. It should display basic metadata about the module
+ * and have selectable options that we would save in the app.options[module] section.
+ * The basic idea is to have a way to change module settings from outside of the module!
+ * 
+ * Maybe also useful when we resurrect the appstore
+ * 
+ */ 
+
+.saito-module-overlay {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  width: min(90vw, 80rem);
+  height: 70vh;
+  overflow: auto;
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-primary);
+  border-radius: 5px;
+}
+
+.saito-module-header {
+    background-image: url(/saito/img/dreamscape.png);
+    background-size: cover;
+    background-position: center;
+    padding: 0.5rem;
+}
+
+.saito-module-header .saito-module-titlebar {
+    max-width: 100%;
+    width: fit-content;
+    padding: 0.5rem 1rem;
+}
+
+.saito-module-details {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    grid-gap: 0.5rem;
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--saito-font-color);
+}
+
+.saito-module-overlay > h4 {
+    margin-left: 1rem;
+}
+
+.saito-module-settings{
+    padding: 1rem;
+}
+
+fieldset.saito-grid {
+    padding: 0.5rem;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    row-gap: 0.75rem;
+    column-gap: 1.5rem;
 }

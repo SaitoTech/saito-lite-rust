@@ -5,13 +5,9 @@ const CallInterfaceVideo = require("./lib/components/call-interface-video");
 const CallInterfaceFloat = require("./lib/components/call-interface-float");
 const DialingInterface = require("./lib/appspace/dialer");
 const PeerManager = require("./lib/appspace/PeerManager");
-
-//Do these do anything???
-var serialize = require("serialize-javascript");
-const adapter = require("webrtc-adapter");
-const { default: Transaction } = require("../../lib/saito/transaction");
 const StreamManager = require("./lib/appspace/StreamManager");
-const Slip = require("../../lib/saito/slip").default;
+
+const AppSettings = require("./lib/stun-settings");
 
 class Stun extends ModTemplate {
   constructor(app) {
@@ -112,6 +108,11 @@ class Stun extends ModTemplate {
     console.log("STUN: " + this.publicKey);
 
     if (app.BROWSER) {
+
+       if (!this.app.options?.stun?.settings) {
+        this.app.options.stun = { settings: { privacy: "all" }, peers: [] };
+      }
+
       if (app.browser.returnURLParameter("stun_video_chat")) {
         this.room_obj = JSON.parse(
           app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
@@ -122,7 +123,7 @@ class Stun extends ModTemplate {
           this.renderInto(".saito-overlay");
         }
       } else {
-        this.app.options.stun = [];
+        this.app.options.stun.peers = []; 
       }
     }
   }
@@ -283,6 +284,15 @@ class Stun extends ModTemplate {
     }
 
     return null;
+  }
+
+  hasSettings() {
+    return true;
+  }
+
+  loadSettings(container) {
+    let as = new AppSettings(this.app, this.mod, container);
+    as.render();
   }
 
   onConfirmation(blk, tx, conf) {
