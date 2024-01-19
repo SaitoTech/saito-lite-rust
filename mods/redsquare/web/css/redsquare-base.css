@@ -100,6 +100,15 @@ html, body {
 .redsquare-intersection {
   opacity: 1;
   height: 1rem;
+  position: relative;
+}
+
+.intersection-observer-trigger{
+  position: absolute;
+  height: 10px;
+  width: 100%;
+  top: -50vh;
+  pointer-events: none;
 }
 
 .saito-main {
