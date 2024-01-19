@@ -17,6 +17,11 @@ class SettingsAppspace {
     this.privateKey = await this.app.wallet.getPrivateKey();
     this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
+
+    /**
+     *  No modules are implementing this, but it is an idea to let modules render a component
+     *  into the Settings appspace overlay
+     */ 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
       for (let i = 0; i < this.app.modules.mods.length; i++) {
