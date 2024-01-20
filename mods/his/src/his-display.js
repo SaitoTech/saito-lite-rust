@@ -284,8 +284,6 @@
       if (i >= 50) { x[i].protestant+=100; x[i].papacy--; }
     }
 
-console.log("returnProtestantSpacesTrackVictoryPoints: ");
-console.log(JSON.stringify(x));
     return x[num_protestant_spaces];
 
   }

@@ -3548,7 +3548,8 @@ if (space.key === "bordeaux") {
 	      let action = $(this).attr("id");
               his_self.addMove("diplomacy_card_event\tprotestant\t"+action);
               his_self.addMove("discard_diplomacy_card\tprotestant\t"+action);
-	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
+	      // protestant will be dealt another next turn - Jan 24
+	      //his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
 	      his_self.addMove("NOTIFY\tPapacy selects "+his_self.popup(action));
 	      his_self.endTurn();
 	    });
@@ -3899,7 +3900,6 @@ if (space.key === "bordeaux") {
 	let p = his_self.returnPlayerOfFaction(faction);
 
 	his_self.game.queue.push("knights-of-saint-john\t"+faction);
-	his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction);
         his_self.game.queue.push(`DEAL\t1\t${p}\t1`);
 
 	return 1;
@@ -3921,6 +3921,7 @@ if (space.key === "bordeaux") {
 	    let card = his_self.game.deck[0].cards[c];
 	    let ops = card.ops;
 
+	    his_self.addMove("discard\t"+faction+"\t"+c);
 	    his_self.addMove("build_saint_peters_with_cp\t"+ops);
 	    his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" pulls "+his_self.popup(c)+ " "+ops+" CP");
 	    his_self.endTurn();
@@ -4036,7 +4037,7 @@ if (space.key === "bordeaux") {
 		let du = -1;
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
                   if (space.units[faction_to_destroy][i].command_value == 0) {
-		    if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
+		    if (!unittypes.includes(space.units[faction_to_destroy][i].type)) {
 		      if (du == -1) { du = i; } else { du = -2; }
   		      html += `<li class="option nonskip" id="${space.units[faction_to_destroy][i].type}">${space.units[faction_to_destroy][i].type}</li>`;
 		      unittypes.push(space.units[faction_to_destroy][i].unittype);
@@ -5593,12 +5594,14 @@ if (space.key === "bordeaux") {
 
 		his_self.addMove("card\tprotestant\t"+card);
 		his_self.addMove("discard\tprotestant\t007");
+		his_self.addMove("NOTIFY\tProtestants retrieve "+his_self.popup(card));
 		his_self.endTurn();
 
 	      } else {
 
 		his_self.addMove("discard\tprotestant\t007");
     		his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
+		his_self.addMove("NOTIFY\tProtestants retrieve "+his_self.popup(card));
 		his_self.addMove("here_i_stand_event\t"+card);
 		his_self.endTurn();
 
@@ -8031,7 +8034,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t1");
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
-	his_self.game.queue.push("LOG\tCalvin's Institutes");
+	his_self.game.queue.push("NOTIFY\tCalvin's Institutes");
 
 	return 1;
       },
@@ -9663,7 +9666,7 @@ console.log("HITS: " + hits);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
@@ -23796,12 +23799,6 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
 	        if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
 	          this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
 	        }
-console.log("###");
-console.log("###");
-console.log("### " + this.game.state.players_info[i].factions[z]);
-console.log(cardnum + " /// " + this.game.state.cards_left[this.game.state.players_info[i].factions[z]]);
-console.log("###");
-console.log("###");
 	        this.game.state.cards_left[this.game.state.players_info[i].factions[z]] += cardnum;
 
 		//
@@ -27153,6 +27150,11 @@ return;
 	  if (method === "sue") {
 
 	    //
+	    // factions no longer At War
+	    //
+	    his_self.addMove("unset_enemies\tpapacy\t"+enemy);
+
+	    //
 	    // protestants get War Winner 1 VP
 	    //
 	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
@@ -29158,29 +29160,41 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
     //
     // remove spaces with other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
-      let removed_space = false;
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let n = his_self.game.spaces[conquerable_spaces[i]];
       if (his_self.returnNonFactionLandUnitsInSpace(faction, n) > 0) {
         conquerable_spaces.splice(i, 1); // remove
-        removed_space = true; // and stop loop
       }
     }
 
     //
     // remove spaces with adjacent other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let removed_space = false;
       let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           conquerable_spaces.splice(i, 1); // remove
-          removed_space = true; // and stop loop
+	  removed_space = true;
 	}
       }
     }
+
+
+    //
+    // remove non-independent, non-enemy spaces
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let s = his_self.game.spaces[conquerable_spaces[i]];
+      if (!his_self.isSpaceHostileOrIndependent(s, faction)) { 
+        conquerable_spaces.splice(i, 1); // remove
+	i--;
+      }
+    }   
+          
+
 
     for (let i = 0; i < spaces_in_unrest.length; i++) {
       if (!his_self.isSpaceControlled(spaces_in_unrest[i]), faction) { 
@@ -29258,30 +29272,39 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
     //
     // remove spaces with other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
-      let removed_space = false;
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let n = his_self.game.spaces[conquerable_spaces[i]];
       if (his_self.returnNonFactionLandUnitsInSpace(faction, n) > 0) {
         conquerable_spaces.splice(i, 1); // remove
-        removed_space = true; // and stop loop
       }
     }
 
     //
     // remove spaces with adjacent other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let removed_space = false;
       let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           conquerable_spaces.splice(i, 1); // remove
-          removed_space = true; // and stop loop
-	}
+          removed_space = true;
+        }
       }
     }
 
+
+    //
+    // remove non-independent, non-enemy spaces
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let s = his_self.game.spaces[conquerable_spaces[i]];
+      if (!his_self.isSpaceHostileOrIndependent(s, faction)) {
+        conquerable_spaces.splice(i, 1); // remove
+        i--;
+      }
+    }
 
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (his_self.isSpaceControlled(conquerable_spaces[i], faction) || his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || his_self.game.spaces[conquerable_spaces[i]].besieged == 2) {
@@ -31466,8 +31489,6 @@ return;
       if (i >= 50) { x[i].protestant+=100; x[i].papacy--; }
     }
 
-console.log("returnProtestantSpacesTrackVictoryPoints: ");
-console.log(JSON.stringify(x));
     return x[num_protestant_spaces];
 
   }

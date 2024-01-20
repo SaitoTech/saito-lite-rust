@@ -6948,12 +6948,6 @@ if (this.game.state.scenario == "is_testing") { cardnum = 1; }
 	        if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
 	          this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
 	        }
-console.log("###");
-console.log("###");
-console.log("### " + this.game.state.players_info[i].factions[z]);
-console.log(cardnum + " /// " + this.game.state.cards_left[this.game.state.players_info[i].factions[z]]);
-console.log("###");
-console.log("###");
 	        this.game.state.cards_left[this.game.state.players_info[i].factions[z]] += cardnum;
 
 		//

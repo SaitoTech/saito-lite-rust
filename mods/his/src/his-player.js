@@ -1818,6 +1818,11 @@ return;
 	  if (method === "sue") {
 
 	    //
+	    // factions no longer At War
+	    //
+	    his_self.addMove("unset_enemies\tpapacy\t"+enemy);
+
+	    //
 	    // protestants get War Winner 1 VP
 	    //
 	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
@@ -3823,29 +3828,41 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
     //
     // remove spaces with other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
-      let removed_space = false;
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let n = his_self.game.spaces[conquerable_spaces[i]];
       if (his_self.returnNonFactionLandUnitsInSpace(faction, n) > 0) {
         conquerable_spaces.splice(i, 1); // remove
-        removed_space = true; // and stop loop
       }
     }
 
     //
     // remove spaces with adjacent other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let removed_space = false;
       let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           conquerable_spaces.splice(i, 1); // remove
-          removed_space = true; // and stop loop
+	  removed_space = true;
 	}
       }
     }
+
+
+    //
+    // remove non-independent, non-enemy spaces
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let s = his_self.game.spaces[conquerable_spaces[i]];
+      if (!his_self.isSpaceHostileOrIndependent(s, faction)) { 
+        conquerable_spaces.splice(i, 1); // remove
+	i--;
+      }
+    }   
+          
+
 
     for (let i = 0; i < spaces_in_unrest.length; i++) {
       if (!his_self.isSpaceControlled(spaces_in_unrest[i]), faction) { 
@@ -3923,30 +3940,39 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
     //
     // remove spaces with other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
-      let removed_space = false;
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let n = his_self.game.spaces[conquerable_spaces[i]];
       if (his_self.returnNonFactionLandUnitsInSpace(faction, n) > 0) {
         conquerable_spaces.splice(i, 1); // remove
-        removed_space = true; // and stop loop
       }
     }
 
     //
     // remove spaces with adjacent other infantry
     //
-    for (let i = 0; i < conquerable_spaces.length; i++) {
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
       let removed_space = false;
       let ns = his_self.game.spaces[conquerable_spaces[i]].neighbours;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
           conquerable_spaces.splice(i, 1); // remove
-          removed_space = true; // and stop loop
-	}
+          removed_space = true;
+        }
       }
     }
 
+
+    //
+    // remove non-independent, non-enemy spaces
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let s = his_self.game.spaces[conquerable_spaces[i]];
+      if (!his_self.isSpaceHostileOrIndependent(s, faction)) {
+        conquerable_spaces.splice(i, 1); // remove
+        i--;
+      }
+    }
 
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (his_self.isSpaceControlled(conquerable_spaces[i], faction) || his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || his_self.game.spaces[conquerable_spaces[i]].besieged == 2) {
