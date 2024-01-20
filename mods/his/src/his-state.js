@@ -337,7 +337,7 @@
     //
     // PROCESS BONUS VP
     //
-    //• Copernicus (2 VP) or Michael Servetus (1 VP) event
+    // Copernicus (2 VP) or Michael Servetus (1 VP) event
     if (this.game.state.events.michael_servetus) {
       factions[this.game.state.events.michael_servetus].vp_special++;
       factions[this.game.state.events.michael_servetus].vp++;
@@ -354,8 +354,6 @@
     // protestant faction class
     //• Papal debater disgraced (1 per debate rating)           ***
     // protestant faction class
-
-
 
     //• Successful voyage of exploration
     //• Successful voyage of conquest

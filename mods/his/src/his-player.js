@@ -1353,7 +1353,7 @@ console.log("and calling callback...");
     // cards left
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
 
     //
     // discard the card
@@ -1642,7 +1642,11 @@ console.log("and calling callback...");
     }
   }
   playerPlayEvent(card, faction, ops=null) {
-    this.addMove("remove\t"+faction+"\t"+card);
+    
+    let deck = this.returnDeck();
+    if (deck[card].removeFromDeckAfterPlay(this, faction)) {
+      this.addMove("remove\t"+faction+"\t"+card);
+    }
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
 
@@ -1657,10 +1661,10 @@ console.log("and calling callback...");
     } else {
       this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     }
-//    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
-//    this.addMove("RESETCONFIRMSNEEDED\tall");
+
+// Jan 20 - 2024
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1);
     this.endTurn();
   }
 
@@ -1795,7 +1799,7 @@ return;
       		  function(spacekey) {
                     his_self.addMove(`control\tpapacy\t${spacekey}`);
                     his_self.addMove(`withdraw_to_nearest_fortified_space\t${enemy}\t${spacekey}`);
-	            his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+	            his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
 		    his_self.endTurn();
 		  },
 
@@ -1816,7 +1820,7 @@ return;
 	    //
 	    // protestants get War Winner 1 VP
 	    //
-	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
 
 	    //
 	    // papacy removes 2 units
@@ -1857,6 +1861,7 @@ return;
                 $('.option').off();
                 $('.option').on('click', function () {
                   let unittype = $(this).attr("id");
+		  his_self.updateStatus("removing unit...");
                   his_self.removeUnit(faction_to_destroy, spacekey, unittype);
                   his_self.displaySpace(spacekey);
                   his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
@@ -1871,7 +1876,7 @@ return;
                     },
                     function(spacekey) {
 
-		      his_self.updateStatus("removing units...");
+		      his_self.updateStatus("removing unit...");
 
 	              let land_or_sea = "land";
 	              let space = null;
@@ -1902,6 +1907,7 @@ return;
                       $('.option').off();
                       $('.option').on('click', function () {
                         let unittype = $(this).attr("id");
+		        his_self.updateStatus("removing unit...");
                         his_self.removeUnit(faction_to_destroy, spacekey, unittype);
                         his_self.displaySpace(spacekey);
                         his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
@@ -1976,7 +1982,7 @@ return;
       	  function(spacekey) {
             his_self.addMove(`control\tpapacy\t${spacekey}`);
             his_self.addMove(`withdraw_to_nearest_fortified_space\t${faction}\t${spacekey}`);
-	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
 	    his_self.endTurn();
 	  },
 
@@ -3815,6 +3821,18 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
     let conquerable_spaces = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
 
     //
+    // remove spaces with other infantry
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let removed_space = false;
+      let n = his_self.game.spaces[conquerable_spaces[i]];
+      if (his_self.returnNonFactionLandUnitsInSpace(faction, n) > 0) {
+        conquerable_spaces.splice(i, 1); // remove
+        removed_space = true; // and stop loop
+      }
+    }
+
+    //
     // remove spaces with adjacent other infantry
     //
     for (let i = 0; i < conquerable_spaces.length; i++) {
@@ -3901,6 +3919,18 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       }
     }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction, true); // include adjacency
+
+    //
+    // remove spaces with other infantry
+    //
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      let removed_space = false;
+      let n = his_self.game.spaces[conquerable_spaces[i]];
+      if (his_self.returnNonFactionLandUnitsInSpace(faction, n) > 0) {
+        conquerable_spaces.splice(i, 1); // remove
+        removed_space = true; // and stop loop
+      }
+    }
 
     //
     // remove spaces with adjacent other infantry
