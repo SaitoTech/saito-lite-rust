@@ -16,6 +16,8 @@ class Dialer {
     this.overlay = new SaitoOverlay(app, mod);
     this.callSetting = new CallSetting(app, this);
     this.receiver = null;
+    this.call_log = [];
+
   }
 
   render(call_receiver, making_call = true) {
@@ -57,6 +59,11 @@ class Dialer {
 
       call_button.onclick = (e) => {
 
+        if (this.call_log.length > 3){
+          salert("You are making too many calls... please try again later");
+          return;
+        }
+
         this.mod.room_obj.ui = video_switch.checked ? "video" : "voice";
 
         let data = Object.assign({}, this.mod.room_obj);
@@ -70,11 +77,20 @@ class Dialer {
           data,
         });
 
-        //this.startRing();
+        this.startRing();
         this.updateMessage("Dialing...");
         this.deactivateOptions();
 
-
+        //
+        // We will block you from trying to make more than 3 phone calls in a 60 second span 
+        // to prevent spamming
+        //
+        this.call_log.push(recipient);
+        setTimeout(()=> { 
+          if (this.call_log.length > 0) {
+            this.call_log.shift();
+          }
+        }, 60000);
 
         this.dialing = setTimeout(() => {
           this.app.connection.emit("relay-send-message", {
@@ -231,6 +247,22 @@ class Dialer {
 
     switch (txmsg.request) {
       case "stun-connection-request":
+        //
+        // Screen the call
+        //
+        let privacy = this.app.options.stun?.settings?.privacy || "all";
+
+        if (privacy == "none"){
+          return;
+        }
+        if (privacy == "dh" && !this.app.keychain.hasSharedSecret(sender)){
+          return;
+        }
+
+        if (privacy == "key" && !this.app.keychain.hasPublicKey(sender)){
+          return;
+        }
+
         if (!this.mod.room_obj) {
           this.mod.room_obj = txmsg.data;
           this.render(sender, false);
@@ -240,14 +272,17 @@ class Dialer {
           // Ping back to let caller know I am online
           // 
           this.app.connection.emit("relay-send-message", {recipient: sender, request: "stun-connection-ping", data});
-          break;
         }
 
+        break;
+
       case "stun-cancel-connection-request":
-        this.stopRing();
-        this.overlay.remove();
-        this.app.connection.emit("reset-stun");
-        siteMessage(`${sender} hung up`);
+        if (this.mod?.room_obj?.room_code == data.room_code) {
+          this.stopRing();
+          this.overlay.remove();
+          this.app.connection.emit("reset-stun");
+          siteMessage(`${sender} hung up`);
+        }
         break;
 
       case "stun-connection-rejected":

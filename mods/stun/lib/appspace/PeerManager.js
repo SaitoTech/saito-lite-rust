@@ -80,7 +80,7 @@ class PeerManager {
         public_key: this.mod.publicKey,
       };
 
-      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun);
+      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun.peers);
     });
 
     app.connection.on("stun-toggle-audio", async () => {
@@ -97,7 +97,7 @@ class PeerManager {
         enabled: this.audioEnabled,
       };
 
-      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun);
+      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun.peers);
     });
 
     app.connection.on("begin-share-screen", async () => {
@@ -150,7 +150,7 @@ class PeerManager {
       if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
         if (this.app.options?.stun && !this.mod.room_obj?.ui) {
           console.log("STUN: my peers, ", this.app.options.stun);
-          for (peer of this.app.options.stun) {
+          for (peer of this.app.options.stun.peers) {
             if (peer !== this.mod.publicKey) {
               this.mod.sendCallEntryTransaction(peer);
               break;
@@ -315,7 +315,7 @@ class PeerManager {
       _peers.push(key);
     });
 
-    this.app.options.stun = _peers;
+    this.app.options.stun.peers = _peers;
 
     console.log("My call list: ", _peers);
 
@@ -618,7 +618,7 @@ class PeerManager {
 
     this.peers = new Map();
 
-    this.app.options.stun = [];
+    this.app.options.stun.peers = [];
     this.app.storage.saveOptions();
 
     if (this.audioStreamAnalysis) {

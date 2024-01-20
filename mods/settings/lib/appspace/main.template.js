@@ -17,24 +17,23 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
     }
   }
 
-  let modules_html = "Wallet Outdated - module selection not supported";
+  let modules_html = "";
 
   try {
     console.log(app.options.modules);
 
-    modules_html = app.options.modules
-      .map((mod, i) => {
-        let CHECKED = mod.active ? 'CHECKED' : '';
-        return `
-        <div class="settings-appspace-app">
-          <label class="saito-switch">
+    for (let i = 0; i < app.options.modules.length; i++){
+      let mod = app.modules.returnModule(app.options.modules[i].name);
+      let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
+      modules_html += `
+      <div class="settings-appspace-app">
+          <div class="saito-switch">
             <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
-          </label>
-          <label>${mod.name}</label>
+          </div>
+          <div id="${mod.name}" class="settings-appspace-module settings-appspace-link">${mod.returnName()}</div>
          </div>
-      `;
-      })
-      .join('');
+      `;  
+    }
 
   } catch (err) {
     if (err.message.startsWith("Cannot read property 'map'")) {
