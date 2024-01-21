@@ -464,9 +464,11 @@ if (space.key === "bordeaux") {
 
 	  for (let i = 0; i < mp.length; i++) {
 	    if (his_self.canFactionActivateMinorPower(faction, mp[i])) {
-	      if (!his_self.returnAllyOfMinorPower(mp[i]) == faction) {
+	      if (his_self.returnAllyOfMinorPower(mp[i]) != faction) {
 	        ca.push(mp[i]);
-	      } else {
+	      }
+	    } else {
+	      if (his_self.canFactionDeactivateMinorPower(faction, mp[i])) {
 	        cd.push(mp[i]);
 	      }
 	    }
@@ -1455,7 +1457,7 @@ if (space.key === "bordeaux") {
 
 	let ally = his_self.returnAllyOfMinorPower("venice");
 
-	if (ally == "") {
+	if (ally === "" || ally === "venice") {
 	  his_self.activateMinorPower("papacy", "venice");
 	}
 	if (ally == "hapsburg") {
@@ -1464,6 +1466,7 @@ if (space.key === "bordeaux") {
         if (ally === "papacy") {
 	  his_self.game.queue.push("venetian_alliance_placement");
 	}
+	his_self.displayWarBox();
 
 	return 1;
 

@@ -8,7 +8,7 @@
       admin_rating	:	1,
       img		:	"france.png",
       cards_bonus	:	1,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
         let base = 0;
 

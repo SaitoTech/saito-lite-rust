@@ -160,7 +160,7 @@ class HereIStand extends GameTemplate {
       capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
         let base = 0;
 
@@ -242,7 +242,7 @@ class HereIStand extends GameTemplate {
       admin_rating	:	1,
       img		:	"france.png",
       cards_bonus	:	1,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
         let base = 0;
 
@@ -334,7 +334,7 @@ class HereIStand extends GameTemplate {
       img		:	"hapsburgs.png",
       admin_rating	:	2,
       cards_bonus	:	0,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
  
         let base = 0;
 
@@ -435,7 +435,7 @@ class HereIStand extends GameTemplate {
       img		:	"ottoman.png",
       admin_rating	:	2,
       cards_bonus	:	0,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
         let base = 0;
 
@@ -511,9 +511,15 @@ class HereIStand extends GameTemplate {
       img		:	"papacy.png",
       admin_rating	:	0,
       cards_bonus	:	0,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
  
         let base = 0;
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("HERE");
+console.log("Clement: " + game_mod.game.state.leaders.clement_vii);
 
         if (game_mod.game.state.leaders.leo_x == 1) { base += 0; }
         if (game_mod.game.state.leaders.clement_vii == 1) { base += 1; }
@@ -614,11 +620,11 @@ class HereIStand extends GameTemplate {
 	return base;        
 
       },
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
-	if (game_mod.game.state.leaders.luther == 1) { return 1; }
-      
+	if (game_mod.game.state.leaders.luther == 1) { return 2; }
 	return 0;
+
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {
@@ -3410,9 +3416,11 @@ if (space.key === "bordeaux") {
 
 	  for (let i = 0; i < mp.length; i++) {
 	    if (his_self.canFactionActivateMinorPower(faction, mp[i])) {
-	      if (!his_self.returnAllyOfMinorPower(mp[i]) == faction) {
+	      if (his_self.returnAllyOfMinorPower(mp[i]) != faction) {
 	        ca.push(mp[i]);
-	      } else {
+	      }
+	    } else {
+	      if (his_self.canFactionDeactivateMinorPower(faction, mp[i])) {
 	        cd.push(mp[i]);
 	      }
 	    }
@@ -4401,7 +4409,7 @@ if (space.key === "bordeaux") {
 
 	let ally = his_self.returnAllyOfMinorPower("venice");
 
-	if (ally == "") {
+	if (ally === "" || ally === "venice") {
 	  his_self.activateMinorPower("papacy", "venice");
 	}
 	if (ally == "hapsburg") {
@@ -4410,6 +4418,7 @@ if (space.key === "bordeaux") {
         if (ally === "papacy") {
 	  his_self.game.queue.push("venetian_alliance_placement");
 	}
+	his_self.displayWarBox();
 
 	return 1;
 
@@ -15260,9 +15269,9 @@ console.log("searching for: " + sourcekey);
   }
 
   canFactionDeactivateMinorPower(faction, power) {
-    if (power == "genoa") { return 1; }
-    if (power == "scotland") { return 1; }
-    if (power == "venice") { return 1; }
+    if (power == "genoa") { if (faction == "france" || faction == "hapsburg" || faction == "papacy") { return 1; } }
+    if (power == "scotland") { if (faction == "england" || faction == "france") { return 1; } }
+    if (power == "venice") { if (faction == "france" || faction == "hapsburg" || faction == "papacy") { return 1; } }
     return 0;
   }
 
@@ -23467,7 +23476,7 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 		}
 	      } else {
 		// they passed but maybe they have more cards left than their admin rating?
-		let far = this.factions[faction].returnAdminRating();
+		let far = this.factions[faction].returnAdminRating(this);
 	        if (far < this.game.state.cards_left[faction]) {
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 	        }
@@ -24306,7 +24315,6 @@ console.log("to: " + this.game.state.cards_left[faction]);
 	    }
 	  }
 	  if (everyone_has_passed == true) {
-console.log("EVERYONE HAS PASSED!");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -26488,12 +26496,22 @@ console.log("and calling callback...");
       if (this.game.deck[0].cards[c].type == "mandatory") { can_pass = false; }
     } // no home card? can pass
 
-    if (this.factions[faction].returnAdminRating() < this.game.deck[0].fhand[faction_hand_idx].length) {
+console.log("can pass: " + can_pass);
+
+console.log("^");
+console.log("^");
+console.log("^");
+console.log(this.factions[faction].returnAdminRating(this) + " ---- " + this.game.deck[0].fhand[faction_hand_idx].length);
+    if (this.factions[faction].returnAdminRating(this) < this.game.deck[0].fhand[faction_hand_idx].length) {
       can_pass = false;
     }
+
+console.log("can pass: " + can_pass);
+
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
       can_pass = true;
     }
+console.log("can pass: " + can_pass);
     if (can_pass) {
       cards.push("pass");
     }
@@ -30253,7 +30271,7 @@ return;
 
   returnFactionAdminRating(faction="") {
     if (this.factions[faction]) {
-      return this.factions[faction].returnAdminRating();
+      return this.factions[faction].returnAdminRating(this);
     }
     return 0;
   }
@@ -30291,7 +30309,7 @@ return;
       obj.calculateBonusVictoryPoints = function() { return 0; }
     }
     if (obj.returnAdminRating == null) {
-      obj.returnAdminRating = function() { return this.admin_rating; }
+      obj.returnAdminRating = function(game_mod) { return this.admin_rating; }
     }
     if (obj.calculateSpecialVictoryPoints == null) {
       obj.calculateSpecialVictoryPoints = function() { return 0; }

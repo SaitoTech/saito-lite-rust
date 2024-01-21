@@ -6616,7 +6616,7 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 		}
 	      } else {
 		// they passed but maybe they have more cards left than their admin rating?
-		let far = this.factions[faction].returnAdminRating();
+		let far = this.factions[faction].returnAdminRating(this);
 	        if (far < this.game.state.cards_left[faction]) {
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 	        }
@@ -7455,7 +7455,6 @@ console.log("to: " + this.game.state.cards_left[faction]);
 	    }
 	  }
 	  if (everyone_has_passed == true) {
-console.log("EVERYONE HAS PASSED!");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }

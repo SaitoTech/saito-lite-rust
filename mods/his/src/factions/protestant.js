@@ -20,11 +20,11 @@
 	return base;        
 
       },
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
-	if (game_mod.game.state.leaders.luther == 1) { return 1; }
-      
+	if (game_mod.game.state.leaders.luther == 1) { return 2; }
 	return 0;
+
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {
