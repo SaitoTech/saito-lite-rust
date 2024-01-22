@@ -23,6 +23,8 @@ class ChatPopup {
 
     this.events_attached = false;
 
+    this.callbacks = {};
+
     app.connection.on("chat-remove-fetch-button-request", (group_id) => {
       if (this.group?.id === group_id) {
         this.no_older_messages = true;
@@ -51,6 +53,7 @@ class ChatPopup {
   }
 
   render() {
+    let this_self = this;
     //
     // exit if group unset
     //
@@ -171,6 +174,29 @@ class ChatPopup {
       }
     }
 
+    // add call icon, ignore if community chat
+    let mods = this.app.modules.mods;
+    if (this.group.name != 'Saito Community Chat') {
+      let index = 0;
+      for (const mod of mods) {
+
+        let item = mod.respondTo("chat-actions", { publicKey: this.group.name });
+        if (item instanceof Array) {
+          item.forEach((j) => {
+            let id = `chat_action_item_${index}`;
+            this_self.callbacks[id] = j.callback;
+            this_self.addChatActionItem(j, id);
+            index++;
+          });
+        } else if (item != null) {
+          let id = `chat_action_item_${index}`;
+          this_self.callbacks[id] = item.callback;
+          this_self.addChatActionItem(item, id);
+        }
+        index++;
+      }
+    }
+
     //
     // re-render typed text
     //
@@ -210,7 +236,18 @@ class ChatPopup {
       return;
     }
 
-
+    if (this.group.name != 'Saito Community Chat') {
+      document.querySelectorAll(".chat-action-item").forEach((menu) => {
+        let id = menu.getAttribute("id");
+        let callback = this_self.callbacks[id];
+        menu.addEventListener("click", (e) => {
+          let pk = e.currentTarget.getAttribute("data-id");
+          console.log("clicked on chat-action-item ///");
+          console.log(pk);
+          callback(app, pk);
+        });
+      });
+    }
 
     // add reply functionality
     document.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`).forEach((el) => {
@@ -496,8 +533,13 @@ class ChatPopup {
 
     app.browser.addDragAndDropFileUploadToElement(popup_id, this.input.callbackOnUpload, false); // false = no drag-and-drop image click
 
+  }
 
-
+  addChatActionItem(item, id) {
+    let popup_qs = "#chat-popup-" + this.group.id;    
+    document.querySelector(`${popup_qs} .chat-actions`).innerHTML = `
+      <i id="${id}" class="chat-action-item ${item.icon}" data-id="${this.group.name}" title="${item.text}"></i>
+      `;
   }
 
   restorePopup(chatPopup) {
