@@ -48,16 +48,16 @@ class FactionOverlay {
           }
         }
 
-        if (this.mod.game.state.leaders.henry_viii == 1) {
+        if (his_self.game.state.leaders.henry_viii == 1) {
 	}
-        if (this.mod.game.state.leaders.edward_vi == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("019"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.edward_vi == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("019"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.mary_i == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("021"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.mary_i == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("021"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.elizabeth_i == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("023"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.elizabeth_i == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("023"), ".faction_sheet_ruler");
 	}
 
 
@@ -76,8 +76,8 @@ class FactionOverlay {
           }
         }
 
-        if (this.mod.game.state.leaders.henry_ii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("020"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.henry_ii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("020"), ".faction_sheet_ruler");
 	}
 
       }
@@ -115,14 +115,14 @@ class FactionOverlay {
           }
         }
 
-        if (this.mod.game.state.leaders.clement_vii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("010"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.clement_vii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("010"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.paul_iii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("014"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.paul_iii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("014"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.julius_iii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("022"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.julius_iii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("022"), ".faction_sheet_ruler");
 	}
 
       }
@@ -180,6 +180,9 @@ class FactionOverlay {
       this.app.browser.addElementToSelector(keyboxen, ".faction_sheet");
 
 
+      //
+      // War Winner VPs
+      //
       while (war_winner_vp >= 2) {
         this.app.browser.addElementToSelector('<div class="war_winner_vp vp2"></div>', ".faction_sheet_vp");
 	war_winner_vp -= 2;
@@ -187,6 +190,32 @@ class FactionOverlay {
       while (war_winner_vp >= 1) {
         this.app.browser.addElementToSelector('<div class="war_winner_vp vp1"></div>', ".faction_sheet_vp");
 	war_winner_vp -= 1;
+      }
+
+      //
+      // Disgraced and Burned Debaters
+      //
+      if (his_self.factions[faction].key === "protestant") {
+        for (let i = 0; i < his_self.game.state.burned.length; i++) {
+          let dn = his_self.game.state.burned[i];
+          let dd = his_self.debaters[dn];
+	  if (dd.faction === "papacy") {
+	    let vp_bonus = dd.power;    
+	    let html = `<div class="debaters-tile" data-key="${dd.key}" data-id="${dd.key}" style="background-image: url(/his/img/tiles/debaters/${dd.img});"></div>`;
+            this.app.browser.addElementToSelector(html, ".faction_sheet_vp");
+	  }
+        }
+      }
+      if (his_self.factions[faction].key === "papacy") {
+        for (let i = 0; i < his_self.game.state.burned.length; i++) {
+          let dn = his_self.game.state.burned[i];
+          let dd = his_self.debaters[dn];
+	  if (dd.faction === "protestant") {
+	    let vp_bonus = dd.power;    
+	    let html = `<div class="debaters-tile" data-key="${dd.key}" data-id="${dd.key}" style="background-image: url(/his/img/tiles/debaters/${dd.img});"></div>`;
+            this.app.browser.addElementToSelector(html, ".faction_sheet_vp");
+	  }
+        }
       }
 
       this.attachEvents();

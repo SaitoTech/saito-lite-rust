@@ -1,4 +1,9 @@
 
+.faction_sheet_vp .debaters_tile {
+  height: 5rem;
+  width: 5rem;
+}
+
 .saint_peters_tile {
   background-image: url("/his/img/tiles/papacy/StPetersCP.svg");
   background-size: cover;
