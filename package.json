@@ -50,7 +50,7 @@
     "identicon.js": "^2.3.3",
     "image-resolver": "^0.6.1",
     "int64-buffer": "^1.0.1",
-    "jimp": "^0.16.2",
+    "jimp": "^0.16.13",
     "js-chess-engine": "^1.0.2",
     "json-bigint": "^1.0.0",
     "json-tree-viewer": "0.0.2",
