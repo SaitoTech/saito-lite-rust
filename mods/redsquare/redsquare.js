@@ -1556,6 +1556,13 @@ class RedSquare extends ModTemplate {
     );
   }
 
+
+  //
+  // We should remove the tweet in question from memory (if we have it)
+  // remove it from the archives and update the archives of linked tweets so that the stats 
+  // decrement accordingly
+  // To-do: implement live updating of reply/retweet counts (currently requires a refresh) 
+  //
   async receiveDeleteTransaction(blk, tx, conf, app) {
     console.log("REDSQUARE: receive delete transaction!");
 
@@ -1567,6 +1574,7 @@ class RedSquare extends ModTemplate {
     if (!txmsg.data.tweet_id) {
       return;
     }
+
 
     this.removeTweet(txmsg.data.tweet_id);
 
@@ -1590,6 +1598,7 @@ class RedSquare extends ModTemplate {
             
             // Delete tweet is a reply
             if (tweet.tx.optional.parent_id) {
+
               await this.app.storage.loadTransactions(
                 { sig: tweet.tx.optional.parent_id, field1: "RedSquare" },
                 async (txs) => {
@@ -1625,11 +1634,6 @@ class RedSquare extends ModTemplate {
       },
       "localhost"
     );
-
-    // We need to update the stats for connected tweets
-
-
-
 
     //Save the transaction with command to delete
     if (!app.BROWSER) {
@@ -1728,16 +1732,16 @@ class RedSquare extends ModTemplate {
             async (txs) => {
               if (txs?.length) {
                 //Only update the first copy??
-                let tx = txs[0];
+                let archived_tx = txs[0];
 
-                if (!tx.optional) {
-                  tx.optional = {};
+                if (!archived_tx.optional) {
+                  archived_tx.optional = {};
                 }
-                if (!tx.optional.num_retweets) {
-                  tx.optional.num_retweets = 0;
+                if (!archived_tx.optional.num_retweets) {
+                  archived_tx.optional.num_retweets = 0;
                 }
-                tx.optional.num_retweets++;
-                await this.app.storage.updateTransaction(tx, {}, "localhost");
+                archived_tx.optional.num_retweets++;
+                await this.app.storage.updateTransaction(archived_tx, {}, "localhost");
               }
             },
             "localhost"
@@ -1779,15 +1783,15 @@ class RedSquare extends ModTemplate {
             { sig: tweet.parent_id, field1: "RedSquare" },
             async (txs) => {
               if (txs?.length) {
-                let tx = txs[0];
-                if (!tx.optional) {
-                  tx.optional = {};
+                let archived_tx = txs[0];
+                if (!archived_tx.optional) {
+                  archived_tx.optional = {};
                 }
-                if (!tx.optional.num_replies) {
-                  tx.optional.num_replies = 0;
+                if (!archived_tx.optional.num_replies) {
+                  archived_tx.optional.num_replies = 0;
                 }
-                tx.optional.num_replies++;
-                await this.app.storage.updateTransaction(tx, {}, "localhost");
+                archived_tx.optional.num_replies++;
+                await this.app.storage.updateTransaction(archived_tx, {}, "localhost");
               }
             },
             "localhost"

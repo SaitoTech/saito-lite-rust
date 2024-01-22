@@ -261,6 +261,20 @@ class Tweet {
     if (document.querySelector(eqs)) {
       document.querySelector(eqs).remove();
     }
+    if (this.parent_id){
+      let parent = this.mod.returnTweet(this.parent_id);
+      if (parent.isRendered()){
+        parent.removeReply();    
+      }
+    }
+  }
+
+  removeReply(){
+    let myqs = this.container + `> .tweet-${this.tx.signature}`;
+    let obj = document.querySelector(myqs);
+    if (obj) {
+      obj.classList.remove("has-reply");
+    }
   }
 
   render(prepend = false) {
@@ -1159,7 +1173,7 @@ class Tweet {
     for (let i = 0; i < this.children.length; i++) {
       if (this.children[i].tx.signature === tweet_sig) {
         this.children[i].remove();
-        this.children[i].splice(i, 1);
+        this.children.splice(i, 1);
         this.children_sigs_hmap[tweet_sig] = 0;
         return;
       }
@@ -1169,7 +1183,7 @@ class Tweet {
       for (let i = 0; i < this.unknown_children.length; i++){
         if (this.unknown_children[i].tx.signature == tweet_sig){
           this.unknown_children[i].remove();
-          this.unknown_children[i].splice(i, 1);
+          this.unknown_children.splice(i, 1);
           this.unknown_children_sigs_hmap[tweet_sig] = 0;
           return;
         }
