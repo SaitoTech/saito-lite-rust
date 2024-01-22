@@ -2219,7 +2219,7 @@ if (space.key === "bordeaux") {
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
-      faction : "french" ,
+      faction : "france" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 	if (his_self.game.state.leaders.francis_i == 1) {
@@ -2228,37 +2228,16 @@ if (space.key === "bordeaux") {
 	return 0;
       },
       onEvent : function(his_self, faction) {
-	his_self.game.queue.push("patron-of-the-arts");
+	his_self.game.queue.push("patron-of-the-arts\t"+faction);
 	return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "patron-of-the-arts") {
-
+	  let faction = mv[1];
           his_self.game.queue.splice(qe, 1);
-
-	  let roll = his_self.rollDice(6);
-
-	  his_self.updateLog("France rolls " + roll + " for "+his_self.popup('004'));
-
-	  if (his_self.isSpaceControlled("milan", "france")) {
-	    his_self.updateLog("French control Milan - roll adjusted to 6");
-	    roll = 6;
-	  };
-
-	  //
-	  // France wins 1 VP
-	  //
-	  if (roll >= 3) {
-	    if (his_self.game.state.french_chateaux_vp < 6) {
-	      his_self.updateLog("France gains 1VP from "+his_self.popup('004'));
-	      his_self.game.state.french_chateaux_vp++;
-              his_self.displayVictoryPoints();
-	    }
-	  }
-
+	  his_self.chateaux_overlay.render(faction);
           return 1;
-
         }
 
 	return 1;
@@ -7800,6 +7779,12 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
           let faction = mv[1];
 
+	  let capitals = his_self.returnCapitals(faction);
+	  for (let i = 0; i < capitals.length; i++) {
+	    his_self.addRegular(faction, capitals[i], 1);
+	    his_self.displaySpace(capitals[i]);
+	  }
+
           his_self.game.state.spring_deploy_across_passes.push(faction);
           his_self.game.state.spring_deploy_across_seas.push(faction);
           his_self.game.state.events.spring_preparations = faction;
@@ -8385,7 +8370,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 
 	  if (player == his_self.game.player) {
 
-	    if (his_self.game.players == 2) {
+	    if (his_self.game.players.length == 2) {
 
 	      if (faction === "protestant") {
 	        his_self.addMove("show_hand\tprotestant\tpapacy");
@@ -8605,7 +8590,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
     delete deck["001"];
     delete deck["002"];
     delete deck["003"];
-    delete deck["004"];
+    //delete deck["004"];
     delete deck["009"];
     delete deck["018"];
     delete deck["030"];

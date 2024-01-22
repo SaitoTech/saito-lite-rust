@@ -192,6 +192,21 @@
     return false;
   }
 
+  doesSpaceHaveNonFactionUnits(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (f != faction) {
+        for (let i = 0; i < space.units[f].length; i++) {
+	  let u = space.units[f][i];
+	  if (u.type == "regular") { return true; }
+	  if (u.type == "mercenary") { return true; }
+	  if (u.type == "corsair") { return true; }
+        }
+      }
+    }
+    return false;
+  }
+
   doesSpaceHaveEnemyUnits(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
