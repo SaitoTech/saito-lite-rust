@@ -1,11 +1,7 @@
 var saito = require("../../lib/saito/saito");
 var ModTemplate = require("../../lib/templates/modtemplate");
 const SettingsAppspace = require("./lib/appspace/main");
-
-//Is this deprecated???
-const SettingsAppspaceSidebar = require("./lib/appspace-sidebar/main");
 const SettingsThemeSwitcherOverlay = require("./lib/theme-switcher-overlay");
-const localforage = require("localforage");
 
 class Settings extends ModTemplate {
   constructor(app) {
@@ -23,7 +19,6 @@ class Settings extends ModTemplate {
     this.styles = [
       "/settings/style.css",
       "/saito/lib/jsonTree/jsonTree.css",
-      "/settings/css/theme-switcher.css",
     ];
     this.main = null;
 
@@ -47,62 +42,55 @@ class Settings extends ModTemplate {
       }
     });
 
-    this.main = new SettingsAppspace(this.app, this);
+    this.app.connection.on("settings-overlay-render-request", async () => {
+      if (!this.main){
+        this.main = new SettingsAppspace(this.app, this);    
+        this.attachStyleSheets();
+      }
+      // the slight delay gives us time to download and process the style sheets, 
+      // which is better than a flicker of unstyled html
+      setTimeout(()=> {this.main.render();}, 50);
+    });
   }
 
   canRenderInto(qs) {
-    //if (qs === ".saito-main") { return true; }
-    if (qs === ".saito-sidebar.right") {
-      return true;
-    }
-    if (qs === ".saito-header-themes") {
-      return true;
-    }
     return false;
   }
 
-  renderInto(qs) {
-    if (qs == ".saito-sidebar.right") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new SettingsAppspaceSidebar(this.app, this, qs));
-      }
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => {
-        comp.render();
-      });
-    }
 
-    if (qs == ".saito-overlay") {
+  /*
+  Note: we are "hacking" the renderInto function to make sure when we render a settings 
+  overlay that we have the style sheets attached. Otherwise it isn't used in the general
+  module fitting into component in other module modality
+  */
+  renderInto(qs) {
+    if (qs == ".theme-selector") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new SettingsThemeSwitcherOverlay(this.app, this, ""));
+        this.attachStyleSheets();
       }
-      this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => {
         comp.render();
       });
     }
   }
 
+
+  /*
+  Note: Account Settings is hardcoded into saito-header
+  */
   respondTo(type = "") {
+    let settings_self = this;
+
     if (type === "saito-header") {
       return [
-        {
-          text: "Scan",
-          icon: "fas fa-expand",
-          rank: 110,
-          callback: function (app, id) {
-            app.connection.emit("scanner-start-scanner", {});
-          },
-        },
         {
           text: "Theme",
           icon: "fa-solid fa-moon",
           rank: 120,
           callback: function (app, id) {
-            let settings_self = app.modules.returnModule("Settings");
-            settings_self.renderInto(".saito-overlay");
+            settings_self.renderInto(".theme-selector");
           },
         },
         {

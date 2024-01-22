@@ -20,11 +20,11 @@
 	return base;        
 
       },
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
-	if (game_mod.game.state.leaders.luther == 1) { return 1; }
-      
+	if (game_mod.game.state.leaders.luther == 1) { return 2; }
 	return 0;
+
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {
@@ -46,7 +46,6 @@
 
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
-            base -= game_mod.returnProtestantSpacesTrackVictoryPoints().unrest;
 
 	// burned papal debaters
 	for (let i = 0; i < game_mod.game.state.burned.length; i++) {

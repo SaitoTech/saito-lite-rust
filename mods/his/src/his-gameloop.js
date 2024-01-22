@@ -816,7 +816,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let card = mv[2];
 
-          this.updateLog(this.returnFactionName(faction) + " triggers " + this.popup(card));
+          this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
 
 	  this.game.queue.splice(qe, 1);
 
@@ -1891,10 +1891,6 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
-	    return 1;
-	  }
-
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
 	  let attacker_includes_cavalry = mv[3];
@@ -1902,6 +1898,10 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let defender_spacekey = mv[5];
 	  let controller_of_defender = this.returnPlayerCommandingFaction(defender);
 	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
+
+	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
+	    return 1;
+	  }
 
 	  if (controller_of_defender == 0) { return 1; }
 	  if (controller_of_defender == controller_of_attacker) { return 1; }
@@ -2172,7 +2172,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  let game_self = this;
 
 	  // first time it happens, lets update menu
-console.log("diet of worms cards_left");
 	  this.displayCardsLeft();
 
           game_self.game.queue.push("resolve_diet_of_worms");
@@ -6617,7 +6616,7 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 		}
 	      } else {
 		// they passed but maybe they have more cards left than their admin rating?
-		let far = this.factions[faction].returnAdminRating();
+		let far = this.factions[faction].returnAdminRating(this);
 	        if (far < this.game.state.cards_left[faction]) {
 		  factions_in_play.push(this.game.state.players_info[i].factions[z]);
 	        }
@@ -7279,13 +7278,14 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	}
 
-	// moves into discard pile
 	if (mv[0] === "discard") {
 
 	  let faction = mv[1];
 	  let card = mv[2];
 	  let player_of_faction = this.returnPlayerOfFaction(faction);
+	  let already_discarded = false;
 
+	  if (this.game.deck[0].discards[card]) { already_discarded = true; }
 	  //
 	  // move into discards
 	  //
@@ -7309,14 +7309,14 @@ console.log("cards_left: " + JSON.stringify(this.game.state.cards_left));
 	  //
 	  // and update cards left
 	  //
+          if (already_discarded == false && this.game.state.cards_left[faction]) {
 console.log("discarding card so hand shrinks from: " + this.game.state.cards_left[faction]);
-          if (this.game.state.cards_left[faction]) {
             if (this.game.state.cards_left[faction] > 0) {
 	      this.game.state.cards_left[faction]--;
 	      this.displayCardsLeft();
 	    }
-	  }
 console.log("to: " + this.game.state.cards_left[faction]);
+	  }
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -7441,7 +7441,9 @@ console.log("to: " + this.game.state.cards_left[faction]);
 
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
+
           this.displayBoard();
+	  this.displayCardsLeft();
 
 	  //
 	  // if everyone has passed, we can avoid this
@@ -7453,7 +7455,6 @@ console.log("to: " + this.game.state.cards_left[faction]);
 	    }
 	  }
 	  if (everyone_has_passed == true) {
-console.log("EVERYONE HAS PASSED!");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -7959,10 +7960,6 @@ console.log("EVERYONE HAS PASSED!");
  	  let faction = mv[2];
  	  let hc = this.returnDeck();
 
-//
-// testing
-//
-//if (this.game.state.scenario != "is_testing") {
 	  for (let key in hc) {
 	    if (hc[key].faction === faction) {
 	      if (!this.game.state.cards_left[faction]) { this.game.state.cards_left[faction] = 0; }
@@ -7972,7 +7969,6 @@ console.log("EVERYONE HAS PASSED!");
 	      }
 	    }
 	  }
-//}
 
 	  this.displayCardsLeft();
 	  this.game.queue.splice(qe, 1);

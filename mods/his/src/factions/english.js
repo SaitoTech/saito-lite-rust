@@ -9,7 +9,7 @@
       capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
         let base = 0;
 

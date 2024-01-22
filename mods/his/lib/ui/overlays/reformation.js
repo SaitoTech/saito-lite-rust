@@ -21,6 +21,20 @@ class ReformationOverlay {
         this.overlay.show(ReformationTemplate(name, res));
 	this.overlay.setBackgroundColor("#000"); // black background
 
+	//
+	// pull over thesis-overlay / zoom if visible
+	//
+	document.querySelectorAll(".thesis-overlay").forEach((el) => {
+	  let zindex = el.style.zIndex;
+	  let my_zindex = document.querySelector(".reformation-overlay");
+	  if (my_zindex) {
+	    if (parseInt(zindex) >= parseInt(my_zindex.style.zIndex)) {
+	      my_zindex.style.zIndex = parseInt(zindex)+1;
+	    }
+	  }
+	});
+
+
 	if (res == null) { return; } 
 
         for (let i = 0; i < res.pdice.length; i++){

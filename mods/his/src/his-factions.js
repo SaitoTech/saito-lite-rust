@@ -8,7 +8,7 @@
 
   returnFactionAdminRating(faction="") {
     if (this.factions[faction]) {
-      return this.factions[faction].returnAdminRating();
+      return this.factions[faction].returnAdminRating(this);
     }
     return 0;
   }
@@ -46,7 +46,7 @@
       obj.calculateBonusVictoryPoints = function() { return 0; }
     }
     if (obj.returnAdminRating == null) {
-      obj.returnAdminRating = function() { return this.admin_rating; }
+      obj.returnAdminRating = function(game_mod) { return this.admin_rating; }
     }
     if (obj.calculateSpecialVictoryPoints == null) {
       obj.calculateSpecialVictoryPoints = function() { return 0; }

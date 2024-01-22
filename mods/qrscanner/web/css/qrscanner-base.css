@@ -122,6 +122,12 @@ video {
   background-color: var(--saito-gray);
 }
 
+.close-scanner:hover {
+  border: 3px solid var(--saito-white);
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+}
+
 @keyframes scanning {
   0% {
     transform: translateY(5vw);

@@ -56,8 +56,6 @@
 
     for (let key in this.game.state.cards_left) {
 
-console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
-
       let qs = ".game-factions .game-menu-sub-options ";
       if (key === "hapsburgs") { 
         qs += ".game-hapsburgs .game-menu-option-label";
@@ -87,6 +85,7 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
   }
 
+  displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
 
     let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
@@ -268,8 +267,8 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
       x[i] = {}; x[i].protestant = 0; x[i].papacy = 15;
 
-      if (i >= 4) { x[i].protestant++; x[i].papacy--; }
-      if (i >= 7) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 4)  { x[i].protestant++; x[i].papacy--; }
+      if (i >= 7)  { x[i].protestant++; x[i].papacy--; }
       if (i >= 10) { x[i].protestant++; x[i].papacy--; }
       if (i >= 14) { x[i].protestant++; x[i].papacy--; }
       if (i >= 17) { x[i].protestant++; x[i].papacy--; }
@@ -1716,12 +1715,17 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
+try {
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);
       obj.style.left = x[total_vp.toString()].left + "px";
       obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
+} catch (err) {
+  console.log("Error Displaying Victory Track: " + JSON.stringify(err));
+}
+
     }
 
   }
