@@ -753,7 +753,6 @@ class Tweet {
             // full thread already exists
             //
             if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
-              window.history.pushState({}, document.title, `/redsquare?tweet_id=${this.thread_id}`);
 
               app.connection.emit("redsquare-tweet-render-request", this);
 
@@ -779,7 +778,6 @@ class Tweet {
           e.stopImmediatePropagation();
           let sig = item.getAttribute("data-id");
           if (e.target.tagName != "IMG" && sig) {
-            //window.location.href = `/redsquare/?tweet_id=${sig}`;
             let t = this.mod.returnTweet(sig);
             if (t) {
               app.connection.emit("redsquare-tweet-render-request", t);

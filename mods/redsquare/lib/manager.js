@@ -434,7 +434,8 @@ class TweetManager {
   renderTweet(tweet) {
     this.render("tweet");
 
-
+    this.showLoader();
+    
     // show the basic tweet first
     if (!tweet.parent_id) {
       tweet.renderWithChildren();

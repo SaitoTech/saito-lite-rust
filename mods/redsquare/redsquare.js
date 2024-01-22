@@ -558,7 +558,7 @@ class RedSquare extends ModTemplate {
 
       this.app.connection.emit("redsquare-insert-loading-message");
       this.loadTweets("later", (tx_count) => {
-        // >>>>> Add code here
+        // Add code here
 
         for (let i = 0; i < this.peers.length; i++){
           if (this.peers[i].publicKey !== this.publicKey){
@@ -1583,12 +1583,53 @@ class RedSquare extends ModTemplate {
           // save the tx
           //
           if (oldtx.from[0].publicKey === tx.from[0].publicKey) {
+
             await this.app.storage.deleteTransaction(oldtx, {}, "localhost");
+
+            let tweet = new Tweet(this.app, this, oldtx, "");
+            
+            // Delete tweet is a reply
+            if (tweet.tx.optional.parent_id) {
+              await this.app.storage.loadTransactions(
+                { sig: tweet.tx.optional.parent_id, field1: "RedSquare" },
+                async (txs) => {
+                  if (txs?.length) {
+                    if (txs[0]?.optional?.num_replies) {
+                      txs[0].optional.num_replies--;  
+                      await this.app.storage.updateTransaction(txs[0], {}, "localhost");
+                    }
+                  }
+                },
+                "localhost"
+              );
+            }
+
+            // Deleted tweet is a retweet
+            if (tweet.retweet_tx){
+              await this.app.storage.loadTransactions(
+                { sig: tweet.retweet.tx.signature, field1: "RedSquare" },
+                async (txs) => {
+                  if (txs?.length) {
+                    if (txs[0].optional?.num_retweets) {
+                      txs[0].optional.num_retweets--;  
+                      await this.app.storage.updateTransaction(txs[0], {}, "localhost");
+                    }                  
+                  }
+                },
+                "localhost"
+              );
+            }
+
           }
         }
       },
       "localhost"
     );
+
+    // We need to update the stats for connected tweets
+
+
+
 
     //Save the transaction with command to delete
     if (!app.BROWSER) {
