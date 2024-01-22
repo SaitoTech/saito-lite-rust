@@ -449,10 +449,6 @@
   autoResolveWinterRetreat(faction, spacekey) {
     let his_self = this;
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
-if (faction === "venice" && spacekey == "agram") {
-  console.log("VENICE CHECK: " + JSON.stringify(res));
-}
-console.log("AUTO: " + JSON.stringify(res));
     if (res.length > 0) {
       let space = this.game.spaces[spacekey];
       let roll = this.rollDice(res.length);
@@ -1499,7 +1495,7 @@ console.log("can pass: " + can_pass);
 	      if (ops > 0) {
  	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
               }
-              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              menu[user_choice].fnct(this, this.game.player, selected_faction, 3, ops);
               return;
 	    }
 
@@ -1515,7 +1511,7 @@ console.log("can pass: " + can_pass);
 	      //
 	      if (ops == 1) {
 
-                  menu[user_choice].fnct(this, this.game.player, faction, 1);
+                  menu[user_choice].fnct(this, this.game.player, faction, 1, 0);
                   return;
 
 	      } else {
@@ -1537,7 +1533,7 @@ console.log("can pass: " + can_pass);
                   if (ops_remaining > 0) {
     	            this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
                   }
-                  menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+                  menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops_remaining);
                   return;
 	        });
 
@@ -1545,17 +1541,20 @@ console.log("can pass: " + can_pass);
 
 	    } else {
 
+	      let ops_to_spend = 0;
+
               for (let z = 0; z < menu[user_choice].factions.length; z++) {
                 if (menu[user_choice].factions[z] === selected_faction) {
                   ops -= menu[user_choice].cost[z];
 	          z = menu[user_choice].factions.length+1;
+		  ops_to_spend = menu[user_choice].cost[z];
                 }
               }
 
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
-              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              menu[user_choice].fnct(this, this.game.player, selected_faction, ops_to_spend, ops);
               return;
 
 	    }
@@ -1613,7 +1612,7 @@ console.log("can pass: " + can_pass);
 	  //
 	  if (ops == 1) {
 
-            menu[user_choice].fnct(this, this.game.player, faction, 1);
+            menu[user_choice].fnct(this, this.game.player, faction, 1, 0);
             return;
 
 	  }
@@ -1635,15 +1634,18 @@ console.log("can pass: " + can_pass);
             if (ops_remaining > 0) {
   	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
             }
-            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops_remaining);
             return;
 	  });
 
 	} else {
 
+	  let ops_to_spend = 0;
+
           for (let z = 0; z < menu[user_choice].factions.length; z++) {
             if (pfactions.includes(menu[user_choice].factions[z])) {
               ops -= menu[user_choice].cost[z];
+	      ops_to_spend = menu[user_choice].cost[z];
   	      z = menu[user_choice].factions.length+1;
             }
           }
@@ -1651,7 +1653,7 @@ console.log("can pass: " + can_pass);
           if (ops > 0) {
   	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
           }
-          menu[user_choice].fnct(this, this.game.player, faction);
+          menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops);
           return;
 
 	}
@@ -2274,7 +2276,7 @@ return;
 
   }
 
-  async playerMoveFormationInClear(his_self, player, faction) {
+  async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -2304,7 +2306,12 @@ return;
  		  if (!space.pass.includes(spacekey)) {
 		    return 1;
 		  } else {
-		    return 0;
+		    if (ops_remaining >= 1) {
+		      // we have to flag and say, "this costs an extra op"
+		      return 1;
+		    } else {
+		      return 0;
+		    }
 		  }
 		}
 	  	return 1;
@@ -2321,6 +2328,28 @@ return;
 		if (units_to_move[i].type === "cavalry") {
 		  does_movement_include_cavalry = 1;
 		}
+	      }
+
+
+	      //
+	      // modify "continue" instruction if this is a move over a pass
+	      //
+	      let space = his_self.game.spaces[spacekey];
+	      if (space.pass) {
+		if (space.pass.includes(destination_spacekey)) {
+	          for (let i = 0; i < his_self.moves.length; i++) {
+		    let x = his_self.moves[i];
+		    let y = x.split("\t");
+		    let new_ops_remaining = parseInt(y[4])-1;
+		    if (y[0] === "continue") {
+		      if (new_ops_remaining) {
+	  	        his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+  	  	      } else {
+		        his_self.moves.splice(i, 1);
+		      }
+		    }
+	          }
+	        }
 	      }
 
 	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
@@ -2444,8 +2473,27 @@ return;
       "Select Town from which to Move Units:",
 
       function(space) {
+	let num_moveable = 0;
 	for (let z in space.units) {
-	  if (space.units[z].length > 0 && faction === z) {
+	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
+	    //
+	    // Foul Weather prevents spaces with already moved units
+	    //
+            if (his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
+              for (let i = 0; i < space.units[z].length; i++) {
+		if (space.units[z][i].type === "cavalry") { num_moveable++; }
+		if (space.units[z][i].type === "regular") { num_moveable++; }
+		if (space.units[z][i].type === "mercenary") { num_moveable++; }
+		if (space.units[z][i].battle_rating > 0) { num_moveable++; }
+                if (space.units[z][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1) {
+	          num_moveable--;
+                }
+              }
+	      if (num_moveable <= 0) {
+		return 0;
+	      }
+            }
+
 	    return 1;
           }
 	}
@@ -2478,8 +2526,20 @@ return;
           $('.option').off();
           $('.option').on('click', function () {
 
-	    $('.option').off();
             let id = $(this).attr("id");
+
+	    for (let key in space.units) {
+	      if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
+	        for (let i = 0; i < space.units[key].length; i++) {
+	          if (space.units[key][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1 && id === "auto") {
+		    alert("Foul Weather: units in this space have already been moved, so movement from this space must happen manually using only unmoved forces");
+		    return;
+	          }
+	        }
+	      }
+	    }
+
+	    $('.option').off();
 
 	    if (id === "auto") {
 	      for (let key in space.units) {
@@ -3247,7 +3307,7 @@ return;
     return 0;
   }
 
-  async playerMoveFormationOverPass(his_self, player, faction) {
+  async playerMoveFormationOverPass(his_self, player, faction, ops_to_spend=0, ops_remaining=0, movement_obj={}) {
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -3690,6 +3750,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -3721,6 +3782,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -3754,6 +3816,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -4123,6 +4186,7 @@ return;
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -4146,6 +4210,7 @@ return;
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tsea\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -4156,7 +4221,7 @@ return;
     if (faction === "protestant") { return 1; }
     return 0;
   }
-  async playerTranslateScripture(his_self, player, faction, ops=1) {
+  async playerTranslateScripture(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
 
     let msg = "Select Work to Translate:";
     let html = '<ul>';
@@ -4195,15 +4260,15 @@ return;
       his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
-	his_self.addMove("translation\tgerman\t"+ops);
+	his_self.addMove("translation\tgerman\t"+ops_to_spend);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in German Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
       if (id == 2 || id == 5) { 
-	his_self.addMove("translation\tfrench\t"+ops); 
+	his_self.addMove("translation\tfrench\t"+ops_to_spend); 
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in French Language Zone\ttranslation_french_language_zone\tfrench\t"+faction);
       }
       if (id == 3 || id == 6) { 
-	his_self.addMove("translation\tenglish\t"+ops);
+	his_self.addMove("translation\tenglish\t"+ops_to_spend);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
       // we only ask for our own CONFIRMS
@@ -4468,8 +4533,8 @@ return;
     }
     return 0;
   }
-  async playerBuildSaintPeters(his_self, player, faction, ops=1) {
-    for (let z = 0; z < ops; z++) {
+  async playerBuildSaintPeters(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
+    for (let z = 0; z < ops_to_spend; z++) {
       his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
     }
     his_self.endTurn();
@@ -4614,6 +4679,7 @@ return;
 
       function(spacekey) {
         
+	his_self.updateStatus("acknowledge...");
 	his_self.addUnit(faction, spacekey, unittype);
 	his_self.displaySpace(spacekey);
         his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	

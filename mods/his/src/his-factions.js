@@ -56,6 +56,7 @@
         return `
 	  <div class="faction_sheet" id="faction_sheet" style="background-image: url('/his/img/factions/${obj.img}')">
 	    <div class="faction_sheet_ruler" id="faction_sheet_ruler"></div>
+	    <div class="faction_sheet_vp" id="faction_sheet_vp"></div>
 	  </div>
 	`;
       }

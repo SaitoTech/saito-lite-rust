@@ -459,6 +459,41 @@ if (this.game.state.scenario != "is_testing") {
 	    this.game.queue.push(moves[i]);
 	  }
 
+
+          //
+          // fortified spaces - any units in excess of stacking limit returned to capital
+          //
+          for (let i in this.game.spaces) {
+            if (this.isSpaceFortified(this.game.spaces[i])) {
+
+              let space = this.game.spaces[i];
+              let f = this.returnFactionControllingSpace(i);
+              let num_friendly_units = this.returnFriendlyLandUnitsInSpace(f, space);
+              let num_faction_units = this.returnFactionLandUnitsInSpace(f, space);
+	      let capitals = this.returnCapitals(f);
+
+              if (num_friendly_units > 4 && !capitals.includes(i)) {
+		let units_preserved = 0;
+		for (let q in space.units) {
+		  for (let ii = 0; ii < space.units[q].length; ii++) {
+		    let u = space.units[q][ii];
+		    if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary") {
+		      units_preserved++;
+		      if (units_preserved > 4) {
+		        space.units[q].splice(ii, 1);
+		        ii--;
+		      }
+		    }
+		  }
+		}
+		this.updateLog("OVERSTACKING " + this.returnName(i) + " (removed)");
+		this.displaySpace(i);
+              }
+
+            }
+          }
+
+
 	  return 1;
         }
 
@@ -678,24 +713,23 @@ if (this.game.state.scenario != "is_testing") {
 	if (mv[0] === "is_testing") {
 
 	  // moar debaters
-          //this.addDebater("protestant", "bullinger-debater");
-          //this.addDebater("protestant", "oekolampadius-debater");
-          //this.addDebater("protestant", "zwingli-debater");
-          //this.addDebater("papacy", "caraffa-debater");
-          //this.addDebater("papacy", "gardiner-debater");
-          //this.addDebater("papacy", "loyola-debater");
-          //this.addDebater("papacy", "pole-debater");
-          //this.addDebater("papacy", "canisius-debater");
-          //this.addDebater("papacy", "contarini-debater");
-          //this.addDebater("papacy", "faber-debater");
-    	  //this.addDebater("papacy", "bucer-debater");
-    	  //this.addDebater("protestant", "aleander-debater");
-    	  //this.addDebater("protestant", "campeggio-debater");  
+          this.addDebater("protestant", "bullinger-debater");
+          this.addDebater("protestant", "oekolampadius-debater");
+          this.addDebater("protestant", "zwingli-debater");
+          this.addDebater("papacy", "caraffa-debater");
+          this.addDebater("papacy", "gardiner-debater");
+          this.addDebater("papacy", "loyola-debater");
+          this.addDebater("papacy", "pole-debater");
+          this.addDebater("papacy", "canisius-debater");
+          this.addDebater("papacy", "contarini-debater");
+          this.addDebater("papacy", "faber-debater");
+    	  this.addDebater("papacy", "bucer-debater");
+    	  this.addDebater("protestant", "aleander-debater");
+    	  this.addDebater("protestant", "campeggio-debater");  
 
-	  this.commitDebater("protestant", "bucer-debater", 0);
-	  this.commitDebater("protestant", "carlstadt-debater", 0);
-	  this.commitDebater("protestant", "melanchthon-debater", 0);
-
+	  //this.commitDebater("protestant", "bucer-debater", 0);
+	  //this.commitDebater("protestant", "carlstadt-debater", 0);
+	  //this.commitDebater("protestant", "melanchthon-debater", 0);
 
           this.addMercenary("papacy", "siena", 4);
           this.addArmyLeader("papacy", "ravenna", "renegade");
@@ -770,21 +804,8 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addNavalSquadron("france", "genoa", 4);
 
 
-	  this.addCard("papacy", "004");
-	  this.addCard("papacy", "105");
-	  this.addCard("protestant", "104");
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("player 1:");
-console.log(JSON.stringify(this.game.state.players_info[0].factions));
-console.log("player 2:");
-console.log(JSON.stringify(this.game.state.players_info[1].factions));
+	  //this.addCard("papacy", "105");
+	  this.addCard("protestant", "031");
 
     	  this.game.queue.splice(qe, 1);
 
@@ -2269,9 +2290,17 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
 	  let hapsburg_card = this.game.pool[0].hand[0];
 
+	  this.updateLog("*************************");
+	  this.updateLog("*** The Diet of Worms ***");
+	  this.updateLog("*************************");
+	  this.updateLog("Protestants select: " + this.popup(this.game.state.sp[protestant-1]));
+	  this.updateLog("Papacy selects: " + this.popup(this.game.state.sp[papacy-1]));
+	  this.updateLog("Hapsburgs select: " + this.popup(hapsburg_card));
+
 	  //
 	  // show card in overlay
 	  //
+	  this.diet_of_worms_overlay.render();
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[protestant-1], "protestant");
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[papacy-1], "catholic");
 	  this.diet_of_worms_overlay.addCardToCardfan(hapsburg_card, "catholic");
@@ -2325,12 +2354,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	    if (x >= 5) { papacy_hits++; }
 	  }
 
-	  //
-	  // TODO: do the hapsburgs get rolls in the 2P game?
-	  //
-	  // yes -- card pulled from top of deck, or 2 if mandatory event pulled
-	  // in which case the event is ignored.
-	  //
  	  if (this.game.deck[0].cards[hapsburg_card].type != "mandatory") {
 	    for (let i = 0; i < this.game.deck[0].cards[hapsburg_card].ops; i++) {
 	      papacy_rolls++;
@@ -2346,6 +2369,9 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	      if (x >= 5) { papacy_hits++; }
 	    }
 	  }
+
+	  this.updateLog("Protestants ("+protestant_hits+") vs. Catholics ("+papacy_hits+")");
+
 
 	  if (protestant_hits > papacy_hits) {
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
