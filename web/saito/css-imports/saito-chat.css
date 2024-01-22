@@ -255,12 +255,12 @@
 .chat-header > .chat-header-nav > i {
   margin: 0;
   color: var(--saito-primary);
-  font-size: 2rem;
+  font-size: 1.2rem;
   display: inline-block;
   position: relative;
   transition: all 0.2s;
   cursor: pointer;
-  padding: 0.7rem;
+  padding: 0.5rem;
 }
 
 .chat-header > .chat-header-nav > i:hover {
