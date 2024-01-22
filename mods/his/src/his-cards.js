@@ -972,7 +972,7 @@ if (space.key === "bordeaux") {
 	  let player = his_self.returnPlayerOfFaction(faction);
 
 	  if (player == his_self.game.player) {
-HACK
+
             let fhand_idx = his_self.returnFactionHandIdx(player, faction);
             let c = his_self.game.deck[0].fhand[fhand_idx][his_self.game.deck[0].fhand[fhand_idx].length-1];
 	    let card = his_self.game.deck[0].cards[c];

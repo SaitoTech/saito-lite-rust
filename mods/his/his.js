@@ -3946,7 +3946,7 @@ if (space.key === "bordeaux") {
 	  let player = his_self.returnPlayerOfFaction(faction);
 
 	  if (player == his_self.game.player) {
-HACK
+
             let fhand_idx = his_self.returnFactionHandIdx(player, faction);
             let c = his_self.game.deck[0].fhand[fhand_idx][his_self.game.deck[0].fhand[fhand_idx].length-1];
 	    let card = his_self.game.deck[0].cards[c];
@@ -19180,9 +19180,17 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
 	  let hapsburg_card = this.game.pool[0].hand[0];
 
+	  this.updateLog("*************************");
+	  this.updateLog("*** The Diet of Worms ***");
+	  this.updateLog("*************************");
+	  this.updateLog("Protestants select: " + this.popup(this.game.state.sp[protestant-1]));
+	  this.updateLog("Papacy selects: " + this.popup(this.game.state.sp[papacy-1]));
+	  this.updateLog("Hapsburgs select: " + this.popup(hapsburg_card));
+
 	  //
 	  // show card in overlay
 	  //
+	  this.diet_of_worms_overlay.render();
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[protestant-1], "protestant");
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[papacy-1], "catholic");
 	  this.diet_of_worms_overlay.addCardToCardfan(hapsburg_card, "catholic");
@@ -19236,12 +19244,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	    if (x >= 5) { papacy_hits++; }
 	  }
 
-	  //
-	  // TODO: do the hapsburgs get rolls in the 2P game?
-	  //
-	  // yes -- card pulled from top of deck, or 2 if mandatory event pulled
-	  // in which case the event is ignored.
-	  //
  	  if (this.game.deck[0].cards[hapsburg_card].type != "mandatory") {
 	    for (let i = 0; i < this.game.deck[0].cards[hapsburg_card].ops; i++) {
 	      papacy_rolls++;
@@ -19257,6 +19259,9 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	      if (x >= 5) { papacy_hits++; }
 	    }
 	  }
+
+	  this.updateLog("Protestants ("+protestant_hits+") vs. Catholics ("+papacy_hits+")");
+
 
 	  if (protestant_hits > papacy_hits) {
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
