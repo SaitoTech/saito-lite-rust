@@ -27,6 +27,8 @@ class MovementOverlay {
     let from = this.mod.game.spaces[source].name;
     let to = "";
     if (destination === "") { destination = "?"; } else { to = this.mod.game.spaces[destination].name; }
+    if (!mobj.unmoved_units) { mobj.unmoved_units = []; }
+    if (!mobj.moved_units) { mobj.moved_units = []; }
 
     //
     // create list of figures in each space

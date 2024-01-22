@@ -56,8 +56,6 @@
 
     for (let key in this.game.state.cards_left) {
 
-console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
-
       let qs = ".game-factions .game-menu-sub-options ";
       if (key === "hapsburgs") { 
         qs += ".game-hapsburgs .game-menu-option-label";
@@ -87,6 +85,7 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
   }
 
+  displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
 
     let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
@@ -256,7 +255,9 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
     let num_protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "protestant") {
-        num_protestant_spaces++;
+	if (!this.game.spaces[key].unrest) {
+          num_protestant_spaces++;
+	}
       }
     }
     if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
@@ -266,8 +267,8 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
       x[i] = {}; x[i].protestant = 0; x[i].papacy = 15;
 
-      if (i >= 4) { x[i].protestant++; x[i].papacy--; }
-      if (i >= 7) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 4)  { x[i].protestant++; x[i].papacy--; }
+      if (i >= 7)  { x[i].protestant++; x[i].papacy--; }
       if (i >= 10) { x[i].protestant++; x[i].papacy--; }
       if (i >= 14) { x[i].protestant++; x[i].papacy--; }
       if (i >= 17) { x[i].protestant++; x[i].papacy--; }
@@ -1473,7 +1474,7 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
     for (let z in space.units) {
       html += this.returnPersonagesTiles(z, space.key);
-      tile = html;
+      if (html != "") { tile = html; }
     }
 
     html += '</div>';
@@ -1500,6 +1501,8 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
 
   displaySpace(key) {
+
+    if (this.game.navalspaces[key]) { this.displayNavalSpace(key); return; }
 
     let ts = new Date().getTime();
     if (this.game.state.board_updated < ts + 20000) {
@@ -1575,6 +1578,7 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
 
   displayNavalSpace(key) {
 
+    if (this.game.spaces[key]) { this.displaySpace(key); return; }
     if (!this.game.navalspaces[key]) { return; }
 
     let obj = document.getElementById(key);
@@ -1588,8 +1592,8 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
     //
     // do not show under some conditions
     //
-
     if (show_tile === 1) {
+      obj.innerHTML = "";
       obj.innerHTML += this.returnNavies(space);
       obj.innerHTML += this.returnPersonages(space);
     }
@@ -1711,12 +1715,17 @@ console.log("dcl: " + key + " - " + this.game.state.cards_left[key]);
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
+try {
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);
       obj.style.left = x[total_vp.toString()].left + "px";
       obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
+} catch (err) {
+  console.log("Error Displaying Victory Track: " + JSON.stringify(err));
+}
+
     }
 
   }

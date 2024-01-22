@@ -9,7 +9,7 @@ module.exports = (app, mod, invite) => {
         </div>
            
         <div class="saito-module-holder">
-          <div class="saito-module-details saito-game-identicons">
+          <div class="saito-game-details saito-game-identicons">
     `;
 
     // render players who have joined

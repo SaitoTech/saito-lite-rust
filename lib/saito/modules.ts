@@ -80,7 +80,13 @@ class Mods {
       request = txmsg?.request;
       if (txmsg?.request === "software-update") {
         let receivedBuildNumber = JSON.parse(tx.msg.data).build_number;
-        this.app.browser.updateSoftwareVersion(receivedBuildNumber)
+
+        let active_mod = this.app.modules.returnActiveModule();
+        // check if not inside game
+        if (!active_mod.game) {
+            this.app.browser.updateSoftwareVersion(receivedBuildNumber);
+        }
+        
       }
 
     } catch (err) { }
@@ -96,7 +102,13 @@ class Mods {
     }
     if (have_responded == false) {
       if (mycallback) {
-        console.log("Execute null callback on " + request);
+
+        // 
+        // callback is defined in apps/lite/index.ts
+        // it runs sendApiSuccess() with the response object
+        // 
+
+        //console.log("Execute null callback on " + request);
         mycallback({});
       }
     }
@@ -128,62 +140,61 @@ class Mods {
     // install any new modules
     //
     let new_mods_installed = 0;
-    let start_installation = 0;
-    if (this.app.options.modules == null) {
-      start_installation = 1;
+
+    if (!this.app.options.modules) {
       this.app.options.modules = [];
-    } else {
-      if (this.app.options.modules.length < this.mods.length) {
-        start_installation = 1;
-      }
     }
-    if (start_installation || true) {
-      for (let i = 0; i < this.mods.length; i++) {
-        let mi = 0;
-        let mi_idx = -1;
-        let install_this_module = 0;
 
-        for (let j = 0; j < this.app.options.modules.length; j++) {
-          if (this.mods[i].name == this.app.options.modules[j].name) {
-            mi = 1;
-            mi_idx = j;
+    for (let i = 0; i < this.mods.length; i++) {
+      let mi_idx = -1;
+      let install_this_module = 1;
+
+      //
+      // We don't need to install this.mods[i] if that module
+      // exists in app.options.modules and is marked as installed
+      //
+      for (let j = 0; j < this.app.options.modules.length; j++) {
+        if (this.mods[i].name == this.app.options.modules[j].name) {
+          if (this.app.options.modules[j].installed) {
+            install_this_module = 0;
           }
+          mi_idx = j;
         }
-        if (mi == 0) {
-          install_this_module = 1;
+      }
+
+      if (install_this_module == 1) {
+        new_mods_installed++;
+
+        await this.mods[i].installModule(this.app);
+        
+        if (mi_idx != -1) {
+          //Update module in app.options.modules
+          this.app.options.modules[mi_idx].installed = 1;
+          this.app.options.modules[mi_idx].active = 1;
+
+          if (this.app.options.modules[mi_idx].version == undefined) {
+            this.app.options.modules[mi_idx].version == "";
+          }
+          if (this.app.options.modules[mi_idx].publisher == undefined) {
+            this.app.options.modules[mi_idx].publisher == "";
+          }
         } else {
-          if (this.app.options.modules[mi_idx].installed == 0) {
-            install_this_module = 1;
-          }
+          //Add module to app.options.modules
+          this.app.options.modules.push({
+            name: this.mods[i].name,
+            installed: 1,
+            version: "",
+            publisher: "",
+            active: 1,
+          });
         }
-
-        if (install_this_module == 1) {
-          new_mods_installed = 1;
-          await this.mods[i].installModule(this.app);
-          if (mi_idx != -1) {
-            this.app.options.modules[mi_idx].installed = 1;
-            if (this.app.options.modules[mi_idx].version == undefined) {
-              this.app.options.modules[mi_idx].version == "";
-            }
-            if (this.app.options.modules[mi_idx].publisher == undefined) {
-              this.app.options.modules[mi_idx].publisher == "";
-            }
-            this.app.options.modules[mi_idx].active = 1;
-          } else {
-            this.app.options.modules.push({
-              name: this.mods[i].name,
-              installed: 1,
-              version: "",
-              publisher: "",
-              active: 1,
-            });
-          }
-        }
-      }
-      if (new_mods_installed == 1) {
-        this.app.storage.saveOptions();
       }
     }
+
+    if (new_mods_installed > 0) {
+      this.app.storage.saveOptions();
+    }
+    
 
     const modNames = {};
     this.mods.forEach((mod, i) => {

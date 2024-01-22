@@ -1822,7 +1822,8 @@ console.log("restoring B");
       //
       // show overlay and purge
       //
-      if ((this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) && this.game.options.deck === "saito") {
+      //if ((this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) && this.game.options.deck === "saito") {
+      if (this.game.saito_cards_added.length > 0 && this.game.options.deck === "saito") {
 	this.deck_overlay.render();
 	this.game.saito_cards_added = [];
 	this.game.saito_cards_added_reason = [];
@@ -1908,9 +1909,11 @@ console.log("restoring B");
             </ul>`;
         twilight_self.updateStatusWithOptions(user_message, html, function(action2) {
 	  if (action2 === "play") {
+	    twilight_self.addMove(`NOTIFY\tUS pulls and plays ${twilight_self.cardToText(card)}`);
             twilight_self.playerTurn(card);
           }
           if (action2 == "hand") {
+	    twilight_self.addMove(`NOTIFY\tUS hands ${twilight_self.cardToText(card)} to USSR`);
             twilight_self.addMove("hand\t"+opponent+"\t"+card);
             twilight_self.endTurn();
 	  }
@@ -2718,9 +2721,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["nixonshock", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["starwars", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
         }
 
       	//this.game.state.round = 1;
@@ -3192,6 +3195,7 @@ try {
             if (this.game.state.events.cia == 1 && this.game.state.events.tsarbomba_added == 1) {
 	      this.game.state.events.tsarbomba_added = 1; // avoid getting re-added later
               this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
+	      this.cancelEvent("tsarbomba");
 	    }
 	    if (this.game.state.events.iranianultimatum != 1 && this.game.state.events.iranianultimatum_removed != 1) {
 	      this.game.state.events.iranianultimatum_removed = 1;
@@ -3423,7 +3427,7 @@ try {
 
 	if (this.game.options.deck === "saito") {
           if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) {
-	    this.deck_overlay.render();
+	    if (this.game.saito_cards_added.length > 0 ) { this.deck_overlay.render(); }
 	    this.game.saito_cards_added = [];
 	    this.game.saito_cards_added_reason = [];
 	    this.game.saito_cards_removed = [];
@@ -4893,11 +4897,11 @@ console.log("getPrivateKey(): " + privateKey);
               //
               if (twilight_self.undoMove(action2, ops - j)) {
 
-            		//
-            		// reset china and vietnam revolts eligibility
-            		//
-            		twilight_self.game.state.events.vietnam_revolts_eligible = 1;
-            		twilight_self.game.state.events.china_card_eligible = 1;
+                //
+            	// reset china and vietnam revolts eligibility
+            	//
+            	twilight_self.game.state.events.vietnam_revolts_eligible = 1;
+            	twilight_self.game.state.events.china_card_eligible = 1;
 
                 twilight_self.playOps(player, ops, card);
               }
@@ -5012,14 +5016,16 @@ console.log("getPrivateKey(): " + privateKey);
               if (twilight_self.countries[c].region !== "seasia") { twilight_self.game.state.events.vietnam_revolts_eligible = 0; }
               if (twilight_self.countries[c].region !== "seasia" && twilight_self.countries[c].region !== "asia") { twilight_self.game.state.events.china_card_eligible = 0; }
 
-              //Play move / add move to queue
+              // play move / add move to queue
               var result = twilight_self.playRealign(player, c);
               twilight_self.addMove("realign\t"+player+"\t"+c);
 
 
               alignment_rolls--;
 
-              //Update directions
+	      //
+              // update directions
+	      //
               twilight_self.updateStatusWithOptions(`Pick a target to realign (${alignment_rolls} rolls), or:`,`<ul><li class="option" id="cancelrealign">end turn</li></ul>`, function(action2) {
                 if (action2 == "cancelrealign") { //Not a cancel, keeps realignment rolls so far...
                   twilight_self.reverseMoves("realign");
@@ -5384,8 +5390,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         }
       }
     }
-
-
 
   }
 
@@ -7525,6 +7529,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       //
       // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
       // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
+      //
       let pushme = 1;
       if (card != "") {
         if (this.game.state.events.redscare_player1 >= 1) {
@@ -7562,6 +7567,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
       if (card != "") { if (this.returnOpsOfCard(card) == 1 && this.game.state.events.redscare_player1 >= 1) { return 0; } }
 
+      this.cancelBackButtonFunction();
       this.updateStatus("Extra 1 OP Available for Southeast Asia");
       this.game.state.events.region_bonus = "seasia";
       return 1;
@@ -7572,6 +7578,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     //
     if (this.game.state.events.china_card_in_play == 1 && this.game.state.events.china_card_eligible == 1) {
 
+      this.cancelBackButtonFunction();
       this.updateStatus("Extra 1 OP Available for Asia");
       this.game.state.events.region_bonus = "asia";
       return 1;

@@ -301,7 +301,17 @@ class SettlersGameloop {
         let roadInfo = slot.split("_");
         this.addRoadToGameboard(roadInfo[2] + "_" + roadInfo[3], roadInfo[1]);
 
-        setTimeout( ()=> { this.buildRoad(player, slot); }, 100); 
+        //
+        // This is kind of ridiculous, animation won't show up without a slight delay
+        // but making buildroad async "breaks" caravan in that I won't unlock the new 
+        // road options before the game queue continues
+        //
+        if (this.game.player == player){
+          this.buildRoad(player, slot);  
+        }else{
+          setTimeout(()=> { this.buildRoad(player, slot); }, 100);
+        }
+        
         this.updateLog(`${this.formatPlayer(player)} built a ${this.r.name}`);
         if (this.checkLongestRoad(player)) {
           console.log("Longest Road:", this.game.state.longestRoad.path);

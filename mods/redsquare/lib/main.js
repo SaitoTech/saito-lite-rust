@@ -28,8 +28,6 @@ class RedSquareMain {
     // HOME-RENDER-REQUEST render the main thread from scratch
     //
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
-      window.history.pushState({}, document.title, "/" + this.mod.slug);
-      window.location.hash = "#home";
 
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();

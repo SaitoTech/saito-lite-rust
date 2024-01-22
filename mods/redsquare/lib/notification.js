@@ -3,6 +3,7 @@ const ReplyNotificationTemplate = require("./notification-reply.template");
 const saito = require("./../../../lib/saito/saito");
 const Tweet = require("./tweet");
 const SaitoUser = require("./../../../lib/saito/ui/saito-user/saito-user");
+const Image = require("./image");
 
 class RedSquareNotification {
   constructor(app, mod, tx = null) {
@@ -160,7 +161,20 @@ class RedSquareNotification {
       //
       this.user.fourthelem = this.app.browser.returnTime(this.tx.timestamp);
       this.user.render();
-    
+
+      // check and render images if any in notification
+      if (txmsg.data?.images) {
+        let img_preview = new Image(
+          this.app,
+          this.mod,
+          `.notification-item-${this.tx.signature} .tweet-body .tweet-main .notification-tweet`,
+          txmsg.data?.images,
+          tweet_tx.signature
+        );
+
+        img_preview.render();
+      }
+
     }
 
     this.tweet.show_controls = 0;

@@ -1646,7 +1646,11 @@ class Chat extends ModTemplate {
     group.online = online_status;
   }
 
-  async deleteChatGroup(group) {
+  async deleteChatGroup(group = null) {
+    if (!group){
+      return;
+    }
+
     let key_to_update = "";
     for (let i = 0; i < this.groups.length; i++) {
       if (this.groups[i].id === group.id) {

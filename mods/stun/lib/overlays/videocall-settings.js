@@ -6,11 +6,10 @@ class VideoCallSettings {
     this.app = app;
     this.mod = mod;
     this.saitoOverlay = new SaitoOverlay(app, mod);
-    this.display_mode = 'gallery'; // gallery, focus, speaker
   }
 
   render(display_mode) {
-    this.saitoOverlay.show(VideoCallSettingsTemplate(this.display_mode));
+    this.saitoOverlay.show(VideoCallSettingsTemplate(display_mode, this.mod));
     this.attachEvents();
   }
 
@@ -20,16 +19,18 @@ class VideoCallSettings {
       option.onchange = (e) => {
         let choice = e.currentTarget.getAttribute("value");
         this_self.app.connection.emit("stun-switch-view", choice);
-        this_self.saitoOverlay.hide();
+        this_self.saitoOverlay.remove();
       };
     });
 
-    document.querySelectorAll(".share-control").forEach((item) => {
-      item.onclick = () => {
-        this_self.app.connection.emit("begin-share-screen");
-        this_self.saitoOverlay.hide();
-      };
-    });
+    if (!this.mod.screen_share){
+      document.querySelectorAll(".share-control").forEach((item) => {
+        item.onclick = () => {
+          this_self.app.connection.emit("begin-share-screen");
+          this_self.saitoOverlay.remove();
+        };
+      });
+    }
   }
 }
 

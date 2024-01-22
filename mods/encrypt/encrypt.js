@@ -270,6 +270,9 @@ class Encrypt extends ModTemplate {
    * Step 2 -- We have been asked to exchange keys
    */ 
   async accept_key_exchange(tx, offchain = 0, peer = null) {
+    
+    if (this.app.BROWSER == 0) { return; }
+
     let txmsg = tx.returnMessage();
 
     console.log("Encrypt: Accepting key exchange");
@@ -278,6 +281,7 @@ class Encrypt extends ModTemplate {
     let our_address = tx.to[0].publicKey;
     let alice_publicKey = txmsg.alice_publicKey;
 
+    
     siteMessage(`${this.app.keychain.returnUsername(remote_address, 8)} has added you as a friend`, 5000);
     
     let fee = BigInt(tx.to[0].amount);
@@ -347,7 +351,7 @@ class Encrypt extends ModTemplate {
     }
 
     siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
-
+ 
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
     let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
     let alice = this.app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);

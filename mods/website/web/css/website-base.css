@@ -150,19 +150,16 @@ video {
 
 .links a button {
   border: 2px solid #fff;
-  background: var(--saito-orange);
-  background-size: cover;
-  background-position: bottom;
   text-shadow: none;
   color: #fff;
+  background: linear-gradient(45deg, transparent, transparent, #fff8, transparent, transparent);
+  background-size: 300%;
+  background-position: left;
 }
 
 .links a button:hover {
-  transform: scale(1.1);
-  border: 2px solid #fff;
-  background: var(--saito-orange);
-  background-size: cover;
-  background-position: bottom;
+  transform: scale(1.025);
+  background-position: right;
   text-shadow: none;
   color: #fff;
 }

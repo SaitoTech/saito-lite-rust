@@ -1,13 +1,19 @@
-module.exports = StunLaunchTemplate = () => {
-  return `
+module.exports = StunLaunchTemplate = (app, mod) => {
+   let html = `
       <div class="stun-appspace"> 
         <div class="stun-appspace-content">
           <card class="appear stunx-appspace-splash">
-            <div class="saito-page-header-title">Saito Video</div>
+            <div class="saito-page-header-title">Saito Talk</div>
               <div>peer-to-peer video chat</div>
-            <div class="stunx-appspace-actions">
-              <div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Call</div>
-            </div>
+            <div class="stunx-appspace-actions">`;
+              
+  if (mod.room_obj){
+    html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.room_code}">Join Meeting</div>`;
+  }else{
+    html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
+  }            
+            
+  html +=   `</div>
             <div class="my-stun-container-info">
               <i class="fas fa-info-circle"></i>
               <span class="saito-info-text">Blockchain-mediated peer-to-peer connections can take longer to negotiate if you are on a mobile network or behind an aggressive firewall.</span>
@@ -27,4 +33,6 @@ module.exports = StunLaunchTemplate = () => {
       </div>
 
     `;
+
+  return html;
 };

@@ -55,6 +55,8 @@ class Arcade extends ModTemplate {
     this.invite_cutoff = 3500000;
     this.game_cutoff = 600000000;
 
+    this.possibleHome = 1;
+    
     this.theme_options = {
       lite: "fa-solid fa-sun",
       dark: "fa-solid fa-moon",

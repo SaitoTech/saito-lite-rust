@@ -42,6 +42,19 @@ class Relay extends ModTemplate {
         console.error(error);
       }
     });
+
+    app.connection.on("relay-transaction", async (tx) => {
+      let peers = await this.app.network.getPeers();
+      for (let i = 0; i < peers.length; i++) {
+        this.app.network.sendRequestAsTransaction(
+          "relay peer message",
+          tx.toJson(),
+          null,
+          peers[i].peerIndex
+        );
+      }
+    });
+
     app.connection.on("set-relay-status-to-busy", () => {
       this.busy = true;
     });

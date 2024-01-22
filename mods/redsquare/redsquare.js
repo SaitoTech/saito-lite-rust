@@ -90,12 +90,17 @@ class RedSquare extends ModTemplate {
     //
     this.manager = "";
 
+    this.possibleHome = 1;
+
     //
     // is this a notification?
     //
     this.notifications_earliest_ts = new Date().getTime();
     this.notifications_last_viewed_ts = 0;
     this.notifications_number_unviewed = 0;
+
+    this.tweets_latest_ts = 0;
+    this.tweets_earliest_ts = new Date().getTime();
 
     this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
 
@@ -483,7 +488,7 @@ class RedSquare extends ModTemplate {
         publicKey: publicKey,
         tweets_earliest_ts: new Date().getTime(),
         tweets_latest_ts: 0,
-        tweets_limit: 20,
+        tweets_limit: 30,
       });
     } else {
       this.peers[peer_idx].peer = peer;
@@ -546,13 +551,22 @@ class RedSquare extends ModTemplate {
           case "#profile":
             this.app.connection.emit("redsquare-profile-render-request");
             break;
-          default: // #home
+          default: 
             break;
         }
       }
 
       this.app.connection.emit("redsquare-insert-loading-message");
       this.loadTweets("later", (tx_count) => {
+        // >>>>> Add code here
+
+        for (let i = 0; i < this.peers.length; i++){
+          if (this.peers[i].publicKey !== this.publicKey){
+            if (this.peers[i].tweets_earliest_ts > this.tweets_latest_ts){
+              console.log("RS: WARNING -- there is a time gap from what was fetched");
+            }
+          }
+        }
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
     }
@@ -631,7 +645,7 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers.length; i++) {
       if (
         !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
-        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)
+        !(created_at == "later" && this.peers[i].publicKey == this.publicKey && this.peers[i].tweets_latest_ts > 0)
       ) {
         peer_count++;
       }
@@ -642,8 +656,8 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers.length; i++) {
       //
       // We have two stop conditions,
-      // 1) when our peer has been tapped out on earlier tweets, we stop querying them.
-      // 2) if we are our peer, don't look for later tweets
+      // 1) when our peer has been tapped out on earlier (older) tweets, we stop querying them.
+      // 2) if we are our own peer, don't look for later (newer) tweets
       // the second should keep the "loading" message flashing longer
       // though this is a hack and we will need to fix once we are loading from multiple remote peers
       // it is just a bit of a pain because we have triply nested callbacks...
@@ -651,7 +665,7 @@ class RedSquare extends ModTemplate {
 
       if (
         !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
-        !(created_at == "later" && this.peers[i].publicKey == this.publicKey)
+        !(created_at == "later" && this.peers[i].publicKey == this.publicKey && this.peers[i].tweets_latest_ts > 0)
       ) {
         let obj = {
           field1: "RedSquare",
@@ -682,23 +696,11 @@ class RedSquare extends ModTemplate {
               for (let z = 0; z < txs.length; z++) {
                 txs[z].decryptMessage(this.app);
 
-                //timestamp is the original timestamp of the create tweet transaction
-                if (created_at === "earlier") {
-                  if (txs[z].updated_at < this.peers[i].tweets_earliest_ts) {
-                    this.peers[i].tweets_earliest_ts = txs[z].updated_at;
-                  }
+                if (txs[z].updated_at < this.peers[i].tweets_earliest_ts) {
+                  this.peers[i].tweets_earliest_ts = txs[z].updated_at;
                 }
-
-                //
-                // If we have a large gap of time, where are 200 new tweets are later than our local tweets,
-                // but those get processed and set our earliest timestamp, then we miss everything between the
-                // initial limited load and what we had saved locally...
-                //
-
-                if (created_at === "later") {
-                  if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
-                    this.peers[i].tweets_latest_ts = txs[z].updated_at;
-                  }
+                if (txs[z].updated_at > this.peers[i].tweets_latest_ts) {
+                  this.peers[i].tweets_latest_ts = txs[z].updated_at;
                 }
 
                 this.addNotification(txs[z]);
@@ -727,7 +729,12 @@ class RedSquare extends ModTemplate {
                   // Update our local archive with any updated metadata
                   //
                   if (this.peers[i].publicKey != this.publicKey) {
-                    this.saveTweet(txs[z].signature, 0);
+                    //
+                    // Only cache top level tweets!!!!
+                    //
+                    if (!tweet.parent_id){
+                      this.saveTweet(txs[z].signature, 0);
+                    }
                   }
                 } else {
                   // console.warn("How did we not add the tweet????");
@@ -740,7 +747,9 @@ class RedSquare extends ModTemplate {
               }
 
             } else {
-              this.peers[i].tweets_earliest_ts = 0;
+              if (created_at === "earlier"){
+                this.peers[i].tweets_earliest_ts = 0;  
+              }
             }
 
             console.log(
@@ -1833,6 +1842,7 @@ class RedSquare extends ModTemplate {
     let tweet = this.returnTweet(sig);
 
     if (!tweet) {
+      console.warn("Want to save a tweet not in our memory");
       return;
     }
 
@@ -1843,9 +1853,9 @@ class RedSquare extends ModTemplate {
           if (preserve){
             this.app.storage.updateTransaction(tweet.tx, { preserve: 1 }, "localhost");    
           }
-          return;
+        }else{
+          this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve }, "localhost");  
         }
-        this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve }, "localhost");
       },
       "localhost"
     );
@@ -1864,20 +1874,26 @@ class RedSquare extends ModTemplate {
       return;
     }
 
+
     this.app.storage.loadTransactions(
-      { field1: "RedSquare", limit: 10 },
+      { field1: "RedSquare", flagged:0, limit: 10, updated_later_than: 0 },
       (txs) => {
-        console.log(`${txs.length} tweets from local DB loaded`);
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
             this.addNotification(txs[z]);
             this.addTweet(txs[z], "local_cache");
+
+            if (txs[z].updated_at > this.tweets_latest_ts) {
+              this.tweets_latest_ts = txs[z].updated_at;
+            }
           }
         }
 
         //Run these regardless of results
         this.app.connection.emit("redsquare-home-render-request");
+        console.log(`${txs.length} tweets from local DB loaded, ${this.tweets.length}`);
+        
       },
       "localhost"
     );

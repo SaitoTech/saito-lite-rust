@@ -41,7 +41,7 @@ class FieldBattleOverlay {
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/fortification.png)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("A Field Battle imminent in "+ this.mod.game.spaces[res.spacekey].name+": Fortification?");
+      this.updateInstructions("Withdraw Units into Fortification?");
     }
   
     renderPostFieldBattle(res={}) {

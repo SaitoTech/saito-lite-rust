@@ -15,7 +15,7 @@
   z-index: 16;
 }
 
-.video-container {
+.qr-video-container {
   background-color: black;
   position: absolute;
   top: 0;
@@ -25,7 +25,7 @@
   overflow: hidden;
 }
 
-.video-container video {
+.qr-video-container video {
   /* Make video to at least 100% wide and tall */
   min-width: 100%;
   min-height: 100%;
@@ -120,6 +120,12 @@ video {
   font-size: 4rem;
   cursor: pointer;
   background-color: var(--saito-gray);
+}
+
+.close-scanner:hover {
+  border: 3px solid var(--saito-white);
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
 }
 
 @keyframes scanning {
