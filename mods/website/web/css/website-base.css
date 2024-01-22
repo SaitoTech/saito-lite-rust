@@ -269,7 +269,7 @@ body {
 .container>div label {
   width: 0;
   display: block;
-  text-wrap: nowrap;
+  white-space: nowrap;
   overflow: hidden;
   text-align: left;
   transition: width 1s ease-in-out;
