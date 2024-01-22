@@ -527,6 +527,11 @@
     state.translations['full']['english'] = 0;
 
     state.protestant_war_winner_vp = 0;
+    state.papacy_war_winner_vp = 0;
+    state.ottoman_war_winner_vp = 0;
+    state.hapsburg_war_winner_vp = 0;
+    state.england_war_winner_vp = 0;
+    state.france_war_winner_vp = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;

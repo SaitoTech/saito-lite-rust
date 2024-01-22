@@ -3690,6 +3690,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -3721,6 +3722,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -3754,6 +3756,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -4123,6 +4126,7 @@ return;
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -4146,6 +4150,7 @@ return;
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tsea\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -4614,6 +4619,7 @@ return;
 
       function(spacekey) {
         
+	his_self.updateStatus("acknowledge...");
 	his_self.addUnit(faction, spacekey, unittype);
 	his_self.displaySpace(spacekey);
         his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	

@@ -956,6 +956,7 @@ if (space.key === "bordeaux") {
 	let p = his_self.returnPlayerOfFaction(faction);
 
 	his_self.game.queue.push("knights-of-saint-john\t"+faction);
+	his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
         his_self.game.queue.push(`DEAL\t1\t${p}\t1`);
 
 	return 1;
@@ -971,7 +972,7 @@ if (space.key === "bordeaux") {
 	  let player = his_self.returnPlayerOfFaction(faction);
 
 	  if (player == his_self.game.player) {
-
+HACK
             let fhand_idx = his_self.returnFactionHandIdx(player, faction);
             let c = his_self.game.deck[0].fhand[fhand_idx][his_self.game.deck[0].fhand[fhand_idx].length-1];
 	    let card = his_self.game.deck[0].cards[c];
@@ -8590,7 +8591,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
     delete deck["001"];
     delete deck["002"];
     delete deck["003"];
-    //delete deck["004"];
+    delete deck["004"];
     delete deck["009"];
     delete deck["018"];
     delete deck["030"];

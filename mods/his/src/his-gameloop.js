@@ -770,21 +770,8 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addNavalSquadron("france", "genoa", 4);
 
 
-	  this.addCard("papacy", "004");
-	  this.addCard("papacy", "105");
-	  this.addCard("protestant", "104");
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("player 1:");
-console.log(JSON.stringify(this.game.state.players_info[0].factions));
-console.log("player 2:");
-console.log(JSON.stringify(this.game.state.players_info[1].factions));
+	  //this.addCard("papacy", "105");
+	  //this.addCard("protestant", "104");
 
     	  this.game.queue.splice(qe, 1);
 

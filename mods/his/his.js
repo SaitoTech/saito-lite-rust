@@ -3930,6 +3930,7 @@ if (space.key === "bordeaux") {
 	let p = his_self.returnPlayerOfFaction(faction);
 
 	his_self.game.queue.push("knights-of-saint-john\t"+faction);
+	his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
         his_self.game.queue.push(`DEAL\t1\t${p}\t1`);
 
 	return 1;
@@ -3945,7 +3946,7 @@ if (space.key === "bordeaux") {
 	  let player = his_self.returnPlayerOfFaction(faction);
 
 	  if (player == his_self.game.player) {
-
+HACK
             let fhand_idx = his_self.returnFactionHandIdx(player, faction);
             let c = his_self.game.deck[0].fhand[fhand_idx][his_self.game.deck[0].fhand[fhand_idx].length-1];
 	    let card = his_self.game.deck[0].cards[c];
@@ -11564,7 +11565,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
     delete deck["001"];
     delete deck["002"];
     delete deck["003"];
-    //delete deck["004"];
+    delete deck["004"];
     delete deck["009"];
     delete deck["018"];
     delete deck["030"];
@@ -15864,6 +15865,11 @@ console.log("searching for: " + sourcekey);
     state.translations['full']['english'] = 0;
 
     state.protestant_war_winner_vp = 0;
+    state.papacy_war_winner_vp = 0;
+    state.ottoman_war_winner_vp = 0;
+    state.hapsburg_war_winner_vp = 0;
+    state.england_war_winner_vp = 0;
+    state.france_war_winner_vp = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
@@ -17654,21 +17660,8 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addNavalSquadron("france", "genoa", 4);
 
 
-	  this.addCard("papacy", "004");
-	  this.addCard("papacy", "105");
-	  this.addCard("protestant", "104");
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("player 1:");
-console.log(JSON.stringify(this.game.state.players_info[0].factions));
-console.log("player 2:");
-console.log(JSON.stringify(this.game.state.players_info[1].factions));
+	  //this.addCard("papacy", "105");
+	  //this.addCard("protestant", "104");
 
     	  this.game.queue.splice(qe, 1);
 
@@ -29110,6 +29103,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -29141,6 +29135,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -29174,6 +29169,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -29543,6 +29539,7 @@ return;
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -29566,6 +29563,7 @@ return;
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tsea\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
@@ -30034,6 +30032,7 @@ return;
 
       function(spacekey) {
         
+	his_self.updateStatus("acknowledge...");
 	his_self.addUnit(faction, spacekey, unittype);
 	his_self.displaySpace(spacekey);
         his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	
@@ -30436,6 +30435,7 @@ return;
         return `
 	  <div class="faction_sheet" id="faction_sheet" style="background-image: url('/his/img/factions/${obj.img}')">
 	    <div class="faction_sheet_ruler" id="faction_sheet_ruler"></div>
+	    <div class="faction_sheet_vp" id="faction_sheet_vp"></div>
 	  </div>
 	`;
       }
