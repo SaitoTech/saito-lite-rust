@@ -26911,7 +26911,7 @@ console.log("can pass: " + can_pass);
 	      if (ops > 0) {
  	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
               }
-              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              menu[user_choice].fnct(this, this.game.player, selected_faction, 3, ops);
               return;
 	    }
 
@@ -26927,7 +26927,7 @@ console.log("can pass: " + can_pass);
 	      //
 	      if (ops == 1) {
 
-                  menu[user_choice].fnct(this, this.game.player, faction, 1);
+                  menu[user_choice].fnct(this, this.game.player, faction, 1, 0);
                   return;
 
 	      } else {
@@ -26949,7 +26949,7 @@ console.log("can pass: " + can_pass);
                   if (ops_remaining > 0) {
     	            this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
                   }
-                  menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+                  menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops_remaining);
                   return;
 	        });
 
@@ -26957,17 +26957,20 @@ console.log("can pass: " + can_pass);
 
 	    } else {
 
+	      let ops_to_spend = 0;
+
               for (let z = 0; z < menu[user_choice].factions.length; z++) {
                 if (menu[user_choice].factions[z] === selected_faction) {
                   ops -= menu[user_choice].cost[z];
 	          z = menu[user_choice].factions.length+1;
+		  ops_to_spend = menu[user_choice].cost[z];
                 }
               }
 
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
-              menu[user_choice].fnct(this, this.game.player, selected_faction);
+              menu[user_choice].fnct(this, this.game.player, selected_faction, ops_to_spend, ops);
               return;
 
 	    }
@@ -27025,7 +27028,7 @@ console.log("can pass: " + can_pass);
 	  //
 	  if (ops == 1) {
 
-            menu[user_choice].fnct(this, this.game.player, faction, 1);
+            menu[user_choice].fnct(this, this.game.player, faction, 1, 0);
             return;
 
 	  }
@@ -27047,15 +27050,18 @@ console.log("can pass: " + can_pass);
             if (ops_remaining > 0) {
   	      this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops_remaining+"\t"+limit);
             }
-            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend);
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops_remaining);
             return;
 	  });
 
 	} else {
 
+	  let ops_to_spend = 0;
+
           for (let z = 0; z < menu[user_choice].factions.length; z++) {
             if (pfactions.includes(menu[user_choice].factions[z])) {
               ops -= menu[user_choice].cost[z];
+	      ops_to_spend = menu[user_choice].cost[z];
   	      z = menu[user_choice].factions.length+1;
             }
           }
@@ -27063,7 +27069,7 @@ console.log("can pass: " + can_pass);
           if (ops > 0) {
   	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
           }
-          menu[user_choice].fnct(this, this.game.player, faction);
+          menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops);
           return;
 
 	}
@@ -27686,7 +27692,7 @@ return;
 
   }
 
-  async playerMoveFormationInClear(his_self, player, faction) {
+  async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -27716,7 +27722,13 @@ return;
  		  if (!space.pass.includes(spacekey)) {
 		    return 1;
 		  } else {
-		    return 0;
+console.log(space.key + " ---> " + spacekey + " -- ops remaining: " + ops_remaining);
+		    if (ops_remaining >= 1) {
+		      // we have to flag and say, "this costs an extra op"
+		      return 1;
+		    } else {
+		      return 0;
+		    }
 		  }
 		}
 	  	return 1;
@@ -27734,6 +27746,24 @@ return;
 		  does_movement_include_cavalry = 1;
 		}
 	      }
+
+
+	      //
+	      // modify "continue" instruction
+	      //
+	      for (let i = 0; i < his_self.moves.length; i++) {
+		let x = his_self.moves[i];
+		let y = x.split("\t");
+		let new_ops_remaining = parseInt(y[4])-1;
+		if (y[0] === "continue") {
+		  if (new_ops_remaining) {
+	  	    his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+		  } else {
+		    his_self.moves.splice(i, 1);
+		  }
+		}
+	      }
+	      
 
 	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -28659,7 +28689,7 @@ return;
     return 0;
   }
 
-  async playerMoveFormationOverPass(his_self, player, faction) {
+  async playerMoveFormationOverPass(his_self, player, faction, ops_to_spend=0, ops_remaining=0, movement_obj={}) {
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -29573,7 +29603,7 @@ return;
     if (faction === "protestant") { return 1; }
     return 0;
   }
-  async playerTranslateScripture(his_self, player, faction, ops=1) {
+  async playerTranslateScripture(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
 
     let msg = "Select Work to Translate:";
     let html = '<ul>';
@@ -29612,15 +29642,15 @@ return;
       his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
-	his_self.addMove("translation\tgerman\t"+ops);
+	his_self.addMove("translation\tgerman\t"+ops_to_spend);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in German Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
       if (id == 2 || id == 5) { 
-	his_self.addMove("translation\tfrench\t"+ops); 
+	his_self.addMove("translation\tfrench\t"+ops_to_spend); 
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in French Language Zone\ttranslation_french_language_zone\tfrench\t"+faction);
       }
       if (id == 3 || id == 6) { 
-	his_self.addMove("translation\tenglish\t"+ops);
+	his_self.addMove("translation\tenglish\t"+ops_to_spend);
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
       // we only ask for our own CONFIRMS
@@ -29885,8 +29915,8 @@ return;
     }
     return 0;
   }
-  async playerBuildSaintPeters(his_self, player, faction, ops=1) {
-    for (let z = 0; z < ops; z++) {
+  async playerBuildSaintPeters(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
+    for (let z = 0; z < ops_to_spend; z++) {
       his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
     }
     his_self.endTurn();
