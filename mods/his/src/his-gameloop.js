@@ -459,6 +459,41 @@ if (this.game.state.scenario != "is_testing") {
 	    this.game.queue.push(moves[i]);
 	  }
 
+
+          //
+          // fortified spaces - any units in excess of stacking limit returned to capital
+          //
+          for (let i in this.game.spaces) {
+            if (this.isSpaceFortified(this.game.spaces[i])) {
+
+              let space = this.game.spaces[i];
+              let f = this.returnFactionControllingSpace(i);
+              let num_friendly_units = this.returnFriendlyLandUnitsInSpace(f, space);
+              let num_faction_units = this.returnFactionLandUnitsInSpace(f, space);
+	      let capitals = this.returnCapitals(f);
+
+              if (num_friendly_units > 4 && !capitals.includes(i)) {
+		let units_preserved = 0;
+		for (let q in space.units) {
+		  for (let ii = 0; ii < space.units[q].length; ii++) {
+		    let u = space.units[q][ii];
+		    if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary") {
+		      units_preserved++;
+		      if (units_preserved > 4) {
+		        space.units[q].splice(ii, 1);
+		        ii--;
+		      }
+		    }
+		  }
+		}
+		this.updateLog("OVERSTACKING " + this.returnName(i) + " (removed)");
+		this.displaySpace(i);
+              }
+
+            }
+          }
+
+
 	  return 1;
         }
 
