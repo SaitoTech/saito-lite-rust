@@ -317,7 +317,7 @@ class Post {
         It's an art, not a science
         */
 
-      if (!is_reply) {
+      if (source == "Post") {
         this.mod.main.scrollFeed(0);
       }
     }
@@ -334,11 +334,12 @@ class Post {
 
     let rparent = this.tweet;
     if (rparent) {
-      console.log("Rerender feed with temp stats");
+      //console.log("Rerender feed with temp stats");
 
       if (posted_tweet.retweet_tx) {
         rparent.render();
         this.mod.addTweet(newtx, "post_retweet");
+
         posted_tweet.render(true);
       } else {
         this.mod.addTweet(newtx, "post_reply");

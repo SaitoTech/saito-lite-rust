@@ -261,6 +261,20 @@ class Tweet {
     if (document.querySelector(eqs)) {
       document.querySelector(eqs).remove();
     }
+    if (this.parent_id){
+      let parent = this.mod.returnTweet(this.parent_id);
+      if (parent.isRendered()){
+        parent.removeReply();    
+      }
+    }
+  }
+
+  removeReply(){
+    let myqs = this.container + `> .tweet-${this.tx.signature}`;
+    let obj = document.querySelector(myqs);
+    if (obj) {
+      obj.classList.remove("has-reply");
+    }
   }
 
   render(prepend = false) {
@@ -753,7 +767,6 @@ class Tweet {
             // full thread already exists
             //
             if (sigs.includes(this.tx.signature) && sigs.includes(this.thread_id)) {
-              window.history.pushState({}, document.title, `/redsquare?tweet_id=${this.thread_id}`);
 
               app.connection.emit("redsquare-tweet-render-request", this);
 
@@ -779,7 +792,6 @@ class Tweet {
           e.stopImmediatePropagation();
           let sig = item.getAttribute("data-id");
           if (e.target.tagName != "IMG" && sig) {
-            //window.location.href = `/redsquare/?tweet_id=${sig}`;
             let t = this.mod.returnTweet(sig);
             if (t) {
               app.connection.emit("redsquare-tweet-render-request", t);
@@ -1161,7 +1173,7 @@ class Tweet {
     for (let i = 0; i < this.children.length; i++) {
       if (this.children[i].tx.signature === tweet_sig) {
         this.children[i].remove();
-        this.children[i].splice(i, 1);
+        this.children.splice(i, 1);
         this.children_sigs_hmap[tweet_sig] = 0;
         return;
       }
@@ -1171,7 +1183,7 @@ class Tweet {
       for (let i = 0; i < this.unknown_children.length; i++){
         if (this.unknown_children[i].tx.signature == tweet_sig){
           this.unknown_children[i].remove();
-          this.unknown_children[i].splice(i, 1);
+          this.unknown_children.splice(i, 1);
           this.unknown_children_sigs_hmap[tweet_sig] = 0;
           return;
         }
@@ -1232,10 +1244,7 @@ class Tweet {
       return this;
     }
 
-    let expression =
-      /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-
-    let links = this.text.match(expression);
+    let links = this.text.match(app.browser.urlRegexp());
 
     if (links != null && links.length > 0) {
       //
