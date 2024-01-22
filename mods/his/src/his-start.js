@@ -257,6 +257,24 @@ if (this.game.players.length > 2) {
       }
     });
     this.menu.addSubMenuOption("game-info", {
+      text : "New World",
+      id : "game-new-world",
+      class : "game-cnew-world",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.newworld_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-info", {
+      text : "Chateaux",
+      id : "game-chateaux-building",
+      class : "game-chateaux-building",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.chateaux_overlay.render("papacy");
+      }
+    });
+    this.menu.addSubMenuOption("game-info", {
       text : "Religion",
       id : "game-religious-conflict",
       class : "game-religious-conflict",

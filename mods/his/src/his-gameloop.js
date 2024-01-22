@@ -242,6 +242,7 @@ if (this.game.state.scenario != "is_testing") {
 	  if (mv[1] === "zoom") { this.theses_overlay.hide(); }
 	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
 	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
+	  if (mv[1] === "chateaux") { this.chateaux_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
 	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.pushHudUnderOverlay(); this.debate_overlay.hide(); }
@@ -641,10 +642,37 @@ if (this.game.state.scenario != "is_testing") {
 	  this.addNavyLeader(faction, spacekey, type);
 
     	  this.game.queue.splice(qe, 1);
-
 	  return 1;
 	}
 
+	if (mv[0] === "colonize") {
+	  let faction = mv[1];
+	  let player = this.returnPlayerCommandingFaction(faction);
+	  if (this.game.state.players_info[player-1].colonized[faction] < 1) {
+	    this.game.state.players_info[player-1].colonized[faction] = 1;
+	  }
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
+	if (mv[0] === "explore") {
+	  let faction = mv[1];
+	  let player = this.returnPlayerCommandingFaction(faction);
+	  if (this.game.state.players_info[player-1].explored[faction] < 1) {
+	    this.game.state.players_info[player-1].explored[faction] = 1;
+	  }
+	  return 1;
+	}
+
+	if (mv[0] === "conquer") {
+	  let faction = mv[1];
+	  let player = this.returnPlayerCommandingFaction(faction);
+	  if (this.game.state.players_info[player-1].conquered[faction] < 1) {
+	    this.game.state.players_info[player-1].conquered[faction] = 1;
+	  }
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
 
 
 	if (mv[0] === "is_testing") {
@@ -742,6 +770,7 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addNavalSquadron("france", "genoa", 4);
 
 
+	  this.addCard("papacy", "004");
 	  this.addCard("papacy", "105");
 	  this.addCard("protestant", "104");
 
@@ -4710,10 +4739,6 @@ console.log("spacekey: " + spacekey);
 
 	if (mv[0] === "assault") {
 
-console.log("!");
-console.log("!! assault !!");
-console.log("!");
-
           this.game.queue.splice(qe, 1);
 	  this.game.state.assault = {};
 
@@ -4873,20 +4898,16 @@ console.log("!");
 	  // calculate how many rolls attacker and defener get in this situation
 	  //
 	  if (defender_units == 0) {
-console.log("CALCULATING ATTACKER ROLLS: no defender units");
 	    attacker_rolls = attacker_units;
 	    attacker_rolls += attacker_highest_battle_rating;
 	    defender_rolls = 1 + defender_highest_battle_rating;
 	  } else {
-console.log("CALCULATING ATTACKER ROLLS: some defender units");
 	    for (let i = 0; i < attacker_units; i++) {
 	      if (i%2 === 0) { attacker_rolls++; }
 	    }
 	    attacker_rolls += attacker_highest_battle_rating;
 	    defender_rolls = 1 + defender_units + defender_highest_battle_rating;
 	  }
-
-console.log("pre-bonus: " + attacker_rolls + " =-= " + defender_rolls);
 
 	  if (attacker_player > 0) {
 	    if (his_self.game.state.players_info[attacker_player-1].tmp_roll_bonus) {
@@ -7278,6 +7299,48 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	}
 
+	if (mv[0] === "select_and_discard") {
+
+	  let his_self = this;
+	  let faction = mv[1];
+	  let player = this.returnPlayerCommandingFaction(faction);
+          let fhand_idx = this.returnFactionHandIdx(player, faction);
+
+	  if (player == this.game.player) {
+
+            let msg = "Select Card to Discard:";
+            let html = '<ul>';
+	    let cards = this.game.deck[0].fhand[fhand_idx];;
+	    let any_choice = false;
+	    for (let i = 0; i < cards.length; i++) {
+              if (his_self.game.deck[0].cards[cards[i]].type != "mandatory" && parseInt(cards[i]) > 7) {
+		any_choice = true;
+                html += `<li class="option showcard" id="${cards[i]}">${his_self.game.deck[0].cards[cards[i]].name}</li>`;
+              }
+            }
+            html += '</ul>';
+
+	    if (any_choice == false) { his_self.endTurn(); return; }
+
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+              $('.option').off();
+              his_self.updateStatus("acknowledge...");
+              let action = $(this).attr("id");
+              his_self.addMove("discard\t"+faction+"\t"+action);
+              his_self.endTurn();
+            });
+	  } else {
+	    his_self.updateStatus(his_self.returnFactionName(faction) + " selecting discard");
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+	}
+
 	if (mv[0] === "discard") {
 
 	  let faction = mv[1];
@@ -7303,27 +7366,20 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    }
 	  }
 
-console.log("in discard!");
-console.log("cards_left: " + JSON.stringify(this.game.state.cards_left));
-
 	  //
 	  // and update cards left
 	  //
           if (already_discarded == false && this.game.state.cards_left[faction]) {
-console.log("discarding card so hand shrinks from: " + this.game.state.cards_left[faction]);
             if (this.game.state.cards_left[faction] > 0) {
 	      this.game.state.cards_left[faction]--;
 	      this.displayCardsLeft();
 	    }
-console.log("to: " + this.game.state.cards_left[faction]);
 	  }
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}
-
-
 
 
 	// skip next impulse

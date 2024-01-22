@@ -1,5 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const DebateOverlay = require('./lib/ui/overlays/debate');
+const ChateauxOverlay = require('./lib/ui/overlays/chateaux');
+const NewWorldOverlay = require('./lib/ui/overlays/newworld');
 const TreatiseOverlay = require('./lib/ui/overlays/treatise');
 const FactionOverlay = require('./lib/ui/overlays/faction');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
@@ -57,6 +59,8 @@ class HereIStand extends GameTemplate {
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
+    this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
+    this.newworld_overlay = new NewWorldOverlay(this.app, this);
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
     this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection

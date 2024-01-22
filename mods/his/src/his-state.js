@@ -573,7 +573,6 @@
     state.events.revolt_in_ireland = 0;
     state.events.revolt_in_egypt = 0;
 
-
     state.augsburg_electoral_bonus = 0;
     state.mainz_electoral_bonus = 0;
     state.trier_electoral_bonus = 0;
@@ -595,7 +594,6 @@
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
-
 
     state.leaders = {};
     state.leaders.francis_i = 1;
@@ -623,6 +621,10 @@
     state.events.schmalkaldic_league = 0;
     state.events.edward_vi_born = 0;
     state.events.wartburg = 0;
+
+    state.conquests = [];
+    state.colonies = [];
+    state.explorations = [];
 
     return state;
 
