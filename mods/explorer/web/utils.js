@@ -41,6 +41,8 @@ function drawRawBlock(blk, hash) {
 }
 
 function listTransactions(blk, hash) {
+  let nolan_per_saito = 100000000;
+
   var html = '<div class="block-table">';
   html += "<div><h4>id</h4></div><div>" + blk.id + "</div>";
   html += "<div><h4>hash</h4></div><div>" + hash + "</div>";
@@ -101,7 +103,7 @@ function listTransactions(blk, hash) {
 
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
-      html += "<div>" + tx_fees.toFixed(5) + "</div>";
+      html += "<div>" + BigInt(tx_fees*nolan_per_saito) + "</div>";
       html += "<div>" + tmptx.type + "</div>";
       if (tmptx.type == 0) {
         if (tmptx.msg.module) {
