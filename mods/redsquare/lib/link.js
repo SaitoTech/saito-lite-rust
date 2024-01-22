@@ -9,13 +9,17 @@ class RedSquareLink {
     this.tweet = tweet;
     this.name = "RedSquareLink";
 
+    this.set_height = true;
     this.src = "/saito/img/dreamscape.png";
     this.url = "";
     this.title = "";
     this.description = "";
 
     if (this.tweet.link_properties) {
-      if (this.tweet.link_properties['og:image']) { this.src = this.tweet.link_properties['og:image']; }
+      if (this.tweet.link_properties['og:image']) { 
+        this.src = this.tweet.link_properties['og:image']; 
+        this.set_height = false;
+      }
       if (this.tweet.link_properties['og:url']) { this.url = this.tweet.link_properties['og:url']; }
       if (this.tweet.link_properties['og:title']) { this.title = this.tweet.link_properties['og:title']; }
       if (this.tweet.link_properties['og:description']) { this.description = this.tweet.link_properties['og:description']; }

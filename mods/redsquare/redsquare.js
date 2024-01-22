@@ -1016,6 +1016,10 @@ class RedSquare extends ModTemplate {
           t.tx.optional.update_tx = tweet.tx.optional.update_tx;
           tweet.render();
         }
+        if (tweet.tx.optional.link_properties) {
+          t.tx.optional.link_properties = tweet.tx.optional.link_properties;
+          tweet.render();
+        }
 
         t.rerenderControls(should_rerender);
       }

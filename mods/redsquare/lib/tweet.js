@@ -1244,10 +1244,7 @@ class Tweet {
       return this;
     }
 
-    let expression =
-      /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-
-    let links = this.text.match(expression);
+    let links = this.text.match(app.browser.urlRegexp());
 
     if (links != null && links.length > 0) {
       //
