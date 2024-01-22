@@ -1558,6 +1558,17 @@ class Browser {
     }
   }
 
+  //
+  // neither of these is quite right and the internet is full of wrong answers 
+  //
+  urlRegexp(){
+    // from tweet.js let expression = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+    // from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+            
+    return /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+
+  }
+
   sanitize(text) {
     //console.log("Sanitize: ", text);
     try {
@@ -1618,9 +1629,8 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-
-      text = text.replace(urlPattern, function (url) {
+      
+      text = text.replace(this.urlRegexp(), function (url) {
         let url1 = url.trim();
         let url2 = url1;
         if (url2.length > 42) {
