@@ -770,7 +770,7 @@ if (this.game.state.scenario != "is_testing") {
 
 
 	  //this.addCard("papacy", "105");
-	  //this.addCard("protestant", "104");
+	  this.addCard("protestant", "031");
 
     	  this.game.queue.splice(qe, 1);
 

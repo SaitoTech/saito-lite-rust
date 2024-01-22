@@ -449,10 +449,6 @@
   autoResolveWinterRetreat(faction, spacekey) {
     let his_self = this;
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
-if (faction === "venice" && spacekey == "agram") {
-  console.log("VENICE CHECK: " + JSON.stringify(res));
-}
-console.log("AUTO: " + JSON.stringify(res));
     if (res.length > 0) {
       let space = this.game.spaces[spacekey];
       let roll = this.rollDice(res.length);
@@ -2310,7 +2306,6 @@ return;
  		  if (!space.pass.includes(spacekey)) {
 		    return 1;
 		  } else {
-console.log(space.key + " ---> " + spacekey + " -- ops remaining: " + ops_remaining);
 		    if (ops_remaining >= 1) {
 		      // we have to flag and say, "this costs an extra op"
 		      return 1;
@@ -2337,21 +2332,25 @@ console.log(space.key + " ---> " + spacekey + " -- ops remaining: " + ops_remain
 
 
 	      //
-	      // modify "continue" instruction
+	      // modify "continue" instruction if this is a move over a pass
 	      //
-	      for (let i = 0; i < his_self.moves.length; i++) {
-		let x = his_self.moves[i];
-		let y = x.split("\t");
-		let new_ops_remaining = parseInt(y[4])-1;
-		if (y[0] === "continue") {
-		  if (new_ops_remaining) {
-	  	    his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
-		  } else {
-		    his_self.moves.splice(i, 1);
-		  }
-		}
+	      let space = his_self.game.spaces[spacekey];
+	      if (space.pass) {
+		if (space.pass.includes(destination_spacekey)) {
+	          for (let i = 0; i < his_self.moves.length; i++) {
+		    let x = his_self.moves[i];
+		    let y = x.split("\t");
+		    let new_ops_remaining = parseInt(y[4])-1;
+		    if (y[0] === "continue") {
+		      if (new_ops_remaining) {
+	  	        his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+  	  	      } else {
+		        his_self.moves.splice(i, 1);
+		      }
+		    }
+	          }
+	        }
 	      }
-	      
 
 	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -2474,8 +2473,27 @@ console.log(space.key + " ---> " + spacekey + " -- ops remaining: " + ops_remain
       "Select Town from which to Move Units:",
 
       function(space) {
+	let num_moveable = 0;
 	for (let z in space.units) {
-	  if (space.units[z].length > 0 && faction === z) {
+	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
+	    //
+	    // Foul Weather prevents spaces with already moved units
+	    //
+            if (his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
+              for (let i = 0; i < space.units[z].length; i++) {
+		if (space.units[z][i].type === "cavalry") { num_moveable++; }
+		if (space.units[z][i].type === "regular") { num_moveable++; }
+		if (space.units[z][i].type === "mercenary") { num_moveable++; }
+		if (space.units[z][i].battle_rating > 0) { num_moveable++; }
+                if (space.units[z][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1) {
+	          num_moveable--;
+                }
+              }
+	      if (num_moveable <= 0) {
+		return 0;
+	      }
+            }
+
 	    return 1;
           }
 	}
@@ -2508,8 +2526,20 @@ console.log(space.key + " ---> " + spacekey + " -- ops remaining: " + ops_remain
           $('.option').off();
           $('.option').on('click', function () {
 
-	    $('.option').off();
             let id = $(this).attr("id");
+
+	    for (let key in space.units) {
+	      if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
+	        for (let i = 0; i < space.units[key].length; i++) {
+	          if (space.units[key][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1 && id === "auto") {
+		    alert("Foul Weather: units in this space have already been moved, so movement from this space must happen manually using only unmoved forces");
+		    return;
+	          }
+	        }
+	      }
+	    }
+
+	    $('.option').off();
 
 	    if (id === "auto") {
 	      for (let key in space.units) {
