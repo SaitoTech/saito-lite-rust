@@ -29,6 +29,14 @@ module.exports = {
     "consistent-return": "error",
     semi: ["error", "always"],
     "prettier/prettier": "error",
+    indent: ["warn", 2],
+    "space-infix-ops": "warn",
+    "space-before-blocks": "warn",
+    "object-curly-spacing": ["warn", "always"],
+    "no-trailing-spaces": "warn",
+    "space-before-function-paren": ["warn", "always"],
+    "array-bracket-spacing": ["warn", "never"],
+    "keyword-spacing": ["warn", { before: true, after: true }],
     // ... more customized rules ...
   },
 };
