@@ -16,15 +16,14 @@ module.exports = {
 		indent: ['error', 'tab'],
 		'linebreak-style': ['error', 'unix'], // Use Unix line endings
 		quotes: ['error', 'single', { allowTemplateLiterals: true }], // Use single quotes for strings
-		semi: ['error', 'always'], // Require semicolons at the end of statements
+		semi: ['error', 'always'] // Require semicolons at the end of statements
 
-		// TypeScript specific rules
-		'@typescript-eslint/no-unused-vars': 'off', // Turn off unused variable warnings
-		'@typescript-eslint/no-empty-function': 'off', // Allow empty functions
-		'@typescript-eslint/no-var-requires': 'off', // Allow 'require' statements
-		'@typescript-eslint/no-this-alias': 'off', // Allow using 'this' alias
-		'no-fallthrough': 'off', // Allow fallthrough in switch statements
-		'no-prototype-builtins': 'off', // Allow prototype built-ins
-		'no-cond-assign': 'off' // Allow assignment in conditional expressions
+		// '@typescript-eslint/no-unused-vars': 'off', // Turn off unused variable warnings
+		// '@typescript-eslint/no-empty-function': 'off', // Allow empty functions
+		// '@typescript-eslint/no-var-requires': 'off', // Allow 'require' statements
+		// '@typescript-eslint/no-this-alias': 'off', // Allow using 'this' alias
+		// 'no-fallthrough': 'off', // Allow fallthrough in switch statements
+		// 'no-prototype-builtins': 'off', // Allow prototype built-ins
+		// 'no-cond-assign': 'off' // Allow assignment in conditional expressions
 	}
 };
