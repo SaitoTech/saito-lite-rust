@@ -516,7 +516,7 @@ class RedSquare extends ModTemplate {
       this.addPeer(peer, "tweets");
 
       //
-      // if viewing a specific tweet
+      // if viewing a specific twee
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
       if (tweet_id) {
@@ -551,7 +551,7 @@ class RedSquare extends ModTemplate {
           case "#profile":
             this.app.connection.emit("redsquare-profile-render-request");
             break;
-          default: 
+          default:
             break;
         }
       }
@@ -560,9 +560,9 @@ class RedSquare extends ModTemplate {
       this.loadTweets("later", (tx_count) => {
         // Add code here
 
-        for (let i = 0; i < this.peers.length; i++){
-          if (this.peers[i].publicKey !== this.publicKey){
-            if (this.peers[i].tweets_earliest_ts > this.tweets_latest_ts){
+        for (let i = 0; i < this.peers.length; i++) {
+          if (this.peers[i].publicKey !== this.publicKey) {
+            if (this.peers[i].tweets_earliest_ts > this.tweets_latest_ts) {
               console.log("RS: WARNING -- there is a time gap from what was fetched");
             }
           }
@@ -645,7 +645,11 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers.length; i++) {
       if (
         !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
-        !(created_at == "later" && this.peers[i].publicKey == this.publicKey && this.peers[i].tweets_latest_ts > 0)
+        !(
+          created_at == "later" &&
+          this.peers[i].publicKey == this.publicKey &&
+          this.peers[i].tweets_latest_ts > 0
+        )
       ) {
         peer_count++;
       }
@@ -665,7 +669,11 @@ class RedSquare extends ModTemplate {
 
       if (
         !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
-        !(created_at == "later" && this.peers[i].publicKey == this.publicKey && this.peers[i].tweets_latest_ts > 0)
+        !(
+          created_at == "later" &&
+          this.peers[i].publicKey == this.publicKey &&
+          this.peers[i].tweets_latest_ts > 0
+        )
       ) {
         let obj = {
           field1: "RedSquare",
@@ -732,28 +740,30 @@ class RedSquare extends ModTemplate {
                     //
                     // Only cache top level tweets!!!!
                     //
-                    if (!tweet.parent_id){
+                    if (!tweet.parent_id) {
                       this.saveTweet(txs[z].signature, 0);
                     }
                   }
                 } else {
                   // console.warn("How did we not add the tweet????");
                   // console.log(txs[z]);
-
                   // There are several legitimate ways that a received "Tweet Tx" is not a tweet tx
-                  // delete is saved as a RedSquare field1 by the server to make sure that people pull the 
+                  // delete is saved as a RedSquare field1 by the server to make sure that people pull the
                   // delete command and scrub it from their local storage
                 }
               }
-
             } else {
-              if (created_at === "earlier"){
-                this.peers[i].tweets_earliest_ts = 0;  
+              if (created_at === "earlier") {
+                this.peers[i].tweets_earliest_ts = 0;
               }
             }
 
             console.log(
-              `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${txs.length} ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(this.peers[i].tweets_earliest_ts)}`
+              `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
+                txs.length
+              } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
+                this.peers[i].tweets_earliest_ts
+              )}`
             );
 
             // execute callback when all txs are fetched from all peers
@@ -1168,7 +1178,6 @@ class RedSquare extends ModTemplate {
     this.tweets_sigs_hmap[tweet_sig] = 0;
 
     for (let i = 0; i < this.tweets.length; i++) {
-
       if (this.tweets[i].tx.signature === tweet_sig) {
         this.tweets[i].remove();
         this.tweets.splice(i, 1);
@@ -1179,7 +1188,6 @@ class RedSquare extends ModTemplate {
         this.tweets[i].removeChildTweet(tweet_sig);
         return;
       }
-
     }
 
     for (let j = 0; j < this.unknown_children.length; j++) {
@@ -1271,7 +1279,6 @@ class RedSquare extends ModTemplate {
   }
 
   async receiveLikeTransaction(blk, tx, conf, app) {
-
     let txmsg = tx.returnMessage();
 
     let liked_tweet = this.returnTweet(txmsg.data.signature);
@@ -1407,7 +1414,6 @@ class RedSquare extends ModTemplate {
   }
 
   async receiveRetweetTransaction(blk, tx, conf, app) {
-
     let txmsg = tx.returnMessage();
 
     let retweeted_tweet = this.returnTweet(txmsg.data.signature);
@@ -1560,12 +1566,11 @@ class RedSquare extends ModTemplate {
     );
   }
 
-
   //
   // We should remove the tweet in question from memory (if we have it)
-  // remove it from the archives and update the archives of linked tweets so that the stats 
+  // remove it from the archives and update the archives of linked tweets so that the stats
   // decrement accordingly
-  // To-do: implement live updating of reply/retweet counts (currently requires a refresh) 
+  // To-do: implement live updating of reply/retweet counts (currently requires a refresh)
   //
   async receiveDeleteTransaction(blk, tx, conf, app) {
     console.log("REDSQUARE: receive delete transaction!");
@@ -1578,7 +1583,6 @@ class RedSquare extends ModTemplate {
     if (!txmsg.data.tweet_id) {
       return;
     }
-
 
     this.removeTweet(txmsg.data.tweet_id);
 
@@ -1595,20 +1599,18 @@ class RedSquare extends ModTemplate {
           // save the tx
           //
           if (oldtx.from[0].publicKey === tx.from[0].publicKey) {
-
             await this.app.storage.deleteTransaction(oldtx, {}, "localhost");
 
             let tweet = new Tweet(this.app, this, oldtx, "");
-            
+
             // Delete tweet is a reply
             if (tweet.tx.optional.parent_id) {
-
               await this.app.storage.loadTransactions(
                 { sig: tweet.tx.optional.parent_id, field1: "RedSquare" },
                 async (txs) => {
                   if (txs?.length) {
                     if (txs[0]?.optional?.num_replies) {
-                      txs[0].optional.num_replies--;  
+                      txs[0].optional.num_replies--;
                       await this.app.storage.updateTransaction(txs[0], {}, "localhost");
                     }
                   }
@@ -1618,21 +1620,20 @@ class RedSquare extends ModTemplate {
             }
 
             // Deleted tweet is a retweet
-            if (tweet.retweet_tx){
+            if (tweet.retweet_tx) {
               await this.app.storage.loadTransactions(
                 { sig: tweet.retweet.tx.signature, field1: "RedSquare" },
                 async (txs) => {
                   if (txs?.length) {
                     if (txs[0].optional?.num_retweets) {
-                      txs[0].optional.num_retweets--;  
+                      txs[0].optional.num_retweets--;
                       await this.app.storage.updateTransaction(txs[0], {}, "localhost");
-                    }                  
+                    }
                   }
                 },
                 "localhost"
               );
             }
-
           }
         }
       },
@@ -1899,17 +1900,20 @@ class RedSquare extends ModTemplate {
       { field1: "RedSquare", sig },
       (txs) => {
         if (txs?.length > 0) {
-          if (preserve){
-            this.app.storage.updateTransaction(tweet.tx, { preserve: 1 }, "localhost");    
+          if (preserve) {
+            this.app.storage.updateTransaction(tweet.tx, { preserve: 1 }, "localhost");
           }
-        }else{
-          this.app.storage.saveTransaction(tweet.tx, { field1: "RedSquare", field3: tweet?.thread_id, preserve }, "localhost");  
+        } else {
+          this.app.storage.saveTransaction(
+            tweet.tx,
+            { field1: "RedSquare", field3: tweet?.thread_id, preserve },
+            "localhost"
+          );
         }
       },
       "localhost"
     );
   }
-
 
   loadLocalTweets() {
     if (!this.app.BROWSER) {
@@ -1923,9 +1927,8 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-
     this.app.storage.loadTransactions(
-      { field1: "RedSquare", flagged:0, limit: 10, updated_later_than: 0 },
+      { field1: "RedSquare", flagged: 0, limit: 10, updated_later_than: 0 },
       (txs) => {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
@@ -1942,7 +1945,6 @@ class RedSquare extends ModTemplate {
         //Run these regardless of results
         this.app.connection.emit("redsquare-home-render-request");
         console.log(`${txs.length} tweets from local DB loaded, ${this.tweets.length}`);
-        
       },
       "localhost"
     );
