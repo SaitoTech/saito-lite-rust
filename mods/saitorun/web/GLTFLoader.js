@@ -278,45 +278,45 @@ class GLTFLoader extends Loader {
 				const extensionsRequired = json.extensionsRequired || [];
 
 				switch (extensionName) {
-					case EXTENSIONS.KHR_MATERIALS_UNLIT:
-						extensions[extensionName] =
+				case EXTENSIONS.KHR_MATERIALS_UNLIT:
+					extensions[extensionName] =
 							new GLTFMaterialsUnlitExtension();
-						break;
+					break;
 
-					case EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS:
-						extensions[extensionName] =
+				case EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS:
+					extensions[extensionName] =
 							new GLTFMaterialsPbrSpecularGlossinessExtension();
-						break;
+					break;
 
-					case EXTENSIONS.KHR_DRACO_MESH_COMPRESSION:
-						extensions[extensionName] =
+				case EXTENSIONS.KHR_DRACO_MESH_COMPRESSION:
+					extensions[extensionName] =
 							new GLTFDracoMeshCompressionExtension(
 								json,
 								this.dracoLoader
 							);
-						break;
+					break;
 
-					case EXTENSIONS.KHR_TEXTURE_TRANSFORM:
-						extensions[extensionName] =
+				case EXTENSIONS.KHR_TEXTURE_TRANSFORM:
+					extensions[extensionName] =
 							new GLTFTextureTransformExtension();
-						break;
+					break;
 
-					case EXTENSIONS.KHR_MESH_QUANTIZATION:
-						extensions[extensionName] =
+				case EXTENSIONS.KHR_MESH_QUANTIZATION:
+					extensions[extensionName] =
 							new GLTFMeshQuantizationExtension();
-						break;
+					break;
 
-					default:
-						if (
-							extensionsRequired.indexOf(extensionName) >= 0 &&
+				default:
+					if (
+						extensionsRequired.indexOf(extensionName) >= 0 &&
 							plugins[extensionName] === undefined
-						) {
-							console.warn(
-								'THREE.GLTFLoader: Unknown extension "' +
+					) {
+						console.warn(
+							'THREE.GLTFLoader: Unknown extension "' +
 									extensionName +
 									'".'
-							);
-						}
+						);
+					}
 				}
 			}
 		}
@@ -442,42 +442,42 @@ class GLTFLightsExtension {
 		const range = lightDef.range !== undefined ? lightDef.range : 0;
 
 		switch (lightDef.type) {
-			case 'directional':
-				lightNode = new DirectionalLight(color);
-				lightNode.target.position.set(0, 0, -1);
-				lightNode.add(lightNode.target);
-				break;
+		case 'directional':
+			lightNode = new DirectionalLight(color);
+			lightNode.target.position.set(0, 0, -1);
+			lightNode.add(lightNode.target);
+			break;
 
-			case 'point':
-				lightNode = new PointLight(color);
-				lightNode.distance = range;
-				break;
+		case 'point':
+			lightNode = new PointLight(color);
+			lightNode.distance = range;
+			break;
 
-			case 'spot':
-				lightNode = new SpotLight(color);
-				lightNode.distance = range;
-				// Handle spotlight properties.
-				lightDef.spot = lightDef.spot || {};
-				lightDef.spot.innerConeAngle =
+		case 'spot':
+			lightNode = new SpotLight(color);
+			lightNode.distance = range;
+			// Handle spotlight properties.
+			lightDef.spot = lightDef.spot || {};
+			lightDef.spot.innerConeAngle =
 					lightDef.spot.innerConeAngle !== undefined
 						? lightDef.spot.innerConeAngle
 						: 0;
-				lightDef.spot.outerConeAngle =
+			lightDef.spot.outerConeAngle =
 					lightDef.spot.outerConeAngle !== undefined
 						? lightDef.spot.outerConeAngle
 						: Math.PI / 4.0;
-				lightNode.angle = lightDef.spot.outerConeAngle;
-				lightNode.penumbra =
+			lightNode.angle = lightDef.spot.outerConeAngle;
+			lightNode.penumbra =
 					1.0 -
 					lightDef.spot.innerConeAngle / lightDef.spot.outerConeAngle;
-				lightNode.target.position.set(0, 0, -1);
-				lightNode.add(lightNode.target);
-				break;
+			lightNode.target.position.set(0, 0, -1);
+			lightNode.add(lightNode.target);
+			break;
 
-			default:
-				throw new Error(
-					'THREE.GLTFLoader: Unexpected light type: ' + lightDef.type
-				);
+		default:
+			throw new Error(
+				'THREE.GLTFLoader: Unexpected light type: ' + lightDef.type
+			);
 		}
 
 		// Some lights (e.g. spot) default to a position other than the origin. Reset the position
@@ -2016,22 +2016,22 @@ function getNormalizedComponentScale(constructor) {
 	// https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_mesh_quantization#encoding-quantized-data
 
 	switch (constructor) {
-		case Int8Array:
-			return 1 / 127;
+	case Int8Array:
+		return 1 / 127;
 
-		case Uint8Array:
-			return 1 / 255;
+	case Uint8Array:
+		return 1 / 255;
 
-		case Int16Array:
-			return 1 / 32767;
+	case Int16Array:
+		return 1 / 32767;
 
-		case Uint16Array:
-			return 1 / 65535;
+	case Uint16Array:
+		return 1 / 65535;
 
-		default:
-			throw new Error(
-				'THREE.GLTFLoader: Unsupported normalized accessor component type.'
-			);
+	default:
+		throw new Error(
+			'THREE.GLTFLoader: Unsupported normalized accessor component type.'
+		);
 	}
 }
 
@@ -2279,60 +2279,60 @@ class GLTFParser {
 
 		if (!dependency) {
 			switch (type) {
-				case 'scene':
-					dependency = this.loadScene(index);
-					break;
+			case 'scene':
+				dependency = this.loadScene(index);
+				break;
 
-				case 'node':
-					dependency = this.loadNode(index);
-					break;
+			case 'node':
+				dependency = this.loadNode(index);
+				break;
 
-				case 'mesh':
-					dependency = this._invokeOne(function (ext) {
-						return ext.loadMesh && ext.loadMesh(index);
-					});
-					break;
+			case 'mesh':
+				dependency = this._invokeOne(function (ext) {
+					return ext.loadMesh && ext.loadMesh(index);
+				});
+				break;
 
-				case 'accessor':
-					dependency = this.loadAccessor(index);
-					break;
+			case 'accessor':
+				dependency = this.loadAccessor(index);
+				break;
 
-				case 'bufferView':
-					dependency = this._invokeOne(function (ext) {
-						return ext.loadBufferView && ext.loadBufferView(index);
-					});
-					break;
+			case 'bufferView':
+				dependency = this._invokeOne(function (ext) {
+					return ext.loadBufferView && ext.loadBufferView(index);
+				});
+				break;
 
-				case 'buffer':
-					dependency = this.loadBuffer(index);
-					break;
+			case 'buffer':
+				dependency = this.loadBuffer(index);
+				break;
 
-				case 'material':
-					dependency = this._invokeOne(function (ext) {
-						return ext.loadMaterial && ext.loadMaterial(index);
-					});
-					break;
+			case 'material':
+				dependency = this._invokeOne(function (ext) {
+					return ext.loadMaterial && ext.loadMaterial(index);
+				});
+				break;
 
-				case 'texture':
-					dependency = this._invokeOne(function (ext) {
-						return ext.loadTexture && ext.loadTexture(index);
-					});
-					break;
+			case 'texture':
+				dependency = this._invokeOne(function (ext) {
+					return ext.loadTexture && ext.loadTexture(index);
+				});
+				break;
 
-				case 'skin':
-					dependency = this.loadSkin(index);
-					break;
+			case 'skin':
+				dependency = this.loadSkin(index);
+				break;
 
-				case 'animation':
-					dependency = this.loadAnimation(index);
-					break;
+			case 'animation':
+				dependency = this.loadAnimation(index);
+				break;
 
-				case 'camera':
-					dependency = this.loadCamera(index);
-					break;
+			case 'camera':
+				dependency = this.loadCamera(index);
+				break;
 
-				default:
-					throw new Error('Unknown type: ' + type);
+			default:
+				throw new Error('Unknown type: ' + type);
 			}
 
 			this.cache.add(cacheKey, dependency);
@@ -2722,7 +2722,7 @@ class GLTFParser {
 			})
 			.catch(function () {
 				console.error(
-					"THREE.GLTFLoader: Couldn't load texture",
+					'THREE.GLTFLoader: Couldn\'t load texture',
 					sourceURI
 				);
 				return null;
@@ -3450,19 +3450,19 @@ class GLTFParser {
 				let TypedKeyframeTrack;
 
 				switch (PATH_PROPERTIES[target.path]) {
-					case PATH_PROPERTIES.weights:
-						TypedKeyframeTrack = NumberKeyframeTrack;
-						break;
+				case PATH_PROPERTIES.weights:
+					TypedKeyframeTrack = NumberKeyframeTrack;
+					break;
 
-					case PATH_PROPERTIES.rotation:
-						TypedKeyframeTrack = QuaternionKeyframeTrack;
-						break;
+				case PATH_PROPERTIES.rotation:
+					TypedKeyframeTrack = QuaternionKeyframeTrack;
+					break;
 
-					case PATH_PROPERTIES.position:
-					case PATH_PROPERTIES.scale:
-					default:
-						TypedKeyframeTrack = VectorKeyframeTrack;
-						break;
+				case PATH_PROPERTIES.position:
+				case PATH_PROPERTIES.scale:
+				default:
+					TypedKeyframeTrack = VectorKeyframeTrack;
+					break;
 				}
 
 				const targetName = node.name ? node.name : node.uuid;

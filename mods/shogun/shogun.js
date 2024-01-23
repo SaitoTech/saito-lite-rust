@@ -300,76 +300,76 @@ class Shogun extends GameTemplate {
 				let supply = [];
 				if (this.game.options.card_set) {
 					switch (this.game.options.card_set) {
-						case 'firstgame':
-							supply = [
-								'cellar',
-								'market',
-								'militia',
-								'mine',
-								'moat',
-								'remodel',
-								'smithy',
-								'village',
-								'woodcutter',
-								'workshop'
-							];
-							break;
-						case 'bigmoney':
-							supply = [
-								'adventurer',
-								'bureaucrat',
-								'chancellor',
-								'chapel',
-								'feast',
-								'laboratory',
-								'market',
-								'mine',
-								'moneylender',
-								'throneroom'
-							];
-							break;
-						case 'interaction':
-							supply = [
-								'bureaucrat',
-								'chancellor',
-								'councilroom',
-								'festival',
-								'library',
-								'militia',
-								'moat',
-								'spy',
-								'thief',
-								'village'
-							];
-							break;
-						case 'sizedistortion':
-							supply = [
-								'cellar',
-								'chapel',
-								'feast',
-								'gardens',
-								'laboratory',
-								'thief',
-								'village',
-								'witch',
-								'woodcutter',
-								'workshop'
-							];
-							break;
-						case 'villagesquare':
-							supply = [
-								'bureaucrat',
-								'cellar',
-								'festival',
-								'library',
-								'market',
-								'remodel',
-								'smithy',
-								'throneroom',
-								'village',
-								'woodcutter'
-							];
-							break;
+					case 'firstgame':
+						supply = [
+							'cellar',
+							'market',
+							'militia',
+							'mine',
+							'moat',
+							'remodel',
+							'smithy',
+							'village',
+							'woodcutter',
+							'workshop'
+						];
+						break;
+					case 'bigmoney':
+						supply = [
+							'adventurer',
+							'bureaucrat',
+							'chancellor',
+							'chapel',
+							'feast',
+							'laboratory',
+							'market',
+							'mine',
+							'moneylender',
+							'throneroom'
+						];
+						break;
+					case 'interaction':
+						supply = [
+							'bureaucrat',
+							'chancellor',
+							'councilroom',
+							'festival',
+							'library',
+							'militia',
+							'moat',
+							'spy',
+							'thief',
+							'village'
+						];
+						break;
+					case 'sizedistortion':
+						supply = [
+							'cellar',
+							'chapel',
+							'feast',
+							'gardens',
+							'laboratory',
+							'thief',
+							'village',
+							'witch',
+							'woodcutter',
+							'workshop'
+						];
+						break;
+					case 'villagesquare':
+						supply = [
+							'bureaucrat',
+							'cellar',
+							'festival',
+							'library',
+							'market',
+							'remodel',
+							'smithy',
+							'throneroom',
+							'village',
+							'woodcutter'
+						];
+						break;
 					}
 				}
 
@@ -785,8 +785,8 @@ class Shogun extends GameTemplate {
 					}
 					this.hud
 						.updateStatusHeaderOnly(`<div class="status-header">${
-						optional ? this.back_button_html : ''
-					}
+							optional ? this.back_button_html : ''
+						}
                                               <span id="status-content">Select (${number}) cards to move to ${target}:</span>
                                            </div>`);
 					//this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,[],optional);
@@ -810,29 +810,29 @@ class Shogun extends GameTemplate {
 						card_list.push(card);
 
 						switch (target) {
-							case 'deck':
-								we_self.putCardOnDeck(card);
-								we_self.addMove(
-									`PUSHONDECK\t${mv[1]}\t${JSON.stringify(
-										we_self.returnLastCard()
-									)}`
-								);
+						case 'deck':
+							we_self.putCardOnDeck(card);
+							we_self.addMove(
+								`PUSHONDECK\t${mv[1]}\t${JSON.stringify(
+									we_self.returnLastCard()
+								)}`
+							);
 
-								break;
-							case 'trash':
-								we_self.trashCard(card);
-								we_self.addMove(
-									`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}\t1`
-								);
+							break;
+						case 'trash':
+							we_self.trashCard(card);
+							we_self.addMove(
+								`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}\t1`
+							);
 
-								break;
-							case 'discards':
-								we_self.discardCard(card);
-								we_self.addMove(
-									`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`
-								);
+							break;
+						case 'discards':
+							we_self.discardCard(card);
+							we_self.addMove(
+								`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`
+							);
 
-								break;
+							break;
 						}
 						if (number <= 0) {
 							we_self.addMove(
@@ -880,46 +880,46 @@ class Shogun extends GameTemplate {
 							);
 						} else {
 							switch (card_to_play) {
-								case 'bandit':
-									this.addMove(
-										`bandit\t${player}\t${victim}`
-									);
-									this.addMove(
-										`SAFEPOOLDEAL\t${victim}\t2\t${victim}`
-									);
-									this.addMove(`POOL\t${victim}`);
-									break;
-								case 'bureaucrat':
-									this.addMove(
-										`bureaucrat\t${player}\t${victim}`
-									);
-									break;
-								case 'militia':
-									this.addMove(
-										`hand\t${victim}\t${
-											this.game.deck[victim - 1].hand
-												.length - 3
-										}\tdiscards`
-									);
-									this.addMove(
-										`augment\tPlayer ${victim} must discard two cards`
-									);
-									break;
-								case 'thief':
-									this.addMove(
-										`thief\t${player}\t${victim}\t`
-									);
-									this.addMove(
-										`SAFEPOOLDEAL\t${victim}\t2\t${victim}`
-									);
-									this.addMove(`POOL\t${victim}`);
-									break;
-								case 'witch':
-									this.addMove(
-										`augment\tPlayer ${victim} gains a curse\tcurse`
-									);
-									this.addMove(`buy\t${victim}\tcurse`);
-									break;
+							case 'bandit':
+								this.addMove(
+									`bandit\t${player}\t${victim}`
+								);
+								this.addMove(
+									`SAFEPOOLDEAL\t${victim}\t2\t${victim}`
+								);
+								this.addMove(`POOL\t${victim}`);
+								break;
+							case 'bureaucrat':
+								this.addMove(
+									`bureaucrat\t${player}\t${victim}`
+								);
+								break;
+							case 'militia':
+								this.addMove(
+									`hand\t${victim}\t${
+										this.game.deck[victim - 1].hand
+											.length - 3
+									}\tdiscards`
+								);
+								this.addMove(
+									`augment\tPlayer ${victim} must discard two cards`
+								);
+								break;
+							case 'thief':
+								this.addMove(
+									`thief\t${player}\t${victim}\t`
+								);
+								this.addMove(
+									`SAFEPOOLDEAL\t${victim}\t2\t${victim}`
+								);
+								this.addMove(`POOL\t${victim}`);
+								break;
+							case 'witch':
+								this.addMove(
+									`augment\tPlayer ${victim} gains a curse\tcurse`
+								);
+								this.addMove(`buy\t${victim}\tcurse`);
+								break;
 							}
 						}
 					}
@@ -1260,7 +1260,7 @@ class Shogun extends GameTemplate {
 				let card =
 					this.game.pool[victim - 1].hand.length > 0
 						? this.game.pool[victim - 1].cards[
-								this.game.pool[victim - 1].hand[0]
+							this.game.pool[victim - 1].hand[0]
 						  ]
 						: 'Deck empty';
 				let player_display =
@@ -1586,8 +1586,8 @@ class Shogun extends GameTemplate {
 		try {
 			let html = `<div id="drawpile" class="cardpile">
                     <div>Draw: ${
-						this.game.deck[this.game.player - 1].crypt.length
-					}</div>`;
+	this.game.deck[this.game.player - 1].crypt.length
+}</div>`;
 			for (
 				let i = 0;
 				i < this.game.deck[this.game.player - 1].crypt.length;
@@ -1614,9 +1614,9 @@ class Shogun extends GameTemplate {
 
 			html = `<div id="discardpile" class="cardpile">
                 <div>Discards: ${
-					Object.keys(this.game.deck[this.game.player - 1].discards)
-						.length
-				}</div>`;
+	Object.keys(this.game.deck[this.game.player - 1].discards)
+		.length
+}</div>`;
 			let shift = 0;
 			for (let card in this.game.deck[this.game.player - 1].discards) {
 				let c = this.game.deck[this.game.player - 1].discards[card];
@@ -2014,8 +2014,8 @@ class Shogun extends GameTemplate {
 		}">
               ${this.returnCardImage(card)}
               <img class="cardBack" src="${this.card_img_dir}/${
-			this.card_back
-		}">
+	this.card_back
+}">
              </div>`;
 	}
 
@@ -2373,7 +2373,7 @@ class Shogun extends GameTemplate {
 			name: 'Vassal',
 			type: 'action',
 			cost: 3,
-			text: "+2 Coin, Discard the top card of your deck. If it's an Action card, you may play it."
+			text: '+2 Coin, Discard the top card of your deck. If it\'s an Action card, you may play it.'
 		};
 		deck['village'] = {
 			img: 'village.jpg',

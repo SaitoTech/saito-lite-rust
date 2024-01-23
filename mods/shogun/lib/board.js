@@ -64,10 +64,10 @@ class ShogunBoard {
 
 		discardhtml = `<div id="discardpile" class="cardpile">
                 <div>Discards: ${
-					Object.keys(
-						this.mod.game.deck[this.mod.game.player - 1].discards
-					).length
-				}</div>`;
+	Object.keys(
+		this.mod.game.deck[this.mod.game.player - 1].discards
+	).length
+}</div>`;
 		let shift = 0;
 		for (let card in this.mod.game.deck[this.mod.game.player - 1]
 			.discards) {
@@ -87,9 +87,9 @@ class ShogunBoard {
 
 		let drawhtml = `<div id="drawpile" class="cardpile">
                     <div>Draw: ${
-						this.mod.game.deck[this.mod.game.player - 1].crypt
-							.length
-					}</div>`;
+	this.mod.game.deck[this.mod.game.player - 1].crypt
+		.length
+}</div>`;
 		for (
 			let i = 0;
 			i < this.mod.game.deck[this.mod.game.player - 1].crypt.length;

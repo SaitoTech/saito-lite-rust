@@ -201,50 +201,50 @@ class LeagueOverlay {
 							).forEach((div) => div.classList.add('hidden'));
 
 							switch (nav) {
-								case 'home':
+							case 'home':
+								document
+									.querySelector(
+										'.league-overlay-description'
+									)
+									.classList.remove('hidden');
+								break;
+							case 'contact':
+								document
+									.querySelector('#admin_details')
+									.classList.remove('hidden');
+								if (document.querySelector('#admin_note')) {
 									document
-										.querySelector(
-											'.league-overlay-description'
-										)
+										.querySelector('#admin_note')
 										.classList.remove('hidden');
-									break;
-								case 'contact':
-									document
-										.querySelector('#admin_details')
-										.classList.remove('hidden');
-									if (document.querySelector('#admin_note')) {
-										document
-											.querySelector('#admin_note')
-											.classList.remove('hidden');
-									}
-									break;
-								case 'games':
-									document
-										.querySelector(
-											'.league-overlay-league-body-games'
-										)
-										.classList.remove('hidden');
-									break;
-								case 'players':
-									document
-										.querySelector('.league-overlay-body')
-										.classList.add('admin-mode');
-									document
-										.querySelector('#admin-widget')
-										.classList.remove('hidden');
-									document
-										.querySelector(
-											'.league-overlay-leaderboard'
-										)
-										.classList.add('hidden');
-									this.loadPlayersUI();
-									break;
-								case 'rankings':
-									document
-										.querySelector(
-											'.league-overlay-leaderboard'
-										)
-										.classList.add('hidden');
+								}
+								break;
+							case 'games':
+								document
+									.querySelector(
+										'.league-overlay-league-body-games'
+									)
+									.classList.remove('hidden');
+								break;
+							case 'players':
+								document
+									.querySelector('.league-overlay-body')
+									.classList.add('admin-mode');
+								document
+									.querySelector('#admin-widget')
+									.classList.remove('hidden');
+								document
+									.querySelector(
+										'.league-overlay-leaderboard'
+									)
+									.classList.add('hidden');
+								this.loadPlayersUI();
+								break;
+							case 'rankings':
+								document
+									.querySelector(
+										'.league-overlay-leaderboard'
+									)
+									.classList.add('hidden');
 							}
 						} catch (err) {
 							console.error(
@@ -290,17 +290,17 @@ class LeagueOverlay {
 			html += `<div class="saito-table-row">
         <div>${this.app.browser.returnAddressHTML(player.publicKey)}</div>
         <div class="player_score editable_field" data-id="${
-			player.publicKey
-		}" contenteditable="true">${Math.round(player.score)}</div>
+	player.publicKey
+}" contenteditable="true">${Math.round(player.score)}</div>
         <div>${Math.round(player.games_finished)}</div>
         <div>${Math.round(player.games_started)}</div>
         <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
         <div class="email_field editable_field" data-id="${
-			player.publicKey
-		}" contenteditable="true">${player.email}</div>
+	player.publicKey
+}" contenteditable="true">${player.email}</div>
         <div class="remove_player" data-id="${
-			player.publicKey
-		}"><i class="fas fa-ban"></i></div>
+	player.publicKey
+}"><i class="fas fa-ban"></i></div>
       </div> `;
 		}
 

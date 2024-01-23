@@ -29,7 +29,7 @@ class InviteManager {
 				this.mod.purgeOldGames();
 				this.render();
 			} else {
-				console.log("Don't update Arcade while initializing game");
+				console.log('Don\'t update Arcade while initializing game');
 			}
 		});
 

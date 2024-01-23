@@ -302,7 +302,7 @@ var Chess = function (fen) {
 			4: '4th field (en-passant square) is invalid.',
 			5: '3rd field (castling availability) is invalid.',
 			6: '2nd field (side to move) is invalid.',
-			7: "1st field (piece positions) does not contain 8 '/'-delimited rows.",
+			7: '1st field (piece positions) does not contain 8 \'/\'-delimited rows.',
 			8: '1st field (piece positions) is invalid [consecutive numbers].',
 			9: '1st field (piece positions) is invalid [invalid piece].',
 			10: '1st field (piece positions) is invalid [row too large].'
@@ -852,7 +852,7 @@ var Chess = function (fen) {
 			return true;
 		} else if (num_pieces === pieces[BISHOP] + 2) {
 
-		/* kb vs. kb where any number of bishops are all on the same color */
+			/* kb vs. kb where any number of bishops are all on the same color */
 			var sum = 0;
 			var len = bishops.length;
 			for (var i = 0; i < len; i++) {

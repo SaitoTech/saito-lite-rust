@@ -78,8 +78,8 @@ module.exports = (app, mod, tx) => {
 	if (is_invite_accepted) {
 		html = `
         <div class="tweet invite-${invite.invite_id}" data-id="${
-			invite.invite_id
-		}">
+	invite.invite_id
+}">
           <div class="tweet-notice"></div>
           <div class="tweet-header">
   	    ${SaitoUser(app, invite.adds[0], userline)}
@@ -104,8 +104,8 @@ module.exports = (app, mod, tx) => {
 	} else {
 		html = `
         <div class="tweet invite-${invite.invite_id}" data-id="${
-			invite.invite_id
-		}">
+	invite.invite_id
+}">
           <div class="tweet-notice"></div>
           <div class="tweet-header">
   	    ${SaitoUser(app, invite.adds[0], userline)}

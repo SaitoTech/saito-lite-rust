@@ -14,7 +14,7 @@ class Poker extends GameTableTemplate {
 		this.name = 'Poker';
 
 		this.description =
-			"Texas Hold'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?";
+			'Texas Hold\'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?';
 		this.categories = 'Games Cardgame Casino';
 		this.card_img_dir = '/saito/img/arcade/cards';
 		this.icon = 'fa-solid fa-diamond';
@@ -965,11 +965,11 @@ class Poker extends GameTableTemplate {
 					winners.length > 1
 						? `split the pot for ${this.formatWager(pot_size)} each`
 						: `wins ${this.formatWager(
-								this.game.state.pot
+							this.game.state.pot
 						  )} (${this.formatWager(
-								this.game.state.pot -
+							this.game.state.pot -
 									this.game.state.player_pot[winners[0]],
-								false
+							false
 						  )} net)`;
 
 				for (let i = 0; i < winners.length; i++) {
@@ -1473,8 +1473,8 @@ class Poker extends GameTableTemplate {
 		balance_html = `
   <div class="menu-player-upper">
           <div style="float:right;" class="saito-balance">${this.formatWager(
-				this.game.state.player_credit[this.game.player - 1]
-			)}</div>
+		this.game.state.player_credit[this.game.player - 1]
+	)}</div>
         </div>
     `;
 		this.app.browser.replaceElementBySelector(
@@ -1542,10 +1542,10 @@ class Poker extends GameTableTemplate {
 				html += `<li class="option" id="${max_raise + match_required}">
                   raise ${poker_self.formatWager(max_raise)} 
                   (all in${
-						smallest_stack_player !== poker_self.game.player - 1
-							? ` for ${poker_self.game.state.player_names[smallest_stack_player]}`
-							: ''
-					})</li>`;
+	smallest_stack_player !== poker_self.game.player - 1
+		? ` for ${poker_self.game.state.player_names[smallest_stack_player]}`
+		: ''
+})</li>`;
 
 				html += '</ul>';
 				poker_self.updateStatus(html);
@@ -3289,47 +3289,47 @@ class Poker extends GameTableTemplate {
 		let suit = h[0];
 		h = h.substring(1);
 		switch (suit) {
-			case 'H':
-				return h + 'h';
-				break;
-			case 'D':
-				return h + 'd';
-				break;
-			case 'S':
-				return h + 's';
-				break;
-			case 'C':
-				return h + 'c';
-				break;
+		case 'H':
+			return h + 'h';
+			break;
+		case 'D':
+			return h + 'd';
+			break;
+		case 'S':
+			return h + 's';
+			break;
+		case 'C':
+			return h + 'c';
+			break;
 		}
 		return h;
 	}
 
 	toHuman(hand) {
-		var humanHand = " <span class='htmlhand'>";
+		var humanHand = ' <span class=\'htmlhand\'>';
 		hand.forEach((h) => {
 			h = h.replace(
 				'H',
-				"<span style='color:red'><span class='suit'>&hearts;</span>"
+				'<span style=\'color:red\'><span class=\'suit\'>&hearts;</span>'
 			);
 			h = h.replace(
 				'D',
-				"<span style='color:red'><span class='suit'>&diams;</span>"
+				'<span style=\'color:red\'><span class=\'suit\'>&diams;</span>'
 			);
 			h = h.replace(
 				'S',
-				"<span style='color:black'><span class='suit'>&spades;</span>"
+				'<span style=\'color:black\'><span class=\'suit\'>&spades;</span>'
 			);
 			h = h.replace(
 				'C',
-				"<span style='color:black'><span class='suit'>&clubs;</span>"
+				'<span style=\'color:black\'><span class=\'suit\'>&clubs;</span>'
 			);
 			h = h.replace('13', 'K');
 			h = h.replace('12', 'Q');
 			h = h.replace('11', 'J');
 			h = h.replace('1', 'A');
 			h = h.replace('A0', '10');
-			h = "<span class='htmlCard'>" + h + '</span></span>';
+			h = '<span class=\'htmlCard\'>' + h + '</span></span>';
 			humanHand += h;
 		});
 		humanHand += '</span> ';
@@ -3507,7 +3507,7 @@ class Poker extends GameTableTemplate {
 	}
 
 	handToHTML(hand, pocket) {
-		let html = "<div class='htmlCards pocket'>";
+		let html = '<div class=\'htmlCards pocket\'>';
 		pocket.forEach((card) => {
 			html += `<img class="card ${
 				hand.includes(card) ? 'used' : 'not_used'
@@ -3515,7 +3515,7 @@ class Poker extends GameTableTemplate {
 		});
 		html += '</div> ';
 
-		html += "<div class='htmlCards pool'>";
+		html += '<div class=\'htmlCards pool\'>';
 		this.game.pool[0].hand.forEach((card) => {
 			card = this.game.pool[0].cards[card].name.replace('.png', '');
 			html += `<img class="card ${

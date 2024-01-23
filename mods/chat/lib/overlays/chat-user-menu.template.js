@@ -58,6 +58,6 @@ module.exports = (app, mod, chat_group) => {
 	}
 
 	html += '</div>';
-
+	console.log('davik  ');
 	return html;
 };

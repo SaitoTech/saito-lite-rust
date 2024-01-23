@@ -183,58 +183,58 @@ class HereIStand extends GameTemplate {
 				let base = 0;
 
 				switch (kc) {
-					case 1: {
-						base = 1;
-						break;
-					}
-					case 2: {
-						base = 1;
-						break;
-					}
-					case 3: {
-						base = 2;
-						break;
-					}
-					case 4: {
-						base = 2;
-						break;
-					}
-					case 5: {
-						base = 3;
-						break;
-					}
-					case 6: {
-						base = 3;
-						break;
-					}
-					case 7: {
-						base = 4;
-						break;
-					}
-					case 8: {
-						base = 4;
-						break;
-					}
-					case 9: {
-						base = 5;
-						break;
-					}
-					case 10: {
-						base = 5;
-						break;
-					}
-					case 11: {
-						base = 6;
-						break;
-					}
-					case 12: {
-						base = 6;
-						break;
-					}
-					default: {
-						base = 1;
-						break;
-					}
+				case 1: {
+					base = 1;
+					break;
+				}
+				case 2: {
+					base = 1;
+					break;
+				}
+				case 3: {
+					base = 2;
+					break;
+				}
+				case 4: {
+					base = 2;
+					break;
+				}
+				case 5: {
+					base = 3;
+					break;
+				}
+				case 6: {
+					base = 3;
+					break;
+				}
+				case 7: {
+					base = 4;
+					break;
+				}
+				case 8: {
+					base = 4;
+					break;
+				}
+				case 9: {
+					base = 5;
+					break;
+				}
+				case 10: {
+					base = 5;
+					break;
+				}
+				case 11: {
+					base = 6;
+					break;
+				}
+				case 12: {
+					base = 6;
+					break;
+				}
+				default: {
+					base = 1;
+					break;
+				}
 				}
 
 				// bonuses based on leaders
@@ -266,42 +266,42 @@ class HereIStand extends GameTemplate {
 				let base = this.vp;
 
 				switch (kc) {
-					case 1: {
-						base += 3;
-						break;
-					}
-					case 2: {
-						base += 5;
-						break;
-					}
-					case 3: {
-						base += 7;
-						break;
-					}
-					case 4: {
-						base += 9;
-						break;
-					}
-					case 5: {
-						base += 11;
-						break;
-					}
-					case 6: {
-						base += 13;
-						break;
-					}
-					case 7: {
-						base += 15;
-						break;
-					}
-					case 8: {
-						base += 17;
-						break;
-					}
-					default: {
-						base += 17;
-						break;
-					}
+				case 1: {
+					base += 3;
+					break;
+				}
+				case 2: {
+					base += 5;
+					break;
+				}
+				case 3: {
+					base += 7;
+					break;
+				}
+				case 4: {
+					base += 9;
+					break;
+				}
+				case 5: {
+					base += 11;
+					break;
+				}
+				case 6: {
+					base += 13;
+					break;
+				}
+				case 7: {
+					base += 15;
+					break;
+				}
+				case 8: {
+					base += 17;
+					break;
+				}
+				default: {
+					base += 17;
+					break;
+				}
 				}
 
 				return base;
@@ -335,58 +335,58 @@ class HereIStand extends GameTemplate {
 				let base = this.vp;
 
 				switch (kc) {
-					case 1: {
-						base = 1;
-						break;
-					}
-					case 2: {
-						base = 1;
-						break;
-					}
-					case 3: {
-						base = 1;
-						break;
-					}
-					case 4: {
-						base = 2;
-						break;
-					}
-					case 5: {
-						base = 2;
-						break;
-					}
-					case 6: {
-						base = 3;
-						break;
-					}
-					case 7: {
-						base = 3;
-						break;
-					}
-					case 8: {
-						base = 4;
-						break;
-					}
-					case 9: {
-						base = 4;
-						break;
-					}
-					case 10: {
-						base = 5;
-						break;
-					}
-					case 11: {
-						base = 6;
-						break;
-					}
-					case 12: {
-						base = 6;
-						break;
-					}
-					default: {
-						base = 0;
-						break;
-					}
+				case 1: {
+					base = 1;
+					break;
+				}
+				case 2: {
+					base = 1;
+					break;
+				}
+				case 3: {
+					base = 1;
+					break;
+				}
+				case 4: {
+					base = 2;
+					break;
+				}
+				case 5: {
+					base = 2;
+					break;
+				}
+				case 6: {
+					base = 3;
+					break;
+				}
+				case 7: {
+					base = 3;
+					break;
+				}
+				case 8: {
+					base = 4;
+					break;
+				}
+				case 9: {
+					base = 4;
+					break;
+				}
+				case 10: {
+					base = 5;
+					break;
+				}
+				case 11: {
+					base = 6;
+					break;
+				}
+				case 12: {
+					base = 6;
+					break;
+				}
+				default: {
+					base = 0;
+					break;
+				}
 				}
 
 				// bonuses based on leaders
@@ -406,46 +406,46 @@ class HereIStand extends GameTemplate {
 				let base = 0;
 
 				switch (kc) {
-					case 1: {
-						base += 2;
-						break;
-					}
-					case 2: {
-						base += 4;
-						break;
-					}
-					case 3: {
-						base += 6;
-						break;
-					}
-					case 4: {
-						base += 8;
-						break;
-					}
-					case 5: {
-						base += 10;
-						break;
-					}
-					case 6: {
-						base += 12;
-						break;
-					}
-					case 7: {
-						base += 14;
-						break;
-					}
-					case 8: {
-						base += 16;
-						break;
-					}
-					case 9: {
-						base += 18;
-						break;
-					}
-					case 10: {
-						base += 20;
-						break;
-					}
+				case 1: {
+					base += 2;
+					break;
+				}
+				case 2: {
+					base += 4;
+					break;
+				}
+				case 3: {
+					base += 6;
+					break;
+				}
+				case 4: {
+					base += 8;
+					break;
+				}
+				case 5: {
+					base += 10;
+					break;
+				}
+				case 6: {
+					base += 12;
+					break;
+				}
+				case 7: {
+					base += 14;
+					break;
+				}
+				case 8: {
+					base += 16;
+					break;
+				}
+				case 9: {
+					base += 18;
+					break;
+				}
+				case 10: {
+					base += 20;
+					break;
+				}
 				}
 
 				return base;
@@ -494,62 +494,62 @@ class HereIStand extends GameTemplate {
 				let base = 0;
 
 				switch (kc) {
-					case 1: {
-						base = 1;
-						break;
-					}
-					case 2: {
-						base = 2;
-						break;
-					}
-					case 3: {
-						base = 2;
-						break;
-					}
-					case 4: {
-						base = 3;
-						break;
-					}
-					case 5: {
-						base = 3;
-						break;
-					}
-					case 6: {
-						base = 4;
-						break;
-					}
-					case 7: {
-						base = 4;
-						break;
-					}
-					case 8: {
-						base = 5;
-						break;
-					}
-					case 9: {
-						base = 5;
-						break;
-					}
-					case 10: {
-						base = 6;
-						break;
-					}
-					case 11: {
-						base = 6;
-						break;
-					}
-					case 12: {
-						base = 7;
-						break;
-					}
-					case 13: {
-						base = 7;
-						break;
-					}
-					default: {
-						base = 0;
-						break;
-					}
+				case 1: {
+					base = 1;
+					break;
+				}
+				case 2: {
+					base = 2;
+					break;
+				}
+				case 3: {
+					base = 2;
+					break;
+				}
+				case 4: {
+					base = 3;
+					break;
+				}
+				case 5: {
+					base = 3;
+					break;
+				}
+				case 6: {
+					base = 4;
+					break;
+				}
+				case 7: {
+					base = 4;
+					break;
+				}
+				case 8: {
+					base = 5;
+					break;
+				}
+				case 9: {
+					base = 5;
+					break;
+				}
+				case 10: {
+					base = 6;
+					break;
+				}
+				case 11: {
+					base = 6;
+					break;
+				}
+				case 12: {
+					base = 7;
+					break;
+				}
+				case 13: {
+					base = 7;
+					break;
+				}
+				default: {
+					base = 0;
+					break;
+				}
 				}
 
 				if (game_mod.game.state.leaders.charles_v == 1) {
@@ -565,58 +565,58 @@ class HereIStand extends GameTemplate {
 				let base = this.vp;
 
 				switch (kc) {
-					case 1: {
-						base += 2;
-						break;
-					}
-					case 2: {
-						base += 3;
-						break;
-					}
-					case 3: {
-						base += 4;
-						break;
-					}
-					case 4: {
-						base += 5;
-						break;
-					}
-					case 5: {
-						base += 6;
-						break;
-					}
-					case 6: {
-						base += 7;
-						break;
-					}
-					case 7: {
-						base += 8;
-						break;
-					}
-					case 8: {
-						base += 9;
-						break;
-					}
-					case 9: {
-						base += 10;
-						break;
-					}
-					case 10: {
-						base += 11;
-						break;
-					}
-					case 11: {
-						base += 12;
-						break;
-					}
-					case 12: {
-						base += 13;
-						break;
-					}
-					case 13: {
-						base += 14;
-						break;
-					}
+				case 1: {
+					base += 2;
+					break;
+				}
+				case 2: {
+					base += 3;
+					break;
+				}
+				case 3: {
+					base += 4;
+					break;
+				}
+				case 4: {
+					base += 5;
+					break;
+				}
+				case 5: {
+					base += 6;
+					break;
+				}
+				case 6: {
+					base += 7;
+					break;
+				}
+				case 7: {
+					base += 8;
+					break;
+				}
+				case 8: {
+					base += 9;
+					break;
+				}
+				case 9: {
+					base += 10;
+					break;
+				}
+				case 10: {
+					base += 11;
+					break;
+				}
+				case 11: {
+					base += 12;
+					break;
+				}
+				case 12: {
+					base += 13;
+					break;
+				}
+				case 13: {
+					base += 14;
+					break;
+				}
 				}
 
 				return base;
@@ -667,50 +667,50 @@ class HereIStand extends GameTemplate {
 				let base = 0;
 
 				switch (kc) {
-					case 1: {
-						base = 2;
-						break;
-					}
-					case 2: {
-						base = 2;
-						break;
-					}
-					case 3: {
-						base = 3;
-						break;
-					}
-					case 4: {
-						base = 3;
-						break;
-					}
-					case 5: {
-						base = 4;
-						break;
-					}
-					case 6: {
-						base = 4;
-						break;
-					}
-					case 7: {
-						base = 5;
-						break;
-					}
-					case 8: {
-						base = 5;
-						break;
-					}
-					case 9: {
-						base = 6;
-						break;
-					}
-					case 10: {
-						base = 6;
-						break;
-					}
-					default: {
-						base = 0;
-						break;
-					}
+				case 1: {
+					base = 2;
+					break;
+				}
+				case 2: {
+					base = 2;
+					break;
+				}
+				case 3: {
+					base = 3;
+					break;
+				}
+				case 4: {
+					base = 3;
+					break;
+				}
+				case 5: {
+					base = 4;
+					break;
+				}
+				case 6: {
+					base = 4;
+					break;
+				}
+				case 7: {
+					base = 5;
+					break;
+				}
+				case 8: {
+					base = 5;
+					break;
+				}
+				case 9: {
+					base = 6;
+					break;
+				}
+				case 10: {
+					base = 6;
+					break;
+				}
+				default: {
+					base = 0;
+					break;
+				}
 				}
 
 				if (game_mod.game.state.leaders.suleiman == 1) {
@@ -726,46 +726,46 @@ class HereIStand extends GameTemplate {
 				let base = this.vp;
 
 				switch (kc) {
-					case 1: {
-						base += 2;
-						break;
-					}
-					case 2: {
-						base += 4;
-						break;
-					}
-					case 3: {
-						base += 6;
-						break;
-					}
-					case 4: {
-						base += 8;
-						break;
-					}
-					case 5: {
-						base += 10;
-						break;
-					}
-					case 6: {
-						base += 12;
-						break;
-					}
-					case 7: {
-						base += 14;
-						break;
-					}
-					case 8: {
-						base += 16;
-						break;
-					}
-					case 9: {
-						base += 18;
-						break;
-					}
-					case 10: {
-						base += 20;
-						break;
-					}
+				case 1: {
+					base += 2;
+					break;
+				}
+				case 2: {
+					base += 4;
+					break;
+				}
+				case 3: {
+					base += 6;
+					break;
+				}
+				case 4: {
+					base += 8;
+					break;
+				}
+				case 5: {
+					base += 10;
+					break;
+				}
+				case 6: {
+					base += 12;
+					break;
+				}
+				case 7: {
+					base += 14;
+					break;
+				}
+				case 8: {
+					base += 16;
+					break;
+				}
+				case 9: {
+					base += 18;
+					break;
+				}
+				case 10: {
+					base += 20;
+					break;
+				}
 				}
 
 				return base;
@@ -819,34 +819,34 @@ class HereIStand extends GameTemplate {
 				let base = 0;
 
 				switch (kc) {
-					case 1: {
-						base = 2;
-						break;
-					}
-					case 2: {
-						base = 3;
-						break;
-					}
-					case 3: {
-						base = 3;
-						break;
-					}
-					case 4: {
-						base = 4;
-						break;
-					}
-					case 5: {
-						base = 4;
-						break;
-					}
-					case 6: {
-						base = 4;
-						break;
-					}
-					default: {
-						base = 0;
-						break;
-					}
+				case 1: {
+					base = 2;
+					break;
+				}
+				case 2: {
+					base = 3;
+					break;
+				}
+				case 3: {
+					base = 3;
+					break;
+				}
+				case 4: {
+					base = 4;
+					break;
+				}
+				case 5: {
+					base = 4;
+					break;
+				}
+				case 6: {
+					base = 4;
+					break;
+				}
+				default: {
+					base = 0;
+					break;
+				}
 				}
 
 				if (game_mod.game.state.leaders.leo_x == 1) {
@@ -871,30 +871,30 @@ class HereIStand extends GameTemplate {
 				let base = this.vp;
 
 				switch (kc) {
-					case 1: {
-						base += 2;
-						break;
-					}
-					case 2: {
-						base += 4;
-						break;
-					}
-					case 3: {
-						base += 6;
-						break;
-					}
-					case 4: {
-						base += 8;
-						break;
-					}
-					case 5: {
-						base += 10;
-						break;
-					}
-					case 6: {
-						base += 12;
-						break;
-					}
+				case 1: {
+					base += 2;
+					break;
+				}
+				case 2: {
+					base += 4;
+					break;
+				}
+				case 3: {
+					base += 6;
+					break;
+				}
+				case 4: {
+					base += 8;
+					break;
+				}
+				case 5: {
+					base += 10;
+					break;
+				}
+				case 6: {
+					base += 12;
+					break;
+				}
 				}
 
 				return base;
@@ -3086,7 +3086,7 @@ Habsburg conquistadores:
 			console.log('\n\n\n\n');
 
 			this.updateStatus(
-				"<div class='status-message' id='status-message'>Generating the Game</div>"
+				'<div class=\'status-message\' id=\'status-message\'>Generating the Game</div>'
 			);
 
 			//
@@ -8104,7 +8104,7 @@ Habsburg conquistadores:
 		// 95 Theses
 		deck['008'] = {
 			img: 'cards/HIS-008.svg',
-			name: "Luther's 95 Theses",
+			name: 'Luther\'s 95 Theses',
 			ops: 0,
 			turn: 1,
 			type: 'mandatory',
@@ -10662,7 +10662,7 @@ Habsburg conquistadores:
 		};
 		deck['038'] = {
 			img: 'cards/HIS-038.svg',
-			name: "Halley's Comet",
+			name: 'Halley\'s Comet',
 			ops: 2,
 			turn: 3,
 			type: 'response',
@@ -11229,7 +11229,7 @@ Habsburg conquistadores:
 		};
 		deck['046'] = {
 			img: 'cards/HIS-046.svg',
-			name: "Calvin's Insitutes",
+			name: 'Calvin\'s Insitutes',
 			ops: 5,
 			turn: 4,
 			type: 'normal',
@@ -11273,7 +11273,7 @@ Habsburg conquistadores:
 				his_self.game.queue.push(
 					'SETVAR\tstate\tskip_counter_or_acknowledge\t1'
 				);
-				his_self.game.queue.push("NOTIFY\tCalvin's Institutes");
+				his_self.game.queue.push('NOTIFY\tCalvin\'s Institutes');
 
 				return 1;
 			}
@@ -11389,7 +11389,7 @@ Habsburg conquistadores:
 		};
 		deck['050'] = {
 			img: 'cards/HIS-050.svg',
-			name: "Mercator's Map",
+			name: 'Mercator\'s Map',
 			ops: 2,
 			turn: 4,
 			type: 'normal',
@@ -11820,7 +11820,7 @@ Habsburg conquistadores:
 		};
 		deck['057'] = {
 			img: 'cards/HIS-057.svg',
-			name: "Philip of Hesse's Bigamy",
+			name: 'Philip of Hesse\'s Bigamy',
 			ops: 2,
 			turn: 5,
 			type: 'normal',
@@ -11880,7 +11880,7 @@ Habsburg conquistadores:
 						});
 					} else {
 						his_self.updateStatus(
-							"Protestants - Philip of Hesse's Bigamy"
+							'Protestants - Philip of Hesse\'s Bigamy'
 						);
 					}
 
@@ -14134,7 +14134,7 @@ Habsburg conquistadores:
 		};
 		deck['088'] = {
 			img: 'cards/HIS-088.svg',
-			name: "Peasants' War",
+			name: 'Peasants\' War',
 			ops: 3,
 			turn: 1,
 			type: 'normal',
@@ -16014,7 +16014,7 @@ Habsburg conquistadores:
 		};
 		deck['114'] = {
 			img: 'cards/HIS-114.svg',
-			name: "La Forets's Embassy in Istanbul",
+			name: 'La Forets\'s Embassy in Istanbul',
 			ops: 2,
 			turn: 3,
 			type: 'mandatory',
@@ -20366,17 +20366,17 @@ Habsburg conquistadores:
 	  <div class="space_name">${obj.name}</div>
 	  <div class="space_properties">
 	    <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(
-					religion
-				)}')"></div><div class="label">${religion} religion</div></div>
+	religion
+)}')"></div><div class="label">${religion} religion</div></div>
 	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnControlImage(
-					political
-				)}')"></div><div class="label">${political} control</div></div>
+	political
+)}')"></div><div class="label">${political} control</div></div>
 	    <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(
-					language
-				)}')"></div><div class="label">${language} language</div></div>
+	language
+)}')"></div><div class="label">${language} language</div></div>
 	    <div class="home"><div class="${home}" style="background-image: url('${his_self.returnControlImage(
-					home
-				)}')"></div><div class="label">${home} home</div></div>
+	home
+)}')"></div><div class="label">${home} home</div></div>
 	  </div>
 	  <div class="space_units">
 	`;
@@ -27403,8 +27403,8 @@ Habsburg conquistadores:
 																	.state
 																	.field_battle
 																	.attacker_units[
-																	z
-																];
+																		z
+																	];
 															if (
 																u.type ===
 																cannon_fodder
@@ -27441,8 +27441,8 @@ Habsburg conquistadores:
 																	.state
 																	.field_battle
 																	.defender_units[
-																	z
-																];
+																		z
+																	];
 															if (
 																u.type ===
 																cannon_fodder
@@ -27969,8 +27969,8 @@ Habsburg conquistadores:
 																	.state
 																	.assault
 																	.attacker_units[
-																	z
-																];
+																		z
+																	];
 															if (
 																u.type ===
 																cannon_fodder
@@ -28007,8 +28007,8 @@ Habsburg conquistadores:
 																	.state
 																	.assault
 																	.defender_units[
-																	z
-																];
+																		z
+																	];
 															if (
 																u.type ===
 																cannon_fodder
@@ -32349,13 +32349,13 @@ Habsburg conquistadores:
 				this.game.queue.splice(qe, 1);
 
 				if (this.game.state.saint_peters_cathedral['vp'] < 5) {
-					this.updateLog("Papacy builds St. Peter's Basilica");
+					this.updateLog('Papacy builds St. Peter\'s Basilica');
 					this.game.state.saint_peters_cathedral['state'] += 1;
 					if (this.game.state.saint_peters_cathedral['state'] >= 5) {
 						this.game.state.saint_peters_cathedral['state'] = 0;
 						this.updateLog(
 							this.returnFactionName('papacy') +
-								" +1 VP from St. Peter's Basilica"
+								' +1 VP from St. Peter\'s Basilica'
 						);
 						this.game.state.saint_peters_cathedral['vp'] += 1;
 					}

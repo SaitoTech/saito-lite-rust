@@ -1069,7 +1069,7 @@ class Arcade extends ModTemplate {
 			game.msg.method = txmsg.reason;
 			game.msg.time_finished = txmsg.timestamp;
 		} else {
-			console.warn("Game not found, arcade can't process gameover tx");
+			console.warn('Game not found, arcade can\'t process gameover tx');
 		}
 
 		await this.changeGameStatus(txmsg.game_id, 'over');
@@ -1624,7 +1624,7 @@ class Arcade extends ModTemplate {
 		// Sanity check the tx and make sure we don't already have it
 		//
 		if (!tx || !tx.msg || !tx.signature) {
-			console.error("Invalid Game TX, won't add to list", tx);
+			console.error('Invalid Game TX, won\'t add to list', tx);
 			return false;
 		}
 

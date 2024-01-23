@@ -266,108 +266,108 @@ class Dialer {
 		let data = txmsg.data;
 
 		switch (txmsg.request) {
-			case 'stun-connection-request':
-				//
-				// Screen the call
-				//
-				let privacy = this.app.options.stun?.settings?.privacy || 'all';
+		case 'stun-connection-request':
+			//
+			// Screen the call
+			//
+			let privacy = this.app.options.stun?.settings?.privacy || 'all';
 
-				if (privacy == 'none') {
-					return;
-				}
-				if (
-					privacy == 'dh' &&
+			if (privacy == 'none') {
+				return;
+			}
+			if (
+				privacy == 'dh' &&
 					!this.app.keychain.hasSharedSecret(sender)
-				) {
-					return;
-				}
+			) {
+				return;
+			}
 
-				if (
-					privacy == 'key' &&
+			if (
+				privacy == 'key' &&
 					!this.app.keychain.hasPublicKey(sender)
-				) {
-					return;
-				}
+			) {
+				return;
+			}
 
-				if (!this.mod.room_obj) {
-					this.mod.room_obj = txmsg.data;
-					this.render(sender, false);
-					this.startRing();
+			if (!this.mod.room_obj) {
+				this.mod.room_obj = txmsg.data;
+				this.render(sender, false);
+				this.startRing();
 
-					//
-					// Ping back to let caller know I am online
-					//
+				//
+				// Ping back to let caller know I am online
+				//
+				this.app.connection.emit('relay-send-message', {
+					recipient: sender,
+					request: 'stun-connection-ping',
+					data
+				});
+			}
+
+			break;
+
+		case 'stun-cancel-connection-request':
+			if (this.mod?.room_obj?.room_code == data.room_code) {
+				this.stopRing();
+				this.overlay.remove();
+				this.app.connection.emit('reset-stun');
+				siteMessage(`${sender} hung up`);
+			}
+			break;
+
+		case 'stun-connection-rejected':
+			this.stopRing();
+			clearTimeout(this.dialing);
+			this.updateMessage('did not answer');
+			if (document.getElementById('startcall')) {
+				document.getElementById('startcall').innerHTML = 'Call';
+			}
+			this.attachEvents();
+			break;
+
+		case 'stun-connection-accepted':
+			this.stopRing();
+			if (this.dialing) {
+				clearTimeout(this.dialing);
+				this.dialing = null;
+			}
+
+			this.updateMessage('connecting...');
+
+			this.app.connection.emit('close-preview-window');
+			setTimeout(() => {
+				this.overlay.remove();
+				this.app.connection.emit(
+					'stun-init-call-interface',
+					this.mod.room_obj.ui
+				);
+				this.app.connection.emit('start-stun-call');
+			}, 1000);
+
+			break;
+
+		case 'stun-connection-ping':
+			console.log('Counter party available, remain on the line');
+			if (this.dialing) {
+				clearTimeout(this.dialing);
+				this.dialing = setTimeout(() => {
 					this.app.connection.emit('relay-send-message', {
 						recipient: sender,
-						request: 'stun-connection-ping',
+						request: 'stun-cancel-connection-request',
 						data
 					});
-				}
-
-				break;
-
-			case 'stun-cancel-connection-request':
-				if (this.mod?.room_obj?.room_code == data.room_code) {
 					this.stopRing();
-					this.overlay.remove();
-					this.app.connection.emit('reset-stun');
-					siteMessage(`${sender} hung up`);
-				}
-				break;
 
-			case 'stun-connection-rejected':
-				this.stopRing();
-				clearTimeout(this.dialing);
-				this.updateMessage('did not answer');
-				if (document.getElementById('startcall')) {
-					document.getElementById('startcall').innerHTML = 'Call';
-				}
-				this.attachEvents();
-				break;
-
-			case 'stun-connection-accepted':
-				this.stopRing();
-				if (this.dialing) {
-					clearTimeout(this.dialing);
-					this.dialing = null;
-				}
-
-				this.updateMessage('connecting...');
-
-				this.app.connection.emit('close-preview-window');
-				setTimeout(() => {
-					this.overlay.remove();
-					this.app.connection.emit(
-						'stun-init-call-interface',
-						this.mod.room_obj.ui
-					);
-					this.app.connection.emit('start-stun-call');
-				}, 1000);
-
-				break;
-
-			case 'stun-connection-ping':
-				console.log('Counter party available, remain on the line');
-				if (this.dialing) {
-					clearTimeout(this.dialing);
-					this.dialing = setTimeout(() => {
-						this.app.connection.emit('relay-send-message', {
-							recipient: sender,
-							request: 'stun-cancel-connection-request',
-							data
-						});
-						this.stopRing();
-
-						if (document.getElementById('startcall')) {
-							document.getElementById('startcall').innerHTML =
+					if (document.getElementById('startcall')) {
+						document.getElementById('startcall').innerHTML =
 								'Call';
-						}
-						this.updateMessage('No answer');
-						this.attachEvents();
-					}, 29000);
-				}
+					}
+					this.updateMessage('No answer');
+					this.attachEvents();
+				}, 29000);
+			}
 
-			default:
+		default:
 		}
 	}
 }

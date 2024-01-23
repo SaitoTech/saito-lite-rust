@@ -6,10 +6,10 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
        <div class="settlers-items-container">
   
           <div class="settlers-item-row item-road ${
-				mod.canPlayerBuildRoad(mod.game.player)
-					? ``
-					: `settlers-row-disabled`
-			}" id="0">
+	mod.canPlayerBuildRoad(mod.game.player)
+		? ``
+		: `settlers-row-disabled`
+}" id="0">
             <div class="settlers-item-column">
                 <img class="settlers-item-img" src="/settlers/img/icons/road.png">
                 <div>Road</div>
@@ -22,10 +22,10 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
           </div>
          
           <div class="settlers-item-row item-village ${
-				mod.canPlayerBuildTown(mod.game.player)
-					? ``
-					: `settlers-row-disabled`
-			}" id="1">
+	mod.canPlayerBuildTown(mod.game.player)
+		? ``
+		: `settlers-row-disabled`
+}" id="1">
             <div class="settlers-item-column">
                 <img class="settlers-item-img" src="/settlers/img/icons/village.png">
                 <div>Village</div>
@@ -40,10 +40,10 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
           </div>
          
           <div class="settlers-item-row item-city ${
-				mod.canPlayerBuildCity(mod.game.player)
-					? ``
-					: `settlers-row-disabled`
-			}" id="2">
+	mod.canPlayerBuildCity(mod.game.player)
+		? ``
+		: `settlers-row-disabled`
+}" id="2">
             <div class="settlers-item-column">
                 <img class="settlers-item-img settlers-item-img-disabled" src="/settlers/img/icons/city.png">
                 <div>City</div>
@@ -57,10 +57,10 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
          
          
           <div class="settlers-item-row item-development-card ${
-				mod.canPlayerBuyCard(mod.game.player)
-					? ``
-					: `settlers-row-disabled`
-			}" id="3">
+	mod.canPlayerBuyCard(mod.game.player)
+		? ``
+		: `settlers-row-disabled`
+}" id="3">
             <div class="settlers-item-column">
                 <img class="settlers-item-img" src="/settlers/img/cards/knight.png">
               <div>Card</div>

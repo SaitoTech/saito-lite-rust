@@ -24,11 +24,11 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                 <div class="league-overlay-header-image" style="background-image: url('${img}')"></div>
                 <div class="league-overlay-header-title-box">
                     <div class="league-overlay-header-title-box-title ${
-						league.name.length > 15 ? 'oversize-load' : ''
-					}">${league.name}</div>
+	league.name.length > 15 ? 'oversize-load' : ''
+}">${league.name}</div>
                     <div class="league-overlay-header-title-box-desc">${
-						league.admin ? `${game_name} league` : key_words
-					}</div>
+	league.admin ? `${game_name} league` : key_words
+}</div>
                 </div>
                 <div class="league-overlay-controls">
                     <div id="home" class="menu-icon active-tab"><i class="fas fa-house"></i><div class="menu-text">Home</div></div>
@@ -47,10 +47,10 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
             <div class="league-overlay-body">
                 <div class="league-overlay-body-content">
                     <div class="league-overlay-description league-overlay-content-box ${
-						(newPlayer || league.unverified) && isMember
-							? 'hidden'
-							: ''
-					}">${league.description}</div>
+	(newPlayer || league.unverified) && isMember
+		? 'hidden'
+		: ''
+}">${league.description}</div>
                     <div class="league-overlay-league-body-games league-overlay-content-box hidden">
                         <div class="league-overlay-games-list league_recent_games"></div>
                     </div>`;
@@ -63,19 +63,19 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 				league.admin
 			}" data-id="${league.admin}">
                         <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(
-							league.admin
-						)}" data-id="${league.admin}"></div>
+		league.admin
+	)}" data-id="${league.admin}"></div>
                         ${app.browser.returnAddressHTML(league.admin)}
                         <div id="admin_contact" class="saito-userline" data-id="${
-							league.admin
-						}">${league.contact}</div>
+	league.admin
+}">${league.contact}</div>
                         ${
-							newPlayer ||
+	newPlayer ||
 							league.unverified ||
 							(league.admin && !isMember)
-								? `<button id="league-chat-button" class="saito-user-fourth-elem-large">League Chat</button>`
-								: ''
-						}
+		? `<button id="league-chat-button" class="saito-user-fourth-elem-large">League Chat</button>`
+		: ''
+}
                     </div>`;
 
 			if (newPlayer || league.unverified || !isMember) {

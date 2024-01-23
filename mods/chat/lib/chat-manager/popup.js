@@ -124,10 +124,10 @@ class ChatPopup {
 		if (document.querySelector(popup_qs)) {
 			let html = `<div class="chat-body">
                     ${
-						this?.no_older_messages
-							? ''
-							: `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`
-					}
+	this?.no_older_messages
+		? ''
+		: `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`
+}
                     ${this.mod.returnChatBody(this.group.id)}
                   </div>`;
 			this.app.browser.replaceElementBySelector(

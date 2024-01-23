@@ -10,8 +10,8 @@ module.exports = (app, tx = {}) => {
     <div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}" data-id="${publickey}"></div>
     ${app.browser.returnAddressHTML(publickey)}
     <div class="saito-userline" data-id="${publickey}">${
-		tx.msg.options.game
-	} Invitation</div>
+	tx.msg.options.game
+} Invitation</div>
   </div>`;
 
 	return `

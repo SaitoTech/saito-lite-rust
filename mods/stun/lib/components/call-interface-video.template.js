@@ -38,33 +38,33 @@ module.exports = CallInterfaceVideoTemplate = (
             </span>
 
              ${
-					mod.app.browser.isMobileBrowser === true
-						? ``
-						: `<span class="record-control icon_click_area" id="record-icon">
+	mod.app.browser.isMobileBrowser === true
+		? ``
+		: `<span class="record-control icon_click_area" id="record-icon">
                   <label>Record</label>
                   <i class="fa-solid fa-record-vinyl"></i>
                 </span>`
-				}
+}
             
             <span class="spacer"></span>
 
             <span class="audio-control mini_okay icon_click_area${
-				audioEnabled ? '' : ' disabled'
-			}">
+	audioEnabled ? '' : ' disabled'
+}">
               <label>Audio</label>
               <i class="fa ${
-					audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'
-				}"> </i>
+	audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'
+}"> </i>
             </span>
          
           
             <span class="video-control mini_okay icon_click_area${
-				videoEnabled ? '' : ' disabled'
-			}">
+	videoEnabled ? '' : ' disabled'
+}">
               <label>Video</label>
               <i class="fas ${
-					videoEnabled ? 'fa-video' : 'fa-video-slash'
-				}"></i>
+	videoEnabled ? 'fa-video' : 'fa-video-slash'
+}"></i>
             </span>
             <span class="disconnect-control mini_okay icon_click_area">
                <label>End </label>
@@ -76,14 +76,14 @@ module.exports = CallInterfaceVideoTemplate = (
     </main>
 
     ${
-		mod.browser_active
-			? `<div class="maximizer">
+	mod.browser_active
+		? `<div class="maximizer">
       <i class="fa fa-window-maximize" aria-hidden="true"></i>
     </div>`
-			: `<div class="minimizer">
+		: `<div class="minimizer">
       <i class=" fas fa-caret-down"></i>
     </div>`
-	}
+}
 
   </div>`;
 

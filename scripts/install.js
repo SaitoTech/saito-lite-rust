@@ -16,20 +16,20 @@ userInput(
 	'\nPLEASE SELECT COMPILE TYPE [TYPE NUMBER AND PRESS ENTER] \n1. Initial (New Install)\n2. Nuke (Destroy Old Install and re-build)\n3. Recompile Build\n4. Cancel\n'
 ).then(function (res) {
 	switch (res) {
-		case '1':
-			init();
-			break;
+	case '1':
+		init();
+		break;
 
-		case '2':
-			nuke();
-			break;
+	case '2':
+		nuke();
+		break;
 
-		case '3':
-			recompile();
-			break;
+	case '3':
+		recompile();
+		break;
 
-		default:
-			console.log(res);
+	default:
+		console.log(res);
 	}
 });
 
@@ -123,11 +123,11 @@ function nuke() {
 	console.log(' _--                  --_    ');
 	console.log(' <                        >) ');
 	console.log(' | _                     _ | ');
-	console.log("     '''--. . , ; .--'''     ");
+	console.log('     \'\'\'--. . , ; .--\'\'\'     ');
 	console.log('          | |   |            ');
 	console.log('          | |   |            ');
 	console.log('       \x1b[33m.-=\x1b[0m||  | |\x1b[33m=-.         ');
-	console.log("        -=#$%&%$/=-'\x1b[0m         ");
+	console.log('        -=#$%&%$/=-\'\x1b[0m         ');
 	console.log('          | ;  :|            ');
 	console.log('          | |   |            ');
 	console.log('    \x1b[33m.,-#%&|/#@%$|%#&#~,\x1b[0m          ');

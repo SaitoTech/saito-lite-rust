@@ -2,10 +2,10 @@ module.exports = (app, mod, invite) => {
 	let html = `
 
       <div class="saito-module saito-game" id="saito-game-${
-			invite.game_id
-		}" style="background-image: url('/${
-		invite.game_slug
-	}/img/arcade/arcade.jpg');">
+	invite.game_id
+}" style="background-image: url('/${
+	invite.game_slug
+}/img/arcade/arcade.jpg');">
         <div class="saito-module-titlebar">
           <div class="saito-module-titlebar-title">${invite.game_name}</div>
           <div class="saito-module-titlebar-details game-type">${invite.game_type.toUpperCase()}</div>
@@ -21,8 +21,8 @@ module.exports = (app, mod, invite) => {
 
           <div>
             <img class="saito-module-identicon saito-identicon" id-${
-				invite.players[i]
-			}" src="${app.keychain.returnIdenticon(invite.players[i])}">
+	invite.players[i]
+}" src="${app.keychain.returnIdenticon(invite.players[i])}">
           </div>
 
       `;
@@ -34,10 +34,10 @@ module.exports = (app, mod, invite) => {
 
           <div class="requested_player">
             <img class="saito-module-identicon saito-identicon" id-${
-				invite.desired_opponent_publickeys[i]
-			}" src="${app.keychain.returnIdenticon(
-			invite.desired_opponent_publickeys[i]
-		)}">
+	invite.desired_opponent_publickeys[i]
+}" src="${app.keychain.returnIdenticon(
+	invite.desired_opponent_publickeys[i]
+)}">
           </div>
 
       `;

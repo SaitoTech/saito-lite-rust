@@ -13,8 +13,8 @@ module.exports = ChatManagerTemplate = (manager_self) => {
       <div class="alternate-close-button"><i class="fa-solid fa-xmark"></i></div>
     </div>
     <div class="chat-manager-list hide-scrollbar${
-		manager_self.mod.browser_active ? '' : ' saito-sidebar-element'
-	}">
+	manager_self.mod.browser_active ? '' : ' saito-sidebar-element'
+}">
     </div>
   </div>`;
 };

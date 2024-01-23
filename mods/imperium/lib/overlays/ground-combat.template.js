@@ -18,9 +18,9 @@ module.exports = ImperiumGroundCombatOverlayTemplate = (
 
 	<div class="ground-combat-attacker">
 	  <div class="ground-combat-attacker-name">${imperium_self.returnFactionName(
-			imperium_self,
-			attacker
-		)}</div>
+		imperium_self,
+		attacker
+	)}</div>
 	  <div class="unit-table small">
   `;
 
@@ -77,9 +77,9 @@ module.exports = ImperiumGroundCombatOverlayTemplate = (
 
 	<div class="ground-combat-defender">
 	  <div class="ground-combat-defender-name">${imperium_self.returnFactionName(
-			imperium_self,
-			defender
-		)}</div>
+		imperium_self,
+		defender
+	)}</div>
 	  <div class="unit-table small">
   `;
 	for (let i = 0; i < defender_forces.length; i++) {

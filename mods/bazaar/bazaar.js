@@ -104,7 +104,7 @@ class Jaipur extends GameTemplate {
 			console.log('\n\n\n\n');
 
 			this.updateStatus(
-				"<div class='status-message' id='status-message'>Generating the Game</div>"
+				'<div class=\'status-message\' id=\'status-message\'>Generating the Game</div>'
 			);
 			this.initializeQueue();
 		}

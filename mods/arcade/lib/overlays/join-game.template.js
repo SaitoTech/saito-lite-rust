@@ -20,13 +20,13 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
   <div class="arcade-game-overlay">
   <div class="arcade-game-overlay-header">
 	  <div class="arcade-game-overlay-header-image" style="background-image: url('${
-			invite.game_mod.respondTo('arcade-games').image
-		}')">
+	invite.game_mod.respondTo('arcade-games').image
+}')">
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
 		  <div class="arcade-game-overlay-header-title-box-title">${
-				invite.game_name
-			}</div>
+	invite.game_name
+}</div>
 		  <div class="arcade-game-overlay-header-title-box-desc">${desc}</div>
 	  </div>
   </div>
@@ -39,14 +39,14 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	for (let i = 0; i < invite.players.length; i++) {
 		html += `
 		  <div class="arcade-game-playerbox saito-table-row" id="invite-user-${
-				invite.players[i]
-			}">
+	invite.players[i]
+}">
 		    <div class="saito-identicon-box${
-				invite.winner?.includes(invite.players[i]) ? ' winner' : ''
-			}">
+	invite.winner?.includes(invite.players[i]) ? ' winner' : ''
+}">
           <img class="saito-identicon" src="${app.keychain.returnIdenticon(
-				invite.players[i]
-			)}">
+		invite.players[i]
+	)}">
         </div>
 		    ${app.browser.returnAddressHTML(invite.players[i])}
         <div class="online-status-indicator"></div>
@@ -59,11 +59,11 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		html += `
 
       <div class="arcade-game-playerbox empty saito-table-row requested_player" id="invite-user-${
-			invite.desired_opponent_publickeys[i]
-		}">
+	invite.desired_opponent_publickeys[i]
+}">
 	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(
-				invite.desired_opponent_publickeys[i]
-			)}"></div>
+		invite.desired_opponent_publickeys[i]
+	)}"></div>
  	      ${app.browser.returnAddressHTML(invite.desired_opponent_publickeys[i])}
         <div class="online-status-indicator"></div>
 	    </div>
@@ -75,8 +75,8 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	for (let i = 0; i < invite.empty_slots; i++) {
 		html += `
 	        <div class="arcade-game-playerbox saito-table-row${
-				mod.publicKey === invite.originator ? ' available_slot' : ''
-			}">  
+	mod.publicKey === invite.originator ? ' available_slot' : ''
+}">  
 	      		<div class="saito-identicon-box empty-slot"></div>
 	    			<div class="saito-address">open player slot</div>	
 	  			</div>
@@ -170,9 +170,9 @@ const formatOptions = (sgoa) => {
 	for (let i in sgoa) {
 		html += `<div class="saito-table-row">
                 <div class="arcade-game-options-key">${i.replace(
-					/_/g,
-					' '
-				)}</div>`;
+		/_/g,
+		' '
+	)}</div>`;
 		if (sgoa[i] !== null) {
 			html += `<div class="arcade-game-options-value">${sgoa[i]}</div>`;
 		}

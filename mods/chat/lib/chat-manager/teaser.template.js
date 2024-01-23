@@ -38,23 +38,23 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
   <div class="saito-user ${notification}
       ${group?.online ? ' online' : ''} 
       ${
-			chat_open ? ' saito-chat-active' : ''
-		}" id="saito-user-${id}" data-id="${id}" data-disable="true">
+	chat_open ? ' saito-chat-active' : ''
+}" id="saito-user-${id}" data-id="${id}" data-disable="true">
     <div class="saito-identicon-box">
       <img class="saito-identicon" src="${imgsrc}" data-disable="true"/>
     
     </div>
     <div class="saito-address saito-address-long" data-id="${
-		group.name
-	}" data-disable="true">${group.name}</div>
+	group.name
+}" data-disable="true">${group.name}</div>
     <div class="saito-userline">${last_msg}</div>
     <div class="saito-chat-notifications">
       ${group.mentioned ? `<div class="saito-notification-dot">@</div>` : ''}
       ${
-			group.unread > 0
-				? `<div class="saito-notification-dot">${group.unread}</div>`
-				: ''
-		}
+	group.unread > 0
+		? `<div class="saito-notification-dot">${group.unread}</div>`
+		: ''
+}
     </div>
     <div class="online-status-indicator"></div>
   </div>

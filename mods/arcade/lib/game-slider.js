@@ -45,8 +45,8 @@ class GameSlider {
 				}">
           <span class="game-slider-name">${game_mod.returnName()}</span>
           <img alt="${game_mod.returnName()}" src="${
-					game_mod.respondTo('arcade-games').banner
-				}">
+	game_mod.respondTo('arcade-games').banner
+}">
           </li>`
 			]);
 		}
@@ -112,8 +112,8 @@ class GameSlider {
 				newIndex < 0
 					? slides.children.length - 1
 					: newIndex === slides.children.length
-					? 0
-					: newIndex;
+						? 0
+						: newIndex;
 			slides.children[newIndex].dataset.activeSlide = true;
 			delete activeSlide.dataset.activeSlide;
 			/*

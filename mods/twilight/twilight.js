@@ -124,10 +124,10 @@ class Twilight extends GameTemplate {
 			let player_action = $(this).attr('id');
 
 			switch (player_action) {
-				case 'private':
-					break;
-				default:
-					break;
+			case 'private':
+				break;
+			default:
+				break;
 			}
 
 			twilight_self.overlay.show(
@@ -454,13 +454,13 @@ class Twilight extends GameTemplate {
 			let hh = document.querySelector('.hud-header');
 			if (hh) {
 				switch (this.game.player) {
-					case 1:
-						hh.classList.add('soviet');
-						break;
-					case 2:
-						hh.classList.add('american');
-						break;
-					default:
+				case 1:
+					hh.classList.add('soviet');
+					break;
+				case 2:
+					hh.classList.add('american');
+					break;
+				default:
 				}
 			}
 		}
@@ -5554,7 +5554,7 @@ class Twilight extends GameTemplate {
 				//
 				if (ac[card].player != 'both' && ac[card].player != player) {
 					let fr_header =
-						"This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?";
+						'This is your opponent\'s event. Are you sure you wish to play it for the event instead of the OPS?';
 					let fr_msg =
 						'<ul><li class="option" id="playevent">play event</li></ul>';
 
@@ -7975,37 +7975,37 @@ class Twilight extends GameTemplate {
 
 	undoMove(move_type, num_of_moves) {
 		switch (move_type) {
-			case 'place':
-				// iterate through the queue and remove past moves
-				// cycle through past moves to know what to revert
-				for (let i = 0; i < num_of_moves; i++) {
-					let last_move = this.removeMove();
-					last_move = last_move.split('\t');
-					let player = last_move[2];
-					let country = last_move[3];
-					let ops = last_move[4];
+		case 'place':
+			// iterate through the queue and remove past moves
+			// cycle through past moves to know what to revert
+			for (let i = 0; i < num_of_moves; i++) {
+				let last_move = this.removeMove();
+				last_move = last_move.split('\t');
+				let player = last_move[2];
+				let country = last_move[3];
+				let ops = last_move[4];
 
-					let opponent = 'us';
-					if (player == 'us') {
-						opponent = 'ussr';
-					}
-					this.removeInfluence(country, ops, player);
-
-					//
-					// if the country is now enemy controlled, it must have taken an extra move
-					// for the play to place there....
-					//
-					if (this.isControlled(opponent, country) == 1) {
-						i++;
-					}
+				let opponent = 'us';
+				if (player == 'us') {
+					opponent = 'ussr';
 				}
+				this.removeInfluence(country, ops, player);
 
-				// use this to clear the "resolve ops" move
-				this.removeMove();
-				return 1;
-			default:
-				break;
-				return 0;
+				//
+				// if the country is now enemy controlled, it must have taken an extra move
+				// for the play to place there....
+				//
+				if (this.isControlled(opponent, country) == 1) {
+					i++;
+				}
+			}
+
+			// use this to clear the "resolve ops" move
+			this.removeMove();
+			return 1;
+		default:
+			break;
+			return 0;
 		}
 	}
 
@@ -11841,358 +11841,358 @@ class Twilight extends GameTemplate {
 		}
 
 		switch (region) {
-			////////////
-			// EUROPE //
-			////////////
-			case 'europe':
-				scoring_range = { presence: 3, domination: 7, control: 10000 };
-				scoring = this.determineRegionVictor(
-					scoring,
-					scoring_range,
-					bg_countries.length,
-					region
-				);
+		////////////
+		// EUROPE //
+		////////////
+		case 'europe':
+			scoring_range = { presence: 3, domination: 7, control: 10000 };
+			scoring = this.determineRegionVictor(
+				scoring,
+				scoring_range,
+				bg_countries.length,
+				region
+			);
 
-				//
-				// neighbouring countries
-				//
-				scoring.us.neigh = [];
-				scoring.ussr.neigh = [];
+			//
+			// neighbouring countries
+			//
+			scoring.us.neigh = [];
+			scoring.ussr.neigh = [];
 
-				if (this.isControlled('us', 'finland') == 1) {
-					scoring.us.vp++;
-					scoring.us.neigh.push('finland');
+			if (this.isControlled('us', 'finland') == 1) {
+				scoring.us.vp++;
+				scoring.us.neigh.push('finland');
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Adjacency',
+					desc: 'US +1 for Finland',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
+			if (this.isControlled('us', 'romania') == 1) {
+				scoring.us.vp++;
+				scoring.us.neigh.push('romania');
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Adjacency',
+					desc: 'US +1 for Romania',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
+			if (this.isControlled('us', 'poland') == 1) {
+				scoring.us.vp++;
+				scoring.us.neigh.push('poland');
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Adjacency',
+					desc: 'US +1 for Poland',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
+			if (this.isControlled('ussr', 'canada') == 1) {
+				scoring.ussr.vp++;
+				scoring.ussr.neigh.push('canada');
+				scoring.bonus.push({
+					side: 'ussr',
+					name: 'Adjacency',
+					desc: 'USSR +1 for Canada',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
+
+			//
+			// GOUZENKO AFFAIR -- early war optional
+			//
+			if (this.game.state.events.optional.gouzenkoaffair == 1) {
+				if (this.isControlled('us', 'canada') == 1) {
+					vp_us++;
+					scoring.us.neigh.push('canada');
 					scoring.bonus.push({
 						side: 'us',
-						name: 'Adjacency',
-						desc: 'US +1 for Finland',
+						name: 'Gouzenko Affair',
+						desc: 'US +1 for Canada-USSR adjacency',
 						icon: '/twilight/img/adjacency.png'
 					});
 				}
-				if (this.isControlled('us', 'romania') == 1) {
-					scoring.us.vp++;
-					scoring.us.neigh.push('romania');
-					scoring.bonus.push({
-						side: 'us',
-						name: 'Adjacency',
-						desc: 'US +1 for Romania',
-						icon: '/twilight/img/adjacency.png'
-					});
-				}
-				if (this.isControlled('us', 'poland') == 1) {
-					scoring.us.vp++;
-					scoring.us.neigh.push('poland');
-					scoring.bonus.push({
-						side: 'us',
-						name: 'Adjacency',
-						desc: 'US +1 for Poland',
-						icon: '/twilight/img/adjacency.png'
-					});
-				}
-				if (this.isControlled('ussr', 'canada') == 1) {
-					scoring.ussr.vp++;
-					scoring.ussr.neigh.push('canada');
-					scoring.bonus.push({
-						side: 'ussr',
-						name: 'Adjacency',
-						desc: 'USSR +1 for Canada',
-						icon: '/twilight/img/adjacency.png'
-					});
-				}
+			}
 
-				//
-				// GOUZENKO AFFAIR -- early war optional
-				//
-				if (this.game.state.events.optional.gouzenkoaffair == 1) {
-					if (this.isControlled('us', 'canada') == 1) {
-						vp_us++;
-						scoring.us.neigh.push('canada');
-						scoring.bonus.push({
-							side: 'us',
-							name: 'Gouzenko Affair',
-							desc: 'US +1 for Canada-USSR adjacency',
-							icon: '/twilight/img/adjacency.png'
-						});
-					}
-				}
+			if (mouseover_preview != 1) {
+				this.resetBattlegroundCountries(region);
+			}
 
-				if (mouseover_preview != 1) {
-					this.resetBattlegroundCountries(region);
-				}
-
-				break;
+			break;
 
 			/////////////
 			// MIDEAST //
 			/////////////
-			case 'mideast':
-				scoring_range = { presence: 3, domination: 5, control: 7 };
+		case 'mideast':
+			scoring_range = { presence: 3, domination: 5, control: 7 };
 
-				//
-				// Shuttle Diplomacy
-				//
-				if (this.game.state.events.shuttlediplomacy == 1) {
-					scoring.bonus.push({
-						side: 'us',
-						name: 'Shuttle Diplomacy',
-						desc: 'USSR -1 battleground',
-						icon: '/twilight/img/Event73.png'
-					});
-					if (scoring.ussr.bg > 0) {
-						scoring.ussr.bg--;
-						scoring.ussr.total--;
-					}
-					if (mouseover_preview == 0) {
-						//commit score
-						scoring.shuttle = 1;
-						this.game.state.events.shuttlediplomacy = 0;
-						this.game.deck[0].discards['shuttle'] =
+			//
+			// Shuttle Diplomacy
+			//
+			if (this.game.state.events.shuttlediplomacy == 1) {
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Shuttle Diplomacy',
+					desc: 'USSR -1 battleground',
+					icon: '/twilight/img/Event73.png'
+				});
+				if (scoring.ussr.bg > 0) {
+					scoring.ussr.bg--;
+					scoring.ussr.total--;
+				}
+				if (mouseover_preview == 0) {
+					//commit score
+					scoring.shuttle = 1;
+					this.game.state.events.shuttlediplomacy = 0;
+					this.game.deck[0].discards['shuttle'] =
 							this.game.deck[0].cards['shuttle'];
-					}
 				}
+			}
 
-				scoring = this.determineRegionVictor(
-					scoring,
-					scoring_range,
-					bg_countries.length,
-					region
-				);
+			scoring = this.determineRegionVictor(
+				scoring,
+				scoring_range,
+				bg_countries.length,
+				region
+			);
 
-				if (mouseover_preview != 1) {
-					this.resetBattlegroundCountries(region);
-				}
+			if (mouseover_preview != 1) {
+				this.resetBattlegroundCountries(region);
+			}
 
-				break;
+			break;
 
 			/////////////
 			// SE ASIA //
 			/////////////
-			case 'seasia':
-				let seasia_countries = [
-					'burma',
-					'laos',
-					'vietnam',
-					'malaysia',
-					'philippines',
-					'indonesia'
-				];
+		case 'seasia':
+			let seasia_countries = [
+				'burma',
+				'laos',
+				'vietnam',
+				'malaysia',
+				'philippines',
+				'indonesia'
+			];
 
-				for (country of seasia_countries) {
-					for (var [player, side] of Object.entries(scoring)) {
-						if (this.isControlled(player, country) == 1) {
-							side.total++;
-						}
+			for (country of seasia_countries) {
+				for (var [player, side] of Object.entries(scoring)) {
+					if (this.isControlled(player, country) == 1) {
+						side.total++;
 					}
 				}
-				switch (this.whoControls('thailand')) {
-					case 'us':
-						scoring.us.total += 2;
-						scoring.us.bg = 1;
-						scoring.us.status = 'Thailand';
-						break;
-					case 'ussr':
-						scoring.ussr.total += 2;
-						scoring.ussr.bg = 1;
-						scoring.ussr.status = 'Thailand';
-						break;
-				}
-
-				scoring.us.vp += scoring.us.total;
-				scoring.ussr.vp += scoring.ussr.total;
+			}
+			switch (this.whoControls('thailand')) {
+			case 'us':
+				scoring.us.total += 2;
+				scoring.us.bg = 1;
+				scoring.us.status = 'Thailand';
 				break;
+			case 'ussr':
+				scoring.ussr.total += 2;
+				scoring.ussr.bg = 1;
+				scoring.ussr.status = 'Thailand';
+				break;
+			}
+
+			scoring.us.vp += scoring.us.total;
+			scoring.ussr.vp += scoring.ussr.total;
+			break;
 
 			/////////////
 			// AFRICA  //
 			/////////////
-			case 'africa':
-				scoring_range = { presence: 1, domination: 4, control: 6 };
+		case 'africa':
+			scoring_range = { presence: 1, domination: 4, control: 6 };
 
-				scoring = this.determineRegionVictor(
-					scoring,
-					scoring_range,
-					bg_countries.length,
-					region
-				);
+			scoring = this.determineRegionVictor(
+				scoring,
+				scoring_range,
+				bg_countries.length,
+				region
+			);
 
-				if (mouseover_preview != 1) {
-					this.resetBattlegroundCountries(region);
-				}
+			if (mouseover_preview != 1) {
+				this.resetBattlegroundCountries(region);
+			}
 
-				break;
+			break;
 
 			/////////////////////
 			// CENTRAL AMERICA //
 			/////////////////////
-			case 'camerica':
-				scoring_range = { presence: 1, domination: 3, control: 5 };
+		case 'camerica':
+			scoring_range = { presence: 1, domination: 3, control: 5 };
 
-				scoring = this.determineRegionVictor(
-					scoring,
-					scoring_range,
-					bg_countries.length,
-					region
-				);
+			scoring = this.determineRegionVictor(
+				scoring,
+				scoring_range,
+				bg_countries.length,
+				region
+			);
 
-				// neighbouring countries
-				scoring.us.neigh = [];
-				scoring.ussr.neigh = [];
+			// neighbouring countries
+			scoring.us.neigh = [];
+			scoring.ussr.neigh = [];
 
-				if (this.isControlled('ussr', 'mexico') == 1) {
-					scoring.ussr.vp++;
-					scoring.ussr.neigh.push('mexico');
-					scoring.bonus.push({
-						side: 'ussr',
-						name: 'Adjacency',
-						desc: 'USSR +1 for Mexico',
-						icon: '/twilight/img/adjacency.png'
-					});
-				}
-				if (this.isControlled('ussr', 'cuba') == 1) {
-					scoring.ussr.vp++;
-					scoring.ussr.neigh.push('cuba');
-					scoring.bonus.push({
-						side: 'ussr',
-						name: 'Adjacency',
-						desc: 'USSR +1 for Cuba',
-						icon: '/twilight/img/adjacency.png'
-					});
-				}
+			if (this.isControlled('ussr', 'mexico') == 1) {
+				scoring.ussr.vp++;
+				scoring.ussr.neigh.push('mexico');
+				scoring.bonus.push({
+					side: 'ussr',
+					name: 'Adjacency',
+					desc: 'USSR +1 for Mexico',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
+			if (this.isControlled('ussr', 'cuba') == 1) {
+				scoring.ussr.vp++;
+				scoring.ussr.neigh.push('cuba');
+				scoring.bonus.push({
+					side: 'ussr',
+					name: 'Adjacency',
+					desc: 'USSR +1 for Cuba',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
 
-				if (mouseover_preview != 1) {
-					this.resetBattlegroundCountries(region);
-				}
+			if (mouseover_preview != 1) {
+				this.resetBattlegroundCountries(region);
+			}
 
-				break;
+			break;
 
 			///////////////////
 			// SOUTH AMERICA //
 			///////////////////
-			case 'samerica':
-				scoring_range = { presence: 2, domination: 5, control: 6 };
+		case 'samerica':
+			scoring_range = { presence: 2, domination: 5, control: 6 };
 
-				scoring = this.determineRegionVictor(
-					scoring,
-					scoring_range,
-					bg_countries.length,
-					region
-				);
+			scoring = this.determineRegionVictor(
+				scoring,
+				scoring_range,
+				bg_countries.length,
+				region
+			);
 
-				if (mouseover_preview != 1) {
-					this.resetBattlegroundCountries(region);
-				}
+			if (mouseover_preview != 1) {
+				this.resetBattlegroundCountries(region);
+			}
 
-				break;
+			break;
 
 			//////////
 			// ASIA //
 			//////////
-			case 'asia':
-				//move Taiwan to BG if necessay
-				if (
-					this.game.state.events.formosan == 1 &&
+		case 'asia':
+			//move Taiwan to BG if necessay
+			if (
+				this.game.state.events.formosan == 1 &&
 					this.isControlled('us', 'taiwan') == 1
-				) {
-					bg_countries.push('taiwan');
-					scoring.us.bg++;
-					scoring.bonus.push({
-						side: 'us',
-						name: 'Formosan Resolution',
-						desc: 'US +1 battleground country',
-						icon: '/twilight/img/Event35.svg'
-					});
+			) {
+				bg_countries.push('taiwan');
+				scoring.us.bg++;
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Formosan Resolution',
+					desc: 'US +1 battleground country',
+					icon: '/twilight/img/Event35.svg'
+				});
+			}
+
+			scoring_range = { presence: 3, domination: 7, control: 9 };
+
+			///////////////////////
+			// Shuttle Diplomacy //
+			///////////////////////
+			if (this.game.state.events.shuttlediplomacy == 1) {
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Shuttle Diplomacy',
+					desc: 'USSR -1 battleground',
+					icon: '/twilight/img/Event73.png'
+				});
+				if (scoring.ussr.bg > 0) {
+					scoring.ussr.bg--;
+					scoring.ussr.total--;
 				}
 
-				scoring_range = { presence: 3, domination: 7, control: 9 };
+				scoring.shuttle = 1;
 
-				///////////////////////
-				// Shuttle Diplomacy //
-				///////////////////////
-				if (this.game.state.events.shuttlediplomacy == 1) {
-					scoring.bonus.push({
-						side: 'us',
-						name: 'Shuttle Diplomacy',
-						desc: 'USSR -1 battleground',
-						icon: '/twilight/img/Event73.png'
-					});
-					if (scoring.ussr.bg > 0) {
-						scoring.ussr.bg--;
-						scoring.ussr.total--;
-					}
-
-					scoring.shuttle = 1;
-
-					if (mouseover_preview == 0) {
-						this.game.state.events.shuttlediplomacy = 0;
-						this.game.deck[0].discards['shuttle'] =
+				if (mouseover_preview == 0) {
+					this.game.state.events.shuttlediplomacy = 0;
+					this.game.deck[0].discards['shuttle'] =
 							this.game.deck[0].cards['shuttle'];
-					}
 				}
+			}
 
-				scoring = this.determineRegionVictor(
-					scoring,
-					scoring_range,
-					bg_countries.length,
-					region
-				);
+			scoring = this.determineRegionVictor(
+				scoring,
+				scoring_range,
+				bg_countries.length,
+				region
+			);
 
-				//
-				// neighbouring countries
-				//
-				scoring.us.neigh = [];
-				scoring.ussr.neigh = [];
+			//
+			// neighbouring countries
+			//
+			scoring.us.neigh = [];
+			scoring.ussr.neigh = [];
 
-				if (this.isControlled('us', 'afghanistan') == 1) {
-					scoring.us.vp++;
-					scoring.us.neigh.push('afghanistan');
+			if (this.isControlled('us', 'afghanistan') == 1) {
+				scoring.us.vp++;
+				scoring.us.neigh.push('afghanistan');
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Adjacency',
+					desc: 'US +1 for Afghanistan',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
+			if (this.isControlled('us', 'northkorea') == 1) {
+				scoring.us.vp++;
+				scoring.us.neigh.push('northkorea');
+				scoring.bonus.push({
+					side: 'us',
+					name: 'Adjacency',
+					desc: 'US +1 for North Korea',
+					icon: '/twilight/img/adjacency.png'
+				});
+			}
+			if (this.isControlled('ussr', 'japan') == 1) {
+				if (this.game.state.events.shuttlediplomacy == 1) {
+					this.updateLog(
+						'USSR loses Japan/US-adjacency with Shuttle Diplomacy'
+					);
+				} else {
+					scoring.ussr.vp++;
+					scoring.ussr.neigh.push('japan');
 					scoring.bonus.push({
-						side: 'us',
+						side: 'ussr',
 						name: 'Adjacency',
-						desc: 'US +1 for Afghanistan',
+						desc: 'USSR +1 for Japan',
 						icon: '/twilight/img/adjacency.png'
 					});
 				}
-				if (this.isControlled('us', 'northkorea') == 1) {
-					scoring.us.vp++;
-					scoring.us.neigh.push('northkorea');
-					scoring.bonus.push({
-						side: 'us',
-						name: 'Adjacency',
-						desc: 'US +1 for North Korea',
-						icon: '/twilight/img/adjacency.png'
-					});
-				}
-				if (this.isControlled('ussr', 'japan') == 1) {
-					if (this.game.state.events.shuttlediplomacy == 1) {
-						this.updateLog(
-							'USSR loses Japan/US-adjacency with Shuttle Diplomacy'
-						);
-					} else {
-						scoring.ussr.vp++;
-						scoring.ussr.neigh.push('japan');
-						scoring.bonus.push({
-							side: 'ussr',
-							name: 'Adjacency',
-							desc: 'USSR +1 for Japan',
-							icon: '/twilight/img/adjacency.png'
-						});
-					}
-				}
+			}
 
-				if (mouseover_preview != 1) {
-					// SAITO COMMUNITY
-					if (region === this.game.state.events.kissinger) {
-						this.game.state.events.kissinger = '';
-					}
-					if (region === this.game.state.events.fischerspassky) {
-						this.updateLog(
-							'Region Scoring Adjusted by Fischer-Spassky...'
-						);
-						this.game.state.events.fischerspassky = '';
-					}
-					this.resetBattlegroundCountries(region);
+			if (mouseover_preview != 1) {
+				// SAITO COMMUNITY
+				if (region === this.game.state.events.kissinger) {
+					this.game.state.events.kissinger = '';
 				}
+				if (region === this.game.state.events.fischerspassky) {
+					this.updateLog(
+						'Region Scoring Adjusted by Fischer-Spassky...'
+					);
+					this.game.state.events.fischerspassky = '';
+				}
+				this.resetBattlegroundCountries(region);
+			}
 
-				break;
+			break;
 		}
 
 		return scoring;
@@ -13306,31 +13306,31 @@ class Twilight extends GameTemplate {
 		let vp_change = 0;
 
 		switch (this.game.state[sr_player]) {
-			case 1: // Earth Satellite
-				vp_change = first ? 2 : 1;
-				break;
-			case 2: // Animal in Space
-				this.game.state.animal_in_space = first ? player : '';
-				break;
-			case 3: // Man in Space
-				vp_change = first ? 2 : 0;
-				break;
-			case 4: // Man in Earth Orbit
-				this.game.state.man_in_earth_orbit = first ? player : '';
-				break;
-			case 5: // Lunar Orbit
-				vp_change = first ? 3 : 1;
-				break;
-			case 6: // Eagle/Bear has Landed
-				this.game.state.eagle_has_landed = first ? player : '';
-				break;
-			case 7: // Space Shuttle
-				vp_change = first ? 4 : 2;
-				break;
-			case 8:
-				vp_change = first ? 2 : 0;
-				this.game.state.space_station = first ? player : '';
-				break;
+		case 1: // Earth Satellite
+			vp_change = first ? 2 : 1;
+			break;
+		case 2: // Animal in Space
+			this.game.state.animal_in_space = first ? player : '';
+			break;
+		case 3: // Man in Space
+			vp_change = first ? 2 : 0;
+			break;
+		case 4: // Man in Earth Orbit
+			this.game.state.man_in_earth_orbit = first ? player : '';
+			break;
+		case 5: // Lunar Orbit
+			vp_change = first ? 3 : 1;
+			break;
+		case 6: // Eagle/Bear has Landed
+			this.game.state.eagle_has_landed = first ? player : '';
+			break;
+		case 7: // Space Shuttle
+			vp_change = first ? 4 : 2;
+			break;
+		case 8:
+			vp_change = first ? 2 : 0;
+			this.game.state.space_station = first ? player : '';
+			break;
 		}
 
 		this.updateSpaceRace();
@@ -13849,27 +13849,27 @@ class Twilight extends GameTemplate {
 			}
 
 			switch (c.player) {
-				case 'both':
-					html += `<img class="${cardclass}" src="/twilight/img/BothPlayerCard.svg" />`;
-					if (c.ops) {
-						html += `<img class="${cardclass}" src="/twilight/img/White${c.ops}.svg" />`;
-						html += `<img class="${cardclass}" src="/twilight/img/Black${c.ops}.svg" />`;
-					}
-					break;
-				case 'us':
-					html += `<img class="${cardclass}" src="/twilight/img/AmericanPlayerCard.svg" />`;
-					if (c.ops) {
-						html += `<img class="${cardclass}" src="/twilight/img/Black${c.ops}.svg" />`;
-					}
-					break;
-				case 'ussr':
-					html += `<img class="${cardclass}" src="/twilight/img/SovietPlayerCard.svg" />`;
-					if (c.ops) {
-						html += `<img class="${cardclass}" src="/twilight/img/White${c.ops}.svg" />`;
-					}
-					break;
-				default:
-					break;
+			case 'both':
+				html += `<img class="${cardclass}" src="/twilight/img/BothPlayerCard.svg" />`;
+				if (c.ops) {
+					html += `<img class="${cardclass}" src="/twilight/img/White${c.ops}.svg" />`;
+					html += `<img class="${cardclass}" src="/twilight/img/Black${c.ops}.svg" />`;
+				}
+				break;
+			case 'us':
+				html += `<img class="${cardclass}" src="/twilight/img/AmericanPlayerCard.svg" />`;
+				if (c.ops) {
+					html += `<img class="${cardclass}" src="/twilight/img/Black${c.ops}.svg" />`;
+				}
+				break;
+			case 'ussr':
+				html += `<img class="${cardclass}" src="/twilight/img/SovietPlayerCard.svg" />`;
+				if (c.ops) {
+					html += `<img class="${cardclass}" src="/twilight/img/White${c.ops}.svg" />`;
+				}
+				break;
+			default:
+				break;
 			}
 		}
 
