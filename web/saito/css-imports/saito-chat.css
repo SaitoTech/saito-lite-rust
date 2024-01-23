@@ -307,6 +307,8 @@
 
 .chat-action-icons i {
   cursor: pointer;
+  height: auto;
+  width: auto;
 }
 
 /*.chat-header > i:last-child:hover {
