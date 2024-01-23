@@ -1,0 +1,58 @@
+
+.vp-overlay {
+    background-image: url(/his/img/backgrounds/new_world.jpg);
+    background-size: cover;
+    max-height: 90vh;
+    max-width: 90vw;
+    width: 90vw;
+    height: auto;
+    min-height: 622px;
+    text-align: center;
+}
+
+.vp-overlay .help {
+    background: #0009;
+    width: 100%;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.4rem;
+    padding: 0.75rem;
+    max-width: 100%;
+    padding: 2rem;
+    line-height: 3.4rem;
+}
+
+.vp-overlay .factions {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+    width: 80%;
+    background-color: #0009;
+    margin-left: auto;
+    margin-right: auto;
+    color: white;
+}
+
+.vp-overlay .factions div {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    font-size: 2rem;
+    padding: 1rem;
+}
+
+
+.vp-overlay .factions div .title {
+
+}
+.vp-overlay .factions div .title {
+    font-size: 1.5rem;
+    text-align: left;
+}
+.vp-overlay .factions div .vp {
+    font-size: 4rem;
+}
+

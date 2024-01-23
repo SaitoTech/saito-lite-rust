@@ -257,6 +257,16 @@ if (this.game.players.length > 2) {
       }
     });
     this.menu.addSubMenuOption("game-info", {
+      text : "VP",
+      id : "game-vp",
+      class : "game-vp",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.vp_overlay.render();
+      }
+    });
+/****
+    this.menu.addSubMenuOption("game-info", {
       text : "New World",
       id : "game-new-world",
       class : "game-cnew-world",
@@ -274,6 +284,7 @@ if (this.game.players.length > 2) {
         game_mod.chateaux_overlay.render("papacy");
       }
     });
+****/
     this.menu.addSubMenuOption("game-info", {
       text : "Religion",
       id : "game-religious-conflict",

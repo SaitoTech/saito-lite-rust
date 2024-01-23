@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const DebateOverlay = require('./lib/ui/overlays/debate');
 const ChateauxOverlay = require('./lib/ui/overlays/chateaux');
+const VPOverlay = require('./lib/ui/overlays/vp');
 const NewWorldOverlay = require('./lib/ui/overlays/newworld');
 const TreatiseOverlay = require('./lib/ui/overlays/treatise');
 const FactionOverlay = require('./lib/ui/overlays/faction');
@@ -60,6 +61,7 @@ class HereIStand extends GameTemplate {
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
+    this.vp_overlay = new VPOverlay(this.app, this);  // end-of-turn points overlay
     this.newworld_overlay = new NewWorldOverlay(this.app, this);
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
@@ -2755,6 +2757,16 @@ if (this.game.players.length > 2) {
       }
     });
     this.menu.addSubMenuOption("game-info", {
+      text : "VP",
+      id : "game-vp",
+      class : "game-vp",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.vp_overlay.render();
+      }
+    });
+/****
+    this.menu.addSubMenuOption("game-info", {
       text : "New World",
       id : "game-new-world",
       class : "game-cnew-world",
@@ -2772,6 +2784,7 @@ if (this.game.players.length > 2) {
         game_mod.chateaux_overlay.render("papacy");
       }
     });
+****/
     this.menu.addSubMenuOption("game-info", {
       text : "Religion",
       id : "game-religious-conflict",
