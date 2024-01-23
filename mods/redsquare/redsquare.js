@@ -516,7 +516,7 @@ class RedSquare extends ModTemplate {
       this.addPeer(peer, "tweets");
 
       //
-      // if viewing a specific twee
+      // if viewing a specific tweet
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
       if (tweet_id) {
