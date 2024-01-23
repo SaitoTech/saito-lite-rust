@@ -1,6 +1,5 @@
 module.exports = ImperiumHowToMoveTemplate = (imperium_self, units) => {
-
-  return `
+	return `
     <div class="how-to-move-overlay hide-scrollbar">
 
 	<div class="title">How Movement Works</div>
@@ -56,6 +55,4 @@ module.exports = ImperiumHowToMoveTemplate = (imperium_self, units) => {
 
     </div>
   `;
-
-}
-
+};

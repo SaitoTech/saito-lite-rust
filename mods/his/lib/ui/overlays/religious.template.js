@@ -1,6 +1,5 @@
 module.exports = () => {
-
-  return `
+	return `
     <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/reference/religious.jpg')">
       <div class="religious_conflict_sheet_tile" id="religious_conflict_sheet_tile"></div>
       <div class="papal_debaters"></div>
@@ -11,6 +10,5 @@ module.exports = () => {
     </div>
   `;
 
-  return html;
-
-}
+	return html;
+};

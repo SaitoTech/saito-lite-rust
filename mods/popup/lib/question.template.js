@@ -1,6 +1,5 @@
 module.exports = (question) => {
-
-  return `
+	return `
     <div id="lesson_question_6047" class="lesson_question">
       <table>
 	<tbody><tr>
@@ -67,7 +66,5 @@ module.exports = (question) => {
 	</tr>
       </tbody></table>
     </div>
-  `;  
-
-}
-
+  `;
+};

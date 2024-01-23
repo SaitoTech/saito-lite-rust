@@ -1,100 +1,101 @@
 .logobox .status,
 .logobox .status-header,
 .logobox .status-text-menu {
-  background-color: #fffe;
+	background-color: #fffe;
 }
 
 .status {
-  border-radius: 5px;
-  padding: 1rem;
+	border-radius: 5px;
+	padding: 1rem;
 }
 
 .rules-overlay ul {
-  margin-left: 25px;
+	margin-left: 25px;
 }
 
 .rules-overlay table {
-  font-size: 1.5em;
-  margin: 0 auto;
+	font-size: 1.5em;
+	margin: 0 auto;
 }
 
 .rules-overlay th {
-  text-align: right;
+	text-align: right;
 }
 
 .rules-overlay td {
-  text-align: center;
-  width: 4em;
+	text-align: center;
+	width: 4em;
 }
 
 .gameboard {
-  position: absolute;
-  background-image: url("/saito/img/arcade/greenfelt.jpg");
-  background-size: cover;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: minmax(20%, max-content) 1fr;
+	position: absolute;
+	background-image: url('/saito/img/arcade/greenfelt.jpg');
+	background-size: cover;
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-columns: minmax(20%, max-content) 1fr;
 }
 
 .logobox {
-  position: relative;
-  font-size: 20px;
-  order: 1;
-  max-width: 200px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 80px;
+	position: relative;
+	font-size: 20px;
+	order: 1;
+	max-width: 200px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 80px;
 }
 
-
 .logobox img {
-  width: 100%;
-  margin-bottom: 15px;
+	width: 100%;
+	margin-bottom: 15px;
 }
 
 .status-header {
-  padding: 10px 5px;
-  margin-top: 20px;
-  height: 160px;
+	padding: 10px 5px;
+	margin-top: 20px;
+	height: 160px;
 }
 
 .status_option {
-  cursor: pointer;
-  border-top: 1px solid;
-  border-radius: 0px;
-  min-height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content:  center;
+	cursor: pointer;
+	border-top: 1px solid;
+	border-radius: 0px;
+	min-height: 45px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.status_option:hover{
-  color: #EEE;
-  background-color: #222;
+.status_option:hover {
+	color: #eee;
+	background-color: #222;
 }
 
 .animated_elem img {
-  width: 100%;
+	width: 100%;
 }
 
 /* Mark place you can put selected card*/
-.card-slot.cs-selectable{
-  cursor: pointer;
+.card-slot.cs-selectable {
+	cursor: pointer;
 }
 
 .card-slot.cs-selectable:hover img {
-  filter: sepia(80%) hue-rotate(10deg) saturate(4);
+	filter: sepia(80%) hue-rotate(10deg) saturate(4);
 }
 
-.cardstack.cs-selectable, .cs-empty.cs-selectable {
-  cursor: pointer;
+.cardstack.cs-selectable,
+.cs-empty.cs-selectable {
+	cursor: pointer;
 }
 
 /* Color empty slots */
-.cardstack.cs-selectable:hover, .cs-empty.cs-selectable:hover {
-  border-color: #00ff00;
-  background-color: rgba(160, 255, 160, 0.85);
+.cardstack.cs-selectable:hover,
+.cs-empty.cs-selectable:hover {
+	border-color: #00ff00;
+	background-color: rgba(160, 255, 160, 0.85);
 }
 
 /*.selected_state .card-slot.cs-selectable:hover img {
@@ -104,28 +105,27 @@
 }*/
 
 .card-slot.cs-selected img {
-  filter: sepia(80%) hue-rotate(20deg) saturate(4);
+	filter: sepia(80%) hue-rotate(20deg) saturate(4);
 }
 
 .selected_state .card-slot.cs-selectable.cs-selected:hover img {
-  background-color: unset;
-  opacity: unset;
-  border-color: black;
-  filter: sepia(100%) hue-rotate(100deg) saturate(10);
-  cursor: not-allowed;
+	background-color: unset;
+	opacity: unset;
+	border-color: black;
+	filter: sepia(100%) hue-rotate(100deg) saturate(10);
+	cursor: not-allowed;
 }
 
-
 .rowbox {
-  order: 2;
-  display: block;
-  width: 100%;
-  margin: auto;
-  position: relative;
-  display: grid;
-  grid-template-rows: repeat(4, min(184px, 24vh, 30.6vw));
-  grid-template-columns: auto min(15.5vh, 120px, 20vw) auto;
-  grid-gap: min(10px,1vh);
+	order: 2;
+	display: block;
+	width: 100%;
+	margin: auto;
+	position: relative;
+	display: grid;
+	grid-template-rows: repeat(4, min(184px, 24vh, 30.6vw));
+	grid-template-columns: auto min(15.5vh, 120px, 20vw) auto;
+	grid-gap: min(10px, 1vh);
 }
 
 /*.cardstack .card-slot {
@@ -133,79 +133,74 @@
 }*/
 
 .card-slot {
-  position: absolute;
-  width: min(15.5vh, 120px, 20vw);
-  height: min(184px, 24vh, 30.6vw);
-  border-radius: 10px;
+	position: absolute;
+	width: min(15.5vh, 120px, 20vw);
+	height: min(184px, 24vh, 30.6vw);
+	border-radius: 10px;
 }
 
 .card-slot img {
-  width: 100%;
-  border-radius: 10px;
-  border: 0.5px solid black;
+	width: 100%;
+	border-radius: 10px;
+	border: 0.5px solid black;
 }
-
-
 
 @media screen and (orientation: portrait) and (max-width: 550px) {
-  .gameboard{
-    grid-template-columns: unset;
-    grid-template-rows: auto 100px;
-  }
+	.gameboard {
+		grid-template-columns: unset;
+		grid-template-rows: auto 100px;
+	}
 
-  .rowbox {
-    order: 1;
-  }
+	.rowbox {
+		order: 1;
+	}
 
-  .logobox {
-    margin-top: unset;
-    order: 2;
-    max-width: 90vw;
-  }
+	.logobox {
+		margin-top: unset;
+		order: 2;
+		max-width: 90vw;
+	}
 
-  .status {
-    padding: 0.5rem;
-  }
+	.status {
+		padding: 0.5rem;
+	}
 
-  .status_option {
-    border-top: unset;
-    border-left: 1px solid;
-    width: min(80px, 30vw);
-    height: 100%;
-  }
+	.status_option {
+		border-top: unset;
+		border-left: 1px solid;
+		width: min(80px, 30vw);
+		height: 100%;
+	}
 
-  .status_option:first-child{
-    border-left: unset;
-  }
+	.status_option:first-child {
+		border-left: unset;
+	}
 
-  .hidable {
-    display: none;
-  }
-  .controls {
-    margin-top: 0;
-    display: flex;
-    flex-direction: row;
-    height: 70px;
-  }
+	.hidable {
+		display: none;
+	}
+	.controls {
+		margin-top: 0;
+		display: flex;
+		flex-direction: row;
+		height: 70px;
+	}
 
-  .controls > .status_option:first-child {
-    border-top: unset;
-  }
-
+	.controls > .status_option:first-child {
+		border-top: unset;
+	}
 }
 
+@media screen and (max-height: 500px) {
+	.hidable {
+		display: none;
+	}
 
-  @media screen and (max-height: 500px) {
-    .hidable {
-      display: none;
-    }
+	.controls {
+		margin-top: 0;
+	}
 
-    .controls {
-      margin-top: 0;
-    }
-
-    .controls > .status_option:first-child {
-      border-top: unset;
-    }
-
-  }
+	.controls > .status_option:first-child {
+		border-top: unset;
+	}
+}

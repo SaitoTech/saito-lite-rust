@@ -1,6 +1,5 @@
 module.exports = () => {
-
-  let html = `
+	let html = `
     <div class="schmalkaldic">
       <div class="title">Schmalkaldic League Formed</div>
       <div class="text">
@@ -18,6 +17,5 @@ module.exports = () => {
       </div>
     </div>
   `;
-  return html;
-
-}
+	return html;
+};

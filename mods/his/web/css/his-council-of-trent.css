@@ -1,52 +1,51 @@
-
 .council-of-trent-overlay {
-    background-image: url(/his/img/backgrounds/council-of-trent.jpg);
-    background-size: cover;
-    max-height: 90vh;
-    max-width: 90vw;
-    width: 90vw;
-    height: auto;
-    min-height: 622px;
-    text-align: center;
+	background-image: url(/his/img/backgrounds/council-of-trent.jpg);
+	background-size: cover;
+	max-height: 90vh;
+	max-width: 90vw;
+	width: 90vw;
+	height: auto;
+	min-height: 622px;
+	text-align: center;
 }
 
 .council-of-trent-overlay .help {
-    background: #0009;
-    width: max-content;
-    color: white;
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 2.4rem;
-    padding: 0.75rem;
-    max-width: 100%;
-    padding: 2rem;
-    line-height: 3.4rem;
+	background: #0009;
+	width: max-content;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2.4rem;
+	padding: 0.75rem;
+	max-width: 100%;
+	padding: 2rem;
+	line-height: 3.4rem;
 }
 
 .council-of-trent-overlay .debaters {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    overflow-y: auto;
-    height: inherit;
-    overflow: normal;
-    flex-direction: rows;
-    max-height: 70vh;
-    justify-content: space-evenly;
+	display: flex;
+	width: 100%;
+	flex-wrap: wrap;
+	overflow-y: auto;
+	height: inherit;
+	overflow: normal;
+	flex-direction: rows;
+	max-height: 70vh;
+	justify-content: space-evenly;
 }
 
-.council-of-trent-overlay .debaters .debater-card.opaque{
-    opacity: 0.5;
+.council-of-trent-overlay .debaters .debater-card.opaque {
+	opacity: 0.5;
 }
 
 .finish-selecting-debaters {
-    border-bottom: 1px dashed whitesmoke;
-    cursor: pointer;
+	border-bottom: 1px dashed whitesmoke;
+	cursor: pointer;
 }
 
-.continue_inconclusive , .continue_papacy , .continue_protestants {
-   border-bottom: 1px dashed whitesmoke;
-   cursor: pointer;
+.continue_inconclusive,
+.continue_papacy,
+.continue_protestants {
+	border-bottom: 1px dashed whitesmoke;
+	cursor: pointer;
 }
-
-

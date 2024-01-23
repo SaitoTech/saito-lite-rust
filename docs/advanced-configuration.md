@@ -2,29 +2,25 @@
 
 ## Table of Contents
 
-* Configuration Files
-* Common Configuration Issues
-	* Change Server Host/Port/Protocol
-	* Adding Peers
-	* Add / Remove Modules
-
+-   Configuration Files
+-   Common Configuration Issues
+    -   Change Server Host/Port/Protocol
+    -   Adding Peers
+    -   Add / Remove Modules
 
 ### Configuration Files
 
 The basic Saito configuration files are location in the /config directory of your local installation. That directory contains some defaults that are used by the server during auto-config process. The following files will be generated once you start Saito for the first time:
 
 /config/options
-This is a JSON file that contains all of the configuration information for your node, including information on the state of the blockchain, the peers to which you want to connect, and information on where visitors to your website can find your server for connecting to the Saito blockchain (which may be different than the host serving web content!). This file also serves as the *wallet* for your node and includes your spent and unspent UTXO slips. In most situations you will only want to change / edit this file before starting the server. It is not recommended to tweak it in production.
+This is a JSON file that contains all of the configuration information for your node, including information on the state of the blockchain, the peers to which you want to connect, and information on where visitors to your website can find your server for connecting to the Saito blockchain (which may be different than the host serving web content!). This file also serves as the _wallet_ for your node and includes your spent and unspent UTXO slips. In most situations you will only want to change / edit this file before starting the server. It is not recommended to tweak it in production.
 
 /config/modules.config.js
-This is a javascript file used during the Saito compilation process that specifies which modules get installed. Modules are sorted into two categories. *Core* modules are those that are installed onto your server/node, while *Lite* modules are those that are compiled into the javascript file your server will feed out to all visitors. Most modules are designed to run on both core and lite clients, but removing unnecessary modules from lite-clients can shrink the javascript and speed up the initial load times for new users grabbing Saito from your server.
-
-
-
+This is a javascript file used during the Saito compilation process that specifies which modules get installed. Modules are sorted into two categories. _Core_ modules are those that are installed onto your server/node, while _Lite_ modules are those that are compiled into the javascript file your server will feed out to all visitors. Most modules are designed to run on both core and lite clients, but removing unnecessary modules from lite-clients can shrink the javascript and speed up the initial load times for new users grabbing Saito from your server.
 
 ### Common Configuration Issues
 
-* Change Server Host/Port/Protocol
+-   Change Server Host/Port/Protocol
 
 Your Saito server automatically generates a configuration/options file for the lite-clients that connect to it. These lite-clients will need to know the host / port / protocol they should use to connect to your blockchain node. If they cannot connect to the blockchain their applications will (usually) load but be unable to send transactions.
 
@@ -43,8 +39,7 @@ Once you have made changes to your options file, be sure to recompile your javas
 
 If you need to hardcode anything for the lite-clients that connect to your server you can also create the file /web/options.client and manually provide whatever options file you prefer. Only new clients will download this file. Existing clients will continue to use their previous version unless explicitly forced to refresh their wallet.
 
-
-* Adding Peers
+-   Adding Peers
 
 You can manually specify peers for your node to connect to by adding entries to the peers array in your options file. Your options file should have at least one peer defined. If you are servicing lite-clients, Saito will automatically list your server as the first peer when it generates the options file that is fed to its lite-clients.
 
@@ -60,8 +55,7 @@ Once you have made changes to your options file, be sure to recompile your javas
 
 If you need to hardcode anything for the lite-clients that connect to your server you can also create the file /web/options.client and manually provide whatever options file you prefer. Only new clients will download this file. Existing clients will continue to use their previous version unless explicitly forced to refresh their wallet.
 
-
-* Adding/Removing Modules
+-   Adding/Removing Modules
 
 If the file /config/modules.config.js exists, that is the file Saito will use to decide what modules you wish to run on your full-node, as well as which modules should be bundled into the saito.js file that is fed out to lite-clients.
 
@@ -95,10 +89,7 @@ module.exports = {
   ]
 }
 ```
-Remove module by removing them from the relevant list. To add modules, download and install the relevant module in the /mods directory and then add a link to the main module in the format of the other modules in this list. 
 
-Once you have made changes to your modules configuration file you will need to recompile your javascript (npm run compile) so that lite-clients get the updated version of the javascript with the new modules. You will need to restart the server if you are installing any new modules on it as well. 
+Remove module by removing them from the relevant list. To add modules, download and install the relevant module in the /mods directory and then add a link to the main module in the format of the other modules in this list.
 
-
-
-
+Once you have made changes to your modules configuration file you will need to recompile your javascript (npm run compile) so that lite-clients get the updated version of the javascript with the new modules. You will need to restart the server if you are installing any new modules on it as well.

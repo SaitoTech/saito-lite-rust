@@ -1,57 +1,56 @@
-
 #advanced-options-overlay-container {
-  color: var(--saito-font-color-dark-modal);
-  background: #181818;
-  border-radius: 0.5rem;
-  width: 40rem;
-  min-height: 15rem;
-  display: flex;
-  padding: 1.5rem;
-  flex-direction: column;
+	color: var(--saito-font-color-dark-modal);
+	background: #181818;
+	border-radius: 0.5rem;
+	width: 40rem;
+	min-height: 15rem;
+	display: flex;
+	padding: 1.5rem;
+	flex-direction: column;
 }
 
 #advanced-options-overlay-container .overlay-title {
-  text-align: center;
-  color: var(--saito-white);
+	text-align: center;
+	color: var(--saito-white);
 }
 
 #advanced-options-overlay-container .overlay-input {
-  margin-bottom: 1rem;
+	margin-bottom: 1rem;
 }
 
 #advanced-options-overlay-container select {
-  text-transform: capitalize;
-  background: transparent;
-  border: 1px solid var(--saito-primary);
-  color: var(--saito-white);
-  font-size: 2.5rem;
-  padding: 1rem;
-  height: 5rem;
-  margin-bottom: 2rem;
+	text-transform: capitalize;
+	background: transparent;
+	border: 1px solid var(--saito-primary);
+	color: var(--saito-white);
+	font-size: 2.5rem;
+	padding: 1rem;
+	height: 5rem;
+	margin-bottom: 2rem;
 }
 
 #advanced-options-overlay-container .options_notice {
-  margin-bottom: 1.2rem;
-  color: var(--saito-background-color);
-  font-style: italic;
-  text-align: center;
+	margin-bottom: 1.2rem;
+	color: var(--saito-background-color);
+	font-style: italic;
+	text-align: center;
 }
 
 .game-wizard-advanced-box {
-  display: block;
-  text-align: left;
+	display: block;
+	text-align: left;
 }
 
 .game-wizard-advanced-box .list-header {
-  color: var(--saito-primary);
+	color: var(--saito-primary);
 }
 
 .game-wizard-advanced-box .list-header:nth-of-type(n + 2) {
-  margin-top: 1.2rem;
+	margin-top: 1.2rem;
 }
 
 #advanced-options-overlay-container label {
-  margin-top: 0.5rem;
+	margin-top: 0.5rem;
 }
 
 /*.game-wizard-advanced-return-btn {
@@ -72,188 +71,185 @@
 /* Game Advanced Options Styling*/
 
 .game-wizard-options-toggle {
-  padding-top: 1rem;
+	padding-top: 1rem;
 }
 
 .game-wizard-options-toggle-text {
-  border-bottom: 1px dashed;
-  cursor: pointer;
+	border-bottom: 1px dashed;
+	cursor: pointer;
 }
 
 .game-wizard-invite {
-  width: 100%;
-  min-height: 7rem;
-  display: block !important;
-  padding: 0rem !important;
+	width: 100%;
+	min-height: 7rem;
+	display: block !important;
+	padding: 0rem !important;
 }
 
 .game-wizard-other-btns {
-  display: none;
-  /* display: flex; */
-  flex-direction: row;
-  justify-content: space-between;
+	display: none;
+	/* display: flex; */
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .league-wizard-overlay {
-  display: grid;
-  max-height: 80vh;
-  height: min-content;
-  width: 80rem;
-  max-width: 75vw;
-  overflow-y: auto;
-  grid-template-rows: min-content auto;
-  background: var(--saito-arcade-overlay-background);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  color: var(--saito-white);
+	display: grid;
+	max-height: 80vh;
+	height: min-content;
+	width: 80rem;
+	max-width: 75vw;
+	overflow-y: auto;
+	grid-template-rows: min-content auto;
+	background: var(--saito-arcade-overlay-background);
+	padding: 2rem;
+	border-radius: 0.5rem;
+	color: var(--saito-white);
 }
 
 .league-wizard-overlay .league-wizard-game-container {
-  min-height: 17rem;
-  display: grid;
-  grid-template-columns: 3fr 7fr;
-  grid-gap: 1.5rem;
+	min-height: 17rem;
+	display: grid;
+	grid-template-columns: 3fr 7fr;
+	grid-gap: 1.5rem;
 }
 
 .league-wizard-overlay .league-wizard-game-image {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 .league-wizard-overlay .league-wizard-game-image img {
-  width: 100%;
-  object-fit: cover;
-  height: 100%;
+	width: 100%;
+	object-fit: cover;
+	height: 100%;
 }
 
-
-.league-wizard-overlay input[type="text"], textarea {
-  margin-bottom: 1rem;
-  width: 100%;
-  padding: 1rem;
+.league-wizard-overlay input[type='text'],
+textarea {
+	margin-bottom: 1rem;
+	width: 100%;
+	padding: 1rem;
 }
 
-.league-wizard-game-name input[type="text"] {
-  height: 4.5rem;
-  font-size: 3rem;
+.league-wizard-game-name input[type='text'] {
+	height: 4.5rem;
+	font-size: 3rem;
 }
-
 
 .league-wizard-game-description textarea {
-    font-size: 2.0rem;
-    line-height: 3.0rem;
-    min-height: 12rem;
+	font-size: 2rem;
+	line-height: 3rem;
+	min-height: 12rem;
 }
 
 .league-wizard-game-controls {
-  display: grid;
-  grid-template-columns: 3fr 7fr;
-  grid-gap: 1rem;
-  margin-top: 2rem;
+	display: grid;
+	grid-template-columns: 3fr 7fr;
+	grid-gap: 1rem;
+	margin-top: 2rem;
 }
 
 .league-wizard-overlay select {
-  background: transparent;
-  border: 1px solid var(--saito-primary);
-  color: var(--saito-white);
-  font-size: 2rem;
-  appearance: none;
-  padding: 0 1rem;
+	background: transparent;
+	border: 1px solid var(--saito-primary);
+	color: var(--saito-white);
+	font-size: 2rem;
+	appearance: none;
+	padding: 0 1rem;
 }
 
 .league-wizard-overlay select:focus {
-  outline: none;
+	outline: none;
 }
 
 .saito-select::after {
-  background: var(--saito-button-background);
-  border-left: 1px solid var(--saito-primary);
+	background: var(--saito-button-background);
+	border-left: 1px solid var(--saito-primary);
 }
 
-.league-wizard-game-controls .settings>div:first-of-type {
-  position: relative;
-  display: flex;
-  width: 20em;
-  height: 3em;
-  line-height: 3;
-  background-color: transparent;
-  overflow: hidden;
-  width: 100%;
-  border-radius: 0 1rem 1rem 0;
-  outline: none;
-  background-color: none;
+.league-wizard-game-controls .settings > div:first-of-type {
+	position: relative;
+	display: flex;
+	width: 20em;
+	height: 3em;
+	line-height: 3;
+	background-color: transparent;
+	overflow: hidden;
+	width: 100%;
+	border-radius: 0 1rem 1rem 0;
+	outline: none;
+	background-color: none;
 }
 
 .league-wizard-game-controls .settings {
-  display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
 }
 
-.league-wizard-game-controls .settings>div:first-of-type::after {
-  content: "\25BC";
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0 1em;
-  color: var(--saito-white);
-  background: var(--saito-button-background);
-  cursor: pointer;
-  pointer-events: none;
-  -webkit-transition: 0.25s all ease;
-  -o-transition: 0.25s all ease;
-  transition: 0.25s all ease;
-  border-radius: 0 1rem 1rem 0;
-  border-left: 1px solid var(--saito-primary);
+.league-wizard-game-controls .settings > div:first-of-type::after {
+	content: '\25BC';
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0 1em;
+	color: var(--saito-white);
+	background: var(--saito-button-background);
+	cursor: pointer;
+	pointer-events: none;
+	-webkit-transition: 0.25s all ease;
+	-o-transition: 0.25s all ease;
+	transition: 0.25s all ease;
+	border-radius: 0 1rem 1rem 0;
+	border-left: 1px solid var(--saito-primary);
 }
 
 .saito-module-intro-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  position: relative;
-  white-space: nowrap;
-  margin-bottom: 0.5rem;
-  padding-top: 0.5rem;
+	font-size: 2.5rem;
+	font-weight: bold;
+	position: relative;
+	white-space: nowrap;
+	margin-bottom: 0.5rem;
+	padding-top: 0.5rem;
 }
 
 .saito-module-intro-description {
-  font-size: 1.9rem;
-  line-height: 2.8rem;
+	font-size: 1.9rem;
+	line-height: 2.8rem;
 }
 
 .league-wizard-overlay .league-game-details {
-  font-size: 1.6rem;
-  margin: 0.4rem;
+	font-size: 1.6rem;
+	margin: 0.4rem;
 }
 
-
 .game-wizard-form {
-  display: grid;
-  grid-gap: 1em;
-  grid-template-columns: 1fr;
+	display: grid;
+	grid-gap: 1em;
+	grid-template-columns: 1fr;
 }
 
 .league-wizard-rankings-select {
-  color: var(--saito-white);
-  border-color: var(--saito-border-color);
+	color: var(--saito-white);
+	border-color: var(--saito-border-color);
 }
 
 .league-wizard-game-invite {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
 }
 
-
 @media screen and (max-width: 900px) {
-  .league-wizard-overlay {
-    max-width: 95vw;
-  }
+	.league-wizard-overlay {
+		max-width: 95vw;
+	}
 }
 
 @media screen and (max-width: 768px) {
-  /*#game-wizard-advanced-return-btn {
+	/*#game-wizard-advanced-return-btn {
       position: absolute;
       bottom: -2rem;
       left: 50%;
@@ -261,38 +257,37 @@
       z-index: 2;
   }*/
 
-  .game-wizard-advanced-box {
-    padding: 0px !important ;
-    margin-top: 2rem;
-  }
+	.game-wizard-advanced-box {
+		padding: 0px !important ;
+		margin-top: 2rem;
+	}
 
-  .game-wizard-advanced-box ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
+	.game-wizard-advanced-box ul {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
 
-  .game-wizard-advanced-box ul li {
-    margin-bottom: 2rem;
-    display: grid;
-    grid-template-columns: 0.25fr 1fr;
-  }
+	.game-wizard-advanced-box ul li {
+		margin-bottom: 2rem;
+		display: grid;
+		grid-template-columns: 0.25fr 1fr;
+	}
 
-  .list-header {
-    margin-left: 0rem !important;
-  }
-
+	.list-header {
+		margin-left: 0rem !important;
+	}
 }
 
 @media screen and (max-width: 700px) {
-  .league-wizard-game-container {
-    display: flex !important;
-    flex-direction: column;
-  }
-  .league-wizard-game-controls {
-    display: flex !important;
-    flex-direction: column-reverse;
-  }
-  .league-wizard-overlay {
-    font-size: 1.8rem;
-  }
+	.league-wizard-game-container {
+		display: flex !important;
+		flex-direction: column;
+	}
+	.league-wizard-game-controls {
+		display: flex !important;
+		flex-direction: column-reverse;
+	}
+	.league-wizard-overlay {
+		font-size: 1.8rem;
+	}
 }

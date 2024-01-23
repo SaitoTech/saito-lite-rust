@@ -1,65 +1,57 @@
-
-
-
 audio {
-  margin-top: 0.5rem;
-  width: 100%;
+	margin-top: 0.5rem;
+	width: 100%;
 }
 
 .popup-content {
-  display: flex;
-  margin-top: 1.5rem;
-  column-gap: 1rem;
+	display: flex;
+	margin-top: 1.5rem;
+	column-gap: 1rem;
 }
 
 .lesson-container .discussion {
-  font-size: 2rem;
-  line-height: 2.6rem;
-  margin-left: 2rem;
-  margin-right: 2rem;
+	font-size: 2rem;
+	line-height: 2.6rem;
+	margin-left: 2rem;
+	margin-right: 2rem;
 }
 
 .lesson-container .discussion p {
-  margin-top: 2rem;
+	margin-top: 2rem;
 }
 
 .lesson-container .transcript {
-  font-size: 2.5rem;
-  line-height: 3rem;
-  margin-left: 2rem;
-  width: 100%
+	font-size: 2.5rem;
+	line-height: 3rem;
+	margin-left: 2rem;
+	width: 100%;
 }
 
 .lesson-container .transcript table {
-  width: 100%;
+	width: 100%;
 }
 
 .lesson-container .transcript table tr td {
-  padding-bottom: 2rem;
+	padding-bottom: 2rem;
 }
 
 .sentence-player {
-  vertical-align: top;
-  padding-right: 2rem;
+	vertical-align: top;
+	padding-right: 2rem;
 }
 
 .sentence-speaker {
-  vertical-align: top;
-  padding-right: 2rem;
+	vertical-align: top;
+	padding-right: 2rem;
 }
 
 .sentence-data * {
-  padding-bottom: 1rem;
+	padding-bottom: 1rem;
 }
-
-
 
 .word {
-  width: 100%;
-  font-size: 2.5rem;
-  line-height: 3rem;
-  margin-left: 2rem;
+	width: 100%;
+	font-size: 2.5rem;
+	line-height: 3rem;
+	margin-left: 2rem;
 }
-
-
-

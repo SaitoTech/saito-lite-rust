@@ -1,6 +1,5 @@
 module.exports = LeagueRankingsTemplate = () => {
-
-    return `
+	return `
  	      <div class="league-rankings">
 	        <h5>Rankings</h5>
 	        <div class="saito-table saito-sidebar-element">
@@ -9,5 +8,3 @@ module.exports = LeagueRankingsTemplate = () => {
 	      </div>
     `;
 };
-
-

@@ -1,6 +1,5 @@
 module.exports = RoundTemplate = (round, turn) => {
-
-  return `
+	return `
     <div class="turns" id="turns">
       <div class="round" id="round">${round}</div>
       <div class="turn" id="turn">${turn}</div>
@@ -8,5 +7,4 @@ module.exports = RoundTemplate = (round, turn) => {
       <div class="turn-label">Turn</div>
     </div>
   `;
-
-}
+};

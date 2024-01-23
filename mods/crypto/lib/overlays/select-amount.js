@@ -1,68 +1,69 @@
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
-const CryptoSelectAmountTemplate = require("./select-amount.template");
+const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
+const CryptoSelectAmountTemplate = require('./select-amount.template');
 
 class CryptoSelectAmount {
-  constructor(app, mod, mycallback = null) {
-    this.app = app;
-    this.mod = mod;
-    this.overlay = new SaitoOverlay(app, mod);
-    this.callback = mycallback;
-  }
+	constructor(app, mod, mycallback = null) {
+		this.app = app;
+		this.mod = mod;
+		this.overlay = new SaitoOverlay(app, mod);
+		this.callback = mycallback;
+	}
 
-  render(mycallback = null) {
-    if (mycallback != null) {
-      this.callback = mycallback;
-    }
-    this.overlay.show(CryptoSelectAmountTemplate(this.app, this.mod));
-    this.attachEvents(this.callback);
-  }
+	render(mycallback = null) {
+		if (mycallback != null) {
+			this.callback = mycallback;
+		}
+		this.overlay.show(CryptoSelectAmountTemplate(this.app, this.mod));
+		this.attachEvents(this.callback);
+	}
 
-  attachEvents(callback = null) {
-    let stake_input = document.getElementById("amount_to_stake_input");
-    if (!stake_input) {
-      return;
-    }
+	attachEvents(callback = null) {
+		let stake_input = document.getElementById('amount_to_stake_input');
+		if (!stake_input) {
+			return;
+		}
 
-    stake_input.onclick = (e) => {
-      let amt = stake_input.value;
-      if (parseFloat(amt) == 0) {
-        stake_input.select();
-      }
-    };
+		stake_input.onclick = (e) => {
+			let amt = stake_input.value;
+			if (parseFloat(amt) == 0) {
+				stake_input.select();
+			}
+		};
 
-    let max_button = document.querySelector(".select_max");
-    if (max_button) {
-      max_button.onclick = (e) => {
-        stake_input.value = this.mod.max_balance;
-      }
-    }
+		let max_button = document.querySelector('.select_max');
+		if (max_button) {
+			max_button.onclick = (e) => {
+				stake_input.value = this.mod.max_balance;
+			};
+		}
 
+		document.querySelector('.crypto_amount_btn').onclick = (e) => {
+			let amount = stake_input.value;
+			let confirm = document.getElementById(
+				'crypto-stake-confirm-input'
+			).checked;
 
-    document.querySelector(".crypto_amount_btn").onclick = (e) => {
-      let amount = stake_input.value;
-      let confirm = document.getElementById("crypto-stake-confirm-input").checked;
+			if (parseFloat(amount) <= 0) {
+				salert('You need to select a positive value');
+				return;
+			}
 
-      if (parseFloat(amount) <= 0) {
-        salert("You need to select a positive value");
-        return;
-      }
+			if (parseFloat(amount) > this.mod.max_balance) {
+				salert('Not all the players have that much to stake');
+				return;
+			}
 
-      if (parseFloat(amount) > this.mod.max_balance) {
-        salert("Not all the players have that much to stake");
-        return;
-      }
+			if (!confirm) {
+				salert('You need to confirm');
+				return;
+			}
 
-      if (!confirm) {
-        salert("You need to confirm");
-        return;
-      }
-
-      if (callback != null) {
-        this.overlay.hide();
-        callback(amount);
-      }
-    };
-  }
+			if (callback != null) {
+				this.overlay.hide();
+				callback(amount);
+			}
+		};
+	}
 }
 
 module.exports = CryptoSelectAmount;

@@ -1,31 +1,31 @@
-const LeaderboardTemplate = require("./leaderboard.template");
+const LeaderboardTemplate = require('./leaderboard.template');
 
 class Leaderboard {
+	constructor(app, mod, container = '') {
+		this.app = app;
+		this.mod = mod;
+		this.container = container;
+	}
 
-  constructor(app, mod, container="") {
-    this.app = app;
-    this.mod = mod;
-    this.container = container;
-  }
+	render() {
+		let myqs = this.container + ' .leaderboard';
 
-  render() {
- 
-    let myqs = this.container + " .leaderboard";
+		if (document.querySelector(myqs)) {
+			this.app.browser.replaceElementBySelector(
+				LeaderboardTemplate(this.mod),
+				myqs
+			);
+		} else {
+			this.app.browser.addElementToDom(
+				LeaderboardTemplate(this.mod),
+				this.container
+			);
+		}
 
-    if (document.querySelector(myqs)) {
-      this.app.browser.replaceElementBySelector(LeaderboardTemplate(this.mod), myqs);
-    } else {
-      this.app.browser.addElementToDom(LeaderboardTemplate(this.mod), this.container);
-    }
+		this.attachEvents();
+	}
 
-    this.attachEvents();
-
-  }
-
-  attachEvents() {
-  }
-
+	attachEvents() {}
 }
 
 module.exports = Leaderboard;
-

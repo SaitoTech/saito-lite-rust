@@ -1,8 +1,6 @@
 module.exports = EstatesOverlayTemplate = () => {
-
-  return `
+	return `
     <div class="estates-overlay hide-scrollbar">
     </div>
   `;
-
-}
+};

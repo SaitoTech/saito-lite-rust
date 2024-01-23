@@ -1,6 +1,5 @@
 module.exports = AppStoreBundleConfirmTemplate = (publickey) => {
-
-  return `
+	return `
 
     The AppStore at ${publickey} has generated a new Saito bundle for you. Use it?
 
@@ -9,4 +8,4 @@ module.exports = AppStoreBundleConfirmTemplate = (publickey) => {
     <button id="confirm-bundle-install-btn" class="confirm-bundle=-install-btn" name="confirm">confirm</button>
 
   `;
-}
+};

@@ -1,6 +1,5 @@
 module.exports = () => {
-
-  let html = `
+	let html = `
 
     <div class="shogun-board">
       <div class="coins"></div>
@@ -14,7 +13,5 @@ module.exports = () => {
 
   `;
 
-  return html;
-
-}
-
+	return html;
+};

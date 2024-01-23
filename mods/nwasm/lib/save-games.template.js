@@ -1,9 +1,6 @@
 module.exports = SaveGamesTemplate = (app, mod) => {
-
-  return `
+	return `
     <div class="nwasm-saved-games" id="nwasm-saved-games">
     </div>
   `;
-
-}
-
+};

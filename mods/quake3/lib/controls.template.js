@@ -1,6 +1,5 @@
 module.exports = (app, mod, ui) => {
-
-  let html = `
+	let html = `
 
     <div id="quake-controls" class="quake-controls">
 
@@ -112,6 +111,5 @@ module.exports = (app, mod, ui) => {
   </div>
   `;
 
-  return html;
-
-}
+	return html;
+};

@@ -1,496 +1,496 @@
-
 body {
-    background-color: black !important;
+	background-color: black !important;
 }
 
 #maindiv.container.text-center {
-    max-width: unset;
-    min-width: unset;
+	max-width: unset;
+	min-width: unset;
 }
 
 .nwasm-upload-instructions {
-    font-size: 3rem;
+	font-size: 3rem;
 }
 
 .nwasm-saved-games-screenshot {
-    max-height: 300px;
-    max-width: 300px;
-    padding: 1rem;
+	max-height: 300px;
+	max-width: 300px;
+	padding: 1rem;
 }
 
 .nwasm-saved-games-screenshot img {
-    width: 100%;
-    height: 100%;
+	width: 100%;
+	height: 100%;
 }
 
 .nwasm-lib-title {
-    text-align: left;
+	text-align: left;
 }
 
 .nwasm-lib-copies {
-    text-align: right;
+	text-align: right;
 }
 
 .nwasm-lib-status {
-    text-align: right;
+	text-align: right;
 }
 
 .nwasm-library-introduction {
-    color: whitesmoke;
-    font-size: 1.5rem;
-    font-size: 2.5rem;
-    margin-left: 2rem;
-    padding-bottom: 4rem;
+	color: whitesmoke;
+	font-size: 1.5rem;
+	font-size: 2.5rem;
+	margin-left: 2rem;
+	padding-bottom: 4rem;
 }
 
 .nwasm-instructions {
-    margin-top: 10rem;
-    font-size: 3rem;
-    color: white;
-    text-align: left;
-    line-height: 5rem;
-    max-width: 800px;
-    margin-left: 5rem;
+	margin-top: 10rem;
+	font-size: 3rem;
+	color: white;
+	text-align: left;
+	line-height: 5rem;
+	max-width: 800px;
+	margin-left: 5rem;
 }
 
 .nwasm-instructions p {
-    height: 3rem;
+	height: 3rem;
 }
 
 .nwasm-saved-games {
-    cursor: pointer;
-    background-color: white;
-    padding: 2.5rem;
-    font-size: 3rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: min-content;
-    overflow-y: scroll;
-    height: 90vh;
-    width: 90vw;
+	cursor: pointer;
+	background-color: white;
+	padding: 2.5rem;
+	font-size: 3rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-rows: min-content;
+	overflow-y: scroll;
+	height: 90vh;
+	width: 90vw;
 }
 
 .nwasm-libraries {
-    position: absolute;
-    top: 7.5rem;
-    left: 2.5rem;
-    padding: 2rem;
-    max-width: 95vw;
+	position: absolute;
+	top: 7.5rem;
+	left: 2.5rem;
+	padding: 2rem;
+	max-width: 95vw;
 }
 
 .nwasm-introduction {
-    color: whitesmoke;
-    font-size: 1.5rem;
+	color: whitesmoke;
+	font-size: 1.5rem;
 }
 
 .nwasm-libraries .nwasm-libraries-header.saito-table-row {
-    grid-template-columns: 1fr 1fr 1fr;
-    font-size: 2rem;
-    color: whitesmoke;
-    min-width: 100%;
-    font-weight: bold;
+	grid-template-columns: 1fr 1fr 1fr;
+	font-size: 2rem;
+	color: whitesmoke;
+	min-width: 100%;
+	font-weight: bold;
 }
 
 .nwasm-libraries .saito-table-row {
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-    font-size: 4rem;
-    color: whitesmoke;
-    width: 1;
-    min-width: 100%;
-    padding: 0.75rem;
-    padding-left: 1.5rem;
+	grid-template-columns: 1fr 1fr 1fr;
+	align-items: center;
+	font-size: 4rem;
+	color: whitesmoke;
+	width: 1;
+	min-width: 100%;
+	padding: 0.75rem;
+	padding-left: 1.5rem;
 }
 
 .nwasm-libraries-header.saito-table-row:hover {
-    background-color: #000;
+	background-color: #000;
 }
 
 .saito-table-row:hover {
-    background-color: #222;
-    cursor: pointer;
+	background-color: #222;
+	cursor: pointer;
 }
 
 .container {
-    max-width: unset;
-    max-height: unset;
-    min-width: unset;
-    min-height: unset;
+	max-width: unset;
+	max-height: unset;
+	min-width: unset;
+	min-height: unset;
 }
 
 #canvas {
-    cursor: default;
-    height: 100vh;
-    width: auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+	cursor: default;
+	height: 100vh;
+	width: auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
-
 #topPanel {
-    display: none;
+	display: none;
 }
 
 #lbErrorOuter {
-    display: none;
+	display: none;
 }
 
 #buttomPanel {
-    display: none;
+	display: none;
 }
 
 .card-title {
-    display: none;
+	display: none;
 }
 
 #loginModal {
-    display: none;
+	display: none;
 }
 
 #buttonsModal {
-    display: none;
+	display: none;
 }
 
-
 .nwasm-upload-overlay {
-    width: auto;
-    background-color: #fff;
-    padding: 2.5rem;
-    min-width: 50rem;
-    max-width: 30rem;
-    min-height: 30rem;
-    max-height: 40rem;
-    border-radius: 2rem;
+	width: auto;
+	background-color: #fff;
+	padding: 2.5rem;
+	min-width: 50rem;
+	max-width: 30rem;
+	min-height: 30rem;
+	max-height: 40rem;
+	border-radius: 2rem;
 }
 
 .nwasm-upload-overlay-dark {
-    color: white;
-    background-color: #000C;
+	color: white;
+	background-color: #000c;
 }
 
 .nwasm-preloader-dark {
-    padding-top: 7rem;
-    color: white;
+	padding-top: 7rem;
+	color: white;
 }
 
-
 #nwasm-upload-rom-box {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    display: inline-block;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	display: inline-block;
 }
 
 #upload-rom-file {
-    display: block;
+	display: block;
 }
 
 #nwasm-upload-area {
-    border: 2px dotted #333;
-    height: 20rem;
-    width: 40rem;
-    text-align: center;
-    line-height: 20rem;
-    font-size: 1.5rem;
-    margin-top: 1rem;
+	border: 2px dotted #333;
+	height: 20rem;
+	width: 40rem;
+	text-align: center;
+	line-height: 20rem;
+	font-size: 1.5rem;
+	margin-top: 1rem;
 }
 
 .loader {
-    width: auto;
-    height: auto;
-    display: none;
-    place-items: center;
-    --f-w: 2vmin;
-    --f-g: 0.5vmin;
-    --x-1: calc(-2.5 * (var(--f-w) + var(--f-g)));
-    --x-2: calc(-1.5 * (var(--f-w) + var(--f-g)));
-    --x-3: calc(-0.5 * (var(--f-w) + var(--f-g)));
-    --x-4: calc(0.5 * (var(--f-w) + var(--f-g)));
-    --x-5: calc(1.5 * (var(--f-w) + var(--f-g)));
-    --x-6: calc(2.5 * (var(--f-w) + var(--f-g)));
-    --y-1: calc(1 * (var(--f-w) + var(--f-g)));
-    --y-2: calc(2 * (var(--f-w) + var(--f-g)));
-    --y-3: calc(3 * (var(--f-w) + var(--f-g)));
-    --c-1-1: var(--saito-primary);
-    --c-1-2: var(--saito-primary);
-    --c-1-3: var(--saito-primary);
-    --c-2-1: var(--saito-primary);
-    --c-2-2: var(--saito-primary);
-    --c-2-3: var(--saito-primary);
-    --c-3-1: var(--saito-primary);
-    --c-3-2: var(--saito-primary);
-    --c-3-3: var(--saito-primary);
-    --c-4-1: var(--saito-primary);
-    --c-4-2: var(--saito-primary);
-    --c-4-3: var(--saito-primary);
-    --c-5-1: var(--saito-primary);
-    --c-5-2: var(--saito-primary);
-    --c-5-3: var(--saito-primary);
-    --c-6-1: var(--saito-primary);
-    --c-6-2: var(--saito-primary);
-    --c-6-3: var(--saito-primary);
-    box-sizing: border-box;
-    font-size: 10vmin;
+	width: auto;
+	height: auto;
+	display: none;
+	place-items: center;
+	--f-w: 2vmin;
+	--f-g: 0.5vmin;
+	--x-1: calc(-2.5 * (var(--f-w) + var(--f-g)));
+	--x-2: calc(-1.5 * (var(--f-w) + var(--f-g)));
+	--x-3: calc(-0.5 * (var(--f-w) + var(--f-g)));
+	--x-4: calc(0.5 * (var(--f-w) + var(--f-g)));
+	--x-5: calc(1.5 * (var(--f-w) + var(--f-g)));
+	--x-6: calc(2.5 * (var(--f-w) + var(--f-g)));
+	--y-1: calc(1 * (var(--f-w) + var(--f-g)));
+	--y-2: calc(2 * (var(--f-w) + var(--f-g)));
+	--y-3: calc(3 * (var(--f-w) + var(--f-g)));
+	--c-1-1: var(--saito-primary);
+	--c-1-2: var(--saito-primary);
+	--c-1-3: var(--saito-primary);
+	--c-2-1: var(--saito-primary);
+	--c-2-2: var(--saito-primary);
+	--c-2-3: var(--saito-primary);
+	--c-3-1: var(--saito-primary);
+	--c-3-2: var(--saito-primary);
+	--c-3-3: var(--saito-primary);
+	--c-4-1: var(--saito-primary);
+	--c-4-2: var(--saito-primary);
+	--c-4-3: var(--saito-primary);
+	--c-5-1: var(--saito-primary);
+	--c-5-2: var(--saito-primary);
+	--c-5-3: var(--saito-primary);
+	--c-6-1: var(--saito-primary);
+	--c-6-2: var(--saito-primary);
+	--c-6-3: var(--saito-primary);
+	box-sizing: border-box;
+	font-size: 10vmin;
 }
 
 .loader:before {
-    content: "loading ROM file...";
-    color: #fff;
-    display: none;
-    min-width: 50rem;
-    min-height: 50rem;
-    position: absolute;
-    text-align: center;
-    font-size: 2.5rem;
-    left: 0px;
-    top: 0px;
-    background: rgba(0, 0, 0, 0.7);
-    transform: translate(-12.5rem, -12.5rem);
-    text-align: center;
-    /*line-height: ;*/
-    padding: 25rem 2rem;
-    width: 25rem;
-    border-radius: 1rem;
+	content: 'loading ROM file...';
+	color: #fff;
+	display: none;
+	min-width: 50rem;
+	min-height: 50rem;
+	position: absolute;
+	text-align: center;
+	font-size: 2.5rem;
+	left: 0px;
+	top: 0px;
+	background: rgba(0, 0, 0, 0.7);
+	transform: translate(-12.5rem, -12.5rem);
+	text-align: center;
+	/*line-height: ;*/
+	padding: 25rem 2rem;
+	width: 25rem;
+	border-radius: 1rem;
 }
 
 .loader:after {
-    display: block;
-    content: " ";
-    background: #f000;
-    width: var(--f-w);
-    height: var(--f-w);
-    box-shadow: var(--x-1) var(--y-3) var(--c-1-3), var(--x-1) var(--y-2) var(--c-1-2), var(--x-2) var(--y-2) var(--c-2-2), var(--x-3) var(--y-2) var(--c-3-2), var(--x-4) var(--y-2) var(--c-4-2), var(--x-5) var(--y-2) var(--c-5-2), var(--x-6) var(--y-2) var(--c-6-2), var(--x-6) var(--y-1) var(--c-6-1);
-    animation: 6s infinite loader;
-    position: absolute;
-    /* top: 22rem; */
-    top: 8rem;
-    /* left: 45%; */
-    left: 48%;
+	display: block;
+	content: ' ';
+	background: #f000;
+	width: var(--f-w);
+	height: var(--f-w);
+	box-shadow: var(--x-1) var(--y-3) var(--c-1-3),
+		var(--x-1) var(--y-2) var(--c-1-2), var(--x-2) var(--y-2) var(--c-2-2),
+		var(--x-3) var(--y-2) var(--c-3-2), var(--x-4) var(--y-2) var(--c-4-2),
+		var(--x-5) var(--y-2) var(--c-5-2), var(--x-6) var(--y-2) var(--c-6-2),
+		var(--x-6) var(--y-1) var(--c-6-1);
+	animation: 6s infinite loader;
+	position: absolute;
+	/* top: 22rem; */
+	top: 8rem;
+	/* left: 45%; */
+	left: 48%;
 }
 
 .loader.stepone:before {
-    content: "loading ROM file...";
+	content: 'loading ROM file...';
 }
 
 .loader.steptwo:before {
-    content: "encrypting ROM so only you can access it...";
+	content: 'encrypting ROM so only you can access it...';
 }
 
 .loader.stepthree:before {
-    content: "cryptographically signing ROM as proof-of-ownership...";
+	content: 'cryptographically signing ROM as proof-of-ownership...';
 }
 
 .loader.stepfour:before {
-    content: "archiving encrypted ROM in your private transaction archive";
+	content: 'archiving encrypted ROM in your private transaction archive';
 }
 
 .loader.stepfive:before {
-    content: "this is a [ big , really big , really really big file ] it will take about a minute to finish. please be patient..";
+	content: 'this is a [ big , really big , really really big file ] it will take about a minute to finish. please be patient..';
 }
 
 @keyframes loader {
-    0% {
-        box-shadow: var(--x-1) var(--y-3) var(--c-1-3),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-6) var(--y-1) var(--c-6-1);
-    }
-    5% {
-        box-shadow: var(--x-2) var(--y-3) var(--c-2-3),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-1) var(--c-5-1);
-    }
-    10% {
-        box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-1) var(--c-2-1),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-3) var(--c-5-3),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-2) var(--c-5-2);
-    }
-    15% {
-        box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-3) var(--y-1) var(--c-3-1),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-4) var(--y-3) var(--c-4-3),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-2) var(--c-5-2);
-    }
-    20% {
-        box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-3) var(--y-3) var(--c-3-3),
-        var(--x-4) var(--y-1) var(--c-4-1),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-2) var(--c-5-2);
-    }
-    25% {
-        box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-3) var(--c-4-3),
-        var(--x-3) var(--y-1) var(--c-3-1),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-2) var(--c-5-2);
-    }
-    30% {
-        box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-3) var(--y-3) var(--c-3-3),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-1) var(--c-4-1),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-2) var(--c-5-2);
-    }
-    35% {
-        box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-3) var(--c-2-3),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-5) var(--y-1) var(--c-5-1),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-2) var(--c-5-2);
-    }
-    40% {
-        box-shadow: var(--x-2) var(--y-1) var(--c-2-1),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-5) var(--y-3) var(--c-5-3);
-    }
-    45% {
-        box-shadow: var(--x-1) var(--y-1) var(--c-1-1),
-        var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2),
-        var(--x-6) var(--y-3) var(--c-6-3);
-    }
-    50% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-1) var(--y-3) var(--c-1-3),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-1) var(--c-6-1),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    55% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-3) var(--c-2-3),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-5) var(--y-1) var(--c-5-1),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    60% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-2) var(--y-1) var(--c-2-1),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-5) var(--y-3) var(--c-5-3),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    65% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-1) var(--c-3-1),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-3) var(--c-4-3),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    70% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-1) var(--c-4-1),
-        var(--x-3) var(--y-3) var(--c-3-3),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    75% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-3) var(--y-1) var(--c-3-1),
-        var(--x-4) var(--y-3) var(--c-4-3),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    80% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-3) var(--c-3-3),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-4) var(--y-1) var(--c-4-1),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    85% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-2) var(--y-3) var(--c-2-3),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-1) var(--c-5-1),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    90% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-2) var(--y-1) var(--c-2-1),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-5) var(--y-3) var(--c-5-3),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
-    95% {
-        box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
-        var(--x-1) var(--y-1) var(--c-1-1),
-        var(--x-2) var(--y-2) var(--c-2-2),
-        var(--x-3) var(--y-2) var(--c-3-2),
-        var(--x-4) var(--y-2) var(--c-4-2),
-        var(--x-5) var(--y-2) var(--c-5-2),
-        var(--x-6) var(--y-3) var(--c-6-3),
-        var(--x-6) var(--y-2) var(--c-6-2);
-    }
+	0% {
+		box-shadow: var(--x-1) var(--y-3) var(--c-1-3),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-6) var(--y-1) var(--c-6-1);
+	}
+	5% {
+		box-shadow: var(--x-2) var(--y-3) var(--c-2-3),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-1) var(--c-5-1);
+	}
+	10% {
+		box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-1) var(--c-2-1),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-3) var(--c-5-3),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-2) var(--c-5-2);
+	}
+	15% {
+		box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-3) var(--y-1) var(--c-3-1),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-4) var(--y-3) var(--c-4-3),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-2) var(--c-5-2);
+	}
+	20% {
+		box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-3) var(--y-3) var(--c-3-3),
+			var(--x-4) var(--y-1) var(--c-4-1),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-2) var(--c-5-2);
+	}
+	25% {
+		box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-3) var(--c-4-3),
+			var(--x-3) var(--y-1) var(--c-3-1),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-2) var(--c-5-2);
+	}
+	30% {
+		box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-3) var(--y-3) var(--c-3-3),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-1) var(--c-4-1),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-2) var(--c-5-2);
+	}
+	35% {
+		box-shadow: var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-3) var(--c-2-3),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-5) var(--y-1) var(--c-5-1),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-2) var(--c-5-2);
+	}
+	40% {
+		box-shadow: var(--x-2) var(--y-1) var(--c-2-1),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-5) var(--y-3) var(--c-5-3);
+	}
+	45% {
+		box-shadow: var(--x-1) var(--y-1) var(--c-1-1),
+			var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2),
+			var(--x-6) var(--y-3) var(--c-6-3);
+	}
+	50% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-1) var(--y-3) var(--c-1-3),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-1) var(--c-6-1),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	55% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-3) var(--c-2-3),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-5) var(--y-1) var(--c-5-1),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	60% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-2) var(--y-1) var(--c-2-1),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-5) var(--y-3) var(--c-5-3),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	65% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-1) var(--c-3-1),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-3) var(--c-4-3),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	70% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-1) var(--c-4-1),
+			var(--x-3) var(--y-3) var(--c-3-3),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	75% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-3) var(--y-1) var(--c-3-1),
+			var(--x-4) var(--y-3) var(--c-4-3),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	80% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-3) var(--c-3-3),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-4) var(--y-1) var(--c-4-1),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	85% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-2) var(--y-3) var(--c-2-3),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-1) var(--c-5-1),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	90% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-2) var(--y-1) var(--c-2-1),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-5) var(--y-3) var(--c-5-3),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
+	95% {
+		box-shadow: var(--x-1) var(--y-2) var(--c-1-2),
+			var(--x-1) var(--y-1) var(--c-1-1),
+			var(--x-2) var(--y-2) var(--c-2-2),
+			var(--x-3) var(--y-2) var(--c-3-2),
+			var(--x-4) var(--y-2) var(--c-4-2),
+			var(--x-5) var(--y-2) var(--c-5-2),
+			var(--x-6) var(--y-3) var(--c-6-3),
+			var(--x-6) var(--y-2) var(--c-6-2);
+	}
 }

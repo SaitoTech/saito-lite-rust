@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  return `
+	return `
     <div class="manager">
       <div class="menu">
         <ul>
@@ -19,6 +18,4 @@ module.exports = (app, mod) => {
       </div>
     </div>
   `;
-
-}
-
+};

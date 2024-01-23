@@ -1,6 +1,5 @@
 module.exports = ArcadeMenuTemplate = (gamelist) => {
-
-  return `
+	return `
     <div class="arcade-game-list-container">
     <h5>Games</h5>
     <div class="saito-menu arcade-menu saito-sidebar-element hide-scrollbar">
@@ -8,6 +7,4 @@ module.exports = ArcadeMenuTemplate = (gamelist) => {
     </div>
     </div>
   `;
-
-}
-
+};

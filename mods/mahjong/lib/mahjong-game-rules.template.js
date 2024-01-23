@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-    let html = `<div class="rules-overlay">
+	let html = `<div class="rules-overlay">
               <h1>Mahjong Solitaire</h1>
               <ul>
                 <li>Two pairs of 36 tiles (144 total) are placed into a multi-layered shape.</li>
@@ -13,7 +12,5 @@ module.exports = (app, mod) => {
               </div>
             </div>
             `;
-    return html;
-
-}
-
+	return html;
+};

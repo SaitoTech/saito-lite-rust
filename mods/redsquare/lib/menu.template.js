@@ -1,6 +1,5 @@
 module.exports = () => {
-
-   return `
+	return `
       <div class="saito-menu redsquare-menu">
 
         <div id="new-tweet" class="saito-button-primary">New Post</div>
@@ -29,5 +28,4 @@ module.exports = () => {
 
       </div>
   `;
-}
-
+};

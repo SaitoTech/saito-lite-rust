@@ -1,8 +1,5 @@
 module.exports = (obj) => {
-
-  
-
-  let html = `
+	let html = `
     <div class="mandates-overlay mandated-offensives-overlay">
       <div class="help">Mandated Offensives</div>
       <div class="mandates">
@@ -23,6 +20,5 @@ module.exports = (obj) => {
       </div>
     </div>
   `;
-  return html;
-
-}
+	return html;
+};

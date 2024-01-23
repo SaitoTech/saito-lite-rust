@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let html =  `
+	let html = `
             <h1 class="overlay-title">Thirteen Days</h1>
             <div class="overlay-input">
             <label for="player1">Play as:</label>
@@ -12,6 +11,5 @@ module.exports = (app, mod) => {
             </div>
           `;
 
-    return html;
-
-}
+	return html;
+};

@@ -1,7 +1,7 @@
 module.exports = (app, mod, tx) => {
-  let txmsg = tx.returnMessage();
+	let txmsg = tx.returnMessage();
 
-  return `
+	return `
         <div class="tweet tweet-notification notification-item-${tx.signature}" data-id="${tx.signature}">
           <div class="tweet-notice"></div>
           <div class="tweet-header"></div>
@@ -15,4 +15,3 @@ module.exports = (app, mod, tx) => {
         </div>
     `;
 };
-

@@ -1,70 +1,65 @@
-
 .card {
-  position: relative;
-  width: min(18vw, 130px);
-  height: min(27.54vw, 199px);
+	position: relative;
+	width: min(18vw, 130px);
+	height: min(27.54vw, 199px);
 }
 
 .card.used {
-  /*border: 2px solid var(--saito-secondary);
+	/*border: 2px solid var(--saito-secondary);
   background-color: var(--saito-secondary);
   border-radius: 8px;*/
 }
 
 .card.not_used {
-  filter: grayscale(100%) brightness(0.55);
+	filter: grayscale(100%) brightness(0.55);
 }
-
 
 .cardfan {
-  max-height: 20vh;
-  max-width: 20vw;
+	max-height: 20vh;
+	max-width: 20vw;
 }
 
-.cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
-  transform: rotate(-15deg);
-  left: 0px; 
-} 
-  
-.cardfan>.card:nth-child(2), .hand>.card:nth-child(2) {
-  transform: rotate(-5deg);
-  left: 3vh;
+.cardfan > .card:nth-child(1),
+.hand > .card:nth-child(1) {
+	transform: rotate(-15deg);
+	left: 0px;
 }
 
+.cardfan > .card:nth-child(2),
+.hand > .card:nth-child(2) {
+	transform: rotate(-5deg);
+	left: 3vh;
+}
 
 .cardfan .card {
-  width: min(20vw, 130px);
+	width: min(20vw, 130px);
 }
 
-.cardFront, .cardBack{
-  transition: transform 0.5s ease;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+.cardFront,
+.cardBack {
+	transition: transform 0.5s ease;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
 }
 
-.cardFront{
-  transform: rotateY(180deg);
+.cardFront {
+	transform: rotateY(180deg);
 }
 
-.flipped .cardFront, .cardBack {
-  transform: rotateY(0deg);
+.flipped .cardFront,
+.cardBack {
+	transform: rotateY(0deg);
 }
 
-.flipped .cardBack{
-  transform: rotateY(-180deg);
+.flipped .cardBack {
+	transform: rotateY(-180deg);
 }
-
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-
-  .cardfan {
-    left: 38vw;
-    top: 53vh;
-    position: absolute;
-    width: 100%;
-  }
-
-
+	.cardfan {
+		left: 38vw;
+		top: 53vh;
+		position: absolute;
+		width: 100%;
+	}
 }
-
-

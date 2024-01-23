@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-    let html = `<div class="rules-overlay">
+	let html = `<div class="rules-overlay">
         <h1>Chess</h1>
         <p>Players attempt to box in the other player's king by sequentially moving pieces on the board. Each piece moves according to various rules (see below). When pieces move into a square occupied by an enemy piece, the enemy is captured. Except for the knight, pieces cannot pass through other pieces.</p>
         <h3>Pieces</h3>
@@ -18,7 +17,5 @@ module.exports = (app, mod) => {
         <p><em>En passant.</em> If a player moves a pawn forward by two spaces into a position adjacent to an enemy pawn, then the enemy pawn may capture said pawn as if it had only moved forward one space.</p> 
     </div>
     `;
-    return html;
-
-}
-
+	return html;
+};

@@ -1,271 +1,269 @@
 /* Appspace css */
 
 .stun-appspace {
-  width: 100vw;
-  height: 100vh;
-  height: calc(100 * var(--saito-vh));
-  left: 0;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: black;
-  color: var(--saito-white);
-  padding: 3rem;
-  justify-content: center;
-  position: relative;
+	width: 100vw;
+	height: 100vh;
+	height: calc(100 * var(--saito-vh));
+	left: 0;
+	top: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: black;
+	color: var(--saito-white);
+	padding: 3rem;
+	justify-content: center;
+	position: relative;
 }
 
-.stun-minimal-appspace{
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: black;
-  color: var(--saito-white);
-  justify-content: space-between;
-  width: min(400px, 98vw);
-  height: min(600px, 80vh);
+.stun-minimal-appspace {
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: black;
+	color: var(--saito-white);
+	justify-content: space-between;
+	width: min(400px, 98vw);
+	height: min(600px, 80vh);
 }
 
 .stun-minimal-appspace .saito-user > .saito-address {
-  color: #DDD;
+	color: #ddd;
 }
 
 .stun-button-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
 }
 
 .stun-button-row .saito-button-primary {
-  min-width: 15rem;
-  padding: 1.5rem;
+	min-width: 15rem;
+	padding: 1.5rem;
 }
 
 .stun-appspace-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  max-width: 1028px;
-  gap: 5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 80%;
+	max-width: 1028px;
+	gap: 5rem;
 }
 
 .chat-settings-preview-message {
-  font-style: italic;
+	font-style: italic;
 }
 
 .my-stun-container-info {
-  display: none;
-  font-size: 1.75rem;
+	display: none;
+	font-size: 1.75rem;
 }
 
 .saito-page-header-title {
-  margin-bottom: 1rem;
-  font-size: 5rem;
+	margin-bottom: 1rem;
+	font-size: 5rem;
 }
 
-
 .stunx-appspace-actions {
-  margin-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 2rem;
+	margin-bottom: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 2rem;
 }
 
 .stunx-appspace-launch-call-btn {
-  margin: 3rem;
-  /* display: none; */
+	margin: 3rem;
+	/* display: none; */
 }
 
 .stunx-appspace-splash {
-  height: 25rem;
-  color: var(--saito-white);
+	height: 25rem;
+	color: var(--saito-white);
 }
 
 .stun-appspace-navigation {
-  width: 80%;
-  max-width: 900px;
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: end;
-  padding: 5rem;
-  gap: 3rem;
+	width: 80%;
+	max-width: 900px;
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: end;
+	padding: 5rem;
+	gap: 3rem;
 }
 
 .stun-appspace-navigation div a {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  font-size: 2rem;
+	display: flex;
+	flex-direction: row;
+	gap: 0.5rem;
+	font-size: 2rem;
 }
 
 .stun-appspace-navigation div a:hover i::before {
-  content: "\f08e";
+	content: '\f08e';
 }
-
 
 /**  Dialer **/
 
 .video_switch {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  font-size: 1.8rem;
-  width: 80%;
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	font-size: 1.8rem;
+	width: 80%;
 }
 
 .video_switch.deactivated {
-  pointer-events: none;
-  color: var(--saito-font-color-light);
+	pointer-events: none;
+	color: var(--saito-font-color-light);
 }
 
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
 }
 
 /* Hide default HTML checkbox */
 .switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+	opacity: 0;
+	width: 0;
+	height: 0;
 }
 
 /* The slider */
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+	position: absolute;
+	content: '';
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+	background-color: #2196f3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+	box-shadow: 0 0 1px #2196f3;
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
 }
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 34px;
+	border-radius: 34px;
 }
 
 .slider.round:before {
-  border-radius: 50%;
+	border-radius: 50%;
 }
 
 .stun-minimal-appspace .chat-appspace-settings div {
-  width: 100%;
+	width: 100%;
 }
 
-.stun-minimal-appspace .chat-settings-toggle-icons, .stun-minimal-appspace .chat-settings-preview-message {
-  display: none;
+.stun-minimal-appspace .chat-settings-toggle-icons,
+.stun-minimal-appspace .chat-settings-preview-message {
+	display: none;
 }
 
 .stun-minimal-appspace .chat-settings-preview {
-  width: 100% !important;
+	width: 100% !important;
 }
 
 .stun-phone-notice {
-  font-style: italic;
+	font-style: italic;
 }
 
 /*  responsive */
 
 @media screen and (max-width: 1028px) {
-  .stun-appspace-content {
-    width: 95%;
-    gap: 1rem;
-  }
+	.stun-appspace-content {
+		width: 95%;
+		gap: 1rem;
+	}
 }
 
 @media screen and (max-width: 900px) {
-  .stun-appspace-content {
-    flex-direction: column;
-    width: 95%;
-  }
-  .stunx-appspace-splash {
-    padding: 0 5rem;
-  }
+	.stun-appspace-content {
+		flex-direction: column;
+		width: 95%;
+	}
+	.stunx-appspace-splash {
+		padding: 0 5rem;
+	}
 }
 
 @media screen and (max-width: 600px) {
-  .stun-appspace,
-  .chat-settings-wrapper {
-    padding: 1rem;
-    margin: 0;
-  }
+	.stun-appspace,
+	.chat-settings-wrapper {
+		padding: 1rem;
+		margin: 0;
+	}
 
-  .stun-appspace-content {
-    margin-top: 1rem;
-    gap: 0;
-  }
+	.stun-appspace-content {
+		margin-top: 1rem;
+		gap: 0;
+	}
 
-  #createRoom {
-    width: 100%;
-  }
-  .stunx-appspace-splash {
-    padding: 0;
-    height: unset;
-  }
+	#createRoom {
+		width: 100%;
+	}
+	.stunx-appspace-splash {
+		padding: 0;
+		height: unset;
+	}
 
-  .chat-settings-preview-message {
-    width: 60%;
-  }
+	.chat-settings-preview-message {
+		width: 60%;
+	}
 
-  .stun-appspace-navigation {
-    gap: 2rem;
-    padding: 2rem;
-    justify-content: center;
-  }
+	.stun-appspace-navigation {
+		gap: 2rem;
+		padding: 2rem;
+		justify-content: center;
+	}
 
-  .stunx-appspace-launch-call-btn {
-    margin: 2rem;
-  }
+	.stunx-appspace-launch-call-btn {
+		margin: 2rem;
+	}
 
-  .stunx-appspace-actions {
-    margin-bottom: 0;
-    margin-top: 1rem;
-  }
+	.stunx-appspace-actions {
+		margin-bottom: 0;
+		margin-top: 1rem;
+	}
 
-  .stun-minimal-appspace{
-    padding: 1rem;
-  }
+	.stun-minimal-appspace {
+		padding: 1rem;
+	}
 
-  .stun-button-row .saito-button-primary {
-  min-width: 12rem;
-  }
-
+	.stun-button-row .saito-button-primary {
+		min-width: 12rem;
+	}
 }

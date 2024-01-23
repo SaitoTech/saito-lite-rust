@@ -1,6 +1,5 @@
 module.exports = ImperiumCombatOverlayTemplate = () => {
-
-  return `
+	return `
 
 
     <div class="how_to_play_overlay" id="how_to_play_overlay">
@@ -64,5 +63,4 @@ winner holds the planet, regardless of who controls the sector in space.
 
     </div>
   `;
-
-}
+};

@@ -1,43 +1,39 @@
-
 body {
-  color: #202020;
-  font-size: 12px;
-  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif
+	color: #202020;
+	font-size: 12px;
+	font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
 .popup-container {
-  position: relative;
-  top: var(--saito-header-height);
-  padding-top: 0.5rem;
-  width: 1000px;
-  max-width: 1000px;
-  z-index: 0;
-  margin-left: auto;
-  margin-right: auto;
-  overflow-y: auto;
-  overflow-x: hidden;
+	position: relative;
+	top: var(--saito-header-height);
+	padding-top: 0.5rem;
+	width: 1000px;
+	max-width: 1000px;
+	z-index: 0;
+	margin-left: auto;
+	margin-right: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 .user {
-  color: #9C1010;
-  font-weight: bold;
+	color: #9c1010;
+	font-weight: bold;
 }
 
 .level {
-  color: #9C1010;
-  font-weight: bold;
+	color: #9c1010;
+	font-weight: bold;
 }
 
 .title {
 }
 
 .red {
-  color: #9C1010;
+	color: #9c1010;
 }
 
 .odd {
-  background-color: #F7F7F7;
+	background-color: #f7f7f7;
 }
-
-
-

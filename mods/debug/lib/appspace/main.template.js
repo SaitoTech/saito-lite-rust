@@ -1,5 +1,5 @@
 module.exports = DebugAppspaceMainTemplate = () => {
-  return `
+	return `
   
     <div class="saito-page-header">
       <div id="saito-page-header-title" class="saito-page-header-title">DEBUG WALLET
@@ -8,4 +8,4 @@ module.exports = DebugAppspaceMainTemplate = () => {
   <div id="appspace-debug" class="appspace-debug"></div>
 
   `;
-}
+};

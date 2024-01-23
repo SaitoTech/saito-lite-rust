@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-    return `<div class="blackjack-rules-overlay">
+	return `<div class="blackjack-rules-overlay">
 	<div class="h2">Blackjack Card Values</div>
 
   <div class="blackjack-modal-table">
@@ -38,6 +37,4 @@ module.exports = (app, mod) => {
     </div>
 	</div>
 </div>`;
-
-}
-
+};

@@ -16,17 +16,22 @@ This functionality represents the work described in [Milestone 1 of our Web3 Fou
 
 ## Tutorial
 
-How to interact with DOT, Kusama, or Westend 
+How to interact with DOT, Kusama, or Westend
 
-1) Get the crypto mod:
+1. Get the crypto mod:
+
 ```
 let cryptoMod = app.modules.returnModule(subPage);
 ```
+
 OR
+
 ```
 let cryptoMod = app.wallet.returnPreferredCrypto();
 ```
-2) Do stuff:
+
+2. Do stuff:
+
 ```
 cryptoMod.transfer(howMuch, toAddress);
 ...
@@ -48,6 +53,7 @@ If a DAPP author also wishes to leverage Saito as an Open Infrastructure platfor
 For anyone who wishes to leverage Saito as an Open Infrastructure platform, the previous work does not fully support this. We would suggest that implementing an API similar to the following might be a good starting point:
 
 ### SaitoAbstractEndpoint
+
 **Call(methodName, callback, payload):**
 
 Returns a promise which will resolve with the response.(i.e. is an async function).
@@ -55,6 +61,7 @@ Returns a promise which will resolve with the response.(i.e. is an async functio
 Wraps a request to an endpoint. This can simply hit an endpoint directly, but will often wrap the request into a Saito Transaction to leverage Saito Open Infrastructure.
 
 For example, a Saito Endpoint might implement calls like these:
+
 ```
 Call(“GetBalance”, pubkey, callback)
 Call(“BuildSignable”, {rawdata: ...}, callback)
@@ -78,8 +85,8 @@ Allows the user to keep a stream open the the Saito Endpoint for as long as it i
 
 Typically wraps a Websocket connection to the endpoint.
 
-> *Note:*
+> _Note:_
 >
-> *If a Saito Endpoint author wishes to grant unlimited access to typical HTTP/REST endpoints for a given period of time it is recommended to create a call like Call(“RequestAuthorization”,...) and to add a signed challenge object to subsequent calls to the HTTP endpoints.*
-> 
-> *For example, if a user has been granted 24 hours of access to a call to something like OnBalanceChange, this could be authorized via Call(“RequestAuthorization”,{pubkey: myPubkey}). Once authorized, subsequent calls to the endpoint would sign dated challenge tokens from the endpoint in order to gain HTTP/REST-style access to those endpoints.*
+> _If a Saito Endpoint author wishes to grant unlimited access to typical HTTP/REST endpoints for a given period of time it is recommended to create a call like Call(“RequestAuthorization”,...) and to add a signed challenge object to subsequent calls to the HTTP endpoints._
+>
+> _For example, if a user has been granted 24 hours of access to a call to something like OnBalanceChange, this could be authorized via Call(“RequestAuthorization”,{pubkey: myPubkey}). Once authorized, subsequent calls to the endpoint would sign dated challenge tokens from the endpoint in order to gain HTTP/REST-style access to those endpoints._
