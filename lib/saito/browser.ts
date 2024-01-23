@@ -255,7 +255,8 @@ class Browser {
       (e) => {
         if (
           e.target?.classList?.contains("saito-identicon") ||
-          e.target?.classList?.contains("saito-address")
+          e.target?.classList?.contains("saito-address") ||
+          e.target?.classList?.contains("saito-add-user-menu")
         ) {
           let disable_click = e.target.getAttribute("data-disable");
           let publicKey = e.target.getAttribute("data-id");
