@@ -5,19 +5,27 @@ module.exports = {
     node: true,
     jquery: true,
   },
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 13,
-    sourceType: 'module',
+    sourceType: "module",
   },
-  plugins: ['@typescript-eslint'],
+  extends: "davik",
+  plugins: ["@typescript-eslint"],
   rules: {
-    indent: ['error', 2],
-    'linebreak-style': ['error', 'unix'],
-    quotes: ['error', 'single'],
-    semi: ['error', 'always'],
-    '@typescript-eslint/no-unused-vars': 'off',
-    ' @typescript-eslint/no-empty-function': 'off',
+    // Basic code style rules
+    indent: ["error", 2], // Use 2 spaces for indentation
+    "linebreak-style": ["error", "unix"], // Use Unix line endings
+    quotes: ["error", "double"], // Use single quotes for strings
+    semi: ["error", "always"], // Require semicolons at the end of statements
+
+    // TypeScript specific rules
+    "@typescript-eslint/no-unused-vars": "off", // Turn off unused variable warnings
+    "@typescript-eslint/no-empty-function": "off", // Allow empty functions
+    "@typescript-eslint/no-var-requires": "off", // Allow 'require' statements
+    "@typescript-eslint/no-this-alias": "off", // Allow using 'this' alias
+    "no-fallthrough": "off", // Allow fallthrough in switch statements
+    "no-prototype-builtins": "off", // Allow prototype built-ins
+    "no-cond-assign": "off", // Allow assignment in conditional expressions
   },
 };

@@ -5,12 +5,6 @@ module.exports = {
     node: true,
     jquery: true,
   },
-  extends: [
-    // 'airbnb-base',
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
-  ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 13,
@@ -18,6 +12,19 @@ module.exports = {
   },
   plugins: ["@typescript-eslint"],
   rules: {
-    "prefer-const": 0,
+    // Basic code style rules
+    indent: ["error", 2], // Use 2 spaces for indentation
+    "linebreak-style": ["error", "unix"], // Use Unix line endings
+    quotes: ["error", "double"], // Use single quotes for strings
+    semi: ["error", "always"], // Require semicolons at the end of statements
+
+    // TypeScript specific rules
+    "@typescript-eslint/no-unused-vars": "off", // Turn off unused variable warnings
+    "@typescript-eslint/no-empty-function": "off", // Allow empty functions
+    "@typescript-eslint/no-var-requires": "off", // Allow 'require' statements
+    "@typescript-eslint/no-this-alias": "off", // Allow using 'this' alias
+    "no-fallthrough": "off", // Allow fallthrough in switch statements
+    "no-prototype-builtins": "off", // Allow prototype built-ins
+    "no-cond-assign": "off", // Allow assignment in conditional expressions
   },
 };

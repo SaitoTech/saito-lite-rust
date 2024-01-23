@@ -18,6 +18,7 @@ import { LogLevel } from "saito-js/saito";
 class WebMethods extends WebSharedMethods {
   app: Saito;
 
+
   constructor(app: Saito) {
     super();
     this.app = app;
@@ -38,6 +39,7 @@ class WebMethods extends WebSharedMethods {
         console.error(error);
       }
     };
+
     let peer = await this.app.network.getPeer(peerIndex);
     let newtx = new Transaction();
     try {
