@@ -47,7 +47,7 @@ module.exports = (app, mod, group, isStatic = false) => {
               data-disable="true">${group.name}</div>
               </div>
 
-              ${group.name != 'Saito Community Chat' ? `
+              ${group.name != mod.communityGroupName ? `
               <div class="chat-action-icons">
                 <div class="chat-actions">
                 </div>

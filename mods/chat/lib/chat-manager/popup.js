@@ -176,7 +176,7 @@ class ChatPopup {
 
     // add call icon, ignore if community chat
     let mods = this.app.modules.mods;
-    if (this.group.name != 'Saito Community Chat') {
+    if (this.group.name != this.mod.communityGroupName) {
       let index = 0;
       for (const mod of mods) {
 
@@ -236,7 +236,7 @@ class ChatPopup {
       return;
     }
 
-    if (this.group.name != 'Saito Community Chat') {
+    if (this.group.name != this.mod.communityGroupName) {
       document.querySelectorAll(".chat-action-item").forEach((menu) => {
         let id = menu.getAttribute("id");
         let callback = this_self.callbacks[id];

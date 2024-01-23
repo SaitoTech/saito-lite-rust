@@ -102,7 +102,7 @@ class Chat extends ModTemplate {
     if (app.BROWSER == 0) {
       this.communityGroup = this.returnOrCreateChatGroupFromMembers(
         [this.publicKey],
-        "Saito Community Chat"
+        this.communityGroupName
       );
       this.communityGroup.members = [this.publicKey];
 
@@ -349,7 +349,7 @@ class Chat extends ModTemplate {
     let services = [];
     // servers with chat service run plaintext community chat groups
     if (this.app.BROWSER == 0) {
-      services.push(new PeerService(null, "chat", "Saito Community Chat"));
+      services.push(new PeerService(null, "chat", this.communityGroupName));
     }
     return services;
   }
