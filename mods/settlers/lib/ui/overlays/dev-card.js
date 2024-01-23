@@ -39,50 +39,50 @@ class DevCardOverlay {
 				this_dev_card.overlay.remove();
 
 				switch (cardobj.action) {
-				case 1: //Soldier/Knight
-					this_dev_card.mod.addMove(
-						`play_knight\t${this_dev_card.mod.game.player}\t${cardobj.card}`
-					);
-					this_dev_card.mod.endTurn();
-					break;
-				case 2:
-					this_dev_card.mod.year_of_plenty.player =
+					case 1: //Soldier/Knight
+						this_dev_card.mod.addMove(
+							`play_knight\t${this_dev_card.mod.game.player}\t${cardobj.card}`
+						);
+						this_dev_card.mod.endTurn();
+						break;
+					case 2:
+						this_dev_card.mod.year_of_plenty.player =
 							this_dev_card.mod.game.player;
-					this_dev_card.mod.year_of_plenty.cardname =
+						this_dev_card.mod.year_of_plenty.cardname =
 							cardobj.card;
-					this_dev_card.mod.year_of_plenty.render(
-						this_dev_card.mod.game.deck[0].hand[card]
-					);
-					break;
-				case 3:
-					this_dev_card.mod.monopoly.player =
+						this_dev_card.mod.year_of_plenty.render(
+							this_dev_card.mod.game.deck[0].hand[card]
+						);
+						break;
+					case 3:
+						this_dev_card.mod.monopoly.player =
 							this_dev_card.mod.game.player;
-					this_dev_card.mod.monopoly.cardname = cardobj.card;
-					this_dev_card.mod.monopoly.render(
-						this_dev_card.mod.game.deck[0].hand[card]
-					);
-					break;
-				case 4:
-					this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
-					this_dev_card.mod.addMove(
-						'player_build_road\t' +
+						this_dev_card.mod.monopoly.cardname = cardobj.card;
+						this_dev_card.mod.monopoly.render(
+							this_dev_card.mod.game.deck[0].hand[card]
+						);
+						break;
+					case 4:
+						this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
+						this_dev_card.mod.addMove(
+							'player_build_road\t' +
 								this_dev_card.mod.game.player
-					);
-					this_dev_card.mod.addMove(
-						'player_build_road\t' +
+						);
+						this_dev_card.mod.addMove(
+							'player_build_road\t' +
 								this_dev_card.mod.game.player
-					);
-					this_dev_card.mod.addMove(
-						`road_building\t${this_dev_card.mod.game.player}\t${cardobj.card}`
-					);
-					this_dev_card.mod.endTurn();
-					break;
-				default:
-					//victory point
-					this_dev_card.mod.addMove(
-						`vp\t${this_dev_card.mod.game.player}\t${cardobj.card}`
-					);
-					this_dev_card.mod.endTurn();
+						);
+						this_dev_card.mod.addMove(
+							`road_building\t${this_dev_card.mod.game.player}\t${cardobj.card}`
+						);
+						this_dev_card.mod.endTurn();
+						break;
+					default:
+						//victory point
+						this_dev_card.mod.addMove(
+							`vp\t${this_dev_card.mod.game.player}\t${cardobj.card}`
+						);
+						this_dev_card.mod.endTurn();
 				}
 				this_dev_card.mod.removeCardFromHand(
 					this_dev_card.mod.game.deck[0].hand[card]

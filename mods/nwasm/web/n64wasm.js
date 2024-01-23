@@ -302,47 +302,47 @@ function setValue(ptr, value, type, noSafe) {
 	type = type || 'i8';
 	if (type.charAt(type.length - 1) === '*') type = 'i32';
 	switch (type) {
-	case 'i1':
-		HEAP8[ptr >> 0] = value;
-		break;
-	case 'i8':
-		HEAP8[ptr >> 0] = value;
-		break;
-	case 'i16':
-		HEAP16[ptr >> 1] = value;
-		break;
-	case 'i32':
-		HEAP32[ptr >> 2] = value;
-		break;
-	case 'i64':
-		(tempI64 = [
-			value >>> 0,
-			((tempDouble = value),
-			+Math_abs(tempDouble) >= 1
-				? tempDouble > 0
-					? (Math_min(
-						+Math_floor(tempDouble / 4294967296),
-						4294967295
+		case 'i1':
+			HEAP8[ptr >> 0] = value;
+			break;
+		case 'i8':
+			HEAP8[ptr >> 0] = value;
+			break;
+		case 'i16':
+			HEAP16[ptr >> 1] = value;
+			break;
+		case 'i32':
+			HEAP32[ptr >> 2] = value;
+			break;
+		case 'i64':
+			(tempI64 = [
+				value >>> 0,
+				((tempDouble = value),
+				+Math_abs(tempDouble) >= 1
+					? tempDouble > 0
+						? (Math_min(
+								+Math_floor(tempDouble / 4294967296),
+								4294967295
 						  ) |
 								0) >>>
 						  0
-					: ~~+Math_ceil(
-						(tempDouble - +(~~tempDouble >>> 0)) /
+						: ~~+Math_ceil(
+								(tempDouble - +(~~tempDouble >>> 0)) /
 									4294967296
 						  ) >>> 0
-				: 0)
-		]),
-		(HEAP32[ptr >> 2] = tempI64[0]),
-		(HEAP32[(ptr + 4) >> 2] = tempI64[1]);
-		break;
-	case 'float':
-		HEAPF32[ptr >> 2] = value;
-		break;
-	case 'double':
-		HEAPF64[ptr >> 3] = value;
-		break;
-	default:
-		abort('invalid type for setValue: ' + type);
+					: 0)
+			]),
+				(HEAP32[ptr >> 2] = tempI64[0]),
+				(HEAP32[(ptr + 4) >> 2] = tempI64[1]);
+			break;
+		case 'float':
+			HEAPF32[ptr >> 2] = value;
+			break;
+		case 'double':
+			HEAPF64[ptr >> 3] = value;
+			break;
+		default:
+			abort('invalid type for setValue: ' + type);
 	}
 }
 var wasmMemory;
@@ -725,9 +725,9 @@ function getBinaryPromise() {
 			.then(function (response) {
 				if (!response['ok']) {
 					throw (
-						'failed to load wasm binary file at \'' +
+						"failed to load wasm binary file at '" +
 						wasmBinaryFile +
-						'\''
+						"'"
 					);
 				}
 				return response['arrayBuffer']();
@@ -1465,10 +1465,10 @@ var Browser = {
 			typeof MozBlobBuilder != 'undefined'
 				? MozBlobBuilder
 				: typeof WebKitBlobBuilder != 'undefined'
-					? WebKitBlobBuilder
-					: !Browser.hasBlobConstructor
-						? console.log('warning: no BlobBuilder')
-						: null;
+				? WebKitBlobBuilder
+				: !Browser.hasBlobConstructor
+				? console.log('warning: no BlobBuilder')
+				: null;
 		Browser.URLObject =
 			typeof window != 'undefined'
 				? window.URL
@@ -1818,16 +1818,16 @@ var Browser = {
 			canvasContainer['msRequestFullscreen'] ||
 			(canvasContainer['webkitRequestFullscreen']
 				? function () {
-					canvasContainer['webkitRequestFullscreen'](
-						Element['ALLOW_KEYBOARD_INPUT']
-					);
+						canvasContainer['webkitRequestFullscreen'](
+							Element['ALLOW_KEYBOARD_INPUT']
+						);
 				  }
 				: null) ||
 			(canvasContainer['webkitRequestFullScreen']
 				? function () {
-					canvasContainer['webkitRequestFullScreen'](
-						Element['ALLOW_KEYBOARD_INPUT']
-					);
+						canvasContainer['webkitRequestFullScreen'](
+							Element['ALLOW_KEYBOARD_INPUT']
+						);
 				  }
 				: null);
 		canvasContainer.requestFullscreen();
@@ -1954,33 +1954,33 @@ var Browser = {
 	getMouseWheelDelta: function (event) {
 		var delta = 0;
 		switch (event.type) {
-		case 'DOMMouseScroll':
-			delta = event.detail / 3;
-			break;
-		case 'mousewheel':
-			delta = event.wheelDelta / 120;
-			break;
-		case 'wheel':
-			delta = event.deltaY;
-			switch (event.deltaMode) {
-			case 0:
-				delta /= 100;
+			case 'DOMMouseScroll':
+				delta = event.detail / 3;
 				break;
-			case 1:
-				delta /= 3;
+			case 'mousewheel':
+				delta = event.wheelDelta / 120;
 				break;
-			case 2:
-				delta *= 80;
+			case 'wheel':
+				delta = event.deltaY;
+				switch (event.deltaMode) {
+					case 0:
+						delta /= 100;
+						break;
+					case 1:
+						delta /= 3;
+						break;
+					case 2:
+						delta *= 80;
+						break;
+					default:
+						throw (
+							'unrecognized mouse wheel delta mode: ' +
+							event.deltaMode
+						);
+				}
 				break;
 			default:
-				throw (
-					'unrecognized mouse wheel delta mode: ' +
-							event.deltaMode
-				);
-			}
-			break;
-		default:
-			throw 'unrecognized mouse wheel event: ' + event.type;
+				throw 'unrecognized mouse wheel event: ' + event.type;
 		}
 		return delta;
 	},
@@ -3457,11 +3457,11 @@ var FS = {
 			}
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'willMovePath\'](\'' +
+				"FS.trackingDelegate['willMovePath']('" +
 					old_path +
-					'\', \'' +
+					"', '" +
 					new_path +
-					'\') threw an exception: ' +
+					"') threw an exception: " +
 					e.message
 			);
 		}
@@ -3478,11 +3478,11 @@ var FS = {
 				FS.trackingDelegate['onMovePath'](old_path, new_path);
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'onMovePath\'](\'' +
+				"FS.trackingDelegate['onMovePath']('" +
 					old_path +
-					'\', \'' +
+					"', '" +
 					new_path +
-					'\') threw an exception: ' +
+					"') threw an exception: " +
 					e.message
 			);
 		}
@@ -3508,9 +3508,9 @@ var FS = {
 			}
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'willDeletePath\'](\'' +
+				"FS.trackingDelegate['willDeletePath']('" +
 					path +
-					'\') threw an exception: ' +
+					"') threw an exception: " +
 					e.message
 			);
 		}
@@ -3521,9 +3521,9 @@ var FS = {
 				FS.trackingDelegate['onDeletePath'](path);
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'onDeletePath\'](\'' +
+				"FS.trackingDelegate['onDeletePath']('" +
 					path +
-					'\') threw an exception: ' +
+					"') threw an exception: " +
 					e.message
 			);
 		}
@@ -3557,9 +3557,9 @@ var FS = {
 			}
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'willDeletePath\'](\'' +
+				"FS.trackingDelegate['willDeletePath']('" +
 					path +
-					'\') threw an exception: ' +
+					"') threw an exception: " +
 					e.message
 			);
 		}
@@ -3570,9 +3570,9 @@ var FS = {
 				FS.trackingDelegate['onDeletePath'](path);
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'onDeletePath\'](\'' +
+				"FS.trackingDelegate['onDeletePath']('" +
 					path +
-					'\') threw an exception: ' +
+					"') threw an exception: " +
 					e.message
 			);
 		}
@@ -3783,9 +3783,9 @@ var FS = {
 			}
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'onOpenFile\'](\'' +
+				"FS.trackingDelegate['onOpenFile']('" +
 					path +
-					'\', flags) threw an exception: ' +
+					"', flags) threw an exception: " +
 					e.message
 			);
 		}
@@ -3895,9 +3895,9 @@ var FS = {
 				FS.trackingDelegate['onWriteToFile'](stream.path);
 		} catch (e) {
 			err(
-				'FS.trackingDelegate[\'onWriteToFile\'](\'' +
+				"FS.trackingDelegate['onWriteToFile']('" +
 					stream.path +
-					'\') threw an exception: ' +
+					"') threw an exception: " +
 					e.message
 			);
 		}
@@ -4263,8 +4263,8 @@ var FS = {
 	createDataFile: function (parent, name, data, canRead, canWrite, canOwn) {
 		var path = name
 			? PATH.join2(
-				typeof parent === 'string' ? parent : FS.getPath(parent),
-				name
+					typeof parent === 'string' ? parent : FS.getPath(parent),
+					name
 			  )
 			: parent;
 		var mode = FS.getMode(canRead, canWrite);
@@ -4395,7 +4395,7 @@ var FS = {
 					)
 				)
 					throw new Error(
-						'Couldn\'t load ' + url + '. Status: ' + xhr.status
+						"Couldn't load " + url + '. Status: ' + xhr.status
 					);
 				var datalength = Number(
 					xhr.getResponseHeader('Content-length')
@@ -4446,7 +4446,7 @@ var FS = {
 						)
 					)
 						throw new Error(
-							'Couldn\'t load ' + url + '. Status: ' + xhr.status
+							"Couldn't load " + url + '. Status: ' + xhr.status
 						);
 					if (xhr.response !== undefined) {
 						return new Uint8Array(xhr.response || []);
@@ -4779,18 +4779,18 @@ var SYSCALLS = {
 			+Math_abs(tempDouble) >= 1
 				? tempDouble > 0
 					? (Math_min(
-						+Math_floor(tempDouble / 4294967296),
-						4294967295
+							+Math_floor(tempDouble / 4294967296),
+							4294967295
 					  ) |
 							0) >>>
 					  0
 					: ~~+Math_ceil(
-						(tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+							(tempDouble - +(~~tempDouble >>> 0)) / 4294967296
 					  ) >>> 0
 				: 0)
 		]),
-		(HEAP32[(buf + 40) >> 2] = tempI64[0]),
-		(HEAP32[(buf + 44) >> 2] = tempI64[1]);
+			(HEAP32[(buf + 40) >> 2] = tempI64[0]),
+			(HEAP32[(buf + 44) >> 2] = tempI64[1]);
 		HEAP32[(buf + 48) >> 2] = 4096;
 		HEAP32[(buf + 52) >> 2] = stat.blocks;
 		HEAP32[(buf + 56) >> 2] = (stat.atime.getTime() / 1e3) | 0;
@@ -4805,18 +4805,18 @@ var SYSCALLS = {
 			+Math_abs(tempDouble) >= 1
 				? tempDouble > 0
 					? (Math_min(
-						+Math_floor(tempDouble / 4294967296),
-						4294967295
+							+Math_floor(tempDouble / 4294967296),
+							4294967295
 					  ) |
 							0) >>>
 					  0
 					: ~~+Math_ceil(
-						(tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+							(tempDouble - +(~~tempDouble >>> 0)) / 4294967296
 					  ) >>> 0
 				: 0)
 		]),
-		(HEAP32[(buf + 80) >> 2] = tempI64[0]),
-		(HEAP32[(buf + 84) >> 2] = tempI64[1]);
+			(HEAP32[(buf + 80) >> 2] = tempI64[0]),
+			(HEAP32[(buf + 84) >> 2] = tempI64[1]);
 		return 0;
 	},
 	doMsync: function (addr, stream, len, flags, offset) {
@@ -4832,14 +4832,14 @@ var SYSCALLS = {
 	},
 	doMknod: function (path, mode, dev) {
 		switch (mode & 61440) {
-		case 32768:
-		case 8192:
-		case 24576:
-		case 4096:
-		case 49152:
-			break;
-		default:
-			return -28;
+			case 32768:
+			case 8192:
+			case 24576:
+			case 4096:
+			case 49152:
+				break;
+			default:
+				return -28;
 		}
 		FS.mknod(path, mode, dev);
 		return 0;
@@ -4934,43 +4934,43 @@ function ___sys_fcntl64(fd, cmd, varargs) {
 	try {
 		var stream = SYSCALLS.getStreamFromFD(fd);
 		switch (cmd) {
-		case 0: {
-			var arg = SYSCALLS.get();
-			if (arg < 0) {
+			case 0: {
+				var arg = SYSCALLS.get();
+				if (arg < 0) {
+					return -28;
+				}
+				var newStream;
+				newStream = FS.open(stream.path, stream.flags, 0, arg);
+				return newStream.fd;
+			}
+			case 1:
+			case 2:
+				return 0;
+			case 3:
+				return stream.flags;
+			case 4: {
+				var arg = SYSCALLS.get();
+				stream.flags |= arg;
+				return 0;
+			}
+			case 12: {
+				var arg = SYSCALLS.get();
+				var offset = 0;
+				HEAP16[(arg + offset) >> 1] = 2;
+				return 0;
+			}
+			case 13:
+			case 14:
+				return 0;
+			case 16:
+			case 8:
+				return -28;
+			case 9:
+				setErrNo(28);
+				return -1;
+			default: {
 				return -28;
 			}
-			var newStream;
-			newStream = FS.open(stream.path, stream.flags, 0, arg);
-			return newStream.fd;
-		}
-		case 1:
-		case 2:
-			return 0;
-		case 3:
-			return stream.flags;
-		case 4: {
-			var arg = SYSCALLS.get();
-			stream.flags |= arg;
-			return 0;
-		}
-		case 12: {
-			var arg = SYSCALLS.get();
-			var offset = 0;
-			HEAP16[(arg + offset) >> 1] = 2;
-			return 0;
-		}
-		case 13:
-		case 14:
-			return 0;
-		case 16:
-		case 8:
-			return -28;
-		case 9:
-			setErrNo(28);
-			return -1;
-		default: {
-			return -28;
-		}
 		}
 	} catch (e) {
 		if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError))
@@ -4983,44 +4983,44 @@ function ___sys_ioctl(fd, op, varargs) {
 	try {
 		var stream = SYSCALLS.getStreamFromFD(fd);
 		switch (op) {
-		case 21509:
-		case 21505: {
-			if (!stream.tty) return -59;
-			return 0;
-		}
-		case 21510:
-		case 21511:
-		case 21512:
-		case 21506:
-		case 21507:
-		case 21508: {
-			if (!stream.tty) return -59;
-			return 0;
-		}
-		case 21519: {
-			if (!stream.tty) return -59;
-			var argp = SYSCALLS.get();
-			HEAP32[argp >> 2] = 0;
-			return 0;
-		}
-		case 21520: {
-			if (!stream.tty) return -59;
-			return -28;
-		}
-		case 21531: {
-			var argp = SYSCALLS.get();
-			return FS.ioctl(stream, op, argp);
-		}
-		case 21523: {
-			if (!stream.tty) return -59;
-			return 0;
-		}
-		case 21524: {
-			if (!stream.tty) return -59;
-			return 0;
-		}
-		default:
-			abort('bad ioctl syscall ' + op);
+			case 21509:
+			case 21505: {
+				if (!stream.tty) return -59;
+				return 0;
+			}
+			case 21510:
+			case 21511:
+			case 21512:
+			case 21506:
+			case 21507:
+			case 21508: {
+				if (!stream.tty) return -59;
+				return 0;
+			}
+			case 21519: {
+				if (!stream.tty) return -59;
+				var argp = SYSCALLS.get();
+				HEAP32[argp >> 2] = 0;
+				return 0;
+			}
+			case 21520: {
+				if (!stream.tty) return -59;
+				return -28;
+			}
+			case 21531: {
+				var argp = SYSCALLS.get();
+				return FS.ioctl(stream, op, argp);
+			}
+			case 21523: {
+				if (!stream.tty) return -59;
+				return 0;
+			}
+			case 21524: {
+				if (!stream.tty) return -59;
+				return 0;
+			}
+			default:
+				abort('bad ioctl syscall ' + op);
 		}
 	} catch (e) {
 		if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError))
@@ -5112,7 +5112,7 @@ function _clock_gettime(clk_id, tp) {
 }
 function _dlclose(handle) {
 	abort(
-		'To use dlopen, you need to use Emscripten\'s linking support, see https://github.com/emscripten-core/emscripten/wiki/Linking'
+		"To use dlopen, you need to use Emscripten's linking support, see https://github.com/emscripten-core/emscripten/wiki/Linking"
 	);
 }
 var EGL = {
@@ -5655,97 +5655,97 @@ function _eglGetConfigAttrib(display, config, attribute, value) {
 	}
 	EGL.setErrorCode(12288);
 	switch (attribute) {
-	case 12320:
-		HEAP32[value >> 2] = EGL.contextAttributes.alpha ? 32 : 24;
-		return 1;
-	case 12321:
-		HEAP32[value >> 2] = EGL.contextAttributes.alpha ? 8 : 0;
-		return 1;
-	case 12322:
-		HEAP32[value >> 2] = 8;
-		return 1;
-	case 12323:
-		HEAP32[value >> 2] = 8;
-		return 1;
-	case 12324:
-		HEAP32[value >> 2] = 8;
-		return 1;
-	case 12325:
-		HEAP32[value >> 2] = EGL.contextAttributes.depth ? 24 : 0;
-		return 1;
-	case 12326:
-		HEAP32[value >> 2] = EGL.contextAttributes.stencil ? 8 : 0;
-		return 1;
-	case 12327:
-		HEAP32[value >> 2] = 12344;
-		return 1;
-	case 12328:
-		HEAP32[value >> 2] = 62002;
-		return 1;
-	case 12329:
-		HEAP32[value >> 2] = 0;
-		return 1;
-	case 12330:
-		HEAP32[value >> 2] = 4096;
-		return 1;
-	case 12331:
-		HEAP32[value >> 2] = 16777216;
-		return 1;
-	case 12332:
-		HEAP32[value >> 2] = 4096;
-		return 1;
-	case 12333:
-		HEAP32[value >> 2] = 0;
-		return 1;
-	case 12334:
-		HEAP32[value >> 2] = 0;
-		return 1;
-	case 12335:
-		HEAP32[value >> 2] = 12344;
-		return 1;
-	case 12337:
-		HEAP32[value >> 2] = EGL.contextAttributes.antialias ? 4 : 0;
-		return 1;
-	case 12338:
-		HEAP32[value >> 2] = EGL.contextAttributes.antialias ? 1 : 0;
-		return 1;
-	case 12339:
-		HEAP32[value >> 2] = 4;
-		return 1;
-	case 12340:
-		HEAP32[value >> 2] = 12344;
-		return 1;
-	case 12341:
-	case 12342:
-	case 12343:
-		HEAP32[value >> 2] = -1;
-		return 1;
-	case 12345:
-	case 12346:
-		HEAP32[value >> 2] = 0;
-		return 1;
-	case 12347:
-		HEAP32[value >> 2] = 0;
-		return 1;
-	case 12348:
-		HEAP32[value >> 2] = 1;
-		return 1;
-	case 12349:
-	case 12350:
-		HEAP32[value >> 2] = 0;
-		return 1;
-	case 12351:
-		HEAP32[value >> 2] = 12430;
-		return 1;
-	case 12352:
-		HEAP32[value >> 2] = 4;
-		return 1;
-	case 12354:
-		HEAP32[value >> 2] = 0;
-		return 1;
-	default:
-		EGL.setErrorCode(12292);
-		return 0;
+		case 12320:
+			HEAP32[value >> 2] = EGL.contextAttributes.alpha ? 32 : 24;
+			return 1;
+		case 12321:
+			HEAP32[value >> 2] = EGL.contextAttributes.alpha ? 8 : 0;
+			return 1;
+		case 12322:
+			HEAP32[value >> 2] = 8;
+			return 1;
+		case 12323:
+			HEAP32[value >> 2] = 8;
+			return 1;
+		case 12324:
+			HEAP32[value >> 2] = 8;
+			return 1;
+		case 12325:
+			HEAP32[value >> 2] = EGL.contextAttributes.depth ? 24 : 0;
+			return 1;
+		case 12326:
+			HEAP32[value >> 2] = EGL.contextAttributes.stencil ? 8 : 0;
+			return 1;
+		case 12327:
+			HEAP32[value >> 2] = 12344;
+			return 1;
+		case 12328:
+			HEAP32[value >> 2] = 62002;
+			return 1;
+		case 12329:
+			HEAP32[value >> 2] = 0;
+			return 1;
+		case 12330:
+			HEAP32[value >> 2] = 4096;
+			return 1;
+		case 12331:
+			HEAP32[value >> 2] = 16777216;
+			return 1;
+		case 12332:
+			HEAP32[value >> 2] = 4096;
+			return 1;
+		case 12333:
+			HEAP32[value >> 2] = 0;
+			return 1;
+		case 12334:
+			HEAP32[value >> 2] = 0;
+			return 1;
+		case 12335:
+			HEAP32[value >> 2] = 12344;
+			return 1;
+		case 12337:
+			HEAP32[value >> 2] = EGL.contextAttributes.antialias ? 4 : 0;
+			return 1;
+		case 12338:
+			HEAP32[value >> 2] = EGL.contextAttributes.antialias ? 1 : 0;
+			return 1;
+		case 12339:
+			HEAP32[value >> 2] = 4;
+			return 1;
+		case 12340:
+			HEAP32[value >> 2] = 12344;
+			return 1;
+		case 12341:
+		case 12342:
+		case 12343:
+			HEAP32[value >> 2] = -1;
+			return 1;
+		case 12345:
+		case 12346:
+			HEAP32[value >> 2] = 0;
+			return 1;
+		case 12347:
+			HEAP32[value >> 2] = 0;
+			return 1;
+		case 12348:
+			HEAP32[value >> 2] = 1;
+			return 1;
+		case 12349:
+		case 12350:
+			HEAP32[value >> 2] = 0;
+			return 1;
+		case 12351:
+			HEAP32[value >> 2] = 12430;
+			return 1;
+		case 12352:
+			HEAP32[value >> 2] = 4;
+			return 1;
+		case 12354:
+			HEAP32[value >> 2] = 0;
+			return 1;
+		default:
+			EGL.setErrorCode(12292);
+			return 0;
 	}
 }
 function _eglGetDisplay(nativeDisplayType) {
@@ -5803,21 +5803,21 @@ function _eglQueryString(display, name) {
 	if (EGL.stringCache[name]) return EGL.stringCache[name];
 	var ret;
 	switch (name) {
-	case 12371:
-		ret = allocateUTF8('Emscripten');
-		break;
-	case 12372:
-		ret = allocateUTF8('1.4 Emscripten EGL');
-		break;
-	case 12373:
-		ret = allocateUTF8('');
-		break;
-	case 12429:
-		ret = allocateUTF8('OpenGL_ES');
-		break;
-	default:
-		EGL.setErrorCode(12300);
-		return 0;
+		case 12371:
+			ret = allocateUTF8('Emscripten');
+			break;
+		case 12372:
+			ret = allocateUTF8('1.4 Emscripten EGL');
+			break;
+		case 12373:
+			ret = allocateUTF8('');
+			break;
+		case 12429:
+			ret = allocateUTF8('OpenGL_ES');
+			break;
+		default:
+			EGL.setErrorCode(12300);
+			return 0;
 	}
 	EGL.stringCache[name] = ret;
 	return ret;
@@ -6973,30 +6973,30 @@ function _emscripten_glFlush() {
 }
 function emscriptenWebGLGetBufferBinding(target) {
 	switch (target) {
-	case 34962:
-		target = 34964;
-		break;
-	case 34963:
-		target = 34965;
-		break;
-	case 35051:
-		target = 35053;
-		break;
-	case 35052:
-		target = 35055;
-		break;
-	case 35982:
-		target = 35983;
-		break;
-	case 36662:
-		target = 36662;
-		break;
-	case 36663:
-		target = 36663;
-		break;
-	case 35345:
-		target = 35368;
-		break;
+		case 34962:
+			target = 34964;
+			break;
+		case 34963:
+			target = 34965;
+			break;
+		case 35051:
+			target = 35053;
+			break;
+		case 35052:
+			target = 35055;
+			break;
+		case 35982:
+			target = 35983;
+			break;
+		case 36662:
+			target = 36662;
+			break;
+		case 36663:
+			target = 36663;
+			break;
+		case 35345:
+			target = 35368;
+			break;
 	}
 	var buffer = GLctx.getParameter(target);
 	if (buffer) return buffer.name | 0;
@@ -7004,18 +7004,18 @@ function emscriptenWebGLGetBufferBinding(target) {
 }
 function emscriptenWebGLValidateMapBufferTarget(target) {
 	switch (target) {
-	case 34962:
-	case 34963:
-	case 36662:
-	case 36663:
-	case 35051:
-	case 35052:
-	case 35882:
-	case 35982:
-	case 35345:
-		return true;
-	default:
-		return false;
+		case 34962:
+		case 34963:
+		case 36662:
+		case 36663:
+		case 35051:
+		case 35052:
+		case 35882:
+		case 35982:
+		case 35345:
+			return true;
+		default:
+			return false;
 	}
 }
 function _emscripten_glFlushMappedBufferRange(target, offset, length) {
@@ -7246,27 +7246,27 @@ function _emscripten_glGetActiveUniformBlockiv(
 	}
 	program = GL.programs[program];
 	switch (pname) {
-	case 35393:
-		var name = GLctx['getActiveUniformBlockName'](
-			program,
-			uniformBlockIndex
-		);
-		HEAP32[params >> 2] = name.length + 1;
-		return;
-	default:
-		var result = GLctx['getActiveUniformBlockParameter'](
-			program,
-			uniformBlockIndex,
-			pname
-		);
-		if (!result) return;
-		if (typeof result == 'number') {
-			HEAP32[params >> 2] = result;
-		} else {
-			for (var i = 0; i < result.length; i++) {
-				HEAP32[(params + i * 4) >> 2] = result[i];
+		case 35393:
+			var name = GLctx['getActiveUniformBlockName'](
+				program,
+				uniformBlockIndex
+			);
+			HEAP32[params >> 2] = name.length + 1;
+			return;
+		default:
+			var result = GLctx['getActiveUniformBlockParameter'](
+				program,
+				uniformBlockIndex,
+				pname
+			);
+			if (!result) return;
+			if (typeof result == 'number') {
+				HEAP32[params >> 2] = result;
+			} else {
+				for (var i = 0; i < result.length; i++) {
+					HEAP32[(params + i * 4) >> 2] = result[i];
+				}
 			}
-		}
 	}
 }
 function _emscripten_glGetActiveUniformsiv(
@@ -7322,123 +7322,123 @@ function emscriptenWebGLGet(name_, p, type) {
 	}
 	var ret = undefined;
 	switch (name_) {
-	case 36346:
-		ret = 1;
-		break;
-	case 36344:
-		if (type != 0 && type != 1) {
-			GL.recordError(1280);
-		}
-		return;
-	case 34814:
-	case 36345:
-		ret = 0;
-		break;
-	case 34466:
-		var formats = GLctx.getParameter(34467);
-		ret = formats ? formats.length : 0;
-		break;
-	case 33309:
-		if (GL.currentContext.version < 2) {
-			GL.recordError(1282);
+		case 36346:
+			ret = 1;
+			break;
+		case 36344:
+			if (type != 0 && type != 1) {
+				GL.recordError(1280);
+			}
 			return;
-		}
-		var exts = GLctx.getSupportedExtensions() || [];
-		ret = 2 * exts.length;
-		break;
-	case 33307:
-	case 33308:
-		if (GL.currentContext.version < 2) {
-			GL.recordError(1280);
-			return;
-		}
-		ret = name_ == 33307 ? 3 : 0;
-		break;
+		case 34814:
+		case 36345:
+			ret = 0;
+			break;
+		case 34466:
+			var formats = GLctx.getParameter(34467);
+			ret = formats ? formats.length : 0;
+			break;
+		case 33309:
+			if (GL.currentContext.version < 2) {
+				GL.recordError(1282);
+				return;
+			}
+			var exts = GLctx.getSupportedExtensions() || [];
+			ret = 2 * exts.length;
+			break;
+		case 33307:
+		case 33308:
+			if (GL.currentContext.version < 2) {
+				GL.recordError(1280);
+				return;
+			}
+			ret = name_ == 33307 ? 3 : 0;
+			break;
 	}
 	if (ret === undefined) {
 		var result = GLctx.getParameter(name_);
 		switch (typeof result) {
-		case 'number':
-			ret = result;
-			break;
-		case 'boolean':
-			ret = result ? 1 : 0;
-			break;
-		case 'string':
-			GL.recordError(1280);
-			return;
-		case 'object':
-			if (result === null) {
-				switch (name_) {
-				case 34964:
-				case 35725:
-				case 34965:
-				case 36006:
-				case 36007:
-				case 32873:
-				case 34229:
-				case 36662:
-				case 36663:
-				case 35053:
-				case 35055:
-				case 36010:
-				case 35097:
-				case 35869:
-				case 32874:
-				case 36389:
-				case 35983:
-				case 35368:
-				case 34068: {
-					ret = 0;
-					break;
-				}
-				default: {
-					GL.recordError(1280);
-					return;
-				}
-				}
-			} else if (
-				result instanceof Float32Array ||
+			case 'number':
+				ret = result;
+				break;
+			case 'boolean':
+				ret = result ? 1 : 0;
+				break;
+			case 'string':
+				GL.recordError(1280);
+				return;
+			case 'object':
+				if (result === null) {
+					switch (name_) {
+						case 34964:
+						case 35725:
+						case 34965:
+						case 36006:
+						case 36007:
+						case 32873:
+						case 34229:
+						case 36662:
+						case 36663:
+						case 35053:
+						case 35055:
+						case 36010:
+						case 35097:
+						case 35869:
+						case 32874:
+						case 36389:
+						case 35983:
+						case 35368:
+						case 34068: {
+							ret = 0;
+							break;
+						}
+						default: {
+							GL.recordError(1280);
+							return;
+						}
+					}
+				} else if (
+					result instanceof Float32Array ||
 					result instanceof Uint32Array ||
 					result instanceof Int32Array ||
 					result instanceof Array
-			) {
-				for (var i = 0; i < result.length; ++i) {
-					switch (type) {
-					case 0:
-						HEAP32[(p + i * 4) >> 2] = result[i];
-						break;
-					case 2:
-						HEAPF32[(p + i * 4) >> 2] = result[i];
-						break;
-					case 4:
-						HEAP8[(p + i) >> 0] = result[i] ? 1 : 0;
-						break;
+				) {
+					for (var i = 0; i < result.length; ++i) {
+						switch (type) {
+							case 0:
+								HEAP32[(p + i * 4) >> 2] = result[i];
+								break;
+							case 2:
+								HEAPF32[(p + i * 4) >> 2] = result[i];
+								break;
+							case 4:
+								HEAP8[(p + i) >> 0] = result[i] ? 1 : 0;
+								break;
+						}
 					}
-				}
-				return;
-			} else {
-				try {
-					ret = result.name | 0;
-				} catch (e) {
-					GL.recordError(1280);
-					err(
-						'GL_INVALID_ENUM in glGet' +
+					return;
+				} else {
+					try {
+						ret = result.name | 0;
+					} catch (e) {
+						GL.recordError(1280);
+						err(
+							'GL_INVALID_ENUM in glGet' +
 								type +
 								'v: Unknown object returned from WebGL getParameter(' +
 								name_ +
 								')! (error: ' +
 								e +
 								')'
-					);
-					return;
+						);
+						return;
+					}
 				}
-			}
-			break;
-		default:
-			GL.recordError(1280);
-			err(
-				'GL_INVALID_ENUM in glGet' +
+				break;
+			default:
+				GL.recordError(1280);
+				err(
+					'GL_INVALID_ENUM in glGet' +
 						type +
 						'v: Native code calling glGet' +
 						type +
@@ -7449,23 +7449,23 @@ function emscriptenWebGLGet(name_, p, type) {
 						' of type ' +
 						typeof result +
 						'!'
-			);
-			return;
+				);
+				return;
 		}
 	}
 	switch (type) {
-	case 1:
-		writeI53ToI64(p, ret);
-		break;
-	case 0:
-		HEAP32[p >> 2] = ret;
-		break;
-	case 2:
-		HEAPF32[p >> 2] = ret;
-		break;
-	case 4:
-		HEAP8[p >> 0] = ret ? 1 : 0;
-		break;
+		case 1:
+			writeI53ToI64(p, ret);
+			break;
+		case 0:
+			HEAP32[p >> 2] = ret;
+			break;
+		case 2:
+			HEAPF32[p >> 2] = ret;
+			break;
+		case 4:
+			HEAP8[p >> 0] = ret ? 1 : 0;
+			break;
 	}
 }
 function _emscripten_glGetBooleanv(name_, p) {
@@ -7537,52 +7537,52 @@ function emscriptenWebGLGetIndexed(target, index, data, type) {
 	var result = GLctx['getIndexedParameter'](target, index);
 	var ret;
 	switch (typeof result) {
-	case 'boolean':
-		ret = result ? 1 : 0;
-		break;
-	case 'number':
-		ret = result;
-		break;
-	case 'object':
-		if (result === null) {
-			switch (target) {
-			case 35983:
-			case 35368:
-				ret = 0;
-				break;
-			default: {
+		case 'boolean':
+			ret = result ? 1 : 0;
+			break;
+		case 'number':
+			ret = result;
+			break;
+		case 'object':
+			if (result === null) {
+				switch (target) {
+					case 35983:
+					case 35368:
+						ret = 0;
+						break;
+					default: {
+						GL.recordError(1280);
+						return;
+					}
+				}
+			} else if (result instanceof WebGLBuffer) {
+				ret = result.name | 0;
+			} else {
 				GL.recordError(1280);
 				return;
 			}
-			}
-		} else if (result instanceof WebGLBuffer) {
-			ret = result.name | 0;
-		} else {
+			break;
+		default:
 			GL.recordError(1280);
 			return;
-		}
-		break;
-	default:
-		GL.recordError(1280);
-		return;
 	}
 	switch (type) {
-	case 1:
-		writeI53ToI64(data, ret);
-		break;
-	case 0:
-		HEAP32[data >> 2] = ret;
-		break;
-	case 2:
-		HEAPF32[data >> 2] = ret;
-		break;
-	case 4:
-		HEAP8[data >> 0] = ret ? 1 : 0;
-		break;
-	default:
-		throw (
-			'internal emscriptenWebGLGetIndexed() error, bad type: ' + type
-		);
+		case 1:
+			writeI53ToI64(data, ret);
+			break;
+		case 0:
+			HEAP32[data >> 2] = ret;
+			break;
+		case 2:
+			HEAPF32[data >> 2] = ret;
+			break;
+		case 4:
+			HEAP8[data >> 0] = ret ? 1 : 0;
+			break;
+		default:
+			throw (
+				'internal emscriptenWebGLGetIndexed() error, bad type: ' + type
+			);
 	}
 }
 function _emscripten_glGetInteger64i_v(target, index, data) {
@@ -7861,52 +7861,52 @@ function _emscripten_glGetString(name_) {
 	if (GL.stringCache[name_]) return GL.stringCache[name_];
 	var ret;
 	switch (name_) {
-	case 7939:
-		var exts = GLctx.getSupportedExtensions() || [];
-		exts = exts.concat(
-			exts.map(function (e) {
-				return 'GL_' + e;
-			})
-		);
-		ret = stringToNewUTF8(exts.join(' '));
-		break;
-	case 7936:
-	case 7937:
-	case 37445:
-	case 37446:
-		var s = GLctx.getParameter(name_);
-		if (!s) {
-			GL.recordError(1280);
-		}
-		ret = stringToNewUTF8(s);
-		break;
-	case 7938:
-		var glVersion = GLctx.getParameter(7938);
-		if (GL.currentContext.version >= 2)
-			glVersion = 'OpenGL ES 3.0 (' + glVersion + ')';
-		else {
-			glVersion = 'OpenGL ES 2.0 (' + glVersion + ')';
-		}
-		ret = stringToNewUTF8(glVersion);
-		break;
-	case 35724:
-		var glslVersion = GLctx.getParameter(35724);
-		var ver_re = /^WebGL GLSL ES ([0-9]\.[0-9][0-9]?)(?:$| .*)/;
-		var ver_num = glslVersion.match(ver_re);
-		if (ver_num !== null) {
-			if (ver_num[1].length == 3) ver_num[1] = ver_num[1] + '0';
-			glslVersion =
+		case 7939:
+			var exts = GLctx.getSupportedExtensions() || [];
+			exts = exts.concat(
+				exts.map(function (e) {
+					return 'GL_' + e;
+				})
+			);
+			ret = stringToNewUTF8(exts.join(' '));
+			break;
+		case 7936:
+		case 7937:
+		case 37445:
+		case 37446:
+			var s = GLctx.getParameter(name_);
+			if (!s) {
+				GL.recordError(1280);
+			}
+			ret = stringToNewUTF8(s);
+			break;
+		case 7938:
+			var glVersion = GLctx.getParameter(7938);
+			if (GL.currentContext.version >= 2)
+				glVersion = 'OpenGL ES 3.0 (' + glVersion + ')';
+			else {
+				glVersion = 'OpenGL ES 2.0 (' + glVersion + ')';
+			}
+			ret = stringToNewUTF8(glVersion);
+			break;
+		case 35724:
+			var glslVersion = GLctx.getParameter(35724);
+			var ver_re = /^WebGL GLSL ES ([0-9]\.[0-9][0-9]?)(?:$| .*)/;
+			var ver_num = glslVersion.match(ver_re);
+			if (ver_num !== null) {
+				if (ver_num[1].length == 3) ver_num[1] = ver_num[1] + '0';
+				glslVersion =
 					'OpenGL ES GLSL ES ' +
 					ver_num[1] +
 					' (' +
 					glslVersion +
 					')';
-		}
-		ret = stringToNewUTF8(glslVersion);
-		break;
-	default:
-		GL.recordError(1280);
-		return 0;
+			}
+			ret = stringToNewUTF8(glslVersion);
+			break;
+		default:
+			GL.recordError(1280);
+			return 0;
 	}
 	GL.stringCache[name_] = ret;
 	return ret;
@@ -7925,25 +7925,25 @@ function _emscripten_glGetStringi(name, index) {
 		return stringiCache[index];
 	}
 	switch (name) {
-	case 7939:
-		var exts = GLctx.getSupportedExtensions() || [];
-		exts = exts.concat(
-			exts.map(function (e) {
-				return 'GL_' + e;
-			})
-		);
-		exts = exts.map(function (e) {
-			return stringToNewUTF8(e);
-		});
-		stringiCache = GL.stringiCache[name] = exts;
-		if (index < 0 || index >= stringiCache.length) {
-			GL.recordError(1281);
+		case 7939:
+			var exts = GLctx.getSupportedExtensions() || [];
+			exts = exts.concat(
+				exts.map(function (e) {
+					return 'GL_' + e;
+				})
+			);
+			exts = exts.map(function (e) {
+				return stringToNewUTF8(e);
+			});
+			stringiCache = GL.stringiCache[name] = exts;
+			if (index < 0 || index >= stringiCache.length) {
+				GL.recordError(1281);
+				return 0;
+			}
+			return stringiCache[index];
+		default:
+			GL.recordError(1280);
 			return 0;
-		}
-		return stringiCache[index];
-	default:
-		GL.recordError(1280);
-		return 0;
 	}
 }
 function _emscripten_glGetSynciv(sync, pname, bufSize, length, values) {
@@ -8053,22 +8053,22 @@ function emscriptenWebGLGetUniform(program, location, params, type) {
 	var data = GLctx.getUniform(GL.programs[program], GL.uniforms[location]);
 	if (typeof data == 'number' || typeof data == 'boolean') {
 		switch (type) {
-		case 0:
-			HEAP32[params >> 2] = data;
-			break;
-		case 2:
-			HEAPF32[params >> 2] = data;
-			break;
+			case 0:
+				HEAP32[params >> 2] = data;
+				break;
+			case 2:
+				HEAPF32[params >> 2] = data;
+				break;
 		}
 	} else {
 		for (var i = 0; i < data.length; i++) {
 			switch (type) {
-			case 0:
-				HEAP32[(params + i * 4) >> 2] = data[i];
-				break;
-			case 2:
-				HEAPF32[(params + i * 4) >> 2] = data[i];
-				break;
+				case 0:
+					HEAP32[(params + i * 4) >> 2] = data[i];
+					break;
+				case 2:
+					HEAPF32[(params + i * 4) >> 2] = data[i];
+					break;
 			}
 		}
 	}
@@ -8097,28 +8097,28 @@ function emscriptenWebGLGetVertexAttrib(index, pname, params, type) {
 		HEAP32[params >> 2] = data && data['name'];
 	} else if (typeof data == 'number' || typeof data == 'boolean') {
 		switch (type) {
-		case 0:
-			HEAP32[params >> 2] = data;
-			break;
-		case 2:
-			HEAPF32[params >> 2] = data;
-			break;
-		case 5:
-			HEAP32[params >> 2] = Math.fround(data);
-			break;
+			case 0:
+				HEAP32[params >> 2] = data;
+				break;
+			case 2:
+				HEAPF32[params >> 2] = data;
+				break;
+			case 5:
+				HEAP32[params >> 2] = Math.fround(data);
+				break;
 		}
 	} else {
 		for (var i = 0; i < data.length; i++) {
 			switch (type) {
-			case 0:
-				HEAP32[(params + i * 4) >> 2] = data[i];
-				break;
-			case 2:
-				HEAPF32[(params + i * 4) >> 2] = data[i];
-				break;
-			case 5:
-				HEAP32[(params + i * 4) >> 2] = Math.fround(data[i]);
-				break;
+				case 0:
+					HEAP32[(params + i * 4) >> 2] = data[i];
+					break;
+				case 2:
+					HEAPF32[(params + i * 4) >> 2] = data[i];
+					break;
+				case 5:
+					HEAP32[(params + i * 4) >> 2] = Math.fround(data[i]);
+					break;
 			}
 		}
 	}
@@ -8510,12 +8510,12 @@ function _emscripten_glTexImage2D(
 		type,
 		pixels
 			? emscriptenWebGLGetTexPixelData(
-				type,
-				format,
-				width,
-				height,
-				pixels,
-				internalFormat
+					type,
+					format,
+					width,
+					height,
+					pixels,
+					internalFormat
 			  )
 			: null
 	);
@@ -9168,8 +9168,8 @@ function _emscripten_sample_gamepad_data() {
 	return (JSEvents.lastGamepadState = navigator.getGamepads
 		? navigator.getGamepads()
 		: navigator.webkitGetGamepads
-			? navigator.webkitGetGamepads()
-			: null)
+		? navigator.webkitGetGamepads()
+		: null)
 		? 0
 		: -1;
 }
@@ -10207,18 +10207,18 @@ function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
 			+Math_abs(tempDouble) >= 1
 				? tempDouble > 0
 					? (Math_min(
-						+Math_floor(tempDouble / 4294967296),
-						4294967295
+							+Math_floor(tempDouble / 4294967296),
+							4294967295
 					  ) |
 							0) >>>
 					  0
 					: ~~+Math_ceil(
-						(tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+							(tempDouble - +(~~tempDouble >>> 0)) / 4294967296
 					  ) >>> 0
 				: 0)
 		]),
-		(HEAP32[newOffset >> 2] = tempI64[0]),
-		(HEAP32[(newOffset + 4) >> 2] = tempI64[1]);
+			(HEAP32[newOffset >> 2] = tempI64[0]),
+			(HEAP32[(newOffset + 4) >> 2] = tempI64[1]);
 		if (stream.getdents && offset === 0 && whence === 0)
 			stream.getdents = null;
 		return 0;
@@ -10518,52 +10518,52 @@ function _glGetString(name_) {
 	if (GL.stringCache[name_]) return GL.stringCache[name_];
 	var ret;
 	switch (name_) {
-	case 7939:
-		var exts = GLctx.getSupportedExtensions() || [];
-		exts = exts.concat(
-			exts.map(function (e) {
-				return 'GL_' + e;
-			})
-		);
-		ret = stringToNewUTF8(exts.join(' '));
-		break;
-	case 7936:
-	case 7937:
-	case 37445:
-	case 37446:
-		var s = GLctx.getParameter(name_);
-		if (!s) {
-			GL.recordError(1280);
-		}
-		ret = stringToNewUTF8(s);
-		break;
-	case 7938:
-		var glVersion = GLctx.getParameter(7938);
-		if (GL.currentContext.version >= 2)
-			glVersion = 'OpenGL ES 3.0 (' + glVersion + ')';
-		else {
-			glVersion = 'OpenGL ES 2.0 (' + glVersion + ')';
-		}
-		ret = stringToNewUTF8(glVersion);
-		break;
-	case 35724:
-		var glslVersion = GLctx.getParameter(35724);
-		var ver_re = /^WebGL GLSL ES ([0-9]\.[0-9][0-9]?)(?:$| .*)/;
-		var ver_num = glslVersion.match(ver_re);
-		if (ver_num !== null) {
-			if (ver_num[1].length == 3) ver_num[1] = ver_num[1] + '0';
-			glslVersion =
+		case 7939:
+			var exts = GLctx.getSupportedExtensions() || [];
+			exts = exts.concat(
+				exts.map(function (e) {
+					return 'GL_' + e;
+				})
+			);
+			ret = stringToNewUTF8(exts.join(' '));
+			break;
+		case 7936:
+		case 7937:
+		case 37445:
+		case 37446:
+			var s = GLctx.getParameter(name_);
+			if (!s) {
+				GL.recordError(1280);
+			}
+			ret = stringToNewUTF8(s);
+			break;
+		case 7938:
+			var glVersion = GLctx.getParameter(7938);
+			if (GL.currentContext.version >= 2)
+				glVersion = 'OpenGL ES 3.0 (' + glVersion + ')';
+			else {
+				glVersion = 'OpenGL ES 2.0 (' + glVersion + ')';
+			}
+			ret = stringToNewUTF8(glVersion);
+			break;
+		case 35724:
+			var glslVersion = GLctx.getParameter(35724);
+			var ver_re = /^WebGL GLSL ES ([0-9]\.[0-9][0-9]?)(?:$| .*)/;
+			var ver_num = glslVersion.match(ver_re);
+			if (ver_num !== null) {
+				if (ver_num[1].length == 3) ver_num[1] = ver_num[1] + '0';
+				glslVersion =
 					'OpenGL ES GLSL ES ' +
 					ver_num[1] +
 					' (' +
 					glslVersion +
 					')';
-		}
-		ret = stringToNewUTF8(glslVersion);
-		break;
-	default:
-		GL.recordError(1280);
-		return 0;
+			}
+			ret = stringToNewUTF8(glslVersion);
+			break;
+		default:
+			GL.recordError(1280);
+			return 0;
 	}
 	GL.stringCache[name_] = ret;
 	return ret;
@@ -10582,25 +10582,25 @@ function _glGetStringi(name, index) {
 		return stringiCache[index];
 	}
 	switch (name) {
-	case 7939:
-		var exts = GLctx.getSupportedExtensions() || [];
-		exts = exts.concat(
-			exts.map(function (e) {
-				return 'GL_' + e;
-			})
-		);
-		exts = exts.map(function (e) {
-			return stringToNewUTF8(e);
-		});
-		stringiCache = GL.stringiCache[name] = exts;
-		if (index < 0 || index >= stringiCache.length) {
-			GL.recordError(1281);
+		case 7939:
+			var exts = GLctx.getSupportedExtensions() || [];
+			exts = exts.concat(
+				exts.map(function (e) {
+					return 'GL_' + e;
+				})
+			);
+			exts = exts.map(function (e) {
+				return stringToNewUTF8(e);
+			});
+			stringiCache = GL.stringiCache[name] = exts;
+			if (index < 0 || index >= stringiCache.length) {
+				GL.recordError(1281);
+				return 0;
+			}
+			return stringiCache[index];
+		default:
+			GL.recordError(1280);
 			return 0;
-		}
-		return stringiCache[index];
-	default:
-		GL.recordError(1280);
-		return 0;
 	}
 }
 function _glGetUniformLocation(program, name) {
@@ -10745,12 +10745,12 @@ function _glTexImage2D(
 		type,
 		pixels
 			? emscriptenWebGLGetTexPixelData(
-				type,
-				format,
-				width,
-				height,
-				pixels,
-				internalFormat
+					type,
+					format,
+					width,
+					height,
+					pixels,
+					internalFormat
 			  )
 			: null
 	);
@@ -11117,20 +11117,20 @@ function _strftime(s, maxsize, format, tm) {
 	}
 	function getFirstWeekStartDate(janFourth) {
 		switch (janFourth.getDay()) {
-		case 0:
-			return new Date(janFourth.getFullYear() - 1, 11, 29);
-		case 1:
-			return janFourth;
-		case 2:
-			return new Date(janFourth.getFullYear(), 0, 3);
-		case 3:
-			return new Date(janFourth.getFullYear(), 0, 2);
-		case 4:
-			return new Date(janFourth.getFullYear(), 0, 1);
-		case 5:
-			return new Date(janFourth.getFullYear() - 1, 11, 31);
-		case 6:
-			return new Date(janFourth.getFullYear() - 1, 11, 30);
+			case 0:
+				return new Date(janFourth.getFullYear() - 1, 11, 29);
+			case 1:
+				return janFourth;
+			case 2:
+				return new Date(janFourth.getFullYear(), 0, 3);
+			case 3:
+				return new Date(janFourth.getFullYear(), 0, 2);
+			case 4:
+				return new Date(janFourth.getFullYear(), 0, 1);
+			case 5:
+				return new Date(janFourth.getFullYear() - 1, 11, 31);
+			case 6:
+				return new Date(janFourth.getFullYear() - 1, 11, 30);
 		}
 	}
 	function getWeekBasedYear(date) {
@@ -11291,10 +11291,10 @@ function _strftime(s, maxsize, format, tm) {
 				janFirst.getDay() === 1
 					? janFirst
 					: __addDays(
-						janFirst,
-						janFirst.getDay() === 0
-							? 1
-							: 7 - janFirst.getDay() + 1
+							janFirst,
+							janFirst.getDay() === 0
+								? 1
+								: 7 - janFirst.getDay() + 1
 					  );
 			var endDate = new Date(
 				date.tm_year + 1900,

@@ -18,7 +18,7 @@ class Settings {
 	attachEvents() {
 		let settings_self = this;
 		Array.from(
-			document.querySelectorAll('input[name=\'stun-privacy\']')
+			document.querySelectorAll("input[name='stun-privacy']")
 		).forEach((radio) => {
 			radio.addEventListener('change', (e) => {
 				if (

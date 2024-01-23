@@ -3,12 +3,12 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
 	if (identifier) {
 		if (identifier.indexOf('@saito') == -1) {
 			txt =
-				'<span style=\'color:var(--saito-secondary);\'>' +
+				"<span style='color:var(--saito-secondary);'>" +
 				identifier +
 				'@saito</span>';
 		} else {
 			txt =
-				'<span class=\'pending_registration\' style=\'color:var(--saito-secondary);\'>' +
+				"<span class='pending_registration' style='color:var(--saito-secondary);'>" +
 				identifier +
 				'</span>';
 		}

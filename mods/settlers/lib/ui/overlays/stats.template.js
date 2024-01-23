@@ -17,8 +17,8 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
 
 	let html = `
       <div class="settlers-stats-overlay ${
-	players_count >= 3 ? `vp-3p ` : ``
-}saitoa">`;
+			players_count >= 3 ? `vp-3p ` : ``
+		}saitoa">`;
 
 	//Fucking Dice
 	html += `<div class="settlers-state-container">
@@ -34,8 +34,8 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
 				: 'never_rolled'
 		}" data-dice-rolls="${i}" style="height:${bar_height}rem;">
                       <div class="settlers-dice-count">${
-	stats.mod.game.stats.dice[i]
-}</div>`;
+							stats.mod.game.stats.dice[i]
+						}</div>`;
 
 		for (let j = 0; j < players_count; j++) {
 			let player_bar_height =
@@ -95,43 +95,43 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
                         <div class="settlers-stats-vp-count">${numVil}</div>
                       </div>
                       <div class="settlers-stats-vp settlers-stats-city${
-	numCity ? '' : ' no-vp'
-}" title="City">
+							numCity ? '' : ' no-vp'
+						}" title="City">
                         <img src="/settlers/img/icons/city.png">
                         <div class="settlers-stats-vp-count">${numCity}</div>
                         <div class="settlers-stats-multiplier">&times;2</div>
                       </div>
                       <div class="settlers-stats-vp settlers-stats-vpc${
-	stats.mod.game.state.players[player].vpc
-		? ''
-		: ' no-vp'
-}" title="Victory Point Card">${
-	stats.mod.vp.img
-} <div class="settlers-stats-vp-count">${
-	stats.mod.game.state.players[player].vpc
-}</div></div>
+							stats.mod.game.state.players[player].vpc
+								? ''
+								: ' no-vp'
+						}" title="Victory Point Card">${
+			stats.mod.vp.img
+		} <div class="settlers-stats-vp-count">${
+			stats.mod.game.state.players[player].vpc
+		}</div></div>
                       <div class="settlers-stats-vp settlers-stats-largest-road${
-	stats.mod.game.state.longestRoad.player ==
+							stats.mod.game.state.longestRoad.player ==
 							player + 1
-		? ''
-		: ' no-vp'
-}" title="Largest Road">
+								? ''
+								: ' no-vp'
+						}" title="Largest Road">
                         ${stats.mod.longest.svg}
                         <div class="settlers-stats-vp-count">${
-	stats.mod.game.state.players[player].road
-}</div>
+							stats.mod.game.state.players[player].road
+						}</div>
                         <div class="settlers-stats-multiplier">+2</div>
                       </div>
                       <div class="settlers-stats-vp settlers-stats-largest-army${
-	stats.mod.game.state.largestArmy.player ==
+							stats.mod.game.state.largestArmy.player ==
 							player + 1
-		? ''
-		: ' no-vp'
-}" title="Largest Army">
+								? ''
+								: ' no-vp'
+						}" title="Largest Army">
                         ${stats.mod.s.img}
                         <div class="settlers-stats-vp-count">${
-	stats.mod.game.state.players[player].knights
-}</div>
+							stats.mod.game.state.players[player].knights
+						}</div>
                         <div class="settlers-stats-multiplier">+2</div>
                       </div>
                     </div>`;

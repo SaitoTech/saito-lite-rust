@@ -219,7 +219,7 @@ class SettingsAppspace {
 					e
 				) => {
 					let confirmation = await sconfirm(
-						'This will clear your browser\'s DB, proceed cautiously'
+						"This will clear your browser's DB, proceed cautiously"
 					);
 					if (confirmation) {
 						localforage

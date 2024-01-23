@@ -472,7 +472,7 @@ class Chessgame extends GameTemplate {
 	}
 
 	updateBoard(position) {
-		console.log('MOVING OPPONENT\'s PIECE');
+		console.log("MOVING OPPONENT's PIECE");
 
 		this.engine.load(position);
 		this.board.position(position, true);
@@ -793,10 +793,10 @@ class Chessgame extends GameTemplate {
 
 	colours(x) {
 		switch (x) {
-		case 'w':
-			return 'white';
-		case 'b':
-			return 'black';
+			case 'w':
+				return 'white';
+			case 'b':
+				return 'black';
 		}
 
 		return;
@@ -804,18 +804,18 @@ class Chessgame extends GameTemplate {
 
 	pieces(x) {
 		switch (x) {
-		case 'p':
-			return 'Pawn';
-		case 'r':
-			return 'Rook';
-		case 'n':
-			return 'Knight';
-		case 'b':
-			return 'Bishop';
-		case 'q':
-			return 'Queen';
-		case 'k':
-			return 'King';
+			case 'p':
+				return 'Pawn';
+			case 'r':
+				return 'Rook';
+			case 'n':
+				return 'Knight';
+			case 'b':
+				return 'Bishop';
+			case 'q':
+				return 'Queen';
+			case 'k':
+				return 'King';
 		}
 
 		return;

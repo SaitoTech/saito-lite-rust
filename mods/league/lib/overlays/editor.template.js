@@ -12,8 +12,8 @@ module.exports = (app, mod, league) => {
 		league.admin ? 'League' : 'Game'
 	} Description</div>
      <div class="box description" contenteditable="true">${
-	league.description
-}</div>
+			league.description
+		}</div>
      <button type="button" class="submit_btn saito-button saito-button-primary">Update</button>
      </div>`;
 

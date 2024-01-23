@@ -5,8 +5,8 @@ module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
       <form>
         <div class="league-wizard-game-container">
           <div class="league-wizard-game-image"><img class="league-wizard-game-thumbnail" src="${
-	game_mod.respondTo('arcade-games').image
-}"></div>
+				game_mod.respondTo('arcade-games').image
+			}"></div>
           <div class="leaguee-wizard-game-details  rs-create-game-desc-wrapper">
             <div class="league-wizard-game-name">
               <input type="text" id="league-name" placeholder="Name your league..." />

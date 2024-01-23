@@ -257,7 +257,7 @@ class Recovery extends ModTemplate {
 			return 0;
 		}
 		if (this.app.BROWSER == 1) {
-			console.warn('Browsers don\'t support backup/recovery');
+			console.warn("Browsers don't support backup/recovery");
 			return 0;
 		}
 

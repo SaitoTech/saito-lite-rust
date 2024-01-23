@@ -70,15 +70,15 @@ function switch_display_mode(dmode, elementID) {
 							tfld6 +
 							'\')" onmouseover="tip(event,\'' +
 							tfld1 +
-							'\',\'' +
+							"','" +
 							tfld2 +
-							'\',\'' +
+							"','" +
 							tfld4 +
-							'\',\'' +
+							"','" +
 							tfld3 +
-							'\',\'' +
+							"','" +
 							tfld5 +
-							'\',\'' +
+							"','" +
 							tfld6 +
 							'\')" onmouseout="htip()">' +
 							tfld4 +
@@ -94,15 +94,15 @@ function switch_display_mode(dmode, elementID) {
 							tfld6 +
 							'\')" onmouseover="tip(event,\'' +
 							tfld1 +
-							'\',\'' +
+							"','" +
 							tfld2 +
-							'\',\'' +
+							"','" +
 							tfld3 +
-							'\',\'' +
+							"','" +
 							tfld4 +
-							'\',\'' +
+							"','" +
 							tfld5 +
-							'\',\'' +
+							"','" +
 							tfld6 +
 							'\')" onmouseout="htip()">' +
 							tfld3 +
@@ -121,15 +121,15 @@ function switch_display_mode(dmode, elementID) {
 							tfld6 +
 							'\')" onmouseover="tip(event,\'' +
 							tfld1 +
-							'\',\'' +
+							"','" +
 							tfld2 +
-							'\',\'' +
+							"','" +
 							tfld4 +
-							'\',\'' +
+							"','" +
 							tfld3 +
-							'\',\'' +
+							"','" +
 							tfld5 +
-							'\',\'' +
+							"','" +
 							tfld6 +
 							'\')" onmouseout="htip()">' +
 							tfld4 +
@@ -145,15 +145,15 @@ function switch_display_mode(dmode, elementID) {
 							tfld6 +
 							'\')" onmouseover="tip(event,\'' +
 							tfld1 +
-							'\',\'' +
+							"','" +
 							tfld2 +
-							'\',\'' +
+							"','" +
 							tfld3 +
-							'\',\'' +
+							"','" +
 							tfld4 +
-							'\',\'' +
+							"','" +
 							tfld5 +
-							'\',\'' +
+							"','" +
 							tfld6 +
 							'\')" onmouseout="htip()">' +
 							tfld3 +
@@ -172,15 +172,15 @@ function switch_display_mode(dmode, elementID) {
 							tfld6 +
 							'\')" onmouseover="tip(event,\'' +
 							tfld1 +
-							'\',\'' +
+							"','" +
 							tfld2 +
-							'\',\'' +
+							"','" +
 							tfld3 +
-							'\',\'' +
+							"','" +
 							tfld4 +
-							'\',\'' +
+							"','" +
 							tfld5 +
-							'\',\'' +
+							"','" +
 							tfld6 +
 							'\')" onmouseout="htip()">' +
 							convert_pinyin(tfld2) +
@@ -197,15 +197,15 @@ function switch_display_mode(dmode, elementID) {
 							tfld6 +
 							'\')" onmouseover="tip(event,\'' +
 							tfld1 +
-							'\',\'' +
+							"','" +
 							tfld2 +
-							'\',\'' +
+							"','" +
 							tfld4 +
-							'\',\'' +
+							"','" +
 							tfld3 +
-							'\',\'' +
+							"','" +
 							tfld5 +
-							'\',\'' +
+							"','" +
 							tfld6 +
 							'\')" onmouseout="htip()">' +
 							convert_pinyin(tfld2) +

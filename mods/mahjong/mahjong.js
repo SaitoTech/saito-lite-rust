@@ -667,8 +667,8 @@ class Mahjong extends OnePlayerGameTemplate {
 				num_found > 1 ? 'found' : 'notfound'
 			} ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
                <div class="scoreboard_tile ${
-	num_found > 3 ? 'found' : 'notfound'
-} ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
+					num_found > 3 ? 'found' : 'notfound'
+				} ${tile.toLowerCase()}">${this.returnCardImageHTML(tile)}</div>
        `;
 		}
 		$('#tiles').html(html);
@@ -898,7 +898,7 @@ class Mahjong extends OnePlayerGameTemplate {
 			'Your life will be happy and peaceful',
 			'Bloom where you are planted',
 			'Move in the direction of your dreams',
-			'Help! I\'m being held prisoner in a fortune cookie factory',
+			"Help! I'm being held prisoner in a fortune cookie factory",
 			'The one you love is closer than you think',
 			'In dreams and in love there are no impossibilities'
 		];

@@ -607,18 +607,18 @@ class RedSquare extends ModTemplate {
 			let hash = window.location.hash;
 			if (hash) {
 				switch (hash) {
-				case '#notifications':
-					this.app.connection.emit(
-						'redsquare-notifications-render-request'
-					);
-					break;
-				case '#profile':
-					this.app.connection.emit(
-						'redsquare-profile-render-request'
-					);
-					break;
-				default:
-					break;
+					case '#notifications':
+						this.app.connection.emit(
+							'redsquare-notifications-render-request'
+						);
+						break;
+					case '#profile':
+						this.app.connection.emit(
+							'redsquare-profile-render-request'
+						);
+						break;
+					default:
+						break;
 				}
 			}
 

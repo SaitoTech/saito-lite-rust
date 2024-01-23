@@ -238,18 +238,18 @@ class GameEngine {
 		}
 		if (this.animIndex > 1 && !this.stopped) {
 			switch (evt.keyCode) {
-			case 32:
-				this.jumpAction();
-				break;
-			case 40: // down arrow
-				this.slideAction();
-				break;
-			case 37: // left arrow
-				this.leftAction();
-				break;
-			case 39: // right arrow
-				this.rightAction();
-				break;
+				case 32:
+					this.jumpAction();
+					break;
+				case 40: // down arrow
+					this.slideAction();
+					break;
+				case 37: // left arrow
+					this.leftAction();
+					break;
+				case 39: // right arrow
+					this.rightAction();
+					break;
 			}
 		}
 	}
@@ -864,7 +864,7 @@ class GameEngine {
 	endGame(playerFailed, wrongAnswer, question) {
 		const distance = this.currentZ + this.getDistance();
 		if (this.triviaAnswered && distance > 0) {
-			document.body.style.backgroundImage = 'url(\'./img/background.jpg\')';
+			document.body.style.backgroundImage = "url('./img/background.jpg')";
 			const instructions = document.getElementById('instructions');
 			instructions.style.display = 'block';
 			this.setDistance(distance);
@@ -1096,7 +1096,7 @@ class GameEngine {
 			setTimeout(this.newAnim.bind(this), timeout);
 			this.updateCamera();
 			if (this.animIndex === 1) {
-				document.body.style.backgroundImage = 'url(\'./img/sky.jpg\')';
+				document.body.style.backgroundImage = "url('./img/sky.jpg')";
 				this.triggerCountDown();
 			}
 			if (this.animIndex === 2) {

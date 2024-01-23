@@ -5,8 +5,8 @@ module.exports = DialerTemplate = (app, mod, is_dialing = true) => {
       	<div class="contact"></div>
 
 		<div id="stun-phone-notice" class="stun-phone-notice">${
-	is_dialing ? '' : ' is calling you'
-}</div>`;
+			is_dialing ? '' : ' is calling you'
+		}</div>`;
 
 	if (is_dialing) {
 		html += `<div class="video_switch">

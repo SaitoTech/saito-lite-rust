@@ -38,13 +38,13 @@ module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
 
 		cards += `
             <div class="settlers-dev-card ${
-	card_disable ? 'settlers-card-disabled' : ''
-}" id="${x}">
+				card_disable ? 'settlers-card-disabled' : ''
+			}" id="${x}">
               <img src="${card.img}">
               <div class="settlers-dev-card-title">${card.card}</div>
               <div class="settlers-dev-card-text">${
-	mod.rules[card.action]
-}</div>
+					mod.rules[card.action]
+				}</div>
             </div>
           `;
 	}

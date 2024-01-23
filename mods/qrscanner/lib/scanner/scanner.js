@@ -987,18 +987,18 @@ function Detector(image) {
 		var dimension =
 			((tltrCentersDimension + tlblCentersDimension) >> 1) + 7;
 		switch (dimension & 0x03) {
-		// mod 4
-		case 0:
-			dimension++;
-			break;
+			// mod 4
+			case 0:
+				dimension++;
+				break;
 			// 1? do nothing
 
-		case 2:
-			dimension--;
-			break;
+			case 2:
+				dimension--;
+				break;
 
-		case 3:
-			throw 'Error';
+			case 3:
+				throw 'Error';
 		}
 		return dimension;
 	};
@@ -1347,7 +1347,7 @@ function BitMatrix(width, height) {
 	});
 	this.__defineGetter__('Dimension', function () {
 		if (this.width != this.height) {
-			throw 'Can\'t call getDimension() on a non-square matrix';
+			throw "Can't call getDimension() on a non-square matrix";
 		}
 		return this.width;
 	});
@@ -3103,7 +3103,7 @@ function FinderPatternFinder() {
 		if (startSize < 3) {
 			// Couldn't find enough finder patterns
 			throw (
-				'Couldn\'t find enough finder patterns (found ' + startSize + ')'
+				"Couldn't find enough finder patterns (found " + startSize + ')'
 			);
 		}
 
@@ -3603,7 +3603,7 @@ function AlignmentPatternFinder(
 			return this.possibleCenters[0];
 		}
 
-		throw 'Couldn\'t find enough alignment patterns';
+		throw "Couldn't find enough alignment patterns";
 	};
 }
 
@@ -3899,32 +3899,32 @@ function QRCodeDataBlockReader(blocks, version, numErrorCorrectionCode) {
 				var dataLength = this.getDataLength(mode);
 				if (dataLength < 1) throw 'Invalid data length: ' + dataLength;
 				switch (mode) {
-				case MODE_NUMBER:
-					var temp_str = this.getFigureString(dataLength);
-					var ta = new Array(temp_str.length);
-					for (var j = 0; j < temp_str.length; j++)
-						ta[j] = temp_str.charCodeAt(j);
-					output.push(ta);
-					break;
+					case MODE_NUMBER:
+						var temp_str = this.getFigureString(dataLength);
+						var ta = new Array(temp_str.length);
+						for (var j = 0; j < temp_str.length; j++)
+							ta[j] = temp_str.charCodeAt(j);
+						output.push(ta);
+						break;
 
-				case MODE_ROMAN_AND_NUMBER:
-					var temp_str = this.getRomanAndFigureString(dataLength);
-					var ta = new Array(temp_str.length);
-					for (var j = 0; j < temp_str.length; j++)
-						ta[j] = temp_str.charCodeAt(j);
-					output.push(ta);
-					break;
+					case MODE_ROMAN_AND_NUMBER:
+						var temp_str = this.getRomanAndFigureString(dataLength);
+						var ta = new Array(temp_str.length);
+						for (var j = 0; j < temp_str.length; j++)
+							ta[j] = temp_str.charCodeAt(j);
+						output.push(ta);
+						break;
 
-				case MODE_8BIT_BYTE:
-					var temp_sbyteArray3 =
+					case MODE_8BIT_BYTE:
+						var temp_sbyteArray3 =
 							this.get8bitByteArray(dataLength);
-					output.push(temp_sbyteArray3);
-					break;
+						output.push(temp_sbyteArray3);
+						break;
 
-				case MODE_KANJI:
-					var temp_str = this.getKanjiString(dataLength);
-					output.push(temp_str);
-					break;
+					case MODE_KANJI:
+						var temp_str = this.getKanjiString(dataLength);
+						output.push(temp_str);
+						break;
 				}
 			}
 		} while (true);

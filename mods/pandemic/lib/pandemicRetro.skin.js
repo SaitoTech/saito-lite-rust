@@ -37,14 +37,14 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 
 	getVirusName(virus) {
 		switch (virus) {
-		case 'red':
-			return 'cyan';
-		case 'blue':
-			return 'red';
-		case 'black':
-			return 'magenta';
-		case 'yellow':
-			return 'yellow';
+			case 'red':
+				return 'cyan';
+			case 'blue':
+				return 'red';
+			case 'black':
+				return 'magenta';
+			case 'yellow':
+				return 'yellow';
 		}
 		return 'unknown';
 	}
@@ -948,8 +948,8 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 		let html = `<div class="scoreboard_virus_group tip">
                     <i class="fas fa-skull"></i>
                     <div class="virus-count ${threat_level}">: ${
-	8 - outbreaks
-}</div>
+			8 - outbreaks
+		}</div>
                     <div class="tiptext">The game will end after 8 outbreaks</div>
                   </div>`;
 		this.mod.scoreboard.append(html);

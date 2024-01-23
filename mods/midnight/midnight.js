@@ -912,8 +912,8 @@ class Midnight extends GameTemplate {
 			combatHTML += `<div class="result">
                        <div class="player_skills">
                          <div>Your attack: ${myAttack}${
-	attack_modifier ? ` (includes ${attack_modifier} modifier)` : ''
-}</div>
+				attack_modifier ? ` (includes ${attack_modifier} modifier)` : ''
+			}</div>
                          <div>Their attack: ${enemyAttack}</div>
                        </div>`;
 			if (myAttack >= enemyAttack) {

@@ -581,10 +581,10 @@ class Wordblocks extends GameTemplate {
 					let html = `
             <div class="tile-submit-controls">
               <div class="playable ${
-	wordblocks_self.checkWord(word)
-		? 'valid_word'
-		: 'invalid_word'
-}">${word}</div>
+					wordblocks_self.checkWord(word)
+						? 'valid_word'
+						: 'invalid_word'
+				}">${word}</div>
               <div class="action" id="submit"><i class="fa fa-paper-plane"></i> Submit</div>
               <div class="action" id="cancel"><i class="far fa-window-close"></i> Cancel</div>
             </div>`;
@@ -2057,18 +2057,18 @@ class Wordblocks extends GameTemplate {
 				switch (
 					tmpb //Word_bonuses can be combined...maybe
 				) {
-				case '3W':
-					word_bonus = word_bonus * 3;
-					break;
-				case '2W':
-					word_bonus = word_bonus * 2;
-					break;
-				case '3L':
-					letter_bonus = 3;
-					break;
-				case '2L':
-					letter_bonus = 2;
-					break;
+					case '3W':
+						word_bonus = word_bonus * 3;
+						break;
+					case '2W':
+						word_bonus = word_bonus * 2;
+						break;
+					case '3L':
+						letter_bonus = 3;
+						break;
+					case '2L':
+						letter_bonus = 2;
+						break;
 				}
 				tilesUsed += 1;
 			} else {

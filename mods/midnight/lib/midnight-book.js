@@ -9,12 +9,12 @@ module.exports = (game_mod) => {
               but it's the best place in Allansia for picking up all kinds of gossip and rumours. Where will you try first?`,
 		choices: [
 			{
-				option: 'The Merchant\'s Guild',
+				option: "The Merchant's Guild",
 				command: 'page\t129',
 				event: '129'
 			},
 			{
-				option: 'Brass\'s house',
+				option: "Brass's house",
 				command: 'page\t156',
 				event: '156'
 			},
@@ -94,7 +94,7 @@ module.exports = (game_mod) => {
 				filter: true
 			},
 			{
-				option: 'I\'m not using it',
+				option: "I'm not using it",
 				command: 'page\t257'
 			}
 		]
@@ -321,7 +321,7 @@ module.exports = (game_mod) => {
              you dodge into an alley which runs down one side of the building, looking for some way in that isn’t quite so exposed.`,
 		choices: [
 			{
-				option: 'Go through the \'not quite exposed\' way',
+				option: "Go through the 'not quite exposed' way",
 				command: 'page\t210'
 			}
 		]
@@ -392,12 +392,12 @@ module.exports = (game_mod) => {
 				command: 'page\t090'
 			},
 			{
-				option: 'Search for clues in Brass’s house (if you haven\'t already)',
+				option: "Search for clues in Brass’s house (if you haven't already)",
 				command: 'page\t156',
 				event: '156'
 			},
 			{
-				option: 'Visit the Noose (if you haven\'t already)',
+				option: "Visit the Noose (if you haven't already)",
 				command: 'page\t203',
 				event: '203'
 			},
@@ -652,7 +652,7 @@ module.exports = (game_mod) => {
 				event: '129'
 			},
 			{
-				option: 'Visit the Noose (if you haven\'t already)',
+				option: "Visit the Noose (if you haven't already)",
 				command: 'page\t203',
 				event: '203'
 			}
@@ -885,7 +885,7 @@ module.exports = (game_mod) => {
 		instant: ['changestats\tstamina\t-2'],
 		choices: [
 			{
-				option: 'Fight to free yourself from the Scitalis\' coils',
+				option: "Fight to free yourself from the Scitalis' coils",
 				command:
 					'combat\t' +
 					JSON.stringify({
@@ -893,7 +893,7 @@ module.exports = (game_mod) => {
 						attack: {
 							limit: 1,
 							damage: 0,
-							message: 'You free yourself from the snake\'s grip',
+							message: "You free yourself from the snake's grip",
 							reward:
 								'combat\t' +
 								JSON.stringify({
@@ -1124,7 +1124,7 @@ module.exports = (game_mod) => {
              It’s too dangerous to go back to Brass’s house, so you will have to do without any information that you could have gained from there. That leaves you two options.`,
 		choices: [
 			{
-				option: 'Go to the Merchants\' Guild if you have not already done so',
+				option: "Go to the Merchants' Guild if you have not already done so",
 				command: 'page\t129',
 				event: '129'
 			},
@@ -1467,7 +1467,7 @@ module.exports = (game_mod) => {
 				event: '129'
 			},
 			{
-				option: 'Leave the house to check out the Noose (if you haven\'t already)',
+				option: "Leave the house to check out the Noose (if you haven't already)",
 				command: 'page\t203',
 				event: '203'
 			},
@@ -1735,12 +1735,12 @@ module.exports = (game_mod) => {
 				command: 'page\t377'
 			},
 			{
-				option: 'Leave the Merchants\' Guild stealthily and search for clues in Brass\' house (if you haven\'t been there before)',
+				option: "Leave the Merchants' Guild stealthily and search for clues in Brass' house (if you haven't been there before)",
 				command: 'page\t156',
 				event: '156'
 			},
 			{
-				option: 'Visit the Noose if you haven\'t already',
+				option: "Visit the Noose if you haven't already",
 				command: 'page\t203',
 				event: '203'
 			},
@@ -1794,7 +1794,7 @@ module.exports = (game_mod) => {
 				filter: true
 			},
 			{
-				option: 'If you don\'t have the skill',
+				option: "If you don't have the skill",
 				command: 'page\t210',
 				filter: false
 			}
@@ -1940,12 +1940,12 @@ module.exports = (game_mod) => {
 		},
 		choices: [
 			{
-				option: 'Use key marked \'L\'',
+				option: "Use key marked 'L'",
 				command: 'page\t273',
 				key: 'L'
 			},
 			{
-				option: 'Use key marked \'R\'',
+				option: "Use key marked 'R'",
 				command: 'page\t124',
 				key: 'R'
 			},
@@ -2069,7 +2069,7 @@ module.exports = (game_mod) => {
 		text: 'You leave the house quickly and quietly, return through the right to the Market Square. What will you do next?',
 		choices: [
 			{
-				option: 'Go to the Merchants\' Guild (If you haven\'t already)',
+				option: "Go to the Merchants' Guild (If you haven't already)",
 				command: 'page\t129',
 				event: '129'
 			},
@@ -2179,12 +2179,12 @@ module.exports = (game_mod) => {
 				skill: 'lock'
 			},
 			{
-				option: 'Go back via the Market Square to the Merchant\'s Guild (If you haven\'t been there)',
+				option: "Go back via the Market Square to the Merchant's Guild (If you haven't been there)",
 				command: 'page\t129',
 				event: '129'
 			},
 			{
-				option: 'You can\'t do any of these things or don\'t wish to. You might be able to find the hiding-place of the Eye of the Basilisk without any further information, who knows?',
+				option: "You can't do any of these things or don't wish to. You might be able to find the hiding-place of the Eye of the Basilisk without any further information, who knows?",
 				command: 'page\t144'
 			}
 		]
@@ -2206,7 +2206,7 @@ module.exports = (game_mod) => {
 				filter: true
 			},
 			{
-				option: 'You don\'t have the gold or don\'t wish to pay her',
+				option: "You don't have the gold or don't wish to pay her",
 				command: 'page\t064'
 			}
 		]
@@ -2226,7 +2226,7 @@ module.exports = (game_mod) => {
 				filter: true
 			},
 			{
-				option: 'You don\'t have the skill',
+				option: "You don't have the skill",
 				command: 'page\t020',
 				filter: false
 			}
@@ -2406,7 +2406,7 @@ module.exports = (game_mod) => {
 				command: 'page\t075'
 			},
 			{
-				option: 'Ignore it and carry on towards the Merchants\' Guild',
+				option: "Ignore it and carry on towards the Merchants' Guild",
 				command: 'page\t246'
 			}
 		]
@@ -2657,7 +2657,7 @@ module.exports = (game_mod) => {
 				command: 'page\t022'
 			},
 			{
-				option: 'Lord Azzur\'s Palace',
+				option: "Lord Azzur's Palace",
 				command: 'page\t167'
 			},
 			{
@@ -2921,7 +2921,7 @@ module.exports = (game_mod) => {
 				command: 'skill\t324',
 				success: 'You break down the door',
 				failure:
-					'You bruise your shoulder, but the door doesn\'t budge. Lose 1 STAMINA point.',
+					"You bruise your shoulder, but the door doesn't budge. Lose 1 STAMINA point.",
 				penalty: 'changestats\tstamina\t-1',
 				filter: false
 			}
@@ -2948,7 +2948,7 @@ module.exports = (game_mod) => {
 		},
 		choices: [
 			{
-				option: 'Creep out and climb the drainpipe (if you haven\'t already done so)',
+				option: "Creep out and climb the drainpipe (if you haven't already done so)",
 				command: 'page\t225',
 				event: '225'
 			},
@@ -3002,7 +3002,7 @@ module.exports = (game_mod) => {
 		},
 		choices: [
 			{
-				option: 'Try to bribe the guardsmen (if you haven\'t already)',
+				option: "Try to bribe the guardsmen (if you haven't already)",
 				command: 'page\t327',
 				filter: true,
 				event: '327'
@@ -3037,7 +3037,7 @@ module.exports = (game_mod) => {
 				filter: false
 			},
 			{
-				option: 'Give up on the Merchants’ Guild and look for clues in Brass\'s house (If you haven\'t already)',
+				option: "Give up on the Merchants’ Guild and look for clues in Brass's house (If you haven't already)",
 				command: 'page\t156',
 				event: '156'
 			},
@@ -3100,7 +3100,7 @@ module.exports = (game_mod) => {
 		]
 	};
 	book['166a'] = {
-		text: 'The Footpads’ heavy chain almost catches your sword. Who knows what would have happened if you hadn\'t luckily shifted your weight.',
+		text: "The Footpads’ heavy chain almost catches your sword. Who knows what would have happened if you hadn't luckily shifted your weight.",
 		choices: [
 			{
 				option: 'Carry on fighting',
@@ -4374,7 +4374,7 @@ module.exports = (game_mod) => {
 				filter: true
 			},
 			{
-				option: 'You do not have the skill so the door can\'t be opened. Look for information at the Merchants\' Guild, if you haven\'t been there before',
+				option: "You do not have the skill so the door can't be opened. Look for information at the Merchants' Guild, if you haven't been there before",
 				command: 'page\t129',
 				event: '129',
 				filter: true
@@ -4527,7 +4527,7 @@ module.exports = (game_mod) => {
 				command: 'skill\t324',
 				success: 'You break down the door',
 				failure:
-					'You bruise your shoulder, but the door doesn\'t budge. Lose 1 STAMINA point.',
+					"You bruise your shoulder, but the door doesn't budge. Lose 1 STAMINA point.",
 				penalty: 'changestats\tstamina\t-1',
 				filter: false
 			}
@@ -4799,7 +4799,7 @@ module.exports = (game_mod) => {
              without any information that you could have gained from there. That leaves you two options.`,
 		choices: [
 			{
-				option: 'You go to the Merchants\' Guild, if you haven’t already done so',
+				option: "You go to the Merchants' Guild, if you haven’t already done so",
 				command: 'page\t129',
 				event: '129'
 			},
@@ -4867,7 +4867,7 @@ module.exports = (game_mod) => {
 				command: 'skill\t131',
 				success: 'You dodge his first blow',
 				failure:
-					'The guard\'s attack takes you by surprise -- lose 2 STAMINA points',
+					"The guard's attack takes you by surprise -- lose 2 STAMINA points",
 				penalty: 'changestats\tstamina\t-2\t131'
 			}
 		]
@@ -5524,7 +5524,7 @@ module.exports = (game_mod) => {
 		combat: true,
 		choices: [
 			{
-				option: 'Fend off the Spider\'s attack',
+				option: "Fend off the Spider's attack",
 				command:
 					'combat\t' +
 					JSON.stringify({
@@ -5790,7 +5790,7 @@ module.exports = (game_mod) => {
 		combat: true,
 		choices: [
 			{
-				option: 'Dodge the Poltergeist\'s attack',
+				option: "Dodge the Poltergeist's attack",
 				command:
 					'combat\t' +
 					JSON.stringify({
@@ -6807,11 +6807,11 @@ module.exports = (game_mod) => {
 				option: 'Try to open the door',
 				command: 'skill\t295\t2',
 				success: 'You have unlocked the door',
-				failure: 'You couldn\'t open the door',
+				failure: "You couldn't open the door",
 				filter: true
 			},
 			{
-				option: 'You can\'t open the door, and you will have to confine your attention to the desk',
+				option: "You can't open the door, and you will have to confine your attention to the desk",
 				command: 'page\t090'
 			},
 			{

@@ -270,20 +270,20 @@ class DRACOLoader extends Loader {
 					const message = e.data;
 
 					switch (message.type) {
-					case 'decode':
-						worker._callbacks[message.id].resolve(message);
-						break;
+						case 'decode':
+							worker._callbacks[message.id].resolve(message);
+							break;
 
-					case 'error':
-						worker._callbacks[message.id].reject(message);
-						break;
+						case 'error':
+							worker._callbacks[message.id].reject(message);
+							break;
 
-					default:
-						console.error(
-							'THREE.DRACOLoader: Unexpected message, "' +
+						default:
+							console.error(
+								'THREE.DRACOLoader: Unexpected message, "' +
 									message.type +
 									'"'
-						);
+							);
 					}
 				};
 
@@ -335,63 +335,63 @@ function DRACOWorker() {
 		const message = e.data;
 
 		switch (message.type) {
-		case 'init':
-			decoderConfig = message.decoderConfig;
-			decoderPending = new Promise(function (resolve /*, reject*/) {
-				decoderConfig.onModuleLoaded = function (draco) {
-					// Module is Promise-like. Wrap before resolving to avoid loop.
-					resolve({ draco: draco });
-				};
+			case 'init':
+				decoderConfig = message.decoderConfig;
+				decoderPending = new Promise(function (resolve /*, reject*/) {
+					decoderConfig.onModuleLoaded = function (draco) {
+						// Module is Promise-like. Wrap before resolving to avoid loop.
+						resolve({ draco: draco });
+					};
 
-				DracoDecoderModule(decoderConfig); // eslint-disable-line no-undef
-			});
-			break;
+					DracoDecoderModule(decoderConfig); // eslint-disable-line no-undef
+				});
+				break;
 
-		case 'decode':
-			const buffer = message.buffer;
-			const taskConfig = message.taskConfig;
-			decoderPending.then((module) => {
-				const draco = module.draco;
-				const decoder = new draco.Decoder();
-				const decoderBuffer = new draco.DecoderBuffer();
-				decoderBuffer.Init(
-					new Int8Array(buffer),
-					buffer.byteLength
-				);
-
-				try {
-					const geometry = decodeGeometry(
-						draco,
-						decoder,
-						decoderBuffer,
-						taskConfig
+			case 'decode':
+				const buffer = message.buffer;
+				const taskConfig = message.taskConfig;
+				decoderPending.then((module) => {
+					const draco = module.draco;
+					const decoder = new draco.Decoder();
+					const decoderBuffer = new draco.DecoderBuffer();
+					decoderBuffer.Init(
+						new Int8Array(buffer),
+						buffer.byteLength
 					);
 
-					const buffers = geometry.attributes.map(
-						(attr) => attr.array.buffer
-					);
+					try {
+						const geometry = decodeGeometry(
+							draco,
+							decoder,
+							decoderBuffer,
+							taskConfig
+						);
 
-					if (geometry.index)
-						buffers.push(geometry.index.array.buffer);
+						const buffers = geometry.attributes.map(
+							(attr) => attr.array.buffer
+						);
 
-					self.postMessage(
-						{ type: 'decode', id: message.id, geometry },
-						buffers
-					);
-				} catch (error) {
-					console.error(error);
+						if (geometry.index)
+							buffers.push(geometry.index.array.buffer);
 
-					self.postMessage({
-						type: 'error',
-						id: message.id,
-						error: error.message
-					});
-				} finally {
-					draco.destroy(decoderBuffer);
-					draco.destroy(decoder);
-				}
-			});
-			break;
+						self.postMessage(
+							{ type: 'decode', id: message.id, geometry },
+							buffers
+						);
+					} catch (error) {
+						console.error(error);
+
+						self.postMessage({
+							type: 'error',
+							id: message.id,
+							error: error.message
+						});
+					} finally {
+						draco.destroy(decoderBuffer);
+						draco.destroy(decoder);
+					}
+				});
+				break;
 		}
 	};
 
@@ -534,20 +534,20 @@ function DRACOWorker() {
 
 	function getDracoDataType(draco, attributeType) {
 		switch (attributeType) {
-		case Float32Array:
-			return draco.DT_FLOAT32;
-		case Int8Array:
-			return draco.DT_INT8;
-		case Int16Array:
-			return draco.DT_INT16;
-		case Int32Array:
-			return draco.DT_INT32;
-		case Uint8Array:
-			return draco.DT_UINT8;
-		case Uint16Array:
-			return draco.DT_UINT16;
-		case Uint32Array:
-			return draco.DT_UINT32;
+			case Float32Array:
+				return draco.DT_FLOAT32;
+			case Int8Array:
+				return draco.DT_INT8;
+			case Int16Array:
+				return draco.DT_INT16;
+			case Int32Array:
+				return draco.DT_INT32;
+			case Uint8Array:
+				return draco.DT_UINT8;
+			case Uint16Array:
+				return draco.DT_UINT16;
+			case Uint32Array:
+				return draco.DT_UINT32;
 		}
 	}
 }

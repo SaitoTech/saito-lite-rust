@@ -178,7 +178,7 @@ const questions = [
 				correct: true
 			},
 			{
-				answer: 'Prisoners\' Dilemma',
+				answer: "Prisoners' Dilemma",
 				correct: false
 			},
 			{
@@ -275,7 +275,7 @@ const questions = [
 		]
 	},
 	{
-		question: 'What is Saito\'s theoretical max supply?',
+		question: "What is Saito's theoretical max supply?",
 		answers: [
 			{
 				answer: '10 B',
@@ -361,7 +361,7 @@ const questions = [
 	},
 	{
 		question:
-			'How does Saito use a \'fee market\' to incentivize nodes to process transactions?',
+			"How does Saito use a 'fee market' to incentivize nodes to process transactions?",
 		answers: [
 			{
 				answer: 'By creating a competitive market between old and new data',
@@ -397,7 +397,7 @@ const questions = [
 	},
 	{
 		question:
-			'What is the difference between a \'full node\' and a \'lite node\' in Saito blockchain?',
+			"What is the difference between a 'full node' and a 'lite node' in Saito blockchain?",
 		answers: [
 			{
 				answer: 'Full nodes process complete blocks, lite-nodes process SPV blocks',
@@ -414,7 +414,7 @@ const questions = [
 		]
 	},
 	{
-		question: 'How does Saito solve the \'scalability trilemma\'?',
+		question: "How does Saito solve the 'scalability trilemma'?",
 		answers: [
 			{
 				answer: 'By generating cost-of-attack payments that flow to nodes in the network',
@@ -852,7 +852,7 @@ const questions = [
 		]
 	},
 	{
-		question: 'What is the main advantage of Saito\'s \'economic\' solution?',
+		question: "What is the main advantage of Saito's 'economic' solution?",
 		answers: [
 			{
 				answer: 'it eliminates technical problems by eliminating the trade-offs that create them',
@@ -863,14 +863,14 @@ const questions = [
 				correct: false
 			},
 			{
-				answer: 'it fulfills all of Hayek\'s five properties for \'digital gold\'',
+				answer: "it fulfills all of Hayek's five properties for 'digital gold'",
 				correct: false
 			}
 		]
 	},
 	{
 		question:
-			'How does Saito solve the \'Tragedy of the Commons\' problem in permanent ledgers?',
+			"How does Saito solve the 'Tragedy of the Commons' problem in permanent ledgers?",
 		answers: [
 			{
 				answer: 'force block producers to do work before receiving payment',
@@ -1013,10 +1013,10 @@ const questions = [
 	},
 	{
 		question:
-			'Why doesn\'t giving a transaction to another node allow it to compete with you producing blocks?',
+			"Why doesn't giving a transaction to another node allow it to compete with you producing blocks?",
 		answers: [
 			{
-				answer: 'because the receiving node gets less \'work\' from the transaction and still has a payment obligation to the sending node',
+				answer: "because the receiving node gets less 'work' from the transaction and still has a payment obligation to the sending node",
 				correct: true
 			},
 			{
@@ -1094,7 +1094,7 @@ const questions = [
 				correct: false
 			},
 			{
-				answer: 'To replace centralized internet service providers (ISP\'s) with its own nodes',
+				answer: "To replace centralized internet service providers (ISP's) with its own nodes",
 				correct: false
 			}
 		]
@@ -1169,7 +1169,7 @@ const questions = [
 		]
 	},
 	{
-		question: 'What is the Saito team\'s stance on third-party nodes?',
+		question: "What is the Saito team's stance on third-party nodes?",
 		answers: [
 			{
 				answer: 'Welcome if they drive transaction volume',
@@ -1187,7 +1187,7 @@ const questions = [
 	},
 	{
 		question:
-			'What is the Saito team\'s stance on scheduled network upgrades?',
+			"What is the Saito team's stance on scheduled network upgrades?",
 		answers: [
 			{
 				answer: 'Willing to work with third-party nodes on upgrades',

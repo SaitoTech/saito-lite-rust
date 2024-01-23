@@ -48,7 +48,7 @@ class Post {
 
 		this.input.display = 'large';
 
-		this.input.placeholder = 'What\'s happening';
+		this.input.placeholder = "What's happening";
 		if (this.source == 'Retweet') {
 			this.input.placeholder = 'optional comment';
 			this.user.notice =

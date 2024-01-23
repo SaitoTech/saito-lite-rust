@@ -224,24 +224,24 @@ class PeerManager {
 	handleDataChannelMessage(data, peerId) {
 		console.log('STUN: Message from data channel:', data);
 		switch (data) {
-		case 'start-presentation':
-			this.trackIsPresentation = true;
-			this.mod.screen_share = true;
-			break;
-		case 'stop-presentation':
-			this.mod.screen_share = false;
-			this.app.connection.emit('remove-peer-box', 'presentation');
-			this.app.connection.emit('stun-switch-view', 'focus');
-			break;
-		case 'start-recording':
-			siteMessage(
-				`${this.app.keychain.returnUsername(
-					peerId
-				)} is recording the call`,
-				2500
-			);
-		default:
-			break;
+			case 'start-presentation':
+				this.trackIsPresentation = true;
+				this.mod.screen_share = true;
+				break;
+			case 'stop-presentation':
+				this.mod.screen_share = false;
+				this.app.connection.emit('remove-peer-box', 'presentation');
+				this.app.connection.emit('stun-switch-view', 'focus');
+				break;
+			case 'start-recording':
+				siteMessage(
+					`${this.app.keychain.returnUsername(
+						peerId
+					)} is recording the call`,
+					2500
+				);
+			default:
+				break;
 		}
 	}
 

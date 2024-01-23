@@ -68,8 +68,8 @@ module.exports = (app, mod, tweet) => {
 
 	let html = `
         <div class="tweet tweet-${tweet.tx.signature}" data-id="${
-	tweet.tx.signature
-}"${html_markers}>
+		tweet.tx.signature
+	}"${html_markers}>
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">

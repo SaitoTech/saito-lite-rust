@@ -341,7 +341,7 @@ class League extends ModTemplate {
 									this.app.modules.returnActiveModule()?.name
 								) {
 									console.log(
-										'Updated info on this game\'s league: ',
+										"Updated info on this game's league: ",
 										JSON.parse(JSON.stringify(league))
 									);
 								}
@@ -1023,7 +1023,7 @@ class League extends ModTemplate {
 				txmsg.reason?.includes('Wins:') ||
 				txmsg.reason?.includes('Scores: '))
 		) {
-			console.log('Don\'t process');
+			console.log("Don't process");
 			return;
 		}
 

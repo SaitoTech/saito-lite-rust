@@ -497,17 +497,17 @@ class Scotland extends GameTemplate {
 					console.log('Mr X location -- ' + target_id);
 					let hint = '';
 					switch (ticket) {
-					case 'taxi':
-						hint = 'Mr. X was spotted in a taxi...';
-						break;
-					case 'bus':
-						hint = 'Mr. X was spotted in a bus...';
-						break;
-					case 'underground':
-						hint = 'Mr. X was spotted on the underground...';
-						break;
-					default:
-						hint = `Mr. X evaded detection this turn by playing a mystery ticket, he has ${scotland_self.game.state.tickets[pawn]['x']} remaining.`;
+						case 'taxi':
+							hint = 'Mr. X was spotted in a taxi...';
+							break;
+						case 'bus':
+							hint = 'Mr. X was spotted in a bus...';
+							break;
+						case 'underground':
+							hint = 'Mr. X was spotted on the underground...';
+							break;
+						default:
+							hint = `Mr. X evaded detection this turn by playing a mystery ticket, he has ${scotland_self.game.state.tickets[pawn]['x']} remaining.`;
 					}
 
 					if (
@@ -710,11 +710,11 @@ class Scotland extends GameTemplate {
 		let html = `<div class="status-icon-menu">
 
             <div class="menu_icon ${
-	mylocation.taxi.length == 0 ||
+				mylocation.taxi.length == 0 ||
 				this.game.state.tickets[pawn]['taxi'] == 0
-		? 'unavailable'
-		: ''
-}" id="taxi">
+					? 'unavailable'
+					: ''
+			}" id="taxi">
               <i class="menu_icon_icon fas fa-taxi fa-border" style="background-color: gold;"></i>
               <div class="menu-text">
                Taxi: ${this.game.state.tickets[pawn]['taxi']}
@@ -722,27 +722,27 @@ class Scotland extends GameTemplate {
             </div>
 
             <div class="menu_icon ${
-	mylocation.bus.length == 0 ||
+				mylocation.bus.length == 0 ||
 				this.game.state.tickets[pawn]['bus'] == 0
-		? 'unavailable'
-		: ''
-}" id="bus">
+					? 'unavailable'
+					: ''
+			}" id="bus">
               <i class="menu_icon_icon fas fa-bus fa-border"  style="background-color: #4382b5;"></i>
               <div class="menu-text">Bus: ${
-	this.game.state.tickets[pawn]['bus']
-}</div>
+					this.game.state.tickets[pawn]['bus']
+				}</div>
             </div>
 
             <div class="menu_icon ${
-	mylocation.underground.length == 0 ||
+				mylocation.underground.length == 0 ||
 				this.game.state.tickets[pawn]['underground'] == 0
-		? 'unavailable'
-		: ''
-}" id="underground">
+					? 'unavailable'
+					: ''
+			}" id="underground">
                <i class="menu_icon_icon fas fa-subway fa-border"  style="background-color: #be5e2f;"></i>
                <div class="menu-text">U.: ${
-	this.game.state.tickets[pawn]['underground']
-}</div>
+					this.game.state.tickets[pawn]['underground']
+				}</div>
             </div>
             `;
 		if (pawn == this.game.state.numDetectives) {
@@ -751,19 +751,19 @@ class Scotland extends GameTemplate {
 			}" id="mystery">
                 <i class="menu_icon_icon fas fa-mask fa-border"></i>
                 <div class="menu-text">X: ${
-	this.game.state.tickets[pawn]['x']
-}</div>
+					this.game.state.tickets[pawn]['x']
+				}</div>
               </div> 
               <div class="menu_icon ${
-	this.game.state.tickets[pawn]['double'] == 0 ||
+					this.game.state.tickets[pawn]['double'] == 0 ||
 					this.game.state.double_in_action
-		? 'unavailable'
-		: ''
-}" id="double">
+						? 'unavailable'
+						: ''
+				}" id="double">
                 <i class="menu_icon_icon fas fa-angle-double-right fa-border" style="background-color: #062E03;"></i>
                 <div class="menu-text">Double: ${
-	this.game.state.tickets[pawn]['double']
-}</div>
+					this.game.state.tickets[pawn]['double']
+				}</div>
               </div>`;
 		}
 		html += `</div>`;
@@ -1102,23 +1102,23 @@ class Scotland extends GameTemplate {
 			return '<img src="/scotland/img/XPawn.png" class="pawn" />';
 		}
 		switch (pawn_id) {
-		case 0:
-			return '<img src="/scotland/img/Red%20Pawn.png" class="pawn" />';
-			break;
-		case 1:
-			return '<img src="/scotland/img/Yellow%20Pawn.png" class="pawn" />';
-			break;
-		case 2:
-			return '<img src="/scotland/img/Blue%20Pawn.png" class="pawn" />';
-			break;
-		case 3:
-			return '<img src="/scotland/img/Cyan%20Pawn.png" class="pawn" />';
-			break;
-		case 4:
-			return '<img src="/scotland/img/Black%20Pawn.png" class="pawn" />';
-			break;
-		default:
-			console.log('undefined pawn type');
+			case 0:
+				return '<img src="/scotland/img/Red%20Pawn.png" class="pawn" />';
+				break;
+			case 1:
+				return '<img src="/scotland/img/Yellow%20Pawn.png" class="pawn" />';
+				break;
+			case 2:
+				return '<img src="/scotland/img/Blue%20Pawn.png" class="pawn" />';
+				break;
+			case 3:
+				return '<img src="/scotland/img/Cyan%20Pawn.png" class="pawn" />';
+				break;
+			case 4:
+				return '<img src="/scotland/img/Black%20Pawn.png" class="pawn" />';
+				break;
+			default:
+				console.log('undefined pawn type');
 		}
 		return '';
 	}

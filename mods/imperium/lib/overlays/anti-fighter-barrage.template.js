@@ -17,9 +17,9 @@ module.exports = ImperiumAntiFighterBarrageOverlayTemplate = (
 
 	<div class="anti-fighter-barrage-attacker">
 	  <div class="anti-fighter-barrage-attacker-name">${imperium_self.returnFactionName(
-		imperium_self,
-		attacker
-	)}</div>
+			imperium_self,
+			attacker
+		)}</div>
 	  <div class="unit-table small">
   `;
 

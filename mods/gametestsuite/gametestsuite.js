@@ -346,17 +346,17 @@ class GameTestSuite extends GameTemplate {
 		//
 		try {
 			switch (this.gameMode) {
-			case 1:
-				$('#main').html(this.returnCardGameHTML());
-				break;
-			case 2:
-				$('#main').html(this.returnBoardGameHTML());
-				break;
-			case 3:
-				$('#main').html(this.returnHexGameHTML());
-				break;
-			default:
-				$('#main').html(this.returnMainHTML());
+				case 1:
+					$('#main').html(this.returnCardGameHTML());
+					break;
+				case 2:
+					$('#main').html(this.returnBoardGameHTML());
+					break;
+				case 3:
+					$('#main').html(this.returnHexGameHTML());
+					break;
+				default:
+					$('#main').html(this.returnMainHTML());
 			}
 
 			this.addEventsToDom(this.app);
@@ -1166,19 +1166,19 @@ class GameTestSuite extends GameTemplate {
 			);
 
 			switch (this.gameMode) {
-			case 1:
-				document.getElementById('game-cardgame').textContent += '✔';
-				break;
-			case 2:
-				document.getElementById('game-boardgame').textContent +=
+				case 1:
+					document.getElementById('game-cardgame').textContent += '✔';
+					break;
+				case 2:
+					document.getElementById('game-boardgame').textContent +=
 						'✔';
-				break;
-			case 3:
-				document.getElementById('game-hexboard').textContent += '✔';
-				break;
-			default:
-				document.getElementById('game-intro').textContent += '✔';
-				break;
+					break;
+				case 3:
+					document.getElementById('game-hexboard').textContent += '✔';
+					break;
+				default:
+					document.getElementById('game-intro').textContent += '✔';
+					break;
 			}
 
 			let divname = `menu-${this.game.players.length}-player`;

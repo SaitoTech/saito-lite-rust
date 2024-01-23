@@ -1574,901 +1574,901 @@ cycloa.ScriptMachine.prototype.run = function () {
 		if (this.__audio__isNTSCmode) {
 			this.__audio__frameIRQCnt++;
 			switch (this.__audio__frameIRQCnt) {
-			case 1:
-				//
+				case 1:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				break;
-			case 2:
-				//
+					break;
+				case 2:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				//
+					//
 
-				if (
-					this.__rectangle1__lengthCounter != 0 &&
+					if (
+						this.__rectangle1__lengthCounter != 0 &&
 						!this.__rectangle1__loopEnabled
-				) {
-					this.__rectangle1__lengthCounter--;
-				}
-				if (this.__rectangle1__sweepEnabled) {
-					if (this.__rectangle1__sweepCounter == 0) {
-						this.__rectangle1__sweepCounter =
+					) {
+						this.__rectangle1__lengthCounter--;
+					}
+					if (this.__rectangle1__sweepEnabled) {
+						if (this.__rectangle1__sweepCounter == 0) {
+							this.__rectangle1__sweepCounter =
 								this.__rectangle1__sweepUpdateRatio;
-						if (
-							this.__rectangle1__lengthCounter != 0 &&
+							if (
+								this.__rectangle1__lengthCounter != 0 &&
 								this.__rectangle1__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle1__shift =
+								var __rectangle1__shift =
 									this.__rectangle1__frequency >>
 									this.__rectangle1__sweepShiftAmount;
-							if (this.__rectangle1__sweepIncreased) {
-								this.__rectangle1__frequency +=
+								if (this.__rectangle1__sweepIncreased) {
+									this.__rectangle1__frequency +=
 										__rectangle1__shift;
-							} else {
-								this.__rectangle1__frequency -=
+								} else {
+									this.__rectangle1__frequency -=
 										__rectangle1__shift;
+								}
 							}
+						} else {
+							this.__rectangle1__sweepCounter--;
 						}
-					} else {
-						this.__rectangle1__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__rectangle0__lengthCounter != 0 &&
+					if (
+						this.__rectangle0__lengthCounter != 0 &&
 						!this.__rectangle0__loopEnabled
-				) {
-					this.__rectangle0__lengthCounter--;
-				}
-				if (this.__rectangle0__sweepEnabled) {
-					if (this.__rectangle0__sweepCounter == 0) {
-						this.__rectangle0__sweepCounter =
+					) {
+						this.__rectangle0__lengthCounter--;
+					}
+					if (this.__rectangle0__sweepEnabled) {
+						if (this.__rectangle0__sweepCounter == 0) {
+							this.__rectangle0__sweepCounter =
 								this.__rectangle0__sweepUpdateRatio;
-						if (
-							this.__rectangle0__lengthCounter != 0 &&
+							if (
+								this.__rectangle0__lengthCounter != 0 &&
 								this.__rectangle0__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle0__shift =
+								var __rectangle0__shift =
 									this.__rectangle0__frequency >>
 									this.__rectangle0__sweepShiftAmount;
-							if (this.__rectangle0__sweepIncreased) {
-								this.__rectangle0__frequency +=
+								if (this.__rectangle0__sweepIncreased) {
+									this.__rectangle0__frequency +=
 										__rectangle0__shift;
-							} else {
-								this.__rectangle0__frequency -=
+								} else {
+									this.__rectangle0__frequency -=
 										__rectangle0__shift;
-								this.__rectangle0__frequency--;
+									this.__rectangle0__frequency--;
+								}
 							}
+						} else {
+							this.__rectangle0__sweepCounter--;
 						}
-					} else {
-						this.__rectangle0__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__triangle__lengthCounter != 0 &&
+					if (
+						this.__triangle__lengthCounter != 0 &&
 						!this.__triangle__enableLinearCounter
-				) {
-					this.__triangle__lengthCounter--;
-				}
+					) {
+						this.__triangle__lengthCounter--;
+					}
 
-				if (
-					this.__noize__lengthCounter != 0 &&
+					if (
+						this.__noize__lengthCounter != 0 &&
 						!this.__noize__loopEnabled
-				) {
-					this.__noize__lengthCounter--;
-				}
+					) {
+						this.__noize__lengthCounter--;
+					}
 
-				break;
-			case 3:
-				//
+					break;
+				case 3:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				break;
-			case 4:
-				//
+					break;
+				case 4:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				//
+					//
 
-				if (
-					this.__rectangle1__lengthCounter != 0 &&
+					if (
+						this.__rectangle1__lengthCounter != 0 &&
 						!this.__rectangle1__loopEnabled
-				) {
-					this.__rectangle1__lengthCounter--;
-				}
-				if (this.__rectangle1__sweepEnabled) {
-					if (this.__rectangle1__sweepCounter == 0) {
-						this.__rectangle1__sweepCounter =
+					) {
+						this.__rectangle1__lengthCounter--;
+					}
+					if (this.__rectangle1__sweepEnabled) {
+						if (this.__rectangle1__sweepCounter == 0) {
+							this.__rectangle1__sweepCounter =
 								this.__rectangle1__sweepUpdateRatio;
-						if (
-							this.__rectangle1__lengthCounter != 0 &&
+							if (
+								this.__rectangle1__lengthCounter != 0 &&
 								this.__rectangle1__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle1__shift =
+								var __rectangle1__shift =
 									this.__rectangle1__frequency >>
 									this.__rectangle1__sweepShiftAmount;
-							if (this.__rectangle1__sweepIncreased) {
-								this.__rectangle1__frequency +=
+								if (this.__rectangle1__sweepIncreased) {
+									this.__rectangle1__frequency +=
 										__rectangle1__shift;
-							} else {
-								this.__rectangle1__frequency -=
+								} else {
+									this.__rectangle1__frequency -=
 										__rectangle1__shift;
+								}
 							}
+						} else {
+							this.__rectangle1__sweepCounter--;
 						}
-					} else {
-						this.__rectangle1__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__rectangle0__lengthCounter != 0 &&
+					if (
+						this.__rectangle0__lengthCounter != 0 &&
 						!this.__rectangle0__loopEnabled
-				) {
-					this.__rectangle0__lengthCounter--;
-				}
-				if (this.__rectangle0__sweepEnabled) {
-					if (this.__rectangle0__sweepCounter == 0) {
-						this.__rectangle0__sweepCounter =
+					) {
+						this.__rectangle0__lengthCounter--;
+					}
+					if (this.__rectangle0__sweepEnabled) {
+						if (this.__rectangle0__sweepCounter == 0) {
+							this.__rectangle0__sweepCounter =
 								this.__rectangle0__sweepUpdateRatio;
-						if (
-							this.__rectangle0__lengthCounter != 0 &&
+							if (
+								this.__rectangle0__lengthCounter != 0 &&
 								this.__rectangle0__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle0__shift =
+								var __rectangle0__shift =
 									this.__rectangle0__frequency >>
 									this.__rectangle0__sweepShiftAmount;
-							if (this.__rectangle0__sweepIncreased) {
-								this.__rectangle0__frequency +=
+								if (this.__rectangle0__sweepIncreased) {
+									this.__rectangle0__frequency +=
 										__rectangle0__shift;
-							} else {
-								this.__rectangle0__frequency -=
+								} else {
+									this.__rectangle0__frequency -=
 										__rectangle0__shift;
-								this.__rectangle0__frequency--;
+									this.__rectangle0__frequency--;
+								}
 							}
+						} else {
+							this.__rectangle0__sweepCounter--;
 						}
-					} else {
-						this.__rectangle0__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__triangle__lengthCounter != 0 &&
+					if (
+						this.__triangle__lengthCounter != 0 &&
 						!this.__triangle__enableLinearCounter
-				) {
-					this.__triangle__lengthCounter--;
-				}
+					) {
+						this.__triangle__lengthCounter--;
+					}
 
-				if (
-					this.__noize__lengthCounter != 0 &&
+					if (
+						this.__noize__lengthCounter != 0 &&
 						!this.__noize__loopEnabled
-				) {
-					this.__noize__lengthCounter--;
-				}
+					) {
+						this.__noize__lengthCounter--;
+					}
 
-				if (this.__audio__frameIRQenabled) {
-					this.IRQ |= 1;
-				}
-				this.__audio__frameIRQCnt = 0;
-				break;
-			default:
-				throw new cycloa.err.CoreException(
-					'FIXME Audio::run interrupt NTSC'
-				);
+					if (this.__audio__frameIRQenabled) {
+						this.IRQ |= 1;
+					}
+					this.__audio__frameIRQCnt = 0;
+					break;
+				default:
+					throw new cycloa.err.CoreException(
+						'FIXME Audio::run interrupt NTSC'
+					);
 			}
 		} else {
 			this.__audio__frameIRQCnt++;
 			switch (this.__audio__frameIRQCnt) {
-			case 1:
-				//
+				case 1:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				break;
-			case 2:
-				//
+					break;
+				case 2:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				//
+					//
 
-				if (
-					this.__rectangle1__lengthCounter != 0 &&
+					if (
+						this.__rectangle1__lengthCounter != 0 &&
 						!this.__rectangle1__loopEnabled
-				) {
-					this.__rectangle1__lengthCounter--;
-				}
-				if (this.__rectangle1__sweepEnabled) {
-					if (this.__rectangle1__sweepCounter == 0) {
-						this.__rectangle1__sweepCounter =
+					) {
+						this.__rectangle1__lengthCounter--;
+					}
+					if (this.__rectangle1__sweepEnabled) {
+						if (this.__rectangle1__sweepCounter == 0) {
+							this.__rectangle1__sweepCounter =
 								this.__rectangle1__sweepUpdateRatio;
-						if (
-							this.__rectangle1__lengthCounter != 0 &&
+							if (
+								this.__rectangle1__lengthCounter != 0 &&
 								this.__rectangle1__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle1__shift =
+								var __rectangle1__shift =
 									this.__rectangle1__frequency >>
 									this.__rectangle1__sweepShiftAmount;
-							if (this.__rectangle1__sweepIncreased) {
-								this.__rectangle1__frequency +=
+								if (this.__rectangle1__sweepIncreased) {
+									this.__rectangle1__frequency +=
 										__rectangle1__shift;
-							} else {
-								this.__rectangle1__frequency -=
+								} else {
+									this.__rectangle1__frequency -=
 										__rectangle1__shift;
+								}
 							}
+						} else {
+							this.__rectangle1__sweepCounter--;
 						}
-					} else {
-						this.__rectangle1__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__rectangle0__lengthCounter != 0 &&
+					if (
+						this.__rectangle0__lengthCounter != 0 &&
 						!this.__rectangle0__loopEnabled
-				) {
-					this.__rectangle0__lengthCounter--;
-				}
-				if (this.__rectangle0__sweepEnabled) {
-					if (this.__rectangle0__sweepCounter == 0) {
-						this.__rectangle0__sweepCounter =
+					) {
+						this.__rectangle0__lengthCounter--;
+					}
+					if (this.__rectangle0__sweepEnabled) {
+						if (this.__rectangle0__sweepCounter == 0) {
+							this.__rectangle0__sweepCounter =
 								this.__rectangle0__sweepUpdateRatio;
-						if (
-							this.__rectangle0__lengthCounter != 0 &&
+							if (
+								this.__rectangle0__lengthCounter != 0 &&
 								this.__rectangle0__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle0__shift =
+								var __rectangle0__shift =
 									this.__rectangle0__frequency >>
 									this.__rectangle0__sweepShiftAmount;
-							if (this.__rectangle0__sweepIncreased) {
-								this.__rectangle0__frequency +=
+								if (this.__rectangle0__sweepIncreased) {
+									this.__rectangle0__frequency +=
 										__rectangle0__shift;
-							} else {
-								this.__rectangle0__frequency -=
+								} else {
+									this.__rectangle0__frequency -=
 										__rectangle0__shift;
-								this.__rectangle0__frequency--;
+									this.__rectangle0__frequency--;
+								}
 							}
+						} else {
+							this.__rectangle0__sweepCounter--;
 						}
-					} else {
-						this.__rectangle0__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__triangle__lengthCounter != 0 &&
+					if (
+						this.__triangle__lengthCounter != 0 &&
 						!this.__triangle__enableLinearCounter
-				) {
-					this.__triangle__lengthCounter--;
-				}
+					) {
+						this.__triangle__lengthCounter--;
+					}
 
-				if (
-					this.__noize__lengthCounter != 0 &&
+					if (
+						this.__noize__lengthCounter != 0 &&
 						!this.__noize__loopEnabled
-				) {
-					this.__noize__lengthCounter--;
-				}
+					) {
+						this.__noize__lengthCounter--;
+					}
 
-				break;
-			case 3:
-				//
+					break;
+				case 3:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				break;
-			case 4:
-				break;
-			case 5:
-				//
+					break;
+				case 4:
+					break;
+				case 5:
+					//
 
-				if (this.__rectangle1__decayCounter === 0) {
-					this.__rectangle1__decayCounter =
+					if (this.__rectangle1__decayCounter === 0) {
+						this.__rectangle1__decayCounter =
 							this.__rectangle1__volumeOrDecayRate;
-					if (this.__rectangle1__decayVolume === 0) {
-						if (this.__rectangle1__loopEnabled) {
-							this.__rectangle1__decayVolume = 0xf;
+						if (this.__rectangle1__decayVolume === 0) {
+							if (this.__rectangle1__loopEnabled) {
+								this.__rectangle1__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle1__decayVolume--;
 						}
 					} else {
-						this.__rectangle1__decayVolume--;
+						this.__rectangle1__decayCounter--;
 					}
-				} else {
-					this.__rectangle1__decayCounter--;
-				}
-				if (this.__rectangle1__decayReloaded) {
-					this.__rectangle1__decayReloaded = false;
-					this.__rectangle1__decayVolume = 0xf;
-				}
+					if (this.__rectangle1__decayReloaded) {
+						this.__rectangle1__decayReloaded = false;
+						this.__rectangle1__decayVolume = 0xf;
+					}
 
-				if (this.__rectangle0__decayCounter === 0) {
-					this.__rectangle0__decayCounter =
+					if (this.__rectangle0__decayCounter === 0) {
+						this.__rectangle0__decayCounter =
 							this.__rectangle0__volumeOrDecayRate;
-					if (this.__rectangle0__decayVolume === 0) {
-						if (this.__rectangle0__loopEnabled) {
-							this.__rectangle0__decayVolume = 0xf;
+						if (this.__rectangle0__decayVolume === 0) {
+							if (this.__rectangle0__loopEnabled) {
+								this.__rectangle0__decayVolume = 0xf;
+							}
+						} else {
+							this.__rectangle0__decayVolume--;
 						}
 					} else {
-						this.__rectangle0__decayVolume--;
+						this.__rectangle0__decayCounter--;
 					}
-				} else {
-					this.__rectangle0__decayCounter--;
-				}
-				if (this.__rectangle0__decayReloaded) {
-					this.__rectangle0__decayReloaded = false;
-					this.__rectangle0__decayVolume = 0xf;
-				}
+					if (this.__rectangle0__decayReloaded) {
+						this.__rectangle0__decayReloaded = false;
+						this.__rectangle0__decayVolume = 0xf;
+					}
 
-				if (this.__triangle__haltFlag) {
-					this.__triangle__linearCounter =
+					if (this.__triangle__haltFlag) {
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer;
-				} else if (this.__triangle__linearCounter != 0) {
-					this.__triangle__linearCounter--;
-				}
-				if (!this.__triangle__enableLinearCounter) {
-					this.__triangle__haltFlag = false;
-				}
+					} else if (this.__triangle__linearCounter != 0) {
+						this.__triangle__linearCounter--;
+					}
+					if (!this.__triangle__enableLinearCounter) {
+						this.__triangle__haltFlag = false;
+					}
 
-				if (this.__noize__decayCounter == 0) {
-					this.__noize__decayCounter =
+					if (this.__noize__decayCounter == 0) {
+						this.__noize__decayCounter =
 							this.__noize__volumeOrDecayRate;
-					if (this.__noize__decayVolume == 0) {
-						if (this.__noize__loopEnabled) {
-							this.__noize__decayVolume = 0xf;
+						if (this.__noize__decayVolume == 0) {
+							if (this.__noize__loopEnabled) {
+								this.__noize__decayVolume = 0xf;
+							}
+						} else {
+							this.__noize__decayVolume--;
 						}
 					} else {
-						this.__noize__decayVolume--;
+						this.__noize__decayCounter--;
 					}
-				} else {
-					this.__noize__decayCounter--;
-				}
-				if (this.__noize__decayReloaded) {
-					this.__noize__decayReloaded = false;
-					this.__noize__decayVolume = 0xf;
-				}
+					if (this.__noize__decayReloaded) {
+						this.__noize__decayReloaded = false;
+						this.__noize__decayVolume = 0xf;
+					}
 
-				//
+					//
 
-				if (
-					this.__rectangle1__lengthCounter != 0 &&
+					if (
+						this.__rectangle1__lengthCounter != 0 &&
 						!this.__rectangle1__loopEnabled
-				) {
-					this.__rectangle1__lengthCounter--;
-				}
-				if (this.__rectangle1__sweepEnabled) {
-					if (this.__rectangle1__sweepCounter == 0) {
-						this.__rectangle1__sweepCounter =
+					) {
+						this.__rectangle1__lengthCounter--;
+					}
+					if (this.__rectangle1__sweepEnabled) {
+						if (this.__rectangle1__sweepCounter == 0) {
+							this.__rectangle1__sweepCounter =
 								this.__rectangle1__sweepUpdateRatio;
-						if (
-							this.__rectangle1__lengthCounter != 0 &&
+							if (
+								this.__rectangle1__lengthCounter != 0 &&
 								this.__rectangle1__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle1__shift =
+								var __rectangle1__shift =
 									this.__rectangle1__frequency >>
 									this.__rectangle1__sweepShiftAmount;
-							if (this.__rectangle1__sweepIncreased) {
-								this.__rectangle1__frequency +=
+								if (this.__rectangle1__sweepIncreased) {
+									this.__rectangle1__frequency +=
 										__rectangle1__shift;
-							} else {
-								this.__rectangle1__frequency -=
+								} else {
+									this.__rectangle1__frequency -=
 										__rectangle1__shift;
+								}
 							}
+						} else {
+							this.__rectangle1__sweepCounter--;
 						}
-					} else {
-						this.__rectangle1__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__rectangle0__lengthCounter != 0 &&
+					if (
+						this.__rectangle0__lengthCounter != 0 &&
 						!this.__rectangle0__loopEnabled
-				) {
-					this.__rectangle0__lengthCounter--;
-				}
-				if (this.__rectangle0__sweepEnabled) {
-					if (this.__rectangle0__sweepCounter == 0) {
-						this.__rectangle0__sweepCounter =
+					) {
+						this.__rectangle0__lengthCounter--;
+					}
+					if (this.__rectangle0__sweepEnabled) {
+						if (this.__rectangle0__sweepCounter == 0) {
+							this.__rectangle0__sweepCounter =
 								this.__rectangle0__sweepUpdateRatio;
-						if (
-							this.__rectangle0__lengthCounter != 0 &&
+							if (
+								this.__rectangle0__lengthCounter != 0 &&
 								this.__rectangle0__sweepShiftAmount != 0
-						) {
-							/**
+							) {
+								/**
 								 * @type {number} uint16_t
 								 */
-							var __rectangle0__shift =
+								var __rectangle0__shift =
 									this.__rectangle0__frequency >>
 									this.__rectangle0__sweepShiftAmount;
-							if (this.__rectangle0__sweepIncreased) {
-								this.__rectangle0__frequency +=
+								if (this.__rectangle0__sweepIncreased) {
+									this.__rectangle0__frequency +=
 										__rectangle0__shift;
-							} else {
-								this.__rectangle0__frequency -=
+								} else {
+									this.__rectangle0__frequency -=
 										__rectangle0__shift;
-								this.__rectangle0__frequency--;
+									this.__rectangle0__frequency--;
+								}
 							}
+						} else {
+							this.__rectangle0__sweepCounter--;
 						}
-					} else {
-						this.__rectangle0__sweepCounter--;
 					}
-				}
 
-				if (
-					this.__triangle__lengthCounter != 0 &&
+					if (
+						this.__triangle__lengthCounter != 0 &&
 						!this.__triangle__enableLinearCounter
-				) {
-					this.__triangle__lengthCounter--;
-				}
+					) {
+						this.__triangle__lengthCounter--;
+					}
 
-				if (
-					this.__noize__lengthCounter != 0 &&
+					if (
+						this.__noize__lengthCounter != 0 &&
 						!this.__noize__loopEnabled
-				) {
-					this.__noize__lengthCounter--;
-				}
+					) {
+						this.__noize__lengthCounter--;
+					}
 
-				this.__audio__frameIRQCnt = 0;
-				break;
-			default:
-				throw new cycloa.err.CoreException(
-					'FIXME Audio::run interrupt PAL'
-				);
+					this.__audio__frameIRQCnt = 0;
+					break;
+				default:
+					throw new cycloa.err.CoreException(
+						'FIXME Audio::run interrupt PAL'
+					);
 			}
 		}
 	}
@@ -2607,24 +2607,24 @@ cycloa.ScriptMachine.prototype.run = function () {
 					var __digital__addr = this.__digital__sampleAddr;
 
 					switch ((__digital__addr & 0xe000) >> 13) {
-					case 0: {
-						/* 0x0000 -> 0x2000 */
-						__digitl__val__ =
-								__cpu__ram[__digital__addr & 0x7ff];
-						break;
-					}
-					case 1: {
-						/* 0x2000 -> 0x4000 */
-						__digitl__val__ =
-								this.__video__readReg(__digital__addr);
-						break;
-					}
-					case 2: {
-						/* 0x4000 -> 0x6000 */
-						if (__digital__addr === 0x4015) {
-							/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).
-			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */
+						case 0: {
+							/* 0x0000 -> 0x2000 */
 							__digitl__val__ =
+								__cpu__ram[__digital__addr & 0x7ff];
+							break;
+						}
+						case 1: {
+							/* 0x2000 -> 0x4000 */
+							__digitl__val__ =
+								this.__video__readReg(__digital__addr);
+							break;
+						}
+						case 2: {
+							/* 0x4000 -> 0x6000 */
+							if (__digital__addr === 0x4015) {
+								/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).
+			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */
+								__digitl__val__ =
 									(this.__rectangle0__lengthCounter != 0 &&
 									this.__rectangle0__frequency >= 0x8 &&
 									this.__rectangle0__frequency < 0x800
@@ -2645,66 +2645,66 @@ cycloa.ScriptMachine.prototype.run = function () {
 										: 0) |
 									(this.IRQ & 1 ? 64 : 0) |
 									(this.IRQ & 2 ? 128 : 0);
-							this.IRQ &= 254;
-							this.IRQ &= 253;
-						} else if (__digital__addr === 0x4016) {
-							__digitl__val__ =
+								this.IRQ &= 254;
+								this.IRQ &= 253;
+							} else if (__digital__addr === 0x4016) {
+								__digitl__val__ =
 									(this.__pad__pad1Fairy.state >>
 										(this.__pad__pad1Idx++ & 7)) &
 									0x1;
-						} else if (__digital__addr === 0x4017) {
-							__digitl__val__ =
+							} else if (__digital__addr === 0x4017) {
+								__digitl__val__ =
 									(this.__pad__pad2Fairy.state >>
 										(this.__pad__pad2Idx++ & 7)) &
 									0x1;
-						} else if (addr < 0x4018) {
-							throw new cycloa.err.CoreException(
-								'[FIXME] Invalid addr: 0x' +
+							} else if (addr < 0x4018) {
+								throw new cycloa.err.CoreException(
+									'[FIXME] Invalid addr: 0x' +
 										__digital__addr.toString(16)
-							);
-						} else {
-							__digitl__val__ =
+								);
+							} else {
+								__digitl__val__ =
 									this.readMapperRegisterArea(addr);
+							}
+							break;
 						}
-						break;
-					}
-					case 3: {
-						/* 0x6000 -> 0x8000 */
-						__digitl__val__ = 0;
-						break;
-					}
-					case 4: {
-						/* 0x8000 -> 0xA000 */
-						__digitl__val__ =
+						case 3: {
+							/* 0x6000 -> 0x8000 */
+							__digitl__val__ = 0;
+							break;
+						}
+						case 4: {
+							/* 0x8000 -> 0xA000 */
+							__digitl__val__ =
 								__cpu__rom[(__digital__addr >> 10) & 31][
 									__digital__addr & 0x3ff
 								];
-						break;
-					}
-					case 5: {
-						/* 0xA000 -> 0xC000 */
-						__digitl__val__ =
+							break;
+						}
+						case 5: {
+							/* 0xA000 -> 0xC000 */
+							__digitl__val__ =
 								__cpu__rom[(__digital__addr >> 10) & 31][
 									__digital__addr & 0x3ff
 								];
-						break;
-					}
-					case 6: {
-						/* 0xC000 -> 0xE000 */
-						__digitl__val__ =
+							break;
+						}
+						case 6: {
+							/* 0xC000 -> 0xE000 */
+							__digitl__val__ =
 								__cpu__rom[(__digital__addr >> 10) & 31][
 									__digital__addr & 0x3ff
 								];
-						break;
-					}
-					case 7: {
-						/* 0xE000 -> 0xffff */
-						__digitl__val__ =
+							break;
+						}
+						case 7: {
+							/* 0xE000 -> 0xffff */
+							__digitl__val__ =
 								__cpu__rom[(__digital__addr >> 10) & 31][
 									__digital__addr & 0x3ff
 								];
-						break;
-					}
+							break;
+						}
 					}
 					this.__digital__sampleBuffer = __digitl__val__;
 
@@ -2800,20 +2800,20 @@ cycloa.ScriptMachine.prototype.read = function (addr) {
 	var __cpu__rom = this.__cpu__rom;
 	var __cpu__ram = this.__cpu__ram;
 	switch ((sym & 0xe000) >> 13) {
-	case 0 /* 0x0000 -> 0x2000 */:
-		return __cpu__ram[addr & 0x7ff];
-	case 1 /* 0x2000 -> 0x4000 */:
-		return this.__video__readReg(addr);
-	case 2 /* 0x4000 -> 0x6000 */:
-		if (addr === 0x4015) {
-			/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).
+		case 0 /* 0x0000 -> 0x2000 */:
+			return __cpu__ram[addr & 0x7ff];
+		case 1 /* 0x2000 -> 0x4000 */:
+			return this.__video__readReg(addr);
+		case 2 /* 0x4000 -> 0x6000 */:
+			if (addr === 0x4015) {
+				/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).
 			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */
-			return;
-			(this.__rectangle0__lengthCounter != 0 &&
+				return;
+				(this.__rectangle0__lengthCounter != 0 &&
 				this.__rectangle0__frequency >= 0x8 &&
 				this.__rectangle0__frequency < 0x800
-				? 1
-				: 0) |
+					? 1
+					: 0) |
 					(this.__rectangle1__lengthCounter != 0 &&
 					this.__rectangle1__frequency >= 0x8 &&
 					this.__rectangle1__frequency < 0x800
@@ -2827,38 +2827,38 @@ cycloa.ScriptMachine.prototype.read = function (addr) {
 					(this.__digital__sampleLength != 0 ? 16 : 0) |
 					(this.IRQ & 1 ? 64 : 0) |
 					(this.IRQ & 2 ? 128 : 0);
-			this.IRQ &= 254;
-			this.IRQ &= 253;
-		} else if (addr === 0x4016) {
-			return (
-				(this.__pad__pad1Fairy.state >>
+				this.IRQ &= 254;
+				this.IRQ &= 253;
+			} else if (addr === 0x4016) {
+				return (
+					(this.__pad__pad1Fairy.state >>
 						(this.__pad__pad1Idx++ & 7)) &
 					0x1
-			);
-		} else if (addr === 0x4017) {
-			return (
-				(this.__pad__pad2Fairy.state >>
+				);
+			} else if (addr === 0x4017) {
+				return (
+					(this.__pad__pad2Fairy.state >>
 						(this.__pad__pad2Idx++ & 7)) &
 					0x1
-			);
-		} else if (addr < 0x4018) {
-			throw new cycloa.err.CoreException(
-				'[FIXME] Invalid addr: 0x' + addr.toString(16)
-			);
-		} else {
+				);
+			} else if (addr < 0x4018) {
+				throw new cycloa.err.CoreException(
+					'[FIXME] Invalid addr: 0x' + addr.toString(16)
+				);
+			} else {
+				return 0;
+				//            return this.readMapperRegisterArea(addr);
+			}
+		case 3 /* 0x6000 -> 0x8000 */:
 			return 0;
-			//            return this.readMapperRegisterArea(addr);
-		}
-	case 3 /* 0x6000 -> 0x8000 */:
-		return 0;
-	case 4 /* 0x8000 -> 0xA000 */:
-		return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
-	case 5 /* 0xA000 -> 0xC000 */:
-		return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
-	case 6 /* 0xC000 -> 0xE000 */:
-		return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
-	case 7 /* 0xE000 -> 0xffff */:
-		return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
+		case 4 /* 0x8000 -> 0xA000 */:
+			return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
+		case 5 /* 0xA000 -> 0xC000 */:
+			return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
+		case 6 /* 0xC000 -> 0xE000 */:
+			return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
+		case 7 /* 0xE000 -> 0xffff */:
+			return __cpu__rom[(addr >> 10) & 31][addr & 0x3ff];
 	}
 };
 
@@ -2866,231 +2866,231 @@ cycloa.ScriptMachine.prototype.write = function (addr, val) {
 	var __cpu__rom = this.__cpu__rom;
 	var __cpu__ram = this.__cpu__ram;
 	switch ((addr & 0xe000) >> 13) {
-	case 0 /* 0x0000 -> 0x2000 */:
-		__cpu__ram[addr & 0x1fff] = val;
-		break;
-	case 1 /* 0x2000 -> 0x4000 */:
-		this.__video__writeReg(addr, val);
-		break;
-	case 2 /* 0x4000 -> 0x6000 */:
-		switch (addr & 0x1f) {
-		case 0x0 /* 4000h - APU Volume/Decay Channel 1 (Rectangle) */:
-			this.__rectangle0__decayCounter =
+		case 0 /* 0x0000 -> 0x2000 */:
+			__cpu__ram[addr & 0x1fff] = val;
+			break;
+		case 1 /* 0x2000 -> 0x4000 */:
+			this.__video__writeReg(addr, val);
+			break;
+		case 2 /* 0x4000 -> 0x6000 */:
+			switch (addr & 0x1f) {
+				case 0x0 /* 4000h - APU Volume/Decay Channel 1 (Rectangle) */:
+					this.__rectangle0__decayCounter =
 						this.__rectangle0__volumeOrDecayRate = val & 15;
-			this.__rectangle0__decayEnabled = (val & 16) == 0;
-			this.__rectangle0__loopEnabled = (val & 32) == 32;
-			switch (val >> 6) {
-			case 0:
-				this.__rectangle0__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle0__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle0__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle0__dutyRatio = 12;
-				break;
-			}
-			break;
-		case 0x1 /* 4001h - APU Sweep Channel 1 (Rectangle) */:
-			this.__rectangle0__sweepShiftAmount = val & 7;
-			this.__rectangle0__sweepIncreased = (val & 0x8) === 0x0;
-			this.__rectangle0__sweepCounter =
+					this.__rectangle0__decayEnabled = (val & 16) == 0;
+					this.__rectangle0__loopEnabled = (val & 32) == 32;
+					switch (val >> 6) {
+						case 0:
+							this.__rectangle0__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle0__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle0__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle0__dutyRatio = 12;
+							break;
+					}
+					break;
+				case 0x1 /* 4001h - APU Sweep Channel 1 (Rectangle) */:
+					this.__rectangle0__sweepShiftAmount = val & 7;
+					this.__rectangle0__sweepIncreased = (val & 0x8) === 0x0;
+					this.__rectangle0__sweepCounter =
 						this.__rectangle0__sweepUpdateRatio = (val >> 4) & 3;
-			this.__rectangle0__sweepEnabled = (val & 0x80) === 0x80;
-			break;
-		case 0x2 /* 4002h - APU Frequency Channel 1 (Rectangle) */:
-			this.__rectangle0__frequency =
+					this.__rectangle0__sweepEnabled = (val & 0x80) === 0x80;
+					break;
+				case 0x2 /* 4002h - APU Frequency Channel 1 (Rectangle) */:
+					this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x0700) | val;
-			break;
-		case 0x3 /* 4003h - APU Length Channel 1 (Rectangle) */:
-			this.__rectangle0__frequency =
+					break;
+				case 0x3 /* 4003h - APU Length Channel 1 (Rectangle) */:
+					this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x00ff) |
 						((val & 7) << 8);
-			this.__rectangle0__lengthCounter =
+					this.__rectangle0__lengthCounter =
 						this.__audio__LengthCounterConst[val >> 3];
-			/* Writing to the length registers restarts the length (obviously),
+					/* Writing to the length registers restarts the length (obviously),
    			   and also restarts the duty cycle (channel 1,2 only), */
-			this.__rectangle0__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */
-			this.__rectangle0__decayReloaded = true;
-			break;
-		case 0x4 /* 4004h - APU Volume/Decay Channel 2 (Rectangle) */:
-			this.__rectangle1__decayCounter =
+					this.__rectangle0__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */
+					this.__rectangle0__decayReloaded = true;
+					break;
+				case 0x4 /* 4004h - APU Volume/Decay Channel 2 (Rectangle) */:
+					this.__rectangle1__decayCounter =
 						this.__rectangle1__volumeOrDecayRate = val & 15;
-			this.__rectangle1__decayEnabled = (val & 16) == 0;
-			this.__rectangle1__loopEnabled = (val & 32) == 32;
-			switch (val >> 6) {
-			case 0:
-				this.__rectangle1__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle1__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle1__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle1__dutyRatio = 12;
-				break;
-			}
-			break;
-		case 0x5 /* 4005h - APU Sweep Channel 2 (Rectangle) */:
-			this.__rectangle1__sweepShiftAmount = val & 7;
-			this.__rectangle1__sweepIncreased = (val & 0x8) === 0x0;
-			this.__rectangle1__sweepCounter =
+					this.__rectangle1__decayEnabled = (val & 16) == 0;
+					this.__rectangle1__loopEnabled = (val & 32) == 32;
+					switch (val >> 6) {
+						case 0:
+							this.__rectangle1__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle1__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle1__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle1__dutyRatio = 12;
+							break;
+					}
+					break;
+				case 0x5 /* 4005h - APU Sweep Channel 2 (Rectangle) */:
+					this.__rectangle1__sweepShiftAmount = val & 7;
+					this.__rectangle1__sweepIncreased = (val & 0x8) === 0x0;
+					this.__rectangle1__sweepCounter =
 						this.__rectangle1__sweepUpdateRatio = (val >> 4) & 3;
-			this.__rectangle1__sweepEnabled = (val & 0x80) === 0x80;
-			break;
-		case 0x6 /* 4006h - APU Frequency Channel 2 (Rectangle) */:
-			this.__rectangle1__frequency =
+					this.__rectangle1__sweepEnabled = (val & 0x80) === 0x80;
+					break;
+				case 0x6 /* 4006h - APU Frequency Channel 2 (Rectangle) */:
+					this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x0700) | val;
-			break;
-		case 0x7 /* 4007h - APU Length Channel 2 (Rectangle) */:
-			this.__rectangle1__frequency =
+					break;
+				case 0x7 /* 4007h - APU Length Channel 2 (Rectangle) */:
+					this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x00ff) |
 						((val & 7) << 8);
-			this.__rectangle1__lengthCounter =
+					this.__rectangle1__lengthCounter =
 						this.__audio__LengthCounterConst[val >> 3];
-			/* Writing to the length registers restarts the length (obviously),
+					/* Writing to the length registers restarts the length (obviously),
    			   and also restarts the duty cycle (channel 1,2 only), */
-			this.__rectangle1__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */
-			this.__rectangle1__decayReloaded = true;
-			break;
-		case 0x8 /* 4008h - APU Linear Counter Channel 3 (Triangle) */:
-			this.__triangle__enableLinearCounter = (val & 128) == 128;
-			this.__triangle__linearCounterBuffer = val & 127;
-			break;
-		case 0x9 /* 4009h - APU N/A Channel 3 (Triangle) */:
-			/* unused */
-			break;
-		case 0xa /* 400Ah - APU Frequency Channel 3 (Triangle) */:
-			this.__triangle__frequency =
+					this.__rectangle1__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */
+					this.__rectangle1__decayReloaded = true;
+					break;
+				case 0x8 /* 4008h - APU Linear Counter Channel 3 (Triangle) */:
+					this.__triangle__enableLinearCounter = (val & 128) == 128;
+					this.__triangle__linearCounterBuffer = val & 127;
+					break;
+				case 0x9 /* 4009h - APU N/A Channel 3 (Triangle) */:
+					/* unused */
+					break;
+				case 0xa /* 400Ah - APU Frequency Channel 3 (Triangle) */:
+					this.__triangle__frequency =
 						(this.__triangle__frequency & 0x0700) | val;
-			break;
-		case 0xb /* 400Bh - APU Length Channel 3 (Triangle) */:
-			this.__triangle__frequency =
+					break;
+				case 0xb /* 400Bh - APU Length Channel 3 (Triangle) */:
+					this.__triangle__frequency =
 						(this.__triangle__frequency & 0x00ff) |
 						((val & 7) << 8);
-			this.__triangle__lengthCounter =
+					this.__triangle__lengthCounter =
 						this.__audio__LengthCounterConst[val >> 3];
-			/* Side effects 	Sets the halt flag */
-			this.__triangle__haltFlag = true;
-			break;
-		case 0xc /* 400Ch - APU Volume/Decay Channel 4 (Noise) */:
-			this.__noize__decayCounter =
+					/* Side effects 	Sets the halt flag */
+					this.__triangle__haltFlag = true;
+					break;
+				case 0xc /* 400Ch - APU Volume/Decay Channel 4 (Noise) */:
+					this.__noize__decayCounter =
 						this.__noize__volumeOrDecayRate = val & 15;
-			this.__noize__decayEnabled = (val & 16) == 0;
-			this.__noize__loopEnabled = (val & 32) == 32;
-			break;
-		case 0xd /* 400Dh - APU N/A Channel 4 (Noise) */:
-			/* unused */
-			break;
-		case 0xe /* 400Eh - APU Frequency Channel 4 (Noise) */:
-			this.__noize__modeFlag = (val & 128) == 128;
-			this.__noize__frequency =
+					this.__noize__decayEnabled = (val & 16) == 0;
+					this.__noize__loopEnabled = (val & 32) == 32;
+					break;
+				case 0xd /* 400Dh - APU N/A Channel 4 (Noise) */:
+					/* unused */
+					break;
+				case 0xe /* 400Eh - APU Frequency Channel 4 (Noise) */:
+					this.__noize__modeFlag = (val & 128) == 128;
+					this.__noize__frequency =
 						this.__noize__FrequencyTable[val & 15];
-			break;
-		case 0xf /* 400Fh - APU Length Channel 4 (Noise) */:
-			/* Writing to the length registers restarts the length (obviously), */
-			this.__noize__lengthCounter =
+					break;
+				case 0xf /* 400Fh - APU Length Channel 4 (Noise) */:
+					/* Writing to the length registers restarts the length (obviously), */
+					this.__noize__lengthCounter =
 						this.__audio__LengthCounterConst[val >> 3];
-			/* and restarts the decay volume (channel 1,2,4 only). */
-			this.__noize__decayReloaded = true;
-			break;
-			/* ------------------------------------ DMC ----------------------------------------------------- */
-		case 0x10 /* 4010h - DMC Play mode and DMA frequency */:
-			this.__digital__irqEnabled = (val & 128) == 128;
-			if (!this.__digital__irqEnabled) {
-				this.IRQ &= 253;
-			}
-			this.__digital__loopEnabled = (val & 64) == 64;
-			this.__digital__frequency =
+					/* and restarts the decay volume (channel 1,2,4 only). */
+					this.__noize__decayReloaded = true;
+					break;
+				/* ------------------------------------ DMC ----------------------------------------------------- */
+				case 0x10 /* 4010h - DMC Play mode and DMA frequency */:
+					this.__digital__irqEnabled = (val & 128) == 128;
+					if (!this.__digital__irqEnabled) {
+						this.IRQ &= 253;
+					}
+					this.__digital__loopEnabled = (val & 64) == 64;
+					this.__digital__frequency =
 						this.__digital__FrequencyTable[val & 0xf];
-			break;
-		case 0x11 /* 4011h - DMC Delta counter load register */:
-			this.__digital__deltaCounter = val & 0x7f;
-			break;
-		case 0x12 /* 4012h - DMC address load register */:
-			this.__digital__sampleAddr = 0xc000 | (val << 6);
-			break;
-		case 0x13 /* 4013h - DMC length register */:
-			this.__digital__sampleLength =
+					break;
+				case 0x11 /* 4011h - DMC Delta counter load register */:
+					this.__digital__deltaCounter = val & 0x7f;
+					break;
+				case 0x12 /* 4012h - DMC address load register */:
+					this.__digital__sampleAddr = 0xc000 | (val << 6);
+					break;
+				case 0x13 /* 4013h - DMC length register */:
+					this.__digital__sampleLength =
 						this.__digital__sampleLengthBuffer = (val << 4) | 1;
-			break;
-		case 0x14 /* 4014h execute Sprite DMA */:
-			/** @type {number} uint16_t */
-			var __audio__dma__addrMask = val << 8;
-			var __video__spRam = this.__video__spRam;
-			var __video__spriteAddr = this.__video__spriteAddr;
-			for (var i = 0; i < 256; ++i) {
-				__video__spRam[(__video__spriteAddr + i) & 0xff] =
+					break;
+				case 0x14 /* 4014h execute Sprite DMA */:
+					/** @type {number} uint16_t */
+					var __audio__dma__addrMask = val << 8;
+					var __video__spRam = this.__video__spRam;
+					var __video__spriteAddr = this.__video__spriteAddr;
+					for (var i = 0; i < 256; ++i) {
+						__video__spRam[(__video__spriteAddr + i) & 0xff] =
 							this.read(__audio__dma__addrmask | i);
-			}
-			__vm__clockDelta += 512;
-			break;
-			/* ------------------------------ CTRL -------------------------------------------------- */
-		case 0x15 /* __audio__analyzeStatusRegister */:
-			if (!(val & 1)) this.__rectangle0__lengthCounter = 0;
-			if (!(val & 2)) this.__rectangle1__lengthCounter = 0;
-			if (!(val & 4)) {
-				this.__triangle__lengthCounter = 0;
-				this.__triangle__linearCounter =
+					}
+					__vm__clockDelta += 512;
+					break;
+				/* ------------------------------ CTRL -------------------------------------------------- */
+				case 0x15 /* __audio__analyzeStatusRegister */:
+					if (!(val & 1)) this.__rectangle0__lengthCounter = 0;
+					if (!(val & 2)) this.__rectangle1__lengthCounter = 0;
+					if (!(val & 4)) {
+						this.__triangle__lengthCounter = 0;
+						this.__triangle__linearCounter =
 							this.__triangle__linearCounterBuffer = 0;
-			}
-			if (!(val & 8)) this.__noize__lengthCounter = 0;
-			if (!(val & 16)) {
-				this.__digital__sampleLength = 0;
-			} else if (this.__digital__sampleLength == 0) {
-				this.__digital__sampleLength =
+					}
+					if (!(val & 8)) this.__noize__lengthCounter = 0;
+					if (!(val & 16)) {
+						this.__digital__sampleLength = 0;
+					} else if (this.__digital__sampleLength == 0) {
+						this.__digital__sampleLength =
 							this.__digital__sampleLengthBuffer;
+					}
+					break;
+				case 0x16:
+					if ((val & 1) === 1) {
+						this.__pad__pad1Idx = 0;
+						this.__pad__pad2Idx = 0;
+					}
+					break;
+				case 0x17 /* __audio__analyzeLowFrequentryRegister */:
+					/* Any write to $4017 resets both the frame counter, and the clock divider. */
+					if (val & 0x80) {
+						this.__audio__isNTSCmode = false;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 4;
+					} else {
+						this.__audio__isNTSCmode = true;
+						this.__audio__frameIRQenabled = true;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 3;
+					}
+					if ((val & 0x40) === 0x40) {
+						this.__audio__frameIRQenabled = false;
+						this.IRQ &= 254;
+					}
+					break;
+				default:
+					/* this.writeMapperRegisterArea(addr, val); */
+					break;
 			}
 			break;
-		case 0x16:
-			if ((val & 1) === 1) {
-				this.__pad__pad1Idx = 0;
-				this.__pad__pad2Idx = 0;
-			}
+		case 3 /* 0x6000 -> 0x8000 */:
 			break;
-		case 0x17 /* __audio__analyzeLowFrequentryRegister */:
-			/* Any write to $4017 resets both the frame counter, and the clock divider. */
-			if (val & 0x80) {
-				this.__audio__isNTSCmode = false;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 4;
-			} else {
-				this.__audio__isNTSCmode = true;
-				this.__audio__frameIRQenabled = true;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 3;
-			}
-			if ((val & 0x40) === 0x40) {
-				this.__audio__frameIRQenabled = false;
-				this.IRQ &= 254;
-			}
+		case 4 /* 0x8000 -> 0xA000 */:
+			__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
 			break;
-		default:
-			/* this.writeMapperRegisterArea(addr, val); */
+		case 5 /* 0xA000 -> 0xC000 */:
+			__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
 			break;
-		}
-		break;
-	case 3 /* 0x6000 -> 0x8000 */:
-		break;
-	case 4 /* 0x8000 -> 0xA000 */:
-		__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
-		break;
-	case 5 /* 0xA000 -> 0xC000 */:
-		__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
-		break;
-	case 6 /* 0xC000 -> 0xE000 */:
-		__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
-		break;
-	case 7 /* 0xE000 -> 0xffff */:
-		__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
-		break;
+		case 6 /* 0xC000 -> 0xE000 */:
+			__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
+			break;
+		case 7 /* 0xE000 -> 0xffff */:
+			__cpu__rom[(addr >> 10) & 31][addr & 0x3ff] = val;
+			break;
 	}
 };
 
@@ -3125,202 +3125,202 @@ cycloa.ScriptMachine.prototype.onHardResetCPU = function () {
 	this.Y = 0x0;
 	this.SP = 0xfd;
 	switch ((0x4017 & 0xe000) >> 13) {
-	case 0: {
-		/* 0x0000 -> 0x2000 */ __cpu__ram[0x4017 & 0x1fff] = 0x00;
-		break;
-	}
-	case 1: {
-		/* 0x2000 -> 0x4000 */ this.__video__writeReg(0x4017, 0x00);
-		break;
-	}
-	case 2: {
-		/* 0x4000 -> 0x6000 */ switch (0x4017 & 0x1f) {
-		case 0x0: {
-			/* 4000h - APU Volume/Decay Channel 1 (Rectangle) */ this.__rectangle0__decayCounter =
+		case 0: {
+			/* 0x0000 -> 0x2000 */ __cpu__ram[0x4017 & 0x1fff] = 0x00;
+			break;
+		}
+		case 1: {
+			/* 0x2000 -> 0x4000 */ this.__video__writeReg(0x4017, 0x00);
+			break;
+		}
+		case 2: {
+			/* 0x4000 -> 0x6000 */ switch (0x4017 & 0x1f) {
+				case 0x0: {
+					/* 4000h - APU Volume/Decay Channel 1 (Rectangle) */ this.__rectangle0__decayCounter =
 						this.__rectangle0__volumeOrDecayRate = 0x00 & 15;
-			this.__rectangle0__decayEnabled = (0x00 & 16) == 0;
-			this.__rectangle0__loopEnabled = (0x00 & 32) == 32;
-			switch (0x00 >> 6) {
-			case 0:
-				this.__rectangle0__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle0__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle0__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle0__dutyRatio = 12;
-				break;
-			}
-			break;
-		}
-		case 0x1: {
-			/* 4001h - APU Sweep Channel 1 (Rectangle) */ this.__rectangle0__sweepShiftAmount =
+					this.__rectangle0__decayEnabled = (0x00 & 16) == 0;
+					this.__rectangle0__loopEnabled = (0x00 & 32) == 32;
+					switch (0x00 >> 6) {
+						case 0:
+							this.__rectangle0__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle0__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle0__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle0__dutyRatio = 12;
+							break;
+					}
+					break;
+				}
+				case 0x1: {
+					/* 4001h - APU Sweep Channel 1 (Rectangle) */ this.__rectangle0__sweepShiftAmount =
 						0x00 & 7;
-			this.__rectangle0__sweepIncreased = (0x00 & 0x8) === 0x0;
-			this.__rectangle0__sweepCounter =
+					this.__rectangle0__sweepIncreased = (0x00 & 0x8) === 0x0;
+					this.__rectangle0__sweepCounter =
 						this.__rectangle0__sweepUpdateRatio = (0x00 >> 4) & 3;
-			this.__rectangle0__sweepEnabled = (0x00 & 0x80) === 0x80;
-			break;
-		}
-		case 0x2: {
-			/* 4002h - APU Frequency Channel 1 (Rectangle) */ this.__rectangle0__frequency =
+					this.__rectangle0__sweepEnabled = (0x00 & 0x80) === 0x80;
+					break;
+				}
+				case 0x2: {
+					/* 4002h - APU Frequency Channel 1 (Rectangle) */ this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0x3: {
-			/* 4003h - APU Length Channel 1 (Rectangle) */ this.__rectangle0__frequency =
+					break;
+				}
+				case 0x3: {
+					/* 4003h - APU Length Channel 1 (Rectangle) */ this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__rectangle0__lengthCounter =
+					this.__rectangle0__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle0__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle0__decayReloaded = true;
-			break;
-		}
-		case 0x4: {
-			/* 4004h - APU Volume/Decay Channel 2 (Rectangle) */ this.__rectangle1__decayCounter =
+					/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle0__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle0__decayReloaded = true;
+					break;
+				}
+				case 0x4: {
+					/* 4004h - APU Volume/Decay Channel 2 (Rectangle) */ this.__rectangle1__decayCounter =
 						this.__rectangle1__volumeOrDecayRate = 0x00 & 15;
-			this.__rectangle1__decayEnabled = (0x00 & 16) == 0;
-			this.__rectangle1__loopEnabled = (0x00 & 32) == 32;
-			switch (0x00 >> 6) {
-			case 0:
-				this.__rectangle1__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle1__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle1__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle1__dutyRatio = 12;
-				break;
-			}
-			break;
-		}
-		case 0x5: {
-			/* 4005h - APU Sweep Channel 2 (Rectangle) */ this.__rectangle1__sweepShiftAmount =
+					this.__rectangle1__decayEnabled = (0x00 & 16) == 0;
+					this.__rectangle1__loopEnabled = (0x00 & 32) == 32;
+					switch (0x00 >> 6) {
+						case 0:
+							this.__rectangle1__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle1__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle1__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle1__dutyRatio = 12;
+							break;
+					}
+					break;
+				}
+				case 0x5: {
+					/* 4005h - APU Sweep Channel 2 (Rectangle) */ this.__rectangle1__sweepShiftAmount =
 						0x00 & 7;
-			this.__rectangle1__sweepIncreased = (0x00 & 0x8) === 0x0;
-			this.__rectangle1__sweepCounter =
+					this.__rectangle1__sweepIncreased = (0x00 & 0x8) === 0x0;
+					this.__rectangle1__sweepCounter =
 						this.__rectangle1__sweepUpdateRatio = (0x00 >> 4) & 3;
-			this.__rectangle1__sweepEnabled = (0x00 & 0x80) === 0x80;
-			break;
-		}
-		case 0x6: {
-			/* 4006h - APU Frequency Channel 2 (Rectangle) */ this.__rectangle1__frequency =
+					this.__rectangle1__sweepEnabled = (0x00 & 0x80) === 0x80;
+					break;
+				}
+				case 0x6: {
+					/* 4006h - APU Frequency Channel 2 (Rectangle) */ this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0x7: {
-			/* 4007h - APU Length Channel 2 (Rectangle) */ this.__rectangle1__frequency =
+					break;
+				}
+				case 0x7: {
+					/* 4007h - APU Length Channel 2 (Rectangle) */ this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__rectangle1__lengthCounter =
+					this.__rectangle1__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle1__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle1__decayReloaded = true;
-			break;
-		}
-		case 0x8: {
-			/* 4008h - APU Linear Counter Channel 3 (Triangle) */ this.__triangle__enableLinearCounter =
+					/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle1__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle1__decayReloaded = true;
+					break;
+				}
+				case 0x8: {
+					/* 4008h - APU Linear Counter Channel 3 (Triangle) */ this.__triangle__enableLinearCounter =
 						(0x00 & 128) == 128;
-			this.__triangle__linearCounterBuffer = 0x00 & 127;
-			break;
-		}
-		case 0x9: {
-			/* 4009h - APU N/A Channel 3 (Triangle) */ /* unused */ break;
-		}
-		case 0xa: {
-			/* 400Ah - APU Frequency Channel 3 (Triangle) */ this.__triangle__frequency =
+					this.__triangle__linearCounterBuffer = 0x00 & 127;
+					break;
+				}
+				case 0x9: {
+					/* 4009h - APU N/A Channel 3 (Triangle) */ /* unused */ break;
+				}
+				case 0xa: {
+					/* 400Ah - APU Frequency Channel 3 (Triangle) */ this.__triangle__frequency =
 						(this.__triangle__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0xb: {
-			/* 400Bh - APU Length Channel 3 (Triangle) */ this.__triangle__frequency =
+					break;
+				}
+				case 0xb: {
+					/* 400Bh - APU Length Channel 3 (Triangle) */ this.__triangle__frequency =
 						(this.__triangle__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__triangle__lengthCounter =
+					this.__triangle__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Side effects 	Sets the halt flag */ this.__triangle__haltFlag = true;
-			break;
-		}
-		case 0xc: {
-			/* 400Ch - APU Volume/Decay Channel 4 (Noise) */ this.__noize__decayCounter =
+					/* Side effects 	Sets the halt flag */ this.__triangle__haltFlag = true;
+					break;
+				}
+				case 0xc: {
+					/* 400Ch - APU Volume/Decay Channel 4 (Noise) */ this.__noize__decayCounter =
 						this.__noize__volumeOrDecayRate = 0x00 & 15;
-			this.__noize__decayEnabled = (0x00 & 16) == 0;
-			this.__noize__loopEnabled = (0x00 & 32) == 32;
-			break;
-		}
-		case 0xd: {
-			/* 400Dh - APU N/A Channel 4 (Noise) */ /* unused */ break;
-		}
-		case 0xe: {
-			/* 400Eh - APU Frequency Channel 4 (Noise) */ this.__noize__modeFlag =
+					this.__noize__decayEnabled = (0x00 & 16) == 0;
+					this.__noize__loopEnabled = (0x00 & 32) == 32;
+					break;
+				}
+				case 0xd: {
+					/* 400Dh - APU N/A Channel 4 (Noise) */ /* unused */ break;
+				}
+				case 0xe: {
+					/* 400Eh - APU Frequency Channel 4 (Noise) */ this.__noize__modeFlag =
 						(0x00 & 128) == 128;
-			this.__noize__frequency =
+					this.__noize__frequency =
 						this.__noize__FrequencyTable[0x00 & 15];
-			break;
-		}
-		case 0xf: {
-			/* 400Fh - APU Length Channel 4 (Noise) */ /* Writing to the length registers restarts the length (obviously), */ this.__noize__lengthCounter =
+					break;
+				}
+				case 0xf: {
+					/* 400Fh - APU Length Channel 4 (Noise) */ /* Writing to the length registers restarts the length (obviously), */ this.__noize__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__noize__decayReloaded = true;
-			break;
-		}
-		/* ------------------------------------ DMC ----------------------------------------------------- */ case 0x10: {
-			/* 4010h - DMC Play mode and DMA frequency */ this.__digital__irqEnabled =
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__noize__decayReloaded = true;
+					break;
+				}
+				/* ------------------------------------ DMC ----------------------------------------------------- */ case 0x10: {
+					/* 4010h - DMC Play mode and DMA frequency */ this.__digital__irqEnabled =
 						(0x00 & 128) == 128;
-			if (!this.__digital__irqEnabled) {
-				this.IRQ &= 253;
-			}
-			this.__digital__loopEnabled = (0x00 & 64) == 64;
-			this.__digital__frequency =
+					if (!this.__digital__irqEnabled) {
+						this.IRQ &= 253;
+					}
+					this.__digital__loopEnabled = (0x00 & 64) == 64;
+					this.__digital__frequency =
 						this.__digital__FrequencyTable[0x00 & 0xf];
-			break;
-		}
-		case 0x11: {
-			/* 4011h - DMC Delta counter load register */ this.__digital__deltaCounter =
+					break;
+				}
+				case 0x11: {
+					/* 4011h - DMC Delta counter load register */ this.__digital__deltaCounter =
 						0x00 & 0x7f;
-			break;
-		}
-		case 0x12: {
-			/* 4012h - DMC address load register */ this.__digital__sampleAddr =
+					break;
+				}
+				case 0x12: {
+					/* 4012h - DMC address load register */ this.__digital__sampleAddr =
 						0xc000 | (0x00 << 6);
-			break;
-		}
-		case 0x13: {
-			/* 4013h - DMC length register */ this.__digital__sampleLength =
+					break;
+				}
+				case 0x13: {
+					/* 4013h - DMC length register */ this.__digital__sampleLength =
 						this.__digital__sampleLengthBuffer = (0x00 << 4) | 1;
-			break;
-		}
-		case 0x14: {
-			/* 4014h execute Sprite DMA */ /** @type {number} uint16_t */ var __audio__dma__addrMask =
+					break;
+				}
+				case 0x14: {
+					/* 4014h execute Sprite DMA */ /** @type {number} uint16_t */ var __audio__dma__addrMask =
 						0x00 << 8;
-			var __video__spRam = this.__video__spRam;
-			var __video__spriteAddr = this.__video__spriteAddr;
-			for (var i = 0; i < 256; ++i) {
-				var __audio__dma__addr__ = __audio__dma__addrMask | i;
-				var __audio_dma__val;
-				switch ((__audio__dma__addr__ & 0xe000) >> 13) {
-				case 0: {
-					/* 0x0000 -> 0x2000 */ __audio_dma__val =
+					var __video__spRam = this.__video__spRam;
+					var __video__spriteAddr = this.__video__spriteAddr;
+					for (var i = 0; i < 256; ++i) {
+						var __audio__dma__addr__ = __audio__dma__addrMask | i;
+						var __audio_dma__val;
+						switch ((__audio__dma__addr__ & 0xe000) >> 13) {
+							case 0: {
+								/* 0x0000 -> 0x2000 */ __audio_dma__val =
 									__cpu__ram[__audio__dma__addr__ & 0x7ff];
-					break;
-				}
-				case 1: {
-					/* 0x2000 -> 0x4000 */ __audio_dma__val =
+								break;
+							}
+							case 1: {
+								/* 0x2000 -> 0x4000 */ __audio_dma__val =
 									this.__video__readReg(__audio__dma__addr__);
-					break;
-				}
-				case 2: {
-					/* 0x4000 -> 0x6000 */ if (
-						__audio__dma__addr__ === 0x4015
-					) {
-						/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */ __audio_dma__val =
+								break;
+							}
+							case 2: {
+								/* 0x4000 -> 0x6000 */ if (
+									__audio__dma__addr__ === 0x4015
+								) {
+									/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */ __audio_dma__val =
 										(this.__rectangle0__lengthCounter !=
 											0 &&
 										this.__rectangle0__frequency >= 0x8 &&
@@ -3345,335 +3345,335 @@ cycloa.ScriptMachine.prototype.onHardResetCPU = function () {
 											: 0) |
 										(this.IRQ & 1 ? 64 : 0) |
 										(this.IRQ & 2 ? 128 : 0);
-						this.IRQ &= 254;
-						this.IRQ &= 253;
-					} else if (__audio__dma__addr__ === 0x4016) {
-						__audio_dma__val =
+									this.IRQ &= 254;
+									this.IRQ &= 253;
+								} else if (__audio__dma__addr__ === 0x4016) {
+									__audio_dma__val =
 										(this.__pad__pad1Fairy.state >>
 											(this.__pad__pad1Idx++ & 7)) &
 										0x1;
-					} else if (__audio__dma__addr__ === 0x4017) {
-						__audio_dma__val =
+								} else if (__audio__dma__addr__ === 0x4017) {
+									__audio_dma__val =
 										(this.__pad__pad2Fairy.state >>
 											(this.__pad__pad2Idx++ & 7)) &
 										0x1;
-					} else if (addr < 0x4018) {
-						throw new cycloa.err.CoreException(
-							'[FIXME] Invalid addr: 0x' +
+								} else if (addr < 0x4018) {
+									throw new cycloa.err.CoreException(
+										'[FIXME] Invalid addr: 0x' +
 											__audio__dma__addr__.toString(16)
-						);
-					} else {
-						__audio_dma__val =
+									);
+								} else {
+									__audio_dma__val =
 										this.readMapperRegisterArea(addr);
+								}
+								break;
+							}
+							case 3: {
+								/* 0x6000 -> 0x8000 */ __audio_dma__val = 0;
+								break;
+							}
+							case 4: {
+								/* 0x8000 -> 0xA000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 5: {
+								/* 0xA000 -> 0xC000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 6: {
+								/* 0xC000 -> 0xE000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 7: {
+								/* 0xE000 -> 0xffff */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+						}
+						__video__spRam[(__video__spriteAddr + i) & 0xff] =
+							__audio_dma__val;
+					}
+					__vm__clockDelta += 512;
+					break;
+				}
+				/* ------------------------------ CTRL -------------------------------------------------- */ case 0x15: {
+					/* __audio__analyzeStatusRegister */ if (!(0x00 & 1))
+						this.__rectangle0__lengthCounter = 0;
+					if (!(0x00 & 2)) this.__rectangle1__lengthCounter = 0;
+					if (!(0x00 & 4)) {
+						this.__triangle__lengthCounter = 0;
+						this.__triangle__linearCounter =
+							this.__triangle__linearCounterBuffer = 0;
+					}
+					if (!(0x00 & 8)) this.__noize__lengthCounter = 0;
+					if (!(0x00 & 16)) {
+						this.__digital__sampleLength = 0;
+					} else if (this.__digital__sampleLength == 0) {
+						this.__digital__sampleLength =
+							this.__digital__sampleLengthBuffer;
 					}
 					break;
 				}
-				case 3: {
-					/* 0x6000 -> 0x8000 */ __audio_dma__val = 0;
+				case 0x16: {
+					if ((0x00 & 1) === 1) {
+						this.__pad__pad1Idx = 0;
+						this.__pad__pad2Idx = 0;
+					}
 					break;
 				}
-				case 4: {
-					/* 0x8000 -> 0xA000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
+				case 0x17: {
+					/* __audio__analyzeLowFrequentryRegister */ /* Any write to $4017 resets both the frame counter, and the clock divider. */ if (
+						0x00 & 0x80
+					) {
+						this.__audio__isNTSCmode = false;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 4;
+					} else {
+						this.__audio__isNTSCmode = true;
+						this.__audio__frameIRQenabled = true;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 3;
+					}
+					if ((0x00 & 0x40) === 0x40) {
+						this.__audio__frameIRQenabled = false;
+						this.IRQ &= 254;
+					}
 					break;
 				}
-				case 5: {
-					/* 0xA000 -> 0xC000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
+				default: {
+					/* this.writeMapperRegisterArea(0x4017, 0x00); */ break;
 				}
-				case 6: {
-					/* 0xC000 -> 0xE000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
-				}
-				case 7: {
-					/* 0xE000 -> 0xffff */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
-				}
-				}
-				__video__spRam[(__video__spriteAddr + i) & 0xff] =
-							__audio_dma__val;
-			}
-			__vm__clockDelta += 512;
-			break;
-		}
-		/* ------------------------------ CTRL -------------------------------------------------- */ case 0x15: {
-			/* __audio__analyzeStatusRegister */ if (!(0x00 & 1))
-				this.__rectangle0__lengthCounter = 0;
-			if (!(0x00 & 2)) this.__rectangle1__lengthCounter = 0;
-			if (!(0x00 & 4)) {
-				this.__triangle__lengthCounter = 0;
-				this.__triangle__linearCounter =
-							this.__triangle__linearCounterBuffer = 0;
-			}
-			if (!(0x00 & 8)) this.__noize__lengthCounter = 0;
-			if (!(0x00 & 16)) {
-				this.__digital__sampleLength = 0;
-			} else if (this.__digital__sampleLength == 0) {
-				this.__digital__sampleLength =
-							this.__digital__sampleLengthBuffer;
 			}
 			break;
 		}
-		case 0x16: {
-			if ((0x00 & 1) === 1) {
-				this.__pad__pad1Idx = 0;
-				this.__pad__pad2Idx = 0;
-			}
+		case 3: {
+			/* 0x6000 -> 0x8000 */ break;
+		}
+		case 4: {
+			/* 0x8000 -> 0xA000 */ this.writeMapperCPU(0x4017, 0x00);
 			break;
 		}
-		case 0x17: {
-			/* __audio__analyzeLowFrequentryRegister */ /* Any write to $4017 resets both the frame counter, and the clock divider. */ if (
-				0x00 & 0x80
-			) {
-				this.__audio__isNTSCmode = false;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 4;
-			} else {
-				this.__audio__isNTSCmode = true;
-				this.__audio__frameIRQenabled = true;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 3;
-			}
-			if ((0x00 & 0x40) === 0x40) {
-				this.__audio__frameIRQenabled = false;
-				this.IRQ &= 254;
-			}
+		case 5: {
+			/* 0xA000 -> 0xC000 */ this.writeMapperCPU(0x4017, 0x00);
 			break;
 		}
-		default: {
-			/* this.writeMapperRegisterArea(0x4017, 0x00); */ break;
+		case 6: {
+			/* 0xC000 -> 0xE000 */ this.writeMapperCPU(0x4017, 0x00);
+			break;
 		}
+		case 7: {
+			/* 0xE000 -> 0xffff */ this.writeMapperCPU(0x4017, 0x00);
+			break;
 		}
-		break;
-	}
-	case 3: {
-		/* 0x6000 -> 0x8000 */ break;
-	}
-	case 4: {
-		/* 0x8000 -> 0xA000 */ this.writeMapperCPU(0x4017, 0x00);
-		break;
-	}
-	case 5: {
-		/* 0xA000 -> 0xC000 */ this.writeMapperCPU(0x4017, 0x00);
-		break;
-	}
-	case 6: {
-		/* 0xC000 -> 0xE000 */ this.writeMapperCPU(0x4017, 0x00);
-		break;
-	}
-	case 7: {
-		/* 0xE000 -> 0xffff */ this.writeMapperCPU(0x4017, 0x00);
-		break;
-	}
 	}
 	switch ((0x4015 & 0xe000) >> 13) {
-	case 0: {
-		/* 0x0000 -> 0x2000 */ __cpu__ram[0x4015 & 0x1fff] = 0x00;
-		break;
-	}
-	case 1: {
-		/* 0x2000 -> 0x4000 */ this.__video__writeReg(0x4015, 0x00);
-		break;
-	}
-	case 2: {
-		/* 0x4000 -> 0x6000 */ switch (0x4015 & 0x1f) {
-		case 0x0: {
-			/* 4000h - APU Volume/Decay Channel 1 (Rectangle) */ this.__rectangle0__decayCounter =
+		case 0: {
+			/* 0x0000 -> 0x2000 */ __cpu__ram[0x4015 & 0x1fff] = 0x00;
+			break;
+		}
+		case 1: {
+			/* 0x2000 -> 0x4000 */ this.__video__writeReg(0x4015, 0x00);
+			break;
+		}
+		case 2: {
+			/* 0x4000 -> 0x6000 */ switch (0x4015 & 0x1f) {
+				case 0x0: {
+					/* 4000h - APU Volume/Decay Channel 1 (Rectangle) */ this.__rectangle0__decayCounter =
 						this.__rectangle0__volumeOrDecayRate = 0x00 & 15;
-			this.__rectangle0__decayEnabled = (0x00 & 16) == 0;
-			this.__rectangle0__loopEnabled = (0x00 & 32) == 32;
-			switch (0x00 >> 6) {
-			case 0:
-				this.__rectangle0__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle0__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle0__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle0__dutyRatio = 12;
-				break;
-			}
-			break;
-		}
-		case 0x1: {
-			/* 4001h - APU Sweep Channel 1 (Rectangle) */ this.__rectangle0__sweepShiftAmount =
+					this.__rectangle0__decayEnabled = (0x00 & 16) == 0;
+					this.__rectangle0__loopEnabled = (0x00 & 32) == 32;
+					switch (0x00 >> 6) {
+						case 0:
+							this.__rectangle0__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle0__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle0__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle0__dutyRatio = 12;
+							break;
+					}
+					break;
+				}
+				case 0x1: {
+					/* 4001h - APU Sweep Channel 1 (Rectangle) */ this.__rectangle0__sweepShiftAmount =
 						0x00 & 7;
-			this.__rectangle0__sweepIncreased = (0x00 & 0x8) === 0x0;
-			this.__rectangle0__sweepCounter =
+					this.__rectangle0__sweepIncreased = (0x00 & 0x8) === 0x0;
+					this.__rectangle0__sweepCounter =
 						this.__rectangle0__sweepUpdateRatio = (0x00 >> 4) & 3;
-			this.__rectangle0__sweepEnabled = (0x00 & 0x80) === 0x80;
-			break;
-		}
-		case 0x2: {
-			/* 4002h - APU Frequency Channel 1 (Rectangle) */ this.__rectangle0__frequency =
+					this.__rectangle0__sweepEnabled = (0x00 & 0x80) === 0x80;
+					break;
+				}
+				case 0x2: {
+					/* 4002h - APU Frequency Channel 1 (Rectangle) */ this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0x3: {
-			/* 4003h - APU Length Channel 1 (Rectangle) */ this.__rectangle0__frequency =
+					break;
+				}
+				case 0x3: {
+					/* 4003h - APU Length Channel 1 (Rectangle) */ this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__rectangle0__lengthCounter =
+					this.__rectangle0__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle0__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle0__decayReloaded = true;
-			break;
-		}
-		case 0x4: {
-			/* 4004h - APU Volume/Decay Channel 2 (Rectangle) */ this.__rectangle1__decayCounter =
+					/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle0__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle0__decayReloaded = true;
+					break;
+				}
+				case 0x4: {
+					/* 4004h - APU Volume/Decay Channel 2 (Rectangle) */ this.__rectangle1__decayCounter =
 						this.__rectangle1__volumeOrDecayRate = 0x00 & 15;
-			this.__rectangle1__decayEnabled = (0x00 & 16) == 0;
-			this.__rectangle1__loopEnabled = (0x00 & 32) == 32;
-			switch (0x00 >> 6) {
-			case 0:
-				this.__rectangle1__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle1__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle1__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle1__dutyRatio = 12;
-				break;
-			}
-			break;
-		}
-		case 0x5: {
-			/* 4005h - APU Sweep Channel 2 (Rectangle) */ this.__rectangle1__sweepShiftAmount =
+					this.__rectangle1__decayEnabled = (0x00 & 16) == 0;
+					this.__rectangle1__loopEnabled = (0x00 & 32) == 32;
+					switch (0x00 >> 6) {
+						case 0:
+							this.__rectangle1__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle1__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle1__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle1__dutyRatio = 12;
+							break;
+					}
+					break;
+				}
+				case 0x5: {
+					/* 4005h - APU Sweep Channel 2 (Rectangle) */ this.__rectangle1__sweepShiftAmount =
 						0x00 & 7;
-			this.__rectangle1__sweepIncreased = (0x00 & 0x8) === 0x0;
-			this.__rectangle1__sweepCounter =
+					this.__rectangle1__sweepIncreased = (0x00 & 0x8) === 0x0;
+					this.__rectangle1__sweepCounter =
 						this.__rectangle1__sweepUpdateRatio = (0x00 >> 4) & 3;
-			this.__rectangle1__sweepEnabled = (0x00 & 0x80) === 0x80;
-			break;
-		}
-		case 0x6: {
-			/* 4006h - APU Frequency Channel 2 (Rectangle) */ this.__rectangle1__frequency =
+					this.__rectangle1__sweepEnabled = (0x00 & 0x80) === 0x80;
+					break;
+				}
+				case 0x6: {
+					/* 4006h - APU Frequency Channel 2 (Rectangle) */ this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0x7: {
-			/* 4007h - APU Length Channel 2 (Rectangle) */ this.__rectangle1__frequency =
+					break;
+				}
+				case 0x7: {
+					/* 4007h - APU Length Channel 2 (Rectangle) */ this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__rectangle1__lengthCounter =
+					this.__rectangle1__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle1__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle1__decayReloaded = true;
-			break;
-		}
-		case 0x8: {
-			/* 4008h - APU Linear Counter Channel 3 (Triangle) */ this.__triangle__enableLinearCounter =
+					/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle1__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle1__decayReloaded = true;
+					break;
+				}
+				case 0x8: {
+					/* 4008h - APU Linear Counter Channel 3 (Triangle) */ this.__triangle__enableLinearCounter =
 						(0x00 & 128) == 128;
-			this.__triangle__linearCounterBuffer = 0x00 & 127;
-			break;
-		}
-		case 0x9: {
-			/* 4009h - APU N/A Channel 3 (Triangle) */ /* unused */ break;
-		}
-		case 0xa: {
-			/* 400Ah - APU Frequency Channel 3 (Triangle) */ this.__triangle__frequency =
+					this.__triangle__linearCounterBuffer = 0x00 & 127;
+					break;
+				}
+				case 0x9: {
+					/* 4009h - APU N/A Channel 3 (Triangle) */ /* unused */ break;
+				}
+				case 0xa: {
+					/* 400Ah - APU Frequency Channel 3 (Triangle) */ this.__triangle__frequency =
 						(this.__triangle__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0xb: {
-			/* 400Bh - APU Length Channel 3 (Triangle) */ this.__triangle__frequency =
+					break;
+				}
+				case 0xb: {
+					/* 400Bh - APU Length Channel 3 (Triangle) */ this.__triangle__frequency =
 						(this.__triangle__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__triangle__lengthCounter =
+					this.__triangle__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Side effects 	Sets the halt flag */ this.__triangle__haltFlag = true;
-			break;
-		}
-		case 0xc: {
-			/* 400Ch - APU Volume/Decay Channel 4 (Noise) */ this.__noize__decayCounter =
+					/* Side effects 	Sets the halt flag */ this.__triangle__haltFlag = true;
+					break;
+				}
+				case 0xc: {
+					/* 400Ch - APU Volume/Decay Channel 4 (Noise) */ this.__noize__decayCounter =
 						this.__noize__volumeOrDecayRate = 0x00 & 15;
-			this.__noize__decayEnabled = (0x00 & 16) == 0;
-			this.__noize__loopEnabled = (0x00 & 32) == 32;
-			break;
-		}
-		case 0xd: {
-			/* 400Dh - APU N/A Channel 4 (Noise) */ /* unused */ break;
-		}
-		case 0xe: {
-			/* 400Eh - APU Frequency Channel 4 (Noise) */ this.__noize__modeFlag =
+					this.__noize__decayEnabled = (0x00 & 16) == 0;
+					this.__noize__loopEnabled = (0x00 & 32) == 32;
+					break;
+				}
+				case 0xd: {
+					/* 400Dh - APU N/A Channel 4 (Noise) */ /* unused */ break;
+				}
+				case 0xe: {
+					/* 400Eh - APU Frequency Channel 4 (Noise) */ this.__noize__modeFlag =
 						(0x00 & 128) == 128;
-			this.__noize__frequency =
+					this.__noize__frequency =
 						this.__noize__FrequencyTable[0x00 & 15];
-			break;
-		}
-		case 0xf: {
-			/* 400Fh - APU Length Channel 4 (Noise) */ /* Writing to the length registers restarts the length (obviously), */ this.__noize__lengthCounter =
+					break;
+				}
+				case 0xf: {
+					/* 400Fh - APU Length Channel 4 (Noise) */ /* Writing to the length registers restarts the length (obviously), */ this.__noize__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__noize__decayReloaded = true;
-			break;
-		}
-		/* ------------------------------------ DMC ----------------------------------------------------- */ case 0x10: {
-			/* 4010h - DMC Play mode and DMA frequency */ this.__digital__irqEnabled =
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__noize__decayReloaded = true;
+					break;
+				}
+				/* ------------------------------------ DMC ----------------------------------------------------- */ case 0x10: {
+					/* 4010h - DMC Play mode and DMA frequency */ this.__digital__irqEnabled =
 						(0x00 & 128) == 128;
-			if (!this.__digital__irqEnabled) {
-				this.IRQ &= 253;
-			}
-			this.__digital__loopEnabled = (0x00 & 64) == 64;
-			this.__digital__frequency =
+					if (!this.__digital__irqEnabled) {
+						this.IRQ &= 253;
+					}
+					this.__digital__loopEnabled = (0x00 & 64) == 64;
+					this.__digital__frequency =
 						this.__digital__FrequencyTable[0x00 & 0xf];
-			break;
-		}
-		case 0x11: {
-			/* 4011h - DMC Delta counter load register */ this.__digital__deltaCounter =
+					break;
+				}
+				case 0x11: {
+					/* 4011h - DMC Delta counter load register */ this.__digital__deltaCounter =
 						0x00 & 0x7f;
-			break;
-		}
-		case 0x12: {
-			/* 4012h - DMC address load register */ this.__digital__sampleAddr =
+					break;
+				}
+				case 0x12: {
+					/* 4012h - DMC address load register */ this.__digital__sampleAddr =
 						0xc000 | (0x00 << 6);
-			break;
-		}
-		case 0x13: {
-			/* 4013h - DMC length register */ this.__digital__sampleLength =
+					break;
+				}
+				case 0x13: {
+					/* 4013h - DMC length register */ this.__digital__sampleLength =
 						this.__digital__sampleLengthBuffer = (0x00 << 4) | 1;
-			break;
-		}
-		case 0x14: {
-			/* 4014h execute Sprite DMA */ /** @type {number} uint16_t */ var __audio__dma__addrMask =
+					break;
+				}
+				case 0x14: {
+					/* 4014h execute Sprite DMA */ /** @type {number} uint16_t */ var __audio__dma__addrMask =
 						0x00 << 8;
-			var __video__spRam = this.__video__spRam;
-			var __video__spriteAddr = this.__video__spriteAddr;
-			for (var i = 0; i < 256; ++i) {
-				var __audio__dma__addr__ = __audio__dma__addrMask | i;
-				var __audio_dma__val;
-				switch ((__audio__dma__addr__ & 0xe000) >> 13) {
-				case 0: {
-					/* 0x0000 -> 0x2000 */ __audio_dma__val =
+					var __video__spRam = this.__video__spRam;
+					var __video__spriteAddr = this.__video__spriteAddr;
+					for (var i = 0; i < 256; ++i) {
+						var __audio__dma__addr__ = __audio__dma__addrMask | i;
+						var __audio_dma__val;
+						switch ((__audio__dma__addr__ & 0xe000) >> 13) {
+							case 0: {
+								/* 0x0000 -> 0x2000 */ __audio_dma__val =
 									__cpu__ram[__audio__dma__addr__ & 0x7ff];
-					break;
-				}
-				case 1: {
-					/* 0x2000 -> 0x4000 */ __audio_dma__val =
+								break;
+							}
+							case 1: {
+								/* 0x2000 -> 0x4000 */ __audio_dma__val =
 									this.__video__readReg(__audio__dma__addr__);
-					break;
-				}
-				case 2: {
-					/* 0x4000 -> 0x6000 */ if (
-						__audio__dma__addr__ === 0x4015
-					) {
-						/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */ __audio_dma__val =
+								break;
+							}
+							case 2: {
+								/* 0x4000 -> 0x6000 */ if (
+									__audio__dma__addr__ === 0x4015
+								) {
+									/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */ __audio_dma__val =
 										(this.__rectangle0__lengthCounter !=
 											0 &&
 										this.__rectangle0__frequency >= 0x8 &&
@@ -3698,137 +3698,137 @@ cycloa.ScriptMachine.prototype.onHardResetCPU = function () {
 											: 0) |
 										(this.IRQ & 1 ? 64 : 0) |
 										(this.IRQ & 2 ? 128 : 0);
-						this.IRQ &= 254;
-						this.IRQ &= 253;
-					} else if (__audio__dma__addr__ === 0x4016) {
-						__audio_dma__val =
+									this.IRQ &= 254;
+									this.IRQ &= 253;
+								} else if (__audio__dma__addr__ === 0x4016) {
+									__audio_dma__val =
 										(this.__pad__pad1Fairy.state >>
 											(this.__pad__pad1Idx++ & 7)) &
 										0x1;
-					} else if (__audio__dma__addr__ === 0x4017) {
-						__audio_dma__val =
+								} else if (__audio__dma__addr__ === 0x4017) {
+									__audio_dma__val =
 										(this.__pad__pad2Fairy.state >>
 											(this.__pad__pad2Idx++ & 7)) &
 										0x1;
-					} else if (addr < 0x4018) {
-						throw new cycloa.err.CoreException(
-							'[FIXME] Invalid addr: 0x' +
+								} else if (addr < 0x4018) {
+									throw new cycloa.err.CoreException(
+										'[FIXME] Invalid addr: 0x' +
 											__audio__dma__addr__.toString(16)
-						);
-					} else {
-						__audio_dma__val =
+									);
+								} else {
+									__audio_dma__val =
 										this.readMapperRegisterArea(addr);
+								}
+								break;
+							}
+							case 3: {
+								/* 0x6000 -> 0x8000 */ __audio_dma__val = 0;
+								break;
+							}
+							case 4: {
+								/* 0x8000 -> 0xA000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 5: {
+								/* 0xA000 -> 0xC000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 6: {
+								/* 0xC000 -> 0xE000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 7: {
+								/* 0xE000 -> 0xffff */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+						}
+						__video__spRam[(__video__spriteAddr + i) & 0xff] =
+							__audio_dma__val;
+					}
+					__vm__clockDelta += 512;
+					break;
+				}
+				/* ------------------------------ CTRL -------------------------------------------------- */ case 0x15: {
+					/* __audio__analyzeStatusRegister */ if (!(0x00 & 1))
+						this.__rectangle0__lengthCounter = 0;
+					if (!(0x00 & 2)) this.__rectangle1__lengthCounter = 0;
+					if (!(0x00 & 4)) {
+						this.__triangle__lengthCounter = 0;
+						this.__triangle__linearCounter =
+							this.__triangle__linearCounterBuffer = 0;
+					}
+					if (!(0x00 & 8)) this.__noize__lengthCounter = 0;
+					if (!(0x00 & 16)) {
+						this.__digital__sampleLength = 0;
+					} else if (this.__digital__sampleLength == 0) {
+						this.__digital__sampleLength =
+							this.__digital__sampleLengthBuffer;
 					}
 					break;
 				}
-				case 3: {
-					/* 0x6000 -> 0x8000 */ __audio_dma__val = 0;
+				case 0x16: {
+					if ((0x00 & 1) === 1) {
+						this.__pad__pad1Idx = 0;
+						this.__pad__pad2Idx = 0;
+					}
 					break;
 				}
-				case 4: {
-					/* 0x8000 -> 0xA000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
+				case 0x17: {
+					/* __audio__analyzeLowFrequentryRegister */ /* Any write to $4017 resets both the frame counter, and the clock divider. */ if (
+						0x00 & 0x80
+					) {
+						this.__audio__isNTSCmode = false;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 4;
+					} else {
+						this.__audio__isNTSCmode = true;
+						this.__audio__frameIRQenabled = true;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 3;
+					}
+					if ((0x00 & 0x40) === 0x40) {
+						this.__audio__frameIRQenabled = false;
+						this.IRQ &= 254;
+					}
 					break;
 				}
-				case 5: {
-					/* 0xA000 -> 0xC000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
+				default: {
+					/* this.writeMapperRegisterArea(0x4015, 0x00); */ break;
 				}
-				case 6: {
-					/* 0xC000 -> 0xE000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
-				}
-				case 7: {
-					/* 0xE000 -> 0xffff */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
-				}
-				}
-				__video__spRam[(__video__spriteAddr + i) & 0xff] =
-							__audio_dma__val;
-			}
-			__vm__clockDelta += 512;
-			break;
-		}
-		/* ------------------------------ CTRL -------------------------------------------------- */ case 0x15: {
-			/* __audio__analyzeStatusRegister */ if (!(0x00 & 1))
-				this.__rectangle0__lengthCounter = 0;
-			if (!(0x00 & 2)) this.__rectangle1__lengthCounter = 0;
-			if (!(0x00 & 4)) {
-				this.__triangle__lengthCounter = 0;
-				this.__triangle__linearCounter =
-							this.__triangle__linearCounterBuffer = 0;
-			}
-			if (!(0x00 & 8)) this.__noize__lengthCounter = 0;
-			if (!(0x00 & 16)) {
-				this.__digital__sampleLength = 0;
-			} else if (this.__digital__sampleLength == 0) {
-				this.__digital__sampleLength =
-							this.__digital__sampleLengthBuffer;
 			}
 			break;
 		}
-		case 0x16: {
-			if ((0x00 & 1) === 1) {
-				this.__pad__pad1Idx = 0;
-				this.__pad__pad2Idx = 0;
-			}
+		case 3: {
+			/* 0x6000 -> 0x8000 */ break;
+		}
+		case 4: {
+			/* 0x8000 -> 0xA000 */ this.writeMapperCPU(0x4015, 0x00);
 			break;
 		}
-		case 0x17: {
-			/* __audio__analyzeLowFrequentryRegister */ /* Any write to $4017 resets both the frame counter, and the clock divider. */ if (
-				0x00 & 0x80
-			) {
-				this.__audio__isNTSCmode = false;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 4;
-			} else {
-				this.__audio__isNTSCmode = true;
-				this.__audio__frameIRQenabled = true;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 3;
-			}
-			if ((0x00 & 0x40) === 0x40) {
-				this.__audio__frameIRQenabled = false;
-				this.IRQ &= 254;
-			}
+		case 5: {
+			/* 0xA000 -> 0xC000 */ this.writeMapperCPU(0x4015, 0x00);
 			break;
 		}
-		default: {
-			/* this.writeMapperRegisterArea(0x4015, 0x00); */ break;
+		case 6: {
+			/* 0xC000 -> 0xE000 */ this.writeMapperCPU(0x4015, 0x00);
+			break;
 		}
+		case 7: {
+			/* 0xE000 -> 0xffff */ this.writeMapperCPU(0x4015, 0x00);
+			break;
 		}
-		break;
-	}
-	case 3: {
-		/* 0x6000 -> 0x8000 */ break;
-	}
-	case 4: {
-		/* 0x8000 -> 0xA000 */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
-	case 5: {
-		/* 0xA000 -> 0xC000 */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
-	case 6: {
-		/* 0xC000 -> 0xE000 */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
-	case 7: {
-		/* 0xE000 -> 0xffff */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
 	} //this.PC = (this.read(0xFFFC) | (this.read(0xFFFD) << 8));
 	this.PC = this.__cpu__rom[31][0x3fc] | (this.__cpu__rom[31][0x3fd] << 8);
 };
@@ -3840,202 +3840,202 @@ cycloa.ScriptMachine.prototype.onResetCPU = function () {
 	this.SP -= 0x03;
 	this.P |= 4;
 	switch ((0x4015 & 0xe000) >> 13) {
-	case 0: {
-		/* 0x0000 -> 0x2000 */ __cpu__ram[0x4015 & 0x1fff] = 0x00;
-		break;
-	}
-	case 1: {
-		/* 0x2000 -> 0x4000 */ this.__video__writeReg(0x4015, 0x00);
-		break;
-	}
-	case 2: {
-		/* 0x4000 -> 0x6000 */ switch (0x4015 & 0x1f) {
-		case 0x0: {
-			/* 4000h - APU Volume/Decay Channel 1 (Rectangle) */ this.__rectangle0__decayCounter =
+		case 0: {
+			/* 0x0000 -> 0x2000 */ __cpu__ram[0x4015 & 0x1fff] = 0x00;
+			break;
+		}
+		case 1: {
+			/* 0x2000 -> 0x4000 */ this.__video__writeReg(0x4015, 0x00);
+			break;
+		}
+		case 2: {
+			/* 0x4000 -> 0x6000 */ switch (0x4015 & 0x1f) {
+				case 0x0: {
+					/* 4000h - APU Volume/Decay Channel 1 (Rectangle) */ this.__rectangle0__decayCounter =
 						this.__rectangle0__volumeOrDecayRate = 0x00 & 15;
-			this.__rectangle0__decayEnabled = (0x00 & 16) == 0;
-			this.__rectangle0__loopEnabled = (0x00 & 32) == 32;
-			switch (0x00 >> 6) {
-			case 0:
-				this.__rectangle0__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle0__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle0__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle0__dutyRatio = 12;
-				break;
-			}
-			break;
-		}
-		case 0x1: {
-			/* 4001h - APU Sweep Channel 1 (Rectangle) */ this.__rectangle0__sweepShiftAmount =
+					this.__rectangle0__decayEnabled = (0x00 & 16) == 0;
+					this.__rectangle0__loopEnabled = (0x00 & 32) == 32;
+					switch (0x00 >> 6) {
+						case 0:
+							this.__rectangle0__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle0__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle0__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle0__dutyRatio = 12;
+							break;
+					}
+					break;
+				}
+				case 0x1: {
+					/* 4001h - APU Sweep Channel 1 (Rectangle) */ this.__rectangle0__sweepShiftAmount =
 						0x00 & 7;
-			this.__rectangle0__sweepIncreased = (0x00 & 0x8) === 0x0;
-			this.__rectangle0__sweepCounter =
+					this.__rectangle0__sweepIncreased = (0x00 & 0x8) === 0x0;
+					this.__rectangle0__sweepCounter =
 						this.__rectangle0__sweepUpdateRatio = (0x00 >> 4) & 3;
-			this.__rectangle0__sweepEnabled = (0x00 & 0x80) === 0x80;
-			break;
-		}
-		case 0x2: {
-			/* 4002h - APU Frequency Channel 1 (Rectangle) */ this.__rectangle0__frequency =
+					this.__rectangle0__sweepEnabled = (0x00 & 0x80) === 0x80;
+					break;
+				}
+				case 0x2: {
+					/* 4002h - APU Frequency Channel 1 (Rectangle) */ this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0x3: {
-			/* 4003h - APU Length Channel 1 (Rectangle) */ this.__rectangle0__frequency =
+					break;
+				}
+				case 0x3: {
+					/* 4003h - APU Length Channel 1 (Rectangle) */ this.__rectangle0__frequency =
 						(this.__rectangle0__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__rectangle0__lengthCounter =
+					this.__rectangle0__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle0__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle0__decayReloaded = true;
-			break;
-		}
-		case 0x4: {
-			/* 4004h - APU Volume/Decay Channel 2 (Rectangle) */ this.__rectangle1__decayCounter =
+					/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle0__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle0__decayReloaded = true;
+					break;
+				}
+				case 0x4: {
+					/* 4004h - APU Volume/Decay Channel 2 (Rectangle) */ this.__rectangle1__decayCounter =
 						this.__rectangle1__volumeOrDecayRate = 0x00 & 15;
-			this.__rectangle1__decayEnabled = (0x00 & 16) == 0;
-			this.__rectangle1__loopEnabled = (0x00 & 32) == 32;
-			switch (0x00 >> 6) {
-			case 0:
-				this.__rectangle1__dutyRatio = 2;
-				break;
-			case 1:
-				this.__rectangle1__dutyRatio = 4;
-				break;
-			case 2:
-				this.__rectangle1__dutyRatio = 8;
-				break;
-			case 3:
-				this.__rectangle1__dutyRatio = 12;
-				break;
-			}
-			break;
-		}
-		case 0x5: {
-			/* 4005h - APU Sweep Channel 2 (Rectangle) */ this.__rectangle1__sweepShiftAmount =
+					this.__rectangle1__decayEnabled = (0x00 & 16) == 0;
+					this.__rectangle1__loopEnabled = (0x00 & 32) == 32;
+					switch (0x00 >> 6) {
+						case 0:
+							this.__rectangle1__dutyRatio = 2;
+							break;
+						case 1:
+							this.__rectangle1__dutyRatio = 4;
+							break;
+						case 2:
+							this.__rectangle1__dutyRatio = 8;
+							break;
+						case 3:
+							this.__rectangle1__dutyRatio = 12;
+							break;
+					}
+					break;
+				}
+				case 0x5: {
+					/* 4005h - APU Sweep Channel 2 (Rectangle) */ this.__rectangle1__sweepShiftAmount =
 						0x00 & 7;
-			this.__rectangle1__sweepIncreased = (0x00 & 0x8) === 0x0;
-			this.__rectangle1__sweepCounter =
+					this.__rectangle1__sweepIncreased = (0x00 & 0x8) === 0x0;
+					this.__rectangle1__sweepCounter =
 						this.__rectangle1__sweepUpdateRatio = (0x00 >> 4) & 3;
-			this.__rectangle1__sweepEnabled = (0x00 & 0x80) === 0x80;
-			break;
-		}
-		case 0x6: {
-			/* 4006h - APU Frequency Channel 2 (Rectangle) */ this.__rectangle1__frequency =
+					this.__rectangle1__sweepEnabled = (0x00 & 0x80) === 0x80;
+					break;
+				}
+				case 0x6: {
+					/* 4006h - APU Frequency Channel 2 (Rectangle) */ this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0x7: {
-			/* 4007h - APU Length Channel 2 (Rectangle) */ this.__rectangle1__frequency =
+					break;
+				}
+				case 0x7: {
+					/* 4007h - APU Length Channel 2 (Rectangle) */ this.__rectangle1__frequency =
 						(this.__rectangle1__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__rectangle1__lengthCounter =
+					this.__rectangle1__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle1__dutyCounter = 0;
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle1__decayReloaded = true;
-			break;
-		}
-		case 0x8: {
-			/* 4008h - APU Linear Counter Channel 3 (Triangle) */ this.__triangle__enableLinearCounter =
+					/* Writing to the length registers restarts the length (obviously),			and also restarts the duty cycle (channel 1,2 only), */ this.__rectangle1__dutyCounter = 0;
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__rectangle1__decayReloaded = true;
+					break;
+				}
+				case 0x8: {
+					/* 4008h - APU Linear Counter Channel 3 (Triangle) */ this.__triangle__enableLinearCounter =
 						(0x00 & 128) == 128;
-			this.__triangle__linearCounterBuffer = 0x00 & 127;
-			break;
-		}
-		case 0x9: {
-			/* 4009h - APU N/A Channel 3 (Triangle) */ /* unused */ break;
-		}
-		case 0xa: {
-			/* 400Ah - APU Frequency Channel 3 (Triangle) */ this.__triangle__frequency =
+					this.__triangle__linearCounterBuffer = 0x00 & 127;
+					break;
+				}
+				case 0x9: {
+					/* 4009h - APU N/A Channel 3 (Triangle) */ /* unused */ break;
+				}
+				case 0xa: {
+					/* 400Ah - APU Frequency Channel 3 (Triangle) */ this.__triangle__frequency =
 						(this.__triangle__frequency & 0x0700) | 0x00;
-			break;
-		}
-		case 0xb: {
-			/* 400Bh - APU Length Channel 3 (Triangle) */ this.__triangle__frequency =
+					break;
+				}
+				case 0xb: {
+					/* 400Bh - APU Length Channel 3 (Triangle) */ this.__triangle__frequency =
 						(this.__triangle__frequency & 0x00ff) |
 						((0x00 & 7) << 8);
-			this.__triangle__lengthCounter =
+					this.__triangle__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* Side effects 	Sets the halt flag */ this.__triangle__haltFlag = true;
-			break;
-		}
-		case 0xc: {
-			/* 400Ch - APU Volume/Decay Channel 4 (Noise) */ this.__noize__decayCounter =
+					/* Side effects 	Sets the halt flag */ this.__triangle__haltFlag = true;
+					break;
+				}
+				case 0xc: {
+					/* 400Ch - APU Volume/Decay Channel 4 (Noise) */ this.__noize__decayCounter =
 						this.__noize__volumeOrDecayRate = 0x00 & 15;
-			this.__noize__decayEnabled = (0x00 & 16) == 0;
-			this.__noize__loopEnabled = (0x00 & 32) == 32;
-			break;
-		}
-		case 0xd: {
-			/* 400Dh - APU N/A Channel 4 (Noise) */ /* unused */ break;
-		}
-		case 0xe: {
-			/* 400Eh - APU Frequency Channel 4 (Noise) */ this.__noize__modeFlag =
+					this.__noize__decayEnabled = (0x00 & 16) == 0;
+					this.__noize__loopEnabled = (0x00 & 32) == 32;
+					break;
+				}
+				case 0xd: {
+					/* 400Dh - APU N/A Channel 4 (Noise) */ /* unused */ break;
+				}
+				case 0xe: {
+					/* 400Eh - APU Frequency Channel 4 (Noise) */ this.__noize__modeFlag =
 						(0x00 & 128) == 128;
-			this.__noize__frequency =
+					this.__noize__frequency =
 						this.__noize__FrequencyTable[0x00 & 15];
-			break;
-		}
-		case 0xf: {
-			/* 400Fh - APU Length Channel 4 (Noise) */ /* Writing to the length registers restarts the length (obviously), */ this.__noize__lengthCounter =
+					break;
+				}
+				case 0xf: {
+					/* 400Fh - APU Length Channel 4 (Noise) */ /* Writing to the length registers restarts the length (obviously), */ this.__noize__lengthCounter =
 						this.__audio__LengthCounterConst[0x00 >> 3];
-			/* and restarts the decay volume (channel 1,2,4 only). */ this.__noize__decayReloaded = true;
-			break;
-		}
-		/* ------------------------------------ DMC ----------------------------------------------------- */ case 0x10: {
-			/* 4010h - DMC Play mode and DMA frequency */ this.__digital__irqEnabled =
+					/* and restarts the decay volume (channel 1,2,4 only). */ this.__noize__decayReloaded = true;
+					break;
+				}
+				/* ------------------------------------ DMC ----------------------------------------------------- */ case 0x10: {
+					/* 4010h - DMC Play mode and DMA frequency */ this.__digital__irqEnabled =
 						(0x00 & 128) == 128;
-			if (!this.__digital__irqEnabled) {
-				this.IRQ &= 253;
-			}
-			this.__digital__loopEnabled = (0x00 & 64) == 64;
-			this.__digital__frequency =
+					if (!this.__digital__irqEnabled) {
+						this.IRQ &= 253;
+					}
+					this.__digital__loopEnabled = (0x00 & 64) == 64;
+					this.__digital__frequency =
 						this.__digital__FrequencyTable[0x00 & 0xf];
-			break;
-		}
-		case 0x11: {
-			/* 4011h - DMC Delta counter load register */ this.__digital__deltaCounter =
+					break;
+				}
+				case 0x11: {
+					/* 4011h - DMC Delta counter load register */ this.__digital__deltaCounter =
 						0x00 & 0x7f;
-			break;
-		}
-		case 0x12: {
-			/* 4012h - DMC address load register */ this.__digital__sampleAddr =
+					break;
+				}
+				case 0x12: {
+					/* 4012h - DMC address load register */ this.__digital__sampleAddr =
 						0xc000 | (0x00 << 6);
-			break;
-		}
-		case 0x13: {
-			/* 4013h - DMC length register */ this.__digital__sampleLength =
+					break;
+				}
+				case 0x13: {
+					/* 4013h - DMC length register */ this.__digital__sampleLength =
 						this.__digital__sampleLengthBuffer = (0x00 << 4) | 1;
-			break;
-		}
-		case 0x14: {
-			/* 4014h execute Sprite DMA */ /** @type {number} uint16_t */ var __audio__dma__addrMask =
+					break;
+				}
+				case 0x14: {
+					/* 4014h execute Sprite DMA */ /** @type {number} uint16_t */ var __audio__dma__addrMask =
 						0x00 << 8;
-			var __video__spRam = this.__video__spRam;
-			var __video__spriteAddr = this.__video__spriteAddr;
-			for (var i = 0; i < 256; ++i) {
-				var __audio__dma__addr__ = __audio__dma__addrMask | i;
-				var __audio_dma__val;
-				switch ((__audio__dma__addr__ & 0xe000) >> 13) {
-				case 0: {
-					/* 0x0000 -> 0x2000 */ __audio_dma__val =
+					var __video__spRam = this.__video__spRam;
+					var __video__spriteAddr = this.__video__spriteAddr;
+					for (var i = 0; i < 256; ++i) {
+						var __audio__dma__addr__ = __audio__dma__addrMask | i;
+						var __audio_dma__val;
+						switch ((__audio__dma__addr__ & 0xe000) >> 13) {
+							case 0: {
+								/* 0x0000 -> 0x2000 */ __audio_dma__val =
 									__cpu__ram[__audio__dma__addr__ & 0x7ff];
-					break;
-				}
-				case 1: {
-					/* 0x2000 -> 0x4000 */ __audio_dma__val =
+								break;
+							}
+							case 1: {
+								/* 0x2000 -> 0x4000 */ __audio_dma__val =
 									this.__video__readReg(__audio__dma__addr__);
-					break;
-				}
-				case 2: {
-					/* 0x4000 -> 0x6000 */ if (
-						__audio__dma__addr__ === 0x4015
-					) {
-						/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */ __audio_dma__val =
+								break;
+							}
+							case 2: {
+								/* 0x4000 -> 0x6000 */ if (
+									__audio__dma__addr__ === 0x4015
+								) {
+									/* Clears the frame interrupt flag after being read (but not the DMC interrupt flag).			   If an interrupt flag was set at the same moment of the read, it will read back as 1 but it will not be cleared. */ __audio_dma__val =
 										(this.__rectangle0__lengthCounter !=
 											0 &&
 										this.__rectangle0__frequency >= 0x8 &&
@@ -4060,137 +4060,137 @@ cycloa.ScriptMachine.prototype.onResetCPU = function () {
 											: 0) |
 										(this.IRQ & 1 ? 64 : 0) |
 										(this.IRQ & 2 ? 128 : 0);
-						this.IRQ &= 254;
-						this.IRQ &= 253;
-					} else if (__audio__dma__addr__ === 0x4016) {
-						__audio_dma__val =
+									this.IRQ &= 254;
+									this.IRQ &= 253;
+								} else if (__audio__dma__addr__ === 0x4016) {
+									__audio_dma__val =
 										(this.__pad__pad1Fairy.state >>
 											(this.__pad__pad1Idx++ & 7)) &
 										0x1;
-					} else if (__audio__dma__addr__ === 0x4017) {
-						__audio_dma__val =
+								} else if (__audio__dma__addr__ === 0x4017) {
+									__audio_dma__val =
 										(this.__pad__pad2Fairy.state >>
 											(this.__pad__pad2Idx++ & 7)) &
 										0x1;
-					} else if (addr < 0x4018) {
-						throw new cycloa.err.CoreException(
-							'[FIXME] Invalid addr: 0x' +
+								} else if (addr < 0x4018) {
+									throw new cycloa.err.CoreException(
+										'[FIXME] Invalid addr: 0x' +
 											__audio__dma__addr__.toString(16)
-						);
-					} else {
-						__audio_dma__val =
+									);
+								} else {
+									__audio_dma__val =
 										this.readMapperRegisterArea(addr);
+								}
+								break;
+							}
+							case 3: {
+								/* 0x6000 -> 0x8000 */ __audio_dma__val = 0;
+								break;
+							}
+							case 4: {
+								/* 0x8000 -> 0xA000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 5: {
+								/* 0xA000 -> 0xC000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 6: {
+								/* 0xC000 -> 0xE000 */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+							case 7: {
+								/* 0xE000 -> 0xffff */ __audio_dma__val =
+									__cpu__rom[
+										(__audio__dma__addr__ >> 10) & 31
+									][__audio__dma__addr__ & 0x3ff];
+								break;
+							}
+						}
+						__video__spRam[(__video__spriteAddr + i) & 0xff] =
+							__audio_dma__val;
+					}
+					__vm__clockDelta += 512;
+					break;
+				}
+				/* ------------------------------ CTRL -------------------------------------------------- */ case 0x15: {
+					/* __audio__analyzeStatusRegister */ if (!(0x00 & 1))
+						this.__rectangle0__lengthCounter = 0;
+					if (!(0x00 & 2)) this.__rectangle1__lengthCounter = 0;
+					if (!(0x00 & 4)) {
+						this.__triangle__lengthCounter = 0;
+						this.__triangle__linearCounter =
+							this.__triangle__linearCounterBuffer = 0;
+					}
+					if (!(0x00 & 8)) this.__noize__lengthCounter = 0;
+					if (!(0x00 & 16)) {
+						this.__digital__sampleLength = 0;
+					} else if (this.__digital__sampleLength == 0) {
+						this.__digital__sampleLength =
+							this.__digital__sampleLengthBuffer;
 					}
 					break;
 				}
-				case 3: {
-					/* 0x6000 -> 0x8000 */ __audio_dma__val = 0;
+				case 0x16: {
+					if ((0x00 & 1) === 1) {
+						this.__pad__pad1Idx = 0;
+						this.__pad__pad2Idx = 0;
+					}
 					break;
 				}
-				case 4: {
-					/* 0x8000 -> 0xA000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
+				case 0x17: {
+					/* __audio__analyzeLowFrequentryRegister */ /* Any write to $4017 resets both the frame counter, and the clock divider. */ if (
+						0x00 & 0x80
+					) {
+						this.__audio__isNTSCmode = false;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 4;
+					} else {
+						this.__audio__isNTSCmode = true;
+						this.__audio__frameIRQenabled = true;
+						this.__audio__frameCnt = 1786360;
+						this.__audio__frameIRQCnt = 3;
+					}
+					if ((0x00 & 0x40) === 0x40) {
+						this.__audio__frameIRQenabled = false;
+						this.IRQ &= 254;
+					}
 					break;
 				}
-				case 5: {
-					/* 0xA000 -> 0xC000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
+				default: {
+					/* this.writeMapperRegisterArea(0x4015, 0x00); */ break;
 				}
-				case 6: {
-					/* 0xC000 -> 0xE000 */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
-				}
-				case 7: {
-					/* 0xE000 -> 0xffff */ __audio_dma__val =
-									__cpu__rom[
-										(__audio__dma__addr__ >> 10) & 31
-									][__audio__dma__addr__ & 0x3ff];
-					break;
-				}
-				}
-				__video__spRam[(__video__spriteAddr + i) & 0xff] =
-							__audio_dma__val;
-			}
-			__vm__clockDelta += 512;
-			break;
-		}
-		/* ------------------------------ CTRL -------------------------------------------------- */ case 0x15: {
-			/* __audio__analyzeStatusRegister */ if (!(0x00 & 1))
-				this.__rectangle0__lengthCounter = 0;
-			if (!(0x00 & 2)) this.__rectangle1__lengthCounter = 0;
-			if (!(0x00 & 4)) {
-				this.__triangle__lengthCounter = 0;
-				this.__triangle__linearCounter =
-							this.__triangle__linearCounterBuffer = 0;
-			}
-			if (!(0x00 & 8)) this.__noize__lengthCounter = 0;
-			if (!(0x00 & 16)) {
-				this.__digital__sampleLength = 0;
-			} else if (this.__digital__sampleLength == 0) {
-				this.__digital__sampleLength =
-							this.__digital__sampleLengthBuffer;
 			}
 			break;
 		}
-		case 0x16: {
-			if ((0x00 & 1) === 1) {
-				this.__pad__pad1Idx = 0;
-				this.__pad__pad2Idx = 0;
-			}
+		case 3: {
+			/* 0x6000 -> 0x8000 */ break;
+		}
+		case 4: {
+			/* 0x8000 -> 0xA000 */ this.writeMapperCPU(0x4015, 0x00);
 			break;
 		}
-		case 0x17: {
-			/* __audio__analyzeLowFrequentryRegister */ /* Any write to $4017 resets both the frame counter, and the clock divider. */ if (
-				0x00 & 0x80
-			) {
-				this.__audio__isNTSCmode = false;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 4;
-			} else {
-				this.__audio__isNTSCmode = true;
-				this.__audio__frameIRQenabled = true;
-				this.__audio__frameCnt = 1786360;
-				this.__audio__frameIRQCnt = 3;
-			}
-			if ((0x00 & 0x40) === 0x40) {
-				this.__audio__frameIRQenabled = false;
-				this.IRQ &= 254;
-			}
+		case 5: {
+			/* 0xA000 -> 0xC000 */ this.writeMapperCPU(0x4015, 0x00);
 			break;
 		}
-		default: {
-			/* this.writeMapperRegisterArea(0x4015, 0x00); */ break;
+		case 6: {
+			/* 0xC000 -> 0xE000 */ this.writeMapperCPU(0x4015, 0x00);
+			break;
 		}
+		case 7: {
+			/* 0xE000 -> 0xffff */ this.writeMapperCPU(0x4015, 0x00);
+			break;
 		}
-		break;
-	}
-	case 3: {
-		/* 0x6000 -> 0x8000 */ break;
-	}
-	case 4: {
-		/* 0x8000 -> 0xA000 */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
-	case 5: {
-		/* 0xA000 -> 0xC000 */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
-	case 6: {
-		/* 0xC000 -> 0xE000 */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
-	case 7: {
-		/* 0xE000 -> 0xffff */ this.writeMapperCPU(0x4015, 0x00);
-		break;
-	}
 	} //this.PC = (read(0xFFFC) | (read(0xFFFD) << 8));
 	this.PC = this.__cpu__rom[31][0x3fc] | (this.__cpu__rom[31][0x3fd] << 8);
 };
@@ -4448,14 +4448,14 @@ cycloa.ScriptMachine.prototype.__video__buildBgLine = function () {
 			(nameTableAddr & 0x3f00) !== 0x3f00
 				? nameTableAddr < 0x2000
 					? __video__pattern[(nameTableAddr >> 9) & 0xf][
-						nameTableAddr & 0x1ff
+							nameTableAddr & 0x1ff
 					  ]
 					: __video__vramMirroring[(nameTableAddr >> 10) & 0x3][
-						nameTableAddr & 0x3ff
+							nameTableAddr & 0x3ff
 					  ]
 				: nameTableAddr & (0x3 === 0)
-					? __video__palette[32 | ((addr >> 2) & 3)]
-					: __video__palette[nameTableAddr & 31];
+				? __video__palette[32 | ((addr >> 2) & 3)]
+				: __video__palette[nameTableAddr & 31];
 		/**
 		 * @type {number} uint16_t
 		 * @const
@@ -4479,11 +4479,11 @@ cycloa.ScriptMachine.prototype.__video__buildBgLine = function () {
 				? palAddr < 0x2000
 					? __video__pattern[(palAddr >> 9) & 0xf][palAddr & 0x1ff]
 					: __video__vramMirroring[(palAddr >> 10) & 0x3][
-						palAddr & 0x3ff
+							palAddr & 0x3ff
 					  ]
 				: palAddr & (0x3 === 0)
-					? __video__palette[32 | ((addr >> 2) & 3)]
-					: __video__palette[palAddr & 31]) >>
+				? __video__palette[32 | ((addr >> 2) & 3)]
+				: __video__palette[palAddr & 31]) >>
 				(((tileYofScreen & 2) << 1) | (nameTableAddr & 2))) &
 			0x3;
 
@@ -4503,8 +4503,8 @@ cycloa.ScriptMachine.prototype.__video__buildBgLine = function () {
 					? __video__pattern[(off >> 9) & 0xf][off & 0x1ff]
 					: __video__vramMirroring[(off >> 10) & 0x3][off & 0x3ff]
 				: off & (0x3 === 0)
-					? __video__palette[32 | ((addr >> 2) & 3)]
-					: __video__palette[off & 31];
+				? __video__palette[32 | ((addr >> 2) & 3)]
+				: __video__palette[off & 31];
 		/**
 		 * @type {number} uint8_t
 		 * @const
@@ -4518,14 +4518,14 @@ cycloa.ScriptMachine.prototype.__video__buildBgLine = function () {
 			(secondPlaneAddr & 0x3f00) !== 0x3f00
 				? secondPlaneAddr < 0x2000
 					? __video__pattern[(secondPlaneAddr >> 9) & 0xf][
-						secondPlaneAddr & 0x1ff
+							secondPlaneAddr & 0x1ff
 					  ]
 					: __video__vramMirroring[(secondPlaneAddr >> 10) & 0x3][
-						secondPlaneAddr & 0x3ff
+							secondPlaneAddr & 0x3ff
 					  ]
 				: secondPlaneAddr & (0x3 === 0)
-					? __video__palette[32 | ((addr >> 2) & 3)]
-					: __video__palette[secondPlaneAddr & 31];
+				? __video__palette[32 | ((addr >> 2) & 3)]
+				: __video__palette[secondPlaneAddr & 31];
 		/**
 		 * @type {number} uint8_t
 		 * @const
@@ -4627,8 +4627,8 @@ cycloa.ScriptMachine.prototype.__video__buildSpriteLine = function () {
 					? __video__pattern[(off >> 9) & 0xf][off & 0x1ff]
 					: __video__vramMirroring[(off >> 10) & 0x3][off & 0x3ff]
 				: off & (0x3 === 0)
-					? __video__palette[32 | ((addr >> 2) & 3)]
-					: __video__palette[off & 31];
+				? __video__palette[32 | ((addr >> 2) & 3)]
+				: __video__palette[off & 31];
 		/**
 		 * @type {number} uint8_t
 		 * @const
@@ -4642,14 +4642,14 @@ cycloa.ScriptMachine.prototype.__video__buildSpriteLine = function () {
 			(secondPlaneAddr & 0x3f00) !== 0x3f00
 				? secondPlaneAddr < 0x2000
 					? __video__pattern[(secondPlaneAddr >> 9) & 0xf][
-						secondPlaneAddr & 0x1ff
+							secondPlaneAddr & 0x1ff
 					  ]
 					: __video__vramMirroring[(secondPlaneAddr >> 10) & 0x3][
-						secondPlaneAddr & 0x3ff
+							secondPlaneAddr & 0x3ff
 					  ]
 				: secondPlaneAddr & (0x3 === 0)
-					? __video__palette[32 | ((addr >> 2) & 3)]
-					: __video__palette[secondPlaneAddr & 31];
+				? __video__palette[32 | ((addr >> 2) & 3)]
+				: __video__palette[secondPlaneAddr & 31];
 		/**
 		 * @type {number} uint16_t
 		 * @const
@@ -4759,97 +4759,97 @@ cycloa.ScriptMachine.prototype.__video__writeReg = function (
 	var __video__screenBuffer8 = this.__video__screenBuffer8;
 	var __video__screenBuffer32 = this.__video__screenBuffer32;
 	switch (addr & 0x07) {
-	/* PPU Control and Status Registers */
-	case 0x00: {
-		//2000h - PPU Control Register 1 (W)
-		this.__video__executeNMIonVBlank =
+		/* PPU Control and Status Registers */
+		case 0x00: {
+			//2000h - PPU Control Register 1 (W)
+			this.__video__executeNMIonVBlank =
 				(value & 0x80) === 0x80 ? true : false;
-		this.__video__spriteHeight = (value & 0x20) === 0x20 ? 16 : 8;
-		this.__video__patternTableAddressBackground = (value & 0x10) << 8;
-		this.__video__patternTableAddress8x8Sprites = (value & 0x8) << 9;
-		this.__video__vramIncrementSize = (value & 0x4) === 0x4 ? 32 : 1;
-		this.__video__vramAddrReloadRegister =
+			this.__video__spriteHeight = (value & 0x20) === 0x20 ? 16 : 8;
+			this.__video__patternTableAddressBackground = (value & 0x10) << 8;
+			this.__video__patternTableAddress8x8Sprites = (value & 0x8) << 9;
+			this.__video__vramIncrementSize = (value & 0x4) === 0x4 ? 32 : 1;
+			this.__video__vramAddrReloadRegister =
 				(this.__video__vramAddrReloadRegister & 0x73ff) |
 				((value & 0x3) << 10);
-		break;
-	}
-	case 0x01: {
-		//2001h - PPU Control Register 2 (W)
-		this.__video__colorEmphasis = value >> 5; //FIXME: この扱い、どーする？
-		this.__video__spriteVisibility =
+			break;
+		}
+		case 0x01: {
+			//2001h - PPU Control Register 2 (W)
+			this.__video__colorEmphasis = value >> 5; //FIXME: この扱い、どーする？
+			this.__video__spriteVisibility =
 				(value & 0x10) === 0x10 ? true : false;
-		this.__video__backgroundVisibility =
+			this.__video__backgroundVisibility =
 				(value & 0x08) == 0x08 ? true : false;
-		this.__video__spriteClipping =
+			this.__video__spriteClipping =
 				(value & 0x04) === 0x04 ? false : true;
-		this.__video__backgroundClipping =
+			this.__video__backgroundClipping =
 				(value & 0x2) === 0x02 ? false : true;
-		this.__video__paletteMask = (value & 0x1) === 0x01 ? 0x30 : 0x3f;
-		break;
-	}
-	//case 0x02: //2002h - PPU Status Register (R)
-	/* PPU SPR-RAM Access Registers */
-	case 0x03: {
-		//2003h - SPR-RAM Address Register (W)
-		this.__video__spriteAddr = value;
-		break;
-	}
-	case 0x04: {
-		//2004h - SPR-RAM Data Register (Read/Write)
-		spRam[this.__video__spriteAddr] = value;
-		this.__video__spriteAddr = (this.__video__spriteAddr + 1) & 0xff;
-		break;
-	}
-	/* PPU VRAM Access Registers */
-	case 0x05: {
-		//PPU Background Scrolling Offset (W2)
-		if (this.__video__scrollRegisterWritten) {
-			//Y
-			this.__video__vramAddrReloadRegister =
+			this.__video__paletteMask = (value & 0x1) === 0x01 ? 0x30 : 0x3f;
+			break;
+		}
+		//case 0x02: //2002h - PPU Status Register (R)
+		/* PPU SPR-RAM Access Registers */
+		case 0x03: {
+			//2003h - SPR-RAM Address Register (W)
+			this.__video__spriteAddr = value;
+			break;
+		}
+		case 0x04: {
+			//2004h - SPR-RAM Data Register (Read/Write)
+			spRam[this.__video__spriteAddr] = value;
+			this.__video__spriteAddr = (this.__video__spriteAddr + 1) & 0xff;
+			break;
+		}
+		/* PPU VRAM Access Registers */
+		case 0x05: {
+			//PPU Background Scrolling Offset (W2)
+			if (this.__video__scrollRegisterWritten) {
+				//Y
+				this.__video__vramAddrReloadRegister =
 					(this.__video__vramAddrReloadRegister & 0x8c1f) |
 					((value & 0xf8) << 2) |
 					((value & 7) << 12);
-		} else {
-			//X
-			this.__video__vramAddrReloadRegister =
+			} else {
+				//X
+				this.__video__vramAddrReloadRegister =
 					(this.__video__vramAddrReloadRegister & 0xffe0) |
 					(value >> 3);
-			this.__video__horizontalScrollBits = value & 7;
-		}
-		this.__video__scrollRegisterWritten =
+				this.__video__horizontalScrollBits = value & 7;
+			}
+			this.__video__scrollRegisterWritten =
 				!this.__video__scrollRegisterWritten;
-		break;
-	}
-	case 0x06: {
-		//VRAM Address Register (W2)
-		if (this.__video__vramAddrRegisterWritten) {
-			this.__video__vramAddrReloadRegister =
+			break;
+		}
+		case 0x06: {
+			//VRAM Address Register (W2)
+			if (this.__video__vramAddrRegisterWritten) {
+				this.__video__vramAddrReloadRegister =
 					(this.__video__vramAddrReloadRegister & 0x7f00) | value;
-			this.__video__vramAddrRegister =
+				this.__video__vramAddrRegister =
 					this.__video__vramAddrReloadRegister & 0x3fff;
-		} else {
-			this.__video__vramAddrReloadRegister =
+			} else {
+				this.__video__vramAddrReloadRegister =
 					(this.__video__vramAddrReloadRegister & 0x00ff) |
 					((value & 0x7f) << 8);
-		}
-		this.__video__vramAddrRegisterWritten =
+			}
+			this.__video__vramAddrRegisterWritten =
 				!this.__video__vramAddrRegisterWritten;
-		break;
-	}
-	case 0x07: {
-		//VRAM Read/Write Data Register (RW)
-		this.__video__writeVram(this.__video__vramAddrRegister, value);
-		this.__video__vramAddrRegister =
+			break;
+		}
+		case 0x07: {
+			//VRAM Read/Write Data Register (RW)
+			this.__video__writeVram(this.__video__vramAddrRegister, value);
+			this.__video__vramAddrRegister =
 				(this.__video__vramAddrRegister +
 					this.__video__vramIncrementSize) &
 				0x3fff;
-		break;
-	}
-	default: {
-		throw new cycloa.err.CoreException(
-			'Invalid addr: 0x' + addr.toString(16)
-		);
-	}
+			break;
+		}
+		default: {
+			throw new cycloa.err.CoreException(
+				'Invalid addr: 0x' + addr.toString(16)
+			);
+		}
 	}
 };
 
@@ -4862,79 +4862,79 @@ cycloa.ScriptMachine.prototype.__video__readReg = function (
 	var __video__screenBuffer8 = this.__video__screenBuffer8;
 	var __video__screenBuffer32 = this.__video__screenBuffer32;
 	switch (addr & 0x07) {
-	/* PPU Control and Status Registers */
-	//case 0x00: //2000h - PPU Control Register 1 (W)
-	//case 0x01: //2001h - PPU Control Register 2 (W)
-	case 0x02: {
-		//2002h - PPU Status Register (R)
-		//from http://nocash.emubase.de/everynes.htm#pictureprocessingunitppu
-		this.__video__vramAddrRegisterWritten = false;
-		this.__video__scrollRegisterWritten = false;
-		//Reading resets the 1st/2nd-write flipflop (used by Port 2005h and 2006h).
-		/**
+		/* PPU Control and Status Registers */
+		//case 0x00: //2000h - PPU Control Register 1 (W)
+		//case 0x01: //2001h - PPU Control Register 2 (W)
+		case 0x02: {
+			//2002h - PPU Status Register (R)
+			//from http://nocash.emubase.de/everynes.htm#pictureprocessingunitppu
+			this.__video__vramAddrRegisterWritten = false;
+			this.__video__scrollRegisterWritten = false;
+			//Reading resets the 1st/2nd-write flipflop (used by Port 2005h and 2006h).
+			/**
 			 * @const
 			 * @type {number} uint8_t
 			 */
-		var result =
+			var result =
 				(this.__video__nowOnVBnank ? 128 : 0) |
 				(this.__video__sprite0Hit ? 64 : 0) |
 				(this.__video__lostSprites ? 32 : 0);
-		this.__video__nowOnVBnank = false;
-		return result;
-	}
-	/* PPU SPR-RAM Access Registers */
-	//case 0x03: //2003h - SPR-RAM Address Register (W)
-	case 0x04: {
-		//2004h - SPR-RAM Data Register (Read/Write)
-		return this.__video__spRam[this.__video__spriteAddr];
-	}
-	/* PPU VRAM Access Registers */
-	//case 0x05: //PPU Background Scrolling Offset (W2)
-	//case 0x06: //VRAM Address Register (W2)
-	case 0x07: {
-		//VRAM Read/Write Data Register (RW)
-		var vramAddrRegister = this.__video__vramAddrRegister;
-		if ((vramAddrRegister & 0x3f00) !== 0x3f00) {
-			/**
+			this.__video__nowOnVBnank = false;
+			return result;
+		}
+		/* PPU SPR-RAM Access Registers */
+		//case 0x03: //2003h - SPR-RAM Address Register (W)
+		case 0x04: {
+			//2004h - SPR-RAM Data Register (Read/Write)
+			return this.__video__spRam[this.__video__spriteAddr];
+		}
+		/* PPU VRAM Access Registers */
+		//case 0x05: //PPU Background Scrolling Offset (W2)
+		//case 0x06: //VRAM Address Register (W2)
+		case 0x07: {
+			//VRAM Read/Write Data Register (RW)
+			var vramAddrRegister = this.__video__vramAddrRegister;
+			if ((vramAddrRegister & 0x3f00) !== 0x3f00) {
+				/**
 				 * @type {number} uint8_t */
-			var ret = this.__video__vramBuffer;
-			this.__video__vramBuffer =
+				var ret = this.__video__vramBuffer;
+				this.__video__vramBuffer =
 					vramAddrRegister < 0x2000
 						? __video__pattern[(vramAddrRegister >> 9) & 0xf][
-							vramAddrRegister & 0x1ff
+								vramAddrRegister & 0x1ff
 						  ]
 						: __video__vramMirroring[
-							(vramAddrRegister >> 10) & 0x3
+								(vramAddrRegister >> 10) & 0x3
 						  ][vramAddrRegister & 0x3ff];
-			this.__video__vramAddrRegister =
+				this.__video__vramAddrRegister =
 					(vramAddrRegister + this.__video__vramIncrementSize) &
 					0x3fff;
-			return ret;
-		} else {
-			/**
+				return ret;
+			} else {
+				/**
 				 * @type {number} uint8_t */
-			var ret =
+				var ret =
 					vramAddrRegister & (0x3 === 0)
 						? __video__palette[32 | ((addr >> 2) & 3)]
 						: __video__palette[vramAddrRegister & 31];
-			this.__video__vramBuffer =
+				this.__video__vramBuffer =
 					vramAddrRegister < 0x2000
 						? __video__pattern[(vramAddrRegister >> 9) & 0xf][
-							vramAddrRegister & 0x1ff
+								vramAddrRegister & 0x1ff
 						  ]
 						: __video__vramMirroring[
-							(vramAddrRegister >> 10) & 0x3
+								(vramAddrRegister >> 10) & 0x3
 						  ][vramAddrRegister & 0x3ff]; //ミラーされてるVRAMにも同時にアクセスしなければならない。
-			this.__video__vramAddrRegister =
+				this.__video__vramAddrRegister =
 					(vramAddrRegister + this.__video__vramIncrementSize) &
 					0x3fff;
-			return ret;
+				return ret;
+			}
 		}
-	}
-	default: {
-		return 0;
-		//			throw EmulatorException() << "Invalid addr: 0x" << std::hex << addr;
-	}
+		default: {
+			return 0;
+			//			throw EmulatorException() << "Invalid addr: 0x" << std::hex << addr;
+		}
 	}
 };
 
@@ -4973,44 +4973,44 @@ cycloa.ScriptMachine.prototype.__video__changeMirrorType = function (
 ) {
 	this.__video__mirrorType = mirrorType;
 	switch (mirrorType) {
-	case 3: {
-		this.__video__vramMirroring[0] = this.__video__internalVram[0];
-		this.__video__vramMirroring[1] = this.__video__internalVram[0];
-		this.__video__vramMirroring[2] = this.__video__internalVram[0];
-		this.__video__vramMirroring[3] = this.__video__internalVram[0];
-		break;
-	}
-	case 4: {
-		this.__video__vramMirroring[0] = this.__video__internalVram[1];
-		this.__video__vramMirroring[1] = this.__video__internalVram[1];
-		this.__video__vramMirroring[2] = this.__video__internalVram[1];
-		this.__video__vramMirroring[3] = this.__video__internalVram[1];
-		break;
-	}
-	case 0: {
-		this.__video__vramMirroring[0] = this.__video__internalVram[1];
-		this.__video__vramMirroring[1] = this.__video__internalVram[2];
-		this.__video__vramMirroring[2] = this.__video__internalVram[3];
-		this.__video__vramMirroring[3] = this.__video__internalVram[4];
-		break;
-	}
-	case 2: {
-		this.__video__vramMirroring[0] = this.__video__internalVram[0];
-		this.__video__vramMirroring[1] = this.__video__internalVram[0];
-		this.__video__vramMirroring[2] = this.__video__internalVram[1];
-		this.__video__vramMirroring[3] = this.__video__internalVram[1];
-		break;
-	}
-	case 1: {
-		this.__video__vramMirroring[0] = this.__video__internalVram[0];
-		this.__video__vramMirroring[1] = this.__video__internalVram[1];
-		this.__video__vramMirroring[2] = this.__video__internalVram[0];
-		this.__video__vramMirroring[3] = this.__video__internalVram[1];
-		break;
-	}
-	default: {
-		throw new cycloa.err.CoreException('Invalid mirroring type!');
-	}
+		case 3: {
+			this.__video__vramMirroring[0] = this.__video__internalVram[0];
+			this.__video__vramMirroring[1] = this.__video__internalVram[0];
+			this.__video__vramMirroring[2] = this.__video__internalVram[0];
+			this.__video__vramMirroring[3] = this.__video__internalVram[0];
+			break;
+		}
+		case 4: {
+			this.__video__vramMirroring[0] = this.__video__internalVram[1];
+			this.__video__vramMirroring[1] = this.__video__internalVram[1];
+			this.__video__vramMirroring[2] = this.__video__internalVram[1];
+			this.__video__vramMirroring[3] = this.__video__internalVram[1];
+			break;
+		}
+		case 0: {
+			this.__video__vramMirroring[0] = this.__video__internalVram[1];
+			this.__video__vramMirroring[1] = this.__video__internalVram[2];
+			this.__video__vramMirroring[2] = this.__video__internalVram[3];
+			this.__video__vramMirroring[3] = this.__video__internalVram[4];
+			break;
+		}
+		case 2: {
+			this.__video__vramMirroring[0] = this.__video__internalVram[0];
+			this.__video__vramMirroring[1] = this.__video__internalVram[0];
+			this.__video__vramMirroring[2] = this.__video__internalVram[1];
+			this.__video__vramMirroring[3] = this.__video__internalVram[1];
+			break;
+		}
+		case 1: {
+			this.__video__vramMirroring[0] = this.__video__internalVram[0];
+			this.__video__vramMirroring[1] = this.__video__internalVram[1];
+			this.__video__vramMirroring[2] = this.__video__internalVram[0];
+			this.__video__vramMirroring[3] = this.__video__internalVram[1];
+			break;
+		}
+		default: {
+			throw new cycloa.err.CoreException('Invalid mirroring type!');
+		}
 	}
 };
 
@@ -5387,74 +5387,74 @@ function PadFairy($dom) {
 	var self = this;
 	$dom.bind('keydown', function (e) {
 		switch (e.keyCode) {
-		case 38:
-			self.state |= self.MASK_UP;
-			e.preventDefault();
-			break;
-		case 40:
-			self.state |= self.MASK_DOWN;
-			e.preventDefault();
-			break;
-		case 37:
-			self.state |= self.MASK_LEFT;
-			e.preventDefault();
-			break;
-		case 39:
-			self.state |= self.MASK_RIGHT;
-			e.preventDefault();
-			break;
-		case 90:
-			self.state |= self.MASK_A;
-			e.preventDefault();
-			break;
-		case 88:
-			self.state |= self.MASK_B;
-			e.preventDefault();
-			break;
-		case 32:
-			self.state |= self.MASK_SELECT;
-			e.preventDefault();
-			break;
-		case 13:
-			self.state |= self.MASK_START;
-			e.preventDefault();
-			break;
+			case 38:
+				self.state |= self.MASK_UP;
+				e.preventDefault();
+				break;
+			case 40:
+				self.state |= self.MASK_DOWN;
+				e.preventDefault();
+				break;
+			case 37:
+				self.state |= self.MASK_LEFT;
+				e.preventDefault();
+				break;
+			case 39:
+				self.state |= self.MASK_RIGHT;
+				e.preventDefault();
+				break;
+			case 90:
+				self.state |= self.MASK_A;
+				e.preventDefault();
+				break;
+			case 88:
+				self.state |= self.MASK_B;
+				e.preventDefault();
+				break;
+			case 32:
+				self.state |= self.MASK_SELECT;
+				e.preventDefault();
+				break;
+			case 13:
+				self.state |= self.MASK_START;
+				e.preventDefault();
+				break;
 		}
 	});
 	$dom.bind('keyup', function (e) {
 		switch (e.keyCode) {
-		case 38:
-			self.state &= ~self.MASK_UP;
-			e.preventDefault();
-			break;
-		case 40:
-			self.state &= ~self.MASK_DOWN;
-			e.preventDefault();
-			break;
-		case 37:
-			self.state &= ~self.MASK_LEFT;
-			e.preventDefault();
-			break;
-		case 39:
-			self.state &= ~self.MASK_RIGHT;
-			e.preventDefault();
-			break;
-		case 90:
-			self.state &= ~self.MASK_A;
-			e.preventDefault();
-			break;
-		case 88:
-			self.state &= ~self.MASK_B;
-			e.preventDefault();
-			break;
-		case 32:
-			self.state &= ~self.MASK_SELECT;
-			e.preventDefault();
-			break;
-		case 13:
-			self.state &= ~self.MASK_START;
-			e.preventDefault();
-			break;
+			case 38:
+				self.state &= ~self.MASK_UP;
+				e.preventDefault();
+				break;
+			case 40:
+				self.state &= ~self.MASK_DOWN;
+				e.preventDefault();
+				break;
+			case 37:
+				self.state &= ~self.MASK_LEFT;
+				e.preventDefault();
+				break;
+			case 39:
+				self.state &= ~self.MASK_RIGHT;
+				e.preventDefault();
+				break;
+			case 90:
+				self.state &= ~self.MASK_A;
+				e.preventDefault();
+				break;
+			case 88:
+				self.state &= ~self.MASK_B;
+				e.preventDefault();
+				break;
+			case 32:
+				self.state &= ~self.MASK_SELECT;
+				e.preventDefault();
+				break;
+			case 13:
+				self.state &= ~self.MASK_START;
+				e.preventDefault();
+				break;
 		}
 	});
 }

@@ -654,7 +654,7 @@ function check_english_answer() {
 
 function is_pinyin_close_enough(user_pinyin, pinyin_answer) {
 	tmpx = user_pinyin.replace(/ /g, '');
-	tmpx = tmpx.replace('\'', '');
+	tmpx = tmpx.replace("'", '');
 	tmpx = tmpx.replace('er5', 'r5');
 	tmpx = tmpx.replace(/5/g, '');
 	tmpx = tmpx.replace(/[^a-zA-Z1-9]/g, '');

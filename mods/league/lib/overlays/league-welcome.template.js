@@ -4,9 +4,9 @@ module.exports = LeagueWelcomeTemplate = (app, league) => {
         <div class="title-box">
 		    	<div class="title">${league.name}</div>
 		    	<div>Send a message to <span class="admin-name" title="${app.keychain.returnIdentifierByPublicKey(
-		league.admin,
-		true
-	)}">the league admin</span> with your name and contact info</div>
+					league.admin,
+					true
+				)}">the league admin</span> with your name and contact info</div>
 				</div>`;
 	if (!app.keychain.hasSharedSecret(league.admin)) {
 		html += `<div class="warning">Warning: this message will be unencrypted</div>`;

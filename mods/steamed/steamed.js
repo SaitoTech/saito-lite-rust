@@ -104,7 +104,7 @@ class Steamed extends GameTemplate {
 			console.log('\n\n\n\n');
 
 			this.updateStatus(
-				'<div class=\'status-message\'>Generating the Game</div>'
+				"<div class='status-message'>Generating the Game</div>"
 			);
 
 			this.game.queue = [];
@@ -277,7 +277,7 @@ class Steamed extends GameTemplate {
 					$('.status').css('display', 'block');
 
 					this.updateStatus(
-						'<div class=\'status-message\'>Liquidating remaining factories to tally final score</div>'
+						"<div class='status-message'>Liquidating remaining factories to tally final score</div>"
 					);
 					this.game.queue.push('gameover');
 					this.game.queue.push(`liquidate\t1\t1`);
@@ -590,7 +590,7 @@ class Steamed extends GameTemplate {
 			}
 			this.restartQueue();
 		} else {
-			console.log('Nevermind, let\'s wait a bit');
+			console.log("Nevermind, let's wait a bit");
 		}
 	}
 
@@ -856,7 +856,7 @@ class Steamed extends GameTemplate {
 			if (steamSelf.game.state.planted !== 0) {
 				steamSelf.removeEvents();
 				steamSelf.updateStatus(
-					'<div class=\'status-message\'>Dealing new cards...</div>'
+					"<div class='status-message'>Dealing new cards...</div>"
 				);
 				steamSelf.prependMove('continue');
 				if (steamSelf.animation_queue.length == 0) {

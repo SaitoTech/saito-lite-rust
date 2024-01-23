@@ -14,11 +14,11 @@ module.exports = ImperiumDashboardTemplate = (
 		html += `
       <div data-id="${i + 1}" class="dash-faction-agenda">
         <div data-id="${
-	i + 1
-}" class="dash-item-agenda-influence agenda-influence">
+			i + 1
+		}" class="dash-item-agenda-influence agenda-influence">
           <span data-id="${i + 1}" class="avail">${
-	imperium_self.game.state.votes_available[i]
-}</span>
+			imperium_self.game.state.votes_available[i]
+		}</span>
         </div> 
       </div>
     `;
@@ -26,15 +26,15 @@ module.exports = ImperiumDashboardTemplate = (
 		html += `
       <div data-id="${i + 1}" class="dash-faction-info">
         <div data-id="${
-	i + 1
-}" class="dash-item tooltip dash-item-resources resources">
+			i + 1
+		}" class="dash-item tooltip dash-item-resources resources">
           <span data-id="${i + 1}" class="avail"></span>
           <span data-id="${i + 1}" class="total"></span>
         </div>
   
         <div data-id="${
-	i + 1
-}" class="dash-item tooltip dash-item-influence influence">
+			i + 1
+		}" class="dash-item tooltip dash-item-influence influence">
           <span data-id="${i + 1}" class="avail"></span>
           <span data-id="${i + 1}" class="total"></span>
         </div>
@@ -52,16 +52,16 @@ module.exports = ImperiumDashboardTemplate = (
 	html += `
       <div data-id="${i + 1}" class="dash-faction-base">
         <div data-id="${i + 1}" class="dash-faction-status-${
-	i + 1
-} dash-faction-status"></div>
+		i + 1
+	} dash-faction-status"></div>
 	<div class="dash-faction-status-text">
           commodities : <span data-id="${
-	i + 1
-}" class="dash-item-commodities">${
-	imperium_self.game.state.players_info[i].commodities
-}</span> / <span data-id="${i + 1}" class="dash-item-commodity-limit">${
-	imperium_self.game.state.players_info[i].commodity_limit
-}</span>
+				i + 1
+			}" class="dash-item-commodities">${
+		imperium_self.game.state.players_info[i].commodities
+	}</span> / <span data-id="${i + 1}" class="dash-item-commodity-limit">${
+		imperium_self.game.state.players_info[i].commodity_limit
+	}</span>
         </div>
       </div>
 

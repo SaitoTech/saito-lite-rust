@@ -26,8 +26,8 @@ module.exports = (app, mod, group, isStatic = false) => {
 
 	let html = `
        <div class="${class_name} chat-popup ${
-	group.members.length == 2 ? 'saito-dm-chat' : ''
-}" id="chat-popup-${group.id}">
+		group.members.length == 2 ? 'saito-dm-chat' : ''
+	}" id="chat-popup-${group.id}">
 
           <div class="chat-header" id="chat-header-${group.id}">
             <div class="chat-header-nav">
@@ -35,10 +35,10 @@ module.exports = (app, mod, group, isStatic = false) => {
             <div class="chat-details hide">
               ${is_encrypted}
               <div id="chat-group-${
-	group.id
-}" class="chat-group active-chat-tab saito-address" data-id="${
-	group.name
-}" 
+					group.id
+				}" class="chat-group active-chat-tab saito-address" data-id="${
+		group.name
+	}" 
               data-disable="true">${group.name}</div>
             </div>
 
@@ -50,32 +50,32 @@ module.exports = (app, mod, group, isStatic = false) => {
               <div class="chat-details">
               ${is_encrypted}
               <div id="chat-group-${
-	group.id
-}" class="chat-group active-chat-tab saito-address" data-id="${
-	group.name
-}" 
+					group.id
+				}" class="chat-group active-chat-tab saito-address" data-id="${
+		group.name
+	}" 
               data-disable="true">${group.name}</div>
               </div>
 
               ${
-	group.name != mod.communityGroupName &&
+					group.name != mod.communityGroupName &&
 					group.members.length == 2
-		? `
+						? `
               <div class="chat-action-icons">
                 <div class="chat-actions">
                 </div>
                 <i class="fa-solid fa-ellipsis-vertical saito-add-user-menu" data-id="${group.name}"></i>
               </div>
               `
-		: ``
-}
+						: ``
+				}
             </div>
           </div>
 
           <div class="chat-body">
             <div id="load-older-chats" class="saito-chat-button" data-id="${
-	group.id
-}">fetch earlier messages</div>
+				group.id
+			}">fetch earlier messages</div>
             ${mod.returnChatBody(group.id)}
           </div>
 

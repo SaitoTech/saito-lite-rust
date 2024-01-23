@@ -161,8 +161,8 @@ var out =
 	(typeof console !== 'undefined'
 		? console.log.bind(console)
 		: typeof print !== 'undefined'
-			? print
-			: null);
+		? print
+		: null);
 var err =
 	Module['printErr'] ||
 	(typeof printErr !== 'undefined'
@@ -427,9 +427,9 @@ function getBinaryPromise() {
 			.then(function (response) {
 				if (!response['ok']) {
 					throw (
-						'failed to load wasm binary file at \'' +
+						"failed to load wasm binary file at '" +
 						wasmBinaryFile +
-						'\''
+						"'"
 					);
 				}
 				return response['arrayBuffer']();

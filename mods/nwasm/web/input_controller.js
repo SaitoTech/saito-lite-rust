@@ -215,8 +215,8 @@ class InputController {
 			var gamepads = navigator.getGamepads
 				? navigator.getGamepads()
 				: navigator.webkitGetGamepads
-					? navigator.webkitGetGamepads
-					: [];
+				? navigator.webkitGetGamepads
+				: [];
 			if (!gamepads) return;
 			var gp = null;
 			for (let i = 0; i < gamepads.length; i++) {

@@ -13,7 +13,7 @@ class Solitrio extends OnePlayerGameTemplate {
 		this.slug = 'solitrio';
 		this.game_length = 5; //Estimated number of minutes to complete a game
 		this.description =
-			'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
+			"Once you've started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.";
 		this.categories = 'Games Cardgame One-player';
 		this.animationSpeed = 500;
 		this.card_img_dir = '/saito/img/arcade/cards';
@@ -923,16 +923,16 @@ no status atm, but this is to update the hud
 
 	cardSuitHTML(suit) {
 		switch (suit) {
-		case 'D':
-			return '&diams;';
-		case 'H':
-			return '&hearts;';
-		case 'S':
-			return '&spades;';
-		case 'C':
-			return '&clubs;';
-		default:
-			return '';
+			case 'D':
+				return '&diams;';
+			case 'H':
+				return '&hearts;';
+			case 'S':
+				return '&spades;';
+			case 'C':
+				return '&clubs;';
+			default:
+				return '';
 		}
 	}
 

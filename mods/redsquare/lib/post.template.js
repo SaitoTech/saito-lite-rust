@@ -1,5 +1,5 @@
 module.exports = (app, mod, post) => {
-	let placeholder = 'What\'s happening';
+	let placeholder = "What's happening";
 
 	let html = `
 
