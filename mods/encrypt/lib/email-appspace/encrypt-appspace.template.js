@@ -1,5 +1,5 @@
 module.exports = EmailAppspaceTemplate = () => {
-  return `
+	return `
 <div class="email-appspace-encrypt">
   <h3>Encrypt transations and messages:</h3>
   <p>
@@ -16,4 +16,4 @@ module.exports = EmailAppspaceTemplate = () => {
   </div>
 </div> 
   `;
-}
+};

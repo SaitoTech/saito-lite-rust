@@ -1,25 +1,25 @@
 .hud-header {
-    margin: 0;
+	margin: 0;
 }
 
 .hud-header.black {
-    background-color: black;
-    color: white;
+	background-color: black;
+	color: white;
 }
 
 .hud-header.white {
-    background-color: white;
-    color: black;
+	background-color: white;
+	color: black;
 }
 
 .hud-long {
-    height: unset;
+	height: unset;
 }
 
 .controls ul li {
-    height: 50px;
-    line-height: unset;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	height: 50px;
+	line-height: unset;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

@@ -1,8 +1,7 @@
 module.exports = YearOfPlentyOverlayTemplate = (app, mod, year_of_plenty) => {
+	let resourceList = mod.returnResources();
 
-  let resourceList = mod.returnResources();
-
-  let html = `
+	let html = `
       <div class="saitoa settlers-selection-overlay">
         <div class="settlers-items-container">
           <div class="settlers-item-row">
@@ -11,12 +10,11 @@ module.exports = YearOfPlentyOverlayTemplate = (app, mod, year_of_plenty) => {
           <div class="settlers-item-row settlers-cards-container settlers-desired-resources settlers-select-options">
   `;
 
-          for (let i of resourceList) {
-            html += `<img id="${i}" src="${mod.returnCardImage(i)}" >`;
-          }
+	for (let i of resourceList) {
+		html += `<img id="${i}" src="${mod.returnCardImage(i)}" >`;
+	}
 
-
-  html += `
+	html += `
           </div>
 
 
@@ -30,6 +28,5 @@ module.exports = YearOfPlentyOverlayTemplate = (app, mod, year_of_plenty) => {
       </div>
   `;
 
-  return html;
-
-}
+	return html;
+};

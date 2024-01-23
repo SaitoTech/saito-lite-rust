@@ -1,6 +1,5 @@
-module.exports = AppStorePublishWaiting = (app) => {  
-
-  let html = `
+module.exports = AppStorePublishWaiting = (app) => {
+	let html = `
 
     <div class="appstore-app-install-overlay">
       <div class="appstore-bundler-install-notice">
@@ -17,8 +16,5 @@ module.exports = AppStorePublishWaiting = (app) => {
 
   `;
 
-  return html;
-
-}
-
-
+	return html;
+};

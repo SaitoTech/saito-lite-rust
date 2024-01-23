@@ -1,42 +1,41 @@
-
 .winter {
-  min-width: 80vw;
-  min-height: 80vh;
-  border-radius: 2rem;
-  background-image: url('/his/img/backgrounds/winter_background.jpg');
-  background-size: cover;
+	min-width: 80vw;
+	min-height: 80vh;
+	border-radius: 2rem;
+	background-image: url('/his/img/backgrounds/winter_background.jpg');
+	background-size: cover;
 }
 
 .winter-title {
-    top: 0px;
-    color: white;
-    line-height: 5rem;
-    font-size: 4rem;
-    position: absolute;
-    margin-top: 5rem;
-    margin-left: 5rem;
-    padding: 1rem;
-    letter-spacing: 0.2rem;
-    font-weight: bold;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    background: #0008;
+	top: 0px;
+	color: white;
+	line-height: 5rem;
+	font-size: 4rem;
+	position: absolute;
+	margin-top: 5rem;
+	margin-left: 5rem;
+	padding: 1rem;
+	letter-spacing: 0.2rem;
+	font-weight: bold;
+	padding-left: 2rem;
+	padding-right: 2rem;
+	background: #0008;
 }
 
 .winter-text {
-    bottom: 0px;
-    color: white;
-    line-height: 5rem;
-    font-size: 3rem;
-    position: absolute;
-    margin-left: 5rem;
-    margin-bottom: 5rem;
-    padding: 1rem;
-    background: #0008;
-    padding-left: 2rem;
-    padding-right: 2rem;
+	bottom: 0px;
+	color: white;
+	line-height: 5rem;
+	font-size: 3rem;
+	position: absolute;
+	margin-left: 5rem;
+	margin-bottom: 5rem;
+	padding: 1rem;
+	background: #0008;
+	padding-left: 2rem;
+	padding-right: 2rem;
 }
 
 .winter-text ul {
-    margin-left: 3rem;
+	margin-left: 3rem;
 }

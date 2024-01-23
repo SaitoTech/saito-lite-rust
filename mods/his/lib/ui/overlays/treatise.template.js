@@ -1,9 +1,7 @@
 module.exports = () => {
-
-  let html = `
+	let html = `
       <div class="treatise-overlay" id="treatise-overlay">
       </div>
   `;
-  return html;
-
-}
+	return html;
+};

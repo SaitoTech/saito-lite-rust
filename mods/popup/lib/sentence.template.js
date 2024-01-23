@@ -1,8 +1,7 @@
 module.exports = (lesson, sentence) => {
+	let s = sentence.sentence_text.replaceAll('\\', '');
 
- let s = sentence.sentence_text.replaceAll("\\", '');
-
- return `
+	return `
     <tr class="sentence">
       <td class="sentence-player"></td>
       <td class="sentence-speaker"></td>
@@ -13,6 +12,4 @@ module.exports = (lesson, sentence) => {
       </td>
     </tr>
   `;
-
-}
-
+};

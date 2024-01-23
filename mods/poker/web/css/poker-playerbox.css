@@ -1,101 +1,101 @@
 .other-player-hand {
-  position: absolute;
+	position: absolute;
 }
 .other-player-hand .card {
-  position: absolute;
+	position: absolute;
 }
 .game-playerbox-manager .game-playerbox {
-  overflow: visible;
+	overflow: visible;
 }
 
 .game-playerbox.game-playerbox-seat-1 {
-  height: 250px;
+	height: 250px;
 }
 
 .game-playerbox.game-playerbox-seat-4 {
-  height: 100px;
+	height: 100px;
 }
 
 .game-playerbox-graphics {
-  display: flex;
+	display: flex;
 }
 
 .game-playerbox-head .saito-user .game-playerbox-icons {
-  grid-row: 1;
-  position: absolute;
+	grid-row: 1;
+	position: absolute;
 }
 
 .game-playerbox-head .saito-user .saito-userline {
-  grid-column: 2 / span 3;
+	grid-column: 2 / span 3;
 }
 
 .game-playerbox-manager.game-playerbox-seat-manager {
-  display: none;
+	display: none;
 }
 
 .game-playerbox {
-  min-width: 250px;
-  max-width: 250px;
-  border: 1px solid #fff3;
-  min-height: unset;
-  color: white;
-  background-color: #4448;
+	min-width: 250px;
+	max-width: 250px;
+	border: 1px solid #fff3;
+	min-height: unset;
+	color: white;
+	background-color: #4448;
 }
 
 .game-playerbox.active {
-  border: 1px solid #fff;
+	border: 1px solid #fff;
 }
 
 .game-playerbox-body .status {
-  width: 100%;
-  padding: 0rem;
-  margin-top: 0.5rem;
-  line-height: 2.3rem;
-  font-size: 1.8rem;
-  text-align: center;
+	width: 100%;
+	padding: 0rem;
+	margin-top: 0.5rem;
+	line-height: 2.3rem;
+	font-size: 1.8rem;
+	text-align: center;
 }
 
 .game-playerbox-body .status .status-header .status-message {
-  box-shadow: none;
+	box-shadow: none;
 }
 
 .game-playerbox .status-header .status-message {
-  background: unset;
+	background: unset;
 }
 
 .game-playerbox .status-text-menu,
 .game-playerbox .status-text-menu ul {
-  background: unset;
+	background: unset;
 }
 
 .game-playerbox-head .saito-user > .saito-address,
 .game-playerbox-head .saito-user > .saito-userline {
-  color: white;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+	color: white;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
 }
 
 .game-playerbox-graphics {
-  position: absolute;
-  height: 100px;
-  width: 100%;
-  left: 100%;
-  top: 20%;
-  z-index: -10;
+	position: absolute;
+	height: 100px;
+	width: 100%;
+	left: 100%;
+	top: 20%;
+	z-index: -10;
 }
 
 @media screen and (max-width: 600px) {
-  .game-playerbox {
-    max-width: 50vw;
-    min-width: unset;
-  }
+	.game-playerbox {
+		max-width: 50vw;
+		min-width: unset;
+	}
 
-  .game-playerbox.game-playerbox-seat-1 {
-    min-width: 250px;
-    max-width: 250px;
-    margin-bottom: 0.5rem;
-  }
+	.game-playerbox.game-playerbox-seat-1 {
+		min-width: 250px;
+		max-width: 250px;
+		margin-bottom: 0.5rem;
+	}
 }

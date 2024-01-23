@@ -1,6 +1,8 @@
-module.exports = ImperiumHowToProduceOverlayTemplate = (imperium_self, units) => {
-
-  return `
+module.exports = ImperiumHowToProduceOverlayTemplate = (
+	imperium_self,
+	units
+) => {
+	return `
     <div class="how-to-produce-overlay hide-scrollbar">
 
         <div class="title">Producing Units</div>
@@ -58,6 +60,4 @@ module.exports = ImperiumHowToProduceOverlayTemplate = (imperium_self, units) =>
 
     </div>
   `;
-
-}
-
+};

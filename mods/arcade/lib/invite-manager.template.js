@@ -1,7 +1,5 @@
 module.exports = InviteManagerTemplate = (app, mod) => {
-
-  return `
+	return `
   <div class="invite-manager">
   </div>`;
-
-}
+};

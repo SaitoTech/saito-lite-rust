@@ -1,62 +1,105 @@
 <html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="" />
+		<meta name="author" content="" />
 
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
+		<title>Saito Run</title>
 
-	<title>Saito Run</title>
+		<script
+			type="text/javascript"
+			src="/saito/lib/jquery/jquery-3.2.1.min.js"
+		></script>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/jquery/jquery-ui.min.css"
+			type="text/css"
+			media="screen"
+		/>
+		<script
+			type="text/javascript"
+			src="/saito/lib/jquery/jquery-ui.min.js"
+		></script>
 
-	<script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
-	<link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="/saito/lib/jquery/jquery-ui.min.js"></script>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/fontawesome.min.css"
+			type="text/css"
+			media="screen"
+		/>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/all.css"
+			type="text/css"
+			media="screen"
+		/>
 
-  <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" type="text/css" media="screen" />
-  <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+		<link rel="stylesheet" type="text/css" href="/saito/game.css" />
+		<link rel="stylesheet" type="text/css" href="/saitorun/style.css" />
 
-	<link rel="stylesheet" type="text/css" href="/saito/saito.css" />
-	<link rel="stylesheet" type="text/css" href="/saito/game.css" />
-	<link rel="stylesheet" type="text/css" href="/saitorun/style.css" />
+		<link
+			rel="icon"
+			media="all"
+			type="image/x-icon"
+			href="/favicon.ico?v=2"
+		/>
+	</head>
 
-	<link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
+	<body>
+		<script type="module">
+			import { GameEngine } from './GameEngine.js';
 
-</head>
-
-<body>
-
-	<script type="module">
-
-		import { GameEngine } from './GameEngine.js';
-
-		document.addEventListener("DOMContentLoaded", () => {
-			const gameEngine = new GameEngine();
-			window.game = gameEngine;
-		});
-	</script>
-	<div id="instructions">Swipe down or press down arrow to start. Use arrows/ swipe for movement (on desktop spacebar
-		for jump)</div>
-	<div id="score-panel">
-		<div id="score">0</div><img width="80" id="points" src="/saitorun/img/points.png" />
-	</div>
-	<div id="distance-panel">
-		<div id="distance">0</div><img width="80" id="dist" src="/saitorun/img/running.png" />
-	</div>
-	<div id="trivia-panel">
-		<div>
-			<div id="question">placeholder</div>
-			<div id="answer-0-text">placeholder</div>
-			<div id="answer-1-text">placeholder</div>
-			<div id="answer-2-text">placeholder</div>
-			<a href="javascript:void(0);" class="answer-button" id="answer-0">a</a>
-			<a href="javascript:void(0);" class="answer-button" id="answer-1">b</a>
-			<a href="javascript:void(0);" class="answer-button" id="answer-2">c</a>
+			document.addEventListener('DOMContentLoaded', () => {
+				const gameEngine = new GameEngine();
+				window.game = gameEngine;
+			});
+		</script>
+		<div id="instructions">
+			Swipe down or press down arrow to start. Use arrows/ swipe for
+			movement (on desktop spacebar for jump)
 		</div>
-	</div>
+		<div id="score-panel">
+			<div id="score">0</div>
+			<img width="80" id="points" src="/saitorun/img/points.png" />
+		</div>
+		<div id="distance-panel">
+			<div id="distance">0</div>
+			<img width="80" id="dist" src="/saitorun/img/running.png" />
+		</div>
+		<div id="trivia-panel">
+			<div>
+				<div id="question">placeholder</div>
+				<div id="answer-0-text">placeholder</div>
+				<div id="answer-1-text">placeholder</div>
+				<div id="answer-2-text">placeholder</div>
+				<a
+					href="javascript:void(0);"
+					class="answer-button"
+					id="answer-0"
+					>a</a
+				>
+				<a
+					href="javascript:void(0);"
+					class="answer-button"
+					id="answer-1"
+					>b</a
+				>
+				<a
+					href="javascript:void(0);"
+					class="answer-button"
+					id="answer-2"
+					>c</a
+				>
+			</div>
+		</div>
 
-	<script id="saito" type="text/javascript" src="/saito/saito.js"></script>
-
-</body>
-
+		<script
+			id="saito"
+			type="text/javascript"
+			src="/saito/saito.js"
+		></script>
+	</body>
 </html>

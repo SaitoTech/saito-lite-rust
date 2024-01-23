@@ -1,80 +1,81 @@
-
-
 .quake-controls {
-    background-color: whitesmoke;
-    border-radius: 0.5rem;
-    width: 80vw;
-    height: auto;
-    line-height: 3.7rem;
-    font-size: 2.2rem;
-    padding: 2rem;
-    max-height: 90vh;
-    overflow-y: scroll;
+	background-color: whitesmoke;
+	border-radius: 0.5rem;
+	width: 80vw;
+	height: auto;
+	line-height: 3.7rem;
+	font-size: 2.2rem;
+	padding: 2rem;
+	max-height: 90vh;
+	overflow-y: scroll;
 }
 
 .chat-container {
-  background-color: transparent;
-  color: whitesmoke;
-  border: 1px solid #6654;
+	background-color: transparent;
+	color: whitesmoke;
+	border: 1px solid #6654;
 }
 .chat-header {
-  border-bottom: 1px solid #6654;
+	border-bottom: 1px solid #6654;
 }
-.chat-header>h6 {
-  color: whitesmoke;
+.chat-header > h6 {
+	color: whitesmoke;
 }
-.chat-input , input[type="text"] {
-  background-color: #FFF3;
-  color: white;
+.chat-input,
+input[type='text'] {
+	background-color: #fff3;
+	color: white;
 }
 .chat-footer {
-  background-color: transparent;
+	background-color: transparent;
 }
 .saito-userline {
-  color: #999;
+	color: #999;
 }
 .game-menu {
-  left: 50%;
-  transform: translate(-50%, 0);
-  opacity: 60%;
+	left: 50%;
+	transform: translate(-50%, 0);
+	opacity: 60%;
 }
 
-.game-menu:hover{
-  opacity: 90%;
+.game-menu:hover {
+	opacity: 90%;
 }
-
 
 /* These were in css-imports/game-menu for some reason  */
 #quake-controls {
-    width: 600px;
+	width: 600px;
 }
 
 #table-div {
-    overflow-y:scroll;
-    height: 500px;
-    display: block;
-    font-size: 18px;
+	overflow-y: scroll;
+	height: 500px;
+	display: block;
+	font-size: 18px;
 }
 
 #screen-cover {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: -100;
-    background-color: rgba(50, 50, 50, 1%);
-    backdrop-filter: blur(1.5px);
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	z-index: -100;
+	background-color: rgba(50, 50, 50, 1%);
+	backdrop-filter: blur(1.5px);
 }
 
 #cover-content {
-    margin-top: 50%;
-    margin-bottom: 50%;
-    background-image: linear-gradient(rgba(250, 250, 250, 0%), rgba(250, 250, 250, 100%), rgba(250, 250, 250, 0%));
+	margin-top: 50%;
+	margin-bottom: 50%;
+	background-image: linear-gradient(
+		rgba(250, 250, 250, 0%),
+		rgba(250, 250, 250, 100%),
+		rgba(250, 250, 250, 0%)
+	);
 }
 
 #controls-bottom {
-  /*//position: absolute;
+	/*//position: absolute;
     //bottom: 0;*/
 }
-

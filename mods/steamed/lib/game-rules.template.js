@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let html = `<div class="rules-overlay">
+	let html = `<div class="rules-overlay">
     <div class="h1">${mod.name}</div>
     <p>Welcome to the Industrial Revolution, a veritable bonanza of steam, where players compete to make sets of factories in order to profit!</p>
     <div class="h2">How to Play</div>
@@ -16,8 +15,6 @@ module.exports = (app, mod) => {
     <div class="h2">How to Win</div>
     <p>The game ends the third time the draw pile is emptied. Players liquidate their remaining factories and the player with the most gold coins wins.</p>
     `;
-    
-  return html;
 
-}
-
+	return html;
+};

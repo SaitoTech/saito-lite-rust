@@ -1,26 +1,38 @@
-module.exports = ImperiumBombardmentOverlayTemplate = (imperium_self, attacker, defender, sector, overlay_html) => {
+module.exports = ImperiumBombardmentOverlayTemplate = (
+	imperium_self,
+	attacker,
+	defender,
+	sector,
+	overlay_html
+) => {
+	let sys = imperium_self.returnSectorAndPlanets(sector);
+	let attacker_ships = sys.s.units[attacker - 1];
+	let defender_ships = sys.s.units[defender - 1];
+	let sector_name = sys.s.name;
 
-  let sys            = imperium_self.returnSectorAndPlanets(sector);
-  let attacker_ships = sys.s.units[attacker-1];
-  let defender_ships = sys.s.units[defender-1];
-  let sector_name    = sys.s.name;
-
-  let html = `
+	let html = `
 
     <div class="bombardment-overlay">
       <div class="bombardment-units">
 
 	<div class="bombardment-attacker">
-	  <div class="bombardment-attacker-name">${imperium_self.returnFactionName(imperium_self, attacker)}</div>
+	  <div class="bombardment-attacker-name">${imperium_self.returnFactionName(
+			imperium_self,
+			attacker
+		)}</div>
 	  <div class="unit-table small">
   `;
 
-  for (let i = 0; i < attacker_ships.length; i++) {
-    let obj = attacker_ships[i];
-    if (obj.bombardment_rolls > 0 && obj.strength > 0 && obj.destroyed != 1) {
-      for (let z = 0; z < obj.bombardment_rolls; z++) {
-      if (z == 0) {
-        html += `
+	for (let i = 0; i < attacker_ships.length; i++) {
+		let obj = attacker_ships[i];
+		if (
+			obj.bombardment_rolls > 0 &&
+			obj.strength > 0 &&
+			obj.destroyed != 1
+		) {
+			for (let z = 0; z < obj.bombardment_rolls; z++) {
+				if (z == 0) {
+					html += `
             <div class="unit-element player-bb-${attacker}-ship-${i} player-bb-${attacker}-ship-${i}-shot-${z}">
               <div class="unit-box-ship unit-box-ship-${obj.type}"></div>
               <div class="unit-box">
@@ -33,8 +45,8 @@ module.exports = ImperiumBombardmentOverlayTemplate = (imperium_self, attacker, 
 	      </div>
             </div>
         `;
-      } else {
-	html += `
+				} else {
+					html += `
             <div class="unit-element player-bb-${attacker}-ship-${i} player-bb-${attacker}-ship-${i}-shot-${z}">
               <div class="unit-box-ship"></div>
               <div class="unit-box">
@@ -47,11 +59,11 @@ module.exports = ImperiumBombardmentOverlayTemplate = (imperium_self, attacker, 
 	      </div>
             </div>
 	`;
-      }
-    }
-    } // skip destroyed or almost-destroyed
-  }
-  html += `
+				}
+			}
+		} // skip destroyed or almost-destroyed
+	}
+	html += `
           </div>
 	</div>
 
@@ -63,7 +75,5 @@ module.exports = ImperiumBombardmentOverlayTemplate = (imperium_self, attacker, 
     </div>
   `;
 
-  return html;
-
-}
-
+	return html;
+};

@@ -1,20 +1,17 @@
-
 .tweet-notification .tweet-body {
-  min-height: 6rem;
+	min-height: 6rem;
 }
-
 
 .new-tweets-notification {
-  position: fixed;
-  display: none;
-  top: calc(var(--saito-header-height) + 1rem);
-  left: 50%;
-  transform: translateX(-50%);
-  height: 6rem;
-  padding: 2.2rem 2rem 1.8rem;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 1000;
+	position: fixed;
+	display: none;
+	top: calc(var(--saito-header-height) + 1rem);
+	left: 50%;
+	transform: translateX(-50%);
+	height: 6rem;
+	padding: 2.2rem 2rem 1.8rem;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	z-index: 1000;
 }
-

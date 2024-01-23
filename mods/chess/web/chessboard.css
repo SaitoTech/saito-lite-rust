@@ -10,68 +10,68 @@
 
 /* clearfix */
 .clearfix-7da63 {
-  clear: both;
+	clear: both;
 }
 
 /* board */
 .board-b72b1 {
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  border: 30px solid #222;
-  box-shadow: 10px 10px 20px #222;
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	border: 30px solid #222;
+	box-shadow: 10px 10px 20px #222;
 }
 
 /* square */
 .square-55d63 {
-  float: left;
-  position: relative;
+	float: left;
+	position: relative;
 
-  /* disable any native browser highlighting */
-  -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+	/* disable any native browser highlighting */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 /* white square */
 .white-1e1d7 {
-  background-color: #F0D9B5;
-  color: #b58863;
+	background-color: #f0d9b5;
+	color: #b58863;
 }
 
 /* black square */
 .black-3c85d {
-  background-color: #B58863;
-  color: #f0d9b5;
+	background-color: #b58863;
+	color: #f0d9b5;
 }
 
 /* highlighted square */
-.highlight1-32417, .highlight2-9c5d2 {
-  -webkit-box-shadow: inset 0 0 3px 3px yellow;
-  -moz-box-shadow: inset 0 0 3px 3px yellow;
-  box-shadow: inset 0 0 3px 3px yellow;
+.highlight1-32417,
+.highlight2-9c5d2 {
+	-webkit-box-shadow: inset 0 0 3px 3px yellow;
+	-moz-box-shadow: inset 0 0 3px 3px yellow;
+	box-shadow: inset 0 0 3px 3px yellow;
 }
 
 /* notation */
 .notation-322f9 {
-  cursor: default;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  position: absolute;
+	cursor: default;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	position: absolute;
 }
 .alpha-d2270 {
-  bottom: -24px;
-  right: 27px;
-  color: #fff;
-  font-size: 16px;
+	bottom: -24px;
+	right: 27px;
+	color: #fff;
+	font-size: 16px;
 }
 .numeric-fc462 {
-  top: 30px;
-  left: -20px;
-  color: #fff;
-  font-size: 16px;
+	top: 30px;
+	left: -20px;
+	color: #fff;
+	font-size: 16px;
 }
-

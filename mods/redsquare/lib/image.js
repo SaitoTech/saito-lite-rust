@@ -1,31 +1,31 @@
-const SaitoImageOverlay = require("./../../../lib/saito/ui/saito-image-overlay/saito-image-overlay");
-const RedSquareImageTemplate = require("./image.template");
+const SaitoImageOverlay = require('./../../../lib/saito/ui/saito-image-overlay/saito-image-overlay');
+const RedSquareImageTemplate = require('./image.template');
 
 class RedSquareImage {
-  constructor(app, mod, container = "", images = [], sig) {
-    this.app = app;
-    this.mod = mod;
-    this.container = container;
-    this.images = images;
-    this.sig = sig;
-    this.overlay = new SaitoImageOverlay(app, mod, images);
-  }
+	constructor(app, mod, container = '', images = [], sig) {
+		this.app = app;
+		this.mod = mod;
+		this.container = container;
+		this.images = images;
+		this.sig = sig;
+		this.overlay = new SaitoImageOverlay(app, mod, images);
+	}
 
-  render() {
-    let element = this.container + " > .tweet-picture";
-    let template = RedSquareImageTemplate(this.app, this.mod, this.images);
-    let sig = this.sig;
+	render() {
+		let element = this.container + ' > .tweet-picture';
+		let template = RedSquareImageTemplate(this.app, this.mod, this.images);
+		let sig = this.sig;
 
-    let expected_width = 520;
-    let expected_height = "auto";
+		let expected_width = 520;
+		let expected_height = 'auto';
 
-    //
-    // avoid length vertical posts
-    //
+		//
+		// avoid length vertical posts
+		//
 
-    for (let i = 0; i < this.images.length; i++) {
-      var img = new Image();
-      /*
+		for (let i = 0; i < this.images.length; i++) {
+			var img = new Image();
+			/*
       img.onload = function () {
         //console.log("Image load");
         let available_width_qs = ".tweet-" + sig + " > .tweet-body .tweet-main";
@@ -55,34 +55,36 @@ class RedSquareImage {
         }
       };
       */
-      img.src = this.images[i];
-    }
-    if (document.querySelector(element)) {
-      this.app.browser.replaceElementBySelector(template, element);
-    } else {
-      if (this.container) {
-        this.app.browser.addElementToSelector(template, this.container);
-      } else {
-        this.app.browser.addElementToDom(template);
-      }
-    }
+			img.src = this.images[i];
+		}
+		if (document.querySelector(element)) {
+			this.app.browser.replaceElementBySelector(template, element);
+		} else {
+			if (this.container) {
+				this.app.browser.addElementToSelector(template, this.container);
+			} else {
+				this.app.browser.addElementToDom(template);
+			}
+		}
 
-    this.attachEvents();
-  }
+		this.attachEvents();
+	}
 
-  attachEvents() {
-    let sel =
-      ".tweet-" + this.sig + " > .tweet-body .tweet-preview .tweet-picture img";
+	attachEvents() {
+		let sel =
+			'.tweet-' +
+			this.sig +
+			' > .tweet-body .tweet-preview .tweet-picture img';
 
-    if (document.querySelectorAll(sel)) {
-      document.querySelectorAll(sel).forEach((image) => {
-        image.onclick = (e) => {
-          let image_idx = e.currentTarget.getAttribute("data-index");
-          this.overlay.render(image_idx);
-        };
-      });
-    }
-  }
+		if (document.querySelectorAll(sel)) {
+			document.querySelectorAll(sel).forEach((image) => {
+				image.onclick = (e) => {
+					let image_idx = e.currentTarget.getAttribute('data-index');
+					this.overlay.render(image_idx);
+				};
+			});
+		}
+	}
 }
 
 module.exports = RedSquareImage;

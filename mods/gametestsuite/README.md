@@ -1,4 +1,3 @@
-
 This test suite is presented as a Saito module.
 
 To install this module:
@@ -7,7 +6,7 @@ To install this module:
 
 2. edit /config/modules.config.js to include this module in both core/lite distributions
 
-3. recompile the javascript 
+3. recompile the javascript
 
 ```
 npm run nuke
@@ -18,6 +17,3 @@ npm run nuke
 ```
 npm start
 ```
-
-
-

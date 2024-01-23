@@ -6,63 +6,63 @@
 	background-size: cover;
 }
 .language-zone-overlay .status {
-    line-height: 4rem;
-    position: relative;
-    height: 4rem;
-    min-height: 0;
-    width: 35rem;
-    max-width: 35rem;
-    background-color: whitesmoke;
-    z-index: 10;
-    border-radius: 1rem;
-    top: 0px;
-    left: 0px;
-    white-space: nowrap;
-    float: left;
-    margin-left: 1rem;
-    margin-top: 1rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+	line-height: 4rem;
+	position: relative;
+	height: 4rem;
+	min-height: 0;
+	width: 35rem;
+	max-width: 35rem;
+	background-color: whitesmoke;
+	z-index: 10;
+	border-radius: 1rem;
+	top: 0px;
+	left: 0px;
+	white-space: nowrap;
+	float: left;
+	margin-left: 1rem;
+	margin-top: 1rem;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 }
 
 .language-zone-overlay .controls ul {
-    display: block;
-    position: relative;
-    background-color: whitesmoke;
-    line-height: 4rem;
-    width: 25rem;
-    max-width: 35rem;
-    z-index: 10;
-    border-radius: 1rem;
-    top: 0px;
-    left: 0px;
-    white-space: nowrap;
-    float: left;
-    margin-left: 5rem;
-    margin-top: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    clear: both;
-    min-height: max-content;
-    max-height: max-content;
-    height: auto;
-    cursor: pointer;
+	display: block;
+	position: relative;
+	background-color: whitesmoke;
+	line-height: 4rem;
+	width: 25rem;
+	max-width: 35rem;
+	z-index: 10;
+	border-radius: 1rem;
+	top: 0px;
+	left: 0px;
+	white-space: nowrap;
+	float: left;
+	margin-left: 5rem;
+	margin-top: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	clear: both;
+	min-height: max-content;
+	max-height: max-content;
+	height: auto;
+	cursor: pointer;
 }
 
 .language-zone-overlay .status .status-header {
-   box-shadow: none;
-   margin-bottom: 0px;
-    padding: 1rem;
-    margin-bottom: 0px;
-    box-shadow: none;
+	box-shadow: none;
+	margin-bottom: 0px;
+	padding: 1rem;
+	margin-bottom: 0px;
+	box-shadow: none;
 }
 
 .language-zone-overlay .status .status-text-menu {
-    background-color: whitesmoke;
-    margin-top: 1rem;
-    width: min(500px,100%);
-    overflow-y: auto;
-    font-size: 1.6rem;
+	background-color: whitesmoke;
+	margin-top: 1rem;
+	width: min(500px, 100%);
+	overflow-y: auto;
+	font-size: 1.6rem;
 }
 .language-zone-overlay .status-text-menu ul {
 	list-style-type: none;
@@ -74,7 +74,7 @@
 	font-size: 1.6rem;
 }
 .language-zone-overlay .status-text-menu ul li {
-    padding: 1.5rem;
+	padding: 1.5rem;
 }
 
 .language-zone-overlay .status-header .status-message {
@@ -87,5 +87,3 @@
 	font-size: 2.6rem;
 	background-color: #0009;
 }
-
-

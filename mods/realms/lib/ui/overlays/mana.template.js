@@ -1,8 +1,6 @@
 module.exports = () => {
-
-  return `
+	return `
     <div class="mana-overlay">
     </div>
   `;
-
-}
+};

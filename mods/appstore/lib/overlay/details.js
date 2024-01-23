@@ -1,94 +1,106 @@
-const AppstoreAppDetailsTemplate = require("./details.template.js");
+const AppstoreAppDetailsTemplate = require('./details.template.js');
 
 module.exports = AppstoreAppDetails = {
-  render(app, mod, data) {
-    document.querySelector(".appstore-overlay").innerHTML = AppstoreAppDetailsTemplate(
-      app,
-      mod,
-      data
-    );
-    this.attachEvents(app, mod, data);
-  },
+	render(app, mod, data) {
+		document.querySelector('.appstore-overlay').innerHTML =
+			AppstoreAppDetailsTemplate(app, mod, data);
+		this.attachEvents(app, mod, data);
+	},
 
-  attachEvents(app, mod, data) {
-    // data is module = dm
-    let dm = data;
+	attachEvents(app, mod, data) {
+		// data is module = dm
+		let dm = data;
 
-    document.querySelector(".appstore-install-confirm-button").onclick = async () => {
-      //remove close event on shim until finished.
-      document.querySelector(".saito-overlay-closebox-btn").remove();
-      document.querySelector(".saito-overlay-closebox").remove();
-      document.querySelector(".saito-overlay-backdrop").onclick = (e) => {};
+		document.querySelector('.appstore-install-confirm-button').onclick =
+			async () => {
+				//remove close event on shim until finished.
+				document.querySelector('.saito-overlay-closebox-btn').remove();
+				document.querySelector('.saito-overlay-closebox').remove();
+				document.querySelector('.saito-overlay-backdrop').onclick = (
+					e
+				) => {};
 
-      let module_list = [];
-      module_list.push(dm);
+				let module_list = [];
+				module_list.push(dm);
 
-      let dmname = dm.name;
+				let dmname = dm.name;
 
-      let mods_to_include = [];
-      if (app.options.modules) {
-        mods_to_include = app.options.modules;
-      } else {
-        alert("ERROR: your wallet does not report having modules. Please reset");
-        return;
-      }
+				let mods_to_include = [];
+				if (app.options.modules) {
+					mods_to_include = app.options.modules;
+				} else {
+					alert(
+						'ERROR: your wallet does not report having modules. Please reset'
+					);
+					return;
+				}
 
-      //
-      // currently can't include a bunch of modules
-      //
-      for (let i = 0; i < mods_to_include.length; i++) {
-        let replacing_old = 0;
+				//
+				// currently can't include a bunch of modules
+				//
+				for (let i = 0; i < mods_to_include.length; i++) {
+					let replacing_old = 0;
 
-        for (let z = 0; z < module_list.length; z++) {
-          if (dmname != "") {
-            if (module_list[z].name == mods_to_include[i].name) {
-              replacing_old = 1;
-            }
-          }
-        }
+					for (let z = 0; z < module_list.length; z++) {
+						if (dmname != '') {
+							if (
+								module_list[z].name == mods_to_include[i].name
+							) {
+								replacing_old = 1;
+							}
+						}
+					}
 
-        if (replacing_old == 0) {
-          module_list.push({ name: mods_to_include[i].name, version: mods_to_include[i].version });
-        }
-      }
+					if (replacing_old == 0) {
+						module_list.push({
+							name: mods_to_include[i].name,
+							version: mods_to_include[i].version
+						});
+					}
+				}
 
-      //
-      //
-      //
-      let have_specified_appstore = 0;
-      if (app.options?.appstore?.default) {
-        if (app.options.appstore.default != "") {
-          have_specified_appstore = 1;
-        }
-      }
+				//
+				//
+				//
+				let have_specified_appstore = 0;
+				if (app.options?.appstore?.default) {
+					if (app.options.appstore.default != '') {
+						have_specified_appstore = 1;
+					}
+				}
 
-      //
-      // READY TO SUBMIT
-      //
-      if (have_specified_appstore) {
-        if (app.network.hasPeer(app.options.appstore.default)) {
-          var newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
-            app.options.appstore.default,
-            BigInt(0)
-          );
-          if (newtx == null) {
-            return;
-          }
+				//
+				// READY TO SUBMIT
+				//
+				if (have_specified_appstore) {
+					if (app.network.hasPeer(app.options.appstore.default)) {
+						var newtx =
+							await app.wallet.createUnsignedTransactionWithDefaultFee(
+								app.options.appstore.default,
+								BigInt(0)
+							);
+						if (newtx == null) {
+							return;
+						}
 
-          newtx.msg.module = "AppStore";
-          newtx.msg.request = "request bundle";
-          newtx.msg.list = module_list;
-          await newtx.sign();
-          await app.network.propagateTransaction(newtx);
+						newtx.msg.module = 'AppStore';
+						newtx.msg.request = 'request bundle';
+						newtx.msg.list = module_list;
+						await newtx.sign();
+						await app.network.propagateTransaction(newtx);
 
-          document.querySelector(".appstore-overlay").innerHTML = `
+						document.querySelector(
+							'.appstore-overlay'
+						).innerHTML = `
             <div class="appstore-bundler-install-notice">
               <center class="appstore-loading-text" style="margin-bottom:20px">Your custom Saito bundle is being compiled. Please do not leave this page -- estimated time to completion 60 seconds.</center>
               <center><div class="saito-loader" id="saito-loader"></div></center>
             </div>
           `;
-        } else {
-          document.querySelector(".appstore-overlay").innerHTML = `
+					} else {
+						document.querySelector(
+							'.appstore-overlay'
+						).innerHTML = `
             <div class="appstore-bundler-install-notice">
               <center style="margin-bottom:20pxpadding:20px;">
 		Your wallet is not setup to use this AppStore. Use this AppStore? 
@@ -100,47 +112,56 @@ module.exports = AppstoreAppDetails = {
             </div>
           `;
 
-          if (!app.options.appstore) {
-            app.options.appstore = {};
-          }
-          let peers = await app.network.getPeers();
-          app.options.appstore.default = peers[0].publicKey;
+						if (!app.options.appstore) {
+							app.options.appstore = {};
+						}
+						let peers = await app.network.getPeers();
+						app.options.appstore.default = peers[0].publicKey;
 
-          document.getElementById("appstore-end-compile-btn").onclick = (e) => {
-            mod.overlay.hide();
-          };
+						document.getElementById(
+							'appstore-end-compile-btn'
+						).onclick = (e) => {
+							mod.overlay.hide();
+						};
 
-          document.getElementById("appstore-compile-btn").onclick = async (e) => {
-            document.querySelector(".appstore-bundler-install-notice").innerHTML = "Please wait...";
+						document.getElementById(
+							'appstore-compile-btn'
+						).onclick = async (e) => {
+							document.querySelector(
+								'.appstore-bundler-install-notice'
+							).innerHTML = 'Please wait...';
 
-            app.options.appstore = {};
-            let peers = await app.network.getPeers();
-            app.options.appstore.default = peers[0].publicKey;
-            await app.storage.saveOptions();
+							app.options.appstore = {};
+							let peers = await app.network.getPeers();
+							app.options.appstore.default = peers[0].publicKey;
+							await app.storage.saveOptions();
 
-            let newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
-              app.options.appstore.default,
-              BigInt(0)
-            );
-            if (newtx == null) {
-              return;
-            }
-            newtx.msg.module = "AppStore";
-            newtx.msg.request = "request bundle";
-            newtx.msg.list = module_list;
-            await newtx.sign();
-            await app.network.propagateTransaction(newtx);
+							let newtx =
+								await app.wallet.createUnsignedTransactionWithDefaultFee(
+									app.options.appstore.default,
+									BigInt(0)
+								);
+							if (newtx == null) {
+								return;
+							}
+							newtx.msg.module = 'AppStore';
+							newtx.msg.request = 'request bundle';
+							newtx.msg.list = module_list;
+							await newtx.sign();
+							await app.network.propagateTransaction(newtx);
 
-            document.querySelector(".appstore-overlay").innerHTML = `
+							document.querySelector(
+								'.appstore-overlay'
+							).innerHTML = `
                <div class="appstore-bundler-install-notice">
                  <center class="appstore-loading-text" style="margin-bottom:20px">Your custom Saito bundle is being compiled. Please do not leave this page -- estimated time to completion 60 seconds.</center>
                  <center><div class="saito-loader" id="saito-loader"></div></center>
                </div>
              `;
-          };
-        }
-      } else {
-        document.querySelector(".appstore-overlay").innerHTML = `
+						};
+					}
+				} else {
+					document.querySelector('.appstore-overlay').innerHTML = `
           <div class="appstore-bundler-install-notice">
             <center style="margin-bottom:20px">
 	      Your wallet does not have a default AppStore. Use this AppStore? 
@@ -152,37 +173,43 @@ module.exports = AppstoreAppDetails = {
           </div>
         `;
 
-        document.getElementById("appstore-end-compile-btn").onclick = (e) => {
-          mod.overlay.hide();
-        };
+					document.getElementById(
+						'appstore-end-compile-btn'
+					).onclick = (e) => {
+						mod.overlay.hide();
+					};
 
-        document.getElementById("appstore-compile-btn").onclick = async (e) => {
-          app.options.appstore = {};
-          let peers = await app.network.getPeers();
-          app.options.appstore.default = peers[0].publicKey;
-          app.storage.saveOptions();
+					document.getElementById('appstore-compile-btn').onclick =
+						async (e) => {
+							app.options.appstore = {};
+							let peers = await app.network.getPeers();
+							app.options.appstore.default = peers[0].publicKey;
+							app.storage.saveOptions();
 
-          var newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
-            app.options.appstore.default,
-            BigInt(0)
-          );
-          if (newtx == null) {
-            return;
-          }
-          newtx.msg.module = "AppStore";
-          newtx.msg.request = "request bundle";
-          newtx.msg.list = module_list;
-          await newtx.sign();
-          await app.network.propagateTransaction(newtx);
+							var newtx =
+								await app.wallet.createUnsignedTransactionWithDefaultFee(
+									app.options.appstore.default,
+									BigInt(0)
+								);
+							if (newtx == null) {
+								return;
+							}
+							newtx.msg.module = 'AppStore';
+							newtx.msg.request = 'request bundle';
+							newtx.msg.list = module_list;
+							await newtx.sign();
+							await app.network.propagateTransaction(newtx);
 
-          document.querySelector(".appstore-overlay").innerHTML = `
+							document.querySelector(
+								'.appstore-overlay'
+							).innerHTML = `
              <div class="appstore-bundler-install-notice">
                <center class="appstore-loading-text" style="margin-bottom:20px">Your custom Saito bundle is being compiled. Please do not leave this page -- estimated time to completion 60 seconds.</center>
                <center><div class="loader" id="game_spinner"></div></center>
              </div>
            `;
-        };
-      }
-    };
-  },
+						};
+				}
+			};
+	}
 };

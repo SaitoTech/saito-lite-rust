@@ -1,33 +1,30 @@
 const ReviewTemplate = require('./review.template');
-const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class ReviewOverlay {
+	constructor(app, mod) {
+		this.app = app;
+		this.mod = mod;
+		this.visible = false;
+		this.overlay = new SaitoOverlay(app, mod);
+	}
 
-    constructor(app, mod){
-        this.app = app;
-        this.mod = mod;
-	this.visible = false;
-        this.overlay = new SaitoOverlay(app, mod);
-    }
+	hide() {
+		this.visible = false;
+		this.overlay.hide();
+	}
 
-    hide() {
-        this.visible = false;
-        this.overlay.hide();
-    }
-   
-    render() {
-	this.visible = true;
-        this.overlay.show(ReviewTemplate(this.mod));
-	
-	// POPUP OLD CODE
-	setup_reinforcement_lightbox();
+	render() {
+		this.visible = true;
+		this.overlay.show(ReviewTemplate(this.mod));
 
-        this.attachEvents();
-    }
+		// POPUP OLD CODE
+		setup_reinforcement_lightbox();
 
-    attachEvents(){
-    }
+		this.attachEvents();
+	}
+
+	attachEvents() {}
 }
 
 module.exports = ReviewOverlay;
-

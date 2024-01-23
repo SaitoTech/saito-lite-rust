@@ -1,5 +1,5 @@
 module.exports = AppStorePublishSuccessTemplate = () => {
-  return `
+	return `
     <div style="margin-top:10px;">
 
     <h2>Module Submitted</h2>
@@ -18,4 +18,4 @@ module.exports = AppStorePublishSuccessTemplate = () => {
 
     </div>
   `;
-}
+};

@@ -1,27 +1,25 @@
-
-
 @media only screen and (max-width: 600px) and (orientation: portrait) {
-  .racetrack {
-    display: none;
-    position: absolute;
-    width: 100% !important;
-    height: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    margin-top: auto !important;
-    margin-bottom: auto !important;
-    left: 0 !important;
-    top: 0 !important;
-    padding-top: 10vh !important;
-    background-color: black !important;
-    padding-left: 5vw !important;
-    padding-right: 5vw !important;
-    z-index: 5;
-  }
+	.racetrack {
+		display: none;
+		position: absolute;
+		width: 100% !important;
+		height: 100% !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
+		margin-top: auto !important;
+		margin-bottom: auto !important;
+		left: 0 !important;
+		top: 0 !important;
+		padding-top: 10vh !important;
+		background-color: black !important;
+		padding-left: 5vw !important;
+		padding-right: 5vw !important;
+		z-index: 5;
+	}
 }
 
 @media only screen and (max-height: 600px) and (orientation: landscape) {
-  .racetrack {
-    display: none;
-  }
+	.racetrack {
+		display: none;
+	}
 }

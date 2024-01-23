@@ -1,6 +1,5 @@
 module.exports = SectorTemplate = (imperium_self, sector) => {
-
-  return `
+	return `
           <div class="hexIn" id="hexIn_${sector}">
             <div class="hexLink" id="hexLink_${sector}">
             <div class="hexInfo" id="hex_info_${sector}"></div>
@@ -18,5 +17,4 @@ module.exports = SectorTemplate = (imperium_self, sector) => {
             </div>
           </div>
   `;
-
-}
+};

@@ -1,136 +1,136 @@
 .settings-appspace {
-  display: flex;
-  flex-direction: column;
-  row-gap: 3rem;
-  width: min(95vw, 100rem);
-  height: 80vh;
-  max-height: 80vh;
-  overflow: auto;
-  background: var(--saito-background-color);
-  color: var(--saito-font-color);
-  padding: 2rem;
-  /*margin: 2rem;*/
-  border: 2px solid var(--saito-primary);
-  border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	row-gap: 3rem;
+	width: min(95vw, 100rem);
+	height: 80vh;
+	max-height: 80vh;
+	overflow: auto;
+	background: var(--saito-background-color);
+	color: var(--saito-font-color);
+	padding: 2rem;
+	/*margin: 2rem;*/
+	border: 2px solid var(--saito-primary);
+	border-radius: 5px;
 }
 
 .settings-appspace-link {
-  cursor: pointer;
-  width: 15rem;
+	cursor: pointer;
+	width: 15rem;
 }
 
 .settings-appspace-link:hover {
-  text-decoration: underline;
+	text-decoration: underline;
 }
 
 .settings-actions-container {
-  display: flex;
-  flex-flow: row-reverse;
-  margin-right: 1rem;
-  gap: 1rem;
+	display: flex;
+	flex-flow: row-reverse;
+	margin-right: 1rem;
+	gap: 1rem;
 }
 
 .settings-actions-container .saito-button-secondary {
-  margin: 0;
-  padding: 0.8rem 0.7rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	margin: 0;
+	padding: 0.8rem 0.7rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .settings-appspace-user-details {
-  display: grid;
-  grid-template-columns: 8rem min-content;
-  grid-template-rows: repeat(3, 1fr);
-  grid-column-gap: 1.5rem;
-  grid-row-gap: 1.5rem;
-  padding: 1rem;
-  max-width: 100%;
-  overflow: auto;
+	display: grid;
+	grid-template-columns: 8rem min-content;
+	grid-template-rows: repeat(3, 1fr);
+	grid-column-gap: 1.5rem;
+	grid-row-gap: 1.5rem;
+	padding: 1rem;
+	max-width: 100%;
+	overflow: auto;
 }
 
-.settings-appspace-user-details>div {
-  width: 100%;
-  min-width: 0;
+.settings-appspace-user-details > div {
+	width: 100%;
+	min-width: 0;
 }
 
-.settings-appspace-user-details>div.register-identifier-btn {
-  width: fit-content;
+.settings-appspace-user-details > div.register-identifier-btn {
+	width: fit-content;
 }
 
 .settings-appspace-user-details .pubkey-containter {
-  justify-content: initial;
-  gap: 1rem;
+	justify-content: initial;
+	gap: 1rem;
 }
 
 .settings-appspace-user-details .profile-public-key {
-  width: 38rem;
+	width: 38rem;
 }
 
 .settings-appspace-modules {
-  display: grid;
-  grid-gap: 1.5rem;
-  grid-template-columns: repeat(5, 1fr);
-  margin: 1rem;
+	display: grid;
+	grid-gap: 1.5rem;
+	grid-template-columns: repeat(5, 1fr);
+	margin: 1rem;
 }
 
 .settings-appspace-app {
-  display: flex;
-  align-items: center;
-  padding: 0.6rem 0.5rem 0.2rem 0.5rem;
-  border: 1px solid var(--saito-border-color);
-  border-radius: 0.5rem;
+	display: flex;
+	align-items: center;
+	padding: 0.6rem 0.5rem 0.2rem 0.5rem;
+	border: 1px solid var(--saito-border-color);
+	border-radius: 0.5rem;
 }
 
 .settings-appspace-app:hover {
-  border-color: var(--saito-primary);
+	border-color: var(--saito-primary);
 }
 
 .settings-appspace-app div {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 13rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 13rem;
 }
 
 label.treated {
-  display: none;
+	display: none;
 }
 
 .settings-appspace-debug-content {
-  margin: 1rem 0;
+	margin: 1rem 0;
 }
 
 /*json tree */
 
 .jsontree_node {
-  list-style: none;
+	list-style: none;
 }
 
 @media only screen and (max-width: 900px) {
-  .settings-appspace {
-    padding: 1.5rem;
-  }
-  .settings-appspace-modules {
-    grid-template-columns: repeat(4, 1fr);
-  }
+	.settings-appspace {
+		padding: 1.5rem;
+	}
+	.settings-appspace-modules {
+		grid-template-columns: repeat(4, 1fr);
+	}
 }
 
 @media only screen and (max-width: 600px) {
-  .settings-appspace {
-    padding: 1rem;
-  }
-  .settings-appspace-modules {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .settings-appspace-user-details {
-    grid-template-columns: 8rem 1fr;
-  }
-  .settings-actions-container {
-    gap: 0.6rem;
-    margin-right: 0.5rem;
-  }
-  .settings-actions-container .saito-button-secondary {
-    padding: 0.4rem 0.3rem;
-  }
+	.settings-appspace {
+		padding: 1rem;
+	}
+	.settings-appspace-modules {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.settings-appspace-user-details {
+		grid-template-columns: 8rem 1fr;
+	}
+	.settings-actions-container {
+		gap: 0.6rem;
+		margin-right: 0.5rem;
+	}
+	.settings-actions-container .saito-button-secondary {
+		padding: 0.4rem 0.3rem;
+	}
 }

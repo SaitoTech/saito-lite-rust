@@ -1,65 +1,64 @@
 .headline-overlay {
-    width: 90vw;
-    height: 80vh;
-    justify-content: space-evenly;
-    justify-items: center;
-    background-size: cover;
-    background-position-y: top;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/headline-bg.png);
+	width: 90vw;
+	height: 80vh;
+	justify-content: space-evenly;
+	justify-items: center;
+	background-size: cover;
+	background-position-y: top;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/headline-bg.png);
 }
 
 .headline-overlay .title {
-    background: #0009;
-    width: 100%;
-    color: white;
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 3rem;
-    padding: 0.75rem;
-    padding: 2rem;
-    line-height: 3.4rem;
-    text-align: center;
+	background: #0009;
+	width: 100%;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 3rem;
+	padding: 0.75rem;
+	padding: 2rem;
+	line-height: 3.4rem;
+	text-align: center;
 }
 
 .headline-overlay .cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    justify-content: space-around;
-    width: min(750px, 90vw);
-    min-height: 65vh;
-    padding: 1rem 0;
-    border-radius: 0.5rem;
-    column-gap: 2rem;
-    padding: 2rem;
-    align-items: center;
-    justify-content: space-evenly;
-    justify-items: center;
-    margin-left: auto;
-    margin-right: auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	justify-content: space-around;
+	width: min(750px, 90vw);
+	min-height: 65vh;
+	padding: 1rem 0;
+	border-radius: 0.5rem;
+	column-gap: 2rem;
+	padding: 2rem;
+	align-items: center;
+	justify-content: space-evenly;
+	justify-items: center;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .headline-overlay .cards .card {
-    display: block;
-    height: 45rem;
-    width: calc(45rem * 0.72110);
-    justify-content: space-around;
-    padding: 2rem;
-    z-index: 2;
-    background-image: url(/twilight/img/Base.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
+	display: block;
+	height: 45rem;
+	width: calc(45rem * 0.7211);
+	justify-content: space-around;
+	padding: 2rem;
+	z-index: 2;
+	background-image: url(/twilight/img/Base.svg);
+	background-size: contain;
+	background-repeat: no-repeat;
 }
 
 .headline-overlay .help {
-    color: white;
-    background: #0009;
-    padding: 1.5rem;
-    text-align: center;
-    font-size: 2rem;
-    bottom: 0px;
-    display: block;
-    position: absolute;
-    width: 100%;
+	color: white;
+	background: #0009;
+	padding: 1.5rem;
+	text-align: center;
+	font-size: 2rem;
+	bottom: 0px;
+	display: block;
+	position: absolute;
+	width: 100%;
 }
-
-

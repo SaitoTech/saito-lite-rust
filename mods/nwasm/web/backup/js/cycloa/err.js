@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * 例外のベースクラスです
  * @param {string} name 例外クラス名
@@ -18,9 +18,9 @@ cycloa.err.Exception = function (name, message) {
 	 * @type {string}
 	 */
 	this.name = name;
-	this.message = "["+name.toString()+"] "+message;
+	this.message = '[' + name.toString() + '] ' + message;
 };
-cycloa.err.Exception.prototype.toString = function(){
+cycloa.err.Exception.prototype.toString = function () {
 	return this.message;
 };
 /**
@@ -30,10 +30,10 @@ cycloa.err.Exception.prototype.toString = function(){
  * @extends cycloa.err.Exception
  */
 cycloa.err.CoreException = function (message) {
-	cycloa.err.Exception.call(this, "CoreException", message);
+	cycloa.err.Exception.call(this, 'CoreException', message);
 };
 cycloa.err.CoreException.prototype = {
-	__proto__ : cycloa.err.Exception.prototype
+	__proto__: cycloa.err.Exception.prototype
 };
 /**
  * 実装するべきメソッドを実装してない例外です
@@ -42,7 +42,7 @@ cycloa.err.CoreException.prototype = {
  * @extends cycloa.err.Exception
  */
 cycloa.err.NotImplementedException = function (message) {
-	cycloa.err.Exception.call(this, "NotImplementedException", message);
+	cycloa.err.Exception.call(this, 'NotImplementedException', message);
 };
 cycloa.err.NotImplementedException.prototype = {
 	__proto__: cycloa.err.Exception.prototype
@@ -52,11 +52,9 @@ cycloa.err.NotImplementedException.prototype = {
  * @param {string} message
  * @constructor
  */
-cycloa.err.NotSupportedException = function ( message ) {
-	cycloa.err.Exception.call(this, "NotSupportedException", message);
+cycloa.err.NotSupportedException = function (message) {
+	cycloa.err.Exception.call(this, 'NotSupportedException', message);
 };
 cycloa.err.NotSupportedException.prototype = {
 	__proto__: cycloa.err.Exception.prototype
 };
-
-

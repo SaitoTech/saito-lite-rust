@@ -1,68 +1,65 @@
-
 #saito-header {
-  background: var(--saito-arcade-header-background);
-  border-bottom: none;
+	background: var(--saito-arcade-header-background);
+	border-bottom: none;
 }
 
 .arcade-tab-container {
-  height: fit-content;
-  width: 100%;
+	height: fit-content;
+	width: 100%;
 }
 
 .saito-header-hamburger-contents {
-  background: var(--saito-arcade-background);
+	background: var(--saito-arcade-background);
 }
 
 .arcade-main {
-  display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
 }
 
-.arcade-game-list-container{
-  max-height: 60%;
+.arcade-game-list-container {
+	max-height: 60%;
 }
 
 .arcade-game-list-container h5 {
-  padding: 0 0.5rem;
+	padding: 0 0.5rem;
 }
 
 .arcade-menu {
-  max-height: calc(100% - 3rem);
+	max-height: calc(100% - 3rem);
 }
-
 
 /*button, .saito-button-primary, .saito-button-secondary:hover {*/
 .saito-button-secondary:hover {
-  background: var(--saito-button-background);
+	background: var(--saito-button-background);
 }
 
-
 .saito-button-secondary {
-  color: var(--saito-font-color);
+	color: var(--saito-font-color);
 }
 
 .arcade-initializer {
-  text-align: center;
-  min-width: 18rem; /*Width of the button*/
+	text-align: center;
+	min-width: 18rem; /*Width of the button*/
 }
 
 .arcade-central-panel .arcade-initializer {
-  height: calc(100vh - var(--saito-header-height));
+	height: calc(100vh - var(--saito-header-height));
 }
 
 .arcade-game-initializer-success-title {
-  text-align: center;
-  font-size: 3rem;
-  margin: 10rem auto 5rem;
+	text-align: center;
+	font-size: 3rem;
+	margin: 10rem auto 5rem;
 }
 
 .arcade-game-initializer-success-button {
-  margin: 3rem auto;
+	margin: 3rem auto;
 }
 
 .arcade-central-panel h5 {
-  margin: 0 0 -1rem 0;
+	margin: 0 0 -1rem 0;
 }
 
 /*************************************
@@ -71,26 +68,26 @@
 **************************************/
 
 @media screen and (max-width: 900px) {
-  .arcade-container .saito-sidebar.right {
-    position: unset;
-    left: unset;
-    width: unset;
-    top: unset;
-    visibility: visible;
-    margin-top: unset;
-    height: unset;
-    grid-row: unset;
-    grid-column-start: unset;
-    padding: 1rem;
-  }
-  .arcade-container .saito-main {
-    margin: 0;
-  }
-  .arcade-container .saito-sidebar.right .saito-table-row {
-    padding: 1rem;
-  }
-  .arcade-container .saito-sidebar.right .saito-table-body {
-    grid-gap: 0.8rem;
-    font-size: 1.6rem;
-  }
+	.arcade-container .saito-sidebar.right {
+		position: unset;
+		left: unset;
+		width: unset;
+		top: unset;
+		visibility: visible;
+		margin-top: unset;
+		height: unset;
+		grid-row: unset;
+		grid-column-start: unset;
+		padding: 1rem;
+	}
+	.arcade-container .saito-main {
+		margin: 0;
+	}
+	.arcade-container .saito-sidebar.right .saito-table-row {
+		padding: 1rem;
+	}
+	.arcade-container .saito-sidebar.right .saito-table-body {
+		grid-gap: 0.8rem;
+		font-size: 1.6rem;
+	}
 }

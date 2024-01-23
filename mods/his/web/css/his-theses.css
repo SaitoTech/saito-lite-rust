@@ -1,116 +1,112 @@
-
 .theses-overlay {
-    height: 90vh;
-    width: 90vw;
-    overflow: hidden;
+	height: 90vh;
+	width: 90vw;
+	overflow: hidden;
 }
 
 .theses-overlay .status {
-    position: relative;
-    height: 4rem;
-    line-height: 4rem;
-    min-height: 0;
-    width: 30rem;
-    max-width: 35rem;
-    background-color: whitesmoke;
-    z-index: 10;
-    border-radius: 1rem;
-    top: 0px;
-    left: 0px;
-    white-space: nowrap;
-    float: left;
-    margin-left: 1rem;
-    margin-top: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+	position: relative;
+	height: 4rem;
+	line-height: 4rem;
+	min-height: 0;
+	width: 30rem;
+	max-width: 35rem;
+	background-color: whitesmoke;
+	z-index: 10;
+	border-radius: 1rem;
+	top: 0px;
+	left: 0px;
+	white-space: nowrap;
+	float: left;
+	margin-left: 1rem;
+	margin-top: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 .theses-overlay .controls {
-    max-height: 80vh;
+	max-height: 80vh;
 }
 
 .theses-overlay .controls ul {
-    overflow-y: auto;
-    display: block;
-    position: relative;
-    background-color: whitesmoke;
-    line-height: 4rem;
-    width: 30rem;
-    max-width: 35rem;
-    max-height: 80vh;
-    z-index: 10;
-    border-radius: 1rem;
-    top: 0px;
-    left: 0px;
-    white-space: nowrap;
-    float: left;
-    margin-left: 1rem;
-    margin-top: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    clear: both;
-    min-height: max-content;
-    height: auto;
-    cursor: pointer;
+	overflow-y: auto;
+	display: block;
+	position: relative;
+	background-color: whitesmoke;
+	line-height: 4rem;
+	width: 30rem;
+	max-width: 35rem;
+	max-height: 80vh;
+	z-index: 10;
+	border-radius: 1rem;
+	top: 0px;
+	left: 0px;
+	white-space: nowrap;
+	float: left;
+	margin-left: 1rem;
+	margin-top: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	clear: both;
+	min-height: max-content;
+	height: auto;
+	cursor: pointer;
 }
 
 .theses-overlay .status .status-header {
-   box-shadow: none;
-   margin-bottom: 0px;
+	box-shadow: none;
+	margin-bottom: 0px;
 }
 
 .theses-overlay .status .message {
-    padding: 1rem;
-    margin-bottom: 0px;
-    box-shadow: none;
+	padding: 1rem;
+	margin-bottom: 0px;
+	box-shadow: none;
 }
 
 .theses-overlay .status ul {
-    margin-top: 1rem;
-    background-color: whitesmoke;
-    border-radius: 0.5rem;
+	margin-top: 1rem;
+	background-color: whitesmoke;
+	border-radius: 0.5rem;
 }
 
 .theses-overlay .status ul {
-  list-style: none;
+	list-style: none;
 }
 
 .theses-overlay .status ul .option {
-    padding: 1.5rem;
-    cursor: pointer;
+	padding: 1.5rem;
+	cursor: pointer;
 }
 .theses-overlay .status ul .option:hover {
-    background: #DDD;
+	background: #ddd;
 }
 
 .theses-overlay .gameboard {
-    position: relative;
+	position: relative;
 }
 
 .theses-overlay .status .status-text-menu ul .textchoice {
-    background-color: whitesmoke;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
+	background-color: whitesmoke;
+	padding: 1.5rem;
+	border-radius: 0.5rem;
 }
 
 .zoom-german {
-    transform: translate(-42%, -20%) scaleX(0.7) scaleY(0.7);
+	transform: translate(-42%, -20%) scaleX(0.7) scaleY(0.7);
 }
 .zoom-english {
-    transform: translate(-24%, -15%) scaleX(0.7) scaleY(0.7);
+	transform: translate(-24%, -15%) scaleX(0.7) scaleY(0.7);
 }
 .zoom-french {
-    transform: translate(-32%, -35%) scaleX(0.6) scaleY(0.6);
+	transform: translate(-32%, -35%) scaleX(0.6) scaleY(0.6);
 }
 .zoom-spanish {
-    transform: translate(-29%, -53%) scaleX(0.6) scaleY(0.6);
+	transform: translate(-29%, -53%) scaleX(0.6) scaleY(0.6);
 }
 .zoom-italian {
-    transform: translate(-49%, -44%) scaleX(0.6) scaleY(0.6);
+	transform: translate(-49%, -44%) scaleX(0.6) scaleY(0.6);
 }
 .zoom-ottoman {
-    transform: translate(-60%, -46%) scaleX(0.6) scaleY(0.6);
+	transform: translate(-60%, -46%) scaleX(0.6) scaleY(0.6);
 }
-
-
-

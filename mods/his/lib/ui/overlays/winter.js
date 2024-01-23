@@ -1,68 +1,57 @@
 const WinterTemplate = require('./winter.template');
-const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class WinterOverlay {
+	constructor(app, mod) {
+		this.app = app;
+		this.mod = mod;
+		this.visible = false;
+		this.overlay = new SaitoOverlay(app, mod, false, true, true);
+	}
 
-    constructor(app, mod){
-        this.app = app;
-        this.mod = mod;
-	this.visible = false;
-        this.overlay = new SaitoOverlay(app, mod, false, true, true);
-    }
- 
-    hide() {
-      this.overlay.hide();
-    }
+	hide() {
+		this.overlay.hide();
+	}
 
-    pullHudOverOverlay() {
-      //
-      // pull GAME HUD over overlay
-      //
-      let overlay_zindex = parseInt(this.overlay.zIndex);
-      if (document.querySelector(".hud")) {
-        document.querySelector(".hud").style.zIndex = overlay_zindex+1;
-        this.mod.hud.zIndex = overlay_zindex+1;
-      }
-    }
-    pushHudUnderOverlay() {
-      //
-      // push GAME HUD under overlay
-      //
-      let overlay_zindex = parseInt(this.overlay.zIndex);
-      if (document.querySelector(".hud")) {
-        document.querySelector(".hud").style.zIndex = overlay_zindex-2;
-        this.mod.hud.zIndex = overlay_zindex-2;
-      }
-    }
+	pullHudOverOverlay() {
+		//
+		// pull GAME HUD over overlay
+		//
+		let overlay_zindex = parseInt(this.overlay.zIndex);
+		if (document.querySelector('.hud')) {
+			document.querySelector('.hud').style.zIndex = overlay_zindex + 1;
+			this.mod.hud.zIndex = overlay_zindex + 1;
+		}
+	}
+	pushHudUnderOverlay() {
+		//
+		// push GAME HUD under overlay
+		//
+		let overlay_zindex = parseInt(this.overlay.zIndex);
+		if (document.querySelector('.hud')) {
+			document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
+			this.mod.hud.zIndex = overlay_zindex - 2;
+		}
+	}
 
+	render(faction = '') {
+		let his_self = this.mod;
 
-  
-    render(faction="") {
+		this.overlay.show(WinterTemplate(faction));
+		this.pushHudUnderOverlay();
 
-      let his_self = this.mod;
+		this.attachEvents();
+	}
 
-      this.overlay.show(WinterTemplate(faction));
-      this.pushHudUnderOverlay();
+	attachEvents() {
+		let his_self = this.mod;
 
-      this.attachEvents();
-
-    }
-
-    attachEvents() {
-
-      let his_self = this.mod;
-
-      $('.winter').on('click', function() {
-	if (document.querySelector("#confirmit")) {
-	  $('#confirmit').click();
-        }
-      });
-
-    }
-
+		$('.winter').on('click', function () {
+			if (document.querySelector('#confirmit')) {
+				$('#confirmit').click();
+			}
+		});
+	}
 }
 
 module.exports = WinterOverlay;
-
-
-

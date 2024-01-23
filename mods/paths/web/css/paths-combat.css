@@ -1,12 +1,9 @@
-
 .combat-overlay {
-  min-width: 1131px;
-  min-height: 827px;
-  max-height: 90vh;
-  max-width: 90vw;
-  border-radius: 2rem;
-  background-image: url('/paths/img/CombatTables.png');
-  background-size: cover;
+	min-width: 1131px;
+	min-height: 827px;
+	max-height: 90vh;
+	max-width: 90vw;
+	border-radius: 2rem;
+	background-image: url('/paths/img/CombatTables.png');
+	background-size: cover;
 }
-
-

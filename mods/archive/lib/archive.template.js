@@ -1,6 +1,5 @@
 module.exports = (app, row) => {
-
-	if (row){
+	if (row) {
 		return `<div class="archive-row">
 					<div>${row.id}</div>
 					<div>${row.publicKey}</div>
@@ -14,7 +13,7 @@ module.exports = (app, row) => {
 					<div class="archive-button" data-tx='${row.tx}'>TX</div>
 					<div>${row.preserve}</div>
 				</div>`;
-	}else{
+	} else {
 		return `<div class="archive-header archive-row">
 					<div>ID</div>
 					<div>From</div>
@@ -29,5 +28,4 @@ module.exports = (app, row) => {
 					<div>DEL</div>
 				</div>`;
 	}
-
 };
