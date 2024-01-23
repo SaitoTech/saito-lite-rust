@@ -1003,13 +1003,25 @@ console.log("no...");
     return luis;
   }
 
-  returnFactionLandUnitsInSpace(faction, space) {
+  returnFactionLandUnitsInSpace(faction, space, include_minor_allies=false) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "regular") { luis++; }
-      if (space.units[faction][i].type === "mercenary") { luis++; }
-      if (space.units[faction][i].type === "cavalry") { luis++; }
+    for (f in space.units) {
+      if (include_minor_allies == false && f == faction) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
+        }
+      } else {
+	if (f == faction || this.isAlliedMinorPower(f, faction)) {
+          for (let i = 0; i < space.units[f].length; i++) {
+            if (space.units[f][i].type === "regular") { luis++; }
+            if (space.units[f][i].type === "mercenary") { luis++; }
+            if (space.units[f][i].type === "cavalry") { luis++; }
+          }
+        }
+      }
     }
     return luis;
   }

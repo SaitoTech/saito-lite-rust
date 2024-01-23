@@ -2514,7 +2514,7 @@ return;
 	// is this a rapid move ?
 	//
 	let max_formation_size = his_self.returnMaxFormationSize(space.units[faction]);
-	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space);
+	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space, true); // true ==> include minor allies
 	let can_we_quick_move = false;
 	if (max_formation_size >= units_in_space) { can_we_quick_move = true; }
 
@@ -2878,7 +2878,7 @@ return;
 
       let html = "<ul>";
       for (let i = 0; i < space.neighbours.length; i++) {
-	if (is_attacker_loser) {
+	if (loser === attacker) {
 	  if (space.neighbours[i] === attacker_comes_from_this_spacekey) {
             html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
 	  }
@@ -2906,7 +2906,7 @@ return;
     html    += `<li class="card" id="skip">sacrifice forces</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`${this.returnFactionName(loser)} retreats to where:`, html);
+    this.updateStatusWithOptions(`${this.returnFactionName(loser)} retreats, yes?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -2977,7 +2977,7 @@ return;
     }
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`{this.returnFactionName(attacker)} approaches ${this.returnSpaceName(space_name)}. ${this.returnFactionName(defender)} Retreat?`, html);
+    this.updateStatusWithOptions(`${this.returnFactionName(attacker)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);

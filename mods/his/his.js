@@ -12644,13 +12644,25 @@ console.log("no...");
     return luis;
   }
 
-  returnFactionLandUnitsInSpace(faction, space) {
+  returnFactionLandUnitsInSpace(faction, space, include_minor_allies=false) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "regular") { luis++; }
-      if (space.units[faction][i].type === "mercenary") { luis++; }
-      if (space.units[faction][i].type === "cavalry") { luis++; }
+    for (f in space.units) {
+      if (include_minor_allies == false && f == faction) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
+        }
+      } else {
+	if (f == faction || this.isAlliedMinorPower(f, faction)) {
+          for (let i = 0; i < space.units[f].length; i++) {
+            if (space.units[f][i].type === "regular") { luis++; }
+            if (space.units[f][i].type === "mercenary") { luis++; }
+            if (space.units[f][i].type === "cavalry") { luis++; }
+          }
+        }
+      }
     }
     return luis;
   }
@@ -18276,7 +18288,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
 	      this.field_battle_overlay.renderFortification(this.game.state.field_battle);
-	      this.field_battle_overlay.updateinstructions(faction + " considering fortification");
+	      this.field_battle_overlay.updateInstructions(faction + " considering fortification");
 	      this.updateStatus(this.returnFactionName(faction) + " considering fortification");
 	    } else {
 
@@ -21225,6 +21237,22 @@ console.log("we have made it this far!");
               }
             }
 
+        
+            //
+            // if the space is besieged and is friendly to the attacker, un-besiege defenders
+            // 
+            if (this.isSpaceFriendly(his_self.game.state.field_battle.spacekey, his_self.game.state.field_battle.attacker_faction) && space.besieged > 0) {
+              space.besieged = 0;
+              for (let key in space.units) {
+                for (let ii = 0; ii < space.units[key].length; ii++) {
+                  space.units[key][ii].besieged = 0;
+                }
+              }
+            }
+
+
+
+
 	    let defender_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.defender_faction);
 	    let attacker_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.attacker_faction);
 
@@ -22517,7 +22545,7 @@ console.log("naval space units: " + JSON.stringify(space.units));
           if (this.game.player == this.returnPlayerOfFaction(loser)) {
 	    let winning_faction = attacker_faction;
 	    let is_attacker_loser = false;
-	    this.playerEvaluateRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
+	    this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
           } else {
             this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
           }
@@ -28005,7 +28033,7 @@ return;
 	// is this a rapid move ?
 	//
 	let max_formation_size = his_self.returnMaxFormationSize(space.units[faction]);
-	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space);
+	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space, true); // true ==> include minor allies
 	let can_we_quick_move = false;
 	if (max_formation_size >= units_in_space) { can_we_quick_move = true; }
 
@@ -28369,7 +28397,7 @@ return;
 
       let html = "<ul>";
       for (let i = 0; i < space.neighbours.length; i++) {
-	if (is_attacker_loser) {
+	if (loser === attacker) {
 	  if (space.neighbours[i] === attacker_comes_from_this_spacekey) {
             html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
 	  }
@@ -28397,7 +28425,7 @@ return;
     html    += `<li class="card" id="skip">sacrifice forces</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`${this.returnFactionName(loser)} retreats to where:`, html);
+    this.updateStatusWithOptions(`${this.returnFactionName(loser)} retreats, yes?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -28468,7 +28496,7 @@ return;
     }
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`{this.returnFactionName(attacker)} approaches ${this.returnSpaceName(space_name)}. ${this.returnFactionName(defender)} Retreat?`, html);
+    this.updateStatusWithOptions(`${this.returnFactionName(attacker)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);

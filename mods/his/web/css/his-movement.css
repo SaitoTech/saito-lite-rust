@@ -7,6 +7,7 @@
     display: grid;
     grid-template-rows: min-content 1fr min-content;
     user-select: none;
+    overflow-y: auto;
 }
 
 .movement-overlay .help {
