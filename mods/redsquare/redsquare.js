@@ -157,7 +157,7 @@ class RedSquare extends ModTemplate {
             window.history.pushState(
               {},
               document.title,
-              "/" + this_mod.slug + `/?user_id=${publicKey}`
+              "/" + this_mod.slug + `/?user_id=${publicKey}`,
             );
           } else {
             window.location = `/redsquare/?user_id=${publicKey}`;
@@ -205,7 +205,7 @@ class RedSquare extends ModTemplate {
                   } else {
                     this_mod.app.browser.addElementToId(
                       `<div class="saito-notification-dot">${unread}</div>`,
-                      id
+                      id,
                     );
                   }
                 } else {
@@ -762,8 +762,8 @@ class RedSquare extends ModTemplate {
               `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
                 txs.length
               } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
-                this.peers[i].tweets_earliest_ts
-              )}`
+                this.peers[i].tweets_earliest_ts,
+              )}`,
             );
 
             // execute callback when all txs are fetched from all peers
@@ -771,7 +771,7 @@ class RedSquare extends ModTemplate {
               mycallback(count);
             }
           },
-          this.peers[i].peer
+          this.peers[i].peer,
         );
       }
     }
@@ -827,7 +827,7 @@ class RedSquare extends ModTemplate {
             middle_callback();
           }
         },
-        "localhost"
+        "localhost",
       );
 
       //
@@ -851,7 +851,7 @@ class RedSquare extends ModTemplate {
             middle_callback();
           }
         },
-        "localhost"
+        "localhost",
       );
     } else {
       //
@@ -889,7 +889,7 @@ class RedSquare extends ModTemplate {
             mycallback(txs);
           }
         },
-        this.peers[i].peer
+        this.peers[i].peer,
       );
     }
   }
@@ -939,13 +939,13 @@ class RedSquare extends ModTemplate {
                     mycallback(txs);
                   }
                 },
-                this.peers[i].peer
+                this.peers[i].peer,
               );
             }
           }
         }
       },
-      "localhost"
+      "localhost",
     );
   }
 
@@ -1335,7 +1335,7 @@ class RedSquare extends ModTemplate {
             await this.app.storage.updateTransaction(tx, {}, "localhost");
           }
         },
-        "localhost"
+        "localhost",
       );
     }
 
@@ -1439,7 +1439,7 @@ class RedSquare extends ModTemplate {
             console.log("Original tweet not found");
           }
         },
-        "localhost"
+        "localhost",
       );
     }
 
@@ -1562,7 +1562,7 @@ class RedSquare extends ModTemplate {
           }
         }
       },
-      "localhost"
+      "localhost",
     );
   }
 
@@ -1615,7 +1615,7 @@ class RedSquare extends ModTemplate {
                     }
                   }
                 },
-                "localhost"
+                "localhost",
               );
             }
 
@@ -1631,13 +1631,13 @@ class RedSquare extends ModTemplate {
                     }
                   }
                 },
-                "localhost"
+                "localhost",
               );
             }
           }
         }
       },
-      "localhost"
+      "localhost",
     );
 
     //Save the transaction with command to delete
@@ -1749,7 +1749,7 @@ class RedSquare extends ModTemplate {
                 await this.app.storage.updateTransaction(archived_tx, {}, "localhost");
               }
             },
-            "localhost"
+            "localhost",
           );
         }
       }
@@ -1799,7 +1799,7 @@ class RedSquare extends ModTemplate {
                 await this.app.storage.updateTransaction(archived_tx, {}, "localhost");
               }
             },
-            "localhost"
+            "localhost",
           );
         }
       }
@@ -1861,7 +1861,7 @@ class RedSquare extends ModTemplate {
               await this.app.storage.updateTransaction(tx, { flagged: 1 }, "localhost");
             }
           },
-          "localhost"
+          "localhost",
         );
       }
     }
@@ -1907,11 +1907,11 @@ class RedSquare extends ModTemplate {
           this.app.storage.saveTransaction(
             tweet.tx,
             { field1: "RedSquare", field3: tweet?.thread_id, preserve },
-            "localhost"
+            "localhost",
           );
         }
       },
-      "localhost"
+      "localhost",
     );
   }
 
@@ -1946,7 +1946,7 @@ class RedSquare extends ModTemplate {
         this.app.connection.emit("redsquare-home-render-request");
         console.log(`${txs.length} tweets from local DB loaded, ${this.tweets.length}`);
       },
-      "localhost"
+      "localhost",
     );
   }
 
@@ -2136,7 +2136,7 @@ class RedSquare extends ModTemplate {
           }
         }
       },
-      "localhost"
+      "localhost",
     );
   }
 
@@ -2172,7 +2172,7 @@ class RedSquare extends ModTemplate {
 
         return hex_values;
       },
-      "localhost"
+      "localhost",
     );
   }
 

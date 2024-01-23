@@ -50,7 +50,7 @@ class Relay extends ModTemplate {
           "relay peer message",
           tx.toJson(),
           null,
-          peers[i].peerIndex
+          peers[i].peerIndex,
         );
       }
     });
@@ -124,7 +124,7 @@ class Relay extends ModTemplate {
         "relay peer message",
         tx.toJson(),
         null,
-        peer.peerIndex
+        peer.peerIndex,
       );
       // }
     }
@@ -200,10 +200,10 @@ class Relay extends ModTemplate {
                   async function () {
                     if (mycallback != null) {
                       mycallback({ err: "", success: 1 });
-		                }
+                    }
                     return 1;
                   },
-                  peers[i].peerIndex
+                  peers[i].peerIndex,
                 );
               }
             }
@@ -222,7 +222,6 @@ class Relay extends ModTemplate {
     }
 
     return 0;
-
   }
 }
 

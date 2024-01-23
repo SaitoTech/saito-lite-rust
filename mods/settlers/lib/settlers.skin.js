@@ -101,7 +101,7 @@ class SettlersSkin {
         break;
 
       default: //Classic
-      //Hidden Resource cards
+        //Hidden Resource cards
         //this.c1 = {name: "village", svg:`<svg viewbox="0 0 200 200"><polygon points="0,75 100,0, 200,75 200,200 0,200"/></svg>`};
         //this.c2 = {name: "city", svg:`<svg viewbox="0 0 200 200"><polygon points="0,100 100,100, 100,50 150,0 200,50 200,200 0,200"/></svg>`};
         this.c1 = { name: "village", svg: `<img src="/settlers/img/icons/village.png"/>` };

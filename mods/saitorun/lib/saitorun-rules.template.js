@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let html =  `<div class="rules-overlay">
+  let html = `<div class="rules-overlay">
               <h1>Saito Run</h1>
                 <ul>
                   <li>Collect cubes and navigate through obstacles</li>
@@ -10,5 +9,5 @@ module.exports = (app, mod) => {
             </div>
             `;
 
-    return html;
-}
+  return html;
+};
