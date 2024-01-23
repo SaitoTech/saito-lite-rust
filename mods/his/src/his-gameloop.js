@@ -798,6 +798,8 @@ if (this.game.state.scenario != "is_testing") {
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
 
+	  this.setEnemies("papacy","hapsburg");
+	  this.setActivatedPower("protestant", "hapsburg");
 
     	  this.controlSpace("france", "genoa");
     	  this.addRegular("france", "genoa", 3);
@@ -1590,7 +1592,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 
 	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
 	      let ap = this.game.state.activated_powers[io[i]][zz];
-	      if (ap != attacker) {
+	      if (ap !== attacker && !io.includes(ap) && io[i] != attacker) {
 	        let units_in_space = this.returnFactionLandUnitsInSpace(ap, spacekey);
 	        if (units_in_space > 0) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
@@ -4322,8 +4324,38 @@ console.log("we have made it this far!");
                 }
               }
             }
-            this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.defender_faction)+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+
+	    let defender_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.defender_faction);
+	    let attacker_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.attacker_faction);
+
+	    // if the defender is the active player AND controls the space, they can fortify
+	    if (defender_player == this.game.state.active_player && this.isSpaceControlled(his_self.game.state.field_battle.spacekey, his_self.game.state.field_battle.defender_faction)) {
+              this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.defender_faction)+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+	    // otherwise they need to retreat
+	    } else {
+              for (let f in his_self.game.state.field_battle.faction_map) {
+                let can_faction_retreat = 0;
+                if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.defender_faction) {
+                  for (let z = 0; z < space.neighbours.length; z++) {
+                    let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
+                    if (fluis > 0) {
+                      can_faction_retreat = 1;
+                    }
+                  }
+                  if (can_faction_retreat == 1) {
+                    this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+		    if (his_self.game.state.field_battle.defender_land_units_remaining > 0) {
+                      this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
+                    }
+                  }
+	          if (can_faction_retreat == 0) {
+                    this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+	          }
+                }
+              }
+	    }
           }
+
 
           //
           // redisplay
@@ -4335,7 +4367,6 @@ console.log("we have made it this far!");
 	  //
           his_self.field_battle_overlay.renderPostFieldBattle(his_self.game.state.field_battle);
           his_self.field_battle_overlay.pullHudOverOverlay();
-
 
           return 1;
 
@@ -5017,8 +5048,6 @@ console.log("spacekey: " + spacekey);
           his_self.game.state.assault.attacker_hits_first = 0;
           his_self.game.state.assault.defender_hits_first = 0;
           
-console.log("ASSAULT: " + JSON.stringify(his_self.game.state.assault));
-
 	  his_self.game.queue.push(`assault_continue\t${mv[1]}\t${mv[2]}`);
 
           let ap = {};
@@ -5586,9 +5615,9 @@ console.log("naval space units: " + JSON.stringify(space.units));
           // fortification has already happened. if the loser is the attacker, they have to retreat
           //
           if (this.game.player == this.returnPlayerOfFaction(loser)) {
+	    let winning_faction = attacker_faction;
 	    let is_attacker_loser = false;
-	    if (loser === attacker_faction) { is_attacker_loser = true; }
-            this.playerEvaluateRetreatOpportunity(attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey, defender_faction, is_attacker_loser);
+	    this.playerEvaluateRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
           } else {
             this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
           }
@@ -6403,7 +6432,7 @@ defender_hits - attacker_hits;
 	      } else {
 	        this.updateLog("Protestants translate New Testament (french)");
 	        this.game.state.translations['new']['french']++;
-		if (this.game.state.translations['full']['french'] == 6) {
+		if (this.game.state.translations['new']['french'] == 6) {
 		  // protestant gets 1 roll bonus at start
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
@@ -6419,7 +6448,7 @@ defender_hits - attacker_hits;
 	      }
 	    }
 	    if (zone === "english") {
-	      if (this.game.state.translations['new']['english'] >= 6) {
+	      if (this.game.state.translations['new']['english'] >= 6) { 
 	        this.updateLog("Protestants translate Old Testament (english)");
 	        this.game.state.translations['full']['english']++;
 		if (this.game.state.translations['full']['english'] == 10) {
@@ -6439,7 +6468,7 @@ defender_hits - attacker_hits;
 	      } else {
 	        this.updateLog("Protestants translate New Testament (english)");
 	        this.game.state.translations['new']['english']++;
-		if (this.game.state.translations['full']['english'] == 6) {
+		if (this.game.state.translations['new']['english'] == 6) {
 		  // protestant gets 1 roll bonus at start
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
@@ -7629,7 +7658,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    });
 	  } else {
 	    this.hideOverlays();
-	    this.updateStatusAndListCards("Opponent Turn", () => {});
+	    this.updateStatusAndListCards("Opponent Turn", his_self.game.deck[0].fhand[0], () => {});
 	  }
 
           return 0;

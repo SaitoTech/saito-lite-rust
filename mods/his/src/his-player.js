@@ -2134,6 +2134,7 @@ return;
 	      for (let key in space.units) {
                 if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
                   for (let i = 0; i < space.units[key].length; i++) {
+                    if (space.units[key][i].navy_leader != true) {
                     if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
                       let does_units_to_move_have_unit = false;
                       for (let z = 0; z < units_to_move.length; z++) {
@@ -2146,6 +2147,7 @@ return;
                         html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
                         unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       }
+                    }
                     }
                   }
                 }
@@ -2381,6 +2383,7 @@ return;
 	  for (let key in space.units) {
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
+	        if (space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
@@ -2395,6 +2398,7 @@ return;
 		      unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
 	            }
 	          }
+	        }
 	        }
 	      }
 	    }
@@ -2545,8 +2549,10 @@ return;
 	      for (let key in space.units) {
 	        if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
 	          for (let i = 0; i < space.units[key].length; i++) {
+	            if (space.units[key][i].navy_leader != true) {
 	            if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 		      units_to_move.push({ faction : key , idx : i , type : space.units[key][i].type });
+	            }
 	            }
 	          }
 	        }
@@ -2785,7 +2791,7 @@ return;
     if (post_battle) {
       this.updateStatusWithOptions(`${this.returnFactionName(faction)} loses the battle. Retreat?`, html);
     } else {
-      this.updateStatusWithOptions(`${this.returnFactionName(faction)} approaches ${this.returnSpaceName(spacekey)}. Retreat?`, html);
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
     }
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
@@ -2806,7 +2812,6 @@ return;
 
     let his_self = this;
     let retreat_destination = "";
-    let space_name = this.game.spaces[spacekey].name;
 
     let onFinishSelect = function(his_self, destination_spacekey) {
       his_self.addMove("retreat"+"\t"+attacker+"\t"+spacekey+"\t"+destination_spacekey);
@@ -2841,7 +2846,7 @@ return;
     html    += `<li class="card" id="skip">sacrifice forces</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Break Siege and Retreat: ${space_name}?`, html);
+    this.updateStatusWithOptions(`Break Siege and Retreat: ${spacekey}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -2854,6 +2859,67 @@ return;
     });
 
   }
+
+
+  playerEvaluatePostBattleRetreatOpportunity(loser, winner, attacker, spacekey, attacker_comes_from_this_spacekey="") {
+
+    let his_self = this;
+    let retreat_destination = "";
+    let space_name = this.game.spaces[spacekey].name;
+
+    let onFinishSelect = function(his_self, destination_spacekey) {
+      his_self.addMove("retreat"+"\t"+loser+"\t"+spacekey+"\t"+destination_spacekey);
+      his_self.endTurn();
+    };
+
+    let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
+
+      let space = his_self.game.spaces[spacekey];
+
+      let html = "<ul>";
+      for (let i = 0; i < space.neighbours.length; i++) {
+	if (is_attacker_loser) {
+	  if (space.neighbours[i] === attacker_comes_from_this_spacekey) {
+            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	  }
+	} else {
+          if (his_self.canFactionRetreatToSpace(loser, space.neighbours[i], "") && space.neighbours[i] !== attacker_comes_from_this_spacekey) {
+            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	  }
+	}
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions("Choose Destination for Retreat: ", html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+        onFinishSelect(his_self, id);
+      });
+
+    };
+
+    
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="skip">sacrifice forces</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`${this.returnFactionName(loser)} retreats to where:`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "retreat") {
+	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
 
 
 
@@ -2911,7 +2977,7 @@ return;
     }
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`{this.returnFactionName(faction)} approaches ${this.returnSpaceName(space_name)}. Retreat?`, html);
+    this.updateStatusWithOptions(`{this.returnFactionName(attacker)} approaches ${this.returnSpaceName(space_name)}. ${this.returnFactionName(defender)} Retreat?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -2922,11 +2988,7 @@ return;
         return;
       }
     });
-
   }
-
-
-
 
 
   playerEvaluateFortification(attacker, faction, spacekey) {
@@ -2983,6 +3045,7 @@ return;
 	  for (let key in space.units) {
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
+	        if (space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
@@ -2997,6 +3060,7 @@ return;
 		      unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
 	            }
 	          }
+	        }
 	        }
 	      }
 	    }
@@ -3120,12 +3184,14 @@ return;
       let html = "<ul>";
 
       for (let i = 0; i < space.units[defender].length; i++) {
+        if (space.units[defender][i].army_leader != true) {
         if (space.units[defender][i].land_or_sea === "sea" || space.units[defender][i].land_or_sea === "both") {
           if (units_to_move.includes(parseInt(i))) {
             html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
           } else {
             html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
           }
+        }
         }
       }
       html += `<li class="option" id="end">finish</li>`;
@@ -3378,6 +3444,7 @@ return;
 	  for (let key in space.units) {
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
+	        if (space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
@@ -3392,6 +3459,7 @@ return;
 		      unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
 	            }
 	          }
+	        }
 	        }
 	      }
 	    }
@@ -3636,7 +3704,6 @@ return;
 	  //
 	  // revised units to move is
 	  //
-console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
 	  for (let i = 0; i < revised_units_to_move.length; i++) {
 	    let unit = revised_units_to_move[i];
             his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+revised_units_to_move[i].idx);
@@ -3686,7 +3753,7 @@ console.log("revised units to move: " + JSON.stringify(revised_units_to_move));
       let html = "<ul>";
       for (let i = 0; i < destinations.length; i++) {
 	let spacekey = destinations[i];
-        html += `<li class="option" style="font-weight:bold" id="${spacekey}">${spacekey}</li>`;
+        html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
       }
       html += "</ul>";
 

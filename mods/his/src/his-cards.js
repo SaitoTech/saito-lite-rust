@@ -1304,12 +1304,14 @@ if (space.key === "bordeaux") {
       onEvent : function(his_self, faction) {
 
 	let controlling_power = "papacy";
+	let victim_power = "protestant";
 
 	//
 	// prior to League formation
 	//
 	if (his_self.game.state.events.schmalkaldic_league != 1) {
 	  controlling_power = "protestant";
+	  victim_power = "papacy";
 	  his_self.setEnemies("papacy","hapsburg");
 	}
 
@@ -1324,7 +1326,7 @@ if (space.key === "bordeaux") {
 	// controlling power gets 1 card
 	//
         his_self.game.queue.push(`DEAL\t1\t${controlling_player}\t1`);
-	his_self.game.queue.push("spanish_invasion_land\t"+controlling_player+"\t"+controlling_power);
+	his_self.game.queue.push("spanish_invasion_land\t"+controlling_player+"\t"+controlling_power+"\t"+victim_power);
 
 	return 1;
       },
@@ -1336,14 +1338,15 @@ if (space.key === "bordeaux") {
 
 	  let controlling_player = parseInt(mv[1]);
 	  let controlling_power = mv[2];
+	  let victim_power = mv[3];
 
 	  if (his_self.game.player === controlling_player) {
 
   	    //
-	    // 2P card, so french get activated under protestant control
+	    // 2P card, so spanish get activated under protestant control
 	    //
 	    his_self.addMove("set_activated_powers\t"+controlling_power+"\thapsburg");
-	    his_self.addMove("declare_war\t"+controlling_power+"\thapsburg");
+	    his_self.addMove("declare_war\t"+victim_power+"\thapsburg");
 
             his_self.playerSelectSpaceWithFilter(
 
@@ -1355,6 +1358,8 @@ if (space.key === "bordeaux") {
               },
 
               function(spacekey) {
+
+		his_self.updateStatus("acknowledge...");
 
 	        //
 	        // move Duke of Alva, add regulars
@@ -1420,6 +1425,7 @@ if (space.key === "bordeaux") {
                   },
 
                   function(spacekey) {
+		    his_self.updateStatus("acknowledge...");
                     his_self.addMove("build\tland\thapsburg\t"+"squadron"+"\t"+spacekey);
                     his_self.endTurn();
 		  },
@@ -1431,6 +1437,7 @@ if (space.key === "bordeaux") {
 	      }
 
 	      if (action === "mercenaries") {
+		his_self.updateStatus("acknowledge...");
 	        his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+land_spacekey);
 	        his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+land_spacekey);
 		his_self.endTurn();

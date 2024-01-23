@@ -13,11 +13,15 @@ module.exports = MovementOverlayTemplate = (obj, his_self) => {
 
   if (!obj.to) { obj.to = "Unknown"; }
 
+
   let html = `<div class="movement-overlay">
     <div class="help">
 	<div class="movement-from">${obj.from}</div> to <div class="movement-to">${obj.to}</div></div>
     <div class="movement-table"><div class="movement-source">`;
   for (let i = 0; i < obj.unmoved_units.length; i++) {
+
+console.log("UNMOVED: " + JSON.stringify(obj.unmoved_units[i]));
+
     let ucss = "";
     let uclass = "";
     let utype = obj.unmoved_units[i].type;

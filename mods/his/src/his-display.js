@@ -96,11 +96,11 @@
 	  let box = '#' + factions[i] + "_" + factions[ii];
 	  obj = document.querySelector(box);
 	  if (obj) {
-	    if (this.areAllies(factions[i], factions[ii])) {
+	    if (this.areAllies(factions[i], factions[ii], 0)) {
 	      obj.innerHTML = '<img src="/his/img/Allied.svg" />';
 	      obj.style.display = "block";
 	    } else {
-	      if (this.areEnemies(factions[i], factions[ii])) {
+	      if (this.areEnemies(factions[i], factions[ii], 0)) {
 	        obj.innerHTML = '<img src="/his/img/AtWar.svg" />';
 	        obj.style.display = "block";
 	      } else {
