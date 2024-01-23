@@ -313,7 +313,7 @@ class Stun extends ModTemplate {
     return true;
   }
 
-  loadSettings(container) {
+  loadSettings(container = null) {
     let as = new AppSettings(this.app, this.mod, container);
     as.render();
   }

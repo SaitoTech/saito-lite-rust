@@ -975,9 +975,10 @@
 
 .videocall-setting-grid-item {
   display: grid;
-  gap: 1.5rem;
   background: var(--saito-background-color);
   color: var(--saito-font-color);
+  padding: 2rem;
+  font-size: 1.75rem;
 }
 
 .videocall-option-grid {
@@ -1010,20 +1011,15 @@
 .videocall-option-label i {
   font-size: 4rem;
   color: var(--saito-font-color);
+  margin: auto;
 }
 
 .videocall-option-label i.fa-table-cells {
   font-size: 4.5rem;
-  margin-left: 0.5rem;
 }
 
 .videocall-option-label i.fa-user {
   font-size: 3.5rem;
-  margin-left: 2rem;
-}
-
-.videocall-option-input {
-  line-height: 4rem
 }
 
 .videocall-setting-icon {
