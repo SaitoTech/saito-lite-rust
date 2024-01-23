@@ -9,8 +9,8 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
 
 
               ${
-					mod.screen_share
-						? `
+	mod.screen_share
+		? `
               <div class="videocall-option-container">
                 <label class="videocall-option-label active" for="videocall-option-input-presentation">
                   <input id="videocall-option-input-presentation" checked type="radio" value="presentation"
@@ -20,16 +20,16 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
                 </label>
               </div>
               `
-						: ``
-				}
+		: ``
+}
 
               <div class="videocall-option-container">
                 <label class="videocall-option-label ${
-					display_mode === 'focus' ? `active` : ``
-				}"  for="videocall-option-input-focus">
+	display_mode === 'focus' ? `active` : ``
+}"  for="videocall-option-input-focus">
                   <input id="videocall-option-input-focus" ${
-						display_mode === 'focus' ? `checked` : ``
-					} type="radio" value="focus"
+	display_mode === 'focus' ? `checked` : ``
+} type="radio" value="focus"
                    name="videocall-option-input" class="videocall-option-input">
                   <div class="videocall-option-name">Focus</div> 
                   <i class="fa-solid fa-users-viewfinder"></i>
@@ -38,11 +38,11 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
             
                 <div class="videocall-option-container">
                   <label class="videocall-option-label ${
-						display_mode === 'gallery' ? `active` : ``
-					}" for="videocall-option-input-gallery">
+	display_mode === 'gallery' ? `active` : ``
+}" for="videocall-option-input-gallery">
                     <input id="videocall-option-input-gallery" ${
-						display_mode === 'gallery' ? `checked` : ``
-					} type="radio" value="gallery" name="videocall-option-input" class="videocall-option-input">
+	display_mode === 'gallery' ? `checked` : ``
+} type="radio" value="gallery" name="videocall-option-input" class="videocall-option-input">
                     <div class="videocall-option-name">Gallery</div> 
                     <i class="fa-solid fa-table-cells"></i>
                   </label>
@@ -50,11 +50,11 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
               
               <div class="videocall-option-container">
                 <label class="videocall-option-label ${
-					display_mode === 'speaker' ? `active` : ``
-				}" for="videocall-option-input-speaker">
+	display_mode === 'speaker' ? `active` : ``
+}" for="videocall-option-input-speaker">
                   <input id="videocall-option-input-speaker" ${
-						display_mode === 'speaker' ? `checked` : ``
-					} type="radio" value="speaker" name="videocall-option-input" class="videocall-option-input">
+	display_mode === 'speaker' ? `checked` : ``
+} type="radio" value="speaker" name="videocall-option-input" class="videocall-option-input">
                   <div class="videocall-option-name">Speaker</div> 
                   <i class="fa-solid fa-user"></i>
                 </label>
@@ -68,8 +68,8 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
             <div class="videocall-option-container share-control">
               <label class="videocall-option-label" for="videocall-screenshare">
               <input id="videocall-screenshare" ${
-					mod.screen_share ? `checked` : ``
-				} type="checkbox" name="videocall-screenshare">
+	mod.screen_share ? `checked` : ``
+} type="checkbox" name="videocall-screenshare">
                 <div class="videocall-option-name">Share screen</div>
                 <i class="fa-solid fa-display"></i>
               </label>

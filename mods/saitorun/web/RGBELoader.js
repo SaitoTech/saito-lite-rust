@@ -30,26 +30,26 @@ class RGBELoader extends DataTextureLoader {
 			rgbe_memory_error = 4,
 			rgbe_error = function (rgbe_error_code, msg) {
 				switch (rgbe_error_code) {
-					case rgbe_read_error:
-						console.error(
-							'THREE.RGBELoader Read Error: ' + (msg || '')
-						);
-						break;
-					case rgbe_write_error:
-						console.error(
-							'THREE.RGBELoader Write Error: ' + (msg || '')
-						);
-						break;
-					case rgbe_format_error:
-						console.error(
-							'THREE.RGBELoader Bad File Format: ' + (msg || '')
-						);
-						break;
-					default:
-					case rgbe_memory_error:
-						console.error(
-							'THREE.RGBELoader: Error: ' + (msg || '')
-						);
+				case rgbe_read_error:
+					console.error(
+						'THREE.RGBELoader Read Error: ' + (msg || '')
+					);
+					break;
+				case rgbe_write_error:
+					console.error(
+						'THREE.RGBELoader Write Error: ' + (msg || '')
+					);
+					break;
+				case rgbe_format_error:
+					console.error(
+						'THREE.RGBELoader Bad File Format: ' + (msg || '')
+					);
+					break;
+				default:
+				case rgbe_memory_error:
+					console.error(
+						'THREE.RGBELoader: Error: ' + (msg || '')
+					);
 				}
 
 				return RGBE_RETURN_FAILURE;
@@ -379,46 +379,46 @@ class RGBELoader extends DataTextureLoader {
 				let numElements;
 
 				switch (this.type) {
-					case FloatType:
-						numElements = image_rgba_data.length / 4;
-						const floatArray = new Float32Array(numElements * 4);
+				case FloatType:
+					numElements = image_rgba_data.length / 4;
+					const floatArray = new Float32Array(numElements * 4);
 
-						for (let j = 0; j < numElements; j++) {
-							RGBEByteToRGBFloat(
-								image_rgba_data,
-								j * 4,
-								floatArray,
-								j * 4
-							);
-						}
-
-						data = floatArray;
-						type = FloatType;
-						break;
-
-					case HalfFloatType:
-						numElements = image_rgba_data.length / 4;
-						const halfArray = new Uint16Array(numElements * 4);
-
-						for (let j = 0; j < numElements; j++) {
-							RGBEByteToRGBHalf(
-								image_rgba_data,
-								j * 4,
-								halfArray,
-								j * 4
-							);
-						}
-
-						data = halfArray;
-						type = HalfFloatType;
-						break;
-
-					default:
-						console.error(
-							'THREE.RGBELoader: unsupported type: ',
-							this.type
+					for (let j = 0; j < numElements; j++) {
+						RGBEByteToRGBFloat(
+							image_rgba_data,
+							j * 4,
+							floatArray,
+							j * 4
 						);
-						break;
+					}
+
+					data = floatArray;
+					type = FloatType;
+					break;
+
+				case HalfFloatType:
+					numElements = image_rgba_data.length / 4;
+					const halfArray = new Uint16Array(numElements * 4);
+
+					for (let j = 0; j < numElements; j++) {
+						RGBEByteToRGBHalf(
+							image_rgba_data,
+							j * 4,
+							halfArray,
+							j * 4
+						);
+					}
+
+					data = halfArray;
+					type = HalfFloatType;
+					break;
+
+				default:
+					console.error(
+						'THREE.RGBELoader: unsupported type: ',
+						this.type
+					);
+					break;
 				}
 
 				return {
@@ -445,21 +445,21 @@ class RGBELoader extends DataTextureLoader {
 	load(url, onLoad, onProgress, onError) {
 		function onLoadCallback(texture, texData) {
 			switch (texture.type) {
-				case FloatType:
-					texture.encoding = LinearEncoding;
-					texture.minFilter = LinearFilter;
-					texture.magFilter = LinearFilter;
-					texture.generateMipmaps = false;
-					texture.flipY = true;
-					break;
+			case FloatType:
+				texture.encoding = LinearEncoding;
+				texture.minFilter = LinearFilter;
+				texture.magFilter = LinearFilter;
+				texture.generateMipmaps = false;
+				texture.flipY = true;
+				break;
 
-				case HalfFloatType:
-					texture.encoding = LinearEncoding;
-					texture.minFilter = LinearFilter;
-					texture.magFilter = LinearFilter;
-					texture.generateMipmaps = false;
-					texture.flipY = true;
-					break;
+			case HalfFloatType:
+				texture.encoding = LinearEncoding;
+				texture.minFilter = LinearFilter;
+				texture.magFilter = LinearFilter;
+				texture.generateMipmaps = false;
+				texture.flipY = true;
+				break;
 			}
 
 			if (onLoad) onLoad(texture, texData);

@@ -7,10 +7,10 @@ module.exports = (app, mod, league) => {
           <div>Algo: ${league.ranking_algorithm}</div>
           <div>Players: ${league.players.length}</div>
           <div>Admin: ${
-				league.admin
-					? app.browser.returnAddressHTML(league.admin)
-					: 'SAITO'
-			}</div>
+	league.admin
+		? app.browser.returnAddressHTML(league.admin)
+		: 'SAITO'
+}</div>
         </div>
         <div class="league-component-existing-league-controls">`;
 

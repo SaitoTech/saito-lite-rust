@@ -235,120 +235,120 @@ class AppStore extends ModTemplate {
 
 			if (conf == 0) {
 				switch (txmsg.request) {
-					case 'submit module':
-						await this.submitModule(blk, tx);
-						if (tx.isFrom(this.publicKey)) {
-							try {
-								document.querySelector(
-									'.appstore-loading-text'
-								).innerHTML =
+				case 'submit module':
+					await this.submitModule(blk, tx);
+					if (tx.isFrom(this.publicKey)) {
+						try {
+							document.querySelector(
+								'.appstore-loading-text'
+							).innerHTML =
 									'Your application is being broadcast to the network. <p></p>Your AppStore should receive it within <span class="time_remaining">45</span> seconds.';
-								let appstore_mod =
+							let appstore_mod =
 									this.app.modules.returnModule('AppStore');
-								appstore_mod.time_remaining = 45;
-								appstore_mod.bundling_timer = setInterval(
-									() => {
-										if (appstore_mod.time_remaining <= 0) {
-											clearInterval(
-												appstore_mod.bundling_timer
-											);
-											AppStoreModuleIndexedConfirm.render(
-												appstore_mod.app,
-												appstore_mod
-											);
-											AppStoreModuleIndexedConfirm.attachEvents(
-												appstore_mod.app,
-												appstore_mod
-											);
-										} else {
-											appstore_mod.time_remaining--;
-											if (
-												appstore_mod.time_remaining >= 1
-											) {
-												try {
-													document.querySelector(
-														'.time_remaining'
-													).innerHTML =
+							appstore_mod.time_remaining = 45;
+							appstore_mod.bundling_timer = setInterval(
+								() => {
+									if (appstore_mod.time_remaining <= 0) {
+										clearInterval(
+											appstore_mod.bundling_timer
+										);
+										AppStoreModuleIndexedConfirm.render(
+											appstore_mod.app,
+											appstore_mod
+										);
+										AppStoreModuleIndexedConfirm.attachEvents(
+											appstore_mod.app,
+											appstore_mod
+										);
+									} else {
+										appstore_mod.time_remaining--;
+										if (
+											appstore_mod.time_remaining >= 1
+										) {
+											try {
+												document.querySelector(
+													'.time_remaining'
+												).innerHTML =
 														appstore_mod.time_remaining;
-												} catch (err) {
-													clearInterval(
-														appstore_mod.bundling_timer
-													);
-												}
+											} catch (err) {
+												clearInterval(
+													appstore_mod.bundling_timer
+												);
 											}
 										}
-									},
-									1000
-								);
-							} catch (err) {}
-						}
-						break;
-					case 'request bundle':
-						if (tx.isFrom(this.publicKey)) {
-							try {
-								document.querySelector(
-									'.appstore-loading-text'
-								).innerHTML =
-									'Your application is being processed by the network. Your upgrade should be complete within about <span class="time_remaining">120</span> seconds.';
-								let appstore_mod =
-									this.app.modules.returnModule('AppStore');
-								appstore_mod.time_remaining = 120;
-								appstore_mod.bundling_timer = setInterval(
-									() => {
-										if (appstore_mod.time_remaining < 0) {
-											clearInterval(
-												appstore_mod.bundling_timer
-											);
-										} else {
-											appstore_mod.time_remaining--;
-											if (
-												appstore_mod.time_remaining >= 0
-											) {
-												try {
-													document.querySelector(
-														'.time_remaining'
-													).innerHTML =
-														appstore_mod.time_remaining;
-												} catch (err) {
-													clearInterval(
-														appstore_mod.bundling_timer
-													);
-												}
-											}
-										}
-									},
-									1000
-								);
-							} catch (err) {}
-						}
-						if (!tx.isTo(this.publicKey)) {
-							return;
-						}
-						await this.requestBundle(blk, tx);
-						break;
-					case 'receive bundle':
-						////console.log("##### - RECEIVE BUNDLE 1");
-						if (
-							tx.isTo(this.publicKey) &&
-							!tx.isFrom(this.publicKey)
-						) {
-							////console.log("##### BUNDLE RECEIVED #####");
-							if (this.app.options.appstore) {
-								////console.log("##### - RECEIVE BUNDLE 2");
-								if (this.app.options.appstore.default != '') {
-									////console.log("##### - RECEIVE BUNDLE 3");
-									if (
-										tx.isFrom(
-											this.app.options.appstore.default
-										)
-									) {
-										////console.log("##### - RECEIVE BUNDLE 4");
-										this.receiveBundle(blk, tx);
 									}
+								},
+								1000
+							);
+						} catch (err) {}
+					}
+					break;
+				case 'request bundle':
+					if (tx.isFrom(this.publicKey)) {
+						try {
+							document.querySelector(
+								'.appstore-loading-text'
+							).innerHTML =
+									'Your application is being processed by the network. Your upgrade should be complete within about <span class="time_remaining">120</span> seconds.';
+							let appstore_mod =
+									this.app.modules.returnModule('AppStore');
+							appstore_mod.time_remaining = 120;
+							appstore_mod.bundling_timer = setInterval(
+								() => {
+									if (appstore_mod.time_remaining < 0) {
+										clearInterval(
+											appstore_mod.bundling_timer
+										);
+									} else {
+										appstore_mod.time_remaining--;
+										if (
+											appstore_mod.time_remaining >= 0
+										) {
+											try {
+												document.querySelector(
+													'.time_remaining'
+												).innerHTML =
+														appstore_mod.time_remaining;
+											} catch (err) {
+												clearInterval(
+													appstore_mod.bundling_timer
+												);
+											}
+										}
+									}
+								},
+								1000
+							);
+						} catch (err) {}
+					}
+					if (!tx.isTo(this.publicKey)) {
+						return;
+					}
+					await this.requestBundle(blk, tx);
+					break;
+				case 'receive bundle':
+					////console.log("##### - RECEIVE BUNDLE 1");
+					if (
+						tx.isTo(this.publicKey) &&
+							!tx.isFrom(this.publicKey)
+					) {
+						////console.log("##### BUNDLE RECEIVED #####");
+						if (this.app.options.appstore) {
+							////console.log("##### - RECEIVE BUNDLE 2");
+							if (this.app.options.appstore.default != '') {
+								////console.log("##### - RECEIVE BUNDLE 3");
+								if (
+									tx.isFrom(
+										this.app.options.appstore.default
+									)
+								) {
+									////console.log("##### - RECEIVE BUNDLE 4");
+									this.receiveBundle(blk, tx);
 								}
 							}
 						}
-						break;
+					}
+					break;
 				}
 			}
 		} catch (err) {
@@ -526,7 +526,7 @@ class AppStore extends ModTemplate {
 								}
 								if (
 									char == '\\' ||
-									char == "'" ||
+									char == '\'' ||
 									char == '"' ||
 									char == ';'
 								) {

@@ -405,7 +405,7 @@ class President extends GameTemplate {
 			this.updateStatusAndListCards('Start the Round');
 		} else {
 			this.updateStatusAndListCards(
-				"Play a card or <div style='display:inline' class='pass'>pass</div>"
+				'Play a card or <div style=\'display:inline\' class=\'pass\'>pass</div>'
 			);
 		}
 

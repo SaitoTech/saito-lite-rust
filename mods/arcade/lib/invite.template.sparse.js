@@ -11,10 +11,10 @@ module.exports = (app, mod, invite) => {
 	for (let i = 0; i < invite.players.length; i++) {
 		players_html += `
           <div class="league_recent_player${
-				invite.winner?.includes(invite.players[i]) ? ' winner' : ''
-			}"><img class="saito-module-identicon saito-identicon" id-${
-			invite.players[i]
-		}" src="${app.keychain.returnIdenticon(invite.players[i])}"></div>
+	invite.winner?.includes(invite.players[i]) ? ' winner' : ''
+}"><img class="saito-module-identicon saito-identicon" id-${
+	invite.players[i]
+}" src="${app.keychain.returnIdenticon(invite.players[i])}"></div>
 
       `;
 	}
@@ -22,11 +22,11 @@ module.exports = (app, mod, invite) => {
 
 	return `
         <div class="saito-table-row league_recent_game" id="saito-game-${
-			invite.game_id
-		}">
+	invite.game_id
+}">
           <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${
-		invite.method ? invite.method : invite?.step || 0
-	}</div>
+	invite.method ? invite.method : invite?.step || 0
+}</div>
         </div>
     `;
 };

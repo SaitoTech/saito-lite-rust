@@ -302,7 +302,7 @@ var Chess = function (fen) {
 			4: '4th field (en-passant square) is invalid.',
 			5: '3rd field (castling availability) is invalid.',
 			6: '2nd field (side to move) is invalid.',
-			7: "1st field (piece positions) does not contain 8 '/'-delimited rows.",
+			7: '1st field (piece positions) does not contain 8 \'/\'-delimited rows.',
 			8: '1st field (piece positions) is invalid [consecutive numbers].',
 			9: '1st field (piece positions) is invalid [invalid piece].',
 			10: '1st field (piece positions) is invalid [row too large].'

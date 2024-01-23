@@ -102,7 +102,7 @@ class QuakeControls {
 		let finishButton = document.getElementById('finish-controls-button');
 
 		finishButton.addEventListener('click', () => {
-			console.log("clicked button 'finish' button");
+			console.log('clicked button \'finish\' button');
 			this.overlay.remove();
 			this.applyControls();
 			this.writeControls();
@@ -273,20 +273,20 @@ class QuakeControls {
 	toQuakeBind(input) {
 		if (typeof input == 'number') {
 			switch (input) {
-				case 0:
-					return 'MOUSE1';
-				case 2:
-					return 'MOUSE2';
-				case 1:
-					return 'MOUSE3';
-				case 4:
-					return 'MOUSE4';
-				case 3:
-					return 'MOUSE5';
-				case 5:
-					return 'MWHEELUP';
-				case -5:
-					return 'MWHEELDOWN';
+			case 0:
+				return 'MOUSE1';
+			case 2:
+				return 'MOUSE2';
+			case 1:
+				return 'MOUSE3';
+			case 4:
+				return 'MOUSE4';
+			case 3:
+				return 'MOUSE5';
+			case 5:
+				return 'MWHEELUP';
+			case -5:
+				return 'MWHEELDOWN';
 			}
 		} else if (input == ' ') {
 			return 'SPACE';
@@ -298,30 +298,30 @@ class QuakeControls {
 		// return special keys
 		else if (input.length > 1) {
 			switch (input) {
-				case 'Shift':
-					return 'SHIFT';
-				case 'Control':
-					return 'CTRL';
-				case 'Alt':
-					return 'ALT';
-				case 'Backspace':
-					return 'BACKSPACE';
-				case 'ArrowUp':
-					return 'UPARROW';
-				case 'ArrowDown':
-					return 'DOWNARROW';
-				case 'ArrowLeft':
-					return 'LEFTARROW';
-				case 'ArrowRight':
-					return 'RIGHTARROW';
-				case 'Tab':
-					return 'TAB';
-				case 'Escape':
-					return 'ESCAPE';
-				case 'Enter':
-					return 'ENTER';
-				default:
-					return 'bad input';
+			case 'Shift':
+				return 'SHIFT';
+			case 'Control':
+				return 'CTRL';
+			case 'Alt':
+				return 'ALT';
+			case 'Backspace':
+				return 'BACKSPACE';
+			case 'ArrowUp':
+				return 'UPARROW';
+			case 'ArrowDown':
+				return 'DOWNARROW';
+			case 'ArrowLeft':
+				return 'LEFTARROW';
+			case 'ArrowRight':
+				return 'RIGHTARROW';
+			case 'Tab':
+				return 'TAB';
+			case 'Escape':
+				return 'ESCAPE';
+			case 'Enter':
+				return 'ENTER';
+			default:
+				return 'bad input';
 			}
 		}
 	}

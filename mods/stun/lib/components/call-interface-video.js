@@ -96,21 +96,21 @@ class CallInterfaceVideo {
 			this.display_mode = newView;
 			console.log('Switch view: ' + newView);
 			switch (newView) {
-				case 'gallery':
-					this.switchDisplayToGallery();
-					break;
-				case 'focus':
-					this.switchDisplayToExpanded();
-					break;
-				case 'speaker':
-					this.switchDisplayToExpanded();
-					break;
-				case 'presentation':
-					this.switchDisplayToExpanded();
-					break;
+			case 'gallery':
+				this.switchDisplayToGallery();
+				break;
+			case 'focus':
+				this.switchDisplayToExpanded();
+				break;
+			case 'speaker':
+				this.switchDisplayToExpanded();
+				break;
+			case 'presentation':
+				this.switchDisplayToExpanded();
+				break;
 
-				default:
-					break;
+			default:
+				break;
 			}
 			// if(newView !== "presentation"){}
 			siteMessage(`Switched to ${newView} display`, 2000);

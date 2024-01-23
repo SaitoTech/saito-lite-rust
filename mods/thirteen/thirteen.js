@@ -116,13 +116,13 @@ class Thirteen extends GameTemplate {
 		let hh = document.querySelector('.hud-header');
 		if (hh) {
 			switch (this.game.player) {
-				case 1:
-					hh.classList.add('soviet');
-					break;
-				case 2:
-					hh.classList.add('american');
-					break;
-				default:
+			case 1:
+				hh.classList.add('soviet');
+				break;
+			case 2:
+				hh.classList.add('american');
+				break;
+			default:
 			}
 		}
 
@@ -150,14 +150,14 @@ class Thirteen extends GameTemplate {
 			var cards;
 
 			switch (player_action) {
-				case 'hand':
-					cards = deck.hand;
-					break;
-				case 'unplayed':
-					cards = Object.keys(twilight_self.returnUnplayedCards());
-					break;
-				default:
-					break;
+			case 'hand':
+				cards = deck.hand;
+				break;
+			case 'unplayed':
+				cards = Object.keys(twilight_self.returnUnplayedCards());
+				break;
+			default:
+				break;
 			}
 
 			html += '<div class="cardlist-container">';
@@ -218,7 +218,7 @@ class Thirteen extends GameTemplate {
 			console.log('\n\n\n\n');
 
 			this.updateStatus(
-				"<div class='status-message' id='status-message'>generating the game</div>"
+				'<div class=\'status-message\' id=\'status-message\'>generating the game</div>'
 			);
 
 			this.game.queue.push('round');
@@ -432,7 +432,7 @@ class Thirteen extends GameTemplate {
 							cardlistWidth: '90vw',
 							title: html,
 							subtitle:
-								"earn points by beating your opponent in this domain by turn's end",
+								'earn points by beating your opponent in this domain by turn\'s end',
 							onCardSelect: function (card) {
 								thirteen_self.overlay.hide();
 
@@ -780,7 +780,7 @@ class Thirteen extends GameTemplate {
 						);
 					} else {
 						this.updateStatus(
-							"<div class='status-message' id='status-message'>Opponent is taking Television Battleground bonus</div>"
+							'<div class=\'status-message\' id=\'status-message\'>Opponent is taking Television Battleground bonus</div>'
 						);
 						return 0;
 					}
@@ -843,7 +843,7 @@ class Thirteen extends GameTemplate {
 
 					if (this.game.player == alliances_bonus) {
 						this.updateStatus(
-							"<div class='status-message' id='status-message'>You are pulling the Alliances Battleground Bonus: pulling strategy card</div>"
+							'<div class=\'status-message\' id=\'status-message\'>You are pulling the Alliances Battleground Bonus: pulling strategy card</div>'
 						);
 						this.addMove(
 							'aftermath_or_discard\t' + this.game.player
@@ -852,7 +852,7 @@ class Thirteen extends GameTemplate {
 						this.endTurn();
 					} else {
 						this.updateStatus(
-							"<div class='status-message' id='status-message'>Alliances Battleground Bonus: Opponent is pulling strategy card</div>"
+							'<div class=\'status-message\' id=\'status-message\'>Alliances Battleground Bonus: Opponent is pulling strategy card</div>'
 						);
 					}
 
@@ -3824,7 +3824,7 @@ class Thirteen extends GameTemplate {
 		deck['s06b'] = {
 			img: 'Strategy Card 06b.png',
 			name: 'Intelligence Reports',
-			text: "Draw one random Strategy card from your opponent's hand. Play it as normal or discard it. Opponent draws a replacement card",
+			text: 'Draw one random Strategy card from your opponent\'s hand. Play it as normal or discard it. Opponent draws a replacement card',
 			side: 'neutral',
 			tokens: 2,
 			defcon: 1,
@@ -3969,7 +3969,7 @@ class Thirteen extends GameTemplate {
 		deck['s11b'] = {
 			img: 'Strategy Card 11b.png',
 			name: 'Containment',
-			text: "Play on opponent. They can't use Events from cards they played themselves to deflate their DEFCON tracks for this round",
+			text: 'Play on opponent. They can\'t use Events from cards they played themselves to deflate their DEFCON tracks for this round',
 			side: 'neutral',
 			tokens: 2,
 			defcon: 0,
@@ -4277,7 +4277,7 @@ class Thirteen extends GameTemplate {
 						'notify\tUS political defcon track is lower than 3, skipping Offensive Missiles'
 					);
 					thirteen_self.displayModal(
-						"Offensive Missiles doesn't go into effect because US political defcon track is lower than 3"
+						'Offensive Missiles doesn\'t go into effect because US political defcon track is lower than 3'
 					);
 					thirteen_self.endTurn();
 				}
@@ -4585,7 +4585,7 @@ class Thirteen extends GameTemplate {
 		deck['s34b'] = {
 			img: 'Strategy Card 34b.png',
 			name: 'Bay of Pigs',
-			text: "Play on opponent. They EITHER remove 2 Influence cubes from the Alliances battleground OR they can't play Events to deflate their DEFCON tracks for this round",
+			text: 'Play on opponent. They EITHER remove 2 Influence cubes from the Alliances battleground OR they can\'t play Events to deflate their DEFCON tracks for this round',
 			side: 'ussr',
 			tokens: 2,
 			defcon: 0,

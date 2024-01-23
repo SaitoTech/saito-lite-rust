@@ -400,114 +400,141 @@ class Chat extends ModTemplate {
 		let force = false;
 
 		switch (type) {
-			case 'chat-manager':
-				if (this.chat_manager == null) {
-					this.chat_manager = new ChatManager(this.app, this);
-				}
-				return this.chat_manager;
-			case 'saito-game-menu':
-				// Need to make sure this is created so we can listen for requests to open chat popups
-				if (this.chat_manager == null) {
-					this.chat_manager = new ChatManager(this.app, this);
-				}
-				// Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
-				force = true;
+		case 'chat-manager':
+			if (this.chat_manager == null) {
+				this.chat_manager = new ChatManager(this.app, this);
+			}
+			return this.chat_manager;
+		case 'saito-game-menu':
+			// Need to make sure this is created so we can listen for requests to open chat popups
+			if (this.chat_manager == null) {
+				this.chat_manager = new ChatManager(this.app, this);
+			}
+			// Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
+			force = true;
 
-			case 'saito-header':
-			case 'saito-floating-menu':
-				//
-				// In mobile, we use the hamburger menu to open chat (without leaving the page)
-				//
-				if (
-					this.app.browser.isMobileBrowser() ||
+		case 'saito-header':
+		case 'saito-floating-menu':
+			//
+			// In mobile, we use the hamburger menu to open chat (without leaving the page)
+			//
+			if (
+				this.app.browser.isMobileBrowser() ||
 					(this.app.BROWSER && window.innerWidth < 600) ||
 					force
-				) {
-					if (this.chat_manger) {
-						//Don't want mobile chat auto popping up
-						this.chat_manager.render_popups_to_screen = 0;
-					}
+			) {
+				if (this.chat_manger) {
+					//Don't want mobile chat auto popping up
+					this.chat_manager.render_popups_to_screen = 0;
+				}
 
-					if (this.chat_manager_overlay == null) {
-						this.chat_manager_overlay = new ChatManagerOverlay(
-							this.app,
-							this
-						);
-					}
-					return [
-						{
-							text: 'Chat',
-							icon: 'fas fa-comments',
-							callback: function (app, id) {
-								console.log('Render Chat manager overlay');
-								chat_self.chat_manager_overlay.render();
-							},
-							event: function (id) {
-								chat_self.app.connection.on(
-									'chat-manager-render-request',
-									() => {
-										let elem = document.getElementById(id);
-										//console.log("Chat event, update", elem);
-										if (elem) {
-											let unread = 0;
-											for (let group of chat_self.groups) {
-												unread += group.unread;
-											}
+				if (this.chat_manager_overlay == null) {
+					this.chat_manager_overlay = new ChatManagerOverlay(
+						this.app,
+						this
+					);
+				}
+				return [
+					{
+						text: 'Chat',
+						icon: 'fas fa-comments',
+						callback: function (app, id) {
+							console.log('Render Chat manager overlay');
+							chat_self.chat_manager_overlay.render();
+						},
+						event: function (id) {
+							chat_self.app.connection.on(
+								'chat-manager-render-request',
+								() => {
+									let elem = document.getElementById(id);
+									//console.log("Chat event, update", elem);
+									if (elem) {
+										let unread = 0;
+										for (let group of chat_self.groups) {
+											unread += group.unread;
+										}
 
-											if (unread) {
-												if (
-													elem.querySelector(
-														'.saito-notification-dot'
-													)
-												) {
-													elem.querySelector(
-														'.saito-notification-dot'
-													).innerHTML = unread;
-												} else {
-													chat_self.app.browser.addElementToId(
-														`<div class="saito-notification-dot">${unread}</div>`,
-														id
-													);
-												}
+										if (unread) {
+											if (
+												elem.querySelector(
+													'.saito-notification-dot'
+												)
+											) {
+												elem.querySelector(
+													'.saito-notification-dot'
+												).innerHTML = unread;
 											} else {
-												if (
-													elem.querySelector(
-														'.saito-notification-dot'
-													)
-												) {
-													elem.querySelector(
-														'.saito-notification-dot'
-													).remove();
-												}
+												chat_self.app.browser.addElementToId(
+													`<div class="saito-notification-dot">${unread}</div>`,
+													id
+												);
+											}
+										} else {
+											if (
+												elem.querySelector(
+													'.saito-notification-dot'
+												)
+											) {
+												elem.querySelector(
+													'.saito-notification-dot'
+												).remove();
 											}
 										}
 									}
-								);
+								}
+							);
 
-								//Trigger my initial display
-								chat_self.app.connection.emit(
-									'chat-manager-render-request'
-								);
-							}
+							//Trigger my initial display
+							chat_self.app.connection.emit(
+								'chat-manager-render-request'
+							);
 						}
-					];
-				} else if (!chat_self.browser_active) {
-					//
-					// Otherwise we go to the main chat application
-					//
-					return [
-						{
-							text: 'Chat',
-							icon: 'fas fa-comments',
-							callback: function (app, id) {
-								window.location = '/chat';
-							}
+					}
+				];
+			} else if (!chat_self.browser_active) {
+				//
+				// Otherwise we go to the main chat application
+				//
+				return [
+					{
+						text: 'Chat',
+						icon: 'fas fa-comments',
+						callback: function (app, id) {
+							window.location = '/chat';
 						}
-					];
-				}
-				return null;
-			case 'user-menu':
-				if (obj?.publicKey !== this.publicKey) {
+					}
+				];
+			}
+			return null;
+		case 'user-menu':
+			if (obj?.publicKey !== this.publicKey) {
+				return {
+					text: 'Chat',
+					icon: 'far fa-comment-dots',
+					callback: function (app, publicKey) {
+						if (chat_self.chat_manager == null) {
+							chat_self.chat_manager = new ChatManager(
+								chat_self.app,
+								chat_self
+							);
+						}
+
+						chat_self.chat_manager.render_popups_to_screen = 1;
+						chat_self.app.connection.emit('open-chat-with', {
+							key: publicKey
+						});
+					}
+				};
+			}
+
+			return null;
+
+		case 'saito-profile-menu':
+			if (obj?.publicKey) {
+				if (
+					chat_self.app.keychain.hasPublicKey(obj.publicKey) &&
+						obj.publicKey !== this.publicKey
+				) {
 					return {
 						text: 'Chat',
 						icon: 'far fa-comment-dots',
@@ -520,45 +547,18 @@ class Chat extends ModTemplate {
 							}
 
 							chat_self.chat_manager.render_popups_to_screen = 1;
-							chat_self.app.connection.emit('open-chat-with', {
-								key: publicKey
-							});
+							chat_self.app.connection.emit(
+								'open-chat-with',
+								{ key: publicKey }
+							);
 						}
 					};
 				}
+			}
 
-				return null;
-
-			case 'saito-profile-menu':
-				if (obj?.publicKey) {
-					if (
-						chat_self.app.keychain.hasPublicKey(obj.publicKey) &&
-						obj.publicKey !== this.publicKey
-					) {
-						return {
-							text: 'Chat',
-							icon: 'far fa-comment-dots',
-							callback: function (app, publicKey) {
-								if (chat_self.chat_manager == null) {
-									chat_self.chat_manager = new ChatManager(
-										chat_self.app,
-										chat_self
-									);
-								}
-
-								chat_self.chat_manager.render_popups_to_screen = 1;
-								chat_self.app.connection.emit(
-									'open-chat-with',
-									{ key: publicKey }
-								);
-							}
-						};
-					}
-				}
-
-				return null;
-			default:
-				return super.respondTo(type);
+			return null;
+		default:
+			return super.respondTo(type);
 		}
 	}
 
@@ -626,7 +626,7 @@ class Chat extends ModTemplate {
 			let group = this.returnGroup(txmsg?.data?.group_id);
 
 			if (!group) {
-				console.log("Group doesn't exist?");
+				console.log('Group doesn\'t exist?');
 				return 0;
 			}
 
@@ -977,7 +977,7 @@ class Chat extends ModTemplate {
 			let group = this.returnGroup(txmsg.group_id);
 
 			if (!group) {
-				console.warn("Chat group doesn't exist locally");
+				console.warn('Chat group doesn\'t exist locally');
 				return;
 			}
 
@@ -1255,8 +1255,8 @@ class Chat extends ModTemplate {
 
 						const replyButton = `
               <div data-id="${block[z].signature}" data-href="${
-							sender + ts
-						}" class="saito-userline-reply">
+	sender + ts
+}" class="saito-userline-reply">
                 <div class="chat-copy"><i class="fas fa-copy"></i></div>
                 <div class="chat-reply"><i class="fas fa-reply"></i></div>
                 <div class="saito-chat-line-controls">

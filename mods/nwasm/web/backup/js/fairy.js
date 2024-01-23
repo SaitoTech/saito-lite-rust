@@ -112,74 +112,74 @@ function PadFairy($dom) {
 	var self = this;
 	$dom.bind('keydown', function (e) {
 		switch (e.keyCode) {
-			case 38:
-				self.state |= self.MASK_UP;
-				e.preventDefault();
-				break;
-			case 40:
-				self.state |= self.MASK_DOWN;
-				e.preventDefault();
-				break;
-			case 37:
-				self.state |= self.MASK_LEFT;
-				e.preventDefault();
-				break;
-			case 39:
-				self.state |= self.MASK_RIGHT;
-				e.preventDefault();
-				break;
-			case 90:
-				self.state |= self.MASK_A;
-				e.preventDefault();
-				break;
-			case 88:
-				self.state |= self.MASK_B;
-				e.preventDefault();
-				break;
-			case 32:
-				self.state |= self.MASK_SELECT;
-				e.preventDefault();
-				break;
-			case 13:
-				self.state |= self.MASK_START;
-				e.preventDefault();
-				break;
+		case 38:
+			self.state |= self.MASK_UP;
+			e.preventDefault();
+			break;
+		case 40:
+			self.state |= self.MASK_DOWN;
+			e.preventDefault();
+			break;
+		case 37:
+			self.state |= self.MASK_LEFT;
+			e.preventDefault();
+			break;
+		case 39:
+			self.state |= self.MASK_RIGHT;
+			e.preventDefault();
+			break;
+		case 90:
+			self.state |= self.MASK_A;
+			e.preventDefault();
+			break;
+		case 88:
+			self.state |= self.MASK_B;
+			e.preventDefault();
+			break;
+		case 32:
+			self.state |= self.MASK_SELECT;
+			e.preventDefault();
+			break;
+		case 13:
+			self.state |= self.MASK_START;
+			e.preventDefault();
+			break;
 		}
 	});
 	$dom.bind('keyup', function (e) {
 		switch (e.keyCode) {
-			case 38:
-				self.state &= ~self.MASK_UP;
-				e.preventDefault();
-				break;
-			case 40:
-				self.state &= ~self.MASK_DOWN;
-				e.preventDefault();
-				break;
-			case 37:
-				self.state &= ~self.MASK_LEFT;
-				e.preventDefault();
-				break;
-			case 39:
-				self.state &= ~self.MASK_RIGHT;
-				e.preventDefault();
-				break;
-			case 90:
-				self.state &= ~self.MASK_A;
-				e.preventDefault();
-				break;
-			case 88:
-				self.state &= ~self.MASK_B;
-				e.preventDefault();
-				break;
-			case 32:
-				self.state &= ~self.MASK_SELECT;
-				e.preventDefault();
-				break;
-			case 13:
-				self.state &= ~self.MASK_START;
-				e.preventDefault();
-				break;
+		case 38:
+			self.state &= ~self.MASK_UP;
+			e.preventDefault();
+			break;
+		case 40:
+			self.state &= ~self.MASK_DOWN;
+			e.preventDefault();
+			break;
+		case 37:
+			self.state &= ~self.MASK_LEFT;
+			e.preventDefault();
+			break;
+		case 39:
+			self.state &= ~self.MASK_RIGHT;
+			e.preventDefault();
+			break;
+		case 90:
+			self.state &= ~self.MASK_A;
+			e.preventDefault();
+			break;
+		case 88:
+			self.state &= ~self.MASK_B;
+			e.preventDefault();
+			break;
+		case 32:
+			self.state &= ~self.MASK_SELECT;
+			e.preventDefault();
+			break;
+		case 13:
+			self.state &= ~self.MASK_START;
+			e.preventDefault();
+			break;
 		}
 	});
 }

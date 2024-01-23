@@ -17,9 +17,9 @@ module.exports = ImperiumBombardmentOverlayTemplate = (
 
 	<div class="bombardment-attacker">
 	  <div class="bombardment-attacker-name">${imperium_self.returnFactionName(
-			imperium_self,
-			attacker
-		)}</div>
+		imperium_self,
+		attacker
+	)}</div>
 	  <div class="unit-table small">
   `;
 

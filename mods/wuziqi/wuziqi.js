@@ -427,7 +427,7 @@ class Wuziqi extends GameTemplate {
 					};
 				} else {
 					this.updateStatus(
-						"Waiting on <span class='playertitle'>" +
+						'Waiting on <span class=\'playertitle\'>' +
 							this.roles[3 - player] +
 							'</span>'
 					);
@@ -567,29 +567,29 @@ class Wuziqi extends GameTemplate {
 	// Translators between B - black etc.
 	shortOwner(s) {
 		switch (s) {
-			case 'black':
-				return 'B';
-				break;
-			case 'white':
-				return 'W';
-				break;
-			default:
-				return 'N';
-				break;
+		case 'black':
+			return 'B';
+			break;
+		case 'white':
+			return 'W';
+			break;
+		default:
+			return 'N';
+			break;
 		}
 	}
 
 	longOwner(s) {
 		switch (s) {
-			case 'B':
-				return 'black';
-				break;
-			case 'W':
-				return 'white';
-				break;
-			default:
-				return 'none';
-				break;
+		case 'B':
+			return 'black';
+			break;
+		case 'W':
+			return 'white';
+			break;
+		default:
+			return 'none';
+			break;
 		}
 	}
 

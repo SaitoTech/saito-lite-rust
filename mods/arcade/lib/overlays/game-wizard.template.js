@@ -30,8 +30,8 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
           <span><b>${game_mod.returnName()}</b></span>
         </div>
         <div class="arcade-wizard-game-description">${
-			game_mod.description
-		}</div>
+	game_mod.description
+}</div>
       </div>
       <!- ***Game desc & title end*** -->
   `;

@@ -17,9 +17,9 @@ module.exports = ImperiumSpaceCombatOverlayTemplate = (
 
 	<div class="space-combat-attacker">
 	  <div class="space-combat-attacker-name">${imperium_self.returnFactionName(
-			imperium_self,
-			attacker
-		)}</div>
+		imperium_self,
+		attacker
+	)}</div>
 	  <div class="unit-table small">
   `;
 
@@ -76,9 +76,9 @@ module.exports = ImperiumSpaceCombatOverlayTemplate = (
 
 	<div class="space-combat-defender">
 	  <div class="space-combat-defender-name">${imperium_self.returnFactionName(
-			imperium_self,
-			defender
-		)}</div>
+		imperium_self,
+		defender
+	)}</div>
 	  <div class="unit-table small">
   `;
 	for (let i = 0; i < defender_ships.length; i++) {
