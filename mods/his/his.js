@@ -28395,17 +28395,39 @@ return;
 
       let space = his_self.game.spaces[spacekey];
 
+      his_self.field_battle_overlay.hide();
+
+      his_self.playerSelectSpaceWithFilter(
+
+                  "Choose Destination for Retreat:" ,
+
+        	  function(space2) {
+	            if (space.neighbours.includes(space2.key)) {
+		      if (loser === attacker) {
+	  		if (space2.key === attacker_comes_from_this_spacekey) {
+          		  return 1;
+	  		}
+		      } else {
+          		if (his_self.canFactionRetreatToSpace(loser, space2.key, "") && space2.key !== attacker_comes_from_this_spacekey) {
+          		  return 1;
+	  		}
+		      }
+		    }
+		  },
+
+      		  function(spacekey) {
+                    onFinishSelect(his_self, spacekey);
+		  },
+
+	    	  null, 
+
+	    	  true 
+
+      );
+
+/****
+
       let html = "<ul>";
-      for (let i = 0; i < space.neighbours.length; i++) {
-	if (loser === attacker) {
-	  if (space.neighbours[i] === attacker_comes_from_this_spacekey) {
-            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
-	  }
-	} else {
-          if (his_self.canFactionRetreatToSpace(loser, space.neighbours[i], "") && space.neighbours[i] !== attacker_comes_from_this_spacekey) {
-            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
-	  }
-	}
       }
       html += "</ul>";
 
@@ -28416,6 +28438,8 @@ return;
         let id = $(this).attr("id");
         onFinishSelect(his_self, id);
       });
+
+***/
 
     };
 
