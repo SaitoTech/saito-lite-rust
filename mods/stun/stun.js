@@ -476,7 +476,7 @@ class Stun extends ModTemplate {
 
     let from = tx.from[0].publicKey;
     let call_list = [];
-    let peers = this.app.options?.stun;
+    let peers = this.app.options?.stun?.peers;
 
     if (peers) {
       peers.forEach((key) => {
