@@ -517,7 +517,7 @@ var jsonTree = (function() {
             self.addChild(new Node(label, node, isLast));
         });
     
-        self.isEmpty = !Boolean(childNodes.length);
+        self.isEmpty = !childNodes.length;
         if (self.isEmpty) {
             el.classList.add('jsontree_node_empty');
         }

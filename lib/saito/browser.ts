@@ -885,10 +885,10 @@ class Browser {
   }
 
   saneDateFromTimestamp(timestamp) {
-    var date = new Date(timestamp);
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1; // getMonth() returns month from 0-11
-    var day = date.getDate();
+    let date = new Date(timestamp);
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1; // getMonth() returns month from 0-11
+    let day = date.getDate();
 
     // Adding leading zeros for day and month if they are less than 10
     month = month < 10 ? '0' + month : month;
@@ -898,10 +898,10 @@ class Browser {
   }
 
   saneTimeFromTimestamp(timestamp) {
-    var date = new Date(timestamp);
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var seconds = date.getSeconds();
+    let date = new Date(timestamp);
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
 
     // Adding leading zeros for hours, minutes, and seconds if they are less than 10
     hours = hours < 10 ? '0' + hours : hours;
@@ -917,7 +917,7 @@ class Browser {
 
   formatNumberWithCommas(number){
     // Split the number into integer and decimal parts
-    var parts = number.toString().split(".");
+    let parts = number.toString().split(".");
 
     // Format the integer part with commas
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");

@@ -214,18 +214,18 @@ var defaults = {
  * @return {Void}
  */
 function warn(msg) {
-  console.error("[Glide warn]: " + msg);
+  console.error('[Glide warn]: ' + msg);
 }
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+var _typeof = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? function (obj) {
   return typeof obj;
 } : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
 };
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
+    throw new TypeError('Cannot call a class as a function');
   }
 };
 
@@ -235,7 +235,7 @@ var createClass = function () {
       var descriptor = props[i];
       descriptor.enumerable = descriptor.enumerable || false;
       descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
+      if ('value' in descriptor) descriptor.writable = true;
       Object.defineProperty(target, descriptor.key, descriptor);
     }
   }
@@ -273,7 +273,7 @@ var get = function get(object, property, receiver) {
     } else {
       return get(parent, property, receiver);
     }
-  } else if ("value" in desc) {
+  } else if ('value' in desc) {
     return desc.value;
   } else {
     var getter = desc.get;
@@ -287,8 +287,8 @@ var get = function get(object, property, receiver) {
 };
 
 var inherits = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  if (typeof superClass !== 'function' && superClass !== null) {
+    throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass);
   }
 
   subClass.prototype = Object.create(superClass && superClass.prototype, {
@@ -304,10 +304,10 @@ var inherits = function (subClass, superClass) {
 
 var possibleConstructorReturn = function (self, call) {
   if (!self) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    throw new ReferenceError('this hasn\'t been initialised - super() hasn\'t been called');
   }
 
-  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
 };
 
 /**
@@ -938,53 +938,53 @@ function Run (Glide, Components, Events) {
      */
     calculate: function calculate() {
       var move = this.move,
-          length = this.length;
+        length = this.length;
       var steps = move.steps,
-          direction = move.direction;
+        direction = move.direction;
 
 
       var countableSteps = isNumber(toInt(steps)) && toInt(steps) !== 0;
 
       switch (direction) {
-        case '>':
-          if (steps === '>') {
-            Glide.index = length;
-          } else if (this.isEnd()) {
-            if (!(Glide.isType('slider') && !Glide.settings.rewind)) {
-              this._o = true;
+      case '>':
+        if (steps === '>') {
+          Glide.index = length;
+        } else if (this.isEnd()) {
+          if (!(Glide.isType('slider') && !Glide.settings.rewind)) {
+            this._o = true;
 
-              Glide.index = 0;
-            }
-          } else if (countableSteps) {
-            Glide.index += Math.min(length - Glide.index, -toInt(steps));
-          } else {
-            Glide.index++;
-          }
-          break;
-
-        case '<':
-          if (steps === '<') {
             Glide.index = 0;
-          } else if (this.isStart()) {
-            if (!(Glide.isType('slider') && !Glide.settings.rewind)) {
-              this._o = true;
-
-              Glide.index = length;
-            }
-          } else if (countableSteps) {
-            Glide.index -= Math.min(Glide.index, toInt(steps));
-          } else {
-            Glide.index--;
           }
-          break;
+        } else if (countableSteps) {
+          Glide.index += Math.min(length - Glide.index, -toInt(steps));
+        } else {
+          Glide.index++;
+        }
+        break;
 
-        case '=':
-          Glide.index = steps;
-          break;
+      case '<':
+        if (steps === '<') {
+          Glide.index = 0;
+        } else if (this.isStart()) {
+          if (!(Glide.isType('slider') && !Glide.settings.rewind)) {
+            this._o = true;
 
-        default:
-          warn('Invalid direction pattern [' + direction + steps + '] has been used');
-          break;
+            Glide.index = length;
+          }
+        } else if (countableSteps) {
+          Glide.index -= Math.min(Glide.index, toInt(steps));
+        } else {
+          Glide.index--;
+        }
+        break;
+
+      case '=':
+        Glide.index = steps;
+        break;
+
+      default:
+        warn('Invalid direction pattern [' + direction + steps + '] has been used');
+        break;
       }
     },
 
@@ -1105,9 +1105,9 @@ function now() {
  */
 function throttle(func, wait, options) {
   var timeout = void 0,
-      context = void 0,
-      args = void 0,
-      result = void 0;
+    context = void 0,
+    args = void 0,
+    result = void 0;
   var previous = 0;
   if (!options) options = {};
 
@@ -1770,8 +1770,8 @@ function Clones (Glide, Components, Events) {
       var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       var slides = Components.Html.slides;
       var _Glide$settings = Glide.settings,
-          perView = _Glide$settings.perView,
-          classes = _Glide$settings.classes;
+        perView = _Glide$settings.perView,
+        classes = _Glide$settings.classes;
 
 
       var peekIncrementer = +!!Glide.settings.peek;
@@ -1809,8 +1809,8 @@ function Clones (Glide, Components, Events) {
     append: function append() {
       var items = this.items;
       var _Components$Html = Components.Html,
-          wrapper = _Components$Html.wrapper,
-          slides = _Components$Html.slides;
+        wrapper = _Components$Html.wrapper,
+        slides = _Components$Html.slides;
 
 
       var half = Math.floor(items.length / 2);
@@ -2602,9 +2602,9 @@ function Swipe (Glide, Components, Events) {
     move: function move(event) {
       if (!Glide.disabled) {
         var _Glide$settings = Glide.settings,
-            touchAngle = _Glide$settings.touchAngle,
-            touchRatio = _Glide$settings.touchRatio,
-            classes = _Glide$settings.classes;
+          touchAngle = _Glide$settings.touchAngle,
+          touchRatio = _Glide$settings.touchRatio,
+          classes = _Glide$settings.classes;
 
 
         var swipe = this.touches(event);

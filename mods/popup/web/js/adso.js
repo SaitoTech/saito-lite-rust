@@ -79,7 +79,7 @@ function show_tooltip() {
 }
 function save_tooltip() {
 
-  var entries = new Array();
+  var entries = [];
   var row_1 = "";
   var row_2 = "";
   var row_3 = "";

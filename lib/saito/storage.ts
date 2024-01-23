@@ -9,7 +9,7 @@ class Storage {
   public app: Saito;
   public active_tab: any;
   public timeout: any;
-  currentBuildNumber: bigint = BigInt(0);
+  currentBuildNumber = BigInt(0);
 
 
 
