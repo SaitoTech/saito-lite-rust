@@ -102,7 +102,7 @@ class Chat extends ModTemplate {
     if (app.BROWSER == 0) {
       this.communityGroup = this.returnOrCreateChatGroupFromMembers(
         [this.publicKey],
-        "Saito Community Chat"
+        this.communityGroupName
       );
       this.communityGroup.members = [this.publicKey];
 
@@ -349,7 +349,7 @@ class Chat extends ModTemplate {
     let services = [];
     // servers with chat service run plaintext community chat groups
     if (this.app.BROWSER == 0) {
-      services.push(new PeerService(null, "chat", "Saito Community Chat"));
+      services.push(new PeerService(null, "chat", this.communityGroupName));
     }
     return services;
   }
@@ -446,24 +446,19 @@ class Chat extends ModTemplate {
         }
         return null;
       case "user-menu":
-        if (obj?.publicKey) {
-          if (
-            chat_self.app.keychain.hasSharedSecret(obj.publicKey) &&
-            obj.publicKey !== this.publicKey
-          ) {
-            return {
-              text: "Chat",
-              icon: "far fa-comment-dots",
-              callback: function (app, publicKey) {
-                if (chat_self.chat_manager == null) {
-                  chat_self.chat_manager = new ChatManager(chat_self.app, chat_self);
-                }
+        if (obj?.publicKey!== this.publicKey) {
+          return {
+            text: "Chat",
+            icon: "far fa-comment-dots",
+            callback: function (app, publicKey) {
+              if (chat_self.chat_manager == null) {
+                chat_self.chat_manager = new ChatManager(chat_self.app, chat_self);
+              }
 
-                chat_self.chat_manager.render_popups_to_screen = 1;
-                chat_self.app.connection.emit("open-chat-with", { key: publicKey });
-              },
-            };
-          }
+              chat_self.chat_manager.render_popups_to_screen = 1;
+              chat_self.app.connection.emit("open-chat-with", { key: publicKey });
+            },
+          };
         }
 
         return null;

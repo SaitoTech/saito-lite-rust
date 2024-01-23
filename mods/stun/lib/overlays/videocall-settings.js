@@ -23,15 +23,30 @@ class VideoCallSettings {
       };
     });
 
-    if (!this.mod.screen_share){
-      document.querySelectorAll(".share-control").forEach((item) => {
-        item.onclick = () => {
+    if (document.querySelector(".share-control")) {
+      document.querySelector(".share-control").onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this_self.mod.screen_share) {
+          console.log("Emit event to stop");
+          this_self.app.connection.emit("stop-share-screen");
+        } else {
+          console.log("Emit event to start");
           this_self.app.connection.emit("begin-share-screen");
-          this_self.saitoOverlay.remove();
-        };
-      });
+        }
+        this_self.saitoOverlay.remove();
+      };
+    }
+
+    if (document.querySelector(".advanced-settings-link")){
+      document.querySelector(".advanced-settings-link").onclick = (e) => {
+        let anotherOverlay = new SaitoOverlay(this.app, this.mod);
+        anotherOverlay.show(`<div class="videocall-setting-grid-item saito-module-settings"></div>`);
+        this.mod.loadSettings(".saito-module-settings");
+      }
     }
   }
+
 }
 
 module.exports = VideoCallSettings;

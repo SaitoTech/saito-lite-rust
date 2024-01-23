@@ -47,17 +47,24 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
             
             </div>
 
+            <hr>
 
-             ${(!mod.screen_share) ?
-              `<div class="videocall-option-grid">
-                  <div class="videocall-setting-title">Screenshare</div>
-                  <div class="videocall-setting-icon share-control">
-                    <i class="fa-solid fa-display"></i>
-                  </div>
-                </div>`
-                : ``
-            }
+
+            <div class="videocall-option-container share-control">
+              <label class="videocall-option-label" for="videocall-screenshare">
+              <input id="videocall-screenshare" ${(mod.screen_share)?`checked` : ``} type="checkbox" name="videocall-screenshare">
+                <div class="videocall-option-name">Share screen</div>
+                <i class="fa-solid fa-display"></i>
+              </label>
+            </div>
+
+            <hr>
             
+            <div class="videocall-option-label">
+              <i class="fa-solid fa-sliders"></i>
+              <div class="videocall-option-name advanced-settings-link">Module Settings</div>
+            </div>
+
           </div>
          
       `;

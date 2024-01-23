@@ -102,6 +102,7 @@ class PeerManager {
 
     app.connection.on("begin-share-screen", async () => {
       try {
+        console.log("Start");
         this.presentationStream = await navigator.mediaDevices.getDisplayMedia({ 
           video: {
             displaySurface: "window",
@@ -124,6 +125,16 @@ class PeerManager {
         });
       } catch (err) {
         console.error("Error accessing media devices.", err);
+      }
+    });
+
+
+    app.connection.on("stop-share-screen", async () => {
+      console.log("no more");
+      if (this.presentationStream){
+        this.presentationStream.getTracks().forEach(track => track.stop());
+        this.stopSharing();
+        this.presentationStream = null;
       }
     });
 
