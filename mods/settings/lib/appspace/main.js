@@ -99,7 +99,7 @@ class SettingsAppspace {
           let currentTarget = e.currentTarget;
 
           if (currentTarget.checked == true) {
-            let sc = await sconfirm("Reactivate this module?");
+            let sc = await sconfirm("Reactivate this module? (Will take effect on refresh)");
             if (sc) {
               app.options.modules[thisid].active = 1;
               app.storage.saveOptions();
@@ -107,7 +107,7 @@ class SettingsAppspace {
               currentTarget.checked = false;
             } 
           } else {
-            let sc = await sconfirm("Remove this module?");
+            let sc = await sconfirm("Remove this module? (Will take effect on refresh)");
             if (sc) {
               app.options.modules[thisid].active = 0;
               app.storage.saveOptions();
