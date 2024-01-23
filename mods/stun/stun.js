@@ -15,7 +15,7 @@ class Stun extends ModTemplate {
     this.app = app;
     this.appname = "Saito Talk";
     this.name = "Stun";
-    this.slug = this.returnSlug();
+    this.slug = "videocall";
     this.description = "P2P Video & Audio Connection Module";
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
@@ -281,6 +281,29 @@ class Stun extends ModTemplate {
       });
 
       return menu_items;
+    }
+
+    if (type === "chat-actions") {
+      if (obj?.publicKey) {
+        if (obj.publicKey !== this.app.wallet.publicKey) {
+          this.attachStyleSheets();
+          super.render(this.app, this);
+          return [
+            {
+              text: "Video/Audio Call",
+              icon: "fas fa-phone",
+              callback: function (app, public_key) {
+
+                if (!stun_self.room_obj) {
+                  stun_self.dialer.establishStunCallWithPeers([public_key]);
+                } else {
+                  salert("Already in or establishing a call");
+                }
+              },
+            },
+          ];
+        }
+      }
     }
 
     return null;
