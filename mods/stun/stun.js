@@ -15,7 +15,7 @@ class Stun extends ModTemplate {
     this.app = app;
     this.appname = "Saito Talk";
     this.name = "Stun";
-    this.slug = this.returnSlug();
+    this.slug = "videocall";
     this.description = "P2P Video & Audio Connection Module";
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
