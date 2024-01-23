@@ -51,7 +51,7 @@ module.exports = (app, mod, group, isStatic = false) => {
               <div class="chat-action-icons">
                 <div class="chat-actions">
                 </div>
-                <i class="fa-solid fa-ellipsis-vertical saito-address" data-id="${group.name}"></i>
+                <i class="fa-solid fa-ellipsis-vertical saito-identicon" data-id="${group.name}"></i>
               </div>
               ` : ``}
             </div>
