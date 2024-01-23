@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let html = `<div class="rules-overlay">
+	let html = `<div class="rules-overlay">
               <h1>Scotland Yard</h1>
               <p>A team of detectives is on the hunt for international terrorist Mr. X. Can London's finest trap him before their Oyster cards run out of credit?</p>     
              <h2>Players</h2>
@@ -20,8 +19,5 @@ module.exports = (app, mod) => {
              <p>Mr X should have an escape route planned after each of those special turns, while the detectives should coordinate to be near bus routes or underground stations in case the need to cover a lot of distance.</p>
              <p>The detectives need to rely on logic and teamwork in order to track and capture Mr. X.</p>
              `;
-  return html;
-
-
-}
-
+	return html;
+};

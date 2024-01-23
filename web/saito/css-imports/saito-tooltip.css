@@ -1,27 +1,27 @@
 .saito-tooltip {
-  display: inline-block;
-  position: relative;
+	display: inline-block;
+	position: relative;
 }
 
 .saito-tooltip .saito-tooltip-icon {
-  margin: 0rem 1rem;
-  color: var(--saito-white);
-  cursor: pointer;
-  font-size: 2rem;
+	margin: 0rem 1rem;
+	color: var(--saito-white);
+	cursor: pointer;
+	font-size: 2rem;
 }
 
 .saito-tooltip .saito-tooltip-info {
-  border-radius: 1rem;
-  position: fixed;
-  background: var(--saito-white);
-  padding: 1rem;
-  box-shadow: (--saito-box-shadow);
-  z-index: 2;
-  color: var(--saito-font-color-heavy);
-  font-weight: 400;
-  min-width: 20rem;
+	border-radius: 1rem;
+	position: fixed;
+	background: var(--saito-white);
+	padding: 1rem;
+	box-shadow: (--saito-box-shadow);
+	z-index: 2;
+	color: var(--saito-font-color-heavy);
+	font-weight: 400;
+	min-width: 20rem;
 }
 
 .tooltip-info-hide {
-  display: none;
+	display: none;
 }

@@ -1,22 +1,22 @@
 # Vanilla JS Datepicker
 
-A vanilla JavaScript remake of [bootstrap-datepicker](https://github.com/uxsolutions/bootstrap-datepicker) for [Bulma](https://bulma.io) and other CSS frameworks  
+A vanilla JavaScript remake of [bootstrap-datepicker](https://github.com/uxsolutions/bootstrap-datepicker) for [Bulma](https://bulma.io) and other CSS frameworks
 
 This package is written from scratch as ECMAScript modules/[Sass](https://sass-lang.com) stylesheets to reproduce similar usability to bootstrap-datepicker.  
-It can work either standalone or with CSS framework (e.g. [Bootstrap](https://getbootstrap.com), [Foundation](https://get.foundation)), but works best with [Bulma](https://bulma.io) as it's developed primarily for Bulma. 
+It can work either standalone or with CSS framework (e.g. [Bootstrap](https://getbootstrap.com), [Foundation](https://get.foundation)), but works best with [Bulma](https://bulma.io) as it's developed primarily for Bulma.
 
 The package also includes pre-built js/css files for those who like to use it directly on browser.
 
 ##### Features
 
-- Date picker (input-dropdown, inline), date range picker
-- Keyboard operation support (navigation by arrow keys, editing on input field)
-- i18n support (locales, CSS-based text direction detection)
-- Easily customizable to adapt stylesheet for various CSS frameworks
-- Dependency free
-- Made for modern browsers — no support for IE and Edge Legacy (aka non-Chromium Edge)  
-  _** If you need to support Edge Legacy, [Web Components polyfill](https://www.npmjs.com/package/@webcomponents/webcomponentsjs) will allow this library to run on it._
-- Lightweight (well, relatively…) — 34kB (minified, uncompressed)
+-   Date picker (input-dropdown, inline), date range picker
+-   Keyboard operation support (navigation by arrow keys, editing on input field)
+-   i18n support (locales, CSS-based text direction detection)
+-   Easily customizable to adapt stylesheet for various CSS frameworks
+-   Dependency free
+-   Made for modern browsers — no support for IE and Edge Legacy (aka non-Chromium Edge)  
+    _\*\* If you need to support Edge Legacy, [Web Components polyfill](https://www.npmjs.com/package/@webcomponents/webcomponentsjs) will allow this library to run on it._
+-   Lightweight (well, relatively…) — 34kB (minified, uncompressed)
 
 ##### Demo
 
@@ -27,7 +27,7 @@ The package also includes pre-built js/css files for those who like to use it di
 Install the package using npm.
 
 ```bash
-npm install --save-dev vanillajs-datepicker 
+npm install --save-dev vanillajs-datepicker
 ```
 
 ##### Date picker
@@ -37,7 +37,7 @@ npm install --save-dev vanillajs-datepicker
 1. create a text input element.
 
 ```html
-<input type="text" name="foo">
+<input type="text" name="foo" />
 ```
 
 2. import the `Datepicker` module.
@@ -63,12 +63,11 @@ import Datepicker from 'vanillajs-datepicker/Datepicker';
 ```javascript
 const elem = document.querySelector('input[name="foo"]');
 const datepicker = new Datepicker(elem, {
-  // ...options
-}); 
+	// ...options
+});
 ```
 
 ![](./images/datepicker.jpg)
-
 
 – **Inline picker**
 
@@ -80,18 +79,16 @@ const datepicker = new Datepicker(elem, {
 
 2. import the `Datepicker` module in the same way as Input picker.
 
-
 3. call `Datepicker` constructor with the block element and, optionally, [config options](options).
 
 ```javascript
 const elem = document.getElementById('foo');
 const datepicker = new Datepicker(elem, {
-  // ...options
-}); 
+	// ...options
+});
 ```
 
 ![](./images/datepicker-inline.jpg)
-
 
 ##### Date range picker
 
@@ -99,9 +96,9 @@ const datepicker = new Datepicker(elem, {
 
 ```html
 <div id="foo">
-  <input type="text" name="start">
-  <span>to</span>
-  <input type="text" name="end">  
+	<input type="text" name="start" />
+	<span>to</span>
+	<input type="text" name="end" />
 </div>
 ```
 
@@ -128,8 +125,8 @@ import DateRangePicker from 'vanillajs-datepicker/DateRangePicker';
 ```javascript
 const elem = document.getElementById('foo');
 const rangepicker = new DateRangePicker(elem, {
-  // ...options
-}); 
+	// ...options
+});
 ```
 
 ![](./images/rangepicker.jpg)
@@ -158,8 +155,8 @@ const rangepicker = new DateRangePicker(elem, {
 
 ```javascript
 const datepicker = new Datepicker(elem, {
-  buttonClass: 'btn',
-}); 
+	buttonClass: 'btn'
+});
 ```
 
 2. import scss file for Bootstrap instead.
@@ -184,12 +181,12 @@ _Or if your Bootstrap's version is v4.x_
 
 #### Other frameworks
 
- 1. If the framework uses a specific class for button elements, set it to the `buttonClass` option to call `Datepicker`/`DateRangePicker` constructor.
+1.  If the framework uses a specific class for button elements, set it to the `buttonClass` option to call `Datepicker`/`DateRangePicker` constructor.
 
 ```javascript
 const datepicker = new Datepicker(elem, {
-  buttonClass: 'uk-button',
-}); 
+	buttonClass: 'uk-button'
+});
 ```
 
 2. Copy the following template into your sass stylesheet, and edit the node_module path, the variables, button class and button style adjustments to match your environment.
@@ -208,27 +205,27 @@ const datepicker = new Datepicker(elem, {
 @import '../node_modules/vanillajs-datepicker/sass/mixins';
 
 @mixin dp-button {
-  .button {
-    /***
+	.button {
+		/***
      Place style adjustment for date picker's buttons here, if needed
      ***/
 
-    .datepicker-header & {
-      @include dp-header-button-common;
+		.datepicker-header & {
+			@include dp-header-button-common;
 
-      /***
+			/***
        Place style adjustment specific to the header buttons here, if needed
        ***/
-    }
+		}
 
-    .datepicker-footer & {
-      @include dp-footer-button-common;
+		.datepicker-footer & {
+			@include dp-footer-button-common;
 
-      /***
+			/***
        Place style adjustment specific to the footer buttons here, if needed
        ***/
-    }
-  }
+		}
+	}
 }
 
 @import '../node_modules/vanillajs-datepicker/sass/datepicker';
@@ -239,7 +236,10 @@ const datepicker = new Datepicker(elem, {
 1. From CDN, load css and js files.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker.min.css">
+<link
+	rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker.min.css"
+/>
 
 ...
 
@@ -249,13 +249,25 @@ const datepicker = new Datepicker(elem, {
 _If you use Bulma, Bootstrap (v5, v4) or Foundation, you can use the css for your framework instead._
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bulma.min.css">
+<link
+	rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bulma.min.css"
+/>
 <!-- or -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bs5.min.css">
+<link
+	rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bs5.min.css"
+/>
 <!-- or -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bs4.min.css">
+<link
+	rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bs4.min.css"
+/>
 <!-- or -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-foundation.min.css">
+<link
+	rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-foundation.min.css"
+/>
 ```
 
 _And if don't need date range, you can use the datepicker-only version of js file._
@@ -269,7 +281,6 @@ _And if don't need date range, you can use the datepicker-only version of js fil
 ```javascript
 const elem = document.querySelector('input[name="foo"]');
 const datepicker = new Datepicker(elem, {
-  // ...options
-}); 
+	// ...options
+});
 ```
-

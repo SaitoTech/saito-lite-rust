@@ -1,6 +1,5 @@
 module.exports = ControlsTemplate = (app, mod) => {
-
-  return `
+	return `
 
     <div  style="" class="modal fade" id="buttonsModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -504,5 +503,4 @@ module.exports = ControlsTemplate = (app, mod) => {
 
     <script src="input_controller.js"></script>
   `;
-
-}
+};

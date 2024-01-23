@@ -1,126 +1,198 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-	
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="description" content="Saito Network" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="description" content="Saito Network" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no"
+		/>
 
-	<link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/all.css"
+			type="text/css"
+			media="screen"
+		/>
 
-	<meta name="mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="application-name" content="saito.io redsquare" />
-	<meta name="apple-mobile-web-app-title" content="Saito Retro" />
-	<meta name="theme-color" content="#FFFFFF" />
-	<meta name="msapplication-navbutton-color" content="#FFFFFF" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-	<meta name="msapplication-starturl" content="/index.html" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="application-name" content="saito.io redsquare" />
+		<meta name="apple-mobile-web-app-title" content="Saito Retro" />
+		<meta name="theme-color" content="#FFFFFF" />
+		<meta name="msapplication-navbutton-color" content="#FFFFFF" />
+		<meta
+			name="apple-mobile-web-app-status-bar-style"
+			content="black-translucent"
+		/>
+		<meta name="msapplication-starturl" content="/index.html" />
 
-	<meta name="twitter:card" content="summary" />
-	<meta name="twitter:site" content="@SaitoOfficial" />
-	<meta name="twitter:creator" content="@SaitoOfficial" />
-	<meta name="twitter:title" content="Saito - Enabling a paradigm shift in blockchain applications" />
-	<meta name="twitter:url" content="https://saito.tech/" />
-	<meta name="twitter:description" content="Saito" />
-	<meta name="twitter:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@SaitoOfficial" />
+		<meta name="twitter:creator" content="@SaitoOfficial" />
+		<meta
+			name="twitter:title"
+			content="Saito - Enabling a paradigm shift in blockchain applications"
+		/>
+		<meta name="twitter:url" content="https://saito.tech/" />
+		<meta name="twitter:description" content="Saito" />
+		<meta
+			name="twitter:image"
+			content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
+		/>
 
-	<meta property="og:title" content="Saito Retro" />
-	<meta property="og:url" content="https://saito.io/redsquare" />
-	<meta property="og:type" content="website" />
-	<meta property="og:description" content="Peer to peer social and more" />
-	<meta property="og:site_name" content="Saito" />
-	<meta property="og:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
-	<meta property="og:image:url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
-	<meta property="og:image:secure_url"
-	content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+		<meta property="og:title" content="Saito Retro" />
+		<meta property="og:url" content="https://saito.io/redsquare" />
+		<meta property="og:type" content="website" />
+		<meta
+			property="og:description"
+			content="Peer to peer social and more"
+		/>
+		<meta property="og:site_name" content="Saito" />
+		<meta
+			property="og:image"
+			content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
+		/>
+		<meta
+			property="og:image:url"
+			content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
+		/>
+		<meta
+			property="og:image:secure_url"
+			content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
+		/>
 
+		<link
+			rel="icon"
+			sizes="192x192"
+			href="/saito/img/touch/pwa-192x192.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="192x192"
+			href="/saito/img/touch/pwa-192x192.png"
+		/>
+		<link
+			rel="icon"
+			sizes="512x512"
+			href="/saito/img/touch/pwa-512x512.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="512x512"
+			href="/saito/img/touch/pwa-512x512.png"
+		/>
 
-	  <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
-	  <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
-	  <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
-	  <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+		<title>Saito Retro Games</title>
 
-
-	<title>Saito Retro Games</title>
-	
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" type="text/css" href="/saito/saito.css" />
-  	<link rel="stylesheet" type="text/css" href="/saito/game.css" />
-	<script type="text/javascript" src="js/lib/jquery-1.8.0.js"></script>
-	<script type="text/javascript" src="build/cycloa.js"></script>
-	<script id="saito" type="text/javascript" src="/saito/saito.js"></script>
-
-</head>
-<body>
-<div id="background">
-</div>
-<div id="wrapper">
-	<div id="header">
-	</div>
-	<div id="content">
-		<div>
-			<p>Please drag &amp; drop your .NES game or select a game from list below.</p>
-		</div>
-		<label for="rom_sel"></label>
-		<select id="rom_sel">
-			<option value="">Select...</option>
-			<option value="roms/alter_ego/Alter_Ego.nes">Alter Ego</option>
-			<option value="roms/thwaite-0.03/thwaite.nes">thwaite</option>
-			<option value="roms/croom/croom.nes">Concentration Room</option>
-			<option value="roms/lj65/lj65.nes">LJ65</option>
-		</select>
-		<div id="interface_box" class="control_box"><!-- 
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+		<link rel="stylesheet" type="text/css" href="/saito/game.css" />
+		<script type="text/javascript" src="js/lib/jquery-1.8.0.js"></script>
+		<script type="text/javascript" src="build/cycloa.js"></script>
+		<script
+			id="saito"
+			type="text/javascript"
+			src="/saito/saito.js"
+		></script>
+	</head>
+	<body>
+		<div id="background"></div>
+		<div id="wrapper">
+			<div id="header"></div>
+			<div id="content">
+				<div>
+					<p>
+						Please drag &amp; drop your .NES game or select a game
+						from list below.
+					</p>
+				</div>
+				<label for="rom_sel"></label>
+				<select id="rom_sel">
+					<option value="">Select...</option>
+					<option value="roms/alter_ego/Alter_Ego.nes">
+						Alter Ego
+					</option>
+					<option value="roms/thwaite-0.03/thwaite.nes">
+						thwaite
+					</option>
+					<option value="roms/croom/croom.nes">
+						Concentration Room
+					</option>
+					<option value="roms/lj65/lj65.nes">LJ65</option>
+				</select>
+				<div id="interface_box" class="control_box">
+					<!-- 
 			<input id="screen_zoom" type="button" value="zoom in/out" /> -->
-			<div id="screen_zoom" class="saito-button-secondary small">zoom in/out</div>
-		</div>
-		<div id="control_box" class="control_box">
-			
-			<div id="nes_hardreset" class="saito-button-secondary small">HardReset</div>
-			<div id="nes_reset" class="saito-button-secondary small">Reset</div>
-			<div id="nes_stop" class="saito-button-secondary small">Stop</div>
-			<div id="nes_start" class="saito-button-secondary small">Start</div>
+					<div id="screen_zoom" class="saito-button-secondary small">
+						zoom in/out
+					</div>
+				</div>
+				<div id="control_box" class="control_box">
+					<div
+						id="nes_hardreset"
+						class="saito-button-secondary small"
+					>
+						HardReset
+					</div>
+					<div id="nes_reset" class="saito-button-secondary small">
+						Reset
+					</div>
+					<div id="nes_stop" class="saito-button-secondary small">
+						Stop
+					</div>
+					<div id="nes_start" class="saito-button-secondary small">
+						Start
+					</div>
 
-			<!-- <input id="nes_hardreset" type="button" value="HardReset"/>
+					<!-- <input id="nes_hardreset" type="button" value="HardReset"/>
 			<input id="nes_reset" type="button" value="Reset"/>
 			<input id="nes_stop" type="button" value="Stop"/>
 			<input id="nes_start" type="button" value="Start"/> -->
-		</div>
-		<div class="nes_screen_wrapper" id="nes_screen_wrapper">
-			<canvas id="nes_screen" width="256" height="240"></canvas>
-		</div>
-		<div id="state" class="control_box"></div>
-		<div>
-			<h6>Controls</h6>
-			<table>
-				<tr>
-					<td><b>A</b></td><td>Z</td>
-				</tr>
-				<tr>
-					<td><b>B</b></td><td>X</td>
-				</tr>
-				<tr>
-					<td><b>Start</b></td><td>Enter</td>
-				</tr>
-				<tr>
-					<td><b>Select</b></td><td>Space</td>
-				</tr>
-				<tr>
-					<td><b>↑</b></td><td>↑</td>
-				</tr>
-				<tr>
-					<td><b>→</b></td><td>→</td>
-				</tr>
-				<tr>
-					<td><b>←</b></td><td>←</td>
-				</tr>
-				<tr>
-					<td><b>↓</b></td><td>↓</td>
-				</tr>
-			</table>
+				</div>
+				<div class="nes_screen_wrapper" id="nes_screen_wrapper">
+					<canvas id="nes_screen" width="256" height="240"></canvas>
+				</div>
+				<div id="state" class="control_box"></div>
+				<div>
+					<h6>Controls</h6>
+					<table>
+						<tr>
+							<td><b>A</b></td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td><b>B</b></td>
+							<td>X</td>
+						</tr>
+						<tr>
+							<td><b>Start</b></td>
+							<td>Enter</td>
+						</tr>
+						<tr>
+							<td><b>Select</b></td>
+							<td>Space</td>
+						</tr>
+						<tr>
+							<td><b>↑</b></td>
+							<td>↑</td>
+						</tr>
+						<tr>
+							<td><b>→</b></td>
+							<td>→</td>
+						</tr>
+						<tr>
+							<td><b>←</b></td>
+							<td>←</td>
+						</tr>
+						<tr>
+							<td><b>↓</b></td>
+							<td>↓</td>
+						</tr>
+					</table>
+				</div>
 			</div>
-	</div>
-</div>
-</body>
+		</div>
+	</body>
 </html>

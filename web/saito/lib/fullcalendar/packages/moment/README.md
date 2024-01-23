@@ -1,4 +1,3 @@
-
 # FullCalendar Moment Plugin
 
 A connector to the MomentJS date library

@@ -1,7 +1,7 @@
 module.exports = () => {
-  let html = `
+	let html = `
   <div class="deck-overlay hide-scrollbar">
   </div>`;
 
-  return html;
-}
+	return html;
+};

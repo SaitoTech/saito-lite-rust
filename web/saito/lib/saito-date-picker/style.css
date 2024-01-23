@@ -1,114 +1,98 @@
 :root {
-  --calendar-width: 25rem;
-  --calendar-minwidth: 10rem;
+	--calendar-width: 25rem;
+	--calendar-minwidth: 10rem;
 }
-
 
 .container {
-  max-width: var(--calendar-width);
-  min-width: var(--calendar-minwidth);
-  /* width: var(); */
+	max-width: var(--calendar-width);
+	min-width: var(--calendar-minwidth);
+	/* width: var(); */
 }
-
-
 
 .calendar {
-  border-radius: .5rem;
-  width: 100%;
-  border: 1px solid #00000052;
-  display: grid;
-  grid-template-rows: min-content min-content min-content;
-  flex-direction: column;
-  padding: 1rem 0;
+	border-radius: 0.5rem;
+	width: 100%;
+	border: 1px solid #00000052;
+	display: grid;
+	grid-template-rows: min-content min-content min-content;
+	flex-direction: column;
+	padding: 1rem 0;
 }
-
 
 .calendar-month {
-  /* padding: 1rem 1rem; */
-  display: grid;
-  grid-template-columns: min-content max-content min-content;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding: 0 2rem;
+	/* padding: 1rem 1rem; */
+	display: grid;
+	grid-template-columns: min-content max-content min-content;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 2rem;
+	padding: 0 2rem;
 }
-
 
 .calendar-month i {
-  font-size: 2rem;
-  cursor: pointer;
+	font-size: 2rem;
+	cursor: pointer;
 }
 
-
-
-
 .calendar-date div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
 }
 
 .calendar-date h4 {
-  font-size: 2.3rem;
-  margin-right: 1rem;
+	font-size: 2.3rem;
+	margin-right: 1rem;
 }
 
 .calendar-date p {
-  font-size: 2.3rem;
+	font-size: 2.3rem;
 }
 
-
 .calendar-weekdays {
-
-  display: flex;
-  justify-content: center;
-  padding: .5rem .5rem;
-
+	display: flex;
+	justify-content: center;
+	padding: 0.5rem 0.5rem;
 }
 
 .calendar-weekdays div {
-  /* min-width: calc((var(--calendar-minwidth) - 2rem)/7); */
-  width: calc((var(--calendar-width) - 2rem)/7);
-  font-size: 1.6rem;
-  text-align: center;
-
-
+	/* min-width: calc((var(--calendar-minwidth) - 2rem)/7); */
+	width: calc((var(--calendar-width) - 2rem) / 7);
+	font-size: 1.6rem;
+	text-align: center;
 }
 
 .calendar-days {
-  display: flex;
-  flex-wrap: wrap;
-  cursor: pointer;
-  padding: 1rem .5rem;
-  text-align: center;
-
+	display: flex;
+	flex-wrap: wrap;
+	cursor: pointer;
+	padding: 1rem 0.5rem;
+	text-align: center;
 }
 
 .calendar-days div {
+	font-size: 1.2rem;
+	margin: 0.5rem;
 
-  font-size: 1.2rem;
-  margin: .5rem;
-
-  width: calc((var(--calendar-width) - (14 * .5rem) - 2rem) /7);
-  /* min-width: calc((var(--calendar-minwidth) - (14 * .5rem) - 2rem) /7); */
+	width: calc((var(--calendar-width) - (14 * 0.5rem) - 2rem) / 7);
+	/* min-width: calc((var(--calendar-minwidth) - (14 * .5rem) - 2rem) /7); */
 }
 
 .calendar-days div:hover {
-  background-color: var(--saito-primary);
-  color: var(--saito-white);
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
 }
 
 .prev-date {
-  color: rgba(0, 0, 0, 0.391);
+	color: rgba(0, 0, 0, 0.391);
 }
 
 .next-date {
-  color: rgba(0, 0, 0, 0.391);
+	color: rgba(0, 0, 0, 0.391);
 }
 
 .today {
-  background-color: var(--saito-primary);
-  color: var(--saito-white);
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
 }

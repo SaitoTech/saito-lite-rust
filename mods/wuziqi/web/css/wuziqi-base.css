@@ -1,246 +1,229 @@
 .main {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(217deg, #125552, transparent 70.71%),
-    linear-gradient(127deg, #093637, #44A08D 70.71%),
-    linear-gradient(336deg, #67B26F, #4ca2cd 70.71%);
-    background-image: url("/wuziqi/img/BG.jpg");
-    background-size: cover;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background: linear-gradient(217deg, #125552, transparent 70.71%),
+		linear-gradient(127deg, #093637, #44a08d 70.71%),
+		linear-gradient(336deg, #67b26f, #4ca2cd 70.71%);
+	background-image: url('/wuziqi/img/BG.jpg');
+	background-size: cover;
 }
 
 .textchoice {
-    background-color: whitesmoke;
+	background-color: whitesmoke;
 }
 
 /*
     Format the help overlay
 */
 .intro {
-  background-color: whitesmoke;
-  padding: 30px;
-  font-size: 1.6em;
+	background-color: whitesmoke;
+	padding: 30px;
+	font-size: 1.6em;
 }
 
-.intro p{
-    margin: 1em 0;
+.intro p {
+	margin: 1em 0;
 }
 
-.replay { 
-    position: absolute;
-    right: 16px;
-    top: 6px;
-    border: 1px solid black;
-    background-color: rgba(55, 55, 55, 0.2);
-    padding: 0.25rem 0.75rem;
-    cursor: pointer;
-    border-radius: 3px;
- }
+.replay {
+	position: absolute;
+	right: 16px;
+	top: 6px;
+	border: 1px solid black;
+	background-color: rgba(55, 55, 55, 0.2);
+	padding: 0.25rem 0.75rem;
+	cursor: pointer;
+	border-radius: 3px;
+}
 
- .replay:hover{
-    color: white;
-    background-color: rgba(55, 55, 55, 0.9);
- }
+.replay:hover {
+	color: white;
+	background-color: rgba(55, 55, 55, 0.9);
+}
 
 .board {
-    display: grid;
-    margin: auto auto;
-    background-image: url("/wuziqi/img/wood-new.jpg");
-    background-size: 102%;
-    padding:  min(2.5rem, 2vw);
-    /*box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);*/
-    border-radius: 2.5rem;
+	display: grid;
+	margin: auto auto;
+	background-image: url('/wuziqi/img/wood-new.jpg');
+	background-size: 102%;
+	padding: min(2.5rem, 2vw);
+	/*box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);*/
+	border-radius: 2.5rem;
 }
 
-
-
 .racetrack .pblack {
-    background-color: black;
-    color: white;
+	background-color: black;
+	color: white;
 }
 
 .racetrack .pwhite {
-    background-color: white;
-    color: black;
+	background-color: white;
+	color: black;
 }
 
 /*
 Board is a grid of wooden squares
 */
 .board > div {
-     position: relative;
+	position: relative;
 }
 
 .board > div::after {
-    content: "";
-    border: 1px solid black;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
+	content: '';
+	border: 1px solid black;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
 }
 
-
 .board > div.top::after {
-    border-top: 2px solid black;
-    top: 50%
+	border-top: 2px solid black;
+	top: 50%;
 }
 
 .board > div.left::after {
-    border-left: 2px solid black;
-    left: 50%
+	border-left: 2px solid black;
+	left: 50%;
 }
 
-.board > div.bottom::after, .board > div.right::after {
-    border: 0px solid black;
+.board > div.bottom::after,
+.board > div.right::after {
+	border: 0px solid black;
 }
 
 .board > div.bottom::after {
-    border-top: 1px solid black;
+	border-top: 1px solid black;
 }
 
 .board > div.right::after {
-    border-left: 1px solid black;
+	border-left: 1px solid black;
 }
 
 .board > div.bottom.right::after {
-    border: 0px solid black;
+	border: 0px solid black;
 }
-
-
 
 /*
  which should lite up when you hover over them
  for which I need a place holder
 */
-.board div.empty{
-    margin: auto;
-    height: 98%;
-    width: 98%;
-    border-radius: 100%;
+.board div.empty {
+	margin: auto;
+	height: 98%;
+	width: 98%;
+	border-radius: 100%;
 }
 
-
-.white .active:hover .empty{
-    cursor: pointer;
-    border: 2px solid rgba(255,255,255,0.9);
-    background-color: rgba(255,255,255,0.5);
+.white .active:hover .empty {
+	cursor: pointer;
+	border: 2px solid rgba(255, 255, 255, 0.9);
+	background-color: rgba(255, 255, 255, 0.5);
 }
 
-.black .active:hover .empty{
-    cursor: pointer;
-    border: 2px solid rgba(0,0,0,0.8);
-    background-color: rgba(0,0,0,0.4);
+.black .active:hover .empty {
+	cursor: pointer;
+	border: 2px solid rgba(0, 0, 0, 0.8);
+	background-color: rgba(0, 0, 0, 0.4);
 }
-
 
 /*
  squares contain round pieces
 */
-.board div.piece{
-    border-radius: 100%;
-    z-index: 2;
-    position: relative; /* z-index does not imact 'unpositioned elements'. */
-    margin: 10%;
-    height: 80%;
-    width: 80%;
+.board div.piece {
+	border-radius: 100%;
+	z-index: 2;
+	position: relative; /* z-index does not imact 'unpositioned elements'. */
+	margin: 10%;
+	height: 80%;
+	width: 80%;
 }
 
 /*
  that are either black or white
 */
-.piece.white{
-    /*background: white;
+.piece.white {
+	/*background: white;
     border: 1px solid #111 !important;*/
-    background-image: url("/wuziqi/img/whitepiece.png");
-    background-size: cover;
+	background-image: url('/wuziqi/img/whitepiece.png');
+	background-size: cover;
 }
 
-.piece.black{
-    /*background: black;
+.piece.black {
+	/*background: black;
     border: 1px solid #eee !important;*/
-    background-image: url("/wuziqi/img/blackpiece.png");
-    background-size: cover;
+	background-image: url('/wuziqi/img/blackpiece.png');
+	background-size: cover;
 }
 
 /*
   We mark the cells of the 5-in-a-row winning combination
 */
-.winner .piece{
-   /*border: 0.5em solid rgb(255, 166, 0);*/
-   animation: 1s 5 alternate linear forwards winner;
+.winner .piece {
+	/*border: 0.5em solid rgb(255, 166, 0);*/
+	animation: 1s 5 alternate linear forwards winner;
 }
 
 @keyframes winner {
-  from {
-    border: 0 solid rgb(255, 166, 0);
-  }
-  to {
-    border: 1em solid rgb(255, 166, 0);
-  }
+	from {
+		border: 0 solid rgb(255, 166, 0);
+	}
+	to {
+		border: 1em solid rgb(255, 166, 0);
+	}
 }
-
-
 
 .opaque30 {
-    opacity: 0.3;
+	opacity: 0.3;
 }
-
 
 .playertitle {
-    text-transform: capitalize;
+	text-transform: capitalize;
 }
-
 
 /*
     Size square board relative to the narrower screen dimension
 */
 
-
 @media (orientation: landscape) {
-    .board {
-        width: 90vh;
-        height: 90vh;
-    }
-    .inner{
-        padding: 5vh;
-    }
+	.board {
+		width: 90vh;
+		height: 90vh;
+	}
+	.inner {
+		padding: 5vh;
+	}
 }
 
 @media (orientation: portrait) {
-    .board {
-        width: 90vw;
-        height: 90vw;
-        margin-top: max(5vw,5vh);
-    }
+	.board {
+		width: 90vw;
+		height: 90vw;
+		margin-top: max(5vw, 5vh);
+	}
 
-    .inner{
-        padding: 5vw;
-        padding-top: 0px;
-    }
-
+	.inner {
+		padding: 5vw;
+		padding-top: 0px;
+	}
 }
-
 
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
 */
-@media (max-aspect-ratio:  8/7) and (min-aspect-ratio: 3/4) {
-    .board{
-        margin-top: 0px;
-        width: min(80vh,92vw);
-        height: min(80vh,92vw);
-    }
-    .inner{
-        padding: 5vh;
-        padding-top: 45px;
-     }
+@media (max-aspect-ratio: 8/7) and (min-aspect-ratio: 3/4) {
+	.board {
+		margin-top: 0px;
+		width: min(80vh, 92vw);
+		height: min(80vh, 92vw);
+	}
+	.inner {
+		padding: 5vh;
+		padding-top: 45px;
+	}
 }
-
-
-
-
 
 /*
     Have board take up more space on small screens
@@ -248,27 +231,25 @@ Board is a grid of wooden squares
 */
 
 @media (max-height: 500px) and (orientation: landscape) {
-    .board {
-        width: 95vh;
-        height: 95vh;
-        padding: 1rem;
-    }
-    .inner{
-        padding: 2.5vh;
-    }
-
-
+	.board {
+		width: 95vh;
+		height: 95vh;
+		padding: 1rem;
+	}
+	.inner {
+		padding: 2.5vh;
+	}
 }
 
-@media (max-width: 500px) and (orientation: portrait) and (max-aspect-ratio: 7/8){
-    .board {
-        width: 95vw;
-        height: 95vw;
-        padding: 0.5em;
-        margin-top: max(5vw,5vh);
-    }
-     .inner{
-        padding: 2.5vw;
-        padding-top: 45px;
-    }
+@media (max-width: 500px) and (orientation: portrait) and (max-aspect-ratio: 7/8) {
+	.board {
+		width: 95vw;
+		height: 95vw;
+		padding: 0.5em;
+		margin-top: max(5vw, 5vh);
+	}
+	.inner {
+		padding: 2.5vw;
+		padding-top: 45px;
+	}
 }

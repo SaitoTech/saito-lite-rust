@@ -1,4 +1,3 @@
-
 # FullCalendar Luxon Plugin
 
 A connector to the Luxon date library

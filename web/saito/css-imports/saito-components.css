@@ -1,44 +1,44 @@
 /*  alert  */
 
 .saito-notification-dot {
-  min-width: 2rem;
-  min-height: 2rem;
-  border-radius: 0.5rem;
-  background-color: var(--saito-primary);
-  color: var(--saito-white);
-  position: absolute;
-  bottom: 2.5rem;
-  left: 3.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
-  line-height: 1.8rem;
+	min-width: 2rem;
+	min-height: 2rem;
+	border-radius: 0.5rem;
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
+	position: absolute;
+	bottom: 2.5rem;
+	left: 3.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.8rem;
+	line-height: 1.8rem;
 }
 
 .saito-header-appspace-option .saito-notification-dot {
-  left: 60%;
-  bottom: unset;
-  top: 5%;
+	left: 60%;
+	bottom: unset;
+	top: 5%;
 }
 
 .online-status-indicator:after {
-  position: absolute;
-  display: none;
-  content: "";
-  border-radius: 100%;
-  width: 1.5rem;
-  height: 1.5rem;
-  background-color: var(--saito-primary);
+	position: absolute;
+	display: none;
+	content: '';
+	border-radius: 100%;
+	width: 1.5rem;
+	height: 1.5rem;
+	background-color: var(--saito-primary);
 }
 
 .online .online-status-indicator:after {
-  display: block;
-  top: 2.9rem;
-  left: 2.75rem;
-  border: 2px solid var(--saito-background-color);
+	display: block;
+	top: 2.9rem;
+	left: 2.75rem;
+	border: 2px solid var(--saito-background-color);
 }
 
 .busy .online-status-indicator:after {
-  background-color: var(--saito-font-color);
+	background-color: var(--saito-font-color);
 }

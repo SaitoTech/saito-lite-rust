@@ -1,6 +1,5 @@
 module.exports = () => {
-
-   return `
+	return `
      <div class="lesson-container">
        <div class="lesson-section vocabulary"></div>
      </div>
@@ -11,6 +10,4 @@ module.exports = () => {
 
 
    `;
-
-}
-
+};

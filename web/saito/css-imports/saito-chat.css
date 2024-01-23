@@ -1,151 +1,158 @@
 .chat-manager {
-  height: 25%;
-  flex: 1;
-  position: relative;
-  display: grid;
-  grid-template-rows: 40px 1fr;
+	height: 25%;
+	flex: 1;
+	position: relative;
+	display: grid;
+	grid-template-rows: 40px 1fr;
 }
 
 .chat-manager .saito-userline {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  width: 13rem;
-  white-space: nowrap;
-  height: 1.7rem;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 13rem;
+	white-space: nowrap;
+	height: 1.7rem;
 }
 
 .chat-manager .saito-userline .img-prev {
-  max-width: 100%;
-  cursor: pointer;
+	max-width: 100%;
+	cursor: pointer;
 }
 
 .chat-popup-img-enhanced {
-  max-height: 90vh;
-  max-width: 95vw;
+	max-height: 90vh;
+	max-width: 95vw;
 }
 
 .chat-manager .saito-user {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
 }
 
-.chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
-  background-color: var(--saito-primary);
-  color: var(--saito-background-color);
+.chat-manager .saito-user:hover,
+.chat-manager .saito-user:hover .saito-address {
+	background-color: var(--saito-primary);
+	color: var(--saito-background-color);
 }
 
 .chat-manager-list {
-  gap: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  min-height: 22rem;
-  max-height: calc(100% - 5rem);
-  position: relative;
+	gap: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	min-height: 22rem;
+	max-height: calc(100% - 5rem);
+	position: relative;
 }
 
 .chat-manager-list .saito-address {
-  font-size: 1.3rem;
-  line-height: 1.8rem;
+	font-size: 1.3rem;
+	line-height: 1.8rem;
 }
 
 .chat-manager-list .saito-userline {
-  font-size: 1.5rem;
+	font-size: 1.5rem;
 }
 
 .new-notification {
-  background: linear-gradient(90deg, #0003 47%, var(--saito-primary), #0003 53%);
-  background-size: 300%;
-  animation: notificationAnimation 1.8s ease;
+	background: linear-gradient(
+		90deg,
+		#0003 47%,
+		var(--saito-primary),
+		#0003 53%
+	);
+	background-size: 300%;
+	animation: notificationAnimation 1.8s ease;
 }
 
 .new-notification .saito-chat-notifications {
-  visibility: hidden;
+	visibility: hidden;
 }
 
 @keyframes notificationAnimation {
-  0% {
-    background-position: 100%;
-  }
-  100% {
-    background-position: 0%;
-  }
+	0% {
+		background-position: 100%;
+	}
+	100% {
+		background-position: 0%;
+	}
 }
 
 .chat-popup .saito-notification-dot {
-  min-width: 3.5rem;
-  min-height: 3.5rem;
-  bottom: 6rem;
-  left: unset;
-  right: 2rem;
-  cursor: pointer;
+	min-width: 3.5rem;
+	min-height: 3.5rem;
+	bottom: 6rem;
+	left: unset;
+	right: 2rem;
+	cursor: pointer;
 }
 
-.chat-popup .saito-notification-dot i, .chat-popup .saito-notification-dot:hover .new-message-count {
-  display: none;
+.chat-popup .saito-notification-dot i,
+.chat-popup .saito-notification-dot:hover .new-message-count {
+	display: none;
 }
 
 .chat-popup .saito-notification-dot:hover i {
-  display: block;
+	display: block;
 }
 
 .saito-chat-active {
-  background-color: var(--saito-gray-transparent);
+	background-color: var(--saito-gray-transparent);
 }
 
 /* We have a chat-manager click event on saito-user */
 
 .chat-manager-list .saito-user {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .chat-body blockquote {
-  cursor: help;
+	cursor: help;
 }
 
 .chat-manager-menu {
-  position: absolute;
-  width: 100%;
-  min-height: 22rem;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: var(--saito-background-color);
-  /*padding-left: 1rem;*/
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  gap: 0.5rem;
+	position: absolute;
+	width: 100%;
+	min-height: 22rem;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: var(--saito-background-color);
+	/*padding-left: 1rem;*/
+	display: flex;
+	flex-direction: column;
+	padding: 1rem;
+	gap: 0.5rem;
 }
 
 .chat-manager-options.active {
-  transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 
-.chat-manager-menu>div {
-  cursor: pointer;
-  padding: 0.5rem;
+.chat-manager-menu > div {
+	cursor: pointer;
+	padding: 0.5rem;
 }
 
-.chat-manager-menu>div:hover {
-  background-color: var(--saito-primary);
-  color: var(--saito-background-color);
+.chat-manager-menu > div:hover {
+	background-color: var(--saito-primary);
+	color: var(--saito-background-color);
 }
 
 .chat-manager-menu i {
-  width: 24px;
-  height: 22px;
-  margin: auto;
+	width: 24px;
+	height: 22px;
+	margin: auto;
 }
 
 .chat-manager-menu .notice {
-  cursor: unset;
-  font-style: italic;
-  font-size: 16px;
+	cursor: unset;
+	font-style: italic;
+	font-size: 16px;
 }
 
-.chat-manager-menu>div.notice:hover {
-  color: var(--saito-font-color);
-  background-color: var(--saito-background-color);
+.chat-manager-menu > div.notice:hover {
+	color: var(--saito-font-color);
+	background-color: var(--saito-background-color);
 }
 
 /*  Chat / Popup  */
@@ -153,125 +160,131 @@
 /* Embedded chat container */
 
 .chat-static {
-  height: 100%;
-  width: 100%;
-  position: relative;
+	height: 100%;
+	width: 100%;
+	position: relative;
 }
 
 /* hide minimize,maximze and close icons when
  viewing chat from /chat 
 */
 
-.chat-static .chat-minimizer-icon, .chat-static .chat-maximizer-icon, .chat-static .chat-container-close, .chat-static .fa-comment-dots {
-  display: none;
+.chat-static .chat-minimizer-icon,
+.chat-static .chat-maximizer-icon,
+.chat-static .chat-container-close,
+.chat-static .fa-comment-dots {
+	display: none;
 }
 
 /* Free floating chat container */
 
 .chat-container {
-  height: 50rem;
-  width: 36rem;
-  border-radius: 0.5rem;
-  z-index: 15;
-  /* So weird, at 15 it blocks the z-index 20 slide in menu*/
-  /* reason: the slidein is child of saito header, so whatever z-index is assigned to saito header,
+	height: 50rem;
+	width: 36rem;
+	border-radius: 0.5rem;
+	z-index: 15;
+	/* So weird, at 15 it blocks the z-index 20 slide in menu*/
+	/* reason: the slidein is child of saito header, so whatever z-index is assigned to saito header,
   the child (slidein menu) inherits it */
-  position: fixed;
-  bottom: 0px;
-  right: 1.5rem;
-  border: 1px solid var(--saito-border-color);
-  background: var(--saito-arcade-background);
-  color: var(--saito-font-color);
-  max-height: 100vh;
-  min-width: 300px;
-  min-height: 150px;
-  overflow-x: hidden;
-  overflow-y: hidden;
+	position: fixed;
+	bottom: 0px;
+	right: 1.5rem;
+	border: 1px solid var(--saito-border-color);
+	background: var(--saito-arcade-background);
+	color: var(--saito-font-color);
+	max-height: 100vh;
+	min-width: 300px;
+	min-height: 150px;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
-.chat-container, .chat-container .chat-body, .chat-container .chat-footer {
-  transition: all 0.15s ease-in-out;
+.chat-container,
+.chat-container .chat-body,
+.chat-container .chat-footer {
+	transition: all 0.15s ease-in-out;
 }
 
 .chat-popup {
-  display: grid;
-  grid-template-rows: 45px 1fr min-content;
-  grid-template-columns: 100%;
-  align-items: center;
+	display: grid;
+	grid-template-rows: 45px 1fr min-content;
+	grid-template-columns: 100%;
+	align-items: center;
 }
 
 .chat-container.active {
-  z-index: 16;
+	z-index: 16;
 }
 
 .chat-container.dragging {
-  z-index: 17;
+	z-index: 17;
 }
 
 .chat-container.minimized {
-  height: 45px;
-  min-height: unset;
+	height: 45px;
+	min-height: unset;
 }
 
-.chat-container.minimized .chat-body, .chat-container.minimized .chat-footer {
-  height: 0;
-  min-height: unset;
-  overflow: hidden;
-  padding: 0;
-  opacity: 0;
-  /*
+.chat-container.minimized .chat-body,
+.chat-container.minimized .chat-footer {
+	height: 0;
+	min-height: unset;
+	overflow: hidden;
+	padding: 0;
+	opacity: 0;
+	/*
   This works but is a little abrupt
   display: none;
   */
 }
 
 .chat-body img {
-  /* If a small image, we don't want to zoom in
+	/* If a small image, we don't want to zoom in
   but the width: 100% should keep it from being to big
    */
-  max-width: fit-content;
-  width: 100%;
+	max-width: fit-content;
+	width: 100%;
 }
 
-.chat-header {  
-  display: flex;
-  flex-direction: column;
-  width: -webkit-fill-available;
-  height: -webkit-fill-available;
-  z-index: inherit;
+.chat-header {
+	display: flex;
+	flex-direction: column;
+	width: -webkit-fill-available;
+	height: -webkit-fill-available;
+	z-index: inherit;
 }
 
 .chat-header > .chat-header-nav {
-  display: flex;
-  align-items: end;
-  justify-content: flex-end;
-  border-bottom: 1px solid var(--saito-border-color);
-  cursor: grab;
-  height: 4.5rem;
-  font-size: 1.7rem;
-  background: var(--saito-background-light);
+	display: flex;
+	align-items: end;
+	justify-content: flex-end;
+	border-bottom: 1px solid var(--saito-border-color);
+	cursor: grab;
+	height: 4.5rem;
+	font-size: 1.7rem;
+	background: var(--saito-background-light);
 }
 
 .chat-header > .chat-header-nav > i {
-  margin: 0;
-  color: var(--saito-primary);
-  font-size: 1.2rem;
-  display: inline-block;
-  position: relative;
-  transition: all 0.2s;
-  cursor: pointer;
-  padding: 0.5rem;
+	margin: 0;
+	color: var(--saito-primary);
+	font-size: 1.2rem;
+	display: inline-block;
+	position: relative;
+	transition: all 0.2s;
+	cursor: pointer;
+	padding: 0.5rem;
 }
 
 .chat-header > .chat-header-nav > i:hover {
-  background-color: var(--saito-primary);
-  color: var(--saito-white);
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
 }
 
 .chat-header > .chat-header-nav > i.noclick:hover {
-  background-color: revert;
-  color: var(--saito-primary);
-  cursor: revert;
+	background-color: revert;
+	color: var(--saito-primary);
+	cursor: revert;
 }
 
 /*
@@ -281,34 +294,32 @@
 */
 
 .chat-header > .chat-header-nav > i:last-child {
-  cursor: pointer;
+	cursor: pointer;
 }
-
-
 
 .chat-header-info {
-  padding: 1.2rem 1rem;
-  background: var(--saito-arcade-background);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+	padding: 1.2rem 1rem;
+	background: var(--saito-arcade-background);
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
-.chat-header-info  i {
-  font-size: 2rem;
-  color: var(--saito-faded-icon-font);
+.chat-header-info i {
+	font-size: 2rem;
+	color: var(--saito-faded-icon-font);
 }
 
 .chat-action-icons {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
+	display: flex;
+	flex-direction: row;
+	gap: 2rem;
 }
 
 .chat-action-icons i {
-  cursor: pointer;
-  height: auto;
-  width: auto;
+	cursor: pointer;
+	height: auto;
+	width: auto;
 }
 
 /*.chat-header > i:last-child:hover {
@@ -316,66 +327,66 @@
 }*/
 
 .chat-header .chat-group {
-  max-width: 70%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  cursor: unset;
-  font-size: 1.7rem;
+	max-width: 70%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	cursor: unset;
+	font-size: 1.7rem;
 }
-
 
 .chat-header-nav .chat-details,
 .chat-header-info .chat-details {
-  width: 71%;
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
+	width: 71%;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
 }
 
 .chat-header-nav .chat-details {
-  display: none;
+	display: none;
 }
 
 .chat-header-nav .chat-details .chat-group {
-  max-width: 82%; 
+	max-width: 82%;
 }
 
 .chat-popup.minimized .chat-header .chat-header-nav .chat-details {
-  display: flex;
+	display: flex;
 }
 
 .chat-popup.minimized .chat-header > .chat-header-nav > i {
-  padding: 1.2rem 0.8rem;
+	padding: 1.2rem 0.8rem;
 }
 
 .chat-body {
-  padding: 1rem;
-  display: block;
-  /*height: calc(100% - 9rem);*/
-  height: 100%;
-  overflow: clip auto;
-  background-image: url(/saito/img/tiled-logo.svg);
-  background-color: var(--saito-bubble-background);
+	padding: 1rem;
+	display: block;
+	/*height: calc(100% - 9rem);*/
+	height: 100%;
+	overflow: clip auto;
+	background-image: url(/saito/img/tiled-logo.svg);
+	background-color: var(--saito-bubble-background);
 }
 
-.chat-body>.saito-user {
-  padding-bottom: 1rem;
-  cursor: default;
-  grid-template-rows: min-content 1fr;
-  min-height: 5.5rem;
-  gap: 0 2rem;
+.chat-body > .saito-user {
+	padding-bottom: 1rem;
+	cursor: default;
+	grid-template-rows: min-content 1fr;
+	min-height: 5.5rem;
+	gap: 0 2rem;
 }
 
 .chat-body .saito-user .saito-userline {
-  font-size: 1.6rem;
-  padding: 1rem;
-  border-radius: 0.5rem 0.5rem 0.5rem 0;
-  background: var(--saito-background-color);
-  box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -4px 0px 2px -2px var(--key-color);
-  margin-right: 1rem;
-  height: fit-content;
-  overflow: visible;
+	font-size: 1.6rem;
+	padding: 1rem;
+	border-radius: 0.5rem 0.5rem 0.5rem 0;
+	background: var(--saito-background-color);
+	box-shadow: 0px 2px 4px var(--saito-bubble-shadow),
+		-4px 0px 2px -2px var(--key-color);
+	margin-right: 1rem;
+	height: fit-content;
+	overflow: visible;
 }
 
 /*
@@ -396,36 +407,35 @@
 */
 
 .chat-body .saito-address {
-  margin: 0.5rem 0;
-  font-size: 1.3rem;
+	margin: 0.5rem 0;
+	font-size: 1.3rem;
 }
 
 .chat-body .saito-user-self.saito-user {
-  display: flex;
-  justify-content: flex-end;
+	display: flex;
+	justify-content: flex-end;
 }
 
 /* hide my own name */
 
 .chat-body .saito-user-self > .saito-address {
-  color: var(--saito-primary);
-  display: none !important
+	color: var(--saito-primary);
+	display: none !important;
 }
 
 .saito-mention.saito-address.treated {
-  display: inline-block !important;
+	display: inline-block !important;
 }
 
 .chat-body .saito-user-self.saito-user .saito-identicon-box {
-  display: none;
+	display: none;
 }
-
 
 /* Hide user names in 2-person chats */
 
 .saito-dm-chat .chat-body .saito-address {
-  visibility: hidden;
-  height: 0;
+	visibility: hidden;
+	height: 0;
 }
 
 /*
@@ -446,7 +456,7 @@
 */
 
 .chat-body .saito-identicon-box {
-  align-self: end;
+	align-self: end;
 }
 
 /*
@@ -463,320 +473,325 @@
 */
 
 .chat-manager em {
-  color: var(--saito-font-color-light);
-  font-style: italic;
+	color: var(--saito-font-color-light);
+	font-style: italic;
 }
 
 .saito-time-stamp {
-  font-size: 1.4rem;
-  text-align: center;
-  color: var(--saito-font-color-light);
-  font-style: italic;
-  margin: 3px 0;
+	font-size: 1.4rem;
+	text-align: center;
+	color: var(--saito-font-color-light);
+	font-style: italic;
+	margin: 3px 0;
 }
 
 .saito-chat-notice {
-  color: var(--saito-font-color-light);
-  font-style: italic;
+	color: var(--saito-font-color-light);
+	font-style: italic;
 }
 
 .saito-chat-line-controls {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  grid-row: span 2;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	grid-row: span 2;
 }
 
 .chat-message-line {
-  position: relative;
+	position: relative;
 }
 
 .saito-userline-reply {
-  display: none;
+	display: none;
 }
 
 .chat-body .saito-userline {
-  width: unset !important;
-  min-width: 10rem;
-  max-width: 600px;
+	width: unset !important;
+	min-width: 10rem;
+	max-width: 600px;
 }
 
 .chat-message-line:hover .saito-userline-reply {
-  display: flex;
-  position: absolute;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  right: -2rem;
-  bottom: 0;
-  z-index: 9;
-  background: var(--saito-background-color);
-  padding: 5px 7px 2px;
-  border-radius: 0.5rem;
-  border: 1px solid var(--saito-border-color);
-  font-size: 1.4rem;
+	display: flex;
+	position: absolute;
+	flex-direction: row;
+	align-items: center;
+	gap: 1rem;
+	right: -2rem;
+	bottom: 0;
+	z-index: 9;
+	background: var(--saito-background-color);
+	padding: 5px 7px 2px;
+	border-radius: 0.5rem;
+	border: 1px solid var(--saito-border-color);
+	font-size: 1.4rem;
 }
 
 .saito-user .saito-userline-reply i:hover {
-  color: var(--saito-primary);
+	color: var(--saito-primary);
 }
 
 .chat-footer {
-  min-height: 4.5rem;
-  height: fit-content;
-  font-size: 2rem;
-  /*position: absolute;
+	min-height: 4.5rem;
+	height: fit-content;
+	font-size: 2rem;
+	/*position: absolute;
   bottom: 0;*/
-  width: 100%;
-  padding: 0;
-  display: flex;
-  flex-flow: row;
-  align-items: end;
-  z-index: 2;
-  border-top: 1px solid var(--saito-border-color);
-  background: var(--saito-arcade-background);
+	width: 100%;
+	padding: 0;
+	display: flex;
+	flex-flow: row;
+	align-items: end;
+	z-index: 2;
+	border-top: 1px solid var(--saito-border-color);
+	background: var(--saito-arcade-background);
 }
 
 .chat-container blockquote {
-  color: inherit;
-  line-height: 2.5rem;
-  margin: 0.5rem 0;
+	color: inherit;
+	line-height: 2.5rem;
+	margin: 0.5rem 0;
 }
 
 .chat-input {
-  border: 1px solid transparent;
-  width: 100%;
-  font-size: 1.6rem;
-  padding: 1.2rem 3rem 1.2rem 1rem;
-  outline: none;
-  background: var(--saito-arcade-background);
-  max-height: 15rem;
-  overflow-y: auto;
-  word-break: break-word;
-  height: 4.2rem;
+	border: 1px solid transparent;
+	width: 100%;
+	font-size: 1.6rem;
+	padding: 1.2rem 3rem 1.2rem 1rem;
+	outline: none;
+	background: var(--saito-arcade-background);
+	max-height: 15rem;
+	overflow-y: auto;
+	word-break: break-word;
+	height: 4.2rem;
 }
 
 .chat-footer .saito-emoji {
-  padding: 1.3rem 0.5rem;
+	padding: 1.3rem 0.5rem;
 }
 
 /* This is the submit paper airplane icon */
 
-.chat-footer>i {
-  color: var(--saito-primary);
-  cursor: pointer;
-  z-index: 2;
-  transition: all 0.2s;
-  font-size: 2rem;
-  padding: 1.3rem 1rem 1.3rem 0.5rem;
+.chat-footer > i {
+	color: var(--saito-primary);
+	cursor: pointer;
+	z-index: 2;
+	transition: all 0.2s;
+	font-size: 2rem;
+	padding: 1.3rem 1rem 1.3rem 0.5rem;
 }
 
 .chat-footer i:hover {
-  transform: rotate(45deg);
+	transform: rotate(45deg);
 }
 
 .dockedLeft {
-  border-left: 3px solid var(--saito-primary) !important;
-  border-top-left-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
+	border-left: 3px solid var(--saito-primary) !important;
+	border-top-left-radius: 0 !important;
+	border-bottom-left-radius: 0 !important;
 }
 
 .dockedRight {
-  border-right: 3px solid var(--saito-primary) !important;
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
+	border-right: 3px solid var(--saito-primary) !important;
+	border-top-right-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
 }
 
 .dockedTop {
-  border-top: 3px solid var(--saito-primary) !important;
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
+	border-top: 3px solid var(--saito-primary) !important;
+	border-top-left-radius: 0 !important;
+	border-top-right-radius: 0 !important;
 }
 
 .dockedBottom {
-  border-bottom: 3px solid var(--saito-primary) !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
+	border-bottom: 3px solid var(--saito-primary) !important;
+	border-bottom-left-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
 }
 
 .remove_user {
-  padding: 0.5rem;
+	padding: 0.5rem;
 }
 
 .remove_user:hover {
-  color: var(--saito-font-color-light);
+	color: var(--saito-font-color-light);
 }
 
 .chat-manager-header {
-  display: flex;
-  align-items: center;
-  font-size: 22px;
-  justify-content: space-between;
-  height: 40px;
-  line-height: 24px;
+	display: flex;
+	align-items: center;
+	font-size: 22px;
+	justify-content: space-between;
+	height: 40px;
+	line-height: 24px;
 }
 
 .chat-manager-header h5 {
-  margin: 0;
+	margin: 0;
 }
 
-.chat-manager-header>div {
-  width: fit-content;
-  cursor: pointer;
-  transition: transform 0.4s;
-  padding: 0 0.5rem;
+.chat-manager-header > div {
+	width: fit-content;
+	cursor: pointer;
+	transition: transform 0.4s;
+	padding: 0 0.5rem;
 }
 
 .chat-main-container {
-  background-color: #bbb1;
-  background-image: url(/saito/img/tiled-logo.svg);
+	background-color: #bbb1;
+	background-image: url(/saito/img/tiled-logo.svg);
 }
 
 .chat-main-container .chat-body {
-  background-color: unset;
-  background-image: unset;
+	background-color: unset;
+	background-image: unset;
 }
 
 .chat-main-container .saito-sidebar.left {
-  background-color: var(--saito-background-color);
+	background-color: var(--saito-background-color);
 }
 
 .saito-chat-button {
-  cursor: pointer;
-  width: fit-content;
-  margin: auto;
-  padding: 4px;
-  color: var(--saito-font-color-light);
-  font-style: italic;
-  font-size: 1.4rem;
-  margin-top: 3rem;
+	cursor: pointer;
+	width: fit-content;
+	margin: auto;
+	padding: 4px;
+	color: var(--saito-font-color-light);
+	font-style: italic;
+	font-size: 1.4rem;
+	margin-top: 3rem;
 }
 
 .saito-chat-button:hover {
-  font-style: unset;
-  color: var(--saito-font-color-heavy);
+	font-style: unset;
+	color: var(--saito-font-color-heavy);
 }
 
 /* Mobile Overlay */
 
 .close-chat-manager {
-  margin-left: 1rem;
-  margin-right: auto;
-  display: none;
-  position: relative;
-  height: 100%;
+	margin-left: 1rem;
+	margin-right: auto;
+	display: none;
+	position: relative;
+	height: 100%;
 }
 
 .chat-manager-overlay .close-chat-manager {
-  display: block;
+	display: block;
 }
 
 .close-chat-manager i {
-  position: absolute;
-  left: 0;
-  top: 0;
-  padding: 1rem;
-  background: var(--saito-background-color);
-  font-size: 24px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	padding: 1rem;
+	background: var(--saito-background-color);
+	font-size: 24px;
 }
 
-.chat-manager-overlay .chat-manager-header, .chat-manager-overlay .chat-manager-menu {
-  font-size: 20px;
+.chat-manager-overlay .chat-manager-header,
+.chat-manager-overlay .chat-manager-menu {
+	font-size: 20px;
 }
 
 .chat-manager-overlay {
-  background-color: var(--saito-background-color);
-  position: absolute;
-  left: 0;
-  top: var(--saito-header-height);
-  z-index: 15;
-  width: 300px;
-  height: fit-content;
+	background-color: var(--saito-background-color);
+	position: absolute;
+	left: 0;
+	top: var(--saito-header-height);
+	z-index: 15;
+	width: 300px;
+	height: fit-content;
 }
 
 .floating-cm-overlay .chat-manager-header {
-  cursor: grab;
+	cursor: grab;
 }
 
-.alternate-close-button, .floating-cm-overlay .chat-manager-options, .chat-manager-overlay.floating-cm-overlay .close-chat-manager {
-  display: none;
+.alternate-close-button,
+.floating-cm-overlay .chat-manager-options,
+.chat-manager-overlay.floating-cm-overlay .close-chat-manager {
+	display: none;
 }
 
 .floating-cm-overlay .alternate-close-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	width: 30px;
 }
 
 .chat-manager-header > div.chat-manager-title {
-  cursor: default;
+	cursor: default;
 }
 
 @media screen and (max-width: 720px) {
-  .chat-manager-title {
-    display: none;
-  }
-  .chat-header i.chat-sizing-icon {
-    display: none;
-  }
+	.chat-manager-title {
+		display: none;
+	}
+	.chat-header i.chat-sizing-icon {
+		display: none;
+	}
 
-  .close-chat-manager i {
-    height: var(--saito-header-height);
-    line-height: 5rem;
-  }
-  
-  .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
-    -webkit-transition: none !important;
-    -moz-transition: none !important;
-    -o-transition: none !important;
-    transition: none !important;
-  }
+	.close-chat-manager i {
+		height: var(--saito-header-height);
+		line-height: 5rem;
+	}
+
+	.chat-container,
+	.chat-container .chat-body,
+	.chat-container .chat-footer {
+		-webkit-transition: none !important;
+		-moz-transition: none !important;
+		-o-transition: none !important;
+		transition: none !important;
+	}
 }
 
 @media screen and (max-width: 600px) {
-  .chat-manager-overlay {
-    top: 0;
-    height: calc(100 * var(--saito-vh));
-    width: 100vw;
-    max-height: -webkit-fill-available;
-    max-width: -webkit-fill-available;
-    z-index: 15;
-  }
+	.chat-manager-overlay {
+		top: 0;
+		height: calc(100 * var(--saito-vh));
+		width: 100vw;
+		max-height: -webkit-fill-available;
+		max-width: -webkit-fill-available;
+		z-index: 15;
+	}
 
-  .chat-manager-overlay .chat-manager {
-    margin-left: auto;
-    margin-right: auto;
-    width: 95vw;
-    min-height: 25rem;
-    height: fit-content;
-    max-height: 100%;
-    grid-template-rows: var(--saito-header-height) 1fr;
-  }
+	.chat-manager-overlay .chat-manager {
+		margin-left: auto;
+		margin-right: auto;
+		width: 95vw;
+		min-height: 25rem;
+		height: fit-content;
+		max-height: 100%;
+		grid-template-rows: var(--saito-header-height) 1fr;
+	}
 
-  .chat-manager-overlay .chat-manager-menu i {
-    width: 40px;
-    height: 40px;
-  }
-  .chat-manager-overlay .chat-manager-header {
-    height: var(--saito-header-height);
-  }
-  .chat-container {
-    margin: 0;
-    width: 100vw;
-    height: calc(100% - var(--saito-header-height));
-    max-height: none;
-    border-radius: 0;
-    /* For the keyboard */
-    right: 0;
-    bottom: 0;
-    top: 0;
-    left: 0;
-  }
-  .chat-manager-overlay+.chat-container {
-    height: 100vh;
-    height: calc(var(--saito-vh) * 100);
-  }
+	.chat-manager-overlay .chat-manager-menu i {
+		width: 40px;
+		height: 40px;
+	}
+	.chat-manager-overlay .chat-manager-header {
+		height: var(--saito-header-height);
+	}
+	.chat-container {
+		margin: 0;
+		width: 100vw;
+		height: calc(100% - var(--saito-header-height));
+		max-height: none;
+		border-radius: 0;
+		/* For the keyboard */
+		right: 0;
+		bottom: 0;
+		top: 0;
+		left: 0;
+	}
+	.chat-manager-overlay + .chat-container {
+		height: 100vh;
+		height: calc(var(--saito-vh) * 100);
+	}
 }

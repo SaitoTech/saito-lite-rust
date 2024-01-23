@@ -1,9 +1,7 @@
 module.exports = () => {
-
-  let html = `
+	let html = `
     <div class="menu hide-scrollbar">
     </div>
   `;
-  return html;
-
-}
+	return html;
+};

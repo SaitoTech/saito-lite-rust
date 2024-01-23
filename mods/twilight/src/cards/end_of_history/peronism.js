@@ -1,86 +1,130 @@
+if (card == 'peronism') {
+	let twilight_self = this;
+	let me = 'ussr';
+	let opponent = 'us';
+	if (this.game.player == 2) {
+		opponent = 'ussr';
+		me = 'us';
+	}
 
-    if (card == "peronism") {
+	this.placeInfluence('argentina', 1, 'us');
+	this.placeInfluence('argentina', 1, 'ussr');
 
-      let twilight_self = this;
-      let me = "ussr";
-      let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
-
-      this.placeInfluence("argentina", 1, "us");
-      this.placeInfluence("argentina", 1, "ussr");
-
-      if (player != me) {
-        this.updateStatus("Opponent deciding to add influence to or coup or realign Argentina");
-        return 0;
-
-      } else {
-
-        let html = `<ul>
+	if (player != me) {
+		this.updateStatus(
+			'Opponent deciding to add influence to or coup or realign Argentina'
+		);
+		return 0;
+	} else {
+		let html = `<ul>
                     <li class="option" id="place">place 1 influence in Argentina</li>
                     <li class="option" id="couporrealign">coup or realign Argentina</li>
                     </ul>`;
 
-        this.updateStatusWithOptions("Do you choose to:",html, function(action2) {
-          if (action2 == "place") {
-            twilight_self.placeInfluence("argentina", 1, player, function() {
-              twilight_self.addMove("resolve\tperonism");
-              twilight_self.addMove("place\t"+player+"\t"+player+"\targentina\t1");
-              twilight_self.addMove("notify\t"+player+" places an extra influence in Argentina");
-              twilight_self.endTurn();
-            });
-          }
-          if (action2 == "couporrealign") {
-            let user_message = "Do you choose to:";
-            html = `<ul>
+		this.updateStatusWithOptions(
+			'Do you choose to:',
+			html,
+			function (action2) {
+				if (action2 == 'place') {
+					twilight_self.placeInfluence(
+						'argentina',
+						1,
+						player,
+						function () {
+							twilight_self.addMove('resolve\tperonism');
+							twilight_self.addMove(
+								'place\t' +
+									player +
+									'\t' +
+									player +
+									'\targentina\t1'
+							);
+							twilight_self.addMove(
+								'notify\t' +
+									player +
+									' places an extra influence in Argentina'
+							);
+							twilight_self.endTurn();
+						}
+					);
+				}
+				if (action2 == 'couporrealign') {
+					let user_message = 'Do you choose to:';
+					html = `<ul>
                     <li class="option" id="coup">coup in Argentina</li>
                     <li class="option" id="realign">realign in Argentina</li>
                     </ul>`;
 
-            twilight_self.updateStatusWithOptions(user_message,html, function(action2) {
+					twilight_self.updateStatusWithOptions(
+						user_message,
+						html,
+						function (action2) {
+							let modified_ops = twilight_self.modifyOps(
+								1,
+								'peronism',
+								me
+							);
 
-              let modified_ops = twilight_self.modifyOps(1, "peronism", me);
-
-              if (action2 == "coup") {
-                twilight_self.addMove("resolve\tperonism");
-                twilight_self.addMove("coup\t"+player+"\targentina\t"+modified_ops+"\tperonism");
-                twilight_self.endTurn();
-              }
-              if (action2 == "realign") {
-                twilight_self.addMove("resolve\tperonism");
-                let result = twilight_self.playRealign("argentina");
-                modified_ops--;
-                if (modified_ops > 0) {
-                  user_message = "You have an OP Bonus. Realign again?:";
-                  html = `<ul>
+							if (action2 == 'coup') {
+								twilight_self.addMove('resolve\tperonism');
+								twilight_self.addMove(
+									'coup\t' +
+										player +
+										'\targentina\t' +
+										modified_ops +
+										'\tperonism'
+								);
+								twilight_self.endTurn();
+							}
+							if (action2 == 'realign') {
+								twilight_self.addMove('resolve\tperonism');
+								let result =
+									twilight_self.playRealign('argentina');
+								modified_ops--;
+								if (modified_ops > 0) {
+									user_message =
+										'You have an OP Bonus. Realign again?:';
+									html = `<ul>
                           <li class="option" id="realign">realign in Argentina</li>
                           <li class="option" id="skip">no, please stop</li>
                           </ul>`;
-                  //Is there a bug here?? 
+									//Is there a bug here??
 
-                  let action2 = $(this).attr("id");
-                  if (action2 == "realign") {
-                    let result2 = twilight_self.playRealign("argentina");
-                    twilight_self.addMove("realign\t"+player+"\targentina");
-                    twilight_self.addMove("realign\t"+player+"\targentina");
-                  }
-                  if (action2 == "skip") {
-                    twilight_self.addMove("realign\t"+player+"\targentina");
-                    twilight_self.endTurn();
-                  }
+									let action2 = $(this).attr('id');
+									if (action2 == 'realign') {
+										let result2 =
+											twilight_self.playRealign(
+												'argentina'
+											);
+										twilight_self.addMove(
+											'realign\t' + player + '\targentina'
+										);
+										twilight_self.addMove(
+											'realign\t' + player + '\targentina'
+										);
+									}
+									if (action2 == 'skip') {
+										twilight_self.addMove(
+											'realign\t' + player + '\targentina'
+										);
+										twilight_self.endTurn();
+									}
+								} else {
+									twilight_self.addMove(
+										'realign\t' + player + '\targentina'
+									);
+									twilight_self.endTurn();
+								}
 
-                } else {
-                  twilight_self.addMove("realign\t"+player+"\targentina");
-                  twilight_self.endTurn();
-                }
+								twilight_self.playerFinishedPlacingInfluence();
+								twilight_self.endTurn();
+							}
+						}
+					);
+				}
+			}
+		);
+	}
 
-                twilight_self.playerFinishedPlacingInfluence();
-                twilight_self.endTurn();
-              }
-            });
-          }
-        });
-      }
-
-      return 0;
-    }
-
+	return 0;
+}

@@ -1,6 +1,5 @@
 module.exports = ImperiumMovementOverlayTemplate = () => {
-
-  return `
+	return `
     <div class="how_to_play_overlay" id="how_to_play_overlay">
       <h2>Moving Ships:</h2>
 
@@ -33,5 +32,4 @@ module.exports = ImperiumMovementOverlayTemplate = () => {
 
     </div>
   `;
-
-}
+};

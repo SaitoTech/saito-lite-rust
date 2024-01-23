@@ -3,11 +3,11 @@
 
 // literal magnification scale
 .sizes-literal(@factor) when (@factor > 0) {
-  .sizes-literal((@factor - 1));
+	.sizes-literal((@factor - 1));
 
-  .@{fa-css-prefix}-@{factor}x {
-    font-size: (@factor * 1em);
-  }
+	.@{fa-css-prefix}-@{factor}x {
+		font-size: (@factor * 1em);
+	}
 }
 .sizes-literal(10);
 

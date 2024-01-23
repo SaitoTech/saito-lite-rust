@@ -1,4 +1,5 @@
 # riichi-mahjong-tiles
+
 This repository contains vector graphics and PNG exports of riichi mahjong tiles. The tiles are available in the regular and black variants. Below are example screenshots of the tiles.
 
 <div style="text-align:center">
@@ -7,4 +8,5 @@ This repository contains vector graphics and PNG exports of riichi mahjong tiles
 </div>
 
 ## License
+
 The images are licensed under the [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).

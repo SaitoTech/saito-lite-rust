@@ -1,20 +1,19 @@
 /* saito game engine variables
 -----------------------------------------------------------------*/
-@import url("./../../cssx-imports/game-animations.css");
-@import url("./../../cssx-imports/game-board-sizer.css");
-@import url("./../../cssx-imports/game-cardbox.css");
-@import url("./../../cssx-imports/game-cardfan.css");
-@import url("./../../cssx-imports/game-clock.css");
-@import url("./../../cssx-imports/game-crypto-transfer-manager.css");
-@import url("./../../cssx-imports/game-hexgrid.css");
-@import url("./../../cssx-imports/game-hud.css");
-@import url("./../../cssx-imports/game-layout.css");
-@import url("./../../cssx-imports/game-log.css");
-@import url("./../../cssx-imports/game-menu.css");
-@import url("./../../cssx-imports/game-observer.css");
-@import url("./../../cssx-imports/game-overlay.css");
-@import url("./../../cssx-imports/game-playerbox.css");
-@import url("./../../cssx-imports/game-popups.css");
-@import url("./../../cssx-imports/game-scoreboard.css");
-@import url("./../../cssx-imports/game-wizard.css");
-
+@import url('./../../cssx-imports/game-animations.css');
+@import url('./../../cssx-imports/game-board-sizer.css');
+@import url('./../../cssx-imports/game-cardbox.css');
+@import url('./../../cssx-imports/game-cardfan.css');
+@import url('./../../cssx-imports/game-clock.css');
+@import url('./../../cssx-imports/game-crypto-transfer-manager.css');
+@import url('./../../cssx-imports/game-hexgrid.css');
+@import url('./../../cssx-imports/game-hud.css');
+@import url('./../../cssx-imports/game-layout.css');
+@import url('./../../cssx-imports/game-log.css');
+@import url('./../../cssx-imports/game-menu.css');
+@import url('./../../cssx-imports/game-observer.css');
+@import url('./../../cssx-imports/game-overlay.css');
+@import url('./../../cssx-imports/game-playerbox.css');
+@import url('./../../cssx-imports/game-popups.css');
+@import url('./../../cssx-imports/game-scoreboard.css');
+@import url('./../../cssx-imports/game-wizard.css');

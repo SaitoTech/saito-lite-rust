@@ -1,53 +1,55 @@
+if (card == 'reformer') {
+	this.game.state.events.reformer = 1;
 
-    if (card == "reformer") {
+	if (this.game.player == 1) {
+		//If the event card has a UI component, run the clock for the player we are waiting on
+		this.startClock();
 
-      this.game.state.events.reformer = 1;
+		var twilight_self = this;
+		twilight_self.playerFinishedPlacingInfluence();
 
-      if (this.game.player == 1) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+		let influence_to_add = this.game.state.vp < 0 ? 6 : 4;
 
-        var twilight_self = this;
-        twilight_self.playerFinishedPlacingInfluence();
+		this.addMove('resolve\treformer');
+		this.updateStatus(
+			`<div class="status-message" id="status-message">${twilight_self.cardToText(
+				card
+			)}: Add ${influence_to_add} influence in Europe (max 2 per country)</div>`
+		);
 
-        let influence_to_add = (this.game.state.vp < 0)? 6: 4;
+		var ops_placed = {};
 
-        this.addMove("resolve\treformer");
-        this.updateStatus(`<div class="status-message" id="status-message">${twilight_self.cardToText(card)}: Add ${influence_to_add} influence in Europe (max 2 per country)</div>`);
+		for (var i in twilight_self.countries) {
+			if (this.countries[i].region == 'europe') {
+				ops_placed[i] = 0;
+				$('#' + i).addClass('easterneurope');
+			}
+		}
 
-        var ops_placed = {};
+		$('.easterneurope').off();
+		$('.easterneurope').on('click', function () {
+			let c = $(this).attr('id');
 
-        for (var i in twilight_self.countries) {
-          if (this.countries[i].region == "europe") {
-            ops_placed[i] = 0;
-            $("#"+i).addClass("easterneurope");  
-          }
-        }
+			if (ops_placed[c] >= 2) {
+				twilight_self.displayModal('Invalid Placement');
+			} else {
+				ops_placed[c]++;
+				twilight_self.placeInfluence(c, 1, 'ussr');
+				twilight_self.addMove('place\tussr\tussr\t' + c + '\t1');
 
-        $(".easterneurope").off();
-        $(".easterneurope").on('click', function() {
+				influence_to_add--;
 
-          let c = $(this).attr('id');
-
-          if (ops_placed[c] >= 2) {
-            twilight_self.displayModal("Invalid Placement");
-          } else {
-            ops_placed[c]++;
-            twilight_self.placeInfluence(c, 1, "ussr");
-            twilight_self.addMove("place\tussr\tussr\t"+c+"\t1");
-
-            influence_to_add--;
-
-            if (influence_to_add == 0) {
-              twilight_self.playerFinishedPlacingInfluence();
-              twilight_self.endTurn();
-            }
-            twilight_self.updateStatus(`<div class="status-message" id="status-message">${twilight_self.cardToText(card)}: Add ${influence_to_add} influence in Europe (max 2 per country)</div>`);
-          }
-        });
-         
-      }
-     return 0;
-    }
-
-
+				if (influence_to_add == 0) {
+					twilight_self.playerFinishedPlacingInfluence();
+					twilight_self.endTurn();
+				}
+				twilight_self.updateStatus(
+					`<div class="status-message" id="status-message">${twilight_self.cardToText(
+						card
+					)}: Add ${influence_to_add} influence in Europe (max 2 per country)</div>`
+				);
+			}
+		});
+	}
+	return 0;
+}

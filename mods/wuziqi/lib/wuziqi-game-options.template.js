@@ -1,8 +1,7 @@
 module.exports = (app, mod) => {
+	let html = '<h1 class="overlay-title">Wuziqi Options</h1>';
 
-  let html =  `<h1 class="overlay-title">Wuziqi Options</h1>`;
-        
-        html += `<div class="overlay-input">
+	html += `<div class="overlay-input">
                     <label for="board_size">Board Size:</label>
                     <select name="board_size">
                         <option value="9">9</>
@@ -16,6 +15,6 @@ module.exports = (app, mod) => {
                         <option value="25">25</>
                     </select>
                 </div>`;
-                
-      return html;
-}
+
+	return html;
+};

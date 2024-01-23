@@ -1,5 +1,3 @@
-
-
 .cardstack {
 	display: flex;
 	position: relative;
@@ -8,7 +6,6 @@
 .cardstack.left {
 	flex-direction: row-reverse;
 }
-
 
 .cardstack.right {
 	flex-direction: row;
@@ -21,4 +18,3 @@
 .cardstack.up {
 	flex-direction: column-reverse;
 }
-

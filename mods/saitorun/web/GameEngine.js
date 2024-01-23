@@ -16,7 +16,12 @@ class GameEngine {
 		this.loadingBar = new LoadingBar();
 		this.loadingBar.visible = false;
 
-		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+		this.camera = new THREE.PerspectiveCamera(
+			60,
+			window.innerWidth / window.innerHeight,
+			0.1,
+			100
+		);
 		this.camera.position.set(0, 2, -5);
 
 		this.cameraController = new THREE.Object3D();
@@ -49,7 +54,10 @@ class GameEngine {
 		let ambient = new THREE.AmbientLight(0x101010);
 		this.scene.add(ambient);
 
-		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+		this.renderer = new THREE.WebGLRenderer({
+			antialias: true,
+			alpha: true
+		});
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setClearColor(0x000000, 0); // the default
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -64,8 +72,16 @@ class GameEngine {
 		document.addEventListener('keydown', this.keyDown.bind(this));
 
 		// mobile touch actions
-		document.addEventListener('touchstart', this.handleTouchStart.bind(this), false);
-		document.addEventListener('touchmove', this.handleTouchMove.bind(this), false);
+		document.addEventListener(
+			'touchstart',
+			this.handleTouchStart.bind(this),
+			false
+		);
+		document.addEventListener(
+			'touchmove',
+			this.handleTouchMove.bind(this),
+			false
+		);
 		// mobile touch actions end
 		const answer1Button = document.getElementById('answer-0');
 		const answer2Button = document.getElementById('answer-1');
@@ -83,22 +99,24 @@ class GameEngine {
 			this.handleAnswer(2);
 		}
 
-		answer1Button.addEventListener("click", handleAnswer1.bind(this));
-		answer2Button.addEventListener("click", handleAnswer2.bind(this));
-		answer3Button.addEventListener("click", handleAnswer3.bind(this));
+		answer1Button.addEventListener('click', handleAnswer1.bind(this));
+		answer2Button.addEventListener('click', handleAnswer2.bind(this));
+		answer3Button.addEventListener('click', handleAnswer3.bind(this));
 	}
 
 	gameLoaded = false;
 
-	dirLight = new THREE.DirectionalLight(0xFFFFFF, 5);
+	dirLight = new THREE.DirectionalLight(0xffffff, 5);
 
 	// mobile touch actions
 	xDown = null;
 	yDown = null;
 
 	getTouches(evt) {
-		return evt.touches ||             // browser API
-			evt.originalEvent.touches; // jQuery
+		return (
+			evt.touches || // browser API
+			evt.originalEvent.touches
+		); // jQuery
 	}
 
 	handleTouchStart(evt) {
@@ -121,13 +139,14 @@ class GameEngine {
 			if (yDiff < 0) {
 				this.gameLoaded = true;
 				this.loadCharacter();
-				return
+				return;
 			} else {
 				return;
 			}
 		}
 
-		if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+		if (Math.abs(xDiff) > Math.abs(yDiff)) {
+			/*most significant*/
 			if (xDiff > 0) {
 				this.leftAction();
 			} else {
@@ -151,13 +170,23 @@ class GameEngine {
 	}
 
 	canResumeRunning() {
-		return !this.isJumping && !this.isSliding && this.action !== 'falling' && this.action !== 'bounce' && !this.levelCompleted && this.triviaAnswered;
+		return (
+			!this.isJumping &&
+			!this.isSliding &&
+			this.action !== 'falling' &&
+			this.action !== 'bounce' &&
+			!this.levelCompleted &&
+			this.triviaAnswered
+		);
 	}
 
 	jumpAction() {
 		if (this.canResumeRunning()) {
 			this.jumpStart = Math.round(this.character.position.z * 10) / 10;
-			this.jumpEnd = Math.round((this.character.position.z + 16 * this.moveBy) * 10) / 10; // approx 16 translateZ movements within a slide
+			this.jumpEnd =
+				Math.round(
+					(this.character.position.z + 16 * this.moveBy) * 10
+				) / 10; // approx 16 translateZ movements within a slide
 			this.jump();
 		}
 	}
@@ -165,13 +194,20 @@ class GameEngine {
 	slideAction() {
 		if (this.canResumeRunning()) {
 			this.diveStart = Math.round(this.character.position.z * 10) / 10;
-			this.diveEnd = Math.round((this.character.position.z + 16 * this.moveBy) * 10) / 10; // approx 16 translateZ movements within a slide
+			this.diveEnd =
+				Math.round(
+					(this.character.position.z + 16 * this.moveBy) * 10
+				) / 10; // approx 16 translateZ movements within a slide
 			this.slide();
 		}
 	}
 
 	leftAction() {
-		if (this.character.position.x < 1 && !this.levelCompleted && this.canTurn()) {
+		if (
+			this.character.position.x < 1 &&
+			!this.levelCompleted &&
+			this.canTurn()
+		) {
 			this.previousX = Math.round(this.character.position.x * 10) / 10;
 			this.currentX = this.previousX + 1;
 			this.character.translateX(1);
@@ -180,7 +216,11 @@ class GameEngine {
 	}
 
 	rightAction() {
-		if (this.character.position.x > -1 && !this.levelCompleted && this.canTurn()) {
+		if (
+			this.character.position.x > -1 &&
+			!this.levelCompleted &&
+			this.canTurn()
+		) {
 			this.previousX = Math.round(this.character.position.x * 10) / 10;
 			this.currentX = this.previousX - 1;
 			this.character.translateX(-1);
@@ -193,23 +233,23 @@ class GameEngine {
 			if (evt.keyCode === 40) {
 				this.gameLoaded = true;
 				this.loadCharacter();
-				return
+				return;
 			}
 		}
 		if (this.animIndex > 1 && !this.stopped) {
 			switch (evt.keyCode) {
-				case 32:
-					this.jumpAction();
-					break;
-				case 40: // down arrow
-					this.slideAction();
-					break;
-				case 37: // left arrow
-					this.leftAction();
-					break;
-				case 39: // right arrow
-					this.rightAction();
-					break;
+			case 32:
+				this.jumpAction();
+				break;
+			case 40: // down arrow
+				this.slideAction();
+				break;
+			case 37: // left arrow
+				this.leftAction();
+				break;
+			case 39: // right arrow
+				this.rightAction();
+				break;
 			}
 		}
 	}
@@ -225,14 +265,19 @@ class GameEngine {
 		cube.receiveShadow = true;
 		cube.castShadow = true;
 		this.scene.add(cube);
-		this.floorCubes.push(cube)
+		this.floorCubes.push(cube);
 	}
 
 	addCeiling() {
-		const ceilingTexture = new THREE.TextureLoader().load(`./img/crooked-grey-bricks.png`);
+		const ceilingTexture = new THREE.TextureLoader().load(
+			'./img/crooked-grey-bricks.png'
+		);
 		ceilingTexture.wrapS = ceilingTexture.wrapT = THREE.RepeatWrapping;
 		ceilingTexture.repeat.set(3, 3);
-		const material = new THREE.MeshBasicMaterial({ map: ceilingTexture, side: THREE.DoubleSide });
+		const material = new THREE.MeshBasicMaterial({
+			map: ceilingTexture,
+			side: THREE.DoubleSide
+		});
 		const geometry = new THREE.PlaneGeometry(9, 9, 1, 1);
 		const cube = new THREE.Mesh(geometry, material);
 		cube.receiveShadow = true;
@@ -249,10 +294,16 @@ class GameEngine {
 	}
 
 	addHangingObstacle(x, z) {
-		const texture = new THREE.TextureLoader().load(`./img/mark.jpg`);
-		const wallMaterialNormal = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+		const texture = new THREE.TextureLoader().load('./img/mark.jpg');
+		const wallMaterialNormal = new THREE.MeshBasicMaterial({
+			map: texture,
+			side: THREE.DoubleSide
+		});
 		const wallGeometry = new THREE.PlaneGeometry(3, 2, 1, 1);
-		const hangingObstacle = new THREE.Mesh(wallGeometry, wallMaterialNormal);
+		const hangingObstacle = new THREE.Mesh(
+			wallGeometry,
+			wallMaterialNormal
+		);
 		hangingObstacle.position.set(0, 1, z);
 		this.wallSegments.push(hangingObstacle);
 		this.scene.add(hangingObstacle);
@@ -262,7 +313,7 @@ class GameEngine {
 				color: 0x000000,
 				side: THREE.DoubleSide,
 				transparent: true,
-				opacity: 0.2,
+				opacity: 0.2
 			});
 			const plane = new THREE.Mesh(geometry, material);
 			plane.position.set(xs, -0.99, z + 0.5);
@@ -273,10 +324,15 @@ class GameEngine {
 	}
 
 	addWalls() {
-		const normalTexture = new THREE.TextureLoader().load(`./img/thick-grey.png`);
-		const wallMaterialNormal = new THREE.MeshBasicMaterial({ map: normalTexture, side: THREE.DoubleSide });
+		const normalTexture = new THREE.TextureLoader().load(
+			'./img/thick-grey.png'
+		);
+		const wallMaterialNormal = new THREE.MeshBasicMaterial({
+			map: normalTexture,
+			side: THREE.DoubleSide
+		});
 		const wallGeometry = new THREE.PlaneGeometry(8, 8, 1, 1);
-		for (let z = -8; z <= 408;) {
+		for (let z = -8; z <= 408; ) {
 			const wall = new THREE.Mesh(wallGeometry, wallMaterialNormal);
 			const wall2 = new THREE.Mesh(wallGeometry, wallMaterialNormal);
 			wall.rotation.y = Math.PI / 2;
@@ -293,10 +349,15 @@ class GameEngine {
 
 	getPreviousNarrowIndex(zIndex) {
 		const lastMapEntryKey = (zIndex - 1).toString();
-		if (this.pathTrackingMap.has(lastMapEntryKey) && this.pathTrackingMap.get(lastMapEntryKey)["narrow"] === true) {
-			if (this.pathTrackingMap.get(lastMapEntryKey)["1"] === true) {
+		if (
+			this.pathTrackingMap.has(lastMapEntryKey) &&
+			this.pathTrackingMap.get(lastMapEntryKey)['narrow'] === true
+		) {
+			if (this.pathTrackingMap.get(lastMapEntryKey)['1'] === true) {
 				return 1;
-			} else if (this.pathTrackingMap.get(lastMapEntryKey)["0"] === true) {
+			} else if (
+				this.pathTrackingMap.get(lastMapEntryKey)['0'] === true
+			) {
 				return 0;
 			} else {
 				return -1;
@@ -318,8 +379,12 @@ class GameEngine {
 	}
 
 	addPath(increment, blocksForward) {
-		const floorTexture = new THREE.TextureLoader().load(`./img/grey-green-old.jpg`);
-		const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture });
+		const floorTexture = new THREE.TextureLoader().load(
+			'./img/grey-green-old.jpg'
+		);
+		const floorMaterial = new THREE.MeshBasicMaterial({
+			map: floorTexture
+		});
 
 		const dimension = 1;
 		const geometry = new THREE.BoxGeometry(dimension, dimension, dimension);
@@ -328,16 +393,29 @@ class GameEngine {
 			for (let i = -4; i < blocksForward + 1; i++) {
 				let zPosition = i;
 				for (let j = -1; j < 2; j++) {
-					this.addPathCube(geometry, floorMaterial, j, -1.5, zPosition, true);
+					this.addPathCube(
+						geometry,
+						floorMaterial,
+						j,
+						-1.5,
+						zPosition,
+						true
+					);
 				}
 			}
 		} else {
 			const pathTypeIndicator = Math.floor(Math.random() * 3); // 0,1,2
-			const isNarrow = (this.level === 1 && pathTypeIndicator === 2) || (this.level > 1 && pathTypeIndicator > 0);
+			const isNarrow =
+				(this.level === 1 && pathTypeIndicator === 2) ||
+				(this.level > 1 && pathTypeIndicator > 0);
 			const ditchIndicator = Math.floor(Math.random() * 2); // 0,1
-			const isDitch = ditchIndicator > 0 && !(this.level === 1 && isNarrow);
+			const isDitch =
+				ditchIndicator > 0 && !(this.level === 1 && isNarrow);
 			const hangingObstacleIndicator = Math.floor(Math.random() * 2); // 0,1
-			const isHanging = hangingObstacleIndicator === 1 && !isDitch && ((this.level === 2 && !isNarrow) || this.level > 2);
+			const isHanging =
+				hangingObstacleIndicator === 1 &&
+				!isDitch &&
+				((this.level === 2 && !isNarrow) || this.level > 2);
 			const hangingZIndex = Math.floor(Math.random() * 3 + 3) + increment;
 			const ditchStartZIndex = 2 + increment;
 			const previousNarrowIndex = this.getPreviousNarrowIndex(increment);
@@ -360,27 +438,54 @@ class GameEngine {
 
 			// add narrow path extension to previous batch to allow for moving left/right
 			if (isNarrow && previousNarrowIndex !== -2) {
-				for (let z = increment - 1; z >= increment - addNarrowPathToPreviousBatchLength; z--) {
+				for (
+					let z = increment - 1;
+					z >= increment - addNarrowPathToPreviousBatchLength;
+					z--
+				) {
 					const mapEntry = this.pathTrackingMap.get(z.toString());
 					this.pathTrackingMap.set(z.toString(), {
-						"ditch": mapEntry["ditch"],
-						"hanging": mapEntry["hanging"],
-						"narrow": mapEntry["narrow"],
-						"1": mapEntry["1"] === true || narrowIndex === 1,
-						"0": mapEntry["0"] === true || narrowIndex === 0,
-						"-1": mapEntry["-1"] === true || narrowIndex === -1
+						ditch: mapEntry['ditch'],
+						hanging: mapEntry['hanging'],
+						narrow: mapEntry['narrow'],
+						1: mapEntry['1'] === true || narrowIndex === 1,
+						0: mapEntry['0'] === true || narrowIndex === 0,
+						'-1': mapEntry['-1'] === true || narrowIndex === -1
 					});
-					this.addPathCube(geometry, floorMaterial, narrowIndex, -1.5, z, true);
+					this.addPathCube(
+						geometry,
+						floorMaterial,
+						narrowIndex,
+						-1.5,
+						z,
+						true
+					);
 				}
 			}
 			// initial path state for the next 10 moves forward
 			for (let z = increment; z < increment + blocksForward; z++) {
-				const isDitchIndex = isDitch && z >= ditchStartZIndex && z <= ditchStartZIndex + ditchLengthExtension;
+				const isDitchIndex =
+					isDitch &&
+					z >= ditchStartZIndex &&
+					z <= ditchStartZIndex + ditchLengthExtension;
 				const isHangingIndex = isHanging && hangingZIndex === z;
-				const fillOne = !isDitchIndex && (!isNarrow || (isNarrow && narrowIndex === 1));
-				const fillZero = !isDitchIndex && (!isNarrow || (isNarrow && narrowIndex === 0));
-				const fillMinusOne = !isDitchIndex && (!isNarrow || (isNarrow && narrowIndex === -1));
-				this.pathTrackingMap.set(z.toString(), { "ditch": isDitchIndex, "hanging": isHangingIndex, "narrow": isNarrow, "1": fillOne, "0": fillZero, "-1": fillMinusOne });
+				const fillOne =
+					!isDitchIndex &&
+					(!isNarrow || (isNarrow && narrowIndex === 1));
+				const fillZero =
+					!isDitchIndex &&
+					(!isNarrow || (isNarrow && narrowIndex === 0));
+				const fillMinusOne =
+					!isDitchIndex &&
+					(!isNarrow || (isNarrow && narrowIndex === -1));
+				this.pathTrackingMap.set(z.toString(), {
+					ditch: isDitchIndex,
+					hanging: isHangingIndex,
+					narrow: isNarrow,
+					1: fillOne,
+					0: fillZero,
+					'-1': fillMinusOne
+				});
 				if (isHangingIndex) {
 					if (isNarrow) {
 						this.addHangingObstacle([narrowIndex], z);
@@ -395,7 +500,14 @@ class GameEngine {
 					this.addPathCube(geometry, floorMaterial, 0, -1.5, z, true);
 				}
 				if (fillMinusOne) {
-					this.addPathCube(geometry, floorMaterial, -1, -1.5, z, true);
+					this.addPathCube(
+						geometry,
+						floorMaterial,
+						-1,
+						-1.5,
+						z,
+						true
+					);
 				}
 				if (this.zNextPoints === z) {
 					this.addPoint(z, 0, narrowIndex);
@@ -423,14 +535,14 @@ class GameEngine {
 		const loader = new THREE.TextureLoader();
 
 		const material = new THREE.MeshBasicMaterial({
-			map: loader.load(`./img/${pointImage}`),
+			map: loader.load(`./img/${pointImage}`)
 		});
 
 		const cube = new THREE.Mesh(geometry, material);
 		cube.position.setX(xIndex);
 		cube.position.setY(yIndex);
 		cube.position.setZ(zIndex);
-		cube.rotateX(135)
+		cube.rotateX(135);
 		cube.rotateY(135);
 		cube.rotateZ(180);
 		cube.castShadow = true;
@@ -461,7 +573,6 @@ class GameEngine {
 	cleanupCollection(collection, zIncrement) {
 		let i = collection.length;
 		while (i--) {
-
 			if (collection[i].position.z < zIncrement - 15) {
 				collection[i].material.dispose();
 				collection[i].geometry.dispose();
@@ -478,9 +589,9 @@ class GameEngine {
 
 		elm.innerHTML = this.pointsEarned;
 
-		elm.classList.add("scaleOut");
+		elm.classList.add('scaleOut');
 		setTimeout(() => {
-			elm.classList.remove("scaleOut");
+			elm.classList.remove('scaleOut');
 		}, 100);
 	}
 
@@ -507,7 +618,12 @@ class GameEngine {
 			if (distance < 200) {
 				this.moveBy = 0.3;
 			} else if (distance < 400) {
-				if (this.action !== 'sprint' && !this.isSliding && !this.isJumping && this.stumbleZ !== 0) {
+				if (
+					this.action !== 'sprint' &&
+					!this.isSliding &&
+					!this.isJumping &&
+					this.stumbleZ !== 0
+				) {
 					this.runningAction = 'sprint';
 					this.action = this.runningAction;
 				}
@@ -521,7 +637,9 @@ class GameEngine {
 			}
 			this.previousZ = Math.round(this.character.position.z * 10) / 10;
 
-			this.currentZ = Math.round((this.character.position.z + this.moveBy) * 10 / 10);
+			this.currentZ = Math.round(
+				((this.character.position.z + this.moveBy) * 10) / 10
+			);
 			if (this.currentZ % 20 === 0) {
 				this.cleanupCollection(this.ceilingCubes, this.currentZ);
 				this.cleanupCollection(this.floorCubes, this.currentZ);
@@ -529,7 +647,7 @@ class GameEngine {
 			}
 
 			this.setDistance(Math.floor(distance));
-			
+
 			if (Math.floor(this.character.position.z) === this.levelStop - 1) {
 				this.action = 'idle';
 				this.levelCompleted = true;
@@ -548,35 +666,68 @@ class GameEngine {
 				let pathMapEntry = this.pathTrackingMap.get(zFloor.toString());
 
 				// fall
-				if (pathMapEntry["ditch"] === true && !(this.jumpStart <= zFloor && this.jumpEnd >= zFloor + 1)) {
+				if (
+					pathMapEntry['ditch'] === true &&
+					!(this.jumpStart <= zFloor && this.jumpEnd >= zFloor + 1)
+				) {
 					this.stopped = true;
 					setTimeout(this.fall.bind(this), 1);
 					// hit hanging obstacle
-				} else if (pathMapEntry["hanging"] === true && !(this.diveStart <= zFloor && this.diveEnd >= zFloor + 1)) {
+				} else if (
+					pathMapEntry['hanging'] === true &&
+					!(this.diveStart <= zFloor && this.diveEnd >= zFloor + 1)
+				) {
 					this.stumbleZ = zFloor;
 					this.stopped = true;
 					setTimeout(this.stumble.bind(this), 1);
 					// if narrow path
-				} else if (!pathMapEntry["1"] || !pathMapEntry["0"] || !pathMapEntry["-1"]) {
-					if (!(this.jumpStart <= zFloor && this.jumpEnd >= zFloor + 1)) {
+				} else if (
+					!pathMapEntry['1'] ||
+					!pathMapEntry['0'] ||
+					!pathMapEntry['-1']
+				) {
+					if (
+						!(
+							this.jumpStart <= zFloor &&
+							this.jumpEnd >= zFloor + 1
+						)
+					) {
 						if (!pathMapEntry[this.currentX.toString()]) {
 							setTimeout(this.fall.bind(this), 50);
 						} else {
-							if (this.points.length > 0 && this.points[0].position.z === zFloor) {
-								this.removeFirstPoint(zFloor, this.points[0].position.x === this.currentX);
+							if (
+								this.points.length > 0 &&
+								this.points[0].position.z === zFloor
+							) {
+								this.removeFirstPoint(
+									zFloor,
+									this.points[0].position.x === this.currentX
+								);
 							}
 							setTimeout(this.moveForward.bind(this), 50);
 						}
 						// skip current z position check, if jump occurred before and will end after current z
 					} else {
-						if (this.points.length > 0 && this.points[0].position.z === zFloor) {
-							this.removeFirstPoint(zFloor, this.points[0].position.x === this.currentX);
+						if (
+							this.points.length > 0 &&
+							this.points[0].position.z === zFloor
+						) {
+							this.removeFirstPoint(
+								zFloor,
+								this.points[0].position.x === this.currentX
+							);
 						}
 						setTimeout(this.moveForward.bind(this), 50);
 					}
 				} else {
-					if (this.points.length > 0 && this.points[0].position.z === zFloor) {
-						this.removeFirstPoint(zFloor, this.points[0].position.x === this.currentX);
+					if (
+						this.points.length > 0 &&
+						this.points[0].position.z === zFloor
+					) {
+						this.removeFirstPoint(
+							zFloor,
+							this.points[0].position.x === this.currentX
+						);
 					}
 					setTimeout(this.moveForward.bind(this), 50);
 				}
@@ -658,7 +809,7 @@ class GameEngine {
 	slidingIndex = 0;
 	levelStop = 400;
 
-	runningAction = "running";
+	runningAction = 'running';
 
 	startCount = 4;
 
@@ -713,17 +864,24 @@ class GameEngine {
 	endGame(playerFailed, wrongAnswer, question) {
 		const distance = this.currentZ + this.getDistance();
 		if (this.triviaAnswered && distance > 0) {
-			document.body.style.backgroundImage = "url('./img/background.jpg')";
+			document.body.style.backgroundImage = 'url(\'./img/background.jpg\')';
 			const instructions = document.getElementById('instructions');
 			instructions.style.display = 'block';
 			this.setDistance(distance);
 			let message = `Level ${this.level} completed!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>Swipe down or press down arrow to continue`;
-			const gameOver = wrongAnswer || playerFailed || this.level === this.maxLevels;
+			const gameOver =
+				wrongAnswer || playerFailed || this.level === this.maxLevels;
 			if (wrongAnswer) {
-				instructions.style.fontSize = "20px";
-				message = `Wrong answer! <br> Correct answer for question <br>${question.question} <br>is: <br>${question.answers[question.correctAnswerIndex].answer} <br>Game over!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>Swipe down or press down arrow to restart`;
+				instructions.style.fontSize = '20px';
+				message = `Wrong answer! <br> Correct answer for question <br>${
+					question.question
+				} <br>is: <br>${
+					question.answers[question.correctAnswerIndex].answer
+				} <br>Game over!<br>Distance: ${distance}<br>Points: ${
+					this.pointsEarned
+				}<br>Swipe down or press down arrow to restart`;
 			} else if (playerFailed) {
-				message = `Game over!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>Swipe down or press down arrow to restart`;;
+				message = `Game over!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>Swipe down or press down arrow to restart`;
 			} else {
 				if (this.level === this.maxLevels) {
 					message = `Level ${this.level} completed!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>More levels coming soon! Swipe down or press down arrow to restart`;
@@ -731,7 +889,9 @@ class GameEngine {
 				this.level++;
 			}
 			if (gameOver) {
-				console.info(`SAITORUN:${this.level}|${distance}|${this.pointsEarned}`);
+				console.info(
+					`SAITORUN:${this.level}|${distance}|${this.pointsEarned}`
+				);
 				this.pointsEarned = 0;
 				this.resetGameFinishValues();
 			}
@@ -824,28 +984,35 @@ class GameEngine {
 	}
 
 	setEnvironment() {
-		const loader = new RGBELoader().setPath("");
+		const loader = new RGBELoader().setPath('');
 		const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
 		pmremGenerator.compileEquirectangularShader();
 
 		const self = this;
 
-		loader.load('./img/hdr/factory.hdr', (texture) => {
-			const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-			pmremGenerator.dispose();
+		loader.load(
+			'./img/hdr/factory.hdr',
+			(texture) => {
+				const envMap =
+					pmremGenerator.fromEquirectangular(texture).texture;
+				pmremGenerator.dispose();
 
-			self.scene.environment = envMap;
-
-		}, undefined, (err) => {
-			console.error(err.message);
-		});
+				self.scene.environment = envMap;
+			},
+			undefined,
+			(err) => {
+				console.error(err.message);
+			}
+		);
 	}
 
 	loadCharacter() {
-		const loader = new GLTFLoader().setPath(`./img/`);
+		const loader = new GLTFLoader().setPath('./img/');
 		const dracoLoader = new DRACOLoader();
 		dracoLoader.setDecoderConfig({ type: 'js' });
-		dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+		dracoLoader.setDecoderPath(
+			'https://www.gstatic.com/draco/v1/decoders/'
+		);
 		loader.setDRACOLoader(dracoLoader);
 		this.loadingBar.visible = true;
 
@@ -853,8 +1020,7 @@ class GameEngine {
 		loader.load(
 			'runner.glb',
 			// called when the resource is loaded
-			gltf => {
-
+			(gltf) => {
 				this.scene.add(gltf.scene);
 				this.character = gltf.scene;
 
@@ -875,7 +1041,7 @@ class GameEngine {
 
 				this.animations = {};
 
-				gltf.animations.forEach(animation => {
+				gltf.animations.forEach((animation) => {
 					this.animations[animation.name.toLowerCase()] = animation;
 				});
 
@@ -894,32 +1060,28 @@ class GameEngine {
 				this.renderer.setAnimationLoop(this.render.bind(this));
 			},
 			// called while loading is progressing
-			xhr => {
-
-				this.loadingBar.progress = (xhr.loaded / xhr.total);
-
+			(xhr) => {
+				this.loadingBar.progress = xhr.loaded / xhr.total;
 			},
 			// called when loading has errors
-			err => {
-
+			(err) => {
 				console.error(err);
-
 			}
 		);
 	}
 
 	async triggerCountDown() {
 		const instructions = document.getElementById('instructions');
-		instructions.style.fontSize = "80px";
+		instructions.style.fontSize = '80px';
 		if (this.startCount > 0) {
 			instructions.innerHTML = this.startCount;
 			this.startCount--;
 			setTimeout(this.triggerCountDown.bind(this), 1200);
 		} else {
-			instructions.innerHTML = "Go!";
+			instructions.innerHTML = 'Go!';
 			await this.sleep(400);
 			instructions.style.display = 'none';
-			instructions.style.fontSize = "30px";
+			instructions.style.fontSize = '30px';
 		}
 	}
 
@@ -934,7 +1096,7 @@ class GameEngine {
 			setTimeout(this.newAnim.bind(this), timeout);
 			this.updateCamera();
 			if (this.animIndex === 1) {
-				document.body.style.backgroundImage = "url('./img/sky.jpg')";
+				document.body.style.backgroundImage = 'url(\'./img/sky.jpg\')';
 				this.triggerCountDown();
 			}
 			if (this.animIndex === 2) {
@@ -978,7 +1140,6 @@ class GameEngine {
 		this.velocity = new Vector3(1, 1, 1);
 
 		this.velocity.set(0, 0, 0.1);
-
 	}
 
 	updateCamera() {

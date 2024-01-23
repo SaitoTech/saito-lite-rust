@@ -37,33 +37,33 @@ $dp-input-in-edit-focus-box-shadow-size: 0 0 0.25em 0.25em !default;
 @import 'mixins';
 
 @mixin dp-button {
-  .button {
-    .datepicker-header & {
-      @include dp-header-button-common;
+	.button {
+		.datepicker-header & {
+			@include dp-header-button-common;
 
-      &:hover {
-        background-color: darken($white, 2.5%);
-      }
+			&:hover {
+				background-color: darken($white, 2.5%);
+			}
 
-      &:focus {
-        &:not(:active) {
-          box-shadow: 0 0 0 0.125em rgba($white, 0.25);
-        }
-      }
+			&:focus {
+				&:not(:active) {
+					box-shadow: 0 0 0 0.125em rgba($white, 0.25);
+				}
+			}
 
-      &:active {
-        background-color: darken($white, 5%);
-      }
+			&:active {
+				background-color: darken($white, 5%);
+			}
 
-      &[disabled] {
-        box-shadow: none;
-      }
-    }
+			&[disabled] {
+				box-shadow: none;
+			}
+		}
 
-    .datepicker-footer & {
-      @include dp-footer-button-common;
-    }
-  }
+		.datepicker-footer & {
+			@include dp-footer-button-common;
+		}
+	}
 }
 
 @import 'datepicker';

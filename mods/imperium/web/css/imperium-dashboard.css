@@ -1,171 +1,159 @@
-
 .imperium-dashboard {
-  display: inline-flex;
-  column-gap: 1.5rem;
+	display: inline-flex;
+	column-gap: 1.5rem;
 }
 
 .dashboard {
-  display: inline-flex;
-  position: absolute;
-  z-index: 9;
-  color: #fff;
-  background: transparent;
-  margin-top: 5.5rem;
-  margin-left: 1rem;
+	display: inline-flex;
+	position: absolute;
+	z-index: 9;
+	color: #fff;
+	background: transparent;
+	margin-top: 5.5rem;
+	margin-left: 1rem;
 }
 
 .dash-faction {
-  display: flex;
-  flex-direction: column;
-  grid-gap: 0.2rem;
-  cursor: pointer;
-  user-select: none;
-  width: max-content;
-  row-gap: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	grid-gap: 0.2rem;
+	cursor: pointer;
+	user-select: none;
+	width: max-content;
+	row-gap: 0.5rem;
 }
 
 .dash-faction-name {
-  text-align: center;
-  color: #fff;
-  cursor: pointer;
-  padding-top: 0.5rem;
-  padding-bottom: 0.25rem;
-  font-family: 'orbitron-medium';
-  font-size: 1.6rem;
+	text-align: center;
+	color: #fff;
+	cursor: pointer;
+	padding-top: 0.5rem;
+	padding-bottom: 0.25rem;
+	font-family: 'orbitron-medium';
+	font-size: 1.6rem;
 }
 
 .dash-faction-info {
-  display: flex;
-  flex-direction: row;
-  height: max-content;
-  padding-left: 0.3rem;
-  justify-content: space-around;
+	display: flex;
+	flex-direction: row;
+	height: max-content;
+	padding-left: 0.3rem;
+	justify-content: space-around;
 }
 
 .dash-item.resources {
-    background-image: url(/imperium/img/blank_resources_hex.png);
-    background-size: cover;
-    height: 5rem;
-    width: 5.65rem;
-    font-size: 3.5rem;
+	background-image: url(/imperium/img/blank_resources_hex.png);
+	background-size: cover;
+	height: 5rem;
+	width: 5.65rem;
+	font-size: 3.5rem;
 }
 
 .dash-item.influence {
-    background-image: url("/imperium/img/blank_influence_hex.png");
-    background-size: cover;
-    height: 5rem;
-    width: 5.65rem;
-    color: #c16400;
-    font-size: 3.5rem;
+	background-image: url('/imperium/img/blank_influence_hex.png');
+	background-size: cover;
+	height: 5rem;
+	width: 5.65rem;
+	color: #c16400;
+	font-size: 3.5rem;
 }
 
 .dash-item.trade {
-  display: flex;
-  position: relative;
-  height: 5rem;
-  width: 5.65rem;
-  font-size: 5rem;
-  padding-left: 0.4rem;
-  z-index: 1001;
+	display: flex;
+	position: relative;
+	height: 5rem;
+	width: 5.65rem;
+	font-size: 5rem;
+	padding-left: 0.4rem;
+	z-index: 1001;
 }
 
 .dash-item .avail {
-  transform: translateY(-0.2em);
-  display: inline-block;
-  color: white;
+	transform: translateY(-0.2em);
+	display: inline-block;
+	color: white;
 }
 
-.dash-item .total, .dash-item .limit {
-  transform: translateY(0.2em);
-  display: none;
-  opacity: 0.7;
+.dash-item .total,
+.dash-item .limit {
+	transform: translateY(0.2em);
+	display: none;
+	opacity: 0.7;
 }
 
 .dash-item-goods {
-    position: relative;
-    top: -2.2rem;
-    left: -3.5rem;
-    font-size: 4rem;
+	position: relative;
+	top: -2.2rem;
+	left: -3.5rem;
+	font-size: 4rem;
 }
 
 .dash-faction-base {
-  background-color: #000;
-  opacity: 0.95;
-  color: white;
-  text-weight: bold;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+	background-color: #000;
+	opacity: 0.95;
+	color: white;
+	text-weight: bold;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
 }
 
 .speaker {
-  background-color: red;
-  color: white;
-  font-size:1.6rem;
-  font-weight: bold;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'bank-gothic';
-  letter-spacing: 0.1rem;
-  padding-bottom: 0.5rem;
-  padding-top: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+	background-color: red;
+	color: white;
+	font-size: 1.6rem;
+	font-weight: bold;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'bank-gothic';
+	letter-spacing: 0.1rem;
+	padding-bottom: 0.5rem;
+	padding-top: 0.5rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 .dash-faction-status {
-  border: 1px solid #c16400;
-  background-color: green;
-  height: 1rem;
-  width: 2rem;
-  margin-right: 0.5rem;
-  margin-left: 0.5rem;
-  margin-top: 0.5rem;
-  float: left;
+	border: 1px solid #c16400;
+	background-color: green;
+	height: 1rem;
+	width: 2rem;
+	margin-right: 0.5rem;
+	margin-left: 0.5rem;
+	margin-top: 0.5rem;
+	float: left;
 }
 
 .dash-faction-status-text {
-  padding-top: 0.25rem;
-  font-family: 'orbitron-medium';
-  letter-spacing: 0.1rem;
-  width: 20rem;
-  font-size: 1.4rem;
+	padding-top: 0.25rem;
+	font-family: 'orbitron-medium';
+	letter-spacing: 0.1rem;
+	width: 20rem;
+	font-size: 1.4rem;
 }
-
-
-
-
-
-
-
-
-
 
 .dash-faction-agenda {
-  font-weight: bold;
-  font-size: 4em;
-  color: white;
-  background: #0004;
-  text-align: center;
+	font-weight: bold;
+	font-size: 4em;
+	color: white;
+	background: #0004;
+	text-align: center;
 }
 
-
-
 .dash-item {
-  width: 3em;
-  line-height: 1.9em;
-  text-align: center;
-  font-size: 1.5em;
-  text-shadow: 2px 2px #000A;
+	width: 3em;
+	line-height: 1.9em;
+	text-align: center;
+	font-size: 1.5em;
+	text-shadow: 2px 2px #000a;
 }
 
 .dash-faction-action {
-  text-align: center;
-  font-size: large;
-  color: #fff;
+	text-align: center;
+	font-size: large;
+	color: #fff;
 }
 
 .dash-item {
-  color: #fff;
-  position: relative;
+	color: #fff;
+	position: relative;
 }
-

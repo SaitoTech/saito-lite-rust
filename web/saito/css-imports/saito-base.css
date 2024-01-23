@@ -8,30 +8,32 @@
 @custom-media --breakpoint-md (max-width: 590px);
 @custom-media --breakpoint-sm (max-width: 375px); */
 
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 :root {
-  font-size: 10px;
+	font-size: 10px;
 }
 
 body {
-  line-height: 1.2;
-  color: var(--saito-font-color);
-  font-family: var(--saito-font);
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: 400;
-  position: fixed; /* why relative? */
-  height: calc(var(--saito-vh) * 100);
-  width: 100vw;
-  max-height: -webkit-fill-available;
-  max-width: -webkit-fill-available;
-  overflow: hidden;
-  background-color: var(--saito-background-color);
+	line-height: 1.2;
+	color: var(--saito-font-color);
+	font-family: var(--saito-font);
+	margin: 0;
+	font-size: 1.6rem;
+	font-weight: 400;
+	position: fixed; /* why relative? */
+	height: calc(var(--saito-vh) * 100);
+	width: 100vw;
+	max-height: -webkit-fill-available;
+	max-width: -webkit-fill-available;
+	overflow: hidden;
+	background-color: var(--saito-background-color);
 }
 
 /* ----------------------------------------------------------------
@@ -39,56 +41,61 @@ body {
 -----------------------------------------------------------------*/
 
 a {
-  text-decoration: none;
-  cursor: pointer;
-  color: var(--saito-primary);
+	text-decoration: none;
+	cursor: pointer;
+	color: var(--saito-primary);
 }
 
 a:hover {
-  opacity: 0.8;
+	opacity: 0.8;
 }
 
 /* ----------------------------------------------------------------
 	Headings
 -----------------------------------------------------------------*/
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: normal;
-  cursor: default; /* We don't want the text cursor on headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: normal;
+	cursor: default; /* We don't want the text cursor on headers */
 }
 
 h1 {
-  font-size: 5rem;
+	font-size: 5rem;
 }
 
 h2 {
-  font-size: 4.5rem;
+	font-size: 4.5rem;
 }
 
 h3 {
-  font-size: 4rem;
+	font-size: 4rem;
 }
 
 h4 {
-  font-size: 3.5rem;
+	font-size: 3.5rem;
 }
 
 h5 {
-  font-size: 2rem;
-  line-height: 3rem;
-  margin-bottom: 1rem;
+	font-size: 2rem;
+	line-height: 3rem;
+	margin-bottom: 1rem;
 }
 
 h6 {
-  font-size: 2rem;
+	font-size: 2rem;
 }
 
 textarea {
-  resize: none;
+	resize: none;
 }
 
 iframe {
-  border: none;
+	border: none;
 }
 
 /* ----------------------------------------------------------------
@@ -96,43 +103,45 @@ iframe {
 -----------------------------------------------------------------*/
 
 p.large {
-  font-size: 2rem;
-  font-weight: bold;
+	font-size: 2rem;
+	font-weight: bold;
 }
 
-p, p.middle {
-  color: var(--saito-font-color);
-  font-size: 1.5rem;
-  overflow: auto;
+p,
+p.middle {
+	color: var(--saito-font-color);
+	font-size: 1.5rem;
+	overflow: auto;
 }
 
 p::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 p.small {
-  font-size: 1.3rem;
+	font-size: 1.3rem;
 }
 
 blockquote {
-  border-color: var(--saito-primary);
-  border-width: 0 0 0 2px;
-  border-style: solid;
-  padding: 0 0 0 0.5rem;
+	border-color: var(--saito-primary);
+	border-width: 0 0 0 2px;
+	border-style: solid;
+	padding: 0 0 0 0.5rem;
 }
 
 /* ----------------------------------------------------------------
 QR Code
 -----------------------------------------------------------------*/
 
-@media screen and (max-width: 600px) {}
+@media screen and (max-width: 600px) {
+}
 
 /* ----------------------------------------------------------------
 Password Font
 -----------------------------------------------------------------*/
 
 .saito-password {
-  font-family: "p-word";
+	font-family: 'p-word';
 }
 
 /* ----------------------------------------------------------------
@@ -140,8 +149,8 @@ Divider
 -----------------------------------------------------------------*/
 
 hr {
-  color: var(--saito-font-color);
-  margin: 2.5rem;
+	color: var(--saito-font-color);
+	margin: 2.5rem;
 }
 
 /*-----------------------------------------------------------------
@@ -149,12 +158,12 @@ Scrollbars
 -----------------------------------------------------------------*/
 
 ::-webkit-scrollbar {
-  width: 0.6rem;
+	width: 0.6rem;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
-  /*
+	background: transparent;
+	/*
   background: linear-gradient(
     90deg,
     transparent 0 45%,
@@ -165,152 +174,150 @@ Scrollbars
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--saito-primary);
-  border-radius: 1rem;
+	background-color: var(--saito-primary);
+	border-radius: 1rem;
 }
 
 /* utils */
 
 .left-align {
-  text-align: left;
+	text-align: left;
 }
 
 .center-align {
-  text-align: center;
+	text-align: center;
 }
 
 .right-align {
-  text-align: right;
+	text-align: right;
 }
 
 .saito-deemphasize {
-  opacity: 0.66;
+	opacity: 0.66;
 }
-
 
 .saito-address {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: inline-block !important;
-  width: auto;
-  max-width: 99%;
-  cursor: pointer;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	display: inline-block !important;
+	width: auto;
+	max-width: 99%;
+	cursor: pointer;
 }
 
-
 .tip:hover .tiptext {
-  visibility: visible;
+	visibility: visible;
 }
 
 .tiptext {
-  visibility: hidden;
-  position: absolute;
-  box-sizing: content-box !important;
-  z-index: 10;
-  width: 90%;
-  min-width: 300px;
-  max-width: 750px;
-  padding: 1em;
-  background-color: var(--saito-background-color);
-  border-left: 2px solid var(--saito-primary);
-  font-style: italic;
-  font-size: smaller;
-  border-radius: 0 0.5rem 0.5rem 0;
-  line-height: 2rem;
+	visibility: hidden;
+	position: absolute;
+	box-sizing: content-box !important;
+	z-index: 10;
+	width: 90%;
+	min-width: 300px;
+	max-width: 750px;
+	padding: 1em;
+	background-color: var(--saito-background-color);
+	border-left: 2px solid var(--saito-primary);
+	font-style: italic;
+	font-size: smaller;
+	border-radius: 0 0.5rem 0.5rem 0;
+	line-height: 2rem;
 }
 
 .hidden {
-  display: none;
+	display: none;
 }
 
 #message-wrapper {
-  border: 2px solid var(--saito-primary);
-  min-width: 500px;
-  max-width: 100vw;
-  padding: 3rem;
-  font-size: 2rem;
-  background: var(--saito-primary);
-  position: fixed;
-  bottom: 5rem;
-  left: 5rem;
-  z-index: 200;
+	border: 2px solid var(--saito-primary);
+	min-width: 500px;
+	max-width: 100vw;
+	padding: 3rem;
+	font-size: 2rem;
+	background: var(--saito-primary);
+	position: fixed;
+	bottom: 5rem;
+	left: 5rem;
+	z-index: 200;
 }
 
 .message-message {
-  font-size: 2rem;
-  color: var(--saito-white);
-  cursor: default;
+	font-size: 2rem;
+	color: var(--saito-white);
+	cursor: default;
 }
 
-.message-clickable, .message-clickable .message-message{
-  cursor: pointer;
+.message-clickable,
+.message-clickable .message-message {
+	cursor: pointer;
 }
-
 
 /* ----------------------------------------------------------------
  Scrollbars 
 ----------------------------------------------------------------- */
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-  overflow-y: auto;
-  overflow-x: auto;
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+	overflow-y: auto;
+	overflow-x: auto;
 }
-
 
 /* ----------------------------------------------------------------
 Media Queries
 -----------------------------------------------------------------*/
 
 @media screen and (max-width: 768px) {
-  body {
-    font-size: 1.45rem;
-  }
-  h1 {
-    font-size: 4.5rem;
-  }
-  h2 {
-    font-size: 4rem;
-  }
-  h3 {
-    font-size: 3.5rem;
-  }
-  h4 {
-    font-size: 3rem;
-  }
-  h5 {
-    font-size: 2.5rem;
-  }
-  h6 {
-    font-size: 2rem;
-  }
-  p.large {
-    font-size: 1.8rem;
-  }
-  p, p.middle {
-    font-size: 1.4rem;
-  }
-  p.small {
-    font-size: 1.1rem;
-  }
-  #message-wrapper {
-    width: 100vw;
-    min-width: unset;
-    position: absolute;
-    padding: 2rem;
-    bottom: 0;
-    left: 0;
-  }
+	body {
+		font-size: 1.45rem;
+	}
+	h1 {
+		font-size: 4.5rem;
+	}
+	h2 {
+		font-size: 4rem;
+	}
+	h3 {
+		font-size: 3.5rem;
+	}
+	h4 {
+		font-size: 3rem;
+	}
+	h5 {
+		font-size: 2.5rem;
+	}
+	h6 {
+		font-size: 2rem;
+	}
+	p.large {
+		font-size: 1.8rem;
+	}
+	p,
+	p.middle {
+		font-size: 1.4rem;
+	}
+	p.small {
+		font-size: 1.1rem;
+	}
+	#message-wrapper {
+		width: 100vw;
+		min-width: unset;
+		position: absolute;
+		padding: 2rem;
+		bottom: 0;
+		left: 0;
+	}
 }
 
 @media screen and (max-width: 375px) {
-  body {
-    font-size: 1.4rem;
-  }
+	body {
+		font-size: 1.4rem;
+	}
 }

@@ -1,4 +1,3 @@
-
 # FullCalendar Moment Timezone Plugin
 
 A connector to the moment-timezone library

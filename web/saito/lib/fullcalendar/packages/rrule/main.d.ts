@@ -3,7 +3,6 @@
 //   ../../../../../@fullcalendar/core
 
 declare module '@fullcalendar/rrule' {
-    const _default: import("@fullcalendar/core").PluginDef;
-    export default _default;
+	const _default: import('@fullcalendar/core').PluginDef;
+	export default _default;
 }
-

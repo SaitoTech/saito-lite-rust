@@ -1,0 +1,20 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Matches multiple files with brace expansion notation
+[*.{js,ts,jsx,tsx}]
+charset = utf-8
+indent_style = tab
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Specific settings for JavaScript and TypeScript files
+[*.{js,ts}]
+quote_type = double
+
+# Ensure newline at the end of files
+[*]
+insert_final_newline = true

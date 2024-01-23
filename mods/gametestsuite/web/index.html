@@ -1,61 +1,125 @@
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="" />
+		<meta name="author" content="" />
 
-    <title>Saito Game Engine - Test Suite Application</title>
+		<title>Saito Game Engine - Test Suite Application</title>
 
-    <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
-    <link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
-    <script type="text/javascript" src="/saito/lib/jquery/jquery-ui.min.js"></script>
+		<script
+			type="text/javascript"
+			src="/saito/lib/jquery/jquery-3.2.1.min.js"
+		></script>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/jquery/jquery-ui.min.css"
+			type="text/css"
+			media="screen"
+		/>
+		<script
+			type="text/javascript"
+			src="/saito/lib/jquery/jquery-ui.min.js"
+		></script>
 
-    <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/fontawesome.min.css"
+			type="text/css"
+			media="screen"
+		/>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/all.css"
+			type="text/css"
+			media="screen"
+		/>
 
-    <link rel="stylesheet" type="text/css" href="/saito/style.css" />
-    <link rel="stylesheet" type="text/css" href="/saito/lib/templates/game.css" />
-    <link rel="stylesheet" type="text/css" href="/gametestsuite/style.css" />
+		<link rel="stylesheet" type="text/css" href="/saito/style.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/saito/lib/templates/game.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/gametestsuite/style.css"
+		/>
 
-    <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
+		<link
+			rel="icon"
+			media="all"
+			type="image/x-icon"
+			href="/favicon.ico?v=2"
+		/>
+	</head>
 
-  </head>
+	<body>
+		<div class="main" id="main" style="display: all">
+			<div class="gameboard" id="gameboard">
+				<div class="test-buttons">
+					<div>
+						<h2>Interfaces</h2>
+						<div class="button add_menu" id="add_menu_button">
+							Toggle Menu
+						</div>
+						<div
+							class="button display_overlay"
+							id="display_overlay_button"
+						>
+							Display Overlay
+						</div>
+					</div>
 
-  <body>
+					<div>
+						<h2>Dice and Decks</h2>
+						<div
+							class="button deal_cards_to_pile"
+							id="deal_cards_to_player_button"
+						>
+							Deal Cards to Players
+						</div>
+						<div
+							class="button deal_cards_to_table"
+							id="deal_cards_to_table_button"
+						>
+							Deal Cards to Table
+						</div>
+						<div
+							class="button shuffle_cards"
+							id="shuffle_deck_button"
+						>
+							Shuffle Deck
+						</div>
+						<div
+							class="button insecure_dice_roll"
+							id="insecure_dice_roll_button"
+						>
+							Roll Dice Non-Securely
+						</div>
+						<div
+							class="button secure_dice_roll"
+							id="secure_dice_roll_button"
+						>
+							Roll Dice Securely
+						</div>
+					</div>
 
-    <div class="main" id="main" style="display:all">
-
-      <div class="gameboard" id="gameboard">
-      	<div class="test-buttons">
-        <div>
-        	<h2>Interfaces</h2>
-          <div class="button add_menu" id="add_menu_button">Toggle Menu</div>
-          <div class="button display_overlay" id="display_overlay_button">Display Overlay</div>
-        </div>
-
-        <div>
-        	<h2>Dice and Decks</h2>
-          <div class="button deal_cards_to_pile" id="deal_cards_to_player_button">Deal Cards to Players</div>
-        	<div class="button deal_cards_to_table" id="deal_cards_to_table_button">Deal Cards to Table</div>
-        	<div class="button shuffle_cards" id="shuffle_deck_button">Shuffle Deck</div>
-        	<div class="button insecure_dice_roll" id="insecure_dice_roll_button">Roll Dice Non-Securely</div>
-        	<div class="button secure_dice_roll" id="secure_dice_roll_button">Roll Dice Securely</div>
-        </div>
-
-        <!--div>
+					<!--div>
         	<h2>Players and Turns</h2>
           <div class="button consecutive_moves" id="consecutive_moves_button">Trigger Consecutive Moves</div>
           <div class="button simultaneous_moves" id="simultaneous_moves_button">Trigger Simultaneous Moves</div>
           <div class="button simultaneous_pick" id="simultaneous_pick_button">Trigger Simultaneous Reveal</div>
         </div-->
-      	</div>
-    	</div>
-
-      </div>
-    </div>
-    <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
-  </body>
+				</div>
+			</div>
+		</div>
+		<script
+			id="saito"
+			type="text/javascript"
+			src="/saito/saito.js"
+		></script>
+	</body>
 </html>
-

@@ -1,99 +1,97 @@
 .saito-loader {
-    /* border struggles with overlay 8?
+	/* border struggles with overlay 8?
 /*  border: 1px solid aqua; */
-    position: relative;
-    width: 100%;
+	position: relative;
+	width: 100%;
 }
 
 .saito-loader::after {
-    background-color: var(--saito-primary);
-    background-image: url(/saito/img/saito-loader.svg);
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    animation-duration: 2s;
-    animation-name: loader-pulse;
-    animation-iteration-count: infinite;
-    position: relative;
+	background-color: var(--saito-primary);
+	background-image: url(/saito/img/saito-loader.svg);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center;
+	animation-duration: 2s;
+	animation-name: loader-pulse;
+	animation-iteration-count: infinite;
+	position: relative;
 
-    width: 70px;
-    height: 70px;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    content: "";
-    display: block;
-    transform-origin: 50%, 50%;
+	width: 70px;
+	height: 70px;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	content: '';
+	display: block;
+	transform-origin: 50%, 50%;
 }
 
 @keyframes loader-pulse {
-    0% {
-        transform: translate(-50%, -50%) scale(0.2);
-        border-radius: 50%;
-        background-size: 0px;
-    }
+	0% {
+		transform: translate(-50%, -50%) scale(0.2);
+		border-radius: 50%;
+		background-size: 0px;
+	}
 
-    40% {
-        transform: translate(-50%, -50%) scale(1);
-        background-size: 50px;
-        border-radius: 5%;
-    }
+	40% {
+		transform: translate(-50%, -50%) scale(1);
+		background-size: 50px;
+		border-radius: 5%;
+	}
 
+	60% {
+		transform: translate(-50%, -50%) scale(1);
+		background-size: 50px;
+		border-radius: 5%;
+	}
 
-    60% {
-        transform: translate(-50%, -50%) scale(1);
-        background-size: 50px;
-        border-radius: 5%;
-    }
-
-    100% {
-        transform: translate(-50%, -50%) scale(0.2);
-        border-radius: 50%;
-        background-size: 0px;
-    }
+	100% {
+		transform: translate(-50%, -50%) scale(0.2);
+		border-radius: 50%;
+		background-size: 0px;
+	}
 }
 
 .saito-loader-container.blocker {
-  height: 100vh; 
-  width: 100vw; 
-  position: fixed;  
-  z-index: 150;  
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: none;
+	height: 100vh;
+	width: 100vw;
+	position: fixed;
+	z-index: 150;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: none;
 }
 
 .saito-loader-container.non-blocker {
-    z-index: 20;
-    margin-top: 7rem;
+	z-index: 20;
+	margin-top: 7rem;
 }
 
-.game-loader-container{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
+.game-loader-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .game-loader-spinner {
-  margin: auto;
-  border: 16px solid var(--saito-skyline-grey);
-  border-top: 16px solid var(--saito-red);
-  border: 16px solid var(--saito-primary);
-  border-top: 16px solid var(--saito-white);
+	margin: auto;
+	border: 16px solid var(--saito-skyline-grey);
+	border-top: 16px solid var(--saito-red);
+	border: 16px solid var(--saito-primary);
+	border-top: 16px solid var(--saito-white);
 
-  border-radius: 50%;
-  animation: spin 1.5s linear infinite;
-  width: 5em;
-  height: 5em;
-  margin-top: 3rem;
+	border-radius: 50%;
+	animation: spin 1.5s linear infinite;
+	width: 5em;
+	height: 5em;
+	margin-top: 3rem;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(720deg);
-  }
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(720deg);
+	}
 }

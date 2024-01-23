@@ -1,6 +1,5 @@
 module.exports = () => {
-
-  let html =  `
+	let html = `
         <div class="overlay-input">
 
           <label for="deck">Deck:</label>
@@ -10,6 +9,5 @@ module.exports = () => {
           </select>
         </div>
           `;
-    return html;
-
-}
+	return html;
+};

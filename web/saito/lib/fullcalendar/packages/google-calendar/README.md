@@ -1,4 +1,3 @@
-
 # FullCalendar Google Calendar Plugin
 
 Fetch events from a public Google Calendar feed

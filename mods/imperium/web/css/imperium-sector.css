@@ -1,57 +1,50 @@
-
 .sector-overlay {
-    height: min-content;
-    width: min-content;
-    max-width: 1000px;
-    max-height: 85vh;
-    min-width: 400px;
-    background-image: url(/imperium/img/backgrounds/sector-background.jpg);
-    background-size: cover;
-    padding: 2rem;
-    color: white;
-    border: 1px solid #FFF8;
-    border-radius: 0.5rem;
+	height: min-content;
+	width: min-content;
+	max-width: 1000px;
+	max-height: 85vh;
+	min-width: 400px;
+	background-image: url(/imperium/img/backgrounds/sector-background.jpg);
+	background-size: cover;
+	padding: 2rem;
+	color: white;
+	border: 1px solid #fff8;
+	border-radius: 0.5rem;
 }
 
 .sector-overlay .name {
-    font-size: 3rem;
-    width: max-content;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 1rem;
+	font-size: 3rem;
+	width: max-content;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1rem;
 }
 
 .sector-overlay .fleet {
-    width: max-content;
-    margin-left: auto;
-    margin-right: auto;
+	width: max-content;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .sector-overlay .planet-grid {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
 }
 
 .sector-overlay .planet-grid .planet {
-  text-align: center;
-  height: auto;
-  width: auto;
-  padding: 1rem;
-  position: unset;
-  background: transparent;
+	text-align: center;
+	height: auto;
+	width: auto;
+	padding: 1rem;
+	position: unset;
+	background: transparent;
 }
 
 .sector-overlay .planet-grid .system_summary_content {
-  padding-bottom: 1rem;
-  padding-top: 1rem;
+	padding-bottom: 1rem;
+	padding-top: 1rem;
 }
 
 .sector-overlay .planet-grid .planet-card {
-
 }
-
-
-
-
-

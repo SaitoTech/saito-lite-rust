@@ -1,5 +1,5 @@
 module.exports = (app, mod) => {
-    return `
+	return `
         <div class="saito-gif-container">
            <div  class="saito-gif-search">
             <input placeholder="Search For Gif" type="text" />
@@ -9,5 +9,5 @@ module.exports = (app, mod) => {
 
             </div>
         </div>
-    `
-}
+    `;
+};

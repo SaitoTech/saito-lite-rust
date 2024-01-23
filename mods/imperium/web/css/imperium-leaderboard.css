@@ -1,18 +1,16 @@
-
 .leaderboard {
-  position: absolute;
-  bottom: 0;
-  left: -158px;
-  width: 200px;
-  transition: all 500ms;
-  z-index: 9;
+	position: absolute;
+	bottom: 0;
+	left: -158px;
+	width: 200px;
+	transition: all 500ms;
+	z-index: 9;
 }
 
 .leaderboard:hover {
-  left: 0;
+	left: 0;
 }
 
 .leaderboard-lock {
-  left: 0;
+	left: 0;
 }
-

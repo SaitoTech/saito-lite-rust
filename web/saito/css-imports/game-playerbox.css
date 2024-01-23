@@ -1,38 +1,37 @@
-
 .game-playerbox-manager {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    position: absolute;
-    top: 6rem;
-    right: 3rem;
+	display: flex;
+	flex-direction: column;
+	gap: 3rem;
+	position: absolute;
+	top: 6rem;
+	right: 3rem;
 }
 
-.game-playerbox-manager.reverse{
-  flex-direction: column-reverse;
+.game-playerbox-manager.reverse {
+	flex-direction: column-reverse;
 }
 
 .game-playerbox-manager.game-playerbox-seat-manager {
-   position: absolute;
-   display: block;
-   top: unset;
-   right: unset;
-   height: 100vh;
-   width: 100vw;
+	position: absolute;
+	display: block;
+	top: unset;
+	right: unset;
+	height: 100vh;
+	width: 100vw;
 }
 
 .game-playerbox {
-    padding: 1rem;
-    z-index: 3;
-    max-width: 25vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
+	padding: 1rem;
+	z-index: 3;
+	max-width: 25vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
 }
 
 .game-playerbox.active {
-    border: 1px solid white;
+	border: 1px solid white;
 }
 .game-playerbox.flash {
 }
@@ -40,131 +39,127 @@
 }
 
 .game-playerbox-head {
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
+	width: 100%;
+	display: inline-flex;
+	align-items: center;
+	cursor: pointer;
 }
 
 .game-playerbox-body {
-    width: 100%;
-    padding: 0rem;
-    margin-top: 0.5rem;
-    line-height: 2.3rem;
-    font-size: 1.6rem;
-    flex-grow: 1;
+	width: 100%;
+	padding: 0rem;
+	margin-top: 0.5rem;
+	line-height: 2.3rem;
+	font-size: 1.6rem;
+	flex-grow: 1;
 }
 
 .game-playerbox-graphics {
-  display: none;
-  position: absolute;
+	display: none;
+	position: absolute;
 }
 
 .game-playerbox-icons {
-    top: 0rem;
-    right: 0rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    grid-row: 1 / span 2;
-    grid-column: 3;
+	top: 0rem;
+	right: 0rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	grid-row: 1 / span 2;
+	grid-column: 3;
 }
 
-.game-playerbox-head .saito-user>.saito-address , .game-playerbox-head .saito-user>.saito-userline {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+.game-playerbox-head .saito-user > .saito-address,
+.game-playerbox-head .saito-user > .saito-userline {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
 }
-  
+
 .game-playerbox-seat-8 {
-  position: absolute;
-  bottom: 1vh;
-  left: 1rem;
-} 
+	position: absolute;
+	bottom: 1vh;
+	left: 1rem;
+}
 
 .game-playerbox-seat-7 {
-  position: absolute;
-  bottom: 1vh;
-  right: 1rem;
+	position: absolute;
+	bottom: 1vh;
+	right: 1rem;
 }
 
 .game-playerbox-seat-6 {
-  position: absolute;
-  left: 1rem;
-  top: 45vh;
-  transform: translateY(-50%);
+	position: absolute;
+	left: 1rem;
+	top: 45vh;
+	transform: translateY(-50%);
 }
-  
+
 .game-playerbox-seat-5 {
-  position: absolute;
-  left: 1rem;
-  top: 20vh;
-  transform: translateY(-50%);
+	position: absolute;
+	left: 1rem;
+	top: 20vh;
+	transform: translateY(-50%);
 }
 
 .game-playerbox-seat-4 {
-  position: absolute;
-  left: 50vw;
-  top: 40px;
-  transform: translateX(-50%);
+	position: absolute;
+	left: 50vw;
+	top: 40px;
+	transform: translateX(-50%);
 }
 
 .game-playerbox-seat-3 {
-  position: absolute;
-  right: 1rem;
-  top: 20vh;
-  transform: translateY(-50%);
+	position: absolute;
+	right: 1rem;
+	top: 20vh;
+	transform: translateY(-50%);
 }
 
 .game-playerbox-seat-2 {
-  position: absolute;
-  right: 1rem;
-  top: 45vh;
-  transform: translateY(-50%);
+	position: absolute;
+	right: 1rem;
+	top: 45vh;
+	transform: translateY(-50%);
 }
 
 .game-playerbox-seat-1 {
-  position: absolute;
-  min-width: 30vh;
-  max-height: 32vh;
-  left: 50vw;
-  transform: translateX(-50%);
-  width: 16vw;
-  bottom: 0px;
-  margin-bottom: 2rem;
+	position: absolute;
+	min-width: 30vh;
+	max-height: 32vh;
+	left: 50vw;
+	transform: translateX(-50%);
+	width: 16vw;
+	bottom: 0px;
+	margin-bottom: 2rem;
 }
-
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
+	.game-playerbox-manager {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: max-content;
+		justify-content: space-between;
+		bottom: 1rem;
+		top: unset;
+		right: 2rem;
+		gap: 2rem;
+		position: absolute;
+		height: max-content;
+	}
 
-  .game-playerbox-manager {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: max-content;
-    justify-content: space-between;
-    bottom: 1rem;
-    top: unset;
-    right: 2rem;
-    gap: 2rem;
-    position: absolute;
-    height: max-content;
-  }
+	.game-playerbox {
+		max-width: 50vw;
+		min-width: unset;
+	}
 
-  .game-playerbox {
-    max-width: 50vw;
-    min-width: unset;
-  }
+	.game-playerbox-seat-3 {
+		right: 0;
+	}
 
-  .game-playerbox-seat-3{
-    right: 0;
-  }
-
-  .game-playerbox-seat-5{
-    left: 0;
-  }
+	.game-playerbox-seat-5 {
+		left: 0;
+	}
 }
-
-
-

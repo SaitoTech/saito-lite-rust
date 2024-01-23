@@ -24,167 +24,166 @@
  *        ul li.option
  *     .status-overlay
  *
-***/        
+***/
 
 .hud {
-  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  position: absolute;
-  width: max-content;
-  max-width: 100vw;
-  left: 0;
-  bottom: 0;
-  float: none;
-  z-index: 40;
-  font-size: 1.6rem;
-  border-bottom: 0px;
+	font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
+	position: absolute;
+	width: max-content;
+	max-width: 100vw;
+	left: 0;
+	bottom: 0;
+	float: none;
+	z-index: 40;
+	font-size: 1.6rem;
+	border-bottom: 0px;
 }
 
 .hud-square {
-  height: 410px;
-  min-height: 410px;
-  width: 510px;
-  min-width: 510px;
-  max-width: 9.1em;
+	height: 410px;
+	min-height: 410px;
+	width: 510px;
+	min-width: 510px;
+	max-width: 9.1em;
 }
 
 .hud-vertical {
-  width: 280px;
-  max-width: 300px;
-  height: 100%;
-  max-height: 100vh;
-  top: 0px;
-  left: 0px;
-  margin-top: 45px;
-  padding: 0 5px 5px 5px;
+	width: 280px;
+	max-width: 300px;
+	height: 100%;
+	max-height: 100vh;
+	top: 0px;
+	left: 0px;
+	margin-top: 45px;
+	padding: 0 5px 5px 5px;
 }
 
 .hud-long {
-  width: max-content;
-  max-width: calc(100vw - 1rem);
-  height: 280px;
-  max-height: 280px;
-  padding: 0 5px 10px 5px;
-  left: 50%;
-  transform: translateX(-50%);
+	width: max-content;
+	max-width: calc(100vw - 1rem);
+	height: 280px;
+	max-height: 280px;
+	padding: 0 5px 10px 5px;
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 .hud-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 20px;
-  cursor: move;
-  background-color: transparent;
-  grid-template-columns: repeat(auto-fit,minmax(10vw,1fr));
-  margin: 0 0 5px 0;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	height: 20px;
+	cursor: move;
+	background-color: transparent;
+	grid-template-columns: repeat(auto-fit, minmax(10vw, 1fr));
+	margin: 0 0 5px 0;
 }
 
 .hud-body {
-  width: max-content;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 100vw;
-  height: calc(100% - 20px); /*hud-header = 20px*/
-  background-color: transparent;
-  overflow-y: clip;
+	width: max-content;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 100vw;
+	height: calc(100% - 20px); /*hud-header = 20px*/
+	background-color: transparent;
+	overflow-y: clip;
 }
 
 .hud-body > li {
-    list-style: none;
+	list-style: none;
 }
 
 .status {
-    border-radius: unset;
-    position: relative;
-    font-size: 1.6rem;
-    justify-content: space-around;
-    height: min-content;
-    min-height: fit-content;
-    text-align: center;
+	border-radius: unset;
+	position: relative;
+	font-size: 1.6rem;
+	justify-content: space-around;
+	height: min-content;
+	min-height: fit-content;
+	text-align: center;
 }
-
 
 .hud-body .status {
-    background-color: whitesmoke;
-    width: 500px;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
-    padding-top: 0.9rem;
-    padding-bottom: 0.9rem;
+	background-color: whitesmoke;
+	width: 500px;
+	max-width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+	padding-top: 0.9rem;
+	padding-bottom: 0.9rem;
 }
-
 
 .hud-body .status .back-button {
-    padding: 1rem;
-    font-size: 1.85rem;
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    cursor: pointer;
+	padding: 1rem;
+	font-size: 1.85rem;
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	cursor: pointer;
 }
 
-.hud-body .status .back-button:hover{
-    transform: scale(1.3);
+.hud-body .status .back-button:hover {
+	transform: scale(1.3);
 }
 
 .status-overlay {
-  height: 100%;
-  padding: 5px;
-  text-align: center;
-  position: absolute;
-  width: 100%;
-  top: 0px;
-  left: 0px;
-  display: none;
+	height: 100%;
+	padding: 5px;
+	text-align: center;
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	display: none;
 }
 
 .controls {
-    height: max-content;
-    margin-top: 1rem;
+	height: max-content;
+	margin-top: 1rem;
 }
 
 .controls .game-cardgrid {
-    display: flex;
-    column-gap: 0.5rem;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-    overflow-x: clip;
-    grid-template-columns: repeat(auto-fit, minmax(10vw, 1fr) );
-    user-select: none;
+	display: flex;
+	column-gap: 0.5rem;
+	align-items: center;
+	justify-content: center;
+	overflow-y: auto;
+	overflow-x: clip;
+	grid-template-columns: repeat(auto-fit, minmax(10vw, 1fr));
+	user-select: none;
 }
 
 .controls ul {
-    width: min(500px,100%);
-    margin-left: auto;
-    margin-right: auto;
-    overflow-y: auto;
-    font-size: 1.6rem;
-    display: flex;
-    flex-direction: column;
+	width: min(500px, 100%);
+	margin-left: auto;
+	margin-right: auto;
+	overflow-y: auto;
+	font-size: 1.6rem;
+	display: flex;
+	flex-direction: column;
 }
 
-.controls ul li , .options {
-    background-color: whitesmoke;
-    height: 8rem;
-    border-top: 1px solid var(--saito-border-color);
-    width: 100%;
-    font-size: 1.8rem;
-    display: list-item;
-    list-style: none;
-    cursor: pointer;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.controls ul li,
+.options {
+	background-color: whitesmoke;
+	height: 8rem;
+	border-top: 1px solid var(--saito-border-color);
+	width: 100%;
+	font-size: 1.8rem;
+	display: list-item;
+	list-style: none;
+	cursor: pointer;
+	padding: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.controls ul li:hover , .options {
-   background-color: #e7e7e7;
+.controls ul li:hover,
+.options {
+	background-color: #e7e7e7;
 }
-

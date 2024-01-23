@@ -1,5 +1,5 @@
 module.exports = IndexTemplate = (module_config_filename) => {
-  return `
+	return `
 import { Saito } from '../apps/core/index';
 import mod_paths from './${module_config_filename}';
 
@@ -14,4 +14,4 @@ async function init() {
 
 init();
   `;
-}
+};

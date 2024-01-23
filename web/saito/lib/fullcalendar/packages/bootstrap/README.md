@@ -1,4 +1,3 @@
-
 # FullCalendar Bootstrap Plugin
 
 Bootstrap 4 theming for your calendar

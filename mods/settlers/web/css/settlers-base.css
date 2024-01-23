@@ -1,132 +1,132 @@
 :root {
-  --p1-color: #bb233b; /* redish */
-  --p2-color: #004193; /* bluish */
-  --p3-color: #adce14; /* yellowish */
-  --p4-color: #644700; /* brown */
-  --text-color: #331800;
+	--p1-color: #bb233b; /* redish */
+	--p2-color: #004193; /* bluish */
+	--p3-color: #adce14; /* yellowish */
+	--p4-color: #644700; /* brown */
+	--text-color: #331800;
 
-  --p1-color-lite: #bb233be9; /* redish */
-  --p2-color-lite: #004193e9; /* bluish */
-  --p3-color-lite: #adce14e9; /* yellowish */
-  --p4-color-lite: #644700e9; /* brown */
+	--p1-color-lite: #bb233be9; /* redish */
+	--p2-color-lite: #004193e9; /* bluish */
+	--p3-color-lite: #adce14e9; /* yellowish */
+	--p4-color-lite: #644700e9; /* brown */
 }
 
 .mobile-log-tab {
-  background-color: #d3c38df5;
-  color: #424143;
+	background-color: #d3c38df5;
+	color: #424143;
 }
 
 .player-box {
-  min-height: 0vh;
+	min-height: 0vh;
 }
 
 .cardfan {
-  z-index: 9;
+	z-index: 9;
 }
 
 body {
-  user-select: none;
+	user-select: none;
 }
 
 p {
-  overflow: unset;
+	overflow: unset;
 }
 
 .settlers-user {
-  display: grid;
-  column-gap: 1rem;
-  cursor: pointer;
-  grid-template-columns: min-content 1fr min-content;
-  grid-template-rows: min-content 1fr;
-  justify-items: start;
-  width: 100%;
-  position: relative;
+	display: grid;
+	column-gap: 1rem;
+	cursor: pointer;
+	grid-template-columns: min-content 1fr min-content;
+	grid-template-rows: min-content 1fr;
+	justify-items: start;
+	width: 100%;
+	position: relative;
 }
 
 .settlers-userline > .saito-userline {
-  grid-column-start: 2;
-  grid-column-end: span 1;
-  grid-row-start: 2;
-  grid-row-end: span 1;
-  font-size: 1.4rem;
+	grid-column-start: 2;
+	grid-column-end: span 1;
+	grid-row-start: 2;
+	grid-row-end: span 1;
+	font-size: 1.4rem;
 }
 
 .die_value {
-  font-weight: bold;
+	font-weight: bold;
 }
 
 .tip {
-  width: unset;
+	width: unset;
 }
 
 span.tip {
-  border-bottom: 1px dotted;
-  font-weight: bold;
+	border-bottom: 1px dotted;
+	font-weight: bold;
 }
 
 .tip .tiptext {
-  font-weight: normal;
-  min-width: 100px;
-  width: fit-content;
-  padding: 0.5em 1em;
-  box-sizing: content-box;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 300;
+	font-weight: normal;
+	min-width: 100px;
+	width: fit-content;
+	padding: 0.5em 1em;
+	box-sizing: content-box;
+	white-space: nowrap;
+	pointer-events: none;
+	z-index: 300;
 }
 
 .handy-help {
-  margin: 0 auto;
-  grid-row: span 2;
-  font-size: 22px;
-  padding: 5px;
+	margin: 0 auto;
+	grid-row: span 2;
+	font-size: 22px;
+	padding: 5px;
 }
 
 /* Building costs as cardbox overlay */
 
 .game-cardbox {
-  display: none;
-  width: fit-content;
-  background-color: rgba(245, 245, 245, 0.95);
+	display: none;
+	width: fit-content;
+	background-color: rgba(245, 245, 245, 0.95);
 }
 
 .cardfan {
-  top: 45vh;
-  left: 5vw;
+	top: 45vh;
+	left: 5vw;
 }
 
 .hexIn {
-  overflow: unset;
-  padding-bottom: 113%;
+	overflow: unset;
+	padding-bottom: 113%;
 }
 
 .hexLink {
-  overflow: unset;
-  height: 105%;
+	overflow: unset;
+	height: 105%;
 }
 
 .hex_bg {
-  margin: unset;
-  left: -12.5%;
-  right: -12.5%;
+	margin: unset;
+	left: -12.5%;
+	right: -12.5%;
 }
 
 .hex_bg img {
-  left: -12.5%;
-  right: -12.5%;
+	left: -12.5%;
+	right: -12.5%;
 }
 
 dt {
-  margin-top: 0.8em;
-  margin-bottom: 0.5em;
+	margin-top: 0.8em;
+	margin-bottom: 0.5em;
 }
 
 .saito-address {
-  color: unset;
+	color: unset;
 }
 
 .gameboard.dark {
-  background-color: #369;
+	background-color: #369;
 }
 
 /*Richard background*/
@@ -134,381 +134,382 @@ dt {
 /* !-- background moved to body so board is resizable */
 /* gameboard == ocean, the "board" that gets resized is #hexgrid */
 .gameboard {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transition: background 2s;
-  background: linear-gradient(-75deg, #369, #58b, #58b, #369);
-  background-size: 100% 100%;
-  background-blend-mode: multiply;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	transition: background 2s;
+	background: linear-gradient(-75deg, #369, #58b, #58b, #369);
+	background-size: 100% 100%;
+	background-blend-mode: multiply;
 }
 
 #game-hexgrid {
-  transform-origin: center;
-  z-index: 2;
-  width: 1000px;
-  padding: 10% 5% 15%;
-  /*Creates space for board overflow*/
-  padding: 150px 135px 350px;
-  box-sizing: content-box;
-  border-radius: 400px;
-  cursor: grab;
-  background-color: rgba(200, 200, 240, 0.1);
+	transform-origin: center;
+	z-index: 2;
+	width: 1000px;
+	padding: 10% 5% 15%;
+	/*Creates space for board overflow*/
+	padding: 150px 135px 350px;
+	box-sizing: content-box;
+	border-radius: 400px;
+	cursor: grab;
+	background-color: rgba(200, 200, 240, 0.1);
 }
 
 .player-box {
-  background-color: #444e;
-  z-index: 3;
-  max-width: 25vw;
-  padding: 1rem 2rem !important;
+	background-color: #444e;
+	z-index: 3;
+	max-width: 25vw;
+	padding: 1rem 2rem !important;
 }
 
 .game_board_sizer {
-  z-index: 1000;
+	z-index: 1000;
 }
 
 .plog {
-  flex: 1;
+	flex: 1;
 }
 
 .plog .status-text-menu ul,
 .plog .status-text-menu ul li {
-  background-color: unset;
+	background-color: unset;
 }
 
 .player-box .plog {
-  display: none;
+	display: none;
 }
 
 .plog .status-header {
-  background-color: unset;
-  box-shadow: unset;
+	background-color: unset;
+	box-shadow: unset;
 }
 
 #tradenow {
-  text-align: center;
-  width: 80%;
-  margin: 0 10%;
-  border: 1px silver dashed;
-  cursor: pointer;
-  padding: 0.5em 0;
+	text-align: center;
+	width: 80%;
+	margin: 0 10%;
+	border: 1px silver dashed;
+	cursor: pointer;
+	padding: 0.5em 0;
 }
 
 #tradenow:hover {
-  color: black;
-  background-color: #e7e7e7;
+	color: black;
+	background-color: #e7e7e7;
 }
 
 .status-message {
-  box-shadow: unset !important;
+	box-shadow: unset !important;
 }
 
 /* Make room to display two hands of cards*/
 
 .devcards {
-  top: -2vh;
-  position: absolute;
+	top: -2vh;
+	position: absolute;
 }
 
 .devcards + .rescards {
-  top: 2vh;
-  position: absolute;
+	top: 2vh;
+	position: absolute;
 }
 
 .card .cardtitle {
-  position: absolute;
-  font-family: fantasy;
-  font-size: 1.2em;
-  top: 9.5%;
-  width: 100%;
-  text-align: center;
-  pointer-events: none;
+	position: absolute;
+	font-family: fantasy;
+	font-size: 1.2em;
+	top: 9.5%;
+	width: 100%;
+	text-align: center;
+	pointer-events: none;
 }
 
 .card .cardrules {
-  position: absolute;
-  font-family: fantasy;
-  top: 60%;
-  height: 40%;
-  width: 100%;
-  padding: 5% 10%;
-  pointer-events: none;
+	position: absolute;
+	font-family: fantasy;
+	top: 60%;
+	height: 40%;
+	width: 100%;
+	padding: 5% 10%;
+	pointer-events: none;
 }
 
 .startmove {
-  cursor: pointer;
-  display: inline-block;
-  text-decoration: underline;
+	cursor: pointer;
+	display: inline-block;
+	text-decoration: underline;
 }
 
 .hover {
-  z-index: 1000;
+	z-index: 1000;
 }
 
 .chover:hover,
 .city.chover:hover {
-  /*fill: whitesmoke;
+	/*fill: whitesmoke;
   stroke: whitesmoke;*/
-  background-color: whitesmoke;
-  cursor: pointer;
-  border-color: whitesmoke;
+	background-color: whitesmoke;
+	cursor: pointer;
+	border-color: whitesmoke;
 }
 
 .city.empty.rhover {
-  background-color: rgba(255, 255, 128, 0.95);
-  border: 3px dotted purple;
+	background-color: rgba(255, 255, 128, 0.95);
+	border: 3px dotted purple;
 }
 
 .rhover:hover,
 .city.empty.rhover:hover {
-  border: 1px solid white;
-  background-color: whitesmoke;
-  cursor: pointer;
+	border: 1px solid white;
+	background-color: whitesmoke;
+	cursor: pointer;
 }
 
 .ship {
-  font-size: 2em;
-  overflow-x: visible;
-  white-space: nowrap;
+	font-size: 2em;
+	overflow-x: visible;
+	white-space: nowrap;
 }
 
 .ship > .icon {
-  position: relative;
-  top: -20%;
-  width: 85%;
+	position: relative;
+	top: -20%;
+	width: 85%;
 }
 
 .port {
-  width: 100%;
-  height: 60%;
+	width: 100%;
+	height: 60%;
 }
 
 .port1 {
-  top: -40%;
-  left: 40%;
-  transform: rotate(27.5deg);
+	top: -40%;
+	left: 40%;
+	transform: rotate(27.5deg);
 }
 
 .port2 {
-  top: 20%;
-  left: 85%;
-  transform: rotate(90deg);
+	top: 20%;
+	left: 85%;
+	transform: rotate(90deg);
 }
 
 .port3 {
-  top: 80%;
-  left: 40%;
-  transform: rotate(152.5deg);
+	top: 80%;
+	left: 40%;
+	transform: rotate(152.5deg);
 }
 
 .port4 {
-  top: 80%;
-  right: 40%;
-  transform: rotate(-152.5deg);
+	top: 80%;
+	right: 40%;
+	transform: rotate(-152.5deg);
 }
 
 .port5 {
-  right: 85%;
-  top: 20%;
-  transform: rotate(-90deg);
+	right: 85%;
+	top: 20%;
+	transform: rotate(-90deg);
 }
 
 .port6 {
-  top: -40%;
-  right: 40%;
-  transform: rotate(-28.5deg);
+	top: -40%;
+	right: 40%;
+	transform: rotate(-28.5deg);
 }
 
 .harbor {
-  position: absolute;
-  display: block;
-  width: 45px;
-  height: 12px;
-  background-color: brown;
-  background: linear-gradient(90deg, tan 0%, brown 50%, tan 100%);
-  background-size: 6px 12px;
-  bottom: 15%;
+	position: absolute;
+	display: block;
+	width: 45px;
+	height: 12px;
+	background-color: brown;
+	background: linear-gradient(90deg, tan 0%, brown 50%, tan 100%);
+	background-size: 6px 12px;
+	bottom: 15%;
 }
 
 .rharbor {
-  transform: rotate(55deg);
-  right: 17%;
+	transform: rotate(55deg);
+	right: 17%;
 }
 
 .lharbor {
-  transform: rotate(-55deg);
-  left: 17%;
+	transform: rotate(-55deg);
+	left: 17%;
 }
 
 .road {
-  position: absolute;
-  display: block;
-  width: 65%;
-  height: 14%;
-  background-color: transparent;
-  z-index: 10;
-  border-radius: 10px;
-  transition: background-color 1s;
+	position: absolute;
+	display: block;
+	width: 65%;
+	height: 14%;
+	background-color: transparent;
+	z-index: 10;
+	border-radius: 10px;
+	transition: background-color 1s;
 }
 
 .road:after {
-  top: -66%;
-  left: 0;
-  width: 100%;
-  height: 233%;
-  position: absolute;
-  content: "";
+	top: -66%;
+	left: 0;
+	width: 100%;
+	height: 233%;
+	position: absolute;
+	content: '';
 }
 
 .road5 {
-  transform: rotate(90deg);
-  left: -34%;
-  top: 43%;
-  width: 63%;
+	transform: rotate(90deg);
+	left: -34%;
+	top: 43%;
+	width: 63%;
 }
 
 .road6 {
-  transform: rotate(-30deg);
-  top: 7%;
-  left: -9%;
+	transform: rotate(-30deg);
+	top: 7%;
+	left: -9%;
 }
 
 .road1 {
-  transform: rotate(30deg);
-  right: -8%;
-  top: 7%;
-  width: 62%;
+	transform: rotate(30deg);
+	right: -8%;
+	top: 7%;
+	width: 62%;
 }
 
 .road2 {
-  /* Overlaps with Road5 */
-  transform: rotate(90deg);
-  right: -35%;
-  top: 45%;
+	/* Overlaps with Road5 */
+	transform: rotate(90deg);
+	right: -35%;
+	top: 45%;
 }
 
 .road3 {
-  /* Overlaps with Road6 */
-  transform: rotate(-30deg);
-  bottom: 9%;
-  right: -9%;
+	/* Overlaps with Road6 */
+	transform: rotate(-30deg);
+	bottom: 9%;
+	right: -9%;
 }
 
 .road4 {
-  /* Overlaps with Road1 */
-  transform: rotate(30deg);
-  bottom: 9%;
-  left: -9%;
+	/* Overlaps with Road1 */
+	transform: rotate(30deg);
+	bottom: 9%;
+	left: -9%;
 }
 
 .city {
-  position: absolute;
-  display: block;
-  width: 28%;
-  height: 23%;
-  background-color: transparent;
-  z-index: 12;
-  font-size: 2em;
-  text-align: center;
-  border-radius: 50%;
-  scale: 1.6;
+	position: absolute;
+	display: block;
+	width: 28%;
+	height: 23%;
+	background-color: transparent;
+	z-index: 12;
+	font-size: 2em;
+	text-align: center;
+	border-radius: 50%;
+	scale: 1.6;
 }
 
 .city img,
 .village img {
-  transform: scale(1.4);
-  margin: 0 0 3rem;
-  position: relative;
-  top: -2px;
+	transform: scale(1.4);
+	margin: 0 0 3rem;
+	position: relative;
+	top: -2px;
 }
 
 .city > svg,
 .city > img {
-  width: 93%;
-  padding: 0px;
+	width: 93%;
+	padding: 0px;
 }
 
-.city.empty, .road.empty{
-  transition: unset;
+.city.empty,
+.road.empty {
+	transition: unset;
 }
 
 .player-box {
-  max-width: 80vw;
-  width: unset;
+	max-width: 80vw;
+	width: unset;
 }
 
 .mobile-trading-container .flexline {
-  min-width: 16rem;
+	min-width: 16rem;
 }
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
-  background-color: var(--p1-color);
+	background-color: var(--p1-color);
 }
 
 .p2 {
-  background-color: var(--p2-color);
+	background-color: var(--p2-color);
 }
 
 .p3 {
-  background-color: var(--p3-color);
+	background-color: var(--p3-color);
 }
 
 .p4 {
-  background-color: var(--p4-color);
+	background-color: var(--p4-color);
 }
 
 .display-name {
-  /*text-shadow: 0px 0px 1px ghostwhite, 1px 1px 0 ghostwhite, 1px 0px 0 ghostwhite;*/
-  font-weight: bold;
-  margin-right: 2rem;
+	/*text-shadow: 0px 0px 1px ghostwhite, 1px 1px 0 ghostwhite, 1px 0px 0 ghostwhite;*/
+	font-weight: bold;
+	margin-right: 2rem;
 }
 
 .display-name.p1-lite {
-  color: var(--p1-color);
-  background-color: unset;
+	color: var(--p1-color);
+	background-color: unset;
 }
 
 .display-name.p2-lite {
-  color: var(--p2-color);
-  background-color: unset;
+	color: var(--p2-color);
+	background-color: unset;
 }
 
 .display-name.p3-lite {
-  color: var(--p3-color);
-  background-color: unset;
+	color: var(--p3-color);
+	background-color: unset;
 }
 
 .display-name.p4-lite {
-  color: var(--p4-color);
-  background-color: unset;
+	color: var(--p4-color);
+	background-color: unset;
 }
 
 .game-playerbox .saito-identicon-box {
-  border: 5px solid;
-  width: 4rem;
-  height: 4rem;
+	border: 5px solid;
+	width: 4rem;
+	height: 4rem;
 }
 
 .p1-lite .saito-identicon-box {
-  border-color: var(--p1-color-lite);
+	border-color: var(--p1-color-lite);
 }
 
 .p2-lite .saito-identicon-box {
-  border-color: var(--p2-color-lite);
+	border-color: var(--p2-color-lite);
 }
 
 .p3-lite .saito-identicon-box {
-  border-color: var(--p3-color-lite);
+	border-color: var(--p3-color-lite);
 }
 
 .p4-lite .saito-identicon-box {
-  border-color: var(--p4-color-lite);
+	border-color: var(--p4-color-lite);
 }
 
 .saito-userline {
-  width: 100%;
+	width: 100%;
 }
 
 /*.player-box.c1 .saito-userline, .player-box.c1 .saito-address{
@@ -528,228 +529,228 @@ dt {
 }*/
 
 .player-box.c1 .saito-identicon-box {
-  border: 5px solid var(--p1-color);
+	border: 5px solid var(--p1-color);
 }
 
 .player-box.c2 .saito-identicon-box {
-  border: 5px solid var(--p2-color);
+	border: 5px solid var(--p2-color);
 }
 
 .player-box.c3 .saito-identicon-box {
-  border: 5px solid var(--p3-color);
+	border: 5px solid var(--p3-color);
 }
 
 .player-box.c4 .saito-identicon-box {
-  border: 5px solid var(--p4-color);
+	border: 5px solid var(--p4-color);
 }
 
 .player-box .saito-identicon {
-  width: 100%;
-  height: unset;
+	width: 100%;
+	height: unset;
 }
 
 .popup-confirm-menu .confirm_check {
-  border: 1px gray solid;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+	border: 1px gray solid;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
 }
 
-input[type="checkbox"] {
-  margin: 0;
+input[type='checkbox'] {
+	margin: 0;
 }
 
 .city1 {
-  top: -10%;
-  left: 55%;
-  transform: translate(-50%);
+	top: -10%;
+	left: 55%;
+	transform: translate(-50%);
 }
 
 .city2 {
-  top: 15%;
-  right: -17%;
+	top: 15%;
+	right: -17%;
 }
 
 .city3 {
-  bottom: 15%;
-  right: -17%;
+	bottom: 15%;
+	right: -17%;
 }
 
 .city4 {
-  bottom: -10%;
-  left: 50%;
-  transform: translate(-50%);
+	bottom: -10%;
+	left: 50%;
+	transform: translate(-50%);
 }
 
 .city5 {
-  bottom: 15%;
-  left: -17%;
+	bottom: 15%;
+	left: -17%;
 }
 
 .city6 {
-  top: 15%;
-  left: -17%;
+	top: 15%;
+	left: -17%;
 }
 
 .sector-container {
-  position: absolute;
-  border-radius: 50%;
-  width: 12em;
-  height: 12em;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  cursor: pointer;
+	position: absolute;
+	border-radius: 50%;
+	width: 12em;
+	height: 12em;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	cursor: pointer;
 }
 
 .sector-container.rhover:hover {
-  background: none;
-  border: none;
-  cursor: pointer;
+	background: none;
+	border: none;
+	cursor: pointer;
 }
 
 .sector-container.rhover:hover .sector_value {
-  border: 1px solid white;
-  background-color: whitesmoke;
-  cursor: pointer;
+	border: 1px solid white;
+	background-color: whitesmoke;
+	cursor: pointer;
 }
 
 .sector_value {
-  position: absolute;
-  font-size: 2.5em;
-  z-index: 15;
-  font-weight: bold;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  width: 2em;
-  height: 2em;
-  line-height: 2em;
-  text-align: center;
-  background: #6664;
-  color: white;
+	position: absolute;
+	font-size: 2.5em;
+	z-index: 15;
+	font-weight: bold;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	width: 2em;
+	height: 2em;
+	line-height: 2em;
+	text-align: center;
+	background: #6664;
+	color: white;
 }
 
 .sector_value.rolled {
-  box-shadow: 0 0 10px 5px ghostwhite;
+	box-shadow: 0 0 10px 5px ghostwhite;
 }
 
 .bandit {
-  color: #fff9;
-  background-image: url(/settlers/img/icons/bandit.png);
-  background-size: cover;
-  overflow: visible;
-  border: none;
-  width: 50%;
-  height: 40%;
-  box-shadow: 0 0 32px 32px #000b;
-  background-color: #000b;
+	color: #fff9;
+	background-image: url(/settlers/img/icons/bandit.png);
+	background-size: cover;
+	overflow: visible;
+	border: none;
+	width: 50%;
+	height: 40%;
+	box-shadow: 0 0 32px 32px #000b;
+	background-color: #000b;
 }
 
 .bandit .hexTileCenter {
-  opacity: 0.5;
+	opacity: 0.5;
 }
 
 .city.p1 {
-  border: 10px solid var(--p1-color);
-  color: var(--p1-color);
+	border: 10px solid var(--p1-color);
+	color: var(--p1-color);
 }
 
 .city.p2 {
-  border: 10px solid var(--p2-color);
-  color: var(--p2-color);
+	border: 10px solid var(--p2-color);
+	color: var(--p2-color);
 }
 
 .city.p3 {
-  border: 10px solid var(--p3-color);
-  color: var(--p3-color);
+	border: 10px solid var(--p3-color);
+	color: var(--p3-color);
 }
 
 .city.p4 {
-  border: 10px solid var(--p4-color);
-  color: var(--p4-color);
+	border: 10px solid var(--p4-color);
+	color: var(--p4-color);
 }
 
 /* Disable resource selection in trade overlays */
 
 .noselect .icon {
-  filter: grayscale(100%) brightness(0.55);
-  cursor: default;
+	filter: grayscale(100%) brightness(0.55);
+	cursor: default;
 }
 
 .option.noselect {
-  font-style: italic;
-  color: lightgrey;
+	font-style: italic;
+	color: lightgrey;
 }
 
 .icon_multiplier {
-  position: absolute;
-  bottom: 0;
-  right: 2px;
+	position: absolute;
+	bottom: 0;
+	right: 2px;
 }
 
 .button {
-  min-width: 90px;
-  text-align: center;
+	min-width: 90px;
+	text-align: center;
 }
 
 .highlight {
-  font-size: 1.1em;
-  font-weight: bold;
+	font-size: 1.1em;
+	font-weight: bold;
 }
 
 .horizontal_list {
-  display: flex;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--saito-skyline-grey);
+	display: flex;
+	flex-wrap: wrap;
+	border-top: 1px solid var(--saito-skyline-grey);
 }
 
 .horizontal_list .option .icon,
 .bank .option .icon {
-  margin: 0 0.25em;
-  width: 2em;
-  vertical-align: middle;
+	margin: 0 0.25em;
+	width: 2em;
+	vertical-align: middle;
 }
 
 ul.horizontal_list li.iconoption {
-  margin: 0;
-  width: 20%;
-  height: 3em;
-  border: unset;
-  background: unset;
-  min-width: 20%;
+	margin: 0;
+	width: 20%;
+	height: 3em;
+	border: unset;
+	background: unset;
+	min-width: 20%;
 }
 
 .status-message {
-  width: unset;
-  background-color: unset;
+	width: unset;
+	background-color: unset;
 }
 
 .hexTileCenter {
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
 }
 
 /*Sit graphic on top of playerbox*/
 
 .me > .player-box-graphic {
-  position: absolute;
-  left: calc(100% + 12px);
-  top: 5px;
-  /*bottom: calc(100% + 12px);
+	position: absolute;
+	left: calc(100% + 12px);
+	top: 5px;
+	/*bottom: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%);*/
 }
 
 .notme > .player-box-graphic {
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 12px);
-  transform: translateY(-50%);
-  /*position: relative;
+	position: absolute;
+	top: 50%;
+	right: calc(100% + 12px);
+	transform: translateY(-50%);
+	/*position: relative;
   z-index: -1;
   top: 5vh;
   left: 1vw;*/
@@ -758,37 +759,37 @@ ul.horizontal_list li.iconoption {
 /* Dice display (position handled by playerbox-graphic) */
 
 .diceroll {
-  position: relative;
-  display: flex;
-  margin: 0 auto;
-  border: 2px solid black;
-  border-radius: 5px;
-  background-color: #222b;
-  /*width: min(12vw,110px);
+	position: relative;
+	display: flex;
+	margin: 0 auto;
+	border: 2px solid black;
+	border-radius: 5px;
+	background-color: #222b;
+	/*width: min(12vw,110px);
   padding: min(0.5vw,5px) 0;
   flex-direction: row;*/
-  justify-content: space-evenly;
-  align-items: center;
-  z-index: 3;
-  width: 50px;
-  height: min(12vw, 110px);
-  padding: 0 min(0.5vw, 5px);
-  flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	z-index: 3;
+	width: 50px;
+	height: min(12vw, 110px);
+	padding: 0 min(0.5vw, 5px);
+	flex-direction: column;
 }
 
 .log > div {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
 }
 
 .log .die {
-  width: min(2.5vw, 25px);
-  display: inline-block;
-  text-indent: 0;
-  margin: 1px;
-  padding-left: unset;
+	width: min(2.5vw, 25px);
+	display: inline-block;
+	text-indent: 0;
+	margin: 1px;
+	padding-left: unset;
 }
 
 /*.notme .diceroll{
@@ -799,96 +800,96 @@ ul.horizontal_list li.iconoption {
 }*/
 
 .flexline {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
-  width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: row;
+	width: 100%;
 }
 
 .flexline2 {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-direction: row;
-  width: 100%;
-  /*margin-bottom: 0.5em;*/
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-direction: row;
+	width: 100%;
+	/*margin-bottom: 0.5em;*/
 }
 
 .notme .flexline2 {
-  margin-bottom: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 .pbtrade ul li {
-  width: 45%;
-  line-height: 1.5em;
-  cursor: pointer;
-  list-style: none;
-  border: 1px solid var(--text-color);
-  text-align: center;
+	width: 45%;
+	line-height: 1.5em;
+	cursor: pointer;
+	list-style: none;
+	border: 1px solid var(--text-color);
+	text-align: center;
 }
 
 .pbtrade ul li:hover {
-  color: black;
-  background-color: #e7e7e7;
+	color: black;
+	background-color: #e7e7e7;
 }
 
 .player-box .trade:hover {
-  color: black;
-  background-color: #a7a7a7;
+	color: black;
+	background-color: #a7a7a7;
 }
 
 .trade {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .cardct {
-  width: fit-content;
-  font-size: 1.35rem;
-  min-width: 15rem;
+	width: fit-content;
+	font-size: 1.35rem;
+	min-width: 15rem;
 }
 
 /*SVG token coloring*/
 
 .token {
-  margin: min(3px, 1vh);
-  background-color: unset;
+	margin: min(3px, 1vh);
+	background-color: unset;
 }
 
 .token polygon {
-  fill: var(--saito-white);
+	fill: var(--saito-white);
 }
 
 .token.p1 polygon {
-  fill: var(--p1-color);
+	fill: var(--p1-color);
 }
 
 .token.p2 polygon {
-  fill: var(--p2-color);
+	fill: var(--p2-color);
 }
 
 .token.p3 polygon {
-  fill: var(--p3-color);
+	fill: var(--p3-color);
 }
 
 .token.p4 polygon {
-  fill: var(--p4-color);
+	fill: var(--p4-color);
 }
 
 .token.p1 line {
-  stroke: var(--p1-color);
+	stroke: var(--p1-color);
 }
 
 .token.p2 line {
-  stroke: var(--p2-color);
+	stroke: var(--p2-color);
 }
 
 .token.p3 line {
-  stroke: var(--p3-color);
+	stroke: var(--p3-color);
 }
 
 .token.p4 line {
-  stroke: var(--p4-color);
+	stroke: var(--p4-color);
 }
 
 /*.c1 i {
@@ -906,27 +907,27 @@ ul.horizontal_list li.iconoption {
 }*/
 
 .player-box .icon {
-  display: inline-block;
-  width: 30px;
-  vertical-align: middle;
-  margin: 0 4px;
-  border-radius: 5px;
+	display: inline-block;
+	width: 30px;
+	vertical-align: middle;
+	margin: 0 4px;
+	border-radius: 5px;
 }
 
 .player-notice {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  width: max-content;
-  margin-right: auto;
-  margin-left: auto;
-  font-size: 20px;
-  padding: 8px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	width: max-content;
+	margin-right: auto;
+	margin-left: auto;
+	font-size: 20px;
+	padding: 8px;
 }
 
 .player-notice ul {
-  margin-top: 0.5em;
+	margin-top: 0.5em;
 }
 
 /*******
@@ -939,28 +940,28 @@ ul.horizontal_list li.iconoption {
 ******/
 
 .opponents > .player-box {
-  position: relative;
-  right: unset;
-  top: unset;
+	position: relative;
+	right: unset;
+	top: unset;
 }
 
 .player-box.me {
-  max-height: unset;
-  /* left: 30px; */
-  top: unset;
-  bottom: 1px;
+	max-height: unset;
+	/* left: 30px; */
+	top: unset;
+	bottom: 1px;
 }
 
 .mobile-trading-container {
-  position: absolute;
-  top: 70px;
-  display: flex;
-  flex-direction: column;
-  gaps: 2.5rem;
+	position: absolute;
+	top: 70px;
+	display: flex;
+	flex-direction: column;
+	gaps: 2.5rem;
 }
 
 .player-box {
-  display: relative;
+	display: relative;
 }
 
 /*****
@@ -982,174 +983,174 @@ ul.horizontal_list li.iconoption {
 *****/
 
 .flash {
-  animation-name: flash;
-  animation-duration: 1.8s;
-  animation-delay: 0.2s;
-  /*animation-iteration-count: 5;*/
-  /*animation-fill-mode: backwards;*/
+	animation-name: flash;
+	animation-duration: 1.8s;
+	animation-delay: 0.2s;
+	/*animation-iteration-count: 5;*/
+	/*animation-fill-mode: backwards;*/
 }
 
 @keyframes flash {
-  50% {
-    background-color: #b79e76; /*#b4a09073;*/
-    color: black;
-  }
+	50% {
+		background-color: #b79e76; /*#b4a09073;*/
+		color: black;
+	}
 }
 
 .saitoa,
 #saito-alert-box {
-  border: 5px solid #424143;
-  background-color: #d3c38df5;
-  border-image: url(/settlers/img/border.png);
-  border-image-slice: 51;
-  border-image-width: 21px;
-  border-image-repeat: stretch;
-  border-style: solid;
-  border-image-outset: 7px;
-  color: var(--text-color);
+	border: 5px solid #424143;
+	background-color: #d3c38df5;
+	border-image: url(/settlers/img/border.png);
+	border-image-slice: 51;
+	border-image-width: 21px;
+	border-image-repeat: stretch;
+	border-style: solid;
+	border-image-outset: 7px;
+	color: var(--text-color);
 }
 
 /* Overwrite the menu color */
 :root {
-  --game-menu-background: #d3c38df5;
+	--game-menu-background: #d3c38df5;
 }
 
 .game-menu {
-  color: var(--text-color);
+	color: var(--text-color);
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  #game-hexgrid {
-    margin-top: 40px;
-    padding: 100px 45px 125px;
-    border-radius: 300px;
-  }
+	#game-hexgrid {
+		margin-top: 40px;
+		padding: 100px 45px 125px;
+		border-radius: 300px;
+	}
 
-  .player-notice {
-    font-size: 18px;
-  }
+	.player-notice {
+		font-size: 18px;
+	}
 
-  .saitoa {
-    border-image-width: 15px;
-    border-image-outset: 3px;
-    border-width: 3px;
-  }
+	.saitoa {
+		border-image-width: 15px;
+		border-image-outset: 3px;
+		border-width: 3px;
+	}
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  #game-hexgrid {
-    padding: 75px 45px 125px;
-    border-radius: 300px;
-  }
+	#game-hexgrid {
+		padding: 75px 45px 125px;
+		border-radius: 300px;
+	}
 
-  .player-notice {
-    font-size: 18px;
-  }
+	.player-notice {
+		font-size: 18px;
+	}
 
-  .saitoa {
-    border-image-width: 15px;
-    border-image-outset: 3px;
-    border-width: 3px;
-  }
+	.saitoa {
+		border-image-width: 15px;
+		border-image-outset: 3px;
+		border-width: 3px;
+	}
 }
 
 .game-playerbox-icons .army img {
-  width: 4rem;
-  margin: 0 0 0 -2rem;
+	width: 4rem;
+	margin: 0 0 0 -2rem;
 }
 
 .game-playerbox-icons .army {
-  display: flex;
-  flex-direction: row;
-  padding: 0 0 0 2rem;
+	display: flex;
+	flex-direction: row;
+	padding: 0 0 0 2rem;
 }
 
 .game-playerbox-icons .longest-road img {
-  width: 4rem;
+	width: 4rem;
 }
 
 .victory_point_cards,
 .longest-road {
-  display: flex;
-  gap: 1rem;
-  flex-direction: row;
-  align-items: center;
+	display: flex;
+	gap: 1rem;
+	flex-direction: row;
+	align-items: center;
 }
 
 .game-playerbox-icons .victory_point_cards img {
-  height: 3.5rem;
-  margin: 0;
-  display: block;
-  transform: rotate(-5deg);
+	height: 3.5rem;
+	margin: 0;
+	display: block;
+	transform: rotate(-5deg);
 }
 
 .game-playerbox-icons .victory_point_card {
-  margin: 0 0 0 -2rem;
-  display: flex;
-  align-items: center;
+	margin: 0 0 0 -2rem;
+	display: flex;
+	align-items: center;
 }
 
 .game-playerbox-icons .token img,
 .game-playerbox-icons .token svg {
-  transition: all ease-in-out 300ms;
-  border-radius: 50%;
-  border: 2px solid #fff8;
-  background-color: #456;
+	transition: all ease-in-out 300ms;
+	border-radius: 50%;
+	border: 2px solid #fff8;
+	background-color: #456;
 }
 
 .game-playerbox-icons .token img:hover,
 .game-playerbox-icons .token svg:hover {
-  transform: scale(1.3);
+	transform: scale(1.3);
 }
 
 .token.largest.army,
 .longest-road,
 .victory_point_cards {
-  position: relative;
-  margin: 0 -4rem 0 0;
+	position: relative;
+	margin: 0 -4rem 0 0;
 }
 
 .vproundel {
-  position: relative;
-  width: 3rem;
-  line-height: 3rem;
-  font-size: 1.5rem;
-  color: #fff;
-  text-align: center;
-  margin: 0.5rem;
-  background-color: #ffa400cc;
-  border-radius: 50%;
-  font-weight: bold;
-  right: 3rem;
-  top: -1rem;
-  height: 3rem;
+	position: relative;
+	width: 3rem;
+	line-height: 3rem;
+	font-size: 1.5rem;
+	color: #fff;
+	text-align: center;
+	margin: 0.5rem;
+	background-color: #ffa400cc;
+	border-radius: 50%;
+	font-weight: bold;
+	right: 3rem;
+	top: -1rem;
+	height: 3rem;
 }
 
 .flexline img.icon {
-  height: 3.5rem;
+	height: 3.5rem;
 }
 
 .flexline span {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: row;
-  width: 100%;
-  flex-wrap: wrap;
-  gap: 1rem;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: row;
+	width: 100%;
+	flex-wrap: wrap;
+	gap: 1rem;
 }
 
 #cleartrade {
-  cursor: pointer;
-  font-size: 24px;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all ease-in-out 250ms;
+	cursor: pointer;
+	font-size: 24px;
+	width: 35px;
+	height: 35px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all ease-in-out 250ms;
 }
 
 #cleartrade:hover {
-  transform: scale(1.3);
+	transform: scale(1.3);
 }

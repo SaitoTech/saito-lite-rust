@@ -1,8 +1,8 @@
 /// wrapper for zlib-asm (https://github.com/ukyo/zlib-asm)
 
 /* globals zlib */
-(function(global) {
-	"use strict";
+(function (global) {
+	'use strict';
 
 	function Codec(isDeflater, options) {
 		this._isDeflater = isDeflater;
@@ -18,8 +18,7 @@
 	Codec.prototype.flush = function flush() {
 		var bytes;
 		var input = this._input;
-		if (input.length === 1)
-			bytes = input[0];
+		if (input.length === 1) bytes = input[0];
 		else {
 			bytes = new Uint8Array(this._inputLength);
 			for (var i = 0, n = input.length, off = 0; i < n; i++) {
@@ -28,9 +27,9 @@
 				off += slice.length;
 			}
 		}
-		return this._isDeflater ?
-			zlib.rawDeflate(bytes, this.level) :
-			zlib.rawInflate(bytes);
+		return this._isDeflater
+			? zlib.rawDeflate(bytes, this.level)
+			: zlib.rawInflate(bytes);
 	};
 
 	function Deflater(options) {

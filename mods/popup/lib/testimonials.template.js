@@ -1,6 +1,5 @@
 module.exports = () => {
-
- return `
+	return `
 <div style="color:#666666;font-size:1.6em">
 
 <div class="rotate_right">
@@ -168,6 +167,4 @@ I have learned almost exclusively from Popup and Anki flashcards.  I took no for
 
 </div>
   `;
-
-}
-
+};

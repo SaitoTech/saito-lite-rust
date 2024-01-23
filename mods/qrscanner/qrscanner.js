@@ -1,164 +1,172 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-const UserMenu = require("./../../lib/saito/ui/modals/user-menu/user-menu");
-
+const UserMenu = require('./../../lib/saito/ui/modals/user-menu/user-menu');
 
 const HeaderDropdownTemplate = (dropdownmods) => {
-  html = dropdownmods.map(mod => {
-    if (mod.returnLink() != null) {
-      return `<a href="${mod.returnLink()}"><li>${mod.name}</li></a>`;
-    }
-  })
-  return `
+	html = dropdownmods.map((mod) => {
+		if (mod.returnLink() != null) {
+			return `<a href="${mod.returnLink()}"><li>${mod.name}</li></a>`;
+		}
+	});
+	return `
   <div id="modules-dropdown" class="header-dropdown">
     <ul>${html}</ul>
   </div>`;
-}
-
+};
 
 class QRScanner extends ModTemplate {
+	constructor(app) {
+		super(app);
 
-  constructor(app) {
-    super(app);
+		this.name = 'QRScanner';
+		this.description = 'Adds QRCode scanning functionality to Saito';
+		this.categories = 'Core';
+		this.video = null;
+		this.canvas = null;
+		this.canvas_context = null;
+		this.isStreamInit = false;
 
-    this.name = "QRScanner";
-    this.description = "Adds QRCode scanning functionality to Saito";
-    this.categories = "Core";
-    this.video = null;
-    this.canvas = null;
-    this.canvas_context = null;
-    this.isStreamInit = false;
+		this.styles = ['/qrscanner/style.css'];
+		this.scanner_callback = null;
 
-    this.styles = ['/qrscanner/style.css'];
-    this.scanner_callback = null;
+		this.description = 'Helper module with QR code scanning functionality.';
+		this.categories = 'Dev Data Utilities';
 
-    this.description = "Helper module with QR code scanning functionality."
-    this.categories = "Dev Data Utilities";
+		this.constraints = {
+			audio: false,
+			video: {
+				facingMode: 'environment'
+			}
+		};
 
-    this.constraints = {
-      audio: false,
-      video: {
-        facingMode: 'environment'
-      }
-    };
+		// quirc wasm version
+		this.decoder = null;
+		this.last_scanned_raw = null;
+		this.last_scanned_at = null;
 
-    // quirc wasm version
-    this.decoder = null;
-    this.last_scanned_raw = null;
-    this.last_scanned_at = null;
+		// In milliseconds
+		this.debounce_timeout = 750;
 
-    // In milliseconds
-    this.debounce_timeout = 750;
+		this.events = ['encrypt-key-exchange-confirm'];
 
-    this.events = ['encrypt-key-exchange-confirm'];
+		//
+		// and scan when asked
+		//
+		this.app.connection.on('scanner-start-scanner', () => {
+			this.startScanner();
+		});
+	}
 
-    //
-    // and scan when asked
-    //
-    this.app.connection.on("scanner-start-scanner", () => {
-      this.startScanner();
-    });
+	initialize(app) {
+		super.initialize(app);
+		if (app.BROWSER == 1) {
+			this.attachStyleSheets();
+		}
+	}
 
-  }
+	respondTo(type = '') {
+		if (type === 'saito-header') {
+			return [
+				{
+					text: 'Scan',
+					icon: 'fas fa-expand',
+					rank: 110,
+					callback: function (app, id) {
+						app.connection.emit('scanner-start-scanner', {});
+					}
+				}
+			];
+		}
+	}
 
-  initialize(app) {
-    super.initialize(app);
-    if (app.BROWSER == 1) { this.attachStyleSheets(); }
-  }
+	attachEvents(app) {
+		let scanner_self = this;
+		document
+			.querySelector('.launch-scanner')
+			.addEventListener('click', function (e) {
+				scanner_self.startScanner();
+			});
+	}
 
+	startQRDecoderInitializationLoop() {
+		x = this.attemptQRDecode();
 
-  respondTo(type = "") {
-    if (type === "saito-header") {
-      return [
-        {
-          text: "Scan",
-          icon: "fas fa-expand",
-          rank: 110,
-          callback: function (app, id) {
-            app.connection.emit("scanner-start-scanner", {});
-          },
-        }]
-    }
-  }
+		if (x == 1) {
+		} else {
+			setTimeout(() => {
+				this.startQRDecoderInitializationLoop();
+			}, 100);
+		}
+	}
 
+	//
+	// turns BODY into the scanner
+	//
+	startScanner(mycallback = null) {
+		if (this.app.BROWSER == 0) {
+			return;
+		}
+		if (!document) {
+			return;
+		}
+		if (document.querySelector('.qrscanner-container')) {
+			return;
+		}
 
-  attachEvents(app) {
-    let scanner_self = this;
-    document.querySelector('.launch-scanner').addEventListener('click', function (e) {
-      scanner_self.startScanner();
-    });
-  }
+		this.scanner_callback = null;
+		if (mycallback) {
+			this.scanner_callback = mycallback;
+		}
 
-  startQRDecoderInitializationLoop() {
+		this.app.browser.addElementToDom(this.returnScannerHTML());
+		//document.body.innerHTML = this.returnScannerHTML();
+		document.querySelector('.close-scanner').onclick = () => {
+			//window.location.reload();
+			document.querySelector('.qrscanner-container').remove();
+			this.stop();
+		};
 
-    x = this.attemptQRDecode();
+		let scanner_self = this;
 
-    if (x == 1) {
-    } else {
-      setTimeout(() => {
-        this.startQRDecoderInitializationLoop();
-      }, 100);
-    }
+		scanner_self.start(
+			document.getElementById('qr-video'),
+			document.getElementById('qr-canvas')
+		);
+	}
 
-  }
+	//
+	// turns submitted EL into the scanner
+	//
+	startEmbeddedScanner(el, mycallback = null) {
+		if (this.app.BROWSER == 0) {
+			return;
+		}
+		if (!document) {
+			return;
+		}
+		if (document.querySelector('.qrscanner-container')) {
+			return;
+		}
 
-  //
-  // turns BODY into the scanner
-  //
-  startScanner(mycallback = null) {
+		this.scanner_callback = null;
+		if (mycallback) {
+			this.scanner_callback = mycallback;
+		}
 
-    if (this.app.BROWSER == 0) { return; }
-    if (!document) { return; }
-    if (document.querySelector('.qrscanner-container')) { return; }
+		el.innerHTML = this.returnScannerHTML();
+		document.querySelector('.close-scanner').onclick = () => {
+			window.location.reload();
+		};
 
-    this.scanner_callback = null;
-    if (mycallback) { this.scanner_callback = mycallback; }
+		let scanner_self = this;
 
-    this.app.browser.addElementToDom(this.returnScannerHTML());
-    //document.body.innerHTML = this.returnScannerHTML();
-    document.querySelector('.close-scanner').onclick = () => {
-      //window.location.reload();
-      document.querySelector(".qrscanner-container").remove();
-      this.stop();
-    };
+		scanner_self.start(
+			document.getElementById('qr-video'),
+			document.getElementById('qr-canvas')
+		);
+	}
 
-    let scanner_self = this;
-
-    scanner_self.start(
-      document.getElementById("qr-video"),
-      document.getElementById("qr-canvas")
-    );
-
-  }
-
-  //
-  // turns submitted EL into the scanner
-  //
-  startEmbeddedScanner(el, mycallback = null) {
-
-    if (this.app.BROWSER == 0) { return; }
-    if (!document) { return; }
-    if (document.querySelector('.qrscanner-container')) { return; }
-
-    this.scanner_callback = null;
-    if (mycallback) { this.scanner_callback = mycallback; }
-
-    el.innerHTML = this.returnScannerHTML();
-    document.querySelector('.close-scanner').onclick = () => {
-      window.location.reload();
-    };
-
-    let scanner_self = this;
-
-    scanner_self.start(
-      document.getElementById("qr-video"),
-      document.getElementById("qr-canvas")
-    );
-
-  }
-
-
-  returnScannerHTML() {
-    return `
+	returnScannerHTML() {
+		return `
       <div class="qrscanner-container">
         <div id="qr-target" class="qr-target"><div class="corners"></div></div>
         <div id="scanline" class="scanline"></div>
@@ -170,175 +178,192 @@ class QRScanner extends ModTemplate {
       </div>
 
     `;
-  }
+	}
 
-  async start(video, canvas) {
+	async start(video, canvas) {
+		this.video = video;
+		this.canvas = canvas;
 
-    this.video = video
-    this.canvas = canvas;
+		this.canvas_context = this.canvas.getContext('2d');
+		this.decoder = new Worker('/qrscanner/quirc_worker.js');
+		this.decoder.onmessage = (msg) => {
+			this.onDecoderMessage(msg);
+		};
 
-    this.canvas_context = this.canvas.getContext("2d");
-    this.decoder = new Worker('/qrscanner/quirc_worker.js');
-    this.decoder.onmessage = (msg) => { 
-      this.onDecoderMessage(msg) 
-    };
+		try {
+			let stream = await navigator.mediaDevices.getUserMedia(
+				this.constraints
+			);
+			this.handleSuccess(stream);
+		} catch (err) {
+			this.handleError(err);
+		}
+		this.startQRDecoderInitializationLoop();
+	}
 
-    try {
-      let stream = await navigator.mediaDevices.getUserMedia(this.constraints);
-      this.handleSuccess(stream);
-    } catch (err) {
-      this.handleError(err);
-    }
-    this.startQRDecoderInitializationLoop();
-  }
+	stop() {
+		this.decoder.terminate();
+		if (this.video) {
+			this.video.srcObject.getTracks().forEach((track) => track.stop());
+		}
+		if (document.querySelector('.qrscanner-container')) {
+			document.querySelector('.qrscanner-container').remove();
+		}
+	}
 
+	render() {}
 
-  stop() {
-    this.decoder.terminate();
-    if (this.video){
-      this.video.srcObject.getTracks().forEach(track => track.stop());
-    }
-    if (document.querySelector(".qrscanner-container")){
-      document.querySelector(".qrscanner-container").remove();  
-    }
-    
+	//
+	// main loop sending messages to quirc_worker to detect qrcodes on the page
+	//
+	attemptQRDecode() {
+		if (this.isStreamInit) {
+			try {
+				this.canvas.width = this.video.videoWidth;
+				this.canvas.height = this.video.videoHeight;
+				this.canvas_context.drawImage(
+					this.video,
+					0,
+					0,
+					this.canvas.width,
+					this.canvas.height
+				);
+				if (this.canvas.width == 0) return;
 
-  }
+				var imgData = this.canvas_context.getImageData(
+					0,
+					0,
+					this.canvas.width,
+					this.canvas.height
+				);
 
-  render() {
-  }
+				if (imgData.data) {
+					this.decoder.postMessage(imgData);
+				}
+				return 1;
+			} catch (err) {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+		return 0;
+	}
 
+	//
+	// worker passes back a message either containing decoded data,
+	// or it attempts t
+	//
+	onDecoderMessage(msg) {
+		if (msg.data != 'done') {
+			var qrid = msg.data['payload_string'];
+			let right_now = Date.now();
+			if (
+				qrid != this.last_scanned_raw ||
+				this.last_scanned_at < right_now - this.debounce_timeout
+			) {
+				this.last_scanned_raw = qrid;
+				this.last_scanned_at = right_now;
+				this.handleDecodedMessage(qrid);
+				return;
+			} else if (qrid === this.last_scanned_raw) {
+				this.last_scanned_at = right_now;
+			}
+		}
+		setTimeout(() => {
+			this.attemptQRDecode();
+		}, 0);
+	}
 
-  //
-  // main loop sending messages to quirc_worker to detect qrcodes on the page
-  //
-  attemptQRDecode() {
-    if (this.isStreamInit) {
-      try {
-        this.canvas.width = this.video.videoWidth;
-        this.canvas.height = this.video.videoHeight;
-        this.canvas_context.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
-        if (this.canvas.width == 0) return;
+	//
+	// The default behavior of just a publickey is to created initiate a keyexchange.
+	// Else, the message is broadcast for other modules to utilize
+	//
+	handleDecodedMessage(msg) {
+		//
+		// remove scanline
+		//
+		if (document.querySelector('.scanline')) {
+			document.querySelector('.scanline').remove();
+		}
 
-        var imgData = this.canvas_context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		//
+		// we know what we want to do (callback provided)
+		//
+		if (this.scanner_callback != null) {
+			this.stop();
+			this.scanner_callback(msg);
+			return;
+		}
 
-        if (imgData.data) {
-          this.decoder.postMessage(imgData);
-        }
-        return 1;
-      } catch (err) {
-        return 0;
-      }
-    } else {
-      return 0;
-    }
-    return 0;
-  }
+		//
+		// or this is a URL
+		//
+		if (this.app.browser.isValidUrl(msg)) {
+			this.stop();
+			let c = confirm('Visit: ' + msg + '?');
+			if (c) {
+				window.location = msg;
+				return;
+			}
+		}
 
-  //
-  // worker passes back a message either containing decoded data, 
-  // or it attempts t
-  //
-  onDecoderMessage(msg) {
-    if (msg.data != 'done') {
-      var qrid = msg.data['payload_string'];
-      let right_now = Date.now();
-      if (qrid != this.last_scanned_raw || this.last_scanned_at < right_now - this.debounce_timeout) {
-        this.last_scanned_raw = qrid;
-        this.last_scanned_at = right_now;
-        this.handleDecodedMessage(qrid);
-        return;
-      } else if (qrid === this.last_scanned_raw) {
-        this.last_scanned_at = right_now;
-      }
-    }
-    setTimeout(() => { this.attemptQRDecode() }, 0);
-  }
+		//
+		// or this is a publickey
+		//
+		if (this.app.crypto.isPublicKey(msg)) {
+			this.stop();
+			let userMenu = new UserMenu(this.app, msg);
+			userMenu.render(this.app);
+			return;
+		}
 
-  //
-  // The default behavior of just a publickey is to created initiate a keyexchange.
-  // Else, the message is broadcast for other modules to utilize
-  //
-  handleDecodedMessage(msg) {
+		//
+		// non-SAITO publickey?
+		//
+		if (!msg.match(/\s/gi)) {
+			if (msg.match(/[0-9a-zA-Z]+/i)) {
+				this.stop();
 
-    //
-    // remove scanline
-    //
-    if (document.querySelector(".scanline")) {
-      document.querySelector(".scanline").remove();
-    }
+				let obj = {};
+				obj.address = msg;
+				this.app.connection.emit(
+					'saito-crypto-withdraw-render-request',
+					obj
+				);
 
-    //
-    // we know what we want to do (callback provided)
-    //
-    if (this.scanner_callback != null) {
-      this.stop();
-      this.scanner_callback(msg);
-      return;
-    }
+				return;
+			}
+		}
 
-    //
-    // or this is a URL
-    //
-    if (this.app.browser.isValidUrl(msg)) {
-      this.stop();
-      let c = confirm("Visit: " + msg + "?");
-      if (c) {
-      	window.location = msg;
-      	return;	
-      }
-    }
+		this.sendEvent('qrcode', msg);
+	}
 
-    //
-    // or this is a publickey
-    //
-    if (this.app.crypto.isPublicKey(msg)) {
-      this.stop();
-      let userMenu = new UserMenu(this.app, msg);
-      userMenu.render(this.app);
-  	  return;
-    }
+	decodeFromFile(f) {
+		var reader = new FileReader();
+		reader.onload = ((file) => {
+			return (e) => {
+				this.canvas_context.clearRect(
+					0,
+					0,
+					this.canvas.width,
+					this.canvas.height
+				);
+				// port to new quirc system
+			};
+		})(f);
+		reader.readAsDataURL(f);
+	}
 
-    //
-    // non-SAITO publickey?
-    //
-    if (!msg.match(/\s/gi)) {
-      if (msg.match(/[0-9a-zA-Z]+/i)) {
-        this.stop();
+	handleSuccess(stream) {
+		window.stream = stream;
+		this.video.srcObject = stream;
+		this.isStreamInit = true;
+	}
 
-        let obj = {};
-        obj.address = msg;
-        this.app.connection.emit('saito-crypto-withdraw-render-request', obj);
-
-        return;
-      }
-    }
-
-    this.sendEvent('qrcode', msg);
-
-  }
-
-  decodeFromFile(f) {
-    var reader = new FileReader();
-    reader.onload = ((file) => {
-      return (e) => {
-        this.canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        // port to new quirc system
-      };
-    })(f);
-    reader.readAsDataURL(f);
-  }
-
-  handleSuccess(stream) {
-    window.stream = stream;
-    this.video.srcObject = stream;
-    this.isStreamInit = true;
-  }
-
-  handleError(error) {
-    //console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
-  }
-
+	handleError(error) {
+		//console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+	}
 }
 
 module.exports = QRScanner;

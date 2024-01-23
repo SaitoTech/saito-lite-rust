@@ -1,127 +1,133 @@
+if (card == 'ussuri') {
+	let us_cc = 0;
 
-    if (card == "ussuri") {
+	//
+	// does us have cc
+	//
+	if (this.game.state.events.china_card == 2) {
+		us_cc = 1;
+	} else {
+		//
+		// it is in one of our hands
+		//
+		if (this.game.player == 1) {
+			let do_i_have_cc = 0;
 
-      let us_cc = 0;
+			if (this.game.state.events.china_card == 1) {
+				do_i_have_cc = 1;
+			}
 
-      //
-      // does us have cc
-      //
-      if (this.game.state.events.china_card == 2) {
-        us_cc = 1;
-      } else {
+			for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+				if (this.game.deck[0].hand[i] == 'china') {
+					do_i_have_cc = 1;
+				}
+			}
 
-        //
-        // it is in one of our hands
-        //
-        if (this.game.player == 1) {
+			if (do_i_have_cc == 1) {
+			} else {
+				us_cc = 1;
+			}
+		}
+		if (this.game.player == 2) {
+			for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+				if (this.game.deck[0].hand[i] == 'china') {
+					us_cc = 1;
+				}
+			}
+		}
+	}
 
-          let do_i_have_cc = 0;
+	if (us_cc == 1) {
+		this.updateLog('US places 4 influence in Asia (max 2 per country)');
 
-          if (this.game.state.events.china_card == 1) { do_i_have_cc = 1; }
+		//
+		// place four in asia
+		//
+		if (this.game.player == 2) {
+			//If the event card has a UI component, run the clock for the player we are waiting on
+			this.startClock();
 
-          for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                if (this.game.deck[0].hand[i] == "china") {
-              do_i_have_cc = 1;
-            }
-          }
+			var twilight_self = this;
+			twilight_self.playerFinishedPlacingInfluence();
 
-          if (do_i_have_cc == 1) {
-          } else {
-            us_cc = 1;
-          }
+			var ops_to_place = 4;
+			twilight_self.addMove('resolve\tussuri');
 
-        }
-        if (this.game.player == 2) {
-          for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                if (this.game.deck[0].hand[i] == "china") {
-              us_cc = 1;
-            }
-          }
-        }
-      }
+			this.updateStatus(
+				'US place four influence in Asia (2 max per country)'
+			);
 
-      if (us_cc == 1) {
+			for (var i in this.countries) {
+				let countryname = i;
+				let divname = '#' + i;
+				let ops_placed = [];
 
-        this.updateLog("US places 4 influence in Asia (max 2 per country)");
+				if (this.countries[i].region.indexOf('asia') != -1) {
+					ops_placed[i] = 0;
 
-        //
-        // place four in asia
-        //
-        if (this.game.player == 2) {
-          //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+					twilight_self.countries[countryname].place = 1;
+					$(divname).off();
+					$(divname).on('click', function () {
+						let countryname = $(this).attr('id');
+						if (twilight_self.countries[countryname].place == 1) {
+							ops_placed[countryname]++;
+							twilight_self.addMove(
+								'place\tus\tus\t' + countryname + '\t1'
+							);
+							twilight_self.placeInfluence(
+								countryname,
+								1,
+								'us',
+								function () {
+									if (ops_placed[countryname] >= 2) {
+										twilight_self.countries[
+											countryname
+										].place = 0;
+									}
+									ops_to_place--;
+									if (ops_to_place == 0) {
+										twilight_self.playerFinishedPlacingInfluence();
+										twilight_self.endTurn();
+									}
+								}
+							);
+						} else {
+							twilight_self.displayModal(
+								'you cannot place there...'
+							);
+						}
+					});
+				}
+			}
+		} else {
+			this.updateStatus(
+				`<div class='status-message' id='status-message'>${this.cardToText(
+					card
+				)}: US is placing influence in Asia </div>`
+			);
+		}
+		return 0;
+	} else {
+		this.updateLog('US gets the China Card (face up)');
 
-          var twilight_self = this;
-          twilight_self.playerFinishedPlacingInfluence();
+		//
+		// us gets china card face up
+		//
+		this.game.state.events.china_card = 0;
 
-          var ops_to_place = 4;
-          twilight_self.addMove("resolve\tussuri");
+		if (this.game.player == 1) {
+			for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+				if (this.game.deck[0].hand[i] == 'china') {
+					this.game.deck[0].hand.splice(i, 1);
+				}
+			}
+		}
+		if (this.game.player == 2) {
+			if (!this.game.deck[0].hand.includes('china')) {
+				this.game.deck[0].hand.push('china');
+			}
+		}
 
-          this.updateStatus("US place four influence in Asia (2 max per country)");
-
-          for (var i in this.countries) {
-
-            let countryname  = i;
-            let divname      = '#'+i;
-            let ops_placed   = [];
-
-              if (this.countries[i].region.indexOf("asia") != -1) {
-
-              ops_placed[i] = 0;
-
-              twilight_self.countries[countryname].place = 1;
-              $(divname).off();
-              $(divname).on('click', function() {
-                let countryname = $(this).attr('id');
-                if (twilight_self.countries[countryname].place == 1) {
-                  ops_placed[countryname]++;
-                  twilight_self.addMove("place\tus\tus\t"+countryname+"\t1");
-                  twilight_self.placeInfluence(countryname, 1, "us", function() {
-                    if (ops_placed[countryname] >= 2) {
-                      twilight_self.countries[countryname].place = 0;
-                    }
-                    ops_to_place--;
-                    if (ops_to_place == 0) {
-                      twilight_self.playerFinishedPlacingInfluence();
-                      twilight_self.endTurn();
-                    }
-                  });
-                } else {
-                  twilight_self.displayModal("you cannot place there...");
-                }
-              });
-            }
-          }
-        }else{
-          this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText(card)}: US is placing influence in Asia </div>`);
-        }
-        return 0;
-  
-      } else {
-
-        this.updateLog("US gets the China Card (face up)");
-
-        //
-        // us gets china card face up
-        //
-        this.game.state.events.china_card = 0;
-
-        if (this.game.player == 1) {
-          for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-            if (this.game.deck[0].hand[i] == "china") {
-              this.game.deck[0].hand.splice(i, 1);
-            }
-          }
-        }
-        if (this.game.player == 2) {
-          if (! this.game.deck[0].hand.includes("china")) {
-            this.game.deck[0].hand.push("china");
-          }
-        }
-
-        return 1;
-      }
-    }
-
-
-
+		return 1;
+	}
+}

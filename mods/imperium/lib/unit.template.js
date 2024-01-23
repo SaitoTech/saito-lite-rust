@@ -1,6 +1,5 @@
 module.exports = ImperiumUnitTemplate = (unit) => {
-
-  return `
+	return `
     <div class="unit-element">
       <div class="unit-box-ship unit-box-ship-${unit.type}"></div>
       <div class="unit-box">
@@ -22,5 +21,4 @@ module.exports = ImperiumUnitTemplate = (unit) => {
         <div class="unit-description">${unit.description}</div>
       </div>
   `;
-
-}
+};

@@ -1,104 +1,100 @@
-
 .strategy-card-leadership .text {
-  color: #13b708bb;
+	color: #13b708bb;
 }
 .strategy-card-diplomacy .text {
-  color: #ffc45ebb;
+	color: #ffc45ebb;
 }
 .strategy-card-politics .text {
-  color: #7a8de5bb;
+	color: #7a8de5bb;
 }
 .strategy-card-construction .text {
-  color: #feacacbb;
+	color: #feacacbb;
 }
 .strategy-card-trade .text {
-  color: #acfef8bb;
+	color: #acfef8bb;
 }
 .strategy-card-warfare .text {
-  color: #fef9acbb;
+	color: #fef9acbb;
 }
 .strategy-card-technology .text {
-  color: #d8acfebb;
+	color: #d8acfebb;
 }
 .strategy-card-imperial .text {
-  color: #ff7272bb;
+	color: #ff7272bb;
 }
 
-
 .strategy-card-overlay {
-    display: flex;
-    flex-wrap: wrap;
-    width: 80vw;
-    height: min-content;
-    max-height: 90vh;
-    justify-content: space-around;
-    overflow-y: auto;
+	display: flex;
+	flex-wrap: wrap;
+	width: 80vw;
+	height: min-content;
+	max-height: 90vh;
+	justify-content: space-around;
+	overflow-y: auto;
 }
 
 .strategy-card-overlay .strategy-card {
-    width: 18vw;
-    height: calc(18vw * 1.42);
-    font-size: 1.0vw;
-    line-height: 1.8vw;
+	width: 18vw;
+	height: calc(18vw * 1.42);
+	font-size: 1vw;
+	line-height: 1.8vw;
 }
 
 .strategy-card {
-    width: 25vw;
-    height: calc(25vw * 1.42);
-    font-size: 1.6vw;
-    line-height: 3vw;
-    padding: 0vw;
-    position: absolute;
-    font-family: 'orbitron-medium', helvetica, sans-serif;
-    display: block;
-    position:relative;
-    color: whitesmoke;
-    cursor: pointer;
+	width: 25vw;
+	height: calc(25vw * 1.42);
+	font-size: 1.6vw;
+	line-height: 3vw;
+	padding: 0vw;
+	position: absolute;
+	font-family: 'orbitron-medium', helvetica, sans-serif;
+	display: block;
+	position: relative;
+	color: whitesmoke;
+	cursor: pointer;
 }
 
 .strategy-card img {
-  position: absolute;
-  height: inherit;
-  width: inherit;
+	position: absolute;
+	height: inherit;
+	width: inherit;
 }
 
 .strategy-card .text {
-    position: absolute;
-    z-index: 101;
-    padding-left: 1.5vw;
-    padding-right: 3vw;
-    padding-top: 20%;
-    height: inherit;
-    width: inherit;
-    font-size: 1.4vw;
-    line-height: 2vw;
-    padding-top: 4vw;
-    color: #FFFB;
+	position: absolute;
+	z-index: 101;
+	padding-left: 1.5vw;
+	padding-right: 3vw;
+	padding-top: 20%;
+	height: inherit;
+	width: inherit;
+	font-size: 1.4vw;
+	line-height: 2vw;
+	padding-top: 4vw;
+	color: #fffb;
 }
 
 .strategy-card .text br {
-    margin: 1.5rem;
+	margin: 1.5rem;
 }
 
 .strategy-card .picked {
-  position: relative;
-  padding: 1rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  width: min-content;
-  z-index: 9000;
-  color: white;
-  border-bottom-right-radius: 0.5rem;
+	position: relative;
+	padding: 1rem;
+	padding-left: 2rem;
+	padding-right: 2rem;
+	width: min-content;
+	z-index: 9000;
+	color: white;
+	border-bottom-right-radius: 0.5rem;
 }
-
 
 .strategy-card .bonus {
-  position: relative;
-  bottom: 0px;
-  left: 75%;
-  font-size: 3em;
-  color: gold;
-  float: right;
-  width: 100%;
+	position: relative;
+	bottom: 0px;
+	left: 75%;
+	font-size: 3em;
+	color: gold;
+	float: right;
+	width: 100%;
 }
-

@@ -1,16 +1,16 @@
 /// wrapper for pako (https://github.com/nodeca/pako)
 
 /* globals pako */
-(function(global) {
-	"use strict";
+(function (global) {
+	'use strict';
 
 	function Codec(isDeflater, options) {
 		var newOptions = { raw: true, chunkSize: 1024 * 1024 };
 		if (options && typeof options.level === 'number')
 			newOptions.level = options.level;
-		this._backEnd = isDeflater?
-			new pako.Deflate(newOptions) :
-			new pako.Inflate(newOptions);
+		this._backEnd = isDeflater
+			? new pako.Deflate(newOptions)
+			: new pako.Inflate(newOptions);
 		this._chunks = [];
 		this._dataLength = 0;
 		this._backEnd.onData = this._onData.bind(this);
@@ -21,12 +21,10 @@
 	};
 	Codec.prototype._fetchData = function _fetchData() {
 		var be = this._backEnd;
-		if (be.err !== 0)
-			throw new Error(be.msg);
+		if (be.err !== 0) throw new Error(be.msg);
 		var chunks = this._chunks;
 		var data;
-		if (chunks.length === 1)
-			data = chunks[0];
+		if (chunks.length === 1) data = chunks[0];
 		else if (chunks.length > 1) {
 			data = new Uint8Array(this._dataLength);
 			for (var i = 0, n = chunks.length, off = 0; i < n; i++) {

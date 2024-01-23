@@ -1,19 +1,19 @@
 module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
-  let html = `<div class="arcade-wizard-overlay">`;
-  let invite = null;
-  let publicKey = null;
-  if (invite_obj.invite) {
-    invite = invite_obj.invite;
-  }
-  if (invite_obj.publicKey) {
-    publicKey = invite_obj.publicKey;
-  }
+	let html = '<div class="arcade-wizard-overlay">';
+	let invite = null;
+	let publicKey = null;
+	if (invite_obj.invite) {
+		invite = invite_obj.invite;
+	}
+	if (invite_obj.publicKey) {
+		publicKey = invite_obj.publicKey;
+	}
 
-  let img = game_mod.respondTo("arcade-games").image;
+	let img = game_mod.respondTo('arcade-games').image;
 
-  console.log(img);
+	console.log(img);
 
-  html += `
+	html += `
     <form>
     <div class="arcade-wizard-game-container">
     
@@ -29,16 +29,18 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
         <div class="arcade-wizard-game-name">
           <span><b>${game_mod.returnName()}</b></span>
         </div>
-        <div class="arcade-wizard-game-description">${game_mod.description}</div>
+        <div class="arcade-wizard-game-description">${
+	game_mod.description
+}</div>
       </div>
       <!- ***Game desc & title end*** -->
   `;
 
-  html += `
+	html += `
         <input type="hidden" name="game" value="${game_mod.name}" />
   `;
 
-  html += `
+	html += `
     </div>
 
     <div class="arcade-wizard-game-controls">
@@ -51,15 +53,15 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
       <div class="arcade-wizard-game-invite">
   `;
 
-  if (game_mod.maxPlayers == 1) {
-    /*html += `<select name="invite_type" style="display:none;">
+	if (game_mod.maxPlayers == 1) {
+		/*html += `<select name="invite_type" style="display:none;">
               <option value="single" selected default></option>
              </select>
     `;*/
 
-    html += `<button type="button" id="game-invite-btn" class="saito-button saito-button-primary game-invite-btn" data-type="single">Play</button>`;
-  } else {
-    /*html += `<select name="invite_type">
+		html += '<button type="button" id="game-invite-btn" class="saito-button saito-button-primary game-invite-btn" data-type="single">Play</button>';
+	} else {
+		/*html += `<select name="invite_type">
               <option value="open" selected default>public invite</option>
               <option value="private">private invite</option>
              </select>
@@ -70,41 +72,41 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
          `;
 
     */
-    html += `
+		html += `
           <div class="saito-multi-select_btn saito-select">
            <div class="saito-multi-select_btn_options saito-slct">
       `;
-    if (publicKey) {
-      html += `<button type="button" class="saito-multi-btn  game-invite-btn" data-type="direct">next...</button>`;
-    } else {
-      if (invite_obj.league) {
-        html += `<button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create public league invite</button>
+		if (publicKey) {
+			html += '<button type="button" class="saito-multi-btn  game-invite-btn" data-type="direct">next...</button>';
+		} else {
+			if (invite_obj.league) {
+				html += `<button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create public league invite</button>
                  <button type="button" class="saito-multi-btn  game-invite-btn" data-type="private">create private league invite</button>`;
-      } else {
-        html += `
+			} else {
+				html += `
               <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create public invite</button>
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">create private invite</button>
          `;
-      }
-    }
-    html += `</div>
+			}
+		}
+		html += `</div>
           </div>`;
-  }
+	}
 
-  html += `
+	html += `
       </div>
 
     </div>
   </form>
   `;
 
-  // support game publishers
-  if (game_mod.publisher_message) {
-    html += `<div id="arcade-game-publisher-message" class="arcade-game-publisher-message">
+	// support game publishers
+	if (game_mod.publisher_message) {
+		html += `<div id="arcade-game-publisher-message" class="arcade-game-publisher-message">
       <span>NOTE: </span>${game_mod.publisher_message}</div>`;
-  }
+	}
 
-  html += `</div>`; // overlay closing
+	html += '</div>'; // overlay closing
 
-  return html;
+	return html;
 };

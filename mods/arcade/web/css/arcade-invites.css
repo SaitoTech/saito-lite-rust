@@ -1,49 +1,48 @@
 .game-loader-title {
-    text-align: center;
-    font-size: 3rem;
-    margin-top: 10rem;
+	text-align: center;
+	font-size: 3rem;
+	margin-top: 10rem;
 }
 .invite-manager {
-    width: 100%;
-    padding-top: 0px;
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
+	width: 100%;
+	padding-top: 0px;
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
 }
 
 .arcade-players-needed {
-    margin-bottom: -1rem;
+	margin-bottom: -1rem;
 }
 
 .saito-module-holder {
-    margin: 0 0 0 auto;
+	margin: 0 0 0 auto;
 }
 
 .saito-game-identicons {
-    min-width: min-content;
-    padding: 1rem;
+	min-width: min-content;
+	padding: 1rem;
 }
 
 .saito-sidebar .saito-game-identicons {
-    padding: 0.5rem;
-    column-gap: 0.75rem;
+	padding: 0.5rem;
+	column-gap: 0.75rem;
 }
 
 .saito-game-identicons div {
-    height: 3.5rem;
-    backdrop-filter: blur(3px);
+	height: 3.5rem;
+	backdrop-filter: blur(3px);
 }
 
 .saito-game-identicons .requested_player {
-    opacity: 0.6;
-    filter: grayscale(0.7);
+	opacity: 0.6;
+	filter: grayscale(0.7);
 }
 
 .identicon-needed {
-    height: 3.5rem;
-    width: 3.5rem;
-    border: 1px solid var(--saito-border-color);
-    box-shadow: -1px -1px #000;
-    background-color: var(--saito-light-shim);
+	height: 3.5rem;
+	width: 3.5rem;
+	border: 1px solid var(--saito-border-color);
+	box-shadow: -1px -1px #000;
+	background-color: var(--saito-light-shim);
 }
-

@@ -1,6 +1,5 @@
 module.exports = LoginTemplate = () => {
-
-  return `
+	return `
 <form id="login-template">
             <div class="saito-overlay-form">
               <div class="saito-overlay-form-header">
@@ -16,5 +15,4 @@ module.exports = LoginTemplate = () => {
             </div>
 </form>
   `;
-
-}
+};

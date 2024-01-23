@@ -10,17 +10,22 @@
  * period. if omitted, the current date is used.
  * @return {Number} 4-digit year
  */
-export function twoDigitToFullYear(year, futureSideSpan = 50, baseDate = undefined) {
-  if (isNaN(year) || year > 99 || year < 0) {
-    return year;
-  }
+export function twoDigitToFullYear(
+	year,
+	futureSideSpan = 50,
+	baseDate = undefined
+) {
+	if (isNaN(year) || year > 99 || year < 0) {
+		return year;
+	}
 
-  const date = baseDate instanceof Date && !isNaN(baseDate) ? baseDate : new Date();
-  const currentYear = date.getFullYear();
-  const endOfCurrent = currentYear + futureSideSpan;
-  let century = Math.floor(endOfCurrent / 100) * 100;
-  if (year > endOfCurrent % 100) {
-    century -= 100;
-  }
-  return year + century;
+	const date =
+		baseDate instanceof Date && !isNaN(baseDate) ? baseDate : new Date();
+	const currentYear = date.getFullYear();
+	const endOfCurrent = currentYear + futureSideSpan;
+	let century = Math.floor(endOfCurrent / 100) * 100;
+	if (year > endOfCurrent % 100) {
+		century -= 100;
+	}
+	return year + century;
 }

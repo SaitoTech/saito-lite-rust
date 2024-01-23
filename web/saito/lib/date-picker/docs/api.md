@@ -5,7 +5,8 @@
 ### Static Properties
 
 #### Datepicker.locales
-- Type: `Object`
+
+-   Type: `Object`
 
 Installed locales in `[languageCode]: localeObject` format. `en`:_English (US)_ is pre-installed.
 
@@ -20,14 +21,15 @@ Format a Date object or a time value using given format and language
 ```javascript
 Datepicker.formatDate( date , format [, lang ] )
 ```
-- **Arguments:**
-  - `date`: {`Date`|`Number`} - Date or time value to format
-  - `format`: {`String`|`Object`} - Format string or object that contains `toDisplay()` custom formatter  
-    See [Options ≻ format](options?id=format)
-  - [`lang`] : {`String`} - Language code for the locale to use  
-    – Default: `'en'`
-- **Return:**
-  - {`String`} - Formatted date
+
+-   **Arguments:**
+    -   `date`: {`Date`|`Number`} - Date or time value to format
+    -   `format`: {`String`|`Object`} - Format string or object that contains `toDisplay()` custom formatter  
+        See [Options ≻ format](options?id=format)
+    -   [`lang`] : {`String`} - Language code for the locale to use  
+        – Default: `'en'`
+-   **Return:**
+    -   {`String`} - Formatted date
 
 #### Datepicker.parseDate()
 
@@ -36,37 +38,39 @@ Parse date string (or Date/time value) using given format and language
 ```javascript
 Datepicker.parseDate( dateStr , format [, lang ] )
 ```
-- **Arguments:**
-  - `dateStr`: {`String`|`Date`|`Number`} - Date string, Date object or time value to parse
-  - `format`: {`String`|`Object`} - Format string or object that contains `toValue()` custom parser  
-    See [Options ≻ format](options?id=format)
-  - [`lang`] : {`String`} - Language code for the locale to use  
-    – Default: `'en'`
-- **Return:**
-  - {`Number`} - Time value of parsed date
 
+-   **Arguments:**
+    -   `dateStr`: {`String`|`Date`|`Number`} - Date string, Date object or time value to parse
+    -   `format`: {`String`|`Object`} - Format string or object that contains `toValue()` custom parser  
+        See [Options ≻ format](options?id=format)
+    -   [`lang`] : {`String`} - Language code for the locale to use  
+        – Default: `'en'`
+-   **Return:**
+    -   {`Number`} - Time value of parsed date
 
 ### Instance Properties
 
 #### datepicker.active
-- Type: `Boolean`
+
+-   Type: `Boolean`
 
 Whether the picker element is shown  
 (Read-only)
 
 #### datepicker.pickerElement
-- Type: `HTMLDivElement`
+
+-   Type: `HTMLDivElement`
 
 DOM object of picker element  
 (Read-only)
 
 #### datepicker.rangepicker
-- Type: `DateRangePicker`
+
+-   Type: `DateRangePicker`
 
 DateRangePicker instance that the datepicker belongs to  
 Only avalable when the datepicker is a part of date range picker  
 (Read-only)
-
 
 ### Instance Methods
 
@@ -75,10 +79,11 @@ Only avalable when the datepicker is a part of date range picker
 Destroy the Datepicker instance
 
 ```javascript
-datepicker.destroy()
+datepicker.destroy();
 ```
-- **Return:**
-  - {`Detepicker`} - The instance destroyed
+
+-   **Return:**
+    -   {`Detepicker`} - The instance destroyed
 
 #### datepicker.getDate()
 
@@ -87,13 +92,14 @@ Get selected date(s)
 The method returns a Date object of selected date by default, and returns an array of selected dates in multidate mode. If format string is passed, it returns date string(s) formatted in given format.
 
 ```javascript
-datepicker.getDate( [ format ] )
+datepicker.getDate([format]);
 ```
-- **Arguments:**
-  - [`format`] : {`String`} - Format string to stringify the date(s)
-- **Return:**
-  - {`Date`|`String`} - Selected date (or `undefined` if none is selected)
-  - {`Date[]`|`String[]`} - Array of selected dates (or empty array if none is selected)
+
+-   **Arguments:**
+    -   [`format`] : {`String`} - Format string to stringify the date(s)
+-   **Return:**
+    -   {`Date`|`String`} - Selected date (or `undefined` if none is selected)
+    -   {`Date[]`|`String[]`} - Array of selected dates (or empty array if none is selected)
 
 #### datepicker.hide()
 
@@ -101,7 +107,7 @@ Hide the picker element
 Not available on inline picker
 
 ```javascript
-datepicker.hide()
+datepicker.hide();
 ```
 
 #### datepicker.refresh()
@@ -109,12 +115,13 @@ datepicker.hide()
 Refresh the picker element and the associated input field
 
 ```javascript
-datepicker.refresh( [ target ], [ forceRender ] )
+datepicker.refresh([target], [forceRender]);
 ```
-- **Arguments:**
-  - [`target`] : {`String`} - Target item when refreshing one item only. `'picker'` or `'input'`
-  - [`forceRender`] : {`Boolean`} - Whether to re-render the picker element regardless of its state instead of optimized refresh  
-    – Default: `'false'`
+
+-   **Arguments:**
+    -   [`target`] : {`String`} - Target item when refreshing one item only. `'picker'` or `'input'`
+    -   [`forceRender`] : {`Boolean`} - Whether to re-render the picker element regardless of its state instead of optimized refresh  
+        – Default: `'false'`
 
 #### datepicker.setDate()
 
@@ -134,35 +141,37 @@ datepicker.setDate( date1 [, date2 [, ... dateN ]][, options ] )
 datepicker.setDate( dates [, options ] )
 datepicker.setDate( [ options ] )
 ```
-- **Arguments:**
-  - [`...dates`] : {...(`String`|`Date`|`Number`)|`Array`} - Date strings, Date objects, time values or mix of those for new selection
-  - [`options`] : {`Object`} - Function options:
-    - `clear`: {`Boolean`} - Whether to clear the existing selection  
-      – Default: `false`
-    - `render`: {`Boolean`} - Whether to re-render the picker element  
-      – Default: `true`
-    - `autohide`: {`Boolean`} - Whether to hide the picker element after re-render  
-      Ignored when used with `render: false`  
-      – Default: the value of `autohide` config option
-    - `revert`: {`Boolean`} - Whether to refresh the input field when all the passed dates are invalid  
-      – Default: `false`
+
+-   **Arguments:**
+    -   [`...dates`] : {...(`String`|`Date`|`Number`)|`Array`} - Date strings, Date objects, time values or mix of those for new selection
+    -   [`options`] : {`Object`} - Function options:
+        -   `clear`: {`Boolean`} - Whether to clear the existing selection  
+            – Default: `false`
+        -   `render`: {`Boolean`} - Whether to re-render the picker element  
+            – Default: `true`
+        -   `autohide`: {`Boolean`} - Whether to hide the picker element after re-render  
+            Ignored when used with `render: false`  
+            – Default: the value of `autohide` config option
+        -   `revert`: {`Boolean`} - Whether to refresh the input field when all the passed dates are invalid  
+            – Default: `false`
 
 #### datepicker.setOptions()
 
 Set new values to the config options
 
 ```javascript
-datepicker.setOptions( options )
+datepicker.setOptions(options);
 ```
-- **Arguments:**
-  - `options`: {`Object`} - Config options to update
+
+-   **Arguments:**
+    -   `options`: {`Object`} - Config options to update
 
 #### datepicker.show()
 
 Show the picker element
 
 ```javascript
-datepicker.show()
+datepicker.show();
 ```
 
 #### datepicker.update()
@@ -175,25 +184,25 @@ The input field will be refreshed with properly formatted date string.
 In the case that all the entered dates are invalid (unparsable, repeated, disabled or out-of-range), whixh is distinguished from empty input field, the method leaves the input field untouched as well as the selection by default. If `revert: true` option is used in this case, the input field is refreshed with the existing selection.
 
 ```javascript
-datepicker.update( [ options ] )
+datepicker.update([options]);
 ```
-- **Arguments:**
-  - [`options`] : {`Object`} - Function options:
-    - `autohide`: {`Boolean`} - Whether to hide the picker element after update  
-       – Default: `false`
-    - `revert`: {`Boolean`} - Whether to refresh the input field when all the passed dates are invalid  
-      – Default: `false`
 
+-   **Arguments:**
+    -   [`options`] : {`Object`} - Function options:
+        -   `autohide`: {`Boolean`} - Whether to hide the picker element after update  
+             – Default: `false`
+        -   `revert`: {`Boolean`} - Whether to refresh the input field when all the passed dates are invalid  
+            – Default: `false`
 
 ### Events
 
 All Datepicker-event objects are `CustomEvent` instances and dispatched to the associated `<input>` element (for inline picker, the block element).  
 They include the following extra data in the `detail` property.
 
-- `date`: {`Date`} - Selected date(s) (see [getDate()](api?id=datepickergetdate))
-- `viewDate`: {`Date`} - Focused date
-- `viewId`: {`Number`} - ID of the current view
-- `datepicker`: {`Datepicker`} - Datepicker instance
+-   `date`: {`Date`} - Selected date(s) (see [getDate()](api?id=datepickergetdate))
+-   `viewDate`: {`Date`} - Focused date
+-   `viewId`: {`Number`} - ID of the current view
+-   `datepicker`: {`Datepicker`} - Datepicker instance
 
 #### changeDate
 
@@ -201,7 +210,7 @@ Fired when the selected dates are changed.
 
 #### changeMonth
 
-Fired when the focused date is changed to a different month's date. 
+Fired when the focused date is changed to a different month's date.
 
 #### changeView
 
@@ -209,7 +218,7 @@ Fired when the current view is changed.
 
 #### changeYear
 
-Fired when the focused date is changed to a different year's date. 
+Fired when the focused date is changed to a different year's date.
 
 #### hide
 
@@ -219,17 +228,16 @@ Fired when the date picker becomes hidden.
 
 Fired when the date picker becomes visible.
 
-
 ## DateRangePicker
 
 ### Instance Properties
 
 #### rangepicker.datepickers
-- Type: `Array`
+
+-   Type: `Array`
 
 Array of associated Datepicker instances  
 (Read-only)
-
 
 ### Instance Methods
 
@@ -238,10 +246,11 @@ Array of associated Datepicker instances
 Destroy the DateRangePicker instance
 
 ```javascript
-rangepicker.destroy()
+rangepicker.destroy();
 ```
-- **Return:**
-  - {`DateRangePicker`} - The instance destroyed
+
+-   **Return:**
+    -   {`DateRangePicker`} - The instance destroyed
 
 #### rangepicker.getDates()
 
@@ -251,12 +260,13 @@ The method returns Date objects by default. If format string is passed, it retur
 The result array always contains 2 items (start date/end date) and `undefined` is used for unselected side. (e.g. If none is selected, the result will be `[undefined, undefined]`. If only the end date is set when `allowOneSidedRange` config option is `true`, `[undefined, endDate]` will be returned.)
 
 ```javascript
-rangepicker.getDates( [ format ] )
+rangepicker.getDates([format]);
 ```
-- **Arguments:**
-  - [`format`] : {`String`} - Format string to stringify the dates
-- **Return:**
-  - {`Date[]`|`String[]`} - Start and end dates
+
+-   **Arguments:**
+    -   [`format`] : {`String`} - Format string to stringify the dates
+-   **Return:**
+    -   {`Date[]`|`String[]`} - Start and end dates
 
 #### rangepicker.setDates()
 
@@ -271,20 +281,20 @@ If an invalid date, the same date as the current one or an option object without
 When the [`allowOneSidedRange`](options?id=allowonesidedrange) config option is `false`, passing `{clear: true}` to clear the range works only when it is done to the last effective argument (in other words, passed to `rangeEnd` or to `rangeStart` along with ineffective `rangeEnd`). This is because when the date range is changed, it gets normalized based on the last change at the end of the changing process.
 
 ```javascript
-rangepicker.setDates( rangeStart , rangeEnd )
+rangepicker.setDates(rangeStart, rangeEnd);
 ```
-- **Arguments:**
-  - `rangeStart` : {`Date`|`Number`|`String)`|`Object`} - Start date of the range or `{clear: true}` to clear the date
-  - `rangeEnd` : {`Date`|`Number`|`String)`|`Object`} - End date of the range or `{clear: true}` to clear the date
+
+-   **Arguments:**
+    -   `rangeStart` : {`Date`|`Number`|`String)`|`Object`} - Start date of the range or `{clear: true}` to clear the date
+    -   `rangeEnd` : {`Date`|`Number`|`String)`|`Object`} - End date of the range or `{clear: true}` to clear the date
 
 #### rangepicker.setOptions()
 
 Set new values to the config options
 
 ```javascript
-rangepicker.setOptions( options )
+rangepicker.setOptions(options);
 ```
-- **Arguments:**
-  - `options`: {`Object`} - Config options to update
 
-
+-   **Arguments:**
+    -   `options`: {`Object`} - Config options to update

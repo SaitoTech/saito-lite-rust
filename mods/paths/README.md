@@ -1,4 +1,3 @@
-
 INTRODUCTION
 
 This is an implement of PATHS OF GLORY written for the open source Saito Game Engine.
@@ -10,7 +9,3 @@ https://www.amazon.com/Paths-of-Glory-5th-Printing/dp/B00UKJIEBI
 
 AMAZON:
 https://www.amazon.com/Paths-of-Glory-5th-Printing/dp/B00UKJIEBI
-
-
-
-

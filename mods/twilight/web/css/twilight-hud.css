@@ -1,70 +1,78 @@
-
 .hud-body .controls .game-cardgrid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 }
 
-
-.controls ul li , .options {
-    background-color: whitesmoke;
-    height: 7rem;
-    border-top: 1px solid var(--saito-border-color);
-    width: 100%;
-    font-size: 1.6rem;
-    display: list-item;
-    line-height: 4.75rem;
-    list-style: none;
-    cursor: pointer;
-    text-align: center;
-    padding: 1rem;
+.controls ul li,
+.options {
+	background-color: whitesmoke;
+	height: 7rem;
+	border-top: 1px solid var(--saito-border-color);
+	width: 100%;
+	font-size: 1.6rem;
+	display: list-item;
+	line-height: 4.75rem;
+	list-style: none;
+	cursor: pointer;
+	text-align: center;
+	padding: 1rem;
 }
 
 .controls ul {
-    overflow: auto;
+	overflow: auto;
 }
 
 .controls {
-    height: max-content;
-    margin-top: 1rem;
-    max-height: 20rem;
-    overflow-y: scroll;
+	height: max-content;
+	margin-top: 1rem;
+	max-height: 20rem;
+	overflow-y: scroll;
 }
 
 .hud-header {
-  max-width: 500px;
-  margin: auto;
-  box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 75%);
+	max-width: 500px;
+	margin: auto;
+	box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 75%);
 }
 
 .hud-header.soviet {
-  background: linear-gradient(to right, rgba(255, 0, 0, 0.6), rgba(255, 255, 0, 0.4), rgba(255, 0, 0, 0.6));
+	background: linear-gradient(
+		to right,
+		rgba(255, 0, 0, 0.6),
+		rgba(255, 255, 0, 0.4),
+		rgba(255, 0, 0, 0.6)
+	);
 }
 
 .hud-header.american {
-  background: linear-gradient(to right, rgba(0, 0, 255, 0.6), rgba(255, 255, 255, 0.4), rgba(0, 0, 255, 0.6));
+	background: linear-gradient(
+		to right,
+		rgba(0, 0, 255, 0.6),
+		rgba(255, 255, 255, 0.4),
+		rgba(0, 0, 255, 0.6)
+	);
 }
 
 .card {
-  background-image: url("/twilight/img/Base.svg");
-  background-size: contain;
-  background-repeat: no-repeat;
+	background-image: url('/twilight/img/Base.svg');
+	background-size: contain;
+	background-repeat: no-repeat;
 }
 
 .card {
-    height: calc(8vw * 1.4);
-    width: 8vw;
+	height: calc(8vw * 1.4);
+	width: 8vw;
 }
 
 .hud .card {
-  max-width: 120px;
-  max-height: 168px;
+	max-width: 120px;
+	max-height: 168px;
 }
 
 .hud-body .controls .game-cardgrid {
-  display: flex;
-  column-gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
+	display: flex;
+	column-gap: 0.5rem;
+	align-items: center;
+	justify-content: center;
 }
-

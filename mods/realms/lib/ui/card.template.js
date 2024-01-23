@@ -1,9 +1,6 @@
 module.exports = CardTemplate = (card) => {
-
-  return `
+	return `
     <div class="cardstack">
     </div>
   `;
-
-}
-
+};

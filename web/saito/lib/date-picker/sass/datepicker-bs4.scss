@@ -37,55 +37,57 @@ $dp-input-in-edit-focus-box-shadow-size: 0 0 0.25em 0.25em !default;
 @import 'mixins';
 
 @mixin dp-button {
-  .btn {
-    // use custom version of .btn-light
-    $background: $light;
-    $border: $light;
-    $hover-background: darken($background, 7.5%);
-    $hover-border: darken($border, 10%);
-    $active-background: darken($background, 10%);
-    $active-border: darken($border, 12.5%);
+	.btn {
+		// use custom version of .btn-light
+		$background: $light;
+		$border: $light;
+		$hover-background: darken($background, 7.5%);
+		$hover-border: darken($border, 10%);
+		$active-background: darken($background, 10%);
+		$active-border: darken($border, 12.5%);
 
-    border-color: $border;
-    background-color: $dp-background-color;
+		border-color: $border;
+		background-color: $dp-background-color;
 
-    &:hover {
-      border-color: $hover-border;
-      background-color: $hover-background;
-      color: color-yiq($hover-background);
-    }
+		&:hover {
+			border-color: $hover-border;
+			background-color: $hover-background;
+			color: color-yiq($hover-background);
+		}
 
-    &:focus {
-      border-color: $hover-border;
-      box-shadow: 0 0 0 $btn-focus-width rgba(mix(color-yiq($background), $border, 15%), 0.5);
-      background-color: $hover-background;
-      color: color-yiq($hover-background);
-    }
+		&:focus {
+			border-color: $hover-border;
+			box-shadow: 0 0 0 $btn-focus-width
+				rgba(mix(color-yiq($background), $border, 15%), 0.5);
+			background-color: $hover-background;
+			color: color-yiq($hover-background);
+		}
 
-    &:disabled {
-      border-color: $border;
-      background-color: $background;
-      color: color-yiq($background);
-    }
+		&:disabled {
+			border-color: $border;
+			background-color: $background;
+			color: color-yiq($background);
+		}
 
-    &:not(:disabled):active {
-      border-color: $active-border;
-      background-color: $active-background;
-      color: color-yiq($active-background);
+		&:not(:disabled):active {
+			border-color: $active-border;
+			background-color: $active-background;
+			color: color-yiq($active-background);
 
-      &:focus {
-        box-shadow: 0 0 0 $btn-focus-width rgba(mix(color-yiq($background), $border, 15%), 0.5);
-      }
-    }
+			&:focus {
+				box-shadow: 0 0 0 $btn-focus-width
+					rgba(mix(color-yiq($background), $border, 15%), 0.5);
+			}
+		}
 
-    .datepicker-header & {
-      @include dp-header-button-common;
-    }
+		.datepicker-header & {
+			@include dp-header-button-common;
+		}
 
-    .datepicker-footer & {
-      @include dp-footer-button-common;
-    }
-  }
+		.datepicker-footer & {
+			@include dp-footer-button-common;
+		}
+	}
 }
 
 @import 'datepicker';

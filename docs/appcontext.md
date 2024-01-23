@@ -22,9 +22,9 @@ returnHandshake()
 
 returnPublicKey()
 
->Returns wallet's public key
+> Returns wallet's public key
 
-* returns string public key
+-   returns string public key
 
 deletePeer()
 
@@ -82,7 +82,7 @@ propagateOffchainTransaction(tx, outbound_message = "offchain transaction", myca
 
 sendTransaction(message, data = "", fee = 1)
 
-sendRequest(message, data = "", fee = 1) 
+sendRequest(message, data = "", fee = 1)
 
 sendRequestWithCallback(message, data = "", callback)
 
@@ -102,7 +102,7 @@ isPrivateNetwork()
 
 isProductionNetwork()
 
-isConnected() 
+isConnected()
 
 hasPeer(publickey)
 
@@ -172,9 +172,9 @@ returnIdenticonColor(publickey)
 
 fetchIdentifierPromise(publickey)
 
-fetchIdentifier(publickey = "", mycallback) 
+fetchIdentifier(publickey = "", mycallback)
 
-fetchManyIdentifiers(publickeys = [], mycallback) 
+fetchManyIdentifiers(publickeys = [], mycallback)
 
 fetchPublicKeyPromise(identifier = "")
 
@@ -182,7 +182,7 @@ fetchPublicKey(identifier = null, mycallback)
 
 returnPublicKeyByIdentifier(identifier)
 
-returnIdentifierByPublicKey(publickey, returnKey = false) 
+returnIdentifierByPublicKey(publickey, returnKey = false)
 
 returnUsername(publickey)
 
@@ -206,17 +206,17 @@ loadTransactionsByKeys
 
 generateRebroadcastTransaction(creator, tid, sid, avg_fee=2)
 
-isFrom(senderPublicKey) 
+isFrom(senderPublicKey)
 
-isTo(receiverPublicKey) 
+isTo(receiverPublicKey)
 
-isGoldenTicket() 
+isGoldenTicket()
 
-isRebroadcast(oldblk, newblk, sid) 
+isRebroadcast(oldblk, newblk, sid)
 
 involvesPublicKey(publickey)
 
-returnPaymentTo(publickey) 
+returnPaymentTo(publickey)
 
 returnSlipsFrom(fromAddress)
 
@@ -236,7 +236,7 @@ returnSignature(app)
 
 returnSignatureSource(app)
 
-returnFees(app) 
+returnFees(app)
 
 returnRoutingWorkAvailable(app, publickey="")
 
@@ -244,113 +244,113 @@ validate(app, bid=0)
 
 ## Wallet
 
-addInput(x) 
+addInput(x)
 
-addOutput(x) 
+addOutput(x)
 
-containsInput(s) 
+containsInput(s)
 
-containsOutput(s) 
+containsOutput(s)
 
-addTransactionToPending(tx) 
+addTransactionToPending(tx)
 
-doesSlipInPendingTransactionsSpendBlockHash(bsh="") 
+doesSlipInPendingTransactionsSpendBlockHash(bsh="")
 
-isSlipInPendingTransactions(slip=null) 
+isSlipInPendingTransactions(slip=null)
 
-rebroadcastPendingTransactions(peer=null) 
+rebroadcastPendingTransactions(peer=null)
 
-unspendInputSlips(tmptx=null) 
+unspendInputSlips(tmptx=null)
 
-onChainReorganization(bid, bsh, lc, pos) 
+onChainReorganization(bid, bsh, lc, pos)
 
-processPayments(blk, lc=0) 
+processPayments(blk, lc=0)
 
-purgeExpiredSlips() 
+purgeExpiredSlips()
 
-resetExistingSlips(bid, bsh, lc) 
+resetExistingSlips(bid, bsh, lc)
 
-resetSpentInputs(bid=0) 
+resetSpentInputs(bid=0)
 
-returnAdequateInputs(amt) 
+returnAdequateInputs(amt)
 
-calculateBalance() 
+calculateBalance()
 
-calculateDisplayBalance() 
+calculateDisplayBalance()
 
-isSlipValid(slip, index) 
+isSlipValid(slip, index)
 
-returnBalance() 
+returnBalance()
 
-returnPrivateKey() 
+returnPrivateKey()
 
 > Returns wallet's private key
 
-* returns string private key
+-   returns string private key
 
-returnPublicKey() 
+returnPublicKey()
 
-async backupWallet() 
+async backupWallet()
 
-async resetWallet() 
+async resetWallet()
 
-saveWallet() 
+saveWallet()
 
-signMessage(msg) 
+signMessage(msg)
 
->Returns wallet's balance
+> Returns wallet's balance
 
-* returns double balance
+-   returns double balance
 
 signTransaction(tx)
 
->Signs a transaction using the wallet private key.
+> Signs a transaction using the wallet private key.
 
-* tx Saito transaction to sign
-* returns saito.transaction Signed Saito transaction
+-   tx Saito transaction to sign
+-   returns saito.transaction Signed Saito transaction
 
-updateBalance() 
+updateBalance()
 
-returnDisplayBalance() 
+returnDisplayBalance()
 
-createSlip(addr) 
+createSlip(addr)
 
-createRawTransaction(txobj) 
+createRawTransaction(txobj)
 
-createUnsignedTransactionWithDefaultFee(publickey="", amt=0.0) 
+createUnsignedTransactionWithDefaultFee(publickey="", amt=0.0)
 
->Create a transaction with the appropriate slips given the desired fee and payment to associate with the transaction, and a change address to receive any surplus tokens. Use the default wallet fee.
+> Create a transaction with the appropriate slips given the desired fee and payment to associate with the transaction, and a change address to receive any surplus tokens. Use the default wallet fee.
 
-* recipient Publickey of the recipient (string)
-* fee to send with tx
-* returns saito.transaction if successful
-* returns null if inadequate inputs
+-   recipient Publickey of the recipient (string)
+-   fee to send with tx
+-   returns saito.transaction if successful
+-   returns null if inadequate inputs
 
 signTransaction
 
->Signs a msg string using the wallet private key.
+> Signs a msg string using the wallet private key.
 
 returnBalance
 
-* msg string to sign
-* returns string public key
+-   msg string to sign
+-   returns string public key
 
-createUnsignedTransaction(publickey="", amt=0.0, fee=0.0) 
+createUnsignedTransaction(publickey="", amt=0.0, fee=0.0)
 
 > Create a transaction with the appropriate slips given the desired fee and payment to associate with the transaction, and a change address to receive any surplus tokens.
 
-* recipient Publickey of the recipient (string)
-* payment amount
-* fee to send with tx
-* returns saito.transaction if successful
-* returns null if inadequate inputs
+-   recipient Publickey of the recipient (string)
+-   payment amount
+-   fee to send with tx
+-   returns saito.transaction if successful
+-   returns null if inadequate inputs
 
-createToSlips(num, address, amount, change_amount) 
+createToSlips(num, address, amount, change_amount)
 
-createReplacementTransaction(oldtx) 
+createReplacementTransaction(oldtx)
 
-returnInstalledCryptos() 
+returnInstalledCryptos()
 
-returnPreferredCrypto() 
+returnPreferredCrypto()
 
 returnPreferredCryptoByName()

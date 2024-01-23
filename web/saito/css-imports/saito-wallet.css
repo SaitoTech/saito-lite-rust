@@ -1,645 +1,648 @@
 .mixin_crypto_overlay {
-  padding: 2rem;
-  background-color: var(--saito-white);
-  color: black;
-  line-height: 1.6em;
-  font-size: 1.5em;
-  width: 90rem;
+	padding: 2rem;
+	background-color: var(--saito-white);
+	color: black;
+	line-height: 1.6em;
+	font-size: 1.5em;
+	width: 90rem;
 }
 
 .mixin_crypto_title {
-  margin: 0.5em 0;
-  font-size: 2em;
-  font-weight: bold;
-  margin-top: 0rem;
+	margin: 0.5em 0;
+	font-size: 2em;
+	font-weight: bold;
+	margin-top: 0rem;
 }
 
 .mixin_crypto_warning {
-  margin-top: 0px;
-  margin-bottom: 20px;
+	margin-top: 0px;
+	margin-bottom: 20px;
 }
 
 .mixin_risk_acknowledge {
-  max-width: 200px;
-  text-align: center;
-  margin-right: auto;
+	max-width: 200px;
+	text-align: center;
+	margin-right: auto;
 }
 
 .email-appspace-deposit-overlay {
-  padding: 2rem;
-  background-image: linear-gradient(to bottom right, #EA4843, #f78754);
-  color: #fff;
-  background-position: 0em;
-  background-size: 120% 100%;
-  color: white;
-  border-radius: 1rem;
-  width: 40vw;
+	padding: 2rem;
+	background-image: linear-gradient(to bottom right, #ea4843, #f78754);
+	color: #fff;
+	background-position: 0em;
+	background-size: 120% 100%;
+	color: white;
+	border-radius: 1rem;
+	width: 40vw;
 }
 
 .email-appspace-deposit-overlay p {
-  font-size: 17px;
+	font-size: 17px;
 }
 
 .input-cont {
-  margin-bottom: 20px;
-  position: relative;
-  padding-bottom: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	padding-bottom: 10px;
 }
 
 .input-cont p {
-  color: #fff;
+	color: #fff;
 }
 
 .input-heading {
-  margin-bottom: 10px;
-  font-weight: 700;
-  font-size: 18px;
+	margin-bottom: 10px;
+	font-weight: 700;
+	font-size: 18px;
 }
 
 .input-elem {
-  width: 99%;
-  height: 35px;
-  padding: 7px 10px;
-  position: relative;
+	width: 99%;
+	height: 35px;
+	padding: 7px 10px;
+	position: relative;
 }
 
 #copy-deposit-add {
-  position: absolute;
-  top: 54%;
-  right: 4%;
-  color: #444;
-  cursor: pointer;
+	position: absolute;
+	top: 54%;
+	right: 4%;
+	color: #444;
+	cursor: pointer;
 }
 
 .copy-check::before {
-  content: "\f00c";
+	content: '\f00c';
 }
 
 .info-cont {
-  display: flex;
-  justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
-.info-item {}
+.info-item {
+}
 
 .info-item-title {
-  font-size: 13px;
-  font-weight: 700;
+	font-size: 13px;
+	font-weight: 700;
 }
 
 .info-item-detail {
-  font-size: 12px;
+	font-size: 12px;
 }
 
 .note {
-  margin-top: 30px;
-  font-size: 13px;
+	margin-top: 30px;
+	font-size: 13px;
 }
 
 .add-cont {
-  display: flex;
-  justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
-.add-item-cont {}
+.add-item-cont {
+}
 
 .add-input-box {
-  width: 100%;
+	width: 100%;
 }
 
 .email-appspace-deposit-overlay {
-  max-width: 32vw;
+	max-width: 32vw;
 }
 
 .deposit_title {
-  font-size: 2em;
+	font-size: 2em;
 }
 
 .deposit_desc {
-  font-size: 1.2em;
-  line-height: 1.6em;
-  padding-top: 10px;
-  padding-bottom: 10px;
+	font-size: 1.2em;
+	line-height: 1.6em;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .deposit_qrcode {
-  clear: both;
-  margin-top: 10px;
-  margin-bottom: 20px;
+	clear: both;
+	margin-top: 10px;
+	margin-bottom: 20px;
 }
 
 .deposit_address {
-  font-size: 1.2em;
-  font-weight: bold;
-  letter-spacing: 0.05em;
+	font-size: 1.2em;
+	font-weight: bold;
+	letter-spacing: 0.05em;
 }
 
-#withdrawl-confirm-cont, #withdrawl-sent-cont {
-  display: none;
+#withdrawl-confirm-cont,
+#withdrawl-sent-cont {
+	display: none;
 }
 
 .decision-cont a {
-  color: #fff;
-  transition: all 0.1s ease-in-out;
+	color: #fff;
+	transition: all 0.1s ease-in-out;
 }
 
 .decision-cont a:hover {
-  color: #333;
+	color: #333;
 }
 
 #saito-withdraw-overlay {
-  min-width: 32vw;
-  padding: 2rem;
-  color: #fff;
-  background-position: 0em;
-  background-size: 120% 100%;
-  color: white;
-  overflow: hidden;
+	min-width: 32vw;
+	padding: 2rem;
+	color: #fff;
+	background-position: 0em;
+	background-size: 120% 100%;
+	color: white;
+	overflow: hidden;
 }
 
 .mixin-withdraw-token-wrapper {
-  margin-bottom: 2rem;
+	margin-bottom: 2rem;
 }
 
 .mixin-withdraw-token-wrapper p {
-  color: #fff;
+	color: #fff;
 }
 
 .mixin-withdraw-input {
-  margin-bottom: 1rem;
-  position: relative;
-  padding-bottom: 20px;
+	margin-bottom: 1rem;
+	position: relative;
+	padding-bottom: 20px;
 }
 
 .no-margin {
-  margin: 0px;
+	margin: 0px;
 }
 
 .max-amount-error {
-  display: none;
-  color: #5d1919;
+	display: none;
+	color: #5d1919;
 }
 
 .input-heading {
-  margin-bottom: 10px;
-  font-weight: 700;
-  font-size: 18px;
+	margin-bottom: 10px;
+	font-weight: 700;
+	font-size: 18px;
 }
 
 .input-elem {
-  width: 100% !important;
-  height: 45px;
-  padding: 10px 10px !important;
-  color: var(--saito-font-color);
+	width: 100% !important;
+	height: 45px;
+	padding: 10px 10px !important;
+	color: var(--saito-font-color);
 }
 
 .info-cont {
-  display: flex;
-  justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
-.info-item {}
+.info-item {
+}
 
 .info-item-title {
-  font-size: 13px;
-  font-weight: 700;
+	font-size: 13px;
+	font-weight: 700;
 }
 
 .info-item-detail {
-  font-size: 12px;
+	font-size: 12px;
 }
 
 .note {
-  margin-top: 30px;
-  font-size: 12px;
+	margin-top: 30px;
+	font-size: 12px;
 }
 
 .note.withdrawl {
-  font-size: 15px;
-  margin-top: 25px;
-  margin-bottom: 30px;
+	font-size: 15px;
+	margin-top: 25px;
+	margin-bottom: 30px;
 }
 
 .add-cont {
-  display: flex;
-  justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
 .amount-cont {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
+	display: flex;
+	justify-content: space-between;
+	gap: 2rem;
 }
 
 #mixin-warning-note {
-  font-size: 1.7rem;
-  color: #4a4848;
-  margin-bottom: 1.5rem;
+	font-size: 1.7rem;
+	color: #4a4848;
+	margin-bottom: 1.5rem;
 }
 
 .mixin-txn-his-container {
-  margin-top: 1rem;
+	margin-top: 1rem;
 }
 
 .mixin-txn-his-container .saito-table-body {
-  height: auto;
-  margin-top: 1rem;
+	height: auto;
+	margin-top: 1rem;
 }
 
 .amount-item-amount {
-  flex-grow: 1;
+	flex-grow: 1;
 }
 
 .mixin-txn-his-container .saito-table-header {
-  grid-template-columns: 16rem 16rem 15rem 15rem;
-  text-align: center;
+	grid-template-columns: 16rem 16rem 15rem 15rem;
+	text-align: center;
 }
 
 .mixin-txn-his-container .saito-table-row {
-  grid-template-columns: 16rem 16rem 14rem 16rem;
-  text-align: center;
+	grid-template-columns: 16rem 16rem 14rem 16rem;
+	text-align: center;
 }
 
 .mixin-items-container {
-  margin-top: 3rem;
+	margin-top: 3rem;
 }
 
-.mixin-items-container .saito-table-header, .mixin-txn-his-container .saito-table-header {
-  padding: 1rem 0rem;
-  border-radius: 0.5rem;
-  text-align: center;
-  background: var(--dreamscape);
-  color: var(--saito-white);
+.mixin-items-container .saito-table-header,
+.mixin-txn-his-container .saito-table-header {
+	padding: 1rem 0rem;
+	border-radius: 0.5rem;
+	text-align: center;
+	background: var(--dreamscape);
+	color: var(--saito-white);
 }
 
 .mixin-items-container .saito-table-header {
-  grid-template-columns: 14rem 14rem;
+	grid-template-columns: 14rem 14rem;
 }
 
 .mixin-items-container .saito-table-body {
-  height: auto;
+	height: auto;
 }
 
 .mixin-items-container .saito-table-row {
-  grid-template-columns: 13rem 13rem 13rem 13rem 13rem;
-  text-align: center;
-  margin-bottom: 1rem;
+	grid-template-columns: 13rem 13rem 13rem 13rem 13rem;
+	text-align: center;
+	margin-bottom: 1rem;
 }
 
-.mixin-items-container .saito-table-row, .mixin-txn-his-container .saito-table-row {
-  margin-bottom: 1rem;
+.mixin-items-container .saito-table-row,
+.mixin-txn-his-container .saito-table-row {
+	margin-bottom: 1rem;
 }
-
 
 /* pagination */
 .hidden {
-  display: none;
+	display: none;
 }
-
 
 .pagination-container {
-  display: flex;
-  gap: 2rem;
-  width: fit-content;
-  margin: auto;
-  padding: 2rem 0rem 1.3rem 0rem;
+	display: flex;
+	gap: 2rem;
+	width: fit-content;
+	margin: auto;
+	padding: 2rem 0rem 1.3rem 0rem;
 }
 
-
-
 #pagination-numbers {
-    display: flex;
-    gap: 2rem;
+	display: flex;
+	gap: 2rem;
 }
 
 .pagination-number.active {
-  color: var(--saito-white);
-  background: var(--saito-button-background);
+	color: var(--saito-white);
+	background: var(--saito-button-background);
 }
 
 .pagination-number {
-  border: 1px solid var(--saito-background-color);
-  cursor: pointer;
-  padding: 0.3rem 1rem;
-  transition: all 0.2s ease-in-out;
-  border-radius: 0.2rem;
+	border: 1px solid var(--saito-background-color);
+	cursor: pointer;
+	padding: 0.3rem 1rem;
+	transition: all 0.2s ease-in-out;
+	border-radius: 0.2rem;
 }
 
 .pagination-number:hover {
-  border: 1px solid var(--saito-button-background);
+	border: 1px solid var(--saito-button-background);
 }
 
 .pagination-button {
-  cursor: pointer;
-  font-size: 2rem;
+	cursor: pointer;
+	font-size: 2rem;
 }
 
 .pagination-button.disabled {
-  visibility: hidden;
+	visibility: hidden;
 }
 
 .pagination-button:hover {
-  transition: all 0.2s ease-in-out;
-  transform: scale(1.5);
+	transition: all 0.2s ease-in-out;
+	transform: scale(1.5);
 }
 
-
 .pagination-container.disabled .pagination-button {
-  color: #9f9b9b;
+	color: #9f9b9b;
 }
 
 .pagination-container.disabled .pagination-button:hover {
-  transform: scale(1);
+	transform: scale(1);
 }
 
-
 .deposit {
-  color: #00ae00;
-  font-weight: bold;
+	color: #00ae00;
+	font-weight: bold;
 }
 
 .withdrawal {
-  color: #e34927;
-  font-weight: bold;
+	color: #e34927;
+	font-weight: bold;
 }
 
 #mixin-balance-container .mixin-item {
-  width: calc(100% * (1/4));
+	width: calc(100% * (1 / 4));
 }
 
-.mixin-balances_deposit, .mixin-balances_withdraw, .mixin-balance-history {
-  color: var(--saito-primary);
+.mixin-balances_deposit,
+.mixin-balances_withdraw,
+.mixin-balance-history {
+	color: var(--saito-primary);
 }
 
 .mixin-overlay-history {
-  min-height: 20rem;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  background: var(--saito-background-color);
-  color: var(--saito-font-color-heavy);
+	min-height: 20rem;
+	padding: 1.5rem;
+	border-radius: 0.5rem;
+	background: var(--saito-background-color);
+	color: var(--saito-font-color-heavy);
 }
-
 
 .auth_title {
-  font-size: 3.5rem;
+	font-size: 3.5rem;
 }
 
-
-.from_address, .to_address {
-  margin-bottom: 1rem;
-  font-size: 2rem;
+.from_address,
+.to_address {
+	margin-bottom: 1rem;
+	font-size: 2rem;
 }
 
 .game-crypto-transfer-manager-container .balance {
-  margin-bottom: 1.1rem;
-  font-size: 3.5rem;
+	margin-bottom: 1.1rem;
+	font-size: 3.5rem;
 }
-
 
 /*
   Withdrawl overlay 
 */
 
 .token-dropdown {
-  display: flex;
-  position: relative;
-  background: var(--saito-light-shim);
-  padding-right: 0.5rem;
-  border-radius: 0.5rem;
-  background: var(--saito-background-light);
-  border: 1px solid var(--saito-font-color);
+	display: flex;
+	position: relative;
+	background: var(--saito-light-shim);
+	padding-right: 0.5rem;
+	border-radius: 0.5rem;
+	background: var(--saito-background-light);
+	border: 1px solid var(--saito-font-color);
 }
 
-.token-dropdown img { 
-  width: 2rem;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 1rem;
+.token-dropdown img {
+	width: 2rem;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 1rem;
 }
 
 .token-dropdown select {
-  height: 45px;
-  padding: 0rem 3rem;
-  border: none;
-  background: none;
-  font-size: 1.6rem;
-  color: var(--saito-font-color);
+	height: 45px;
+	padding: 0rem 3rem;
+	border: none;
+	background: none;
+	font-size: 1.6rem;
+	color: var(--saito-font-color);
 }
 
 .withdraw-address-cont {
-  position: relative; 
+	position: relative;
 }
 
 .saito-overlay-form-input input {
-  border: none;
-  background: var(--saito-light-shim);
-  color: var(--saito-gray-mid);
-  font-size: 1.6rem;
-  background: var(--saito-background-light);
-  border: 1px solid var(--saito-font-color);
+	border: none;
+	background: var(--saito-light-shim);
+	color: var(--saito-gray-mid);
+	font-size: 1.6rem;
+	background: var(--saito-background-light);
+	border: 1px solid var(--saito-font-color);
 }
 
 .withdraw-options-cont {
-  position: absolute;
-  right: 1rem;
-  top: 45%;
-  transform: translateY(-50%);
-  color: var(--saito-font-color);
-  cursor: pointer;
+	position: absolute;
+	right: 1rem;
+	top: 45%;
+	transform: translateY(-50%);
+	color: var(--saito-font-color);
+	cursor: pointer;
 }
 
 .withdraw-options-cont span {
-  font-size: 1.6rem;
+	font-size: 1.6rem;
 }
 
-
 .withdrawl-notes {
-  background: var(--saito-light-shim);
-  padding: 1.5rem 1rem;
-  border-radius: 0.5rem;
-  color: var(--saito-black-faded);
-  font-size: 1.6rem;
+	background: var(--saito-light-shim);
+	padding: 1.5rem 1rem;
+	border-radius: 0.5rem;
+	color: var(--saito-black-faded);
+	font-size: 1.6rem;
 }
 
 .withdrawl-notes div:nth-child(2) {
-  margin-top: 1rem;
+	margin-top: 1rem;
 }
 
-.saito-overlay-form-submit, .saito-overlay-form-cancel {
-  display: block;
-  height: 3rem !important;
-  padding: 0rem;
-  line-height: 0rem;
-  min-width: 15rem;
-  width: auto;
+.saito-overlay-form-submit,
+.saito-overlay-form-cancel {
+	display: block;
+	height: 3rem !important;
+	padding: 0rem;
+	line-height: 0rem;
+	min-width: 15rem;
+	width: auto;
 }
 
-.saito-overlay-form-submit, .saito-overlay-form-subtext {
-  grid-column: span 2;
+.saito-overlay-form-submit,
+.saito-overlay-form-subtext {
+	grid-column: span 2;
 }
 
 #backup-template .saito-overlay-subform {
-  gap: 2rem 1rem;
+	gap: 2rem 1rem;
 }
 
 .input-elements-container {
-  gap: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-  align-content: flex-start;
-  overflow: auto;
-  flex-direction: row;
+	gap: 1rem;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: flex-start;
+	align-content: flex-start;
+	overflow: auto;
+	flex-direction: row;
 }
 
 .input-elements-container .saito-overlay-form-input {
-  width: 100%;
+	width: 100%;
 }
 
 .confirm-btn-container {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  transition: all 0.4s ease-in-out;
-  margin-left: 100rem;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	transition: all 0.4s ease-in-out;
+	margin-left: 100rem;
 }
 
 .confirm-btn-container button {
-  padding: 1.5rem;
+	padding: 1.5rem;
 }
 
 .confirm-msg-container {
-  color: var(--saito-font-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3rem;
-  display: flex; 
-  transition: all 0.3s ease-in-out;
+	color: var(--saito-font-color);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 3rem;
+	display: flex;
+	transition: all 0.3s ease-in-out;
 }
 
 .confirm-msg-container .withdraw-msg-icon {
-  font-size: 10rem;
+	font-size: 10rem;
 }
 
 .confirm-msg-container .withdraw-msg-icon.hide {
-  display: none;
+	display: none;
 }
 
 .confirm-msg-container .spinner {
-  display: none;
-  height: 9rem;
+	display: none;
+	height: 9rem;
 }
 
 .confirm-msg-container .spinner.show {
-  display: block;
+	display: block;
 }
 
 .confirm-msg-container .confirm-msg {
-  display: inline-block;
-  width: min-content;
-  text-align: center;
-  min-width: 40rem;
-  font-size: 1.8rem;
-  line-height: 2.8rem;
+	display: inline-block;
+	width: min-content;
+	text-align: center;
+	min-width: 40rem;
+	font-size: 1.8rem;
+	line-height: 2.8rem;
 }
 
 .confirm-submit {
-  transition: all 0.3s ease-in-out;
-  justify-content: center;
+	transition: all 0.3s ease-in-out;
+	justify-content: center;
 }
 
 .hide-element {
-  display: none!important;
+	display: none !important;
 }
 
-
 .fa-circle-notch {
-  animation: spin 1.5s ease-in-out infinite;
-  -webkit-animation: spin 1.5s ease-in-out infinite;
+	animation: spin 1.5s ease-in-out infinite;
+	-webkit-animation: spin 1.5s ease-in-out infinite;
 }
 
 .dropdown-cont {
-  display: flex;
-  gap: 1rem;
-  justify-content: space-between;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
 }
 
 .dropdown-cont .saito-overlay-form-input {
-  width: 30%;
+	width: 30%;
 }
 
 .withdraw-info-cont {
-  color: var(--saito-font-color);
-  line-height: 2rem;
-  text-align: center;
+	color: var(--saito-font-color);
+	line-height: 2rem;
+	text-align: center;
 }
 
 .withdraw-info-cont .withdraw-info-title {
-  width: 11rem;
-  display: block;
+	width: 11rem;
+	display: block;
 }
 
 #withdraw-step-one {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
+	display: flex;
+	flex-direction: column;
+	gap: 3rem;
 }
 
 #withdraw-step-two {
-  gap: 3rem;
-  display: flex;
-  flex-direction: column;
+	gap: 3rem;
+	display: flex;
+	flex-direction: column;
 }
 
-
 #withdraw-step-one .input-elem {
-  color: var(--saito-font-color);
+	color: var(--saito-font-color);
 }
 
 .saito-history-msg {
-  color: var(--saito-font-color);
+	color: var(--saito-font-color);
 }
 
 @keyframes spin {
-  to { -webkit-transform: rotate(360deg); }
+	to {
+		-webkit-transform: rotate(360deg);
+	}
 }
 @-webkit-keyframes spin {
-  to { -webkit-transform: rotate(360deg); }
+	to {
+		-webkit-transform: rotate(360deg);
+	}
 }
 
 @media screen and (max-width: 768px) {
-  .mixin-items-container .saito-table-header {
-    grid-template-columns: 8rem 8rem;
-  }
-  .mixin-items-container .saito-table-row {
-    grid-template-columns: 7rem 7rem 7rem 7rem 7rem;
-  }
-  .email-appspace-deposit-overlay {
-    max-width: fit-content;
-    width: 95vw;
-  }
-  .email-appspace-deposit-overlay #qrcode img {
-    width: 24vw;
-    height: auto;
-  }
-  .mixin-no-history {
-    margin-top: 1rem;
-    margin-left: 0rem;
-  }
-  .mixin-txn-his-container {
-    width: 86vw;
-  }
-  .mixin-txn-his-container .saito-table-header {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-  }
-  .mixin_crypto_overlay {
-    width: 99vw;
-  }
+	.mixin-items-container .saito-table-header {
+		grid-template-columns: 8rem 8rem;
+	}
+	.mixin-items-container .saito-table-row {
+		grid-template-columns: 7rem 7rem 7rem 7rem 7rem;
+	}
+	.email-appspace-deposit-overlay {
+		max-width: fit-content;
+		width: 95vw;
+	}
+	.email-appspace-deposit-overlay #qrcode img {
+		width: 24vw;
+		height: auto;
+	}
+	.mixin-no-history {
+		margin-top: 1rem;
+		margin-left: 0rem;
+	}
+	.mixin-txn-his-container {
+		width: 86vw;
+	}
+	.mixin-txn-his-container .saito-table-header {
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+	}
+	.mixin_crypto_overlay {
+		width: 99vw;
+	}
 
-  #saito-withdraw-overlay {
-    min-width: 92vw;
-  }
+	#saito-withdraw-overlay {
+		min-width: 92vw;
+	}
 }

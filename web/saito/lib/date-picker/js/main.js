@@ -1,4 +1,4 @@
 import Datepicker from './Datepicker.js';
 import DateRangePicker from './DateRangePicker.js';
 
-export {Datepicker, DateRangePicker};
+export { Datepicker, DateRangePicker };

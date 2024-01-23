@@ -8,7 +8,7 @@
   // politely let you know if those minor-powers are activated to an ally or enemy
   //
 
-  returnAllies(faction) { 
+  returnAllies(faction); { 
     let f = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
@@ -23,7 +23,7 @@
     return f;
   }
 
-  returnEnemies(faction) { 
+  returnEnemies(faction); { 
     let f = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
@@ -34,7 +34,7 @@
     return f;
   }
 
-  areAllies(faction1, faction2) {
+  areAllies(faction1, faction2); {
     try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}

@@ -1,42 +1,43 @@
+if (card == 'pinochet') {
+	this.game.state.events.pinochet = 1;
 
-    if (card == "pinochet") {
+	if (this.game.player == 2) {
+		this.startClock();
 
-      this.game.state.events.pinochet = 1;
+		var twilight_self = this;
+		twilight_self.playerFinishedPlacingInfluence();
 
-      if (this.game.player == 2) {
+		twilight_self.updateStatusWithOptions(
+			`${twilight_self.cardToText(card)}: `,
+			'<ul><li class="option" id="chile">2 Influence in Chile</li><li class="option" id="argentina">2 Influence in Argentina</li></ul>',
+			function (action2) {
+				twilight_self.addMove('resolve\tpinochet');
+				twilight_self.addMove('pinochet');
 
-        this.startClock();
+				if (action2 == 'chile') {
+					twilight_self.placeInfluence('chile', 2, 'us', function () {
+						twilight_self.addMove('place\tus\tus\tchile\t2');
+						twilight_self.endTurn();
+					});
+					return 0;
+				}
+				if (action2 == 'argentina') {
+					twilight_self.placeInfluence(
+						'argentina',
+						2,
+						'us',
+						function () {
+							twilight_self.addMove(
+								'place\tus\tus\targentina\t2'
+							);
+							twilight_self.endTurn();
+						}
+					);
+					return 0;
+				}
+			}
+		);
+	}
 
-        var twilight_self = this;
-        twilight_self.playerFinishedPlacingInfluence();
-
-        twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="chile">2 Influence in Chile</li><li class="option" id="argentina">2 Influence in Argentina</li></ul>', function(action2) {
-
-          twilight_self.addMove("resolve\tpinochet");
-          twilight_self.addMove("pinochet");
-
-          if (action2 == "chile") {
-
-            twilight_self.placeInfluence("chile", 2, "us", function() {
-              twilight_self.addMove("place\tus\tus\tchile\t2");
-              twilight_self.endTurn();
-            });
-            return 0;
-
-          }
-          if (action2 == "argentina") {
-
-            twilight_self.placeInfluence("argentina", 2, "us", function() {
-              twilight_self.addMove("place\tus\tus\targentina\t2");
-              twilight_self.endTurn();
-            });
-            return 0;
-
-          }
-        });
-      }
-
-      return 0;
-
-    }
-
+	return 0;
+}

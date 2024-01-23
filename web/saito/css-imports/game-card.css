@@ -1,17 +1,15 @@
-
 /* values set from TS card, adjust for poker deck and update TS with this */
 .card {
-  /* change game-controls.css for cardbox minwidth if != 10vw */
-  height: calc(10vw * 1.4);
-  width: 10vw;
+	/* change game-controls.css for cardbox minwidth if != 10vw */
+	height: calc(10vw * 1.4);
+	width: 10vw;
 }
 
-.cardimg , .card img {
-  position: absolute;
-  height: 100%; /* We probably don't want this!!!*/
-  width: 100%;
-  top: 0px;
-  left: 0px;
+.cardimg,
+.card img {
+	position: absolute;
+	height: 100%; /* We probably don't want this!!!*/
+	width: 100%;
+	top: 0px;
+	left: 0px;
 }
-
-

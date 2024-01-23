@@ -1,423 +1,423 @@
-
 .league-overlay {
-  background: var(--saito-arcade-background);
-  width: 90vw;
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  grid-gap: 2rem;
-  max-height: 95vh;
-  max-width: 95rem;
+	background: var(--saito-arcade-background);
+	width: 90vw;
+	padding: 2rem 1rem;
+	display: flex;
+	flex-direction: column;
+	grid-gap: 2rem;
+	max-height: 95vh;
+	max-width: 95rem;
 }
 
 .league-overlay > div {
-  margin: 0 1rem;
+	margin: 0 1rem;
 }
 
 .league-overlay-controls button {
-  height: 7rem;
-  max-width: 20rem;
-  font-size: 2.2rem;
-  margin: 0;
-  margin-left: 1.5rem;
-  min-width: unset;
-  flex-grow: 1;
+	height: 7rem;
+	max-width: 20rem;
+	font-size: 2.2rem;
+	margin: 0;
+	margin-left: 1.5rem;
+	min-width: unset;
+	flex-grow: 1;
 }
 
 .league-overlay-controls {
-  display: flex;
-  flex-direction: row;
-  justify-content: end;
+	display: flex;
+	flex-direction: row;
+	justify-content: end;
 }
 
 .league-overlay-controls i {
-  font-size: 2rem;
-  border-radius: 0.5rem;
-  height: 5rem;
-  width: 5rem;
-  border: 1px solid var(--saito-border-color);
-  line-height: 5rem;
-  text-align: center;
+	font-size: 2rem;
+	border-radius: 0.5rem;
+	height: 5rem;
+	width: 5rem;
+	border: 1px solid var(--saito-border-color);
+	line-height: 5rem;
+	text-align: center;
 }
 
 .league-overlay-controls i.saito-button-primary {
-  font-weight: 900;
-  min-width: unset;
+	font-weight: 900;
+	min-width: unset;
 }
 
 .league-overlay-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  row-gap: 1.5rem;
-  flex-wrap: wrap;
-  height: 8rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	row-gap: 1.5rem;
+	flex-wrap: wrap;
+	height: 8rem;
 }
 
 .league-overlay-header-title-box {
-  flex: 1;
-  min-width: fit-content;
+	flex: 1;
+	min-width: fit-content;
 }
 
 .menu-icon {
-  width: 10rem;
-  text-align: center;
-  cursor: pointer;
-  position: relative;
+	width: 10rem;
+	text-align: center;
+	cursor: pointer;
+	position: relative;
 }
 
 .menu-icon i.notification {
-  position: absolute;
-  top: 19%;
-  left: 43%;
-  font-size: 16px;
-  color: var(--saito-red);
-  width: unset;
-  padding: unset;
-  margin: unset;
+	position: absolute;
+	top: 19%;
+	left: 43%;
+	font-size: 16px;
+	color: var(--saito-red);
+	width: unset;
+	padding: unset;
+	margin: unset;
 }
 
 .league-overlay .hidden {
-  display: none;
+	display: none;
 }
 
 .league-overlay-controls:hover .menu-icon.active-tab {
-  background: unset;
+	background: unset;
 }
 
 .menu-icon:hover i,
 .menu-icon.active-tab i,
 .league-overlay-controls .menu-icon.active-tab:hover i {
-  border-color: var(--saito-primary);
-  color: var(--saito-primary);
+	border-color: var(--saito-primary);
+	color: var(--saito-primary);
 }
 
 .league-overlay-controls .menu-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  justify-content: space-between;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	justify-content: space-between;
 }
 
 .league-overlay-header-title-box-title {
-  font-size: 4rem;
+	font-size: 4rem;
 }
 
 .league-overlay-header-title-box-desc {
-  font-size: 2rem;
-  text-transform: capitalize;
+	font-size: 2rem;
+	text-transform: capitalize;
 }
 
 .league-overlay-body {
-  display: grid;
-  grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
-  gap: 2rem;
-  height: min(45rem, calc(100vh - 160px));
+	display: grid;
+	grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
+	gap: 2rem;
+	height: min(45rem, calc(100vh - 160px));
 }
 
 .league-error {
-  padding: 0rem 1.5rem;
-  line-height: 2rem;
+	padding: 0rem 1.5rem;
+	line-height: 2rem;
 }
 
 .league-overlay-content-box {
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  overflow-y: auto;
-  border: 1px solid var(--saito-border-color);
-  flex: 1;
+	padding: 1.5rem;
+	border-radius: 0.5rem;
+	overflow-y: auto;
+	border: 1px solid var(--saito-border-color);
+	flex: 1;
 }
 
 .league-overlay-body-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  overflow: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	overflow: auto;
 }
 
 .league-overlay-body.admin-mode .league-overlay-body-content {
-  grid-column: span 2;
+	grid-column: span 2;
 }
 
 .league-overlay-body.admin-mode .league-overlay-controls {
-  display: none;
+	display: none;
 }
 
 .league-overlay-header-image {
-  /* Fallback image, should be inserted by JS*/
-  background-image: url(/saito/img/dreamscape.png);
-  background-size: cover;
-  width: 11rem;
-  min-width: 11rem;
-  height: 7rem;
-  margin-right: 1rem;
+	/* Fallback image, should be inserted by JS*/
+	background-image: url(/saito/img/dreamscape.png);
+	background-size: cover;
+	width: 11rem;
+	min-width: 11rem;
+	height: 7rem;
+	margin-right: 1rem;
 }
 
 .league-overlay-description {
-  position: relative;
-  font-size: 1.7rem;
-  line-height: 2.3rem;
+	position: relative;
+	font-size: 1.7rem;
+	line-height: 2.3rem;
 }
 
 .league-overlay-description i,
 #admin_contact i {
-  position: absolute;
-  top: 0;
-  right: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 
 #admin_details {
-  flex: unset;
-  min-height: 7.5rem;
+	flex: unset;
+	min-height: 7.5rem;
 }
 
 span.attention {
-  text-decoration: underline dashed 1px;
-  cursor: pointer;
+	text-decoration: underline dashed 1px;
+	cursor: pointer;
 }
 
 #admin_contact {
-  min-width: 10rem;
-  height: fit-content;
-  min-height: 2rem;
-  position: relative;
+	min-width: 10rem;
+	height: fit-content;
+	min-height: 2rem;
+	position: relative;
 }
 
 .league-overlay-league-body-games {
-  display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
-  flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
+	flex-grow: 1;
 }
 
 .league_recent_game,
 .game-manager .saito-table-header {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1rem;
-  text-align: center;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 1rem;
+	text-align: center;
 }
 
 .league_recent_player {
-  max-width: 27rem;
-  overflow: hidden;
-  display: inline-block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  vertical-align: bottom;
+	max-width: 27rem;
+	overflow: hidden;
+	display: inline-block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	vertical-align: bottom;
 }
 
 .league_recent_players_list {
-  display: flex;
-  flex-direction: row;
-  column-gap: 1rem;
-  margin: auto;
+	display: flex;
+	flex-direction: row;
+	column-gap: 1rem;
+	margin: auto;
 }
 
 .league_recent_players_list_item {
-  display: flex;
-  flex-direction: row;
+	display: flex;
+	flex-direction: row;
 }
 
 .league-overlay-games-list .saito-table {
-  overflow-y: scroll;
+	overflow-y: scroll;
 }
 
 .league_recent_player {
-  position: relative;
-  overflow: visible;
-  width: 3.5rem;
-  height: 3.5rem;
+	position: relative;
+	overflow: visible;
+	width: 3.5rem;
+	height: 3.5rem;
 }
 
 .league_recent_player.winner::before {
-  content: "♕";
-  display: inline-block;
-  font-style: normal;
-  font-variant: normal;
-  text-rendering: auto;
-  position: absolute;
-  top: -1.1rem;
-  right: -1rem;
-  font-size: 30px;
-  font-weight: 900;
-  color: var(--saito-red);
-  text-shadow: 0px 0px 3px var(--saito-white);
+	content: '♕';
+	display: inline-block;
+	font-style: normal;
+	font-variant: normal;
+	text-rendering: auto;
+	position: absolute;
+	top: -1.1rem;
+	right: -1rem;
+	font-size: 30px;
+	font-weight: 900;
+	color: var(--saito-red);
+	text-shadow: 0px 0px 3px var(--saito-white);
 }
 
 .league_recent_game div {
-  align-self: center;
+	align-self: center;
 }
 
 .league-overlay-leaderboard {
-  min-width: min(40rem, 100%);
-  padding: 0px; // keeps scrolled content from showing above sticky header
+	min-width: min(40rem, 100%);
+	padding: 0px; // keeps scrolled content from showing above sticky header
 }
 
 .alert_email,
 .alert_identifier {
-  position: relative;
-  box-shadow: 0px 0px 10px var(--saito-secondary) !important;
-  cursor: pointer;
+	position: relative;
+	box-shadow: 0px 0px 10px var(--saito-secondary) !important;
+	cursor: pointer;
 }
 
 .alert_email .league-leaderboard,
 .alert_identifier .league-leaderboard {
-  filter: blur(2px);
-  pointer-events: none;
+	filter: blur(2px);
+	pointer-events: none;
 }
 
 .alert_email i,
 .alert_identifier i {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: var(--saito-secondary);
-  font-size: 6.4rem;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: var(--saito-secondary);
+	font-size: 6.4rem;
 }
 
 .admin-widget .saito-table-header,
 .admin-widget .saito-table-row {
-  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-  justify-items: center;
-  align-items: center;
+	grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+	justify-items: center;
+	align-items: center;
 }
 
 .admin-widget .saito-table-row > div {
-  width: 100%;
-  text-align: center;
+	width: 100%;
+	text-align: center;
 }
 
 .editable_field {
-  border: 1px solid;
-  cursor: text;
+	border: 1px solid;
+	cursor: text;
 }
 
 .contactAdminWarning {
-  font-size: 2rem;
-  /*min-height: 30rem;*/
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex: 4;
+	font-size: 2rem;
+	/*min-height: 30rem;*/
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex: 4;
 }
 
 .contactAdminWarning > * {
-  margin: 1rem;
+	margin: 1rem;
 }
 
 .contactAdminWarning > div:first-child {
-  font-size: 5rem;
-  justify-content: center;
+	font-size: 5rem;
+	justify-content: center;
 }
 
 .contactAdminWarning i {
-  font-size: 5rem;
-  color: var(--saito-secondary);
+	font-size: 5rem;
+	color: var(--saito-secondary);
 }
 
 .menu-icon.mobile-only {
-  display: none;
+	display: none;
 }
 
 @media screen and (max-width: 900px) {
-  .league-overlay-header {
-    height: unset;
-  }
+	.league-overlay-header {
+		height: unset;
+	}
 
-  .oversize-load {
-    font-size: clamp(3rem, 5vw, 4rem);
-  }
+	.oversize-load {
+		font-size: clamp(3rem, 5vw, 4rem);
+	}
 
-  .league-overlay-body {
-    display: flex;
-    flex-direction: column;
-    row-gap: 2rem;
-    overflow-y: auto;
-    margin: 0 !important;
-    padding: 1px 1rem;
-    height: calc(90vh - 12rem);
-  }
-  .league-overlay-body > div {
-    /*  overflow-y: unset;*/
-  }
-  .league-overlay-body .league-overlay-controls {
-    justify-content: center;
-  }
+	.league-overlay-body {
+		display: flex;
+		flex-direction: column;
+		row-gap: 2rem;
+		overflow-y: auto;
+		margin: 0 !important;
+		padding: 1px 1rem;
+		height: calc(90vh - 12rem);
+	}
+	.league-overlay-body > div {
+		/*  overflow-y: unset;*/
+	}
+	.league-overlay-body .league-overlay-controls {
+		justify-content: center;
+	}
 }
 
 @media screen and (max-width: 600px) {
-  .oversize-load {
-    font-size: clamp(3rem, 10vw, 4rem);
-  }
+	.oversize-load {
+		font-size: clamp(3rem, 10vw, 4rem);
+	}
 
-  .menu-icon.mobile-only {
-    display: flex;
-  }
-  .mobile-hide {
-    display: none;
-  }
+	.menu-icon.mobile-only {
+		display: flex;
+	}
+	.mobile-hide {
+		display: none;
+	}
 
-  .mobile-hide.hidden {
-    display: unset;
-  }
+	.mobile-hide.hidden {
+		display: unset;
+	}
 
-  .league-overlay > div {
-    margin: 0;
-  }
+	.league-overlay > div {
+		margin: 0;
+	}
 
-  .league-overlay {
-    width: 100vw;
-    max-height: calc(95 * var(--saito-vh));
-  }
-  .contactAdminWarning {
-    min-height: 0;
-  }
+	.league-overlay {
+		width: 100vw;
+		max-height: calc(95 * var(--saito-vh));
+	}
+	.contactAdminWarning {
+		min-height: 0;
+	}
 
-  .league-overlay-body {
-    height: calc(90vh - 20rem);
-    flex-direction: column-reverse;
-    row-gap: 1rem;
-  }
+	.league-overlay-body {
+		height: calc(90vh - 20rem);
+		flex-direction: column-reverse;
+		row-gap: 1rem;
+	}
 
-  .league-overlay-controls {
-    justify-content: center;
-    max-width: 100%;
-  }
+	.league-overlay-controls {
+		justify-content: center;
+		max-width: 100%;
+	}
 
-  .league-overlay-leaderboard{
-    min-height: calc(100% - 8rem);
-  }
+	.league-overlay-leaderboard {
+		min-height: calc(100% - 8rem);
+	}
 
-  .league-overlay-controls button {
-    flex: 1;
-  }
+	.league-overlay-controls button {
+		flex: 1;
+	}
 
-  .league-overlay-header {
-    flex-direction: column;
-    position: relative;
-  }
+	.league-overlay-header {
+		flex-direction: column;
+		position: relative;
+	}
 
-  .league-overlay-body-content {
-    flex: 1;
-  }
+	.league-overlay-body-content {
+		flex: 1;
+	}
 
-  .league-overlay-header-image {
-    margin: 0;
-    width: 100%;
-    background-position: center center;
-    height: 10rem;
-  }
+	.league-overlay-header-image {
+		margin: 0;
+		width: 100%;
+		background-position: center center;
+		height: 10rem;
+	}
 
-  .league-overlay-header-title-box {
-    position: absolute;
-    left: 1rem;
-    top: 1.4rem;
-    text-shadow: 1px 1px 2px var(--saito-background-color),
-      -1px -1px 2px var(--saito-background-color), 1px -1px 2px var(--saito-background-color),
-      -1px 1px 2px var(--saito-background-color);
-  }
+	.league-overlay-header-title-box {
+		position: absolute;
+		left: 1rem;
+		top: 1.4rem;
+		text-shadow: 1px 1px 2px var(--saito-background-color),
+			-1px -1px 2px var(--saito-background-color),
+			1px -1px 2px var(--saito-background-color),
+			-1px 1px 2px var(--saito-background-color);
+	}
 }

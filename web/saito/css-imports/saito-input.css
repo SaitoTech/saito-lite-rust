@@ -155,9 +155,7 @@ emoji-picker {
 	justify-content: space-between;
 }
 
-
 .at-window {
-
 	flex-direction: column;
 	justify-content: flex-start;
 }
@@ -178,24 +176,24 @@ emoji-picker {
 
 .saito-input-contact-list {
 	width: calc(100% - 2px);
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
 	padding: 0.5rem;
-    font-size: 2rem;
-    overflow: auto;
-    flex: 1;
-    background: var(--saito-background-color);
-    border-radius: 0.5rem;
+	font-size: 2rem;
+	overflow: auto;
+	flex: 1;
+	background: var(--saito-background-color);
+	border-radius: 0.5rem;
 
-    /* for popping up over input field */
-    max-height: 200px;
-    bottom: 0;
+	/* for popping up over input field */
+	max-height: 200px;
+	bottom: 0;
 }
 
 .at-window .saito-input-contact-list {
-    bottom: unset;
+	bottom: unset;
 	top: 5rem;
 	max-height: calc(100% - 4.5rem);
 	position: static;
@@ -211,11 +209,12 @@ emoji-picker {
 	padding: 0.75rem;
 }
 
-.saito-input-contact:hover, .saito-input-contact:focus {
+.saito-input-contact:hover,
+.saito-input-contact:focus {
 	background-color: var(--saito-primary);
 }
 
-.no-mouse .saito-input-contact:hover{
+.no-mouse .saito-input-contact:hover {
 	background-color: revert;
 }
 
@@ -255,7 +254,6 @@ emoji-picker {
 	align-items: center;
 }
 
-
 .chat-footer .saito-input-quote i:hover {
 	transform: unset;
 }
@@ -264,8 +262,6 @@ emoji-picker {
 	background-color: var(--saito-primary);
 	color: var(--saito-white);
 }
-
- 
 
 @media only screen and (max-width: 768px) {
 	.saito-input-large {
@@ -286,4 +282,3 @@ emoji-picker {
 		width: 3rem;
 	}
 }
-

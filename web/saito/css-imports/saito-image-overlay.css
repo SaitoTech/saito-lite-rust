@@ -1,36 +1,31 @@
-
 .saito-img-arrow-box {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 .saito-img-arrow-box.left {
-  left: -10rem;
+	left: -10rem;
 }
 
 .saito-img-arrow-box.right {
-  right: -10rem;
+	right: -10rem;
 }
 
 .saito-img-icon {
-  font-size: 3rem;
-  color: var(--saito-white);
-  background: var(--saito-gray-mid);
-  padding: 1.5rem;
-  border-radius: 50%;
-  cursor: pointer;
+	font-size: 3rem;
+	color: var(--saito-white);
+	background: var(--saito-gray-mid);
+	padding: 1.5rem;
+	border-radius: 50%;
+	cursor: pointer;
 }
 
 .saito-overlay-img-cont > img {
-  transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
 }
 
 .saito-overlay-img-cont img {
-  max-height: 90vh;
-  max-width: 90vw;
+	max-height: 90vh;
+	max-width: 90vw;
 }
-
-
-
-

@@ -1,6 +1,5 @@
 module.exports = BoardTemplate = () => {
-
-  return `
+	return `
     <div class="opponent">
       <div class="mana"></div>
       <div class="artifacts"></div>
@@ -13,6 +12,4 @@ module.exports = BoardTemplate = () => {
       <div class="artifacts"></div>
     </div>
   `;
-
-}
-
+};

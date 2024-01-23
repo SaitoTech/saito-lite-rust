@@ -4,11 +4,10 @@
 //   ../../../../../@fullcalendar/core
 
 declare module '@fullcalendar/moment' {
-    import * as momentNs from 'moment';
-    import { Calendar, Duration } from '@fullcalendar/core';
-    export function toMoment(date: Date, calendar: Calendar): momentNs.Moment;
-    export function toDuration(fcDuration: Duration): momentNs.Duration;
-    const _default: import("@fullcalendar/core").PluginDef;
-    export default _default;
+	import * as momentNs from 'moment';
+	import { Calendar, Duration } from '@fullcalendar/core';
+	export function toMoment(date: Date, calendar: Calendar): momentNs.Moment;
+	export function toDuration(fcDuration: Duration): momentNs.Duration;
+	const _default: import('@fullcalendar/core').PluginDef;
+	export default _default;
 }
-

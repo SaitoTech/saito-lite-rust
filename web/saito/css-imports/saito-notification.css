@@ -1,63 +1,63 @@
 .notification-item {
-    padding-top: 1rem;
+	padding-top: 1rem;
 }
 
 .notification-tweet {
-  cursor: pointer;
-  padding-top: 1.5rem;
-  position: relative;
+	cursor: pointer;
+	padding-top: 1.5rem;
+	position: relative;
 }
 
 .notification-item:hover {
-  background-color: var(--saito-background-light);
+	background-color: var(--saito-background-light);
 }
 
 .notifications-empty {
-  margin-left: 1rem;
-  display: flex;
-  margin-left: 40%;
-  margin-top: 4rem;
+	margin-left: 1rem;
+	display: flex;
+	margin-left: 40%;
+	margin-top: 4rem;
 }
 
 .notifications-empty p {
-  font-size: 1.8rem;
+	font-size: 1.8rem;
 }
 
 .notifications-empty span {
-  margin-right: 1rem;
-  font-size: 1.8rem;
+	margin-right: 1rem;
+	font-size: 1.8rem;
 }
 
 .redsquare-notifications .tweet .tweet-header {
-  padding: 2rem 0rem;
+	padding: 2rem 0rem;
 }
 
 .redsquare-notifications .tweet .tweet-body {
-  min-height: 5rem;
-  overflow-y: hidden;
+	min-height: 5rem;
+	overflow-y: hidden;
 }
 
-.saito-chat-notifications{
-  position: absolute;
-  width: 20%;
-  height: 100%;
-  display: flex;
-  right: 0.5rem;
-  top: 0;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem;
+.saito-chat-notifications {
+	position: absolute;
+	width: 20%;
+	height: 100%;
+	display: flex;
+	right: 0.5rem;
+	top: 0;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 1rem;
 }
 
 .saito-chat-notifications .saito-notification-dot {
-  position: relative;
-  bottom: unset;
-  left: unset;
-  height: 3rem;
-  width: 3rem;
+	position: relative;
+	bottom: unset;
+	left: unset;
+	height: 3rem;
+	width: 3rem;
 }
 
-.saito-user:hover .saito-notification-dot{
-  background-color: var(--saito-background-color);
-  color: var(--saito-font-color);
+.saito-user:hover .saito-notification-dot {
+	background-color: var(--saito-background-color);
+	color: var(--saito-font-color);
 }

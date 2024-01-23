@@ -24,35 +24,46 @@ and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-var extendStatics = function(d, b) {
-    extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return extendStatics(d, b);
+var extendStatics = function (d, b) {
+	extendStatics =
+		Object.setPrototypeOf ||
+		({ __proto__: [] } instanceof Array &&
+			function (d, b) {
+				d.__proto__ = b;
+			}) ||
+		function (d, b) {
+			for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+		};
+	return extendStatics(d, b);
 };
 
 function __extends(d, b) {
-    extendStatics(d, b);
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	extendStatics(d, b);
+	function __() {
+		this.constructor = d;
+	}
+	d.prototype =
+		b === null
+			? Object.create(b)
+			: ((__.prototype = b.prototype), new __());
 }
 
 var moment = momentNs; // the directly callable function
 var MomentNamedTimeZone = /** @class */ (function (_super) {
-    __extends(MomentNamedTimeZone, _super);
-    function MomentNamedTimeZone() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    MomentNamedTimeZone.prototype.offsetForArray = function (a) {
-        return moment.tz(a, this.timeZoneName).utcOffset();
-    };
-    MomentNamedTimeZone.prototype.timestampToArray = function (ms) {
-        return moment.tz(ms, this.timeZoneName).toArray();
-    };
-    return MomentNamedTimeZone;
-}(NamedTimeZoneImpl));
+	__extends(MomentNamedTimeZone, _super);
+	function MomentNamedTimeZone() {
+		return (_super !== null && _super.apply(this, arguments)) || this;
+	}
+	MomentNamedTimeZone.prototype.offsetForArray = function (a) {
+		return moment.tz(a, this.timeZoneName).utcOffset();
+	};
+	MomentNamedTimeZone.prototype.timestampToArray = function (ms) {
+		return moment.tz(ms, this.timeZoneName).toArray();
+	};
+	return MomentNamedTimeZone;
+})(NamedTimeZoneImpl);
 var main = createPlugin({
-    namedTimeZonedImpl: MomentNamedTimeZone
+	namedTimeZonedImpl: MomentNamedTimeZone
 });
 
 export default main;

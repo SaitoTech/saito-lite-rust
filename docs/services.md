@@ -1,7 +1,6 @@
 # Saito Services Protocol - SMP-30
 
-
-## Abstract 
+## Abstract
 
 The following document describes the methods modules use to broadcast services they are running to peers and users on the network. It covers how to query a remote peer to find out what services it offers, and how to submit service requests to that peer.
 
@@ -22,11 +21,9 @@ A node may connect to one peer that runs a tx-archiving service for it, paying f
 
 This document concerns how access nodes announce they are running services, and how modules can be programmed to connect to them to access remote-services.
 
-
-
 ## Defining a Service
 
-Modules define services by overriding the `returnServices()` function in the modTemplate class file. This function is expected to return an array of associative key-value objects. In the following example, a module announces that it is running a backend "post" service -- this indexes community content for a forum managed by the Post module. 
+Modules define services by overriding the `returnServices()` function in the modTemplate class file. This function is expected to return an array of associative key-value objects. In the following example, a module announces that it is running a backend "post" service -- this indexes community content for a forum managed by the Post module.
 
 ```javascript
   //
@@ -41,9 +38,6 @@ Modules define services by overriding the `returnServices()` function in the mod
 
 (OPTIONAL) This function is executed whenever a new block is added to the chain. Modules can overwrite this function to take action when blocks are received. It differs from onConfirmation in that it will be triggered by any blocks, not just those that add to the longest-chain.
 
-
-
-
 ## Making Service Requests
 
 Peers inform each other of the services they offer as part of the connection handshake. The services running on each peer can then be examined by examining the `peer.peer.services` object in the `/lib/saito/peer.js` class.
@@ -52,20 +46,19 @@ It is considered good etiquette to filter for peers which support the relevant s
 
 Off-chain peer requests may be made through the modTemplate class:
 
-
 ```javascript
   async sendPeerRequestWithFilter(msg_callback, success_callback, peer_filter) {}
 ```
 
-__msg_callback__ - the function to execute to generate the message submitted, if received
-__success_callback__ - the function to execute with the peer data response, if received
-__peer_filter__ - a function that returns 0 or 1 for every peer object
+**msg_callback** - the function to execute to generate the message submitted, if received
+**success_callback** - the function to execute with the peer data response, if received
+**peer_filter** - a function that returns 0 or 1 for every peer object
 
 This function accepts three functions as arguments. The first is executed to generate the message that is passed to peers through the off-chain websocket, the second is called when and if a response is received over that same websocket, while the third allows us to select to which peers the request is sent. Note that if multiple peers are sent the request, the success_callback will fire multiple times.
 
 It is easier to understand how this works with a documented example:
 
-```javascript
+````javascript
   mod.sendPeerRequestWithFilter(
 
     //
@@ -80,9 +73,9 @@ It is easier to understand how this works with a documented example:
     // transactions or other cryptographic sigs in these types of messages, for instance,
     // such as requests to archive nodes to archive particular transactions.
     //
-    // note that the peer requesting processing by a specific module has no guarantee of 
-    // which module will actually execute the data, or how they will respond. it is the 
-    // responsibility of users to ensure they are using modules compatible with peers, 
+    // note that the peer requesting processing by a specific module has no guarantee of
+    // which module will actually execute the data, or how they will respond. it is the
+    // responsibility of users to ensure they are using modules compatible with peers,
     // the network preserves openness and freedom-of-choice, as with the HTML protocol.
     //
     () => {
@@ -97,7 +90,7 @@ It is easier to understand how this works with a documented example:
     // success callback
     //
     // "res" is the object returned from our peer. it may be undefined. it may be null. it
-    // may or may not contain the data requested by the peer and should be subject to 
+    // may or may not contain the data requested by the peer and should be subject to
     // sanity and security checks. this callback is triggered once the object has been
     // received over teh network. if there is no response (and there is no guarantee that
     // any peer will respond, then this callback is simply never executed.
@@ -106,14 +99,14 @@ It is easier to understand how this works with a documented example:
     },
 
     //
-    // peer filter 
+    // peer filter
     //
     // every peer to which the user is connected is passed through this filter callback. if
     // the function returns 1 the request is sent to that peer. if the function returns 0
     // then that peer is skipped.
     //
     // in this example code we check to see if the peer provided is running the "posts"
-    // service and returning 1 (i.e. sending the request) if so. all peers that do not 
+    // service and returning 1 (i.e. sending the request) if so. all peers that do not
     // announce support for this service pass through and are skipped.
     //
     (peer) => {
@@ -138,13 +131,12 @@ The following function exists as a convenient method for peers to make SQL queri
 
 ```javascript
   async sendPeerDatabaseRequestWithFilter(modname="", sql="", success_callback=null, peerfilter=null) {}
-```
+````
 
-__modname__ - the name of the module which should process this request on the remote server
-__sql__ - the request SQL query to be executed
-__success_callback - a callback whose first argument is the database response, if returned
-__peer_filter - a callback which takes a peer as an argument and determines in boolean fashion whether to send the off-chain request to the peer.
-
+**modname** - the name of the module which should process this request on the remote server
+**sql** - the request SQL query to be executed
+**success_callback - a callback whose first argument is the database response, if returned
+**peer_filter - a callback which takes a peer as an argument and determines in boolean fashion whether to send the off-chain request to the peer.
 
 ## One Final Note
 
@@ -152,14 +144,12 @@ One tricky part of designing blockchain applications that run in browsers powere
 
 If your application requires making database requests to remote servers on load, we recommend avoiding this problem by starting the logic which triggers the updating of your DOM/UI interface be triggered by overriding the function `onPeerHandshakeComplete(app, peer)` in the ModTemplate class (`/lib/templates/modtemplate.js`). This function will fire when a peer completes its handshake and is ready to accept both on and off-chain requests.
 
-
-
 ## Copyright
+
 Copyright Proclus Technologies, 2021.
 
 ## Citation
+
 Please cite this document as:
 
 David Lancashire, "SMP-30: Saito Module Protocol", Saito Network Documents, no, 3, January 2021 [Online serial]. Available: https://github.com/saitotech/saito-lite/docs/standard/application.md.
-
-

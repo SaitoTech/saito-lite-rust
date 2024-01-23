@@ -4,69 +4,72 @@ buttons
 
 button,
 .saito-button-primary {
-  background: var(--saito-primary-background);
-  transition: 0.5s;
-  background-size: 400% auto;
-  padding: 1rem 1.5rem;
-  text-align: center;
-  letter-spacing: 1px;
-  min-width: 18rem;
-  font-size: 1.8rem;
-  color: var(--saito-white);
-  font-weight: 500;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  border: 1px solid transparent;
-  background-position: 1% 1%;
+	background: var(--saito-primary-background);
+	transition: 0.5s;
+	background-size: 400% auto;
+	padding: 1rem 1.5rem;
+	text-align: center;
+	letter-spacing: 1px;
+	min-width: 18rem;
+	font-size: 1.8rem;
+	color: var(--saito-white);
+	font-weight: 500;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	border: 1px solid transparent;
+	background-position: 1% 1%;
 }
 
 .saito-button-secondary {
-  padding: 1rem 1.5rem;
-  text-align: center;
-  letter-spacing: 1px;
-  font-size: 1.8rem;
-  font-weight: 500;
-  min-width: 18rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  margin: 0.5rem;
-  border: 1px solid var(--saito-primary);
-  color: var(--saito-primary);
-  background: var(--saito-background-color);
+	padding: 1rem 1.5rem;
+	text-align: center;
+	letter-spacing: 1px;
+	font-size: 1.8rem;
+	font-weight: 500;
+	min-width: 18rem;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	margin: 0.5rem;
+	border: 1px solid var(--saito-primary);
+	color: var(--saito-primary);
+	background: var(--saito-background-color);
 }
 
-button:hover, .saito-button-primary:hover{
-  background-position: 99% 99%; /* change the direction of the change here */
-  color: #fff;
-  text-decoration: none;
+button:hover,
+.saito-button-primary:hover {
+	background-position: 99% 99%; /* change the direction of the change here */
+	color: #fff;
+	text-decoration: none;
 }
 
 .saito-button-primary.disabled {
-  background: var(--saito-background-color);
-  color: var(--saito-primary);
-  border: 1px solid var(--saito-primary);
-  cursor: unset;
-  pointer-events: none;
+	background: var(--saito-background-color);
+	color: var(--saito-primary);
+	border: 1px solid var(--saito-primary);
+	cursor: unset;
+	pointer-events: none;
 }
 
 .saito-button-secondary:hover {
-  background: var(--saito-primary);
-  color: var(--saito-white);
+	background: var(--saito-primary);
+	color: var(--saito-white);
 }
 
 button.small,
 .saito-button-primary.small,
 .saito-button-secondary.small,
 .saito-button-gradient.small {
-  padding: 0.75rem 0.7rem;
-  font-size: 1.4rem;
-  min-width: 4rem;
+	padding: 0.75rem 0.7rem;
+	font-size: 1.4rem;
+	min-width: 4rem;
 }
-button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-gradient.fat {
-    height: 7rem;
-    font-size: 2rem;
-    padding: 2.4rem !important;
-    min-width: 30rem;
-    text-align: center;
+button.fat,
+saito-button-primary.fat,
+.saito-button-secondary.fat,
+saito-button-gradient.fat {
+	height: 7rem;
+	font-size: 2rem;
+	padding: 2.4rem !important;
+	min-width: 30rem;
+	text-align: center;
 }
-

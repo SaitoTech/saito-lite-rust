@@ -1,18 +1,23 @@
 module.exports = BackupTemplate = (identifier, newIdentifier) => {
-
-  let txt = "your Saito account";
-  if (identifier) { 
-    if (identifier.indexOf("@saito") == -1) { 
-      txt = "<span style='color:var(--saito-secondary);'>"+identifier+"@saito</span>"; 
-    } else {
-      txt = "<span class='pending_registration' style='color:var(--saito-secondary);'>"+identifier+"</span>"; 
-    }
-  }
-  let intro = "";
-  if (newIdentifier) {
-    intro = `<h6>Name Registration Submitted!</h6> `;
-  }
-  return `
+	let txt = 'your Saito account';
+	if (identifier) {
+		if (identifier.indexOf('@saito') == -1) {
+			txt =
+				'<span style=\'color:var(--saito-secondary);\'>' +
+				identifier +
+				'@saito</span>';
+		} else {
+			txt =
+				'<span class=\'pending_registration\' style=\'color:var(--saito-secondary);\'>' +
+				identifier +
+				'</span>';
+		}
+	}
+	let intro = '';
+	if (newIdentifier) {
+		intro = '<h6>Name Registration Submitted!</h6> ';
+	}
+	return `
     <form id="backup-template">
       <div class="saito-overlay-form">
         <div class="saito-overlay-form-header">
@@ -35,5 +40,4 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
       </div>
     </form>
   `;
-
-}
+};

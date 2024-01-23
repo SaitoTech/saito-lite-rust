@@ -1,11 +1,16 @@
 module.exports = SectorOverlayTemplate = (sys, fleet) => {
+	let cols = '1fr';
+	if (sys.p.length == 2) {
+		cols = '1fr 1fr';
+	}
+	if (sys.p.length == 3) {
+		cols = '1fr 1fr 1fr';
+	}
+	if (sys.p.length == 4) {
+		cols = '1fr 1fr 1fr 1fr';
+	}
 
-  let cols = "1fr";
-  if (sys.p.length == 2) { cols = "1fr 1fr"; }
-  if (sys.p.length == 3) { cols = "1fr 1fr 1fr"; }
-  if (sys.p.length == 4) { cols = "1fr 1fr 1fr 1fr"; }
-
-  return `
+	return `
     <div class="sector-overlay hide-scrollbar">
       <div class="name">${sys.s.name}</div>
       <div class="fleet">${fleet}</div>
@@ -13,5 +18,4 @@ module.exports = SectorOverlayTemplate = (sys, fleet) => {
         </div>
     </div>
   `;
-
-}
+};

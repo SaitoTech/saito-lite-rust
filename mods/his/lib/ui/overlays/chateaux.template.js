@@ -1,8 +1,7 @@
-module.exports = () => { 
+module.exports = () => {
+	let help = 'Build a Chateaux?';
 
-  let help = `Build a Chateaux?`;
-
-  let html = `
+	let html = `
       <div class="chateaux-overlay" id="chateaux-overlay">
 	<div class="help">${help}</div>
 	<div class="bonuses">
@@ -30,10 +29,5 @@ module.exports = () => {
 	</div>
       </div>
   `;
-  return html;
-
-}
-
-
-
-
+	return html;
+};

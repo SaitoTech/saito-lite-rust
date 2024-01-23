@@ -1,8 +1,9 @@
 module.exports = RegisterUsernameTemplate = (msg) => {
-	if (!msg){
-		msg = "Registering a username is free and makes it easier for others to find you on the network";
+	if (!msg) {
+		msg =
+			'Registering a username is free and makes it easier for others to find you on the network';
 	}
-  return `
+	return `
 		<form id="register-username-template"> 
       <div class="saito-overlay-form">
 	      <div class="saito-overlay-form-header">
@@ -17,5 +18,4 @@ module.exports = RegisterUsernameTemplate = (msg) => {
       </div>
 		</form>
   `;
-
-}
+};

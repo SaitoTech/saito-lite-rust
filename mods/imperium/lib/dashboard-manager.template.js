@@ -1,5 +1,3 @@
 module.exports = ImperiumDashboardManagerTemplate = (imperium_self) => {
-
-  return '<div class="imperium-dashboard"></div>';
-
-}
+	return '<div class="imperium-dashboard"></div>';
+};

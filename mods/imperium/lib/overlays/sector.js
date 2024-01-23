@@ -1,49 +1,47 @@
-const SectorOverlayTemplate = require("./sector.template");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
-
+const SectorOverlayTemplate = require('./sector.template');
+const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class SectorOverlay {
+	constructor(app, mod) {
+		this.app = app;
+		this.mod = mod;
+		this.overlay = new SaitoOverlay(this.app, this.mod, false);
+	}
 
-  constructor(app, mod) {
-    this.app = app;
-    this.mod = mod;
-    this.overlay = new SaitoOverlay(this.app, this.mod, false);
-  }
+	render(sector) {
+		let sys = this.mod.returnSectorAndPlanets(sector);
+		let fleet = '';
 
-  render(sector) {
+		console.log('SYS 2');
+		console.log(sector);
+		console.log(JSON.stringify(sys));
 
-    let sys = this.mod.returnSectorAndPlanets(sector);
-    let fleet = "";
+		//
+		// fleet in sector
+		//
+		for (let i = 0; i < sys.s.units.length; i++) {
+			if (sys.s.units[i].length > 0) {
+				fleet += this.mod.returnPlayerFleetInSector(i + 1, sector);
+				i = sys.s.units.length;
+			}
+		}
 
-console.log("SYS 2");
-console.log(sector);
-console.log(JSON.stringify(sys));
+		//
+		// overlay
+		//
+		this.overlay.show(SectorOverlayTemplate(sys, fleet));
 
-    //
-    // fleet in sector
-    //
-    for (let i = 0; i < sys.s.units.length; i++) {
-      if (sys.s.units[i].length > 0) {
-        fleet += this.mod.returnPlayerFleetInSector((i+1), sector);
-        i = sys.s.units.length;
-      }
-    }
+		//
+		// planet
+		//
+		for (let i = 0; i < sys.p.length; i++) {
+			let planet = sys.p[i];
+			let owner = 'UNCONTROLLED';
+			if (planet.owner > -1) {
+				owner = this.mod.returnFactionNickname(sys.p[i].owner);
+			}
 
-    //
-    // overlay
-    //
-    this.overlay.show(SectorOverlayTemplate(sys, fleet));
-
-    //
-    // planet
-    //
-    for (let i = 0; i < sys.p.length; i++) {
- 
-      let planet = sys.p[i];
-      let owner = "UNCONTROLLED";
-      if (planet.owner > -1) { owner = this.mod.returnFactionNickname(sys.p[i].owner); }
-
-      html = `
+			html = `
         <div class="planet">
           ${owner}
           <div class="system_summary_content">
@@ -53,16 +51,18 @@ console.log(JSON.stringify(sys));
             <br />
             ${this.mod.returnSpaceDocksOnPlanet(sys.p[i])} spacedocks
           </div>
-          <div class="planet-card" style="background-image: url('${sys.p[i].img}');"></div>
+          <div class="planet-card" style="background-image: url('${
+	sys.p[i].img
+}');"></div>
         </div>
       `;
 
-      this.app.browser.addElementToSelector(html, ".sector-overlay .planet-grid");
-    }
-
-  }
-
+			this.app.browser.addElementToSelector(
+				html,
+				'.sector-overlay .planet-grid'
+			);
+		}
+	}
 }
 
 module.exports = SectorOverlay;
-

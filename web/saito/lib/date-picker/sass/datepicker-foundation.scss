@@ -20,13 +20,22 @@ $dp-cell-disabled-color: $light-gray !default;
 $dp-cell-selected-background-color: get-color('primary') !default;
 $dp-cell-selected-color: $white !default;
 $dp-cell-selected-font-weight: $dp-font-weight-semibold !default;
-$dp-cell-today-background-color: scale-color(get-color('primary'), $lightness: 85%) !default;
+$dp-cell-today-background-color: scale-color(
+	get-color('primary'),
+	$lightness: 85%
+) !default;
 $dp-cell-today-color: $dark-gray !default;
-$dp-cell-highlighted-background-color: scale-color($medium-gray, $lightness: 85%) !default;
+$dp-cell-highlighted-background-color: scale-color(
+	$medium-gray,
+	$lightness: 85%
+) !default;
 $dp-range-start-end-background-color: get-color('secondary') !default;
 $dp-range-start-end-color: $dp-cell-selected-color !default;
 $dp-range-background-color: $light-gray !default;
-$dp-range-today-background-color: darken($dp-cell-today-background-color, 8%) !default;
+$dp-range-today-background-color: darken(
+	$dp-cell-today-background-color,
+	8%
+) !default;
 $dp-week-color: $dark-gray !default;
 
 $dp-footer-background-color: $light-gray !default;
@@ -37,30 +46,33 @@ $dp-input-in-edit-focus-box-shadow-size: 0 0 0.25em 0.25em !default;
 @import 'mixins';
 
 @mixin dp-button {
-  .button {
-    margin: 0;
-    background-color: $dp-background-color;
-    color: $body-font-color;
+	.button {
+		margin: 0;
+		background-color: $dp-background-color;
+		color: $body-font-color;
 
-    &:hover,
-    &:focus {
-      background-color: scale-color($dp-background-color, $lightness: -15%);
+		&:hover,
+		&:focus {
+			background-color: scale-color(
+				$dp-background-color,
+				$lightness: -15%
+			);
 
-      &[disabled] {
-        opacity: 0.25;  // $button-opacity-disabled
-        background-color: $dp-background-color;
-        color: $body-font-color;
-      }
-    }
+			&[disabled] {
+				opacity: 0.25; // $button-opacity-disabled
+				background-color: $dp-background-color;
+				color: $body-font-color;
+			}
+		}
 
-    .datepicker-header & {
-      @include dp-header-button-common;
-    }
+		.datepicker-header & {
+			@include dp-header-button-common;
+		}
 
-    .datepicker-footer & {
-      @include dp-footer-button-common;
-    }
-  }
+		.datepicker-footer & {
+			@include dp-footer-button-common;
+		}
+	}
 }
 
 @import 'datepicker';

@@ -1,11 +1,9 @@
-
 .planet-card {
-  width: 22.5rem;
-  height: 31.5rem;
-  background-size: contain;
+	width: 22.5rem;
+	height: 31.5rem;
+	background-size: contain;
 }
 
 .planet-card.exhausted {
-  opacity: 0.7;
+	opacity: 0.7;
 }
-

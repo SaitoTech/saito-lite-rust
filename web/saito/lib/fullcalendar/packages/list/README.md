@@ -1,4 +1,3 @@
-
 # FullCalendar List View Plugin
 
 View your events as a bulleted list

@@ -14,9 +14,9 @@ When Datepicker object is attached to a block element, it's configured as an inl
 
 ![](./images/datepicker-inline.jpg)
 
-- The picker element is embedded to the block element. (always shown)
-- Initial selection can be set in the `data-date` attribute
-- Inline picker does not support operation by keyboard.
+-   The picker element is embedded to the block element. (always shown)
+-   Initial selection can be set in the `data-date` attribute
+-   Inline picker does not support operation by keyboard.
 
 ##### Date range picker
 
@@ -24,9 +24,8 @@ Date range picker is essentially a wrapper/controller of 2 date pickers. It's th
 
 ![](./images/rangepicker.jpg)
 
-- Date range picker cannot be attached to elements that contain less than 2 `<input>` elements
-- Regular date picker is attached to each of `<input>` elements
-
+-   Date range picker cannot be attached to elements that contain less than 2 `<input>` elements
+-   Regular date picker is attached to each of `<input>` elements
 
 ## Picker Element
 
@@ -44,7 +43,7 @@ Date range picker is essentially a wrapper/controller of 2 date pickers. It's th
    Area to display a calendar (for days) or a grid of months, years, or decades
 6. **Cell**:  
    Block for each day, month, year or decade  
-   It works as a select button in days view. In the other views, it works as a button to change the view to the period of time it represents. (months view → days view of the month, years → months of the year, decades → years of the decade) 
+   It works as a select button in days view. In the other views, it works as a button to change the view to the period of time it represents. (months view → days view of the month, years → months of the year, decades → years of the decade)
 7. **Today button**:  
    Button to jump to the current date  
    It can be customized to select the current date.
@@ -74,7 +73,6 @@ The view to select a year.
 The view to select a decade.
 
 ![](./images/view-decades.jpg)
-
 
 ## Multidate Mode
 
@@ -116,59 +114,59 @@ You can operate date picker using keyboard. Here are the available keyboard oper
 
 **When picker is hidden**
 
-- <KBD>**↓**</KBD> (arrowDown)**,** <kbd>**Esc**</kbd> **:**  
-  Show the picker
-- <kbd>**Enter**</kbd> **:**  
-  Update the picker with the input field's value
+-   <KBD>**↓**</KBD> (arrowDown)**,** <kbd>**Esc**</kbd> **:**  
+    Show the picker
+-   <kbd>**Enter**</kbd> **:**  
+    Update the picker with the input field's value
 
 **When picker is shown**
 
-- <kbd>**Esc**</kbd> **:**  
-  Hide the picker
-- <kbd>**←**</kbd> (arrowLeft)**,** <kbd>**→**</kbd> (arrowRight) **:**  
-  Move focused date/month/year/decade 1 step horizontally
-- <kbd>**↑**</kbd> (arrowUp)**,** <kbd>**↓**</kbd> (arrowDown) **:**  
-  Move focused date/month/year/decade 1 step vertically
-- <kbd>**Ctrl**</kbd> (or <kbd>Meta</kbd>) **+** <kbd>**←**</kbd> (arrowLeft) **:**  
-  Move to previous month/year/decade/century _(Shortcut of the "Prev" button)_
-- <kbd>**Ctrl**</kbd> (or <kbd>Meta</kbd>) **+** <kbd>**→**</kbd> (arrowRight) **:**  
-  Move to next month/year/decade/century _(Shortcut of the "Next" button)_
-- <kbd>**Ctrl**</kbd> (or <kbd>Meta</kbd>) **+** <kbd>**↑**</kbd> (arrowUp) **:**    
-  Change the view upward _(Shortcut of the view switch)_
-- <kbd>**Enter**</kbd> **:**
-  - *when days view is shown:*  
-    Select the focused date 
-  - *otherwise:*  
-    Change the view downward for the focused decade/year/month 
-- <kbd>**Backspace**</kbd>**,** <kbd>**Delete**</kbd>**, any printable character,** <kbd>**Shift**</kbd> **+ either of arrow keys** ( <kbd>←</kbd>/<kbd>→</kbd>/<kbd>↑</kbd>/<kbd>↓</kbd> ) **:**  
-  Enter [edit mode](overview?id=edit-mode)
+-   <kbd>**Esc**</kbd> **:**  
+    Hide the picker
+-   <kbd>**←**</kbd> (arrowLeft)**,** <kbd>**→**</kbd> (arrowRight) **:**  
+    Move focused date/month/year/decade 1 step horizontally
+-   <kbd>**↑**</kbd> (arrowUp)**,** <kbd>**↓**</kbd> (arrowDown) **:**  
+    Move focused date/month/year/decade 1 step vertically
+-   <kbd>**Ctrl**</kbd> (or <kbd>Meta</kbd>) **+** <kbd>**←**</kbd> (arrowLeft) **:**  
+    Move to previous month/year/decade/century _(Shortcut of the "Prev" button)_
+-   <kbd>**Ctrl**</kbd> (or <kbd>Meta</kbd>) **+** <kbd>**→**</kbd> (arrowRight) **:**  
+    Move to next month/year/decade/century _(Shortcut of the "Next" button)_
+-   <kbd>**Ctrl**</kbd> (or <kbd>Meta</kbd>) **+** <kbd>**↑**</kbd> (arrowUp) **:**  
+    Change the view upward _(Shortcut of the view switch)_
+-   <kbd>**Enter**</kbd> **:**
+    -   _when days view is shown:_  
+        Select the focused date
+    -   _otherwise:_  
+        Change the view downward for the focused decade/year/month
+-   <kbd>**Backspace**</kbd>**,** <kbd>**Delete**</kbd>**, any printable character,** <kbd>**Shift**</kbd> **+ either of arrow keys** ( <kbd>←</kbd>/<kbd>→</kbd>/<kbd>↑</kbd>/<kbd>↓</kbd> ) **:**  
+    Enter [edit mode](overview?id=edit-mode)
 
 **When in [edit mode](overview?id=edit-mode)**
 
-- <kbd>**Esc**</kbd> **:**  
-  Hide the picker exiting edit mode
-- <kbd>**Enter**</kbd> **:**   
-  Exit edit mode updating the picker with the change on the input field
+-   <kbd>**Esc**</kbd> **:**  
+    Hide the picker exiting edit mode
+-   <kbd>**Enter**</kbd> **:**  
+    Exit edit mode updating the picker with the change on the input field
 
 > Note: Keyboard operation is not supported by inline picker.
 
-## Edit Mode 
+## Edit Mode
 
 When the picker element is shown, date picker (in the primary state) captures key-press events and uses them to control the picker element. Therefore, users cannot edit the `<input>` element in this state.  
 To solve this, Datepicker has the edit mode.
 
 Date picker automatically enters edit mode when:
 
-- the `<input>` element is clicked
-- <kbd>Backspace</kbd>, <kbd>Delete</kbd> or any of printable character key is pressed (without control/meta key).
-- <kbd>Shift</kbd> + either of arrow keys ( <kbd>←</kbd>/<kbd>→</kbd>/<kbd>↑</kbd>/<kbd>↓</kbd> ) is pressed (without control/meta key).
+-   the `<input>` element is clicked
+-   <kbd>Backspace</kbd>, <kbd>Delete</kbd> or any of printable character key is pressed (without control/meta key).
+-   <kbd>Shift</kbd> + either of arrow keys ( <kbd>←</kbd>/<kbd>→</kbd>/<kbd>↑</kbd>/<kbd>↓</kbd> ) is pressed (without control/meta key).
 
 and exits edit mode when:
 
-- <kbd>Enter</kbd> key or <kbd>Esc</kbd> key is pressed
-- the picker element becomes hidden
+-   <kbd>Enter</kbd> key or <kbd>Esc</kbd> key is pressed
+-   the picker element becomes hidden
 
 While date picker is in edit mode,
 
-- highlight of the `<input>` element becomes more prominent
-- keyboard operation of the picker element is temporarily disabled
+-   highlight of the `<input>` element becomes more prominent
+-   keyboard operation of the picker element is temporarily disabled

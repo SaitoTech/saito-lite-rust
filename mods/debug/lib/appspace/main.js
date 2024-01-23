@@ -2,31 +2,29 @@ const DebugAppspaceMainTemplate = require('./main.template');
 const jsonTree = require('json-tree-viewer');
 
 class DebugAppspaceMain {
+	constructor(app) {
+		this.name = 'DebugAppspaceMain';
+	}
 
-  constructor(app) {
-    this.name = "DebugAppspaceMain";
-  }
+	render(app, mod) {
+		console.log('testing A');
 
-  render(app, mod) {
+		document.querySelector('.appspace').innerHTML =
+			DebugAppspaceMainTemplate();
 
-    console.log("testing A");
+		let el = document.getElementById('appspace-debug');
 
-    document.querySelector(".appspace").innerHTML = DebugAppspaceMainTemplate();
+		try {
+			var tree = jsonTree.create(
+				JSON.parse(JSON.stringify(app.options)),
+				el
+			);
+		} catch (err) {
+			console.log('error creating jsonTree: ' + err);
+		}
+	}
 
-    let el = document.getElementById("appspace-debug");
-
-    try { 
-      var tree = jsonTree.create(JSON.parse(JSON.stringify(app.options)), el); 
-    } catch (err) {
-      console.log("error creating jsonTree: " + err);
-    }
-  }
-
-
-  attachEvents(app, mod) { }
-
+	attachEvents(app, mod) {}
 }
 
-
 module.exports = DebugAppspaceMain;
-

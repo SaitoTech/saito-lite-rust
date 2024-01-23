@@ -1,4 +1,3 @@
-
 # FullCalendar RRule Plugin
 
 A connector to the RRule library, for recurring events

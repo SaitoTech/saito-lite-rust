@@ -1,58 +1,61 @@
 module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
-
-  let html = `
+	let html = `
     <div class="saitoa dev-card-overlay">
-      <div class="settlers-items-container">`
-  if (mod.canPlayerPlayCard()){
-    html += `<div class="settlers-item-info-text">Select a card to play:</div>`;
-  }else{
-    html += `<div class="settlers-item-info-text">My dev cards:</div>`;
-  }
-        
-  html += `<div class="settlers-item-row settlers-cards-container settlers-desired-resources">`;
+      <div class="settlers-items-container">`;
+	if (mod.canPlayerPlayCard()) {
+		html += '<div class="settlers-item-info-text">Select a card to play:</div>';
+	} else {
+		html += '<div class="settlers-item-info-text">My dev cards:</div>';
+	}
 
-      let cards = "";
-      let disable = !mod.canPlayerPlayCard();
+	html += '<div class="settlers-item-row settlers-cards-container settlers-desired-resources">';
 
-      console.log(disable);
+	let cards = '';
+	let disable = !mod.canPlayerPlayCard();
 
-      if (mod.game.state.playerTurn !== mod.game.player){
-        disable = true;
-      }
+	console.log(disable);
 
-      console.log(disable);
+	if (mod.game.state.playerTurn !== mod.game.player) {
+		disable = true;
+	}
 
-      for (let x = 0; x < mod.game.deck[0].hand.length; x++) {
-          let card = mod.game.deck[0].cards[mod.game.deck[0].hand[x]];
-        
-          //
-          // It's not out turn or we have already played a dev card this turn, or which just bought the card (but it isn't a VP)
-          // 
-          let card_disable = disable || (x >= mod.game.state.players[mod.game.player - 1].devcards && card.action != 0);
-          
-          if (!mod.game.state.hasRolled && card.action !== 1){
-            card_disable = true;
-          }
+	console.log(disable);
 
-          cards += `
-            <div class="settlers-dev-card ${card_disable ? "settlers-card-disabled":""}" id="${x}">
+	for (let x = 0; x < mod.game.deck[0].hand.length; x++) {
+		let card = mod.game.deck[0].cards[mod.game.deck[0].hand[x]];
+
+		//
+		// It's not out turn or we have already played a dev card this turn, or which just bought the card (but it isn't a VP)
+		//
+		let card_disable =
+			disable ||
+			(x >= mod.game.state.players[mod.game.player - 1].devcards &&
+				card.action != 0);
+
+		if (!mod.game.state.hasRolled && card.action !== 1) {
+			card_disable = true;
+		}
+
+		cards += `
+            <div class="settlers-dev-card ${
+	card_disable ? 'settlers-card-disabled' : ''
+}" id="${x}">
               <img src="${card.img}">
               <div class="settlers-dev-card-title">${card.card}</div>
-              <div class="settlers-dev-card-text">${mod.rules[card.action]}</div>
+              <div class="settlers-dev-card-text">${
+	mod.rules[card.action]
+}</div>
             </div>
           `;
+	}
 
-      }
+	html += cards;
 
-      html += cards;
-
-
-  html += `
+	html += `
         </div>
       </div>
     </div>  
   `;
 
-  return html;
-
-}
+	return html;
+};
