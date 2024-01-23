@@ -1,86 +1,60 @@
 module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
   let publicKey = mod.publicKey;
-  console.log("publickey ////////");
-  console.log(publicKey);
-
   let key = app.keychain.returnKey({ publicKey : publicKey});
-  let identifier_registered = key?.identifier;
+  let identifier_registered;
 
   console.log("key ////////");
   console.log(key);
 
-  if (!identifier_registered) {
+  if (key?.identifier) {
+    identifier_registered = `<div class="username">${key.identifier}</div>`;
+  }else{
     if (key?.has_registered_username){
-      identifier_registered = `<span class="register-identifier-btn settings-appspace-link">Registering...</span>`;  
+      identifier_registered = `<div class="register-identifier-btn">Registering...</div>`;  
     } else{
-      identifier_registered = `<span id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</span>`;  
+      identifier_registered = `<div id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</div>`;  
     }
   }
 
-  let modules_html = "Wallet Outdated - module selection not supported";
-  let modules_html_active = "Wallet Outdated - module selection not supported";
+  let modules_html = "";
+
   try {
-    modules_html = app.options.modules
-      .map((mod, i) => {
-        let CHECKED = mod.active ? 'CHECKED' : '';
-        return `
-        <div class="settings-appspace-app">
-        <label class="saito-switch">
-          <input type="checkbox"  id="${i}"  value="modules_mods_${i}" name="modules_mods_${i}" ${CHECKED}>
-          <span class="saito-switch-slider"></span>
-        </label>
-          <label>${mod.name}
-            <span></span>
-          </label>
-         </div>
-      `;
-      })
-      .join('');
+    console.log(app.options.modules);
 
-    modules_html_active = app.options.modules
-      .map((mod, i) => {
-        let CHECKED = mod.active ? 'CHECKED' : '';
-        return `
-        <div class="settings-appspace-installed-app">
-          <label>${mod.name}
-            <span></span>
-          </label>
+    for (let i = 0; i < app.options.modules.length; i++){
+      let mod = app.modules.returnModule(app.options.modules[i].name);
+      let shortName = app.options.modules[i].name;
+      let fullName = mod ? mod.returnName() : shortName;
+
+      
+      let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
+      modules_html += `
+      <div class="settings-appspace-app">
+          <div class="saito-switch">
+            <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
+          </div>
+          <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>
          </div>
-      `;
-      })
-      .join('');
+      `;  
+    
+    }
+
   } catch (err) {
-    if (err.message.startsWith("Cannot read property 'map'")) {
-      modules_html = "Initialization error. Refresh page should fix this.";
-    } else {
-      modules_html = `Unknown error<br/>${err}`;
-    }
+    console.error(err);
   }
-
-  let balance_link = "";
-  app.modules.mods.forEach(mod => {
-    if (mod.name == 'Balance') {
-      balance_link = `
-        <a target="_blank" href="${window.location.origin + "/balance?address=" + publicKey}">Check Recorded Balance</a>
-      `;
-    }
-  });
-
 
   let html = `
   
   <div class="settings-appspace">
 
     <div class="settings-appspace-header">
-      <div class="settings-actions-buttons">
-        <div class="settings-actions-container">
-          <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
-          <div class="saito-button-secondary small" id="restore-account-btn">Restore Wallet</div>
-          <div class="saito-button-secondary small" id="backup-account-btn">Backup Wallet</div>
-          <div class="saito-button-secondary small" id="nuke-account-btn">Nuke Account</div>
-          <div class="saito-button-secondary small" id="clear-storage-btn">Clear Local Cache</div>
-        </div>
+      <div class="settings-actions-container">
+        <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
+        <div class="saito-button-secondary small" id="restore-account-btn">Restore Wallet</div>
+        <div class="saito-button-secondary small" id="backup-account-btn">Backup Wallet</div>
+        <div class="saito-button-secondary small" id="nuke-account-btn">Nuke Account</div>
+        <div class="saito-button-secondary small" id="clear-storage-btn">Clear Local Cache</div>
       </div>
     </div>
 
@@ -89,16 +63,18 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
         <h6>Wallet</h6>
           <div class="settings-appspace-user-details">
             <div>Username:</div>
-            <div>${identifier_registered}</div>
+            ${identifier_registered}
       
             <div>Public Key:</div>
             <div class="pubkey-containter" data-id="${publicKey}">
-              <span class="profile-public-key">${publicKey}</span><i class="fas fa-copy" id="copy-public-key"></i>
+              <div class="profile-public-key">${publicKey}</div>
+              <i class="fas fa-copy" id="copy-public-key"></i>
             </div>
       
             <div>Private Key:</div>
             <div class="pubkey-containter" data-id="${main.privateKey}">
-              <span class="profile-public-key saito-password">${main.privateKey}</span><i class="fas fa-copy" id="copy-private-key"></i>
+              <div class="profile-public-key saito-password">${main.privateKey}</div>
+              <i class="fas fa-copy" id="copy-private-key"></i>
             </div>
           </div>
         </div>

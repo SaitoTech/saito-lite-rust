@@ -156,7 +156,9 @@
     if (!unit) { return; }
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    let p = this.returnPlayerOfFaction(winning_faction);
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    let winning_player = this.returnPlayerCommandingFaction(winning_faction);
+    let p = this.game.state.players_info[winning_player-1];
     let unitjson = JSON.stringify(unit);
     for (let z = 0; z < p.captured.length; z++) {
       if (JSON.stringify(p.captured[z]) === unitjson) { return; }
@@ -335,7 +337,7 @@
     //
     // PROCESS BONUS VP
     //
-    //• Copernicus (2 VP) or Michael Servetus (1 VP) event
+    // Copernicus (2 VP) or Michael Servetus (1 VP) event
     if (this.game.state.events.michael_servetus) {
       factions[this.game.state.events.michael_servetus].vp_special++;
       factions[this.game.state.events.michael_servetus].vp++;
@@ -352,8 +354,6 @@
     // protestant faction class
     //• Papal debater disgraced (1 per debate rating)           ***
     // protestant faction class
-
-
 
     //• Successful voyage of exploration
     //• Successful voyage of conquest
@@ -527,6 +527,11 @@
     state.translations['full']['english'] = 0;
 
     state.protestant_war_winner_vp = 0;
+    state.papacy_war_winner_vp = 0;
+    state.ottoman_war_winner_vp = 0;
+    state.hapsburg_war_winner_vp = 0;
+    state.england_war_winner_vp = 0;
+    state.france_war_winner_vp = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
@@ -573,7 +578,6 @@
     state.events.revolt_in_ireland = 0;
     state.events.revolt_in_egypt = 0;
 
-
     state.augsburg_electoral_bonus = 0;
     state.mainz_electoral_bonus = 0;
     state.trier_electoral_bonus = 0;
@@ -595,7 +599,6 @@
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
-
 
     state.leaders = {};
     state.leaders.francis_i = 1;
@@ -623,6 +626,10 @@
     state.events.schmalkaldic_league = 0;
     state.events.edward_vi_born = 0;
     state.events.wartburg = 0;
+
+    state.conquests = [];
+    state.colonies = [];
+    state.explorations = [];
 
     return state;
 

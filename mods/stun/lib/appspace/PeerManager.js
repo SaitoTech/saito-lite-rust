@@ -80,7 +80,7 @@ class PeerManager {
         public_key: this.mod.publicKey,
       };
 
-      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun);
+      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun.peers);
     });
 
     app.connection.on("stun-toggle-audio", async () => {
@@ -97,12 +97,20 @@ class PeerManager {
         enabled: this.audioEnabled,
       };
 
-      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun);
+      this.mod.sendStunMessageToPeersTransaction(data, this.app.options.stun.peers);
     });
 
     app.connection.on("begin-share-screen", async () => {
       try {
-        this.presentationStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        this.presentationStream = await navigator.mediaDevices.getDisplayMedia({ 
+          video: {
+            displaySurface: "window",
+          }, 
+          preferCurrentTab: false,
+          selfBrowserSurface: "exclude",
+          surfaceSwitching: "include",
+          monitorTypeSurfaces: "exclude", 
+        });
         let videoTrack = this.presentationStream.getVideoTracks()[0];
         videoTrack.onended = this.stopSharing.bind(this);
 
@@ -123,6 +131,8 @@ class PeerManager {
     app.connection.on("start-stun-call", async () => {
       console.log("STUN: start-stun-call");
 
+      this.firstConnect = true;
+
       console.log("STUN: ", this.mod.room_obj, this.app.options.stun);
 
       //Render the UI component
@@ -140,7 +150,7 @@ class PeerManager {
       if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
         if (this.app.options?.stun && !this.mod.room_obj?.ui) {
           console.log("STUN: my peers, ", this.app.options.stun);
-          for (peer of this.app.options.stun) {
+          for (peer of this.app.options.stun.peers) {
             if (peer !== this.mod.publicKey) {
               this.mod.sendCallEntryTransaction(peer);
               break;
@@ -305,7 +315,7 @@ class PeerManager {
       _peers.push(key);
     });
 
-    this.app.options.stun = _peers;
+    this.app.options.stun.peers = _peers;
 
     console.log("My call list: ", _peers);
 
@@ -402,13 +412,13 @@ class PeerManager {
         peerConnection.connectionState === "disconnected"
       ) {
         setTimeout(() => {
-          console.log("Attempting Reconnection");
           this.reconnect(peerId);
-        }, 5000);
+        }, 3000);
       }
-      if (peerConnection.connectionState === "connected") {
+      if (this?.firstConnect && peerConnection.connectionState === "connected") {
         let sound = new Audio("/videocall/audio/enter-call.mp3");
         sound.play();
+        this.firstConnect = false;
       }
 
       this.app.connection.emit(
@@ -465,10 +475,8 @@ class PeerManager {
   }
 
   reconnect(peerId) {
-    const maxRetries = 2;
-    const retryDelay = 5000;
 
-    const attemptReconnect = (currentRetry) => {
+    const attemptReconnect = async (currentRetry, retryDelay = 5000) => {
       const peerConnection = this.peers.get(peerId);
 
       if (!peerConnection) {
@@ -481,27 +489,30 @@ class PeerManager {
         return;
       }
 
-      // Remove peer connection if its state is neither "connected" nor "connecting"
-      if (
-        peerConnection.connectionState !== "connected" &&
-        peerConnection.connectionState !== "connecting"
-      ) {
-        console.log(`STUN: Removing peerConnection with state: ${peerConnection.connectionState}`);
-        this.removePeerConnection(peerId);
-      }
-
-      if (currentRetry === maxRetries) {
-        console.log("STUN: Reached maximum number of reconnection attempts, giving up");
+      if (peerConnection.connectionState === "connecting"){
+        console.log("STUN: renogotiation/reconnection in progress");
         return;
       }
 
-      setTimeout(() => {
-        console.log(`STUN: Reconnection attempt ${currentRetry + 1}/${maxRetries}`);
-        attemptReconnect(currentRetry + 1);
-      }, retryDelay);
+      console.log("STUN: Attempting Reconnection");
+      this.renegotiate(peerId);
+
+      if (currentRetry > 0) {
+        setTimeout(() => {
+          console.log(`STUN: Reconnection attempt ${currentRetry}`);
+          attemptReconnect(currentRetry - 1);
+        }, retryDelay);
+      }else{
+        let c = await sconfirm("Stun connection failed, hang up?");
+        if (c){
+          this.removePeerConnection(peerId);
+        }else{
+          attemptReconnect(3);
+        }
+      }
     };
 
-    attemptReconnect(0);
+    attemptReconnect(3);
   }
 
   //This can get double processed by PeerTransaction and onConfirmation
@@ -607,7 +618,7 @@ class PeerManager {
 
     this.peers = new Map();
 
-    this.app.options.stun = [];
+    this.app.options.stun.peers = [];
     this.app.storage.saveOptions();
 
     if (this.audioStreamAnalysis) {
@@ -695,14 +706,15 @@ class PeerManager {
       pc.dc.send("start-recording");
     });
 
+    const audioContext = new AudioContext();
+    const audioDestination = audioContext.createMediaStreamDestination();
+
+    /*
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
     canvas.width = 1280;
     canvas.height = 720;
-
-    const audioContext = new AudioContext();
-    const audioDestination = audioContext.createMediaStreamDestination();
 
     const localVideo = document.createElement("video");
     localVideo.srcObject = this.localStream;
@@ -762,7 +774,8 @@ class PeerManager {
     };
 
     draw();
-
+    */
+    
     [
       this.localStream, 
       ...Array.from(this.remoteStreams.values()).map((c) => c.remoteStream),
@@ -772,10 +785,22 @@ class PeerManager {
       source.connect(audioDestination);
     });
 
-    const combinedStream = new MediaStream([
+    /*const combinedStream = new MediaStream([
       ...audioDestination.stream.getTracks(),
       ...canvas.captureStream(30).getTracks(),
-    ]);
+    ]);*/
+
+
+    let screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+          video: {
+            displaySurface: "browser",
+          }, 
+          preferCurrentTab: true,
+          selfBrowserSurface: "include",
+          monitorTypeSurfaces: "exclude", 
+        });
+ 
+    const combinedStream = new MediaStream([...audioDestination.stream.getTracks(), ...screenStream.getTracks()]);
 
     this.mediaRecorder = new MediaRecorder(combinedStream);
 
@@ -808,6 +833,8 @@ class PeerManager {
       if (audioContext.state !== "closed") {
         audioContext.close();
       }
+
+      screenStream.getTracks().forEach(track => track.stop());
 
       // Reset recording flag
       this.recording = false;

@@ -8,7 +8,7 @@
 
   returnFactionAdminRating(faction="") {
     if (this.factions[faction]) {
-      return this.factions[faction].returnAdminRating();
+      return this.factions[faction].returnAdminRating(this);
     }
     return 0;
   }
@@ -46,7 +46,7 @@
       obj.calculateBonusVictoryPoints = function() { return 0; }
     }
     if (obj.returnAdminRating == null) {
-      obj.returnAdminRating = function() { return this.admin_rating; }
+      obj.returnAdminRating = function(game_mod) { return this.admin_rating; }
     }
     if (obj.calculateSpecialVictoryPoints == null) {
       obj.calculateSpecialVictoryPoints = function() { return 0; }
@@ -56,6 +56,7 @@
         return `
 	  <div class="faction_sheet" id="faction_sheet" style="background-image: url('/his/img/factions/${obj.img}')">
 	    <div class="faction_sheet_ruler" id="faction_sheet_ruler"></div>
+	    <div class="faction_sheet_vp" id="faction_sheet_vp"></div>
 	  </div>
 	`;
       }

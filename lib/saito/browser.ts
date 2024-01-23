@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import screenfull, { element } from "screenfull";
-import html2canvas from "html2canvas";
 import { getDiffieHellman } from "crypto";
 
 let marked = require("marked");
@@ -1549,42 +1548,25 @@ class Browser {
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  async captureScreenshot(callback = null) {
-    // svg needs converstion
-    let svgElements = document.body.querySelectorAll("svg");
-    svgElements.forEach(function (item) {
-      item.setAttribute("width", item.getBoundingClientRect().width);
-      item.setAttribute("height", item.getBoundingClientRect().height);
-      item.style.width = null;
-      item.style.height = null;
-    });
-
-    html2canvas(document.body).then(function (canvas) {
-      let img = canvas.toDataURL("image/jpeg", 0.35);
-      if (callback != null) {
-        callback(img);
-      }
-    });
-  }
-
-  async screenshotCanvasElementBySelector(selector = "", callback = null) {
-    let canvas = document.querySelector(selector);
-    if (canvas) {
-      let img = canvas.toDataURL("image/jpeg", 0.35);
-      if (callback != null) {
-        callback(img);
-      }
-    }
-  }
-
   async screenshotCanvasElementById(id = "", callback = null) {
     let canvas = document.getElementById(id);
     if (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
       if (callback != null) {
-        callback(img);
+        callback(img);d
       }
     }
+  }
+
+  //
+  // neither of these is quite right and the internet is full of wrong answers 
+  //
+  urlRegexp(){
+    // from tweet.js let expression = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+    // from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+            
+    return /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+
   }
 
   sanitize(text) {
@@ -1647,9 +1629,8 @@ class Browser {
       });
 
       /* wrap link in <a> tag */
-      let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-
-      text = text.replace(urlPattern, function (url) {
+      
+      text = text.replace(this.urlRegexp(), function (url) {
         let url1 = url.trim();
         let url2 = url1;
         if (url2.length > 42) {

@@ -129,6 +129,7 @@ class CallInterfaceVideo {
 
     app.connection.on("stun-disconnect", ()=>{
       this.video_boxes = {};
+      this.app.connection.emit("reset-stun");
 
       if (this.mod.browser_active) {
         let homeModule = this.app.options?.homeModule || "Stun";
@@ -145,8 +146,6 @@ class CallInterfaceVideo {
         // Hopefully we don't have to reload the page on the end of a stun call
         // But keep on eye on this for errors and make sure all the components shut themselves down properly
         //
-        this.app.connection.emit("reset-stun");
-
         if (document.getElementById("stun-chatbox")) {
           document.getElementById("stun-chatbox").remove();
           let am = this.app.modules.returnActiveModule();

@@ -58,9 +58,9 @@
   }
 
   canFactionDeactivateMinorPower(faction, power) {
-    if (power == "genoa") { return 1; }
-    if (power == "scotland") { return 1; }
-    if (power == "venice") { return 1; }
+    if (power == "genoa") { if (faction == "france" || faction == "hapsburg" || faction == "papacy") { return 1; } }
+    if (power == "scotland") { if (faction == "england" || faction == "france") { return 1; } }
+    if (power == "venice") { if (faction == "france" || faction == "hapsburg" || faction == "papacy") { return 1; } }
     return 0;
   }
 

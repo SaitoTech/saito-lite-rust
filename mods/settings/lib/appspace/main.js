@@ -1,5 +1,6 @@
 const SettingsAppspaceTemplate = require("./main.template.js");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoModule = require("./../../../../lib/saito/ui/saito-module/saito-module");
 const localforage = require("localforage");
 const jsonTree = require("json-tree-viewer");
 
@@ -11,17 +12,17 @@ class SettingsAppspace {
     this.privateKey = null;
 
     this.overlay = new SaitoOverlay(app, mod);
-
-    this.app.connection.on("settings-overlay-render-request", async () => {
-      this.mod.attachStyleSheets();
-      await this.render();
-    });
   }
 
   async render() {
     this.privateKey = await this.app.wallet.getPrivateKey();
     this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
+
+    /**
+     *  No modules are implementing this, but it is an idea to let modules render a component
+     *  into the Settings appspace overlay
+     */ 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
       for (let i = 0; i < this.app.modules.mods.length; i++) {
@@ -32,8 +33,18 @@ class SettingsAppspace {
       }
     }
 
+    this.renderDebugTree();
+
+    await this.attachEvents();
+  }
+
+  //
+  // Todo: Add a param to auto open one branch of the tree
+  //
+  renderDebugTree(){
     //debug info
     let el = document.querySelector(".settings-appspace-debug-content");
+    el.innerHTML = "";
 
     try {
       let optjson = JSON.parse(
@@ -47,7 +58,6 @@ class SettingsAppspace {
       console.log("error creating jsonTree: " + err);
     }
 
-    await this.attachEvents();
   }
 
   async attachEvents() {
@@ -88,26 +98,38 @@ class SettingsAppspace {
           let thisid = parseInt(e.currentTarget.id);
           let currentTarget = e.currentTarget;
 
-          if (e.currentTarget.checked == true) {
-            let sc = await sconfirm("Reactivate this module?");
+          if (currentTarget.checked == true) {
+            let sc = await sconfirm("Reactivate this module? (Will take effect on refresh)");
             if (sc) {
               app.options.modules[thisid].active = 1;
               app.storage.saveOptions();
-              window.location = window.location;
-            } else {
-              window.location = window.location;
-            }
+            }else{
+              currentTarget.checked = false;
+            } 
           } else {
-            let sc = await sconfirm("Remove this module?");
+            let sc = await sconfirm("Remove this module? (Will take effect on refresh)");
             if (sc) {
               app.options.modules[thisid].active = 0;
               app.storage.saveOptions();
-              window.location = window.location;
             } else {
               currentTarget.checked = true;
             }
           }
         };
+      });
+
+      Array.from(document.getElementsByClassName("settings-appspace-module")).forEach((modlink) => {
+        modlink.onclick = async (e) => {
+          let modname = e.currentTarget.id;
+          let mod = this.app.modules.returnModule(modname);
+          if (!mod){
+            console.error("Module not found! ", modname);
+            return;
+          }
+
+          let mod_overlay = new SaitoModule(this.app, mod, ()=> {this.renderDebugTree(); });
+          mod_overlay.render();
+        }
       });
 
       if (document.getElementById("backup-account-btn")) {

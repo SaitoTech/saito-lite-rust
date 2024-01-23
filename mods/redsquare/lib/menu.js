@@ -89,9 +89,13 @@ class RedSquareMenu {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      let should_refresh = window.location.hash == "#home";
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      //Don't set a hast location (even on click)
 
-      if (should_refresh) {
+      if (window.location.hash || window.location.search) {
+        this.app.connection.emit("redsquare-home-render-request");
+
+      } else {
         this.app.connection.emit("redsquare-home-render-request", true);
 
         //
@@ -105,8 +109,6 @@ class RedSquareMenu {
         this.mod.loadTweets("later", (tx_count) => {
           this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
         });
-      } else {
-        this.app.connection.emit("redsquare-home-render-request");
       }
     };
 

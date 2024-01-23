@@ -32,12 +32,13 @@ class CallInterfaceFloat {
     this.app.connection.on("stun-update-connection-message", (peer_id, status) => {
       if (status === "connected") {
         this.startTimer();
+      }else {
+        this.pauseTimer();
       }
 
-      siteMessage(`Stun connection ${status}`, 2000);
     });
 
-    this.app.connection.on("stun-disconnect", this.hide);
+    this.app.connection.on("stun-disconnect", this.hide.bind(this));
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
       if (this.audio_boxes[peer_id]?.audio_box) {
@@ -147,9 +148,12 @@ class CallInterfaceFloat {
 
   startTimer() {
     if (this.timer_interval) {
-      return;
+      clearInterval(this.timer_interval);
     }
     let timerElement = document.querySelector(".timer .counter");
+    
+    timerElement.classList.remove("paused-timer");
+
     let seconds = 0;
 
     const timer = () => {
@@ -181,6 +185,17 @@ class CallInterfaceFloat {
     console.log("Start Call Timer");
   }
 
+  pauseTimer() {
+    if (this.timer_interval){
+      clearInterval(this.timer_interval);
+    }
+
+    let timerElement = document.querySelector(".timer .counter");
+
+    this.timer_interval = setInterval(()=> {
+      timerElement.classList.toggle("paused-timer");
+    }, 600);
+  }
 
 }
 

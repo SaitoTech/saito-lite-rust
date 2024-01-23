@@ -55,9 +55,9 @@ class TweetManager {
                   let notification = new Notification(this.app, this.mod, null);
                   notification.render(".tweet-manager");
 
-                  if (document.querySelector("#redsquare-intersection")) {
+                  if (document.querySelector("#intersection-observer-trigger")) {
                     this.intersectionObserver.unobserve(
-                      document.querySelector("#redsquare-intersection")
+                      document.querySelector("#intersection-observer-trigger")
                     );
                   }
                 }
@@ -92,9 +92,9 @@ class TweetManager {
                       ".tweet-manager"
                     );
                   }
-                  if (document.querySelector("#redsquare-intersection")) {
+                  if (document.querySelector("#intersection-observer-trigger")) {
                     this.intersectionObserver.unobserve(
-                      document.querySelector("#redsquare-intersection")
+                      document.querySelector("#intersection-observer-trigger")
                     );
                   }
                 } 
@@ -105,7 +105,6 @@ class TweetManager {
       },
       {
         root: null,
-        rootMargin: "30px",
         threshold: 1,
       }
     );
@@ -212,8 +211,8 @@ class TweetManager {
           let notification = new Notification(this.app, this.mod, null);
           notification.render(".tweet-manager");
 
-          if (document.querySelector("#redsquare-intersection")) {
-            this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
+          if (document.querySelector("#intersection-observer-trigger")) {
+            this.intersectionObserver.unobserve(document.querySelector("#intersection-observer-trigger"));
           }
         }
         this.hideLoader();
@@ -253,8 +252,8 @@ class TweetManager {
               ".tweet-manager"
             );
           }
-          if (document.querySelector("#redsquare-intersection")) {
-            this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
+          if (document.querySelector("#intersection-observer-trigger")) {
+            this.intersectionObserver.unobserve(document.querySelector("#intersection-observer-trigger"));
           }
         } else {
           console.log("Keep looking for tweets");
@@ -435,7 +434,8 @@ class TweetManager {
   renderTweet(tweet) {
     this.render("tweet");
 
-
+    this.showLoader();
+    
     // show the basic tweet first
     if (!tweet.parent_id) {
       tweet.renderWithChildren();
@@ -469,7 +469,7 @@ class TweetManager {
     // dynamic content loading
     //
 
-    let ob = document.getElementById("redsquare-intersection");
+    let ob = document.getElementById("intersection-observer-trigger");
     if (ob) {
       //Only set up intersection observer if we have more content than fits on the screen
       //(so we don't double tap the servers)

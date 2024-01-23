@@ -24,6 +24,8 @@ class FactionOverlay {
       let controlled_keys = 0;
       let keyboxen = '';
 
+      let war_winner_vp = 0;
+
       for (let key in his_self.game.spaces) {
         if (his_self.game.spaces[key].type === "key") {
           if (his_self.game.spaces[key].political === his_self.factions[faction].key || (his_self.game.spaces[key].political === "" && his_self.game.spaces[key].home === his_self.factions[faction].key)) {
@@ -34,6 +36,7 @@ class FactionOverlay {
 
       // ENGLAND
       if (his_self.factions[faction].key === "england") {
+	war_winner_vp = his_self.game.state.england_war_winner_vp;
         let total_keys = 9;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = his_self.factions[faction].marital_status; i < 7; i++) {
@@ -45,22 +48,23 @@ class FactionOverlay {
           }
         }
 
-        if (this.mod.game.state.leaders.henry_viii == 1) {
+        if (his_self.game.state.leaders.henry_viii == 1) {
 	}
-        if (this.mod.game.state.leaders.edward_vi == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("019"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.edward_vi == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("019"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.mary_i == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("021"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.mary_i == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("021"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.elizabeth_i == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("023"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.elizabeth_i == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("023"), ".faction_sheet_ruler");
 	}
 
 
       }
       // FRANCE
       if (his_self.factions[faction].key === "france") {
+	war_winner_vp = his_self.game.state.france_war_winner_vp;
         let total_keys = 11;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i < 7; i++) {
@@ -72,13 +76,14 @@ class FactionOverlay {
           }
         }
 
-        if (this.mod.game.state.leaders.henry_ii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("020"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.henry_ii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("020"), ".faction_sheet_ruler");
 	}
 
       }
       // OTTOMAN
       if (his_self.factions[faction].key === "ottoman") {
+	war_winner_vp = his_self.game.state.ottoman_war_winner_vp;
         let total_keys = 11;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i <= 10; i++) {
@@ -92,6 +97,7 @@ class FactionOverlay {
       }
       // PAPACY
       if (his_self.factions[faction].key === "papacy") {
+	war_winner_vp = his_self.game.state.papacy_war_winner_vp;
         let total_keys = 7;
 	controlled_keys = his_self.returnNumberOfKeysControlledByFaction("papacy");
         let remaining_keys = total_keys - controlled_keys;
@@ -109,19 +115,20 @@ class FactionOverlay {
           }
         }
 
-        if (this.mod.game.state.leaders.clement_vii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("010"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.clement_vii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("010"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.paul_iii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("014"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.paul_iii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("014"), ".faction_sheet_ruler");
 	}
-        if (this.mod.game.state.leaders.julius_iii == 1) {
-	  this.app.browser.addElementToSelector(this.mod.returnCardImage("022"), ".faction_sheet_ruler");
+        if (his_self.game.state.leaders.julius_iii == 1) {
+	  this.app.browser.addElementToSelector(his_self.returnCardImage("022"), ".faction_sheet_ruler");
 	}
 
       }
       // PROTESTANTS
       if (his_self.factions[faction].key === "protestant") {
+	war_winner_vp = his_self.game.state.protestant_war_winner_vp;
         for (let i = 0; i <= 6; i++) {
           let box_inserts = "";
           if (his_self.game.state.translations['new']['german'] == i) {
@@ -152,6 +159,7 @@ class FactionOverlay {
 
       // HAPSBURG
       if (his_self.factions[faction].key === "hapsburg") {
+	war_winner_vp = his_self.game.state.hapsburg_war_winner_vp;
         let total_keys = 14;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 1; i <= 14; i++) {
@@ -170,6 +178,45 @@ class FactionOverlay {
         }
       }
       this.app.browser.addElementToSelector(keyboxen, ".faction_sheet");
+
+
+      //
+      // War Winner VPs
+      //
+      while (war_winner_vp >= 2) {
+        this.app.browser.addElementToSelector('<div class="war_winner_vp vp2"></div>', ".faction_sheet_vp");
+	war_winner_vp -= 2;
+      }
+      while (war_winner_vp >= 1) {
+        this.app.browser.addElementToSelector('<div class="war_winner_vp vp1"></div>', ".faction_sheet_vp");
+	war_winner_vp -= 1;
+      }
+
+      //
+      // Disgraced and Burned Debaters
+      //
+      if (his_self.factions[faction].key === "protestant") {
+        for (let i = 0; i < his_self.game.state.burned.length; i++) {
+          let dn = his_self.game.state.burned[i];
+          let dd = his_self.debaters[dn];
+	  if (dd.faction === "papacy") {
+	    let vp_bonus = dd.power;    
+	    let html = `<div class="debaters-tile" data-key="${dd.key}" data-id="${dd.key}" style="background-image: url(/his/img/tiles/debaters/${dd.img});"></div>`;
+            this.app.browser.addElementToSelector(html, ".faction_sheet_vp");
+	  }
+        }
+      }
+      if (his_self.factions[faction].key === "papacy") {
+        for (let i = 0; i < his_self.game.state.burned.length; i++) {
+          let dn = his_self.game.state.burned[i];
+          let dd = his_self.debaters[dn];
+	  if (dd.faction === "protestant") {
+	    let vp_bonus = dd.power;    
+	    let html = `<div class="debaters-tile" data-key="${dd.key}" data-id="${dd.key}" style="background-image: url(/his/img/tiles/debaters/${dd.img});"></div>`;
+            this.app.browser.addElementToSelector(html, ".faction_sheet_vp");
+	  }
+        }
+      }
 
       this.attachEvents();
 

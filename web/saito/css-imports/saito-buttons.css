@@ -17,6 +17,7 @@ button,
   border-radius: 0.5rem;
   cursor: pointer;
   border: 1px solid transparent;
+  background-position: 1% 1%;
 }
 
 .saito-button-secondary {
@@ -35,7 +36,7 @@ button,
 }
 
 button:hover, .saito-button-primary:hover{
-  background-position: right bottom; /* change the direction of the change here */
+  background-position: 99% 99%; /* change the direction of the change here */
   color: #fff;
   text-decoration: none;
 }

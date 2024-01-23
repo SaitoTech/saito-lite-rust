@@ -3,6 +3,10 @@
   border-bottom: 2px dashed;
 }
 
+ul .option.showcard {
+  border-bottom: 0px;
+}
+
 .cardtext {
     position: relative;
     font-size: 2rem;

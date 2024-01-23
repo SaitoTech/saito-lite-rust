@@ -8,7 +8,7 @@
       admin_rating	:	1,
       img		:	"france.png",
       cards_bonus	:	1,
-      returnCardsSaved  :       function(game_mod) {
+      returnAdminRating  :       function(game_mod) {
 
         let base = 0;
 
@@ -72,7 +72,10 @@
         return 0;
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
-	return game_mod.game.state.french_chateaux_vp;
+	if (game_mod.game.state.french_chateaux_vp) {
+	  return game_mod.game.state.french_chateaux_vp;
+	}
+	return 0;
       },
     });
  
