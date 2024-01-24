@@ -1,8 +1,6 @@
 module.exports = ImperiumStrategyCardOverlayTemplate = () => {
-
-  return `
+	return `
     <div class="strategy-card-overlay hide-scrollbar">
     </div>
   `;
-
-}
+};

@@ -1,471 +1,484 @@
-const saito = require("./../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
-const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const PopupLesson = require("./lib/lesson");
-const PopupMenu = require("./lib/menu");
-const PopupVocab = require("./lib/vocab");
-const PopupReview = require("./lib/review");
-const PopupMain = require("./lib/main");
-const PopupLessonManager = require("./lib/manager");
-const PeerService = require("saito-js/lib/peer_service").default;
-const localforage = require("localforage");
-const JsStore = require("jsstore");
-
-
+const saito = require('./../../lib/saito/saito');
+const ModTemplate = require('../../lib/templates/modtemplate');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const PopupLesson = require('./lib/lesson');
+const PopupMenu = require('./lib/menu');
+const PopupVocab = require('./lib/vocab');
+const PopupReview = require('./lib/review');
+const PopupMain = require('./lib/main');
+const PopupLessonManager = require('./lib/manager');
+const PeerService = require('saito-js/lib/peer_service').default;
+const localforage = require('localforage');
+const JsStore = require('jsstore');
 
 class Popup extends ModTemplate {
+	constructor(app) {
+		super(app);
+		this.appname = 'Popup Chinese';
+		this.name = 'Popup';
+		this.slug = 'popup';
+		this.description = 'Chinese Language Education on the Saito Network';
+		this.categories = 'Social Entertainment';
+		this.icon_fa = 'fa-solid fa-language';
 
-  constructor(app) {
-    super(app);
-    this.appname = "Popup Chinese";
-    this.name = "Popup";
-    this.slug = "popup";
-    this.description = "Chinese Language Education on the Saito Network";
-    this.categories = "Social Entertainment";
-    this.icon_fa = "fa-solid fa-language";
+		this.styles = ['/popup/style.css'];
+		this.peers = [];
 
-    this.styles = ["/popup/style.css"];
-    this.peers = [];
+		// in browser db
+		this.localDB = null;
+		this.schema = [
+			'id',
+			'user_id',
+			'publickey',
+			'owner',
+			'sig',
+			'field1',
+			'field2',
+			'field3',
+			'block_id',
+			'block_hash',
+			'created_at',
+			'updated_at',
+			'tx',
+			'preserve'
+		];
 
-    // in browser db
-    this.localDB = null;
-    this.schema = ["id", "user_id", "publickey", "owner", "sig", "field1", "field2", "field3", "block_id", "block_hash", "created_at", "updated_at", "tx", "preserve"];
+		this.social = {
+			twitter_card: 'summary',
+			twitter_site: '@SaitoOfficial',
+			twitter_creator: '@SaitoOfficial',
+			twitter_title: 'Popup Chinese',
+			twitter_url: 'https://popupchinese.com/',
+			twitter_description: 'Popup Chinese - Learn Chinese',
+			twitter_image:
+				'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png',
+			og_title: 'Popup Chinese',
+			og_url: 'https://popupchinese.com',
+			og_type: 'website',
+			og_description: 'Popup Chinese - Learn Chinese',
+			og_site_name: 'Popup Chinese',
+			og_image: 'https://popupchinese.com',
+			og_image_url: 'https://popupchinese.com',
+			og_image_secure_url: 'https://popupchinese.com'
+		};
 
+		this.lessons = [];
+		this.offset = 0;
 
-    this.social = {
-      twitter_card: "summary",
-      twitter_site: "@SaitoOfficial",
-      twitter_creator: "@SaitoOfficial",
-      twitter_title: "Popup Chinese",
-      twitter_url: "https://popupchinese.com/",
-      twitter_description: "Popup Chinese - Learn Chinese" ,
-      twitter_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      og_title: "Popup Chinese" ,
-      og_url: "https://popupchinese.com",
-      og_type: "website",
-      og_description: "Popup Chinese - Learn Chinese",
-      og_site_name: "Popup Chinese",
-      og_image: "https://popupchinese.com",
-      og_image_url: "https://popupchinese.com",
-      og_image_secure_url:
-        "https://popupchinese.com",
-    };
+		return this;
+	}
 
-    this.lessons = [];
-    this.offset = 0;
+	returnServices() {
+		let services = [];
+		services.push(new PeerService(null, 'popup', 'Popup Language Archive'));
+		return services;
+	}
 
-    return this;
-  }
+	////////////////////
+	// initialization //
+	////////////////////
+	async initialize(app) {
+		//
+		// database setup etc.
+		//
+		await super.initialize(app);
 
-  returnServices() {
-    let services = [];
-    services.push(new PeerService(null, "popup", "Popup Language Archive"));
-    return services;
-  }
+		//
+		// create in-browser DB
+		//
+		await this.initializeDatabase();
 
+		console.log(JSON.stringify(this.returnVocab()));
 
-  ////////////////////
-  // initialization //
-  ////////////////////
-  async initialize(app) {
+		//
+		// fetch content from options file
+		//
+		this.load();
+	}
 
-    //
-    // database setup etc.
-    //
-    await super.initialize(app);
+	////////////
+	// render //
+	////////////
+	async render() {
+		//
+		// create and render components
+		//
+		if (this.main == null) {
+			// initialize components
+			this.header = new SaitoHeader(this.app, this);
+			await this.header.initialize(this.app);
+			this.menu = new PopupMenu(this.app, this);
+			this.main = new PopupMain(this.app, this);
+			this.manager = new PopupLessonManager(this.app, this);
+			this.lesson = new PopupLesson(this.app, this);
+			this.review = new PopupReview(this.app, this);
+			this.vocab = new PopupVocab(this.app, this);
 
-    //
-    // create in-browser DB
-    //
-    await this.initializeDatabase();
+			this.addComponent(this.header);
+			this.addComponent(this.main);
+			this.addComponent(this.menu);
 
+			//
+			// chat manager can insert itself into left-sidebar if exists
+			//
+			//      for (const mod of this.app.modules.returnModulesRespondingTo("chat-manager")) {
+			//        let cm = mod.respondTo("chat-manager");
+			//        cm.container = ".saito-sidebar.left";
+			//        cm.render_manager_to_screen = 1;
+			//        this.addComponent(cm);
+			//      }
+		}
 
-console.log(JSON.stringify(this.returnVocab()));
+		await super.render();
 
+		this.app.connection.emit('popup-home-render-request');
+	}
 
-    //
-    // fetch content from options file
-    //
-    this.load();
+	////////////////////////////
+	// fetch language content //
+	////////////////////////////
+	async onPeerServiceUp(app, peer, service = {}) {
+		let popup_self = this;
 
-  }
+		//
+		// override functions called by non-Saito JS
+		//
+		if (this.app.BROWSER == 1) {
+			add_to_vocab = function (
+				field1 = '',
+				field2 = '',
+				field3 = '',
+				field4 = '',
+				field5 = '',
+				label = ''
+			) {
+				popup_self.addVocab(
+					field1,
+					field2,
+					field3,
+					field4,
+					field5,
+					label
+				);
+			};
+		}
 
-  ////////////
-  // render //
-  ////////////
-  async render() {
+		//
+		// avoid network overhead if in other apps
+		//
+		if (!this.browser_active) {
+			return;
+		}
 
-    //
-    // create and render components
-    //
-    if (this.main == null) {
+		//
+		// load available lessons / media
+		//
+		if (service.service === 'popup') {
+			if (!this.peers.includes(peer.publicKey)) {
+				this.peers.push(peer.publicKey);
+			}
 
-      // initialize components
-      this.header = new SaitoHeader(this.app, this);
-      await this.header.initialize(this.app);
-      this.menu = new PopupMenu(this.app, this);
-      this.main = new PopupMain(this.app, this);
-      this.manager = new PopupLessonManager(this.app, this);
-      this.lesson = new PopupLesson(this.app, this);
-      this.review = new PopupReview(this.app, this);
-      this.vocab = new PopupVocab(this.app, this);
-
-      this.addComponent(this.header);
-      this.addComponent(this.main);
-      this.addComponent(this.menu);
-
-      //
-      // chat manager can insert itself into left-sidebar if exists
-      //
-//      for (const mod of this.app.modules.returnModulesRespondingTo("chat-manager")) {
-//        let cm = mod.respondTo("chat-manager");
-//        cm.container = ".saito-sidebar.left";
-//        cm.render_manager_to_screen = 1;
-//        this.addComponent(cm);
-//      }
-
-    }
-
-    await super.render();
-
-    this.app.connection.emit("popup-home-render-request");
-
-  }
-
-
-
-  ////////////////////////////
-  // fetch language content //
-  ////////////////////////////
-  async onPeerServiceUp(app, peer, service = {}) {
-
-    let popup_self = this;
-
-    //
-    // override functions called by non-Saito JS
-    //
-    if (this.app.BROWSER == 1) {
-      add_to_vocab = function(field1="", field2="", field3="", field4="", field5="", label="") {
-        popup_self.addVocab(field1, field2, field3, field4, field5, label);
-      }
-    }
-
-    //
-    // avoid network overhead if in other apps
-    //
-    if (!this.browser_active) { return; }
-
-    //
-    // load available lessons / media
-    //
-    if (service.service === "popup") {
-
-      if (!this.peers.includes(peer.publicKey)) { this.peers.push(peer.publicKey); }
-
-      //
-      // sql request
-      //
-      let sql = `SELECT lessons.id, lessons.title, lessons.content, lessons.slug, lessons.photo, users.username, users.userslug
+			//
+			// sql request
+			//
+			let sql = `SELECT lessons.id, lessons.title, lessons.content, lessons.slug, lessons.photo, users.username, users.userslug
                    FROM lessons JOIN users 
                    WHERE users.id = lessons.user_id AND promoted = 1
                    ORDER BY lessons.created_at DESC`;
-      this.sendPeerDatabaseRequestWithFilter(
-	"Popup", 
-	sql, 
-	async (res) => {
-	  let_lesson_id = 0;
-          if (res.rows) {
-            for (let record of res.rows) { this.addLesson(record); }
-            return;
-          }
-        },
-        (p) => {
-  	  if (p.publicKey == peer.publicKey) {
-            return 1; 
-          }
-          return 0;
-        }
-      );
-    }
+			this.sendPeerDatabaseRequestWithFilter(
+				'Popup',
+				sql,
+				async (res) => {
+					let_lesson_id = 0;
+					if (res.rows) {
+						for (let record of res.rows) {
+							this.addLesson(record);
+						}
+						return;
+					}
+				},
+				(p) => {
+					if (p.publicKey == peer.publicKey) {
+						return 1;
+					}
+					return 0;
+				}
+			);
+		}
+	}
 
-  }
+	loadLesson(lesson) {
+		if (!lesson) {
+			return;
+		}
 
-  loadLesson(lesson) {
+		let sql;
 
-    if (!lesson) { return; }
-
-    let sql;
-
-    //
-    // sql request
-    //
-    sql = `SELECT *
+		//
+		// sql request
+		//
+		sql = `SELECT *
                FROM sentences
                WHERE lesson_id = ${lesson.id} 
                ORDER BY display_order ASC`;
-    this.sendPeerDatabaseRequestWithFilter(
-        "Popup", 
-	sql, 
-	async (res) => {
-          if (res.rows) {
-	    lesson.sentences = res.rows;
-	    mycallback(lesson);
-            return;
-          }
-        },
-        (p) => {
-  	  if (p.publicKey == peer.publicKey) { return 1; }
-          return 0;
-        }
-    );
+		this.sendPeerDatabaseRequestWithFilter(
+			'Popup',
+			sql,
+			async (res) => {
+				if (res.rows) {
+					lesson.sentences = res.rows;
+					mycallback(lesson);
+					return;
+				}
+			},
+			(p) => {
+				if (p.publicKey == peer.publicKey) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+	}
+	///////////////////////
+	// network functions //
+	///////////////////////
+	async onConfirmation(blk, tx, conf) {
+		let txmsg = tx.returnMessage();
 
-  }
-  ///////////////////////
-  // network functions //
-  ///////////////////////
-  async onConfirmation(blk, tx, conf) {
+		if (conf === 0) {
+			console.log('%%');
+			console.log('NEW TRANSACTION RECEIVED!');
+			console.log('txmsg: ' + JSON.stringify(txmsg));
+		}
+	}
 
-    let txmsg = tx.returnMessage();
+	///////////////////////////////
+	// content loading functions //
+	///////////////////////////////
+	loadLessons(mycallback) {}
 
-    if (conf === 0) {
-      console.log("%%");
-      console.log("NEW TRANSACTION RECEIVED!");
-      console.log("txmsg: " + JSON.stringify(txmsg));
-    }
+	////////////////
+	// add lesson //
+	////////////////
+	async addLesson(lesson) {
+		let add_me = true;
+		for (let i = 0; i < this.lessons.length; i++) {
+			if (this.lessons[i].id === lesson.id) {
+				return;
+			}
+		}
+		this.lessons.push(lesson);
+	}
 
-  }
+	async fetchLessonSentences(lesson, mycallback = null) {
+		let sql = `SELECT sentences.speaker_text, sentences.speaker_translation, sentences.sentence_text, sentences.sentence_translation, sentences.display_order, sentences.audio_source, sentences.audio_translation, sentences.video_start, sentences.video_stop, sentences.youtube_start, sentences.youtube_stop, sentences.youku_start, sentences.youku_stop FROM sentences WHERE sentences.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
+		this.sendPeerDatabaseRequestWithFilter(
+			'Popup',
+			sql,
+			async (res) => {
+				if (res.rows) {
+					lesson.sentences = res.rows;
+					mycallback(lesson);
+				}
+			},
+			(p) => {
+				if (this.peers.includes(p.publicKey)) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+	}
 
-  ///////////////////////////////
-  // content loading functions //
-  ///////////////////////////////
-  loadLessons(mycallback) {
+	async fetchLessonQuestions(lesson, mycallback = null) {
+		let sql = `SELECT questions.question, questions.answer1, questions.answer2, questions.answer3, questions.answer4, questions.correct, questions.display_order, questions.audio, questions.question_image, questions.explanation, questions.audio_transcript FROM questions WHERE questions.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
+		console.log(sql);
+		this.sendPeerDatabaseRequestWithFilter(
+			'Popup',
+			sql,
+			async (res) => {
+				if (res.rows) {
+					lesson.questions = res.rows;
+					mycallback(lesson);
+				}
+			},
+			(p) => {
+				if (this.peers.includes(p.publicKey)) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+	}
 
-  }
+	async fetchLessonVocabulary(lesson, mycallback = null) {
+		let sql = `SELECT words.audio_source, words.audio_translation, words.field1, words.field2, words.field3, words.field4, words.field5 FROM words WHERE words.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
+		console.log(sql);
+		this.sendPeerDatabaseRequestWithFilter(
+			'Popup',
+			sql,
+			async (res) => {
+				if (res.rows) {
+					lesson.words = res.rows;
+					mycallback(lesson);
+				}
+			},
+			(p) => {
+				if (this.peers.includes(p.publicKey)) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+	}
 
+	returnLesson(lesson_id = null) {
+		for (let i = 0; i < this.lessons.length; i++) {
+			if (this.lessons[i].id == lesson_id) {
+				return this.lessons[i];
+			}
+		}
 
+		return {
+			level: 'Unknown',
+			title: 'Placeholder Title'
+		};
+	}
 
+	load() {
+		if (!this.app.BROWSER) {
+			return;
+		}
 
-  ////////////////
-  // add lesson //
-  ////////////////
-  async addLesson(lesson) {
-    let add_me = true;
-    for (let i = 0; i < this.lessons.length; i++) { if (this.lessons[i].id === lesson.id) { return; } }
-    this.lessons.push(lesson);
-  }
+		if (!this.app.options.popup) {
+			this.app.options.popup = {};
+		}
+		if (!this.app.options.popup.display) {
+			this.app.options.popup.display = {};
+			this.app.options.popup.display.simplified = 1;
+			this.app.options.popup.display.traditional = 0;
+			this.app.options.popup.display.pinyin = 1;
+			this.app.options.popup.display.english = 1;
+			this.app.options.popup.display.part_of_speech = 0;
+		}
+		if (!this.app.options.popup.review) {
+			this.app.options.popup.review = {};
+			this.app.options.popup.review.enable = 1;
+		}
 
-  async fetchLessonSentences(lesson, mycallback=null) {
-    let sql = `SELECT sentences.speaker_text, sentences.speaker_translation, sentences.sentence_text, sentences.sentence_translation, sentences.display_order, sentences.audio_source, sentences.audio_translation, sentences.video_start, sentences.video_stop, sentences.youtube_start, sentences.youtube_stop, sentences.youku_start, sentences.youku_stop FROM sentences WHERE sentences.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
-    this.sendPeerDatabaseRequestWithFilter(
-      	"Popup", 
-      	sql, 
-        async (res) => {
-	  if (res.rows) {
-            lesson.sentences = res.rows;
-	    mycallback(lesson);
-          }
-        },
-        (p) => {
-  	  if (this.peers.includes(p.publicKey)) {
-            return 1; 
-          }
-          return 0;
-        }
-    );
-  }
+		localforage.getItem(`popup_vocabulary`, (error, value) => {
+			if (value && value.length > 0) {
+				for (let tx of value) {
+					try {
+						// process transactions one-by-one
+					} catch (err) {}
+				}
+				//this.app.connection.emit("redsquare-home-render-request");
+			}
+		});
+	}
 
-  async fetchLessonQuestions(lesson, mycallback=null) {
-    let sql = `SELECT questions.question, questions.answer1, questions.answer2, questions.answer3, questions.answer4, questions.correct, questions.display_order, questions.audio, questions.question_image, questions.explanation, questions.audio_transcript FROM questions WHERE questions.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
-console.log(sql);
-    this.sendPeerDatabaseRequestWithFilter(
-      	"Popup", 
-      	sql, 
-        async (res) => {
-	  if (res.rows) {
-            lesson.questions = res.rows;
-	    mycallback(lesson);
-          }
-        },
-        (p) => {
-  	  if (this.peers.includes(p.publicKey)) {
-            return 1; 
-          }
-          return 0;
-        }
-    );
-  }
+	save() {
+		if (!this.app.options?.popup) {
+			this.app.options.popup = {};
+			this.app.options.popup.display = {};
+			this.app.options.popup.display.simplified = 1;
+			this.app.options.popup.display.traditional = 1;
+			this.app.options.popup.display.pinyin = 1;
+			this.app.options.popup.display.english = 1;
+			this.app.options.popup.display.part_of_speech = 1;
+			this.app.options.popup.review = {};
+			this.app.options.popup.review.enable = 1;
+		}
 
-  async fetchLessonVocabulary(lesson, mycallback=null) {
-    let sql = `SELECT words.audio_source, words.audio_translation, words.field1, words.field2, words.field3, words.field4, words.field5 FROM words WHERE words.lesson_id = ${lesson.id} ORDER BY display_order ASC`;
-console.log(sql);
-    this.sendPeerDatabaseRequestWithFilter(
-      	"Popup", 
-      	sql, 
-        async (res) => {
-	  if (res.rows) {
-            lesson.words = res.rows;
-	    mycallback(lesson);
-          }
-        },
-        (p) => {
-  	  if (this.peers.includes(p.publicKey)) {
-            return 1; 
-          }
-          return 0;
-        }
-    );
-  }
+		this.saveOptions();
+	}
 
-  returnLesson(lesson_id = null) {
+	async initializeDatabase() {
+		if (this.app.BROWSER) {
+			this.localDB = new JsStore.Connection(
+				new Worker('/saito/lib/jsstore/jsstore.worker.js')
+			);
 
-    for (let i = 0; i < this.lessons.length; i++) {
-      if (this.lessons[i].id == lesson_id) { return this.lessons[i]; }
-    }
+			//
+			// create Local database
+			//
+			let vocabulary = {
+				name: 'vocabulary',
+				columns: {
+					id: { primaryKey: true, autoIncrement: true },
+					field1: { dataType: 'string', default: '' },
+					field2: { dataType: 'string', default: '' },
+					field3: { dataType: 'string', default: '' },
+					field4: { dataType: 'string', default: '' },
+					field5: { dataType: 'string', default: '' },
+					label: { dataType: 'string', default: '' },
+					lesson_id: { dataType: 'number', default: 0 },
+					created_at: { dataType: 'number', default: 0 },
+					updated_at: { dataType: 'number', default: 0 }
+				}
+			};
 
-    return {
-      level : "Unknown" ,
-      title : "Placeholder Title" ,
-    }
+			let db = {
+				name: 'vocabulary_db',
+				tables: [vocabulary]
+			};
 
-  }
+			var isDbCreated = await this.localDB.initDb(db);
+			if (isDbCreated) {
+				console.log('POPUP: db created and connection opened');
+			} else {
+				console.log('POPUP: connection opened');
+			}
+		}
 
+		return;
+	}
 
-  load() {
+	async addVocab(
+		field1 = '',
+		field2 = '',
+		field3 = '',
+		field4 = '',
+		field5 = '',
+		label = '',
+		lesson_id = ''
+	) {
+		let obj = {};
+		obj.field1 = field1;
+		obj.field2 = field2;
+		obj.field3 = field3;
+		obj.field4 = field4;
+		obj.field5 = field5;
+		obj.lesson_id = lesson_id;
+		obj.label = label;
+		obj.created_at = new Date().getTime();
+		obj.updated_at = new Date().getTime();
 
-    if (!this.app.BROWSER) {
-      return;
-    }
+		if (this.app.BROWSER) {
+			let numRows = await this.localDB.insert({
+				into: 'vocabulary',
+				values: [obj]
+			});
+		}
 
-    if (!this.app.options.popup) {
-      this.app.options.popup = {};
-    }
-    if (!this.app.options.popup.display) {
-      this.app.options.popup.display = {}
-      this.app.options.popup.display.simplified = 1;
-      this.app.options.popup.display.traditional = 0;
-      this.app.options.popup.display.pinyin = 1;
-      this.app.options.popup.display.english = 1;
-      this.app.options.popup.display.part_of_speech = 0;
-    }
-    if (!this.app.options.popup.review) {
-      this.app.options.popup.review = {};
-      this.app.options.popup.review.enable = 1;
-    }
+		let v = await this.returnVocab();
+		console.log('POST INSERT: ' + JSON.stringify(v));
+	}
 
-    localforage.getItem(`popup_vocabulary`, (error, value) => {
-      if (value && value.length > 0) {
-        for (let tx of value) {
-	  try {
-	    // process transactions one-by-one
-          } catch (err) {
-	  }
-        }
-        //this.app.connection.emit("redsquare-home-render-request");
-      }
-    });
+	async returnVocab(offset = 0) {
+		if (!this.app.BROWSER) {
+			return;
+		}
 
-  }
+		let rows = await this.localDB.select({
+			from: 'vocabulary',
+			//where: where_obj,
+			order: { by: 'id', type: 'desc' }
+		});
 
-
-  save() {
-
-    if (!this.app.options?.popup) {
-      this.app.options.popup = {};
-      this.app.options.popup.display = {}
-      this.app.options.popup.display.simplified = 1;
-      this.app.options.popup.display.traditional = 1;
-      this.app.options.popup.display.pinyin = 1;
-      this.app.options.popup.display.english = 1;
-      this.app.options.popup.display.part_of_speech = 1;
-      this.app.options.popup.review = {};
-      this.app.options.popup.review.enable = 1;
-    }
-
-    this.saveOptions();
-
-  }
-
-  async initializeDatabase() {
-
-    if (this.app.BROWSER) {
-
-      this.localDB = new JsStore.Connection(new Worker("/saito/lib/jsstore/jsstore.worker.js"));
-
-      //
-      // create Local database
-      //
-      let vocabulary = {
-        name: "vocabulary",
-        columns: {
-          id: { primaryKey: true, autoIncrement: true },
-          field1: { dataType: "string", default: "" },
-          field2: { dataType: "string", default: "" },
-          field3: { dataType: "string", default: "" },
-          field4: { dataType: "string", default: "" },
-          field5: { dataType: "string", default: "" },
-          label: { dataType: "string", default: "" },
-          lesson_id: { dataType: "number", default: 0 },
-          created_at: { dataType: "number", default: 0 },
-          updated_at: { dataType: "number", default: 0 },
-        },
-      };
-
-      let db = {
-        name: "vocabulary_db",
-        tables: [vocabulary],
-      };
-
-      var isDbCreated = await this.localDB.initDb(db);
-      if (isDbCreated) {
-        console.log("POPUP: db created and connection opened");
-      } else {
-        console.log("POPUP: connection opened");
-      }
-    }
-
-    return;
-  }
-
-
-  async addVocab(field1 = "", field2 = "", field3 = "", field4 = "", field5 = "", label = "", lesson_id = "") {
-
-    let obj = {};
-    obj.field1 = field1;
-    obj.field2 = field2;
-    obj.field3 = field3;
-    obj.field4 = field4;
-    obj.field5 = field5;
-    obj.lesson_id = lesson_id;
-    obj.label = label;
-    obj.created_at = new Date().getTime();
-    obj.updated_at = new Date().getTime();
-
-    if (this.app.BROWSER) {
-      let numRows = await this.localDB.insert({
-        into: "vocabulary",
-        values: [obj],
-      });
-    }
-
-	let v = await this.returnVocab();
-console.log("POST INSERT: " + JSON.stringify(v));
-
-  }
-
-  async returnVocab(offset = 0) {
-
-    if (!this.app.BROWSER) { return; }
-
-    let rows = await this.localDB.select({
-      from: "vocabulary" ,
-      //where: where_obj,
-      order: { by: "id", type: "desc" },
-    });
-          
-    return rows; 
-   
-  }
-
+		return rows;
+	}
 }
 
 module.exports = Popup;

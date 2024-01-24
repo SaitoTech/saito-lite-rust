@@ -1,0 +1,11 @@
+node_modules
+built/*
+bundler/*
+coverage/*
+*.min.js
+.editorconfig
+.vscode
+mods/**/src/**
+.DS_Store
+/webpack/*
+/web/*

@@ -1,11 +1,9 @@
 module.exports = () => {
-
-  let html = `
+	let html = `
     <div class="combat-overlay">
       <div class="status"></div>
       <div class="options"></div>
     </div>
   `;
-  return html;
-
-}
+	return html;
+};

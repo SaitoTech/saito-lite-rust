@@ -1,35 +1,33 @@
 .agenda-card {
-    background-image: url(/imperium/img/cards/agenda.png);
-    background-size: cover;
-    height: 40vh;
-    width: calc(40vh * 0.72110);
-    color: white;
-    padding: 1.5vw;
-    background-size: cover;
-    margin: 5px 10px;
-    font-size: 1rem;
+	background-image: url(/imperium/img/cards/agenda.png);
+	background-size: cover;
+	height: 40vh;
+	width: calc(40vh * 0.7211);
+	color: white;
+	padding: 1.5vw;
+	background-size: cover;
+	margin: 5px 10px;
+	font-size: 1rem;
 }
 
 .agenda-card-title {
-    font-weight: bold;
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 1rem;
+	font-weight: bold;
+	text-align: center;
+	font-size: 2rem;
+	margin-bottom: 1rem;
 }
 
 .agenda-card-content {
-    font-size: 1.5rem;
-    line-height: 2.1rem;
+	font-size: 1.5rem;
+	line-height: 2.1rem;
 }
 
 .agenda-overlay {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    justify-content: space-evenly;
-    width: 100%;
-    max-width: 80vw;
-    max-height: 85vh;
+	display: flex;
+	flex-direction: row;
+	gap: 2rem;
+	justify-content: space-evenly;
+	width: 100%;
+	max-width: 80vw;
+	max-height: 85vh;
 }
-
-

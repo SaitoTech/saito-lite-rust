@@ -1,5 +1,5 @@
 module.exports = SendTokensOverlayTemplate = () => {
-  return `
+	return `
     <form id="wallet-send-tokens-form" action="" method="POST">
       <div class="wallet-send-tokens-overlay" id="wallet-send-tokens-overlay">
 
@@ -50,4 +50,4 @@ module.exports = SendTokensOverlayTemplate = () => {
 }
     </style>
   `;
-}
+};

@@ -1,5 +1,5 @@
 module.exports = AddContactTemplate = ({ publickey }) => {
-  return `
+	return `
     <div class="header"></div>
     <div
       style="

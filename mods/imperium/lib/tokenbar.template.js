@@ -1,9 +1,11 @@
-module.exports = ImperiumTokenBarTemplate = (command_tokens, strategy_tokens, fleet_supply) => {
-
-  return `
+module.exports = ImperiumTokenBarTemplate = (
+	command_tokens,
+	strategy_tokens,
+	fleet_supply
+) => {
+	return `
     <div class="tokenbar">
       <div>${command_tokens} / ${strategy_tokens} / ${fleet_supply}</div>
     </div>
   `;
-
-}
+};

@@ -1,46 +1,46 @@
-
 .hud-header {
-  opacity: 0.5;
-  background-color: #0005;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 500px;
+	opacity: 0.5;
+	background-color: #0005;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 500px;
 }
 .hud-body {
-  overflow: auto;
-  min-height: 20rem;
+	overflow: auto;
+	min-height: 20rem;
 }
 .hud-body .status .message {
-  padding: 15px;
-  background-color: whitesmoke;
+	padding: 15px;
+	background-color: whitesmoke;
 }
 .status-header .status-message {
-  box-shadow: none;
+	box-shadow: none;
 }
 .status-header {
-  background-color: whitesmoke;
+	background-color: whitesmoke;
 }
 
 .hud-body .status {
-  line-height: 2rem;
+	line-height: 2rem;
 }
 
 .hud-body .status ul {
-  width: 100%;
-  background-color: whitesmoke;
-  overflow-y: auto;
+	width: 100%;
+	background-color: whitesmoke;
+	overflow-y: auto;
 }
-.hud-body .status ul li , .hud-body .status .status-text-menu li {
-  cursor: pointer;
-  padding: 15px;
-  list-style: none;
-  background-color: whitesmoke;
+.hud-body .status ul li,
+.hud-body .status .status-text-menu li {
+	cursor: pointer;
+	padding: 15px;
+	list-style: none;
+	background-color: whitesmoke;
 }
-.hud-body .status ul li:hover , .hud-body .status .status-text-menu li:hover {
-  background-color: #E7E7E7;
+.hud-body .status ul li:hover,
+.hud-body .status .status-text-menu li:hover {
+	background-color: #e7e7e7;
 }
 
 .game-cardgrid {
-  margin-top: 0rem;
+	margin-top: 0rem;
 }
-

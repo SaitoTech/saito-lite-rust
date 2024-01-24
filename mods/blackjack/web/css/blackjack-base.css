@@ -1,108 +1,105 @@
-
 .tinyhand .card {
-    position: absolute;
-    width: 12vh;
-    height: calc(12vh * 1.55);
+	position: absolute;
+	width: 12vh;
+	height: calc(12vh * 1.55);
 }
 
 .saito-balance {
-  text-align: right;
+	text-align: right;
 }
 
 .status-info {
-    font-size: 1.5rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+	font-size: 1.5rem;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
 }
 
-.gameboard{
-  /* Default fill the background with image */
-  position: absolute;
-  background-image: url("/saito/img/arcade/greenfelt.jpg");
-  background-size: cover;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+.gameboard {
+	/* Default fill the background with image */
+	position: absolute;
+	background-image: url('/saito/img/arcade/greenfelt.jpg');
+	background-size: cover;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 }
 
-.splithand{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
+.splithand {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
 }
 
-.plog .htmlCards .card{
-  width: 20px;
-  height: calc(20px * 1.55);
+.plog .htmlCards .card {
+	width: 20px;
+	height: calc(20px * 1.55);
 }
 
-.justify{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+.justify {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .card {
-  width: unset;
-  float: none;
+	width: unset;
+	float: none;
 }
 
 .suit {
-  font-size: larger;
+	font-size: larger;
 }
 
 .htmlCard {
-  margin: 5px 3px;
-  display: inline-block;
-  background: #fffD;
-  padding: 4px 3px;
-  border-radius: 6px;
+	margin: 5px 3px;
+	display: inline-block;
+	background: #fffd;
+	padding: 4px 3px;
+	border-radius: 6px;
 }
 
 .menu-player {
-  font-size: 2vh;
-  font-weight: bolder;
-  margin-top: 0.5vh;
-  margin-bottom: 0.5vh;
+	font-size: 2vh;
+	font-weight: bolder;
+	margin-top: 0.5vh;
+	margin-bottom: 0.5vh;
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-   .game-scoreboard{
-    top: unset;
-    left: unset;
-    transform: unset;
-    bottom: 0;
-    right: 0;
-    flex-direction: column;
-    padding: 4px;
-    max-width: 20vw;
-  }
-  .scoreitem{
-    width: calc(100% - 8px);
-    padding: unset;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+	.game-scoreboard {
+		top: unset;
+		left: unset;
+		transform: unset;
+		bottom: 0;
+		right: 0;
+		flex-direction: column;
+		padding: 4px;
+		max-width: 20vw;
+	}
+	.scoreitem {
+		width: calc(100% - 8px);
+		padding: unset;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 }
 
-
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  .game-scoreboard{
-    top: unset;
-    left: unset;
-    transform: unset;
-    bottom: 0;
-    right: 0;
-    flex-direction: column;
-    padding: 4px;
-    max-width: 30vw;
-  }
-  .scoreitem{
-    width: calc(100% - 8px);
-    padding: unset;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
+	.game-scoreboard {
+		top: unset;
+		left: unset;
+		transform: unset;
+		bottom: 0;
+		right: 0;
+		flex-direction: column;
+		padding: 4px;
+		max-width: 30vw;
+	}
+	.scoreitem {
+		width: calc(100% - 8px);
+		padding: unset;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 }

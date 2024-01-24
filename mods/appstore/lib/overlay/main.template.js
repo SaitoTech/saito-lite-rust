@@ -1,12 +1,11 @@
 module.exports = AppStoreAppspaceTemplate = (app, mod, search_options) => {
+	let default_text = 'Install Applications';
 
-  let default_text = "Install Applications";
+	if (search_options?.search) {
+		default_text = 'Search: ' + search_options.search;
+	}
 
-  if (search_options?.search) {
-    default_text = "Search: " + search_options.search;
-  }
-
-  return `
+	return `
     <div class="appstore-overlay">
       <div class="appstore-overlay-header">
         <div class="appstore-overlay-header-title">
@@ -21,5 +20,4 @@ module.exports = AppStoreAppspaceTemplate = (app, mod, search_options) => {
       </div>
     </div>
   `;
-
-}
+};

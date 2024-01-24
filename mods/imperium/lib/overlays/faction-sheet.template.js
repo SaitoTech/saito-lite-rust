@@ -1,6 +1,9 @@
-module.exports = ImperiumRulesOverlayTemplate = (imperium_self, player, faction_name) => {
-
-  return `
+module.exports = ImperiumRulesOverlayTemplate = (
+	imperium_self,
+	player,
+	faction_name
+) => {
+	return `
 
   <div style="" class="faction-sheet p${player} bc${player}">
 
@@ -25,5 +28,4 @@ module.exports = ImperiumRulesOverlayTemplate = (imperium_self, player, faction_
   </div>
 
   `;
-
-}
+};

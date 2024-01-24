@@ -1,7 +1,5 @@
-
 module.exports = () => {
-
-  return `
+	return `
     <div id="saito-container" class="saito-container">
       
       <div class="saito-sidebar left">
@@ -16,5 +14,4 @@ module.exports = () => {
       
     </div>
   `;
-}
-
+};

@@ -1,6 +1,5 @@
 module.exports = AppStoreModuleIndexedConfirmTemplate = (publickey) => {
-
-  return `
+	return `
 
   Install Application?
 
@@ -9,4 +8,4 @@ module.exports = AppStoreModuleIndexedConfirmTemplate = (publickey) => {
   <button id="confirm-appstore-visit-btn" class="confirm-appstore-visit-btn" name="confirm">confirm</button>
 
   `;
-}
+};

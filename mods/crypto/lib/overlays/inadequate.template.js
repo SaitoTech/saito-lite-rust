@@ -1,6 +1,5 @@
 module.exports = GameCryptoTransferManagerStakeTemplate = (app, sobj) => {
-
-  return `  
+	return `  
   <div class="game-crypto-transfer-manager-container">
     
     <h2 class="auth_title">Inadequate ${sobj.ticker}</h2>
@@ -17,6 +16,4 @@ Once all players have ${sobj.ticker} available in their wallets you can use this
 
   </div>
   `;
-
-}
-
+};

@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let html = `<div class="poker-rules-overlay">
+	let html = `<div class="poker-rules-overlay">
 	<div class="h2">Poker Hand Ranking</div>
 
 	<div class="poker-modal-table">
@@ -118,8 +117,6 @@ module.exports = (app, mod) => {
 		</div>
 	</div>
 </div>`;
-    
-  return html;
 
-}
-
+	return html;
+};

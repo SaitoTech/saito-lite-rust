@@ -1,7 +1,5 @@
-
 module.exports = () => {
-
-  return `
+	return `
     <div id="popup-container" class="popup-container">
 
       <div class="popup-menu">
@@ -12,5 +10,4 @@ module.exports = () => {
      
     </div>
   `;
-}
-
+};

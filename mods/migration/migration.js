@@ -1,56 +1,58 @@
-const ModTemplate = require("./../../lib/templates/modtemplate");
-const PeerService = require("saito-js/lib/peer_service").default;
+const ModTemplate = require('./../../lib/templates/modtemplate');
+const PeerService = require('saito-js/lib/peer_service').default;
 
 class Migration extends ModTemplate {
+	constructor(app) {
+		super(app);
 
-  constructor(app) {
+		this.app = app;
+		this.name = 'Migration';
+		this.description = 'Migrate ERC20 tokens to Saito Migration';
+		this.categories = 'Core Utilities Messaging';
+		this.publickey = '';
 
-    super(app);
+		return this;
+	}
 
-    this.app = app;
-    this.name = "Migration";
-    this.description = "Migrate ERC20 tokens to Saito Migration";
-    this.categories = "Core Utilities Messaging";
-    this.publickey = "";
+	async onConfirmation(blk, tx, conf) {}
 
-    return this;
-  }
+	async render() {
+		if (!this.browser_active) {
+			return;
+		}
 
-  async onConfirmation(blk, tx, conf) {}
+		this.publickey = await this.app.wallet.getPublicKey();
 
-  async render() {
+		//
+		//
+		//
+		let pk = this.app.browser.returnURLParameter('publickey');
+		let erc20 = this.app.browser.returnURLParameter('erc20');
+		let email = this.app.browser.returnURLParameter('email');
 
-    if (!this.browser_active) { return; }
+		if (pk && erc20) {
+			document.querySelector('.withdraw-outtro').style.display = 'none';
+			document.querySelector('.withdraw-title').innerHTML =
+				'Confirm Transfer';
+			document.querySelector(
+				'.withdraw-intro'
+			).innerHTML = `Please confirm your ERC20 transfer is complete`;
+			document.querySelector('.withdraw-button').innerHTML = `confirm`;
+			document.querySelector('#email').style.display = 'none';
+			document.querySelector('#publickey').style.display = 'none';
+			document.querySelector('#erc20').style.display = 'none';
 
-    this.publickey = await this.app.wallet.getPublicKey();
+			let el2 = document.querySelector('.withdraw-button');
+			el2.onclick = (e) => {
+				let mailrelay_mod = this.app.modules.returnModule('MailRelay');
+				if (!mailrelay_mod) {
+					alert(
+						'Your Saito install does not contain email support, please write the project manually to complete token withdrawal'
+					);
+					return;
+				}
 
-    //
-    // 
-    //
-    let pk = this.app.browser.returnURLParameter("publickey");
-    let erc20 = this.app.browser.returnURLParameter("erc20");
-    let email = this.app.browser.returnURLParameter("email");
-
-    if (pk && erc20) {
-
-	document.querySelector(".withdraw-outtro").style.display = "none";
-	document.querySelector(".withdraw-title").innerHTML = "Confirm Transfer";
-	document.querySelector(".withdraw-intro").innerHTML = `Please confirm your ERC20 transfer is complete`;
-	document.querySelector(".withdraw-button").innerHTML = `confirm`;
-	document.querySelector("#email").style.display = "none";
-	document.querySelector("#publickey").style.display = "none";
-	document.querySelector("#erc20").style.display = "none";
-
-        let el2 = document.querySelector(".withdraw-button");
-        el2.onclick = (e) => {
-	
-	  let mailrelay_mod = this.app.modules.returnModule("MailRelay");
-	  if (!mailrelay_mod) { 
-	    alert("Your Saito install does not contain email support, please write the project manually to complete token withdrawal");
-	    return;
-	  }
-
-	  let emailtext = `
+				let emailtext = `
       <div>
 	    <p>Dear Saitozen,</p>
      	<p>Token withdrawal requested:</p>
@@ -62,49 +64,77 @@ class Migration extends ModTemplate {
  	    <p>-- Saito Migration Transfer Service</p>
 	  `;
 
-	  mailrelay_mod.sendMailRelayTransaction(email, "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal Request (action required)", emailtext, true, "", "migration@saito.io");
-	  mailrelay_mod.sendMailRelayTransaction("migration@saito.tech", "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal Request (action required)", emailtext, true, "", "migration@saito.io");
+				mailrelay_mod.sendMailRelayTransaction(
+					email,
+					'Saito Token Migration <info@saito.tech>',
+					'Saito Token Withdrawal Request (action required)',
+					emailtext,
+					true,
+					'',
+					'migration@saito.io'
+				);
+				mailrelay_mod.sendMailRelayTransaction(
+					'migration@saito.tech',
+					'Saito Token Migration <info@saito.tech>',
+					'Saito Token Withdrawal Request (action required)',
+					emailtext,
+					true,
+					'',
+					'migration@saito.io'
+				);
 
-	  document.querySelector(".withdraw-intro").innerHTML = "Your request is now processing. Please contact us by email if you do not receive confirmation of token issuance within 24 hours.";
-	  document.querySelector(".withdraw-outtro").style.display = "none";
-	  document.querySelector(".withdraw-title").innerHTML = "Request in Process";
-	  document.querySelector(".withdraw-button").style.display = "none";
+				document.querySelector('.withdraw-intro').innerHTML =
+					'Your request is now processing. Please contact us by email if you do not receive confirmation of token issuance within 24 hours.';
+				document.querySelector('.withdraw-outtro').style.display =
+					'none';
+				document.querySelector('.withdraw-title').innerHTML =
+					'Request in Process';
+				document.querySelector('.withdraw-button').style.display =
+					'none';
 
-	  this.sendStoreMigrationTransaction(this.app, this, { pk: pk, erc20: erc20, email: email });
-	}
+				this.sendStoreMigrationTransaction(this.app, this, {
+					pk: pk,
+					erc20: erc20,
+					email: email
+				});
+			};
 
-				
-        return;
-    }
+			return;
+		}
 
-    let el = document.querySelector(".withdraw-button");
-    el.onclick = (e) => {
+		let el = document.querySelector('.withdraw-button');
+		el.onclick = (e) => {
+			let email = document.querySelector('#email').value;
+			let erc20 = document.querySelector('#erc20').value;
+			let publickey = document.querySelector('#publickey').value;
 
-        let email = document.querySelector("#email").value;
-        let erc20 = document.querySelector("#erc20").value;
-        let publickey = document.querySelector("#publickey").value;
+			//
+			//
+			//
+			if (publickey !== this.publickey) {
+				alert(
+					'The publickey provided is not the publickey of this wallet. To avoid problems please request token withdrawal from the wallet which will receive the tokens'
+				);
+				return;
+			} else {
+				let c = confirm('I confirm that I have backed up this wallet.');
+				if (c) {
+				} else {
+					alert(
+						'Please backup your wallet before continuing. The project cannot be responsible for lost or misplaced private keys'
+					);
+				}
+			}
 
-        //
-        //
-        //
-	if (publickey !== this.publickey) {
-	  alert("The publickey provided is not the publickey of this wallet. To avoid problems please request token withdrawal from the wallet which will receive the tokens");
-	  return;
-	} else {
-	  let c = confirm("I confirm that I have backed up this wallet.");
-	  if (c) {
-	  } else {
-	    alert("Please backup your wallet before continuing. The project cannot be responsible for lost or misplaced private keys");
-	  }
-	}
+			let mailrelay_mod = this.app.modules.returnModule('MailRelay');
+			if (!mailrelay_mod) {
+				alert(
+					'Your Saito install does not contain email support, please write the project manually to process token withdrawal'
+				);
+				return;
+			}
 
-	let mailrelay_mod = this.app.modules.returnModule("MailRelay");
-	if (!mailrelay_mod) { 
-	  alert("Your Saito install does not contain email support, please write the project manually to process token withdrawal");
-	  return;
-	}
-
-	let emailtext = `
+			let emailtext = `
 
 	<div>
       <p>Dear Saitozen,</p>
@@ -122,68 +152,80 @@ class Migration extends ModTemplate {
 
 	`;
 
-	mailrelay_mod.sendMailRelayTransaction(email, "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal (migration)", emailtext, true);
-	mailrelay_mod.sendMailRelayTransaction("migration@saito.io", "Saito Token Migration <info@saito.tech>", "Saito Token Withdrawal (migration)", emailtext, true);
+			mailrelay_mod.sendMailRelayTransaction(
+				email,
+				'Saito Token Migration <info@saito.tech>',
+				'Saito Token Withdrawal (migration)',
+				emailtext,
+				true
+			);
+			mailrelay_mod.sendMailRelayTransaction(
+				'migration@saito.io',
+				'Saito Token Migration <info@saito.tech>',
+				'Saito Token Withdrawal (migration)',
+				emailtext,
+				true
+			);
 
-	document.querySelector(".withdraw-outtro").style.display = "none";
-	document.querySelector(".withdraw-title").innerHTML = "Email Sent";
-	document.querySelector(".withdraw-intro").innerHTML = `We have emailed you instructions on transferring your ERC20 tokens and a link to report the transfer when complete. In the event of problems please reach out directly at <i>info@saito.tech</i>.`;
-	document.querySelector("#email").style.display = "none";
-	document.querySelector("#publickey").style.display = "none";
-	document.querySelector("#erc20").style.display = "none";
-	document.querySelector(".withdraw-button").style.display = "none";
+			document.querySelector('.withdraw-outtro').style.display = 'none';
+			document.querySelector('.withdraw-title').innerHTML = 'Email Sent';
+			document.querySelector(
+				'.withdraw-intro'
+			).innerHTML = `We have emailed you instructions on transferring your ERC20 tokens and a link to report the transfer when complete. In the event of problems please reach out directly at <i>info@saito.tech</i>.`;
+			document.querySelector('#email').style.display = 'none';
+			document.querySelector('#publickey').style.display = 'none';
+			document.querySelector('#erc20').style.display = 'none';
+			document.querySelector('.withdraw-button').style.display = 'none';
+		};
+	}
 
-    }
+	async onConfirmation(blk, tx, conf) {
+		let txmsg = tx.returnMessage();
+		try {
+			if (conf == 0) {
+				console.log('Migration onConfirmation: ' + txmsg.request);
 
-  }
+				if (txmsg.request === 'save migration data') {
+					await this.receiveStoreMigrationTransaction(blk, tx, conf);
+				}
+			}
+		} catch (err) {
+			console.log('ERROR in ' + this.name + ' onConfirmation: ' + err);
+		}
+	}
 
-  async onConfirmation(blk, tx, conf) {
-    let txmsg = tx.returnMessage();
-    try {
-      if (conf == 0) {
-        console.log("Migration onConfirmation: " + txmsg.request);
+	async sendStoreMigrationTransaction(app, mod, data) {
+		let obj = {
+			module: this.name,
+			request: 'save migration data',
+			data: {}
+		};
+		for (let key in data) {
+			obj.data[key] = data[key];
+		}
 
-        if (txmsg.request === "save migration data") {
-          await this.receiveStoreMigrationTransaction(blk, tx, conf);
-        }
-      }
-    } catch (err) {
-      console.log("ERROR in " + this.name + " onConfirmation: " + err);
-    }
-  }
+		let newtx = await this.app.wallet.createUnsignedTransaction();
+		newtx.msg = obj;
+		await newtx.sign();
+		await this.app.network.propagateTransaction(newtx);
 
-  async sendStoreMigrationTransaction(app, mod, data) {
-    let obj = {
-      module: this.name,
-      request: "save migration data",
-      data: {},
-    };
-    for (let key in data) {
-      obj.data[key] = data[key];
-    }
+		return newtx;
+	}
 
-    let newtx = await this.app.wallet.createUnsignedTransaction();
-    newtx.msg = obj;
-    await newtx.sign();
-    await this.app.network.propagateTransaction(newtx);
+	async receiveStoreMigrationTransaction(blk, tx, conf) {
+		try {
+			//
+			// browsers
+			//
+			if (this.app.BROWSER == 1) {
+				return;
+			}
 
-    return newtx;
-  }
-
-  async receiveStoreMigrationTransaction(blk, tx, conf) {
-   	try {
-	    //
-	    // browsers
-	    //
-	    if (this.app.BROWSER == 1) {
-	      return;
-	    }
-
-	    //
-	    // servers
-	    //
-	    let txmsg = tx.returnMessage();
-	    let sql = `INSERT INTO migration ( 
+			//
+			// servers
+			//
+			let txmsg = tx.returnMessage();
+			let sql = `INSERT INTO migration ( 
 	    						publickey,
 	    						erc20,
 	    						erc20_tx_id,
@@ -199,21 +241,17 @@ class Migration extends ModTemplate {
 	                0,
 	                $created_at
 	               )`;
-	    let params = {
-	      $publickey: txmsg.data.pk,
-	      $erc20: txmsg.data.erc20,
-	      $email: txmsg.data.email,
-	      $created_at: tx.timestamp
-	    };
-	    await this.app.storage.runDatabase(sql, params, "migration");
-  	} catch (err) {
-  		console.log("ERROR in saving migration data to db: " + err);
-  	}
-  }
-
-
+			let params = {
+				$publickey: txmsg.data.pk,
+				$erc20: txmsg.data.erc20,
+				$email: txmsg.data.email,
+				$created_at: tx.timestamp
+			};
+			await this.app.storage.runDatabase(sql, params, 'migration');
+		} catch (err) {
+			console.log('ERROR in saving migration data to db: ' + err);
+		}
+	}
 }
 
 module.exports = Migration;
-
-

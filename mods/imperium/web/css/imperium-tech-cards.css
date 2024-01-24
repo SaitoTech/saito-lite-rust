@@ -1,68 +1,56 @@
-
 .tech-overlay {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100vw;
-    height: min-content;
-    row-gap: 2rem;
-    column-gap: 2rem;
-    justify-content: space-evenly;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 100vw;
+	height: min-content;
+	row-gap: 2rem;
+	column-gap: 2rem;
+	justify-content: space-evenly;
 }
 
 .tech-card {
-    background-image: url(/imperium/img/tech_card_template.jpg);
-    background-size: cover;
-    position: relative;
-    width: 16vw;
-    height: 12vw;
-    font-size: 1.2vw;
-    line-height: 1.7vw;
-    color: whitesmoke;
-    border: 1px solid #fff6;
-    padding: 1vw;
-    cursor: pointer;
+	background-image: url(/imperium/img/tech_card_template.jpg);
+	background-size: cover;
+	position: relative;
+	width: 16vw;
+	height: 12vw;
+	font-size: 1.2vw;
+	line-height: 1.7vw;
+	color: whitesmoke;
+	border: 1px solid #fff6;
+	padding: 1vw;
+	cursor: pointer;
 }
 
 .tech-card::before {
-    content: "";
-    width: 0;
-    height: 0;
-    border-bottom: 4vw solid;
-    border-left: 10vw solid transparent !important;
-    position: absolute;
-    bottom: 0;
-    right: 0;
+	content: '';
+	width: 0;
+	height: 0;
+	border-bottom: 4vw solid;
+	border-left: 10vw solid transparent !important;
+	position: absolute;
+	bottom: 0;
+	right: 0;
 }
 
 .tech-card .name {
-  margin: 0 0 0.3rem 0;
-  text-align: center;
-  font-size: 1.3em;
-  margin-bottom: 0.5vw;
+	margin: 0 0 0.3rem 0;
+	text-align: center;
+	font-size: 1.3em;
+	margin-bottom: 0.5vw;
 }
 
 .tech-card .content {
-  text-align: left;
-  padding: 0.75rem;
+	text-align: left;
+	padding: 0.75rem;
 }
 
 .tech-card .prereqs {
-    font-size: 2rem;
-    letter-spacing: 2px;
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0rem;
-    -webkit-text-stroke: 1px #000;
+	font-size: 2rem;
+	letter-spacing: 2px;
+	position: absolute;
+	bottom: 0.5rem;
+	right: 0rem;
+	-webkit-text-stroke: 1px #000;
 }
-
-
-
-
-
-
-
-
-
-
-

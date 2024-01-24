@@ -1,56 +1,51 @@
-
 .mandates-overlay {
-    min-width: 900px;
-    min-height: 550px;
-    max-height: 70vh;
-    max-width: 90vw;
-    border-radius: 2rem;
-    background-image: url(/paths/img/backgrounds/trench.png);
-    background-size: cover;
+	min-width: 900px;
+	min-height: 550px;
+	max-height: 70vh;
+	max-width: 90vw;
+	border-radius: 2rem;
+	background-image: url(/paths/img/backgrounds/trench.png);
+	background-size: cover;
 }
 
-
 .mandates-overlay .help {
-    background: #0009;
-    width: 100%;
-    color: white;
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 2.4rem;
-    padding: 0.75rem;
-    max-width: 100%;
-    padding: 1rem;
-    line-height: 3.4rem;
-    text-align: center;
+	background: #0009;
+	width: 100%;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2.4rem;
+	padding: 0.75rem;
+	max-width: 100%;
+	padding: 1rem;
+	line-height: 3.4rem;
+	text-align: center;
 }
 
 .mandates-overlay .mandates {
-    display: flex;
-    flex-direction: column;
-    row-gap: 3rem;
-    margin-top: 3rem;
+	display: flex;
+	flex-direction: column;
+	row-gap: 3rem;
+	margin-top: 3rem;
 }
 
 .mandates > div {
-    min-height: 200px;
-    display: grid;
-    row-gap: 2rem;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    width: 80rem;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: whitesmoke;
+	min-height: 200px;
+	display: grid;
+	row-gap: 2rem;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	width: 80rem;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: whitesmoke;
 }
 
 .mandates > div .entry {
-    padding: 5rem;
-    border: 1px dashed #fff;
-    text-align: center;
-    font-size: 2rem;
-    vertical-align: bottom;
-    height: 100%;
-    color:  #555;
+	padding: 5rem;
+	border: 1px dashed #fff;
+	text-align: center;
+	font-size: 2rem;
+	vertical-align: bottom;
+	height: 100%;
+	color: #555;
 }
-
-
-

@@ -1,6 +1,5 @@
 module.exports = () => {
-
-  let html =  `<div class="rules-overlay">
+	let html = `<div class="rules-overlay">
     <h1>Twilight Struggle</h1>
     <p>Players take the roles of the US and the USSR and vie for global dominance over ten turns that cover the cold war. Twilight Struggle is a card-based board game. Most cards describes an EVENT, which may be associated with the US, the USSR, or neutral. Every card has an OPERATIONS value. Some SCORING cards trigger a pause to score the current board state. The board show the amount of influence each player has in various countries across the globe. Every country has a STABILITY number and lines on the board show adjacency between countries.</p>
     <p>Each turn begins with the selection of a HEADLINE, wherein both players select one card from their hand to play first. The card with the higher OPERATIONS value takes effect first, or in the event of a tie the US player's card goes into effect first. A HEADLINE card must be chosen and played, regardless of whether the event helps the player or their opponent.</p>
@@ -28,6 +27,5 @@ module.exports = () => {
     <p>If a player ever reaches a 20 VP lead over the opponent, then they win the game. </p>
     </div>`;
 
-    return html;
-
-}
+	return html;
+};

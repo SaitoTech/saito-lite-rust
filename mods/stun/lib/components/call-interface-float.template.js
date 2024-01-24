@@ -1,5 +1,5 @@
 module.exports = CallInterfaceFloat = () => {
-  return `
+	return `
     <div class="small-audio-chatbox" id="small-audio-chatbox">
       <div class="control-panel">
         <div class="timer">
@@ -16,5 +16,4 @@ module.exports = CallInterfaceFloat = () => {
         </div>
       </div>
     </div>`;
-}
-
+};

@@ -1,12 +1,12 @@
 module.exports = (app, slug, lastSnapshotPath) => {
-  const title = "Saito Graffiti";
+	const title = 'Saito Graffiti';
 
-  let snapshotMetaTags = "";
-  if (lastSnapshotPath !== null) {
-    const origin = "https://saito.io";
-    const lastSnapshotURL = `${origin}/${slug}/${lastSnapshotPath}`;
+	let snapshotMetaTags = '';
+	if (lastSnapshotPath !== null) {
+		const origin = 'https://saito.io';
+		const lastSnapshotURL = `${origin}/${slug}/${lastSnapshotPath}`;
 
-    snapshotMetaTags += `
+		snapshotMetaTags += `
       <meta property="og:type"             content="website" />
       <meta property="og:url"              content="${origin}/${slug}" />
       <meta property="og:title"            content="🟥 ${title}" />
@@ -22,9 +22,9 @@ module.exports = (app, slug, lastSnapshotPath) => {
       <meta name="twitter:creator" content="@SaitoOfficial" />
       <meta name="twitter:image"   content="${lastSnapshotURL}" />
     `;
-  }
+	}
 
-  return `
+	return `
     <!doctype html>
     <html lang="en" prefix="og: http://ogp.me/ns#">
       <head>

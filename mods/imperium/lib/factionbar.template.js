@@ -1,8 +1,6 @@
 module.exports = ImperiumFactionBarTemplate = () => {
-
-  return `
+	return `
     <div class="factionbar">
     </div>
   `;
-
-}
+};

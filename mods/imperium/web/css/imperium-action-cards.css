@@ -1,79 +1,77 @@
 .new-action-cards-overlay {
-    width: 80vw;
-    max-width: 1200px;
-    min-width: 800px;
-    padding: 2rem;
-    text-align: center;
+	width: 80vw;
+	max-width: 1200px;
+	min-width: 800px;
+	padding: 2rem;
+	text-align: center;
 }
 
 .new-action-cards-overlay > .title {
-    font-size: 4rem;
-    background-color: #0009;
-    color: whitesmoke;
-    padding: 1rem;
-    width: max-content;
-    text-wrap: nowrap;
-    border-radius: 1rem;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 2rem;
+	font-size: 4rem;
+	background-color: #0009;
+	color: whitesmoke;
+	padding: 1rem;
+	width: max-content;
+	text-wrap: nowrap;
+	border-radius: 1rem;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 2rem;
 }
 
 .new-action-cards {
-    display: flex;
-    flex-direction: rows;
-    flex-wrap: auto;
-    justify-content: space-evenly;
+	display: flex;
+	flex-direction: rows;
+	flex-wrap: auto;
+	justify-content: space-evenly;
 }
 
 .new-action-cards > .action-card {
-  height: 40vh;
-  width: calc(40vh * 0.72110);
+	height: 40vh;
+	width: calc(40vh * 0.7211);
 }
 .new-action-cards > .action-card > .title {
-    font-size: 2rem;
-    line-height: 2.8rem;
+	font-size: 2rem;
+	line-height: 2.8rem;
 }
 .new-action-cards > .action-card > .text {
-    font-size: 1.8rem;
-    line-height: 2.4rem;
+	font-size: 1.8rem;
+	line-height: 2.4rem;
 }
 .new-action-cards > .action-card:hover {
-  transform: unset;
-  border: 1px solid white;
+	transform: unset;
+	border: 1px solid white;
 }
 
 .action-card {
-  background-image: url("/imperium/img/cards/action_card.png");
-  background-size: cover;
-  height: 26vh;
-  width: calc(26vh * 0.72110);
-  color: whitesmoke;
-  padding: 1.5vw;
-  transition: all 50ms;
-  border: 1px solid;
-  cursor: pointer;
+	background-image: url('/imperium/img/cards/action_card.png');
+	background-size: cover;
+	height: 26vh;
+	width: calc(26vh * 0.7211);
+	color: whitesmoke;
+	padding: 1.5vw;
+	transition: all 50ms;
+	border: 1px solid;
+	cursor: pointer;
 }
 
-
 .action-card .title {
-    font-family: 'orbitron-medium', helvetica, arial;
-    text-align: center;
-    font-size: 1.5rem;
-    line-height: 2rem;
-    margin-bottom: 1rem;
+	font-family: 'orbitron-medium', helvetica, arial;
+	text-align: center;
+	font-size: 1.5rem;
+	line-height: 2rem;
+	margin-bottom: 1rem;
 }
 
 .action-card .text {
-    font-size: 1.4rem;
-    line-height: 1.9rem;
-    text-align: center;
+	font-size: 1.4rem;
+	line-height: 1.9rem;
+	text-align: center;
 }
 
 .action-card:hover {
-  transform: scale(1.2);
-  z-index: 10;
-  border: 1px solid whitesmoke;
+	transform: scale(1.2);
+	z-index: 10;
+	border: 1px solid whitesmoke;
 }
-

@@ -1,121 +1,118 @@
-
 .deck-overlay {
-  width: 90vw;
-  max-height: 90vh;
-  min-height: 90vh;
-  overflow-y: auto;
+	width: 90vw;
+	max-height: 90vh;
+	min-height: 90vh;
+	overflow-y: auto;
 }
 
 .deck-overlay h1 {
-  color: white;
-  font-weight: bold;
-  text-transform: lowercase;
-  text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  font-size: 2.4rem;
-  padding-right: 8px;
-  background: #0009;
-  padding: 1rem;
-  letter-spacing: 0.2rem;
+	color: white;
+	font-weight: bold;
+	text-transform: lowercase;
+	text-align: center;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	font-size: 2.4rem;
+	padding-right: 8px;
+	background: #0009;
+	padding: 1rem;
+	letter-spacing: 0.2rem;
 }
 
 .deck-overlay .cardlist-container {
-  width: 100%;
-  max-width: 100%;
-  height: unset;
-  max-height: unset;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  background: unset;
-  justify-content: center;
-  gap: 2rem;
+	width: 100%;
+	max-width: 100%;
+	height: unset;
+	max-height: unset;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	background: unset;
+	justify-content: center;
+	gap: 2rem;
 }
 
 .custom_card_resize {
-    scale: 0.95;
-    margin-top: -1rem;
+	scale: 0.95;
+	margin-top: -1rem;
 }
 
 .deck-overlay .cardlist-container .card_added::before {
-    content: "";
-    color: white;
-    width: 0;
-    height: 0;
-    border-top: 80px solid #088a08;
-    border-left: 80px solid transparent !important;
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 10;
-    margin-right: 6px;
-    border-top-right-radius: 1rem;
+	content: '';
+	color: white;
+	width: 0;
+	height: 0;
+	border-top: 80px solid #088a08;
+	border-left: 80px solid transparent !important;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 10;
+	margin-right: 6px;
+	border-top-right-radius: 1rem;
 }
 .deck-overlay .cardlist-container .card_removed::before {
-    content: "";
-    color: white;
-    width: 0;
-    height: 0;
-    border-top: 80px solid #9c1010;
-    border-left: 80px solid transparent !important;
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 10;
-    margin-right: 6px;
-    border-top-right-radius: 1rem;
+	content: '';
+	color: white;
+	width: 0;
+	height: 0;
+	border-top: 80px solid #9c1010;
+	border-left: 80px solid transparent !important;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 10;
+	margin-right: 6px;
+	border-top-right-radius: 1rem;
 }
 .deck-overlay .cardlist-container .card_added::after {
-    content: "+";
-    color: white;
-    top: 0;
-    right: 0;
-    z-index: 10000;
-    font-size: 4rem;
-    position: absolute;
-    font-weight: bold;
-    margin-right: 6px;
-    padding-left: 1rem;
-    padding-right: 1rem;
+	content: '+';
+	color: white;
+	top: 0;
+	right: 0;
+	z-index: 10000;
+	font-size: 4rem;
+	position: absolute;
+	font-weight: bold;
+	margin-right: 6px;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 .deck-overlay .cardlist-container .card_removed::after {
-    content: "-";
-    color: white;
-    top: 0;
-    right: 0;
-    z-index: 10000;
-    font-size: 4rem;
-    position: absolute;
-    font-weight: bold;
-    margin-right: 6px;
-    padding-left: 1rem;
-    padding-right: 1rem;
+	content: '-';
+	color: white;
+	top: 0;
+	right: 0;
+	z-index: 10000;
+	font-size: 4rem;
+	position: absolute;
+	font-weight: bold;
+	margin-right: 6px;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 .deck-overlay .cardlist-container .card {
-    max-width: 300px;
-    max-height: calc(300px * 1.44);
-    height: calc(300px * 1.44);
-    width: 300px;
+	max-width: 300px;
+	max-height: calc(300px * 1.44);
+	height: calc(300px * 1.44);
+	width: 300px;
 }
 
 .deck-overlay .cardlist-container .card .desc {
-    position: relative;
-    top: 350px;
-    text-align: center;
-    background: #0009;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0.5rem;
-    color: white;
-    font-weight: bold;
+	position: relative;
+	top: 350px;
+	text-align: center;
+	background: #0009;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0.5rem;
+	color: white;
+	font-weight: bold;
 }
-
 
 .deck-overlay .cardlist-container .card .cardimg {
-  width: inherit;
-  height: inherit;
+	width: inherit;
+	height: inherit;
 }
-

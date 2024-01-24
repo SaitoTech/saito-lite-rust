@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let html =  `
+	let html = `
         <div class="overlay-input">
             <p>Play Mode:</p>
             <div><input type="radio" id="auto" value="auto" name="play_mode" checked>
@@ -9,6 +8,5 @@ module.exports = (app, mod) => {
             <label for="manual">Click empty slot to move card</label></div>
         </div>`;
 
-    return html;
-
-}
+	return html;
+};

@@ -1,6 +1,5 @@
 module.exports = GameSliderTemplate = (html) => {
-
-    return `
+	return `
     <div class="game-slider">
       <section class="carousel">
         <button class="slider-button slider-button-prev" data-slide-direction="prev">⏴</button>
@@ -10,6 +9,4 @@ module.exports = GameSliderTemplate = (html) => {
 
         </section>
     </div>`;
-  
-  }
-  
+};

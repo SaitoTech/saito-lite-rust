@@ -1,5 +1,5 @@
 module.exports = AppStoreAppspaceTemplate = () => {
-  return `
+	return `
 
     <div class="appstore-appspace">
 
@@ -25,4 +25,4 @@ module.exports = AppStoreAppspaceTemplate = () => {
   </div>
 
   `;
-}
+};

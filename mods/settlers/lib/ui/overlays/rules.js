@@ -1,26 +1,20 @@
-const SettlersRulesOverlayTemplate = require("./rules.template");
-const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SettlersRulesOverlayTemplate = require('./rules.template');
+const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class RulesOverlay {
+	constructor(app, mod) {
+		this.app = app;
+		this.mod = mod;
+		this.overlay = new SaitoOverlay(this.app, this.mod, false);
+	}
 
-  constructor(app, mod) {
-    this.app = app;
-    this.mod = mod;
-    this.overlay = new SaitoOverlay(this.app, this.mod, false);
-  }
+	render() {
+		this.overlay.show(SettlersRulesOverlayTemplate(this));
 
-  render() {
-    
-    this.overlay.show(SettlersRulesOverlayTemplate(this));
+		this.attachEvents();
+	}
 
-    this.attachEvents();
-
-  }
-
-  attachEvents() {
-  }
-
+	attachEvents() {}
 }
 
 module.exports = RulesOverlay;
-
