@@ -13,6 +13,7 @@ const redsquareHome = require('./index');
 const Post = require('./lib/post');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
+const AppSettings = require('./lib/redsquare-settings');
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
