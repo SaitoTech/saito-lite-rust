@@ -1,3 +1,5 @@
+const Transaction = require("../../lib/saito/transaction").default;
+
 class StunManager {
   constructor(app, mod) {
     this.app = app;
@@ -29,15 +31,14 @@ class StunManager {
 
       this.mod.sendRelayMessage(publicKey, "stun signaling relay", {
         type: "peer-query",
-        public_key: this.publicKey,
+        public_key: this.mod.publicKey,
       });
     });
   }
 
   handleDataChannelMessage(data, peerId) {
-    console.log("RELAY-STUN: Message from data channel:", data);
-
-    let relayed_tx = new Transaction(null, data);
+    let relayed_tx = new Transaction();
+    relayed_tx.deserialize_from_web(this.app, data);
     this.app.modules.handlePeerTransaction(relayed_tx);
   }
 
@@ -74,7 +75,6 @@ class StunManager {
         })
         .then(() => {
           let data = {
-            room_code: this.mod.room_obj.room_code,
             type: "answer",
             sdp: peerConnection.localDescription.sdp,
             public_key: this.mod.publicKey,
@@ -119,14 +119,14 @@ class StunManager {
     return false;
   }
 
-  sendTransaction(peerId, tx_as_json){
+  sendTransaction(peerId, tx){
     let peerConnection = this.peers.get(peerId);
     if (!peerConnection?.dc){
       console.warn("Stun-Relay: no data channel with peer");
       return;
     }
 
-    peerConnection.dc.send(tx_as_json);
+    peerConnection.dc.send(tx.serialize_to_web(this.app));
   }
 
   async createPeerConnection(peerId, on_connection = null) {

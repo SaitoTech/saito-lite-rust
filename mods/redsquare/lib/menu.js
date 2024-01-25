@@ -107,7 +107,7 @@ class RedSquareMenu {
       e.stopImmediatePropagation();
 
       window.history.pushState({}, document.title, "/" + this.mod.slug);
-      //Don't set a hast location (even on click)
+      //Don't set a hash location (even on click)
 
       if (window.location.hash || window.location.search) {
         this.app.connection.emit("redsquare-home-render-request");

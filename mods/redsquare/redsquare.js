@@ -90,7 +90,7 @@ class RedSquare extends ModTemplate {
     this.notifications = [];
     this.notifications_sigs_hmap = {};
 
-    this.ignoreCentralServer = true;
+    this.ignoreCentralServer = false;
     this.offerService = false;
 
     //
@@ -140,6 +140,7 @@ class RedSquare extends ModTemplate {
       dark: "fa-solid fa-moon",
       sangre: "fa-solid fa-droplet",
     };
+
 
     return this;
   }
@@ -417,6 +418,18 @@ class RedSquare extends ModTemplate {
           this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
         });
       }, 300000);
+
+
+      this.app.connection.on("relay-is-online", pkey => {
+        for (let i = 0; i < this.following.length; i++) {
+          if (this.following[i].publicKey === pkey){
+            this.app.connection.emit("open-stun-relay", pkey, (pc)=> {
+              this.following[i].peer = pc;
+            });
+          }
+        }
+      });
+
     }
   }
 
@@ -482,6 +495,7 @@ class RedSquare extends ModTemplate {
 
     this.app.connection.emit("redsquare-home-render-request");
     //this.loadLocalTweets();
+
   }
 
   /////////////////////
@@ -600,17 +614,115 @@ class RedSquare extends ModTemplate {
     // our followees for new content up top
     //
     if (service.service === "relay") {
-      if (this.ignoreCentralServer){
+      console.log("Redsquare: ping colleagues", this.following);
+      // Ping your colleagues 
+      this.app.connection.emit("relay-send-message", {recipient: this.app.options.redsquare?.following, request: "ping", data:{}});
+
+      setTimeout(()=> {
+        console.log("1 second later");
         this.loadTweets("later", (tx_count) => {
           this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
         });
-      }
+      }, 1000);
     }
   }
 
   ///////////////////////
   // network functions //
   ///////////////////////
+  async handlePeerTransaction(app, tx = null, peer, mycallback) {
+
+    if (tx) {
+      if (tx.isTo(this.publicKey)){
+        let txmsg = tx.returnMessage();
+
+        if (txmsg.module == this.name){
+
+          if (txmsg.request == "loadTweets"){
+
+            console.log("Our colleague asked us to return tweets!!!!");
+
+            if (!this.offerService){
+              console.log("But we aren't processing requests!");
+              return;
+            }
+
+            //
+            // Maybe add a check for approved list of colleagues
+            // this.app.options.redsquare.followers
+
+            console.log(txmsg.data);
+
+            this.app.storage.loadTransactions(txmsg.data, async (txs)=>{
+              //have to reserialize the txs ...
+
+              let response_tx = await this.app.wallet.createUnsignedTransaction(tx.from[0].publicKey);
+              response_tx.msg = {
+                module: this.name,
+                request: "returnTweets",
+                created_at: (txmsg.data?.updated_earlier_than >= 0) ? "earlier" : "later",
+                data: [],
+              }
+
+              for (let tx of txs){
+                response_tx.msg.data.push(tx.serialize_to_web(this.app));
+              }
+
+              await response_tx.sign();
+
+              this.app.connection.emit("relay-transaction", response_tx);
+
+            }, "localhost");
+          
+            return;
+          }
+
+          if (txmsg.request == "returnTweets"){
+            console.log("I received tweets from my colleague!!!");
+
+            let created_at = txmsg.created_at;
+            let colleague = null;
+
+            for (let i = 0; i < this.following.length; i++){
+              if (this.following[i].publicKey === tx.from[0].publicKey){
+                colleague = this.following[i];
+              } 
+            }
+
+            if (!colleague){
+              console.warn("We got tweets back from someone we weren't following");
+              return;
+            }
+
+            let txs = [];
+            for (let tx of txmsg.data){
+              let newtx = new Transaction();
+              newtx.deserialize_from_web(this.app, tx);
+              txs.push(newtx);
+            }
+
+            if (txs.length > 0) {
+              count = this.processTweetsFromPeer(colleague, txs);
+            } else {
+              if (created_at === "earlier") {
+                colleague.tweets_earliest_ts = 0;
+              }
+            }
+
+            console.log(`REDSQUARE (${colleague.publicKey}): returned ${txs.length} ${created_at} tweets, ${count} are new to the feed. `);
+
+            // >>>> How do we get the callback here.....????
+          }
+
+        }
+      }
+    }
+
+    return super.handlePeerTransaction(app, tx, peer, mycallback);
+  }
+
+
+
   async onConfirmation(blk, tx, conf) {
     //try {
     let txmsg = tx.returnMessage();
@@ -842,30 +954,42 @@ class RedSquare extends ModTemplate {
     return count;
   }
 
-  loadTweets2(created_at = "earlier", mycallback) {
+  async loadTweets2(created_at = "earlier", mycallback) {
     let count = 0;
 
     let peer_count = 0;
 
     for (let i = 0; i < this.following.length; i++) {
-      if (!(this.following[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
-        peer_count++;
-        let obj = {
-          field1: "RedSquare",
-          flagged: 0,
-          //tx_size_less_than: 1330000,
-          limit: this.following[i].tweets_limit,
-        };
+      if (this.following[i].peer){
+        if (!(this.following[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
+          peer_count++;
+          let obj = {
+            field1: "RedSquare",
+            flagged: 0,
+            //tx_size_less_than: 1330000,
+            limit: this.following[i].tweets_limit,
+          };
 
-        if (created_at == "earlier") {
-          obj.updated_earlier_than = this.following[i].tweets_earliest_ts;
-        } else if (created_at == "later") {
-          obj.updated_later_than = this.following[i].tweets_latest_ts;
-        } else {
-          console.error("Unsupported time restraint in rS");
+          if (created_at == "earlier") {
+            obj.updated_earlier_than = this.following[i].tweets_earliest_ts;
+          } else if (created_at == "later") {
+            obj.updated_later_than = this.following[i].tweets_latest_ts;
+          } else {
+            console.error("Unsupported time restraint in rS");
+          }
+
+          let tx = await this.app.wallet.createUnsignedTransaction(this.following[i].publicKey);
+
+          tx.msg = {
+            module: this.name,
+            request: "loadTweets",
+            data: obj,
+          };
+
+          await tx.sign();          
+
+          this.app.connection.emit("relay-transaction", tx);
         }
-
-        // something
       }
     }
 
@@ -2110,7 +2234,7 @@ class RedSquare extends ModTemplate {
   }
 
   saveOptions() {
-    if (!this.app.BROWSER || !this.browser_active) {
+    if (!this.app.BROWSER) {
       return;
     }
 

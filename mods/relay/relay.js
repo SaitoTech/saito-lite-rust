@@ -1,9 +1,9 @@
-const Slip = require("../../lib/saito/slip").default;
+//const Slip = require("../../lib/saito/slip").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 const Transaction = require("../../lib/saito/transaction").default;
 
 var ModTemplate = require("../../lib/templates/modtemplate");
-var saito = require("../../lib/saito/saito");
+//var saito = require("../../lib/saito/saito");
 const Stun = require("./stun-relay");
 const JSON = require("json-bigint");
 
@@ -93,7 +93,8 @@ class Relay extends ModTemplate {
     if (tx.to.length == 1) {
       let addressee = tx.to[0].publicKey;
       if (this.stun.hasConnection(addressee)){
-        this.stun.sendTransaction(addressee, tx.toJson());
+        console.log("Sending tx through stun");
+        this.stun.sendTransaction(addressee, tx);
         return;
       }
     } 
@@ -111,7 +112,6 @@ class Relay extends ModTemplate {
         null,
         peers[i].peerIndex
       );
-      // }
     }
 
   }
@@ -121,12 +121,16 @@ class Relay extends ModTemplate {
   // recipients and permit multi-hop transaction construction.
   //
   async sendRelayMessage(recipients, message_request, message_data) {
+    if (!recipients || !message_request){
+      console.warn("Invalid relay message:", recipients, message_request, message_data);
+      return;
+    }
     let newtx = await this.createRelayTransaction(recipients, message_request, message_data);
     await this.sendRelayTransaction(newtx);
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    //console.log("relay.handlePeerTransaction : ", tx);
+
     if (tx == null) {
       return 0;
     }
