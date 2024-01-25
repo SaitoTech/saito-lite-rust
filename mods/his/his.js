@@ -3377,7 +3377,7 @@ if (space.key === "bordeaux") {
 			    if (space.units[key][i].type === "squadron") {
   	    		      $('.option').off();
 			      his_self.updateStatus("Papacy removes squadron");
-          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+key+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
           	  	      his_self.addMove("NOTIFY\tPapacy removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
@@ -3394,7 +3394,7 @@ if (space.key === "bordeaux") {
 			    if (space.units[key][i].type === "squadron") {
   	    		      $('.option').off();
 			      his_self.updateStatus("Protestants remove squadron");
-          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+key+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
           	  	      his_self.addMove("NOTIFY\tProtestant removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
@@ -11340,7 +11340,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
           let cards = JSON.parse(mv[3]);
 
 console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
-his_self.deck_overlay.render("Venetian Informant", cards);
+	  his_self.deck_overlay.render("Venetian Informant", cards);
           
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);
@@ -11360,6 +11360,8 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 
         if (mv[0] == "venetian_informant") {
 
+          his_self.game.queue.splice(qe, 1);
+
 	  let faction = mv[1];
 	  let player = his_self.returnPlayerOfFaction(faction);
 
@@ -11375,7 +11377,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 	        his_self.endTurn();
 	      }
 
-	      return;
+	      return 0;
 
 	    } else {
 
@@ -11404,9 +11406,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 
 	  }
 
-          his_self.game.queue.splice(qe, 1);
 	  return 0;
-
 
         }
 
@@ -12083,7 +12083,12 @@ his_self.deck_overlay.render("Venetian Informant", cards);
       0 
     );
 
-    return 1;
+    if (res.length > 0) {
+      return 1;
+    }
+
+    return 0;
+
   }
 
   isSpaceAdjacentToReligion(space, religion) {
@@ -12826,6 +12831,14 @@ console.log("no...");
   // if transit_seas and faction is specified, we can only cross if
   // there are no ports in a zone with non-faction ships.
   //
+  returnNeighboursAsArrayOfKeys(space, transit_passes=1, transit_seas=0, faction="") {
+    let res = [];
+    let x = this.returnNeighbours(space, transit_passes, transit_seas, faction);
+    for (let i = 0; i < x.length; i++) {
+      res.push(x[i].neighbour);
+    }
+    return res;
+  }
   returnNeighbours(space, transit_passes=1, transit_seas=0, faction="") {
 
     let is_naval_space = false;
@@ -12837,13 +12850,17 @@ console.log("no...");
 
     if (transit_seas == 0 && is_naval_space != true) {
       if (transit_passes == 1) {
-        return space.neighbours;
+	let res = [];
+	for (let z = 0; z < space.neighbours.length; z++) {
+	  res.push({ neighbour : space.neighbours[z] , overseas : false });
+	} 
+        return res;
       }
       let neighbours = [];
       for (let i = 0; i < space.neighbours.length; i++) {
         let x = space.neighbours[i];      
         if (!space.pass.includes[x]) {
-  	  neighbours.push(x);
+  	  neighbours.push({ neighbour : x , overseas : false });
         }
       }
       return neighbours;
@@ -12852,13 +12869,16 @@ console.log("no...");
       let neighbours = [];
 
       if (transit_passes == 1 && is_naval_space != true) {
-        neighbours = JSON.parse(JSON.stringify(space.neighbours));
+        neighbours = [];
+	for (let z = 0; z < space.neighbours.length; z++) {
+	  neighbours.push({ neighbour : space.neighbours[z] , overseas : false });
+	}
       } else {
         for (let i = 0; i < space.neighbours.length; i++) {
           let x = space.neighbours[i];
 	  if (is_naval_space != true) {
             if (!space.pass.includes[x]) {
-              neighbours.push(x);
+              neighbours.push({ neighbour : x , overseas : false });
             }
           }
         }
@@ -12888,8 +12908,14 @@ console.log("no...");
 	        }
 	      }
               for (let z = 0; z < navalspace.ports.length; z++) {
-	        if (!neighbours.includes(navalspace.ports[z]) && any_unfriendly_ships == false) {
-	          neighbours.push(navalspace.ports[z]);
+		let already_listed = false;
+	        for (let zz = 0; zz < neighbours.length; zz++) {
+	          if (neighbours[zz].neighbour === navalspace.ports[z]) {
+		    already_listed = true;
+		  }
+ 		}
+	        if (already_listed == false && any_unfriendly_ships == false) {
+	          neighbours.push({ neighbour : navalspace.ports[z] , overseas : true });
 	        };
 	      }
 	    }
@@ -13099,10 +13125,21 @@ console.log("searching for: " + sourcekey);
     //
     // put the neighbours into pending
     //
+    //let n = this.returnNeighboursAsArrayOfKeys(sourcekey, transit_passes, transit_seas, faction);
     let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction);
 
+
+if (sourcekey === "candia") {
+
+  console.log("^");
+  console.log("^");
+  console.log("^ NEIGHBOURS ");
+  console.log(JSON.stringify(n));
+
+}
+
     for (let i = 0; i < n.length; i++) {
-      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
+      pending_spaces[n[i].neighbour] = { hops : 0 , key : n[i] , overseas : n[i].overseas };
     }
 
     //
@@ -13110,6 +13147,10 @@ console.log("searching for: " + sourcekey);
     //
     let continue_searching = 1;
     while (continue_searching) {
+
+if (sourcekey === "candia") {
+  console.log("loop: " + JSON.stringify(pending_spaces));
+}
 
       let count = 0;
       for (let key in pending_spaces) {
@@ -13119,7 +13160,7 @@ console.log("searching for: " + sourcekey);
 
 	if (destination_filter(key)) {
 	  // found results? this is last pass
-	  results.push({ hops : (hops+1) , key : key });	
+	  results.push({ hops : (hops+1) , key : key , overseas : pending_spaces[key].overseas });	
 	  continue_searching = 0;
 	  if (searched_spaces[key]) {
 	    // we've searched for this before
@@ -13128,19 +13169,25 @@ console.log("searching for: " + sourcekey);
 	  }
 	} else {
 	  if (propagation_filter(key)) {
-    	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
-	      if (searched_spaces[this.game.spaces[key].neighbours[i]]) {
+	    let nn = [];
+	    if (pending_spaces[key].overseas) {
+	      nn = this.returnNeighbours(key, transit_passes, 0, faction);
+	    } else {
+	      nn = this.returnNeighbours(key, transit_passes, 1, faction);
+	    }
+    	    for (let i = 0; i < nn.length; i++) {
+	      if (searched_spaces[nn[i].neighbour]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[this.game.spaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] };
+      	        pending_spaces[nn[i].neighbour] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] , overseas : nn[i].overseas };
 	      }
     	    }
 	  }
-	  searched_spaces[key] = { hops : (hops+1) , key : key };
+	  searched_spaces[key] = { hops : (hops+1) , key : key , overseas : 0 };
 	}
 	delete pending_spaces[key];
-
       }
+
       if (count == 0) {
 	continue_searching = 0;
 	for (let newkey in pending_spaces) {
@@ -13148,6 +13195,10 @@ console.log("searching for: " + sourcekey);
 	}
       }
     }
+if (sourcekey == "candia") {
+  console.log(JSON.stringify(results));
+}
+
 
     //
     // at this point we have results or not 
@@ -17731,8 +17782,8 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addNavalSquadron("france", "genoa", 4);
 
 
-	  //this.addCard("papacy", "105");
-	  this.addCard("protestant", "031");
+	  this.addCard("papacy", "109");
+//	  this.addCard("protestant", "031");
 
     	  this.game.queue.splice(qe, 1);
 
@@ -18490,7 +18541,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  this.game.state.attacker_comes_from_this_spacekey = mv[3];
 	  let space = this.game.spaces[spacekey];
-	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+	  let neighbours = this.returnNeighboursAsArrayOfKeys(spacekey, 0); // 0 cannot intercept across passes
 	  let attacking_player = this.returnPlayerOfFaction(attacker);
 
 	  let io = this.returnImpulseOrder();
@@ -18551,7 +18602,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }      
 	  if (this.game.navalspaces[spacekey]) { space = this.game.spaces[spacekey]; }      
 
-	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+	  let neighbours = this.returnNeighboursAsArrayOfKeys(spacekey, 0); // 0 cannot intercept across passes
 	  let attacking_player = this.returnPlayerOfFaction(attacker);
 
 	  let io = this.returnImpulseOrder();
@@ -18735,7 +18786,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  let includes_cavalry = parseInt(mv[3]);
 
 	  let space = this.game.spaces[spacekey];
-	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+	  let neighbours = this.returnNeighboursAsArrayOfKeys(spacekey, 0); // 0 cannot intercept across passes
 
 	  let attacking_player = this.returnPlayerCommandingFaction(faction);
 
@@ -23929,6 +23980,11 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
         if (mv[0] === "card_draw_phase") {
 
+console.log("###");
+console.log("###");
+console.log("###");
+console.log("Cards in Hand: " + JSON.stringify(this.game.deck[0].fhand));
+
 	  //
 	  // deal cards and add home card
 	  //
@@ -25062,6 +25118,11 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let fhand_idx = this.returnFactionHandIdx(player, faction);
 
 	  if (this.game.player == player) {
+
+console.log("$$$");
+console.log("$$$");
+console.log("$$$");
+console.log("fhand: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
 	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }
@@ -29678,8 +29739,11 @@ return;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
-          conquerable_spaces.splice(i, 1); // remove
-          removed_space = true;
+	  // unless we are there
+          if (his_self.returnFactionLandUnitsInSpace(faction, conquerable_spaces[i]) > 0) {} else {
+            conquerable_spaces.splice(i, 1); // remove
+            removed_space = true;
+          }
         }
       }
     }
@@ -29880,6 +29944,7 @@ return;
     $('.option').on('click', function () {
 
       let id = parseInt($(this).attr("id"));
+      his_self.updateStatus("selecting...");
       his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {

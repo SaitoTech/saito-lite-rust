@@ -806,8 +806,8 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addNavalSquadron("france", "genoa", 4);
 
 
-	  //this.addCard("papacy", "105");
-	  this.addCard("protestant", "031");
+	  this.addCard("papacy", "109");
+//	  this.addCard("protestant", "031");
 
     	  this.game.queue.splice(qe, 1);
 
@@ -1565,7 +1565,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  this.game.state.attacker_comes_from_this_spacekey = mv[3];
 	  let space = this.game.spaces[spacekey];
-	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+	  let neighbours = this.returnNeighboursAsArrayOfKeys(spacekey, 0); // 0 cannot intercept across passes
 	  let attacking_player = this.returnPlayerOfFaction(attacker);
 
 	  let io = this.returnImpulseOrder();
@@ -1626,7 +1626,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }      
 	  if (this.game.navalspaces[spacekey]) { space = this.game.spaces[spacekey]; }      
 
-	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+	  let neighbours = this.returnNeighboursAsArrayOfKeys(spacekey, 0); // 0 cannot intercept across passes
 	  let attacking_player = this.returnPlayerOfFaction(attacker);
 
 	  let io = this.returnImpulseOrder();
@@ -1810,7 +1810,7 @@ console.log("NO-ONE BUT US, ADD ALLY CHECK!");
 	  let includes_cavalry = parseInt(mv[3]);
 
 	  let space = this.game.spaces[spacekey];
-	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+	  let neighbours = this.returnNeighboursAsArrayOfKeys(spacekey, 0); // 0 cannot intercept across passes
 
 	  let attacking_player = this.returnPlayerCommandingFaction(faction);
 
@@ -7004,6 +7004,11 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
         if (mv[0] === "card_draw_phase") {
 
+console.log("###");
+console.log("###");
+console.log("###");
+console.log("Cards in Hand: " + JSON.stringify(this.game.deck[0].fhand));
+
 	  //
 	  // deal cards and add home card
 	  //
@@ -8137,6 +8142,11 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let fhand_idx = this.returnFactionHandIdx(player, faction);
 
 	  if (this.game.player == player) {
+
+console.log("$$$");
+console.log("$$$");
+console.log("$$$");
+console.log("fhand: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
 	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }

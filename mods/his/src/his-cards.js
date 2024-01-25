@@ -390,7 +390,7 @@ if (space.key === "bordeaux") {
 			    if (space.units[key][i].type === "squadron") {
   	    		      $('.option').off();
 			      his_self.updateStatus("Papacy removes squadron");
-          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+key+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
           	  	      his_self.addMove("NOTIFY\tPapacy removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
@@ -407,7 +407,7 @@ if (space.key === "bordeaux") {
 			    if (space.units[key][i].type === "squadron") {
   	    		      $('.option').off();
 			      his_self.updateStatus("Protestants remove squadron");
-          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+key+"\t"+"squadron"+"\t"+spacekey+"\t"+0);
           	  	      his_self.addMove("NOTIFY\tProtestant removes squadron from "+his_self.returnSpaceName(spacekey));
           	  	      his_self.endTurn();
 			      return 0;
@@ -8353,7 +8353,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
           let cards = JSON.parse(mv[3]);
 
 console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
-his_self.deck_overlay.render("Venetian Informant", cards);
+	  his_self.deck_overlay.render("Venetian Informant", cards);
           
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);
@@ -8373,6 +8373,8 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 
         if (mv[0] == "venetian_informant") {
 
+          his_self.game.queue.splice(qe, 1);
+
 	  let faction = mv[1];
 	  let player = his_self.returnPlayerOfFaction(faction);
 
@@ -8388,7 +8390,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 	        his_self.endTurn();
 	      }
 
-	      return;
+	      return 0;
 
 	    } else {
 
@@ -8417,9 +8419,7 @@ his_self.deck_overlay.render("Venetian Informant", cards);
 
 	  }
 
-          his_self.game.queue.splice(qe, 1);
 	  return 0;
-
 
         }
 

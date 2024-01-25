@@ -4146,8 +4146,11 @@ return;
       for (let z = 0; removed_space == false && z < ns.length; z++) {
         let n = his_self.game.spaces[ns[z]];
         if (his_self.returnHostileLandUnitsInSpace(faction, n) > 0) {
-          conquerable_spaces.splice(i, 1); // remove
-          removed_space = true;
+	  // unless we are there
+          if (his_self.returnFactionLandUnitsInSpace(faction, conquerable_spaces[i]) > 0) {} else {
+            conquerable_spaces.splice(i, 1); // remove
+            removed_space = true;
+          }
         }
       }
     }
@@ -4348,6 +4351,7 @@ return;
     $('.option').on('click', function () {
 
       let id = parseInt($(this).attr("id"));
+      his_self.updateStatus("selecting...");
       his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
