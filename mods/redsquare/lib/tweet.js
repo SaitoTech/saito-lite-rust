@@ -389,13 +389,13 @@ class Tweet {
 				this.mentions == 1 ||
 				this.mentions?.includes(this.mod.publicKey)
 			) {
-				this.notice = 'You were mentioned in this tweet';
+				this.notice = 'you were mentioned in this tweet';
 			}
 		}
 
 		if (this.tx.optional?.update_tx) {
 			this.notice =
-				'This tweet was edited at ' + this.formatDate(this.updated_at);
+				'this tweet was edited at ' + this.formatDate(this.updated_at);
 		}
 
 		if (this.render_after_selector) {
