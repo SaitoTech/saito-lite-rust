@@ -69,6 +69,7 @@ class ChatPopup {
 		//
 		// exit if group unset
 		//
+
 		if (this.group == null) {
 			return;
 		}
@@ -103,6 +104,7 @@ class ChatPopup {
 				this.input.display = 'small';
 			}
 		}
+
 
 		//
 		// calculate some values to determine position on screen...
@@ -205,7 +207,7 @@ class ChatPopup {
 
 		// add call icon, ignore if community chat
 		let mods = this.app.modules.mods;
-		if (this.group.name != this.mod.communityGroupName) {
+    if (!this.group.community) {
 			let index = 0;
 			for (const mod of mods) {
 				let item = mod.respondTo('chat-actions', {

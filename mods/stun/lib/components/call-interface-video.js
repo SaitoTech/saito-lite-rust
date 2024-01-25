@@ -223,7 +223,8 @@ class CallInterfaceVideo {
 			members: [peer],
 			name: `Video Chat`,
 			txs: [],
-			unread: 0
+			unread: 0,
+			community: true
 			//
 			// USE A TARGET Container if the chat box is supposed to show up embedded within the UI
 			// Don't include if you want it to be just a chat popup....

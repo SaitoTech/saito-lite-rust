@@ -114,7 +114,8 @@ class Chat extends ModTemplate {
 		if (app.BROWSER == 0) {
 			this.communityGroup = this.returnOrCreateChatGroupFromMembers(
 				[this.publicKey],
-				this.communityGroupName
+				this.communityGroupName,
+				true
 			);
 			this.communityGroup.members = [this.publicKey];
 
@@ -1512,7 +1513,8 @@ class Chat extends ModTemplate {
 	returnOrCreateChatGroupFromMembers(
 		members = null,
 		name = null,
-		update_name = true
+		update_name = true,
+		isCommunity = false
 	) {
 		if (!members) {
 			return null;
@@ -1523,6 +1525,7 @@ class Chat extends ModTemplate {
 		//This might keep persistence across server resets
 		if (name === this.communityGroupName) {
 			id = this.app.crypto.hash(this.communityGroupName);
+			isCommunity = true;
 		} else {
 			//Make sure that I am part of the chat group
 			if (!members.includes(this.publicKey)) {
@@ -1571,7 +1574,8 @@ class Chat extends ModTemplate {
 			name: name,
 			txs: [],
 			unread: 0,
-			last_update: 0
+			last_update: 0,
+			community: isCommunity
 		};
 
 		//Prepend the community chat
