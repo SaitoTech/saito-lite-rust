@@ -8091,8 +8091,7 @@ console.log("target is: " + target);
       img : "cards/HIS-047.svg" , 
       name : "Copernicus" ,
       ops : 6 ,
-      //turn : 5 ,
-      turn : 1 ,
+      turn : 5 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; },
@@ -8213,8 +8212,7 @@ console.log("total: " + total);
       img : "cards/HIS-051.svg" , 
       name : "Michael Servetus" ,
       ops : 4 ,
-      turn : 1 ,
-      //turn : 4 ,
+      turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; } ,
@@ -17091,14 +17089,6 @@ console.log("MOVE: " + mv[0]);
 this.updateLog(`###############`);
 this.updateLog(`### Round ${this.game.state.round} ###`);
 this.updateLog(`###############`);
-	      this.addDebater("protestant", "cranmer-debater");
-	      this.addDebater("protestant", "latimer-debater");
-	      this.addDebater("protestant", "coverdale-debater");
-	      this.addReformer("protestant", "london", "cranmer-reformer");
-	      this.addDebater("papacy", "pole-debater");
-	      this.addDebater("papacy", "caraffa-debater");
-	      this.convertSpace("protestant", "london");
-
 
 	  this.game.state.cards_left = {};
 
@@ -26645,15 +26635,6 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/university.png',
     });
-    menu.push({
-      factions : ['papacy'],
-      cost : [1],
-      name : "Build Chateaux",
-      check : () => { return 1; } ,
-      fnct : this.playerBuildChateaux,
-      category : "special" ,
-      img : '/his/img/backgrounds/move/chateaux.png',
-    });
 }
 
     //
@@ -29623,8 +29604,8 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
       for (let i = 0; i < spaces_with_units.length; i++) {
        for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
 	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked != true) {
-	    // need to be non-pass moves available
-	    if (his_self.game.spaces[spaces_with_units[i]].neighbours.length > his_self.game.spaces[spaces_with_units[i]].pass.length) {
+	    // if no neighbours, no move
+	    if (his_self.game.spaces[spaces_with_units[i]].neighbours.length > 0) {
 	      return 1;
 	    }
 	  }

@@ -30,14 +30,6 @@ console.log("MOVE: " + mv[0]);
 this.updateLog(`###############`);
 this.updateLog(`### Round ${this.game.state.round} ###`);
 this.updateLog(`###############`);
-	      this.addDebater("protestant", "cranmer-debater");
-	      this.addDebater("protestant", "latimer-debater");
-	      this.addDebater("protestant", "coverdale-debater");
-	      this.addReformer("protestant", "london", "cranmer-reformer");
-	      this.addDebater("papacy", "pole-debater");
-	      this.addDebater("papacy", "caraffa-debater");
-	      this.convertSpace("protestant", "london");
-
 
 	  this.game.state.cards_left = {};
 
