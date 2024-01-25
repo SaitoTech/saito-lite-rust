@@ -405,6 +405,55 @@
     if (space.type == "key") { stype = "key"; }
 
     if (owner != "") {
+
+      // if these have a major ally, we make them
+      // the owner for tile-display purposes.
+      if (owner === "hungary") {
+	owner = this.returnAllyOfMinorPower(owner);
+        if (owner === "hungary") {
+          tile = "/his/img/tiles/independent/";	  
+          if (space.religion === "protestant") {
+            tile += `Independent_${stype}_back.svg`;
+          } else {
+            tile += `Independent_${stype}.svg`;
+          }
+        }
+      }
+      if (owner === "scotland") {
+	owner = this.returnAllyOfMinorPower(owner);
+	if (owner === "scotland") {
+          tile = "/his/img/tiles/independent/";	  
+          if (space.religion === "protestant") {
+            tile += `Independent_${stype}_back.svg`;
+          } else {
+            tile += `Independent_${stype}.svg`;
+          }
+        }
+      }
+      if (owner === "venice") {
+	owner = this.returnAllyOfMinorPower(owner);
+	if (owner === "venice") {
+          tile = "/his/img/tiles/independent/";	  
+          if (space.religion === "protestant") {
+            tile += `Independent_${stype}_back.svg`;
+          } else {
+            tile += `Independent_${stype}.svg`;
+          }
+        }
+      }
+      if (owner === "genoa") {
+	owner = this.returnAllyOfMinorPower(owner);
+        if (owner === "genoa") {
+	  tile = "/his/img/tiles/independent/";	  
+          if (space.religion === "protestant") {
+            tile += `Independent_${stype}_back.svg`;
+          } else {
+            tile += `Independent_${stype}.svg`;
+          }
+        }
+      }
+
+
       if (owner === "hapsburg") {
         tile = "/his/img/tiles/hapsburg/";	  
         if (space.religion === "protestant") {
@@ -442,6 +491,9 @@
         if (space.religion === "protestant") {
           tile += `Protestant_${stype}_back.svg`;
         } else {
+if (space.key === "regensburg") {
+  alert("religion is: " + space.religion);
+}
           tile += `Protestant_${stype}.svg`;
         }
       }
@@ -454,38 +506,6 @@
         }
       }
       if (owner === "independent") {
-        tile = "/his/img/tiles/independent/";	  
-        if (space.religion === "protestant") {
-          tile += `Independent_${stype}_back.svg`;
-        } else {
-          tile += `Independent_${stype}.svg`;
-        }
-      }
-      if (owner === "hungary") {
-        tile = "/his/img/tiles/independent/";	  
-        if (space.religion === "protestant") {
-          tile += `Independent_${stype}_back.svg`;
-        } else {
-          tile += `Independent_${stype}.svg`;
-        }
-      }
-      if (owner === "scotland") {
-        tile = "/his/img/tiles/independent/";	  
-        if (space.religion === "protestant") {
-          tile += `Independent_${stype}_back.svg`;
-        } else {
-          tile += `Independent_${stype}.svg`;
-        }
-      }
-      if (owner === "venice") {
-        tile = "/his/img/tiles/independent/";	  
-        if (space.religion === "protestant") {
-          tile += `Independent_${stype}_back.svg`;
-        } else {
-          tile += `Independent_${stype}.svg`;
-        }
-      }
-      if (owner === "genoa") {
         tile = "/his/img/tiles/independent/";	  
         if (space.religion === "protestant") {
           tile += `Independent_${stype}_back.svg`;
@@ -1529,12 +1549,15 @@
     //
     if (space.political == space.home && space.religion != "protestant") { show_tile = 0; }
     if (space.political === "" && space.religion != "protestant") { show_tile = 0; }
+    if (space.political == "protestant" && space.religion != "protestant") { show_tile = 1; }
+    if (space.language == "german" && space.units["protestant"].length > 0) { show_tile = 1; }
 
     //
     // and force for keys
     //
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
+    if (space.type === "electorate") { show_tile = 1; }
 
     //
     // and force if has units

@@ -23,6 +23,7 @@ const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 
+const GameHelp = require('./../../lib/saito/ui/game-help/game-help');
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
 const HISingularOption = require('./lib/core/options.template');
@@ -77,6 +78,11 @@ class HereIStand extends GameTemplate {
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
+
+    //
+    // triangular help button
+    //
+    this.game_help = new GameHelp(this.app, this);
 
     //
     // this sets the ratio used for determining

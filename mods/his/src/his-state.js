@@ -347,6 +347,8 @@
       factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
+console.log("protestants after copernicus: " + factions["protestant"].vp);
+
     //
     //• Bible translation completed (1 VP for each language)    ***
     // protestant faction class
@@ -594,6 +596,7 @@
     state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
     state.excommunicated_factions = {};
+    state.already_excommunicated = [];
     state.excommunicated = [];
     state.burned = [];
     state.debaters = [];
@@ -636,12 +639,14 @@
   }
 
   excommunicateFaction(faction="") {
+    this.game.state.already_excommunicated.push(faction);
     this.game.state.excommunicated_faction[faction] = 1;
     return;
   }
 
   excommunicateReformer(reformer="") {
 
+    this.game.state.already_excommunicated.push(reformer);
     if (reformer == "") { return; }
     if (!this.returnSpaceOfPersonage("protestant", reformer)) { return; }
 

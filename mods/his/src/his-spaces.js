@@ -1186,6 +1186,7 @@ console.log("no...");
     return res;
   }
   returnNeighbours(space, transit_passes=1, transit_seas=0, faction="") {
+try {
 
     let is_naval_space = false;
 
@@ -1215,7 +1216,6 @@ console.log("no...");
       let neighbours = [];
 
       if (transit_passes == 1 && is_naval_space != true) {
-        neighbours = [];
 	for (let z = 0; z < space.neighbours.length; z++) {
 	  neighbours.push({ neighbour : space.neighbours[z] , overseas : false });
 	}
@@ -1237,11 +1237,17 @@ console.log("no...");
         if (space.ports.length > 0) {
 	  for (let i = 0; i < space.ports.length; i++) {
 	    let navalspace = "";
+
+console.log("space ports: " + JSON.stringify(space.ports[i]));
+
 	    if (this.game.navalspaces[space.ports[i]]) {
 	      navalspace = this.game.navalspaces[space.ports[i]];
 	    } else {
 	      navalspace = this.game.spaces[space.ports[i]];
 	    }
+
+console.log("debugging navalspace: " + JSON.stringify(navalspace));
+
 	    let any_unfriendly_ships = false;
 	    if (navalspace.ports) {
 	      if (faction != "") {
@@ -1270,6 +1276,10 @@ console.log("no...");
       }
       return neighbours;
     }
+} catch (err) {
+  alert("return neighbours bug pls report: " + JSON.stringify(err));
+}
+    return [];
   }
 
 
@@ -1612,6 +1622,47 @@ if (sourcekey == "candia") {
         }
       }
     }
+
+    //
+    // minor allied powers
+    //
+    if (faction === this.returnAllyOfMinorPower("genoa")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "genoa" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "genoa")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+    if (faction === this.returnAllyOfMinorPower("scotland")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "scotland" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "scotland")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+    if (faction === this.returnAllyOfMinorPower("hungary")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "hungary" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "hungary")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+    if (faction === this.returnAllyOfMinorPower("venice")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "venice" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "venice")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+
     return controlled_keys;
   }
   returnNumberOfKeysControlledByPlayer(player_num) {
