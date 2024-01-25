@@ -622,12 +622,14 @@ class ChatPopup {
 
 	addChatActionItem(item, id) {
 		let popup_qs = '#chat-popup-' + this.group.id;
-		document.querySelector(`${popup_qs} .chat-actions`).innerHTML = `
-      <i id="${id}" class="chat-action-item ${item.icon}" data-id="${this.group.name}" title="${item.text}"></i>
-      `;
+		if (document.querySelector(`${popup_qs} .chat-actions`)) {
+			document.querySelector(`${popup_qs} .chat-actions`).innerHTML = `
+			<i id="${id}" class="chat-action-item ${item.icon}" data-id="${this.group.name}" title="${item.text}"></i>
+			`;	  
+		}
 	}
 
-	restorePopup(chatPopup) {
+	restorePopup(chatPopup)  {
 		chatPopup.classList.remove('minimized');
 		chatPopup.classList.remove('maximized');
 		chatPopup.classList.add('active');

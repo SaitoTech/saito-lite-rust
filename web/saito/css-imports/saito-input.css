@@ -48,7 +48,7 @@
 	color: var(--saito-primary);
 	font-style: italic;
 	user-select: none;
-	margin-right: 8px;
+	margin-right: 8px !important;
 	width: fit-content;
 }
 

@@ -285,41 +285,26 @@ class RedSquareMain {
 			this.hasScrolledDown = true;
 			this.idleTime = 0;
 
-			if (window.innerHeight - 150 < sidebar.clientHeight) {
-				if (scrollTop < scrollableElement.scrollTop) {
-					stop =
-						window.innerHeight -
-						sidebar.clientHeight +
-						scrollableElement.scrollTop;
-					if (
-						scrollableElement.scrollTop + window.innerHeight >
-						sidebar.clientHeight
-					) {
-						try {
-							sidebar.style.top = stop + 'px';
-						} catch (err) {
-							console.log('SIDEBAR ERROR 1');
-						}
+			let newScrollTop = scrollableElement.scrollTop;
+			let maxScroll = sidebar.clientHeight - window.innerHeight + 70;
+			
+			if (maxScroll > 0) {
+				if (scrollTop < newScrollTop) {
+					if (newScrollTop - stop > maxScroll){
+						stop = window.innerHeight -	70 - sidebar.clientHeight + newScrollTop;
 					}
 				} else {
-					if (stop > scrollableElement.scrollTop) {
-						stop = scrollableElement.scrollTop;
-						try {
-							sidebar.style.top = stop + 'px';
-						} catch (err) {
-							console.log('SIDEBAR ERROR 2');
-						}
+					if (stop > newScrollTop) {
+						stop = newScrollTop;
 					}
 				}
 			} else {
-				stop = scrollableElement.scrollTop;
-				try {
-					sidebar.style.top = stop + 'px';
-				} catch (err) {
-					console.log('SIDEBAR ERROR 3');
-				}
+				//Keep top of side bar fixed relative to viewPort
+				stop = newScrollTop;
 			}
-			scrollTop = scrollableElement.scrollTop;
+
+			sidebar.style.top = stop + 'px';
+			scrollTop = newScrollTop;
 		});
 	}
 

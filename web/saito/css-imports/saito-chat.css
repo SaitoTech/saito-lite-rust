@@ -360,7 +360,7 @@
 }
 
 .chat-body>.saito-user {
-  padding-bottom: 1rem;
+  padding-bottom: 1.5rem;
   cursor: default;
   grid-template-rows: min-content 1fr;
   min-height: 5.5rem;
@@ -395,8 +395,8 @@
 }
 */
 
-.chat-body .saito-address {
-  margin: 0.5rem 0;
+.chat-body .saito-user > .saito-address {
+  margin-bottom: 0.5rem;
   font-size: 1.3rem;
 }
 
@@ -414,6 +414,7 @@
 
 .saito-mention.saito-address.treated {
   display: inline-block !important;
+  margin: 0 8px 0 0;
 }
 
 .chat-body .saito-user-self.saito-user .saito-identicon-box {
