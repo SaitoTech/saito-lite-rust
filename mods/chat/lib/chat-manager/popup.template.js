@@ -73,9 +73,7 @@ module.exports = (app, mod, group, isStatic = false) => {
           </div>
 
           <div class="chat-body">
-            <div id="load-older-chats" class="saito-chat-button" data-id="${
-	group.id
-}">check for earlier messages</div>
+            <!--div id="load-older-chats" class="saito-chat-button" data-id="${group.id}">check for earlier messages</div-->
             ${mod.returnChatBody(group.id)}
           </div>
 

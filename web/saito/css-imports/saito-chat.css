@@ -195,7 +195,7 @@
 
 .chat-popup {
   display: grid;
-  grid-template-rows: 45px 1fr min-content;
+  grid-template-rows: 67px 1fr min-content;
   grid-template-columns: 100%;
   align-items: center;
 }
@@ -247,7 +247,6 @@
   justify-content: flex-end;
   border-bottom: 1px solid var(--saito-border-color);
   cursor: grab;
-  height: 4.5rem;
   font-size: 1.7rem;
   background: var(--saito-background-light);
 }
@@ -651,7 +650,6 @@
   color: var(--saito-font-color-light);
   font-style: italic;
   font-size: 1.4rem;
-  margin-top: 3rem;
 }
 
 .saito-chat-button:hover {
