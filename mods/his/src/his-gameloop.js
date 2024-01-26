@@ -77,6 +77,7 @@ if (this.game.state.scenario == "is_testing") {
 	    this.game.queue.push("card_draw_phase");
 if (this.game.state.scenario != "is_testing") {
 	    this.game.queue.push("event\tprotestant\t008");
+	    this.game.queue.push("game_help_start");
 }
 
 	  } else {
@@ -155,14 +156,6 @@ if (this.game.state.scenario != "is_testing") {
 	    this.game.queue.push("show_overlay\twelcome\thapsburg");
 	    this.game.queue.push("show_overlay\twelcome\tottoman");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-	  } else {
-
-	    //
-	    // TESTING
-	    //
-	    //this.updateStatus("Game Over");
-	    //return 0;
-
 	  }
 
           return 1;
@@ -327,6 +320,35 @@ if (this.game.state.scenario != "is_testing") {
 
 	}
 
+	if (mv[0] === "game_help_start") {
+
+	  this.game.queue.splice(qe, 1);
+
+  this.game_help.render(TutorialTemplate, {
+    help : `First Time Playing?` ,
+    content : `
+	Here I Stand opens with Luther's publication of his 95 Theses in 1517, which marked the start of the Protestant
+	reformation. This occurs at the start of every game as the Protestant player makes a series of reform 
+	attempts which spread out from Luther's home town of Wittenberg. Here as throughout the game, all rttempts
+	must be made in spaces adjacent to a Protestant space or containing a Protestant reformer.
+	<p></p>
+	The Protestants get VP for converting as many spaces as possible, but also want to capture the six German 
+	Electorates (the hexagonal cities of Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). Reforming 
+	these spaces will add Protestant regulars to the map, which will assist with reforming neighbouring spaces.
+	<p></p>
+	The 95 Theses is followed by the Diet of Worms, an assembly convened in 1521 by the Holy Roman Emperor 
+	(Charles V of the Hapsburg Dynasty) in the Imperial Free City of Worms. Martin Luther was summoned to the 
+	Diet where he refused to recant his views and was subsequently declared a heretic. This event is emulated 
+	by having all players pick a card which represents their level of commitment to the assembly, then rolling 
+	dice to see how the debate influences public opinion across Germany.
+    `,
+  }, "what is", "happening?", "2.1rem");
+
+// HACK
+
+	  return 1;
+
+	}
 	if (mv[0] === "deactivate_minor_power") {
 
 	  let faction = mv[1];
@@ -2263,6 +2285,11 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", x);
           this.attachCardboxEvents(async function(card) {
+
+  	    //
+	    // hide triangular help if game start -- papacy and other factions
+	    //
+	    this.game_help.hide();
 
             game_self.updateStatus("You picked: " + game_self.deck[card].name);
 
@@ -6975,6 +7002,29 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
 	}
         if (mv[0] === "diplomacy_phase") {
 
+//
+// Papacy 
+//          
+if (this.game.state.round == 2) {
+  this.game_help.render(TutorialTemplate, {
+    help : `Diplomacy Phase` ,
+    content : `
+	In the two-player version of Here I Stand, the Diplomatic Stage starts with the Papacy having the option
+	to end any wars it is in with third powers such as France or the Ottomans. Terminating any war will give 
+	the Protestants a "War Winner" VP.
+	</p></p>
+	Both players are then dealt two cards from a special Diplomatic Deck and must choose one to event. These
+	cards trigger actions affecting the other factions on the board.
+	<p></p>
+	If diplomatic events put a player at war with either the Papacy or the Protestants, that faction can be 
+	controlled by the opposing faction during their turn. Once the Schmalkaldic League has formed, for instance,
+	the Papacy also controls the Hapsburgs.
+    `,        
+  }, "learn", "diplomacy", "2.1rem");
+}         
+
+
+
 	  // multiplayer has diplomacy phase
 	  // this.playerOffer();
 	  // return 0;
@@ -8348,6 +8398,13 @@ console.log("fhand: " + JSON.stringify(this.game.deck[deckidx].fhand));
 	}
 
 	if (mv[0] === "reformation") {
+
+	  //
+	  // hide triangular help if game start
+	  //
+	  if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
+	    this.game_help.hide();
+	  }
 
 	  this.game.queue.splice(qe, 1);
 

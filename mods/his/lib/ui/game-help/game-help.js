@@ -16,9 +16,22 @@ class GameHelp {
 		this.app = app;
 		this.game_mod = mod;
                 this.overlay = new SaitoOverlay(this.app, this.game_mod);
+		this.enabled = true;
+
+		if (app.options) {
+		  if (app.options.gameprefs) {
+		    if (app.options.gameprefs.his_expert_mode) {
+		      if (app.options.gameprefs.his_expert_mode == 1) {
+			this.enabled = false;
+		      }
+		    }
+		  }
+		}
 	}
 
 	hide() {
+	  if (this.enabled != true) { return; }
+
 	  let gh = document.querySelector(".game-help");
 	  if (gh) {
 	    gh.classList.remove("game-help-visible");
@@ -27,6 +40,9 @@ class GameHelp {
 	}
 
 	render(t=null, targs={}, line1="learn", line2="to play", fontsize="2.1rem") {
+
+	  if (this.enabled != true) { return; }
+
 		let gh = document.querySelector(".game-help");
 		if (gh) {
 			document.querySelector(".game-help-text .line1").innerHTML = line1;
