@@ -39,20 +39,27 @@ class GameHelp {
 	  }
 	}
 
-	render(t=null, targs={}, line1="learn", line2="to play", fontsize="2.1rem") {
+	render(t=null, targs={}) {
 
 	  if (this.enabled != true) { return; }
 
 		let gh = document.querySelector(".game-help");
 		if (gh) {
-			document.querySelector(".game-help-text .line1").innerHTML = line1;
-			document.querySelector(".game-help-text .line2").innerHTML = line2;
 			gh.classList.remove("game-help-hidden");
 			gh.classList.add("game-help-visible");
 		} else {
-			this.app.browser.addElementToDom(GameHelpTemplate(line1, line2));
-			document.querySelector(".game-help-text").style.fontSize = fontsize;
+			this.app.browser.addElementToDom(GameHelpTemplate(targs));
+			gh = document.querySelector(".game-help");
 		}
+		if (targs.fontsize) {
+		  document.querySelector(".game-help-text").style.fontSize = targs.fontsize;
+	        }
+		if (targs.line1) {
+		  document.querySelector(".game-help-text .line1").innerHTML = targs.line1;
+	        }
+		if (targs.line2) {
+		  document.querySelector(".game-help-text .line2").innerHTML = targs.line2;
+	        }
 		this.attachEvents(t, targs);
 	}
 
@@ -60,7 +67,12 @@ class GameHelp {
 
 	  let gh = document.querySelector(".game-help");
 	  gh.onclick = (e) => {
-	    if (t != null) { this.overlay.show(t(targs)); }
+	    if (t != null) {
+	      this.overlay.show(t(targs)); 
+	      if (targs.img) {
+	        document.querySelector(".tutorial-overlay").style.backgroundImage = `url("${targs.img}")`;
+	      }
+	    }
 	    this.toggle();
 	  }
 	

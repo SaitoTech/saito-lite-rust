@@ -42,6 +42,7 @@
     if (this.app.options.gameprefs) {
       if (this.app.options.gameprefs.his_expert_mode) {
 	this.confirm_moves = this.app.options.gameprefs.his_expert_mode;
+	if (this.confirm_moves == 1) { this.game_help.enabled = false; }
       }
     }
     this.menu.addSubMenuOption("game-confirm",{
@@ -72,6 +73,7 @@
 	  document.querySelector("#game-confirm-expert div").innerHTML = "Expert ✔";
           game_mod.displayModal("Game Settings", "Tutorial Mode disabled");
           game_mod.saveGamePreference('his_expert_mode', 1);
+	  game_mod.game_help.hide();
 	  game_mod.game_help.enabled = false;
 	  game_mod.confirm_moves = 0;
         }else{

@@ -1,4 +1,10 @@
-module.exports = GameHelpTemplate = (line1="learn", line2="to play") => {
+module.exports = GameHelpTemplate = (targs) => {
+
+  let line1 = "";
+  let line2 = "";
+
+  if (targs.line1) { line1 = targs.line1; }
+  if (targs.line2) { line2 = targs.line2; }
 
 	return `
 		<div id="game-help" class="game-help">

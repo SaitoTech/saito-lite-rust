@@ -2558,6 +2558,7 @@ console.log("\n\n\n\n");
     if (this.app.options.gameprefs) {
       if (this.app.options.gameprefs.his_expert_mode) {
 	this.confirm_moves = this.app.options.gameprefs.his_expert_mode;
+	if (this.confirm_moves == 1) { this.game_help.enabled = false; }
       }
     }
     this.menu.addSubMenuOption("game-confirm",{
@@ -2588,6 +2589,7 @@ console.log("\n\n\n\n");
 	  document.querySelector("#game-confirm-expert div").innerHTML = "Expert ✔";
           game_mod.displayModal("Game Settings", "Tutorial Mode disabled");
           game_mod.saveGamePreference('his_expert_mode', 1);
+	  game_mod.game_help.hide();
 	  game_mod.game_help.enabled = false;
 	  game_mod.confirm_moves = 0;
         }else{
@@ -17432,22 +17434,24 @@ if (this.game.state.scenario != "is_testing") {
   this.game_help.render(TutorialTemplate, {
     help : `First Time Playing?` ,
     content : `
-	Here I Stand opens with Luther's publication of his 95 Theses in 1517, which marked the start of the Protestant
-	reformation. This occurs at the start of every game as the Protestant player makes a series of reform 
-	attempts which spread out from Luther's home town of Wittenberg. Here as throughout the game, all rttempts
-	must be made in spaces adjacent to a Protestant space or containing a Protestant reformer.
+	Here I Stand opens with the publication of Luther's 95 Theses in 1517, which marked the start of the Reformation. 
+	The Protestant player then makes a series of reformation attempts which spread out from Wittenberg, each attempt 
+	made in a space adjacent to an existing Protestant space or Protestant reformer.
 	<p></p>
-	The Protestants get VP for converting as many spaces as possible, but also want to capture the six German 
-	Electorates (the hexagonal cities of Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). Reforming 
-	these spaces will add Protestant regulars to the map, which will assist with reforming neighbouring spaces.
+	The Protestants get VP for converting spaces. They should also aim to convert the six major German Electorates 
+	on the board (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). Capturing these spaces will add Protestant 
+	regulars to the map, which will in turn assist with reforming neighbouring spaces.
 	<p></p>
 	The 95 Theses is followed by the Diet of Worms, an assembly convened in 1521 by the Holy Roman Emperor 
-	(Charles V of the Hapsburg Dynasty) in the Imperial Free City of Worms. Martin Luther was summoned to the 
-	Diet where he refused to recant his views and was subsequently declared a heretic. This event is emulated 
-	by having all players pick a card which represents their level of commitment to the assembly, then rolling 
-	dice to see how the debate influences public opinion across Germany.
+	in the Imperial Free City of Worms. Martin Luther was summoned to the Diet where he refused to recant and was 
+	declared a heretic. This assembly is emulated by having all players pick a card representing their level of 
+	commitment to the assembly, then rolling dice to see the outcome on German public opinion.
     `,
-  }, "what is", "happening?", "2.1rem");
+    img : "/his/img/backgrounds/tutorials/95theses.jpg",
+    line1 : "first",
+    line2 : "time here?",
+    fontsize : "2.1rem" ,
+  });
 
 // HACK
 
@@ -23774,6 +23778,46 @@ defender_hits - attacker_hits;
 
 	  let f = this.calculateVictoryPoints();
 
+if (this.game.state.round == 1) {
+  if (this.game.player === this.returnPlayerCommandingFaction("protestant")) {
+  this.game_help.render(TutorialTemplate, {
+    help : `End-of-Round Scoring` ,
+    content : `
+        The Protestants mainly score VP by converting spaces to the protestant religion, and through the control of the 
+	six key electorates. See Info > Religion for details on how many VP you get from Protestant spaces, and your faction sheet
+	for information on VP from Electorates.
+	<p></p>
+	There are three ways to win: (1) being the first faction to 25 VP, (2) taking an 8 VP lead in any round 
+	after Round 4, or (3) being in the lead at the end of Round 9 if the game has not ended by then. See your 
+	faction sheet for more details on how the Protestants can earn additional VP.
+    `,
+    line1 : "curious",
+    line2 : "who's winning?",
+    fontsize : "2.1rem",      
+    img : `/his/img/backgrounds/new_world.jpg`,
+  });
+  }
+  if (this.game.player === this.returnPlayerCommandingFaction("papacy")) {
+  this.game_help.render(TutorialTemplate, {
+    help : `End-of-Round Scoring` ,
+    content : `
+        The Papacy gains VP for keeping spaces faithful to the Catholic religion, and for the direct control of keys on the board.
+	See Info > Religion for details on how many VP you get from Protestant spaces, and your faction sheet
+	for information on how many VP you get from controlling new keys.
+	<p></p>
+	There are three ways to win: (1) being the first faction to 25 VP, (2) taking an 8 VP lead in any round 
+	after Round 4, or (3) being in the lead at the end of Round 9 if the game has not ended by then.
+	<p></p>
+	See your faction sheet for more details on how the Papacy can earn additional VP.
+    `,
+    line1 : "curious",
+    line2 : "who's winning?",
+    fontsize : "2.1rem",      
+    img : `/his/img/backgrounds/new_world.jpg`,
+  });
+  }
+}
+
 /****
 //          faction : this.game.state.players_info[i].factions[ii] ,
 //          vp : 0 ,
@@ -23931,8 +23975,12 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
 	<p></p>
 	If you have any OPs that cannot otherwise be spent, you can earn VP by contributing them to the construction of
 	St. Peter's Basilica in Rome.
-    `,        
-  }, "learn", "to play", "2.1rem");
+    `,
+    line1 : "learn",
+    line2 : "to play",
+    fontsize : "2.1rem",      
+    img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
+  });
 }
 //
 // Protestant
@@ -23955,7 +24003,11 @@ if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
 	the Protestants will get an extra card each turn for controlling any five, and these keys will give VP once the 
 	Schmalkaldic (German Defense) League forms at the end of the early-war period.
     `,        
-  }, "learn", "to play", "2.1rem");
+    line1 : "learn",
+    line2 : "to play",
+    fontsize : "2.1rem",      
+    img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
+  });
 }
 }
 
@@ -24053,21 +24105,29 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 	  this.game.queue.splice(qe, 1);
 
 //
+// hide any other help (scoring!);
+//
+this.game_help.hide();
 //
 //
-if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+//
+if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.round == 1) {
   this.game_help.render(TutorialTemplate, {
     help : `Spring Deployment` ,
     content : `
 	Spring Deployment takes place at the start of every round. It allows players
- 	to move units from their capital to any space connected via a line of 
-	uninterrupted control by their faction or allied powers.
+ 	to move units from their capital to any space connected to it via a line of 
+	uninterrupted control.
 	<p></p>
 	The Papacy normally skips Spring Deployment in the first round. Later in the game
 	it often uses Spring Deployment to move troops north into Europe to assist with
 	Counter-Reformation attempts.
     `,
-  }, "spring", "deployment", "2.1rem");
+    line1 : "spring" ,
+    line2 : "deployment" ,
+    fontsize : "2.1rem" ,
+    img : `/his/img/backgrounds/tutorials/spring_deployment.jpeg`,
+  });
 }
 
 
@@ -24124,8 +24184,12 @@ if (this.game.state.round == 2) {
 	If diplomatic events put a player at war with either the Papacy or the Protestants, that faction can be 
 	controlled by the opposing faction during their turn. Once the Schmalkaldic League has formed, for instance,
 	the Papacy also controls the Hapsburgs.
-    `,        
-  }, "learn", "diplomacy", "2.1rem");
+    `,
+    line1 : "learn" ,
+    line2 : "diplomacy" ,
+    fontsize : "2.1rem" ,
+    img : `/his/img/backgrounds/tutorials/the_ambassadors_depart.png`,
+  });
 }         
 
 
