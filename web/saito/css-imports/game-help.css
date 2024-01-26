@@ -14,6 +14,7 @@
     left: 0px;
     transform: skew(+55deg);
     margin-left: -24rem;
+    z-index: 999;
 }
 
 .game-help:hover {
@@ -23,13 +24,13 @@
 .game-help-hidden {
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0s 2s, opacity 2s linear;
+  transition: visibility 0s 1s, opacity 1s linear;
 }
 
 .game-help-visible {
   visibility: visible;
   opacity: 1;
-  transition: opacity 2s linear;
+  transition: opacity 1s linear;
 }
 
 .game-help-text {
