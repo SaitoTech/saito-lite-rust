@@ -716,6 +716,17 @@
   cursor: default;
 }
 
+
+.chat-manager-overlay.floating-cm-overlay .chat-manager {
+  max-height: 400px;
+}
+
+.chat-manager-overlay.floating-cm-overlay .chat-manager-list {
+  min-height: unset;
+  max-height: unset;
+}
+
+
 @media screen and (max-width: 720px) {
   .chat-manager-title {
     display: none;
