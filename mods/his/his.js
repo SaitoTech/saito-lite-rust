@@ -23,6 +23,10 @@ const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 
+// Tutorial Overlays
+const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template');
+
+
 const GameHelp = require('./../../lib/saito/ui/game-help/game-help');
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
@@ -2531,11 +2535,6 @@ console.log("\n\n\n\n");
     //
     this.preloadImages();
 
-
-    //
-    // 
-    //
-    this.game_help.render();
 
     // required here so menu will be proper
     try {
@@ -23925,6 +23924,25 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
 	  this.game.queue.splice(qe, 1);
 
+//
+//
+if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+  this.game_help.render(TutorialTemplate, {
+    help : `Spring Deployment` ,
+    content : `
+	Spring Deployment takes place at the start of every round. It allows a player 
+	to move units from their capital to any space connected to it in an uninterrupted 
+	line of spaces controlled by their faction or any allied powers.
+	<p></p>
+	The Papacy normally skips Spring Deployment in the first round. As you expand 
+	your control over Italy, you can use Spring Deployment to move troops north 
+	into Europe at the start of your turn to assist with your Counter-Reformation 
+	attempts.
+    `,
+  }, "spring", "deployment", "2.1rem");
+}
+//
+
 	  if (this.game.players.length === 2) {
 	    // only papacy moves units
 	    this.game.queue.push("spring_deployment\tpapacy");
@@ -26930,27 +26948,17 @@ console.log("and calling callback...");
       if (c === "008") { can_pass = false; }
       if (c === "009") { can_pass = false; }
       if (c === "010") { can_pass = false; }
-console.log("c: " + c);
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
       if (this.game.deck[0].cards[c].type == "mandatory") { can_pass = false; }
     } // no home card? can pass
 
-console.log("can pass: " + can_pass);
-
-console.log("^");
-console.log("^");
-console.log("^");
-console.log(this.factions[faction].returnAdminRating(this) + " ---- " + this.game.deck[0].fhand[faction_hand_idx].length);
     if (this.factions[faction].returnAdminRating(this) < this.game.deck[0].fhand[faction_hand_idx].length) {
       can_pass = false;
     }
 
-console.log("can pass: " + can_pass);
-
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
       can_pass = true;
     }
-console.log("can pass: " + can_pass);
     if (can_pass) {
       cards.push("pass");
     }
@@ -26961,6 +26969,7 @@ console.log("can pass: " + can_pass);
         $('.card').off();
         $('.card img').off();
       } catch (err) {}
+      this.game_help.hide();
       this.playerPlayCard(card, this.game.player, faction);
     });  
 

@@ -20,11 +20,6 @@
     this.preloadImages();
 
 
-    //
-    // 
-    //
-    this.game_help.render();
-
     // required here so menu will be proper
     try {
       if (this.app.options.gameprefs.hereistand_expert_mode == 1) {

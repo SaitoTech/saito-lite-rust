@@ -6866,6 +6866,25 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
 	  this.game.queue.splice(qe, 1);
 
+//
+//
+if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+  this.game_help.render(TutorialTemplate, {
+    help : `Spring Deployment` ,
+    content : `
+	Spring Deployment takes place at the start of every round. It allows a player 
+	to move units from their capital to any space connected to it in an uninterrupted 
+	line of spaces controlled by their faction or any allied powers.
+	<p></p>
+	The Papacy normally skips Spring Deployment in the first round. As you expand 
+	your control over Italy, you can use Spring Deployment to move troops north 
+	into Europe at the start of your turn to assist with your Counter-Reformation 
+	attempts.
+    `,
+  }, "spring", "deployment", "2.1rem");
+}
+//
+
 	  if (this.game.players.length === 2) {
 	    // only papacy moves units
 	    this.game.queue.push("spring_deployment\tpapacy");

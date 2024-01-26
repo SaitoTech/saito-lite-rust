@@ -1153,27 +1153,17 @@ console.log("and calling callback...");
       if (c === "008") { can_pass = false; }
       if (c === "009") { can_pass = false; }
       if (c === "010") { can_pass = false; }
-console.log("c: " + c);
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
       if (this.game.deck[0].cards[c].type == "mandatory") { can_pass = false; }
     } // no home card? can pass
 
-console.log("can pass: " + can_pass);
-
-console.log("^");
-console.log("^");
-console.log("^");
-console.log(this.factions[faction].returnAdminRating(this) + " ---- " + this.game.deck[0].fhand[faction_hand_idx].length);
     if (this.factions[faction].returnAdminRating(this) < this.game.deck[0].fhand[faction_hand_idx].length) {
       can_pass = false;
     }
 
-console.log("can pass: " + can_pass);
-
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
       can_pass = true;
     }
-console.log("can pass: " + can_pass);
     if (can_pass) {
       cards.push("pass");
     }
@@ -1184,6 +1174,7 @@ console.log("can pass: " + can_pass);
         $('.card').off();
         $('.card img').off();
       } catch (err) {}
+      this.game_help.hide();
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
