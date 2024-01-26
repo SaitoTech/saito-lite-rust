@@ -39,6 +39,7 @@
     this.setAllies(faction, power, 0);
     this.game.state.activated_powers[faction].push(power);
     this.game.state.minor_activated_powers.push(power);
+    this.displayBoard();
     this.displayVictoryTrack();
   }
 
@@ -56,6 +57,7 @@
 	this.game.state.minor_activated_powers.splice(i, 1);
       }
     }
+    this.displayBoard();
     this.displayVictoryTrack();
   }
 

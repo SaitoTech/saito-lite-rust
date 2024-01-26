@@ -24,10 +24,10 @@ const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 
 // Tutorial Overlays
+const GameHelp = require('./lib/ui/game-help/game-help');
 const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template');
 
 
-const GameHelp = require('./../../lib/saito/ui/game-help/game-help');
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
 const HISingularOption = require('./lib/core/options.template');
@@ -7210,7 +7210,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  let source = mv[2];
 	  let unit_idx = parseInt(mv[3]);
 
-	  his_self.displayModal(his_self.returnFactionname(faction) + " triggers Foul Weather");
+	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Foul Weather");
 
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
@@ -9082,15 +9082,28 @@ console.log("total: " + total);
 	      let space = his_self.game.spaces[spacekey];
 	      let first_choice = space.key;
 
+	      let spaces = his_self.returnSpacesWithFilter(
+          	function(spacekey) {
+		  let s2 = his_self.game.spaces[spacekey];
+	          if (s2.religion == "protestant" && his_self.isOccupied(s2) == 0 && !his_self.isElectorate(s2) && s2.key != first_choice) {
+		    return 1;
+	          }
+	          return 0;
+	  	}
+	      );
+
+	      if (spaces.length == 0) {
+		his_self.addMove("convert\t"+first_choice+"\tcatholic");
+		his_self.endTurn();
+		return 0;
+	      }
+
+
               if (0 == his_self.playerSelectSpaceWithFilter(
 
 	        "Select Second Space to Convert", 
 
 	        function(space2) {
-	          if (space2.religion == "protestant" && his_self.isOccupied(space2) == 0 && !his_self.isElectorate(space2) && space2.key != first_choice) {
-		    return 1;
-	          }
-	          return 0;
 	        },
 
 	        function(second_choice) {
@@ -15185,6 +15198,7 @@ if (sourcekey == "candia") {
   }
 
   areAllies(faction1, faction2, count_minor_activated_factions=1) {
+    if (faction1 === faction2) { return 1; }
     try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
@@ -15202,6 +15216,7 @@ if (sourcekey == "candia") {
   }
 
   areEnemies(faction1, faction2, count_minor_activated_factions=1) {
+    if (faction1 === faction2) { return 0; }
     try { if (this.game.state.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
@@ -15434,6 +15449,7 @@ if (sourcekey == "candia") {
     this.setAllies(faction, power, 0);
     this.game.state.activated_powers[faction].push(power);
     this.game.state.minor_activated_powers.push(power);
+    this.displayBoard();
     this.displayVictoryTrack();
   }
 
@@ -15451,6 +15467,7 @@ if (sourcekey == "candia") {
 	this.game.state.minor_activated_powers.splice(i, 1);
       }
     }
+    this.displayBoard();
     this.displayVictoryTrack();
   }
 
@@ -17526,6 +17543,7 @@ if (this.game.state.scenario != "is_testing") {
 
               let space = this.game.spaces[i];
               let f = this.returnFactionControllingSpace(i);
+
               let num_friendly_units = this.returnFriendlyLandUnitsInSpace(f, space);
               let num_faction_units = this.returnFactionLandUnitsInSpace(f, space);
 	      let capitals = this.returnCapitals(f);
@@ -17872,8 +17890,6 @@ if (this.game.state.scenario != "is_testing") {
 
 
 	  this.addCard("papacy", "109");
-	  this.addCard("protestant", "047");
-	  this.addCard("protestant", "051");
 
     	  this.game.queue.splice(qe, 1);
 
@@ -18067,7 +18083,6 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 
 	  if (this.game.player == this.returnPlayerCommandingFaction(faction) && this.game.player == this.game.state.active_player) {
-alert("attacker is coming from here: " + mv[3]);
 	    this.game.state.attacker_comes_from_this_spacekey = mv[3];
 	  }
 
@@ -18261,9 +18276,11 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	        }
 
 		if (anyone_else_here == 0 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
-console.log("NO-ONE BUT US, ADD ALLY CHECK!");
-	 	  space.besieged = 2;
-		  this.displaySpace(space.key);
+		  let f = this.returnFactionControllingSpace(space.key);
+		  if (!this.areAllies(f, faction) && f !== faction) {
+	 	    space.besieged = 2;
+		    this.displaySpace(space.key);
+		  }
 	        }
 
 	      } else {
@@ -23832,6 +23849,60 @@ defender_hits - attacker_hits;
 
         if (mv[0] === "action_phase") {
 
+
+//
+// Papacy
+//
+if (this.game.state.round == 1) {
+if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+  this.game_help.render(TutorialTemplate, {
+    help : `Action Phase` ,
+    content : `
+        In the Action Phase, players take turns playing cards for their event or operation points (OPS). The Papacy 
+	usually attempts to contain the Protestant expansion in Europe while seeking additional points by expanding
+	its control of Italian keys. Bonus VP can be earned by building St. Peter's Basilica in Rome.
+	<p></p>
+	Burning Books and Convening Theological Debates are the Papacy's primary tools for slowing the Protestant spread
+	early in the game. When holding a debate, try to arrange it so that your more powerful debaters are paired up 
+	against their weaker debaters for a better change at flipping spaces and earning VP.
+	<p></p>
+	Beyond religious conflict, the Papacy can also earn VP by expanding its control of keys, earning 2 VP and some 
+	additional cards for each extra key it controls. To do this build Mercenaries and Regulars in Papal home spaces
+	and march them up the map. Be sure to control all of the spaces between your target and an existing Papal-
+	controlled key like Rome or Ravenna so that you have a "Line of Control" to your target. Florence is a common
+	early-war target for the Papacy.
+	<p></p>
+	If you have any OPs that cannot otherwise be spent, you can earn VP by contributing them to the construction of
+	St. Peter's Basilica in Rome.
+    `,        
+  }, "learn", "to play", "2.1rem");
+}
+//
+// Protestant
+//
+if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
+  this.game_help.render(TutorialTemplate, {
+    help : `Action Phase` ,
+    content : `
+        In the Action Phase, players take turns playing cards for their event or operation points (OPS). The Protestants
+	should focus on events that help them convert spaces to the Protestant religion. You can spend OPS to do this by 
+	Publishing Treatises (which give reformation attempts) and Convening Theological Debates (less predictable, but 
+	ignores adjacency).
+	<p></p>
+	If you do not have enough OPs to do either of those actions, spend your resources on translating . Once you have
+	finished translating the New and Old Testament you will get bonus conversion attempts in the language zone of your
+	transaction.
+	<p></p>
+        In the early game, the Protestants should focus on converting spaces in Germany to Protestantism, and particularly aim
+	to flip the six German Electorates (hexagonal spaces of Wittenberg, Brandenburg, Mainz, Cologne, Trier and Augsburg) as
+	the Protestants will get an extra card each turn for controlling any five, and these keys will give VP once the 
+	Schmalkaldic (German Defense) League forms at the end of the early-war period.
+    `,        
+  }, "learn", "to play", "2.1rem");
+}
+}
+
+
 	  //
 	  // check if we are really ready for a new round, or just need another loop
 	  // until all of the players have passed. note that players who have passed 
@@ -23926,22 +23997,22 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 
 //
 //
+//
 if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
     help : `Spring Deployment` ,
     content : `
-	Spring Deployment takes place at the start of every round. It allows a player 
-	to move units from their capital to any space connected to it in an uninterrupted 
-	line of spaces controlled by their faction or any allied powers.
+	Spring Deployment takes place at the start of every round. It allows players
+ 	to move units from their capital to any space connected via a line of 
+	uninterrupted control by their faction or allied powers.
 	<p></p>
-	The Papacy normally skips Spring Deployment in the first round. As you expand 
-	your control over Italy, you can use Spring Deployment to move troops north 
-	into Europe at the start of your turn to assist with your Counter-Reformation 
-	attempts.
+	The Papacy normally skips Spring Deployment in the first round. Later in the game
+	it often uses Spring Deployment to move troops north into Europe to assist with
+	Counter-Reformation attempts.
     `,
   }, "spring", "deployment", "2.1rem");
 }
-//
+
 
 	  if (this.game.players.length === 2) {
 	    // only papacy moves units
@@ -24399,7 +24470,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
                 is_this_home_card = 0;
                 roll--;
                 if (roll == -1) {
-                  this.addMove("NOTIFY\t"+this.returnFactionname(faction)+ " has no non-home cards to pull");
+                  this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to pull");
                   this.endTurn();
                   return 0;
                 }
@@ -24691,7 +24762,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	      let num_cards = this.game.deck[0].fhand[fhand_idx].length;
 	      if (num_cards == 0) {
 		this.rollDice(6);
-		this.addMove("NOTIFY\t"+this.returnFactionname(faction)+ " has no cards to discard");
+		this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no cards to discard");
 		this.endTurn();
 		return 0;
 	      }
@@ -24710,7 +24781,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		  is_this_home_card = 0;
 		  roll--;
 		  if (roll == -1) {
-		    this.addMove("NOTIFY\t"+this.returnFactionname(faction)+ " has no non-home cards to discard");
+		    this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to discard");
 		    this.endTurn();
 		    return 0;
 		  }

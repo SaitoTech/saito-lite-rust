@@ -4207,7 +4207,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  let source = mv[2];
 	  let unit_idx = parseInt(mv[3]);
 
-	  his_self.displayModal(his_self.returnFactionname(faction) + " triggers Foul Weather");
+	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Foul Weather");
 
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
@@ -6079,15 +6079,28 @@ console.log("total: " + total);
 	      let space = his_self.game.spaces[spacekey];
 	      let first_choice = space.key;
 
+	      let spaces = his_self.returnSpacesWithFilter(
+          	function(spacekey) {
+		  let s2 = his_self.game.spaces[spacekey];
+	          if (s2.religion == "protestant" && his_self.isOccupied(s2) == 0 && !his_self.isElectorate(s2) && s2.key != first_choice) {
+		    return 1;
+	          }
+	          return 0;
+	  	}
+	      );
+
+	      if (spaces.length == 0) {
+		his_self.addMove("convert\t"+first_choice+"\tcatholic");
+		his_self.endTurn();
+		return 0;
+	      }
+
+
               if (0 == his_self.playerSelectSpaceWithFilter(
 
 	        "Select Second Space to Convert", 
 
 	        function(space2) {
-	          if (space2.religion == "protestant" && his_self.isOccupied(space2) == 0 && !his_self.isElectorate(space2) && space2.key != first_choice) {
-		    return 1;
-	          }
-	          return 0;
 	        },
 
 	        function(second_choice) {

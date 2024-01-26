@@ -24,10 +24,10 @@ const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 
 // Tutorial Overlays
+const GameHelp = require('./lib/ui/game-help/game-help');
 const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template');
 
 
-const GameHelp = require('./../../lib/saito/ui/game-help/game-help');
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
 const HISingularOption = require('./lib/core/options.template');

@@ -1,5 +1,5 @@
 const GameHelpTemplate = require('./game-help.template');
-const SaitoOverlay = require('./../saito-overlay/saito-overlay');
+const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 /**
  * GameHelp is a small triangle that will show up on the bottom-left of the 
@@ -29,6 +29,8 @@ class GameHelp {
 	render(t=null, targs={}, line1="learn", line2="to play", fontsize="2.1rem") {
 		let gh = document.querySelector(".game-help");
 		if (gh) {
+			document.querySelector(".game-help-text .line1").innerHTML = line1;
+			document.querySelector(".game-help-text .line2").innerHTML = line2;
 			gh.classList.remove("game-help-hidden");
 			gh.classList.add("game-help-visible");
 		} else {
