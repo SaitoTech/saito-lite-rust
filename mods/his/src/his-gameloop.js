@@ -327,18 +327,11 @@ if (this.game.state.scenario != "is_testing") {
   this.game_help.render(TutorialTemplate, {
     help : `First Time Playing?` ,
     content : `
-	Here I Stand opens with the publication of Luther's 95 Theses in 1517, which marked the start of the Reformation. 
-	The Protestant player then makes a series of reformation attempts which spread out from Wittenberg, each attempt 
-	made in a space adjacent to an existing Protestant space or Protestant reformer.
+	Here I Stand opens with the publication of Luther's 95 Theses in 1517. The Protestants make a series of reformation attempts starting from Wittenberg, each made in a space adjacent to an existing Protestant town or Protestant reformer.
 	<p></p>
-	The Protestants get VP for converting spaces. They should also aim to convert the six major German Electorates 
-	on the board (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). Capturing these spaces will add Protestant 
-	regulars to the map, which will in turn assist with reforming neighbouring spaces.
+	This is followed by the Diet of Worms, an assembly in the Imperial Free City of Worms where Martin Luther refused to recant and was declared a heretic. All players select a card to represent their level of commitment tothe event, and dice are rolled to see the outcome on German public opinion.
 	<p></p>
-	The 95 Theses is followed by the Diet of Worms, an assembly convened in 1521 by the Holy Roman Emperor 
-	in the Imperial Free City of Worms. Martin Luther was summoned to the Diet where he refused to recant and was 
-	declared a heretic. This assembly is emulated by having all players pick a card representing their level of 
-	commitment to the assembly, then rolling dice to see the outcome on German public opinion.
+	The Protestants should focus on reforming spaces in the Early War. They should also strive to control the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne) which will add Protestant regulars to the map and help protect their neighbouring spaces.
     `,
     img : "/his/img/backgrounds/tutorials/95theses.jpg",
     line1 : "first",
@@ -6684,8 +6677,8 @@ if (this.game.state.round == 1) {
 	after Round 4, or (3) being in the lead at the end of Round 9 if the game has not ended by then. See your 
 	faction sheet for more details on how the Protestants can earn additional VP.
     `,
-    line1 : "curious",
-    line2 : "who's winning?",
+    line1 : "how",
+    line2 : "to win?",
     fontsize : "2.1rem",      
     img : `/his/img/backgrounds/new_world.jpg`,
   });
@@ -6703,8 +6696,8 @@ if (this.game.state.round == 1) {
 	<p></p>
 	See your faction sheet for more details on how the Papacy can earn additional VP.
     `,
-    line1 : "curious",
-    line2 : "who's winning?",
+    line1 : "how",
+    line2 : "to win?",
     fontsize : "2.1rem",      
     img : `/his/img/backgrounds/new_world.jpg`,
   });
@@ -6852,25 +6845,17 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
     help : `Action Phase` ,
     content : `
-        In the Action Phase, players take turns playing cards for their event or operation points (OPS). The Papacy 
-	usually attempts to contain the Protestant expansion in Europe while seeking additional points by expanding
-	its control of Italian keys. Bonus VP can be earned by building St. Peter's Basilica in Rome.
+	Your goal is to slow the Protestant expansion in Germany while expanding Papal influence in Italy.
 	<p></p>
-	Burning Books and Convening Theological Debates are the Papacy's primary tools for slowing the Protestant spread
-	early in the game. When holding a debate, try to arrange it so that your more powerful debaters are paired up 
-	against their weaker debaters for a better change at flipping spaces and earning VP.
+	Burning Books and Convening Theological Debates are your primary tools for doing so. Burning Books can flip 
+	spaces back to the Catholic faith, while Theological Debates succeed or fail depending on who is debating.
 	<p></p>
-	Beyond religious conflict, the Papacy can also earn VP by expanding its control of keys, earning 2 VP and some 
-	additional cards for each extra key it controls. To do this build Mercenaries and Regulars in Papal home spaces
-	and march them up the map. Be sure to control all of the spaces between your target and an existing Papal-
-	controlled key like Rome or Ravenna so that you have a "Line of Control" to your target. Florence is a common
-	early-war target for the Papacy.
-	<p></p>
-	If you have any OPs that cannot otherwise be spent, you can earn VP by contributing them to the construction of
-	St. Peter's Basilica in Rome.
+	The Papacy can also earn VP by expanding its number of controlled keys (the square spaces). Consider building 
+	Regulars and Mercenaries and marching into Florence. Remember to take Siena -- you need a "line-of-control" 
+	from an existing key to assault another space.
     `,
-    line1 : "learn",
-    line2 : "to play",
+    line1 : "what",
+    line2 : "to do?",
     fontsize : "2.1rem",      
     img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
   });
@@ -6882,22 +6867,18 @@ if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
   this.game_help.render(TutorialTemplate, {
     help : `Action Phase` ,
     content : `
-        In the Action Phase, players take turns playing cards for their event or operation points (OPS). The Protestants
-	should focus on events that help them convert spaces to the Protestant religion. You can spend OPS to do this by 
-	Publishing Treatises (which give reformation attempts) and Convening Theological Debates (less predictable, but 
-	ignores adjacency).
+        Your goal is to convert spaces to the Protestant religion.
 	<p></p>
-	If you do not have enough OPs to do either of those actions, spend your resources on translating . Once you have
-	finished translating the New and Old Testament you will get bonus conversion attempts in the language zone of your
-	transaction.
+	Publishing Treatises and Convening Theological Debates are your primary tools for converting spaces to 
+	Protestantism. Spend additional OPS on translations -- once you have completed the New Testament in a 
+	language you will get bonus reformation attempts.
 	<p></p>
-        In the early game, the Protestants should focus on converting spaces in Germany to Protestantism, and particularly aim
-	to flip the six German Electorates (hexagonal spaces of Wittenberg, Brandenburg, Mainz, Cologne, Trier and Augsburg) as
-	the Protestants will get an extra card each turn for controlling any five, and these keys will give VP once the 
-	Schmalkaldic (German Defense) League forms at the end of the early-war period.
+	In the early game, the Protestants should focus on converting spaces in Germany, and particularly flip
+	the six major German Electorates (hexagonal spaces of Wittenberg, Brandenburg, Mainz, Cologne, Trier 
+	and Augsburg) as controlling these spaces will give VP once the Schmalkaldic League forms.
     `,        
-    line1 : "learn",
-    line2 : "to play",
+    line1 : "what",
+    line2 : "to do?",
     fontsize : "2.1rem",      
     img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
   });
@@ -7000,7 +6981,9 @@ console.log(JSON.stringify(this.game.state.players_info[i].factions));
 //
 // hide any other help (scoring!);
 //
-this.game_help.hide();
+if (this.game.state.round > 1) {
+  this.game_help.hide();
+}
 //
 //
 //
@@ -7062,7 +7045,8 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 
 //
 // Papacy 
-//          
+//
+/***********
 if (this.game.state.round == 2) {
   this.game_help.render(TutorialTemplate, {
     help : `Diplomacy Phase` ,
@@ -7083,7 +7067,8 @@ if (this.game.state.round == 2) {
     fontsize : "2.1rem" ,
     img : `/his/img/backgrounds/tutorials/the_ambassadors_depart.png`,
   });
-}         
+}
+******/     
 
 
 
