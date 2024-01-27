@@ -1,0 +1,45 @@
+.tutorial-overlay {
+	background-image: url(/his/img/backgrounds/martin_luther2.jpg);
+	background-size: cover;
+	max-height: 90vh;
+	max-width: 90vw;
+	width: 90vw;
+	height: auto;
+	min-height: 622px;
+	text-align: center;
+	color: white;
+}
+
+.tutorial-overlay .help {
+	background: #0009;
+	width: max-content;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2.4rem;
+	padding: 0.75rem;
+	max-width: 100%;
+	padding: 2rem;
+	line-height: 3.4rem;
+}
+
+.tutorial-overlay .content {
+    background: #0009;
+    width: max-content;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.1rem;
+    max-width: 90%;
+    padding: 2rem;
+    line-height: 4rem;
+    text-align: left;
+    margin-top: 2rem;
+    overflow-y: auto;
+}
+
+.tutorial-overlay .content p {
+    margin-top: 1.5rem;
+}
+
+

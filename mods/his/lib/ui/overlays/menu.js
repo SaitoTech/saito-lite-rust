@@ -53,14 +53,15 @@ class MenuOverlay {
 				let cost = menu_item.cost;
 				let active_option = menu_item.active;
 
+			
 				let html = `
-	      <div id="${idx}" class="menu-option-container card ${active_option}">
-	        <div class="menu-option-image">
-	          <img src="${menu[idx].img}" />
-	        </div>
-	        <div class="menu-option-title">${menu[idx].name} [${cost}]</div>
-	      </div>
-	  `;
+				      <div id="${idx}" class="menu-option-container card ${active_option}">
+				        <div class="menu-option-image">
+				          <img src="${menu[idx].img}" />
+				        </div>
+				        <div class="menu-option-title">${menu[idx].name} [${cost}]</div>
+				      </div>
+				`;
 				this.app.browser.addElementToSelector(html, `.menu`);
 			}
 
@@ -70,7 +71,6 @@ class MenuOverlay {
 		};
 
 		let main_menu = (main_menu) => {
-			//this.overlay.show(MenuTemplate());
 
 			//
 			// arrange options into categories
@@ -131,6 +131,7 @@ class MenuOverlay {
 					}
 					if (
 						menu[i].category != 'move' &&
+						menu[i].category != 'attack' &&
 						menu[i].category != 'build'
 					) {
 						special.push({

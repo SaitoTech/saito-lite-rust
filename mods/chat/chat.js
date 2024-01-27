@@ -377,6 +377,8 @@ class Chat extends ModTemplate {
              else{
               this.app.connection.emit("chat-popup-render-request");
             }*/
+						
+						this.app.connection.emit("chat-ready");
 						}
 					}
 				);
@@ -1297,6 +1299,10 @@ class Chat extends ModTemplate {
 			}
 		}
 
+		if (!html){
+			html = `<div class="saito-time-stamp">say hello</div>`;
+		}
+
 		group.unread = 0;
 		group.mentioned = false;
 
@@ -1345,7 +1351,10 @@ class Chat extends ModTemplate {
 			last = next;
 		}
 
-		blocks.push(block);
+		if (block.length > 0){
+			blocks.push(block);	
+		}
+
 		return blocks;
 	}
 

@@ -2275,8 +2275,10 @@ if (space.key === "bordeaux") {
 	    for (let key in his_self.reformers) {
 	      let s = his_self.returnSpaceOfPersonage("protestant", key);
 	      if (s) {
-	        reformer_exists = 1;
-                html += `<li class="option" id="${key}">${his_self.reformers[key].name}</li>`;
+		if (!his_self.game.state.already_excommunicated.includes(key)) {
+	          reformer_exists = 1;
+                  html += `<li class="option" id="${key}">${his_self.reformers[key].name}</li>`;
+	        }
 	      }
 	    }
 	
@@ -2543,8 +2545,8 @@ if (space.key === "bordeaux") {
                   $('.option').off();
                   $('.option').on('click', function () {
                     his_self.language_zone_overlay.hide();
-                    let prohibited_protestant_debater = $(this).attr("id");
-		    prohibited_protestant_debater = his_self.game.state.debaters[i].type;
+                    let selected_idx = parseInt($(this).attr("id"));
+		    let prohibited_protestant_debater = his_self.game.state.debaters[selected_idx].type;
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -2981,12 +2983,6 @@ if (space.key === "bordeaux") {
         }
 
         if (mv[0] == "protestant_reformation") {
-
-console.log("#");
-console.log("#");
-console.log("REOFMRAITON BONUS ROLLS: " + his_self.game.state.tmp_protestant_reformation_bonus);
-console.log("#");
-console.log("#");
 
           let player = parseInt(mv[1]);
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
@@ -4211,7 +4207,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  let source = mv[2];
 	  let unit_idx = parseInt(mv[3]);
 
-	  his_self.displayModal(his_self.returnFactionname(faction) + " triggers Foul Weather");
+	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Foul Weather");
 
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
@@ -4744,11 +4740,13 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
 	      if (action === "discard") {
                 his_self.addMove("discard_random\t"+target_faction);
+  	        his_self.addMove("NOTIFY\tHalley's Comet forces "+his_self.returnFactionName(target_faction)+" to discard a card");
 		his_self.endTurn();
 	      }
 
 	      if (action === "skip") {
                 his_self.addMove("skip_next_impulse\t"+target_faction);
+  	        his_self.addMove("NOTIFY\tHalley's Comet forces "+his_self.returnFactionName(target_faction)+" to skip next turn");
 		his_self.endTurn();
 	      }
 
@@ -4780,7 +4778,7 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 
 	if (his_self.isCommitted("melanchthon-debater")) { return 1; }
 	his_self.game.state.events.augsburg_confession = true;
-	his_self.commitDebater("papacy", "melanchton-debater", 0); // 0 = no bonus
+	his_self.commitDebater("papacy", "melanchthon-debater", 0); // 0 = no bonus
 
 	return 1;
       },
@@ -5039,10 +5037,12 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	obj.reformer = his_self.reformers["calvin-reformer"];
         let target = his_self.returnSpaceOfPersonage("protestant", "calvin-reformer");
 
+console.log("target is: " + target);
+
 	if (target) {
   	  for (let i = 0; i < his_self.game.spaces[target].units["protestant"].length; i++) {
 	    if (his_self.game.spaces[target].units["protestant"][i].type == "calvin-reformer") {
-              obj.reformer = his_self.game.state.spaces[target].units["protestant"][idx];
+              obj.reformer = his_self.game.state.spaces[target].units["protestant"][i];
 	      his_self.game.spaces[target].units["protestant"].splice(i, 1);
 	    }
 	  }
@@ -5090,12 +5090,15 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
       turn : 5 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
         let home_spaces = his_self.returnSpacesWithFilter(
 	  function(spacekey) {
 	    if (his_self.game.spaces[spacekey].home === faction) {
+	      return 1;
 	    }
+	    return 0;
 	  }
 	);
 
@@ -5106,6 +5109,9 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	for (let i = 0; i < home_spaces.length; i++) {
 	  if (his_self.game.spaces[home_spaces[i]].religion === "protestant") { count++; }
 	}
+
+console.log("count: " + count);
+console.log("total: " + total);
 
 	if (count >= (total/2)) {
 	  double_vp = 1;
@@ -5120,6 +5126,8 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	  his_self.game.state.events.copernicus = faction;
 	  his_self.game.state.events.copernicus_vp = 2;
 	  his_self.displayVictoryTrack();
+
+	  return 1;
 
 	} else {
 
@@ -6071,15 +6079,28 @@ alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + 
 	      let space = his_self.game.spaces[spacekey];
 	      let first_choice = space.key;
 
+	      let spaces = his_self.returnSpacesWithFilter(
+          	function(spacekey) {
+		  let s2 = his_self.game.spaces[spacekey];
+	          if (s2.religion == "protestant" && his_self.isOccupied(s2) == 0 && !his_self.isElectorate(s2) && s2.key != first_choice) {
+		    return 1;
+	          }
+	          return 0;
+	  	}
+	      );
+
+	      if (spaces.length == 0) {
+		his_self.addMove("convert\t"+first_choice+"\tcatholic");
+		his_self.endTurn();
+		return 0;
+	      }
+
+
               if (0 == his_self.playerSelectSpaceWithFilter(
 
 	        "Select Second Space to Convert", 
 
 	        function(space2) {
-	          if (space2.religion == "protestant" && his_self.isOccupied(space2) == 0 && !his_self.isElectorate(space2) && space2.key != first_choice) {
-		    return 1;
-	          }
-	          return 0;
 	        },
 
 	        function(second_choice) {

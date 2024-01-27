@@ -35,6 +35,7 @@
   }
 
   areAllies(faction1, faction2, count_minor_activated_factions=1) {
+    if (faction1 === faction2) { return 1; }
     try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
@@ -52,6 +53,7 @@
   }
 
   areEnemies(faction1, faction2, count_minor_activated_factions=1) {
+    if (faction1 === faction2) { return 0; }
     try { if (this.game.state.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}

@@ -122,14 +122,14 @@ class ChatPopup {
 		// insert or replace popup on page
 		//
 		if (document.querySelector(popup_qs)) {
-			let html = `<div class="chat-body">
-                    ${
-	this?.no_older_messages
-		? ''
-		: `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`
-}
-                    ${this.mod.returnChatBody(this.group.id)}
-                  </div>`;
+			let html = `<div class="chat-body">`;
+
+			//Temporarily disable this...
+			//if (!this?.no_older_messages) {
+			//	html += `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`;
+			//}
+
+            html +=  this.mod.returnChatBody(this.group.id) + "</div>";
 			this.app.browser.replaceElementBySelector(
 				html,
 				popup_qs + ' .chat-body'

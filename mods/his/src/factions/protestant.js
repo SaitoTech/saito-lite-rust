@@ -31,6 +31,7 @@
 	// 2 VP for every electorate that is under Protesant religious + political control
         let base = 0;
         base += (2 * game_mod.returnNumberOfProtestantElectorates());        
+console.log("protestants electorate VP: " + base);
         return base;
       },
 
@@ -39,6 +40,7 @@
 	let bonus_vp_points = 0;
 	bonus_vp_points += game_mod.game.state.papal_debaters_disgraced_vp;
 	bonus_vp_points += game_mod.game.state.protestant_war_winner_vp;
+console.log("protestants bonus VP from wars, etc.: " + bonus_vp_points);
         return bonus_vp_points;
       }
 ,
@@ -46,6 +48,8 @@
 
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
+
+console.log("protestants from spaces track: " + base);
 
 	// burned papal debaters
 	for (let i = 0; i < game_mod.game.state.burned.length; i++) {
@@ -61,6 +65,8 @@
         if (game_mod.game.state.translations['full']['german'] == 10) { base++; }
         if (game_mod.game.state.translations['full']['french'] == 10) { base++; }
         if (game_mod.game.state.translations['full']['english'] == 10) { base++; }
+
+console.log("and after translations...: " + base);
 
         return base;
       },
