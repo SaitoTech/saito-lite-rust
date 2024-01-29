@@ -136,6 +136,20 @@ if (this.game.state.scenario != "is_testing") {
 	      this.addDebater("papacy", "canisius-debater");
 	    }
 
+
+	    //
+	    // round 6 or higher - England (Mary, Elizabeth and Edward)
+	    //
+	    // this logic is implemented in newCards
+	    if (this.game.state.round >= 6 ) {
+	      if (this.game.state.healthy_edward == 1) {
+	      }
+              this.game.state.henry_viii_healthy_edward = 1;
+              this.game.state.henry_viii_sickly_edward = 0;
+              this.game.state.henry_viii_add_elizabeth = 0;
+	    }
+
+
 	    //
 	    // round 7
 	    //
@@ -262,6 +276,7 @@ if (this.game.state.scenario != "is_testing") {
 	if (mv[0] === "pass") {
  
           let faction = mv[1];
+
 	  let player = this.returnPlayerOfFaction(faction);
 	  if (mv[2]) {
             let cards_left = parseInt(mv[2]);
@@ -275,6 +290,14 @@ if (this.game.state.scenario != "is_testing") {
 	  }
 
 	  this.updateLog(this.returnFactionName(faction) + " passes");
+
+	  //
+	  // Henry VIII reroll on first pass after 3 roll on pregnancy chart
+	  //
+	  if (this.game.state.henry_viii_auto_reroll == 1) {
+	    this.game.queue.push("advance_henry_viii_marital_status");
+	    this.game.state.henry_viii_auto_reroll = 0;
+	  }
 
           this.game.queue.splice(qe, 1);
 	  return 1;

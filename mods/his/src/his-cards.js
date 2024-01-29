@@ -34,6 +34,34 @@
       }
     }
 
+    if (turn >= 6) {
+      if (this.game.state.henry_viii_healthy_edward == 1 && this.game.state.henry_viii_edward_added != 1) {
+	this.game.state.henry_viii_edward_added = 1;
+	new_deck["019"] = deck["019"];
+      }
+      if (this.game.state.henry_viii_sickly_edward == 1 && this.game.state.henry_viii_edward_added != 1) {
+	new_deck["019"] = deck["019"];
+	this.game.state.henry_viii_edward_added = 1;
+      }
+      if (this.game.state.henry_viii_add_elizabeth == 1 && this.game.state.henry_viii_sickly_edward == 0 && this.game.state.henry_viii_healthy_edward == 0 && this.game.state.henry_viii_mary_added != 1) {
+	new_deck["021"] = deck["021"];
+	this.game.state.henry_viii_mary_i_added = 1;
+      }
+      if (this.game.state.henry_viii_add_elizabeth == 0 && this.game.state.henry_viii_sickly_edward == 0 && this.game.state.henry_viii_healthy_edward == 0 && this.game.state.henry_viii_mary_added != 1) {
+	new_deck["021"] = deck["021"];
+	this.game.state.henry_viii_mary_i_added = 1;
+      }
+      if (this.game.state.henry_viii_mary_added == 1 && this.game.state.henry_viii_add_elizabeth == 1 && this.game.state.henry_viii_elizabeth_added != 1) {
+	new_deck["023"] = deck["023"];
+	this.game.state.henry_viii_elizabeth_added = 1;
+      }
+      if (this.game.state.henry_viii_mary_i_added_with_sickly_edward_played == 1 && this.game.state.henry_viii_mary_added_twice != 1) {
+	new_deck["021"] = deck["021"];
+	this.game.state.henry_viii_mary_added_twice = 1;
+      }
+
+    }
+
     return new_deck;
 
   }
@@ -2229,8 +2257,11 @@ if (space.key === "bordeaux") {
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "six-wives-of-henry-vii") {
-	  if (his_self.game.player.returnPlayerOfFaction("england")) {
-            his_self.game.queue.splice(qe, 1);
+
+          his_self.game.queue.splice(qe, 1);
+
+	  if (his_self.game.player == his_self.game.player.returnPlayerOfFaction("england")) {
+
 	    let faction = mv[1];
 
 	    let target_haps = false;
@@ -2275,7 +2306,7 @@ if (space.key === "bordeaux") {
 		  return;
 	        }
 	        if (action2 === "marital") {
-	  	  his_self.game.queue.push("henry_viii_marital");
+	  	  his_self.game.queue.push("advance_henry_viii_marital_status");
 		  his_self.endTurn();
 		  return;
 	        }
@@ -2291,13 +2322,78 @@ if (space.key === "bordeaux") {
 	    }
 
 	    if (options2) {
-	      his_self.game.queue.push("henry_viii_marital");
+	      his_self.game.queue.push("advance_henry_viii_marital_status");
 	      return 0;
 	    }
           }
 
 	  return 0;
         }
+
+        if (mv[0] == "advance_henry_viii_marital_status") {
+
+	  //
+	  // Henry VIII already dead, cannot roll
+	  //
+	  if (his_self.game.state.leaders.mary_i == 1 || his_self.game.state.leaders.edward_vi == 1 || his_self.game.state.leaders_elizabeth_i) {
+            his_self.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
+          his_self.game.queue.splice(qe, 1);
+
+	  this.updateLog("Henry VIII advances his marital status");
+
+	  this.game.state.henry_viii_marital_status++;
+	  if (this.game.state.henry_viii_marital_status > 7) { this.game.state.henry_viii_marital_status = 7; return 1; }
+
+	  if (this.game.state.henry_viii_marital_status > 2) {
+	    this.updateStatus("Henry VIII makes a roll on the pregnancy chart");
+	    let dd = this.rollDice(6);
+
+	    if (this.game.state.henry_viii_rolls.includes(dd)) {
+	      while (this.game.state.henry_viii_rolls.includes(dd) && dd < 6) {
+	        dd++;
+	      }
+	    }
+	    this.game.state.henry_viii_rolls.push(dd);
+
+	    if (this.game.state.henry_viii_marital_status == 3) { 
+	      this.updateStatus("Henry VIII receives +1 bonus for Jane Seymour");
+	      dd++;
+	    }
+
+	    // results of pregnancy chart rolls
+	    if (dd == 1) {
+	      this.updateLog("Henry VIII rolls 1: marriage fails");
+	    }
+	    if (dd == 2) {
+	      this.updateLog("Henry VIII rolls 2: marriage barren");
+	    }
+	    if (dd == 3) {
+	      this.updateLog("Henry VIII rolls 3: wife beheaded - reroll");
+	      this.game.state.henry_viii_auto_reroll = 1;
+	    }
+	    if (dd == 4) {
+	      this.updateLog("Henry VIII rolls 4: Elizabeth I born");
+	      this.game.state.henry_viii_add_elizabeth = 1;
+	    }
+	    if (dd == 5) {
+	      this.updateLog("Henry VIII rolls 5: sickly Edward VI");
+	      this.game.state.henry_viii_sickly_edward = 1;
+	      this.game.state.henry_viii_add_elizabeth = 0;
+	    }
+	    if (dd >= 6) {
+	      this.updateLog("Henry VIII rolls 6: healthy Edward VI");
+	      this.game.state.henry_viii_healthy_edward = 1;
+	      this.game.state.henry_viii_sickly_edward = 0;
+	      this.game.state.henry_viii_add_elizabeth = 0;
+	    }
+
+	  }
+
+	  return 1;
+	}
 
 	return 1;
       },
@@ -3553,6 +3649,8 @@ if (space.key === "bordeaux") {
 
 	his_self.game.state.leaders.edward_vi = 1;
 	his_self.game.state.leaders.henry_viii = 0;
+	his_self.game.state.leaders.mary_i = 0;
+	his_self.game.state.leaders.elizabeth_i = 0;
 
 	let placed = 0;
 
@@ -3623,7 +3721,38 @@ if (space.key === "bordeaux") {
 	his_self.game.state.leaders.edward_vi = 0;
 	his_self.game.state.leaders.mary_i = 1;
 
+	//
+	// it is possible that a healthy Edward has already been born before this
+	// card has been played, in which case Mary I is actually Edward VI since
+	// the succession passes to him.
+	//
+        if (his_self.game.state.henry_viii_healthy_edward == 1) {
+	  let deck = his_self.returnDeck();
+	  let card = deck["019"];
+	  card.onEvent(his_self,faction);
+	  return 1;
+        }
+
+	//
+	// otherwise remove Edward from the Deck
+	//
 	his_self.removeCardFromGame('019'); // remove edward_vi if still in deck
+
+	//
+	// if sickly edward has been born but this card has been played, we want
+	// to push it back into the deck next turn. the card will be removed because
+	// it is a mandatory card, so we make a note to re-add it next turn.
+	//
+        if (his_self.game.state.henry_viii_sickly_edward == 1) {
+	  this.game.state.henry_viii_mary_i_added_with_sickly_edward_played = 1;
+	  return 1;
+        }
+
+	//
+	// if Elizabeth has been born, we will tag to add her next round
+	//
+	// this code is in returnNewCards...
+
 
 	let placed = 0;
 	if (his_self.game.state.leaders.henry_viii == 1) {
