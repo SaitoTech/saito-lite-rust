@@ -39,6 +39,10 @@
     //
     this.game.state.events.augsburg_confession = false;
 
+    //
+    // increment impulse
+    //
+    this.game.state.impulse++;
 
   }
 
@@ -69,6 +73,8 @@
     this.game.state.tmp_catholic_counter_reformation_bonus_spaces = [];
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+    this.game.state.impulse = 0;
         
     //
     // allow stuff to move again

@@ -610,7 +610,9 @@ if (space.key === "bordeaux") {
 	      his_self.endTurn();
 	    });
 
-  	  }
+  	  } else {
+	    salert("Papacy has played Diplomatic Pressure - selecting Protestant card to play");
+	  }
 
           return 0;
         }
@@ -2220,6 +2222,86 @@ if (space.key === "bordeaux") {
       type : "normal" ,
       faction : "england" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+	his_self.game.queue.push("six-wives-of-henry-vii\t"+faction);
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "six-wives-of-henry-vii") {
+	  if (his_self.game.player.returnPlayerOfFaction("england")) {
+            his_self.game.queue.splice(qe, 1);
+	    let faction = mv[1];
+
+	    let target_haps = false;
+	    let target_france = false;
+	    let target_scotland = false;
+
+	    let options1 = false;
+	    let options2 = false;
+
+	    if (!his_self.areAllies("england", "hapsburg") && !his_self.areEnemies("england", "hapsburg")) { target_haps = true; }
+	    if (!his_self.areAllies("england", "scotland") && !his_self.areEnemies("england", "scotland")) { target_scotland = true; }
+	    if (!his_self.areAllies("england", "france") && !his_self.areEnemies("england", "france")) { target_france = true; }
+
+	    if (target_haps || target_france || target_scotland) {
+	      options1 = true;
+	    }
+
+	    if (his_self.game.state.round >= 2 && his_self.game.state.leaders.henry_viii == 1) {
+	      if (!his_self.isCaptured("england", "henry_viii") && !his_self.isBesieged("hapsburg", "charles-v")) {
+	        options2 = true;
+	      }
+	    }
+	  
+	    if (options1 && options2) {
+
+              let msg = "Choose an Option: ";
+              let html = '<ul>';
+              html += `<li class="option" id="war">Declare War</li>`;
+              html += `<li class="option" id="marital">Advance Marital Status</li>`;
+	      html += '</ul>';
+              his_self.updateStatusWithOptions(msg, html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+		
+                let action2 = $(this).attr("id");
+	        his_self.updateStatus("submitting...");
+
+	        if (action2 === "war") {
+	  	  his_self.game.queue.push("henry_viii_declaration_of_war");
+		  his_self.endTurn();
+		  return;
+	        }
+	        if (action2 === "marital") {
+	  	  his_self.game.queue.push("henry_viii_marital");
+		  his_self.endTurn();
+		  return;
+	        }
+
+	      });
+
+	      return 0;
+            }
+
+	    if (options1) {
+	      his_self.game.queue.push("henry_viii_declaration_of_war");
+	      return 0;
+	    }
+
+	    if (options2) {
+	      his_self.game.queue.push("henry_viii_marital");
+	      return 0;
+	    }
+          }
+
+	  return 0;
+        }
+
+	return 1;
+      },
+
     }
     deck['004'] = { 
       img : "cards/HIS-004.svg" , 
@@ -2231,7 +2313,8 @@ if (space.key === "bordeaux") {
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 	if (his_self.game.state.leaders.francis_i == 1) {
-	  if (!his_self.isCaptured("france", "francis-i")) { return 1; }
+	  if (!his_self.isCaptured("france", "francis-i")) { return 0; }
+	  if (!his_self.isBesieged("france", "francis-i")) { return 0; }
 	}
 	return 0;
       },
@@ -2446,7 +2529,7 @@ if (space.key === "bordeaux") {
 	  //
   	  // show visual language zone selector
   	  //
-  	  his_self.language_zone_overlay.render();
+  	  his_self.language_zone_overlay.render("catholic_counter_reformation");
 
           his_self.updateStatusWithOptions(msg, html);
 
@@ -8209,7 +8292,9 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
  	        let msg = "Choose Faction to Suffer Losses:";
                 let html = '<ul>';
+		let op = 0;
 	        for (let i = 0; i < factions.length; i++) {
+		  op++;
                   html += `<li class="option" id="${factions[i]}">${factions[i]}</li>`;
 		}
     	        html += '</ul>';
@@ -8251,6 +8336,9 @@ console.log("TESTING: " + JSON.stringify(space.units));
 		  }
 		  his_self.endTurn();
 		});
+
+	        // auto-submit if only 1 choice
+                if (op == 1) { $('.option').click(); }
 
 	      } else {
 

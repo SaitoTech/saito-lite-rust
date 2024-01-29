@@ -2,20 +2,14 @@
 
   returnPlayers(num = 0) {
 
+console.log("NUM: " + num);
+
     var players = [];
     let factions  = JSON.parse(JSON.stringify(this.factions));
     let factions2 = JSON.parse(JSON.stringify(this.factions));
 
     // < 6 player games
     if (num == 2) {
-      for (let key in factions) {
-	if (key !== "protestant" && key !== "papacy") {
-	  delete factions[key];
-	}
-      }
-    }
-
-    if (num == 3) {
       for (let key in factions) {
 	if (key !== "protestant" && key !== "papacy") {
 	  delete factions[key];
@@ -592,7 +586,12 @@ console.log("RETREAT DESTINATION IS: " + retreat_destination);
   }
 
 
+  playerDeclareWar(his_self, faction) {
 
+    console.log("Player Declare War!");
+    
+
+  }
 
   returnPlayerFactions(player) {
     return this.game.state.players_info[player-1].factions;
@@ -4400,12 +4399,22 @@ return;
 
       let msg = "Select Language Zone for Reformation Attempts:";
       let html = '<ul>';
-          html += '<li class="option german" style="" id="german">German</li>';
-          html += '<li class="option english" style="" id="english">English</li>';
-          html += '<li class="option french" style="" id="french">French</li>';
-          html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
-          html += '<li class="option italian" style="" id="italian">Italian</li>';
-          html += '</ul>';
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("german")) {
+        html += '<li class="option german" style="" id="german">German</li>';
+      }
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("english")) {
+        html += '<li class="option english" style="" id="english">English</li>';
+      }
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("french")) {
+        html += '<li class="option french" style="" id="french">French</li>';
+      }
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("spanish")) {
+        html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+      }
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("italian")) {
+        html += '<li class="option italian" style="" id="italian">Italian</li>';
+      }
+      html += '</ul>';
 
       //
       // show visual language zone selector
@@ -4655,12 +4664,23 @@ return;
 
     let msg = "Select Language Zone for Counter Reformations";
     let html = '<ul>';
-        html += '<li class="option german" style="" id="german">German</li>';
+
+    if (his_self.returnNumberOfProtestantSpacesInLanguageZone("german")) {
+      html += '<li class="option german" style="" id="german">German</li>';
+    }
+    if (his_self.returnNumberOfProtestantSpacesInLanguageZone("english")) {
         html += '<li class="option english" style="" id="english">English</li>';
+    }
+    if (his_self.returnNumberOfProtestantSpacesInLanguageZone("french")) {
         html += '<li class="option french" style="" id="french">French</li>';
+    }
+    if (his_self.returnNumberOfProtestantSpacesInLanguageZone("spanish")) {
         html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+    }
+    if (his_self.returnNumberOfProtestantSpacesInLanguageZone("italian")) {
         html += '<li class="option italian" style="" id="italian">Italian</li>';
-        html += '</ul>';
+    }
+    html += '</ul>';
 
     //
     // show visual language zone selector

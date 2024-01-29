@@ -1,5 +1,5 @@
 module.exports = (game_self, players = 2) => {
-	let help = `Protestants and Catholics debate at the Diet of Worms...`;
+	let help = `The Diet of Worms is convened in response to growing Protestant influence in Germany...`;
 	if (
 		game_self.game.player == game_self.returnPlayerOfFaction('protestant')
 	) {
@@ -23,7 +23,7 @@ module.exports = (game_self, players = 2) => {
 	}
 	if (players > 2) {
 		help =
-			'The Protestant and Catholic Powers convene for Theological Debate during the Diet of Worms. Both sides pick cards to indicate their level of commitment during the debate.';
+			'The Diet of Worms is convened in response to growing Protestant influence in Germany...';
 	}
 
 	let html = `

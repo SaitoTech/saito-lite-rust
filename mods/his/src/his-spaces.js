@@ -2140,7 +2140,7 @@ if (sourcekey == "candia") {
       home: "france",
       political: "france",
       religion: "catholic",
-      ports: ["channnel","biscay"],
+      ports: ["channel","biscay"],
       neighbours: ["nantes"],
       language: "french",
       type: "town"
