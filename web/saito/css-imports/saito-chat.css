@@ -195,7 +195,7 @@
 
 .chat-popup {
   display: grid;
-  grid-template-rows: 67px 1fr min-content;
+  grid-template-rows: 63px 1fr min-content;
   grid-template-columns: 100%;
   align-items: center;
 }
@@ -290,11 +290,12 @@
 }
 
 .chat-header-info {
-  padding: 1.2rem 1rem;
   background: var(--saito-arcade-background);
+  height: 4rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 }
 
 .chat-header-info  i {
@@ -309,13 +310,30 @@
 .chat-action-icons {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  height: 100%;
+  align-items: center;
 }
 
-.chat-action-icons i {
+.chat-action-item {
   cursor: pointer;
-  height: auto;
-  width: auto;
+  height: 4rem;
+  width: 3.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.chat-action-item.saito-add-user-menu{
+  width: 2.5rem;
+}
+
+.chat-action-item:hover{
+  background-color: var(--saito-primary);
+}
+
+.chat-action-item:hover i {
+  color: var(--saito-white);
 }
 
 /*.chat-header > i:last-child:hover {
@@ -338,6 +356,7 @@
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  margin-left: 1rem;
 }
 
 .chat-header-nav .chat-details {
