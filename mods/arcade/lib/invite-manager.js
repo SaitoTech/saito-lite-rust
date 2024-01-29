@@ -46,14 +46,22 @@ class InviteManager {
 			// Otherwise we launch an overlay and stick the spinner in there
 			//
 			if (!this.mod.browser_active) {
-				this.loader_overlay.show(
-					'<div class="arcade_game_overlay_loader"></div>'
-				);
+
+				let target = '.arcade_game_overlay_loader';
+
+				if (document.querySelector(".invite-manager")){
+					document.querySelector(".invite-manager").innerHTML = "";	
+					target = ".invite-manager";
+				}else{
+					this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');	
+				}
+
 				let game_loader = new ArcadeInitializer(
 					app,
 					mod,
-					'.arcade_game_overlay_loader'
+					target
 				);
+				
 				game_loader.render();
 			}
 		});
@@ -127,27 +135,27 @@ class InviteManager {
 				if (this.mod.games[list].length > 0) {
 					if (list === 'mine') {
 						this.app.browser.addElementToSelector(
-							`<h5>My Games</h5>`,
+							`<h5 class="sidebar-header">My Games</h5>`,
 							target
 						);
 					} else if (list == 'open') {
 						this.app.browser.addElementToSelector(
-							`<h5>Open Invites</h5>`,
+							`<h5 class="sidebar-header">Open Invites</h5>`,
 							target
 						);
 					} else if (list == 'active') {
 						this.app.browser.addElementToSelector(
-							`<h5>Active Matches</h5>`,
+							`<h5 class="sidebar-header">Active Matches</h5>`,
 							target
 						);
 					} else if (list == 'over') {
 						this.app.browser.addElementToSelector(
-							`<h5>Recent Matches</h5>`,
+							`<h5 class="sidebar-header">Recent Matches</h5>`,
 							target
 						);
 					} else {
 						this.app.browser.addElementToSelector(
-							`<h5>${
+							`<h5 class="sidebar-header">${
 								list.charAt(0).toUpperCase() + list.slice(1)
 							} Games</h5>`,
 							target

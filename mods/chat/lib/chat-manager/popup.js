@@ -268,13 +268,15 @@ class ChatPopup {
 		if (this.group.name != this.mod.communityGroupName) {
 			document.querySelectorAll('.chat-action-item').forEach((menu) => {
 				let id = menu.getAttribute('id');
-				let callback = this_self.callbacks[id];
-				menu.addEventListener('click', (e) => {
-					let pk = e.currentTarget.getAttribute('data-id');
-					console.log('clicked on chat-action-item ///');
-					console.log(pk);
-					callback(app, pk);
-				});
+				if (id && this_self.callbacks[id]){
+					let callback = this_self.callbacks[id];
+					menu.addEventListener('click', (e) => {
+						let pk = e.currentTarget.getAttribute('data-id');
+						console.log('clicked on chat-action-item ///');
+						console.log(pk);
+						callback(app, pk);
+					});
+				}
 			});
 		}
 
@@ -622,11 +624,13 @@ class ChatPopup {
 
 	addChatActionItem(item, id) {
 		let popup_qs = '#chat-popup-' + this.group.id;
-		if (document.querySelector(`${popup_qs} .chat-actions`)) {
-			document.querySelector(`${popup_qs} .chat-actions`).innerHTML = `
-			<i id="${id}" class="chat-action-item ${item.icon}" data-id="${this.group.name}" title="${item.text}"></i>
-			`;	  
-		}
+
+		let html = `<div id="${id}" class="chat-action-item" data-id="${this.group.name}" title="${item.text}">
+				<i class="${item.icon}"></i>
+			</div>`;
+
+		this.app.browser.prependElementToSelector(html, `${popup_qs} .chat-actions`);
+
 	}
 
 	restorePopup(chatPopup)  {
