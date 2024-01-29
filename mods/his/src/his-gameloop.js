@@ -151,9 +151,9 @@ if (this.game.state.scenario != "is_testing") {
 	  if (this.game.state.round == 1) {
 	    this.game.queue.push("show_overlay\twelcome\tprotestant");
 	    this.game.queue.push("show_overlay\twelcome\tpapacy");
+	    this.game.queue.push("show_overlay\twelcome\thapsburg");
 	    this.game.queue.push("show_overlay\twelcome\tengland");
 	    this.game.queue.push("show_overlay\twelcome\tfrance");
-	    this.game.queue.push("show_overlay\twelcome\thapsburg");
 	    this.game.queue.push("show_overlay\twelcome\tottoman");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  }
@@ -2575,6 +2575,8 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	}
 	if (mv[0] === "counter_or_acknowledge") {
 
+console.log("counter_or_acknowledge #1");
+
 	  //
 	  // hide any cardbox
 	  //
@@ -2626,6 +2628,8 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  //
 	  let his_self = this;
 
+console.log("counter_or_acknowledge #2");
+
 	  let html = '<ul>';
 
 	  let menu_index = [];
@@ -2636,6 +2640,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
+console.log("counter_or_acknowledge #3");
             if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
               let x = z[i].menuOption(this, stage, this.game.player, extra);
               html += x.html;
@@ -2699,6 +2704,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
             //
             if (attach_menu_events == 1) {
               for (let i = 0; i < menu_triggers.length; i++) {
+console.log("counter_or_acknowledge #4");
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
@@ -2729,6 +2735,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
           });
 
+console.log("counter_or_acknowledge #5");
 	  return 0;
 
 	}

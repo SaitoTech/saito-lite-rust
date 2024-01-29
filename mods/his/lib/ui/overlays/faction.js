@@ -44,19 +44,16 @@ class FactionOverlay {
 		if (his_self.factions[faction].key === 'england') {
 			war_winner_vp = his_self.game.state.england_war_winner_vp;
 			let total_keys = 9;
+			let controlled_keys = his_self.returnNumberOfKeysControlledByFaction('england');
 			let remaining_keys = total_keys - controlled_keys;
-			for (
-				let i = his_self.factions[faction].marital_status;
-				i < 7;
-				i++
-			) {
-				keyboxen += `<div class="faction_sheet_keytile england_marital_status${
-					i + 1
-				}" id="england_marital_status_keytile${i + 1}"></div>`;
+			for (let i = 0; i < 7; i++) {
+			  let hcss = ""; 
+			  if (i == his_self.game.state.henry_viii_marital_status) { hcss = "active "; }
+			  keyboxen += `<div class="${hcss} faction_sheet_keytile henry_viii_marital_status henry_viii_marital_status${i + 1}" id="henry_viii_marital_status${i + 1}"></div>`;
 			}
 			for (let i = 1; i <= 9; i++) {
-				if (i > 9 - remaining_keys) {
-					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+				if (i == controlled_keys) {
+					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} england_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
 
@@ -166,6 +163,7 @@ class FactionOverlay {
 				);
 			}
 		}
+
 		// PROTESTANTS
 		if (his_self.factions[faction].key === 'protestant') {
 			war_winner_vp = his_self.game.state.protestant_war_winner_vp;

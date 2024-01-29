@@ -628,6 +628,8 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     state.spring_deploy_across_seas = [];
     state.spring_deploy_across_passes = [];
 
+    state.henry_viii_marital_status = 0;
+
     state.events.maurice_of_saxony = "";
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;

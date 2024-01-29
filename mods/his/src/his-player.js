@@ -661,15 +661,15 @@ if (limit === "build") {
       category : "move" ,
       img : '/his/img/backgrounds/move/move_in_clear.jpg',
     });
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
-      cost : [2,2,2,2,2,2,2,2,2,2],
-      name : "Move over Pass",
-      check : this.canPlayerMoveFormationOverPass,
-      fnct : this.playerMoveFormationOverPass,
-      category : "move" ,
-      img : '/his/img/backgrounds/move/move_over_pass.jpg',
-    });
+    //menu.push({
+    //  factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+    //  cost : [2,2,2,2,2,2,2,2,2,2],
+    //  name : "Move over Pass",
+    //  check : this.canPlayerMoveFormationOverPass,
+    //  fnct : this.playerMoveFormationOverPass,
+    //  category : "move" ,
+    //  img : '/his/img/backgrounds/move/move_over_pass.jpg',
+    //});
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
@@ -2285,6 +2285,8 @@ return;
               if (his_self.game.player != protestant_player && his_self.game.state.events.schmalkaldic_league == 0) {
 		if (space.type == "electorate") { return 0; }
 	      }
+	      // you cannot move into spaces that are not allied or enemies
+              if (!his_self.canFactionMoveIntoSpace(faction, space.key)) { return 0; }
 	      if (space.neighbours.includes(spacekey)) {
 	        if (!space.pass) { 
 		  return 1; 
@@ -3388,22 +3390,22 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
   } 
     
 
-  canPlayerMoveFormationOverPass(his_self, player, faction) {
-    // no for protestants early-game
-    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
-    let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
-    for (let i = 0; i < spaces_with_units.length; i++) {
-      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
-        for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
-  	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked != true) {
-	    return 1;
-	  }
-        }
-      }
-    }
-    return 0;
-  }
-
+  //canPlayerMoveFormationOverPass(his_self, player, faction) {
+  //  // no for protestants early-game
+  //  if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+  //  let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+  //  for (let i = 0; i < spaces_with_units.length; i++) {
+  //    if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
+  //      for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
+  //	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked != true) {
+  //	    return 1;
+  //	  }
+  //      }
+  //    }
+  //  }
+  //  return 0;
+  //}
+/******
   async playerMoveFormationOverPass(his_self, player, faction, ops_to_spend=0, ops_remaining=0, movement_obj={}) {
 
     let parent_faction = faction;
@@ -3650,6 +3652,7 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
     );
 
   }
+*****/
 
   canPlayerNavalMove(his_self, player, faction) {
 

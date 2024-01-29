@@ -168,6 +168,26 @@
     return 1;
   }
 
+
+  canFactionMoveIntoSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let cf = this.returnFactionControllingSpace(space);
+    if (this.areEnemies(faction, cf)) { return 1; }
+    if (this.areAllies(faction, cf)) { return 1; }
+    if (this.isSpaceIndependent(space.key)) { return 1; }
+    let is_empty = true;
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+        if (this.returnFactionLandUnitsInSpace(key, space.key, 1)) {
+          is_empty = false;
+	  if (!this.areEnemies(faction, key) && !this.areAllies(faction, key)) { return 0; }
+	}
+      }
+    }
+    if (is_empty) { return 1; }
+    return 0;
+  }
+
   isSpaceFriendly(space, faction) {
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
@@ -183,7 +203,9 @@
 
   isSpaceIndependent(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.political === "independent") { return true; }
     if (space.home === "independent") { return true; }
+    return false;
   }
 
   isSpaceHomeSpace(space, faction) {

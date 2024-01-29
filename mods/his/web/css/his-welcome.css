@@ -4,6 +4,26 @@
 	border-radius: 2rem;
 }
 
+.welcome-england {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
+.welcome-france {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
+.welcome-ottoman {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
+.welcome-hapsburg {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
 .welcome-papacy {
 	background-image: url('/his/img/backgrounds/leo_x.jpg');
 	background-size: cover;

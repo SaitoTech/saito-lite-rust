@@ -2089,7 +2089,7 @@ if (space.key === "bordeaux") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-              break;
+              i = 100;
             }
           }
           return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };

@@ -56,13 +56,67 @@ class WelcomeOverlay {
 				'.welcome-title'
 			).innerHTML = `You are the Protestants`;
 			document.querySelector('.welcome-text').innerHTML = `
-	  The Saxon princes are weak and divided.
-	  <p></p>
-	  But from their gentle shelter,
-	  <p></p>
-	  Great Oaks may yet spread across Europe...
-	`;
+			  The Saxon princes are weak and divided.
+			  <p></p>
+			  But from their gentle shelter,
+			  <p></p>
+			  Great Oaks may yet spread across Europe...
+			`;
 		}
+
+		// OTTOMAN
+		if (faction === 'ottoman') {
+			document.querySelector(
+				'.welcome-title'
+			).innerHTML = `You are the Ottomans`;
+			document.querySelector('.welcome-text').innerHTML = `
+			  "If we will not learn out of the Scriptures, we must learn out of the Turk’s scabbard..."
+			  </br>-- <i>Martin Luther</i>
+			`;
+		}
+
+		// ENGLAND
+		if (faction === 'england') {
+			document.querySelector(
+				'.welcome-title'
+			).innerHTML = `You are the English`;
+			document.querySelector('.welcome-text').innerHTML = `
+			  Nought shall make us rue,
+			  </br>If England to itself do rest but true.
+			`;
+		}
+
+
+		// FRANCE
+		if (faction === 'france') {
+			document.querySelector(
+				'.welcome-title'
+			).innerHTML = `You are the French`;
+			document.querySelector('.welcome-text').innerHTML = `
+			  The Saxon princes are weak and divided.
+			  <p></p>
+			  But from their gentle shelter,
+			  <p></p>
+			  Great Oaks may yet spread across Europe...
+			`;
+		}
+
+
+		// HAPSBURGS
+		if (faction === 'hapsburg') {
+			document.querySelector(
+				'.welcome-title'
+			).innerHTML = `You are the Hapsburg Dynasty`;
+			document.querySelector('.welcome-text').innerHTML = `
+			  The Saxon princes are weak and divided.
+			  <p></p>
+			  But from their gentle shelter,
+			  <p></p>
+			  Great Oaks may yet spread across Europe...
+			`;
+		}
+
+
 
 		this.attachEvents();
 	}
