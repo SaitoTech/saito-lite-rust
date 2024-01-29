@@ -1,10 +1,8 @@
 module.exports = ChatManagerTemplate = (manager_self) => {
 	return `
   <div class="chat-manager">
-    <div id="chat-manager-header" class="chat-manager-header">
-      <div class="chat-manager-title" title="Recent Chats and Secure Contacts">
-        <h5>Chats</h5>
-      </div>
+    <div id="chat-manager-header" class="sidebar-header chat-manager-header">
+      <div class="chat-manager-title sidebar-title" title="Recent Chats and Secure Contacts">Chats</div>
       <div class="close-chat-manager">
         <img class="saito-header-logo" alt="Logo" src="/saito/img/logo.svg">
         <i class="fa-solid fa-arrow-left"></i>

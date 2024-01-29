@@ -127,27 +127,27 @@ class InviteManager {
 				if (this.mod.games[list].length > 0) {
 					if (list === 'mine') {
 						this.app.browser.addElementToSelector(
-							`<h5>My Games</h5>`,
+							`<h5 class="sidebar-header">My Games</h5>`,
 							target
 						);
 					} else if (list == 'open') {
 						this.app.browser.addElementToSelector(
-							`<h5>Open Invites</h5>`,
+							`<h5 class="sidebar-header">Open Invites</h5>`,
 							target
 						);
 					} else if (list == 'active') {
 						this.app.browser.addElementToSelector(
-							`<h5>Active Matches</h5>`,
+							`<h5 class="sidebar-header">Active Matches</h5>`,
 							target
 						);
 					} else if (list == 'over') {
 						this.app.browser.addElementToSelector(
-							`<h5>Recent Matches</h5>`,
+							`<h5 class="sidebar-header">Recent Matches</h5>`,
 							target
 						);
 					} else {
 						this.app.browser.addElementToSelector(
-							`<h5>${
+							`<h5 class="sidebar-header">${
 								list.charAt(0).toUpperCase() + list.slice(1)
 							} Games</h5>`,
 							target
