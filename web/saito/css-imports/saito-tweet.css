@@ -160,6 +160,13 @@
   overflow-wrap: anywhere;
 }
 
+.tweet-text .saito-mention.saito-address.treated {
+  /*color: var(--saito-primary);
+  font-style: normal;
+  font-size: 1.6rem;
+  margin: 0rem!important;*/
+}
+
 
 /* For overly long tweets, we crop and show that it can be expanded */
 
