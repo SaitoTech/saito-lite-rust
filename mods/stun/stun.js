@@ -158,10 +158,8 @@ class Stun extends ModTemplate {
     }
   }
 
-  respondTo(type = "") {
-    // console.log(type, obj);
+  respondTo(type, obj) {
     let stun_self = this;
-    let obj = arguments[1];
 
     if (type === "user-menu") {
       if (obj?.publicKey) {
@@ -299,7 +297,7 @@ class Stun extends ModTemplate {
 						{
 							text: 'Video/Audio Call',
 							icon: 'fas fa-phone',
-							callback: function (app, public_key) {
+							callback: function (app, public_key, id) {
 								if (!stun_self.room_obj) {
 									stun_self.dialer.establishStunCallWithPeers(
 										[public_key]

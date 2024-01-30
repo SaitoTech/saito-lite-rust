@@ -1008,14 +1008,14 @@ class Browser {
 		read_as_array_buffer = false
 	) {
 		const hidden_upload_form = `
-      <form class="my-form" style="display:none">
+      <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
         <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated hidden_file_element_${id}">
-        <label class="button" class="hidden_file_element_button_${id}" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
+        <label class="button" class="hidden_file_element_button" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
       </form>
     `;
 
-		if (!document.getElementById(`hidden_file_element_${id}`)) {
+		if (!document.getElementById(`uploader_${id}`)) {
 			this.addElementToId(hidden_upload_form, id);
 			const dropArea = document.getElementById(id);
 			if (!dropArea) {
@@ -1109,6 +1109,7 @@ class Browser {
 					if (this.files && this.files.length > 0) {
 						const files = this.files;
 						[...files].forEach(function (file) {
+							console.log(`File is ${[file.name, file.size, file.type, file.lastModified].join(' ')}`);
 							const reader = new FileReader();
 							reader.addEventListener('load', (event) => {
 								handleFileDrop(event.target.result);

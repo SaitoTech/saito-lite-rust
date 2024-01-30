@@ -307,6 +307,11 @@
   display: none;
 }
 
+.chat-actions {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 .chat-action-icons {
   display: flex;
   flex-direction: row;

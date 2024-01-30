@@ -27,6 +27,10 @@ class StunManager {
     ];
 
     app.connection.on("open-stun-relay", (publicKey, connectionCallback) => {
+      if (this.peers.get(publicKey)) {
+        return;
+      }
+
       this.createPeerConnection(publicKey, connectionCallback);
 
       this.mod.sendRelayMessage(publicKey, "stun signaling relay", {
@@ -131,6 +135,11 @@ class StunManager {
 
   async createPeerConnection(peerId, on_connection = null) {
     console.log("STUN: Create Peer Connection with " + peerId);
+
+    if (this.peers.get(peerId)){
+      salert("Already have a peer connection");
+      return;
+    }
 
     if (peerId === this.mod.publicKey) {
       console.log("STUN: Attempting to create a peer Connection with myself!");
