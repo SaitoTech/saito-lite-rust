@@ -29,28 +29,60 @@
       }
     } catch (err) {}
 
+
     this.menu.addMenuOption("game-game", "Game");
-    let initial_confirm_moves = "Newbie Mode"; 
-    if (this.confirm_moves == 1) {
-      initial_confirm_moves = "Expert Mode"; 
-    }
     this.menu.addSubMenuOption("game-game", {
-      text : initial_confirm_moves,
+      text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	if (game_mod.confirm_moves == 0) {
-	  game_mod.confirm_moves = 1;
+      callback : null
+    });
+
+    this.confirm_moves = 0;
+    if (this.app.options.gameprefs) {
+      if (this.app.options.gameprefs.his_expert_mode) {
+	this.confirm_moves = this.app.options.gameprefs.his_expert_mode;
+	if (this.confirm_moves == 1) { this.game_help.enabled = false; }
+      }
+    }
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
+      id:"game-confirm-newbie",
+      class:"game-confirm-newbie",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 0){
+	  document.querySelector("#game-confirm-newbie div").innerHTML = "Newbie ✔";
+	  document.querySelector("#game-confirm-expert div").innerHTML = "Expert";
+          game_mod.displayModal("Game Settings", "Tutorial Mode re-enabled");
           game_mod.saveGamePreference('his_expert_mode', 0);
-	  window.location.reload();	
-	} else {
-	  game_mod.confirm_moves = 0;
-          game_mod.saveGamePreference('his_expert_mode', 1);
-	  window.location.reload();	
-	}
+	  game_mod.game_help.enabled = true;
+	  game_mod.confirm_moves = 1;
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
       }
     });
+      
+    this.menu.addSubMenuOption("game-confirm",{ 
+      text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
+      id:"game-confirm-expert",
+      class:"game-confirm-expert",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 1){
+	  document.querySelector("#game-confirm-newbie div").innerHTML = "Newbie";
+	  document.querySelector("#game-confirm-expert div").innerHTML = "Expert ✔";
+          game_mod.displayModal("Game Settings", "Tutorial Mode disabled");
+          game_mod.saveGamePreference('his_expert_mode', 1);
+	  game_mod.game_help.hide();
+	  game_mod.game_help.enabled = false;
+	  game_mod.confirm_moves = 0;
+        }else{
+          game_mod.menu.hideSubMenus();
+        } 
+      }
+    });
+
+
     this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",

@@ -235,7 +235,7 @@ class Stun extends ModTemplate {
 
 			let menu_items = {
 				id: 'game-social',
-				text: 'Chat / Social',
+				text: 'Chat',
 				submenus: []
 			};
 
@@ -261,7 +261,7 @@ class Stun extends ModTemplate {
 			}
 
 			menu_items['submenus'].push({
-				parent: 'game-social',
+				parent: 'game-game',
 				text: 'Record Game',
 				id: 'record-stream',
 				class: 'record-stream',

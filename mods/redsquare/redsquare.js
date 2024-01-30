@@ -304,25 +304,25 @@ class RedSquare extends ModTemplate {
       return x;
     }
 
-    if (type == "game-menu") {
+    if (type == 'game-menu') {
       this.attachStyleSheets();
       super.render(this.app, this);
       return {
-        id: "game-social",
-        text: "Social",
+        id: 'game-game',
+        text: 'Game',
         submenus: [
           {
-            parent: "game-social",
-            text: "Tweet",
-            id: "game-tweet",
-            class: "game-tweet",
+            parent: 'game-game',
+            text: 'Tweet',
+            id: 'game-tweet',
+            class: 'game-tweet',
             callback: function (app, game_mod) {
               game_mod.menu.hideSubMenus();
               let post = new Post(app, this_mod);
               post.render();
-            },
-          },
-        ],
+            }
+          }
+        ]
       };
     }
 

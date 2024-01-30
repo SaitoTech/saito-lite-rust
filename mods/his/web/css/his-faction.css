@@ -1,10 +1,16 @@
-.faction_sheet_vp .debaters_tile {
+.faction_sheet_vp .debaters-tile {
 	height: 5rem;
 	width: 5rem;
 }
 
 .saint_peters_tile {
 	background-image: url('/his/img/tiles/papacy/StPetersCP.svg');
+	background-size: cover;
+	width: 50px;
+	height: 50px;
+}
+.england_keytile {
+	background-image: url('/his/img/tiles/england/England_key.svg');
 	background-size: cover;
 	width: 50px;
 	height: 50px;
@@ -39,6 +45,11 @@
 	height: 50px;
 	position: absolute;
 	margin-top: 2rem;
+}
+
+.henry_viii_marital_status.active {
+	background-image: url('/his/img/HenryMaritalStatus.svg');
+	background-size: cover;
 }
 
 .bible_german_tile {
@@ -135,44 +146,36 @@
 
 .faction_sheet_keytile {
 	position: absolute;
-	height: 7%;
+	height: 11%;
 	width: 7%;
 }
-.faction_sheet_england_keytile1 {
-	top: 568px;
-	left: 42px;
+.henry_viii_marital_status1 {
+    top: 52%;
+    left: 3%;
 }
-.faction_sheet_england_keytile2 {
-	top: 568px;
-	left: 155px;
+.henry_viii_marital_status2 {
+    top: 52%;
+    left: 11.5%;
 }
-.faction_sheet_england_keytile3 {
-	top: 568px;
-	left: 269px;
+.henry_viii_marital_status3 {
+    top: 52%;
+    left: 20%;
 }
-.faction_sheet_england_keytile4 {
-	top: 568px;
-	left: 383px;
+.henry_viii_marital_status4 {
+    top: 52%;
+    left: 28.5%;
 }
-.faction_sheet_england_keytile5 {
-	top: 568px;
-	left: 496px;
+.henry_viii_marital_status5 {
+    top: 52%;
+    left: 37.25%;
 }
-.faction_sheet_england_keytile6 {
-	top: 681px;
-	left: 42px;
+.henry_viii_marital_status6 {
+    top: 52%;
+    left: 45.75%;
 }
-.faction_sheet_england_keytile7 {
-	top: 681px;
-	left: 155px;
-}
-.faction_sheet_england_keytile8 {
-	top: 681px;
-	left: 269px;
-}
-.faction_sheet_england_keytile9 {
-	top: 681px;
-	left: 383px;
+.henry_viii_marital_status7 {
+    top: 52%;
+    left: 54.25%;
 }
 
 .faction_sheet_france_keytile1 {
@@ -644,6 +647,62 @@
 	left: 41%;
 }
 
+.faction_sheet_england_keytile1 {
+	top: 69.5%;
+	left: 3%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile2 {
+	top: 69.5;
+	left: 12%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile3 {
+	top: 69.5%;
+	left: 21%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile4 {
+	top: 69.5%;
+	left: 30%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile5 {
+	top: 69.5%;
+	left: 39.5%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile6 {
+	top: 83%;
+	left: 3%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile7 {
+	top: 83%;
+	left: 12%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile8 {
+	top: 83%;
+	left: 21%;
+	height: 12%;
+	width: 8%;
+}
+.faction_sheet_england_keytile9 {
+	top: 83%;
+	left: 30%;
+	height: 12%;
+	width: 8%;
+}
+
+
 .faction_sheet_papacy_keytile1 {
 	top: 83%;
 	left: 3%;
@@ -686,3 +745,4 @@
 	height: 12%;
 	width: 8%;
 }
+

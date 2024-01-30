@@ -9,22 +9,16 @@
       admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
-        
 	let base = 4; 
-
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
         if (kc > 4) { base += 1; }
-
         if (game_mod.game.state.leaders.luther == 1) { base += 0; }
-
 	return base;        
-
       },
-      returnAdminRating  :       function(game_mod) {
 
+      returnAdminRating  :       function(game_mod) {
 	if (game_mod.game.state.leaders.luther == 1) { return 2; }
 	return 0;
-
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {

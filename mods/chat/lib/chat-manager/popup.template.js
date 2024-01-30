@@ -62,10 +62,9 @@ module.exports = (app, mod, group, isStatic = false) => {
 					group.members.length == 2
 		? `
               <div class="chat-action-icons">
-                <div class="chat-actions">
-                </div>
-                <i class="fa-solid fa-ellipsis-vertical saito-add-user-menu" data-id="${group.name}"></i>
-              </div>
+                <div class="chat-actions"></div>
+                <div class="chat-action-item saito-add-user-menu" data-id="${group.name}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+	             </div>
               `
 		: ``
 }
@@ -73,9 +72,7 @@ module.exports = (app, mod, group, isStatic = false) => {
           </div>
 
           <div class="chat-body">
-            <div id="load-older-chats" class="saito-chat-button" data-id="${
-	group.id
-}">fetch earlier messages</div>
+            <!--div id="load-older-chats" class="saito-chat-button" data-id="${group.id}">check for earlier messages</div-->
             ${mod.returnChatBody(group.id)}
           </div>
 

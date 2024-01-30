@@ -168,6 +168,26 @@
     return 1;
   }
 
+
+  canFactionMoveIntoSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let cf = this.returnFactionControllingSpace(space);
+    if (this.areEnemies(faction, cf)) { return 1; }
+    if (this.areAllies(faction, cf)) { return 1; }
+    if (this.isSpaceIndependent(space.key)) { return 1; }
+    let is_empty = true;
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+        if (this.returnFactionLandUnitsInSpace(key, space.key, 1)) {
+          is_empty = false;
+	  if (!this.areEnemies(faction, key) && !this.areAllies(faction, key)) { return 0; }
+	}
+      }
+    }
+    if (is_empty) { return 1; }
+    return 0;
+  }
+
   isSpaceFriendly(space, faction) {
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
@@ -183,7 +203,9 @@
 
   isSpaceIndependent(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.political === "independent") { return true; }
     if (space.home === "independent") { return true; }
+    return false;
   }
 
   isSpaceHomeSpace(space, faction) {
@@ -1186,6 +1208,7 @@ console.log("no...");
     return res;
   }
   returnNeighbours(space, transit_passes=1, transit_seas=0, faction="") {
+try {
 
     let is_naval_space = false;
 
@@ -1215,7 +1238,6 @@ console.log("no...");
       let neighbours = [];
 
       if (transit_passes == 1 && is_naval_space != true) {
-        neighbours = [];
 	for (let z = 0; z < space.neighbours.length; z++) {
 	  neighbours.push({ neighbour : space.neighbours[z] , overseas : false });
 	}
@@ -1237,11 +1259,17 @@ console.log("no...");
         if (space.ports.length > 0) {
 	  for (let i = 0; i < space.ports.length; i++) {
 	    let navalspace = "";
+
+console.log("space ports: " + JSON.stringify(space.ports[i]));
+
 	    if (this.game.navalspaces[space.ports[i]]) {
 	      navalspace = this.game.navalspaces[space.ports[i]];
 	    } else {
 	      navalspace = this.game.spaces[space.ports[i]];
 	    }
+
+console.log("debugging navalspace: " + JSON.stringify(navalspace));
+
 	    let any_unfriendly_ships = false;
 	    if (navalspace.ports) {
 	      if (faction != "") {
@@ -1270,6 +1298,10 @@ console.log("no...");
       }
       return neighbours;
     }
+} catch (err) {
+  alert("return neighbours bug pls report: " + JSON.stringify(err));
+}
+    return [];
   }
 
 
@@ -1612,6 +1644,47 @@ if (sourcekey == "candia") {
         }
       }
     }
+
+    //
+    // minor allied powers
+    //
+    if (faction === this.returnAllyOfMinorPower("genoa")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "genoa" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "genoa")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+    if (faction === this.returnAllyOfMinorPower("scotland")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "scotland" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "scotland")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+    if (faction === this.returnAllyOfMinorPower("hungary")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "hungary" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "hungary")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+    if (faction === this.returnAllyOfMinorPower("venice")) {
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].type === "key") {
+          if (this.game.spaces[key].political === "venice" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "venice")) {
+            controlled_keys++;
+          }
+        }
+      }
+    }
+
     return controlled_keys;
   }
   returnNumberOfKeysControlledByPlayer(player_num) {
@@ -2089,7 +2162,7 @@ if (sourcekey == "candia") {
       home: "france",
       political: "france",
       religion: "catholic",
-      ports: ["channnel","biscay"],
+      ports: ["channel","biscay"],
       neighbours: ["nantes"],
       language: "french",
       type: "town"

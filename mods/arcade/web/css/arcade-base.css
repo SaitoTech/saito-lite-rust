@@ -16,18 +16,15 @@
 	display: flex;
 	flex-direction: column;
 	row-gap: 1rem;
+	padding-top: 2rem;
 }
 
 .arcade-game-list-container {
 	max-height: 60%;
 }
 
-.arcade-game-list-container h5 {
-	padding: 0 0.5rem;
-}
-
 .arcade-menu {
-	max-height: calc(100% - 3rem);
+	max-height: calc(100% - 4rem);
 }
 
 /*button, .saito-button-primary, .saito-button-secondary:hover {*/
@@ -42,10 +39,15 @@
 .arcade-initializer {
 	text-align: center;
 	min-width: 18rem; /*Width of the button*/
+	display: flex;
+	flex-direction: column;
 }
 
 .arcade-central-panel .arcade-initializer {
-	height: calc(100vh - var(--saito-header-height));
+	height: calc(100vh - var(--saito-header-height) - 3rem);
+	padding-top: 5rem;
+	gap: 5rem;
+
 }
 
 .arcade-game-initializer-success-title {

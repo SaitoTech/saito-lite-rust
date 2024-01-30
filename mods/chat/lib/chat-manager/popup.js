@@ -64,6 +64,9 @@ class ChatPopup {
 		}
 	}
 
+	//
+	// The chat popup has subcomponents, but only the body gets re-rendered
+	//
 	render() {
 		let this_self = this;
 		//
@@ -122,14 +125,14 @@ class ChatPopup {
 		// insert or replace popup on page
 		//
 		if (document.querySelector(popup_qs)) {
-			let html = `<div class="chat-body">
-                    ${
-	this?.no_older_messages
-		? ''
-		: `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`
-}
-                    ${this.mod.returnChatBody(this.group.id)}
-                  </div>`;
+			let html = `<div class="chat-body">`;
+
+			//Temporarily disable this...
+			//if (!this?.no_older_messages) {
+			//	html += `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`;
+			//}
+
+            html +=  this.mod.returnChatBody(this.group.id) + "</div>";
 			this.app.browser.replaceElementBySelector(
 				html,
 				popup_qs + ' .chat-body'
@@ -171,6 +174,32 @@ class ChatPopup {
 				obj.style.left = x_pos + 'px';
 			}
 
+
+			// add call icon, ignore if community chat
+			let mods = this.app.modules.mods;
+			if (this.group.name != this.mod.communityGroupName) {
+				let index = 0;
+				for (const mod of mods) {
+					let item = mod.respondTo('chat-actions', {
+						publicKey: this.group.name
+					});
+					if (item instanceof Array) {
+						item.forEach((j) => {
+							let id = `chat_action_item_${index}`;
+							this_self.callbacks[id] = j.callback;
+							this_self.addChatActionItem(j, id);
+							index++;
+						});
+					} else if (item != null) {
+						let id = `chat_action_item_${index}`;
+						this_self.callbacks[id] = item.callback;
+						this_self.addChatActionItem(item, id);
+					}
+					index++;
+				}
+			}
+
+
 			//
 			// inputs
 			//
@@ -203,37 +232,6 @@ class ChatPopup {
 			}
 		}
 
-		// add call icon, ignore if community chat
-		let mods = this.app.modules.mods;
-		if (this.group.name != this.mod.communityGroupName) {
-			let index = 0;
-			for (const mod of mods) {
-				let item = mod.respondTo('chat-actions', {
-					publicKey: this.group.name
-				});
-				if (item instanceof Array) {
-					item.forEach((j) => {
-						let id = `chat_action_item_${index}`;
-						this_self.callbacks[id] = j.callback;
-						this_self.addChatActionItem(j, id);
-						index++;
-					});
-				} else if (item != null) {
-					let id = `chat_action_item_${index}`;
-					this_self.callbacks[id] = item.callback;
-					this_self.addChatActionItem(item, id);
-				}
-				index++;
-			}
-		}
-
-		//
-		// re-render typed text
-		//
-		//if (existing_input != "") {
-		//  this.input.setInput(existing_input);
-		//  existing_input = "";
-		//}
 
 		//
 		// attach events
@@ -268,13 +266,15 @@ class ChatPopup {
 		if (this.group.name != this.mod.communityGroupName) {
 			document.querySelectorAll('.chat-action-item').forEach((menu) => {
 				let id = menu.getAttribute('id');
-				let callback = this_self.callbacks[id];
-				menu.addEventListener('click', (e) => {
-					let pk = e.currentTarget.getAttribute('data-id');
-					console.log('clicked on chat-action-item ///');
-					console.log(pk);
-					callback(app, pk);
-				});
+				if (id && this_self.callbacks[id]){
+					let callback = this_self.callbacks[id];
+					menu.addEventListener('click', (e) => {
+						let pk = e.currentTarget.getAttribute('data-id');
+						console.log('clicked on chat-action-item ///');
+						console.log(pk);
+						callback(app, pk);
+					});
+				}
 			});
 		}
 
@@ -622,11 +622,13 @@ class ChatPopup {
 
 	addChatActionItem(item, id) {
 		let popup_qs = '#chat-popup-' + this.group.id;
-		if (document.querySelector(`${popup_qs} .chat-actions`)) {
-			document.querySelector(`${popup_qs} .chat-actions`).innerHTML = `
-			<i id="${id}" class="chat-action-item ${item.icon}" data-id="${this.group.name}" title="${item.text}"></i>
-			`;	  
-		}
+
+		let html = `<div id="${id}" class="chat-action-item" data-id="${this.group.name}" title="${item.text}">
+				<i class="${item.icon}"></i>
+			</div>`;
+
+		this.app.browser.prependElementToSelector(html, `${popup_qs} .chat-actions`);
+
 	}
 
 	restorePopup(chatPopup)  {

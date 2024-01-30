@@ -39,6 +39,10 @@
     //
     this.game.state.events.augsburg_confession = false;
 
+    //
+    // increment impulse
+    //
+    this.game.state.impulse++;
 
   }
 
@@ -69,6 +73,8 @@
     this.game.state.tmp_catholic_counter_reformation_bonus_spaces = [];
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+    this.game.state.impulse = 0;
         
     //
     // allow stuff to move again
@@ -347,6 +353,8 @@
       factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
+console.log("protestants after copernicus: " + factions["protestant"].vp);
+
     //
     //• Bible translation completed (1 VP for each language)    ***
     // protestant faction class
@@ -594,6 +602,7 @@
     state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
     state.excommunicated_factions = {};
+    state.already_excommunicated = [];
     state.excommunicated = [];
     state.burned = [];
     state.debaters = [];
@@ -619,6 +628,13 @@
     state.spring_deploy_across_seas = [];
     state.spring_deploy_across_passes = [];
 
+    state.henry_viii_marital_status = 0;
+    state.henry_viii_healthy_edward = 0;
+    state.henry_viii_sickly_edward = 0;
+    state.henry_viii_add_elizabeth = 0;
+    state.henry_viii_auto_reroll = 0;
+    state.henry_viii_rolls = [];
+
     state.events.maurice_of_saxony = "";
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -636,12 +652,14 @@
   }
 
   excommunicateFaction(faction="") {
+    this.game.state.already_excommunicated.push(faction);
     this.game.state.excommunicated_faction[faction] = 1;
     return;
   }
 
   excommunicateReformer(reformer="") {
 
+    this.game.state.already_excommunicated.push(reformer);
     if (reformer == "") { return; }
     if (!this.returnSpaceOfPersonage("protestant", reformer)) { return; }
 
