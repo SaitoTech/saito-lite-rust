@@ -161,10 +161,10 @@
 }
 
 .tweet-text .saito-mention.saito-address.treated {
-  /*color: var(--saito-primary);
+  color: var(--saito-primary);
   font-style: normal;
   font-size: 1.6rem;
-  margin: 0rem!important;*/
+  margin: 0rem!important;
 }
 
 
