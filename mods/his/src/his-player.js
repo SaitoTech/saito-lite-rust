@@ -2,8 +2,6 @@
 
   returnPlayers(num = 0) {
 
-console.log("NUM: " + num);
-
     var players = [];
     let factions  = JSON.parse(JSON.stringify(this.factions));
     let factions2 = JSON.parse(JSON.stringify(this.factions));
@@ -586,13 +584,6 @@ console.log("RETREAT DESTINATION IS: " + retreat_destination);
   }
 
 
-  playerDeclareWar(his_self, faction) {
-
-    console.log("Player Declare War!");
-    
-
-  }
-
   returnPlayerFactions(player) {
     return this.game.state.players_info[player-1].factions;
   }
@@ -960,6 +951,9 @@ if (limit === "build") {
 
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
+
+console.log("WE ARE CLEAR!");
+
         at_least_one_option = true;
         html += '<li class="option .'+key+'" id="' + key + '">' + his_self.returnSpaceName(key) + '</li>';
 
@@ -993,6 +987,7 @@ if (limit === "build") {
     }
     html += '</ul>';
 
+console.log("updating with: " + html);
     this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
@@ -1710,6 +1705,8 @@ return;
     $(".option").off();
     $(".option").on('click', function () {
 
+      his_self.updateStatus("acknowledge...");
+
       $(".option").off();
       let id = $(this).attr('id');
 
@@ -2118,7 +2115,7 @@ return;
 	      for (let key in space.units) {
                 if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
                   for (let i = 0; i < space.units[key].length; i++) {
-                    if (space.units[key][i].navy_leader != true) {
+	            if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
                     if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
                       let does_units_to_move_have_unit = false;
                       for (let z = 0; z < units_to_move.length; z++) {
@@ -2369,7 +2366,7 @@ return;
 	  for (let key in space.units) {
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
-	        if (space.units[key][i].navy_leader != true) {
+	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
@@ -2535,7 +2532,7 @@ return;
 	      for (let key in space.units) {
 	        if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
 	          for (let i = 0; i < space.units[key].length; i++) {
-	            if (space.units[key][i].navy_leader != true) {
+	            if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	            if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 		      units_to_move.push({ faction : key , idx : i , type : space.units[key][i].type });
 	            }
@@ -2573,6 +2570,49 @@ return;
       true,
 
     );
+
+  }
+
+  //
+  // players select a card with at least [cost] ops. this respects the "cannot pay with mandatory cards"
+  // limitation.
+  //
+  canPlayerSelectOps(faction, cost) {
+
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+
+    let cards = [];
+    for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
+      let c = this.game.deck[0].fhand[faction_hand_idx][i];
+      if (this.game.deck[0].cards[c].type != "mandatory" && this.game.deck[0].cards[c].ops >= cost) {
+	return 1;
+      }
+    }
+
+    return 0;
+  }
+  playerSelectOps(faction, cost, mycallback=null) {
+
+    let his_self = this;
+
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+
+    let cards = [];
+    for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
+      let c = this.game.deck[0].fhand[faction_hand_idx][i];
+      if (this.game.deck[0].cards[c].type != "mandatory" && this.game.deck[0].cards[c].ops >= cost) {
+        cards.push(c);
+      }
+    }
+
+    this.updateStatusAndListCards("Select a Card: ", cards);
+    this.attachCardboxEvents((card) => {
+      try {
+        $('.card').off();
+        $('.card img').off();
+      } catch (err) {}
+      mycallback(card);
+    });  
 
   }
 
@@ -2858,14 +2898,6 @@ return;
       his_self.endTurn();
     };
 
-console.log("loser: " + loser);
-console.log("winner: " + winner);
-console.log("attacker: " + attacker);
-console.log("attacker from: " + attacker_comes_from_this_spacekey);
-console.log(JSON.stringify(this.game.state.field_battle));
-console.log(JSON.stringify(this.game.state.attacker_comes_from_this_spacekey));
-
-
     let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
 
       let space = his_self.game.spaces[spacekey];
@@ -2877,12 +2909,8 @@ console.log(JSON.stringify(this.game.state.attacker_comes_from_this_spacekey));
                   "Choose Destination for Retreat:" ,
 
         	  function(space2) {
-
-console.log("spacekey: " + space2.key);
-console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.key, ""));
-
 	            if (space.neighbours.includes(space2.key)) {
-		      if (loser === attacker) {
+		      if (his_self.returnPlayerCommandingFaction(loser) === his_self.returnPlayerCommandingFaction(attacker)) {
 	  		if (space2.key === attacker_comes_from_this_spacekey) {
           		  return 1;
 	  		}
@@ -2904,23 +2932,6 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
 	    	  true 
 
       );
-
-/****
-
-      let html = "<ul>";
-      }
-      html += "</ul>";
-
-      his_self.updateStatusWithOptions("Choose Destination for Retreat: ", html);
-
-      $('.option').off();
-      $('.option').on('click', function () {
-        let id = $(this).attr("id");
-        onFinishSelect(his_self, id);
-      });
-
-***/
-
     };
 
     
@@ -3049,12 +3060,10 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
     let units_to_move = [];
     let parent_player = his_self.returnPlayerCommandingFaction(defender);
 
-
     let onFinishSelect = function(his_self, units_to_move) {
       his_self.addMove("intercept"+"\t"+attacker+"\t"+spacekey+"\t"+attacker_includes_cavalry+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
       his_self.endTurn();
     };
-
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
@@ -3068,7 +3077,7 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
 	  for (let key in space.units) {
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
-	        if (space.units[key][i].navy_leader != true) {
+	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
@@ -3477,7 +3486,7 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
 	  for (let key in space.units) {
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
-	        if (space.units[key][i].navy_leader != true) {
+	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
@@ -3998,6 +4007,9 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
 	his_self.endTurn();
       },
 
+      null ,
+
+      true ,
     );
   }
 
@@ -4017,6 +4029,16 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
+
+    //
+    // removed fortified spaces
+    //
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
+      let n = his_self.game.spaces[conquerable_spaces[i]];
+      if (his_self.isSpaceFortified(n)) {
+        conquerable_spaces.splice(i, 1); // remove
+      }
+    }
 
     //
     // remove spaces with other infantry
@@ -4068,7 +4090,6 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
         i--;
       }
     }
-
 
     for (let i = 0; i < spaces_in_unrest.length; i++) {
       if (!his_self.isSpaceControlled(spaces_in_unrest[i]), faction) { 
@@ -4140,6 +4161,16 @@ console.log("can go here? " + his_self.canFactionRetreatToSpace(loser, space2.ke
       }
     }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction, true); // include adjacency
+
+    //
+    // removed fortified spaces
+    //
+    for (let i = conquerable_spaces.length-1; i >= 0; i--) {
+      let n = his_self.game.spaces[conquerable_spaces[i]];
+      if (his_self.isSpaceFortified(n)) {
+        conquerable_spaces.splice(i, 1); // remove
+      }
+    }
 
     //
     // remove spaces with other infantry
@@ -4402,19 +4433,19 @@ return;
 
       let msg = "Select Language Zone for Reformation Attempts:";
       let html = '<ul>';
-      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("german")) {
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("german") || his_self.canProtestantsReformInLanguageZone("german")) {
         html += '<li class="option german" style="" id="german">German</li>';
       }
-      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("english")) {
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("english") || his_self.canProtestantsReformInLanguageZone("english")) {
         html += '<li class="option english" style="" id="english">English</li>';
       }
-      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("french")) {
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("french") || his_self.canProtestantsReformInLanguageZone("french")) {
         html += '<li class="option french" style="" id="french">French</li>';
       }
-      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("spanish")) {
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("spanish") || his_self.canProtestantsReformInLanguageZone("spanish")) {
         html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
       }
-      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("italian")) {
+      if (his_self.returnNumberOfProtestantSpacesInLanguageZone("italian") || his_self.canProtestantsReformInLanguageZone("italian")) {
         html += '<li class="option italian" style="" id="italian">Italian</li>';
       }
       html += '</ul>';
@@ -4874,4 +4905,53 @@ return;
 
   }
 
+  canPlayerDeclareWar(his_self, faction) {
+
+    let t = his_self.returnDeclarationOfWarTargets(faction);
+    for (let i = 0; i < t.length; i++) {
+      if (t[i].cost > 0) { return 1; }
+    }
+
+    return 0;
+
+  }
+
+  playerDeclareWar(his_self, faction, cost=-1, targets=[]) {
+
+    let t = his_self.returnDeclarationOfWarTargets(faction);
+
+    let msg = "Declare War on which Power?";
+    let html = '<ul>';
+    for (let i = 0; i < t.length; i++) {
+      if ((this.canPlayerSelectOps(faction, t[i].cost) || cost == -1) || (this.canPlayerSelectOps(faction, cost))) {
+	if (targets.length > 0) {
+          if (targets.includes(t[i].faction)) {
+	    html += `<li class="option" id="${i}">${t[i].faction}</li>`;
+	  }
+	} else {
+          html += `<li class="option" id="${i}">${t[i].faction}</li>`;
+        }
+      }
+    }
+    html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let id = $(this).attr("id");
+      let enemy = t[id].faction;
+      let cost = t[id].cost;
+
+      his_self.playerSelectOps(faction, cost, (card) => {
+        his_self.addMove(`discard\t${faction}\t${card}`);
+        his_self.addMove(`declare_war\t${faction}\t${cost}`);
+        his_self.endTurn();
+      });
+
+    });
+     
+    return 0;
+  }
 

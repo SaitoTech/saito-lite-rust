@@ -430,7 +430,7 @@ if (this.game.state.scenario != "is_testing") {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
 		// && clause permits Hapsburgs in Tunis for instance
-		if (!this.isSpaceFortified(space) || ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerOfFaction(key) > 0 && !this.isSpaceControlled(i, key))) {
+		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) || ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerOfFaction(key) > 0 && !this.isSpaceControlled(i, key))) {
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
 		  //
@@ -810,8 +810,6 @@ if (this.game.state.scenario != "is_testing") {
     	  this.convertSpace("protestant", "regensberg");
     	  this.convertSpace("protestant", "munster");
 
-
-
 	  this.controlSpace("papacy", "siena");
 	  this.addMercenary("papacy", "siena", 1);
 	  this.addMercenary("papacy", "siena", 1);
@@ -841,6 +839,13 @@ if (this.game.state.scenario != "is_testing") {
 
 	  this.addNavyLeader("papacy", "rome", "dragut");
 
+	  for (let key in this.game.spaces) {
+	    if (this.game.spaces[key].language == "german") {
+	      this.controlSpace("protestant", key);
+	      this.convertSpace("protestant", key);
+	    }
+	  }
+
 	  this.addRegular("france","graz", 1);
 
     	  this.game.spaces['graz'].type = 'key';
@@ -853,8 +858,8 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addRegular("france", "genoa", 3);
     	  this.addNavalSquadron("france", "genoa", 4);
 
-
-	  this.addCard("papacy", "109");
+	  let deck = this.returnDeck();
+	  deck['013'].onEvent(this, "protestant");
 
     	  this.game.queue.splice(qe, 1);
 
@@ -4073,14 +4078,19 @@ console.log("we have made it this far!");
             hits_to_assign = this.game.state.assault.defender_hits;
 	  }
 
+console.log("we have made it this far 2!");
+
           let defending_factions = [];
           let defending_factions_count = 0;
           let defending_major_powers = 0;
           let defending_factions_hits = [];
 	  let major_power = false;
+	  let multiple_major_powers = false;
 	  for (let f in this.game.state.assault.faction_map) {
 	    if (this.game.state.assault.faction_map[f] === faction) {
+console.log("we have made it this far 3!");
 	      if (this.isMajorPower(f)) {
+		if (major_power) { multiple_major_powers = true; }
 	        defending_factions.push(f);
                 defending_factions_hits.push(0);
 		major_power = true;
@@ -4091,37 +4101,45 @@ console.log("we have made it this far!");
 	      }
 	    }
 	  }
-
+console.log(JSON.stringify(defending_factions));
+console.log(JSON.stringify(defending_factions_hits));
+console.log("we have made it this far 4!");
 	  //
 	  // every gets shared hits
 	  //
-	  if (defending_factions_hits.length > 0) {
-	    while (major_power == true && hits_to_assign > defending_factions_hits.length) {
-	      for (let i = 0; i < defending_factions_hits.length; i++) { defending_factions_hits[i]++; }
-	      hits_to_assign -= defending_factions_hits.length;
+	  if (multiple_major_powers) {
+  	    if (defending_factions_hits.length > 0) {
+	      while (major_power == true && hits_to_assign > defending_factions_hits.length) {
+	        for (let i = 0; i < defending_factions_hits.length; i++) { defending_factions_hits[i]++; }
+	        hits_to_assign -= defending_factions_hits.length;
+	      }
 	    }
-	  }
+console.log("we have made it this far 5!");
 
-	  //
-	  // randomly assign remainder
-	  //
-	  let already_punished = [];
-	  for (let i = 0; i < hits_to_assign; i++) {
-	    let unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
-	    while (already_punished.includes(unlucky_faction)) {
-	      unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
+	    //
+	    // randomly assign remainder
+	    //
+	    let already_punished = [];
+	    if (defending_factions_hits.length > 0 && hits_to_assign > 0) {
+	      for (let i = 0; i < hits_to_assign; i++) {
+	        let unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
+	        while (already_punished.includes(unlucky_faction)) {
+	          unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
+	        }
+	        defending_factions_hits[unlucky_faction]++;
+	        already_punished.push(unlucky_faction);
+	      }
+	      hits_to_assign = 0;
 	    }
-	    defending_factions_hits[unlucky_faction]++;
-	    already_punished.push(unlucky_faction);
-	  }
 
-	  //
-	  // defending major powers
-	  //
-//	  for (let i = 0; i < defending_factions_hits.length; i++) {
-//  	    this.game.queue.push(`assault_manually_assign_hits\t${defending_factions[i]}\t${defending_factions_hits[i]}`);
-//	  }
-//	  return 1;
+	    //
+	    // defending major powers
+	    //
+	    for (let i = 0; i < defending_factions_hits.length; i++) {
+  	      this.game.queue.push(`assault_manually_assign_hits\t${defending_factions[i]}\t${defending_factions_hits[i]}`);
+	    }
+	    return 1;
+	  }
 
 	  //
 	  // otherwise assign hits directly
@@ -6903,15 +6921,6 @@ if (this.game.state.round == 1) {
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
 	  //
-	  // TESTING form Schmalkaldic League triggers end of round 1
-	  //
-	  //if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
-	  //  this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
-	  //  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-	  //  this.game.queue.push("event\tprotestant\t013");
-	  //}
-	  //
-	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
 	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
@@ -6922,8 +6931,6 @@ if (this.game.state.round == 1) {
 
 	  // Return naval units to the nearest port
 	  this.game.queue.push("retreat_to_winter_ports");
-
-	  // TODO - ATTRITION
 
 	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
 	  this.game.queue.push("retreat_to_winter_spaces");
@@ -6940,6 +6947,9 @@ if (this.game.state.round == 1) {
 // Papacy
 //
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
+console.log("round: " + round);
+console.log("impulse: " + round);
+
 if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
     help : `Action Phase` ,
@@ -8334,6 +8344,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
 	  let space = mv[2];
+	  let religion = this.game.spaces[space].religion;
 
 	  this.game.spaces[space].unrest = 0;
 
@@ -8353,6 +8364,44 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  }
 
 	  this.game.spaces[space].political = faction;
+
+	  //
+	  // post schmalkaldic_league
+	  //
+	  if (faction === "protestant") {
+            if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0 && this.game.state.events.schmalkaldic_league == 1) {
+              this.game.spaces['augsburg'].units['protestant'].push();
+              this.addRegular("protestant", "augsburg", 2);
+              this.game.state.augsburg_electoral_bonus = 1;
+            }
+            if (space === "mainz" && religion === "protestant" && this.game.state.mainz_electoral_bonus == 0 && this.game.state.events.schmalkaldic_league == 1) {
+              this.game.spaces['mainz'].units['protestant'].push();
+              this.addRegular("protestant", "mainz", 1);
+              this.game.state.mainz_electoral_bonus = 1;
+            }
+            if (space === "trier" && religion === "protestant" && this.game.state.trier_electoral_bonus == 0 && this.game.state.events.schmalkaldic_league == 1) {
+              this.game.spaces['trier'].units['protestant'].push();
+              this.addRegular("protestant", "trier", 1);
+              this.game.state.trier_electoral_bonus = 1;
+            }
+            if (space === "cologne" && religion === "protestant" && this.game.state.cologne_electoral_bonus == 0 && this.game.state.events.schmalkaldic_league == 1) {
+              this.game.spaces['cologne'].units['protestant'].push();
+              this.addRegular("protestant", "cologne", 1);
+              this.game.state.cologne_electoral_bonus = 1;
+            }
+            if (space === "wittenberg" && religion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0 && this.game.state.events.schmalkaldic_league == 1) {
+              this.game.spaces['wittenberg'].units['protestant'].push();
+              this.addRegular("protestant", "wittenberg", 2);
+              this.game.state.wittenberg_electoral_bonus = 1;
+            }
+            if (space === "brandenburg" && religion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0 && this.game.state.events.schmalkaldic_league == 1) {
+              this.game.spaces['brandenburg'].units['protestant'].push();
+              this.addRegular("protestant", "brandenburg", 1);
+              this.game.state.brandenburg_electoral_bonus = 1;
+            }
+          }
+
+
 
 	  this.displaySpace(space);
 	  this.displayVictoryTrack();
@@ -8408,32 +8457,32 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    this.updateLog(this.returnSpaceName(space) + " converts Catholic");
 	  }
 
-	  if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
+	  if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
 	    this.game.spaces['augsburg'].units['protestant'].push();
     	    this.addRegular("protestant", "augsburg", 2);
 	    this.game.state.augsburg_electoral_bonus = 1;
 	  }
-	  if (space === "mainz" && religion === "protestant" && this.game.state.mainz_electoral_bonus == 0) {
+	  if (space === "mainz" && religion === "protestant" && this.game.state.mainz_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
 	    this.game.spaces['mainz'].units['protestant'].push();
     	    this.addRegular("protestant", "mainz", 1);
 	    this.game.state.mainz_electoral_bonus = 1;
 	  }
-	  if (space === "trier" && religion === "protestant" && this.game.state.trier_electoral_bonus == 0) {
+	  if (space === "trier" && religion === "protestant" && this.game.state.trier_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
 	    this.game.spaces['trier'].units['protestant'].push();
     	    this.addRegular("protestant", "trier", 1);
 	    this.game.state.trier_electoral_bonus = 1;
 	  }
-	  if (space === "cologne" && religion === "protestant" && this.game.state.cologne_electoral_bonus == 0) {
+	  if (space === "cologne" && religion === "protestant" && this.game.state.cologne_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
 	    this.game.spaces['cologne'].units['protestant'].push();
     	    this.addRegular("protestant", "cologne", 1);
 	    this.game.state.cologne_electoral_bonus = 1;
 	  }
-	  if (space === "wittenberg" && religion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0) {
+	  if (space === "wittenberg" && religion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
 	    this.game.spaces['wittenberg'].units['protestant'].push();
     	    this.addRegular("protestant", "wittenberg", 2);
 	    this.game.state.wittenberg_electoral_bonus = 1;
 	  }
-	  if (space === "brandenburg" && religion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0) {
+	  if (space === "brandenburg" && religion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
 	    this.game.spaces['brandenburg'].units['protestant'].push();
     	    this.addRegular("protestant", "brandenburg", 1);
 	    this.game.state.brandenburg_electoral_bonus = 1;

@@ -433,6 +433,23 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
   }
 
 
+  canProtestantsReformInLanguageZone(lang="german") {
+    let access_spots = [];
+    if (lang == "german") { access_spots = ["amsterdam","liege","metz","becanson","geneva","trent","trieste","agram","pressburg","brunn","prague","breslau","antwerp","calais","london","norwich","berwick","edinburgh"]; }
+    if (lang == "italian") { access_spots = ["innsbruck","graz","geneva","grenoble","nice","agram","zara","bastia","ragusa","scutari","durazzo","corfu","nice"]; }
+    if (lang == "spanish") { access_spots = ["bordeaux","toulouse","avignon","marseille","nice","bastia","palma","cagliari","tunis","algiers","oran","nantes","brest"]; }
+    if (lang == "english") { access_spots = ["brest","rouen","boulogne","calais","antwerp","amsterdam","bremen","hamburg"]; }
+    if (lang == "french") { access_spots = ["plymouth","portsmouth","london","calais","antwerp","cologne","trier","strasburg","basel","turin","genoa","bastia","palma","valencia","barcelona","navarre","corunna"]; }
+
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion == "protestant") {
+	if (access_spots.includes(key)) { return 1; }
+      }
+    }
+
+    return 0;
+  }
+
   returnImpulseOrder() {
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
@@ -489,6 +506,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     state.scenario = "1517";
     if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;
+    state.impulse = 0;
     state.players = [];
     state.events = {};
     state.removed = []; // removed cards

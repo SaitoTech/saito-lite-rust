@@ -403,6 +403,7 @@
 
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
+    if (owner == "protestant") { stype = "hex"; }
 
     if (owner != "") {
 

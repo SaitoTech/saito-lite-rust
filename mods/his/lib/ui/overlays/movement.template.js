@@ -24,7 +24,7 @@ module.exports = MovementOverlayTemplate = (obj, his_self) => {
 		let ucss = '';
 		let uclass = '';
 		let utype = obj.unmoved_units[i].type;
-		if (utype != 'regular' && utype != 'mercenary' && utype != 'cavalry') {
+		if (utype != 'regular' && utype != 'mercenary' && utype != 'cavalry' && obj.unmoved_units[i].reformer != true) {
 			uclass = 'army-unit';
 			ucss = `background-image:url('/his/img/tiles/army/${his_self.army[utype].img}');background-size:cover;`;
 		}

@@ -5,6 +5,7 @@
     return spacekey;
   }
 
+  
 
   resetBesiegedSpaces() {
     for (let space in this.game.spaces) {

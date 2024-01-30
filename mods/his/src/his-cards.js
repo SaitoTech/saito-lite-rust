@@ -135,7 +135,7 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
 
-        if (mv[0] == "andrea_doria_placement") {
+        if (mv[0] == "andrea_dorea_placement") {
 
 	  let faction = mv[1];
 	  let player = his_self.returnPlayerOfFaction(faction);
@@ -241,7 +241,7 @@
    	    let msg = "Additional Military Support:";
             let html = '<ul>';
             html += '<li class="option" id="squadron">1 squadron in French home port</li>';
-            html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
+            html += '<li class="option" id="mercenaries">2 more mercenaries in '+his_self.returnSpaceName(spacekey)+'</li>';
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -701,7 +701,7 @@ if (space.key === "bordeaux") {
             his_self.updateStatus("acknowledge...");
 
 	    if (action === "discard") {
-	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
+	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("papacy"))+"\t1");
               his_self.addMove("discard_diplomacy_card\tpapacy\t"+cards[0]);
 	      his_self.addMove("NOTIFY\tProtestants discard "+his_self.popup(cards[0]));
 	      his_self.endTurn();
@@ -794,7 +794,7 @@ if (space.key === "bordeaux") {
  	    let msg = "Choose Option:";
             let html = '<ul>';
             html += '<li class="option" id="squadron">1 squadron in French home port</li>';
-            html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
+            html += '<li class="option" id="mercenaries">2 more mercenaries in '+his_self.returnSpaceName(spacekey)+'</li>';
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -1570,7 +1570,7 @@ if (space.key === "bordeaux") {
             function(spacekey) {
 	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
               his_self.addMove(`DEAL\t1\t${p}\t1`);
-              his_self.addMove("add_army_leader\tpapacy\t"+spacekey+"\tferdinand");
+              his_self.addMove("add_army_leader\thapsburg\t"+spacekey+"\tferdinand");
 	      his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
               his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
               his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
@@ -1578,7 +1578,11 @@ if (space.key === "bordeaux") {
               his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null,
+
+	    true
           );
 
 	}
@@ -1612,7 +1616,7 @@ if (space.key === "bordeaux") {
             function(spacekey) {
 	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
               his_self.addMove(`DEAL\t1\t${p}\t1`);
-              his_self.addMove("add_army_leader\tpapacy\t"+spacekey+"\tcharles-v");
+              his_self.addMove("add_army_leader\thapsburg\t"+spacekey+"\tcharles-v");
 	      his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
 	      his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
               his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
@@ -1622,7 +1626,11 @@ if (space.key === "bordeaux") {
               his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
               his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
               his_self.endTurn();
-            }
+            },
+
+	    null,
+
+	    true,
           );
 
 	}
@@ -1652,12 +1660,12 @@ if (space.key === "bordeaux") {
 	//
         let msg = "Select Invasion Card:";
         let html = '<ul>';
-        html += '<li class="option" id="ottoman">Ottoman Invasion</li>';
-        html += '<li class="option" id="imperial">Imperial Invasion</li>';
-        html += '<li class="option" id="austrian">Austrian Invasion</li>';
-        html += '<li class="option" id="spanish">Spanish Invasion</li>';
-        html += '<li class="option" id="french">French Invasion</li>';
-        html += '<li class="option" id="constable">French Constable Invades</li>';
+        html += '<li class="option showcard" id="216">Ottoman Invasion</li>';
+        html += '<li class="option showcard" id="214">Imperial Invasion</li>';
+        html += '<li class="option showcard" id="213">Austrian Invasion</li>';
+        html += '<li class="option showcard" id="211">Spanish Invasion</li>';
+        html += '<li class="option showcard" id="206">French Invasion</li>';
+        html += '<li class="option showcard" id="202">French Constable Invades</li>';
         html += '</ul>';
 
         his_self.updateStatusWithOptions(msg, html);
@@ -1665,34 +1673,8 @@ if (space.key === "bordeaux") {
         $('.option').off();
         $('.option').on('click', function () {
 
-          let action = $(this).attr("id");
-
-          let card = "";
-
-	  if (action === "ottoman") {
-            card = "216";
-	  }
-
-	  if (action === "imperial") {
-            card = "214";
-	  }
-
-	  if (action === "austrian") {
-            card = "213";
-	  }
-
-	  if (action === "spanish") {
-            card = "211";
-	  }
-
-	  if (action === "french") {
-            card = "206";
-	  }
-
-	  if (action === "constable") {
-            card = "202";
-	  }
-
+	  his_self.updateStatus("acknowledge...");
+          let card = $(this).attr("id");
 	  his_self.addMove("reshuffle_diplomacy_deck");
 	  his_self.addMove("diplomacy_card_event\t"+winner+"\t"+card);
 	  his_self.endTurn();
@@ -1774,9 +1756,11 @@ if (space.key === "bordeaux") {
 	let d = his_self.rollDice(6);
 
 	if (d <= 3) {
+	  his_self.updateLog("Protestants may flip an Italian and Spanish space");
 	  his_self.game.queue.push("secret_protestant_circle\tspanish");
 	  his_self.game.queue.push("secret_protestant_circle\titalian");
 	} else {
+	  his_self.updateLog("Protestants may convert an Italian space");
 	  his_self.game.queue.push("secret_protestant_circle\titalian");
 	}
 
@@ -1802,7 +1786,11 @@ if (space.key === "bordeaux") {
               function(spacekey) {
                 his_self.addMove("convert\t"+spacekey+"\tprotestant");
                 his_self.endTurn();
-              }
+              },
+
+	      null,
+
+	      true
             );
 	  }
 	  
@@ -1834,7 +1822,7 @@ if (space.key === "bordeaux") {
 
 	let spaces = his_self.returnSpacesWithFilter(
           function(spacekey) {
-            if (his_self.returnFactionLandUnitsInSpace("papacy", spacekey)) { return true; }
+            if (his_self.returnFactionLandUnitsInSpace("hapsburg", spacekey)) { return true; }
             if (his_self.returnFactionLandUnitsInSpace("hungary", spacekey)) { return true; }
 	    return false;
 	  }
@@ -1851,10 +1839,9 @@ if (space.key === "bordeaux") {
 
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
-	  let player = his_self.returnPlayerOfFaction(faction);
+	  let player = his_self.returnPlayerCommandingFaction(faction);
 
 	  let lockdown = ["regensburg","salzburg","linz","prague","breslau","brunn","vienna","graz","trieste","agram","pressburg","buda"];
-
 	  if (player == his_self.game.player) {
 
  	    let msg = `${his_self.popup("218")}: remove unit #${num}:`;
@@ -1864,7 +1851,6 @@ if (space.key === "bordeaux") {
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
-
 
    	    $('.option').off();
 	    $('.option').on('click', function () {
@@ -1886,6 +1872,7 @@ if (space.key === "bordeaux") {
                   "Select Space to Remove Unit" ,
 
                   function(space) {
+console.log("considering: " + space.key);
                     if (spaces.includes(space.key)) { return 1; }
 	            return 0;
                   },
@@ -2037,11 +2024,11 @@ if (space.key === "bordeaux") {
 
         if (mv[0] === "spanish_inquisition_results") {
 
-          let cards = JSON.parse(mv[2]);
+          let cards = JSON.parse(mv[1]);
 
           his_self.game.queue.splice(qe, 1);
 	  // remove protestant play 
-          his_self.game.queue.splice(qe, 1);
+          his_self.game.queue.splice(qe-1, 1);
 
 	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
 
@@ -2049,7 +2036,7 @@ if (space.key === "bordeaux") {
    	    let msg = "Choose Protestant Card to Discard:";
             let html = '<ul>';
 	    for (let i = 0; i < cards.length; i++) {
-              html += `<li class="option" id="${i}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
+              html += `<li class="showcard option" id="${cards[i]}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
 	    }
     	    html += '</ul>';
 
