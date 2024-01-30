@@ -1,0 +1,45 @@
+const SettingsTemplate = require("./redsquare-settings.template");
+
+class Settings {
+  constructor(app, mod, container = ".saito-module-settings") {
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
+  }
+
+  render() {
+    this.app.browser.addElementToSelector(SettingsTemplate(this.app, this.mod), this.container);
+    this.attachEvents();
+  }
+
+  attachEvents() {
+
+    let settings_self = this;
+
+    Array.from(document.querySelectorAll("input[name='redsquare-source']")).forEach(radio => {
+      radio.addEventListener("change", (e) => {
+        if (e.currentTarget.value == "distributed"){
+          this.app.options.redsquare.distributed = true;
+        }else{
+          this.app.options.redsquare.distributed = false;
+        }
+        this.app.storage.saveOptions();
+      });
+    });
+
+    if (document.getElementById("browser_service")){
+      document.getElementById("browser_service").addEventListener("change", (e) => {
+        if (e.currentTarget.checked){
+          this.app.options.redsquare.offer_service = true;
+        }else{
+          this.app.options.redsquare.offer_service = false;
+        }
+        this.app.storage.saveOptions();
+      });
+
+    }
+
+  }
+}
+
+module.exports = Settings;
