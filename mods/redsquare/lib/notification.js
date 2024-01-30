@@ -192,7 +192,7 @@ class RedSquareNotification {
 	}
 
 	attachEvents() {
-		Array.from(document.querySelectorAll('.tweet-notification')).forEach(
+		Array.from(document.querySelectorAll('.tweet')).forEach(
 			(obj) => {
 				obj.onclick = (e) => {
 					let sig = e.currentTarget.getAttribute('data-id');
