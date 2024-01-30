@@ -64,6 +64,9 @@ class ChatPopup {
 		}
 	}
 
+	//
+	// The chat popup has subcomponents, but only the body gets re-rendered
+	//
 	render() {
 		let this_self = this;
 		//
@@ -171,6 +174,32 @@ class ChatPopup {
 				obj.style.left = x_pos + 'px';
 			}
 
+
+			// add call icon, ignore if community chat
+			let mods = this.app.modules.mods;
+			if (this.group.name != this.mod.communityGroupName) {
+				let index = 0;
+				for (const mod of mods) {
+					let item = mod.respondTo('chat-actions', {
+						publicKey: this.group.name
+					});
+					if (item instanceof Array) {
+						item.forEach((j) => {
+							let id = `chat_action_item_${index}`;
+							this_self.callbacks[id] = j.callback;
+							this_self.addChatActionItem(j, id);
+							index++;
+						});
+					} else if (item != null) {
+						let id = `chat_action_item_${index}`;
+						this_self.callbacks[id] = item.callback;
+						this_self.addChatActionItem(item, id);
+					}
+					index++;
+				}
+			}
+
+
 			//
 			// inputs
 			//
@@ -203,37 +232,6 @@ class ChatPopup {
 			}
 		}
 
-		// add call icon, ignore if community chat
-		let mods = this.app.modules.mods;
-		if (this.group.name != this.mod.communityGroupName) {
-			let index = 0;
-			for (const mod of mods) {
-				let item = mod.respondTo('chat-actions', {
-					publicKey: this.group.name
-				});
-				if (item instanceof Array) {
-					item.forEach((j) => {
-						let id = `chat_action_item_${index}`;
-						this_self.callbacks[id] = j.callback;
-						this_self.addChatActionItem(j, id);
-						index++;
-					});
-				} else if (item != null) {
-					let id = `chat_action_item_${index}`;
-					this_self.callbacks[id] = item.callback;
-					this_self.addChatActionItem(item, id);
-				}
-				index++;
-			}
-		}
-
-		//
-		// re-render typed text
-		//
-		//if (existing_input != "") {
-		//  this.input.setInput(existing_input);
-		//  existing_input = "";
-		//}
 
 		//
 		// attach events
