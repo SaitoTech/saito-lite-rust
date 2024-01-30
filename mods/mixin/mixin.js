@@ -140,8 +140,6 @@ class Mixin extends ModTemplate {
 
   async createAccount(callback){
     console.log('inside mixin account create ////');
-    console.log('account_created');
-    console.log(this.account_created);
     if (this.account_created == 0) {
       await this.sendCreateAccountTransaction(callback);
     }
@@ -208,13 +206,6 @@ class Mixin extends ModTemplate {
         },
       });
 
-      console.log("user keystore ///");
-      console.log({
-          app_id: user.user_id,
-          session_id: user.session_id,
-          pin_token_base64: user.pin_token_base64,
-          session_private_key: mixin_self.bot_data.session_private_key
-        });
 
       const { privateKey: spendPrivateKey, publicKey: spendPublicKey, seed: sessionSeed } = getED25519KeyPair();
       const spend_private_key = spendPrivateKey;
@@ -386,7 +377,6 @@ class Mixin extends ModTemplate {
 
   async fetchSafeUtxo(asset_id){
     try {
-      console.log('inside fetchSafeSnapshots ///');
       let priv_key = (this.mixin.session_seed);
 
       let user = MixinApi({
@@ -488,20 +478,19 @@ class Mixin extends ModTemplate {
       });
 
       console.log("check 8");
-      console.log({
+      let address_data = await user.address.create(this.mixin.tip_key_base64, {
         asset_id: asset_id,
         destination: withdrawal_address,
         tag: tag,
-      });
-
-      let address_data = await user.external.checkAddress({
-        asset_id: asset_id,
-        destination: withdrawal_address,
-        tag: tag,
+        label: ''
       });
 
       console.log("check address //");
       console.log(address_data);
+
+      if (callback) {
+        return callback(address_data);
+      }
     } catch(err) {
       console.error("ERROR: Mixin error check withdrawl fee: " + err);
       return false;
