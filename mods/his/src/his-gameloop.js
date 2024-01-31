@@ -2618,8 +2618,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	}
 	if (mv[0] === "counter_or_acknowledge") {
 
-console.log("counter_or_acknowledge #1");
-
 	  //
 	  // hide any cardbox
 	  //
@@ -2671,8 +2669,6 @@ console.log("counter_or_acknowledge #1");
 	  //
 	  let his_self = this;
 
-console.log("counter_or_acknowledge #2");
-
 	  let html = '<ul>';
 
 	  let menu_index = [];
@@ -2684,13 +2680,15 @@ console.log("counter_or_acknowledge #2");
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
 console.log("counter_or_acknowledge #3");
-            if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
-              let x = z[i].menuOption(this, stage, this.game.player, extra);
-              html += x.html;
-	      z[i].faction = x.faction; // add faction
-	      menu_index.push(i);
-	      menu_triggers.push(x.event);
-	      attach_menu_events = 1;
+	    if (z[i].key !== this.game.state.active_card) {
+              if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
+                let x = z[i].menuOption(this, stage, this.game.player, extra);
+                html += x.html;
+	        z[i].faction = x.faction; // add faction
+	        menu_index.push(i);
+	        menu_triggers.push(x.event);
+	        attach_menu_events = 1;
+	      }
 	    }
 	  }
 	  html += '</ul>';
@@ -6832,8 +6830,8 @@ console.log("FACTIONS: " + JSON.stringify(f));
 
 	  for (let faction in f) {
 	    if (f[faction].victory == 1) {
-	      this.updateLog(this.returnFactionName(f) + " wins: " + f[faction].reasons);
-	      this.updateStatus(this.returnFactionName(f) + " wins: " + f[faction].reasons);
+	      this.updateLog(this.returnFactionName(faction) + " wins: " + f[faction].reason);
+	      this.updateStatus(this.returnFactionName(faction) + " wins: " + f[faction].reason);
 //	      let player = this.returnPlayerOfFaction(faction);
 //	      this.sendGameOverTransaction([this.game.players[player-1]], f.details);
 	      return 0;
@@ -7686,6 +7684,19 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let p2 = this.returnPlayerOfFaction(faction_giving);
 	  this.game.state.last_pulled_card = card;
 
+
+	  //
+	  // update cards left
+	  //
+	  this.game.state.cards_left[faction_taking] += 1;
+	  this.game.state.cards_left[faction_giving] -= 1;
+	  if (this.game.state.cards_left[faction_giving] < 0) { 
+	    this.game.state.cards_left[faction_taking] -= 1;
+	    this.game.state.cards_left[faction_giving] = 0;
+	  }
+	  this.displayCardsLeft();
+
+
 	  if (this.game.player == p2) {
 	    for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
 	      for (let z = 0; z < this.game.deck[0].fhand[i].length; z++) {
@@ -7985,6 +7996,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.debate_overlay.hide();
 	  this.theses_overlay.hide();
 
+	  this.game.state.active_card = "";
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
 
@@ -8478,32 +8490,26 @@ console.log("AVAILABLE SPACES: " + available_spaces);
 	  }
 
 	  if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
-	    this.game.spaces['augsburg'].units['protestant'].push();
     	    this.addRegular("protestant", "augsburg", 2);
 	    this.game.state.augsburg_electoral_bonus = 1;
 	  }
 	  if (space === "mainz" && religion === "protestant" && this.game.state.mainz_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
-	    this.game.spaces['mainz'].units['protestant'].push();
     	    this.addRegular("protestant", "mainz", 1);
 	    this.game.state.mainz_electoral_bonus = 1;
 	  }
 	  if (space === "trier" && religion === "protestant" && this.game.state.trier_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
-	    this.game.spaces['trier'].units['protestant'].push();
     	    this.addRegular("protestant", "trier", 1);
 	    this.game.state.trier_electoral_bonus = 1;
 	  }
 	  if (space === "cologne" && religion === "protestant" && this.game.state.cologne_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
-	    this.game.spaces['cologne'].units['protestant'].push();
     	    this.addRegular("protestant", "cologne", 1);
 	    this.game.state.cologne_electoral_bonus = 1;
 	  }
 	  if (space === "wittenberg" && religion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
-	    this.game.spaces['wittenberg'].units['protestant'].push();
     	    this.addRegular("protestant", "wittenberg", 2);
 	    this.game.state.wittenberg_electoral_bonus = 1;
 	  }
 	  if (space === "brandenburg" && religion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {
-	    this.game.spaces['brandenburg'].units['protestant'].push();
     	    this.addRegular("protestant", "brandenburg", 1);
 	    this.game.state.brandenburg_electoral_bonus = 1;
 	  }

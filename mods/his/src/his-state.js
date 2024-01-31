@@ -350,8 +350,6 @@
       factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
-console.log("protestants after copernicus: " + factions["protestant"].vp);
-
     //
     //• Bible translation completed (1 VP for each language)    ***
     // protestant faction class
@@ -387,7 +385,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
 	leaders = [];
         leaders.push(key);
       }
-      if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round) {
+      if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
 	if (leaders.length == 1) {
 	  factions[leaders[0]].victory = 1;
 	  factions[leaders[0]].reason = "Domination Victory";
@@ -408,7 +406,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     //
     // 8 VP lead in 2P
     //
-    if (this.game.players.length == 2) {
+    if (this.game.players.length == 2 && this.game.state.round >= 4) {
       if ((factions["protestant"].vp - factions["papacy"].vp) >= 8) {
 	factions["protestant"].victory = 1;
 	factions["protestant"].reason = "Commanding 8VP Lead";
@@ -424,32 +422,32 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     //
     let highest_vp = 0;
     let fs = [];
-    this.game.state.vp.push({});
     if (this.game.state.round > 0) {
-    for (let key in factions) {
-      if (factions[key].vp == highest_vp) {
-	fs.push(key);
+      this.game.state.vp.push({});
+      for (let key in factions) {
+        if (factions[key].vp == highest_vp) {
+ 	  fs.push(key);
+        }
+        if (factions[key].vp > highest_vp) {
+	  fs = [];
+	  fs.push(key);
+  	  highest_vp = factions[key].vp;
+        }
+        this.game.state.vp[this.game.state.round-1][key] = factions[key].vp;
       }
-      if (factions[key].vp > highest_vp) {
-	fs = [];
-	fs.push(key);
-	highest_vp = factions[key].vp;
+      if (fs.length == 1 && highest_vp >= 25) {
+        factions[fs[0]].victory = 1;
+        factions[fs[0]].reason = "Standard Victory"; 
       }
-      this.game.state.vp[this.game.state.round-1][key] = factions[key].vp;
-    }
-    if (fs.length == 1) {
-      factions[fs[0]].victory = 1;
-      factions[fs[0]].reason = "Standard Victory"; 
-    }
-    //
-    // historical resolution -
-    //
-    if (fs.length > 1) {
-      for (let z = 0; z < fs.length; z++) {
-        factions[fs[z]].victory = 1;
-        factions[fs[z]].reason = "Score Tied";
+      //
+      // historical resolution -
+      //
+      if (fs.length > 1 && highest_vp >= 25) {
+        for (let z = 0; z < fs.length; z++) {
+          factions[fs[z]].victory = 1;
+          factions[fs[z]].reason = "Score Tied";
+        }
       }
-    }
     }
 
     return factions;

@@ -166,7 +166,7 @@
 
           );
 	  } else {
-	    this.updateStatus("Genoa adding 4 Regulars");
+	    his_self.updateStatus("Genoa adding 4 Regulars");
 	  }
 
           return 0;
@@ -3067,6 +3067,8 @@ console.log("considering: " + space.key);
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
+	  let spillover = 0;
+	  if (mv[3]) { spillover = parseInt(mv[3]); } // allow reformation outside target area
 
 	  his_self.game.queue.splice(qe, 1);
 
@@ -3074,7 +3076,7 @@ console.log("considering: " + space.key);
 	    function(space) {
 	      if (
 	        space.religion === "protestant" &&
-	        (space.language === language_zone || language_zone == "all") &&
+	        ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
 	        !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
 	        ( 
 		  his_self.isSpaceAdjacentToReligion(space, "catholic")
@@ -3120,7 +3122,7 @@ console.log("considering: " + space.key);
 	      function(space) {
 		if (
 		  space.religion === "protestant" &&
-		  (space.language === language_zone || language_zone == "all") &&
+		  ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
 		  !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
 		  his_self.isSpaceAdjacentToReligion(space, "catholic")
 	        ) {
@@ -3165,6 +3167,9 @@ console.log("considering: " + space.key);
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
+	  let spillover = 0;
+	  if (mv[3]) { spillover = parseInt(mv[3]); } // allow reformation outside target area
+
 
 	  his_self.game.queue.splice(qe, 1);
 
@@ -3173,7 +3178,7 @@ console.log("considering: " + space.key);
 	      if (
 		space.religion === "catholic" &&
 		!his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
-		(space.language === language_zone || language_zone == "all") &&
+		((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
 		(
 			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
 			||
@@ -3220,7 +3225,7 @@ console.log("considering: " + space.key);
 	  	  if (
 		    space.religion === "catholic" &&
 		    !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
-		    (space.language === language_zone || language_zone == "all") &&
+		    ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
 		    (
 			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
 			||
@@ -8884,6 +8889,7 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
     delete deck["116"];
 
     for (let key in deck) {
+      deck[key].key = key;
       deck[key] = this.addEvents(deck[key]);
       if (!deck[key].warn) { deck[key].warn = []; }
     }

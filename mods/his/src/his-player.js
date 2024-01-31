@@ -1274,6 +1274,7 @@ console.log("and calling callback...");
   playerPlayCard(card, player, faction) {
     
     this.cardbox.hide();
+    this.game.state.active_card = card;
 
     if (card === "pass") {
       this.updateStatus("Passing this Round...");
@@ -4496,9 +4497,12 @@ return;
 	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    } else {
+	      his_self.addMove("protestant_reformation\t"+player+"\tfrench\t1");
+	      his_self.addMove("protestant_reformation\t"+player+"\tfrench\t1");
 	    }
-	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
-	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("show_overlay\tpublish_treatise\tfrench");
 	    if (id === "calvin-debater") {
 	      his_self.addMove("commit\tprotestant\tcalvin_debater\t1");
@@ -4547,9 +4551,12 @@ return;
 	    if (id === "carlstadt-debater") {
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    } else {
+	      his_self.addMove("protestant_reformation\t"+player+"\tgerman\t1");
+	      his_self.addMove("protestant_reformation\t"+player+"\tgerman\t1");
 	    }
-	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
-	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("show_overlay\tpublish_treatise\tgerman");
 	    if (id === "carlstadt-debater") {
 	      his_self.addMove("commit\tprotestant\tcarlstadt-debater\t1");
@@ -4567,8 +4574,8 @@ return;
 
 	his_self.addMove("hide_overlay\tpublish_treatise\t"+id);
 	his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
-	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id+"\t1");
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id+"\t1");
 	his_self.addMove("show_overlay\tpublish_treatise\t"+id);
 	his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.endTurn();
@@ -4776,10 +4783,10 @@ return;
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
 	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater\t1"); }
 	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater\t1"); }
-            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
 	  }
-          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
-          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
+          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
 	  his_self.addMove("show_overlay\tburn_books\t"+id);
 	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	  his_self.endTurn();
@@ -4792,8 +4799,8 @@ return;
 
       his_self.addMove("hide_overlay\tburn_books\t"+id);
       his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
-      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
+      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
       his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
       his_self.addMove("show_overlay\tburn_books\t"+id);
       his_self.endTurn();
