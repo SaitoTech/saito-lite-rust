@@ -28,7 +28,20 @@ class StunManager {
 
     app.connection.on("open-stun-relay", (publicKey, connectionCallback) => {
       if (this.peers.get(publicKey)) {
-        return;
+        let pc = this.peers.get(publicKey);
+
+        console.log("Already have peer connection: " + pc.connectionState);
+
+        if (pc.connectionState == "connected"){
+          if (connectionCallback){
+            connectionCallback(this.peers.get(publicKey));
+          }
+         
+        }else{
+          this.renegotiate(publicKey);
+        }
+
+         return;
       }
 
       this.createPeerConnection(publicKey, connectionCallback);
@@ -129,16 +142,25 @@ class StunManager {
       console.warn("Stun-Relay: no data channel with peer");
       return;
     }
+    console.log("Sending tx through stun");
+    //console.log(tx);
 
-    peerConnection.dc.send(tx.serialize_to_web(this.app));
+    try{
+      peerConnection.dc.send(tx.serialize_to_web(this.app));
+    }catch(err){
+      console.error(err);
+      this.app.connection.emit("relay-stun-send-fail");
+    }
+    
   }
 
   async createPeerConnection(peerId, on_connection = null) {
     console.log("STUN: Create Peer Connection with " + peerId);
 
     if (this.peers.get(peerId)){
-      salert("Already have a peer connection");
-      return;
+      if (this.peers.get(peerId).connection == "connected"){
+        return;  
+      }
     }
 
     if (peerId === this.mod.publicKey) {
@@ -193,7 +215,7 @@ class StunManager {
 
         receiveChannel.onopen = (event) => {
           console.log("STUN: Data channel is open");
-          on_connection(peerId);
+          on_connection(peerConnection);
         };
 
         receiveChannel.onclose = (event) => {

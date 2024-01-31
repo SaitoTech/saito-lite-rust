@@ -40,8 +40,8 @@ class Relay extends ModTemplate {
       this.sendRelayMessage(obj.recipient, obj.request, obj.data);
     });
 
-    app.connection.on("relay-transaction", async (tx) => {
-      this.sendRelayTransaction(tx);
+    app.connection.on("relay-transaction", async (tx, force_stun = false) => {
+      this.sendRelayTransaction(tx, force_stun);
     });
 
     app.connection.on("set-relay-status-to-busy", () => {
@@ -55,40 +55,6 @@ class Relay extends ModTemplate {
     services.push(new PeerService(null, "relay"));
     return services;
   }
-
-
-  respondTo(type, obj){
-    let relay_self = this;
-
-    if (type === 'chat-actions') {
-      if (obj?.publicKey) {
-        if (obj.publicKey !== this.app.wallet.publicKey) {
-          return [
-            {
-              text: 'Send File',
-              icon: 'fa-solid fa-file',
-              callback: function (app, public_key, id) {
-                relay_self.app.connection.emit("open-stun-relay", public_key, ()=> {
-                  //
-                  // When stun connection is established, select a file to upload
-                  //
-                  const input = document.getElementById(`hidden_file_element_${id}`);
-                  input.click();
-                });
-
-                relay_self.app.browser.addDragAndDropFileUploadToElement(id, () => {
-                  //Do nothing
-                }, false, true);
-
-              }
-            }
-          ];
-        }
-      }
-    }
-
-  }
-
 
 
   async createRelayTransaction(recipients, message_request, message_data) {
@@ -123,16 +89,20 @@ class Relay extends ModTemplate {
     return tx;
   }
 
-  async sendRelayTransaction(tx){
+  async sendRelayTransaction(tx, force_stun = false){
 
     if (tx.to.length == 1) {
       let addressee = tx.to[0].publicKey;
       if (this.stun.hasConnection(addressee)){
-        console.log("Sending tx through stun");
         this.stun.sendTransaction(addressee, tx);
         return;
       }
     } 
+
+    if (force_stun){
+      console.warn("Requested relay to only use stun, but it didn't work");
+      return;
+    }
 
     let peers = await this.app.network.getPeers();
     for (let i = 0; i < peers.length; i++) {

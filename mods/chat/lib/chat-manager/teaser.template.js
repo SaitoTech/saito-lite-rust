@@ -6,10 +6,16 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
 
 	if (group.txs.length > 0) {
 		let tx = group.txs[group.txs.length - 1];
-		last_msg =
-			tx.msg.indexOf('<img') == 0
-				? '<em>[image]</em>'
-				: app.browser.sanitize(tx.msg);
+
+		const regex3 = /<div class="file-name">[^>]*>/i;
+
+		if (tx.msg.indexOf('<img') == 0){
+			last_msg = '<em>[image]</em>'
+		}else if (regex3.test(tx.msg)) {
+			last_msg = tx.msg.match(regex3)[0];
+		}else{
+			last_msg = app.browser.sanitize(tx.msg);
+		}
 
 		const regex = /<blockquote.*<\/blockquote>/is;
 		last_msg = last_msg.replace(regex, '<em>RE:</em> ').replace('<br>', '');

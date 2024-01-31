@@ -1109,7 +1109,6 @@ class Browser {
 					if (this.files && this.files.length > 0) {
 						const files = this.files;
 						[...files].forEach(function (file) {
-							console.log(`File is ${[file.name, file.size, file.type, file.lastModified].join(' ')}`);
 							const reader = new FileReader();
 							reader.addEventListener('load', (event) => {
 								handleFileDrop(event.target.result);
@@ -1754,7 +1753,8 @@ class Browser {
 					div: ['class', 'id'],
 					span: ['class', 'id', 'data-id'],
 					img: ['src', 'class'],
-					blockquote: ['href']
+					blockquote: ['href'],
+					i: ['class']
 				},
 				selfClosing: [
 					'img',
