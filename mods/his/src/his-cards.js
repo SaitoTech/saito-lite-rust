@@ -1127,7 +1127,7 @@ if (space.key === "bordeaux") {
 		    if (!unittypes.includes(space.units[faction_to_destroy][i].type)) {
 		      if (du == -1) { du = i; } else { du = -2; }
   		      html += `<li class="option nonskip" id="${space.units[faction_to_destroy][i].type}">${space.units[faction_to_destroy][i].type}</li>`;
-		      unittypes.push(space.units[faction_to_destroy][i].unittype);
+		      unittypes.push(space.units[faction_to_destroy][i].type);
 		    }
 		  }
 		}
@@ -2506,6 +2506,7 @@ console.log("considering: " + space.key);
               $('.option').off();
               $('.option').on('click', function () {
 		
+	        his_self.updateStatus("convening...");
                 let action2 = $(this).attr("id");
 
 		if (action2 === "yes") {
@@ -6492,7 +6493,7 @@ console.log("total: " + total);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 	if (his_self.game.players.length == 2) {
-	  if (his_self.game.state.events.schmalkaldic_league && space.political == "hapsburg") { return 1; }
+	  if (his_self.game.state.events.schmalkaldic_league == 1) { return 1; }
 	  return 0;
 	}
 	return 1;

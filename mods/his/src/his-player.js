@@ -4832,6 +4832,9 @@ return;
     let his_self = this;
     let placed = 0;
 
+    let count = his_self.countSpacesWithFilter(filter_func);
+    if (count == 0) { his_self.endTurn(); return 0; }
+
     his_self.playerSelectSpaceWithFilter(
 
       `Place ${his_self.units[unittype].name} (${num})` ,
@@ -4863,6 +4866,9 @@ return;
 
     let his_self = this;
     let placed = 0;
+
+    let count = his_self.countSpacesWithFilter(filter_func);
+    if (count == 0) { his_self.endTurn(); return 0; }
 
     his_self.playerSelectSpaceWithFilter(
 

@@ -424,6 +424,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     //
     let highest_vp = 0;
     let fs = [];
+    this.game.state.vp.push({});
     for (let key in factions) {
       if (factions[key].vp == highest_vp) {
 	fs.push(key);
@@ -433,6 +434,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
 	fs.push(key);
 	highest_vp = factions[key].vp;
       }
+      this.game.state.vp[this.game.state.round-1][key] = factions[key].vp;
     }
     if (fs.length == 1) {
       factions[fs[0]].victory = 1;
@@ -442,8 +444,10 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     // historical resolution -
     //
     if (fs.length > 1) {
-
-
+      for (let z = 0; z < fs.length; z++) {
+        factions[fs[z]].victory = 1;
+        factions[fs[z]].reason = "Score Tied";
+      }
     }
 
     return factions;
@@ -481,6 +485,20 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion == "protestant") {
 	if (access_spots.includes(key)) { return 1; }
+      }
+    }
+
+    //
+    // add access to any space with a reformer
+    //
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].language == lang) {
+        for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+	  let u = this.game.spaces[key].units[z];
+	  if (u.reformer == true) {
+	    return 1;
+	  }
+	}
       }
     }
 
@@ -543,6 +561,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     state.scenario = "1517";
     if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;
+    state.vp = [];
     state.impulse = 0;
     state.players = [];
     state.events = {};

@@ -1701,25 +1701,43 @@ if (sourcekey == "candia") {
     return controlled_keys;
   }
 
-  returnNumberOfCatholicSpacesInLanguageZone(language="") {  
+  returnNumberOfCatholicSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
     let catholic_spaces = 0;
     for (let key in this.game.spaces) {
-      if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
-	if (language == "" || this.game.spaces[key].language == language) {
-	  catholic_spaces++;
+      if (do_not_count_unrest == 0) {
+        if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
+  	  if (language == "" || this.game.spaces[key].language == language) {
+console.log("space: " + key);
+	    catholic_spaces++;
+	  }
 	}
+      } else {
+        if (this.game.spaces[key].religion === "catholic") {
+  	  if (language == "" || this.game.spaces[key].language == language) {
+console.log("space: " + key);
+	    catholic_spaces++;
+	  }
+        }
       }
     }
     return catholic_spaces;
   }
 
-  returnNumberOfProtestantSpacesInLanguageZone(language="") {  
+  returnNumberOfProtestantSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
-	if (language == "all" || language == "" || this.game.spaces[key].language == language) {
-	  protestant_spaces++;
-	}
+      if (do_not_count_unrest == 0) {
+        if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
+	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
+	    protestant_spaces++;
+	  }
+        }
+      } else {
+        if (this.game.spaces[key].religion === "protestant") {
+	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
+	    protestant_spaces++;
+	  }
+        }
       }
     }
     return protestant_spaces;
