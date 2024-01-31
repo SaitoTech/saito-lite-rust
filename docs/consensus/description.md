@@ -10,7 +10,6 @@ Once a block falls out of the current epoch, its unspent transaction outputs (UT
 
 Block producers rebroadcast UTXO slips by creating special "automatic transaction rebroadcasting" (ATR) transactions. These ATR transactions include the original transaction as embedded data, but come with new UTXO. Each UTXO that meets rebroadcast criteria is rebroadcast in a separate ATR transaction at present although there is room for optimization here. The rebroadcasting fee is deducted from each UTXO and added to the block reward. After two epochs block producers will no longer require access to historical block data, but are required to retain the 32-byte header hash to prove the connection with the genesis block.
 
-
 ## 2. PRODUCING BLOCKS
 
 Saito adds cryptographic signatures to transactions. When users make a transaction their wallet signs the core transaction and then adds a separate routing signature that specifies which node is the recipient. If users send their transactions to multiple nodes they create variant versions of their transactions with the same core but with different routing information. The nodes in the network add similar routing signatures as they forward their received transactions. This gives each transaction an unforgeable record of the path it has taken into the network. The same transaction in two different mempools will consist of the same core-data but have a different set of routing signatures based on its unique path into that mempool.
@@ -25,12 +24,11 @@ Each block contains a proof-of-work challenge. When a block is produced miners o
 
 If a valid golden ticket is included in the very next block by its block producer the network will resurrect the burned block reward and distribute it as payments to network participants. Those new to Saito should remember that the payments issued in block N+1 are for the block reward which was burned in block N. The block reward for the new block containing our golden ticket will be burned exactly as the previous one was in turn.
 
-When a block is solved in block N+1, the payment for block N is the block reward from block N split between the miner that found the solution and a routing node selected using the random number associated with the winning hash. That random number is hashed to select a winning transaction in the block, with transactions weighted according to their share of fees in overall block. The random number is then hashed again to select a routing node from the list of nodes in the routing paths in that transaction. The chance that nodes in that path have of winning is weighted according to their individual share of routing work over the aggregate amount generated.\footnote[1]{If a transaction paying a 10 SAITO fee passes through two relay nodes before its inclusion in a block, the first relay node is deemed to have done 10 / 17.5 percent (57\%), the second node is deemed to have done 5 / 17.5 percent (29\%), and the block producer is deemed to have done 2.5 / 17.5 percent (14\%) of the routing work for that transaction. If a transaction is included without a routing path, the originator is assigned all of the work for that transaction.} 
+When a block is solved in block N+1, the payment for block N is the block reward from block N split between the miner that found the solution and a routing node selected using the random number associated with the winning hash. That random number is hashed to select a winning transaction in the block, with transactions weighted according to their share of fees in overall block. The random number is then hashed again to select a routing node from the list of nodes in the routing paths in that transaction. The chance that nodes in that path have of winning is weighted according to their individual share of routing work over the aggregate amount generated.\footnote[1]{If a transaction paying a 10 SAITO fee passes through two relay nodes before its inclusion in a block, the first relay node is deemed to have done 10 / 17.5 percent (57\%), the second node is deemed to have done 5 / 17.5 percent (29\%), and the block producer is deemed to have done 2.5 / 17.5 percent (14\%) of the routing work for that transaction. If a transaction is included without a routing path, the originator is assigned all of the work for that transaction.}
 
 In the event that the block reward is seriously in excess of a smoothed average maintained by consensus (current target 1.25), the payment for both miner and router is reduced proportionally and the excess portion is burned for good. This induces deflation in the event of attacks on the lottery mechanism and ensures there are no theoretical situations in which attackers can recapture more money from the payments lottery than they are forced to contribute in attacking the network.
 
 In "Classic Saito" mining difficulty auto-adjusts until the network produces one golden ticket on average per block. The network is secure at the cost of deflation from unsolved blocks.
-
 
 ## 4. IMPROVING SAITO
 
@@ -38,12 +36,11 @@ We can increase cost-of-attack and minimize deflation by inclusion of a staking 
 
 The payment mechanism is modified as follows. Once a golden ticket is included in block N+1, the payment to the miner and router for the preceding block N is unmodified. If block N did not contain a golden ticket, the random variable used to select the winning routing node from block N is hashed again. This is used to pick a winning entrant from the set of unpaid UTXO maintained in the table of stakers. The random variable is then hashed again to pick a winning routing node for block N-1 in the same process as above. This process can be repeated for all previously unpaid blocks, although an upper limit to backwards recusion may be applied for practical purposes, beyond which point any uncollected funds are simply burned.
 
-Some minor modifications are useful. When all stakers have been paid out, the staking table is recalculated and the amount paid to staking UTXO should be re-calculated as the average of the amount paid into the treasury by the staking reward during the *previous* genesis period, normalized to the percentage of the staking table represented by each UTXO. The percentage of the block reward that would be paid to stakers is thus put into the staking treasury, and the payments come from that treasury and are smoothed over time. A longer smoothing period may be used if desired. This smoothing function should also permit tokens to be burned in the event of a gross disparity between the current and historical average. Limits may be put on the size of the staking pool to induce competition between stakers if desirable, although we prefer to keep the table completely open.
+Some minor modifications are useful. When all stakers have been paid out, the staking table is recalculated and the amount paid to staking UTXO should be re-calculated as the average of the amount paid into the treasury by the staking reward during the _previous_ genesis period, normalized to the percentage of the staking table represented by each UTXO. The percentage of the block reward that would be paid to stakers is thus put into the staking treasury, and the payments come from that treasury and are smoothed over time. A longer smoothing period may be used if desired. This smoothing function should also permit tokens to be burned in the event of a gross disparity between the current and historical average. Limits may be put on the size of the staking pool to induce competition between stakers if desirable, although we prefer to keep the table completely open.
 
 In order to make staking work with ATR, block producers who rebroadcast staked-UTXOs must indicate in their ATR transactions whether the outputs are in the current or pending pool. We recommend that a hash representation of the state of the staking table is included in every block in the form of a commitment, but this is not strictly necessary as it is theoretically possible to reconstruct the state of the staking pool within one genesis period at most.
 
 A target difficulty is selected which represents the ideal number of staker-to-miner payouts. We are starting with 1 golden ticket every 2 blocks on average. At this rate, mining difficulty is adjusted upwards if two blocks containing golden tickets are found in a row and downwards if two blocks without golden tickets are found in a row.
-
 
 ## 5. ADVANCED SAITO
 
@@ -55,7 +52,6 @@ Routing and congestion policies which leverage block-level signatures and allow 
 
 Possible adding requirements for block producers to provide stake (making tokens unspendable for X blocks) when producing blocks, increasing the cost of some kinds of work-reuse and spamming attacks.
 
-
 ### APPENDIX I: SAITO TERMINOLOGY
 
 **Paysplit:** a variable between 0 and 1 that determines the percentage of the block reward that is allocated to mining nodes.
@@ -65,5 +61,3 @@ Possible adding requirements for block producers to provide stake (making tokens
 **Golden icket:** a transaction from a miner containing a valid solution to the computational lottery puzzle embodied in the previous block hash.
 
 **Genesis Period:** the length of the epoch in number of blocks.
-
-

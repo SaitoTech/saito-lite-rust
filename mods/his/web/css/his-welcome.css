@@ -1,43 +1,61 @@
-
 .welcome {
-  min-width: 80vw;
-  min-height: 80vh;
-  border-radius: 2rem;
+	min-width: 80vw;
+	min-height: 80vh;
+	border-radius: 2rem;
+}
+
+.welcome-england {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
+.welcome-france {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
+.welcome-ottoman {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
+.welcome-hapsburg {
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
 }
 
 .welcome-papacy {
-  background-image: url('/his/img/backgrounds/leo_x.jpg');
-  background-size: cover;
+	background-image: url('/his/img/backgrounds/leo_x.jpg');
+	background-size: cover;
 }
 
 .welcome-protestant {
-  background-image: url('/his/img/backgrounds/martin_luther.jpg');
-  background-size: cover;
+	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
 }
 
 .welcome-title {
-    top: 0px;
-    color: white;
-    line-height: 5rem;
-    font-size: 4rem;
-    position: absolute;
-    background: #0005;
-    margin-top: 5rem;
-    margin-left: 5rem;
-    padding: 1rem;
-    letter-spacing: 0.2rem;
-    font-weight: bold;
+	top: 0px;
+	color: white;
+	line-height: 5rem;
+	font-size: 4rem;
+	position: absolute;
+	background: #0005;
+	margin-top: 5rem;
+	margin-left: 5rem;
+	padding: 1rem;
+	letter-spacing: 0.2rem;
+	font-weight: bold;
 }
 
 .welcome-text {
-    bottom: 0px;
-    color: white;
-    line-height: 5rem;
-    font-size: 3rem;
-    position: absolute;
-    margin-left: 5rem;
-    margin-bottom: 5rem;
-    padding: 1rem;
-    background: #0005;
+	bottom: 0px;
+	color: white;
+	line-height: 5rem;
+	font-size: 3rem;
+	position: absolute;
+	margin-left: 5rem;
+	margin-bottom: 5rem;
+	padding: 1rem;
+	background: #0005;
 }
-

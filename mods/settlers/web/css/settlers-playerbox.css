@@ -1,156 +1,147 @@
-
 .game-playerbox-manager {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    position: absolute;
-    top: 6rem;
-    right: 3rem;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	position: absolute;
+	top: 6rem;
+	right: 3rem;
 }
 
 .game-playerbox {
-    z-index: 3;
-    max-width: 50vw;
-    min-width: 30rem;
+	z-index: 3;
+	max-width: 50vw;
+	min-width: 30rem;
 
-    /* Manually add saito properties */
-    border: 3px solid #424143;
-    background-color: #d3c38d;
-    /*background: linear-gradient(#d3c38df5, #d3c38df5);*/
-    border-image: url(/settlers/img/border.png);
-    border-image-slice: 55;
-    border-image-width: 16px;
-    border-image-repeat: stretch;
-    border-style: solid;
-    border-image-outset: 5px;
-    color: var(--text-color);
-    padding: 0.5rem;
+	/* Manually add saito properties */
+	border: 3px solid #424143;
+	background-color: #d3c38d;
+	/*background: linear-gradient(#d3c38df5, #d3c38df5);*/
+	border-image: url(/settlers/img/border.png);
+	border-image-slice: 55;
+	border-image-width: 16px;
+	border-image-repeat: stretch;
+	border-style: solid;
+	border-image-outset: 5px;
+	color: var(--text-color);
+	padding: 0.5rem;
 }
 
 .game-playerbox > div {
-  /*background-color: #d3c38d;*/
-  margin: 0.5rem;
+	/*background-color: #d3c38d;*/
+	margin: 0.5rem;
 }
 
 .game-playerbox-icons {
-    top: 0rem;
-    right: 0rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
+	top: 0rem;
+	right: 0rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
 }
 
-  
 /******************************/
 /*** Poker / Cardgame Boxes ***/
 /******************************/
 .game-playerbox-seat-8 {
-  bottom: 1vh;
-  left: 1em;
-} 
+	bottom: 1vh;
+	left: 1em;
+}
 
 .game-playerbox-seat-7 {
-  bottom: 1vh;
-  right: 1em;
+	bottom: 1vh;
+	right: 1em;
 }
 
 .game-playerbox-seat-6 {
-  left: 1em;
-  top: 45vh;
-  transform: translateY(-50%);
+	left: 1em;
+	top: 45vh;
+	transform: translateY(-50%);
 }
-  
+
 .game-playerbox-seat-5 {
-  left: 1em;
-  top: 20vh;
-  transform: translateY(-50%);
+	left: 1em;
+	top: 20vh;
+	transform: translateY(-50%);
 }
 
 .game-playerbox-seat-4 {
-  left: 50vw;
-  top: 30px;
-  transform: translateX(-50%);
+	left: 50vw;
+	top: 30px;
+	transform: translateX(-50%);
 }
 
 .game-playerbox-seat-3 {
-  right: 1em;
-  top: 20vh;
-  transform: translateY(-50%);
+	right: 1em;
+	top: 20vh;
+	transform: translateY(-50%);
 }
 
 .game-playerbox-seat-2 {
-  right: 1em;
-  top: 45vh;
-  transform: translateY(-50%);
+	right: 1em;
+	top: 45vh;
+	transform: translateY(-50%);
 }
 
 /*** special rules for P1 ***/
 .game-playerbox-seat-1 {
-  min-width: 30vh;
-  max-height: 32vh;
-  bottom: 1vh;
-  left: 50vw;
-  transform: translateX(-50%);
-  width: 16vw;
+	min-width: 30vh;
+	max-height: 32vh;
+	bottom: 1vh;
+	left: 50vw;
+	transform: translateX(-50%);
+	width: 16vw;
 }
-
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
+	.game-playerbox-manager {
+		display: none;
+		top: 0px;
+		left: 0px;
+		padding: 2rem;
+		padding-top: 10rem;
+		width: 100%;
+		height: 100%;
+		background-color: #000;
+		z-index: 9;
+		justify-content: flex-start;
+	}
 
-  .game-playerbox-manager {
-    display: none;
-    top: 0px;
-    left: 0px;
-    padding: 2rem;
-    padding-top: 10rem;
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    z-index: 9;
-    justify-content: flex-start;
-  }
-
-  .game-playerbox {
-    width: 100%;
-    max-width: 100%;
-    border-image-width: 12px;
-    border-image-outset: 2px;
-    border-width: 2px;
-  }
-
+	.game-playerbox {
+		width: 100%;
+		max-width: 100%;
+		border-image-width: 12px;
+		border-image-outset: 2px;
+		border-width: 2px;
+	}
 }
-
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
+	.game-playerbox {
+		min-width: unset;
+		padding: 0.6rem 1.2rem;
+		border-image-width: 12px;
+		border-image-outset: 2px;
+		border-width: 2px;
+	}
 
-  .game-playerbox { 
-    min-width: unset;
-    padding: 0.6rem 1.2rem;
-    border-image-width: 12px;
-    border-image-outset: 2px;
-    border-width: 2px;
-  }
-
-  .game-playerbox-manager {
-    top: 1rem;
-    gap: 1rem;
-    right: 2rem;
-  }
+	.game-playerbox-manager {
+		top: 1rem;
+		gap: 1rem;
+		right: 2rem;
+	}
 }
-
 
 .game-playerbox .saito-user {
-  min-height: 4.5rem;
-  align-items: center;
-  grid-template-rows: repeat(2, 2.25rem);
-  padding-left: 0.25rem;
-  column-gap: 0.5rem;
-
+	min-height: 4.5rem;
+	align-items: center;
+	grid-template-rows: repeat(2, 2.25rem);
+	padding-left: 0.25rem;
+	column-gap: 0.5rem;
 }
 
-
-.game-playerbox .saito-user, .game-playerbox .saito-user > .saito-address{
-  /*
+.game-playerbox .saito-user,
+.game-playerbox .saito-user > .saito-address {
+	/*
     color: white;
     text-shadow: 1px 1px 2px black, 1px 0px 2px black, 0px 1px 2px black, 0px 0px 2px black;
   */
@@ -162,9 +153,9 @@
   
 }*/
 
-.game-playerbox .saito-user .saito-identicon-box img{
-  transition: all ease-in-out 300ms;
+.game-playerbox .saito-user .saito-identicon-box img {
+	transition: all ease-in-out 300ms;
 }
 .game-playerbox .saito-user .saito-identicon-box img:hover {
-  transform: scale(1.2);
+	transform: scale(1.2);
 }

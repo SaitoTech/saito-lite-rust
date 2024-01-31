@@ -1,14 +1,14 @@
 module.exports = (app, mod, tx) => {
-  let txmsg = tx.returnMessage();
-  let txsig = "";
-  let tweet_to_show = "";
-  let from = tx.from[0].publicKey;
+	let txmsg = tx.returnMessage();
+	let txsig = '';
+	let tweet_to_show = '';
+	let from = tx.from[0].publicKey;
 
-  if (txmsg.data?.signature) {
-    txsig = txmsg.data.signature;
-  }
+	if (txmsg.data?.signature) {
+		txsig = txmsg.data.signature;
+	}
 
-  return `
+	return `
         <div class="tweet tweet-notification notification-item-${from}-${txsig} tweet-notif-fav" data-id="${txsig}">
           <div class="tweet-notice"></div>
           <div class="tweet-header"></div>

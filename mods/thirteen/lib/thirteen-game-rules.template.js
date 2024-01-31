@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let html = `<div class="rules-overlay">
+	let html = `<div class="rules-overlay">
     <h1>Thirteen Days</h1>
     <p>Thirteen Days is a fast paced two player simulation of the Cuban Missile Crisis. (No historical knowledge needed to play)</p>
     <p>The game is played over three rounds, where each player has a secret AGENDA that awards them additional PRESTIGE at the end of the round for completing. Each player starts the round with 5 STRATEGY cards that may either be played for EVENTS or for COMMAND.</p>
@@ -13,6 +12,5 @@ module.exports = (app, mod) => {
     <p>The game is about bluffing and brinksmanship. You know which AGENDA card you selected and your opponent knows the three from which you chose. So, you don't want to give away exactly which AGENDA you are aiming for. Meanwhile, you have a 1 in 3 chance of guessing what your opponent's AGENDA selection is. You can win points from either AGENDA. Most of the AGENDAs award points based on the difference in INFLUENCE in a battleground or difference on the DEFCON track. So, you want to maximize those without tipping over into thermonuclear war. However, you only have four moves in which to accomplish all this before the round ends.</p>
     </div>`;
 
-    return html;
-
-}
+	return html;
+};

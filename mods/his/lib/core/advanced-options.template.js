@@ -1,6 +1,5 @@
 module.exports = () => {
-
-  let html =  `
+	let html = `
 
       <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
         <div style="top:0;left:0;">
@@ -26,6 +25,5 @@ module.exports = () => {
 
           `;
 
-    return html;
-
-}
+	return html;
+};

@@ -1,123 +1,121 @@
-
 .space {
-    width: 90px;
-    height: 90px;
-    position: absolute;
+	width: 90px;
+	height: 90px;
+	position: absolute;
 }
 
 .selectable::before {
-    content: " ";
-    box-shadow: 2rem 2rem 7rem 3rem #FFFC, -2rem -2rem 7rem 3rem #FFFC;
-    height: 6rem;
-    width: 6rem;
-    display: block;
-    margin-top: 2.5rem;
-    margin-left: 2rem;
-    position: absolute;
+	content: ' ';
+	box-shadow: 2rem 2rem 7rem 3rem #fffc, -2rem -2rem 7rem 3rem #fffc;
+	height: 6rem;
+	width: 6rem;
+	display: block;
+	margin-top: 2.5rem;
+	margin-left: 2rem;
+	position: absolute;
 }
 
 .trench-tile {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: +30;
-  left: +30;
-  z-index: -1;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: +30;
+	left: +30;
+	z-index: -1;
 }
 .trench-tile:hover {
-  z-index: 999;
+	z-index: 999;
 }
 .activation-tile {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: -15;
-  left: +15px;
-  z-index: 10;
-  display: block;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	top: -15;
+	left: +15px;
+	z-index: 10;
+	display: block;
 }
 .activation-tile:hover {
-  display: none;
+	display: none;
 }
 .army-tile {
-  width: 100%;
-  height: 100%;
-  position: absolute;
+	width: 100%;
+	height: 100%;
+	position: absolute;
 }
 .army-tile:hover {
-  z-index: 999;
+	z-index: 999;
 }
 .space .army-tile:nth-child(1) {
-  top: 0;
-  left: 0;
+	top: 0;
+	left: 0;
 }
 .space .army-tile:nth-child(2) {
-  top: -30;
-  left: 30;
+	top: -30;
+	left: 30;
 }
 .space .army-tile:nth-child(3) {
-  top: -60;
-  left: 60;
+	top: -60;
+	left: 60;
 }
 .space .army-tile:nth-child(4) {
-  top: -90;
-  left: 90;
+	top: -90;
+	left: 90;
 }
 .space .army-tile:nth-child(5) {
-  top: -120;
-  left: 120;
+	top: -120;
+	left: 120;
 }
 .space .army-tile:nth-child(6) {
-  top: -150;
-  left: 150;
+	top: -150;
+	left: 150;
 }
 
-
 .hud-body .status .status-message {
-  padding-top: 15px;
+	padding-top: 15px;
 }
 
 img {
-  width: unset;
+	width: unset;
 }
 
 .card {
-  position: relative;
+	position: relative;
 }
-.cardimg , .card img {
-  position: relative;
+.cardimg,
+.card img {
+	position: relative;
 }
 .cardimg.cancel_x {
-  position: absolute;
-  width: inherit;
-  top: 20%;
+	position: absolute;
+	width: inherit;
+	top: 20%;
 }
 
 .cancel_x {
-  opacity: 0.3;
+	opacity: 0.3;
 }
 .cardimg {
-  position: absolute;
-  width: 100%;
-  height: auto;
-  top: 0px;
-  left: 0px;
+	position: absolute;
+	width: 100%;
+	height: auto;
+	top: 0px;
+	left: 0px;
 }
 
 .vp_tile {
-  position: absolute;
-  z-index: 200;
-  height: 100px;
-  width: 100px;
-  top: 100px;
-  left: 100px;
-  display: none;
+	position: absolute;
+	z-index: 200;
+	height: 100px;
+	width: 100px;
+	top: 100px;
+	left: 100px;
+	display: none;
 }
 
 .gameboard {
-  background-image: url("/paths/img/backgrounds/gameboard-large.jpg");
-  background-size: cover;
-  width: 5100px;
-  height: 3312px;
+	background-image: url('/paths/img/backgrounds/gameboard-large.jpg');
+	background-size: cover;
+	width: 5100px;
+	height: 3312px;
 }
-

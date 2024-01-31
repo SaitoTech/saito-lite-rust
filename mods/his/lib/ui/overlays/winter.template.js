@@ -1,6 +1,5 @@
 module.exports = (f) => {
-
-  let html = `
+	let html = `
     <div class="winter winter-${f}">
       <div class="winter-title">A Passage of Winter</div>
       <div class="winter-text">
@@ -18,6 +17,5 @@ module.exports = (f) => {
       </div>
     </div>
   `;
-  return html;
-
-}
+	return html;
+};

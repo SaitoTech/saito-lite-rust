@@ -1,7 +1,5 @@
-
-module.exports = LeaderboardTemplate = (title = "Games") => {
-
-  return `
+module.exports = LeaderboardTemplate = (title = 'Games') => {
+	return `
       <div class="league-leaderboard">
         <div class="saito-table">
           <div class="saito-table-header">
@@ -15,7 +13,5 @@ module.exports = LeaderboardTemplate = (title = "Games") => {
         </div>
       </div>
 
-  `;  
-
-}
-
+  `;
+};

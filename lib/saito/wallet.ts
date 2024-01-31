@@ -1,16 +1,16 @@
-import Peer from "./peer";
+import Peer from './peer';
 
-const getUuid = require("uuid-by-string");
-const ModalSelectCrypto = require("./ui/modals/select-crypto/select-crypto");
-import Transaction from "./transaction";
-import Slip from "./slip";
-import { Saito } from "../../apps/core";
-import S from "saito-js/saito";
-import SaitoWallet from "saito-js/lib/wallet";
-import BalanceSnapshot from "saito-js/lib/balance_snapshot";
-import { WalletSlip } from "saito-js/lib/wallet";
+const getUuid = require('uuid-by-string');
+const ModalSelectCrypto = require('./ui/modals/select-crypto/select-crypto');
+import Transaction from './transaction';
+import Slip from './slip';
+import { Saito } from '../../apps/core';
+import S from 'saito-js/saito';
+import SaitoWallet from 'saito-js/lib/wallet';
+import BalanceSnapshot from 'saito-js/lib/balance_snapshot';
+import { WalletSlip } from 'saito-js/lib/wallet';
 
-const CryptoModule = require("../templates/cryptomodule");
+const CryptoModule = require('../templates/cryptomodule');
 
 export default class Wallet extends SaitoWallet {
   public app: Saito;
@@ -1098,5 +1098,4 @@ export default class Wallet extends SaitoWallet {
 
     return string;
   }
-
 }

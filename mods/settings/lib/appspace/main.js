@@ -1,253 +1,299 @@
-const SettingsAppspaceTemplate = require("./main.template.js");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
-const SaitoModule = require("./../../../../lib/saito/ui/saito-module/saito-module");
-const localforage = require("localforage");
-const jsonTree = require("json-tree-viewer");
+const SettingsAppspaceTemplate = require('./main.template.js');
+const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
+const SaitoModule = require('./../../../../lib/saito/ui/saito-module/saito-module');
+const localforage = require('localforage');
+const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
-  constructor(app, mod, container = "") {
-    this.app = app;
-    this.mod = mod;
-    this.container = container;
-    this.privateKey = null;
+	constructor(app, mod, container = '') {
+		this.app = app;
+		this.mod = mod;
+		this.container = container;
+		this.privateKey = null;
 
-    this.overlay = new SaitoOverlay(app, mod);
-  }
+		this.overlay = new SaitoOverlay(app, mod);
+	}
 
-  async render() {
-    this.privateKey = await this.app.wallet.getPrivateKey();
-    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
+	async render() {
+		this.privateKey = await this.app.wallet.getPrivateKey();
+		this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
+		/**
+		 *  No modules are implementing this, but it is an idea to let modules render a component
+		 *  into the Settings appspace overlay
+		 */
+		let settings_appspace = document.querySelector('.settings-appspace');
+		if (settings_appspace) {
+			for (let i = 0; i < this.app.modules.mods.length; i++) {
+				if (
+					this.app.modules.mods[i].respondTo('settings-appspace') !=
+					null
+				) {
+					let mod_settings_obj =
+						this.app.modules.mods[i].respondTo('settings-appspace');
+					mod_settings_obj.render(this.app, this.mod);
+				}
+			}
+		}
 
-    /**
-     *  No modules are implementing this, but it is an idea to let modules render a component
-     *  into the Settings appspace overlay
-     */ 
-    let settings_appspace = document.querySelector(".settings-appspace");
-    if (settings_appspace) {
-      for (let i = 0; i < this.app.modules.mods.length; i++) {
-        if (this.app.modules.mods[i].respondTo("settings-appspace") != null) {
-          let mod_settings_obj = this.app.modules.mods[i].respondTo("settings-appspace");
-          mod_settings_obj.render(this.app, this.mod);
-        }
-      }
-    }
+		this.renderDebugTree();
 
-    this.renderDebugTree();
+		await this.attachEvents();
+	}
 
-    await this.attachEvents();
-  }
+	//
+	// Todo: Add a param to auto open one branch of the tree
+	//
+	renderDebugTree() {
+		//debug info
+		let el = document.querySelector('.settings-appspace-debug-content');
+		el.innerHTML = '';
 
-  //
-  // Todo: Add a param to auto open one branch of the tree
-  //
-  renderDebugTree(){
-    //debug info
-    let el = document.querySelector(".settings-appspace-debug-content");
-    el.innerHTML = "";
+		try {
+			let optjson = JSON.parse(
+				JSON.stringify(
+					this.app.options,
+					(key, value) =>
+						typeof value === 'bigint' ? value.toString() : value // return everything else unchanged
+				)
+			);
+			var tree = jsonTree.create(optjson, el);
+		} catch (err) {
+			console.log('error creating jsonTree: ' + err);
+		}
+	}
 
-    try {
-      let optjson = JSON.parse(
-        JSON.stringify(
-          this.app.options,
-          (key, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
-        )
-      );
-      var tree = jsonTree.create(optjson, el);
-    } catch (err) {
-      console.log("error creating jsonTree: " + err);
-    }
+	async attachEvents() {
+		let app = this.app;
+		let mod = this.mod;
 
-  }
+		try {
+			let settings_appspace =
+				document.querySelector('.settings-appspace');
+			if (settings_appspace) {
+				for (let i = 0; i < app.modules.mods.length; i++) {
+					if (
+						app.modules.mods[i].respondTo('settings-appspace') !=
+						null
+					) {
+						let mod_settings_obj =
+							app.modules.mods[i].respondTo('settings-appspace');
+						mod_settings_obj.attachEvents(app, mod);
+					}
+				}
+			}
 
-  async attachEvents() {
-    let app = this.app;
-    let mod = this.mod;
+			if (document.getElementById('register-identifier-btn')) {
+				document.getElementById('register-identifier-btn').onclick =
+					function (e) {
+						app.connection.emit('register-username-or-login');
+					};
+			}
 
-    try {
-      let settings_appspace = document.querySelector(".settings-appspace");
-      if (settings_appspace) {
-        for (let i = 0; i < app.modules.mods.length; i++) {
-          if (app.modules.mods[i].respondTo("settings-appspace") != null) {
-            let mod_settings_obj = app.modules.mods[i].respondTo("settings-appspace");
-            mod_settings_obj.attachEvents(app, mod);
-          }
-        }
-      }
+			if (document.getElementById('trigger-appstore-btn')) {
+				document.getElementById('trigger-appstore-btn').onclick =
+					function (e) {
+						let appstore_mod = app.modules.returnModule('AppStore');
+						if (appstore_mod) {
+							appstore_mod.openAppstoreOverlay(app, appstore_mod);
+						}
+					};
+			}
 
-      if (document.getElementById("register-identifier-btn")) {
-        document.getElementById("register-identifier-btn").onclick = function (e) {
-          app.connection.emit("register-username-or-login");
-        };
-      }
+			//
+			// install module (button)
+			//
+			Array.from(
+				document.getElementsByClassName('modules_mods_checkbox')
+			).forEach((ckbx) => {
+				ckbx.onclick = async (e) => {
+					let thisid = parseInt(e.currentTarget.id);
+					let currentTarget = e.currentTarget;
 
-      if (document.getElementById("trigger-appstore-btn")) {
-        document.getElementById("trigger-appstore-btn").onclick = function (e) {
-          let appstore_mod = app.modules.returnModule("AppStore");
-          if (appstore_mod) {
-            appstore_mod.openAppstoreOverlay(app, appstore_mod);
-          }
-        };
-      }
+					if (currentTarget.checked == true) {
+						let sc = await sconfirm(
+							'Reactivate this module? (Will take effect on refresh)'
+						);
+						if (sc) {
+							app.options.modules[thisid].active = 1;
+							app.storage.saveOptions();
+						} else {
+							currentTarget.checked = false;
+						}
+					} else {
+						let sc = await sconfirm(
+							'Remove this module? (Will take effect on refresh)'
+						);
+						if (sc) {
+							app.options.modules[thisid].active = 0;
+							app.storage.saveOptions();
+						} else {
+							currentTarget.checked = true;
+						}
+					}
+				};
+			});
 
-      //
-      // install module (button)
-      //
-      Array.from(document.getElementsByClassName("modules_mods_checkbox")).forEach((ckbx) => {
-        ckbx.onclick = async (e) => {
-          let thisid = parseInt(e.currentTarget.id);
-          let currentTarget = e.currentTarget;
+			Array.from(
+				document.getElementsByClassName('settings-appspace-module')
+			).forEach((modlink) => {
+				modlink.onclick = async (e) => {
+					let modname = e.currentTarget.id;
+					let mod = this.app.modules.returnModule(modname);
+					if (!mod) {
+						console.error('Module not found! ', modname);
+						return;
+					}
 
-          if (currentTarget.checked == true) {
-            let sc = await sconfirm("Reactivate this module?");
-            if (sc) {
-              app.options.modules[thisid].active = 1;
-              app.storage.saveOptions();
-            }else{
-              currentTarget.checked = false;
-            } 
-          } else {
-            let sc = await sconfirm("Remove this module?");
-            if (sc) {
-              app.options.modules[thisid].active = 0;
-              app.storage.saveOptions();
-            } else {
-              currentTarget.checked = true;
-            }
-          }
-        };
-      });
+					let mod_overlay = new SaitoModule(this.app, mod, () => {
+						this.renderDebugTree();
+					});
+					mod_overlay.render();
+				};
+			});
 
-      Array.from(document.getElementsByClassName("settings-appspace-module")).forEach((modlink) => {
-        modlink.onclick = async (e) => {
-          let modname = e.currentTarget.id;
-          let mod = this.app.modules.returnModule(modname);
-          if (!mod){
-            console.error("Module not found! ", modname);
-            return;
-          }
+			if (document.getElementById('backup-account-btn')) {
+				document.getElementById('backup-account-btn').onclick = (e) => {
+					app.wallet.backupWallet();
+				};
+			}
 
-          let mod_overlay = new SaitoModule(this.app, mod, ()=> {this.renderDebugTree(); });
-          mod_overlay.render();
-        }
-      });
+			if (document.getElementById('restore-account-btn')) {
+				document.getElementById('restore-account-btn').onclick = async (
+					e
+				) => {
+					document
+						.getElementById('file-input')
+						.addEventListener('change', async function (e) {
+							var file = e.target.files[0];
 
-      if (document.getElementById("backup-account-btn")) {
-        document.getElementById("backup-account-btn").onclick = (e) => {
-          app.wallet.backupWallet();
-        };
-      }
+							let wallet_reader = new FileReader();
+							wallet_reader.readAsBinaryString(file);
+							wallet_reader.onloadend = async () => {
+								let result = await app.wallet.onUpgrade(
+									'import',
+									'',
+									wallet_reader
+								);
 
-      if (document.getElementById("restore-account-btn")) {
-        document.getElementById("restore-account-btn").onclick = async (e) => {
-          document.getElementById("file-input").addEventListener("change", async function (e) {
-            var file = e.target.files[0];
-            
-            let wallet_reader = new FileReader();
-            wallet_reader.readAsBinaryString(file);
-            wallet_reader.onloadend = async () => {
-              let result = await app.wallet.onUpgrade("import", "", wallet_reader);
+								if (result === true) {
+									alert(
+										'Restoration Complete ... click to reload Saito'
+									);
+									window.location.reload();
+								} else {
+									let err = result;
+									if (err.name == 'SyntaxError') {
+										salert(
+											'Error reading wallet file. Did you upload the correct file?'
+										);
+									} else if (false) {
+										// put this back when we support encrypting wallet backups again...
+										salert(
+											'Error decrypting wallet file. Password incorrect'
+										);
+									} else {
+										salert('Unknown error<br/>' + err);
+									}
+								}
+							};
+						});
+					document.querySelector('#file-input').click();
+				};
+			}
 
-              if (result === true) {
-                alert("Restoration Complete ... click to reload Saito");
-                window.location.reload();
-              } else {
-                let err = result;
-                if (err.name == "SyntaxError") {
-                  salert("Error reading wallet file. Did you upload the correct file?");
-                } else if (false) {
-                  // put this back when we support encrypting wallet backups again...
-                  salert("Error decrypting wallet file. Password incorrect");
-                } else {
-                  salert("Unknown error<br/>" + err);
-                }
-              }         
-            };
+			document.getElementById('nuke-account-btn').onclick = async (e) => {
+				let confirmation = await sconfirm(
+					'This will reset/nuke your account, do you wish to proceed?'
+				);
+				if (confirmation) {
+					await app.wallet.onUpgrade('nuke');
+					if (this.app.browser.browser_active == 1) {
+						window.location.reload();
+					}
+				}
+			};
 
-          });
-          document.querySelector("#file-input").click();
-        };
-      }
+			if (document.getElementById('clear-storage-btn')) {
+				document.getElementById('clear-storage-btn').onclick = async (
+					e
+				) => {
+					let confirmation = await sconfirm(
+						'This will clear your browser\'s DB, proceed cautiously'
+					);
+					if (confirmation) {
+						localforage
+							.clear()
+							.then(function () {
+								console.log('Cleared LocalForage');
+							})
+							.catch(function (err) {
+								console.error(err);
+							});
 
-      document.getElementById("nuke-account-btn").onclick = async (e) => {
-        let confirmation = await sconfirm(
-          "This will reset/nuke your account, do you wish to proceed?"
-        );
-        if (confirmation) {
-          await app.wallet.onUpgrade("nuke");
-          if (this.app.browser.browser_active == 1) {
-            window.location.reload();
-          }
-        }
-      };
+						let archive = this.app.modules.returnModule('Archive');
+						if (archive) {
+							await archive.onWalletReset(true);
+						}
+					}
+				};
+			}
 
-      if (document.getElementById("clear-storage-btn")) {
-        document.getElementById("clear-storage-btn").onclick = async (e) => {
-          let confirmation = await sconfirm(
-            "This will clear your browser's DB, proceed cautiously"
-          );
-          if (confirmation) {
-            localforage
-              .clear()
-              .then(function () {
-                console.log("Cleared LocalForage");
-              })
-              .catch(function (err) {
-                console.error(err);
-              });
+			Array.from(
+				document.querySelectorAll(
+					'.settings-appspace .pubkey-containter'
+				)
+			).forEach((key) => {
+				key.onclick = (e) => {
+					navigator.clipboard.writeText(e.currentTarget.dataset.id);
+					let icon_element = e.currentTarget.querySelector(
+						'.pubkey-containter i'
+					);
+					icon_element.classList.toggle('fa-copy');
+					icon_element.classList.toggle('fa-check');
 
-            let archive = this.app.modules.returnModule("Archive");
-            if (archive) {
-              await archive.onWalletReset(true);
-            }
-          }
-        };
-      }
+					setTimeout(() => {
+						icon_element.classList.toggle('fa-copy');
+						icon_element.classList.toggle('fa-check');
+					}, 1500);
+				};
+			});
 
-      Array.from(document.querySelectorAll(".settings-appspace .pubkey-containter")).forEach(
-        (key) => {
-          key.onclick = (e) => {
-            navigator.clipboard.writeText(e.currentTarget.dataset.id);
-            let icon_element = e.currentTarget.querySelector(".pubkey-containter i");
-            icon_element.classList.toggle("fa-copy");
-            icon_element.classList.toggle("fa-check");
+			document.getElementById('restore-privatekey-btn').onclick = async (
+				e
+			) => {
+				let privatekey = '';
+				let publicKey = '';
 
-            setTimeout(() => {
-              icon_element.classList.toggle("fa-copy");
-              icon_element.classList.toggle("fa-check");
-            }, 1500);
-          };
-        }
-      );
+				try {
+					privatekey = await sprompt('Enter Private Key:');
+					if (privatekey != '') {
+						let result = await app.wallet.onUpgrade(
+							'import',
+							privatekey
+						);
 
-      document.getElementById("restore-privatekey-btn").onclick = async (e) => {
-        let privatekey = "";
-        let publicKey = "";
-
-        try {
-          privatekey = await sprompt("Enter Private Key:");
-          if (privatekey != "") {
-            let result = await app.wallet.onUpgrade("import", privatekey);
-
-            if (result === true) {
-              let c = await sconfirm("Success! Confirm to reload");
-              if (c) {
-                window.location.reload();
-              }
-            } else {
-              let err = result;
-              salert("Something went wrong: " + err.name);
-            }
-          }
-        } catch (e) {
-          salert("Restore Private Key ERROR: " + e);
-          console.log("Restore Private Key ERROR: " + e);
-        }
-      };
-    } catch (err) {
-      console.log("Error in Settings Appspace: ", err);
-    }
-  }
+						if (result === true) {
+							let c = await sconfirm(
+								'Success! Confirm to reload'
+							);
+							if (c) {
+								window.location.reload();
+							}
+						} else {
+							let err = result;
+							salert('Something went wrong: ' + err.name);
+						}
+					}
+				} catch (e) {
+					salert('Restore Private Key ERROR: ' + e);
+					console.log('Restore Private Key ERROR: ' + e);
+				}
+			};
+		} catch (err) {
+			console.log('Error in Settings Appspace: ', err);
+		}
+	}
 }
 
 module.exports = SettingsAppspace;

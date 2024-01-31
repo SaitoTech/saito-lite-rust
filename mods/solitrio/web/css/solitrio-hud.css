@@ -1,16 +1,12 @@
-
 .status {
-    background-color: whitesmoke;
-    padding: 1rem;
+	background-color: whitesmoke;
+	padding: 1rem;
 }
 
 .controls {
-    overflow-y: none;
-    min-height: 160px;
+	overflow-y: none;
+	min-height: 160px;
 }
 .controls ul {
-    border-radius: 0.5rem;
+	border-radius: 0.5rem;
 }
-
-
-

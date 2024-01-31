@@ -1,7 +1,5 @@
-
 module.exports = () => {
-
-  return `
+	return `
     <div class="league-main-container" id="league-main-container">
     <div class="saito-module">
       <div class="saito-module-details-box">
@@ -14,5 +12,4 @@ module.exports = () => {
     <div class="league-component-existing-league" id="leagues-for-play"></div>
     <div class="league-component-existing-league" id="leagues-for-join"></div>
     `;
-}
-
+};

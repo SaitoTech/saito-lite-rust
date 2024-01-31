@@ -1,7 +1,7 @@
 module.exports = MonopolyOverlayTemplate = (app, mod, monopoly) => {
-  let resourceList = mod.returnResources();
+	let resourceList = mod.returnResources();
 
-  let html = `
+	let html = `
       <div class="saitoa settlers-selection-overlay">      
 
         <div class="settlers-items-container">
@@ -11,13 +11,13 @@ module.exports = MonopolyOverlayTemplate = (app, mod, monopoly) => {
           <div class="settlers-item-row settlers-cards-container settlers-desired-resources">
   `;
 
-  for (let i of resourceList) {
-    html += `<img id="${i}" src="${mod.returnCardImage(i)}" >`;
-  }
+	for (let i of resourceList) {
+		html += `<img id="${i}" src="${mod.returnCardImage(i)}" >`;
+	}
 
-  html += `</div>
+	html += `</div>
         </div>
       </div>`;
 
-  return html;
+	return html;
 };

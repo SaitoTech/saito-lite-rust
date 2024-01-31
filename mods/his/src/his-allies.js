@@ -7,6 +7,107 @@
   // include minor-activated powers like scotland or genoa these functions will 
   // politely let you know if those minor-powers are activated to an ally or enemy
   //
+  returnDeclarationOfWarCost(f1, f2) {
+    if (f1 == "ottoman") {
+      if (f1 == "ottoman") 	{ return 0; }
+      if (f1 == "hapsburg") 	{ return 2; }
+      if (f1 == "england") 	{ return 2; }
+      if (f1 == "france") 	{ return 2; }
+      if (f1 == "papacy") 	{ return 2; }
+      if (f1 == "protestant") 	{ return 2; }
+      if (f1 == "genoa") 	{ return 1; }
+      if (f1 == "hungary") 	{ return 0; }
+      if (f1 == "scotland") 	{ return 0; }
+      if (f1 == "venice") 	{ return 1; }
+    }
+    if (f1 == "hapsburg") {
+      if (f1 == "ottoman") 	{ return 2; }
+      if (f1 == "hapsburg") 	{ return 2; }
+      if (f1 == "england") 	{ return 3; }
+      if (f1 == "france") 	{ return 3; }
+      if (f1 == "papacy") 	{ return 4; }
+      if (f1 == "protestant") 	{ return 0; }
+      if (f1 == "genoa") 	{ return 2; }
+      if (f1 == "hungary") 	{ return 0; }
+      if (f1 == "scotland") 	{ return 1; }
+      if (f1 == "venice") 	{ return 2; }
+    }
+    if (f1 == "england") {
+      if (f1 == "ottoman") 	{ return 2; }
+      if (f1 == "hapsburg") 	{ return 1; }
+      if (f1 == "england") 	{ return 0; }
+      if (f1 == "france") 	{ return 3; }
+      if (f1 == "papacy") 	{ return 3; }
+      if (f1 == "protestant") 	{ return 2; }
+      if (f1 == "genoa") 	{ return 1; }
+      if (f1 == "hungary") 	{ return 0; }
+      if (f1 == "scotland") 	{ return 1; }
+      if (f1 == "venice") 	{ return 0; }
+    }
+    if (f1 == "france") {
+      if (f1 == "ottoman") 	{ return 2; }
+      if (f1 == "hapsburg") 	{ return 3; }
+      if (f1 == "england") 	{ return 4; }
+      if (f1 == "france") 	{ return 0; }
+      if (f1 == "papacy") 	{ return 3; }
+      if (f1 == "protestant") 	{ return 2; }
+      if (f1 == "genoa") 	{ return 1; }
+      if (f1 == "hungary") 	{ return 0; }
+      if (f1 == "scotland") 	{ return 2; }
+      if (f1 == "venice") 	{ return 1; }
+    }
+    if (f1 == "papacy") {
+      if (f1 == "ottoman") 	{ return 2; }
+      if (f1 == "hapsburg") 	{ return 4; }
+      if (f1 == "england") 	{ return 3; }
+      if (f1 == "france") 	{ return 3; }
+      if (f1 == "papacy") 	{ return 0; }
+      if (f1 == "protestant") 	{ return 0; }
+      if (f1 == "genoa") 	{ return 2; }
+      if (f1 == "hungary") 	{ return 0; }
+      if (f1 == "scotland") 	{ return 0; }
+      if (f1 == "venice") 	{ return 2; }
+    }
+    if (f1 == "protestant") {
+      if (f1 == "ottoman") 	{ return 2; }
+      if (f1 == "hapsburg") 	{ return 0; }
+      if (f1 == "england") 	{ return 2; }
+      if (f1 == "france") 	{ return 2; }
+      if (f1 == "papacy") 	{ return 0; }
+      if (f1 == "protestant") 	{ return 0; }
+      if (f1 == "genoa") 	{ return 1; }
+      if (f1 == "hungary") 	{ return 0; }
+      if (f1 == "scotland") 	{ return 0; }
+      if (f1 == "venice") 	{ return 1; }
+    }
+    return 0;
+  }
+  returnDeclarationOfWarTargets(faction) {
+    let na = [];
+    let io = this.returnImpulseOrder();
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] !== faction) {
+        if (!this.areAllies(faction, io[i])) { na.push(io[i]); }
+      }
+    }
+    if (!this.areAllies(faction, "genoa")) { na.push("genoa"); }
+    if (this.areAllies(faction, "scotland")) { 
+      if (faction != "protestant" && faction != "papacy" && faction != "ottoman") { na.push("scotland"); }
+    }
+    if (this.areAllies(faction, "venice")) { 
+      if (faction != "england") { na.push("venice"); }
+    }
+
+    let rv = [];
+
+    for (let i = 0; i < na.length; i++) {
+      if (na[i] != faction) {
+	rv.push({ faction : na[i] , cost : this.returnDeclarationOfWarCost(na[i], faction) });
+      }
+    } 
+
+    return rv;
+  }
 
   returnAllies(faction) { 
     let f = [];
@@ -34,31 +135,37 @@
     return f;
   }
 
-  areAllies(faction1, faction2) {
+  areAllies(faction1, faction2, count_minor_activated_factions=1) {
+    if (faction1 === faction2) { return 1; }
     try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
-    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
-      let f1cp = this.returnControllingPower(faction1);
-      let f2cp = this.returnControllingPower(faction2);
-      try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
-      try { if (this.game.state.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
-      try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+    if (count_minor_activated_factions) {
+      if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
+        let f1cp = this.returnControllingPower(faction1);
+        let f2cp = this.returnControllingPower(faction2);
+        try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+      }
     }
     return 0;
   }
 
-  areEnemies(faction1, faction2) {
+  areEnemies(faction1, faction2, count_minor_activated_factions=1) {
+    if (faction1 === faction2) { return 0; }
     try { if (this.game.state.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
-    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
-      let f1cp = this.returnControllingPower(faction1);
-      let f2cp = this.returnControllingPower(faction2);
-      try { if (this.game.state.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
-      try { if (this.game.state.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
+    if (count_minor_activated_factions) {
+      if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
+        let f1cp = this.returnControllingPower(faction1);
+        let f2cp = this.returnControllingPower(faction2);
+        try { if (this.game.state.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
+      }
     }
     return 0;
   }
@@ -97,7 +204,6 @@
         this.setActivatedPower("papacy", "hapsburg");
       }
     }
-
 
     if (amp == 1) {
       if (this.isMinorPower(faction1)) {
@@ -213,6 +319,8 @@
       defender = this.returnControllingPower(defender);
     }         
 
+console.log(JSON.stringify(this.game.state.activated_powers));
+
     //
     // defender now controlling power or itself
     //
@@ -224,6 +332,7 @@
       let player_factions = this.returnPlayerFactions((p+1));
       let i_command_this_faction = false;
       for (let i = 0; i < player_factions.length; i++) { 
+console.log("testing: " + player_factions[i]);
 	if (player_factions[i] === defender) { return (p+1); }
         if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { return (p+1); }
         for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {

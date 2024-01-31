@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let options_html = `
+	let options_html = `
 
       <h1 class="overlay-title">Poker Options</h1>
 
@@ -16,10 +15,9 @@ module.exports = (app, mod) => {
   	 
   `;
 
-  return options_html;
+	return options_html;
 
-
-/******
+	/******
 
           <div class="overlay-input">
             <label for="num_chips">Num chips:</label>
@@ -79,7 +77,4 @@ module.exports = (app, mod) => {
     return options_html;
 
 ******/
-
-
-}
-
+};

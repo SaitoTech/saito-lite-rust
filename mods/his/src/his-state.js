@@ -39,6 +39,7 @@
     //
     this.game.state.events.augsburg_confession = false;
 
+    // impulse incremented in gameloop
 
   }
 
@@ -69,6 +70,8 @@
     this.game.state.tmp_catholic_counter_reformation_bonus_spaces = [];
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+    this.game.state.impulse = 0;
         
     //
     // allow stuff to move again
@@ -347,6 +350,8 @@
       factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
+console.log("protestants after copernicus: " + factions["protestant"].vp);
+
     //
     //• Bible translation completed (1 VP for each language)    ***
     // protestant faction class
@@ -400,6 +405,46 @@
       }
     }
 
+    //
+    // 8 VP lead in 2P
+    //
+    if (this.game.players.length == 2) {
+      if ((factions["protestant"].vp - factions["papacy"].vp) >= 8) {
+	factions["protestant"].victory = 1;
+	factions["protestant"].reason = "Commanding 8VP Lead";
+      }
+      if ((factions["papacy"].vp - factions["protestant"].vp) >= 8) {
+	factions["papacy"].victory = 1;
+	factions["papacy"].reason = "Commanding 8VP Lead";
+      }
+    }
+
+    //
+    // tied at 25 VP or higher
+    //
+    let highest_vp = 0;
+    let fs = [];
+    for (let key in factions) {
+      if (factions[key].vp == highest_vp) {
+	fs.push(key);
+      }
+      if (factions[key].vp > highest_vp) {
+	fs = [];
+	fs.push(key);
+	highest_vp = factions[key].vp;
+      }
+    }
+    if (fs.length == 1) {
+      factions[fs[0]].victory = 1;
+      factions[fs[0]].reason = "Standard Victory"; 
+    }
+    //
+    // historical resolution -
+    //
+    if (fs.length > 1) {
+
+
+    }
 
     return factions;
 
@@ -424,6 +469,23 @@
     return num;
   }
 
+
+  canProtestantsReformInLanguageZone(lang="german") {
+    let access_spots = [];
+    if (lang == "german") { access_spots = ["amsterdam","liege","metz","becanson","geneva","trent","trieste","agram","pressburg","brunn","prague","breslau","antwerp","calais","london","norwich","berwick","edinburgh"]; }
+    if (lang == "italian") { access_spots = ["innsbruck","graz","geneva","grenoble","nice","agram","zara","bastia","ragusa","scutari","durazzo","corfu","nice"]; }
+    if (lang == "spanish") { access_spots = ["bordeaux","toulouse","avignon","marseille","nice","bastia","palma","cagliari","tunis","algiers","oran","nantes","brest"]; }
+    if (lang == "english") { access_spots = ["brest","rouen","boulogne","calais","antwerp","amsterdam","bremen","hamburg"]; }
+    if (lang == "french") { access_spots = ["plymouth","portsmouth","london","calais","antwerp","cologne","trier","strasburg","basel","turin","genoa","bastia","palma","valencia","barcelona","navarre","corunna"]; }
+
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion == "protestant") {
+	if (access_spots.includes(key)) { return 1; }
+      }
+    }
+
+    return 0;
+  }
 
   returnImpulseOrder() {
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
@@ -481,6 +543,7 @@
     state.scenario = "1517";
     if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;
+    state.impulse = 0;
     state.players = [];
     state.events = {};
     state.removed = []; // removed cards
@@ -527,6 +590,11 @@
     state.translations['full']['english'] = 0;
 
     state.protestant_war_winner_vp = 0;
+    state.papacy_war_winner_vp = 0;
+    state.ottoman_war_winner_vp = 0;
+    state.hapsburg_war_winner_vp = 0;
+    state.england_war_winner_vp = 0;
+    state.france_war_winner_vp = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
@@ -589,6 +657,7 @@
     state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
     state.excommunicated_factions = {};
+    state.already_excommunicated = [];
     state.excommunicated = [];
     state.burned = [];
     state.debaters = [];
@@ -614,6 +683,13 @@
     state.spring_deploy_across_seas = [];
     state.spring_deploy_across_passes = [];
 
+    state.henry_viii_marital_status = 0;
+    state.henry_viii_healthy_edward = 0;
+    state.henry_viii_sickly_edward = 0;
+    state.henry_viii_add_elizabeth = 0;
+    state.henry_viii_auto_reroll = 0;
+    state.henry_viii_rolls = [];
+
     state.events.maurice_of_saxony = "";
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -631,12 +707,14 @@
   }
 
   excommunicateFaction(faction="") {
+    this.game.state.already_excommunicated.push(faction);
     this.game.state.excommunicated_faction[faction] = 1;
     return;
   }
 
   excommunicateReformer(reformer="") {
 
+    this.game.state.already_excommunicated.push(reformer);
     if (reformer == "") { return; }
     if (!this.returnSpaceOfPersonage("protestant", reformer)) { return; }
 

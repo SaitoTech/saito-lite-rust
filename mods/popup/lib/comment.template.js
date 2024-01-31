@@ -1,6 +1,5 @@
 module.exports = (lesson) => {
-
-   return `
+	return `
      <div class="lesson-container">
 
        <div class="lesson-introduction">${lesson.intro}</div>
@@ -205,6 +204,4 @@ Lesson Vocabulary Goes Here
 
 
    `;
-
-}
-
+};

@@ -1,6 +1,5 @@
 module.exports = ImperiumSenateOverlayTemplate = () => {
-
-  let html = `
+	let html = `
 
     <div class="senate-overlay">
       <div class="senate-agenda-card"></div>
@@ -9,7 +8,5 @@ module.exports = ImperiumSenateOverlayTemplate = () => {
 
   `;
 
-  return html;
-
-}
-
+	return html;
+};

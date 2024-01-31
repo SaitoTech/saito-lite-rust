@@ -1,43 +1,46 @@
 HTMLElement.prototype.toggleClass = function toggleClass(className) {
-  if (this.classList.contains(className)) {
-    this.classList.remove(className);
-  } else {
-    this.classList.add(className);
-  }
+	if (this.classList.contains(className)) {
+		this.classList.remove(className);
+	} else {
+		this.classList.add(className);
+	}
 };
 
 async function fetchBlock(hash) {
-  var url = window.location.origin + "/explorer/json-block/" + hash;
+	var url = window.location.origin + '/explorer/json-block/' + hash;
 
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      listTransactions(data, hash);
-    })
-    .catch((err) => {
-      console.error("Error fetching content: " + err);
-      return "";
-    });
+	fetch(url)
+		.then((response) => response.json())
+		.then((data) => {
+			listTransactions(data, hash);
+		})
+		.catch((err) => {
+			console.error('Error fetching content: ' + err);
+			return '';
+		});
 }
 
 async function fetchRawBlock(hash) {
-  var url = window.location.origin + "/explorer/json-block/" + hash;
-  var block = [];
-  for await (let line of makeTextFileLineIterator(url)) {
-    block.push(JSON.parse(line));
-  }
-  drawRawBlock(block, hash);
+	var url = window.location.origin + '/explorer/json-block/' + hash;
+	var block = [];
+	for await (let line of makeTextFileLineIterator(url)) {
+		block.push(JSON.parse(line));
+	}
+	drawRawBlock(block, hash);
 }
 
 function drawRawBlock(blk, hash) {
-  var jsonBlk = document.querySelector(".blockJson");
-  jsonBlk.innerHTML = "";
-  blk.forEach((row, index) => {
-    jsonBlk.innerHTML += "<div class='block-row-" + index + "'></div>";
-  });
-  blk.forEach((row, index) => {
-    var tree = jsonTree.create(row, document.querySelector(".block-row-" + index));
-  });
+	var jsonBlk = document.querySelector('.blockJson');
+	jsonBlk.innerHTML = '';
+	blk.forEach((row, index) => {
+		jsonBlk.innerHTML += '<div class=\'block-row-' + index + '\'></div>';
+	});
+	blk.forEach((row, index) => {
+		var tree = jsonTree.create(
+			row,
+			document.querySelector('.block-row-' + index)
+		);
+	});
 }
 
 function listTransactions(blk, hash) {
@@ -127,49 +130,47 @@ function listTransactions(blk, hash) {
 }
 
 function showTransaction(obj) {
-  var txdiv = document.querySelector(".txbox." + obj);
-  console.log("A");
-  if (!txdiv.classList.contains("treated")) {
-    console.log("B");
-    var txjson = JSON.parse(txdiv.innerText);
-    txdiv.innerHTML = "";
-    var tree = jsonTree.create(txjson, txdiv);
-    txdiv.classList.add("treated");
-    txdiv.style.display = "block";
-  }
-  txdiv.toggleClass("hidden");
+	var txdiv = document.querySelector('.txbox.' + obj);
+	console.log('A');
+	if (!txdiv.classList.contains('treated')) {
+		console.log('B');
+		var txjson = JSON.parse(txdiv.innerText);
+		txdiv.innerHTML = '';
+		var tree = jsonTree.create(txjson, txdiv);
+		txdiv.classList.add('treated');
+		txdiv.style.display = 'block';
+	}
+	txdiv.toggleClass('hidden');
 }
 
 async function* makeTextFileLineIterator(fileURL) {
-  const utf8Decoder = new TextDecoder("utf-8");
-  const response = await fetch(fileURL);
-  const reader = response.body.getReader();
-  let { value: chunk, done: readerDone } = await reader.read();
-  chunk = chunk ? utf8Decoder.decode(chunk) : "";
+	const utf8Decoder = new TextDecoder('utf-8');
+	const response = await fetch(fileURL);
+	const reader = response.body.getReader();
+	let { value: chunk, done: readerDone } = await reader.read();
+	chunk = chunk ? utf8Decoder.decode(chunk) : '';
 
-  const re = /\n|\r|\r\n/gm;
-  let startIndex = 0;
-  let result;
+	const re = /\n|\r|\r\n/gm;
+	let startIndex = 0;
+	let result;
 
-  for (;;) {
-    let result = re.exec(chunk);
-    if (!result) {
-      if (readerDone) {
-        break;
-      }
-      let remainder = chunk.substr(startIndex);
-      ({ value: chunk, done: readerDone } = await reader.read());
-      chunk = remainder + (chunk ? utf8Decoder.decode(chunk) : "");
-      startIndex = re.lastIndex = 0;
-      continue;
-    }
-    yield chunk.substring(startIndex, result.index);
-    startIndex = re.lastIndex;
-  }
-  if (startIndex < chunk.length) {
-    // last line didn't end in a newline char
-    yield chunk.substr(startIndex);
-  }
+	for (;;) {
+		let result = re.exec(chunk);
+		if (!result) {
+			if (readerDone) {
+				break;
+			}
+			let remainder = chunk.substr(startIndex);
+			({ value: chunk, done: readerDone } = await reader.read());
+			chunk = remainder + (chunk ? utf8Decoder.decode(chunk) : '');
+			startIndex = re.lastIndex = 0;
+			continue;
+		}
+		yield chunk.substring(startIndex, result.index);
+		startIndex = re.lastIndex;
+	}
+	if (startIndex < chunk.length) {
+		// last line didn't end in a newline char
+		yield chunk.substr(startIndex);
+	}
 }
-
-

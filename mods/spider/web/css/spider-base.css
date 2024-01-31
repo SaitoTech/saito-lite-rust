@@ -1,290 +1,273 @@
-
-.rules-overlay ul{
-  margin-left: 25px;
+.rules-overlay ul {
+	margin-left: 25px;
 }
 
-
-.rules-overlay table{
-  font-size: 1.5em;
-  margin: 0 auto;
+.rules-overlay table {
+	font-size: 1.5em;
+	margin: 0 auto;
 }
 
-.rules-overlay th{
-  text-align: right;
+.rules-overlay th {
+	text-align: right;
 }
 
-.rules-overlay td{
-  text-align: center;
-  width: 4em;
+.rules-overlay td {
+	text-align: center;
+	width: 4em;
 }
-
 
 .gameboard {
-  position: absolute;
-  background-image: url(/saito/img/arcade/greenfelt.jpg);
-  background-size: cover;
-  width: 100%;
-  height: 100%;
-  display: grid;
+	position: absolute;
+	background-image: url(/saito/img/arcade/greenfelt.jpg);
+	background-size: cover;
+	width: 100%;
+	height: 100%;
+	display: grid;
 }
 
-.gameboard.selection * { 
-  /*cursor: none !important;*/
+.gameboard.selection * {
+	/*cursor: none !important;*/
 }
 
-.game-scoreboard{
-  font-size: 20px;
-  height: 40px;
-  padding: 5px 20px;
+.game-scoreboard {
+	font-size: 20px;
+	height: 40px;
+	padding: 5px 20px;
 }
-
 
 /*arrange the cards in an array*/
-.card-stack-array{
-  width: calc(100vw - 100px);
-  height: calc(100vh - 200px);
-  margin: 50px auto;
-  display: grid;
-  grid-template-columns: repeat(10, minmax(auto,120px));
-  justify-content: space-evenly;
-  grid-gap: 3px;
-  max-width: 1375px;
+.card-stack-array {
+	width: calc(100vw - 100px);
+	height: calc(100vh - 200px);
+	margin: 50px auto;
+	display: grid;
+	grid-template-columns: repeat(10, minmax(auto, 120px));
+	justify-content: space-evenly;
+	grid-gap: 3px;
+	max-width: 1375px;
 }
 
 .nomoves .card-stack-array {
-  transition: filter 1s 1s;
-  filter: brightness(0.4);
+	transition: filter 1s 1s;
+	filter: brightness(0.4);
 }
-
 
 /* ANIMATIONS */
 .nomoves .draw-pile {
-  animation: 1s linear 0.25s infinite alternate undulate;
+	animation: 1s linear 0.25s infinite alternate undulate;
 }
 
-@keyframes undulate{
-  from{
-    box-shadow: 0 0 2px 2px whitesmoke;
-    } 
-  to{
-    box-shadow: 0 0 15px 10px whitesmoke;
-  }
+@keyframes undulate {
+	from {
+		box-shadow: 0 0 2px 2px whitesmoke;
+	}
+	to {
+		box-shadow: 0 0 15px 10px whitesmoke;
+	}
 }
 
-
-
-#helper, #helper:hover{
-  position: absolute;
-  width: min(120px, calc(10vw - 10px));
-  pointer-events: none;
-  z-index: 50;
+#helper,
+#helper:hover {
+	position: absolute;
+	width: min(120px, calc(10vw - 10px));
+	pointer-events: none;
+	z-index: 50;
 }
 
+.spider-footer {
+	position: absolute;
+	bottom: 3px;
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr min-content min-content;
+	grid-template-rows: min(12.24vw, 184px);
+	grid-column-gap: 10px;
+	align-items: center;
 
-
-.spider-footer{
-  position: absolute;
-  bottom: 3px;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr min-content min-content;
-  grid-template-rows: min(12.24vw, 184px);
-  grid-column-gap: 10px;
-  align-items: center;
-
-  color: whitesmoke;
-  font-size: 50px;
+	color: whitesmoke;
+	font-size: 50px;
 }
 
-.completed_stack_box{
-  height: 100%;
-  display: flex;
-  line-height: 300%;
-  justify-content: flex-start;
+.completed_stack_box {
+	height: 100%;
+	display: flex;
+	line-height: 300%;
+	justify-content: flex-start;
 }
 
-
-.completed_stack{
-  width: min(8vw, 120px);
-  height: min(12.24vw, 184px);
-  position: relative;
-  margin-left: 10px;
+.completed_stack {
+	width: min(8vw, 120px);
+	height: min(12.24vw, 184px);
+	position: relative;
+	margin-left: 10px;
 }
 
 .icon_container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-evenly;
 }
 
-.icon_container > div{
-  transition: opacity 0.1;
+.icon_container > div {
+	transition: opacity 0.1;
 }
 
 .icon_container > div i {
-  height: 70px;
-  width: 70px;
-  text-align: center;
-  font-size: 45px;
-  cursor: pointer;
+	height: 70px;
+	width: 70px;
+	text-align: center;
+	font-size: 45px;
+	cursor: pointer;
 }
 
-.icon_container > div i:hover{
-  background-color: whitesmoke;
-  color: black;
+.icon_container > div i:hover {
+	background-color: whitesmoke;
+	color: black;
 }
 
-
-.draw-pile{
-  width: min(8vw, 100px);
-  height: min(12.24vw, 153px);
-  border-radius: 5px;
-  border: 1px solid whitesmoke;
-  font-size: min(2vw, 32px);
-  margin: 0 6px 6px;
-  cursor: pointer;
-  background-color: black;
-  background-position: center;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  transition: font-size 0.2s;
-  padding: calc(14px - 1vw) 0;
+.draw-pile {
+	width: min(8vw, 100px);
+	height: min(12.24vw, 153px);
+	border-radius: 5px;
+	border: 1px solid whitesmoke;
+	font-size: min(2vw, 32px);
+	margin: 0 6px 6px;
+	cursor: pointer;
+	background-color: black;
+	background-position: center;
+	background-size: cover;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	transition: font-size 0.2s;
+	padding: calc(14px - 1vw) 0;
 }
 
 .draw-pile div {
-  text-shadow: 1px 1px black;
+	text-shadow: 1px 1px black;
 }
 
-
-.draw-pile:hover{
-  font-size: min(2.5vw, 36px);
+.draw-pile:hover {
+	font-size: min(2.5vw, 36px);
 }
 
-.card-slot{
-  width: min(8vw, 120px);
-  height: min(12.24vw, 184px);
-  position: absolute;
-  perspective: 500px;
-  transform-style: preserve-3d;
-  pointer-events: none;
+.card-slot {
+	width: min(8vw, 120px);
+	height: min(12.24vw, 184px);
+	position: absolute;
+	perspective: 500px;
+	transform-style: preserve-3d;
+	pointer-events: none;
 }
 
-.card-slot img{
-  width: 100%;
-  height: auto;
-  position: absolute;
-  z-index: 0;
+.card-slot img {
+	width: 100%;
+	height: auto;
+	position: absolute;
+	z-index: 0;
 }
 
 .animated_elem img {
-  width: 100%;
+	width: 100%;
 }
-
-
 
 .card-slot.selected {
-  filter: brightness(0.85);
+	filter: brightness(0.85);
 }
 
-
 .cs-empty {
-  border: 1px var(--saito-red) dashed;
-  background-color: var(--saito-red);
-  opacity: 0.3;
+	border: 1px var(--saito-red) dashed;
+	background-color: var(--saito-red);
+	opacity: 0.3;
 }
 
 .selected .cs-empty {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 /* Color empty slots */
 .cs-empty.cs-selectable:hover {
-  border-color: #00ff00;
-  /*background-color: rgba(160, 255, 160, 0.85);*/
-  opacity: 0.8;
+	border-color: #00ff00;
+	/*background-color: rgba(160, 255, 160, 0.85);*/
+	opacity: 0.8;
 }
 
-
-.cardFront, .cardBack {
-  transition: transform .4s linear;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+.cardFront,
+.cardBack {
+	transition: transform 0.4s linear;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
 }
 
 .cardFront {
-  transform: rotateY(180deg);
+	transform: rotateY(180deg);
 }
 
 .cardBack {
-  transform: rotateY(0deg);
+	transform: rotateY(0deg);
 }
 
-.faceup .cardFront, .completed_card .cardFront {
-  transform: rotateY(0deg);
+.faceup .cardFront,
+.completed_card .cardFront {
+	transform: rotateY(0deg);
 }
 
-
-.faceup .cardBack, .completed_card .cardBack {
-  transform: rotateY(-180deg);
+.faceup .cardBack,
+.completed_card .cardBack {
+	transform: rotateY(-180deg);
 }
 
 .card-slot.cs-selectable {
-  cursor: grab;
-  pointer-events: unset;
+	cursor: grab;
+	pointer-events: unset;
 }
 
-.hover img.cardFront, .cardstack .cs-selectable:hover img, .cardstack .cs-selectable:hover ~ .card-slot img {
-  filter: brightness(0.5);
+.hover img.cardFront,
+.cardstack .cs-selectable:hover img,
+.cardstack .cs-selectable:hover ~ .card-slot img {
+	filter: brightness(0.5);
 }
 
 .hover.empty_slot {
-  background: rgba(100,100,100,0.9);
+	background: rgba(100, 100, 100, 0.9);
 }
-
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  .draw-pile{
-    min-width: unset;
-  }
-  .undo{
-    font-size: 40px;
-    height: unset;
-    width: unset;
-  }
+	.draw-pile {
+		min-width: unset;
+	}
+	.undo {
+		font-size: 40px;
+		height: unset;
+		width: unset;
+	}
 
- .game-scoreboard{
-    font-size: 16px;
-    height: 30px;
-    padding: 5px 20px;
-    top: unset;
-    bottom: 0;
-  }
-  .card-stack-array{
-    margin: 10px 0 0 80px;
-    height: calc(100vh - 100px);
-  }
+	.game-scoreboard {
+		font-size: 16px;
+		height: 30px;
+		padding: 5px 20px;
+		top: unset;
+		bottom: 0;
+	}
+	.card-stack-array {
+		margin: 10px 0 0 80px;
+		height: calc(100vh - 100px);
+	}
 
-.icon_container > div i {
-  height: 40px;
-  width: 40px;
-  font-size: 25px;
-}
-
-
+	.icon_container > div i {
+		height: 40px;
+		width: 40px;
+		font-size: 25px;
+	}
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .gameboard{
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    
-  }
+	.gameboard {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
 }
-
-

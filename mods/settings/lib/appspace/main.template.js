@@ -1,49 +1,46 @@
 module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
+	let publicKey = mod.publicKey;
+	let key = app.keychain.returnKey({ publicKey: publicKey });
+	let identifier_registered;
 
-  let publicKey = mod.publicKey;
-  let key = app.keychain.returnKey({ publicKey : publicKey});
-  let identifier_registered;
+	console.log('key ////////');
+	console.log(key);
 
-  console.log("key ////////");
-  console.log(key);
+	if (key?.identifier) {
+		identifier_registered = `<div class="username">${key.identifier}</div>`;
+	} else {
+		if (key?.has_registered_username) {
+			identifier_registered = `<div class="register-identifier-btn">Registering...</div>`;
+		} else {
+			identifier_registered = `<div id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</div>`;
+		}
+	}
 
-  if (key?.identifier) {
-    identifier_registered = `<div class="username">${key.identifier}</div>`;
-  }else{
-    if (key?.has_registered_username){
-      identifier_registered = `<div class="register-identifier-btn">Registering...</div>`;  
-    } else{
-      identifier_registered = `<div id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</div>`;  
-    }
-  }
+	let modules_html = '';
 
-  let modules_html = "";
+	try {
+		console.log(app.options.modules);
 
-  try {
-    console.log(app.options.modules);
+		for (let i = 0; i < app.options.modules.length; i++) {
+			let mod = app.modules.returnModule(app.options.modules[i].name);
+			let shortName = app.options.modules[i].name;
+			let fullName = mod ? mod.returnName() : shortName;
 
-    for (let i = 0; i < app.options.modules.length; i++){
-      let mod = app.modules.returnModule(app.options.modules[i].name);
-      let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
-      modules_html += `
+			let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
+			modules_html += `
       <div class="settings-appspace-app">
           <div class="saito-switch">
             <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
           </div>
-          <div id="${mod.name}" class="settings-appspace-module settings-appspace-link">${mod.returnName()}</div>
+          <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>
          </div>
-      `;  
-    }
+      `;
+		}
+	} catch (err) {
+		console.error(err);
+	}
 
-  } catch (err) {
-    if (err.message.startsWith("Cannot read property 'map'")) {
-      modules_html = "Initialization error. Refresh page should fix this.";
-    } else {
-      modules_html = `Unknown error<br/>${err}`;
-    }
-  }
-
-  let html = `
+	let html = `
   
   <div class="settings-appspace">
 
@@ -94,6 +91,5 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
   `;
 
-  return html;
-
-}
+	return html;
+};

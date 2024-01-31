@@ -143,4 +143,10 @@ fieldset.saito-grid {
     grid-template-columns: 2rem 1fr;
     row-gap: 0.75rem;
     column-gap: 1.5rem;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.saito-module-settings .note {
+    font-style: italic;
 }

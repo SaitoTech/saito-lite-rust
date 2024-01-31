@@ -1,1266 +1,1316 @@
-
 .help-question {
-    background-color: goldenrod;
-    padding: 0.5rem 1.5rem 0.5rem 1.5rem;
-    border: 1px solid #000;
+	background-color: goldenrod;
+	padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+	border: 1px solid #000;
 }
 
 .status .status-update {
-    width: max-content;
-    margin-left: auto;
-    margin-right: auto;
+	width: max-content;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .objectives-toggle {
-  font-family: orbitron-medium, sans-serif;
-  float: right;
-  height: 4.5vh;
-  font-size: 3vh;
-  background-color: goldenrod;
-  width: 4rem;
-  opacity: 0.5;
-  margin: 3px;
-  padding-left: 1.4rem;
-  padding-top: 0.8vh;
-  user-select: none;
-  cursor: pointer;
-  position: relative;
-  top: -1.1rem;
+	font-family: orbitron-medium, sans-serif;
+	float: right;
+	height: 4.5vh;
+	font-size: 3vh;
+	background-color: goldenrod;
+	width: 4rem;
+	opacity: 0.5;
+	margin: 3px;
+	padding-left: 1.4rem;
+	padding-top: 0.8vh;
+	user-select: none;
+	cursor: pointer;
+	position: relative;
+	top: -1.1rem;
 }
 
-.game-overlay-button-continue, .game-overlay-cardlist-button {
-    background-color: white;
-    padding: 2rem;
-    color: #000D;
-    border-radius: 1rem;
-    cursor: pointer;
+.game-overlay-button-continue,
+.game-overlay-cardlist-button {
+	background-color: white;
+	padding: 2rem;
+	color: #000d;
+	border-radius: 1rem;
+	cursor: pointer;
 }
-.game-overlay-button-continue:hover, .game-overlay-cardlist-button:hover {
-    background-color: var(--saito-primary);
-    padding: 2rem;
-    color: white;
-    border-radius: 1rem;
-    cursor: pointer;
+.game-overlay-button-continue:hover,
+.game-overlay-cardlist-button:hover {
+	background-color: var(--saito-primary);
+	padding: 2rem;
+	color: white;
+	border-radius: 1rem;
+	cursor: pointer;
 }
 
 .goods_box {
-  background-color: #006400;
-  padding: 4px;
-  border: 1px solid #fff;
-  color: white;
+	background-color: #006400;
+	padding: 4px;
+	border: 1px solid #fff;
+	color: white;
 }
-     
+
 .resources_box {
-  background-color: black;
-  padding: 4px;
-  border: 1px solid #fff;
-  color: white;
+	background-color: black;
+	padding: 4px;
+	border: 1px solid #fff;
+	color: white;
 }
-     
+
 .influence_box {
-  background-color: goldenrod;
-  padding: 4px;
-  border: 1px solid #fff;
-  color: black;
-}   
+	background-color: goldenrod;
+	padding: 4px;
+	border: 1px solid #fff;
+	color: black;
+}
 
 .flash-color {
-  /* override player_color when flashing */
-  filter: none !important;
+	/* override player_color when flashing */
+	filter: none !important;
 }
 
-.chat-body>.saito-user>.saito-userline {
-  font-family: sans-serif;
+.chat-body > .saito-user > .saito-userline {
+	font-family: sans-serif;
 }
 
 ul li {
-  list-style: none;
+	list-style: none;
 }
 
 .game-menu ul li {
-    width: 160px;
+	width: 160px;
 }
 .game-overlay-cardlist-title {
-  font-family: 'orbitron-medium', helvetica;
-  color: #000;
-  -webkit-text-stroke: 2px #FFFD;
-  stroke: 2px #FFF8;
-  font-size: 4.5rem;
+	font-family: 'orbitron-medium', helvetica;
+	color: #000;
+	-webkit-text-stroke: 2px #fffd;
+	stroke: 2px #fff8;
+	font-size: 4.5rem;
 }
 .game-overlay-cardlist-subtitle {
-  font-family: 'orbitron-light', helvetica;
-  height: auto;
-  padding: 1rem;
+	font-family: 'orbitron-light', helvetica;
+	height: auto;
+	padding: 1rem;
 }
-
 
 .sf-title {
-  font-family: 'bank-gothic';
+	font-family: 'bank-gothic';
 }
 .sf-readable {
-  font-family: 'sans-serif';
+	font-family: 'sans-serif';
 }
 
 @font-face {
-  font-family: 'bank-gothic';
-  src: url('/imperium/font/BankGothicRegular.eot');
-  src: local('BankGothicRegular'), url('/imperium/font/BankGothicRegular.woff') format('woff'), url('/imperium/font/BankGothicRegular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'bank-gothic';
+	src: url('/imperium/font/BankGothicRegular.eot');
+	src: local('BankGothicRegular'),
+		url('/imperium/font/BankGothicRegular.woff') format('woff'),
+		url('/imperium/font/BankGothicRegular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: 'orbitron-medium';
-  src: url('/imperium/font/orbitron-medium-webfont.eot');
-  src: local('orbitron-medium-webfont'), url('/imperium/font/orbitron-medium-webfont.woff') format('woff'), url('/imperium/font/orbitron-medium-webfont.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'orbitron-medium';
+	src: url('/imperium/font/orbitron-medium-webfont.eot');
+	src: local('orbitron-medium-webfont'),
+		url('/imperium/font/orbitron-medium-webfont.woff') format('woff'),
+		url('/imperium/font/orbitron-medium-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: 'orbitron-light';
-  src: url('/imperium/font/orbitron-light-webfont.eot');
-  src: local('orbitron-light-webfont'), url('/imperium/font/orbitron-light-webfont.woff') format('woff'), url('/imperium/font/orbitron-light-webfont.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'orbitron-light';
+	src: url('/imperium/font/orbitron-light-webfont.eot');
+	src: local('orbitron-light-webfont'),
+		url('/imperium/font/orbitron-light-webfont.woff') format('woff'),
+		url('/imperium/font/orbitron-light-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
-
 
 /*** generic cardlist overlays ***/
 .game-overlay-cardlist-title {
-  font-family: 'orbitron-medium',helvetica;
+	font-family: 'orbitron-medium', helvetica;
 }
 
 /*** unit overlay ***/
 
 #close-units-btn {
-  margin-bottom: 30px;
-  width: 120px;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 2em;
+	margin-bottom: 30px;
+	width: 120px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2em;
 }
 .unit-box-ship {
-  float: left;
-  color: black;
-  width: 200px;
-  text-align: center;
-  height: 100px;
-  vertical-align: middle;
-  padding-top: 40px;
-  font-size: 20px;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-family: 'bank-gothic', 'orbitron-medium', helvetica;
+	float: left;
+	color: black;
+	width: 200px;
+	text-align: center;
+	height: 100px;
+	vertical-align: middle;
+	padding-top: 40px;
+	font-size: 20px;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-family: 'bank-gothic', 'orbitron-medium', helvetica;
 }
-.unit-box-ship-fighter, .unit-box-ship-fighter-ii {
-  background-image: url("/imperium/img/ships/fighter_100x200.png");
-  background-size: cover;
+.unit-box-ship-fighter,
+.unit-box-ship-fighter-ii {
+	background-image: url('/imperium/img/ships/fighter_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-destroyer, .unit-box-ship-destroyer-ii {
-  background-image: url("/imperium/img/ships/destroyer_100x200.png");
-  background-size: cover;
+.unit-box-ship-destroyer,
+.unit-box-ship-destroyer-ii {
+	background-image: url('/imperium/img/ships/destroyer_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-carrier, .unit-box-ship-carrier-ii {
-  background-image: url("/imperium/img/ships/carrier_100x200.png");
-  background-size: cover;
+.unit-box-ship-carrier,
+.unit-box-ship-carrier-ii {
+	background-image: url('/imperium/img/ships/carrier_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-cruiser, .unit-box-ship-cruiser-ii {
-  background-image: url("/imperium/img/ships/cruiser_100x200.png");
-  background-size: cover;
+.unit-box-ship-cruiser,
+.unit-box-ship-cruiser-ii {
+	background-image: url('/imperium/img/ships/cruiser_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-dreadnaught, .unit-box-ship-dreadnaught-ii {
-  background-image: url("/imperium/img/ships/dreadnaught_100x200.png");
-  background-size: cover;
+.unit-box-ship-dreadnaught,
+.unit-box-ship-dreadnaught-ii {
+	background-image: url('/imperium/img/ships/dreadnaught_100x200.png');
+	background-size: cover;
 }
 .unit-box-ship-flagship {
-  background-image: url("/imperium/img/ships/flagship_100x200.png");
-  background-size: cover;
+	background-image: url('/imperium/img/ships/flagship_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-warsun, .unit-box-ship-warsun-ii {
-  background-image: url("/imperium/img/ships/warsun_100x200.png");
-  background-size: cover;
+.unit-box-ship-warsun,
+.unit-box-ship-warsun-ii {
+	background-image: url('/imperium/img/ships/warsun_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-infantry, .unit-box-ship-infantry-ii {
-  background-image: url("/imperium/img/ships/infantry_100x200.png");
-  background-size: cover;
+.unit-box-ship-infantry,
+.unit-box-ship-infantry-ii {
+	background-image: url('/imperium/img/ships/infantry_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-pds, .unit-box-ship-pds-ii {
-  background-image: url("/imperium/img/ships/pds_100x200.png");
-  background-size: cover;
+.unit-box-ship-pds,
+.unit-box-ship-pds-ii {
+	background-image: url('/imperium/img/ships/pds_100x200.png');
+	background-size: cover;
 }
-.unit-box-ship-spacedock, .unit-box-ship-spacedock-ii {
-  background-image: url("/imperium/img/ships/spacedock_100x200.png");
-  background-size: cover;
+.unit-box-ship-spacedock,
+.unit-box-ship-spacedock-ii {
+	background-image: url('/imperium/img/ships/spacedock_100x200.png');
+	background-size: cover;
 }
 .units-overlay-container {
-  background-image: url("/imperium/img/starscape_background1.jpg");
-  background-size: cover;
-  min-width: 80vw;
-  min-height: 80vh;
-  overflow-y: scroll;
-  max-height: 80vh;
+	background-image: url('/imperium/img/starscape_background1.jpg');
+	background-size: cover;
+	min-width: 80vw;
+	min-height: 80vh;
+	overflow-y: scroll;
+	max-height: 80vh;
 }
 .unit-element {
-  margin-top:20px;
-  color: white;
-  font-family: 'orbitron-light', helvetica, arial;
+	margin-top: 20px;
+	color: white;
+	font-family: 'orbitron-light', helvetica, arial;
 }
 .unit-box {
-  float: left;
-  width: 120px;
-  height: 120px;
-  border: 1px solid green;
-  text-align: center;
+	float: left;
+	width: 120px;
+	height: 120px;
+	border: 1px solid green;
+	text-align: center;
 }
 .unit-box-num {
-  font-size: 60px;
-  padding-top: 17px;
+	font-size: 60px;
+	padding-top: 17px;
 }
 .unit-box-desc {
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 18px;
-  clear:both;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 18px;
+	clear: both;
 }
 .unit-description {
-  clear: both;
-  padding: 10px;
-  font-weight: bold;
-  min-height: 50px;
-  line-height: 1.7em;
-  letter-spacing: 0.1em;
+	clear: both;
+	padding: 10px;
+	font-weight: bold;
+	min-height: 50px;
+	line-height: 1.7em;
+	letter-spacing: 0.1em;
 }
 .units-overlay-container {
-  background-color: whitesmoke;
-  width: 800px;
+	background-color: whitesmoke;
+	width: 800px;
 }
 .units-overlay-title {
-  padding-top:30px;
-  color: white;
-  width: 100%;
-  text-align: center;
-  font-size: 4em;
-  font-family: 'orbitron-medium';
+	padding-top: 30px;
+	color: white;
+	width: 100%;
+	text-align: center;
+	font-size: 4em;
+	font-family: 'orbitron-medium';
 }
 .units-overlay-text {
-  display: inline-block;
-  color: black;
-  text-align: center;
-  font-size: 1.2em;
-  font-family: 'orbitron-medium';
-  background-color: whitesmoke;
-  padding-top:8px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-top: 15px;
+	display: inline-block;
+	color: black;
+	text-align: center;
+	font-size: 1.2em;
+	font-family: 'orbitron-medium';
+	background-color: whitesmoke;
+	padding-top: 8px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-top: 15px;
 }
 .unit-table {
-  width: 685px;
-  margin-left: auto;
-  margin-right: auto;
+	width: 685px;
+	margin-left: auto;
+	margin-right: auto;
 }
-
 
 .new_secret_objective_overlay {
-  background-image: url("/imperium/img/starscape_background1.jpg");
-  width: 50vw;
-  height: auto;
-  text-align:center;
-  transform: scale(1.4);
-  min-height: 30vh;
-  max-width: 50vw;
+	background-image: url('/imperium/img/starscape_background1.jpg');
+	width: 50vw;
+	height: auto;
+	text-align: center;
+	transform: scale(1.4);
+	min-height: 30vh;
+	max-width: 50vw;
 }
 .new_secret_objective_overlay_title {
-  margin-top:15px;
-  background: #3335;
-  display: inline-block;
-  color: white;
-  font-size: 3em;
-  font-family: 'orbitron-medium', helvetica, arial;
-  font-weight: bold;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+	margin-top: 15px;
+	background: #3335;
+	display: inline-block;
+	color: white;
+	font-size: 3em;
+	font-family: 'orbitron-medium', helvetica, arial;
+	font-weight: bold;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
-
 .cardbox-card img {
-  position: absolute;
+	position: absolute;
 }
 
 .game-menu {
-  font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
+	font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
 }
 
 #close-action-cards-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 240px;
-  margin-top: 14px;
-  margin-bottom: 20px;
-  font-size: 2em;
-  font-family: 'bank-gothic';
+	max-width: 240px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 240px;
+	margin-top: 14px;
+	margin-bottom: 20px;
+	font-size: 2em;
+	font-family: 'bank-gothic';
 }
 .objectives_secret_notice {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  background-color: red;
-  color: white;
-  font-weight: bold;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  font-size: 1em;
-  margin-top: 5px;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	font-size: 1em;
+	margin-top: 5px;
 }
-
 
 .new_objectives_overlay_container {
-  background-image: url("/imperium/img/starscape_background1.jpg");
-  background-size: cover;
-  border-radius: 15px;
-  width: 80vw;
-  font-family: 'orbitron-medium';
-  letter-spacing: 0.1em;
-  line-height: 2em;
-  text-align: center;
-  padding: 20px;
+	background-image: url('/imperium/img/starscape_background1.jpg');
+	background-size: cover;
+	border-radius: 15px;
+	width: 80vw;
+	font-family: 'orbitron-medium';
+	letter-spacing: 0.1em;
+	line-height: 2em;
+	text-align: center;
+	padding: 20px;
 }
 .new_objectives_title {
-  font-size: 3em;
-  padding: 20px;
-  text-align: center;
-  color: white;
-  padding-bottom: 20px;
+	font-size: 3em;
+	padding: 20px;
+	text-align: center;
+	color: white;
+	padding-bottom: 20px;
 }
 .close-objectives-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 240px;
-  margin-top: 14px;
-  margin-bottom: 20px;
-  font-size: 2em;
-  font-family: 'bank-gothic';
-  text-align:center;
+	max-width: 240px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 240px;
+	margin-top: 14px;
+	margin-bottom: 20px;
+	font-size: 2em;
+	font-family: 'bank-gothic';
+	text-align: center;
 }
 
 .new_action_cards {
-  height: 35vh;
-  min-height: 35vh;
-  margin-bottom: 20px;
-  display: inline-block;
+	height: 35vh;
+	min-height: 35vh;
+	margin-bottom: 20px;
+	display: inline-block;
 }
 .new_action_cards_overlay_container {
-  background-image: url("/imperium/img/starscape_background3.jpg");
-  background-size: cover;
-  border-radius: 15px;
-  width: 80vw;
-  font-family: 'orbitron-medium';
-  letter-spacing: 0.1em;
-  line-height: 2em;
-  text-align: center;
-  padding: 20px;
-  max-width: 900px;
+	background-image: url('/imperium/img/starscape_background3.jpg');
+	background-size: cover;
+	border-radius: 15px;
+	width: 80vw;
+	font-family: 'orbitron-medium';
+	letter-spacing: 0.1em;
+	line-height: 2em;
+	text-align: center;
+	padding: 20px;
+	max-width: 900px;
 }
 .new_action_cards_title {
-  font-size: 3em;
-  padding: 20px;
-  text-align: center;
-  color: white;
-  padding-bottom: 20px;
+	font-size: 3em;
+	padding: 20px;
+	text-align: center;
+	color: white;
+	padding-bottom: 20px;
 }
 .close-action-cards-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 240px;
-  margin-top: 14px;
-  margin-bottom: 20px;
-  font-size: 2em;
-  font-family: 'bank-gothic';
-  text-align:center;
+	max-width: 240px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 240px;
+	margin-top: 14px;
+	margin-bottom: 20px;
+	font-size: 2em;
+	font-family: 'bank-gothic';
+	text-align: center;
 }
 
 .action_card {
-  padding: 25px;
-  padding-top: 30px;
-  height: 34vh;
-  width: calc(34vh * 0.72110);
-  background-size: cover;
-  text-align: center;
-  font-size: 1em;
-  transition: all 50ms;
-  border: 1px solid;
-  cursor: pointer;
+	padding: 25px;
+	padding-top: 30px;
+	height: 34vh;
+	width: calc(34vh * 0.7211);
+	background-size: cover;
+	text-align: center;
+	font-size: 1em;
+	transition: all 50ms;
+	border: 1px solid;
+	cursor: pointer;
 }
 .action_card_title {
-  position: relative;
-  font-family: 'orbitron-medium', helvetica, arial;
-  color: white;
-  padding-right: 10px;
-  white-space: nowrap;
-  margin: 0.2vw 0 0 0;
-  font-weight: bold;
+	position: relative;
+	font-family: 'orbitron-medium', helvetica, arial;
+	color: white;
+	padding-right: 10px;
+	white-space: nowrap;
+	margin: 0.2vw 0 0 0;
+	font-weight: bold;
 }
 .action_card_text {
-  position: relative;
-  font-family: 'orbitron-medium', helvetica, arial;
-  color: white;
-  padding: 0px;
-  padding-top:15px;
-  margin: 1.1vw 0 0 0;
-  height: 11vw;
-  text-align: left;
-  line-height: 1.6em;
+	position: relative;
+	font-family: 'orbitron-medium', helvetica, arial;
+	color: white;
+	padding: 0px;
+	padding-top: 15px;
+	margin: 1.1vw 0 0 0;
+	height: 11vw;
+	text-align: left;
+	line-height: 1.6em;
 }
 .action_card:hover {
-  transform: scale(1.2);
-  z-index: 10;
-  border: 1px solid whitesmoke;
+	transform: scale(1.2);
+	z-index: 10;
+	border: 1px solid whitesmoke;
 }
 
-
 .game-menu {
-  font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
-
+	font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
 }
 
 .log {
-  cursor: pointer;
+	cursor: pointer;
 }
 .combat_log_th {
-  padding-right: 5px;
+	padding-right: 5px;
 }
 
 .combat_log_td {
-  padding-right: 5px;
-  text-align: right;
+	padding-right: 5px;
+	text-align: right;
 }
 
 .hazard_border {
-  display: none;
-  left: -100%;
-  right: -100%;
-  width: auto;
-  height: 100%;
-  margin: 0 auto;
+	display: none;
+	left: -100%;
+	right: -100%;
+	width: auto;
+	height: 100%;
+	margin: 0 auto;
 }
 
 .faction_border {
-  display: none;
-  left: -100%;
-  right: -100%;
-  width: auto;
-  height: 100%;
-  margin: 0 auto;
+	display: none;
+	left: -100%;
+	right: -100%;
+	width: auto;
+	height: 100%;
+	margin: 0 auto;
 }
 
 .cardbox_card tech_card {
-  font-size: 1.6em;
-  padding: 5px;
+	font-size: 1.6em;
+	padding: 5px;
 }
 .tech_card_overlay {
-  position: absolute;
-  color: white;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 100px;
-  top: 0px;
-  line-height: 1.8em;
-  font-family: 'orbitron-light', helvetica, sans-serif;
-  font-size: 2em;
+	position: absolute;
+	color: white;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 100px;
+	top: 0px;
+	line-height: 1.8em;
+	font-family: 'orbitron-light', helvetica, sans-serif;
+	font-size: 2em;
 }
 
 .action_card_overlay {
-  position: absolute;
-  color: white;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 100px;
-  top: 0px;
-  line-height: 1.8em;
-  font-family: 'orbitron-light', helvetica, sans-serif;
-  font-size: 2em;
+	position: absolute;
+	color: white;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 100px;
+	top: 0px;
+	line-height: 1.8em;
+	font-family: 'orbitron-light', helvetica, sans-serif;
+	font-size: 2em;
 }
 
 .agenda_card_overlay {
-  position: absolute;
-  color: white;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 130px;
-  top: 0px;
-  line-height: 1.8em;
-  font-family: 'orbitron-light', helvetica, sans-serif;
-  font-size: 2em;
+	position: absolute;
+	color: white;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 130px;
+	top: 0px;
+	line-height: 1.8em;
+	font-family: 'orbitron-light', helvetica, sans-serif;
+	font-size: 2em;
 }
 
 #confirm {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  cursor: pointer;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	cursor: pointer;
 }
 
 .hud {
-  left: 140px;
-  transform: translate(0, 0);
+	left: 140px;
+	transform: translate(0, 0);
 }
 
 .hud-menu-overlay ul {
-  list-style: none;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  cursor: pointer;
+	list-style: none;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	cursor: pointer;
 }
 
 .hud-menu-overlay ul li {
-  width: 100%;
-  line-height: 3.5em;
-  border-top: 1px solid var(--saito-skyline-grey);
-  cursor: pointer;
+	width: 100%;
+	line-height: 3.5em;
+	border-top: 1px solid var(--saito-skyline-grey);
+	cursor: pointer;
 }
 
 .sf-readable {
-  /** font-family: 'orbitron-light', helvetica, sans-serif; **/
-  font-family: helvetica, sans-serif;
-  line-height: 1.6em;
-  font-weight: normal;
+	/** font-family: 'orbitron-light', helvetica, sans-serif; **/
+	font-family: helvetica, sans-serif;
+	line-height: 1.6em;
+	font-weight: normal;
 }
 
 .status > .sf-readable {
-  /** font-family: 'orbitron-light', helvetica, sans-serif; ***/
-  font-family: helvetica, sans-serif;
-  line-height: 1.6em;
-  font-weight: normal;
-  padding-top: 16px;
-  padding-bottom: 16px;
+	/** font-family: 'orbitron-light', helvetica, sans-serif; ***/
+	font-family: helvetica, sans-serif;
+	line-height: 1.6em;
+	font-weight: normal;
+	padding-top: 16px;
+	padding-bottom: 16px;
 }
 
 * {
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 .doublespace {
-  line-height: 1.8em;
-  color: whitesmoke;
+	line-height: 1.8em;
+	color: whitesmoke;
 }
 
 :root {
-  --p1: #229922;
-  --p2: #0066ff;
-  --p3: #FF6037;
-  --p4: #FF00CC;
-  --p5: #FFCC33;
-  --p6: #FF355E;
-  --my-color: var(--p1);
-  --playing-color: var(--p1);
+	--p1: #229922;
+	--p2: #0066ff;
+	--p3: #ff6037;
+	--p4: #ff00cc;
+	--p5: #ffcc33;
+	--p6: #ff355e;
+	--my-color: var(--p1);
+	--playing-color: var(--p1);
 }
 
-.p1, .p1 .pc {
-  color: var(--p1);
+.p1,
+.p1 .pc {
+	color: var(--p1);
 }
 
-.p2, .p2 .pc {
-  color: var(--p2);
+.p2,
+.p2 .pc {
+	color: var(--p2);
 }
 
-.p3, .p3 .pc {
-  color: var(--p3);
+.p3,
+.p3 .pc {
+	color: var(--p3);
 }
 
-.p4, .p4 .pc {
-  color: var(--p4);
+.p4,
+.p4 .pc {
+	color: var(--p4);
 }
 
-.p5, .p5 .pc {
-  color: var(--p5);
+.p5,
+.p5 .pc {
+	color: var(--p5);
 }
 
-.p6, .p6 .pc {
-  color: var(--p6);
+.p6,
+.p6 .pc {
+	color: var(--p6);
 }
 
-.p1 .bc, .p1 .bc::before, .bc1 {
-  border-color: var(--p1);
-  border: 1px solid var(--p1);
+.p1 .bc,
+.p1 .bc::before,
+.bc1 {
+	border-color: var(--p1);
+	border: 1px solid var(--p1);
 }
 
-.p2 .bc, .p2 .bc::before, .bc2 {
-  border-color: var(--p2);
-  border: 1px solid var(--p2);
+.p2 .bc,
+.p2 .bc::before,
+.bc2 {
+	border-color: var(--p2);
+	border: 1px solid var(--p2);
 }
 
-.p3 .bc, .p3 .bc::before, .bc3 {
-  border-color: var(--p3);
-  border: 1px solid var(--p3);
+.p3 .bc,
+.p3 .bc::before,
+.bc3 {
+	border-color: var(--p3);
+	border: 1px solid var(--p3);
 }
 
-.p4 .bc, .p4 .bc::before, .bc4 {
-  border-color: var(--p4);
-  border: 1px solid var(--p4);
+.p4 .bc,
+.p4 .bc::before,
+.bc4 {
+	border-color: var(--p4);
+	border: 1px solid var(--p4);
 }
 
-.p5 .bc, .p5 .bc::before, .bc5 {
-  border-color: var(--p5);
-  border: 1px solid var(--p5);
+.p5 .bc,
+.p5 .bc::before,
+.bc5 {
+	border-color: var(--p5);
+	border: 1px solid var(--p5);
 }
 
-.p6 .bc, .p6 .bc::before, .bc6 {
-  border-color: var(--p6);
-  border: 1px solid var(--p6);
+.p6 .bc,
+.p6 .bc::before,
+.bc6 {
+	border-color: var(--p6);
+	border: 1px solid var(--p6);
 }
 
-.p1 .bk , .p1.bk {
-  background-color: var(--p1);
+.p1 .bk,
+.p1.bk {
+	background-color: var(--p1);
 }
 
-.p2 .bk , .p2.bk {
-  background-color: var(--p2);
+.p2 .bk,
+.p2.bk {
+	background-color: var(--p2);
 }
 
-.p3 .bk , .p3.bk {
-  background-color: var(--p3);
+.p3 .bk,
+.p3.bk {
+	background-color: var(--p3);
 }
 
-.p4 .bk , .p4.bk {
-  background-color: var(--p4);
+.p4 .bk,
+.p4.bk {
+	background-color: var(--p4);
 }
 
-.p5 .bk , .p5.bk {
-  background-color: var(--p5);
+.p5 .bk,
+.p5.bk {
+	background-color: var(--p5);
 }
 
-.p6 .bk , .p6.bk {
-  background-color: var(--p6);
+.p6 .bk,
+.p6.bk {
+	background-color: var(--p6);
 }
 
 body {
-  overflow: hidden;
-  font-family: sans-serif, 'orbitron-medium', arial, helvetica, sans-serif, 'bank-gothic';
-  background: #151717;
-  font-size: 13px;
-  padding: 0px;
-  margin: 0px;
+	overflow: hidden;
+	font-family: sans-serif, 'orbitron-medium', arial, helvetica, sans-serif,
+		'bank-gothic';
+	background: #151717;
+	font-size: 13px;
+	padding: 0px;
+	margin: 0px;
 }
 
 .game_background {
-    background-image: url(/imperium/img/starscape_background3.jpg);
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-size: cover;
-    z-index: -999;
-    /* filter: blur(1px) grayscale(0.2); */
+	background-image: url(/imperium/img/starscape_background3.jpg);
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background-size: cover;
+	z-index: -999;
+	/* filter: blur(1px) grayscale(0.2); */
 }
 
 .faction_name {
-  color: #fff;
-  text-shadow: 1px 2px #000;
-  font-size: 2em;
-  text-align: center;
-  line-height: 2.2em;
+	color: #fff;
+	text-shadow: 1px 2px #000;
+	font-size: 2em;
+	text-align: center;
+	line-height: 2.2em;
 }
 
 .faction_sheets {
-  display: grid;
-  grid-auto-columns: 1fr;
-  grid-auto-flow: column;
-  grid-gap: 2em;
-  padding: 2em;
+	display: grid;
+	grid-auto-columns: 1fr;
+	grid-auto-flow: column;
+	grid-gap: 2em;
+	padding: 2em;
 }
 
 .objectives_scorings {
-  display: grid;
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  width: 100%;
-  grid-template-rows: auto;
+	display: grid;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	grid-template-rows: auto;
 }
 .objectives_players_scored {
-  height: 20px;
-  z-index: 99;
+	height: 20px;
+	z-index: 99;
 }
 
 .token_count {
-  font-size: 1em;
-  margin-top: 0px;
-  display: block;
-  color: #FFF;
-  font-family: 'bank-gothic';
-  text-shadow: 1px 1px #000;
+	font-size: 1em;
+	margin-top: 0px;
+	display: block;
+	color: #fff;
+	font-family: 'bank-gothic';
+	text-shadow: 1px 1px #000;
 }
 
 .combat_attacker {
-  margin-top: 20px;
-  margin-bottom: 15px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'orbitron-medium', helvetica;
-  font-weight: bold;
-  line-height: 1.5em;
-  text-align: center;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 20px;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'orbitron-medium', helvetica;
+	font-weight: bold;
+	line-height: 1.5em;
+	text-align: center;
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 .combat_attacker_fleet {
-  margin-top: 20px;
-  margin-bottom: 15px;
-  font-size: 0.8em;
-  margin-right: auto;
-  margin-left: auto;
-  font-family: 'orbitron-medium', helvetica;
-  font-weight: normal;
-  line-height: 1.5em;
-  text-align: center;
-  width: 100%;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	font-size: 0.8em;
+	margin-right: auto;
+	margin-left: auto;
+	font-family: 'orbitron-medium', helvetica;
+	font-weight: normal;
+	line-height: 1.5em;
+	text-align: center;
+	width: 100%;
 }
 
 .combat_defender {
-  margin-top: 20px;
-  margin-bottom: 15px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'orbitron-medium', helvetica;
-  font-weight: bold;
-  line-height: 1.5em;
-  text-align: center;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 20px;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'orbitron-medium', helvetica;
+	font-weight: bold;
+	line-height: 1.5em;
+	text-align: center;
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 .combat_defender_fleet {
-  margin-top: 20px;
-  margin-bottom: 15px;
-  font-size: 0.8em;
-  font-weight: normal;
-  margin-right: auto;
-  margin-left: auto;
-  font-family: 'orbitron-medium', helvetica;
-  line-height: 1.5em;
-  text-align: center;
-  width: 100%;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	font-size: 0.8em;
+	font-weight: normal;
+	margin-right: auto;
+	margin-left: auto;
+	font-family: 'orbitron-medium', helvetica;
+	line-height: 1.5em;
+	text-align: center;
+	width: 100%;
 }
 
 .action_card_instructions_hud {
-  font-family: 'orbitron-light', helvetica;
-  font-size: 0.9em;
-  margin-top: 15px;
-  line-height: 1.5em;
+	font-family: 'orbitron-light', helvetica;
+	font-size: 0.9em;
+	margin-top: 15px;
+	line-height: 1.5em;
 }
 
 .action_card_name_hud {
-  margin-top: 20px;
-  margin-bottom: 15px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'orbitron-medium', helvetica;
-  font-weight: bold;
-  line-height: 1.5em;
-  text-align: center;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 20px;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'orbitron-medium', helvetica;
+	font-weight: bold;
+	line-height: 1.5em;
+	text-align: center;
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 .action_card_text_hud {
-  margin-bottom: 20px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'orbitron-light', helvetica;
-  line-height: 1.6em;
-  font-size: 0.9em;
+	margin-bottom: 20px;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'orbitron-light', helvetica;
+	line-height: 1.6em;
+	font-size: 0.9em;
 }
 
 .action_card_status_hud {
-  font-family: 'orbitron-light', helvetica;
-  font-size: 0.9em;
-  margin-top: 10px;
+	font-family: 'orbitron-light', helvetica;
+	font-size: 0.9em;
+	margin-top: 10px;
 }
 
 .agenda_instructions {
-  font-family: 'orbitron-light', helvetica;
-  font-size: 0.9em;
-  margin-top: 15px;
-  line-height: 1.5em;
+	font-family: 'orbitron-light', helvetica;
+	font-size: 0.9em;
+	margin-top: 15px;
+	line-height: 1.5em;
 }
 
 .agenda_name {
-  margin-top: 20px;
-  margin-bottom: 15px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'orbitron-medium', helvetica;
-  font-weight: bold;
-  line-height: 1.5em;
+	margin-top: 20px;
+	margin-bottom: 15px;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'orbitron-medium', helvetica;
+	font-weight: bold;
+	line-height: 1.5em;
 }
 
 .agenda_text {
-  margin-bottom: 20px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'orbitron-light', helvetica;
-  line-height: 1.6em;
-  font-size: 0.9em;
+	margin-bottom: 20px;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'orbitron-light', helvetica;
+	line-height: 1.6em;
+	font-size: 0.9em;
 }
 
 .agenda_status {
-  font-family: 'orbitron-light', helvetica;
-  font-size: 0.9em;
-  margin-top: 10px;
+	font-family: 'orbitron-light', helvetica;
+	font-size: 0.9em;
+	margin-top: 10px;
 }
 
 .action_card_content {
-  font-family: 'orbitron-medium', helvetica, arial;
-  color: white;
-  padding: 0px;
-  margin: 1.1vw 0 0 0;
-  height: 11vw;
-  text-align: left;
-  line-height: 1.6em;
+	font-family: 'orbitron-medium', helvetica, arial;
+	color: white;
+	padding: 0px;
+	margin: 1.1vw 0 0 0;
+	height: 11vw;
+	text-align: left;
+	line-height: 1.6em;
 }
 
 .action_card_name {
-  font-family: 'orbitron-medium', helvetica, arial;
-  color: white;
-  padding-right:10px;
-  white-space: nowrap;
-  margin: 0.2vw 0 0 0;
-  font-weight: bold;
+	font-family: 'orbitron-medium', helvetica, arial;
+	color: white;
+	padding-right: 10px;
+	white-space: nowrap;
+	margin: 0.2vw 0 0 0;
+	font-weight: bold;
 }
 
 .nonopaque {
-  opacity: 1;
+	opacity: 1;
 }
 .opaque {
-  opacity: 0.6;
+	opacity: 0.6;
 }
 .opaque:hover {
-  opacity: 0.8;
+	opacity: 0.8;
 }
 
 .unit-display-tile {
-  height: 8vw;
-  width: 16vw;
-  position: relative;
-  margin: 1em;
+	height: 8vw;
+	width: 16vw;
+	position: relative;
+	margin: 1em;
 }
 
 .unit-display {
-  position: absolute;
-  display: grid;
-  grid-template-columns: auto auto;
-  height: 100%;
-  width: 100%;
+	position: absolute;
+	display: grid;
+	grid-template-columns: auto auto;
+	height: 100%;
+	width: 100%;
 }
 
 .unit-image {
-  width: 100%;
-  height: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: absolute;
+	width: 100%;
+	height: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	position: absolute;
 }
 
 .unit-display div {
-  text-align: center;
-  line-height: 4vw;
-  z-index: 1;
+	text-align: center;
+	line-height: 4vw;
+	z-index: 1;
 }
 
 .unit-name {
-  text-align: center;
-  font-size: 1.5em;
-  line-height: 8vw;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background: linear-gradient(150deg, #000B, #0004);
+	text-align: center;
+	font-size: 1.5em;
+	line-height: 8vw;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	background: linear-gradient(150deg, #000b, #0004);
 }
 
 .faction_buttons {
-  display: inline-flex;
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-  background-color: #4446;
-  padding: 3px;
-  border: 1px solid var(--my-color);
+	display: inline-flex;
+	position: absolute;
+	top: -1px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1;
+	background-color: #4446;
+	padding: 3px;
+	border: 1px solid var(--my-color);
 }
 
 .faction_button {
-  font-size: 2em;
-  text-shadow: 2px 2px #222;
-  border-radius: 100px;
-  text-align: center;
-  width: 2em;
-  height: 2em;
-  line-height: 2em;
-  margin: 5px 10px;
-  color: #fff;
-  border: 1px solid #8888;
-  cursor: pointer;
+	font-size: 2em;
+	text-shadow: 2px 2px #222;
+	border-radius: 100px;
+	text-align: center;
+	width: 2em;
+	height: 2em;
+	line-height: 2em;
+	margin: 5px 10px;
+	color: #fff;
+	border: 1px solid #8888;
+	cursor: pointer;
 }
 
 .faction_button:hover {
-  border: 1px solid #fff;
-  text-shadow: 1px 1px #fff;
+	border: 1px solid #fff;
+	text-shadow: 1px 1px #fff;
 }
 
 .faction_button.p1 {
-  background-color: var(--p1);
+	background-color: var(--p1);
 }
 
 .faction_button.p2 {
-  background-color: var(--p2);
+	background-color: var(--p2);
 }
 
 .faction_button.p3 {
-  background-color: var(--p3);
+	background-color: var(--p3);
 }
 
 .faction_button.p4 {
-  background-color: var(--p4);
+	background-color: var(--p4);
 }
 
 .faction_button.p5 {
-  background-color: var(--p5);
+	background-color: var(--p5);
 }
 
 .faction_button.p6 {
-  background-color: var(--p6);
+	background-color: var(--p6);
 }
 
 .cardbox {
-  top: 17vh;
-  height: 60vh;
-  width: auto;
-  -webkit-filter: drop-shadow(1px 1px 3px #FFF8) drop-shadow(-1px -1px 3px #fff8);
-  filter: drop-shadow(1px 1px 3px #FFF8) drop-shadow(-1px -1px 3px #fff8);
+	top: 17vh;
+	height: 60vh;
+	width: auto;
+	-webkit-filter: drop-shadow(1px 1px 3px #fff8)
+		drop-shadow(-1px -1px 3px #fff8);
+	filter: drop-shadow(1px 1px 3px #fff8) drop-shadow(-1px -1px 3px #fff8);
 }
 
 .cardbox-exit-background {
-  display: none !important;
+	display: none !important;
 }
 
 .turns {
-  position: absolute;
-  margin: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  font-size: 3em;
-  width: 2em;
-  color: #fff;
-  margin-top:6.75rem;
+	position: absolute;
+	margin: 10px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	font-size: 3em;
+	width: 2em;
+	color: #fff;
+	margin-top: 6.75rem;
 }
 
 .round {
-  background-color: var(--playing-color);
-  border: 1px solid var(--playing-color);
-  width: 2em;
-  height: 2em;
-  color: #FFF;
-  text-align: center;
-  line-height: 2em;
-  font-size: 1em;
-  font-weight: bold;
+	background-color: var(--playing-color);
+	border: 1px solid var(--playing-color);
+	width: 2em;
+	height: 2em;
+	color: #fff;
+	text-align: center;
+	line-height: 2em;
+	font-size: 1em;
+	font-weight: bold;
 }
 
 .turn {
-  width: 2em;
-  height: 2em;
-  color: var(--playing-color);
-  border: 1px solid var(--playing-color);
-  text-align: center;
-  line-height: 2em;
-  font-size: 1em;
-  font-weight: bold;
+	width: 2em;
+	height: 2em;
+	color: var(--playing-color);
+	border: 1px solid var(--playing-color);
+	text-align: center;
+	line-height: 2em;
+	font-size: 1em;
+	font-weight: bold;
 }
 
-.round-label, .turn-label {
-  font-size: 0.5em;
-  text-align: center;
-  font-family: 'bank-gothic';
-  padding-top: 0.5rem;
+.round-label,
+.turn-label {
+	font-size: 0.5em;
+	text-align: center;
+	font-family: 'bank-gothic';
+	padding-top: 0.5rem;
 }
 
 .VP-track-label {
-  font-size: 1.35em;
-  color: #fff;
-  text-align: left;
-  padding-left: 1rem;
-  height: 3rem;
-  cursor: pointer;
+	font-size: 1.35em;
+	color: #fff;
+	text-align: left;
+	padding-left: 1rem;
+	height: 3rem;
+	cursor: pointer;
 }
 
 .vp {
-  position: relative;
-  height: 5vh;
-  background: #5555;
-  margin: 3px;
+	position: relative;
+	height: 5vh;
+	background: #5555;
+	margin: 3px;
 }
 
 .vp-players {
-  height: 100%;
-  display: grid;
-  position: absolute;
-  top: 0px;
-  width: 100%;
-  z-index: -1;
+	height: 100%;
+	display: grid;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: -1;
 }
 
 .vp-faction-name {
-  color: #fff;
-  display: inline-block;
-  padding: 2px;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 5px;
+	color: #fff;
+	display: inline-block;
+	padding: 2px;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 5px;
 }
 
 .player-vp {
-  font-family: 'orbitron-medium', 'bank-gothic', arial, helvetica, sans-serif;
+	font-family: 'orbitron-medium', 'bank-gothic', arial, helvetica, sans-serif;
 }
 
 .player-vp-background {
-  position: relative;
-  width: 2em;
-  text-align: center;
-  color: #ddd;
-  font-size: 2em;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  left: 90%;
-  -webkit-text-stroke: 1px #8888;
-  font-weight: bolder;
+	position: relative;
+	width: 2em;
+	text-align: center;
+	color: #ddd;
+	font-size: 2em;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	left: 90%;
+	-webkit-text-stroke: 1px #8888;
+	font-weight: bolder;
 }
 
 .ship_graphic {
-  filter: brightness(0) saturate(100%) invert(76%) sepia(0%) saturate(7455%) hue-rotate(66deg) brightness(66%) contrast(92%);
+	filter: brightness(0) saturate(100%) invert(76%) sepia(0%) saturate(7455%)
+		hue-rotate(66deg) brightness(66%) contrast(92%);
 }
 
 .pointer {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .addoption {
-  cursor: pointer;
-  margin-left: 20px;
+	cursor: pointer;
+	margin-left: 20px;
 }
 
 .card {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .textchoice {
-  cursor: pointer;
-  font-family: 'orbitron-medium', helvetica, arial, courier;
-  text-transform: uppercase;
-  padding: 15px;
-  user-select: none;
+	cursor: pointer;
+	font-family: 'orbitron-medium', helvetica, arial, courier;
+	text-transform: uppercase;
+	padding: 15px;
+	user-select: none;
 }
 .buildchoice {
-  padding: 15px;
+	padding: 15px;
 }
 .option {
-  cursor: pointer;
-  font-family: 'orbitron-medium', helvetica, arial, courier;
-  padding: 2rem;
-  user-select: none;
+	cursor: pointer;
+	font-family: 'orbitron-medium', helvetica, arial, courier;
+	padding: 2rem;
+	user-select: none;
 }
 
 .status ul .cardchoice-card {
-  display: inline-block;
-  width: auto;
+	display: inline-block;
+	width: auto;
 }
 
 .cardchoice {
-  cursor: pointer;
-  margin-right: 10px;
-  float: left;
+	cursor: pointer;
+	margin-right: 10px;
+	float: left;
 }
 .cardchoice:hover {
-  background: transparent;
+	background: transparent;
 }
 
 .sector_name {
-  cursor: pointer;
-  margin: 0;
-  display: block;
-  border-top: 2px solid #888;
-  padding: 1.25em;
+	cursor: pointer;
+	margin: 0;
+	display: block;
+	border-top: 2px solid #888;
+	padding: 1.25em;
 }
 
-.sector_graphics_space {}
+.sector_graphics_space {
+}
 
 .sector_graphics_planet {
-  display: none;
+	display: none;
 }
 
 .sector_graphics {
-  position: relative;
-  top: 0px;
-  left: 0px;
+	position: relative;
+	top: 0px;
+	left: 0px;
 }
 
 /* https://codepen.io/sosuke/pen/Pjoqqp */
 
 .player_color_1 {
-  filter: brightness(0) saturate(100%) invert(57%) sepia(13%) saturate(2390%) hue-rotate(84deg) brightness(93%) contrast(80%);
+	filter: brightness(0) saturate(100%) invert(57%) sepia(13%) saturate(2390%)
+		hue-rotate(84deg) brightness(93%) contrast(80%);
 }
 
 .player_color_2 {
-  filter: brightness(0) saturate(100%) invert(32%) sepia(90%) saturate(870%) hue-rotate(184deg) brightness(93%) contrast(97%);
+	filter: brightness(0) saturate(100%) invert(32%) sepia(90%) saturate(870%)
+		hue-rotate(184deg) brightness(93%) contrast(97%);
 }
 
 .player_color_3 {
-  filter: invert(50%) sepia(52%) saturate(753%) hue-rotate(333deg) brightness(95%) contrast(93%);
+	filter: invert(50%) sepia(52%) saturate(753%) hue-rotate(333deg)
+		brightness(95%) contrast(93%);
 }
 
 .player_color_4 {
-  filter: invert(39%) sepia(11%) saturate(5559%) hue-rotate(273deg) brightness(101%) contrast(86%);
-  ;
+	filter: invert(39%) sepia(11%) saturate(5559%) hue-rotate(273deg)
+		brightness(101%) contrast(86%);
 }
 
 .player_color_5 {
-  filter: invert(84%) sepia(92%) saturate(701%) hue-rotate(154deg) brightness(84%) contrast(97%);
+	filter: invert(84%) sepia(92%) saturate(701%) hue-rotate(154deg)
+		brightness(84%) contrast(97%);
 }
 
 .player_color_6 {
-  filter: invert(32%) sepia(14%) saturate(7093%) hue-rotate(336deg) brightness(88%) contrast(86%);
+	filter: invert(32%) sepia(14%) saturate(7093%) hue-rotate(336deg)
+		brightness(88%) contrast(86%);
 }
 
 .player_color_7 {
-  filter: brightness(0) saturate(100%) invert(32%) sepia(90%) saturate(870%) hue-rotate(184deg) brightness(93%) contrast(97%);
+	filter: brightness(0) saturate(100%) invert(32%) sepia(90%) saturate(870%)
+		hue-rotate(184deg) brightness(93%) contrast(97%);
 }
 
-.player_color_8 {}
+.player_color_8 {
+}
 
 .player_color_box {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: inline-block;
-  margin-right: 1rem;
-  padding-top:0.5rem;
-  background-color: #000;
+	width: 2.5rem;
+	height: 2.5rem;
+	display: inline-block;
+	margin-right: 1rem;
+	padding-top: 0.5rem;
+	background-color: #000;
 }
 
 .terminal_header {
-  margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
 .terminal_header2 {
-  margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
-.terminal_header3 {}
+.terminal_header3 {
+}
 
 .exhausted {
-  opacity: 0.5;
+	opacity: 0.5;
 }
 
 .agendabox {
-  float: right;
-  width: 200px;
-  height: 200px;
-  background-color: lightyellow;
+	float: right;
+	width: 200px;
+	height: 200px;
+	background-color: lightyellow;
 }
 
-.agendas {}
+.agendas {
+}
 
 .agendacard {
-  width: 180px;
-  height: 252px;
-  position: relative;
-  left: 0px;
-  top: 0px;
-  background-size: cover;
-  float: right;
-  border: 2px solid white;
-  margin-left: 10px;
+	width: 180px;
+	height: 252px;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	background-size: cover;
+	float: right;
+	border: 2px solid white;
+	margin-left: 10px;
 }
 
 .agendacard_name {
-  color: white;
-  position: relative;
-  top: 6%;
-  font-weight: bold;
-  text-align: center;
-  width: inherit;
-  margin-left: auto;
-  margin-right: auto;
+	color: white;
+	position: relative;
+	top: 6%;
+	font-weight: bold;
+	text-align: center;
+	width: inherit;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .agendacard:nth-child(1) {
-  transform: translate(0px, 50px);
+	transform: translate(0px, 50px);
 }
 
 .agendacard:nth-child(2) {
-  transform: translate(0px, 100px);
+	transform: translate(0px, 100px);
 }
 
 .agendacard:nth-child(3) {
-  transform: translate(0px, 150px);
+	transform: translate(0px, 150px);
 }
 
 .actionbox {
-  background-color: lightblue;
+	background-color: lightblue;
 }
 
-.actioncards {}
+.actioncards {
+}
 
 .techbox {
-  background-color: lightgrey;
+	background-color: lightgrey;
 }
 
-.techcards {}
+.techcards {
+}
 
 .objectivebox {
-  background-color: orange;
+	background-color: orange;
 }
 
-.objectives {}
+.objectives {
+}
 
 #game_board_sizer {
-  position: absolute;
-  top: 20px;
-  width: 200px;
-  right: 50px;
+	position: absolute;
+	top: 20px;
+	width: 200px;
+	right: 50px;
 }
 
 #hexGrid {
-  display: flex;
-  flex-wrap: wrap;
-  width: 2000px;
-  margin: 0 auto;
-  overflow: hidden;
-  font-size: 15px;
-  list-style-type: none;
-  /*
+	display: flex;
+	flex-wrap: wrap;
+	width: 2000px;
+	margin: 0 auto;
+	overflow: hidden;
+	font-size: 15px;
+	list-style-type: none;
+	/*
 %  3D Perspective
 %  -webkit-transform: perspective(600px) rotateX(60deg);
 %  -moz-transform: perspective(600px) rotateX(60deg);
@@ -1271,737 +1321,776 @@ body {
 }
 
 .hex {
-  position: relative;
-  visibility: hidden;
-  outline: 1px solid transparent;
-  /* fix for jagged edges in FF on hover transition */
+	position: relative;
+	visibility: hidden;
+	outline: 1px solid transparent;
+	/* fix for jagged edges in FF on hover transition */
 }
 
 .hex::after {
-  content: '';
-  display: block;
-  padding-bottom: 86.602%;
-  /* =  100 / tan(60) * 1.5 */
+	content: '';
+	display: block;
+	padding-bottom: 86.602%;
+	/* =  100 / tan(60) * 1.5 */
 }
 
 .hexIn {
-  position: absolute;
-  width: 96%;
-  padding-bottom: 110.851%;
-  /* =  width / sin(60) */
-  margin: 0 2%;
-  overflow: hidden;
-  visibility: hidden;
-  outline: 1px solid transparent;
-  /* fix for jagged edges in FF on hover transition */
-  -webkit-transform: rotate3d(0, 0, 1, -60deg) skewY(30deg);
-  -ms-transform: rotate3d(0, 0, 1, -60deg) skewY(30deg);
-  transform: rotate3d(0, 0, 1, -60deg) skewY(30deg);
+	position: absolute;
+	width: 96%;
+	padding-bottom: 110.851%;
+	/* =  width / sin(60) */
+	margin: 0 2%;
+	overflow: hidden;
+	visibility: hidden;
+	outline: 1px solid transparent;
+	/* fix for jagged edges in FF on hover transition */
+	-webkit-transform: rotate3d(0, 0, 1, -60deg) skewY(30deg);
+	-ms-transform: rotate3d(0, 0, 1, -60deg) skewY(30deg);
+	transform: rotate3d(0, 0, 1, -60deg) skewY(30deg);
 }
 
 .hexIn * {
-  position: absolute;
-  visibility: visible;
-  outline: 1px solid transparent;
-  /* fix for jagged edges in FF on hover transition */
+	position: absolute;
+	visibility: visible;
+	outline: 1px solid transparent;
+	/* fix for jagged edges in FF on hover transition */
 }
 
 .hexLink {
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  color: #fff;
-  overflow: hidden;
-  -webkit-transform: skewY(-30deg) rotate3d(0, 0, 1, 60deg);
-  -ms-transform: skewY(-30deg) rotate3d(0, 0, 1, 60deg);
-  transform: skewY(-30deg) rotate3d(0, 0, 1, 60deg);
+	display: block;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	color: #fff;
+	overflow: hidden;
+	-webkit-transform: skewY(-30deg) rotate3d(0, 0, 1, 60deg);
+	-ms-transform: skewY(-30deg) rotate3d(0, 0, 1, 60deg);
+	transform: skewY(-30deg) rotate3d(0, 0, 1, 60deg);
 }
 
 .hex_ground {
-  height: 100%;
-  width: 100%;
-  margin: 0 auto;
-  z-index: 20000;
-  font-weight: bold;
-  color: #FFF;
-  z-index: 100000;
-  opacity: 1.0;
-  position: relative;
-  left: 28.5%;
+	height: 100%;
+	width: 100%;
+	margin: 0 auto;
+	z-index: 20000;
+	font-weight: bold;
+	color: #fff;
+	z-index: 100000;
+	opacity: 1;
+	position: relative;
+	left: 28.5%;
 }
 
 .hex_space {
-  height: 100%;
-  width: 100%;
-  margin: 0 auto;
-  z-index: 20000;
-  font-weight: bold;
-  color: #FFF;
-  z-index: 100000;
-  opacity: 1.0;
-  position: relative;
-  left: 28.5%;
+	height: 100%;
+	width: 100%;
+	margin: 0 auto;
+	z-index: 20000;
+	font-weight: bold;
+	color: #fff;
+	z-index: 100000;
+	opacity: 1;
+	position: relative;
+	left: 28.5%;
 }
 
 .hex_activated {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  margin: 0 auto;
-  z-index: 20000;
-  font-weight: bold;
-  color: #FFF;
-  z-index: 100000;
-  background-color: transparent;
-  opacity: 1.0;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	margin: 0 auto;
+	z-index: 20000;
+	font-weight: bold;
+	color: #fff;
+	z-index: 100000;
+	background-color: transparent;
+	opacity: 1;
 }
 
 .hex_bg {
-  left: -100%;
-  right: -100%;
-  width: auto;
-  height: 100%;
-  margin: 0 auto;
-  -webkit-transform: rotate3d(0, 0, 0, 0deg);
-  -ms-transform: rotate3d(0, 0, 0, 0deg);
-  transform: rotate3d(0, 0, 0, 0deg);
-  transform: rotate(30deg) scale(0.88);
+	left: -100%;
+	right: -100%;
+	width: auto;
+	height: 100%;
+	margin: 0 auto;
+	-webkit-transform: rotate3d(0, 0, 0, 0deg);
+	-ms-transform: rotate3d(0, 0, 0, 0deg);
+	transform: rotate3d(0, 0, 0, 0deg);
+	transform: rotate(30deg) scale(0.88);
 }
 
 .sector_graphics_background {
-  left: -100%;
-  right: -100%;
-  width: auto;
-  height: 100%;
-  margin: 0 auto;
-  -webkit-transform: rotate3d(0, 0, 0, 0deg);
-  -ms-transform: rotate3d(0, 0, 0, 0deg);
-  transform: rotate3d(0, 0, 0, 0deg);
+	left: -100%;
+	right: -100%;
+	width: auto;
+	height: 100%;
+	margin: 0 auto;
+	-webkit-transform: rotate3d(0, 0, 0, 0deg);
+	-ms-transform: rotate3d(0, 0, 0, 0deg);
+	transform: rotate3d(0, 0, 0, 0deg);
 }
 
 .sector_graphics {
-  left: -100%;
-  right: -100%;
-  width: auto;
-  height: 100%;
-  margin: 0 auto;
-  -webkit-transform: rotate3d(0, 0, 0, 0deg);
-  -ms-transform: rotate3d(0, 0, 0, 0deg);
-  transform: rotate3d(0, 0, 0, 0deg);
+	left: -100%;
+	right: -100%;
+	width: auto;
+	height: 100%;
+	margin: 0 auto;
+	-webkit-transform: rotate3d(0, 0, 0, 0deg);
+	-ms-transform: rotate3d(0, 0, 0, 0deg);
+	transform: rotate3d(0, 0, 0, 0deg);
 }
 
 .top_left {
-  transform: translate(-50px, -55px);
+	transform: translate(-50px, -55px);
 }
 
 .bottom_right {
-  transform: translate(50px, 50px);
+	transform: translate(50px, 50px);
 }
 
 .fleet * {
-  position: relative;
+	position: relative;
 }
 
 .fighter {
-  #background-color: white;
-  width: 20px;
-  height: 20px;
-  padding: 3px;
-  float: left;
-  margin-right: 10px;
-  margin-top: 10px;
+	#background-color: white;
+	width: 20px;
+	height: 20px;
+	padding: 3px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
 }
 
 .destroyer {
-  #background-color: white;
-  width: 20px;
-  height: 40px;
-  padding: 3px;
-  float: left;
-  margin-right: 10px;
-  margin-top: 10px;
+	#background-color: white;
+	width: 20px;
+	height: 40px;
+	padding: 3px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
 }
 
 .carrier {
-  #background-color: white;
-  width: 90px;
-  height: 20px;
-  padding: 3px;
-  float: left;
-  margin-right: 10px;
-  margin-top: 10px;
+	#background-color: white;
+	width: 90px;
+	height: 20px;
+	padding: 3px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
 }
 
 .cruiser {
-  #background-color: white;
-  width: 120px;
-  height: 35px;
-  padding: 3px;
-  float: left;
-  margin-right: 10px;
-  margin-top: 10px;
+	#background-color: white;
+	width: 120px;
+	height: 35px;
+	padding: 3px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
 }
 
 .dreadnaught {
-  #background-color: white;
-  width: 120px;
-  height: 55px;
-  padding: 3px;
-  float: left;
-  margin-right: 10px;
-  margin-top: 10px;
+	#background-color: white;
+	width: 120px;
+	height: 55px;
+	padding: 3px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
 }
 
 .flagship {
-  #background-color: white;
-  width: 140px;
-  height: 60px;
-  padding: 3px;
-  float: left;
-  margin-right: 10px;
-  margin-top: 10px;
+	#background-color: white;
+	width: 140px;
+	height: 60px;
+	padding: 3px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
 }
 
 .planet {
-  position: absolute;
-  height: 90px;
-  width: 90px;
-  background-color: white;
-  z-index: 9000000;
+	position: absolute;
+	height: 90px;
+	width: 90px;
+	background-color: white;
+	z-index: 9000000;
 }
 
 .ground_forces * {
-  position: relative;
-  float: left;
+	position: relative;
+	float: left;
 }
 
 .infantry {
-  position: relative;
-  background-color: blue;
-  width: 35px;
-  height: 35px;
-  padding: 3px;
-  float: left;
+	position: relative;
+	background-color: blue;
+	width: 35px;
+	height: 35px;
+	padding: 3px;
+	float: left;
 }
 
 .pds {
-  position: relative;
-  background-color: red;
-  width: 35px;
-  height: 35px;
-  padding: 3px;
-  float: left;
+	position: relative;
+	background-color: red;
+	width: 35px;
+	height: 35px;
+	padding: 3px;
+	float: left;
 }
 
 .spacedock {
-  position: relative;
-  background-color: green;
-  width: 35px;
-  height: 35px;
-  padding: 3px;
-  float: left;
+	position: relative;
+	background-color: green;
+	width: 35px;
+	height: 35px;
+	padding: 3px;
+	float: left;
 }
-
 
 .system_summary {
-  background-image: url(/imperium/img/backgrounds/space-art.jpg);
-  padding: 4rem;
-  color: white;
-  width: auto;
-  height: auto;
-  border-radius: 10px;
-  padding: 20px;
-  max-width: 80vw;
-  max-height: 90vh;
-  overflow-y: scroll;
+	background-image: url(/imperium/img/backgrounds/space-art.jpg);
+	padding: 4rem;
+	color: white;
+	width: auto;
+	height: auto;
+	border-radius: 10px;
+	padding: 20px;
+	max-width: 80vw;
+	max-height: 90vh;
+	overflow-y: scroll;
 }
 .system_summary_content {
-  padding: 2rem;
+	padding: 2rem;
 }
 .system_summary_sector {
-  display: inline-block;
-  width: 100%;
-  text-align: center;
-  font-size: 2em;
-  font-family: 'orbitron-medium', helvetical, arial;
-  margin-bottom: 1.6rem;
-
+	display: inline-block;
+	width: 100%;
+	text-align: center;
+	font-size: 2em;
+	font-family: 'orbitron-medium', helvetical, arial;
+	margin-bottom: 1.6rem;
 }
 .system_summary_units {
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 10px;
-  font-family: 'orbitron-medium',helvetica, arial;
-  text-transform: uppercase;
-  line-height: 1.7em;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 10px;
+	font-family: 'orbitron-medium', helvetica, arial;
+	text-transform: uppercase;
+	line-height: 1.7em;
 }
 .system_summary_text {
-  text-align: center;
+	text-align: center;
 }
 .system_summary_planet {
-  margin-bottom:1rem;
+	margin-bottom: 1rem;
 }
 .system_summary_planets_grid {
-  min-width: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: auto;
-  column-gap: 4rem;
-  font-size: 1.6rem;
+	min-width: auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	width: auto;
+	column-gap: 4rem;
+	font-size: 1.6rem;
 }
 
 .system_summary_planet_card {
-  width: 200px;
-  height: 280px;
-  background-size: cover;
-  margin-left: 5px;
-  margin-right: 5px;
+	width: 200px;
+	height: 280px;
+	background-size: cover;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
-
 .planetcard {
-  width: 110px;
-  height: 160px;
-  float: left;
-  margin-right: 5px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-/*  width: 180px; */
-/*  height: 252px; */
-  position: relative;
-  background-size: cover;
+	width: 110px;
+	height: 160px;
+	float: left;
+	margin-right: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	/*  width: 180px; */
+	/*  height: 252px; */
+	position: relative;
+	background-size: cover;
 }
 
 .planetcard:hover {
-  transform: scale(1.4);
+	transform: scale(1.4);
 }
 
 .strategycard {
-  width: 180px;
-  height: 252px;
-  position: relative;
-  background-size: cover;
-  margin-bottom: 10px;
+	width: 180px;
+	height: 252px;
+	position: relative;
+	background-size: cover;
+	margin-bottom: 10px;
 }
 
 .strategycard_name {
-  position: relative;
-  top: 6%;
-  font-weight: bold;
-  text-align: center;
-  width: inherit;
-  margin-left: auto;
-  margin-right: auto;
+	position: relative;
+	top: 6%;
+	font-weight: bold;
+	text-align: center;
+	width: inherit;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .actioncard {
-  width: 180px;
-  height: 252px;
-  position: relative;
-  background-size: cover;
-  margin-bottom: 10px;
+	width: 180px;
+	height: 252px;
+	position: relative;
+	background-size: cover;
+	margin-bottom: 10px;
 }
 
 .actioncard_name {
-  position: relative;
-  top: 6%;
-  font-weight: bold;
-  text-align: center;
-  width: inherit;
-  margin-left: auto;
-  margin-right: auto;
+	position: relative;
+	top: 6%;
+	font-weight: bold;
+	text-align: center;
+	width: inherit;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 /*** HEXAGON SIZING AND EVEN ROW INDENTATION *****************************************************************/
 
-@media (min-width:1201px) {
-  /* <- 5-4  hexagons per row */
-  #hexGrid {
-    padding-bottom: 4.4%
-  }
-  .hex {
-    width: 12.5%;
-    /* = 100 / 8 */
-  }
-  .hex:nth-child(15n+9) {
-    /* first hexagon of even rows */
-    margin-left: 6.25%;
-    /* = width of .hex / 2  to indent even rows */
-  }
+@media (min-width: 1201px) {
+	/* <- 5-4  hexagons per row */
+	#hexGrid {
+		padding-bottom: 4.4%;
+	}
+	.hex {
+		width: 12.5%;
+		/* = 100 / 8 */
+	}
+	.hex:nth-child(15n + 9) {
+		/* first hexagon of even rows */
+		margin-left: 6.25%;
+		/* = width of .hex / 2  to indent even rows */
+	}
 }
 
-@media (max-width: 1200px) and (min-width:901px) {
-  /* <- 4-3  hexagons per row */
-  #hexGrid {
-    padding-bottom: 5.5%
-  }
-  .hex {
-    width: 12.5%;
-    /* = 100 / 8 */
-  }
-  .hex:nth-child(15n+9) {
-    /* first hexagon of even rows */
-    margin-left: 6.25%;
-    /* = width of .hex / 2  to indent even rows */
-  }
+@media (max-width: 1200px) and (min-width: 901px) {
+	/* <- 4-3  hexagons per row */
+	#hexGrid {
+		padding-bottom: 5.5%;
+	}
+	.hex {
+		width: 12.5%;
+		/* = 100 / 8 */
+	}
+	.hex:nth-child(15n + 9) {
+		/* first hexagon of even rows */
+		margin-left: 6.25%;
+		/* = width of .hex / 2  to indent even rows */
+	}
 }
 
-@media (max-width: 900px) and (min-width:601px) {
-  /* <- 3-2  hexagons per row */
-  #hexGrid {
-    padding-bottom: 7.4%
-  }
-  .hex {
-    width: 12.5%;
-    /* = 100 / 8 */
-  }
-  .hex:nth-child(15n+9) {
-    /* first hexagon of even rows */
-    margin-left: 6.25%;
-    /* = width of .hex / 2  to indent even rows */
-  }
+@media (max-width: 900px) and (min-width: 601px) {
+	/* <- 3-2  hexagons per row */
+	#hexGrid {
+		padding-bottom: 7.4%;
+	}
+	.hex {
+		width: 12.5%;
+		/* = 100 / 8 */
+	}
+	.hex:nth-child(15n + 9) {
+		/* first hexagon of even rows */
+		margin-left: 6.25%;
+		/* = width of .hex / 2  to indent even rows */
+	}
 }
 
 @media (max-width: 600px) {
-  /* <- 2-1  hexagons per row */
-  #hexGrid {
-    padding-bottom: 11.2%
-  }
-  .hex {
-    width: 12.5%;
-    /* = 100 / 8 */
-  }
-  .hex:nth-child(15n+9) {
-    /* first hexagon of even rows */
-    margin-left: 6.25%;
-    /* = width of .hex / 2  to indent even rows */
-  }
+	/* <- 2-1  hexagons per row */
+	#hexGrid {
+		padding-bottom: 11.2%;
+	}
+	.hex {
+		width: 12.5%;
+		/* = 100 / 8 */
+	}
+	.hex:nth-child(15n + 9) {
+		/* first hexagon of even rows */
+		margin-left: 6.25%;
+		/* = width of .hex / 2  to indent even rows */
+	}
 }
 
 @media (max-width: 400px) {
-  #hexGrid {
-    font-size: 13px;
-  }
+	#hexGrid {
+		font-size: 13px;
+	}
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg)
-  }
-  to {
-    transform: rotate(360deg)
-  }
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  background-color: var(--my-color);
-  background-color: var(--my-color);
-  border: var(--my-color);
+input[type='range']::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	background-color: var(--my-color);
+	background-color: var(--my-color);
+	border: var(--my-color);
 }
 
 /* All the same stuff for Firefox */
 
-input[type=range]::-moz-range-thumb {
-  background-color: var(--my-color);
-  border: 1px solid var(--my-color);
+input[type='range']::-moz-range-thumb {
+	background-color: var(--my-color);
+	border: 1px solid var(--my-color);
 }
 
-input[type=range] {
-  border: 1px solid var(--my-color);
+input[type='range'] {
+	border: 1px solid var(--my-color);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--my-color);
-  border: var(--my-color);
+	background-color: var(--my-color);
+	border: var(--my-color);
 }
 
 .white-stroke {
-  -webkit-text-stroke: 2px #DDD8;
-  stroke: 2px #DDD8;
+	-webkit-text-stroke: 2px #ddd8;
+	stroke: 2px #ddd8;
 }
 
 .chat-box {
-  background-color: #000A;
-  border: 1px solid var(--my-color)
+	background-color: #000a;
+	border: 1px solid var(--my-color);
 }
 
-.chat-box-main, .chat-box-input, .chat-box-header, .chat-box-new-message-input {
-  background: transparent;
-  background-color: transparent;
-  background-image: none;
-  color: #fff;
+.chat-box-main,
+.chat-box-input,
+.chat-box-header,
+.chat-box-new-message-input {
+	background: transparent;
+	background-color: transparent;
+	background-image: none;
+	color: #fff;
 }
 
 .green {
-  color: green;
+	color: green;
 }
 .yellow {
-  color: yellow;
+	color: yellow;
 }
 .red {
-  color: red;
+	color: red;
 }
 .blue {
-  color: blue;
+	color: blue;
 }
 .tech_yellow {
-  color: yellow;
-  border-color: yellow;
+	color: yellow;
+	border-color: yellow;
 }
 
 .tech_red {
-  color: red;
-  border-color: red;
+	color: red;
+	border-color: red;
 }
 
 .tech_blue {
-  color: blue;
-  border-color: blue;
+	color: blue;
+	border-color: blue;
 }
 
 .tech_green {
-  color: green;
-  border-color: green;
+	color: green;
+	border-color: green;
 }
 
 .tech_yellow::before {
-  color: yellow;
-  border-color: yellow;
+	color: yellow;
+	border-color: yellow;
 }
 
 .tech_red::before {
-  color: red;
-  border-color: red;
+	color: red;
+	border-color: red;
 }
 
 .tech_blue::before {
-  color: blue;
-  border-color: blue;
+	color: blue;
+	border-color: blue;
 }
 
 .tech_green::before {
-  color: green;
-  border-color: green;
+	color: green;
+	border-color: green;
 }
 
 .gameboard img {
-  transition: 0.333s;
+	transition: 0.333s;
 }
 
 .new-byzantium {
-  transform: scale(1.4);
+	transform: scale(1.4);
 }
 
 .bold {
-  font-weight: heavy;
+	font-weight: heavy;
 }
 
 /* double planet */
 
-.bi .sector8, .bi .sector9, .bi .sector10, .bi .sector11, .bi .sector12, .bi .sector13, .bi .sector14, .bi .sector15, .bi .sector16, .bi .sector17, .bi .sector18, .bi .sector19, .bi .sector20, .bi .sector21, .bi .sector38, .bi .sector39, .bi .sector40, .bi .sector50, .bi .sector51 {
-  transform: scale(2.6)rotate(-30deg);
+.bi .sector8,
+.bi .sector9,
+.bi .sector10,
+.bi .sector11,
+.bi .sector12,
+.bi .sector13,
+.bi .sector14,
+.bi .sector15,
+.bi .sector16,
+.bi .sector17,
+.bi .sector18,
+.bi .sector19,
+.bi .sector20,
+.bi .sector21,
+.bi .sector38,
+.bi .sector39,
+.bi .sector40,
+.bi .sector50,
+.bi .sector51 {
+	transform: scale(2.6) rotate(-30deg);
 }
 
 /* large single planet */
 
-.bi .sector22, .bi .sector23, .bi .sector24, .bi .sector25, .bi .sector26, .bi .sector27, .bi .sector28, .bi .new-byzantium, .bi .sector29, .bi .sector30, .bi .sector31, .bi .sector32, .bi .sector45, .bi .sector52, .bi .sector53, .bi .sector73 {
-  transform: scale(2.3) translate(0%, 25%) rotate(17deg);
+.bi .sector22,
+.bi .sector23,
+.bi .sector24,
+.bi .sector25,
+.bi .sector26,
+.bi .sector27,
+.bi .sector28,
+.bi .new-byzantium,
+.bi .sector29,
+.bi .sector30,
+.bi .sector31,
+.bi .sector32,
+.bi .sector45,
+.bi .sector52,
+.bi .sector53,
+.bi .sector73 {
+	transform: scale(2.3) translate(0%, 25%) rotate(17deg);
 }
 
 /* small single planet */
 
-.bi .sector58, .bi .sector59, .bi .sector60, .bi .sector61, .bi .sector62, .bi .sector63, .bi .sector64, .bi .sector65, .bi .sector66, .bi .sector67, .bi .sector62, .bi .sector69, .bi .sector70 {
-  transform: scale(3) translate(-5%, 16%);
+.bi .sector58,
+.bi .sector59,
+.bi .sector60,
+.bi .sector61,
+.bi .sector62,
+.bi .sector63,
+.bi .sector64,
+.bi .sector65,
+.bi .sector66,
+.bi .sector67,
+.bi .sector62,
+.bi .sector69,
+.bi .sector70 {
+	transform: scale(3) translate(-5%, 16%);
 }
 
 /* planet and wormhole */
 
-.bi .sector41, .bi .sector42, .bi .sector46, .bi .sector47, .bi .sector55, .bi .sector57 {
-  transform: scale(3) translate(11%, 35%);
+.bi .sector41,
+.bi .sector42,
+.bi .sector46,
+.bi .sector47,
+.bi .sector55,
+.bi .sector57 {
+	transform: scale(3) translate(11%, 35%);
 }
 
 /* small planet bottom */
 
-.bi .sector43, .bi .sector44 {
-  transform: scale(3) translate(-10%, 6%);
+.bi .sector43,
+.bi .sector44 {
+	transform: scale(3) translate(-10%, 6%);
 }
 
 .hexInfo {
-  position: absolute;
-  color: #fff;
-  display: none;
-  z-index: 999;
-  white-space: nowrap;
+	position: absolute;
+	color: #fff;
+	display: none;
+	z-index: 999;
+	white-space: nowrap;
 }
 
 .bi .hexInfo {
-  display: block;
+	display: block;
 }
 
 .sector_information_planetname {
-  font-size: 1.65em;
-  position: absolute;
-  padding: 5px 10px;
-  color: #fff;
-  text-shadow: 1px 1px darkorange;
-  background-color: #000A;
+	font-size: 1.65em;
+	position: absolute;
+	padding: 5px 10px;
+	color: #fff;
+	text-shadow: 1px 1px darkorange;
+	background-color: #000a;
 }
 
 .one_planet .sector_information_planetname {
-  top: 165px;
-  left: 10px;
-  font-size: 1.2em;
+	top: 165px;
+	left: 10px;
+	font-size: 1.2em;
 }
 
 .two_planet .sector_information_planetname {
-  font-size: 1.2em;
+	font-size: 1.2em;
 }
 
 .top_planet .sector_information_planetname {
-  top: 40px;
-  left: 20px;
+	top: 40px;
+	left: 20px;
 }
 
 .bottom_planet .sector_information_planetname {
-  top: 190px;
-  left: 230px;
-  transform: translateX(-100%);
+	top: 190px;
+	left: 230px;
+	transform: translateX(-100%);
 }
 
 .sector_information_planetname::before {
-  content: "\2B24";
-  text-shadow: none;
-  font-size: 15px;
-  position: relative;
-  display: inline-block;
-  top: -2px;
-  left: -3px;
+	content: '\2B24';
+	text-shadow: none;
+	font-size: 15px;
+	position: relative;
+	display: inline-block;
+	top: -2px;
+	left: -3px;
 }
 
 .sector_information_planetname.p1::before {
-  color: var(--p1);
+	color: var(--p1);
 }
 
 .sector_information_planetname.p2::before {
-  color: var(--p2);
+	color: var(--p2);
 }
 
 .sector_information_planetname.p3::before {
-  color: var(--p3);
+	color: var(--p3);
 }
 
 .sector_information_planetname.p4::before {
-  color: var(--p4);
+	color: var(--p4);
 }
 
 .sector_information_planetname.p5::before {
-  color: var(--p5);
+	color: var(--p5);
 }
 
 .sector_information_planetname.p6::before {
-  color: var(--p6);
+	color: var(--p6);
 }
 
 .sector_information_planetname.nowner::before {
-  display: none;
+	display: none;
 }
 
 .sector_information_planet_content {
-  display: grid;
-  grid-gap: 3px;
-  grid-template-columns: auto auto;
-  position: absolute;
-  top: 60px;
-  left: 120px;
-  background: #000a;
-  padding: 1em;
-  transform: translateX(-50%);
+	display: grid;
+	grid-gap: 3px;
+	grid-template-columns: auto auto;
+	position: absolute;
+	top: 60px;
+	left: 120px;
+	background: #000a;
+	padding: 1em;
+	transform: translateX(-50%);
 }
 
 .sector_information_planet_content div {
-  position: relative;
-  text-align: left;
+	position: relative;
+	text-align: left;
 }
 
 .top_planet .sector_information_planet_content {
-  top: 90px;
-  left: 60px;
-  font-size: smaller;
+	top: 90px;
+	left: 60px;
+	font-size: smaller;
 }
 
 .bottom_planet .sector_information_planet_content {
-  top: 90px;
-  left: 238px;
-  font-size: smaller;
-  transform: translateX(-100%);
+	top: 90px;
+	left: 238px;
+	font-size: smaller;
+	transform: translateX(-100%);
 }
 
 .ship_selector b::before {
-  content: " \1F5F9   ";
+	content: ' \1F5F9   ';
 }
-
-
-
-
 
 @media screen and (orientation: landscape) and (max-height: 650px) {
+	.turns {
+		transform: scale(0.4);
+		transform-origin: top right;
+	}
 
-  .turns {
-    transform: scale(0.4);
-    transform-origin: top right;
-  }
-
-  .dashboard {
-    transform: scale(0.4);
-    transform-origin: top left;
-  }
-
+	.dashboard {
+		transform: scale(0.4);
+		transform-origin: top left;
+	}
 }
-
-
-
-
-
 
 .demo_ordered_list {
-  margin-left: 30px;
-  font-family: courier;
-  margin-top: 2a0px;
-  margin-bottom: 20px;
+	margin-left: 30px;
+	font-family: courier;
+	margin-top: 2a0px;
+	margin-bottom: 20px;
 }
 .demo_planet_card {
-  float: right;
-  width: 150px;
+	float: right;
+	width: 150px;
 }
 .demo_player_tokens {
-  clear:both;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 200px;
-  display: inline-block;
+	clear: both;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 200px;
+	display: inline-block;
 }
 .how_to_play_overlay {
-  padding:30px;
-  width: 800px;
-  max-width: 80vw;
-  max-height: 90vh;
-  font-family: 'orbitron-medium', helvetica, arial;
-  line-height: 1.7em;
-  font-size: 1.1em;
-  background-image: url("/imperium/img/starscape-background4.jpg");
-  background-size: cover;
-  color: white;
-  overflow-y: scroll;
-  font-size:1.3em;
+	padding: 30px;
+	width: 800px;
+	max-width: 80vw;
+	max-height: 90vh;
+	font-family: 'orbitron-medium', helvetica, arial;
+	line-height: 1.7em;
+	font-size: 1.1em;
+	background-image: url('/imperium/img/starscape-background4.jpg');
+	background-size: cover;
+	color: white;
+	overflow-y: scroll;
+	font-size: 1.3em;
 }
 .how_to_play_resources_entry {
-  padding-top: 20px;
+	padding-top: 20px;
 }
-

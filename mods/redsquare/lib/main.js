@@ -1,6 +1,6 @@
-const RedSquareMainTemplate = require("./main.template");
-const TweetManager = require("./manager");
-const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
+const RedSquareMainTemplate = require('./main.template');
+const TweetManager = require('./manager');
+const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class RedSquareMain {
   constructor(app, mod) {
@@ -17,7 +17,6 @@ class RedSquareMain {
     //
     // measuring activity
     //
-    this.hasScrolledDown = false;
     this.idleTime = 10;
 
     ////////////////////
@@ -29,6 +28,7 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
 
+      console.log("redsquare-home-render-request");
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
       }
@@ -39,7 +39,6 @@ class RedSquareMain {
 
       if (scroll_to_top) {
         this.scroll_depth = 0;
-        this.hasScrolledDown = false;
         this.idleTime = 10;
         behavior = "smooth";
       }
@@ -55,18 +54,6 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets = 0) => {
       console.log(`postcache, pulled ${num_tweets} new tweets`);
 
-      if (this.mod.debug) {
-        // I don't know what we were debugging here.... maybe checking that they are ordered correctly
-        for (let z = 0; z < this.mod.tweets.length; z++) {
-          let higher = this.mod.tweets[z].created_at;
-          if (this.mod.tweets[z].updated_at > higher) {
-            higher = this.mod.tweets[z].updated_at;
-          }
-          console.log(higher + " -- " + this.mod.tweets[z].text);
-        }
-      }
-
-      
       //
       // check if we can refresh page (show tweets immediately) or show prompt / button
       //
@@ -79,8 +66,8 @@ class RedSquareMain {
         if (this.manager.mode == "tweets") {
           if (this.canRefreshPage()) {
             console.log("postcache-render-request: refresh the page automatically!");
-            this.manager.render("tweets");
-            
+            document.querySelector(".saito-main").innerHTML = "";
+            this.app.connection.emit("redsquare-home-render-request", true);
 
           } else {
             console.log("postcache-render-request: CANNOT refresh the page!");
@@ -94,9 +81,6 @@ class RedSquareMain {
 
             document.getElementById("saito-new-tweets").onclick = (e) => {
 
-              // We usually don't want to wipe out the rendered feed, but this is going to be 
-              // the easiest way to get rid of the button and make sure the new tweets show up on 
-              // top 
               document.querySelector(".saito-main").innerHTML = "";
               this.app.connection.emit("redsquare-home-render-request", true);
             };
@@ -117,11 +101,16 @@ class RedSquareMain {
     // when someone clicks on a tweet
     //
     this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
+
+      window.history.pushState({}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
+ 
       this.scrollFeed(0);
       this.manager.renderTweet(tweet);
 
       this.app.connection.emit("saito-header-replace-logo", (e) => {
         this.app.connection.emit("redsquare-home-render-request");
+        window.history.pushState({}, document.title, "/" + this.mod.slug);
+
       });
 
     });
@@ -136,6 +125,8 @@ class RedSquareMain {
 
       this.app.connection.emit("saito-header-replace-logo", (e) => {
         this.app.connection.emit("redsquare-home-render-request");
+        window.history.pushState({}, document.title, "/" + this.mod.slug);
+
       });
 
 
@@ -158,6 +149,8 @@ class RedSquareMain {
 
       this.app.connection.emit("saito-header-replace-logo", (e) => {
         this.app.connection.emit("redsquare-home-render-request");
+        window.history.pushState({}, document.title, "/" + this.mod.slug);
+
       });
 
     });
@@ -208,24 +201,6 @@ class RedSquareMain {
       }
     });
 
-    // event for rendering back btn when viewing post
-    this.app.connection.on("saito-main-render-back-btn", (callback = null) => {
-      this.app.browser.prependElementToSelector(
-        `<div class="saito-main-back">
-          <i class="fa-solid fa-arrow-left"></i> 
-          <span>Back</span>
-        </div>`,
-        ".saito-main"
-      );
-
-      document.querySelector(".saito-main-back").onclick = async (e) => {
-        e.currentTarget.remove();
-
-        if (callback) {
-          await callback(e);
-        }
-      };
-    });
   }
 
   render() {
@@ -247,9 +222,15 @@ class RedSquareMain {
     var stop = 0;
 
     scrollableElement.addEventListener("scroll", (e) => {
-      this.hasScrolledDown = true;
-      this.idleTime = 0;
 
+      if (this.manager.mode == "tweets") {
+        this.scroll_depth = scrollableElement.scrollTop;
+        this.idleTime = 0;
+      }
+
+      //
+      // For keeping the side bar positioned correctly!
+      //
       if (window.innerHeight - 150 < sidebar.clientHeight) {
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
@@ -321,7 +302,7 @@ class RedSquareMain {
     //
     // no if we have scrolled down
     //
-    if (this.hasScrolledDown) {
+    if (this.scroll_depth) {
       return 0;
     }
 
@@ -330,13 +311,8 @@ class RedSquareMain {
       return 0;
     }
 
-    //
-    // yes if still at top
-    //
-    if (window?.pageYOffset == 0 && document?.body?.scrollTop == 0) {
-      if (this.idleTime >= 10) {
-        return 1;
-      }
+    if (this.idleTime >= 10) {
+      return 1;
     }
 
     //

@@ -96,7 +96,7 @@
 		width: unset !important;
 	}
 
-	.chat-main-container.saito-container{
+	.chat-main-container.saito-container {
 		grid-template-columns: 20rem auto;
 	}
 }

@@ -1,64 +1,81 @@
-const RedSquareMenuTemplate = require("./menu.template");
-const Post = require("./post");
+const RedSquareMenuTemplate = require('./menu.template');
+const Post = require('./post');
 
 class RedSquareMenu {
-  constructor(app, mod, container = "") {
-    this.app = app;
-    this.mod = mod;
-    this.container = container;
-    this.name = "RedSquareMenu";
-    this.increments = 0;
+	constructor(app, mod, container = '') {
+		this.app = app;
+		this.mod = mod;
+		this.container = container;
+		this.name = 'RedSquareMenu';
+		this.increments = 0;
 
-    app.connection.on("redsquare-clear-menu-highlighting", (active_tab = "") => {
-      document.querySelectorAll(".redsquare-page-active").forEach((el) => {
-        el.classList.remove("redsquare-page-active");
-      });
+		app.connection.on(
+			'redsquare-clear-menu-highlighting',
+			(active_tab = '') => {
+				document
+					.querySelectorAll('.redsquare-page-active')
+					.forEach((el) => {
+						el.classList.remove('redsquare-page-active');
+					});
 
-      if (active_tab == "tweets") {
-        if (document.querySelector(".redsquare-menu-home")) {
-          document.querySelector(".redsquare-menu-home").classList.add("redsquare-page-active");
-        }
-      }
+				if (active_tab == 'tweets') {
+					if (document.querySelector('.redsquare-menu-home')) {
+						document
+							.querySelector('.redsquare-menu-home')
+							.classList.add('redsquare-page-active');
+					}
+				}
 
-      if (active_tab == "notifications") {
-        if (document.querySelector(".redsquare-menu-notifications")) {
-          document
-            .querySelector(".redsquare-menu-notifications")
-            .classList.add("redsquare-page-active");
-        }
-      }
+				if (active_tab == 'notifications') {
+					if (
+						document.querySelector('.redsquare-menu-notifications')
+					) {
+						document
+							.querySelector('.redsquare-menu-notifications')
+							.classList.add('redsquare-page-active');
+					}
+				}
 
-      if (active_tab == "profile") {
-        if (document.querySelector(".redsquare-menu-profile")) {
-          document.querySelector(".redsquare-menu-profile").classList.add("redsquare-page-active");
-        }
-      }
-    });
-  }
+				if (active_tab == 'profile') {
+					if (document.querySelector('.redsquare-menu-profile')) {
+						document
+							.querySelector('.redsquare-menu-profile')
+							.classList.add('redsquare-page-active');
+					}
+				}
+			}
+		);
+	}
 
-  render() {
-    //
-    // replace element or insert into page
-    //
-    if (document.querySelector(".redsquare-menu")) {
-      this.app.browser.replaceElementBySelector(
-        RedSquareMenuTemplate(this.app, this.mod),
-        ".redsquare-menu"
-      );
-    } else {
-      this.app.browser.addElementToSelector(
-        RedSquareMenuTemplate(this.app, this.mod),
-        this.container
-      );
-    }
+	render() {
+		//
+		// replace element or insert into page
+		//
+		if (document.querySelector('.redsquare-menu')) {
+			this.app.browser.replaceElementBySelector(
+				RedSquareMenuTemplate(this.app, this.mod),
+				'.redsquare-menu'
+			);
+		} else {
+			this.app.browser.addElementToSelector(
+				RedSquareMenuTemplate(this.app, this.mod),
+				this.container
+			);
+		}
 
-    //
-    // appspace modules
-    //
-    this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
-      if (!document.querySelector(`.redsquare-menu-${mod.returnSlug()}`)) {
-        this.app.browser.addElementToSelector(
-          `<li class="redsquare-menu-${mod.returnSlug()}">
+		//
+		// appspace modules
+		//
+		this.app.modules
+			.returnModulesRenderingInto('.saito-main')
+			.forEach((mod) => {
+				if (
+					!document.querySelector(
+						`.redsquare-menu-${mod.returnSlug()}`
+					)
+				) {
+					this.app.browser.addElementToSelector(
+						`<li class="redsquare-menu-${mod.returnSlug()}">
             <i class="${mod.icon}"></i>
             <span>${mod.returnName()}</span>
           </li>`,
@@ -90,7 +107,7 @@ class RedSquareMenu {
       e.stopImmediatePropagation();
 
       window.history.pushState({}, document.title, "/" + this.mod.slug);
-      //Don't set a hast location (even on click)
+      //Don't set a hash location (even on click)
 
       if (window.location.hash || window.location.search) {
         this.app.connection.emit("redsquare-home-render-request");
@@ -106,9 +123,19 @@ class RedSquareMenu {
         //
         // and load any NEW tweets at the top
         //
-        this.mod.loadTweets("later", (tx_count) => {
+        let ct = this.mod.loadTweets("later", (tx_count) => {
           this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
         });
+
+        console.log(ct);
+        
+        // if I don't have any valid peers to query, we won't otherwise run the callback, 
+        // which is just this
+        if (!ct){
+          setTimeout(()=>{
+            this.app.connection.emit("redsquare-remove-loading-message");
+          }, 1000);
+        }
       }
     };
 

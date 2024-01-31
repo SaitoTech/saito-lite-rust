@@ -1,143 +1,146 @@
 .scoring-overlay {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    justify-content: space-around;
-    width: min(750px, 90vw);
-    min-height: 50vh;
-    padding: 1rem 0;
-    border-radius: 0.5rem;
-    column-gap: 2rem;
-    padding: 2rem;
-    align-items: center;
-    width: 90vw;
-    height: 80vh;
-    justify-content: space-evenly;
-    justify-items: center;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	justify-content: space-around;
+	width: min(750px, 90vw);
+	min-height: 50vh;
+	padding: 1rem 0;
+	border-radius: 0.5rem;
+	column-gap: 2rem;
+	padding: 2rem;
+	align-items: center;
+	width: 90vw;
+	height: 80vh;
+	justify-content: space-evenly;
+	justify-items: center;
 }
 
 .scoring-overlay .card {
-    display: block;
-    height: 45rem;
-    width: calc(45rem * 0.72110);
-    justify-content: space-around;
-    padding: 2rem;
-    z-index: 2;
-    background-image: url(/twilight/img/Base.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
+	display: block;
+	height: 45rem;
+	width: calc(45rem * 0.7211);
+	justify-content: space-around;
+	padding: 2rem;
+	z-index: 2;
+	background-image: url(/twilight/img/Base.svg);
+	background-size: contain;
+	background-repeat: no-repeat;
 }
 
 .winner-tied {
-    border: 0.5rem solid blue;
-    border-right: 0.5rem solid red;
-    border-bottom: 0.5rem solid red;
+	border: 0.5rem solid blue;
+	border-right: 0.5rem solid red;
+	border-bottom: 0.5rem solid red;
 }
 .winner-ussr {
-    border: 0.5rem solid red;
+	border: 0.5rem solid red;
 }
 .winner-us {
-    border: 0.5rem solid blue;
+	border: 0.5rem solid blue;
 }
 .asia-scoring {
-    background-size: cover;
-    background-position-y: bottom;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/asia-scoring-bg.png);
+	background-size: cover;
+	background-position-y: bottom;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/asia-scoring-bg.png);
 }
 .europe-scoring {
-    background-size: cover;
-    background-position-y: bottom;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/europe-scoring-bg.png);
+	background-size: cover;
+	background-position-y: bottom;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/europe-scoring-bg.png);
 }
 .mideast-scoring {
-    background-size: cover;
-    background-position-y: bottom;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/mideast-scoring-bg.png);
+	background-size: cover;
+	background-position-y: bottom;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/mideast-scoring-bg.png);
 }
 .seasia-scoring {
-    background-size: cover;
-    background-position-y: bottom;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/seasia-scoring-bg.png);
+	background-size: cover;
+	background-position-y: bottom;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/seasia-scoring-bg.png);
 }
 .africa-scoring {
-    background-size: cover;
-    background-position-y: bottom;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/africa-scoring-bg.png);
+	background-size: cover;
+	background-position-y: bottom;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/africa-scoring-bg.png);
 }
 .samerica-scoring {
-    background-size: cover;
-    background-position-y: bottom;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/southamerica-scoring-bg.png);
+	background-size: cover;
+	background-position-y: bottom;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/southamerica-scoring-bg.png);
 }
 .camerica-scoring {
-    background-size: cover;
-    background-position-y: bottom;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/centralamerica-scoring-bg.png);
+	background-size: cover;
+	background-position-y: bottom;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+		url(/twilight/img/backgrounds/centralamerica-scoring-bg.png);
 }
 .scoring-box {
-    background-color: #0009;
-    justify-items: center;
-    width: auto;
-    border-radius: 0.5rem;
-    height: auto;
-    padding: 2rem;
-    max-width: 90%;
+	background-color: #0009;
+	justify-items: center;
+	width: auto;
+	border-radius: 0.5rem;
+	height: auto;
+	padding: 2rem;
+	max-width: 90%;
 }
 .scoring-result-title {
-    text-align: center;
-    color: #fff;
-    padding: 1rem 0rem;
-    font-size: 5rem;
-    width: 100%;
-    border-radius: 0.5rem 0.5rem 0rem 0rem;
+	text-align: center;
+	color: #fff;
+	padding: 1rem 0rem;
+	font-size: 5rem;
+	width: 100%;
+	border-radius: 0.5rem 0.5rem 0rem 0rem;
 }
 .winner-us .scoring-box .scoring-result-title {
-    text-shadow: 0.125rem 0.125rem 1rem blue;
+	text-shadow: 0.125rem 0.125rem 1rem blue;
 }
 .winner-ussr .scoring-box .scoring-result-title {
-    text-shadow: 0.125rem 0.125rem 1rem red;
+	text-shadow: 0.125rem 0.125rem 1rem red;
 }
 .scoring-text {
-    text-align: center;
-    padding: 0rem;
-    color: #fff;
-    font-size: 2.7vh;
-    margin-bottom: 1.4rem;
+	text-align: center;
+	padding: 0rem;
+	color: #fff;
+	font-size: 2.7vh;
+	margin-bottom: 1.4rem;
 }
 .scoring-bonus-title {
-    text-align: center;
-    color: #ffffff;
-    padding: 3em 0rem 0rem 0rem;
-    font-size: 2.5rem;
+	text-align: center;
+	color: #ffffff;
+	padding: 3em 0rem 0rem 0rem;
+	font-size: 2.5rem;
 }
 .scoring-event-grid {
-    display: grid;
-    grid-template-columns: 33% 33% 33%;
-    padding: 4rem;
-}  
+	display: grid;
+	grid-template-columns: 33% 33% 33%;
+	padding: 4rem;
+}
 .scoring-event-container {
-    grid-row: 1;
-    padding: 0rem 3rem;
+	grid-row: 1;
+	padding: 0rem 3rem;
 }
 .scoring-event {
-  text-align: center;
+	text-align: center;
 }
 .scoring-event-name {
-  color: whitesmoke;
-  margin-bottom: 1.5rem;
+	color: whitesmoke;
+	margin-bottom: 1.5rem;
 }
 
 .img.scoring-event-icon {
-    width: 10rem;
-    padding: 1rem;
+	width: 10rem;
+	padding: 1rem;
 }
 .scoring-event-desc {
-    text-align: center;
-    color: #ffffff;
-    padding: 1rem 0rem;
-    font-size: 1.5rem;
-    grid-row: 2;
+	text-align: center;
+	color: #ffffff;
+	padding: 1rem 0rem;
+	font-size: 1.5rem;
+	grid-row: 2;
 }
-
-
-
-

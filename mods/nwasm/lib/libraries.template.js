@@ -1,10 +1,7 @@
 module.exports = LibrariesTemplate = (app, mod) => {
-
-  return `
+	return `
     <div class="nwasm-libraries saito-table" id="nwasm-libraries">
       <div class="nwasm-library-introduction">Your library contains the following titles:</div>
     </div>
   `;
-
-}
-
+};

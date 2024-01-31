@@ -1,42 +1,39 @@
 .league-leaderboard .saito-table .saito-table-body .saito-table-row {
-  grid-template-columns: 4rem auto 5rem 5rem 5rem;
+	grid-template-columns: 4rem auto 5rem 5rem 5rem;
 }
 
 .league-leaderboard .saito-table .saito-table-header {
-  grid-template-columns: 4rem auto 5rem 5rem 5rem;
-  text-align: center;
-  padding: 8px;
-  text-transform: capitalize;
-  margin-bottom: 3px;
+	grid-template-columns: 4rem auto 5rem 5rem 5rem;
+	text-align: center;
+	padding: 8px;
+	text-transform: capitalize;
+	margin-bottom: 3px;
 }
 
-.saito-table-header { 
-  position: sticky;
-  top: 0px;
-  background: var(--saito-background-light);
-  z-index: 3;
+.saito-table-header {
+	position: sticky;
+	top: 0px;
+	background: var(--saito-background-light);
+	z-index: 3;
 }
 
 .saito-table-row.league-leaderboard-ranking {
-  border-radius: 0.5rem;
+	border-radius: 0.5rem;
 }
 
 .saito-table-row.league-leaderboard-ranking:hover {
-  background: var(--saito-primary);
+	background: var(--saito-primary);
 }
 
-.my-leaderboard-position{
-  border: 1px solid var(--saito-primary);
+.my-leaderboard-position {
+	border: 1px solid var(--saito-primary);
 }
 
-.my-leaderboard-position>div:first-child {
-  font-size: 0;
+.my-leaderboard-position > div:first-child {
+	font-size: 0;
 }
 
-.my-leaderboard-position>div:first-child::before {
-  content: "\22B3";
-  font-size: 1.5rem;
+.my-leaderboard-position > div:first-child::before {
+	content: '\22B3';
+	font-size: 1.5rem;
 }
-
-
-

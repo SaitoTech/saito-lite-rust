@@ -1,6 +1,5 @@
 module.exports = () => {
-
-  let html =  `
+	let html = `
 
       <div class="twilight-advanced-options-container">
 
@@ -207,6 +206,5 @@ module.exports = () => {
     </div>
           `;
 
-    return html;
-
-}
+	return html;
+};

@@ -1,149 +1,196 @@
-const Invite = require("./invite");
-const InviteManagerTemplate = require("./invite-manager.template");
-const JSON = require("json-bigint");
-const ArcadeInitializer = require("./main/initializer");
-const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
-const JoinGameOverlay = require("./overlays/join-game");
+const Invite = require('./invite');
+const InviteManagerTemplate = require('./invite-manager.template');
+const JSON = require('json-bigint');
+const ArcadeInitializer = require('./main/initializer');
+const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
+const JoinGameOverlay = require('./overlays/join-game');
 
 class InviteManager {
-  constructor(app, mod, container = "") {
-    this.app = app;
-    this.mod = mod;
-    this.container = container;
-    this.name = "InviteManager";
-    this.type = "short";
+	constructor(app, mod, container = '') {
+		this.app = app;
+		this.mod = mod;
+		this.container = container;
+		this.name = 'InviteManager';
+		this.type = 'short';
 
-    // For filtering which games get displayed
-    // We may want to only display one type of game invite, so overwrite this before render()
-    this.list = "all";
-    this.lists = ["mine", "open"];
+		// For filtering which games get displayed
+		// We may want to only display one type of game invite, so overwrite this before render()
+		this.list = 'all';
+		this.lists = ['mine', 'open'];
 
-    this.loader_overlay = new SaitoOverlay(app, mod, false, true);
+		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
 
-    //
-    // handle requests to re-render invite manager
-    //
-    app.connection.on("arcade-invite-manager-render-request", () => {
-      console.log("arcade-invite-manager-render-request");
-      if (!this.mod.is_game_initializing) {
-        this.mod.purgeOldGames();
-        this.render();
-      }else{
-        console.log("Don't update Arcade while initializing game");
-      }
-    });
+		//
+		// handle requests to re-render invite manager
+		//
+		app.connection.on('arcade-invite-manager-render-request', () => {
+			console.log('arcade-invite-manager-render-request');
+			if (!this.mod.is_game_initializing) {
+				this.mod.purgeOldGames();
+				this.render();
+			} else {
+				console.log('Don\'t update Arcade while initializing game');
+			}
+		});
 
-    app.connection.on("finished-loading-leagues", () => {
-      if (!this.mod.is_game_initializing) {
-        this.mod.purgeOldGames();
-        this.render();
-      }
-    });
+		app.connection.on('finished-loading-leagues', () => {
+			if (!this.mod.is_game_initializing) {
+				this.mod.purgeOldGames();
+				this.render();
+			}
+		});
 
-    app.connection.on("arcade-game-initialize-render-request", () => {
-      //
-      // If Arcade is the active module, Arcade.main will respond to this event
-      // Otherwise we launch an overlay and stick the spinner in there
-      //
-      if (!this.mod.browser_active) {
-        this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');
-        let game_loader = new ArcadeInitializer(app, mod, ".arcade_game_overlay_loader");
-        game_loader.render();
-      }
-    });
+		app.connection.on('arcade-game-initialize-render-request', () => {
+			//
+			// If Arcade is the active module, Arcade.main will respond to this event
+			// Otherwise we launch an overlay and stick the spinner in there
+			//
+			if (!this.mod.browser_active) {
 
-    app.connection.on("arcade-continue-game-from-options", async (game_mod) => {
+				let target = '.arcade_game_overlay_loader';
 
-      let id = game_mod.game?.id;
-      if (!id){
-        return;
-      }
+				if (document.querySelector(".invite-manager")){
+					document.querySelector(".invite-manager").innerHTML = "";	
+					target = ".invite-manager";
+				}else{
+					this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');	
+				}
 
-      let game_tx = mod.returnGame(id);
+				let game_loader = new ArcadeInitializer(
+					app,
+					mod,
+					target
+				);
+				
+				game_loader.render();
+			}
+		});
 
-      if (!game_tx) {
-        console.log("Creating fresh transaction");
-        game_tx = await mod.createPseudoTransaction(game_mod.game);
-        mod.addGame(game_tx, "closed");
-      }else{
-        delete game_tx.msg.time_finished;
-        delete game_tx.msg.method;
-        delete game_tx.msg.winner;
-        game_tx.msg.request = "paused";
-      }
+		app.connection.on(
+			'arcade-continue-game-from-options',
+			async (game_mod) => {
+				let id = game_mod.game?.id;
+				if (!id) {
+					return;
+				}
 
-      console.log(JSON.parse(JSON.stringify(game_tx)));
-      console.log(JSON.parse(JSON.stringify(game_mod.game)));
+				let game_tx = mod.returnGame(id);
 
-      let newInvite = new Invite(app, mod, null, this.type, game_tx, mod.publicKey);
-      let join_overlay = new JoinGameOverlay(app, mod, newInvite.invite_data);
-      join_overlay.render();
+				if (!game_tx) {
+					console.log('Creating fresh transaction');
+					game_tx = await mod.createPseudoTransaction(game_mod.game);
+					mod.addGame(game_tx, 'closed');
+				} else {
+					delete game_tx.msg.time_finished;
+					delete game_tx.msg.method;
+					delete game_tx.msg.winner;
+					game_tx.msg.request = 'paused';
+				}
 
-    });
-  }
+				console.log(JSON.parse(JSON.stringify(game_tx)));
+				console.log(JSON.parse(JSON.stringify(game_mod.game)));
 
-  render() {
-    //
-    // replace element or insert into page (deletes invites for a full refresh)
-    //
-    let target = this.container + " .invite-manager";
+				let newInvite = new Invite(
+					app,
+					mod,
+					null,
+					this.type,
+					game_tx,
+					mod.publicKey
+				);
+				let join_overlay = new JoinGameOverlay(
+					app,
+					mod,
+					newInvite.invite_data
+				);
+				join_overlay.render();
+			}
+		);
+	}
 
-    if (document.querySelector(target)) {
-      this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), target);
-    } else {
-      this.app.browser.addElementToSelector(
-        InviteManagerTemplate(this.app, this.mod),
-        this.container
-      );
-    }
+	render() {
+		//
+		// replace element or insert into page (deletes invites for a full refresh)
+		//
+		let target = this.container + ' .invite-manager';
 
-    for (let list of this.lists) {
-      if (this.list === "all" || this.list === list) {
-        if (!this.mod.games[list]) {
-          this.mod.games[list] = [];
-        }
+		if (document.querySelector(target)) {
+			this.app.browser.replaceElementBySelector(
+				InviteManagerTemplate(this.app, this.mod),
+				target
+			);
+		} else {
+			this.app.browser.addElementToSelector(
+				InviteManagerTemplate(this.app, this.mod),
+				this.container
+			);
+		}
 
-        if (this.mod.games[list].length > 0) {
-          if (list === "mine") {
-            this.app.browser.addElementToSelector(`<h5>My Games</h5>`, target);
-          } else if (list == "open") {
-            this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, target);
-          } else if (list == "active") {
-            this.app.browser.addElementToSelector(`<h5>Active Matches</h5>`, target);
-          } else if (list == "over") {
-            this.app.browser.addElementToSelector(`<h5>Recent Matches</h5>`, target);
-          } else {
-            this.app.browser.addElementToSelector(
-              `<h5>${list.charAt(0).toUpperCase() + list.slice(1)} Games</h5>`,
-              target
-            );
-          }
-        }
+		for (let list of this.lists) {
+			if (this.list === 'all' || this.list === list) {
+				if (!this.mod.games[list]) {
+					this.mod.games[list] = [];
+				}
 
-        for (let i = 0; i < this.mod.games[list].length && i < 5; i++) {
-          let newInvite = new Invite(
-            this.app,
-            this.mod,
-            target,
-            this.type,
-            this.mod.games[list][i],
-            this.mod.publicKey
-          );
+				if (this.mod.games[list].length > 0) {
+					if (list === 'mine') {
+						this.app.browser.addElementToSelector(
+							`<h5 class="sidebar-header">My Games</h5>`,
+							target
+						);
+					} else if (list == 'open') {
+						this.app.browser.addElementToSelector(
+							`<h5 class="sidebar-header">Open Invites</h5>`,
+							target
+						);
+					} else if (list == 'active') {
+						this.app.browser.addElementToSelector(
+							`<h5 class="sidebar-header">Active Matches</h5>`,
+							target
+						);
+					} else if (list == 'over') {
+						this.app.browser.addElementToSelector(
+							`<h5 class="sidebar-header">Recent Matches</h5>`,
+							target
+						);
+					} else {
+						this.app.browser.addElementToSelector(
+							`<h5 class="sidebar-header">${
+								list.charAt(0).toUpperCase() + list.slice(1)
+							} Games</h5>`,
+							target
+						);
+					}
+				}
 
-          if (newInvite.invite_data.league) {
-            if (!this.mod.leagueCallback?.testMembership(newInvite.invite_data.league)) {
-              continue;
-            }
-          }
-          newInvite.render();
-        }
-      }
-    }
+				for (let i = 0; i < this.mod.games[list].length && i < 5; i++) {
+					let newInvite = new Invite(
+						this.app,
+						this.mod,
+						target,
+						this.type,
+						this.mod.games[list][i],
+						this.mod.publicKey
+					);
 
-    this.attachEvents();
-  }
+					if (newInvite.invite_data.league) {
+						if (
+							!this.mod.leagueCallback?.testMembership(
+								newInvite.invite_data.league
+							)
+						) {
+							continue;
+						}
+					}
+					newInvite.render();
+				}
+			}
+		}
 
-  attachEvents() {}
+		this.attachEvents();
+	}
+
+	attachEvents() {}
 }
 
 module.exports = InviteManager;

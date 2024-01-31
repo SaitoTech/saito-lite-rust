@@ -1,5 +1,5 @@
 module.exports = (app, mod) => {
-  let html = `
+	let html = `
         <div class="overlay-input">
             <label for="game_length ">Game Length:</label>
             <select name="game_length">
@@ -10,7 +10,5 @@ module.exports = (app, mod) => {
         </div>
     `;
 
-  return html;
+	return html;
 };
-
-

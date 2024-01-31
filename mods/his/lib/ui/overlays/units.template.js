@@ -1,11 +1,9 @@
 module.exports = (f) => {
-
-  let html = `
+	let html = `
     <div class="units hide-scrollbar">
       <div class="units-title"></div>
       <div class="units-table"></div>
     </div>
   `;
-  return html;
-
-}
+	return html;
+};

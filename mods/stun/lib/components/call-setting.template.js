@@ -1,5 +1,5 @@
 module.exports = () => {
-    return `
+	return `
     <div class="chat-settings-container">
     <div class="chat-settings-wrapper">
     <div class="chat-settings">
@@ -29,4 +29,4 @@ module.exports = () => {
 </div>
 </div>
      `;
-}
+};

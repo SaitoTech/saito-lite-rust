@@ -1,45 +1,40 @@
-
 .agenda-selection-overlay {
-    display: grid;
-    color: white;
-    width: 80vw;
-    min-width: 75rem;
-    max-width: 1200px;
-    height: max-content;
-    column-gap: 2rem;
-    row-gap: 2rem;
-    padding: 4rem;
-    background-color: #0007;
-    border-radius: 1rem;
-    grid-template-rows: min-content 1fr;
-    width: min-content;
-    justify-items: center;
-    align-items: baseline;
+	display: grid;
+	color: white;
+	width: 80vw;
+	min-width: 75rem;
+	max-width: 1200px;
+	height: max-content;
+	column-gap: 2rem;
+	row-gap: 2rem;
+	padding: 4rem;
+	background-color: #0007;
+	border-radius: 1rem;
+	grid-template-rows: min-content 1fr;
+	width: min-content;
+	justify-items: center;
+	align-items: baseline;
 }
 
 .agenda-selection-title {
-    margin-left: auto;
-    margin-right: auto;
-    font-family: 'bank-gothic';
-    letter-spacing: 0.75rem;
-    font-size: 5rem;
-    width: max-content;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'bank-gothic';
+	letter-spacing: 0.75rem;
+	font-size: 5rem;
+	width: max-content;
 }
 
 .agenda-selection-cards {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    margin-top: 2rem;
-    width: max-content;
-    max-width: 80vw;
-    min-width: 1000px;
-
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	margin-top: 2rem;
+	width: max-content;
+	max-width: 80vw;
+	min-width: 1000px;
 }
 
 .agenda-selection-cards .overlay_agendacard:hover {
-    transform: scale(1.1);
+	transform: scale(1.1);
 }
-
-
-

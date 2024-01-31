@@ -22,10 +22,10 @@
  party would just return out instead of responding to a re-request.
 
  *********************************************************************************/
-var saito = require("../../lib/saito/saito");
-var ModTemplate = require("../../lib/templates/modtemplate");
-const Big = require("big.js");
-const Transaction = require("../../lib/saito/transaction").default;
+var saito = require('../../lib/saito/saito');
+var ModTemplate = require('../../lib/templates/modtemplate');
+const Big = require('big.js');
+const Transaction = require('../../lib/saito/transaction').default;
 
 class Encrypt extends ModTemplate {
   constructor(app) {
@@ -251,11 +251,6 @@ class Encrypt extends ModTemplate {
     if (offchain == 0) {
       await this.app.network.propagateTransaction(tx);
     } else {
-      //let data = {};
-      //data.module = "Encrypt";
-      //data.tx = tx;
-      //this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
-
       this.app.connection.emit("relay-send-message", {
       recipient: recipients,
       request: "diffie hellman key exchange",

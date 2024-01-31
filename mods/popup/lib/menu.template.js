@@ -1,6 +1,5 @@
 module.exports = () => {
-
-   return `
+	return `
       <ul class="header">
 	<li class="option popup-lessons">Chinese Lessons</li>
 	<li class="option popup-vocab">Vocabulary</li>
@@ -24,6 +23,4 @@ module.exports = () => {
 
 
    `;
-
-}
-
+};

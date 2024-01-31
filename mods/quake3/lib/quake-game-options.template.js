@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
-
-  let options_html = `
+	let options_html = `
       <h1 class="overlay-title">Advanced Options</h1>
         <div class="overlay-input">
           <label for="crypto">Crypto:</label>
@@ -8,18 +7,19 @@ module.exports = (app, mod) => {
             <option value="" selected>None</option>
       `;
 
-      let listed = [];
-      for (let i = 0; i < app.modules.mods.length; i++) {
-        if (
-          app.modules.mods[i].ticker != "" &&
-          app.modules.mods[i].ticker != undefined && !listed.includes(app.modules.mods[i].ticker)
-        ) {
-          options_html += `<option value="${app.modules.mods[i].ticker}">${app.modules.mods[i].ticker}</option>`;
-          listed.push(app.modules.mods[i].ticker);
-        }
-      }
+	let listed = [];
+	for (let i = 0; i < app.modules.mods.length; i++) {
+		if (
+			app.modules.mods[i].ticker != '' &&
+			app.modules.mods[i].ticker != undefined &&
+			!listed.includes(app.modules.mods[i].ticker)
+		) {
+			options_html += `<option value="${app.modules.mods[i].ticker}">${app.modules.mods[i].ticker}</option>`;
+			listed.push(app.modules.mods[i].ticker);
+		}
+	}
 
-      options_html += `
+	options_html += `
         </select>
           <label for="server">Game Server:</label>
           <select id="server" name="server">
@@ -43,7 +43,5 @@ module.exports = (app, mod) => {
 
   `;
 
-  return options_html;
-
-}
-
+	return options_html;
+};

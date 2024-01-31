@@ -1,6 +1,5 @@
 module.exports = ImperiumRulesOverlayTemplate = () => {
-
-  return `
+	return `
         <div class="game-overlay-menu" id="game-overlay-menu">
           <div>Game Rules:</div>
             <ul style="font-family: 'orbitron-medium', helvetica">
@@ -12,5 +11,4 @@ module.exports = ImperiumRulesOverlayTemplate = () => {
             </ul>
           </div>
   `;
-
-}
+};

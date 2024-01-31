@@ -1,5 +1,5 @@
 module.exports = DebugAppspaceTemplate = () => {
-  return `
+	return `
   
   <h3>Wallet Configuration:</h3> 
   <div style="clear:both;padding-top:10px;padding-bottom:10px;" id="email-appspace-debug" class="email-appspace-debug"></div>
@@ -13,4 +13,4 @@ module.exports = DebugAppspaceTemplate = () => {
   </p>
     <hr />
   `;
-}
+};

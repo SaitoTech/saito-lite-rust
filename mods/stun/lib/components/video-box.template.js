@@ -1,21 +1,20 @@
 module.exports = (streamId, app, mod) => {
-  
-  //
-  // Do you want presentation videos to be mirrored (flipped) or not ???
-  // The Css file flips local video so it is like looking in a mirror at yourself
-  // Don't randomly apply in-line styling unless ABSOLUTELY necessary
-  //
+	//
+	// Do you want presentation videos to be mirrored (flipped) or not ???
+	// The Css file flips local video so it is like looking in a mirror at yourself
+	// Don't randomly apply in-line styling unless ABSOLUTELY necessary
+	//
 
-  let key = streamId;
-  let videoAttribute = "";
-  if (streamId == "local") {
-    key = mod.publicKey;
-    videoAttribute = "muted";
-  } 
+	let key = streamId;
+	let videoAttribute = '';
+	if (streamId == 'local') {
+		key = mod.publicKey;
+		videoAttribute = 'muted';
+	}
 
-  let name = app.keychain.returnIdentifierByPublicKey(key, true);
+	let name = app.keychain.returnIdentifierByPublicKey(key, true);
 
-  return `
+	return `
     <div id="stream_${streamId}"  class="video-box-container-large">
       <video id="${streamId}" ${videoAttribute} autoplay playsinline class="video-box"></video>
       <div class="video-call-info">

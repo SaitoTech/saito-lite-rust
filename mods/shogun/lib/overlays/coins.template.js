@@ -1,8 +1,6 @@
 module.exports = CoinsOverlayTemplate = () => {
-
-  return `
+	return `
     <div class="coins-overlay hide-scrollbar">
     </div>
   `;
-
-}
+};

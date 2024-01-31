@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const DebateOverlay = require('./lib/ui/overlays/debate');
 const ChateauxOverlay = require('./lib/ui/overlays/chateaux');
+const VPOverlay = require('./lib/ui/overlays/vp');
 const NewWorldOverlay = require('./lib/ui/overlays/newworld');
 const TreatiseOverlay = require('./lib/ui/overlays/treatise');
 const FactionOverlay = require('./lib/ui/overlays/faction');
@@ -21,6 +22,11 @@ const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
+
+// Tutorial Overlays
+const GameHelp = require('./lib/ui/game-help/game-help');
+const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template');
+
 
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
@@ -60,6 +66,7 @@ class HereIStand extends GameTemplate {
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
+    this.vp_overlay = new VPOverlay(this.app, this);  // end-of-turn points overlay
     this.newworld_overlay = new NewWorldOverlay(this.app, this);
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
@@ -75,6 +82,11 @@ class HereIStand extends GameTemplate {
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
+
+    //
+    // triangular help button
+    //
+    this.game_help = new GameHelp(this.app, this);
 
     //
     // this sets the ratio used for determining

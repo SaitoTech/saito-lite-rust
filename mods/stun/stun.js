@@ -1,56 +1,56 @@
-const saito = require("../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
-const StunLauncher = require("./lib/appspace/call-launch");
-const CallInterfaceVideo = require("./lib/components/call-interface-video");
-const CallInterfaceFloat = require("./lib/components/call-interface-float");
-const DialingInterface = require("./lib/appspace/dialer");
-const PeerManager = require("./lib/appspace/PeerManager");
-const StreamManager = require("./lib/appspace/StreamManager");
+const saito = require('../../lib/saito/saito');
+const ModTemplate = require('../../lib/templates/modtemplate');
+const StunLauncher = require('./lib/appspace/call-launch');
+const CallInterfaceVideo = require('./lib/components/call-interface-video');
+const CallInterfaceFloat = require('./lib/components/call-interface-float');
+const DialingInterface = require('./lib/appspace/dialer');
+const PeerManager = require('./lib/appspace/PeerManager');
+const StreamManager = require('./lib/appspace/StreamManager');
 
-const AppSettings = require("./lib/stun-settings");
+const AppSettings = require('./lib/stun-settings');
 
 class Stun extends ModTemplate {
-  constructor(app) {
-    super(app);
-    this.app = app;
-    this.appname = "Saito Talk";
-    this.name = "Stun";
-    this.slug = this.returnSlug();
-    this.description = "P2P Video & Audio Connection Module";
-    this.categories = "Utilities Communications";
-    this.icon = "fas fa-video";
-    this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
-    this.isRelayConnected = false;
-    this.hasReceivedData = {};
+	constructor(app) {
+		super(app);
+		this.app = app;
+		this.appname = 'Saito Talk';
+		this.name = 'Stun';
+		this.slug = 'videocall';
+		this.description = 'P2P Video & Audio Connection Module';
+		this.categories = 'Utilities Communications';
+		this.icon = 'fas fa-video';
+		this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
+		this.isRelayConnected = false;
+		this.hasReceivedData = {};
 
-    this.screen_share = false;
+		this.screen_share = false;
 
-    this.servers = [
-      {
-        urls: "turn:stun-sf.saito.io:3478",
-        username: "guest",
-        credential: "somepassword",
-      },
-      {
-        urls: "turn:stun-sg.saito.io:3478",
-        username: "guest",
-        credential: "somepassword",
-      },
-      {
-        urls: "turn:stun-de.saito.io:3478",
-        username: "guest",
-        credential: "somepassword",
-      },
+		this.servers = [
+			{
+				urls: 'turn:stun-sf.saito.io:3478',
+				username: 'guest',
+				credential: 'somepassword'
+			},
+			{
+				urls: 'turn:stun-sg.saito.io:3478',
+				username: 'guest',
+				credential: 'somepassword'
+			},
+			{
+				urls: 'turn:stun-de.saito.io:3478',
+				username: 'guest',
+				credential: 'somepassword'
+			}
 
-      // Firefox gives a warning if you provide more than two servers and
-      // throws an error if you use 5 or more.
-      // is it redundant to have both turn and stun on the same server, since
-      //
-      // " TURN (Traversal Using Relay NAT) is the more advanced solution that incorporates
-      // the STUN protocols and most commercial WebRTC based services use a TURN server
-      // for establishing connections between peers. "
+			// Firefox gives a warning if you provide more than two servers and
+			// throws an error if you use 5 or more.
+			// is it redundant to have both turn and stun on the same server, since
+			//
+			// " TURN (Traversal Using Relay NAT) is the more advanced solution that incorporates
+			// the STUN protocols and most commercial WebRTC based services use a TURN server
+			// for establishing connections between peers. "
 
-      /*{
+			/*{
         urls: "stun:stun-sf.saito.io:3478",
       },
       {
@@ -104,8 +104,6 @@ class Stun extends ModTemplate {
 
   async initialize(app) {
     await super.initialize(app);
-
-    console.log("STUN: " + this.publicKey);
 
     if (app.BROWSER) {
 
@@ -214,318 +212,389 @@ class Stun extends ModTemplate {
             }
             app.connection.emit("start-stun-call");
             */
-          },
-        },
-      ];
-    }
-    //
-    //Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
-    //
-    if (type == "game-menu") {
-      this.attachStyleSheets();
-      super.render(this.app, this);
+					}
+				}
+			];
+		}
+		//
+		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
+		//
+		if (type == 'game-menu') {
+			this.attachStyleSheets();
+			super.render(this.app, this);
 
-      //Set listeners for stun events
-      this.app.connection.on("show-call-interface", () => {
-        document.getElementById("start-group-video-chat").style.display = "none";
-      });
-      this.app.connection.on("reset-stun", () => {
-        document.getElementById("start-group-video-chat").style = "";
-      });
+			//Set listeners for stun events
+			this.app.connection.on('show-call-interface', () => {
+				document.getElementById(
+					'start-group-video-chat'
+				).style.display = 'none';
+			});
+			this.app.connection.on('reset-stun', () => {
+				document.getElementById('start-group-video-chat').style = '';
+			});
 
-      let menu_items = {
-        id: "game-social",
-        text: "Chat / Social",
-        submenus: [],
-      };
+			let menu_items = {
+				id: 'game-social',
+				text: 'Chat',
+				submenus: []
+			};
 
-      if (obj?.game?.players?.length > 1) {
-        menu_items["submenus"].push({
-          parent: "game-social",
-          text: "Start Call",
-          id: "start-group-video-chat",
-          class: "start-group-video-chat",
-          callback: function (app, game_mod) {
-            //Start Call
-            game_mod.menu.hideSubMenus();
+			if (obj?.game?.players?.length > 1) {
+				menu_items['submenus'].push({
+					parent: 'game-social',
+					text: 'Start Call',
+					id: 'start-group-video-chat',
+					class: 'start-group-video-chat',
+					callback: function (app, game_mod) {
+						//Start Call
+						game_mod.menu.hideSubMenus();
 
-            if (!stun_self.room_obj) {
-              stun_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);
-            } else {
-              salert("Already in or establishing a call");
-            }
-          },
-        });
-      }
+						if (!stun_self.room_obj) {
+							stun_self.dialer.establishStunCallWithPeers([
+								...game_mod.game.players
+							]);
+						} else {
+							salert('Already in or establishing a call');
+						}
+					}
+				});
+			}
 
-      menu_items["submenus"].push({
-        parent: "game-social",
-        text: "Record Game",
-        id: "record-stream",
-        class: "record-stream",
-        callback: function (app, game_mod) {
-          game_mod.menu.hideSubMenus();
-          if (!stun_self.streamManager) {
-            stun_self.streamManager = new StreamManager(app, stun_self);
-          }
-          if (!stun_self?.recording) {
-            stun_self.streamManager.recordGameStream();
-            stun_self.recording = true;
-            document.getElementById("record-stream").textContent = "Stop Recording";
-          } else {
-            stun_self.streamManager.stopRecordGameStream();
-            stun_self.recording = false;
-            document.getElementById("record-stream").textContent = "Start Recording";
-          }
-        },
-      });
+			menu_items['submenus'].push({
+				parent: 'game-game',
+				text: 'Record Game',
+				id: 'record-stream',
+				class: 'record-stream',
+				callback: function (app, game_mod) {
+					game_mod.menu.hideSubMenus();
+					if (!stun_self.streamManager) {
+						stun_self.streamManager = new StreamManager(
+							app,
+							stun_self
+						);
+					}
+					if (!stun_self?.recording) {
+						stun_self.streamManager.recordGameStream();
+						stun_self.recording = true;
+						document.getElementById('record-stream').textContent =
+							'Stop Recording';
+					} else {
+						stun_self.streamManager.stopRecordGameStream();
+						stun_self.recording = false;
+						document.getElementById('record-stream').textContent =
+							'Start Recording';
+					}
+				}
+			});
 
-      return menu_items;
-    }
+			return menu_items;
+		}
 
-    return null;
-  }
+		if (type === 'chat-actions') {
+			if (obj?.publicKey) {
+				if (obj.publicKey !== this.app.wallet.publicKey) {
+					this.attachStyleSheets();
+					super.render(this.app, this);
+					return [
+						{
+							text: 'Video/Audio Call',
+							icon: 'fas fa-phone',
+							callback: function (app, public_key) {
+								if (!stun_self.room_obj) {
+									stun_self.dialer.establishStunCallWithPeers(
+										[public_key]
+									);
+								} else {
+									salert('Already in or establishing a call');
+								}
+							}
+						}
+					];
+				}
+			}
+		}
 
-  hasSettings() {
-    return true;
-  }
+		return null;
+	}
 
-  loadSettings(container) {
-    let as = new AppSettings(this.app, this.mod, container);
-    as.render();
-  }
+	hasSettings() {
+		return true;
+	}
 
-  onConfirmation(blk, tx, conf) {
-    if (tx == null) {
-      return;
-    }
+	loadSettings(container = null) {
+		let as = new AppSettings(this.app, this.mod, container);
+		as.render();
+	}
 
-    let message = tx.returnMessage();
+	onConfirmation(blk, tx, conf) {
+		if (tx == null) {
+			return;
+		}
 
-    if (conf === 0) {
-      if (message.module === "Stun") {
-        //
-        // Do we even need/want to send messages on chain?
-        // There are problems with double processing events...
-        //
+		let message = tx.returnMessage();
 
-        try {
-          if (this.app.BROWSER === 1) {
-            if (this.hasSeenTransaction(tx)) return;
+		if (conf === 0) {
+			if (message.module === 'Stun') {
+				//
+				// Do we even need/want to send messages on chain?
+				// There are problems with double processing events...
+				//
 
-            if (!this?.room_obj?.room_code || this.room_obj.room_code !== message.data.room_code) {
-              console.log("OC: Tab is not active");
-              return;
-            }
-            // if (document.hidden) {
-            //   console.log("tab is not active");
-            //   return;
-            // }
+				try {
+					if (this.app.BROWSER === 1) {
+						if (this.hasSeenTransaction(tx)) return;
 
-            if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-              if (message.request === "stun-send-call-list-request") {
-                console.log("OnConfirmation:  stun-send-call-list-request");
-                this.receiveCallListRequestTransaction(this.app, tx);
-              }
-              if (message.request === "stun-send-call-list-response") {
-                console.log("OnConfirmation:  stun-send-call-list-response");
-                this.receiveCallListResponseTransaction(this.app, tx);
-              }
+						if (
+							!this?.room_obj?.room_code ||
+							this.room_obj.room_code !== message.data.room_code
+						) {
+							console.log('OC: Tab is not active');
+							return;
+						}
+						// if (document.hidden) {
+						//   console.log("tab is not active");
+						//   return;
+						// }
 
-              if (message.request === "stun-send-message-to-peers") {
-                console.log("OnConfirmation: stun-send-message-to-peers");
-                this.peerManager.handleSignalingMessage(tx.msg.data);
-              }
-            }
-          }
-        } catch (err) {
-          console.error("Stun Error:", err);
-        }
-      }
-    }
-  }
+						if (
+							tx.isTo(this.publicKey) &&
+							!tx.isFrom(this.publicKey)
+						) {
+							if (
+								message.request ===
+								'stun-send-call-list-request'
+							) {
+								console.log(
+									'OnConfirmation:  stun-send-call-list-request'
+								);
+								this.receiveCallListRequestTransaction(
+									this.app,
+									tx
+								);
+							}
+							if (
+								message.request ===
+								'stun-send-call-list-response'
+							) {
+								console.log(
+									'OnConfirmation:  stun-send-call-list-response'
+								);
+								this.receiveCallListResponseTransaction(
+									this.app,
+									tx
+								);
+							}
 
-  async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    if (tx == null) {
-      return;
-    }
-    let txmsg = tx.returnMessage();
+							if (
+								message.request === 'stun-send-message-to-peers'
+							) {
+								console.log(
+									'OnConfirmation: stun-send-message-to-peers'
+								);
+								this.peerManager.handleSignalingMessage(
+									tx.msg.data
+								);
+							}
+						}
+					}
+				} catch (err) {
+					console.error('Stun Error:', err);
+				}
+			}
+		}
+	}
 
-    if (this.app.BROWSER === 1) {
-      if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-        //console.log(txmsg);
+	async handlePeerTransaction(app, tx = null, peer, mycallback) {
+		if (tx == null) {
+			return;
+		}
+		let txmsg = tx.returnMessage();
 
-        if (txmsg.request.substring(0, 10) == "stun-send-") {
-          if (this.hasSeenTransaction(tx)) return;
+		if (this.app.BROWSER === 1) {
+			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+				//console.log(txmsg);
 
-          if (!this?.room_obj?.room_code || this.room_obj.room_code !== txmsg.data.room_code) {
-            console.log("HPT: Tab is not active");
-            return;
-          }
+				if (txmsg.request.substring(0, 10) == 'stun-send-') {
+					if (this.hasSeenTransaction(tx)) return;
 
-          if (txmsg.request === "stun-send-call-list-request") {
-            console.log("HPT:  stun-send-call-list-request");
-            this.receiveCallListRequestTransaction(this.app, tx);
-            return;
-          }
-          if (txmsg.request === "stun-send-call-list-response") {
-            console.log("HPT:  stun-send-call-list-response");
-            this.receiveCallListResponseTransaction(this.app, tx);
-            return;
-          }
+					if (
+						!this?.room_obj?.room_code ||
+						this.room_obj.room_code !== txmsg.data.room_code
+					) {
+						console.log('HPT: Tab is not active');
+						return;
+					}
 
-          if (txmsg.request === "stun-send-message-to-peers") {
-            //console.log("HPT: stun-send-message-to-peers");
-            this.peerManager.handleSignalingMessage(tx.msg.data);
-            return;
-          }
+					if (txmsg.request === 'stun-send-call-list-request') {
+						console.log('HPT:  stun-send-call-list-request');
+						this.receiveCallListRequestTransaction(this.app, tx);
+						return;
+					}
+					if (txmsg.request === 'stun-send-call-list-response') {
+						console.log('HPT:  stun-send-call-list-response');
+						this.receiveCallListResponseTransaction(this.app, tx);
+						return;
+					}
 
-          console.warn("Unprocessed request:");
-          console.log(txmsg);
-        } else if (txmsg.request.substring(0, 5) == "stun-") {
-          this.dialer.receiveStunCallMessageFromPeers(tx);
-        }
-      }
-    }
+					if (txmsg.request === 'stun-send-message-to-peers') {
+						//console.log("HPT: stun-send-message-to-peers");
+						this.peerManager.handleSignalingMessage(tx.msg.data);
+						return;
+					}
 
-    return super.handlePeerTransaction(app, tx, peer, mycallback);
-  }
+					console.warn('Unprocessed request:');
+					console.log(txmsg);
+				} else if (txmsg.request.substring(0, 5) == 'stun-') {
+					this.dialer.receiveStunCallMessageFromPeers(tx);
+				}
+			}
+		}
 
-  createRoomCode() {
-    return this.app.crypto.generateRandomNumber().substring(0, 12);
-  }
+		return super.handlePeerTransaction(app, tx, peer, mycallback);
+	}
 
-  async sendStunMessageToPeersTransaction(_data, recipients) {
-    //console.log("sending to peers ", recipients, " data ", _data);
-    let request = "stun-send-message-to-peers";
+	createRoomCode() {
+		return this.app.crypto.generateRandomNumber().substring(0, 12);
+	}
 
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+	async sendStunMessageToPeersTransaction(_data, recipients) {
+		//console.log("sending to peers ", recipients, " data ", _data);
+		let request = 'stun-send-message-to-peers';
 
-    if (recipients) {
-      recipients.forEach((recipient) => {
-        if (recipient) {
-          newtx.addTo(recipient);
-        }
-      });
-    }
-    newtx.msg.module = "Stun";
-    newtx.msg.request = request;
-    newtx.msg.data = _data;
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-    await newtx.sign();
+		if (recipients) {
+			recipients.forEach((recipient) => {
+				if (recipient) {
+					newtx.addTo(recipient);
+				}
+			});
+		}
+		newtx.msg.module = 'Stun';
+		newtx.msg.request = request;
+		newtx.msg.data = _data;
 
-    this.app.connection.emit("relay-transaction", newtx);
+		await newtx.sign();
 
-    this.app.network.propagateTransaction(newtx);
-  }
+		this.app.connection.emit('relay-transaction', newtx);
 
-  async sendCallEntryTransaction(public_key = "") {
-    if (!this.room_obj) {
-      console.error("No room object");
-      return;
-    }
+		this.app.network.propagateTransaction(newtx);
+	}
 
-    if (!public_key) {
-      public_key = this.room_obj?.host_public_key;
-    }
+	async sendCallEntryTransaction(public_key = '') {
+		if (!this.room_obj) {
+			console.error('No room object');
+			return;
+		}
 
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(public_key);
+		if (!public_key) {
+			public_key = this.room_obj?.host_public_key;
+		}
 
-    let request = "stun-send-call-list-request";
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				public_key
+			);
 
-    newtx.msg.module = "Stun";
-    newtx.msg.request = request;
+		let request = 'stun-send-call-list-request';
 
-    let data = {
-      room_code: this.room_obj.room_code,
-    };
+		newtx.msg.module = 'Stun';
+		newtx.msg.request = request;
 
-    newtx.msg.data = data;
-    newtx.msg.data.module = "Stun";
-    await newtx.sign();
+		let data = {
+			room_code: this.room_obj.room_code
+		};
 
-    this.app.connection.emit("relay-transaction", newtx);
-    this.app.network.propagateTransaction(newtx);
-  }
+		newtx.msg.data = data;
+		newtx.msg.data.module = 'Stun';
+		await newtx.sign();
 
-  async receiveCallListRequestTransaction(app, tx) {
-    let txmsg = tx.returnMessage();
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+	}
 
-    let from = tx.from[0].publicKey;
-    let call_list = [];
-    let peers = this.app.options?.stun;
+	async receiveCallListRequestTransaction(app, tx) {
+		let txmsg = tx.returnMessage();
 
-    if (peers) {
-      peers.forEach((key) => {
-        if (!call_list.includes(key)) {
-          call_list.push(key);
-        }
-      });
-    }
+		let from = tx.from[0].publicKey;
+		let call_list = [];
+		let peers = this.app.options?.stun?.peers;
 
-    if (!call_list.includes(this.publicKey)) {
-      call_list.push(this.publicKey);
-    }
+		if (peers) {
+			peers.forEach((key) => {
+				if (!call_list.includes(key)) {
+					call_list.push(key);
+				}
+			});
+		}
 
-    console.log("STUN: call list", call_list);
+		if (!call_list.includes(this.publicKey)) {
+			call_list.push(this.publicKey);
+		}
 
-    this.sendCallListResponseTransaction(from, call_list);
-  }
+		console.log('STUN: call list', call_list);
 
-  async sendCallListResponseTransaction(public_key, call_list) {
-    let request = "stun-send-call-list-response";
-    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(public_key);
+		this.sendCallListResponseTransaction(from, call_list);
+	}
 
-    newtx.msg.module = "Stun";
-    newtx.msg.request = request;
-    let data = {
-      call_list,
-      room_code: this.room_obj.room_code,
-    };
+	async sendCallListResponseTransaction(public_key, call_list) {
+		let request = 'stun-send-call-list-response';
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				public_key
+			);
 
-    newtx.msg.data = data;
-    newtx.msg.data.module = "Stun";
+		newtx.msg.module = 'Stun';
+		newtx.msg.request = request;
+		let data = {
+			call_list,
+			room_code: this.room_obj.room_code
+		};
 
-    await newtx.sign();
+		newtx.msg.data = data;
+		newtx.msg.data.module = 'Stun';
 
-    this.app.connection.emit("relay-transaction", newtx);
+		await newtx.sign();
 
-    this.app.network.propagateTransaction(newtx);
-  }
+		this.app.connection.emit('relay-transaction', newtx);
 
-  async receiveCallListResponseTransaction(app, tx) {
-    let txmsg = tx.returnMessage();
+		this.app.network.propagateTransaction(newtx);
+	}
 
-    let call_list = txmsg.data.call_list;
-    // remove my own key
-    call_list = call_list.filter((key) => this.publicKey !== key);
+	async receiveCallListResponseTransaction(app, tx) {
+		let txmsg = tx.returnMessage();
 
-    let room_code = txmsg.data.room_code;
+		let call_list = txmsg.data.call_list;
+		// remove my own key
+		call_list = call_list.filter((key) => this.publicKey !== key);
 
-    let _data = {
-      type: "peer-joined",
-      public_key: this.publicKey,
-      room_code,
-    };
+		let room_code = txmsg.data.room_code;
 
-    await this.sendStunMessageToPeersTransaction(_data, call_list);
-  }
+		let _data = {
+			type: 'peer-joined',
+			public_key: this.publicKey,
+			room_code
+		};
 
-  hasSeenTransaction(tx) {
-    let hashed_data = tx.signature;
+		await this.sendStunMessageToPeersTransaction(_data, call_list);
+	}
 
-    // this.app.crypto.stringToBase64(txmsg.data) can be short or very long!
-    // signature = 128 characters
-    // running signature though stringToBase64 or stringToHex makes it longer (172, 256 respectively)
-    //
+	hasSeenTransaction(tx) {
+		let hashed_data = tx.signature;
 
-    if (this.hasReceivedData[hashed_data]) {
-      return true;
-    }
-    this.hasReceivedData[hashed_data] = true;
+		// this.app.crypto.stringToBase64(txmsg.data) can be short or very long!
+		// signature = 128 characters
+		// running signature though stringToBase64 or stringToHex makes it longer (172, 256 respectively)
+		//
 
-    return false;
-  }
+		if (this.hasReceivedData[hashed_data]) {
+			return true;
+		}
+		this.hasReceivedData[hashed_data] = true;
+
+		return false;
+	}
 }
 
 module.exports = Stun;

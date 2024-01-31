@@ -1,7 +1,5 @@
-
 module.exports = (app, mod) => {
-
-  return `
+	return `
 
     <div class="game-crypto-transfer-manager-container">
 
@@ -24,7 +22,5 @@ module.exports = (app, mod) => {
  
   `;
 
-  return html;
-
-}
-
+	return html;
+};

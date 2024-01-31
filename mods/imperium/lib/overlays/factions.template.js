@@ -1,6 +1,5 @@
 module.exports = ImperiumCombatOverlayTemplate = () => {
-
-  return `
+	return `
     <div class="how_to_play_overlay" id="how_to_play_overlay">
 <h2 style="clear:both;margin-top:35px;">Faction Abilities:</h2>
 <div style="padding-left: 30px">
@@ -28,6 +27,4 @@ dashboard. Each faction has unique faction abilities that can change the
 game radically. Learn your opponent's weaknesses and strengths.
     </div>
   `;
-
-}
-
+};

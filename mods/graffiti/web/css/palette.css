@@ -1,52 +1,52 @@
 #palette {
-  position: absolute;
-  top: 50%;
-  left: 65px;
-  transform: translateY(-50%);
-  flex-direction: column;
-  align-items: center;
-  padding: 5px;
-  background: #ffffff;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 99;
+	position: absolute;
+	top: 50%;
+	left: 65px;
+	transform: translateY(-50%);
+	flex-direction: column;
+	align-items: center;
+	padding: 5px;
+	background: #ffffff;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	z-index: 99;
 }
 
 #palette-arrow {
-  position: absolute;
-  top: 218px;
-  left: 55px;
-  width: 0;
-  height: 0;
-  border: 12px solid transparent;
-  border-right-color: #ffffff;
-  border-left: 0;
-  z-index: 100;
+	position: absolute;
+	top: 218px;
+	left: 55px;
+	width: 0;
+	height: 0;
+	border: 12px solid transparent;
+	border-right-color: #ffffff;
+	border-left: 0;
+	z-index: 100;
 }
 
 .color-option {
-  width: 30px;
-  border-radius: 4px;
-  margin: 2px 0;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  position: relative;
+	width: 30px;
+	border-radius: 4px;
+	margin: 2px 0;
+	cursor: pointer;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+	position: relative;
 }
 
 .preset-color-option {
-  height: 19px;
+	height: 19px;
 }
 
 #color-picker {
-  height: 30px;
+	height: 30px;
 }
 
 #color-picker i {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  color: #555;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	color: #555;
 }

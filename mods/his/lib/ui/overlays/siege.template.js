@@ -1,8 +1,7 @@
-module.exports = (players=2) => {
- 
-  let help = 'Siege / Assault';
-  
-  let html = `
+module.exports = (players = 2) => {
+	let help = 'Siege / Assault';
+
+	let html = `
       <div class="siege-overlay" id="siege-overlay">
 	<div class="help">${help}</div>
 	<div class="siege-grid">
@@ -16,10 +15,5 @@ module.exports = (players=2) => {
 	</div>
       </div>
   `;
-  return html;
-
-}
-
-
-
-
+	return html;
+};

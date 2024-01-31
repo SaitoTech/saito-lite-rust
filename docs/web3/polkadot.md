@@ -64,7 +64,7 @@ This functionality represents the work described in [Milestone 1 of our Web3 Fou
 
 ## Tutorial
 
-How to interact with DOT, Kusama, or Westend 
+How to interact with DOT, Kusama, or Westend
 
 1) Get the crypto mod:
 ```
@@ -137,5 +137,6 @@ Typically wraps a Websocket connection to the endpoint.
 > *Note:*
 >
 > *If a Saito Endpoint author wishes to grant unlimited access to typical HTTP/REST endpoints for a given period of time it is recommended to create a call like Call(“RequestAuthorization”,...) and to add a signed challenge object to subsequent calls to the HTTP endpoints.*
-> 
+>
 > *For example, if a user has been granted 24 hours of access to a call to something like OnBalanceChange, this could be authorized via Call(“RequestAuthorization”,{pubkey: myPubkey}). Once authorized, subsequent calls to the endpoint would sign dated challenge tokens from the endpoint in order to gain HTTP/REST-style access to those endpoints.*
+```

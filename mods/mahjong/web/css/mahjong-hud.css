@@ -1,39 +1,35 @@
-
 .status {
-    background-color: whitesmoke;
-    padding: 1rem;
+	background-color: whitesmoke;
+	padding: 1rem;
 }
 
 .controls {
-    overflow-y: none;
-    min-height: 140px;
-    width: 100%;
+	overflow-y: none;
+	min-height: 140px;
+	width: 100%;
 }
 .controls ul {
-    border-radius: 0.5rem;
+	border-radius: 0.5rem;
 }
 
-.controls ul li , .options {
-    height: 7rem;
+.controls ul li,
+.options {
+	height: 7rem;
 }
-
-
 
 @media screen and (orientation: landscape) and (max-height: 700px) {
-    .controls {
-        min-height: 120px;
-    }
-    
-    .controls ul li , .options {
-        height: 6rem;
-    }
+	.controls {
+		min-height: 120px;
+	}
 
+	.controls ul li,
+	.options {
+		height: 6rem;
+	}
 }
 
-
 @media screen and (orientation: portrait) and (max-width: 600px) {
-
-    .controls ul {
-        flex-direction: row;
-    }
+	.controls ul {
+		flex-direction: row;
+	}
 }

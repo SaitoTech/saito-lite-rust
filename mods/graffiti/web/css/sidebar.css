@@ -1,52 +1,52 @@
 #sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  background-color: #333;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  box-sizing: border-box;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	background-color: #333;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 10px;
+	box-sizing: border-box;
 }
 
 .button-category {
-  margin: 10px 0;
+	margin: 10px 0;
 }
 
 #sidebar button {
-  background-color: #fff;
-  border: none;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	background-color: #fff;
+	border: none;
+	padding: 10px;
+	margin: 5px 0;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s, box-shadow 0.3s;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 #sidebar button:hover {
-  background-color: #e7e7e7;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	background-color: #e7e7e7;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 #sidebar button:disabled {
-  color: #bbb;
-  cursor: not-allowed;
+	color: #bbb;
+	cursor: not-allowed;
 }
 
 #color-preview {
-  width: 36px;
-  height: 36px;
-  border-radius: 4px;
-  margin: 5px 0;
-  border: 2px solid #ccc;
-  cursor: pointer;
-  position: relative;
-  z-index: 100;
+	width: 36px;
+	height: 36px;
+	border-radius: 4px;
+	margin: 5px 0;
+	border: 2px solid #ccc;
+	cursor: pointer;
+	position: relative;
+	z-index: 100;
 }

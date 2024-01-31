@@ -2,12 +2,12 @@
 
 ## Table of Content
 
-* [REST API](#REST-API)
-	* [Websocket Connection](#Websocket-Connection)
-	* [Peer Requests](#Peer-Requests) 
-	* [Block Data Endpoints](#Block-Data-endpoints)
-	* [Other RESTFUL Endpoints](#Other-RESTFUL-Endpoints)
-  
+-   [REST API](#REST-API)
+    -   [Websocket Connection](#Websocket-Connection)
+    -   [Peer Requests](#Peer-Requests)
+    -   [Block Data Endpoints](#Block-Data-endpoints)
+    -   [Other RESTFUL Endpoints](#Other-RESTFUL-Endpoints)
+
 The API for interacting with Saito's Core code is quite minimalistic. Additional APIs will be provided later through modules which nodes can opt to install or not depending on their preferences. The Saito philosophy is always that nodes only provide the services which they are incentived to provide.
 
 The API consists of a websocket which will be described below as well as to GET method endpoints for retrieving blocks:
@@ -20,14 +20,16 @@ GET /options
 
 ### Websocket Connection
 
-A node will keep a list of peers which connect to it via a websocket(or local socket, coming soon). 
+A node will keep a list of peers which connect to it via a websocket(or local socket, coming soon).
 
 A peer can send a "request" message through the socket with one of the following request types:
+
 ```
 'handshake', 'block', 'missing block', 'blockchain', 'transaction', 'keylist', or by simply passing a transaction as the payload.
 ```
 
 For Example:
+
 ```
 var message = {};
 message.request = requestType;
@@ -37,7 +39,9 @@ this.socket.emit('request', JSON.stringify(message), function (resdata) {
 	mycallback(resdata);
 });
 ```
+
 Within the Lite Client, helper functions are provided:
+
 ```
 peer.sendRequest("chat message", tx);
 //or
@@ -45,11 +49,13 @@ peer.sendRequest("transaction", tx);
 // or
 peer.sendRequestWithCallback("keylist", {...}, function () {...});
 ```
+
 Before a node will begin to send peer request and new transaction events to a peer, the peer must complete a handshake.
 
 When a client first opens a websocket to a peer, the peer will reply with a handshake request.
 
 The server does something like this:
+
 ```
 this.socket.on('connect', () => {
   // build a handshake object(described below)
@@ -62,7 +68,9 @@ this.socket.on('connect', () => {
   });
  });
 ```
+
 A handshake data object should look something like this:
+
 ```
 {
   request: 'handshake',
@@ -75,7 +83,7 @@ A handshake data object should look something like this:
     challenge_peer: '',
     challenge_proof: '',
     challenge_verified: 0,
-    peer: { 
+    peer: {
       host: '',
       port: '',
       protocol: '',
@@ -104,16 +112,18 @@ A handshake data object should look something like this:
   }
 }
 ```
+
 The server will set the step to 1, which begins the handshake process, which goes like this:
 
-1) Server creates a handshake object which includes a challenge, and sends it
-2) Client creates it's own handshake object which includes a challenge and a signature of the server server's challenge, and sends it.
-3) Server confirms the client's signature, signs the client's challenge, sends it's handshake *and* sends a second request informing the client it is free to begin requesting blocks.
-4) Client confirms the server's signature and begins requesting blocks(if it's behind).
+1. Server creates a handshake object which includes a challenge, and sends it
+2. Client creates it's own handshake object which includes a challenge and a signature of the server server's challenge, and sends it.
+3. Server confirms the client's signature, signs the client's challenge, sends it's handshake _and_ sends a second request informing the client it is free to begin requesting blocks.
+4. Client confirms the server's signature and begins requesting blocks(if it's behind).
 
-*(Note that in a peer-to-peer blockchain context, the terminology "server" and "client" are not necessarily correct. In this case "client" refers to the peer openning the websocket connection and "server" as the peer which begins the handshake. In the wild, this will often be something which looks like a client and server, but there is no reason either peer cannot perform any particular service)*
+_(Note that in a peer-to-peer blockchain context, the terminology "server" and "client" are not necessarily correct. In this case "client" refers to the peer openning the websocket connection and "server" as the peer which begins the handshake. In the wild, this will often be something which looks like a client and server, but there is no reason either peer cannot perform any particular service)_
 
 The data fields serve the following purposes:
+
 ```
 step
 	Tracks the step in the handshake we are on. Should be incremented when replying.
@@ -180,14 +190,17 @@ blockchain.fork_id
 blockchain.genesis_bid
 	Genesis Block ID
 ```
+
 ## Peer Requests
+
 Once peers have connected the websocket and verified each other, they can begin to send other messages over the socket.
 
 These message can serve a number of purposes, or can also simply be leveraged by a DAPP as a means of peer-to-peer communication. At the moment, there's not really a good way to discover peers, but in the future we envision this becoming a common technique. As of this moment, this mechanism is mostly used for client-server type interactions, for example, the chat module will send transaction to connected peers so they can receive messages before they are mined. Think of it as a simple mechanism for transactions which are "0-conf safe".
 
 To leverage this capability, a transaction can simply be sent with an arbitrary message type(i.e. message.request).
 
-Core provides helper functions for this as mentioned above: *peer.sendRequest*, *peer.sendRequestWithCallback*, and their counterparts *network.sendRequest* and  *network.sendRequestWithCallback*, which will send the message to all connected peers.
+Core provides helper functions for this as mentioned above: _peer.sendRequest_, _peer.sendRequestWithCallback_, and their counterparts _network.sendRequest_ and _network.sendRequestWithCallback_, which will send the message to all connected peers.
+
 ```
 peer.sendRequest('myCustomMessageType', someDataObject);
 // or
@@ -195,44 +208,53 @@ peer.sendRequestWithCallback('myCustomMessageType', someDataObject, (res) => {
 // do something with the response
 });
 ```
+
 Beside being used a generate data transportation, there are some message types which have a special purpose. Beside 'handshake', this is also 'block', 'missing block', 'blockchain', 'transaction', and 'keylist', which have to following purposes:
 
-
 ### block
+
 This message informs the peer that a new block has been found or that the peer should request a block for some other reason. The peer then makes a request to the appropriate GET enpoint mentiond above, i.e. /blocks/:bhash/:pkey or /lite-blocks/:bhash/:pkey.
 
 **Message Data**:
-  * bhash: the block hash
-  * bid: the block id
+
+-   bhash: the block hash
+-   bid: the block id
 
 **Example**:
+
 ```
 { bhash: block.hash, bid: block.id }
 ```
 
 ### missing block
+
 This message requests a block from the peer. The peer will then reply with a 'block' message.
 
 **Message Data**:
-  * hash: from hash
-  * last_hash: to hash 
+
+-   hash: from hash
+-   last_hash: to hash
 
 **Example**:
+
 ```
 { hash: block.prevbsh, last_hash: latestBlockHash }
 ```
 
 ### blockchain
+
 This message sends arrays of data which indicate to a lite client which blocks in the chain contain transactions in it's keylist.
 
 **Message Data**:
-  * start: previous block hash of starting block
-  * prehash: array of hashes of block signatures
-  * bid: array of block ids
-  * ts: array of timestamps
-  * txs: array of 0 and 1 indicating if block contains tx related to keylist 
+
+-   start: previous block hash of starting block
+-   prehash: array of hashes of block signatures
+-   bid: array of block ids
+-   ts: array of timestamps
+-   txs: array of 0 and 1 indicating if block contains tx related to keylist
 
 **Example**:
+
 ```
 let message = {};
     message.request = "blockchain";
@@ -249,13 +271,15 @@ let message = {};
 This message is used to send a transaction to a peer.
 
 **Message Data**:
-  * start: previous block hash of starting block
-  * prehash: array of hashes of block signatures
-  * bid: array of block ids
-  * ts: array of timestamps
-  * txs: array of 0 and 1 indicating if block contains tx related to keylist 
+
+-   start: previous block hash of starting block
+-   prehash: array of hashes of block signatures
+-   bid: array of block ids
+-   ts: array of timestamps
+-   txs: array of 0 and 1 indicating if block contains tx related to keylist
 
 **Example**:
+
 ```
 let tx = new saito.transaction({...});
 peer.sendRequest("transaction, JSON.stringify(tx.transaction));
@@ -264,12 +288,15 @@ peer.sendRequest("transaction, JSON.stringify(tx.transaction));
 ### keylist
 
 **Message Data**:
-  * [array of pubkeys]
+
+-   [array of pubkeys]
 
 **Example**:
+
 ```
 peer.sendRequest(message, app.keys.returnWatchedPublicKeys());
 ```
+
 ## Block Data Endpoints
 
 GET /blocks/:bhash/:pkey

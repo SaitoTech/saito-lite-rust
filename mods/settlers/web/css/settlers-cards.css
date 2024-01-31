@@ -1,57 +1,54 @@
-
-
 .card {
-  width: min(17.5vh,20vw);
-  height: auto;
+	width: min(17.5vh, 20vw);
+	height: auto;
 }
 
 .card.tiny {
-  height: calc(4rem * 1.4);
-  width: 4rem;
+	height: calc(4rem * 1.4);
+	width: 4rem;
 }
 
 .player-notice .card.tiny {
-  width: 3rem;
-  height: calc(3rem * 1.4);
-  margin-left: 1rem;
-  transform: rotate(5deg);
+	width: 3rem;
+	height: calc(3rem * 1.4);
+	margin-left: 1rem;
+	transform: rotate(5deg);
 }
 
 .log .card.tiny {
-  width: 2.5rem;
-  height: calc(2.5rem * 1.4);
-  /*margin: 0.25rem;*/
-  transform: rotate(5deg);
-  text-indent: 0;
-  padding-left: unset;
+	width: 2.5rem;
+	height: calc(2.5rem * 1.4);
+	/*margin: 0.25rem;*/
+	transform: rotate(5deg);
+	text-indent: 0;
+	padding-left: unset;
 }
 
-  
 /*
   unsure if still used
 */
 
-.devcards>.card {
-  width: 10vh;
-  position: absolute;
+.devcards > .card {
+	width: 10vh;
+	position: absolute;
 }
 
 .card > img {
-  width: 100%;
-  position: relative;
-  pointer-events: none;
-  width: inherit;
-  height: inherit;
-} 
+	width: 100%;
+	position: relative;
+	pointer-events: none;
+	width: inherit;
+	height: inherit;
+}
 
 .card .icon {
-  position: absolute;
-  width: 15%;
-  left: 7%;
-  top: 5%;
-  pointer-events: none;
+	position: absolute;
+	width: 15%;
+	left: 7%;
+	top: 5%;
+	pointer-events: none;
 }
 
 .card_holder img {
-  width: 100%;
+	width: 100%;
 }

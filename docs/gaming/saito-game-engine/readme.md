@@ -1,6 +1,5 @@
 # The Saito Game Engine
 
-
 ## Introduction
 
 In traditional single-player game engines there is little need for cryptographic implementations of dice rolls or deck shuffles. This changes with multiplayer games that interact with on-chain assets, or any games that require genuinely fair and trustless play between distributed parties.
@@ -10,8 +9,6 @@ The traditional approach to address trust issues in multiplayer games has been a
 The Saito Game Engine offers a new approach to solving this problem. Developed in part with the support of the Web3 Foundation, it provides a standard set of cryptographic instructions that permit games to roll dice, shuffle cards, and execute game moves in a peer-to-peer fashion without the need for any central servers or trusted servers. Cryptographic techniques make it impossible for players to cheat without their malfeasance being cryptographically provable.
 
 Many games have already been built using the Saito Game Engine. If you are new to blockchain gaming and interested in playing some we encourage you to visit the Saito Arcade [https://saito.io/arcade]. What follows is a more technical introduction to the gaming library for developers who are interested in understanding how the engine works or looking to develop or modify applications running atop the library.
-
-
 
 ## The Basics -- Game State
 
@@ -30,8 +27,6 @@ Saito provides the following object for developers to store game state. You may 
 ```
 
 PRO-TIP: it is typical for Saito games to have a returnState() function that returns an associative array that defines the starting conditions of the game. This approach makes initializing a game very easy: in the initializeGame() function we can check to see if the game we are loading is new (i.e. has no entries in the game queue described below) and assign the contents returned by the returnState() function to the game_self.game.state object if and only if we are creating a new game.
-
-
 
 ### The Basics -- Game Queue
 
@@ -74,7 +69,8 @@ If this is the move broadcast by Player 1 in response to their turn above, our G
   ]
 
 ```
-Note the difference between UPPERCASE and lowercase instructions. UPPERCASE instructions are executed by the underlying Saito game engine. lowercase instructions are commands specific to the game itself. In the context of a game like TWILIGHT STRUGGLE, these moves might instruct that "player 2 places 3 influence in Italy" and then that "player 1 removes 2 influence from Austria". The functions "remove" and "place" need to be programmed by the developer. 
+
+Note the difference between UPPERCASE and lowercase instructions. UPPERCASE instructions are executed by the underlying Saito game engine. lowercase instructions are commands specific to the game itself. In the context of a game like TWILIGHT STRUGGLE, these moves might instruct that "player 2 places 3 influence in Italy" and then that "player 1 removes 2 influence from Austria". The functions "remove" and "place" need to be programmed by the developer.
 
 Writing a game atop the Saito Game Engine thus requires creating game-specific functions like "place" and "remove" and "newround". These must be added to the function handleGameLoop(), which will be called by the Game Engine automatically whenever it runs into an instruction it believes is specific to your game. In contrast, instructions that are in UPPERCASE will be handled automatically by the game engine with no need for any additional programming. In our API document we outline all of the commands available to programmers.
 
@@ -82,11 +78,9 @@ It is typical for instructions to clear themselves from the queue after they hav
 
 PRO-TIP: the return value specified by individual instructions controls how they are executed by the game engine. If an instruction returns a value of 1 that game queue will continue to loop around and execute the next available instruction. Returning a value of 0 indicates that the game engine should stop executing the queue and wait to receive the next move. In the example above the PLAY instruction halts execution of the queue until the player in question broadcasts their move. Their "first" move should be to RESOLVE the PLAY instruction so all players remove it from the queue and gameplay can continue.
 
-
 ## The Basics - Key Functions:
 
 To get started coding a game, we recommend downloading this Game Template. This package contains all of the "scaffold" code that you will need to start playing, and provides the basic functions that require editing to get started with a game. This package also includes some supporting functions that allow it to "just work" with the Saito Arcade.
-
 
 #### initializeGame(game_id)
 
@@ -113,9 +107,6 @@ initializeGame(game_id) {
 
 This function runs whenever the game is initialized. In the example above, you can see the code check to see if the game already exists (are there entries on the queue?) and initialize the queue and state objects to the state of a new game if they do not. Note that the function runs not only when you load the game in your browser, but also when you create and initialize a game while looking at other applications like the Arcade.
 
-
-
-
 #### initializeHTML(app)
 
 app - reference to the Saito app object, which exposes cryptographic functions
@@ -137,7 +128,6 @@ initializeHTML(app) {
 ```
 
 This function runs whenever the game is loaded to the screen. You could theoretically put the content in initializeGame() instead, but putting it here ensures that attempts to manipulate the DOM will only happen if the application is active. In this short example you can see our game load the GameLog UI element onto the screen, and the GameHUD UI element as well.
-
 
 #### initializeHTML(app)
 
@@ -179,9 +169,6 @@ handleGameLoop() {
 
 This function runs whenever the game engine runs into a command it does not know how to handle. You should manually code the instructions your game supports. They should generally remove themselves from the queue. If you wish to halt execution of the queue simply return 0 from within one of your instructions. The game will then halt until another move is received from one of the players in the game.
 
-
-
-
 #### playerTurn()
 
 ```javascript
@@ -204,6 +191,3 @@ playerTurn() {
 This function will run ONLY on the machines of the players specified by the PLAY instruction. It is a convenience -- you do not need to use the PLAY instruction to hand control to a particular player. You can also pass control using game-specific lowercase commands. Usually a game should update the interface for the player who is taking their turn and add events to the DOM elements.
 
 If you are coding a card game there are a lot of functions in the GameHUD that will simplify displaying cards and allowing users to click on them to make moves.
-
-
-

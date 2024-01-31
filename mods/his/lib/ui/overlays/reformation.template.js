@@ -1,9 +1,10 @@
 module.exports = (title, obj) => {
+	let t = `Reformation in ${title}`;
+	if (obj.counter_reformation) {
+		t = `Counter-Reformation in ${title}`;
+	}
 
-  let t = `Reformation in ${title}`;
-  if (obj.counter_reformation) { t = `Counter-Reformation in ${title}`; }
-
-  let html = `
+	let html = `
       <div class="reformation-overlay" id="reformation-overlay">
         <div class="title">${t}</div>
 	<div class="reformation-box">
@@ -17,6 +18,5 @@ module.exports = (title, obj) => {
         </div>
       </div>
   `;
-  return html;
-
-}
+	return html;
+};

@@ -9,22 +9,16 @@
       admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
-        
 	let base = 4; 
-
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
         if (kc > 4) { base += 1; }
-
         if (game_mod.game.state.leaders.luther == 1) { base += 0; }
-
 	return base;        
-
       },
-      returnAdminRating  :       function(game_mod) {
 
+      returnAdminRating  :       function(game_mod) {
 	if (game_mod.game.state.leaders.luther == 1) { return 2; }
 	return 0;
-
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {
@@ -37,8 +31,8 @@
       calculateBonusVictoryPoints  :    function(game_mod) {
 	// + VP from disgraced papal debaters
 	let bonus_vp_points = 0;
-	bonus_vp_points += game_mod.game.state.papal_debaters_disgraced_vp;
-	bonus_vp_points += game_mod.game.state.protestant_war_winner_vp;
+	bonus_vp_points += parseInt(game_mod.game.state.papal_debaters_disgraced_vp);
+	bonus_vp_points += parseInt(game_mod.game.state.protestant_war_winner_vp);
         return bonus_vp_points;
       }
 ,
