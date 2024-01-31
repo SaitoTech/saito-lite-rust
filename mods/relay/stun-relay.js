@@ -27,6 +27,23 @@ class StunManager {
     ];
 
     app.connection.on("open-stun-relay", (publicKey, connectionCallback) => {
+      if (this.peers.get(publicKey)) {
+        let pc = this.peers.get(publicKey);
+
+        console.log("Already have peer connection: " + pc.connectionState);
+
+        if (pc.connectionState == "connected"){
+          if (connectionCallback){
+            connectionCallback(this.peers.get(publicKey));
+          }
+         
+        }else{
+          this.renegotiate(publicKey);
+        }
+
+         return;
+      }
+
       this.createPeerConnection(publicKey, connectionCallback);
 
       this.mod.sendRelayMessage(publicKey, "stun signaling relay", {
@@ -126,11 +143,23 @@ class StunManager {
       return;
     }
 
-    peerConnection.dc.send(tx.serialize_to_web(this.app));
+    try{
+      peerConnection.dc.send(tx.serialize_to_web(this.app));
+    }catch(err){
+      console.error(err);
+      this.app.connection.emit("relay-stun-send-fail", peerId);
+    }
+    
   }
 
   async createPeerConnection(peerId, on_connection = null) {
     console.log("STUN: Create Peer Connection with " + peerId);
+
+    if (this.peers.get(peerId)){
+      if (this.peers.get(peerId).connection == "connected"){
+        return;  
+      }
+    }
 
     if (peerId === this.mod.publicKey) {
       console.log("STUN: Attempting to create a peer Connection with myself!");
@@ -169,6 +198,7 @@ class StunManager {
 
     peerConnection.addEventListener("connectionstatechange", () => {
       console.log(`STUN: ${peerId} connectionstatechange -- ` + peerConnection.connectionState);
+
     });
 
     if (on_connection) {
@@ -184,11 +214,12 @@ class StunManager {
 
         receiveChannel.onopen = (event) => {
           console.log("STUN: Data channel is open");
-          on_connection(peerId);
+          on_connection(peerConnection);
         };
 
         receiveChannel.onclose = (event) => {
           console.log("STUN: Data channel is closed");
+          this.app.connection.emit("relay-stun-send-fail", peerId);
         };
       });
     } else {
@@ -205,6 +236,7 @@ class StunManager {
 
       dc.onclose = (event) => {
         console.log("STUN: Data channel is closed");
+        this.app.connection.emit("relay-stun-send-fail", peerId);
       };
 
       this.renegotiate(peerId);

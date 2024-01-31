@@ -380,7 +380,7 @@ class SettlersActions {
     }
     
     //Check if longest path is good enough to claim VP prize
-    if (longest.length >= 5) {
+    if (longest.length >= this.longest.min) {
       if (this.game.state.longestRoad.player > 0) {
         //Someone already has it
         if (longest.length > this.game.state.longestRoad.size) {

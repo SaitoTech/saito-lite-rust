@@ -55,6 +55,21 @@ class ChatPopup {
 				}
 			}
 		});
+
+
+		app.connection.on('relay-is-online', (pkey) => {
+			let target_id = this.mod.createGroupIdFromMembers([
+				pkey,
+				this.mod.publicKey
+			]);
+			if (target_id === this.group?.id) {
+				let icon = document.querySelector('#chat-popup-' + this.group.id + " .unavailable-without-relay");
+				if (icon){
+					icon.classList.remove("unavailable-without-relay");
+				}
+			}
+		});
+
 	}
 
 	remove() {
@@ -177,11 +192,11 @@ class ChatPopup {
 
 			// add call icon, ignore if community chat
 			let mods = this.app.modules.mods;
-			if (this.group.name != this.mod.communityGroupName) {
+			if (this.group.name != this.mod.communityGroupName && this.group.members.length == 2) {
 				let index = 0;
 				for (const mod of mods) {
 					let item = mod.respondTo('chat-actions', {
-						publicKey: this.group.name
+						publicKey: this.group.name,
 					});
 					if (item instanceof Array) {
 						item.forEach((j) => {
@@ -196,6 +211,13 @@ class ChatPopup {
 						this_self.addChatActionItem(item, id);
 					}
 					index++;
+				}
+			}
+
+			if (this.group.online){
+				let icon = document.querySelector('#chat-popup-' + this.group.id + " .unavailable-without-relay");
+				if (icon){
+					icon.classList.remove("unavailable-without-relay");
 				}
 			}
 
@@ -272,7 +294,7 @@ class ChatPopup {
 						let pk = e.currentTarget.getAttribute('data-id');
 						console.log('clicked on chat-action-item ///');
 						console.log(pk);
-						callback(app, pk);
+						callback(app, pk, id);
 					});
 				}
 			});

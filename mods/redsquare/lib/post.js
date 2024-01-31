@@ -148,11 +148,9 @@ class Post {
 			);
 		}
 
-		if (
-			typeof document.querySelector('.my-form') != 'undefined' &&
-			document.querySelector('.my-form')
-		) {
-			document.querySelector('.my-form').style.display = 'none';
+		//
+		if (document.querySelector('.saito-file-uploader')) {
+			document.querySelector('.saito-file-uploader').style.display = 'none';
 		}
 
 		document

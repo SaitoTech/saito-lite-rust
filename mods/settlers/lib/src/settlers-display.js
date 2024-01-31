@@ -121,7 +121,7 @@ class SettlersDisplay {
 
       //Update Longest Road
       if (this.game.state.longestRoad.player == i + 1) {
-        score += 2;
+        score += this.longest.value;
       }
       //Update Largest Army
       if (this.game.state.largestArmy.player == i + 1) {

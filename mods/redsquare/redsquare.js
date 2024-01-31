@@ -725,7 +725,7 @@ class RedSquare extends ModTemplate {
 
 
   async onConfirmation(blk, tx, conf) {
-    //try {
+
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
@@ -798,9 +798,6 @@ class RedSquare extends ModTemplate {
         }
       }
     }
-    //} catch (err) {
-    //  console.log("ERROR in RedSquare onConfirmation: " + err);
-    //}
   }
 
   ///////////////////////////////

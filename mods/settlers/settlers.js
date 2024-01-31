@@ -89,7 +89,9 @@ class Settlers extends GameTemplate {
 		};
 		this.longest = {
 			name: 'Longest Road',
-			svg: `<img src="/settlers/img/icons/road.png"/>`
+			svg: `<img src="/settlers/img/icons/road.png"/>`,
+			value: 2,
+			min: 5,
 		};
 		this.largest = {
 			name: 'Largest Army',
@@ -475,6 +477,11 @@ class Settlers extends GameTemplate {
 
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 12;
+		} else {
+			//2-player game -- make adjustments!
+
+			this.longest.value = 1;
+			this.longest.min = 6;
 		}
 
 		this.game.playerNames = [];
