@@ -425,6 +425,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
     let highest_vp = 0;
     let fs = [];
     this.game.state.vp.push({});
+    if (this.game.state.round > 0) {
     for (let key in factions) {
       if (factions[key].vp == highest_vp) {
 	fs.push(key);
@@ -448,6 +449,7 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
         factions[fs[z]].victory = 1;
         factions[fs[z]].reason = "Score Tied";
       }
+    }
     }
 
     return factions;
