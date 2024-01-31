@@ -142,14 +142,12 @@ class StunManager {
       console.warn("Stun-Relay: no data channel with peer");
       return;
     }
-    console.log("Sending tx through stun");
-    //console.log(tx);
 
     try{
       peerConnection.dc.send(tx.serialize_to_web(this.app));
     }catch(err){
       console.error(err);
-      this.app.connection.emit("relay-stun-send-fail");
+      this.app.connection.emit("relay-stun-send-fail", peerId);
     }
     
   }
@@ -200,6 +198,7 @@ class StunManager {
 
     peerConnection.addEventListener("connectionstatechange", () => {
       console.log(`STUN: ${peerId} connectionstatechange -- ` + peerConnection.connectionState);
+
     });
 
     if (on_connection) {
@@ -220,6 +219,7 @@ class StunManager {
 
         receiveChannel.onclose = (event) => {
           console.log("STUN: Data channel is closed");
+          this.app.connection.emit("relay-stun-send-fail", peerId);
         };
       });
     } else {
@@ -236,6 +236,7 @@ class StunManager {
 
       dc.onclose = (event) => {
         console.log("STUN: Data channel is closed");
+        this.app.connection.emit("relay-stun-send-fail", peerId);
       };
 
       this.renegotiate(peerId);

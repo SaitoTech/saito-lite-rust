@@ -55,6 +55,21 @@ class ChatPopup {
 				}
 			}
 		});
+
+
+		app.connection.on('relay-is-online', (pkey) => {
+			let target_id = this.mod.createGroupIdFromMembers([
+				pkey,
+				this.mod.publicKey
+			]);
+			if (target_id === this.group?.id) {
+				let icon = document.querySelector('#chat-popup-' + this.group.id + " .unavailable-without-relay");
+				if (icon){
+					icon.classList.remove("unavailable-without-relay");
+				}
+			}
+		});
+
 	}
 
 	remove() {
@@ -196,6 +211,13 @@ class ChatPopup {
 						this_self.addChatActionItem(item, id);
 					}
 					index++;
+				}
+			}
+
+			if (this.group.online){
+				let icon = document.querySelector('#chat-popup-' + this.group.id + " .unavailable-without-relay");
+				if (icon){
+					icon.classList.remove("unavailable-without-relay");
 				}
 			}
 

@@ -76,7 +76,7 @@ module.exports = (app, mod, tweet) => {
             <div class="tweet-sidebar">
             </div>
             <div class="tweet-main">
-              <div class="tweet-text">${app.browser.sanitize(text)}</div>`;
+              <div class="tweet-text">${app.browser.sanitize(text, true)}</div>`;
 
 	if (tweet.youtube_id != null && tweet.youtube_id != 'null') {
 		html += `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;

@@ -91,7 +91,6 @@ class Chat extends ModTemplate {
 			let newtx = await this.createChatTransaction(group.id, message);
 			await this.sendChatTransaction(this.app, newtx);
 
-			siteMessage('Message sent through chat', 2500);
 		});
 
 		this.postScripts = ['/saito/lib/emoji-picker/emoji-picker.js'];
@@ -1275,7 +1274,7 @@ class Chat extends ModTemplate {
 								: ''
 						}">`;
 						if (block[z].msg.indexOf('<img') != 0) {
-							msg += this.app.browser.sanitize(block[z].msg);
+							msg += this.app.browser.sanitize(block[z].msg, true);
 						} else {
 							msg += block[z].msg.substring(
 								0,
