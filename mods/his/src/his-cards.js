@@ -986,7 +986,7 @@ if (space.key === "bordeaux") {
 	let p = his_self.returnPlayerOfFaction(faction);
 
 	his_self.game.queue.push("knights-of-saint-john\t"+faction);
-	his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
+	his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction);
         his_self.game.queue.push(`DEAL\t1\t${p}\t1`);
 
 	return 1;
@@ -1828,8 +1828,12 @@ if (space.key === "bordeaux") {
 	  }
 	);
 
-	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t2");
-	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
+	if (spaces.length >= 2) {
+	  his_self.game.queue.push("siege_of_vienna\t"+faction+"\t2");
+	}
+	if (spaces.length >= 1) {
+	  his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
+	}
 
         return 1;
       },
@@ -1866,6 +1870,12 @@ if (space.key === "bordeaux") {
                     return false;
                   } 
                 );
+
+	        if (spaces.length == 0) {
+	 	  his_self.addMove("NOTIFY\tSiege of Vienna - no units to target.");
+	 	  his_self.endTurn();
+		  return 0;
+	        }
 
                 his_self.playerSelectSpaceWithFilter(
 

@@ -39,10 +39,7 @@
     //
     this.game.state.events.augsburg_confession = false;
 
-    //
-    // increment impulse
-    //
-    this.game.state.impulse++;
+    // impulse incremented in gameloop
 
   }
 
@@ -408,6 +405,46 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
       }
     }
 
+    //
+    // 8 VP lead in 2P
+    //
+    if (this.game.players.length == 2) {
+      if ((factions["protestant"].vp - factions["papacy"].vp) >= 8) {
+	factions["protestant"].victory = 1;
+	factions["protestant"].reason = "Commanding 8VP Lead";
+      }
+      if ((factions["papacy"].vp - factions["protestant"].vp) >= 8) {
+	factions["papacy"].victory = 1;
+	factions["papacy"].reason = "Commanding 8VP Lead";
+      }
+    }
+
+    //
+    // tied at 25 VP or higher
+    //
+    let highest_vp = 0;
+    let fs = [];
+    for (let key in factions) {
+      if (factions[key].vp == highest_vp) {
+	fs.push(key);
+      }
+      if (factions[key].vp > highest_vp) {
+	fs = [];
+	fs.push(key);
+	highest_vp = factions[key].vp;
+      }
+    }
+    if (fs.length == 1) {
+      factions[fs[0]].victory = 1;
+      factions[fs[0]].reason = "Standard Victory"; 
+    }
+    //
+    // historical resolution -
+    //
+    if (fs.length > 1) {
+
+
+    }
 
     return factions;
 

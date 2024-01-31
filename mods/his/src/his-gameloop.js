@@ -703,6 +703,13 @@ if (this.game.state.scenario != "is_testing") {
 	  let spacekey = mv[2];
 	  let type = mv[3];
 
+	  //
+	  // remove if exists elsewhere
+	  //
+          let eak = his_self.returnSpaceOfPersonage(faction, type);
+          let eak_idx = his_self.returnIndexOfPersonageInSpace(faction, type, eak);
+	  if (eak != "") { this.game.spaces[spacekey].units[faction].splice(eak_idx, 1); }
+
 	  this.addArmyLeader(faction, spacekey, type);
 
     	  this.game.queue.splice(qe, 1);
@@ -715,6 +722,13 @@ if (this.game.state.scenario != "is_testing") {
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  let type = mv[3];
+
+	  //
+	  // remove if exists elsewhere
+	  //
+          let eak = his_self.returnSpaceOfPersonage(faction, type);
+          let eak_idx = his_self.returnIndexOfPersonageInSpace(faction, type, eak);
+	  if (eak != "") { this.game.spaces[spacekey].units[faction].splice(eak_idx, 1); }
 
 	  this.addNavyLeader(faction, spacekey, type);
 
@@ -6776,7 +6790,6 @@ defender_hits - attacker_hits;
 
         if (mv[0] === "victory_determination_phase") {
 
-
 	  this.game.queue.splice(qe, 1);
 
 	  let f = this.calculateVictoryPoints();
@@ -6829,6 +6842,11 @@ if (this.game.state.round == 1) {
 //          victory : 0,
 //          details : "",
 ****/
+	  //
+	  //
+	  //
+	  
+
 
 	  for (let faction in f) {
 	    if (f.victory == 1) {
@@ -6947,8 +6965,8 @@ if (this.game.state.round == 1) {
 // Papacy
 //
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
-console.log("round: " + round);
-console.log("impulse: " + round);
+console.log("round: " + this.game.state.round);
+console.log("impulse: " + this.game.state.impulse);
 
 if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
@@ -7985,7 +8003,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
-	  this.game.state.impulse = 0;
 
 	  // skip factions not-in-play
 	  if (player == -1) {

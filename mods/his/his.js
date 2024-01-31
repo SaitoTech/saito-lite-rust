@@ -4003,7 +4003,7 @@ if (space.key === "bordeaux") {
 	let p = his_self.returnPlayerOfFaction(faction);
 
 	his_self.game.queue.push("knights-of-saint-john\t"+faction);
-	his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
+	his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction);
         his_self.game.queue.push(`DEAL\t1\t${p}\t1`);
 
 	return 1;
@@ -4845,8 +4845,12 @@ if (space.key === "bordeaux") {
 	  }
 	);
 
-	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t2");
-	his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
+	if (spaces.length >= 2) {
+	  his_self.game.queue.push("siege_of_vienna\t"+faction+"\t2");
+	}
+	if (spaces.length >= 1) {
+	  his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
+	}
 
         return 1;
       },
@@ -4883,6 +4887,12 @@ if (space.key === "bordeaux") {
                     return false;
                   } 
                 );
+
+	        if (spaces.length == 0) {
+	 	  his_self.addMove("NOTIFY\tSiege of Vienna - no units to target.");
+	 	  his_self.endTurn();
+		  return 0;
+	        }
 
                 his_self.playerSelectSpaceWithFilter(
 
@@ -15902,10 +15912,7 @@ console.log("testing: " + player_factions[i]);
     //
     this.game.state.events.augsburg_confession = false;
 
-    //
-    // increment impulse
-    //
-    this.game.state.impulse++;
+    // impulse incremented in gameloop
 
   }
 
@@ -16271,6 +16278,46 @@ console.log("protestants after copernicus: " + factions["protestant"].vp);
       }
     }
 
+    //
+    // 8 VP lead in 2P
+    //
+    if (this.game.players.length == 2) {
+      if ((factions["protestant"].vp - factions["papacy"].vp) >= 8) {
+	factions["protestant"].victory = 1;
+	factions["protestant"].reason = "Commanding 8VP Lead";
+      }
+      if ((factions["papacy"].vp - factions["protestant"].vp) >= 8) {
+	factions["papacy"].victory = 1;
+	factions["papacy"].reason = "Commanding 8VP Lead";
+      }
+    }
+
+    //
+    // tied at 25 VP or higher
+    //
+    let highest_vp = 0;
+    let fs = [];
+    for (let key in factions) {
+      if (factions[key].vp == highest_vp) {
+	fs.push(key);
+      }
+      if (factions[key].vp > highest_vp) {
+	fs = [];
+	fs.push(key);
+	highest_vp = factions[key].vp;
+      }
+    }
+    if (fs.length == 1) {
+      factions[fs[0]].victory = 1;
+      factions[fs[0]].reason = "Standard Victory"; 
+    }
+    //
+    // historical resolution -
+    //
+    if (fs.length > 1) {
+
+
+    }
 
     return factions;
 
@@ -18154,6 +18201,13 @@ if (this.game.state.scenario != "is_testing") {
 	  let spacekey = mv[2];
 	  let type = mv[3];
 
+	  //
+	  // remove if exists elsewhere
+	  //
+          let eak = his_self.returnSpaceOfPersonage(faction, type);
+          let eak_idx = his_self.returnIndexOfPersonageInSpace(faction, type, eak);
+	  if (eak != "") { this.game.spaces[spacekey].units[faction].splice(eak_idx, 1); }
+
 	  this.addArmyLeader(faction, spacekey, type);
 
     	  this.game.queue.splice(qe, 1);
@@ -18166,6 +18220,13 @@ if (this.game.state.scenario != "is_testing") {
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  let type = mv[3];
+
+	  //
+	  // remove if exists elsewhere
+	  //
+          let eak = his_self.returnSpaceOfPersonage(faction, type);
+          let eak_idx = his_self.returnIndexOfPersonageInSpace(faction, type, eak);
+	  if (eak != "") { this.game.spaces[spacekey].units[faction].splice(eak_idx, 1); }
 
 	  this.addNavyLeader(faction, spacekey, type);
 
@@ -24227,7 +24288,6 @@ defender_hits - attacker_hits;
 
         if (mv[0] === "victory_determination_phase") {
 
-
 	  this.game.queue.splice(qe, 1);
 
 	  let f = this.calculateVictoryPoints();
@@ -24280,6 +24340,11 @@ if (this.game.state.round == 1) {
 //          victory : 0,
 //          details : "",
 ****/
+	  //
+	  //
+	  //
+	  
+
 
 	  for (let faction in f) {
 	    if (f.victory == 1) {
@@ -24398,8 +24463,8 @@ if (this.game.state.round == 1) {
 // Papacy
 //
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
-console.log("round: " + round);
-console.log("impulse: " + round);
+console.log("round: " + this.game.state.round);
+console.log("impulse: " + this.game.state.impulse);
 
 if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
@@ -25436,7 +25501,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
-	  this.game.state.impulse = 0;
 
 	  // skip factions not-in-play
 	  if (player == -1) {
@@ -34477,6 +34541,9 @@ try {
     if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
     if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
 
+console.log("cardname: " + cardname);
+
+
     //
     // triggered before card deal
     //
@@ -34495,7 +34562,7 @@ try {
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-      if (!this.deck[cardname]) {
+      if (this.deck[cardname]) {
         if (!this.deck[cardname].canEvent(this, "")) {
           html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
         }
