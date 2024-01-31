@@ -24313,75 +24313,27 @@ defender_hits - attacker_hits;
 
 	  this.game.queue.splice(qe, 1);
 
+	  //
+	  // show scoring points - situation
+	  //
+	  this.vp_overlay.render();
+
 	  let f = this.calculateVictoryPoints();
-
-if (this.game.state.round == 1) {
-  if (this.game.player === this.returnPlayerCommandingFaction("protestant")) {
-  this.game_help.render(TutorialTemplate, {
-    help : `End-of-Round Scoring` ,
-    content : `
-        The Protestants mainly score VP by converting spaces to the protestant religion, and through the control of the 
-	six key electorates. See Info > Religion for details on how many VP you get from Protestant spaces, and your faction sheet
-	for information on VP from Electorates.
-	<p></p>
-	There are three ways to win: (1) being the first faction to 25 VP, (2) taking an 8 VP lead in any round 
-	after Round 4, or (3) being in the lead at the end of Round 9 if the game has not ended by then. See your 
-	faction sheet for more details on how the Protestants can earn additional VP.
-    `,
-    line1 : "how",
-    line2 : "to win?",
-    fontsize : "2.1rem",      
-    img : `/his/img/backgrounds/new_world.jpg`,
-  });
-  }
-  if (this.game.player === this.returnPlayerCommandingFaction("papacy")) {
-  this.game_help.render(TutorialTemplate, {
-    help : `End-of-Round Scoring` ,
-    content : `
-        The Papacy gains VP for keeping spaces faithful to the Catholic religion, and for the direct control of keys on the board.
-	See Info > Religion for details on how many VP you get from Protestant spaces, and your faction sheet
-	for information on how many VP you get from controlling new keys.
-	<p></p>
-	There are three ways to win: (1) being the first faction to 25 VP, (2) taking an 8 VP lead in any round 
-	after Round 4, or (3) being in the lead at the end of Round 9 if the game has not ended by then.
-	<p></p>
-	See your faction sheet for more details on how the Papacy can earn additional VP.
-    `,
-    line1 : "how",
-    line2 : "to win?",
-    fontsize : "2.1rem",      
-    img : `/his/img/backgrounds/new_world.jpg`,
-  });
-  }
-}
-
-/****
-//          faction : this.game.state.players_info[i].factions[ii] ,
-//          vp : 0 ,
-//          keys : 0 ,
-//          religious : 0 ,
-//          victory : 0,
-//          details : "",
-****/
-	  //
-	  //
-	  //
-	  
-
-console.log("FACTIONS: " + JSON.stringify(f));
 
 	  for (let faction in f) {
 	    if (f[faction].victory == 1) {
 	      this.updateLog(this.returnFactionName(faction) + " wins: " + f[faction].reason);
 	      this.updateStatus(this.returnFactionName(faction) + " wins: " + f[faction].reason);
-//	      let player = this.returnPlayerOfFaction(faction);
-//	      this.sendGameOverTransaction([this.game.players[player-1]], f.details);
 	      return 0;
 	    }
 	  }
 
           return 1;
+
         }
+
+
+
         if (mv[0] === "new_world_phase") {
 
 	  //
@@ -24496,14 +24448,12 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
     help : `Action Phase` ,
     content : `
-	Your goal is to slow the Protestant expansion in Germany while expanding Papal influence in Italy.
+	Your goal is to slow the Protestant expansion in Germany and expand Papal control in Italy.
 	<p></p>
-	Burning Books and Convening Theological Debates are your primary tools for doing so. Burning Books can flip 
-	spaces back to the Catholic faith, while Theological Debates succeed or fail depending on who is debating.
+	<b>Burning Books</b> and holding <b>Theological Debates</b> are your primary tools for flipping spaces back 
+	to the Catholic faith.
 	<p></p>
-	The Papacy can also earn VP by expanding its number of controlled keys (the square spaces). Consider building 
-	Regulars and Mercenaries and marching into Florence. Remember to take Siena -- you need a "line-of-control" 
-	from an existing key to assault another space.
+	The Papacy can build Regulars and Mercenaries to capture strategic keys like Florence.
     `,
     line1 : "what",
     line2 : "to do?",
@@ -24520,13 +24470,9 @@ if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
     content : `
         Your goal is to convert spaces to the Protestant religion.
 	<p></p>
-	Publishing Treatises and Convening Theological Debates are your primary tools for converting spaces to 
-	Protestantism. Spend additional OPS on translations -- once you have completed the New Testament in a 
-	language you will get bonus reformation attempts.
-	<p></p>
-	In the early game, the Protestants should focus on converting spaces in Germany, and particularly flip
-	the six major German Electorates (hexagonal spaces of Wittenberg, Brandenburg, Mainz, Cologne, Trier 
-	and Augsburg) as controlling these spaces will give VP once the Schmalkaldic League forms.
+	Publishing Treatises and holding Theological Debates are your primary tools for flipping spaces to 
+	Protestantism. Once you have completed translating the New Testament in any language you will get 
+	bonus reformation attempts in that language zone.
     `,        
     line1 : "what",
     line2 : "to do?",

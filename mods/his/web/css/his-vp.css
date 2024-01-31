@@ -23,16 +23,36 @@
     line-height: 3.4rem;
 }
 
+.vp-overlay .advice {
+    background: #0009;
+    width: 100%;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.4rem;
+    padding: 0.75rem;
+    max-width: 100%;
+    padding: 2rem;
+    line-height: 3.4rem;
+    bottom: 0px;
+    position: absolute;
+}
+
 .vp-overlay .factions {
-    display: flex;
-    flex-direction: column;
-    margin-top: 5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    margin-top: 7.5rem;
     margin-bottom: 5rem;
     width: 80%;
     background-color: #0009;
     margin-left: auto;
     margin-right: auto;
     color: white;
+    font-size: 2.4rem;
+    padding: 0.5rem;
+    row-gap: 1rem;
+    column-gap: 1rem;
 }
 
 .vp-overlay .factions div {
@@ -40,10 +60,12 @@
     max-width: 100%;
     display: flex;
     flex-direction: row;
-    font-size: 2rem;
     padding: 1rem;
 }
 
+.vp-overlay .factions .round {
+    border: 1px dashed #fff;
+}
 
 .vp-overlay .factions div .title {
 
