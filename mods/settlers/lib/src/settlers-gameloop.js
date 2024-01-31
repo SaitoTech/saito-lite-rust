@@ -854,18 +854,31 @@ class SettlersGameloop {
 
       //Player Chooses where to put bandit
       if (mv[0] == "roll_bandit") {
-        let player = parseInt(mv[1]);
+        let player_who_rolled = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
+
+        let player = player_who_rolled;
+        if (this.game.players.length == 2){
+          if (this.game.state.players[player_who_rolled-1].vp > this.game.state.players[2 - player_who_rolled].vp + 1){
+            player = 3 - player_who_rolled;
+          }
+        }
 
         //Move Bandit
         if (this.game.player == player) {
           this.playerPlayBandit();
         } else {
-          this.updateStatus(
-            `<div class="player-notice">${this.game.playerNames[player - 1]} moving the ${
-              this.b.name
-            }...</div>`
-          );
+          if (player == player_who_rolled){
+            this.updateStatus(
+              `<div class="player-notice">${this.game.playerNames[player - 1]} moving the ${
+                this.b.name
+              }...</div>`
+            );
+          }else{
+            this.updateStatus(
+              `<div class="player-notice">You rolled the ${this.b.name}, but ${this.game.playerNames[player - 1]} gets to move it...</div>`
+            );
+          }
         }
         return 0;
       }
