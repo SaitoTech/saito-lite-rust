@@ -5876,15 +5876,15 @@ console.log("spacekey: " + spacekey);
 	  // attacker chosen randomly from uncommitted
 	  //
           let ad = 0;
-          let cd = 0;
+	  let cd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].owner == attacker) {
 	      if (attacker == "papacy" || (attacker == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
 	        if (this.game.state.debaters[i].committed == 0) {
 	          ad++;
-	        } else {
-	          cd++;
-	        }
+	 	} else {
+		  cd++;
+		}
 	      }
 	    }
 	  }
@@ -5957,29 +5957,27 @@ console.log("spacekey: " + spacekey);
 	  if (ad != 0) {
 	    x = this.rollDice(ad) - 1;
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	        if (this.game.state.debaters[i].type != prohibited_protestant_debater) {
-	          if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
-	            if (x === tad) {
-		      this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
-		      this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
-	              this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
-		    }
-	            tad++;
-	          }
+	      if (attacker == "papacy" || (attacker == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	          if (x === tad) {
+		    this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
+		    this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	            this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
+		  }
+	          tad++;
 	        }
-	      } else {
-	        x = this.rollDice(cd) - 1;
-	        for (let i = 0; i < this.game.state.debaters.length; i++) {
-	          if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
-	            if (x === tad) {
-		      this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
-		      this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
-	              this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
-		    }
-	            tad++;
-	          }
+	      }
+	    }
+          } else {
+	    x = this.rollDice(cd) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
+	        if (x === tad) {
+	          this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
+	          this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
 	        }
+	        tad++;
 	      }
 	    }
 	  }
