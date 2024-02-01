@@ -231,9 +231,9 @@ stats overlay
 }
 
 .trade_overlay_offers {
-	display: grid;
+	display: flex;
+	flex-direction: row;
 	width: 100%;
-	grid-template-columns: repeat(5, 1fr);
 	gap: 1rem;
 	margin: auto;
 }
@@ -249,8 +249,11 @@ stats overlay
 
 .trade_area {
 	position: relative;
-	height: min(22vh, 20vw);
-	width: calc(min(22vh, 20vw) * 0.72);
+	/* setting to rem makes its size relative
+	to parent element, instead of viewport size
+	*/ 
+	height: 25rem;
+	width: calc(25rem * 0.72);
 	color: white;
 	font-size: bold;
 	font-size: 9rem;
