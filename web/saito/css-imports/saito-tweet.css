@@ -258,9 +258,11 @@
   color: var(--saito-primary);
 }
 
+.tweet-controls>div.tweet-tool.tweet-tool-more{
+  transition: transform 0.3s;
+}
 .tweet-controls>div.tweet-tool.tweet-tool-more:hover{
-  transform: unset;
-  color: var(--saito-font-color-light);
+  transform: rotate(90deg);
 }
 
 .tweet-tool-more {
@@ -307,6 +309,7 @@
   grid-gap: 1.5rem;
   padding: 0.75rem;
   align-items: center;
+  cursor: pointer;
 }
 
 .tweet-menu-list-item:hover{

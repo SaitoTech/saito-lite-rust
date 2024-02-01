@@ -1074,38 +1074,6 @@ class Tweet {
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
-					let wallet_balance = await this.app.wallet.getBalance(
-						'SAITO'
-					);
-
-					// restrict moderation
-					if (wallet_balance == 0 && this.app.BROWSER == 1) {
-						siteMessage('Purchase SAITO to Moderate...', 3000);
-						return;
-					} else {
-						this.mod.sendFlagTransaction(
-							this.app,
-							this.mod,
-							{ signature: this.tx.signature },
-							this.tx
-						);
-						this.flagged = 1;
-
-						// Okay, sure we can delete our local copy of it...
-						this.app.storage.deleteTransaction(
-							this.tx,
-							null,
-							'localhost'
-						);
-
-						let obj = document.querySelector(
-							`.tweet-${this.tx.signature}`
-						);
-						if (obj) {
-							obj.style.display = 'none';
-						}
-						siteMessage('Reporting tweet to moderators...', 5000);
-					}
 				};
 			}*/
 

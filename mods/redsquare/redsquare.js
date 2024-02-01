@@ -92,6 +92,10 @@ class RedSquare extends ModTemplate {
     this.notifications = [];
     this.notifications_sigs_hmap = {};
 
+    this.mute_list = [];
+    this.black_list = [];
+    this.hidden_tweets = [];
+
     this.ignoreCentralServer = false;
     this.offerService = false;
 
@@ -641,6 +645,12 @@ class RedSquare extends ModTemplate {
 
         if (txmsg.module == this.name){
 
+
+          if (this.black_list.includes(tx.from[0].publicKey)){
+            console.log("Don't process transactions from blacklisted keys");
+            return;
+          }
+
           if (txmsg.request == "loadTweets"){
 
             console.log("Our colleague asked us to return tweets!!!!");
@@ -741,6 +751,11 @@ class RedSquare extends ModTemplate {
         } else {
           console.log("txmsg: " + JSON.stringify(txmsg));
         }
+      }
+
+      if (this.black_list.includes(tx.from[0].publicKey)){
+        console.log("Don't process transactions from blacklisted keys");
+        return;
       }
 
       if (txmsg.request === "delete tweet") {
@@ -1201,6 +1216,23 @@ class RedSquare extends ModTemplate {
       return 0;
     }
 
+    //Censorship
+
+    if (this.black_list.includes(tx.from[0].publicKey)) {
+      console.log("Not adding tweet from blocked user");
+      return 0;
+    }
+
+    if (this.mute_list.includes(tx.from[0].publicKey) && !tx.isTo(this.publicKey)){
+      console.log("Not adding tweet from muted user");
+      return 0;
+    }
+
+    if (this.hidden_tweets.includes(tx.signature)){
+      console.log("Not adding hidden tweet");
+      return 0; 
+    }
+
     //
     // create the tweet
     //
@@ -1323,7 +1355,7 @@ class RedSquare extends ModTemplate {
   //
   addNotification(tx) {
     if (tx.isTo(this.publicKey)) {
-      if (!tx.isFrom(this.publicKey)) {
+      if (!tx.isFrom(this.publicKey) && !this.black_list.includes(tx.from[0].publicKey)) {
         //
         // only insert notification if doesn't already exist
         //
@@ -2228,6 +2260,18 @@ class RedSquare extends ModTemplate {
       this.ignoreCentralServer = this.app.options.redsquare?.distributed;
       this.offerService = this.app.options.redsquare?.offer_service;
 
+      if (this.app.options.redsquare.hidden_tweets){
+        this.hidden_tweets = this.app.options.redsquare.hidden_tweets;
+      }
+
+      if (this.app.options.redsquare.mute_list){
+        this.mute_list = this.app.options.redsquare.mute_list;
+      }
+
+      if (this.app.options.redsquare.black_list){
+        this.black_list = this.app.options.redsquare.black_list;
+      }
+
     } else {
       this.saveOptions();
     }
@@ -2272,6 +2316,10 @@ class RedSquare extends ModTemplate {
 
     this.app.options.redsquare.distributed = this.ignoreCentralServer;
     this.app.options.redsquare.offer_service = this.offerService;
+
+    this.app.options.redsquare.mute_list = this.mute_list;
+    this.app.options.redsquare.black_list = this.black_list;
+    this.app.options.redsquare.hidden_tweets = this.hidden_tweets;
 
     this.app.storage.saveOptions();
   }
