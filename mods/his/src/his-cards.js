@@ -4123,7 +4123,6 @@ console.log("considering: " + space.key);
         if (mv[0] == "siege_mining") {
           his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.players_info[his_self.game.state.active_player-1].tmp_roll_bonus = 3;
-alert("enabled siege mining: " + his_self.game.state.active_player-1 + " -- " + JSON.stringify(his_self.game.state.players_info[his_self.game.state.active_player-1].tmp_roll_bonus));
 	}
         return 1;
       }

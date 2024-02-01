@@ -363,8 +363,6 @@ if (this.game.state.scenario != "is_testing") {
     fontsize : "2.1rem" ,
   });
 
-// HACK
-
 	  return 1;
 
 	}
@@ -431,7 +429,7 @@ if (this.game.state.scenario != "is_testing") {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
 		// && clause permits Hapsburgs in Tunis for instance
-		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) || ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerOfFaction(key) > 0 && !this.isSpaceControlled(i, key))) {
+		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerOfFaction(key) > 0 && !this.isSpaceControlled(i, key))) {
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
 		  //
@@ -3723,13 +3721,20 @@ console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_rating
           let defending_factions_count = 0;
           let defending_major_powers = 0;
           let defending_factions_hits = [];
+	  let units_capable_of_taking_hits = 0;
 	  for (let f in this.game.state.field_battle.faction_map) {
 	    if (this.game.state.field_battle.faction_map[f] === this.game.state.field_battle.defender_faction) {
+	      units_capable_of_taking_hits += this.returnFactionLandUnitsInSpance(f, this.game.state.field_battle.spacekey);
 	      if (this.isMajorPower(f)) {
 	        defending_factions.push(f);
                 defending_factions_hits.push(0);
 	      }
 	    }
+	  }
+
+	  if (units_capable_of_taking_hits == 0) {
+console.log("how do we have a field battle against no-one? just clearing through!");
+	    return 1;
 	  }
 
 	  //
@@ -4099,9 +4104,11 @@ console.log("we have made it this far 2!");
           let defending_factions_hits = [];
 	  let major_power = false;
 	  let multiple_major_powers = false;
+	  let defender_units_capable_of_taking_hits = 0;
 	  for (let f in this.game.state.assault.faction_map) {
 	    if (this.game.state.assault.faction_map[f] === faction) {
 console.log("we have made it this far 3!");
+	      defender_units_capable_of_taking_hits += this.returnFactionLandUnitsInSpace(f, this.game.state.assault.spacekey);
 	      if (this.isMajorPower(f)) {
 		if (major_power) { multiple_major_powers = true; }
 	        defending_factions.push(f);
@@ -4114,6 +4121,13 @@ console.log("we have made it this far 3!");
 	      }
 	    }
 	  }
+
+	  //
+	  // no-one to take hits
+	  //
+console.log("any defender units capable of taking hits? " + defender_units_capable_of_taking_hits);
+	  if (defender_units_capable_of_taking_hits == 0) { return 1; }
+
 console.log(JSON.stringify(defending_factions));
 console.log(JSON.stringify(defending_factions_hits));
 console.log("we have made it this far 4!");
@@ -5876,28 +5890,34 @@ console.log("spacekey: " + spacekey);
 	  }
 
 	  //
-	  // defender chosen randomly from type committed / uncommitted
+	  // defender chosen randomly from type uncommitted
 	  //
 	  let dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	      if (this.game.state.theological_debate.committed == "committed") {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	          dd++;
-	        }
-	      } else {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed != 1) {
-	          dd++;
-	        }
+	      // second round picks from uncommitted unless not available
+	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed != 1) {
+	        dd++;
 	      }
 	    }
 	  }
 
-	  x = this.rollDice(dd) - 1;
-	  dd = 0;
-	  for (let i = 0; i < this.game.state.debaters.length; i++) {
-	    if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	      if (this.game.state.theological_debate.committed == "committed") {
+	  //
+	  // unless there aren't any more uncommitted
+	  //
+	  if (dd == 0) {
+
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+	        // second round picks from uncommitted unless not available
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+	          dd++;
+	        }
+	      }
+	    }
+	    x = this.rollDice(dd) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
 	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
 	          if (x === dd) {
 	            this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
@@ -5906,19 +5926,29 @@ console.log("spacekey: " + spacekey);
 		  }
 	          dd++;
 	        }
-	      } else {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
-	          if (x === dd) {
-	            this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-	            this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	            this.game.state.theological_debate.defender_debater_bonus++;
-	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
-	          }
-	          dd++;
-	        }
 	      }
 	    }
+
+	  //
+	  // but if there are pick one here
+	  //
+	  } else {
+
+	    x = this.rollDice(dd) - 1;
+	    dd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+	        if (x === dd) {
+	          this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+	          this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
+	        }
+	        dd++;
+	      }
+	    }
+
 	  }
+
 
 	  //
 	  // attacker chosen from uncommitted
@@ -7212,9 +7242,6 @@ if (this.game.state.round == 2) {
 	  for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); } }
 
 	  if (this.game.player == this.returnPlayerOfFaction("papacy")) {
-//
-// HACK
-//
 	    this.playerPlayPapacyRegainSpacesForVP();
 	  } else {
 	    this.updateStatus("Papacy Considering Regaining Spaces");
