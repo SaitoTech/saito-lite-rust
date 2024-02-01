@@ -243,7 +243,7 @@
   cursor: default;
 }
 
-.tweet-controls>div {
+.tweet-controls>div.tweet-tool {
   position: relative;
   display: flex;
   align-items: center;
@@ -253,9 +253,18 @@
   color: var(--saito-font-color-light);
 }
 
-.tweet-controls>div:hover {
+.tweet-controls>div.tweet-tool:hover {
   transform: scale(1.05);
   color: var(--saito-primary);
+}
+
+.tweet-controls>div.tweet-tool.tweet-tool-more:hover{
+  transform: unset;
+  color: var(--saito-font-color-light);
+}
+
+.tweet-tool-more {
+  position: relative;
 }
 
 .tweet-controls span {
@@ -270,8 +279,42 @@
   text-align: center;
 }
 
-.tweet-tool-flag i {
-  font-weight: normal;
+.tweet-menu {
+  position: absolute;
+  /*right: 0;
+    bottom: -2rem;
+  */
+  width: 28rem;
+  height: 26rem;
+  padding: 1rem;
+  border: 1px solid;
+  background: var(--saito-background-color);
+  z-index: 1;
+  font-size: 1.8rem;
+
+}
+
+.tweet-menu ul.saito-menu-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tweet-menu-list-item {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  grid-gap: 1.5rem;
+  padding: 0.75rem;
+  align-items: center;
+}
+
+.tweet-menu-list-item:hover{
+  color: var(--saito-primary);
+}
+
+.tweet-menu-list-item i {
+  justify-self: center;
 }
 
 .tweet-picture {

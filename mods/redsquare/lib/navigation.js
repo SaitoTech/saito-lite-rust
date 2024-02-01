@@ -1,12 +1,11 @@
-const RedSquareMenuTemplate = require('./menu.template');
+const RedSquareNavigationTemplate = require('./navigation.template');
 const Post = require('./post');
 
-class RedSquareMenu {
+class RedSquareNavigation {
 	constructor(app, mod, container = '') {
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
-		this.name = 'RedSquareMenu';
 		this.increments = 0;
 
 		app.connection.on(
@@ -53,12 +52,12 @@ class RedSquareMenu {
 		//
 		if (document.querySelector('.redsquare-menu')) {
 			this.app.browser.replaceElementBySelector(
-				RedSquareMenuTemplate(this.app, this.mod),
+				RedSquareNavigationTemplate(this.app, this.mod),
 				'.redsquare-menu'
 			);
 		} else {
 			this.app.browser.addElementToSelector(
-				RedSquareMenuTemplate(this.app, this.mod),
+				RedSquareNavigationTemplate(this.app, this.mod),
 				this.container
 			);
 		}
@@ -218,4 +217,4 @@ class RedSquareMenu {
   }
 }
 
-module.exports = RedSquareMenu;
+module.exports = RedSquareNavigation;

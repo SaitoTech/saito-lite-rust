@@ -62,7 +62,8 @@ module.exports = (app, mod, tweet) => {
 			controls += `<div class="tweet-tool tweet-tool-delete" title="Delete your tweet"><i class="fas fa-trash"></i></div>`;
 		}
 	} else {
-		controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
+		controls += `<div class="tweet-tool tweet-tool-more" title="More options"><i class="fa-solid fa-ellipsis-vertical"></i></div>`;
+		//controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
 	}
 	controls += `           </div>`;
 

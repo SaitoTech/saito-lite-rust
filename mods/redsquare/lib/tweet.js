@@ -1048,7 +1048,22 @@ class Tweet {
 				};
 			}
 
-			//////////
+
+			let more = document.querySelector(
+				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-more`
+			);
+			if (more) {
+				more.onclick = (e) => {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+
+					this.app.connection.emit("rs-show-tweet-options", this, more);	
+				}
+				
+			}
+
+
+			/*/////////
 			// flag //
 			//////////
 			let flag = document.querySelector(
@@ -1092,7 +1107,9 @@ class Tweet {
 						siteMessage('Reporting tweet to moderators...', 5000);
 					}
 				};
-			}
+			}*/
+
+
 		} catch (err) {
 			console.log('ERROR attaching events to tweet: ' + err);
 		}
