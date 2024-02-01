@@ -952,8 +952,6 @@ if (limit === "build") {
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
 
-console.log("WE ARE CLEAR!");
-
         at_least_one_option = true;
         html += '<li class="option .'+key+'" id="' + key + '">' + his_self.returnSpaceName(key) + '</li>';
 
@@ -987,7 +985,6 @@ console.log("WE ARE CLEAR!");
     }
     html += '</ul>';
 
-console.log("updating with: " + html);
     this.updateStatusWithOptions(msg, html);
 
     $('.option').off();

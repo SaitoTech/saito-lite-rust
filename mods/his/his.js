@@ -9295,75 +9295,80 @@ console.log("total: " + total);
 
 	let p = his_self.returnPlayerOfFaction(faction);
 	if (p == his_self.game.player) {
-          if (0 == his_self.playerSelectSpaceWithFilter(
 
-	    "Select First Space to Convert", 
-
-	    function(space) {
+	  let count = his_self.countSpacesWithFilter(function(space) {
 	      if (space.religion == "protestant" && his_self.isOccupied(space) == 0 && !his_self.isElectorate(space)) {
 		return 1;
 	      }
 	      return 0;
-	    },
+	  });
 
-	    function(spacekey) {
+          if (count > 0) {
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select First Space to Convert", 
+	      function(space) {
+	        if (space.religion == "protestant" && his_self.isOccupied(space) == 0 && !his_self.isElectorate(space)) {
+		  return 1;
+	        }
+	        return 0;
+	      },
 
-	      let space = his_self.game.spaces[spacekey];
-	      let first_choice = space.key;
+	      function(spacekey) {
+	        let space = his_self.game.spaces[spacekey];
+	        let first_choice = space.key;
+	        let spaces = his_self.returnSpacesWithFilter(
+          	  function(spacekey) {
+		    let s2 = his_self.game.spaces[spacekey];
+	            if (s2.religion == "protestant" && his_self.isOccupied(s2) == 0 && !his_self.isElectorate(s2) && s2.key != first_choice) {
+		      return 1;
+	            }
+	            return 0;
+	  	  }
+	        );
 
-	      let spaces = his_self.returnSpacesWithFilter(
-          	function(spacekey) {
-		  let s2 = his_self.game.spaces[spacekey];
-	          if (s2.religion == "protestant" && his_self.isOccupied(s2) == 0 && !his_self.isElectorate(s2) && s2.key != first_choice) {
-		    return 1;
-	          }
-	          return 0;
-	  	}
-	      );
-
-	      if (spaces.length == 0) {
-		his_self.addMove("convert\t"+first_choice+"\tcatholic");
-		his_self.endTurn();
-		return 0;
-	      }
-
-
-              if (0 == his_self.playerSelectSpaceWithFilter(
-
-	        "Select Second Space to Convert", 
-
-	        function(space2) {
-	        },
-
-	        function(second_choice) {
-
-		  his_self.addMove("convert\t"+second_choice+"\tcatholic");
+	        if (spaces.length == 0) {
 		  his_self.addMove("convert\t"+first_choice+"\tcatholic");
 		  his_self.endTurn();
+		  return 0;
+	        }
 
-	        },
+                if (count > 2) {
+	          his_self.playerSelectSpaceWithFilter(
 
-		null , 
+	            "Select Second Space to Convert", 
 
-		true 
-	      )) { 
-	        his_self.updateStatus("No acceptable targets for Anabaptists");
-	        his_self.endTurn();
-	      };
-	    } ,
+	            function(space2) {
+	              if (space2.key !== first_choice && space2.religion == "protestant" && his_self.isOccupied(space) == 0 && !his_self.isElectorate(space)) {
+		        return 1;
+	              }
+	              return 0;
+		    },
 
-	    null ,
-
-	    true 
-	  )) {
+	            function(second_choice) {
+		      his_self.addMove("convert\t"+second_choice+"\tcatholic");
+		      his_self.addMove("convert\t"+first_choice+"\tcatholic");
+		      his_self.endTurn();
+	            },
+		    null , 
+		    true 
+	          );
+	  	} else {
+	          his_self.updateStatus("No acceptable targets for Anabaptists");
+	          his_self.endTurn();
+	        }
+	      },
+	      null ,
+	      true 
+	    );
+	  } else {
 	    his_self.updateStatus("No acceptable targets for Anabaptists");
 	    his_self.endTurn();
-	  };
-	} else {
-	  his_self.updateStatus("Papacy playing "+his_self.popup("067"));
-	}
-	return 0;
-      }
+	  }
+        } else {
+          his_self.updateStatus("Papacy playing "+his_self.popup("067"));
+        }
+        return 0;
+      },
     }
     deck['068'] = { 
       img : "cards/HIS-068.svg" , 
@@ -27510,8 +27515,6 @@ if (limit === "build") {
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
 
-console.log("WE ARE CLEAR!");
-
         at_least_one_option = true;
         html += '<li class="option .'+key+'" id="' + key + '">' + his_self.returnSpaceName(key) + '</li>';
 
@@ -27545,7 +27548,6 @@ console.log("WE ARE CLEAR!");
     }
     html += '</ul>';
 
-console.log("updating with: " + html);
     this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
