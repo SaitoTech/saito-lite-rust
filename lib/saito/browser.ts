@@ -2257,6 +2257,16 @@ class Browser {
 			}
 		}
 	}
+
+	getDecimalSeparator() {
+		let locale = (window.navigator?.language) 
+                     ? window.navigator?.language : 'en-US';
+    const numberWithDecimalSeparator = 1.1;
+    return Intl.NumberFormat(locale)
+        .formatToParts(numberWithDecimalSeparator)
+        .find(part => part.type === 'decimal')
+        .value;
+	}
 }
 
 export default Browser;

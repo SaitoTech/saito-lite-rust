@@ -180,10 +180,15 @@ export default class Wallet extends SaitoWallet {
           balance = "0.00";
         }
 
-        balance = Number(balance);
-        let format_balance = balance.toFixed(precision);
+        let locale = (window.navigator?.language) 
+                     ? window.navigator?.language : 'en-US';
+        let nf = new Intl.NumberFormat(locale, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: precision
+        });
 
-        return format_balance.toString();
+        let balance_as_float = parseFloat(balance);
+        return (nf.format(balance_as_float)).toString();
       }
     }
 
@@ -1089,7 +1094,7 @@ export default class Wallet extends SaitoWallet {
     if (typeof amount == 'bigint') {
 
       // convert bigint to number
-      num = Number(amount * 100n / bigint_divider) / 100;
+      num = Number(amount * 100000000n / bigint_divider) / 100000000;
 
       // convert number to string
       string = num.toString();
@@ -1100,5 +1105,4 @@ export default class Wallet extends SaitoWallet {
 
     return string;
   }
-
 }
