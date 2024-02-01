@@ -178,7 +178,7 @@
 .balance-amount-decimal {
   font-size: 2rem;
   align-self: end;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .wallet-balance select {
