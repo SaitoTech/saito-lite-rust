@@ -6,15 +6,9 @@ class DevCardOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, false);
-		this.limit = null;
 	}
 
 	render() {
-		this.limit = Math.min(
-			this.mod.game.deck[0].hand.length,
-			this.mod.game.state.players[this.mod.game.player - 1].devcards
-		);
-
 		this.overlay.show(DevCardOverlayTemplate(this.app, this.mod, this));
 		this.attachEvents();
 	}
@@ -30,11 +24,9 @@ class DevCardOverlay {
 					return;
 				}
 
-				let card = target.getAttribute('id');
-				let cardobj =
-					this_dev_card.mod.game.deck[0].cards[
-						this_dev_card.mod.game.deck[0].hand[card]
-					];
+				let selection = target.getAttribute('id');
+				let card = this_dev_card.mod.game.state.players[this_dev_card.mod.game.player-1].devcards[selection];
+				let cardobj = this_dev_card.mod.game.deck[0].cards[card];
 
 				this_dev_card.overlay.remove();
 
@@ -50,17 +42,13 @@ class DevCardOverlay {
 							this_dev_card.mod.game.player;
 					this_dev_card.mod.year_of_plenty.cardname =
 							cardobj.card;
-					this_dev_card.mod.year_of_plenty.render(
-						this_dev_card.mod.game.deck[0].hand[card]
-					);
+					this_dev_card.mod.year_of_plenty.render(card);
 					break;
 				case 3:
 					this_dev_card.mod.monopoly.player =
 							this_dev_card.mod.game.player;
 					this_dev_card.mod.monopoly.cardname = cardobj.card;
-					this_dev_card.mod.monopoly.render(
-						this_dev_card.mod.game.deck[0].hand[card]
-					);
+					this_dev_card.mod.monopoly.render(card);
 					break;
 				case 4:
 					this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
@@ -84,12 +72,11 @@ class DevCardOverlay {
 					);
 					this_dev_card.mod.endTurn();
 				}
-				this_dev_card.mod.removeCardFromHand(
-					this_dev_card.mod.game.deck[0].hand[card]
-				);
+
+				this_dev_card.mod.game.state.players[this_dev_card.mod.game.player-1].devcards.splice(parseInt(selection), 1);
 				this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
 
-				if (this_dev_card.mod.game.deck[0].hand.length == 0) {
+				if (this_dev_card.mod.game.deck[0].hand.length == 0 && this_dev_card.mod.game.state.players[this_dev_card.mod.game.player-1].devcards.length == 0) {
 					document
 						.querySelector('.hud-body .mobile .cards')
 						.classList.add('hidden');
