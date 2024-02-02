@@ -85,6 +85,15 @@
 
   }
 
+  displayTurnTrack() {
+
+    let obj = document.querySelector(".turntrack");
+    obj.classList.remove(`turntrack1`);
+    obj.classList.remove(`turntrack${this.game.state.round-1}`);
+    obj.classList.add(`turntrack${this.game.state.round}`);
+
+  }
+
   displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
 
@@ -298,6 +307,11 @@
 
   displayBoard() {
 
+    try {
+      this.displayTurnTracker();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayWarBox();
     } catch (err) {

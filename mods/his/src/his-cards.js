@@ -3349,6 +3349,16 @@ console.log("considering: " + space.key);
 	if (!f[his_self.game.spaces['genoa'].political]) { f[his_self.game.spaces['genoa'].political] = 1; }
 	else { f[his_self.game.spaces['genoa'].political]++ }
 
+	//
+	// minor allied-controlled spaces count for the controlling power
+	//
+	for (let key in f) {
+	  if (his_self.returnAllyOfMinorPower(key) != key) { 
+	    if (!f[his_self.returnAllyOfMinorPower(key)]) { f[his_self.returnAllyOfMinorPower(key)] = 0; }
+	    f[his_self.returnAllyOfMinorPower(key)]++; 
+	  }
+	}
+
 	for (let key in f) {
 	  if (f[key] >= 4) {
 	    return 1;
@@ -3368,6 +3378,17 @@ console.log("considering: " + space.key);
 	let f = {};
 	if (!f[his_self.game.spaces['genoa'].political]) { f[his_self.game.spaces['genoa'].political] = 1; }
 	else { f[his_self.game.spaces['genoa'].political]++ }
+
+	//
+	// minor allied-controlled spaces count for the controlling power
+	//
+	for (let key in f) {
+	  if (his_self.returnAllyOfMinorPower(key) != key) { 
+	    if (!f[his_self.returnAllyOfMinorPower(key)]) { f[his_self.returnAllyOfMinorPower(key)] = 0; }
+	    f[his_self.returnAllyOfMinorPower(key)]++; 
+	  }
+	}
+
 
 	for (let key in f) {
 	  if (f[key] >= 4) {
@@ -3994,6 +4015,7 @@ console.log("considering: " + space.key);
 	  let faction = mv[1];
 
 	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("027"));
+	  salert(his_self.returnFactionName(faction) + " events Mercenaries Grow Restless!"); 
 
           let player = his_self.returnPlayerOfFaction(faction);
 	  let space = his_self.game.spaces[his_self.game.state.assault.spacekey];
@@ -5079,7 +5101,7 @@ console.log("considering: " + space.key);
               html += '<li class="option" id="mz">Melanchthon and Zwingli</li>';
 	    }
 	    if (his_self.isCommitted("oekolampadius-debater") != 1) {
-              html += '<li class="option" id="mo">Melanchthon Oekolampadius</li>';
+              html += '<li class="option" id="mo">Melanchthon and Oekolampadius</li>';
 	    }
 	  }
           html += '</ul>';
@@ -5107,12 +5129,12 @@ console.log("considering: " + space.key);
 	    }
 	    if (action !== "mz") {
 	      his_self.addMove("commit\tprotestant\tzwingli-debater");
-	      his_self.addMove("commit\tprotestant\tmalanchthon-debater");
+	      his_self.addMove("commit\tprotestant\tmelanchthon-debater");
 	      refs = 6;
 	    }
 	    if (action !== "mo") {
 	      his_self.addMove("commit\tprotestant\toekolampadius-debater");
-	      his_self.addMove("commit\tprotestant\tmalanchthon-debater");
+	      his_self.addMove("commit\tprotestant\tmelanchthon-debater");
 	      refs = 5;
 	    }
 
@@ -6304,7 +6326,7 @@ console.log("total: " + total);
 	        let spaces = his_self.returnSpacesWithFilter(
           	  function(spacekey) {
 		    let s2 = his_self.game.spaces[spacekey];
-	            if (s2.religion == "protestant" && his_self.isOccupied(s2) == 0 && !his_self.isElectorate(s2) && s2.key != first_choice) {
+	            if (s2.religion == "protestant" && his_self.isOccupied(s2.key) == 0 && !his_self.isElectorate(s2.key) && s2.key != first_choice) {
 		      return 1;
 	            }
 	            return 0;
@@ -8074,7 +8096,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	      cards.push(his_self.game.deck[0].fhand[fhand_idx][i]);
 	    }
 
-	    while (surplus_cards > 2) { cards.unshift(); surplus_cards--; }
+	    while (surplus_cards > 2) { cards.shift(); surplus_cards--; }
 	  
 	    if (surplus_cards == 2) {
 	      his_self.addMove("select_and_discard\t"+faction+"\t"+JSON.stringify(cards));
@@ -9149,6 +9171,57 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
       turn : 5 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	if (his_self.game.state.events.henry_viii_healthy_edward == 1 || his_self.game.state.henry_viii_sickly_edward == 1) {
+	  if (his_self.areAllies("france", "scotland")) {
+	    return 1;
+	  }
+	}
+	return 0;
+      },
+      onEvent : function(his_self, faction) {
+
+	let england_roll = his_self.rollDice(6);
+	let france_roll = his_self.rollDice(6);
+	let spaces = ["stirling","glasgow","edinburgh"];
+
+	let english_units = 0;
+	let french_units = 0;
+
+	for (let i = 0; i < spaces.length; i++) {
+	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["england"].length; z++) {
+	    let u = his_self.game.spaces[spaces[i]].units["england"][i];
+	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { english_units++; }
+	  }
+	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["france"].length; z++) {
+	    let u = his_self.game.spaces[spaces[i]].units["france"][i];
+	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { french_units++; }
+	  }
+	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["scotland"].length; z++) {
+	    let u = his_self.game.spaces[spaces[i]].units["scotland"][i];
+	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { french_units++; }
+	  }
+	}
+	
+	if ((2+french_units) >= english_units) {
+	  his_self.unsetAllies("france","scotland");
+	  his_self.setAllies("england","scotland");
+	  for (let i = 0; i < spaces.length; i++) {
+	    for (let z = 0; z < his_self.game.spaces[spaces[i]].units["france"].length; z++) {
+	      if (his_self.game.spaces[spaces[i]].units["france"][z].type == "squadron") {
+	        his_self.game.spaces["paris"].units["rouen"].push(his_self.game.spaces[spaces[i]].units["france"][z]);
+	      } else {
+	        his_self.game.spaces["paris"].units["france"].push(his_self.game.spaces[spaces[i]].units["france"][z]);
+	      }
+	    }
+	    his_self.game.spaces[spaces[i]].units["france"] = [];
+	  }
+	}
+
+	return 1;
+
+      },
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; }
     }
 
 
@@ -9199,24 +9272,11 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
     delete deck["108"];
     delete deck["110"];
 
-    //
-    // TO REQUIRES CODING
-    //
-    delete deck["116"];
-
     for (let key in deck) {
       deck[key].key = key;
       deck[key] = this.addEvents(deck[key]);
       if (!deck[key].warn) { deck[key].warn = []; }
     }
-
-
-
-
-
-
-
-
 
     return deck;
 

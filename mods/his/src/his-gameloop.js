@@ -67,6 +67,7 @@ this.updateLog(`###############`);
 if (this.game.state.scenario == "is_testing") {
   this.game.queue.push("is_testing");
 } else {
+  this.game.queue.push("show_overlay\tvp");
   this.game.queue.push("hide_overlay\tdiet_of_worms");
   this.game.queue.push("diet_of_worms");
   this.game.queue.push("show_overlay\tdiet_of_worms");
@@ -212,6 +213,7 @@ if (this.game.state.scenario != "is_testing") {
 	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.render(); }
 	  if (mv[1] === "winter") { this.winter_overlay.render(); }
 	  if (mv[1] === "faction") { this.faction_overlay.render(mv[2]); }
+	  if (mv[1] === "vp") { this.vp_overlay.render(); }
 	  if (mv[1] === "zoom") {
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
@@ -253,6 +255,7 @@ if (this.game.state.scenario != "is_testing") {
 	  if (mv[1] === "chateaux") { this.chateaux_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
 	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.hide(); }
+	  if (mv[1] === "vp") { this.vp_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.pushHudUnderOverlay(); this.debate_overlay.hide(); }
 	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
 	  if (mv[1] === "siege") { this.assault_overlay.hide(); }
@@ -429,7 +432,13 @@ if (this.game.state.scenario != "is_testing") {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
 		// && clause permits Hapsburgs in Tunis for instance
-		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerOfFaction(key) > 0 && !this.isSpaceControlled(i, key))) {
+console.log("SPACEKEY: " + i + "("+key+")");
+console.log("A: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i))));
+console.log("B: " + ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)));
+console.log("C: " + (this.returnPlayerOfFaction(key) > 0));
+console.log("D: " + (this.returnPlayerOfFaction(key) > 0));
+console.log("E: " + (!this.isSpaceControlled(i, key)));
+		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerCommandingFaction(key) > 0 && !this.isSpaceControlled(i, key))) {
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
 		  //
@@ -484,7 +493,17 @@ if (this.game.state.scenario != "is_testing") {
 		    }
 		  }
 
-		}
+		} else {
+
+		  let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
+	          if (res.length > 0) {
+	            this.autoResolveWinterRetreat(key, i);
+		  } else {
+		    this.game.spaces[i].units[key] = [];
+		    this.displaySpace(i);
+		  }
+
+	        }
 	      }
 	    }
 	  }
@@ -813,6 +832,11 @@ if (this.game.state.scenario != "is_testing") {
 	  this.addNavalSquadron("hapsburg", "naples", 2);
 	
 
+    	  this.addRegular("england", "stirling", 4);
+	  this.addRegular("france", "glasgow", 2);
+	  this.setAllies("france", "scotland");
+	  this.game.state.events.henry_viii_healthy_edward = 1;
+
 	  this.controlSpace("france", "ragusa");
 	  this.addRegular("france", "ragusa", 1);
 	  this.addNavalSquadron("france", "ragusa", 4); 
@@ -829,10 +853,10 @@ if (this.game.state.scenario != "is_testing") {
 	  this.addMercenary("papacy", "siena", 1);
 	  this.addRegular("papacy", "siena", 1);
 
-
 	  this.setAllies("protestant", "france");
 	  this.setAllies("protestant", "ottoman");
-	  this.setAllies("papacy", "hapsburg");
+	  this.setEnemies("papacy", "hapsburg");
+	  //this.setAllies("papacy", "hapsburg");
 	  this.setAllies("papacy", "genoa");
 	  this.setAllies("papacy", "venice");
 
@@ -872,14 +896,14 @@ if (this.game.state.scenario != "is_testing") {
     	  this.addRegular("france", "genoa", 3);
     	  this.addNavalSquadron("france", "genoa", 4);
 
-	  this.addCard("protestant", "095");
-	  this.addCard("protestant", "031");
-	  this.addCard("protestant", "032");
-	  this.addCard("papacy", "033");
-	  this.addCard("papacy", "035");
+//	  this.addCard("protestant", "116");
+//	  this.addCard("protestant", "031");
+//	  this.addCard("protestant", "032");
+//	  this.addCard("papacy", "033");
+//	  this.addCard("papacy", "035");
 
-	  let deck = this.returnDeck();
-	  deck['013'].onEvent(this, "protestant");
+//	  let deck = this.returnDeck();
+//	  deck['013'].onEvent(this, "protestant");
 
     	  this.game.queue.splice(qe, 1);
 
@@ -2334,7 +2358,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  if (this.game.player != this.returnPlayerCommandingFaction("hapsburg")) {
             this.updateStatusAndListCards("Hapsburgs Selecting Card for the Diet of Worms", x);
 	  } else {
-            this.updateStatusAndListCards("Hapsburgs - Pick your Card for the Diet of Worms", x);
+            this.updateStatusAndListCards("Hapsburgs - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
 	      game_self.game_help.hide();
               game_self.updateStatus("You picked: " + game_self.deck[card].name);
@@ -2423,7 +2447,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
 	  } else {
 
-            this.updateStatusAndListCards(my_faction + " - Pick your Card for the Diet of Worms", x);
+            this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
 
   	      //
@@ -3729,11 +3753,16 @@ console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_rating
 	  //
 	  // sack of rome special treatment
 	  //
-	  //if (his_self.game.state.events.sack_of_rome == 1) {
+	  if (his_self.game.state.events.sack_of_rome == 1) {
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("SACK OF ROME: ");
+console.log(JSON.stringify(his_self.game.state.field_battle));
 	  //  if (faction != "papacy") {
 	  //    his_self.game.state.field_battle.attacker_faction = faction;
 	  //  }
-	  //}
+	  }
 
 
 	  //
@@ -3759,14 +3788,14 @@ console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_rating
           let defending_factions_hits = [];
 	  let units_capable_of_taking_hits = 0;
 	  for (let f in this.game.state.field_battle.faction_map) {
-	    if (this.game.state.field_battle.faction_map[f] === this.game.state.field_battle.defender_faction) {
+	    if (this.game.state.field_battle.faction_map[f] === faction || f === faction) {
 	      units_capable_of_taking_hits += this.returnFactionLandUnitsInSpace(f, this.game.state.field_battle.spacekey);
 	      if (this.isMajorPower(f)) {
 	        defending_factions.push(f);
                 defending_factions_hits.push(0);
 	      }
 	    }
-	  }
+          }
 
 	  if (units_capable_of_taking_hits == 0) {
 console.log("how do we have a field battle against no-one? just clearing through!");
@@ -6849,15 +6878,15 @@ defender_hits - attacker_hits;
 
 	  this.game.queue.splice(qe, 1);
 
-	  //
-	  // show scoring points - situation
-	  //
-	  this.vp_overlay.render();
-
 	  let f = this.calculateVictoryPoints();
 
 	  for (let faction in f) {
 	    if (f[faction].victory == 1) {
+	      //
+	      // show scoring points - situation
+	      //
+	      this.vp_overlay.render();
+
 	      this.updateLog(this.returnFactionName(faction) + " wins: " + f[faction].reason);
 	      this.updateStatus(this.returnFactionName(faction) + " wins: " + f[faction].reason);
 	      return 0;
@@ -6982,17 +7011,16 @@ console.log("impulse: " + this.game.state.impulse);
 
 if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
-    help : `Action Phase` ,
+    help : `Your Goal` ,
     content : `
-	Your goal is to slow the Protestant expansion in Germany and expand Papal control in Italy.
+	Slow the Protestant expansion in Germany and expand Papal control in Italy.
 	<p></p>
-	<b>Burning Books</b> and holding <b>Theological Debates</b> are your primary tools for flipping spaces back 
-	to the Catholic faith.
+	Play events which hurt the Protestants. Or play cards for OPs to <b>Burn Books</b> and hold <b>Theological Debates</b> which flip spaces back to Catholicism. 
 	<p></p>
-	The Papacy can build Regulars and Mercenaries to capture strategic keys like Florence.
+	The Papacy can also raise Regulars and Mercenaries to capture strategic keys like Florence and earn 2VP per key and additional cards each turn.
     `,
-    line1 : "what",
-    line2 : "to do?",
+    line1 : "your",
+    line2 : "first turn",
     fontsize : "2.1rem",      
     img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
   });
@@ -7002,16 +7030,14 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
 //
 if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
   this.game_help.render(TutorialTemplate, {
-    help : `Action Phase` ,
+    help : `Your Goal` ,
     content : `
-        Your goal is to convert spaces to the Protestant religion.
+        Convert spaces to the Protestant religion.
 	<p></p>
-	Publishing Treatises and holding Theological Debates are your primary tools for flipping spaces to 
-	Protestantism. Once you have completed translating the New Testament in any language you will get 
-	bonus reformation attempts in that language zone.
+	Play cards for OPs to <b>Publish Treatises</b> and hold <b>Theological Debates</b> to flip to Protestantism. Spend additional OPs to translate the New Testament into any language for bonus reformation attempts in that language zone.
     `,        
-    line1 : "what",
-    line2 : "to do?",
+    line1 : "your",
+    line2 : "first turn",
     fontsize : "2.1rem",      
     img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
   });

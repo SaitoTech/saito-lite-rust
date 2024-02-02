@@ -88,6 +88,7 @@
     this.removeBesiegedSpaces();
 
     this.displayCardsLeft();
+    this.displayTurnTrack();
 
 
   }

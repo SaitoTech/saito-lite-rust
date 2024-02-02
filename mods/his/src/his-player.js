@@ -4792,12 +4792,15 @@ return;
 	  his_self.addMove("hide_overlay\tburn_books\t"+id);
 	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
-	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater\t1"); }
-	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater\t1"); }
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  } else {
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
 	  }
-          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
-          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
 	  his_self.addMove("show_overlay\tburn_books\t"+id);
 	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	  his_self.endTurn();

@@ -13,7 +13,7 @@ class VPOverlay {
     pullHudOverOverlay() {
       let overlay_zindex = parseInt(this.overlay.zIndex);
       if (document.querySelector(".hud")) {
-        document.querySelector(".hud").style.zIndex = overlay_zindex+1;
+        document.querySelector(".hud").zIndex = overlay_zindex+1;
         this.mod.hud.zIndex = overlay_zindex+1;
       }
     }
@@ -21,7 +21,7 @@ class VPOverlay {
     pushHudUnderOverlay() {
       let overlay_zindex = parseInt(this.overlay.zIndex);
       if (document.querySelector(".hud")) {
-        document.querySelector(".hud").style.zIndex = overlay_zindex-2;
+        document.querySelector(".hud").zIndex = overlay_zindex-2;
         this.mod.hud.zIndex = overlay_zindex-2;
       }
     }
@@ -34,6 +34,8 @@ class VPOverlay {
 
 	this.visible = true;
         this.overlay.show(VPTemplate());
+
+	this.pushHudUnderOverlay();
 
 	let vp = this.mod.calculateVictoryPoints();
 	let factions = [];
@@ -49,6 +51,7 @@ class VPOverlay {
 	      if (this.mod.game.state.vp[i][factions[z]]) {
 	        vp = this.mod.game.state.vp[i][factions[z]];
 	      }
+	      if (vp == "" && this.mod.game.state.round > i) { vp = 0; }
   	      html = `<div class="round round${(i+1)}">${vp}</div>`;
 	    } else {
   	      html = `<div class="round round${(i+1)}desc"></div>`;

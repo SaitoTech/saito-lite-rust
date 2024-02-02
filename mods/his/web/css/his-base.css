@@ -412,3 +412,50 @@ img {
 	position: relative;
 	padding: 0.25rem;
 }
+
+
+.turntrack {
+  border: 1rem solid red;
+  height: 24rem;
+  width: 14rem;
+  position: absolute;
+}
+.turntrack1 {
+  top: 2905px;
+  left: 3725px;
+}
+.turntrack2 {
+  top: 2905px;
+  left: 3860px;
+}
+.turntrack3 {
+  top: 2905px;
+  left: 3995px;
+}
+.turntrack4 {
+  top: 2905px;
+  left: 4125px;
+}
+.turntrack5 {
+  top: 2905px;
+  left: 4255px;
+}
+.turntrack6 {
+  top: 2905px;
+  left: 4390px;
+}
+.turntrack7 {
+  top: 2905px;
+  left: 4520px;
+}
+.turntrack8 {
+  top: 2905px;
+  left: 4660px;
+}
+.turntrack9 {
+  top: 2905px;
+  left: 4795px;
+}
+
+
+
