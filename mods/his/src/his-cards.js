@@ -6317,7 +6317,7 @@ console.log("total: " + total);
 		  return 0;
 	        }
 
-                if (count > 2) {
+                if (count > 1) {
 	          his_self.playerSelectSpaceWithFilter(
 
 	            "Select Second Space to Convert", 

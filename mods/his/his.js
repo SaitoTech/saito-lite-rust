@@ -9334,7 +9334,7 @@ console.log("total: " + total);
 		  return 0;
 	        }
 
-                if (count > 2) {
+                if (count > 1) {
 	          his_self.playerSelectSpaceWithFilter(
 
 	            "Select Second Space to Convert", 
@@ -30466,7 +30466,7 @@ return;
 	  //
 	  for (let i = 0; i < revised_units_to_move.length; i++) {
 	    let unit = revised_units_to_move[i];
-            his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+revised_units_to_move[i].idx);
+            his_self.addMove("move\t"+revised_units_to_move[i].faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+revised_units_to_move[i].idx);
 	  }
           his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
 	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
