@@ -234,7 +234,7 @@ body {
   flex-direction: row;
 }
 
-.container fieldset {
+.container>div {
   width: 50%;
   transition: width ease-in-out 1s, all ease-in-out 1s;
   display: flex;
@@ -243,7 +243,7 @@ body {
   gap: 2rem;
 }
 
-.container fieldset:hover {
+.container>div:hover {
   width: 100%;
 }
 
@@ -266,7 +266,7 @@ body {
   gap: 2rem;
 }
 
-.container fieldset label {
+.container>div label {
   width: 0;
   display: block;
   white-space: nowrap;
@@ -275,7 +275,7 @@ body {
   transition: width 1s ease-in-out;
 }
 
-.container fieldset:hover label {
+.container>div:hover label {
   width: 180px;
 }
 
@@ -293,12 +293,12 @@ body {
     align-items: center;
   }
   
-  .container fieldset {
+  .container>div {
     width: 500px;
     height: 50%;
   }
 
-  .container fieldset:hover {
+  .container>div:hover {
     height: 100%;
     width: 500px;
   }
