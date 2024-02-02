@@ -246,10 +246,11 @@ class SettlersDisplay {
         //
         this.game.state.players[i - 1].resources.sort();
         let num_resources = this.game.state.players[i - 1].resources.length;
-        let num_cards =
-          i == this.game.player
-            ? this.game.deck[0].hand.length
-            : this.game.state.players[i - 1].devcards;
+        let num_cards = this.game.state.players[i - 1].devcards.length;
+
+        if (i == this.game.player){
+          num_cards += this.game.deck[0].hand.length;
+        }
         let userline = "";
         //userline += `<div class="flexline">`;
         userline += `
@@ -337,6 +338,14 @@ class SettlersDisplay {
           }
         }
       }
+
+
+      if (this.game.deck[0].hand.length == 0 && this.game.state.players[this.game.player-1].devcards.length == 0) {
+        document.querySelector('.hud-body .mobile .cards').classList.add('hidden');
+      }else{
+        document.querySelector('.hud-body .mobile .cards').classList.remove('hidden');
+      }
+
 
       if (this.game.player == 0) {
         this.showPlayerResources();

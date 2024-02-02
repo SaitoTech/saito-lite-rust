@@ -17,7 +17,7 @@ class YearOfPlentyOverlay {
 			YearOfPlentyOverlayTemplate(this.app, this.mod, this),
 			() => {
 				//Allow to cancel by clicking out of overlay
-				this.mod.game.deck[0].hand.push(card);
+				this.mod.game.state.players[this.mod.game.player-1].devcards.push(card);
 				this_dev_card.mod.game.state.canPlayCard = true;
 			}
 		);

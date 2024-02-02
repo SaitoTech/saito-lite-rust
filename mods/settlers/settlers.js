@@ -333,11 +333,18 @@ class Settlers extends GameTemplate {
 		//
 		// add extra controls to HUD
 		//
-		console.log(this.game.deck[0].hand);
+		//console.log(this.game.deck[0].hand);
+		let has_cards = false;
+		if (this.game.deck[0]?.hand?.length > 0){
+			has_cards = true;
+		}
+		if (this.game.state.players[this.game.player-1].devcards.length > 0){
+			has_cards = true;
+		}
 
 		this.app.browser.prependElementToSelector(
 			`<div class="mobile"><div class="trade">trade</div><div class="cards ${
-				this.game.deck[0]?.hand?.length > 0 ? '' : 'hidden'
+				has_cards ? '' : 'hidden'
 			}">cards</div><div class="score">score</div></div>`,
 			'.hud-body'
 		);
@@ -518,7 +525,7 @@ class Settlers extends GameTemplate {
 			state.players[i].cities = 4;
 			state.players[i].knights = 0;
 			state.players[i].vpc = 0;
-			state.players[i].devcards = 0;
+			state.players[i].devcards = [];
 			state.players[i].ports = [];
 			state.players[i].road = 0;
 		}
