@@ -5511,6 +5511,9 @@ console.log("considering: " + space.key);
             $('.option').off();
             $('.option').on('click', function () {
               let selected_reformer = $(this).attr("id");
+	      if (selected_reformer === "cranmer-reformer") {
+		his_self.addEndMove("counter_or_acknowledge\tPapal Bull announces excommunication of Cranmer\tpapal_bull_cranmer_excommunication");
+	      }
 	      his_self.addEndMove("excommunicate_reformer\t"+selected_reformer);
 
               let msg = "Convene Theological Debate?";
@@ -11777,6 +11780,23 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+
+//HACK
+/***
+                        this.mod.game.queue.push('select_and_discard\t' + faction);
+                        this.mod.game.queue.push('hide_overlay\tchateaux');
+                        this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+                        this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
+                        this.mod.game.queue.push(
+                                `ACKNOWLEDGE\t${this.mod.returnFactionName(
+                                        faction
+                                )} rolls on the Chateaux Table`
+                        );
+***/
+
+//    this.game.state.events.more_executed_limits_debates = 1;
+//    this.game.state.events.more_executed = 1;
+
     }
     deck['113'] = { 
       img : "cards/HIS-113.svg" , 
@@ -11842,7 +11862,86 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
       ops : 3 ,
       turn : 4 ,
       type : "response" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+
+	if (faction === "england" || faction === "protestant") {
+
+	  his_self.game.state.events.more_executed = 1;
+	  his_self.game.state.events.more_executed_limits_debates = 1;
+
+	} else {
+
+
+
+	}
+
+	return 0;
+
+      },
+      removeFromDeckAfterPlay : function(his_self, player) {
+	if (this.game.state.henry_viii_rolls.includes(1)) { return 1; }
+	if (this.game.state.henry_viii_rolls.includes(2)) { return 1; }
+	if (this.game.state.henry_viii_rolls.includes(3)) { return 1; }
+	return 0;
+      },
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "papal_bull_cranmer_excommunication") {
+	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('115')) {
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : '115', html : `<li class="option" id="115">thomas cromwell (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
+        if (menu == "papal_bull_cranmer_excommunication") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('115')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "papal_bull_cranmer_excommunication") {
+	  his_self.addMove(`thomas_cromwell_cancels_bull`);
+  	  his_self.addMove("discard\t"+faction+"\t"+"115");
+	  his_self.endTurn();
+        }
+        return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+	if (mv[0] === "thomas_cromwell_retrieves_monasteries") {
+          if (his_self.game.deck[0].discards["063"]) {
+	    his_self.game.deck[0].cards["063"] = his_self.game.deck[0].discards["063"];
+	    delete his_self.game.deck[0].discards["063"];
+	    if (his_self.game.player == his_self.returnPlayerCommandingFaction("england")) {
+              let fhand_idx = his_self.returnFactionHandIdx(p, "england");
+	      his_self.game.deck[0].fhand[fhand_idx].push("063");
+	    }
+	  }
+	  return 1;
+	}
+
+
+        if (mv[0] === "thomas_cromwell_cancels_bull") {
+	  his_self.updateLog("Thomas Cromwell cancels Cranmer Excommunication");
+	  // cancel the excommunication and fall through
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.queue.splice(qe-1, 1);
+	  return 1;
+	}
+
+	return 1;
+      },
     }
     deck['116'] = { 
       img : "cards/HIS-116.svg" , 
@@ -11906,7 +12005,6 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
     //
     delete deck["095"];
     delete deck["112"];
-    delete deck["115"];
     delete deck["116"];
 
     for (let key in deck) {
@@ -15911,6 +16009,9 @@ console.log("testing: " + player_factions[i]);
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
+    this.game.state.events.cranmer_active = 0;
+    this.game.state.events.more_executed_limits_debates = 0;
+
 
     //
     // reset impulse commits
@@ -19025,6 +19126,25 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           return 0;
 
 	}
+
+
+        if (mv[0] === "player_publish_treatise") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  if (faction == "england") {
+	    if (this.game.player === this.returnPlayerCommandingFaction("england")) {
+	      this.playerPublishTreatise(this, "england");
+	    }
+	    return 0;
+	  }
+	
+	  return 1;
+
+	}
+
+	
 
         if (mv[0] === "player_evaluate_fortification") {
 
@@ -27385,6 +27505,7 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/translate.jpg',
     });
+if (this.game.state.events.cramner_active == 1) {
     menu.push({
       factions : ['england','protestant'],
       cost : [3,2],
@@ -27394,6 +27515,17 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/printing_press.jpg',
     });
+} else {
+    menu.push({
+      factions : ['england','protestant'],
+      cost : [2,2],
+      name : "Publish Treatise",
+      check : this.canPlayerPublishTreatise,
+      fnct : this.playerPublishTreatise,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/printing_press.jpg',
+    });
+}
     menu.push({
       factions : ['papacy','protestant'],
       cost : [3,3],
@@ -31201,7 +31333,9 @@ return;
         html += '<li class="option french" style="" id="french">French</li>';
     }
     if (his_self.returnDebatersInLanguageZone("english", "protestant", 0) || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("english") > 0)) { 
-        html += '<li class="option english" style="" id="english">English</li>';
+	if (his_self.game.state.events.more_executed_limits_debates != 1) {
+          html += '<li class="option english" style="" id="english">English</li>';
+      }
     }
         html += '</ul>';
 

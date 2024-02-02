@@ -9,6 +9,9 @@
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
+    this.game.state.events.cranmer_active = 0;
+    this.game.state.events.more_executed_limits_debates = 0;
+
 
     //
     // reset impulse commits

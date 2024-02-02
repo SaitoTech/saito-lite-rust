@@ -1480,6 +1480,25 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	}
 
+
+        if (mv[0] === "player_publish_treatise") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  if (faction == "england") {
+	    if (this.game.player === this.returnPlayerCommandingFaction("england")) {
+	      this.playerPublishTreatise(this, "england");
+	    }
+	    return 0;
+	  }
+	
+	  return 1;
+
+	}
+
+	
+
         if (mv[0] === "player_evaluate_fortification") {
 
 	  this.game.queue.splice(qe, 1);

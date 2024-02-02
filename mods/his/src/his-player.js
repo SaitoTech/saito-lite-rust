@@ -798,6 +798,7 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/translate.jpg',
     });
+if (this.game.state.events.cramner_active == 1) {
     menu.push({
       factions : ['england','protestant'],
       cost : [3,2],
@@ -807,6 +808,17 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/printing_press.jpg',
     });
+} else {
+    menu.push({
+      factions : ['england','protestant'],
+      cost : [2,2],
+      name : "Publish Treatise",
+      check : this.canPlayerPublishTreatise,
+      fnct : this.playerPublishTreatise,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/printing_press.jpg',
+    });
+}
     menu.push({
       factions : ['papacy','protestant'],
       cost : [3,3],
@@ -4614,7 +4626,9 @@ return;
         html += '<li class="option french" style="" id="french">French</li>';
     }
     if (his_self.returnDebatersInLanguageZone("english", "protestant", 0) || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("english") > 0)) { 
-        html += '<li class="option english" style="" id="english">English</li>';
+	if (his_self.game.state.events.more_executed_limits_debates != 1) {
+          html += '<li class="option english" style="" id="english">English</li>';
+      }
     }
         html += '</ul>';
 
