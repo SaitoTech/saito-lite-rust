@@ -2481,11 +2481,11 @@ console.log("considering: " + space.key);
 		// no
 	        his_self.updateLog("No excommunicable Protestant reformers exist");
 	        his_self.endTurn();
-		return;
+		return 0;
 
 	      });
 
-	      return;
+	      return 0;
 	    }
 
 	    html += '</ul>';
@@ -7925,6 +7925,170 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+
+	let regulars_in_rome = 0;
+	let sack_of_rome = false;
+	for (let i = 0; i < his_self.game.spaces["rome"].units.length; i++) {
+	  let u = his_self.game.spaces["rome"].units[i];
+	  if (u.type == "regular") { regulars_in_rome++; }
+	}
+
+	let max_non_papal_mercenaries = 0;
+	let spacekey = "";
+	for (let key in his_self.game.spaces) {
+	  if (his_self.game.spaces[key].language == "italian") {
+	    let non_papal_mercenaries = 0;
+	    for (let f in his_self.game.spaces[key].units) {
+	      if (f != "papacy" && his_self.isAlliedMinorPower(f, "papacy") != true) {
+		for (let i = 0; i < his_self.game.spaces[key].units[f].length; i++) {
+		  let u = his_self.game.spaces[key].units[f][i];
+		  if (u.type == "mercenary") {
+		    non_papal_mercenaries++;  
+		  }
+	        }
+	      }
+	    }
+	    if (non_papal_mercenaries > regulars_in_rome && non_papal_mercenaries > max_non_papal_mercenaries) {
+	      spacekey = key;
+	      max_non_papal_mercenaries = non_papal_mercenaries;
+	      sack_of_rome = true;
+	    }
+	  }
+	}
+	return sack_of_rome;
+      },
+      onEvent : function(his_self, faction) {
+
+	his_self.game.state.events.sack_of_rome = 1;
+
+	let regulars_in_rome = 0;
+	let sack_of_rome = false;
+	for (let i = 0; i < his_self.game.spaces["rome"].units.length; i++) {
+	  let u = his_self.game.spaces["rome"].units[i];
+	  if (u.type == "regular") { regulars_in_rome++; }
+	}
+
+	let max_non_papal_mercenaries = 0;
+	let spacekey = "";
+	let fact = "";
+	for (let key in his_self.game.spaces) {
+	  if (his_self.game.spaces[key].language == "italian") {
+	    let non_papal_mercenaries = 0;
+	    for (let f in his_self.game.spaces[key].units) {
+	      if (f != "papacy" && his_self.isAlliedMinorPower(f, "papacy") != true) {
+		for (let i = 0; i < his_self.game.spaces[key].units[f].length; i++) {
+		  let u = his_self.game.spaces[key].units[f][i];
+		  if (u.type == "mercenary") {
+		    non_papal_mercenaries++;  
+		    fact = f;
+		  }
+	        }
+	      }
+	    }
+	    if (non_papal_mercenaries > regulars_in_rome && non_papal_mercenaries > max_non_papal_mercenaries) {
+	      spacekey = key;
+	      max_non_papal_mercenaries = non_papal_mercenaries;
+	      sack_of_rome = true;
+	    }
+	  }
+	}
+
+	if (!sack_of_rome) { return 1; }
+
+	//
+	// otherwise we have a field battle
+	//
+ 	his_self.game.spaces["rome"].units[fact] = his_self.game.spaces[spacekey].units[fact];
+ 	his_self.game.spaces[spacekey].units[fact] = [];
+	his_self.game.queue.push("post_sack_of_rome_retreat\t"+fact+"\t"+spacekey);
+	his_self.game.queue.push("field_battle\trome\t"+fact);
+
+	return 1;
+
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] === "post_sack_of_rome_retreat") {
+
+          let faction = mv[1];
+          let spacekey = mv[2];
+
+ 	  his_self.game.spaces[spacekey].units[faction] = his_self.game.spaces["rome"].units[faction];
+ 	  his_self.game.spaces["rome"].units[faction] = [];
+	 
+	  //
+	  // 2P game give cards to Protestants
+	  //
+	  if (his_self.game.players.length == 2) { faction = "protestant"; }
+
+	  //
+	  // if the papacy lost
+	  //
+	  if (his_self.game.state.field_battle.attacker_hits > his_self.game.state.field_battle.defender_hits) {
+
+	    //
+	    // deduct vp
+	    //
+	    let total_to_deduct = 5;
+            his_self.game.state.saint_peters_cathedral['state'] -= total_to_deduct;
+            if (his_self.game.state.saint_peters_cathedral['state'] < 0) {
+	      let surplus = his_self.game.state.saint_peters_cathedral['state'] * -1;
+	      if (his_self.game.state.saint_peters_cathedral['vp'] > 0) {
+		his_self.game.state.saint_peters_cathedral['vp']--;
+		his_self.game.state.saint_peters_cathedral['state'] = 5 - surplus;
+	      } else {
+		his_self.game.state.saint_peters_cathedral['state'] = 0;
+	      }
+	    }
+
+	    //
+	    // pull two cards
+	    //
+	    let faction_cards_left = his_self.game.state.cards_left[faction];
+	    his_self.game.queue.push("sack_of_rome_if_two_surplus_cards_discard\t"+faction+"\t"+faction_cards_left);
+	    his_self.game.queue.push("pull_card\t"+faction+"\t"+"papacy");
+	    his_self.game.queue.push("pull_card\t"+faction+"\t"+"papacy");
+
+	  }
+
+          his_self.game.queue.splice(qe, 1);
+          return 1;
+
+        }
+
+
+	if (mv[0] === "sack_of_rome_if_two_surplus_cards_discard") {
+
+	  let faction = mv[1];
+	  let faction_cards_left = parseInt(mv[2]);
+	  let cards = [];
+	  let surplus_cards = 0;
+
+          his_self.game.queue.splice(qe, 1);
+
+	  if (his_self.game.player === his_self.returnPlayerCommandingFaction(faction)) {
+            let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
+	    for (let i = faction_cards_left; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
+	      surplus_cards++;
+	      cards.push(his_self.game.deck[0].fhand[fhand_idx][i]);
+	    }
+
+	    while (surplus_cards > 2) { cards.unshift(); surplus_cards--; }
+	  
+	    if (surplus_cards == 2) {
+	      his_self.addMove("select_and_discard\t"+faction+"\t"+JSON.stringify(cards));
+	    }
+	    his_self.endTurn();
+	  }
+
+          return 0;
+
+	}
+
+	return 1;
+
+      },
     }
     deck['096'] = { 
       img : "cards/HIS-096.svg" , 
@@ -8763,22 +8927,74 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+
+	if (faction === "protestant" || faction === "england") {
+
+	  let p = his_self.returnPlayerCommandingFaction("england");
+
+          his_self.game.state.events.more_executed_limits_debates = 1;
+	  his_self.game.state.events.more_executed = 1;
+
+	  if (p > 0) {
+            his_self.game.queue.push('remove\t'+faction+'\t112');
+            his_self.game.queue.push('select_and_discard\t' + faction);
+            his_self.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+            his_self.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
+	  }
+          his_self.game.queue.push("NOTIFY\tThomas More prevents debates in England this turn");
+
+	} else {
+
+	  his_self.game.state.events.more_bonus = 1;
+	  if (his_self.game.state.events.henry_viii_marital_status >= 2) {
+            his_self.game.queue.push('remove\t'+faction+'\t112');
+	  }
+
+	  //
+	  // pope gets to call a debate and gets +1 bonus dice in England 
+	  // or +3 bonus dice in England.
+	  //
+	  if (his_self.returnPlayerCommandingFaction("papacy") == his_self.game.player) {
+
+            let msg = "Convene Theological Debate?";
+            let html = '<ul>';
+            html += `<li class="option" id="yes">yes</li>`;
+            html += `<li class="option" id="no">no</li>`;
+            html += '</ul>';
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              let action2 = $(this).attr("id");
+              his_self.updateStatus("submitting...");
+
+              if (action2 === "yes") {
+                his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
+                return 0;
+              }
+
+              // no
+              his_self.updateLog("Papacy refrains from holding debate");
+              his_self.endTurn();
+
+            });
+
+	  }
+
+	  return 0;
+
+	}
+
+	return 1;
+      },
 
 //HACK
 /***
-                        this.mod.game.queue.push('select_and_discard\t' + faction);
-                        this.mod.game.queue.push('hide_overlay\tchateaux');
-                        this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
-                        this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
-                        this.mod.game.queue.push(
-                                `ACKNOWLEDGE\t${this.mod.returnFactionName(
-                                        faction
-                                )} rolls on the Chateaux Table`
-                        );
 ***/
 
-//    this.game.state.events.more_executed_limits_debates = 1;
-//    this.game.state.events.more_executed = 1;
 
     }
     deck['113'] = { 
@@ -8986,8 +9202,6 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
     //
     // TO REQUIRES CODING
     //
-    delete deck["095"];
-    delete deck["112"];
     delete deck["116"];
 
     for (let key in deck) {

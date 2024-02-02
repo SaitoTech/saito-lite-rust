@@ -11,6 +11,8 @@
     this.game.state.spaces_assaulted_this_turn = [];
     this.game.state.events.cranmer_active = 0;
     this.game.state.events.more_executed_limits_debates = 0;
+    this.game.state.events.more_bonus = 0;
+    this.game.state.events.sack_of_rome = 0;
 
 
     //
@@ -54,6 +56,7 @@
     this.game.state.debater_committed_this_impulse = {};
     this.game.state.spaces_assaulted_this_turn = [];
     this.game.state.printing_press_active = 0;
+    this.game.state.events.sack_of_rome = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -75,6 +78,8 @@
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
     this.game.state.impulse = 0;
+    this.game.state.events.more_executed_limits_debates = 0;
+    this.game.state.events.more_bonus = 0;
         
     //
     // allow stuff to move again

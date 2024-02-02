@@ -842,6 +842,7 @@ if (this.game.state.scenario != "is_testing") {
 	  this.setEnemies("papacy", "hapsburg");
 	  this.setActivatedPower("protestant", "france");
 	  this.addRegular("france","milan", 1);
+	  this.addMercenary("france","milan", 4);
 	  this.controlSpace("france", "trent");
 	  this.addRegular("france","trent", 1);
 	  this.addRegular("france","trent", 1);
@@ -850,7 +851,7 @@ if (this.game.state.scenario != "is_testing") {
 	  this.addRegular("france","trent", 1);
 	  this.addArmyLeader("france", "trent", "montmorency");
 
-	  this.addNavyLeader("papacy", "rome", "dragut");
+//	  this.addNavyLeader("papacy", "rome", "dragut");
 
 	  for (let key in this.game.spaces) {
 	    if (this.game.spaces[key].language == "german") {
@@ -870,6 +871,12 @@ if (this.game.state.scenario != "is_testing") {
     	  this.controlSpace("france", "genoa");
     	  this.addRegular("france", "genoa", 3);
     	  this.addNavalSquadron("france", "genoa", 4);
+
+	  this.addCard("protestant", "095");
+	  this.addCard("protestant", "031");
+	  this.addCard("protestant", "032");
+	  this.addCard("papacy", "033");
+	  this.addCard("papacy", "035");
 
 	  let deck = this.returnDeck();
 	  deck['013'].onEvent(this, "protestant");
@@ -3720,6 +3727,16 @@ console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_rating
 	  }
 
 	  //
+	  // sack of rome special treatment
+	  //
+	  //if (his_self.game.state.events.sack_of_rome == 1) {
+	  //  if (faction != "papacy") {
+	  //    his_self.game.state.field_battle.attacker_faction = faction;
+	  //  }
+	  //}
+
+
+	  //
 	  // no hits assignment if no hits
 	  //
 	  //
@@ -3743,7 +3760,7 @@ console.log("DEFENDER HIGHEST BATTLE RANKING: " + defender_highest_battle_rating
 	  let units_capable_of_taking_hits = 0;
 	  for (let f in this.game.state.field_battle.faction_map) {
 	    if (this.game.state.field_battle.faction_map[f] === this.game.state.field_battle.defender_faction) {
-	      units_capable_of_taking_hits += this.returnFactionLandUnitsInSpance(f, this.game.state.field_battle.spacekey);
+	      units_capable_of_taking_hits += this.returnFactionLandUnitsInSpace(f, this.game.state.field_battle.spacekey);
 	      if (this.isMajorPower(f)) {
 	        defending_factions.push(f);
                 defending_factions_hits.push(0);
@@ -4485,9 +4502,13 @@ console.log("we have made it this far 5!");
 	    }
 	  }
 
-//	  this.updateLog("Winner: "+this.returnFactionName(winner));
-//	  this.updateLog("Attacker Units Remaining: "+his_self.game.state.field_battle.attacker_land_units_remaining);
-//	  this.updateLog("Defender Units Remaining: "+his_self.game.state.field_battle.efender_land_units_remaining);
+
+	  //
+	  // sack of rome exits
+	  //
+	  if (this.game.state.events.sack_of_rome == 1) {
+	    return 1;
+	  }
 
           //
           // conduct retreats
@@ -6381,6 +6402,16 @@ console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defende
 	  }
 
 	  //
+	  // thomas more
+	  //
+	  if (this.game.state.events.more_bonus == 1) {
+	    attacker_rolls += 1;
+	    if (language_zone == "english") {
+	      attacker_rolls += 2;
+	    }
+	  }
+
+	  //
 	  // eck-debator bonus
 	  //
 	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) {
@@ -7757,12 +7788,15 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let player = this.returnPlayerCommandingFaction(faction);
           let fhand_idx = this.returnFactionHandIdx(player, faction);
+	  let cards = [];
 
 	  if (player == this.game.player) {
 
+	    cards = this.game.deck[0].fhand[fhand_idx];
+	    if (mv[2]) { cards = JSON.parse(mv[2]); }
+
             let msg = "Select Card to Discard:";
             let html = '<ul>';
-	    let cards = this.game.deck[0].fhand[fhand_idx];;
 	    let any_choice = false;
 	    for (let i = 0; i < cards.length; i++) {
               if (his_self.game.deck[0].cards[cards[i]].type != "mandatory" && parseInt(cards[i]) > 7) {
