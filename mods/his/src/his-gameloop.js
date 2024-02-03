@@ -354,11 +354,9 @@ if (this.game.state.scenario != "is_testing") {
   this.game_help.render(TutorialTemplate, {
     help : `First Time Playing?` ,
     content : `
-	Here I Stand opens with the publication of Luther's 95 Theses in 1517. The Protestants make a series of reformation attempts starting from Wittenberg, each made in a space adjacent to an existing Protestant town or Protestant reformer.
+	Here I Stand opens with the publication of Luther's 95 Theses in 1517, which sparked the start of the Protestant Reformation in Wittenburg. Four years later, the spreading Protestant faith led to the convocation of the Diet of Worms, an Imperial assembly held in the Free City of Worms where Martin Luther refused to recant and was declared a heretic.
 	<p></p>
-	This is followed by the Diet of Worms, an assembly in the Imperial Free City of Worms where Martin Luther refused to recant and was declared a heretic. All players select a card to represent their level of commitment tothe event, and dice are rolled to see the outcome on German public opinion.
-	<p></p>
-	The Protestants should focus on reforming spaces in the Early War. They should also strive to control the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne) which will add Protestant regulars to the map and help protect their neighbouring spaces.
+	These opening acts set the stage for the religious and military conflict that forms the heart of Here I Stand. In the early period, the Protestants should focus on reforming spaces in Germany, and strive to control the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). The Papacy should focus on slowing the Protestant advance while expanding its territorial claims and defusing military confrontations in Italy.
     `,
     img : "/his/img/backgrounds/tutorials/95theses.jpg",
     line1 : "first",
@@ -495,14 +493,16 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 
 		} else {
 
-		  let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
-	          if (res.length > 0) {
-	            this.autoResolveWinterRetreat(key, i);
-		  } else {
-		    this.game.spaces[i].units[key] = [];
-		    this.displaySpace(i);
-		  }
+		  if (key != "protestant" && this.game.state.events.schmalkaldic_league != 1) {
+		    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
+	            if (res.length > 0) {
+	              this.autoResolveWinterRetreat(key, i);
+		    } else {
+		      this.game.spaces[i].units[key] = [];
+		      this.displaySpace(i);
+		    }
 
+	          }
 	        }
 	      }
 	    }

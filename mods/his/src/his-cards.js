@@ -7534,7 +7534,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
         his_self.game.state.printing_press_active = 1;
 
-	let p = his_self.returnPlayerOfFaction(faction);
+	let p = his_self.returnPlayerOfFaction("protestant");
 
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");

@@ -308,7 +308,7 @@
   displayBoard() {
 
     try {
-      this.displayTurnTracker();
+      this.displayTurnTrack();
     } catch (err) {
       console.log("error displaying board... " + err);
     }

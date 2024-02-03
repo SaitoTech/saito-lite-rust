@@ -4619,13 +4619,13 @@ return;
     let msg = "Select Language Zone for Theological Debate:";
     let html = '<ul>';
 
-    if (his_self.returnDebatersInLanguageZone("german", "protestant", 0) || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("german") > 0)) { 
+    if (his_self.returnDebatersInLanguageZone("german", "protestant", 0) && (faction == "protestant" || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("german") > 0))) { 
         html += '<li class="option german" style="" id="german">German</li>';
     }
-    if (his_self.returnDebatersInLanguageZone("french", "protestant", 0) || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("french") > 0)) { 
+    if (his_self.returnDebatersInLanguageZone("french", "protestant", 0) && (faction == "protestant" || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("french") > 0))) { 
         html += '<li class="option french" style="" id="french">French</li>';
     }
-    if (his_self.returnDebatersInLanguageZone("english", "protestant", 0) || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("english") > 0)) { 
+    if (his_self.returnDebatersInLanguageZone("english", "protestant", 0) && (faction == "protestant" || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("english") > 0))) { 
 	if (his_self.game.state.events.more_executed_limits_debates != 1) {
           html += '<li class="option english" style="" id="english">English</li>';
       }
