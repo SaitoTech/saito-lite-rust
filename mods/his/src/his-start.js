@@ -92,6 +92,7 @@
         game_mod.log.toggleLog();
       }
     });
+/****
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
@@ -101,9 +102,10 @@
         game_mod.handleStatsMenu();
       }
     });
+****/
     this.menu.addMenuOption("game-info", "Info");
     this.menu.addSubMenuOption("game-info", {
-      text: "Units",
+      text: "Faction Units",
       id: "game-units",
       class: "game-units",
       callback: function(app, game_mod){
@@ -120,13 +122,15 @@
       }
     });
     this.menu.addSubMenuOption("game-info", {
-      text: "Action Cards",
+      text: "Discard Pile",
       id: "game-cards",
       class: "game-cards",
       callback: function(app, game_mod){
-        game_mod.menu.showSubSubMenu("game-cards");
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("discards");
       }
     });
+/****
     this.menu.addSubMenuOption("game-info", {
       text: "Diplomatic Cards",
       id: "game-diplomatic",
@@ -135,24 +139,7 @@
         game_mod.menu.showSubSubMenu("game-diplomatic");
       }
     });
-    this.menu.addSubMenuOption("game-diplomatic", {
-      text : "My Hand",
-      id : "game-my-dhand",
-      class : "game-my-dhand",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.deck_overlay.render("dhand");
-      }
-    });
-    this.menu.addSubMenuOption("game-diplomatic", {
-      text : "All Cards",
-      id : "game-all-diplomatic",
-      class : "game-add-diplomatic",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.deck_overlay.render("diplomatic");
-      }
-    });
+****/
     this.menu.addSubMenuOption("game-faction-cards", {
       text : "Papacy",
       id : "game-papacy-cards",
@@ -160,7 +147,9 @@
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("papacy") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "papacy");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("papacy");
@@ -173,7 +162,9 @@
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("protestant") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "protestant");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("protestant");
@@ -187,7 +178,9 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("england") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "england");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("england");
@@ -200,7 +193,9 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("france") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "france");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("france");
@@ -213,7 +208,9 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("hapsburg") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "hapsburg");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("hapsburg");
@@ -226,13 +223,16 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("ottoman") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "ottoman");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("ottoman");
       }
     });
 }
+/****
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",
       id : "game-my-hand",
@@ -278,16 +278,7 @@ if (this.game.players.length > 2) {
         game_mod.deck_overlay.render("removed");
       }
     });
-
-    this.menu.addSubMenuOption("game-info", {
-      text : "Field Battle",
-      id : "game-field-battle",
-      class : "game-field_battle",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.field_battle_overlay.renderFortification();
-      }
-    });
+****/
     this.menu.addSubMenuOption("game-info", {
       text : "VP",
       id : "game-vp",
@@ -335,6 +326,7 @@ if (this.game.players.length > 2) {
         game_mod.displayDebaters();
       }
     });
+/***
     this.menu.addSubMenuOption("game-info", {
       text : "Explorers",
       id : "game-explorers",
@@ -353,6 +345,7 @@ if (this.game.players.length > 2) {
         game_mod.displayConquistadors();
       }
     });
+***/
 
     this.menu.addMenuOption("game-factions", "Factions");
     this.menu.addSubMenuOption("game-factions", {

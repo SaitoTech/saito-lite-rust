@@ -124,13 +124,19 @@
     return f;
   }
 
-  returnEnemies(faction) { 
+  returnEnemies(faction, include_minor_powers=false) { 
     let f = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
       if (io[i] !== faction) {
         if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
       }
+    }
+    if (include_minor_powers) {
+      if (this.areEnemies(faction, "hungary")) { f.push("hungary"); }
+      if (this.areEnemies(faction, "scotland")) { f.push("scotland"); }
+      if (this.areEnemies(faction, "venice")) { f.push("venice"); }
+      if (this.areEnemies(faction, "genoa")) { f.push("genoa"); }
     }
     return f;
   }

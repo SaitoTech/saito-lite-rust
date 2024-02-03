@@ -446,7 +446,6 @@
       let roll = this.rollDice(res.length);
       if (res[roll-1].hops > 0) {
         let retreat_destination = res[roll-1].key;
-console.log("RETREAT DESTINATION IS: " + retreat_destination);
         his_self.game.queue.push("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+retreat_destination);
       }
     }
@@ -3184,6 +3183,7 @@ return;
 
     this.updateStatusWithOptions(`Intercept from ${this.returnSpaceName(defender_spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
+      his_self.updateStatus("acknowledge");
       if (user_choice === "intercept") {
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
         return;
@@ -4308,12 +4308,154 @@ return;
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
-    if (faction === "ottoman" && his_self.game.state.events.ottoman_piracy_enabled == 1) { return 1; }
+    if (faction === "ottoman" && his_self.game.state.events.ottoman_piracy_attempts < 4 && his_self.game.state.events.ottoman_piracy_enabled == 1) { return 1; }
+
     return 0;
   }
+
   async playerInitiatePiracyInASea(his_self, player, faction) {
+
+    // relevant
+    //state.events.ottoman_piracy_enabled = 0;
+    //state.events.ottoman_corsairs_enabled = 0;
+    //state.events.ottoman_piracy_attempts = 0;
+    //state.events.ottoman_piracy_seazones = [];
+    
+    let msg = "Select Sea for Piracy: ";
+    let html = '<ul>';
+    for (let key in this.game.navalspaces) {
+      let targetsea = false;
+      for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	if (this.game.navalspaces[key].units[faction][i].type == "corsair") { targetsea = true; }
+      }
+      if (targetsea == true) {
+        html += '<li class="option" id="'+key+'">'+this.returnSpaceName(key)+'</li>';
+      }
+    }
+    html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+ 
+      his_self.updateStatus("acknowledge");
+      let key = parseInt($(this).attr("id"));
+      let ports = [];
+      let dragut = false;
+      let barbarossa = false;
+
+      let target_space = this.game.navalspaces[key];
+      let adjacent_spaces = [];
+
+      let io = this.returnImpulseOrder();
+      let factions_at_war_with_ottoman = his_self.returnEnemies("ottoman", true); // true = include minor powers
+
+      for (let i = 0; i < target_space.neighbours.length; i++) {
+	adjacent_spaces.push(his_self.game.navalspaces[target_space.neighbours[i]]);
+      }
+      for (let i = 0; i < target_space.ports.length; i++) {
+	adjacent_spaces.push(his_self.game.spaces[target_space.ports[i]]);
+      }
+
+      ports = this.game.navalspaces[key].ports;
+      for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	if (this.game.navalspaces[key].units[faction][i].type == "dragut") { dragut = true; }
+	if (this.game.navalspaces[key].units[faction][i].type == "barbarossa") { barbarossa = true; }
+      }
+
+      let msg = "Select Target for Piracy: ";
+      let html = '<ul>';
+
+      for (let z = 0; z < ports.length; z++) {
+	let controller = ports.political;
+	if (ports.political == "") { controller = ports.home; }
+        if (io.includes(controller)) {
+          html += '<li class="option" id="'+ports[z]+'">'+ports[z]+'</li>';
+        }
+      }
+      html += '</ul>';
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+ 
+        let target_port = parseInt($(this).attr("id"));
+        his_self.updateStatus("acknowledge");
+	his_self.addMove("piracy\t"+faction+"\t"+key+"\t"+target_port);
+	his_endTurn();
+
+
+	let controller = ports.political;
+	if (ports.political == "") { controller = ports.home; }
+        let target_faction = parseInt($(this).attr("id"));
+        if (!factions_at_war_with_ottoman.includes(target_faction)) { factions_at_war_with_ottoman.push(target_faction); }
+	let opponent_dice = 0;
+
+
+	//
+	// targetted player dice
+	// 2 dice per naval squadron in sea zone
+	//
+	for (let z = 0; z < target_space.units[target_faction].length; z++) {
+	  if (target_space.units[target_faction][z].type == "squadron") { opponent_dice += 2; }
+	}
+	//
+	// 1 dice for their own or at-war-with-ottoman power (incl. minor) in port or adjacent sea-zone
+	//
+	for (let i = 0; i < adjacent_spaces.length; i++) {
+	  for (let k = 0; k < factions_at_war_with_ottoman.length; k++) {
+	    for (let z = 0; z < adjacent_spaces[i].units[factions_at_war_with_ottoman[k]].length; z++) {
+	      let u = adjacent_spaces[i].units[factions_at_war_with_ottoman[k]][z];
+	      if (u.type == "squadron") {
+		opponent_dice++;
+	      }
+	    }
+	  }
+	}
+
+	//
+	// 1 dice for each fortres controlled by target, power at war, or St. John -- fortress adjacent
+	//
+	if (target_space.key == "atlantic" || target_space.key == "barbary") {
+	  let x = his_self.returnFactionControlling("gibraltar");
+	  if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+	}
+	if (target_space.key == "africa" || target_space.key == "ionian") {
+	  let x = his_self.returnFactionControlling("malta");
+	  if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+	}
+	if (target_space.key == "africa" || target_space.key == "aegean") {
+	  let x = his_self.returnFactionControlling("corfu");
+	  if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+	}
+	if (target_space.key == "adriatic" || target_space.key == "ionian") {
+	  let x = his_self.returnFactionControlling("candia");
+	  if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+	}
+        if (his_self.game.state.knights_of_st_john != "") {
+	  let indspace = his_self.game.spaces[his_self.game.state.knights_of_st_john];
+	  if (indspace.unrest == 0 && indspace.besieged == 0) {
+	    for (let b = 0; b < indspace.ports.length; b++) {
+	      if (indspace.ports[b] === target_space.key) {
+		opponent_dice++;
+	      }
+	    }
+	  }
+	}
+
+	//
+	// eliminate 1 corsair for each hit of 5 or 6
+	//
+	let hits = 0;
+	for (let i = 0; i < opponent_dice; i++) {
+	}	
+
+      });
+    });
+
 console.log("13");
-return;
+return 0;
   }
   canPlayerRaiseCavalry(his_self, player, faction) {
 
@@ -4326,7 +4468,7 @@ return;
 
     his_self.playerSelectSpaceWithFilter(
 
-      "Select Port for Naval Squadron",
+      "Select Destination for Cavalry",
 
       function(space) {
         if (space.owner === faction) { return 1; }
@@ -4340,10 +4482,14 @@ return;
 	his_self.endTurn();
       },
 
+      null,
+
+      true
+
     );
   }
   canPlayerBuildCorsair(his_self, player, faction) {
-    if (faction === "ottoman" && his_self.game.events.ottoman_corsairs_enabled == 1) { return 1; }
+    if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) { return 1; }
     return 0;
   }
   async playerBuildCorsair(his_self, player, faction) {

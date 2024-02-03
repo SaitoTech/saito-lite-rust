@@ -58,6 +58,9 @@
     this.game.state.printing_press_active = 0;
     this.game.state.events.sack_of_rome = 0;
 
+    this.game.state.events.ottoman_piracy_attempts = 0;
+    this.game.state.events.ottoman_piracy_seazones = [];
+
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
     this.game.state.tmp_protestant_translation_bonus = 0;
@@ -718,13 +721,19 @@
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
 
+    state.knights_of_st_john = "";
+
     state.events.maurice_of_saxony = "";
-    state.events.ottoman_piracy_enabled = 0;
-    state.events.ottoman_corsairs_enabled = 0;
     state.events.papacy_may_found_jesuit_universities = 0;
     state.events.schmalkaldic_league = 0;
     state.events.edward_vi_born = 0;
     state.events.wartburg = 0;
+
+    state.events.ottoman_piracy_enabled = 0;
+    state.events.ottoman_corsairs_enabled = 0;
+    state.events.ottoman_piracy_attempts = 0;
+    state.events.ottoman_piracy_seazones = [];
+    state.events.ottoman_piracy_vp = 0;
 
     state.conquests = [];
     state.colonies = [];

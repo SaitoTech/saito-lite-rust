@@ -43,7 +43,7 @@ class VPOverlay {
 
 	let html = '';
         for (let z = 0; z < factions.length; z++) {
-  	  html = `<div class="desc">${this.mod.returnFactionName(factions[z])}</div>`;
+  	  html = `<div class="desc">${this.mod.returnFactionName(factions[z]).replace(" Empire", "")}</div>`;
 	  this.app.browser.addElementToSelector(html, ".factions");
           for (let i = 0; i < 9; i++) {
 	    if (this.mod.game.state.vp.length > i) {
@@ -60,7 +60,7 @@ class VPOverlay {
 	  }
 	}
 
-        this.app.browser.addElementToSelector("Victory to First Player at 25 VP", '.vp-overlay .help');
+        this.app.browser.addElementToSelector("Victory at 25 VP", '.vp-overlay .help');
 	if (this.mod.game.state.round <= 4) {
           this.app.browser.addElementToSelector("Protestants must be within 8 VP of the Papacy by the end of Round 4", '.vp-overlay .advice');
 	}

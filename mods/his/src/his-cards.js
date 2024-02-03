@@ -2327,17 +2327,58 @@ console.log("considering: " + space.key);
 	  return 0;
         }
 
-        if (mv[0] == "advance_henry_viii_marital_status") {
+	if (mv[0] === "henry_viii_declaration_of_war") {
+
+          his_self.game.queue.splice(qe, 1);
+
+	  let target_haps = false;
+	  let target_france = false;
+	  let target_scotland = false;
+
+	  let options1 = false;
+	  let options2 = false;
+
+	  if (!his_self.areAllies("england", "hapsburg") && !his_self.areEnemies("england", "hapsburg")) { target_haps = true; }
+	  if (!his_self.areAllies("england", "scotland") && !his_self.areEnemies("england", "scotland")) { target_scotland = true; }
+	  if (!his_self.areAllies("england", "france") && !his_self.areEnemies("england", "france")) { target_france = true; }
+
+          let msg = "Declare War on Whom?";
+          let html = '<ul>';
+          if (target_haps) { html += `<li class="option" id="hapsburg">Hapsburg</li>`; }
+          if (target_france) { html += `<li class="option" id="france">France</li>`; }
+          if (target_scotland) { html += `<li class="option" id="scotland">Scotland</li>`; }
+	  html += '</ul>';
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+		
+            let action2 = $(this).attr("id");
+	    his_self.updateStatus("acknowledge");
+
+	    his_self.addMove("ops\tengland\t003\t5");
+	    if (action2 === "scotland" && !his_self.areEnemies("england","france")) {
+	      his_self.addMove("natural_ally_intervention\tfrance\tscotland\tengland\t0\tEngland declares war on Scotland");
+	    }	
+	    his_self.addMove("declare_war\tengland\t"+action2);
+	    his_self.endTurn();
+
+	  });
+
+	  return 0;
+
+	}
+
+        if (mv[0] === "advance_henry_viii_marital_status") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  //
 	  // Henry VIII already dead, cannot roll
 	  //
 	  if (his_self.game.state.leaders.mary_i == 1 || his_self.game.state.leaders.edward_vi == 1 || his_self.game.state.leaders_elizabeth_i) {
-            his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
-
-          his_self.game.queue.splice(qe, 1);
 
 	  this.updateLog("Henry VIII advances his marital status");
 
@@ -5242,7 +5283,7 @@ console.log("considering: " + space.key);
       turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      canEvent : function(his_self, faction) { if (!his_self.isCommitted("cop-debater")) { return 0; } return 1; } ,
+      canEvent : function(his_self, faction) { if (his_self.isCommitted("cop-debater")) { return 0; } return 1; } ,
       onEvent : function(his_self, faction) {
 
 	if (his_self.isCommitted("cop-debater")) { return 1; }
@@ -9228,6 +9269,7 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
     //
     // cards removed from 2P game
     //
+if (this.game.players.length == 2) {
     delete deck["001"];
     delete deck["002"];
     delete deck["003"];
@@ -9271,6 +9313,7 @@ console.log("SHARE HAND CARDS: " + JSON.stringify(cards));
     delete deck["103"];
     delete deck["108"];
     delete deck["110"];
+}
 
     for (let key in deck) {
       deck[key].key = key;

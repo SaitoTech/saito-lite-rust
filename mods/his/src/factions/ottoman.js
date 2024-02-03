@@ -64,10 +64,12 @@
 
       },
       calculateBonusVictoryPoints  :    function(game_mod) {
-        return this.bonus_vp;
+        return 0;
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
-        return this.special_vp;
+        let base = 0;
+	base += game_mod.game.state.events.ottoman_piracy_vp;
+	return base;
       },
     });
  
