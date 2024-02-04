@@ -506,8 +506,8 @@
     //
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].language == lang) {
-        for (let z = 0; z < this.game.spaces[key].units.length; z++) {
-	  let u = this.game.spaces[key].units[z];
+        for (let z = 0; z < this.game.spaces[key].units["protestant"].length; z++) {
+	  let u = this.game.spaces[key].units["protestant"][z];
 	  if (u.reformer == true) {
 	    return 1;
 	  }
@@ -753,6 +753,10 @@
     state.conquests = [];
     state.explorations = [];
 
+    state.events.smallpox = "";
+    state.events.cabot_england = 0;
+    state.events.cabot_france = 0;
+    state.events.cabot_hapsburg = 0;
     state.events.ottoman_julia_gonzaga_vp = 0;
 
     return state;

@@ -11635,7 +11635,89 @@ return 1;
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) {
+	if (his_self.areAllies("france", "scotland")) { return 1; }
+	return 0;
+      },
+      onEvent : function(his_self, faction) {
+
+	//
+	// displace from Stirling
+	//
+	for (let i = 0; i < his_self.game.spaces["stirling"].units["england"].length; i++) {
+	  his_self.game.spaces["london"].units["england"].push(his_self.game.spaces["stirling"].units["england"][i]);
+	}
+	his_self.game.spaces["stirling"].units["england"] = [];
+
+	if (his_self.game.player === his_self.returnPlayerOfFaction("france")) {
+
+	  //
+	  // choose between 3 and 6 OPs
+	  //
+	  let msg = "Scots Raid: move French Army Leader to Scotland?";
+          let html = '<ul>';
+          html += '<li class="option" id="yes">Yes (3 OPs)</li>';
+          html += '<li class="option" id="no">No (6 OPs)</li>';
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+     	  $('.option').off();
+	  $('.option').on('click', function () {
+
+            $('.option').off();
+	    let action = $(this).attr("id");
+ 	    his_self.updateStatus("acknowledge");
+
+	    if (action === "yes") {
+
+              let msg = "Move Army Leader: ";
+              let options = [];
+              for (let key in his_self.game.spaces) {
+                let space = his_self.game.spaces[key];
+                for (let i = 0; i < space.units["france"].length; i++) {
+                  let u = space.units["france"][i];
+                  if (u.army_leader) {
+                    options.push({ spacekey : key , idx : i , name : u.name });
+                  }
+                }
+              }
+
+              let html = '<ul>';
+              for (let i = 0; i < options.length; i++) {
+                html += `<li class="option" id="${i}">${options[i].name}</li>`;
+              }
+              html += `<li class="option" id="skip">skip</li>`;
+              html += '</ul>';
+
+              his_self.updateStatusWithOptions(msg, html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+
+                $('.option').off();
+                let options_idx = $(this).attr("id");
+		his_self.updateStatus("acknowledge");
+
+                his_self.addMove("ops\tfrance\t097\t3");
+                his_self.addMove("move\tfrance\tland\t"+options[options_idx].spacekey+"\tstirling\t"+options[options_idx].idx);
+                his_self.endTurn();
+
+              });
+	    }
+
+	    if (action === "no") {
+              his_self.addMove("ops\tfrance\t097\t3");
+	      his_self.endTurn();
+	    }
+
+	  });
+	}
+
+	return 0;
+
+      },
     }
     deck['098'] = { 
       img : "cards/HIS-098.svg" , 
@@ -11652,6 +11734,18 @@ return 1;
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	if (faction == "england" && his_self.game.state.events.cabot_england == 0) { return 0; }
+	if (faction == "france" && his_self.game.state.events.cabot_france == 0) { return 0; }
+	if (faction == "hapsburg" && his_self.game.state.events.cabot_hapsburg == 0) { return 0; }
+	return 1;
+      },
+      onEvent(his_self, faction) {
+	if (faction == "england") { his_self.game.state.events.cabot_england = 1; }
+	if (faction == "france") { his_self.game.state.events.cabot_france = 1; }
+	if (faction == "hapsburg") { his_self.game.state.events.cabot_hapsburg = 1; }
+        return 1;
+      },
     }
     deck['100'] = { 
       img : "cards/HIS-100.svg" , 
@@ -11746,6 +11840,15 @@ return 1;
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	if (faction != "england" && faction != "hapsburg" && faction != "france") { return 0; }
+	return 1;
+      },
+      onEvent(his_self, faction) {
+        his_self.game.state.conquests.push(faction);
+	his_self.game.state.events.smallpox = faction;
+        return 1;
+      },
     }
     deck['102'] = { 
       img : "cards/HIS-102.svg" , 
@@ -17510,8 +17613,8 @@ console.log("EXACT MATCH 3: " + (p+1));
     //
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].language == lang) {
-        for (let z = 0; z < this.game.spaces[key].units.length; z++) {
-	  let u = this.game.spaces[key].units[z];
+        for (let z = 0; z < this.game.spaces[key].units["protestant"].length; z++) {
+	  let u = this.game.spaces[key].units["protestant"][z];
 	  if (u.reformer == true) {
 	    return 1;
 	  }
@@ -17757,6 +17860,10 @@ console.log("EXACT MATCH 3: " + (p+1));
     state.conquests = [];
     state.explorations = [];
 
+    state.events.smallpox = "";
+    state.events.cabot_england = 0;
+    state.events.cabot_france = 0;
+    state.events.cabot_hapsburg = 0;
     state.events.ottoman_julia_gonzaga_vp = 0;
 
     return state;
