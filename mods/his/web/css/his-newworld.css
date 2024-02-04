@@ -9,6 +9,7 @@
 	text-align: center;
 }
 
+
 .new-world-overlay .help {
 	background: #0009;
 	width: 100%;
@@ -37,17 +38,45 @@
 }
 
 .new-world-row {
-	display: grid;
+	display: flex;
+	flex-direction: rows;
 	justify-items: right;
 	background: #0005;
 	border: 1px solid black;
-	height: min-content;
+	height: 6rem;
 	margin-left: unset;
 	margin-right: unset;
 	margin-top: unset;
 	width: unset;
 	color: whitesmoke;
 	letter-spacing: 0.05rem;
+}
+
+.new-world-explorer {
+    background-image: url(/his/img/tiles/explorers/Cabot_English.svg);
+    background-size: cover;
+    height: 6rem;
+    min-height: 6rem;
+    width: 6rem;
+    min-width: 6rem;
+}
+
+.new-world-colony {
+    background-image: url(/his/img/tiles/explorers/Cabot_English.svg);
+    background-size: cover;
+    height: 6rem;
+    min-height: 6rem;
+    width: 6rem;
+    min-width: 6rem;
+}
+
+.new-world-conquest {
+    background-image: url(/his/img/tiles/explorers/Cabot_English.svg);
+    background-size: cover;
+    height: 6rem;
+    min-height: 6rem;
+    width: 6rem;
+    min-width: 6rem;
 }
 
 .new-world-row .new-world-description {

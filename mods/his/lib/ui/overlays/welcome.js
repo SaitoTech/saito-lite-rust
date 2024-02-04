@@ -79,7 +79,7 @@ class WelcomeOverlay {
 		if (faction === 'england') {
 			document.querySelector(
 				'.welcome-title'
-			).innerHTML = `You are the English`;
+			).innerHTML = `You are England`;
 			document.querySelector('.welcome-text').innerHTML = `
 			  This fortress built by Nature for herself </br> Against infection and the hand of war, 
 			`;

@@ -749,29 +749,30 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 
 	if (mv[0] === "colonize") {
 	  let faction = mv[1];
-	  let player = this.returnPlayerCommandingFaction(faction);
-	  if (this.game.state.players_info[player-1].colonized[faction] < 1) {
-	    this.game.state.players_info[player-1].colonized[faction] = 1;
-	  }
+	  this.game.state.colonies.push({
+	    faction : faction,
+	    round :   this.game.state.round,
+	  });
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
 
 	if (mv[0] === "explore") {
 	  let faction = mv[1];
-	  let player = this.returnPlayerCommandingFaction(faction);
-	  if (this.game.state.players_info[player-1].explored[faction] < 1) {
-	    this.game.state.players_info[player-1].explored[faction] = 1;
-	  }
+	  this.game.state.explorations.push({
+	    faction : faction,
+	    round :   this.game.state.round,
+	  });
+    	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
 
 	if (mv[0] === "conquer") {
 	  let faction = mv[1];
-	  let player = this.returnPlayerCommandingFaction(faction);
-	  if (this.game.state.players_info[player-1].conquered[faction] < 1) {
-	    this.game.state.players_info[player-1].conquered[faction] = 1;
-	  }
+	  this.game.state.conquests.push({
+	    faction : faction,
+	    round :   this.game.state.round,
+	  });
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -4846,6 +4847,9 @@ console.log("spacekey: " + spacekey);
 	  }
 
 	  if (total_piracy_hits > 0) {
+            if (his_self.game.state.events.julia_gonzaga_activated == 1 && target_navalspace === "tyrrhenian") {
+              his_self.game.queue.push("SETVAR\tstate\tevents\tottoman_julia_gonzaga_vp\t1");
+	    }
 	    his_self.game.queue.push("piracy_hits\t"+target_faction+"\t"+total_piracy_hits);
 	  }
 

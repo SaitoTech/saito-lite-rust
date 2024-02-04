@@ -102,9 +102,6 @@
       players[i].factions_passed.push(false); // faction not passed
       players[i].captured = [];
       players[i].num = i;
-      players[i].conquered = {};
-      players[i].colonized = {};
-      players[i].explored = {};
 
       //
       // Each power's VP total is derived from base, special, and bonus VP. 
@@ -173,10 +170,6 @@
     for (let i = 0; i < this.game.state.players_info[player_num-1].factions.length; i++) {
       this.game.state.players_info[player_num-1].factions_passed[i] = false;
     }
-
-    this.game.state.players_info[player_num-1].explored = {};
-    this.game.state.players_info[player_num-1].conquered = {};
-    this.game.state.players_info[player_num-1].colonized = {};
 
   }
 
@@ -4055,7 +4048,9 @@ console.log("faction_hand_idx: " + faction_hand_idx);
   }
   canPlayerExplore(his_self, player, faction) {
     if (faction === "protestant") {  return false; }
-    if (his_self.game.state.players_info[player-1].explored[faction] > 0) { return 0; }
+    for (let i = 0; i < his_self.game.state.explorations.length; i++) {
+      if (his_self.game.state.explorations[i].faction == faction) { return 0; }
+    }
     return 1;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
@@ -4179,8 +4174,14 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
-
-    if (his_self.game.state.players_info[player-1].colonized[faction] > 0) { return 0; }
+    if (faction === "ottoman") { return false; }
+    if (faction === "papacy") { return false; }
+    for (let i = 0; i < his_self.game.state.colonies.length; i++) {
+      if (his_self.game.state.colonies[i].faction == faction) { return 0; }
+    }
+    if (faction === "england" && his_self.game.state.england_colonies == 2) { return 0; }
+    if (faction === "france" && his_self.game.state.france_colonies == 2) { return 0; }
+    if (faction === "hapsburg" && his_self.game.state.hapsburg_colonies == 3) { return 0; }
     return 1;
   }
   async playerColonize(his_self, player, faction) {
@@ -4192,8 +4193,9 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
-
-    if (his_self.game.state.players_info[player-1].conquered[faction] > 0) { return 0; }
+    for (let i = 0; i < his_self.game.state.conquests.length; i++) {
+      if (his_self.game.state.conquests[i].faction == faction) { return 0; }
+    }
     return 1;
   }
   async playerConquer(his_self, player, faction) {

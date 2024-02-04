@@ -288,7 +288,6 @@ if (this.game.players.length > 2) {
         game_mod.vp_overlay.render();
       }
     });
-/****
     this.menu.addSubMenuOption("game-info", {
       text : "New World",
       id : "game-new-world",
@@ -298,6 +297,7 @@ if (this.game.players.length > 2) {
         game_mod.newworld_overlay.render();
       }
     });
+/****
     this.menu.addSubMenuOption("game-info", {
       text : "Chateaux",
       id : "game-chateaux-building",

@@ -152,6 +152,14 @@
   }
 
 
+  isUnoccupied(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space];  } } catch (err) {}
+    for (let key in space.units) {
+      if (this.returnFactionLandUnitsInSpace(key, space.key) > 0) { return 0; }
+    }
+    return 1;
+  }
+
   isNavalSpaceFriendly(space, faction) {
    
     // if a port, must be controlled by faction

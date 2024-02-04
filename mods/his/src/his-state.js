@@ -57,6 +57,7 @@
     this.game.state.spaces_assaulted_this_turn = [];
     this.game.state.printing_press_active = 0;
     this.game.state.events.sack_of_rome = 0;
+    this.game.state.events.julia_gonzaga_activated = 0;
 
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
@@ -740,9 +741,19 @@
     state.events.ottoman_piracy_seazones = [];
     state.events.ottoman_piracy_vp = 0;
 
-    state.conquests = [];
+    //
+    // {
+    //    faction : faction
+    //    round   : 0
+    //  
     state.colonies = [];
+    state.english_colonies = 0;
+    state.french_colonies = 0;
+    state.hapsburg_colonies = 0;
+    state.conquests = [];
     state.explorations = [];
+
+    state.events.ottoman_julia_gonzaga_vp = 0;
 
     return state;
 
