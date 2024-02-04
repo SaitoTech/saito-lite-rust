@@ -7695,6 +7695,122 @@ console.log("HITS: " + hits);
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	if (his_self.game.state.events.barbary_pirates == 1) {
+
+	  let target_oran = false;
+	  let target_tripoli = false;
+
+	  if (his_self.isUnoccupied("oran") && his_self.areEnemies("ottoman", his_self.returnFactionControllingSpace("oran"))) {
+	    let oran = his_self.game.spaces["oran"];
+	    for (let i = 0; i < oran.ports.length; i++) {
+	      let sea = oran.ports[i];
+	      for (let z = 0; z < sea.ports.length; z++) {
+	        if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	          if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
+	  	    target_oran = true;
+		  }
+	        }
+	      }
+	    }
+	  }
+	  if (his_self.isUnoccupied("tripoli") && his_self.areEnemies("ottoman", his_self.returnFactionControllingSpace("tripoli"))) {
+	    let tripoli = his_self.game.spaces["tripoli"];
+	    for (let i = 0; i < tripoli.ports.length; i++) {
+	      let sea = tripoli.ports[i];
+	      for (let z = 0; z < sea.ports.length; z++) {
+	        if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	          if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
+		    target_tripoli = true;
+		  }
+	        }
+	      }
+	    }
+	  }
+
+	}
+	return 0;
+      },
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction("ottoman");
+
+	if (his_self.game.player == p) {
+	let target_oran = false;
+	let target_tripoli = false;
+
+	if (his_self.isUnoccupied("oran") && his_self.areEnemies("ottoman", his_self.returnFactionControllingSpace("oran"))) {
+	  let oran = his_self.game.spaces["oran"];
+	  for (let i = 0; i < oran.ports.length; i++) {
+	    let sea = oran.ports[i];
+	    for (let z = 0; z < sea.ports.length; z++) {
+	      if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	        if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
+		  target_oran = true;
+		}
+	      }
+	    }
+	  }
+	}
+	if (his_self.isUnoccupied("tripoli") && his_self.areEnemies("ottoman", his_self.returnFactionControllingSpace("tripoli"))) {
+	  let tripoli = his_self.game.spaces["tripoli"];
+	  for (let i = 0; i < tripoli.ports.length; i++) {
+	    let sea = tripoli.ports[i];
+	    for (let z = 0; z < sea.ports.length; z++) {
+	      if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	        if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
+		  target_tripoli = true;
+		}
+	      }
+	    }
+	  }
+	}
+
+   	let msg = "Convert Space into Pirate Haven: ";
+        let html = '<ul>';
+  	if (target_tripoli) { html += `<li class="option" id="tripoli">Tripoli</li>`; }
+  	if (target_oran)    { html += `<li class="option" id="oran">oran</li>`; }
+    	html += '</ul>';
+
+        his_self.updateStatusWithOptions(msg, html);
+
+   	$('.option').off();
+	$('.option').on('click', function () {
+
+   	  $('.option').off();
+	  let action2 = $(this).attr("id");
+	  his_self.updateStatus("converting...");
+
+	  his_self.addMove("pirate_haven\t"+action2);
+	  his_self.endTurn();
+
+	});
+	}
+	return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "pirate_haven") {
+
+          his_self.game.queue.splice(qe, 1);
+	  let spacekey = mv[1];
+
+	  his_self.addRegular("ottoman", spacekey, 1);
+	  his_self.addCorsair("ottoman", spacekey, 2);
+	  his_self.game.spaces[spacekey].pirate_haven = 1;
+
+	  return 1;
+
+	}
+
+        return 1;
+      },
+    }
+    deck['091'] = { 
+      img : "cards/HIS-091.svg" , 
+      name : "Ransom" ,
+      ops : 3 ,
+      turn : 1 ,
     }
     deck['090'] = { 
       img : "cards/HIS-090.svg" , 
@@ -8580,6 +8696,22 @@ return 1;
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	if (his_self.game.state.newworld['circumnavigation'].faction) {
+	  return 1;
+	}
+	return 0;
+      },
+      onEvent : function(his_self, faction) {
+
+	let f = his_self.game.state.newworld['circumnavigation'].faction;
+	let p = his_self.returnPlayerCommandingFaction(f);
+
+        his_self.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+        his_self.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
+	
+	return 1;
+      }
     }
     deck['097'] = { 
       img : "cards/HIS-097.svg" , 
@@ -8678,6 +8810,55 @@ return 1;
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	if (his_self.game.state.events.cabot_england == 1) { return 1; }
+	if (his_self.game.state.events.cabot_france == 1) { return 1; }
+	if (his_self.game.state.events.cabot_hapsburg == 1) { return 1; }
+	if (his_self.game.state.colonies.length > 0) { return 1; }
+	return 0;
+      },
+      onEvent(his_self, faction) {
+
+        let player = his_self.returnPlayerCommandingFaction(faction);
+        if (his_self.game.player === player) { 
+
+	  let msg = "Cancel Which Expedition?";
+          let html = '<ul>';
+	  for (let i = 0; i < his_self.game.state.colonies.length; i++) {
+            html += `<li class="option" id="${his_self.game.state.colonies[i]}">${his_self.returnFactionName(his_self.game.state.colonies[i])}</li>`;
+	  }
+	  if (his_self.game.state.events.cabot_england == 1) {
+            html += `<li class="option" id="cabot_england">sebastian cabot (england)</li>`;
+	  }
+	  if (his_self.game.state.events.cabot_france == 1) {
+            html += `<li class="option" id="cabot_france">sebastian cabot (france)</li>`;
+	  }
+	  if (his_self.game.state.events.cabot_hapsburg == 1) {
+            html += `<li class="option" id="cabot_hapsburg">sebastian cabot (haps)</li>`;
+	  }
+          html += '</ul>';
+
+ 	  his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+	  $('.option').on('click', function () {
+
+            $('.option').off();
+	    let action = $(this).attr("id");
+
+	    if (action === "cabot_england") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_england\t0"); }
+	    if (action === "cabot_hapsburg") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_hapsburg\t0"); }
+	    if (action === "cabot_france") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_france\t0"); }
+	    if (action === "england") {  his_self.addMove("remove_colony\tengland"); }
+	    if (action === "hapsburg") {  his_self.addMove("remove_colony\thapsburg"); }
+	    if (action === "france") {  his_self.addMove("remove_colony\tfrance"); }
+
+	    his_self.endTurn();
+
+	  });
+	}
+        return 0;
+      },
     }
     deck['099'] = { 
       img : "cards/HIS-099.svg" , 

@@ -747,6 +747,16 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 	  return 1;
 	}
 
+	if (mv[0] === "remove_colony") {
+	  let faction = mv[1];
+	  for (let i = 0; i < this.game.state.colonies.length; i++) {
+	    if (this.game.state.colonies[i] === faction) {
+	      this.game.state.colonies.splice(i, 1);
+	    }
+	  }
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
 	if (mv[0] === "colonize") {
 	  let faction = mv[1];
 	  this.game.state.colonies.push({

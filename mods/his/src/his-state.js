@@ -575,6 +575,7 @@
     if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;
     state.vp = [];
+    state.newworld = this.returnNewWorld();
     state.impulse = 0;
     state.players = [];
     state.events = {};
@@ -627,6 +628,14 @@
     state.hapsburg_war_winner_vp = 0;
     state.england_war_winner_vp = 0;
     state.france_war_winner_vp = 0;
+
+    state.bonus_vp = {};
+    state.bonus_vp['protestant'] = 0;
+    state.bonus_vp['papacy'] = 0;
+    state.bonus_vp['england'] = 0;
+    state.bonus_vp['france'] = 0;
+    state.bonus_vp['hapsburg'] = 0;
+    state.bonus_vp['ottoman'] = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
@@ -1033,7 +1042,6 @@
       left : 486 ,
       vp : 1
     }
-
 
     return nw;
 

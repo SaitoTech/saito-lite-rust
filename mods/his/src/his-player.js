@@ -4157,19 +4157,6 @@ console.log("faction_hand_idx: " + faction_hand_idx);
     );
     return 0;
   }
-  canPlayerExplore(his_self, player, faction) {
-
-    // no for protestants early-game
-    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
-
-    if (his_self.game.state.players_info[player-1].explored[faction] > 0) { return 0; }
-    return 1;
-  }
-  async playerExplore(his_self, player, faction) {
-    his_self.addMove("conquer\t"+faction);
-    his_self.endTurn();
-    return 0;
-  }
   canPlayerColonize(his_self, player, faction) {
 
     // no for protestants early-game
@@ -4183,6 +4170,11 @@ console.log("faction_hand_idx: " + faction_hand_idx);
     if (faction === "france" && his_self.game.state.france_colonies == 2) { return 0; }
     if (faction === "hapsburg" && his_self.game.state.hapsburg_colonies == 3) { return 0; }
     return 1;
+  }
+  async playerExplore(his_self, player, faction) {
+    his_self.addMove("explore\t"+faction);
+    his_self.endTurn();
+    return 0;
   }
   async playerColonize(his_self, player, faction) {
     his_self.addMove("colonize\t"+faction);
