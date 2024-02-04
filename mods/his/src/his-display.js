@@ -126,6 +126,31 @@
     this.debaters_overlay.render();
   }
 
+  displayPersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "block";
+  }
+  hidePersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "none";
+  }
+  displayEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "block";
+  }
+  hideEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "none";
+  }
+  displayIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "block";
+  }
+  hideIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "none";
+  }
+
   displayExplorers() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
@@ -306,6 +331,10 @@
   }
 
   displayBoard() {
+
+    if (this.game.state.events.war_in_persia) { this.displayPersia(); }
+    if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
+    if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
 
     try {
       this.displayTurnTrack();
@@ -1857,6 +1886,7 @@ console.log("cardname: " + cardname);
       "img/backgrounds/diet_of_worms.jpeg",
       "img/backgrounds/language-zone.jpg",
       "img/backgrounds/95_theses.jpeg",
+      "img/cards/PASS.png",
     ];
 
     this.preloadImageArray(allImages);

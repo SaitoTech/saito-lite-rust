@@ -501,6 +501,8 @@ if (this.game.players.length > 2) {
 
     } catch (err) {}
 
+    this.factionbar.render();
+
     this.hud.render();
 
     this.displayBoard();

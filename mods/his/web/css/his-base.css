@@ -2,6 +2,19 @@
 	padding-top: 15px;
 }
 
+.persia {
+    top: 500px;
+    left: 3800px;
+}
+.ireland {
+    top: 800px;
+    left: 4125px;
+}
+.egypt {
+    top: 800px;
+    left: 4500px;
+}
+
 .selectable::before {
 	content: ' ';
 	box-shadow: 2rem 2rem 7rem 3rem #fffc, -2rem -2rem 7rem 3rem #fffc;

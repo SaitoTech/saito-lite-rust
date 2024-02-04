@@ -679,6 +679,11 @@
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
 
+    state.galleons = {};
+    state.galleons['french'] = 0;
+    state.galleons['hapsburg'] = 0;
+    state.galleons['england'] = 0;
+
     state.autowin_hapsburg_keys_controlled = 14;
     state.autowin_ottoman_keys_controlled = 11;
     state.autowin_papacy_keys_controlled = 7;
