@@ -371,15 +371,7 @@ class RedSquare extends ModTemplate {
       //
       if (this.browser_active) {
 
-        if (this.ignoreCentralServer || !window?.tweets?.length){
-          console.log("REDSQUARE: Local archive for initial load");
-          this.loadTweets("earlier", (tx_count)=> {
-            console.log("Loaded local tweets -- " + tx_count);
-            if (this.rendered){
-              this.app.connection.emit("redsquare-home-render-request", true);  
-            }
-          });
-        }else{
+        if (!this.ignoreCentralServer && window?.tweets?.length){
           console.log("REDSQUARE: Using Server Cached Tweets");
           for (let z = 0; z < window.tweets.length; z++) {
             //console.log(window.tweets[z]);
@@ -414,18 +406,7 @@ class RedSquare extends ModTemplate {
       console.error(err);
     }
 
-    //
-    // Add auto-polling for new tweets, on a 5 minute interval
-    // 1000 * 60 * 5
-
     if (this.browser_active) {
-      setInterval(() => {
-        this.loadTweets("later", (tx_count) => {
-          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
-        });
-      }, 300000);
-
-
       this.app.connection.on("relay-is-online", pkey => {
         for (let i = 0; i < this.following.length; i++) {
           if (this.following[i].publicKey === pkey){
@@ -614,23 +595,47 @@ class RedSquare extends ModTemplate {
         }
       }
 
+      //
+      // Get tweets from my peers
+      // will hit up local archive, central server and any peers around... 
+      console.log("REDSQUARE: Local archive for initial load");
+      this.loadTweets("earlier", (tx_count)=> {
+        if (this.rendered){
+          this.app.connection.emit("redsquare-home-render-request", true);  
+        }
+      });
+
+      //
+      // Add auto-polling for new tweets, on a 5 minute interval
+      // 1000 * 60 * 5
+        setInterval(() => {
+          this.loadTweets("later", (tx_count) => {
+            this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+          });
+        }, 300000);
+
     }
+
+
 
     //
     // We are ignoring the central node, so we need to specifically query 
     // our followees for new content up top
     //
     if (service.service === "relay") {
-      console.log("Redsquare: ping colleagues", this.following);
-      // Ping your colleagues 
-      this.app.connection.emit("relay-send-message", {recipient: this.app.options.redsquare?.following, request: "ping", data:{}});
 
-      setTimeout(()=> {
-        console.log("1 second later");
-        this.loadTweets("later", (tx_count) => {
-          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
-        });
-      }, 1000);
+      if (this.following.length > 0){
+        console.log("Redsquare: ping colleagues", this.following);
+        // Ping your colleagues 
+        this.app.connection.emit("relay-send-message", {recipient: this.following, request: "ping", data:{}});
+
+        setTimeout(()=> {
+          console.log("1 second later");
+          this.loadTweets("later", (tx_count) => {
+            this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+          });
+        }, 1000);
+      }
     }
   }
 
