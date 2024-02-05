@@ -224,11 +224,3 @@ body {
 }
 
 
-.redsquare-settings-overlay {
-	width: min(800px, 95vw);
-	height: min(400px, 90vh);
-	padding: 2rem;
-	background: var(--saito-background-color);
-	border-radius: 0.5rem;
-	border: 1px solid var(--saito-primary);
-}

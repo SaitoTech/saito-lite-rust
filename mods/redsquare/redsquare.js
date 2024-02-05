@@ -165,8 +165,8 @@ class RedSquare extends ModTemplate {
   loadSettings(container = null) {
     if (!container){
       let overlay = new SaitoOverlay(this.app, this.mod);
-      overlay.show(`<div class="redsquare-settings-overlay"><h2>Redsquare Settings</h2></div>`);
-      container = ".redsquare-settings-overlay";
+      overlay.show(`<div class="module-settings-overlay"><h2>Redsquare Settings</h2></div>`);
+      container = ".module-settings-overlay";
     }
     let as = new AppSettings(this.app, this, container);
     as.render();
