@@ -201,107 +201,7 @@ class MixinModule extends CryptoModule {
 
 		console.log("sendPayment inside MixinModule ///");
 
-		let r = recipient.split('|');
-		let ts = new Date().getTime();
-
-		console.log('Recipient: ' + recipient);
-
-		//
-		// internal MIXIN transfer
-		//
-		if (r.length >= 2) {
-			if (r[2] === 'mixin') {
-				console.log('Send to Mixin address');
-				let opponent_address_id = r[1];
-				let trace_id = await this.mixin.sendInNetworkTransferRequest(
-					this.asset_id,
-					opponent_address_id,
-					amount,
-					unique_hash
-				);
-				if (trace_id?.error) {
-					return '';
-				}
-				this.saveOutboundPayment(
-					amount,
-					this.returnAddress(),
-					recipient,
-					ts,
-					trace_id
-				);
-				return trace_id;
-			}
-		}
-
-		console.log('Possibly external transfer');
-
-		//
-		// external withdrawal to network
-		//
-		let destination = this.returnNetworkAddress(recipient);
-		let withdrawal_address_exists = 0;
-		let withdrawal_address_id = '';
-
-		for (let i = 0; i < this.mixin.addresses.length; i++) {
-			if (this.mixin.addresses[i]?.destination === destination) {
-				withdrawal_address_exists = 1;
-				withdrawal_address_id = this.mixin.addresses[i].address_id;
-			}
-		}
-
-		//
-		// existing withdrawal address
-		//
-		if (withdrawal_address_exists === 1) {
-			this.mixin.sendWithdrawalRequest(
-				this.asset_id,
-				withdrawal_address_id,
-				destination,
-				amount,
-				unique_hash,
-				function (d) {}
-			);
-			this.saveOutboundPayment(
-				amount,
-				this.returnAddress(),
-				recipient,
-				ts,
-				unique_hash
-			);
-			return unique_hash;
-
-			//
-			// create withdrawal address and save
-			//
-		} else {
-			this.mixin.createWithdrawalAddress(
-				this.asset_id,
-				destination,
-				'',
-				(d) => {
-					let asset_id = d.data.asset_id;
-					let withdrawal_address_id = d.data.address_id;
-
-					this.mixin.sendWithdrawalRequest(
-						this.asset_id,
-						withdrawal_address_id,
-						destination,
-						amount,
-						unique_hash,
-						(d) => {}
-					);
-					this.saveOutboundPayment(
-						amount,
-						this.returnAddress(),
-						recipient,
-						ts,
-						unique_hash
-					);
-				}
-			);
-
-			return unique_hash;
-		}
+		this.mixin.withdrawAmount(this.asset_id, recipient, amount);
 	}
 
 	/**
@@ -378,9 +278,15 @@ class MixinModule extends CryptoModule {
 	 * @abstract
 	 * @return {Function} Callback function
 	 */
-	returnWithdrawalFee(asset_id) {
-		return this.mixin.checkWithdrawalFee(asset_id);
+	returnWithdrawalFee(asset_id, recipient) {
+		return this.mixin.checkWithdrawalFee(asset_id, recipient);
 	}
+
+
+	returnNetworkFee(asset_id) {
+		return this.mixin.checkNetworkFee(asset_id);
+	}
+
 
 	//
 	// this function creates a Mixin address associated with the account in order to check
@@ -421,38 +327,14 @@ class MixinModule extends CryptoModule {
 		}
 
 		console.log("check 4");
-
 		//
-		// existing withdrawal address
+		// return 0 if in-network address, or estimate if external
 		//
-		if (withdrawal_address_exists === 1) {
-			console.log("check 5");
-			//
-			// return 0 if in-network address, or estimate if external
-			//
-			if (withdrawal_address_id) {
-				mycallback(0);
-			} else {
-				let fee = await this.returnWithdrawalFee(this.asset_id);
-				mycallback(fee);
-			}
-
-			//
-			// create withdrawal address to see if is Mixin address
-			//
+		if (withdrawal_address_id) {
+			mycallback(0);
 		} else {
-
-			console.log("check 6");
-			this.mixin.createWithdrawalAddress(
-				this.asset_id,
-				destination,
-				'',
-				(d) => {
-					if (d.data?.fee) {
-						mycallback(d.data?.fee);
-					}
-				}
-			);
+			let fee = await this.returnWithdrawalFee(this.asset_id, recipient);
+			mycallback(fee);
 		}
 	}
 

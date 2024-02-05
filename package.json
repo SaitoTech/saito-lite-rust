@@ -30,7 +30,7 @@
 		"@elrondnetwork/erdjs-web-wallet-provider": "^2.1.1",
 		"@giphy/js-components": "^5.8.2",
 		"@giphy/js-fetch-api": "^4.4.0",
-		"@mixin.dev/mixin-node-sdk": "^7.0.5",
+		"@mixin.dev/mixin-node-sdk": "^7.0.8",
 		"archiver": "^3.1.1",
 		"axios": "^0.27.2",
 		"babel": "^6.23.0",
