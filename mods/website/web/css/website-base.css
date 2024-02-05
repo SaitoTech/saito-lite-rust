@@ -27,7 +27,6 @@ body {
   align-items: center;
   color: #fff;
   background-size: 100% 125%;
-
 }
 
 .content {
@@ -41,7 +40,6 @@ body {
   flex-direction: column;
   text-align: center;
 }
-
 
 .mask {
   display: flex;
@@ -72,6 +70,7 @@ body {
   position: absolute;
   z-index: -1;
 }
+
 /*
 @media (orientation: landscape) {
   video {
@@ -93,34 +92,30 @@ body {
 */
 
 video {
-    width: 100vw;
-    height: 100vh; 
-    object-fit: cover;
-  }
-  .feature {
-    width: 100vw;
-    display: flex;
-    justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
 
-  }
+.feature {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
 
-
-
-@media screen and (max-width: 99px ) {
+@media screen and (max-width: 99px) {
   video {
     width: 100vh;
     width: 100vw;
   }
-
-  .content > h1 {
+  .content>h1 {
     font-size: 2rem;
   }
-
   .links a button {
     width: 75vw;
+  }
 }
-  
-}
+
 /* 
 @media (max-aspect-ratio: 9/5) {
   video {
@@ -130,7 +125,6 @@ video {
     width: 100vh;
   }
 } */
-
 
 .banner-logo {
   width: 30vw;
@@ -214,7 +208,6 @@ hr {
   }
 }
 
-
 .feature {
   width: 100vw;
   display: flex;
@@ -234,21 +227,8 @@ body {
   flex-direction: row;
 }
 
-.container>div {
-  width: 50%;
-  transition: width ease-in-out 1s, all ease-in-out 1s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-}
-
-.container>div:hover {
-  width: 100%;
-}
-
 .splash-title {
-  font-size: 2rem;
+  font-size: 3rem;
 }
 
 .spalsh-option-list {
@@ -257,28 +237,109 @@ body {
   gap: 1rem;
 }
 
-.splash-option {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  height: 5rem;
-  gap: 2rem;
+@media screen and (min-width: 801px) {
+  .container>div {
+    width: 50%;
+    transition: width ease-in-out 1s, all ease-in-out 1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  .container>div:hover {
+    width: 100%;
+  }
+
+
+  .splash-option {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 5rem;
+    gap: 2rem;
+  }
+  .container>div label {
+    width: 0;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: left;
+    transition: width 1s ease-in-out;
+  }
+  .container>div:hover label {
+    width: 180px;
+  }
 }
 
-.container>div label {
-  width: 0;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-align: left;
-  transition: width 1s ease-in-out;
+@media screen and (max-width: 800px) {
+
+  .content {
+    width: 90vw;
+  }
+
+  .mask {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  .spalsh-option-list {
+    gap: 2rem;
+  }
+  
+
+  .splash-title {
+    margin: 1rem;
+    text-align: left;
+  }
+
+  .splash-option {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .links a button{
+    width: 100%;
+  }
+
+  .splash-option label {
+    overflow: hidden;
+  }
 }
 
-.container>div:hover label {
-  width: 180px;
+
+@media screen and (max-height: 840px) {
+  .content {
+    width: 120vw;
+  } 
+  .mask {
+    transform: scale(0.8);
+  }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 .splash-option {
   display: flex;
   flex-direction: row;
@@ -303,3 +364,4 @@ body {
     width: 500px;
   }
 }
+*/
