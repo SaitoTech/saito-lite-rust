@@ -8,6 +8,7 @@
     height: auto;
     min-height: 622px;
     text-align: center;
+    z-index: 110;
 }
 
 .vp-overlay .help {

@@ -289,7 +289,7 @@
   width: 28rem;
   height: 26rem;
   padding: 1rem;
-  border: 1px solid;
+  border: 1px solid var(--saito-border-color);
   background: var(--saito-background-color);
   z-index: 1;
   font-size: 1.8rem;

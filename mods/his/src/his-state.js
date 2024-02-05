@@ -9,6 +9,11 @@
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
+    this.game.state.events.cranmer_active = 0;
+    this.game.state.events.more_executed_limits_debates = 0;
+    this.game.state.events.more_bonus = 0;
+    this.game.state.events.sack_of_rome = 0;
+
 
     //
     // reset impulse commits
@@ -51,6 +56,11 @@
     this.game.state.debater_committed_this_impulse = {};
     this.game.state.spaces_assaulted_this_turn = [];
     this.game.state.printing_press_active = 0;
+    this.game.state.events.sack_of_rome = 0;
+    this.game.state.events.julia_gonzaga_activated = 0;
+
+    this.game.state.events.ottoman_piracy_attempts = 0;
+    this.game.state.events.ottoman_piracy_seazones = [];
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -72,6 +82,8 @@
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
     this.game.state.impulse = 0;
+    this.game.state.events.more_executed_limits_debates = 0;
+    this.game.state.events.more_bonus = 0;
         
     //
     // allow stuff to move again
@@ -80,6 +92,7 @@
     this.removeBesiegedSpaces();
 
     this.displayCardsLeft();
+    this.displayTurnTrack();
 
 
   }
@@ -493,8 +506,8 @@
     //
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].language == lang) {
-        for (let z = 0; z < this.game.spaces[key].units.length; z++) {
-	  let u = this.game.spaces[key].units[z];
+        for (let z = 0; z < this.game.spaces[key].units["protestant"].length; z++) {
+	  let u = this.game.spaces[key].units["protestant"][z];
 	  if (u.reformer == true) {
 	    return 1;
 	  }
@@ -667,6 +680,11 @@
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
 
+    state.galleons = {};
+    state.galleons['french'] = 0;
+    state.galleons['hapsburg'] = 0;
+    state.galleons['england'] = 0;
+
     state.autowin_hapsburg_keys_controlled = 14;
     state.autowin_ottoman_keys_controlled = 11;
     state.autowin_papacy_keys_controlled = 7;
@@ -709,17 +727,37 @@
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
 
+    state.knights_of_st_john = "";
+
     state.events.maurice_of_saxony = "";
-    state.events.ottoman_piracy_enabled = 0;
-    state.events.ottoman_corsairs_enabled = 0;
     state.events.papacy_may_found_jesuit_universities = 0;
     state.events.schmalkaldic_league = 0;
     state.events.edward_vi_born = 0;
     state.events.wartburg = 0;
 
-    state.conquests = [];
+    state.events.ottoman_piracy_enabled = 0;
+    state.events.ottoman_corsairs_enabled = 0;
+    state.events.ottoman_piracy_attempts = 0;
+    state.events.ottoman_piracy_seazones = [];
+    state.events.ottoman_piracy_vp = 0;
+
+    //
+    // {
+    //    faction : faction
+    //    round   : 0
+    //  
     state.colonies = [];
+    state.english_colonies = 0;
+    state.french_colonies = 0;
+    state.hapsburg_colonies = 0;
+    state.conquests = [];
     state.explorations = [];
+
+    state.events.smallpox = "";
+    state.events.cabot_england = 0;
+    state.events.cabot_france = 0;
+    state.events.cabot_hapsburg = 0;
+    state.events.ottoman_julia_gonzaga_vp = 0;
 
     return state;
 

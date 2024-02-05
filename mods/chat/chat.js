@@ -9,6 +9,8 @@ const JSON = require('json-bigint');
 const localforage = require('localforage');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
+const ChatSettings = require('./lib/overlays/chat-manager-menu');
+
 
 class Chat extends ModTemplate {
 	constructor(app) {
@@ -58,6 +60,10 @@ class Chat extends ModTemplate {
 		this.isRelayConnected = false;
 
 		this.enable_notifications = false;
+		this.audio_notifications = false;
+		this.auto_open_community = false;
+
+		this.black_list = [];
 
 		this.app.connection.on('encrypt-key-exchange-confirm', (data) => {
 			this.returnOrCreateChatGroupFromMembers(data?.members);
@@ -82,6 +88,12 @@ class Chat extends ModTemplate {
 			}
 		);
 
+		this.app.connection.on("chat-ready", ()=> {
+			if (this.auto_open_community){
+				this.app.connection.emit("chat-popup-render-request");
+			}
+		});
+
 		this.app.connection.on('chat-message-user', async (pkey, message) => {
 			let group = this.returnOrCreateChatGroupFromMembers([
 				this.publicKey,
@@ -102,6 +114,15 @@ class Chat extends ModTemplate {
 
 		this.hiddenTab = 'hidden';
 		this.orig_title = '';
+	}
+
+	hasSettings(){
+		return true;
+	}
+
+	loadSettings(container){
+		let as = new ChatSettings(this.app, this, container);
+		as.render();
 	}
 
 	async initialize(app) {
@@ -132,26 +153,7 @@ class Chat extends ModTemplate {
 		// BROWSERS ONLY
 		//
 
-		//Enforce compliance with wallet indexing
-		if (!app.options?.chat) {
-			app.options.chat = {};
-			app.options.chat.groups = [];
-			app.options.chat.enable_notifications = this.enable_notifications;
-		} else if (Array.isArray(app.options.chat)) {
-			let newObj = {
-				groups: app.options.chat,
-				enable_notifications: this.enable_notifications
-			};
-			app.options.chat = newObj;
-		} else {
-			this.enable_notifications = app.options.chat?.enable_notifications;
-		}
-
-		if (app.options.chat.groups?.length == 0) {
-			this.createDefaultChatsFromKeys();
-		}
-
-		this.app.storage.saveOptions();
+		this.loadOptions();
 
 		await this.loadChatGroups();
 
@@ -371,13 +373,8 @@ class Chat extends ModTemplate {
 								);
 								return;
 							}
-							/*
-            Let's see if not auto opening community chat makes for a better UX
-             else{
-              this.app.connection.emit("chat-popup-render-request");
-            }*/
 						
-						this.app.connection.emit("chat-ready");
+							this.app.connection.emit("chat-ready");
 						}
 					}
 				);
@@ -1161,6 +1158,13 @@ class Chat extends ModTemplate {
 			console.log(JSON.parse(JSON.stringify(txmsg)));
 		}
 
+		for (let blocked of this.black_list){
+			if (tx.isFrom(blocked)){
+				console.log("Refuse chat message from blocked account");
+				return;
+			}
+		}
+
 		//
 		// if to someone else and encrypted
 		// (i.e. I am sending an encrypted message and not waiting for relay)
@@ -1723,6 +1727,47 @@ class Chat extends ModTemplate {
 	///////////////////
 	// LOCAL STORAGE //
 	///////////////////
+	loadOptions(){
+
+		//Enforce compliance with wallet indexing
+		if (!this.app.options?.chat) {
+			this.app.options.chat = {};
+			this.app.options.chat.groups = [];
+		} else if (Array.isArray(this.app.options.chat)) {
+			let newObj = {
+				groups: this.app.options.chat,
+			};
+			this.app.options.chat = newObj;
+		} else {
+			//
+			//These default to false, so will only toggle on if a true value is stored in options
+			//
+			this.enable_notifications = this.app.options.chat?.enable_notifications;
+			this.audio_notifications = this.app.options.chat?.audio_notifications;
+			this.auto_open_community = this.app.options.chat?.auto_open_community;
+			if (this.app.options.chat?.black_list){
+				this.black_list = this.app.options.chat.black_list;
+			}
+		}
+
+		if (this.app.options.chat.groups?.length == 0) {
+			this.createDefaultChatsFromKeys();
+		}
+
+		this.app.storage.saveOptions();
+
+	}
+
+	saveOptions(){
+		this.app.options.chat.enable_notifications = this.enable_notifications;
+		this.app.options.chat.audio_notifications = this.audio_notifications;
+		this.app.options.chat.auto_open_community = this.auto_open_community;
+		this.app.options.chat.black_list = this.black_list;
+
+		this.app.storage.saveOptions();
+	}
+
+
 	async loadChatGroups() {
 		if (!this.app.BROWSER) {
 			return;
@@ -1767,8 +1812,9 @@ class Chat extends ModTemplate {
 		//Save group in app.options
 		if (!this.app.options.chat.groups.includes(group.id)) {
 			this.app.options.chat.groups.push(group.id);
-			this.app.storage.saveOptions();
 		}
+
+		this.saveOptions();
 
 		let online_status = group.online;
 
@@ -1818,7 +1864,7 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		this.app.storage.saveOptions();
+		this.saveOptions();
 
 		if (key_to_update) {
 			this.app.keychain.addKey(key_to_update, { mute: 1 });

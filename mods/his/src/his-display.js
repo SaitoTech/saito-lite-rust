@@ -85,6 +85,15 @@
 
   }
 
+  displayTurnTrack() {
+
+    let obj = document.querySelector(".turntrack");
+    obj.classList.remove(`turntrack1`);
+    obj.classList.remove(`turntrack${this.game.state.round-1}`);
+    obj.classList.add(`turntrack${this.game.state.round}`);
+
+  }
+
   displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
 
@@ -115,6 +124,31 @@
 
   displayDebaters() {
     this.debaters_overlay.render();
+  }
+
+  displayPersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "block";
+  }
+  hidePersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "none";
+  }
+  displayEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "block";
+  }
+  hideEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "none";
+  }
+  displayIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "block";
+  }
+  hideIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "none";
   }
 
   displayExplorers() {
@@ -298,6 +332,15 @@
 
   displayBoard() {
 
+    if (this.game.state.events.war_in_persia) { this.displayPersia(); }
+    if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
+    if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+
+    try {
+      this.displayTurnTrack();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayWarBox();
     } catch (err) {
@@ -1843,6 +1886,7 @@ console.log("cardname: " + cardname);
       "img/backgrounds/diet_of_worms.jpeg",
       "img/backgrounds/language-zone.jpg",
       "img/backgrounds/95_theses.jpeg",
+      "img/cards/PASS.png",
     ];
 
     this.preloadImageArray(allImages);

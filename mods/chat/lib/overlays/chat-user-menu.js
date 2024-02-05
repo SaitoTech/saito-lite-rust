@@ -63,6 +63,37 @@ class ChatUserMenu {
 				thisobj.overlay.remove();
 			};
 		}
+
+		if (document.getElementById('mute')){
+			document.getElementById('mute').onclick = (e) => {
+				this.chat_group.muted = true;
+				this.mod.saveChatGroup(this.chat_group);
+				this.overlay.remove();
+			}
+		}
+
+		if (document.getElementById('unmute')){
+			document.getElementById('unmute').onclick = (e) => {
+				this.chat_group.muted = false;
+				this.mod.saveChatGroup(this.chat_group);
+				this.overlay.remove();
+			}
+		}
+
+
+		if (document.getElementById('block')){
+			document.getElementById('block').onclick = (e) => {
+				for (let pkey of this.chat_group.members){
+					if (pkey !== this.mod.publicKey){
+						this.mod.black_list.push(pkey);		
+					}
+				}
+				this.mod.deleteChatGroup(this.chat_group);
+				this.overlay.remove();
+			}
+		}
+
+
 		if (document.getElementById('delete')) {
 			document.getElementById('delete').onclick = async (e) => {
 				let c = await sconfirm(

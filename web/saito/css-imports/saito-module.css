@@ -145,8 +145,22 @@ fieldset.saito-grid {
     column-gap: 1.5rem;
     align-items: center;
     margin: 1rem 0;
+    border: 1px solid var(--saito-font-color-light);
 }
 
 .saito-module-settings .note {
     font-style: italic;
+}
+
+.saito-grid i {
+    margin: 0 0.5rem;
+    font-size: 1.8rem;
+}
+
+.settings-link, .settings-link label {
+    cursor: pointer;
+}
+
+.settings-link:hover label{
+    text-decoration: underline;
 }

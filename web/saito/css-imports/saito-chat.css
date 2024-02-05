@@ -102,51 +102,6 @@
   cursor: help;
 }
 
-.chat-manager-menu {
-  position: absolute;
-  width: 100%;
-  min-height: 22rem;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: var(--saito-background-color);
-  /*padding-left: 1rem;*/
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  gap: 0.5rem;
-}
-
-.chat-manager-options.active {
-  transform: rotate(90deg);
-}
-
-.chat-manager-menu>div {
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.chat-manager-menu>div:hover {
-  background-color: var(--saito-primary);
-  color: var(--saito-background-color);
-}
-
-.chat-manager-menu i {
-  width: 24px;
-  height: 22px;
-  margin: auto;
-}
-
-.chat-manager-menu .notice {
-  cursor: unset;
-  font-style: italic;
-  font-size: 16px;
-}
-
-.chat-manager-menu>div.notice:hover {
-  color: var(--saito-font-color);
-  background-color: var(--saito-background-color);
-}
 
 /*  Chat / Popup  */
 
