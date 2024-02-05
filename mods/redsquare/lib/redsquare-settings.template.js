@@ -2,7 +2,8 @@ module.exports = (app, mod) => {
 
 	let current_source = app.options.redsquare?.distributed;
 
-	return `
+	let html = `
+			<div class="saito-module-settings">
 			<fieldset class="saito-grid">
 			<legend class="settings-label">RedSquare Feed</legend>
 			<input type="radio" id="central" name="redsquare-source" value="central" ${current_source ? "" : "checked"}/>
@@ -16,4 +17,22 @@ module.exports = (app, mod) => {
 			</fieldset>
 			`;
 
+
+	if (mod?.mute_list?.length > 0){
+		html += `<fieldset id="muted-accounts" class="saito-grid settings-link">
+		<i class="fa-solid fa-volume-xmark"></i>
+		<label>Manage Muted Accounts</label>
+		</fieldset>`;
+	}
+
+	if (mod?.black_list?.length > 0){
+		html += `<fieldset id="blocked-accounts" class="saito-grid settings-link">
+		<i class="fa-solid fa-ban"></i>
+		<label>Manage Blocked Accounts</label>
+		</fieldset>`;
+	}
+
+	html += "</div>";
+
+	return html;
 }

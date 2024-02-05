@@ -15,6 +15,7 @@ const Post = require('./lib/post');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const AppSettings = require('./lib/redsquare-settings');
+const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay');
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
@@ -162,7 +163,12 @@ class RedSquare extends ModTemplate {
   }
 
   loadSettings(container = null) {
-    let as = new AppSettings(this.app, this.mod, container);
+    if (!container){
+      let overlay = new SaitoOverlay(this.app, this.mod);
+      overlay.show(`<div class="redsquare-settings-overlay"><h2>Redsquare Settings</h2></div>`);
+      container = ".redsquare-settings-overlay";
+    }
+    let as = new AppSettings(this.app, this, container);
     as.render();
   }
 
