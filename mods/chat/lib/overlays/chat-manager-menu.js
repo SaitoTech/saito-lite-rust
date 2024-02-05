@@ -1,6 +1,8 @@
 const chatMenuTemplate = require('./chat-manager-menu.template');
 const ContactsList = require('./../../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
+const ChatList = require('./chat-list');
+const ChatUserMenu = require('./chat-user-menu');
 
 class ChatManagerMenu {
 	constructor(app, mod, container) {
@@ -34,6 +36,18 @@ class ChatManagerMenu {
 				let group = this.mod.returnOrCreateChatGroupFromMembers(person);
 			}
 		};
+
+		this.chatList = new ChatList(app, mod);
+		this.chatList.callback = (gid) => {
+			console.log("Callback: " + gid);
+					let chatMenu = new ChatUserMenu(
+						this.app,
+						this.mod,
+						this.mod.returnGroup(gid)
+					);
+					chatMenu.render();
+
+		};
 	}
 
 	async render() {
@@ -66,6 +80,13 @@ class ChatManagerMenu {
 				this.contactList.render();
 			};
 		}
+
+	    if (document.getElementById('edit-contacts')){
+	    	document.getElementById('edit-contacts').onclick = (e) => {
+	    		this.chatList.render();
+	    	}
+		}
+
 
 		if (document.getElementById('enable-notifications')) {
 			document
@@ -110,6 +131,17 @@ class ChatManagerMenu {
 
     }
 
+    if (document.getElementById("auto-open")){
+      document.getElementById("auto-open").addEventListener("change", (e) => {
+        if (e.currentTarget.checked){
+        	this.mod.auto_open_community = true;
+        }else{
+        	this.mod.auto_open_community = false;
+        }
+        this.mod.saveOptions();
+      });
+
+    }
 	}
 }
 
