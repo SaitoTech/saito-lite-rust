@@ -1,6 +1,6 @@
 .chat-manager {
-  height: 25%;
-  flex: 1;
+  min-height: 25%;
+  /*flex: 1;*/
   position: relative;
   display: grid;
   grid-template-rows: 40px 1fr;
@@ -39,8 +39,9 @@
   display: flex;
   flex-direction: column;
   min-height: 22rem;
-  max-height: calc(100% - 5rem);
+  max-height: 100%;/*calc(100% - 5rem);*/
   position: relative;
+  background: blue;
 }
 
 .chat-manager-list .saito-address {
@@ -698,7 +699,13 @@
     height: var(--saito-header-height);
     line-height: 5rem;
   }
-  
+
+  .chat-header > .chat-header-nav > i.chat-container-close {
+    width: 4rem;
+    text-align: center;
+    font-size: 2.4rem;
+  }
+
   .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
     -webkit-transition: none !important;
     -moz-transition: none !important;
@@ -737,8 +744,10 @@
   .chat-container {
     margin: 0;
     width: 100vw;
-    height: calc(100% - var(--saito-header-height));
-    max-height: none;
+    height: 100%;
+    height: calc(100 * var(--saito-vh));
+    max-height: -webkit-fill-available;
+    max-width: -webkit-fill-available;
     border-radius: 0;
     /* For the keyboard */
     right: 0;
@@ -746,6 +755,10 @@
     top: 0;
     left: 0;
   }
+
+
+
+  /* emoji-picker breaks this */
   .chat-manager-overlay+.chat-container {
     height: 100vh;
     height: calc(var(--saito-vh) * 100);

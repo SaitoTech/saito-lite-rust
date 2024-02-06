@@ -18,6 +18,11 @@
 	height: calc(100vh - var(--saito-header-height));
 }
 
+.chat-main-container .chat-manager {
+	height: 100%;
+}
+
+
 .chat-main-container .chat-header,
 .chat-main-container .chat-footer {
 	padding: 0 1rem !important;
