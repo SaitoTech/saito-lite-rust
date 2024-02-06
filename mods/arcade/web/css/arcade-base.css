@@ -71,13 +71,9 @@
 
 @media screen and (max-width: 900px) {
 	.arcade-container .saito-sidebar.right {
-		position: unset;
-		left: unset;
-		width: unset;
-		top: unset;
+		display: block;
 		visibility: visible;
-		margin-top: unset;
-		height: unset;
+		position: unset;
 		grid-row: unset;
 		grid-column-start: unset;
 		padding: 1rem;

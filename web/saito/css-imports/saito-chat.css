@@ -150,7 +150,8 @@
 
 .chat-popup {
   display: grid;
-  grid-template-rows: 63px 1fr min-content;
+  /*grid-template-rows: 63px 1fr min-content;*/
+  grid-template-rows: min-content 1fr min-content;
   grid-template-columns: 100%;
   align-items: center;
 }
@@ -388,20 +389,19 @@
   justify-content: flex-end;
 }
 
+.chat-body .saito-user-self.saito-user .saito-userline {
+  background: var(--saito-background-light);
+}
+
 /* hide my own name */
 
-.chat-body .saito-user-self > .saito-address {
-  color: var(--saito-primary);
-  display: none !important
+.chat-body .saito-user-self.saito-user > .saito-address, .chat-body .saito-user-self.saito-user > .saito-identicon-box {
+  display: none;
 }
 
 .saito-mention.saito-address.treated {
   display: inline-block !important;
   margin: 0 8px 0 0;
-}
-
-.chat-body .saito-user-self.saito-user .saito-identicon-box {
-  display: none;
 }
 
 

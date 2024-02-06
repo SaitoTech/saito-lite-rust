@@ -130,7 +130,7 @@ label.treated {
 	}
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 650px) {
 	.settings-appspace {
 		padding: 1rem;
 	}
@@ -146,5 +146,11 @@ label.treated {
 	}
 	.settings-actions-container .saito-button-secondary {
 		padding: 0.4rem 0.3rem;
+	}
+}
+
+@media only screen and (max-width: 500px) {
+	.settings-appspace-modules {
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
