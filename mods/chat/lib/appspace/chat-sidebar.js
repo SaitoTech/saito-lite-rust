@@ -6,11 +6,7 @@ class ChatSidebar {
 		this.mod = mod;
 		this.container = container;
 
-    app.connection.on('chat-popup-render-request', (group = null) => {
-      if (!group) {
-        group = this.mod.returnCommunityChat();
-      }
-
+    app.connection.on('chat-manager-opens-group', (group = null) => {
       if (group) {
         this.render(group);
       }
@@ -18,13 +14,19 @@ class ChatSidebar {
 	}
 
 	render(chat = null) {
+
+    console.log("Render chat sidebar for ", chat);
+
     if (document.getElementById("chat-sidebar")){
       this.app.browser.replaceElementById(ChatSidebarTemplate(this.app, this.mod, chat), "chat-sidebar");
     }else{
       this.app.browser.addElementToSelector(ChatSidebarTemplate(this.app, this.mod, chat), this.container);
     }
 
-    this.attachEvents(chat);
+    if (chat){
+      this.attachEvents(chat);  
+    }
+    
   }
 
   attachEvents(chat) {
