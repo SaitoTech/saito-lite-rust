@@ -85,6 +85,18 @@
 	height: 4rem;
 }
 
+
+/* left align all chats in wide screen */ 
+@media screen and (min-width: 1200px) {
+	.chat-body .saito-user-self.saito-user {
+	  display: grid;
+	  justify-content: unset;
+	}
+	.chat-body .saito-user-self.saito-user > .saito-address, .chat-body .saito-user-self.saito-user > .saito-identicon-box {
+	  display: block;
+	}
+}
+
 @media screen and (max-width: 1200px) {
 	.chat-main-container .saito-sidebar.left {
 		visibility: visible;

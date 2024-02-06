@@ -192,7 +192,7 @@ Scrollbars
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  display: inline-block !important;
+  display: inline-block/*!important*/;
   width: auto;
   max-width: 99%;
   cursor: pointer;
