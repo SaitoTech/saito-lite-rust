@@ -324,16 +324,21 @@ video#local {
 	transform: rotateY(180deg);
 }
 
-/* So for some reason we think it is better to inline style these through the template file */
 .video-box-container-large video {
 	width: 100%;
 	height: fit-content;
+	max-width: 100%;
 	max-height: 100%;
 	z-index: 2;
 	border-radius: 0.1rem;
 	object-fit: contain;
 	border: none;
 	overflow: clip;
+}
+
+.video-box-container-large.portrait video {
+	width: auto;
+	height: 100%;
 }
 
 .video-box-container-large > #connection-message {
@@ -628,7 +633,8 @@ video#local {
 
 @media screen and (max-width: 900px) {
 	.stun-chatbox.full-screen main {
-		grid-template-rows: 1fr minmax(200px, 20%);
+		grid-template-rows: minmax(0, 1fr) minmax(200px, 20%);
+		grid-template-columns: minmax(100px, 1fr);
 	}
 
 	.full-screen .control-panel {
@@ -674,6 +680,16 @@ video#local {
 		max-width: 100%;
 		justify-content: space-between;
 	}
+
+	.full-screen .control-panel .control-list {
+		gap: 0.75rem;
+	}
+
+	.full-screen .control-panel .control-list span {
+		width: 4rem;
+		height: 4rem;
+	}
+
 }
 
 /* CHAT SETTINGS */
@@ -914,6 +930,7 @@ video#local {
 	.presentation,
 	.expanded-video {
 		resize: none;
+		overflow: hidden;
 		min-width: 100%;
 	}
 

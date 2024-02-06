@@ -77,6 +77,8 @@ class ArcadeMain {
 	}
 
 	attachEvents() {
+		/*
+
 		const scrollableElement = document.querySelector('.saito-container');
 		const sidebar = document.querySelector('.saito-sidebar.right');
 		let scrollTop = 0;
@@ -107,6 +109,7 @@ class ArcadeMain {
 			}
 			scrollTop = scrollableElement.scrollTop;
 		});
+		*/
 	}
 }
 
