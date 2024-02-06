@@ -2113,7 +2113,12 @@ return;
               let moved_units = [];
 
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
-	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
+	      if (faction != his_self.game.state.events.spring_preparations) { 
+  		if (his_self.isSpaceConnectedToCapitalSpringDeployment(destination_spacekey, faction, 0) == 0) {
+		  if (max_formation_size > 5) { max_formation_size = 5; } 
+	        }
+  	      }
+
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
 	      let html = '<ul>';
 
@@ -4047,6 +4052,7 @@ console.log("faction_hand_idx: " + faction_hand_idx);
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
+    if (his_self.game.state.may_explore[faction] == 0) { return 0; }
     if (faction === "protestant") {  return false; }
     for (let i = 0; i < his_self.game.state.explorations.length; i++) {
       if (his_self.game.state.explorations[i].faction == faction) { return 0; }
@@ -4159,6 +4165,8 @@ console.log("faction_hand_idx: " + faction_hand_idx);
   }
   canPlayerColonize(his_self, player, faction) {
 
+    if (his_self.game.state.may_colonize[faction] == 0) { return 0; }
+
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
     if (faction === "ottoman") { return false; }
@@ -4182,6 +4190,9 @@ console.log("faction_hand_idx: " + faction_hand_idx);
     return 0;
   }
   canPlayerConquer(his_self, player, faction) {
+
+    if (his_self.game.state.may_conquer[faction] == 0) { return 0; }
+
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }

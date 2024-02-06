@@ -165,3 +165,108 @@
 	width: 28rem;
 	max-width: 28vw;
 }
+
+
+.new-world-bonus , .colony , .conquest {
+  position: absolute;
+  height: 10rem;
+  width: 10rem;
+  background-color: green;
+}
+
+.england_colony1 {
+      top : 1007px;
+      left : 55px;
+}
+.england_colony2 {
+      top : 1120px;
+      left : 55px;
+}
+.france_colony1 {
+      top : 1230px;
+      left : 55px;
+}
+.france_colony2 {
+      top : 1340px;
+      left : 55px;
+}
+.hapsburg_colony1 {
+      top : 1455px;
+      left : 55px;
+}
+.hapsburg_colony2 {
+      top : 1565px;
+      left : 55px;
+}
+.hapsburg_colony3 {
+      top : 1680px;
+      left : 55px;
+}
+.england_conquest1 {
+      top : 1007px;
+      left : 180px;
+}
+.england_conquest2 {
+      top : 1120px;
+      left : 180px;
+}
+.france_conquest1 {
+      top : 1230px;
+      left : 180px;
+}
+.france_conquest2 {
+      top : 1340px;
+      left : 180px;
+}
+.hapsburg_conquest1 {
+      top : 1455px;
+      left : 180px;
+}
+.hapsburg_conquest2 {
+      top : 1565px;
+      left : 180px;
+}
+.hapsburg_conquest3 {
+      top : 1680px;
+      left : 180px;
+}
+.greatlakes {
+      top : 1906px;
+      left : 280px;
+}
+.stlawrence {
+      top : 1886px;
+      left : 515px;
+}
+.mississippi {
+      top : 2075px;
+      left : 280px;
+}
+.aztec {
+      top : 2258px;
+      left : 168px;
+}
+.maya {
+      top : 2300px;
+      left : 302px;
+}
+.amazon {
+      top : 2536px;
+      left : 668px;
+}
+.inca {
+      top : 2660px;
+      left : 525px;
+}
+.circumnavigation {
+      top : 2698px;
+      left : 128px;
+}
+.pacificstrait {
+      top : 2996px;
+      left : 486px;
+}
+
+
+
+

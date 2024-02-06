@@ -747,6 +747,26 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 	  return 1;
 	}
 
+	if (mv[0] === "remove_conquest") {
+	  let faction = mv[1];
+	  for (let i = 0; i < this.game.state.conquests.length; i++) {
+	    if (this.game.state.conquests[i] === faction) {
+	      this.game.state.conquests.splice(i, 1);
+	    }
+	  }
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+	if (mv[0] === "remove_exploration") {
+	  let faction = mv[1];
+	  for (let i = 0; i < this.game.state.explorations.length; i++) {
+	    if (this.game.state.explorations[i] === faction) {
+	      this.game.state.explorations.splice(i, 1);
+	    }
+	  }
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
 	if (mv[0] === "remove_colony") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.colonies.length; i++) {
@@ -763,6 +783,7 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 	    faction : faction,
 	    round :   this.game.state.round,
 	  });
+          this.game.state.may_colonize[faction] = 0;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -773,6 +794,7 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 	    faction : faction,
 	    round :   this.game.state.round,
 	  });
+          this.game.state.may_explore[faction] = 0;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -783,6 +805,7 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 	    faction : faction,
 	    round :   this.game.state.round,
 	  });
+          this.game.state.may_conquer[faction] = 0;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -7159,10 +7182,42 @@ defender_hits - attacker_hits;
 	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
 
 	  //
+	  // Clement VII takes the Papacy by the end of round two
+	  //
+	  if (this.game.state.round == 2 && this.game.state.events.clement_vii != 1) {
+	    this.game.queue.push("counter_or_acknowledge\tTurn 2: Clement VII is elected Pope");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("event\tpapacy\t010");
+	  }
+	  //
+	  // Paul III takes the Papacy by the end of round 4
+	  //
+	  if (this.game.state.round == 4 && this.game.state.events.paul_iii != 1) {
+	    this.game.queue.push("counter_or_acknowledge\tTurn 4: Paul III is elected Pope");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("event\tpapacy\t014");
+	  }
+	  //
+	  // Barbary Pirates form by end of round 3 (not in 2P game)
+	  //
+	  if (this.game.players.length > 2 && this.game.state.round == 3 && this.game.state.events.barbary_pirates != 1) {
+	    this.game.queue.push("counter_or_acknowledge\tTurn 3: Barbary Pirates Form!");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("event\tottoman\t009");
+	  }
+	  //
+	  // Society of Jesus forms by end of round 6
+	  //
+	  if (this.game.state.round == 6 && this.game.state.events.society_of_jesus != 1) {
+	    this.game.queue.push("counter_or_acknowledge\tTurn 6: Society of Jesus Forms");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("event\tprotestant\t015");
+	  }
+	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
 	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
-	    this.game.queue.push("counter_or_acknowledge\tSchmalkaldic League Forms");
+	    this.game.queue.push("counter_or_acknowledge\tTurn 4: Schmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }

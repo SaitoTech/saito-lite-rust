@@ -390,6 +390,8 @@
   }
 
   displayNewWorld() {
+    this.displayColony();
+    this.displayConquest();
   }
 
   displaySpaceDetailedView(name) {
