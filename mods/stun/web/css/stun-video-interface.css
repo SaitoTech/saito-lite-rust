@@ -324,16 +324,21 @@ video#local {
 	transform: rotateY(180deg);
 }
 
-/* So for some reason we think it is better to inline style these through the template file */
 .video-box-container-large video {
 	width: 100%;
 	height: fit-content;
+	max-width: 100%;
 	max-height: 100%;
 	z-index: 2;
 	border-radius: 0.1rem;
 	object-fit: contain;
 	border: none;
 	overflow: clip;
+}
+
+.video-box-container-large.portrait video {
+	width: auto;
+	height: 100%;
 }
 
 .video-box-container-large > #connection-message {
