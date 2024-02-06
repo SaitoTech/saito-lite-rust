@@ -41,7 +41,6 @@
   min-height: 22rem;
   max-height: 100%;/*calc(100% - 5rem);*/
   position: relative;
-  background: blue;
 }
 
 .chat-manager-list .saito-address {
