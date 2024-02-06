@@ -202,6 +202,7 @@
   }
 
   isSpaceFriendly(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
     return this.areAllies(cf, faction);
@@ -284,6 +285,7 @@
     // • free of unrest.
     //
     let res = this.returnNearestSpaceWithFilter(
+
       space.key ,
 
       // capitals are good destinations
@@ -434,6 +436,14 @@
       transit_passes = 1;
     }
 
+let debugmode = 0;
+if (space.key == "cagliari") { debugmode = 1; 
+  console.log("!");
+  console.log("!");
+  console.log("!");
+  console.log("cagliari!");
+}
+
     let res = this.returnNearestSpaceWithFilter(
 
       space.key,
@@ -444,6 +454,7 @@
         return 0;
       },
 
+
       // route through this?
       function(spacekey) {
 	if (already_routed_through[spacekey] == 1) { return 0; }
@@ -451,6 +462,8 @@
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	return 0;
       },
+
+      0, // include source
 
       // transit passes? 0
       transit_passes,
@@ -1060,28 +1073,30 @@
     if (this.game.spaces[key]) {
       for (let f in this.game.spaces[key].units) {
 	if (f != exclude_faction) {
-          if (this.game.spaces[key].units[faction]) {
-            for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
+          if (this.game.spaces[key].units[f]) {
+            for (let i = 0; i < this.game.spaces[key].units[f].length; i++) {
+              if (this.game.spaces[key].units[f][i].type === "squadron" || this.game.spaces[key].units[f][i].type === "corsair") {
   	        return 1;
               }
             }
 	  }
 	}
       }
+      return 0;
     }
     if (this.game.navalspaces[key]) {
       for (let f in this.game.navalspaces[key].units) {
 	if (f != exclude_faction) {
-          if (this.game.navalspaces[key].units[faction]) {
-            for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
-              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
+          if (this.game.navalspaces[key].units[f]) {
+            for (let i = 0; i < this.game.navalspaces[key].units[f].length; i++) {
+              if (this.game.navalspaces[key].units[f][i].type === "squadron" || this.game.navalspaces[key].units[f][i].type === "corsair") {
   	        return 1;
               }
             }
 	  }
 	}
       }
+      return 0;
     }
     return 0;
   }
@@ -1208,6 +1223,7 @@ try {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; is_naval_space = true; } } catch (err) {}
     try { if (this.game.navalspaces[space.key]) { is_naval_space = true; } } catch (err) {}
+
 
     if (transit_seas == 0 && is_naval_space != true) {
       if (transit_passes == 1) {
@@ -1484,6 +1500,7 @@ try {
     let searched_spaces = {};
     let pending_spaces = {};
 
+
     //
     // if the source matches our destination, return it
     //
@@ -1498,6 +1515,14 @@ try {
     // put the neighbours into pending
     //
     let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction, is_spring_deployment);
+
+if (sourcekey == "cagliari") {
+  console.log("faction is: " + faction);
+  console.log("neighbours: " + JSON.stringify(n));
+  let cf = this.returnFactionControllingSpace("toulouse");
+  console.log("controlling faction: " + cf + " faction is: " + faction);
+  console.log("allies: " + this.areAllies(cf, faction));
+}
 
     for (let i = 0; i < n.length; i++) {
       pending_spaces[n[i].neighbour] = { hops : 0 , key : n[i] , overseas : n[i].overseas };
@@ -1745,7 +1770,7 @@ try {
       top : 1020 ,
       left : 1450 ,
       name : "English Channel" ,
-      ports : ["brest", "plymouth", "portsmouth", "rouen", "bolougne", "calais" ] ,
+      ports : ["brest", "plymouth", "portsmouth", "rouen", "boulogne", "calais" ] ,
       neighbours : ["irish","biscay","north"] ,
     }
     seas['north'] = {
@@ -3362,6 +3387,7 @@ try {
     }
 
     for (let key in spaces) {
+      spaces[key].key = key;
       spaces[key].units = {};
       spaces[key].units['england'] = [];
       spaces[key].units['france'] = [];

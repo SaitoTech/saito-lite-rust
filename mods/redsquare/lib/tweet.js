@@ -395,7 +395,7 @@ class Tweet {
 
 		if (this.tx.optional?.update_tx) {
 			this.notice =
-				'this tweet was edited at ' + this.formatDate(this.updated_at);
+				'this tweet was edited on ' + this.formatDate(this.updated_at);
 		}
 
 		if (this.render_after_selector) {

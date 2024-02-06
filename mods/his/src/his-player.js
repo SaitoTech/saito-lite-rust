@@ -2072,6 +2072,24 @@ return;
 
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
+if (space.key === "bilbao") {
+
+  console.log("#");
+  console.log("#");
+  console.log("#");
+  console.log("space.key: " + space.key + " " + faction);
+  console.log("is connected: " + his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction));
+
+}
+if (space.key === "barcelona") {
+
+  console.log("#");
+  console.log("#");
+  console.log("#");
+  console.log("space.key: " + space.key + " " + faction);
+  console.log("is connected: " + his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction));
+
+}
               if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction)) {
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
                   return 1;

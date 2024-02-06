@@ -442,6 +442,7 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 		//  the space isn't controlled by the faction
 
 		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerCommandingFaction(key) > 0)) {
+
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
 		  //
@@ -864,6 +865,9 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 	  this.addRegular("hapsburg", "naples", 4);
 	  this.addNavalSquadron("hapsburg", "naples", 2);
 	
+	  this.addRegular("hapsburg", "nuremberg", 1);
+	  this.addRegular("hapsburg", "worms", 1);
+	  this.addRegular("hapsburg", "kassel", 1);
 
     	  this.addRegular("england", "stirling", 4);
 	  this.addRegular("france", "glasgow", 2);
@@ -911,7 +915,7 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 
 	  for (let key in this.game.spaces) {
 	    if (this.game.spaces[key].language == "german") {
-	      this.controlSpace("protestant", key);
+	      //this.controlSpace("protestant", key);
 	      this.convertSpace("protestant", key);
 	    }
 	  }
@@ -923,10 +927,6 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
 
 	  this.setAllies("papacy", "hapsburg");
 	  this.setActivatedPower("papacy", "hapsburg");
-
-    	  this.controlSpace("france", "genoa");
-    	  this.addRegular("france", "genoa", 3);
-    	  this.addNavalSquadron("france", "genoa", 4);
 
           this.addReformer("protestant", "modena", "zwingli-reformer");
 
@@ -3356,7 +3356,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	  let defender_units = ['defender'];
 
 	  // no defender bonus in foreign wars
-	  if (spacekey === "persia" || spacekey === "egypt" || spacekey === "ireland") {
+	  if (space.key === "persia" || space.key === "egypt" || space.key === "ireland") {
 	    defender_units = [];
 	  }
 	  let attacker_units_faction = [];
