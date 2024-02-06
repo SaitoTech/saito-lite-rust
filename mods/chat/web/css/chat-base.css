@@ -27,8 +27,13 @@
 	grid-template-columns: min-content auto;
 }
 
+
 .chat-main-container .saito-sidebar.left {
+	min-width: 20rem;
 	width: 30rem;
+	max-width: 50vw;
+	resize: horizontal;
+	overflow: auto;
 	border-right: 1px solid var(--saito-border-color);
 	padding: 1rem;
 }
@@ -82,28 +87,28 @@
 
 @media screen and (max-width: 1200px) {
 	.chat-main-container .saito-sidebar.left {
-		position: sticky;
-		width: 25rem;
-		height: calc(100vh - var(--saito-header-height));
 		visibility: visible;
-		border: unset;
-		top: 0;
+		display: block;
 	}
 }
 
+
 @media screen and (max-width: 900px) {
 	.chat-main-container .saito-main {
-		width: unset !important;
+		width: 100% !important;
 	}
 
-	.chat-main-container.saito-container {
-		grid-template-columns: 20rem auto;
-	}
 }
 
 @media screen and (max-width: 600px) {
 	.chat-main-container.saito-container {
 		grid-template-columns: 1fr;
+	}
+
+	.chat-main-container .saito-sidebar.left {
+		max-width: unset;
+		width: 100vw;
+		resize: none;
 	}
 	.saito-main {
 		display: none;
