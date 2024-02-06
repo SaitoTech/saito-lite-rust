@@ -23,10 +23,16 @@
 	padding: 0 1rem !important;
 }
 
+.chat-main-container .chat-header-info {
+	height: 5rem;
+}
+.chat-main-container .chat-header .chat-header-nav {
+	display: none;
+}
+
 .chat-main-container.saito-container {
 	grid-template-columns: min-content auto;
 }
-
 
 .chat-main-container .saito-sidebar.left {
 	min-width: 20rem;

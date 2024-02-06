@@ -150,7 +150,8 @@
 
 .chat-popup {
   display: grid;
-  grid-template-rows: 63px 1fr min-content;
+  /*grid-template-rows: 63px 1fr min-content;*/
+  grid-template-rows: min-content 1fr min-content;
   grid-template-columns: 100%;
   align-items: center;
 }
