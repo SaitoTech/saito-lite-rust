@@ -406,21 +406,8 @@ class ChatManager {
 
 		if (document.querySelector('.chat-manager-options')) {
 			document.querySelector('.chat-manager-options').onclick = (e) => {
-				if (!this.chatManagerMenu) {
-					this.chatManagerMenu = new ChatManagerMenu(
-						this.app,
-						this.mod
-					);
-				}
-				if (this.chatManagerMenu.active) {
-					this.chatManagerMenu.hide();
-				} else {
-					this.chatManagerMenu.render();
-				}
-				document
-					.querySelector('.chat-manager-options')
-					.classList.toggle('active');
-			};
+				this.mod.loadSettings();
+			}
 		}
 	}
 }

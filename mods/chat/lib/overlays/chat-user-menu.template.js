@@ -3,8 +3,24 @@ module.exports = (app, mod, chat_group) => {
    <div class="saito-modal saito-modal-menu" id="saito-chat-menu">
     <div class="saito-modal-title">${chat_group.name}</div>
      <div class="saito-modal-content">
-      <div id="rename" class="saito-modal-menu-option"><i class="fas fa-user-edit"></i><div>Rename</div></div>
-      <div id="delete" class="saito-modal-menu-option"><i class="fas fa-trash-alt"></i><div>Delete</div></div>`;
+      <div id="rename" class="saito-modal-menu-option"><i class="fas fa-user-edit"></i><div>Rename</div></div>`;
+
+    if (chat_group?.muted){
+		html += `<div id="unmute" class="saito-modal-menu-option"><i class="fa-solid fa-volume"></i><div>Unmute</div></div>`;	
+    }else{
+    	html += `<div id="mute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-xmark"></i><div>Mute</div></div>`;	
+    }
+    html += `<div id="delete" class="saito-modal-menu-option"><i class="fas fa-trash-alt"></i><div>Clear History</div></div>
+      `;
+
+      if (chat_group.id !== mod.communityGroup.id){
+      	if (chat_group.members.length == 2){
+      		html += `<div id="block" class="saito-modal-menu-option"><i class="fas fa-ban"></i><div>Delete and Block</div></div>`;	
+      	}else{
+      		html += `<div id="leave" class="saito-modal-menu-option"><i class="fa-solid fa-door-open"></i><div>Leave Group</div></div>`;	
+      	}
+      	
+      }
 
 	if (chat_group.member_ids) {
 		if (chat_group.member_ids[mod.publicKey] == 'admin') {

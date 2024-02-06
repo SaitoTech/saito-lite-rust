@@ -150,6 +150,11 @@ class RedSquareNavigation {
       this.app.connection.emit("redsquare-profile-render-request", this.mod.publicKey);
     };
 
+
+    document.querySelector(".redsquare-menu-settings").onclick = (e) => {
+      this.mod.loadSettings();
+    }
+
     //
     // appspace modules
     //

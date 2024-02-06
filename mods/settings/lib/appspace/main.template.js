@@ -32,9 +32,13 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
           <div class="saito-switch">
             <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
           </div>
-          <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>
-         </div>
-      `;
+          <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>`;
+
+      if (mod.hasSettings()){
+        modules_html += `<i class="fas fa-cog"></i>`
+      }
+
+      modules_html += "</div>";
 		}
 	} catch (err) {
 		console.error(err);

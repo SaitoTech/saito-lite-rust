@@ -9,11 +9,11 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
 
 		const regex3 = /<div class="file-name">[^>]*>/i;
 
-		if (tx.msg.indexOf('<img') == 0){
-			last_msg = '<em>[image]</em>'
-		}else if (regex3.test(tx.msg)) {
+		if (tx.msg.indexOf('<img') == 0) {
+			last_msg = '<em>[image]</em>';
+		} else if (regex3.test(tx.msg)) {
 			last_msg = tx.msg.match(regex3)[0];
-		}else{
+		} else {
 			last_msg = app.browser.sanitize(tx.msg);
 		}
 
@@ -43,24 +43,21 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
 	return `
   <div class="saito-user ${notification}
       ${group?.online ? ' online' : ''} 
-      ${
-	chat_open ? ' saito-chat-active' : ''
-}" id="saito-user-${id}" data-id="${id}" data-disable="true">
+      ${chat_open ? ' saito-chat-active' : ''
+		}" id="saito-user-${id}" data-id="${id}" data-disable="true">
     <div class="saito-identicon-box">
       <img class="saito-identicon" src="${imgsrc}" data-disable="true"/>
     
     </div>
-    <div class="saito-address saito-address-long" data-id="${
-	group.name
-}" data-disable="true">${group.name}</div>
+    <div class="saito-address saito-address-long" data-id="${group.name
+	}" data-disable="true">${group.name}</div>
     <div class="saito-userline">${last_msg}</div>
     <div class="saito-chat-notifications">
       ${group.mentioned ? `<div class="saito-notification-dot">@</div>` : ''}
-      ${
-	group.unread > 0
-		? `<div class="saito-notification-dot">${group.unread}</div>`
-		: ''
-}
+      ${ group.unread > 0
+				? `<div class="saito-notification-dot">${group.unread}</div>`
+				: ''
+		}
     </div>
     <div class="online-status-indicator"></div>
   </div>
