@@ -1,6 +1,7 @@
 .saito-container.chat-main-container {
 	padding: 0;
 	overflow-y: hidden;
+	grid-template-columns: min-content auto;
 }
 
 #saito-header {
@@ -35,10 +36,6 @@
 	display: none;
 }
 
-.chat-main-container.saito-container {
-	grid-template-columns: min-content auto;
-}
-
 .chat-main-container .saito-sidebar.left {
 	min-width: 20rem;
 	width: 30rem;
@@ -47,6 +44,11 @@
 	overflow: auto;
 	border-right: 1px solid var(--saito-border-color);
 	padding: 1rem;
+}
+
+.chat-main-container .saito-sidebar.right {
+	display: none;
+	visibility: hidden;
 }
 
 .chat-main-container .chat-header {
@@ -106,6 +108,16 @@
 	.chat-body .saito-user-self.saito-user > .saito-address, .chat-body .saito-user-self.saito-user > .saito-identicon-box {
 	  display: block;
 	}
+
+	.chat-main-container .saito-sidebar.right {
+		display: block;
+		visibility: visible;
+	}
+
+	.saito-container.chat-main-container {
+		grid-template-columns: min-content auto min-content;
+	}
+
 }
 
 @media screen and (max-width: 1200px) {

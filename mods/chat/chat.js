@@ -10,7 +10,7 @@ const localforage = require('localforage');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ChatSettings = require('./lib/overlays/chat-manager-menu');
-
+const ChatSidebar = require("./lib/appspace/chat-sidebar");
 
 class Chat extends ModTemplate {
 	constructor(app) {
@@ -210,6 +210,8 @@ class Chat extends ModTemplate {
 
 			this.main = new ChatMain(this.app, this);
 			this.addComponent(this.main);
+
+			this.addComponent(new ChatSidebar(this.app, this));
 		}
 
 		if (this.chat_manager == null) {
