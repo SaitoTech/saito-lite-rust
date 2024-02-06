@@ -1107,7 +1107,7 @@ class Chat extends ModTemplate {
 			this.app.browser.stripHtml(msg).length >= 1000
 		) {
 			siteMessage(
-				'Purchase SAITO to Send Large Messages in Community Chat...',
+				'Insufficient SAITO to Send Large Messages in Community Chat...',
 				3000
 			);
 			return null;

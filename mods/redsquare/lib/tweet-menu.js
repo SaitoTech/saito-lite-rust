@@ -103,7 +103,7 @@ class TweetMenu {
 
 			siteMessage('Reporting tweet to moderators...', 3000);
 		} else {
-			siteMessage('Purchase SAITO to Moderate...', 3000);
+			siteMessage('Insufficient SAITO to Moderate...', 3000);
 		}
 
 		this.hideTweet();
