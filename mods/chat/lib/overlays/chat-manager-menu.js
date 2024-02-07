@@ -39,13 +39,12 @@ class ChatManagerMenu {
 
 		this.chatList = new ChatList(app, mod);
 		this.chatList.callback = (gid) => {
-			console.log("Callback: " + gid);
-					let chatMenu = new ChatUserMenu(
-						this.app,
-						this.mod,
-						this.mod.returnGroup(gid)
-					);
-					chatMenu.render();
+			let chatMenu = new ChatUserMenu(
+				this.app,
+				this.mod,
+				this.mod.returnGroup(gid)
+			);
+			chatMenu.render();
 
 		};
 	}
