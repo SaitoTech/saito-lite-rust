@@ -3,9 +3,9 @@ INTRODUCTION
 This is an implement of HERE I STAND written for the open source Saito Game Engine. The game supports both the two-player and six-player game variants. The codebase is under community development - if you'd like ot help we could use assistance.
 
 
-BUGS
+TODO
+ - bugtesting -- please report issues
 
- - Mary I papal rolls not implemented
 
 LICENSE
 

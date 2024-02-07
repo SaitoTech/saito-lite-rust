@@ -5864,34 +5864,35 @@ alert("HERE");
       canEvent : function(his_self, faction) { if (his_self.game.state.events.society_of_jesus) { return 1; } return 0; } ,
       onEvent : function(his_self, faction) {
 	if (his_self.game.state.events.society_of_jesus) { his_self.game.queue.push("jesuit_education"); }
+	return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
-        if (mv[0] == "jesuit_education") {
-
-	  if (!his_self.game.state.events.society_of_jesus) { return 1; }
+        if (mv[0] === "jesuit_education") {
 
           his_self.game.queue.splice(qe, 1);
+
+	  if (!his_self.game.state.events.society_of_jesus) {
+	    return 1;
+	  }
+
 	  let player = his_self.returnPlayerOfFaction("papacy");
 
 	  if (his_self.game.player == player) {
-
 	    his_self.playerSelectSpaceWithFilter(
 	      "Select Catholic Space for 1st Jesuit University",
 	      function(space) { if (space.religion === "catholic" && space.university != 1) { return 1; } return 0; },
 	      function(spacekey) {
-
-		let s = his_self.game.spaces[spacekey].university = 1;
-		his_self.displaySpace(s);
+	        his_self.game.spaces[spacekey].university = 1;
+	        his_self.displaySpace(spacekey);
 		his_self.addMove("jesuit_university\t"+spacekey);
 
 	        his_self.playerSelectSpaceWithFilter(
 	          "Select Catholic Space for 2nd Jesuit University",
 	          function(space) { if (space.religion === "catholic" && space.university != 1) { return 1; } return 0; },
 	          function(spacekey) {
-
-		    let s = his_self.game.spaces[spacekey].university = 1;
-		    his_self.displaySpace(s);
+	            his_self.game.spaces[spacekey].university = 1;
+	            his_self.displaySpace(spacekey);
 		    his_self.addMove("jesuit_university\t"+spacekey);
 		    his_self.endTurn();
 		  },
@@ -6478,7 +6479,7 @@ alert("HERE");
       ops : 4 ,
       turn : 6 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
 	if (
 	     faction === "hapsburg" || 

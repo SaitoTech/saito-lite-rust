@@ -571,6 +571,23 @@ if (space.key == "cagliari") { debugmode = 1;
     return false;
   }
 
+  isSpaceAPortInTheSameSeaZoneAsACatholicPort(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let seas = [];
+    for (let i = 0; i < space.ports.length; i++) {
+      if (!seas.includes(space.ports[i])) { seas.push(space.ports[i]); }
+    }
+    for (let s in this.game.spaces) {
+      let sp = this.game.spaces[s];
+      if (sp.religion == "catholic" && sp.ports.length > 0) {
+	for (let z = 0; z < sp.ports.length; z++) {
+	  if (seas.includes(sp.ports[z])) { return true; }
+	}
+      }
+    }  
+    return false;
+  }
+
   isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let seas = [];
