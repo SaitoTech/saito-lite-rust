@@ -9,8 +9,9 @@ module.exports = ChatSideTemplate = (app, mod, group) => {
 
 	if (group.members.length > 2) {
 		// Multiparty Group
-	} else if (group.id == mod.communityGroup.id) {
+	} else if (group.id == mod.communityGroup?.id || group.name == mod.communityGroupName) {
 		// Community Chat
+		// If the peerservices haven't come up, we won't have a communityGroup obj yet....
 		groupKey = "";
 	} else {
 		// 1-1 chat
@@ -41,6 +42,9 @@ module.exports = ChatSideTemplate = (app, mod, group) => {
       		</div>
      		<div class="saito-profile-info">
       			<div class="saito-username">${groupKey}</div>
+      		</div>
+      		<div class="saito-profile-menu vertical">
+      			<div id="chat-group-edit" class="saito-modal-menu-option"><i class="fa-solid fa-user-pen"></i><div>Manage Chat</div></div>
       		</div>
       	</div>
     </div>`;

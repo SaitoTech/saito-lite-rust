@@ -529,6 +529,9 @@ class Chat extends ModTemplate {
 
 			return null;
 
+		//
+		// Abandoned code to duplicate user menu in saito-profile
+		//
 		case 'saito-profile-menu':
 			if (obj?.publicKey) {
 				if (

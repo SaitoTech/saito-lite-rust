@@ -162,6 +162,10 @@ class Stun extends ModTemplate {
     let stun_self = this;
 
     if (type === "user-menu") {
+    	//Don't provide a calling hook if in the video call app!
+    	if (stun_self.browser_active){
+    		return null;
+    	}
       if (obj?.publicKey) {
         if (obj.publicKey !== this.app.wallet.publicKey) {
           this.attachStyleSheets();
