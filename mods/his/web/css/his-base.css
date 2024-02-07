@@ -15,6 +15,15 @@
     left: 4500px;
 }
 
+.university {
+    z-index: 3;
+    position: absolute;
+}
+.pirate-haven {
+    z-index: 4;
+    position: absolute;
+}
+
 .selectable::before {
 	content: ' ';
 	box-shadow: 2rem 2rem 7rem 3rem #fffc, -2rem -2rem 7rem 3rem #fffc;

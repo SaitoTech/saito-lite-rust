@@ -2606,8 +2606,9 @@ alert("HERE");
                 let action2 = $(this).attr("id");
 
 		if (action2 === "yes") {
-		  his_self.excommunicateReformer(selected_reformer);
-		  his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
+	          his_self.addMove("excommunicate_reformer\t"+selected_reformer);
+	          his_self.addMove("player_call_theological_debate\tpapacy");
+		  his_self.endTurn();
 		  return;
 		}
 
@@ -3613,6 +3614,8 @@ alert("HERE");
               return 0; 
             },          
             function(destination_spacekey) {
+	      his_self.game.spaces[destination_spacekey].university = 1;
+	      his_self.displaySpace(destination_spacekey);
     	      his_self.playerSelectSpaceWithFilter(
       	        "Select Catholic-Controlled Space for Second Jesuit University",
        	        function(space) {
@@ -3620,11 +3623,15 @@ alert("HERE");
                   return 0; 
                 },
                 function(second_spacekey) {
+	          his_self.game.spaces[second_spacekey].university = 1;
+	          his_self.displaySpace(second_spacekey);
                   his_self.addMove("found_jesuit_university\t"+second_spacekey);
                   his_self.addMove("found_jesuit_university\t"+destination_spacekey);
 	          his_self.addMove("SETVAR\tstate\tevents\tpapacy_may_found_jesuit_universities\t1");
                   his_self.endTurn();
-	        }
+	        },
+		null,
+		true
 	      );
 	    },
 	    null,
@@ -3660,9 +3667,10 @@ alert("HERE");
 	  }
 	}
 
+	his_self.displaySpace(x);
 	his_self.updateLog("Luther dies and is replaced by Calvin");
 
-	return 0;
+	return 1;
       }
     }
     deck['017'] = { 
@@ -5126,7 +5134,7 @@ alert("HERE");
 	let player = his_self.returnPlayerOfFaction(faction);
 
 	if (his_self.isCommitted("melanchthon-debater")) { return 1; }
-	his_self.game.state.events.augsburg_confession = true;
+	his_self.game.state.events.augsburg_confession = 1;
 	his_self.commitDebater("papacy", "melanchthon-debater", 0); // 0 = no bonus
 
 	return 1;
@@ -5251,8 +5259,8 @@ alert("HERE");
 	    for (let i = 0; i < refs; i++) {
               his_self.prependMove("protestant_reformation\t"+player+"\tall");
 	    }
-	
-            his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+            his_self.prependMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
+	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	    his_self.endTurn();
 
 	  });
@@ -5353,7 +5361,7 @@ alert("HERE");
 	    $('.option').off();
 	    let action = $(this).attr("id");
 
-	    if (action != "skip") {
+	    if (action === "skip") {
 
 	      his_self.endTurn();
 
@@ -5364,7 +5372,7 @@ alert("HERE");
               let html = '<ul>';
 	      for (let i = 0; i < catholic_land_units.length; i++) {
 	        let u = his_self.game.spaces[action].units[catholic_land_units[i].faction][catholic_land_units[i].unit_idx];
-                html += '<li class="option" id="${catholic_land_units[i].faction}_${catholic_land_units[i].unit_idx}">${catholic_land_units[i].faction} - ${u.type}</li>';
+                html += `<li class="option" id="${catholic_land_units[i].faction}_${catholic_land_units[i].unit_idx}">${catholic_land_units[i].faction} - ${u.type}</li>`;
 	      }
 
     	      his_self.updateStatusWithOptions(msg, html);
@@ -5428,12 +5436,10 @@ alert("HERE");
 	obj.reformer = his_self.reformers["calvin-reformer"];
         let target = his_self.returnSpaceOfPersonage("protestant", "calvin-reformer");
 
-console.log("target is: " + target);
-
 	if (target) {
   	  for (let i = 0; i < his_self.game.spaces[target].units["protestant"].length; i++) {
 	    if (his_self.game.spaces[target].units["protestant"][i].type == "calvin-reformer") {
-              obj.reformer = his_self.game.state.spaces[target].units["protestant"][i];
+              obj.reformer = his_self.game.spaces[target].units["protestant"][i];
 	      his_self.game.spaces[target].units["protestant"].splice(i, 1);
 	    }
 	  }
@@ -5924,7 +5930,6 @@ console.log("target is: " + target);
 	if (his_self.isCommitted("caraffe-debater")) { return 1; }
 
 	his_self.commitDebater("papacy", "caraffe-debater", 0); // no bonus
-	his_self.addMove("papal_inquisition_card_draw");
 	his_self.addMove("papal_inquisition_target_player");
 	his_self.addMove("papal_inquisition_convert_spaces");
 	his_self.endTurn();
@@ -5996,7 +6001,7 @@ console.log("target is: " + target);
 	      $('.option').off();
 	      let action = $(this).attr("id");
 
-              his_self.addMove("papal_inquisition_draw_card\t"+action);
+              his_self.addMove("papal_inquisition_card_draw\t"+action);
               his_self.addMove("request_reveal_hand\tpapacy\t"+action);
               his_self.endTurn();
 
@@ -6009,18 +6014,18 @@ console.log("target is: " + target);
 
 	}
 
-        if (mv[0] == "papal_inquisition_draw_card") {
+        if (mv[0] == "papal_inquisition_card_draw") {
 
 	  let target = mv[1];
 	  let player = his_self.returnPlayerOfFaction("papacy");
 
-	  if (his_self.game.player === player) {
+          his_self.game.queue.splice(qe, 1);
 
-            his_self.game.queue.splice(qe, 1);
+	  if (his_self.game.player === player) {
 
  	    let msg = "Choose Action:";
             let html = '<ul>';
-            html += '<li class="option" id="draw">draw ${target} card</li>';
+            html += `<li class="option" id="draw">draw ${target} card</li>`;
             html += '<li class="option" id="recover">recover from discard pile</li>';
             html += '<li class="option" id="debate">initiate debate +2 dice</li>';
     	    html += '</ul>';
@@ -6167,18 +6172,18 @@ console.log("target is: " + target);
 
 	}
 
-
         if (mv[0] == "philip_of_hesse_bigamy") {
 
           his_self.game.queue.splice(qe, 1);
 	  let player = his_self.returnPlayerOfFaction("protestant");
+	  let ph = his_self.returnSpaceOfPersonage("protestant", "philip-hesse");
 
 	  if (his_self.game.player === player) {
 
  	    let msg = "Choose Action: ";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
-            html += '<li class="option" id="hesse">remove Philip of Hesse</li>';
+            if (ph) { html += '<li class="option" id="hesse">remove Philip of Hesse</li>'; }
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -9750,7 +9755,7 @@ console.log("HITS: " + hits);
             let obj = {};
             obj.space = s;
             obj.faction = faction;
-            obj.leader = his_self.game.state.spaces[s].units[faction][idx];
+            obj.leader = his_self.game.spaces[s].units[faction][idx];
 
             if (idx != -1) {
               s.units[faction].splice(idx, 1);
@@ -10000,7 +10005,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
  		  $('.option').off();
 	    	  let action = $(this).attr("id");
 
-		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
+		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
 		    his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
 		  }
 		  his_self.endTurn();
@@ -10008,11 +10013,15 @@ console.log("TESTING: " + JSON.stringify(space.units));
 
 	      } else {
 		for (let z = his_self.game.spaces[spacekey].units[factions[0]].length-1; z >= 0; z--) {
-		  his_self.addMove(`destroy_unit\t${factions[0]}\t${spacekey}\t${z}`);
+		  his_self.addMove(`destroy_unit_by_index\t${factions[0]}\t${spacekey}\t${z}`);
 		}
 		his_self.endTurn();
 	      }
-            }
+            },
+
+	    null,
+
+	    true
           );
 
           return 0;
@@ -10633,11 +10642,6 @@ alert("ALL FIVE SELECTED");
 	return 1;
       },
 
-//HACK
-/***
-***/
-
-
     }
     deck['113'] = { 
       img : "cards/HIS-113.svg" , 
@@ -10655,13 +10659,16 @@ alert("ALL FIVE SELECTED");
 
 	let s = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
 	if (s) {
+	  try { if (his_self.game.spaces[s]) { s = his_self.game.spaces[s]; } } catch (err) {}
 	  if (s.language == "italian") {
 
     	    let hp = his_self.returnPlayerOfFaction("hapsburg");
   	    let pf = his_self.returnPlayerOfFaction(faction);
 
-	    his_self.game.queue.push("hand_to_fhand\t1\t"+hf+"\t"+"hapsburg");
-            his_self.game.queue.push(`DEAL\t1\t${hf}\t1`);
+	    if (his_self.game.players.length != 2) {
+	      his_self.game.queue.push("hand_to_fhand\t1\t"+hf+"\t"+"hapsburg");
+              his_self.game.queue.push(`DEAL\t1\t${hf}\t1`);
+	    }
 	    if (faction !== "hapsburg") {
 	      his_self.game.queue.push("hand_to_fhand\t1\t"+pf+"\t"+faction);
               his_self.game.queue.push(`DEAL\t1\t${pf}\t1`);
@@ -10706,24 +10713,39 @@ alert("ALL FIVE SELECTED");
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
-	if (faction === "england" || faction === "protestant") {
+   	let msg = "Which Action?";
+        let html = '<ul>';
+        if (his_self.game.deck[0].discards["063"]) {
+          html += '<li class="option showcard" id="063">retrieve Dissolution of the Monasteries</li>';
+        }
+        html += '<li class="option" id="treatise">publish treatise in England</li>';
+    	html += '</ul>';
 
-	  his_self.game.state.events.more_executed = 1;
-	  his_self.game.state.events.more_executed_limits_debates = 1;
+        his_self.updateStatusWithOptions(msg, html);
 
-	} else {
+	$('.option').off();
+	$('.option').on('click', function () {
 
+	  $('.option').off();
+	  let action = $(this).attr("id");
 
+	  if (action === "063") {
+	    his_self.addMove("thomas_cromwell_retrieves_monasteries");
+	    his_self.endTurn();
+	    return 0;
+	  }
 
-	}
+	  his_self.addMove("player_publish_treatise\tengland");
+	  his_self.endTurn();
+	  return 0;
+	});
 
 	return 0;
-
       },
       removeFromDeckAfterPlay : function(his_self, player) {
-	if (this.game.state.henry_viii_rolls.includes(1)) { return 1; }
-	if (this.game.state.henry_viii_rolls.includes(2)) { return 1; }
-	if (this.game.state.henry_viii_rolls.includes(3)) { return 1; }
+	if (his_self.game.state.henry_viii_rolls.includes(1)) { return 1; }
+	if (his_self.game.state.henry_viii_rolls.includes(2)) { return 1; }
+	if (his_self.game.state.henry_viii_rolls.includes(3)) { return 1; }
 	return 0;
       },
       menuOption  :       function(his_self, menu, player) {
@@ -10771,7 +10793,6 @@ alert("ALL FIVE SELECTED");
 	  }
 	  return 1;
 	}
-
 
         if (mv[0] === "thomas_cromwell_cancels_bull") {
 	  his_self.updateLog("Thomas Cromwell cancels Cranmer Excommunication");

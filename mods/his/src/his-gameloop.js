@@ -862,7 +862,7 @@ console.log("E: " + (!this.isSpaceControlled(i, key)));
           this.addArmyLeader("france", "paris", "francis-i");
 
           this.addArmyLeader("hapsburg", "gibraltar", "duke-of-alva");
-          this.addArmyLeader("hapsburg", "gibraltar", "charles-v");
+          this.addArmyLeader("hapsburg", "naples", "charles-v");
 
           this.addMercenary("papacy", "siena", 4);
           this.addArmyLeader("papacy", "ravenna", "renegade");
@@ -6607,7 +6607,7 @@ console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defende
 	if (mv[0] === "player_call_theological_debate") {
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
-	  let player = this.returnPlayerOfFaction(faction);
+	  let player = this.returnPlayerCommandingFaction(faction);
 	  if (this.game.player == player) {
 	    this.playerCallTheologicalDebate(this, player, faction);
 	  } else {
@@ -6735,7 +6735,7 @@ console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defende
 	  //
 	  // augsburg confession
 	  //
-	  if (attacker === "papacy" && this.game.state.events.augsburg_confession == true) {
+	  if (attacker === "papacy" && this.game.state.events.augsburg_confession == 1) {
 	    attacker_rolls--;
 	  }
 
@@ -8126,14 +8126,20 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
               is_this_home_card = 1;
             }
 
+	    let looped_once = false;
             if (home_card_permitted == 0 && is_this_home_card == 1) {
               while (roll > 0 && is_this_home_card == 1) {
                 is_this_home_card = 0;
                 roll--;
                 if (roll == -1) {
-                  this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to pull");
-                  this.endTurn();
-                  return 0;
+		  if (looped_once == false) { 
+		    looped_once = true;
+		    roll = this.game.deck[0].fhand[fhand_idx].length-1;
+		  } else {
+                    this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to pull");
+                    this.endTurn();
+                    return 0;
+	          }
                 }
                 let pulled = this.game.deck[0].fhand[fhand_idx][roll];
                 if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
@@ -8187,7 +8193,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  if (this.game.player == p1) {
 	    this.updateLog("Cards Revealed: ");
 	    for (let i = 0; i < cards.length; i++) {
-	      this.updateLog(this.game.deck[0].cards[i].name);
+	      this.updateLog(this.game.deck[0].cards[cards[i]].name);
 	    }
 	  }
 
@@ -8612,27 +8618,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
           return 0;
         }
 
-	if (mv[0] === "faction_acknowledge") {
-
-	  let faction = mv[1];
-	  let msg = mv[2];
-	  let player = this.returnPlayerOfFaction(faction);
-
-	  this.game.queue.splice(qe, 1);
-
-	  if (this.game.player == player) {
-	    // active player halts, then continues once acknowledgement happens
-	    this.playerAcknowledgeNotice(msg, () => {
-	      this.handleGameLoop();
-	    });
-	  } else {
-	    // everyone else continues processing
-	    return 1;
-	  }
-
-	  return 0;
-
-	}
 
 	if (mv[0] === "place_protestant_debater") {
 
@@ -9531,13 +9516,13 @@ console.log("fhand: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    if (his_self.game.state.events.augsburg_confession == true) { x--; }
 	    pdice.push(x);
 	    if (x > p_high) { p_high = x; }
 	  }
 
 	  for (let i = 0; i < c_rolls; i++) {
 	    let x = this.rollDice(6);
+	    if (his_self.game.state.events.augsburg_confession == 1) { x--; }
 	    cdice.push(x);
 	    if (x > c_high) { c_high = x; }
 	  }

@@ -1631,6 +1631,12 @@
       if (space.fortified == 1) {
         obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
       }
+      if (space.pirate_haven == 1) {
+        obj.innerHTML += `<img class="pirate-haven" src="/his/img/tiles/ottoman/PirateHaven.svg" />`;
+      }
+      if (space.university == 1) {
+        obj.innerHTML += `<img class="university" src="/his/img/tiles/papacy/Jesuit_Univ.svg" />`;
+      }
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
