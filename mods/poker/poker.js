@@ -266,15 +266,18 @@ class Poker extends GameTableTemplate {
 		//
 		// test crypto hand scoring
 		//
-		let hand1 = ["S8","S7","H3","H5","C2","S6","H4"];
-		let hand2 = ["C10","D2","H3","H5","C2","S6","H4"];
-		console.log("TESTING HAND SCORING");
-		let score1 = this.scoreHand(hand1);
-		let score2 = this.scoreHand(hand2);
-		let winner = this.pickWinner(score1, score2);
-		console.log("score1: " + JSON.stringify(score1));
-		console.log("score2: " + JSON.stringify(score2));
-		console.log("winner: " + JSON.stringify(winner));
+	 	// this is just convenience code for checking why two hands
+		// might not score properly. please leave this in for now.
+		//
+		//let hand1 = ["S8","S7","H3","H5","C2","S6","H4"];
+		//let hand2 = ["C10","D2","H3","H5","C2","S6","H4"];
+		//console.log("TESTING HAND SCORING");
+		//let score1 = this.scoreHand(hand1);
+		//let score2 = this.scoreHand(hand2);
+		//let winner = this.pickWinner(score1, score2);
+		//console.log("score1: " + JSON.stringify(score1));
+		//console.log("score2: " + JSON.stringify(score2));
+		//console.log("winner: " + JSON.stringify(winner));
 
 		super.initializeGame(); //Update max players
 
@@ -3233,6 +3236,7 @@ class Poker extends GameTableTemplate {
 	}
 
 	isStraight(suite, val, low = 1) {
+		let rv = 0;
 		for (let i = low - 1; i < 10; i++) {
 			//
 			// catch royal straight
@@ -3245,9 +3249,8 @@ class Poker extends GameTableTemplate {
 					val.includes(10) &&
 					val.includes(1)
 				) {
-					return 10;
+					rv = 10;
 				}
-				return 0;
 			}
 
 			if (
@@ -3257,11 +3260,11 @@ class Poker extends GameTableTemplate {
 				val.includes(i + 4) &&
 				val.includes(i + 5)
 			) {
-				return i + 1;
+				rv = i + 1;
 			}
 		}
 
-		return 0;
+		return rv;
 	}
 
 	isCardSuite(suite, val, card, s) {
