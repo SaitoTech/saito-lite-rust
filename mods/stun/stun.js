@@ -59,149 +59,161 @@ class Stun extends ModTemplate {
       {
         urls: "stun:stun-de.saito.io:3478",
       },*/
-    ];
+		];
 
-    this.styles = ["/saito/saito.css", "/videocall/style.css"];
+		this.styles = ['/saito/saito.css', '/videocall/style.css'];
 
-    this.peerManager = new PeerManager(app, this);
-    this.dialer = new DialingInterface(app, this);
+		this.peerManager = new PeerManager(app, this);
+		this.dialer = new DialingInterface(app, this);
 
-    //When StunLauncher is rendered or game-menu triggers it
-    app.connection.on("stun-init-call-interface", (ui_type = "large") => {
-      if (this.CallInterface) {
-        console.warn("Already instatiated a video/audio call manager");
-        return;
-      }
+		//When StunLauncher is rendered or game-menu triggers it
+		app.connection.on('stun-init-call-interface', (ui_type = 'large') => {
+			if (this.CallInterface) {
+				console.warn('Already instatiated a video/audio call manager');
+				return;
+			}
 
-      console.log("STUN UI: " + ui_type);
+			console.log('STUN UI: ' + ui_type);
 
-      if (ui_type === "large") {
-        this.CallInterface = new CallInterfaceVideo(app, this, true);
-      } else if (ui_type === "video") {
-        this.CallInterface = new CallInterfaceVideo(app, this, false);
-      } else {
-        this.CallInterface = new CallInterfaceFloat(app, this);
-      }
-    });
+			if (ui_type === 'large') {
+				this.CallInterface = new CallInterfaceVideo(app, this, true);
+			} else if (ui_type === 'video') {
+				this.CallInterface = new CallInterfaceVideo(app, this, false);
+			} else {
+				this.CallInterface = new CallInterfaceFloat(app, this);
+			}
+		});
 
-    app.connection.on("reset-stun", () => {
-      this.room_obj = null;
-      if (this.CallInterface) {
-        this.CallInterface.destroy();
-        this.CallInterface = null;
-      }
-    });
-  }
+		app.connection.on('reset-stun', () => {
+			this.room_obj = null;
+			if (this.CallInterface) {
+				this.CallInterface.destroy();
+				this.CallInterface = null;
+			}
+		});
+	}
 
-  /**
-   * Stun will be rendered on
-   *  - /videocall
-   *  - Saito-header menu
-   *  - Saito-user-menu
-   *  - game-menu options
-   *
-   */
+	/**
+	 * Stun will be rendered on
+	 *  - /videocall
+	 *  - Saito-header menu
+	 *  - Saito-user-menu
+	 *  - game-menu options
+	 *
+	 */
 
-  async initialize(app) {
-    await super.initialize(app);
+	async initialize(app) {
+		await super.initialize(app);
 
-    if (app.BROWSER) {
+		if (app.BROWSER) {
+			if (!this.app.options?.stun?.settings) {
+				this.app.options.stun = {
+					settings: { privacy: 'all' },
+					peers: []
+				};
+			}
 
-       if (!this.app.options?.stun?.settings) {
-        this.app.options.stun = { settings: { privacy: "all" }, peers: [] };
-      }
+			if (app.browser.returnURLParameter('stun_video_chat')) {
+				this.room_obj = JSON.parse(
+					app.crypto.base64ToString(
+						app.browser.returnURLParameter('stun_video_chat')
+					)
+				);
 
-      if (app.browser.returnURLParameter("stun_video_chat")) {
-        this.room_obj = JSON.parse(
-          app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
-        );
+				// JOIN THE ROOM
+				if (!this.browser_active) {
+					this.renderInto('.saito-overlay');
+				}
+			} else {
+				this.app.options.stun.peers = [];
+			}
+		}
+	}
 
-        // JOIN THE ROOM
-        if (!this.browser_active) {
-          this.renderInto(".saito-overlay");
-        }
-      } else {
-        this.app.options.stun.peers = []; 
-      }
-    }
-  }
+	async onPeerServiceUp(app, peer, service) {
+		if (app.BROWSER !== 1) {
+			return;
+		}
 
-  async onPeerServiceUp(app, peer, service) {
-    if (app.BROWSER !== 1) {
-      return;
-    }
+		if (service.service === 'relay') {
+			if (app.BROWSER !== 1) {
+				return;
+			}
 
-    if (service.service === "relay") {
-      if (app.BROWSER !== 1) {
-        return;
-      }
+			this.isRelayConnected = true;
+		}
+	}
 
-      this.isRelayConnected = true;
-    }
-  }
+	render() {
+		this.renderInto('body');
+	}
 
-  render() {
-    this.renderInto("body");
-  }
+	renderInto(qs) {
+		if (qs == '.saito-overlay' || qs == 'body') {
+			if (!this.renderIntos[qs]) {
+				this.renderIntos[qs] = [];
+				this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
+			}
+			this.attachStyleSheets();
+			this.renderIntos[qs].forEach((comp) => {
+				comp.render();
+			});
+			this.renderedInto = qs;
+		}
+	}
 
-  renderInto(qs) {
-    if (qs == ".saito-overlay" || qs == "body") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
-      }
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => {
-        comp.render();
-      });
-      this.renderedInto = qs;
-    }
-  }
+	respondTo(type, obj) {
+		let stun_self = this;
 
-  respondTo(type, obj) {
-    let stun_self = this;
+		if (type === 'user-menu') {
+			//Don't provide a calling hook if in the video call app!
+			if (stun_self.browser_active) {
+				return null;
+			}
+			if (obj?.publicKey) {
+				if (obj.publicKey !== this.app.wallet.publicKey) {
+					this.attachStyleSheets();
+					super.render(this.app, this);
+					return [
+						{
+							text: 'Video/Audio Call',
+							icon: 'fas fa-video',
+							callback: function (app, public_key) {
+								if (!stun_self.room_obj) {
+									stun_self.dialer.establishStunCallWithPeers(
+										[public_key]
+									);
+								} else {
+									salert('Already in or establishing a call');
+								}
+							}
+						}
+					];
+				}
+			}
+		}
 
-    if (type === "user-menu") {
-      if (obj?.publicKey) {
-        if (obj.publicKey !== this.app.wallet.publicKey) {
-          this.attachStyleSheets();
-          super.render(this.app, this);
-          return [
-            {
-              text: "Video/Audio Call",
-              icon: "fas fa-video",
-              callback: function (app, public_key) {
-                if (!stun_self.room_obj) {
-                  stun_self.dialer.establishStunCallWithPeers([public_key]);
-                } else {
-                  salert("Already in or establishing a call");
-                }
-              },
-            },
-          ];
-        }
-      }
-    }
+		if (type === 'invite') {
+			this.attachStyleSheets();
+			super.render(this.app, this);
+			return new StunxInvite(this.app, this);
+		}
 
-    if (type === "invite") {
-      this.attachStyleSheets();
-      super.render(this.app, this);
-      return new StunxInvite(this.app, this);
-    }
+		if (type === 'saito-header') {
 
-    if (type === "saito-header") {
-      this.attachStyleSheets();
-      super.render(this.app, this);
+			if (!this.browser_active) {
+				this.attachStyleSheets();
+				super.render(this.app, this);
 
-      return [
-        {
-          text: "Video Call",
-          icon: this.icon,
-          allowed_mods: ["redsquare", "arcade"],
-          callback: function (app, id) {
-            stun_self.renderInto(".saito-overlay");
+				return [
+					{
+						text: 'Saito Talk',
+						icon: this.icon,
+						//allowed_mods: ['redsquare', 'arcade'],
+						callback: function (app, id) {
+							stun_self.renderInto('.saito-overlay');
 
-            /*app.connection.emit("stun-init-call-interface", "video");
+							/*app.connection.emit("stun-init-call-interface", "video");
             if (!stun_self.room_obj) {
               stun_self.room_obj = {
                 room_code: stun_self.createRoomCode(),
@@ -210,9 +222,10 @@ class Stun extends ModTemplate {
             }
             app.connection.emit("start-stun-call");
             */
+						}
 					}
-				}
-			];
+				];
+			}
 		}
 		//
 		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option

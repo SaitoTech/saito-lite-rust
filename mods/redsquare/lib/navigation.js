@@ -105,9 +105,6 @@ class RedSquareNavigation {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      window.history.pushState({}, document.title, "/" + this.mod.slug);
-      //Don't set a hash location (even on click)
-
       if (window.location.hash || window.location.search) {
         this.app.connection.emit("redsquare-home-render-request");
 
@@ -136,6 +133,10 @@ class RedSquareNavigation {
           }, 1000);
         }
       }
+
+      window.history.pushState({}, document.title, "/" + this.mod.slug);
+      //Don't set a hash location (even on click)
+
     };
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {

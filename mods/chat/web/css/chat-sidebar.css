@@ -11,3 +11,13 @@
 .chat-sidebar .saito-profile-icons {
 	margin-right: 1rem;
 }
+
+.chat-sidebar .saito-modal-menu-option {
+	font-size: 2rem;
+	height: unset;
+	width: 100%;
+}
+
+.chat-sidebar .saito-modal-menu-option > div {
+	font-size: 1.8rem;
+}

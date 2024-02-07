@@ -35,5 +35,11 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 			<label>manage chats</label>
 		</fieldset>`;
 
+	html += 
+		`<fieldset id="chat-link" class="saito-grid settings-link">
+			<i class="fas fa-link"></i>
+			<label>my chat id</label>
+		</fieldset>`;
+
 	return html;
 };

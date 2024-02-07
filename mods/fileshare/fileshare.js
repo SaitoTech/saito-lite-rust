@@ -31,55 +31,65 @@ class Fileshare extends ModTemplate {
 			return null;
 		}
 
-		if (type === 'chat-actions') {
-			if (obj?.publicKey) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
-					return [
-						{
-							text: 'Send File',
-							icon: 'fa-solid fa-file unavailable-without-relay',
-							callback: function (app, public_key, id) {
-							
-								if (fss.fileId){
-									salert("Currently sending a file!");
-									return;
-								}
+		let returnObj = null;
 
-								fss.recipient = obj.publicKey;
-								fss.offset = 0;
-								fss.addFileUploader(id);
-
-								//
-								fss.app.connection.emit(
-									'open-stun-relay',
-									public_key,
-									() => {
-										//
-										// When stun connection is established, select a file to upload
-										//
-										const input = document.getElementById(
-											`hidden_file_element_${id}`
-										);
-										input.click();
-									}
-								);
-
-								fss.callback = (file) => {
-									let html = `
-									<div class="saito-file-transfer" id="saito-file-transfer-${fss.fileId}">
-									<i class="fa-solid fa-file"></i>
-									<div class="file-name">${file.name.replace(/\s+/g, "")}</div>
-									<div class="file-size">${fss.calcSize(file.size)}</div>
-									</div>`;
-									fss.app.connection.emit("chat-message-user", obj.publicKey, html.replace(/\s+/, ""));
-								}
-
+		if (obj?.publicKey) {
+			if (obj.publicKey !== this.app.wallet.publicKey) {
+				returnObj = [
+					{
+						text: 'Send File',
+						icon: 'fa-solid fa-file unavailable-without-relay',
+						callback: function (app, public_key, id = "body") {
+						
+							if (fss.fileId){
+								salert("Currently sending a file!");
+								return;
 							}
+
+							fss.recipient = obj.publicKey;
+							fss.offset = 0;
+							fss.addFileUploader(id);
+
+							//
+							fss.app.connection.emit(
+								'open-stun-relay',
+								public_key,
+								() => {
+									//
+									// When stun connection is established, select a file to upload
+									//
+									const input = document.getElementById(
+										`hidden_file_element_${id}`
+									);
+									input.click();
+								}
+							);
+
+							fss.callback = (file) => {
+								let html = `
+								<div class="saito-file-transfer" id="saito-file-transfer-${fss.fileId}">
+								<i class="fa-solid fa-file"></i>
+								<div class="file-name">${file.name.replace(/\s+/g, "")}</div>
+								<div class="file-size">${fss.calcSize(file.size)}</div>
+								</div>`;
+								fss.app.connection.emit("chat-message-user", obj.publicKey, html.replace(/\s+/, ""));
+							}
+
 						}
-					];
-				}
+					}
+				];
 			}
 		}
+
+
+		if (type === 'chat-actions') {
+			return returnObj;
+		}
+
+    if (type === "user-menu") {
+    	return returnObj;
+    }
+
 	}
 
 	initialize(app) {

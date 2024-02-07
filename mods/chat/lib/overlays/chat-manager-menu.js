@@ -39,13 +39,12 @@ class ChatManagerMenu {
 
 		this.chatList = new ChatList(app, mod);
 		this.chatList.callback = (gid) => {
-			console.log("Callback: " + gid);
-					let chatMenu = new ChatUserMenu(
-						this.app,
-						this.mod,
-						this.mod.returnGroup(gid)
-					);
-					chatMenu.render();
+			let chatMenu = new ChatUserMenu(
+				this.app,
+				this.mod,
+				this.mod.returnGroup(gid)
+			);
+			chatMenu.render();
 
 		};
 	}
@@ -141,6 +140,14 @@ class ChatManagerMenu {
         this.mod.saveOptions();
       });
 
+    }
+
+    if (document.getElementById("chat-link")){
+    	document.getElementById("chat-link").addEventListener("click", (e) => {
+    		let link = window.location.origin + "/chat?chat_id="+this.mod.publicKey;
+    		navigator.clipboard.writeText(link);
+    		siteMessage("Link Copied", 2000);
+    	});
     }
 	}
 }

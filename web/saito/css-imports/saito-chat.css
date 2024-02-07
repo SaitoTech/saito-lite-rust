@@ -89,7 +89,7 @@
 }
 
 .saito-chat-active {
-  background-color: var(--saito-gray-transparent);
+  background-color: var(--saito-background-light);
 }
 
 /* We have a chat-manager click event on saito-user */
