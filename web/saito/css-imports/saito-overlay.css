@@ -225,8 +225,10 @@
 
 
 .module-settings-overlay {
-    width: min(800px, 95vw);
-    height: min(400px, 90vh);
+    min-width: min(800px, 90vw);
+    min-height: min(400px, 90vh);
+    max-width: 95vw;
+    max-height: 95vh;
     padding: 2rem;
     background: var(--saito-background-color);
     border-radius: 0.5rem;

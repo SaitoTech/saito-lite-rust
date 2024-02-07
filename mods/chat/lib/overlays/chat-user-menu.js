@@ -53,9 +53,7 @@ class ChatUserMenu {
 							'admin'
 					) {
 						console.log('Send new name as group tx');
-						thisobj.mod.sendCreateGroupTransaction(
-							thisobj.chat_group
-						);
+						thisobj.mod.sendUpdateGroupTransaction(thisobj.chat_group);
 					}
 					thisobj.mod.saveChatGroup(thisobj.chat_group);
 					thisobj.app.connection.emit('chat-manager-render-request');

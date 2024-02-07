@@ -594,8 +594,8 @@ class Chat extends ModTemplate {
 			if (txmsg.request == 'chat group') {
 				await this.receiveCreateGroupTransaction(tx);
 			}
-			if (txmsg.request == 'chat confirm') {
-				await this.receiveConfirmGroupTransaction(tx);
+			if (txmsg.request == 'chat join') {
+				await this.receiveJoinGroupTransaction(tx);
 			}
 			if (txmsg.request == 'chat add') {
 				await this.receiveAddMemberTransaction(tx);
@@ -669,6 +669,16 @@ class Chat extends ModTemplate {
 			return 0;
 		}
 
+		if (txmsg.request == 'chat group') {
+			this.receiveCreateGroupTransaction(tx);
+			return;
+		}
+		if (txmsg.request == 'chat join') {
+			this.receiveJoinGroupTransaction(tx);
+			return;
+		}
+
+
 		if (txmsg.request === 'chat message broadcast') {
 			let inner_tx = new Transaction(undefined, txmsg.data);
 
@@ -728,7 +738,7 @@ class Chat extends ModTemplate {
 	// Create a n > 2 chat group (currently unencrypted)
 	// We have a single admin (who can add additional members or kick people out)
 	//
-	async sendCreateGroupTransaction(group) {
+	async sendCreateGroupTransaction(name, invitees) {
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
@@ -738,77 +748,68 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		for (let i = 0; i < group.members.length; i++) {
-			if (group.members[i] !== this.publicKey) {
-				newtx.addTo(group.members[i]);
+		for (let i = 0; i < invitees.length; i++) {
+			if (invitees[i] !== this.publicKey) {
+				newtx.addTo(invitees[i]);
 			}
 		}
 
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat group',
-			group_id: group.id,
-			group_name: group.name,
+			name: name,
 			admin: this.publicKey,
-			timestamp: new Date().getTime()
 		};
+
+		console.log(newtx.msg);
 
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
+
+		this.app.connection.emit("relay-transaction", newtx);
 	}
 
 	async receiveCreateGroupTransaction(tx) {
+
+		console.log("Receiving group creation tx");
+
 		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
 
-			let group = this.returnGroup(txmsg.group_id);
+			if (this.returnGroup(tx.signature)){
+				console.warn("Already have this group!");
+				return;
+			}
 
-			//
-			//Get the list of all keys message is sent to
-			//
-			let members = [];
+			let newGroup = {
+				id: tx.signature,
+				members: [],
+				member_ids: {},
+				name: txmsg.name,
+				txs: [],
+				unread: 0,
+				last_update: 0
+			};
+
 			for (let x = 0; x < tx.to.length; x++) {
-				if (!members.includes(tx.to[x].publicKey)) {
-					members.push(tx.to[x].publicKey);
+				if (!newGroup.members.includes(tx.to[x].publicKey)) {
+					newGroup.members.push(tx.to[x].publicKey);
+					newGroup.member_ids[tx.to[x].publicKey] = 0;
 				}
 			}
 
-			if (group) {
-				if (txmsg.group_name) {
-					console.log('Update group name: ' + txmsg.group_name);
-					group.name = txmsg.group_name;
-				}
-			} else {
-				group = this.returnOrCreateChatGroupFromMembers(
-					members,
-					txmsg.group_name
-				);
-				group.id = txmsg.group_id;
-			}
+			newGroup.member_ids[this.publicKey] = 1;
+			newGroup.member_ids[txmsg.admin] = "admin";
 
-			group.members = members;
+			this.groups.push(newGroup);
 
-			if (!group.member_ids) {
-				group.member_ids = {};
-			}
-			for (let m of group.members) {
-				if (!group.member_ids[m]) {
-					group.member_ids[m] = 0;
-				}
-			}
+			this.saveChatGroup(newGroup);
 
-			group.member_ids[this.publicKey] = 1;
-
-			if (txmsg.admin) {
-				group.member_ids[txmsg.admin] = 'admin';
-			}
-
-			this.saveChatGroup(group);
 			this.app.connection.emit('chat-manager-render-request');
 
 			if (!tx.isFrom(this.publicKey)) {
-				await this.sendConfirmGroupTransaction(group);
+				await this.sendJoinGroupTransaction(newGroup);
 			}
 		}
 	}
@@ -817,13 +818,11 @@ class Chat extends ModTemplate {
 	// We automatically send a confirmation when added to a chat group (just so that we can make sure that the user was successfully added)
 	// But in the future, we may add a confirmation interface
 	//
-	async sendConfirmGroupTransaction(group) {
-		let newtx = await this.app.wallet.createUnsignedTransaction(
-			this.publicKey,
-			BigInt(0),
-			BigInt(0)
-		);
-		if (newtx == null) {
+	async sendJoinGroupTransaction(group) {
+
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+		if (!newtx) {
 			return;
 		}
 
@@ -835,26 +834,27 @@ class Chat extends ModTemplate {
 
 		newtx.msg = {
 			module: 'Chat',
-			request: 'chat confirm',
+			request: 'chat join',
 			group_id: group.id,
-			group_name: group.name,
-			timestamp: new Date().getTime()
 		};
 
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
+		this.app.connection.emit("relay-transaction", newtx);
+
 	}
 
-	async receiveConfirmGroupTransaction(tx) {
-		if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+	async receiveJoinGroupTransaction(tx) {
+		if (tx.isTo(this.publicKey)) {
+
 			let txmsg = tx.returnMessage();
 
 			let group = this.returnGroup(txmsg.group_id);
 
 			if (!group) {
-				await this.receiveCreateGroupTransaction(tx);
-				group = this.returnGroup(txmsg.group_id);
+				console.warn("Receiving chat group transaction from a group I don't know");
+				return;
 			}
 
 			if (!group.members.includes(tx.from[0].publicKey)) {

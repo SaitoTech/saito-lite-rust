@@ -143,14 +143,6 @@ class ChatManager {
 						group = group2;
 					}
 				}
-				if (data.admin) {
-					//
-					// It may be overkill to send a group update transaction everytime the admin starts a chat
-					// But if groups have variable memberships, it does push out an update to everyone as long
-					// as the admin has an accurate list
-					//
-					this.mod.sendCreateGroupTransaction(group);
-				}
 			}
 
 			//
