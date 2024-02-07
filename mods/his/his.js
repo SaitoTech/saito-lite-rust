@@ -8516,12 +8516,12 @@ alert("HERE");
 	his_self.commitDebater("protestant", "calvin-debater", 0); // no bonus
 
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t0");
+	his_self.game.queue.push("SETVAR\tstate\tevents\tcalvins_institutes\t0");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
-	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t1");
+	his_self.game.queue.push("SETVAR\tstate\tevents\tcalvins_institutes\t1");
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("NOTIFY\tCalvin's Institutes");
 
@@ -13054,7 +13054,9 @@ console.log("TESTING: " + JSON.stringify(space.units));
 	    	  let action = $(this).attr("id");
 
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
-		    his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
+		    if (his_self.game.spaces[spacekey].units[action][z].type == "mercenary") {
+		      his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
+		    }
 		  }
 		  his_self.endTurn();
 		});
@@ -13761,6 +13763,10 @@ alert("ALL FIVE SELECTED");
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
+	let p = his_self.returnPlayerCommandingFaction(faction);
+
+	if (his_self.game.player == p) {
+
    	let msg = "Which Action?";
         let html = '<ul>';
         if (his_self.game.deck[0].discards["063"]) {
@@ -13776,18 +13782,24 @@ alert("ALL FIVE SELECTED");
 
 	  $('.option').off();
 	  let action = $(this).attr("id");
+	  his_self.updateStatus("processing");
 
 	  if (action === "063") {
 	    his_self.addMove("thomas_cromwell_retrieves_monasteries");
 	    his_self.endTurn();
-	    return 0;
+	  }
+	
+	  if (action === "treatise") {
+	    his_self.addMove("player_publish_treatise\tengland");
+	    his_self.endTurn();
 	  }
 
-	  his_self.addMove("player_publish_treatise\tengland");
-	  his_self.endTurn();
 	  return 0;
 	});
 
+	} else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("115") );
+	}
 	return 0;
       },
       removeFromDeckAfterPlay : function(his_self, player) {
@@ -21326,14 +21338,15 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
+
 	  if (faction == "england") {
-	    if (this.game.player === this.returnPlayerCommandingFaction("england")) {
-	      this.playerPublishTreatise(this, "england");
+	    if (this.game.players.length == 2) { faction = "protestant"; }
+	    if (this.game.player === this.returnPlayerCommandingFaction(faction)) {
+	      this.playerPublishTreatise(this, this.game.player, "england");
 	    }
-	    return 0;
 	  }
 	
-	  return 1;
+	  return 0;
 
 	}
 
@@ -28441,7 +28454,7 @@ console.log("AVAILAVBLE SPACES: " + available_spaces + " --- " + zone);
                   space.religion === "protestant" &&
                   his_self.isSpaceAdjacentToReligion(space, "catholic")
                 ) {
-		  if (space.language == zone || zone == "") {
+		  if (space.language == zone || zone == "" || zone == "all") {
                     return 1;
                   }
                 }
@@ -28510,7 +28523,7 @@ console.log("AVAILABLE SPACES: " + available_spaces);
                   space.religion === "catholic" &&
                   his_self.isSpaceAdjacentToReligion(space, "protestant")
                 ) {
-		  if (space.language == zone || zone == "") {
+		  if (space.language == zone || zone == "" || zone == "all") {
                     return 1;
                   }
                 }
@@ -29078,7 +29091,7 @@ console.log("fhand: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    if (this.game.state.events.calvins_institutes && this.game.spaces[space].language === "french") { x++; }
+	    if (this.game.state.events.calvins_institutes == 1 && this.game.spaces[space].language === "french") { x++; }
 	    if (x > p_high) { p_high = x; }
 	    pdice.push(x);
 	  }

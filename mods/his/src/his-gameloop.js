@@ -1563,14 +1563,15 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
+
 	  if (faction == "england") {
-	    if (this.game.player === this.returnPlayerCommandingFaction("england")) {
-	      this.playerPublishTreatise(this, "england");
+	    if (this.game.players.length == 2) { faction = "protestant"; }
+	    if (this.game.player === this.returnPlayerCommandingFaction(faction)) {
+	      this.playerPublishTreatise(this, this.game.player, "england");
 	    }
-	    return 0;
 	  }
 	
-	  return 1;
+	  return 0;
 
 	}
 
@@ -8678,7 +8679,7 @@ console.log("AVAILAVBLE SPACES: " + available_spaces + " --- " + zone);
                   space.religion === "protestant" &&
                   his_self.isSpaceAdjacentToReligion(space, "catholic")
                 ) {
-		  if (space.language == zone || zone == "") {
+		  if (space.language == zone || zone == "" || zone == "all") {
                     return 1;
                   }
                 }
@@ -8747,7 +8748,7 @@ console.log("AVAILABLE SPACES: " + available_spaces);
                   space.religion === "catholic" &&
                   his_self.isSpaceAdjacentToReligion(space, "protestant")
                 ) {
-		  if (space.language == zone || zone == "") {
+		  if (space.language == zone || zone == "" || zone == "all") {
                     return 1;
                   }
                 }
@@ -9315,7 +9316,7 @@ console.log("fhand: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    if (this.game.state.events.calvins_institutes && this.game.spaces[space].language === "french") { x++; }
+	    if (this.game.state.events.calvins_institutes == 1 && this.game.spaces[space].language === "french") { x++; }
 	    if (x > p_high) { p_high = x; }
 	    pdice.push(x);
 	  }

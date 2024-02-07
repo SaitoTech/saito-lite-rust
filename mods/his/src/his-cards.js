@@ -5468,12 +5468,12 @@ alert("HERE");
 	his_self.commitDebater("protestant", "calvin-debater", 0); // no bonus
 
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t0");
+	his_self.game.queue.push("SETVAR\tstate\tevents\tcalvins_institutes\t0");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
-	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t1");
+	his_self.game.queue.push("SETVAR\tstate\tevents\tcalvins_institutes\t1");
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("NOTIFY\tCalvin's Institutes");
 
@@ -10006,7 +10006,9 @@ console.log("TESTING: " + JSON.stringify(space.units));
 	    	  let action = $(this).attr("id");
 
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
-		    his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
+		    if (his_self.game.spaces[spacekey].units[action][z].type == "mercenary") {
+		      his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
+		    }
 		  }
 		  his_self.endTurn();
 		});
@@ -10713,6 +10715,10 @@ alert("ALL FIVE SELECTED");
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
+	let p = his_self.returnPlayerCommandingFaction(faction);
+
+	if (his_self.game.player == p) {
+
    	let msg = "Which Action?";
         let html = '<ul>';
         if (his_self.game.deck[0].discards["063"]) {
@@ -10728,18 +10734,24 @@ alert("ALL FIVE SELECTED");
 
 	  $('.option').off();
 	  let action = $(this).attr("id");
+	  his_self.updateStatus("processing");
 
 	  if (action === "063") {
 	    his_self.addMove("thomas_cromwell_retrieves_monasteries");
 	    his_self.endTurn();
-	    return 0;
+	  }
+	
+	  if (action === "treatise") {
+	    his_self.addMove("player_publish_treatise\tengland");
+	    his_self.endTurn();
 	  }
 
-	  his_self.addMove("player_publish_treatise\tengland");
-	  his_self.endTurn();
 	  return 0;
 	});
 
+	} else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("115") );
+	}
 	return 0;
       },
       removeFromDeckAfterPlay : function(his_self, player) {
