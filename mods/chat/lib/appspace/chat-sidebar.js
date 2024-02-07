@@ -56,7 +56,6 @@ class ChatSidebar {
     let index = 0;
 
     for (let am of availableMods){
-      console.log(am.returnName());
       if (am.returnName() !== this.mod.returnName()){
         let item = am.respondTo("user-menu", { publicKey: user_publickey });
         if (item instanceof Array) {

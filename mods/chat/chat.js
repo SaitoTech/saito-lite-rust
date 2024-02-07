@@ -308,6 +308,8 @@ class Chat extends ModTemplate {
 			);
 			this.communityGroup.members = [peer.publicKey];
 
+			this.communityGroup.description = "an open forum for anyone on Saito to chat";
+
 			if (this.communityGroup) {
 				//
 				// remove duplicate public chats caused by server update
