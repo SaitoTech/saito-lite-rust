@@ -411,12 +411,14 @@
 	leaders = [];
         leaders.push(key);
       }
+if (this.game.options.scenario != "is_testing") {
       if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
 	if (leaders.length == 1) {
 	  factions[leaders[0]].victory = 1;
 	  factions[leaders[0]].reason = "Domination Victory";
 	}
       }
+}
     }
 
     //
@@ -432,16 +434,18 @@
     //
     // 8 VP lead in 2P
     //
+if (this.game.options.scenario != "is_testing") {
     if (this.game.players.length == 2 && this.game.state.round >= 4) {
       if ((factions["protestant"].vp - factions["papacy"].vp) >= 8) {
 	factions["protestant"].victory = 1;
-	factions["protestant"].reason = "Commanding 8VP Lead";
+	factions["protestant"].reason = "Commanding 8 VP Lead";
       }
       if ((factions["papacy"].vp - factions["protestant"].vp) >= 8) {
 	factions["papacy"].victory = 1;
-	factions["papacy"].reason = "Commanding 8VP Lead";
+	factions["papacy"].reason = "Commanding 8 VP Lead";
       }
     }
+}
 
     //
     // tied at 25 VP or higher
@@ -449,7 +453,7 @@
     let highest_vp = 0;
     let fs = [];
     if (this.game.state.round > 0) {
-      this.game.state.vp.push({});
+      while (this.game.state.vp.length < this.game.state.round) { this.game.state.vp.push({}); }
       for (let key in factions) {
         if (factions[key].vp == highest_vp) {
  	  fs.push(key);

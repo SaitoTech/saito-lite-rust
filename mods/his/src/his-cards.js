@@ -2934,23 +2934,27 @@ alert("HERE");
 
 	return 0;
       },
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :       function(his_self, menu, player, extra) {
         if (menu === "debate") {
-          return { faction : "protestant" , event : '007', html : `<li class="option" id="007">Here I Stand (assign Luther)</li>` };
+	  if (extra === "german") {
+            return { faction : "protestant" , event : '007', html : `<li class="option" id="007">Here I Stand (assign Luther)</li>` };
+	  }
         }
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
-	  // Wartburg stops Luther
-	  if (his_self.game.state.events.wartburg == 1) { return 0; }
-	  if (his_self.game.state.leaders.luther == 1) {
-	    if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
-	    if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
-	    if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
-	    if (his_self.game.state.theological_debate.round2_defender_debater == "luther-debater") { return 0; }
-	    if (player === his_self.returnPlayerOfFaction("protestant")) {
-	      if (his_self.canPlayerPlayCard("protestant", "007")) { return 1; }
+	  if (extra === "german") {
+	    // Wartburg stops Luther
+	    if (his_self.game.state.events.wartburg == 1) { return 0; }
+	    if (his_self.game.state.leaders.luther == 1) {
+	      if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
+	      if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
+	      if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
+	      if (his_self.game.state.theological_debate.round2_defender_debater == "luther-debater") { return 0; }
+	      if (player === his_self.returnPlayerOfFaction("protestant")) {
+	        if (his_self.canPlayerPlayCard("protestant", "007")) { return 1; }
+	      }
 	    }
 	  }
 	}
@@ -3622,7 +3626,9 @@ alert("HERE");
                   his_self.endTurn();
 	        }
 	      );
-	    }
+	    },
+	    null,
+	    true
 	  );
         }
 	return 0;
@@ -5932,6 +5938,11 @@ console.log("target is: " + target);
 	  let player = his_self.returnPlayerOfFaction("papacy");
           his_self.game.queue.splice(qe, 1);
 
+	  let count = his_self.countSpacesWithFilter(function(space) {
+	    if (space.language === "italian" && space.religion === "protestant") { return 1; } return 0;
+	  });
+	  if (count == 0) { return 1; }
+
 	  if (his_self.game.player === player) {
 
 	    his_self.playerSelectSpaceWithFilter(
@@ -5939,6 +5950,7 @@ console.log("target is: " + target);
 	      function(space) { if (space.language === "italian" && space.religion === "protestant") { return 1; } return 0; },
 	      function(spacekey) {
 		his_self.addMove("convert\t"+spacekey+"\tcatholic");
+		if (count == 1) { his_self.endTurn(); return 0; }
 
 	        his_self.playerSelectSpaceWithFilter(
 	          "Select Protestant Space to Convert",
@@ -9238,9 +9250,23 @@ console.log("HITS: " + hits);
 	    //
 	    let faction_cards_left = his_self.game.state.cards_left[faction];
 	    if (his_self.game.players.length == 2 || (faction != "hapsburg" || faction != "france")) {
-	      his_self.game.queue.push("sack_of_rome_if_two_surplus_cards_discard\t"+faction+"\t"+faction_cards_left);
-	      his_self.game.queue.push("pull_card\t"+faction+"\t"+"papacy");
-	      his_self.game.queue.push("pull_card\t"+faction+"\t"+"papacy");
+	      let expected = 4;
+	      if (!his_self.game.deck[0].discards['005']) { expected--; }
+	      if (!his_self.game.deck[0].discards['006']) { expected--; }
+	      if (his_self.game.state.cards_left["papacy"] < expected) { expected--; }
+	      if (his_self.game.state.cards_left["papacy"] < expected) { expected--; }
+	      if (expected >= 2) {
+  	        his_self.game.queue.push("sack_of_rome_if_two_surplus_cards_discard\t"+faction+"\t"+faction_cards_left);
+	        his_self.game.queue.push("pull_card\t"+faction+"\t"+"papacy");
+	        his_self.game.queue.push("pull_card\t"+faction+"\t"+"papacy");
+	      }
+	      if (expected == 1) {
+	        his_self.game.queue.push("NOTIFY\tPapacy has one card available for pull...");
+	        his_self.game.queue.push("pull_card\t"+faction+"\t"+"papacy");
+	      }
+	      if (expected == 0) {
+	        his_self.game.queue.push("NOTIFY\tPapacy has no cards available for pull...");
+	      }
 	    } else {
 	      his_self.game.queue.push("discard_random\tpapacy");
 	      his_self.game.queue.push("discard_random\tpapacy");

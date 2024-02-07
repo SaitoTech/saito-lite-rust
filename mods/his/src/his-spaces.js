@@ -185,13 +185,20 @@
     if (this.areEnemies(faction, cf)) { return 1; }
     if (this.areAllies(faction, cf)) { return 1; }
     if (this.isSpaceIndependent(space.key)) {
+
+      // if controlled by non-independent, we cannot enter
+      if (cf !== "independent") { return 0; }
+
       let is_empty = true;
       for (let key in space.units) {
 	if (key != "independent") {
-          if (space.units[key].length > 0) {
-            if (this.returnFactionLandUnitsInSpace(key, space.key, 1)) {
-              is_empty = false;
-  	      if (!this.areEnemies(faction, key) && !this.areAllies(faction, key)) { return 0; }
+	  // don't let ourselves be blocked by non-controlling allies/enemies
+          if (!this.areAllies(faction, key) && !this.areEnemies(faction, key)) {
+            if (space.units[key].length > 0) {
+              if (this.returnFactionLandUnitsInSpace(key, space.key, 1)) {
+                is_empty = false;
+  	        if (!this.areEnemies(faction, key) && !this.areAllies(faction, key)) { return 0; }
+	      }
 	    }
           }
         }
@@ -946,6 +953,7 @@ if (space.key == "cagliari") { debugmode = 1;
 
   convertSpace(religion, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (religion === "papacy") { religion = "catholic"; }
     space.religion = religion;
     this.displayBoard();
   }
@@ -1046,7 +1054,7 @@ if (space.key == "cagliari") { debugmode = 1;
           if (space.units[f][i].type === "cavalry") { luis++; }
         }
       } else {
-	if (f == faction || this.isAlliedMinorPower(f, faction)) {
+	if (include_minor_allies == true && (f == faction || this.isAlliedMinorPower(f, faction))) {
           for (let i = 0; i < space.units[f].length; i++) {
             if (space.units[f][i].type === "regular") { luis++; }
             if (space.units[f][i].type === "mercenary") { luis++; }

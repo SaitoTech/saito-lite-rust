@@ -1149,6 +1149,7 @@ console.log("and calling callback...");
       if (c === "009") { can_pass = false; }
       if (c === "010") { can_pass = false; }
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+console.log("c: " + c);
       if (this.game.deck[0].cards[c].type == "mandatory") { can_pass = false; }
     } // no home card? can pass
 
@@ -4637,15 +4638,26 @@ console.log("faction_hand_idx: " + faction_hand_idx);
     let msg = "Select Language Zone for Theological Debate:";
     let html = '<ul>';
 
-    if (his_self.returnDebatersInLanguageZone("german", "protestant", 0) && (faction == "protestant" || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("german") > 0))) { 
+    if (faction === "protestant" || faction === "england") {
+      if (his_self.returnDebatersInLanguageZone("german", "protestant", 0)) {
         html += '<li class="option german" style="" id="german">German</li>';
-    }
-    if (his_self.returnDebatersInLanguageZone("french", "protestant", 0) && (faction == "protestant" || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("french") > 0))) { 
+      }
+      if (his_self.returnDebatersInLanguageZone("french", "protestant", 0)) {
         html += '<li class="option french" style="" id="french">French</li>';
-    }
-    if (his_self.returnDebatersInLanguageZone("english", "protestant", 0) && (faction == "protestant" || (faction == "papacy" && his_self.returnNumberOfProtestantSpacesInLanguageZone("english") > 0))) { 
+      }
+      if (his_self.returnDebatersInLanguageZone("english", "protestant", 0)) {
 	if (his_self.game.state.events.more_executed_limits_debates != 1) {
           html += '<li class="option english" style="" id="english">English</li>';
+        }
+      }
+    }
+    if (faction === "papacy") {
+      html += '<li class="option german" style="" id="german">German</li>';
+      if (his_self.returnDebatersInLanguageZone("french", "protestant", 0) || his_self.returnDebatersInLanguageZone("french", "protestant", 1)) {
+        html += '<li class="option french" style="" id="french">French</li>';
+      }
+      if (his_self.returnDebatersInLanguageZone("english", "protestant", 0) || his_self.returnDebatersInLanguageZone("english", "protestant", 1)) {
+        html += '<li class="option english" style="" id="english">English</li>';
       }
     }
         html += '</ul>';
@@ -4696,12 +4708,12 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
         if (faction === "papacy") {
 	  his_self.addMove("theological_debate");
-          his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
+          his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t"+language_zone);
           his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
     	  his_self.addMove("theological_debate");
-          his_self.addMove("counter_or_acknowledge\tProtestants call a theological debate\tdebate");
+          his_self.addMove("counter_or_acknowledge\tProtestants call a theological debate\tdebate\t"+language_zone);
           his_self.addMove("RESETCONFIRMSNEEDED\tall");
     	  his_self.addMove("pick_first_round_debaters\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }

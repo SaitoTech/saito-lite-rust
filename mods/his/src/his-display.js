@@ -537,9 +537,6 @@
         if (space.religion === "protestant") {
           tile += `Protestant_${stype}_back.svg`;
         } else {
-if (space.key === "regensburg") {
-  alert("religion is: " + space.religion);
-}
           tile += `Protestant_${stype}.svg`;
         }
       }
@@ -1829,8 +1826,6 @@ try {
     }
     if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
     if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
-
-console.log("cardname: " + cardname);
 
 
     //

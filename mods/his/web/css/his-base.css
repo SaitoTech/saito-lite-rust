@@ -197,6 +197,9 @@ img {
 	display: none;
 }
 
+.siege:hover {
+        opacity: 0.2;
+}
 .siege {
 	position: absolute;
 	display: block;
