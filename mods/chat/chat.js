@@ -237,6 +237,13 @@ class Chat extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/chat/style.css'];
 
 		await super.render();
+
+
+		if (this.app.browser.returnURLParameter('chat_id')){
+			this.app.connection.emit("open-chat-with", {
+				key: this.app.browser.returnURLParameter('chat_id')
+			});
+		}
 	}
 
 	async onPeerServiceUp(app, peer, service = {}) {

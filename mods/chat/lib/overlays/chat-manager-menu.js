@@ -142,6 +142,14 @@ class ChatManagerMenu {
       });
 
     }
+
+    if (document.getElementById("chat-link")){
+    	document.getElementById("chat-link").addEventListener("click", (e) => {
+    		let link = window.location.origin + "/chat?chat_id="+this.mod.publicKey;
+    		navigator.clipboard.writeText(link);
+    		siteMessage("Link Copied", 2000);
+    	});
+    }
 	}
 }
 
