@@ -145,6 +145,7 @@ class CouncilOfTrentOverlay {
 				);
 			}
 			if (protestants_hits === papacy_hits) {
+				document.querySelector(".council-of-trent-overlay .help").innerHTML += 'Council Inconclusive - No Winner';
 				this.mod.game.queue.push(
 					'ACKNOWLEDGE\tThe Council of Trent is Inconclusive'
 				);

@@ -6584,9 +6584,9 @@ alert("HERE");
       onEvent : function(his_self, faction) {
 
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
-	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
-	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tenglish");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tenglish");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tenglish");
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	return 1;

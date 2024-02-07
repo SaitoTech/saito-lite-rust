@@ -1223,7 +1223,7 @@ Habsburg conquistadores:
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "debate" && his_self.canPlayerCommitDebater("protestant", "bullinger-debater")) {
+        if (menu === "debate" && his_self.canPlayerCommitDebater("protestant", "bullinger-debater")) {
 	  if (his_self.game.state.theological_debate.round === 2) {
             if (faction === "protestant") {
               return 1;
@@ -1621,15 +1621,18 @@ Habsburg conquistadores:
             return { faction : extra , event : 'cop-debater', html : `<li class="option" id="cop-debater">Nicholas Cop +1 Roll</li>` };
           }
         } 
+console.log("returning empty for cop!");
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "cop-debater")) {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player && ["paris","stdizier","dijon","orleans","rouen","boulogne","stquentin","calais","brussels","metz","besancon","lyon","tours","nantes"].includes(spacekey)) {
+console.log("returning yes for: " + spacekey);
            return 1;
           }
         }
+console.log("returning no for: " + spacekey);
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
@@ -9632,9 +9635,9 @@ alert("HERE");
       onEvent : function(his_self, faction) {
 
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
-	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
-	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tenglish");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tenglish");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tenglish");
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	return 1;
@@ -20368,8 +20371,6 @@ if (this.game.options.scenario == "is_testing") {
 	    let card_pulled = this.game.deck[0].fhand[0][this.game.deck[0].fhand.length-1];
 	    let ops_pulled = this.game.deck[0].cards[card_pulled].ops;
 
-	    this.addMove("NOTIFY\tMary I pulls "+this.popup(card_pulled));
-
 	    if (ops_pulled == 1 || ops_pulled == 2) {
 	      this.addMove("mary_i_burn_books");
 	    }
@@ -20383,6 +20384,8 @@ if (this.game.options.scenario == "is_testing") {
 	      this.addMove("mary_i_theological_debate");
 	    }
 
+	    this.addMove("ACKNOWLEDGE\tMary I pulls "+this.popup(card_pulled) + "("+this.game.deck[0].cards[card_pulled].ops+" ops)");
+
 	    this.endTurn();
 	  }
 
@@ -20395,7 +20398,9 @@ if (this.game.options.scenario == "is_testing") {
 
 	  let player = this.returnPlayerOfFaction("papacy");
 	  if (this.canPlayerBurnBooksMaryI(this, player, "papacy")) {
-	    this.playerBurnBooksMaryI(this, player, "papacy");
+	    if (this.game.player == player) {
+	      this.playerBurnBooksMaryI(this, player, "papacy");
+	    }
 	    return 0;
 	  }
 
@@ -20412,7 +20417,9 @@ if (this.game.options.scenario == "is_testing") {
 
 	  let player = this.returnPlayerOfFaction("papacy");
 	  if (this.canPlayerCallTheologicalDebateMaryI(this, player, "papacy")) {
-	    this.playerCallTheologicalDebateMaryI(this, player, "papacy");
+	    if (this.game.player == player) {
+	      this.playerCallTheologicalDebateMaryI(this, player, "papacy");
+	    }
 	    return 0;
 	  }
 
@@ -20742,9 +20749,9 @@ if (this.game.options.scenario === "is_testing") {
 	      this.addDebater("protestant", "calvin-debater");
 	      this.addReformer("protestant", "geneva", "calvin-reformer");
 	      this.addDebater("protestant", "cranmer-debater");
+	      this.addReformer("protestant", "london", "cranmer-reformer");
 	      this.addDebater("protestant", "latimer-debater");
 	      this.addDebater("protestant", "coverdale-debater");
-	      this.addReformer("protestant", "london", "cranmer-reformer");
 	      this.addDebater("papacy", "pole-debater");
 	      this.addDebater("papacy", "caraffa-debater");
 	      this.addDebater("protestant", "wishart-debater");
@@ -22688,6 +22695,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 console.log("counter_or_acknowledge #3");
 	    if (z[i].key !== this.game.state.active_card) {
               if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
+console.log("triggers: " + z[i].name + " -- " + z[i].key);
                 let x = z[i].menuOption(this, stage, this.game.player, extra);
                 html += x.html;
 	        z[i].faction = x.faction; // add faction

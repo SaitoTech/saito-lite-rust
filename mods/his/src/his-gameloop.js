@@ -575,8 +575,6 @@ if (this.game.options.scenario == "is_testing") {
 	    let card_pulled = this.game.deck[0].fhand[0][this.game.deck[0].fhand.length-1];
 	    let ops_pulled = this.game.deck[0].cards[card_pulled].ops;
 
-	    this.addMove("NOTIFY\tMary I pulls "+this.popup(card_pulled));
-
 	    if (ops_pulled == 1 || ops_pulled == 2) {
 	      this.addMove("mary_i_burn_books");
 	    }
@@ -590,6 +588,8 @@ if (this.game.options.scenario == "is_testing") {
 	      this.addMove("mary_i_theological_debate");
 	    }
 
+	    this.addMove("ACKNOWLEDGE\tMary I pulls "+this.popup(card_pulled) + "("+this.game.deck[0].cards[card_pulled].ops+" ops)");
+
 	    this.endTurn();
 	  }
 
@@ -602,7 +602,9 @@ if (this.game.options.scenario == "is_testing") {
 
 	  let player = this.returnPlayerOfFaction("papacy");
 	  if (this.canPlayerBurnBooksMaryI(this, player, "papacy")) {
-	    this.playerBurnBooksMaryI(this, player, "papacy");
+	    if (this.game.player == player) {
+	      this.playerBurnBooksMaryI(this, player, "papacy");
+	    }
 	    return 0;
 	  }
 
@@ -619,7 +621,9 @@ if (this.game.options.scenario == "is_testing") {
 
 	  let player = this.returnPlayerOfFaction("papacy");
 	  if (this.canPlayerCallTheologicalDebateMaryI(this, player, "papacy")) {
-	    this.playerCallTheologicalDebateMaryI(this, player, "papacy");
+	    if (this.game.player == player) {
+	      this.playerCallTheologicalDebateMaryI(this, player, "papacy");
+	    }
 	    return 0;
 	  }
 
@@ -949,9 +953,9 @@ if (this.game.options.scenario === "is_testing") {
 	      this.addDebater("protestant", "calvin-debater");
 	      this.addReformer("protestant", "geneva", "calvin-reformer");
 	      this.addDebater("protestant", "cranmer-debater");
+	      this.addReformer("protestant", "london", "cranmer-reformer");
 	      this.addDebater("protestant", "latimer-debater");
 	      this.addDebater("protestant", "coverdale-debater");
-	      this.addReformer("protestant", "london", "cranmer-reformer");
 	      this.addDebater("papacy", "pole-debater");
 	      this.addDebater("papacy", "caraffa-debater");
 	      this.addDebater("protestant", "wishart-debater");
@@ -2895,6 +2899,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 console.log("counter_or_acknowledge #3");
 	    if (z[i].key !== this.game.state.active_card) {
               if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
+console.log("triggers: " + z[i].name + " -- " + z[i].key);
                 let x = z[i].menuOption(this, stage, this.game.player, extra);
                 html += x.html;
 	        z[i].faction = x.faction; // add faction

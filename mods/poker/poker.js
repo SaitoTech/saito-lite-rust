@@ -266,15 +266,15 @@ class Poker extends GameTableTemplate {
 		//
 		// test crypto hand scoring
 		//
-		//let hand1 = ["H4","D12","H2","H5","H12","C11","H1"];
-		//let hand2 = ["H7","H13","H2","H5","H12","C11","H1"];
-		//console.log("TESTING HAND SCORING");
-		//let score1 = this.scoreHand(hand1);
-		//let score2 = this.scoreHand(hand2);
-		//let winner = this.pickWinner(score1, score2);
-		//console.log("score1: " + JSON.stringify(score1));
-		//console.log("score2: " + JSON.stringify(score2));
-		//console.log("winner: " + JSON.stringify(winner));
+		let hand1 = ["S8","S7","H3","H5","C2","S6","H4"];
+		let hand2 = ["C10","D2","H3","H5","C2","S6","H4"];
+		console.log("TESTING HAND SCORING");
+		let score1 = this.scoreHand(hand1);
+		let score2 = this.scoreHand(hand2);
+		let winner = this.pickWinner(score1, score2);
+		console.log("score1: " + JSON.stringify(score1));
+		console.log("score2: " + JSON.stringify(score2));
+		console.log("winner: " + JSON.stringify(winner));
 
 		super.initializeGame(); //Update max players
 
