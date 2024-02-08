@@ -227,10 +227,15 @@ class Mixin extends ModTemplate {
 
 
       const { privateKey: spendPrivateKey, publicKey: spendPublicKey, seed: sessionSeed } = getED25519KeyPair();
+      
+      console.log('spendPrivateKey: ',spendPrivateKey.toString('hex'), 'spend_public_key: ',spendPublicKey.toString('hex'), 'sessionSeed: ',sessionSeed.toString('hex'));
+
       const spend_private_key = spendPrivateKey;
       const spend_public_key = spendPublicKey.toString('hex');
       const session_seed = sessionSeed.toString('hex');
     
+
+
       this.user_data.spend_private_key = spend_private_key;
       this.user_data.spend_public_key = spend_public_key;
       await this.updateTipPin('', spend_public_key, user.tip_counter + 1);
@@ -241,14 +246,25 @@ class Mixin extends ModTemplate {
       // create safe user
       let safe_user = await this.safe_register(user.user_id);
  
+
+      console.log('callback: ', {
+        user_id:  safe_user.user_id,
+        full_name: safe_user.full_name,
+        session_id:  safe_user.session_id,
+        tip_key_base64:  safe_user.tip_key_base64,
+        spend_private_key: spendPrivateKey.toString('hex'),
+        spend_public_key: spendPublicKey.toString('hex'),
+        session_seed: mixin_self.bot_data.session_private_key
+      });
+
       if (callback) {
         return callback({
           user_id:  safe_user.user_id,
           full_name: safe_user.full_name,
           session_id:  safe_user.session_id,
           tip_key_base64:  safe_user.tip_key_base64,
-          spend_private_key: sessionSeed,
-          spend_public_key: spend_public_key,
+          spend_private_key: spendPrivateKey.toString('hex'),
+          spend_public_key: spendPublicKey.toString('hex'),
           session_seed: mixin_self.bot_data.session_private_key
         });
       }
@@ -618,8 +634,7 @@ class Mixin extends ModTemplate {
   async sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash = "") {
 
     let priv_key = (this.mixin.session_seed);
-    let spend_private_key = 'b242848900685bae1e36464b32651db35fa9b40735e40f5ef17f2deec35cec7d';
-    //spend_private_key = spend_private_key.toString('hex');
+    let spend_private_key = this.mixin.spend_private_key;
     console.log(this.mixin);
     console.log('spend: ', spend_private_key);
 

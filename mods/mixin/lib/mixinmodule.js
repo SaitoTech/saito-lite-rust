@@ -198,7 +198,7 @@ class MixinModule extends CryptoModule {
 	 * @return {Number}
 	 */
 	async sendPayment(amount = '', recipient = '', unique_hash = '') {
-
+		try{
 		let r = recipient.split('|');
 		let ts = new Date().getTime();
 
@@ -248,7 +248,7 @@ class MixinModule extends CryptoModule {
 		//
 		// in-network transfer if address exists in db
 		//
-		if (user_data.length > 0) {
+		if (typeof user_data.user_id != 'undefined') {
 
 			await this.mixin.sendInNetworkTransferRequest(
 				this.asset_id,
@@ -259,47 +259,25 @@ class MixinModule extends CryptoModule {
 
 			return;
 
-			this.saveOutboundPayment(
-				amount,
-				this.returnAddress(),
-				recipient,
-				ts,
-				unique_hash
-			);
+			// this.saveOutboundPayment(
+			// 	amount,
+			// 	this.returnAddress(),
+			// 	recipient,
+			// 	ts,
+			// 	unique_hash
+			// );
 			return unique_hash;
 
 			//
 			// create withdrawal address and save
 			//
 		} else {
-			this.mixin.createWithdrawalAddress(
-				this.asset_id,
-				destination,
-				'',
-				'',
-				(d) => {
-					let asset_id = d.data.asset_id;
-					let withdrawal_address_id = d.data.address_id;
+			
+			// send external withdrawl
+		}
 
-					this.mixin.sendWithdrawalRequest(
-						this.asset_id,
-						withdrawal_address_id,
-						destination,
-						amount,
-						unique_hash,
-						(d) => {}
-					);
-					this.saveOutboundPayment(
-						amount,
-						this.returnAddress(),
-						recipient,
-						ts,
-						unique_hash
-					);
-				}
-			);
-
-			return unique_hash;
+		} catch(err) {
+			console.log('send payment err: ', err);
 		}
 
 //		this.mixin.withdrawAmount(this.asset_id, recipient, amount);
