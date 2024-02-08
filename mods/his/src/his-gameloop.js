@@ -1,5 +1,6 @@
 
 
+
   //
   // Core Game Logic
   //
@@ -7446,7 +7447,7 @@ alert("flipping more than exist in the zone!");
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
-	  if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
+	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 4: Schmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    this.game.queue.push("remove\tprotestant\t013");
