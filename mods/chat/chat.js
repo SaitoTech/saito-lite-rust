@@ -228,8 +228,6 @@ class Chat extends ModTemplate {
 			window.innerWidth > 599
 		) {
 			this.chat_manager.chat_popup_container = '.saito-main';
-			//Main Chat Application doesn't use popups as such...
-			this.chat_manager.render_popups_to_screen = 0;
 		}
 
 		this.chat_manager.render_manager_to_screen = 1;
@@ -418,17 +416,11 @@ class Chat extends ModTemplate {
 						if (this.app.BROWSER) {
 							let active_module =
 								app.modules.returnActiveModule();
-							if (
-								app.browser.isMobileBrowser(
-									navigator.userAgent
-								) ||
+							if (app.browser.isMobileBrowser(navigator.userAgent) ||
 								window.innerWidth < 600 ||
 								active_module?.request_no_interrupts
 							) {
-								this.app.connection.emit(
-									'chat-manager-request-no-interrupts'
-								);
-								return;
+								this.app.connection.emit('chat-manager-request-no-interrupts');
 							}
 
 							this.app.connection.emit('chat-ready');
