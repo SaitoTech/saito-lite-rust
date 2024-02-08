@@ -27,7 +27,7 @@ class ChatSidebar {
     if (chat){
 
 
-      if (chat.members.length > 2) {
+      if (chat?.member_ids) {
         // Multiparty Group
       } else if (chat.id == this.mod.communityGroup?.id || chat.name == this.mod.communityGroupName) {
         // Community Chat

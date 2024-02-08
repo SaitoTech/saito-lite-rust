@@ -5,29 +5,31 @@ module.exports = (app, mod, chat_group) => {
      <div class="saito-modal-content">
       <div id="rename" class="saito-modal-menu-option"><i class="fas fa-user-edit"></i><div>Rename</div></div>`;
 
-    if (chat_group?.muted){
-		html += `<div id="unmute" class="saito-modal-menu-option"><i class="fa-solid fa-volume"></i><div>Unmute</div></div>`;	
-    }else{
-    	html += `<div id="mute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-xmark"></i><div>Mute</div></div>`;	
-    }
-    html += `<div id="delete" class="saito-modal-menu-option"><i class="fas fa-trash-alt"></i><div>Clear History</div></div>
+	if (chat_group?.muted) {
+		html += `<div id="unmute" class="saito-modal-menu-option"><i class="fa-solid fa-volume"></i><div>Unmute</div></div>`;
+	} else {
+		html += `<div id="mute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-xmark"></i><div>Mute</div></div>`;
+	}
+	html += `<div id="delete" class="saito-modal-menu-option"><i class="fas fa-trash-alt"></i><div>Clear History</div></div>
       `;
 
-      if (chat_group.id !== mod.communityGroup.id){
-      	if (chat_group.members.length == 2){
-      		html += `<div id="block" class="saito-modal-menu-option"><i class="fas fa-ban"></i><div>Delete and Block</div></div>`;	
-      	}else{
-      		html += `<div id="leave" class="saito-modal-menu-option"><i class="fa-solid fa-door-open"></i><div>Leave Group</div></div>`;	
-      	}
-      	
-      }
+	if (chat_group.id !== mod.communityGroup.id) {
+		if (chat_group.member_ids) {
+			html += `<div id="leave" class="saito-modal-menu-option"><i class="fa-solid fa-door-open"></i><div>Leave Group</div></div>`;
+		} else {
+			html += `<div id="block" class="saito-modal-menu-option"><i class="fas fa-ban"></i><div>Delete and Block</div></div>`;
+		}
+	}
 
 	if (chat_group.member_ids) {
 		if (chat_group.member_ids[mod.publicKey] == 'admin') {
-			html += `<div id="invite" class="saito-modal-menu-option"><i class="fa-solid fa-user-plus"></i><div>Add Member</div></div>`;
+			html += `<div id="admin" class="saito-modal-menu-option"><i class="fa-solid fa-user-plus"></i><div>Add Admin</div></div>`;
 		}
 
+		html += `<div id="invite" class="saito-modal-menu-option"><i class="fas fa-link"></i><div>Add member</div></div>`;
+
 		html += `</div>`;
+
 		html += `<div class="saito-modal-content">`;
 
 		for (let publickey in chat_group.member_ids) {
@@ -55,18 +57,18 @@ module.exports = (app, mod, chat_group) => {
 
 			html += `<div class="saito-user">
                 <div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}">${
-	chat_group.member_ids[publickey] == 'admin'
-		? `<i class="saito-overlaid-icon fa-solid fa-dragon"></i>`
-		: ''
-}</div>
+				chat_group.member_ids[publickey] == 'admin'
+					? `<i class="saito-overlaid-icon fa-solid fa-dragon"></i>`
+					: ''
+			}</div>
                   ${name}
                 <div class="saito-userline">${publickey}</div>
                 ${
-	chat_group.member_ids[mod.publicKey] == 'admin' ||
+					chat_group.member_ids[mod.publicKey] == 'admin' ||
 					publickey === mod.publicKey
-		? `<div class="remove_user saito-user-fourth-elem-large" data-id="${publickey}"><i class="fa-solid fa-user-minus"></i></div>`
-		: '<div></div>'
-}
+						? `<div class="remove_user saito-user-fourth-elem-large" data-id="${publickey}"><i class="fa-solid fa-user-minus"></i></div>`
+						: '<div></div>'
+				}
               </div>
             </div>`;
 		}

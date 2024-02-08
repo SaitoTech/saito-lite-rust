@@ -27,7 +27,7 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
 
 	let identicon_source = id;
 
-	if (group.members.length == 2) {
+	if (group.members.length == 2 && !group?.member_ids) {
 		for (let mem of group.members) {
 			if (mem !== mod.publicKey) {
 				identicon_source = mem;

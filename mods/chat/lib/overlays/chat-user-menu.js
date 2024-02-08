@@ -30,7 +30,7 @@ class ChatUserMenu {
 
 		let suggestedName = this.chat_group.name;
 
-		if (this.chat_group.members.length == 2) {
+		if (this.chat_group.members.length == 2 && !this.chat_group?.member_ids) {
 			for (let m of this.chat_group.members) {
 				if (m !== this.mod.publicKey) {
 					suggestedName = m;
@@ -47,11 +47,7 @@ class ChatUserMenu {
 				if (name) {
 					thisobj.chat_group.name = sanitize(name);
 
-					if (
-						thisobj.chat_group?.member_ids &&
-						thisobj.chat_group.member_ids[thisobj.mod.publicKey] ==
-							'admin'
-					) {
+					if (thisobj.chat_group?.member_ids[thisobj.mod.publicKey] == 'admin' ) {
 						console.log('Send new name as group tx');
 						thisobj.mod.sendUpdateGroupTransaction(thisobj.chat_group);
 					}
@@ -91,6 +87,12 @@ class ChatUserMenu {
 			}
 		}
 
+		if (document.getElementById("invite")){
+			document.getElementById('invite').onclick = (e) => {
+				this.mod.generateChatGroupLink(this.chat_group);
+			}
+		}
+
 
 		if (document.getElementById('delete')) {
 			document.getElementById('delete').onclick = async (e) => {
@@ -104,40 +106,48 @@ class ChatUserMenu {
 			};
 		}
 
-		if (document.getElementById('invite')) {
-			document.getElementById('invite').onclick = (e) => {
+		if (document.getElementById('admin')) {
+			document.getElementById('admin').onclick = (e) => {
 				const contactList = new ContactsList(this.app, this.mod, false);
+
 				contactList.callback = async (person) => {
 					if (person) {
-						//Add here, not on receiveTX
+
 						if (!thisobj.chat_group.members.includes(person)) {
 							thisobj.chat_group.members.push(person);
 						}
 
-						if (!thisobj.chat_group.member_ids[person]) {
-							thisobj.chat_group.member_ids[person] = 0;
-						}
+						thisobj.chat_group.member_ids[person] = "admin";
 
-						this.mod.sendAddMemberTransaction(
-							thisobj.chat_group,
-							person
-						);
+						thisobj.mod.sendUpdateGroupTransaction(thisobj.chat_group);
 
 						this.mod.saveChatGroup(thisobj.chat_group);
 						thisobj.overlay.remove();
 						thisobj.render();
-						siteMessage('User invited to chat group', 2000);
 					}
 				};
-				contactList.render();
+				contactList.render(thisobj.chat_group.members);
 			};
+		}
+
+		if (document.getElementById('leave')){
+			document.getElementById('leave').onclick = async (e) => {
+				await this.mod.sendRemoveMemberTransaction(
+						thisobj.chat_group,
+						this.mod.publicKey
+					);
+
+				this.mod.deleteChatGroup(thisobj.chat_group);
+				siteMessage('You left the chat group', 2000);
+				thisobj.overlay.remove();
+			}
 		}
 
 		document.querySelectorAll('.remove_user').forEach((user) => {
 			user.onclick = async (e) => {
 				let user_id = e.currentTarget.dataset.id;
 				if (user_id) {
-					this.mod.sendRemoveMemberTransaction(
+					await this.mod.sendRemoveMemberTransaction(
 						thisobj.chat_group,
 						user_id
 					);
@@ -169,20 +179,6 @@ class ChatUserMenu {
 			};
 		});
 
-		document
-			.querySelectorAll('.saito-contact.unconfirmed')
-			.forEach((user) => {
-				user.onclick = (e) => {
-					let user_id = e.currentTarget.dataset.id;
-					if (user_id) {
-						this.mod.sendAddMemberTransaction(
-							thisobj.chat_group,
-							user_id
-						);
-						siteMessage('Chat Group invite resent', 2000);
-					}
-				};
-			});
 	}
 }
 

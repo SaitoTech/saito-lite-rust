@@ -153,6 +153,7 @@ class ChatManager {
 			}
 
 			app.connection.emit('chat-popup-render-request', group);
+			app.connection.emit("chat-manager-opens-group", group);
 		});
 
 		app.connection.on('relay-is-online', (pkey) => {
