@@ -27,18 +27,23 @@ class ChatSidebar {
     if (chat){
 
 
-      if (chat?.member_ids) {
+      if (chat?.member_ids || chat.members.length > 2) {
+        console.log("Chat - Defined group");
         // Multiparty Group
       } else if (chat.id == this.mod.communityGroup?.id || chat.name == this.mod.communityGroupName) {
         // Community Chat
-      } else {
+        console.log("Chat - Community");
+      } else if (chat.members.length == 2) {
         // 1-1 chat
+        console.log("Chat - P2P");
         for (let member of chat.members) {
           if (member !== this.mod.publicKey) {
             this.addUserMenu(member);
             break;
           }
         }
+      }else{
+        console.log("Chat - Undefined group");
       }
 
       this.attachEvents(chat);  

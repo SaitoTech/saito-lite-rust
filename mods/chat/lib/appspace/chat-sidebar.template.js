@@ -1,3 +1,5 @@
+const MemberList = require("../overlays/member-list.template");
+
 module.exports = ChatSideTemplate = (app, mod, group) => {
 	if (!group) {
 		return '';
@@ -51,8 +53,9 @@ module.exports = ChatSideTemplate = (app, mod, group) => {
     
     html += `</div>
       		<div class="saito-profile-menu vertical">
-      			<div id="chat-group-edit" class="saito-modal-menu-option"><i class="fa-solid fa-user-pen"></i><div>Manage Chat</div></div>
+      			<div id="chat-group-edit" class="saito-modal-menu-option"><i class="fa-solid ${(group.id == mod.communityGroup?.id || group?.member_ids) ? "fa-users-gear": "fa-user-gear"}"></i><div>Manage Chat</div></div>
       		</div>
+      		${MemberList(app, mod, group)}
       	</div>
     </div>`;
 

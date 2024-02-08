@@ -22,7 +22,6 @@ class ChatUserMenu {
 			this.attachEvents();
 		}
 
-		this.app.connection.emit('chat-popup-remove-request', this.chat_group);
 	}
 
 	attachEvents() {
@@ -84,6 +83,7 @@ class ChatUserMenu {
 				}
 				this.mod.deleteChatGroup(this.chat_group);
 				this.overlay.remove();
+				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
 			}
 		}
 
@@ -96,9 +96,12 @@ class ChatUserMenu {
 
 		if (document.getElementById('delete')) {
 			document.getElementById('delete').onclick = async (e) => {
+				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
+	
 				let c = await sconfirm(
 					'Remove this chat group from my local storage?'
 				);
+
 				if (c) {
 					thisobj.mod.deleteChatGroup(thisobj.chat_group);
 				}
@@ -109,7 +112,7 @@ class ChatUserMenu {
 		if (document.getElementById('admin')) {
 			document.getElementById('admin').onclick = (e) => {
 				const contactList = new ContactsList(this.app, this.mod, false);
-
+				contactList.title = "Promote to Admin";
 				contactList.callback = async (person) => {
 					if (person) {
 
@@ -126,12 +129,13 @@ class ChatUserMenu {
 						thisobj.render();
 					}
 				};
-				contactList.render(thisobj.chat_group.members);
+				contactList.render(thisobj.chat_group.members.filter(x => x != thisobj.mod.publicKey));
 			};
 		}
 
 		if (document.getElementById('leave')){
 			document.getElementById('leave').onclick = async (e) => {
+				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
 				await this.mod.sendRemoveMemberTransaction(
 						thisobj.chat_group,
 						this.mod.publicKey
@@ -143,41 +147,38 @@ class ChatUserMenu {
 			}
 		}
 
-		document.querySelectorAll('.remove_user').forEach((user) => {
-			user.onclick = async (e) => {
-				let user_id = e.currentTarget.dataset.id;
-				if (user_id) {
+		if (document.getElementById("remove")){
+			document.getElementById("remove").onclick = async (e) => {
+				const contactList = new ContactsList(this.app, this.mod, false);
+				contactList.title = "Remove Member";
+				contactList.callback = async (person) => {
 					await this.mod.sendRemoveMemberTransaction(
 						thisobj.chat_group,
-						user_id
+						person
 					);
 
-					//Add here, not on receiveTX
-					for (
-						let i = 0;
-						i < thisobj.chat_group.members.length;
-						i++
-					) {
-						if (thisobj.chat_group.members[i] == user_id) {
+					for (let i = 0; i < thisobj.chat_group.members.length; i++) {
+						if (thisobj.chat_group.members[i] == person) {
 							thisobj.chat_group.members.splice(i, 1);
 							break;
 						}
 					}
 
-					delete thisobj.chat_group.member_ids[user_id];
+					thisobj.chat_group.member_ids[person] = -1;
+				};
+				contactList.render(thisobj.chat_group.members.filter(x => x != thisobj.mod.publicKey));
+			}
+			
+		}
 
-					if (this.mod.publicKey == user_id) {
-						this.mod.deleteChatGroup(thisobj.chat_group);
-						siteMessage('You left the chat group', 2000);
-					} else {
-						this.mod.saveChatGroup(thisobj.chat_group);
-						siteMessage('User removed from chat group', 2000);
-					}
-					thisobj.overlay.remove();
-					thisobj.render();
-				}
-			};
-		});
+		if (document.getElementById("view")){
+			document.getElementById("view").onclick = async (e) => {
+				const contactList = new ContactsList(this.app, this.mod, false);
+				contactList.title = `${thisobj.chat_group.name} Members`;
+				contactList.callback = null;
+				contactList.render(thisobj.chat_group.members);
+			}
+		}
 
 	}
 }

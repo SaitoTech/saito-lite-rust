@@ -25,7 +25,7 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 
 	html += 
 		`<fieldset id="add-contacts" class="saito-grid settings-link">
-			<i class="fa-solid fa-user-plus"></i>
+			<i class="fa-solid fa-user-group"></i>
 			<label>new chat</label>
 		</fieldset>`;
 

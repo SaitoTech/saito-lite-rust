@@ -179,7 +179,7 @@ class RedSquare extends ModTemplate {
     let this_mod = this;
     if (type === "user-menu") {
       return {
-        text: `View ${obj?.publicKey && obj.publicKey === this.publicKey ? "My " : ""}Profile`,
+        text: `${obj?.publicKey && obj.publicKey === this.publicKey ? "My" : "View"} RedSquare Profile`,
         icon: "fa fa-user",
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square") {

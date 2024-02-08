@@ -49,7 +49,7 @@ class Chat extends ModTemplate {
 		this.communityGroup = null;
 		this.communityGroupName = 'Saito Community Chat';
 
-		this.debug = true;
+		this.debug = false;
 
 		this.chat_manager = null;
 
@@ -248,6 +248,9 @@ class Chat extends ModTemplate {
 				let chat_group = JSON.parse(
 					this.app.crypto.base64ToString(chat_id)
 				);
+
+				console.log(chat_group);
+
 				let search = this.returnGroup(chat_group.id);
 				if (search) {
 					//data.id = group id
