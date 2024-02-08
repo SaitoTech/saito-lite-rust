@@ -199,88 +199,65 @@ class MixinModule extends CryptoModule {
 	 */
 	async sendPayment(amount = '', recipient = '', unique_hash = '') {
 		try{
-		let r = recipient.split('|');
-		let ts = new Date().getTime();
+			let r = recipient.split('|');
+			let ts = new Date().getTime();
+			let internal_transfer = false;
+			let destination = recipient;
+			let res = {};
 
-		console.log('send sendPayment');
-		console.log('Recipient: ' + recipient);
+			console.log('send sendPayment');
+			console.log('Recipient: ' + recipient);
 
-		//
-		// internal MIXIN transfer
-		//
-		if (r.length >= 2) {
-			if (r[2] === 'mixin') {
-				console.log('Send to Mixin address');
-				let opponent_address_id = r[1];
-				let trace_id = await this.mixin.sendInNetworkTransferRequest(
+			// if address has |mixin| concat
+			if (r.length >= 2) {
+				if (r[2] === 'mixin') {
+					console.log('Send to Mixin address');
+					internal_transfer = true;
+					destination = r[1];
+				}
+			}
+			
+			// check if address exists in local db
+			if (internal_transfer == false) { 
+				await this.mixin.sendFetchUserTransaction({
+					address: recipient
+				}, function(res){
+					let user_data = res;
+					if (typeof user_data.user_id != 'undefined') {
+						internal_transfer = true;
+						destination = user_data.user_id;
+					}
+				});
+			}
+			
+			// internal mixin transfer
+			if (internal_transfer) {
+				res = await this.mixin.sendInNetworkTransferRequest(
 					this.asset_id,
-					opponent_address_id,
+					destination,
 					amount,
 					unique_hash
 				);
-				if (trace_id?.error) {
-					return '';
-				}
-				this.saveOutboundPayment(
+			} else {
+				// address is external, send external withdrawl request
+				res = await this.mixin.sendExternalNetworkTransferRequest(
+					this.asset_id,
+					destination,
 					amount,
-					this.returnAddress(),
-					recipient,
-					ts,
-					trace_id
+					unique_hash
 				);
-				return trace_id;
 			}
-		}
 
-		//
-		// check if address exists in local db
-		//
-		let user_data = null;
-		await this.mixin.sendFetchUserTransaction({
-			address: recipient
-		}, function(res){
-			console.log('MixinModule user_data', res);
-			user_data = res;
-		});
-		
-		console.log('user_data inside sendPayment', user_data);
-
-		//
-		// in-network transfer if address exists in db
-		//
-		if (typeof user_data.user_id != 'undefined') {
-
-			await this.mixin.sendInNetworkTransferRequest(
-				this.asset_id,
-				user_data.user_id,
-				amount,
-				unique_hash
-			);
-
-			return;
-
-			// this.saveOutboundPayment(
-			// 	amount,
-			// 	this.returnAddress(),
-			// 	recipient,
-			// 	ts,
-			// 	unique_hash
-			// );
-			return unique_hash;
-
-			//
-			// create withdrawal address and save
-			//
-		} else {
-			
-			// send external withdrawl
-		}
+			if (res.status == 200) {
+				return unique_hash;
+			} else {
+				console.error(res.message);
+				return '';
+			}
 
 		} catch(err) {
 			console.log('send payment err: ', err);
 		}
-
-//		this.mixin.withdrawAmount(this.asset_id, recipient, amount);
 	}
 
 	/**
