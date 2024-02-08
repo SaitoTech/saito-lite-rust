@@ -186,14 +186,14 @@ class Mixin extends ModTemplate {
       data,
       function (res) {
         console.log("Callback for sendCreateAccountTransaction request: ", res);
-        if (typeof res == 'object') {
+        if (typeof res == 'object' && Object.keys(res).length > 0) {
           mixin_self.mixin = res;
           mixin_self.account_created = 1;
           mixin_self.save();
+        }
 
-          if (callback) {
-            return callback();
-          }
+        if (callback) {
+          return callback(res);
         }
       },
       peers[0].peerIndex
@@ -225,17 +225,12 @@ class Mixin extends ModTemplate {
         },
       });
 
-
       const { privateKey: spendPrivateKey, publicKey: spendPublicKey, seed: sessionSeed } = getED25519KeyPair();
       
-      console.log('spendPrivateKey: ',spendPrivateKey.toString('hex'), 'spend_public_key: ',spendPublicKey.toString('hex'), 'sessionSeed: ',sessionSeed.toString('hex'));
-
       const spend_private_key = spendPrivateKey;
       const spend_public_key = spendPublicKey.toString('hex');
       const session_seed = sessionSeed.toString('hex');
     
-
-
       this.user_data.spend_private_key = spend_private_key;
       this.user_data.spend_public_key = spend_public_key;
       await this.updateTipPin('', spend_public_key, user.tip_counter + 1);
@@ -287,7 +282,6 @@ class Mixin extends ModTemplate {
       this.bot_data.session_private_key = session_private_key;
       this.bot_data.session_public_key = sessionPublicKey;
 
-      console.log('user session_private_key', session_private_key);
       const user = await this.bot.user.createBareUser(`Saito User ${this.publicKey}`, base64RawURLEncode(sessionPublicKey));
 
       console.log('user //');
@@ -523,7 +517,6 @@ class Mixin extends ModTemplate {
       const assetFee = fees.find(f => f.asset_id === asset.asset_id);
       const chainFee = fees.find(f => f.asset_id === chain.asset_id);
       const fee = assetFee ?? chainFee;
-      console.log("asset: ", asset, "chain", chain, 'fees',fees, 'assetFee', assetFee, 'chain', chain, 'fee', fee);
       
       return fee.amount;
     } catch(err) {

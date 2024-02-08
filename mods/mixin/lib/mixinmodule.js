@@ -91,9 +91,16 @@ class MixinModule extends CryptoModule {
 		if (this.mixin.account_created == 0) {
 			if (this.mixin.mixin.session_id === '') {
 				this.app.connection.emit('create-mixin-account');
-				await this.mixin.createAccount(async() => {
-					await this.mixin.createDepositAddress(this_self.asset_id);
-					super.activate();
+				await this.mixin.createAccount(async(res) => {
+					if (Object.keys(res).length > 0) {
+						await this.mixin.createDepositAddress(this_self.asset_id);
+						super.activate();
+					} else {
+						salert('Having problem generating key for '+' '+this_self.ticker);
+						await this.app.wallet.setPreferredCrypto('SAITO', 1);
+						this.app.connection.emit("wallet-updated");
+						this.app.connection.emit('update_identifier', this.publicKey);
+					}
 				});
 			}
 		} else {
@@ -369,11 +376,8 @@ class MixinModule extends CryptoModule {
 		await this.mixin.sendFetchUserTransaction({
 			address: recipient
 		}, function(res){
-			console.log('MixinModule user_data', res);
 			user_data = res;
 		});
-		
-		console.log('user_data', user_data);
 
 		//
 		// return 0 fee if in-network address, or estimate if external
