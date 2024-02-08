@@ -35,11 +35,11 @@ class CouncilOfTrentOverlay {
 			if (this.mod.game.player != papacy_player) {
 				document.querySelector(
 					'.council-of-trent-overlay .help'
-				).innerHTML = 'Papacy select up to 4 Debaters.';
+				).innerHTML = 'Papacy is selecting up to 4 Debaters.';
 			} else {
 				document.querySelector(
 					'.council-of-trent-overlay .help'
-				).innerHTML = `Papacy select up to 4 Debaters. (<span class="finish-selecting-debaters">click when done</span>)`;
+				).innerHTML = `Papacy - select up to 4 Debaters. (<span class="finish-selecting-debaters">click when done</span>)`;
 			}
 		}
 		if (stage == 'protestant') {
@@ -53,14 +53,15 @@ class CouncilOfTrentOverlay {
 			if (this.mod.game.player != protestants_player) {
 				document.querySelector(
 					'.council-of-trent-overlay .help'
-				).innerHTML = 'Protestants select up to 2 Debaters.';
+				).innerHTML = 'Protestants are selecting up to 2 Debaters.';
 			} else {
 				document.querySelector(
 					'.council-of-trent-overlay .help'
-				).innerHTML = `Protestants select up to 2 Debaters. (<span class="finish-selecting-debaters">click when done</span>)`;
+				).innerHTML = `Protestants - select up to 2 Debaters. (<span class="finish-selecting-debaters">click when done</span>)`;
 			}
 		}
 		if (stage == 'results') {
+
 			let papacy_total = 0;
 			let protestants_total = 0;
 			let papacy_rolls = [];
@@ -126,11 +127,7 @@ class CouncilOfTrentOverlay {
 				winner = `Protestants may convert ${winner_converts} space(s) (<span class="continue_protestants">click here</a>)`;
 				html += winner;
 				for (let i = 0; i < winner_converts; i++) {
-					this.mod.game.queue.push(
-						'protestant_reformation\t' +
-							protestants_player +
-							'\tall'
-					);
+					this.mod.game.queue.push("select_for_protestant_conversion\tprotestant\tall");
 				}
 				this.mod.game.queue.push(
 					'ACKNOWLEDGE\tProtestants win the Council of Trent'
@@ -141,17 +138,14 @@ class CouncilOfTrentOverlay {
 				winner = `Papacy may convert ${winner_converts} space(s) (<span class="continue_papacy">click here</a>)`;
 				html += winner;
 				for (let i = 0; i < winner_converts; i++) {
-					this.mod.game.queue.push(
-						'catholic_counter_reformation\t' +
-							papacy_player +
-							'\tall'
-					);
+					this.mod.game.queue.push("select_for_catholic_conversion\tpapacy\tall");
 				}
 				this.mod.game.queue.push(
 					'ACKNOWLEDGE\tPapacy wins the Council of Trent'
 				);
 			}
 			if (protestants_hits === papacy_hits) {
+				document.querySelector(".council-of-trent-overlay .help").innerHTML += 'Council Inconclusive - No Winner';
 				this.mod.game.queue.push(
 					'ACKNOWLEDGE\tThe Council of Trent is Inconclusive'
 				);
@@ -186,7 +180,7 @@ class CouncilOfTrentOverlay {
 		if (
 			(this.mod.game.player == papacy_player && stage == 'papacy') ||
 			(this.mod.game.player == protestants_player &&
-				stage == 'protestants')
+				stage == 'protestant')
 		) {
 			this.attachEvents(stage);
 		}
@@ -215,10 +209,10 @@ class CouncilOfTrentOverlay {
 				}
 				if (
 					this.mod.game.player == protestants_player &&
-					stage == 'protestants'
+					stage == 'protestant'
 				) {
 					this.mod.addMove(
-						'council_of_trent_add_debaters\tprotestants\t' +
+						'council_of_trent_add_debaters\tprotestant\t' +
 							JSON.stringify(this.selected)
 					);
 					this.mod.endTurn();
@@ -250,7 +244,7 @@ class CouncilOfTrentOverlay {
 									return;
 								}
 							}
-							if (stage === 'protestants') {
+							if (stage === 'protestant') {
 								if (this.selected.length >= 2) {
 									alert('You can at most select 2 debaters');
 									return;

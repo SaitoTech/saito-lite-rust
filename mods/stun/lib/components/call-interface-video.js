@@ -96,21 +96,21 @@ class CallInterfaceVideo {
 			this.display_mode = newView;
 			console.log('Switch view: ' + newView);
 			switch (newView) {
-			case 'gallery':
-				this.switchDisplayToGallery();
-				break;
-			case 'focus':
-				this.switchDisplayToExpanded();
-				break;
-			case 'speaker':
-				this.switchDisplayToExpanded();
-				break;
-			case 'presentation':
-				this.switchDisplayToExpanded();
-				break;
+				case 'gallery':
+					this.switchDisplayToGallery();
+					break;
+				case 'focus':
+					this.switchDisplayToExpanded();
+					break;
+				case 'speaker':
+					this.switchDisplayToExpanded();
+					break;
+				case 'presentation':
+					this.switchDisplayToExpanded();
+					break;
 
-			default:
-				break;
+				default:
+					break;
 			}
 			// if(newView !== "presentation"){}
 			siteMessage(`Switched to ${newView} display`, 2000);
@@ -454,21 +454,21 @@ class CallInterfaceVideo {
 	}
 
 	addRemoteStream(peer, remoteStream) {
-		console.log('addRemoteStream');
 
 		this.createVideoBox(peer);
 		this.video_boxes[peer].video_box.render(remoteStream);
-
-		let peer_elem = document.getElementById(`stream_${peer}`);
-		if (peer_elem) {
-			peer_elem.querySelector('.video-box').click();
-		}
 
 		//
 		// Check if newly added remote stream is muted
 		// TODO -- this doesn't pick up if the audio is disabled/muted for some GD reason!!!!
 		//
 		if (remoteStream) {
+
+			let peer_elem = document.getElementById(`stream_${peer}`);
+			if (peer_elem) {
+				peer_elem.querySelector('.video-box').click();
+			}
+
 			if (!remoteStream.getVideoTracks()?.length) {
 				this.app.connection.emit(`peer-toggle-video-status`, {
 					public_key: peer,
@@ -477,7 +477,6 @@ class CallInterfaceVideo {
 			}
 
 			for (let track of remoteStream.getTracks()) {
-				console.log(track);
 				if (!track.enabled) {
 					this.app.connection.emit(
 						`peer-toggle-${track.kind}-status`,

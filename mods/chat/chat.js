@@ -10,7 +10,7 @@ const localforage = require('localforage');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ChatSettings = require('./lib/overlays/chat-manager-menu');
-
+const ChatSidebar = require("./lib/appspace/chat-sidebar");
 
 class Chat extends ModTemplate {
 	constructor(app) {
@@ -210,6 +210,8 @@ class Chat extends ModTemplate {
 
 			this.main = new ChatMain(this.app, this);
 			this.addComponent(this.main);
+
+			this.addComponent(new ChatSidebar(this.app, this));
 		}
 
 		if (this.chat_manager == null) {
@@ -235,6 +237,13 @@ class Chat extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/chat/style.css'];
 
 		await super.render();
+
+
+		if (this.app.browser.returnURLParameter('chat_id')){
+			this.app.connection.emit("open-chat-with", {
+				key: this.app.browser.returnURLParameter('chat_id')
+			});
+		}
 	}
 
 	async onPeerServiceUp(app, peer, service = {}) {
@@ -527,6 +536,9 @@ class Chat extends ModTemplate {
 
 			return null;
 
+		//
+		// Abandoned code to duplicate user menu in saito-profile
+		//
 		case 'saito-profile-menu':
 			if (obj?.publicKey) {
 				if (
@@ -1104,7 +1116,7 @@ class Chat extends ModTemplate {
 			this.app.browser.stripHtml(msg).length >= 1000
 		) {
 			siteMessage(
-				'Purchase SAITO to Send Large Messages in Community Chat...',
+				'Insufficient SAITO to Send Large Messages in Community Chat...',
 				3000
 			);
 			return null;

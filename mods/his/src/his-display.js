@@ -390,6 +390,8 @@
   }
 
   displayNewWorld() {
+    this.displayColony();
+    this.displayConquest();
   }
 
   displaySpaceDetailedView(name) {
@@ -497,7 +499,6 @@
         }
       }
 
-
       if (owner === "hapsburg") {
         tile = "/his/img/tiles/hapsburg/";	  
         if (space.religion === "protestant") {
@@ -535,9 +536,6 @@
         if (space.religion === "protestant") {
           tile += `Protestant_${stype}_back.svg`;
         } else {
-if (space.key === "regensburg") {
-  alert("religion is: " + space.religion);
-}
           tile += `Protestant_${stype}.svg`;
         }
       }
@@ -1632,6 +1630,12 @@ if (space.key === "regensburg") {
       if (space.fortified == 1) {
         obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
       }
+      if (space.pirate_haven == 1) {
+        obj.innerHTML += `<img class="pirate-haven" src="/his/img/tiles/ottoman/PirateHaven.svg" />`;
+      }
+      if (space.university == 1) {
+        obj.innerHTML += `<img class="university" src="/his/img/tiles/papacy/Jesuit_Univ.svg" />`;
+      }
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
@@ -1827,8 +1831,6 @@ try {
     }
     if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
     if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
-
-console.log("cardname: " + cardname);
 
 
     //

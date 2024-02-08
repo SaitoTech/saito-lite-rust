@@ -1,6 +1,7 @@
 .saito-container.chat-main-container {
 	padding: 0;
 	overflow-y: hidden;
+	grid-template-columns: min-content auto;
 }
 
 #saito-header {
@@ -18,19 +19,37 @@
 	height: calc(100vh - var(--saito-header-height));
 }
 
+.chat-main-container .chat-manager {
+	height: 100%;
+}
+
+
 .chat-main-container .chat-header,
 .chat-main-container .chat-footer {
 	padding: 0 1rem !important;
 }
 
-.chat-main-container.saito-container {
-	grid-template-columns: min-content auto;
+.chat-main-container .chat-header-info {
+	height: 5rem;
+}
+.chat-main-container .chat-header .chat-header-nav {
+	display: none;
 }
 
 .chat-main-container .saito-sidebar.left {
+	min-width: 20rem;
 	width: 30rem;
+	max-width: 50vw;
+	resize: horizontal;
+	overflow: auto;
 	border-right: 1px solid var(--saito-border-color);
 	padding: 1rem;
+}
+
+.chat-main-container .saito-sidebar.right {
+	display: none;
+	visibility: hidden;
+	padding: 0;
 }
 
 .chat-main-container .chat-header {
@@ -80,30 +99,57 @@
 	height: 4rem;
 }
 
+
+/* left align all chats in wide screen */ 
+@media screen and (min-width: 1200px) {
+	.chat-body .saito-user-self.saito-user {
+	  display: grid;
+	  justify-content: unset;
+	}
+	.chat-body .saito-user-self.saito-user > .saito-address, .chat-body .saito-user-self.saito-user > .saito-identicon-box {
+	  display: block;
+	}
+
+	.chat-main-container .saito-sidebar.right {
+		display: block;
+		visibility: visible;
+	}
+
+	.saito-container.chat-main-container {
+		grid-template-columns: min-content auto min-content;
+	}
+
+	.chat-main-container .chat-header, .chat-main-container .chat-header-info {
+		visibility: hidden;
+		height: 1rem;
+	}
+
+}
+
 @media screen and (max-width: 1200px) {
 	.chat-main-container .saito-sidebar.left {
-		position: sticky;
-		width: 25rem;
-		height: calc(100vh - var(--saito-header-height));
 		visibility: visible;
-		border: unset;
-		top: 0;
+		display: block;
 	}
 }
 
+
 @media screen and (max-width: 900px) {
 	.chat-main-container .saito-main {
-		width: unset !important;
+		width: 100% !important;
 	}
 
-	.chat-main-container.saito-container {
-		grid-template-columns: 20rem auto;
-	}
 }
 
 @media screen and (max-width: 600px) {
 	.chat-main-container.saito-container {
 		grid-template-columns: 1fr;
+	}
+
+	.chat-main-container .saito-sidebar.left {
+		max-width: unset;
+		width: 100vw;
+		resize: none;
 	}
 	.saito-main {
 		display: none;

@@ -86,12 +86,22 @@ class VideoBox {
 					videoBoxTemplate(this.stream_id, this.app, this.mod),
 					this.containerClass
 				);
+
+				document.querySelector(`#stream_${this.stream_id} video`).addEventListener("play", (event) => {
+				  console.log("Begin Playing Video:", event.currentTarget.videoWidth, event.currentTarget.videoHeight);
+				  if (event.currentTarget.videoHeight > event.currentTarget.videoWidth){
+				  	console.log("Portrait Video!");
+				  	event.currentTarget.parentElement.classList.add("portrait");
+				  }else{
+				  	console.log("Landscape Video!");
+				  	event.currentTarget.parentElement.classList.remove("portrait");
+				  }
+				});
 			}
 
-			const videoBox = document.getElementById(
-				`stream_${this.stream_id}`
-			);
+			const videoBox = document.getElementById(`stream_${this.stream_id}`);
 			videoBox.firstElementChild.srcObject = this.stream;
+
 		} else {
 			this.renderPlaceholder();
 		}

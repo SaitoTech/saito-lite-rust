@@ -290,6 +290,12 @@ class Tweet {
 	}
 
 	render(prepend = false) {
+
+		if (this.mod.hidden_tweets.includes(this.tx.signature)){
+			console.log("Not rendering hidden tweet");
+			return;
+		}
+
 		//
 		// handle if link
 		//
@@ -395,7 +401,7 @@ class Tweet {
 
 		if (this.tx.optional?.update_tx) {
 			this.notice =
-				'this tweet was edited at ' + this.formatDate(this.updated_at);
+				'this tweet was edited on ' + this.formatDate(this.updated_at);
 		}
 
 		if (this.render_after_selector) {
