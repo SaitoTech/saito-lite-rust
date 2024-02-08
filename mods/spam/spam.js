@@ -48,10 +48,6 @@ class Spam extends ModTemplate {
 			this_mod.publicKey = document.querySelector('#publicKey').value;
 			this_mod.fee = document.querySelector('#fee').value;
 
-			if (this.publicKey && this.publicKey.length !== 44) {
-				return console.log('public key is invalid');
-			}
-
 			console.log(this.publicKey, this.fee, 'fee');
 
 			document.querySelector('.spam-loop-count').innerHTML =
