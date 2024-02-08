@@ -850,8 +850,8 @@ export default class Wallet extends SaitoWallet {
 					// some hope of figuring out why the game isn't progressing.
 					console.log(
 						'Did not receive payment after ' +
-							(pollWaitTime * tries) / 1000 +
-							' seconds'
+						(pollWaitTime * tries) / 1000 +
+						' seconds'
 					);
 					return;
 					// mycallback({err: "Did not receive payment after " + ((pollWaitTime * tries)/1000) + " seconds"});
@@ -872,10 +872,10 @@ export default class Wallet extends SaitoWallet {
 		return this.app.crypto.hash(
 			Buffer.from(
 				JSON.stringify(senders) +
-					JSON.stringify(receivers) +
-					JSON.stringify(amounts) +
-					unique_hash +
-					ticker,
+				JSON.stringify(receivers) +
+				JSON.stringify(amounts) +
+				unique_hash +
+				ticker,
 				'utf-8'
 			)
 		);
@@ -1001,7 +1001,7 @@ export default class Wallet extends SaitoWallet {
 				pom.setAttribute(
 					'href',
 					'data:application/json;utf-8,' +
-						encodeURIComponent(this.exportWallet())
+					encodeURIComponent(this.exportWallet())
 				);
 				pom.setAttribute('download', 'saito.wallet.json');
 				document.body.appendChild(pom);
@@ -1165,7 +1165,7 @@ export default class Wallet extends SaitoWallet {
 				} catch (err) {
 					try {
 						alert('error: ' + JSON.stringify(err));
-					} catch (err) {}
+					} catch (err) { }
 					console.log(err);
 					return err.name;
 				}
