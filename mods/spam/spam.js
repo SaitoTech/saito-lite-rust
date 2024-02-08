@@ -16,6 +16,7 @@ class Spam extends ModTemplate {
 		this.period = 1000;
 		this.interval = null;
 		this.loop_count = 0;
+		this.fee = 0;
 
 		this.styles = ['/spam/style.css', '/saito/saito.css'];
 
@@ -44,6 +45,10 @@ class Spam extends ModTemplate {
 		start.onclick = (e) => {
 			this_mod.frequency = document.querySelector('#frequency').value;
 			this_mod.period = document.querySelector('#period').value * 1000;
+			this_mod.publicKey = document.querySelector('#publicKey').value;
+			this_mod.fee = document.querySelector('#fee').value;
+
+			console.log(this.publicKey, this.fee, 'fee');
 
 			document.querySelector('.spam-loop-count').innerHTML =
 				this_mod.loop_count;
@@ -51,6 +56,7 @@ class Spam extends ModTemplate {
 				'green';
 
 			this_mod.loop_start = 1;
+
 			this_mod.changeLoopStatus();
 		};
 
@@ -133,7 +139,11 @@ class Spam extends ModTemplate {
 			obj.data[key] = data[key];
 		}
 
-		let newtx = await this.app.wallet.createUnsignedTransaction();
+		let newtx = await this.app.wallet.createUnsignedTransaction(
+			this.publicKey,
+			BigInt(0),
+			BigInt(this.fee)
+		);
 		newtx.msg = obj;
 		await newtx.sign();
 		// console.log('tx: ' + data.tx_num);

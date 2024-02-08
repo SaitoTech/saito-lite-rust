@@ -26,6 +26,8 @@ async function fetchRawBlock(hash) {
 	for await (let line of makeTextFileLineIterator(url)) {
 		block.push(JSON.parse(line));
 	}
+
+	console.log('this block', block);
 	drawRawBlock(block, hash);
 }
 
@@ -33,7 +35,7 @@ function drawRawBlock(blk, hash) {
 	var jsonBlk = document.querySelector('.blockJson');
 	jsonBlk.innerHTML = '';
 	blk.forEach((row, index) => {
-		jsonBlk.innerHTML += '<div class=\'block-row-' + index + '\'></div>';
+		jsonBlk.innerHTML += "<div class='block-row-" + index + "'></div>";
 	});
 	blk.forEach((row, index) => {
 		var tree = jsonTree.create(
