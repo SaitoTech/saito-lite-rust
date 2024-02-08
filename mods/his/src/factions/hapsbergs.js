@@ -72,10 +72,17 @@
 
       },
       calculateBonusVictoryPoints  :    function(game_mod) {
-        return this.bonus_vp;
+        return 0;
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
-        return this.special_vp;
+        let base = 0;
+	if (game_mod.isSpaceControlled("mainz", "hapsburg")) { base += 1; }
+	if (game_mod.isSpaceControlled("wittenberg", "hapsburg")) { base += 1; }
+	if (game_mod.isSpaceControlled("augsburg", "hapsburg")) { base += 1; }
+	if (game_mod.isSpaceControlled("trier", "hapsburg")) { base += 1; }
+	if (game_mod.isSpaceControlled("cologne", "hapsburg")) { base += 1; }
+	if (game_mod.isSpaceControlled("brandenburg", "hapsburg")) { base += 1; }
+	return base;
       },
     });
  

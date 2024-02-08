@@ -124,13 +124,19 @@
     return f;
   }
 
-  returnEnemies(faction) { 
+  returnEnemies(faction, include_minor_powers=false) { 
     let f = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
       if (io[i] !== faction) {
         if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
       }
+    }
+    if (include_minor_powers) {
+      if (this.areEnemies(faction, "hungary")) { f.push("hungary"); }
+      if (this.areEnemies(faction, "scotland")) { f.push("scotland"); }
+      if (this.areEnemies(faction, "venice")) { f.push("venice"); }
+      if (this.areEnemies(faction, "genoa")) { f.push("genoa"); }
     }
     return f;
   }
@@ -326,17 +332,31 @@ console.log(JSON.stringify(this.game.state.activated_powers));
     //
     for (let p = 0; p < this.game.players.length; p++) {
 
+console.log("player: " + (p+1))
+
       //
       // does player command this faction
       //
       let player_factions = this.returnPlayerFactions((p+1));
+
       let i_command_this_faction = false;
       for (let i = 0; i < player_factions.length; i++) { 
-console.log("testing: " + player_factions[i]);
-	if (player_factions[i] === defender) { return (p+1); }
-        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { return (p+1); }
+console.log("player faction " + i + ": " + player_factions[i]);
+console.log("defender: " + defender);
+	if (player_factions[i] === defender) { 
+console.log("EXACT MATCH: " + (p+1));
+	  return (p+1);
+	}
+
+        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { 
+console.log("EXACT MATCH 2: " + (p+1));
+	  return (p+1);
+	}
         for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
-          if (this.game.state.activated_powers[player_factions[i]][z] === defender) { return (p+1); }
+          if (this.game.state.activated_powers[player_factions[i]][z] === defender) {
+console.log("EXACT MATCH 3: " + (p+1));
+	    return (p+1);
+	  }
         }
       }
     }

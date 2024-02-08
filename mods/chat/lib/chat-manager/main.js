@@ -62,10 +62,6 @@ class ChatManager {
 					this.popups[group.id].group = group;
 				}
 
-				// For the love of all the is holy, would you stop commenting out this if-condition
-				// to make "stun" work, it breaks chat on mobile
-				// Talk to me about how to get chat to work in your desired field... there are other less
-				// destructive ways to do so
 				if (
 					this.render_popups_to_screen ||
 					this.popups[group.id].is_rendered
@@ -357,11 +353,11 @@ class ChatManager {
 						this.switchTabs();
 					}
 
-					console.log('clcked popup', this.popups[gid]);
 					// unset manually closed to permit rendering
 					this.popups[gid].manually_closed = false;
 
 					this.popups[gid].render();
+
 					//
 					// We would want to force this if juggling multiple chat popups on a desktop
 					// because the user is choosing to open the popup, otherwise there are safety
@@ -372,6 +368,7 @@ class ChatManager {
 					}
 
 					this.app.connection.emit('chat-manager-render-request');
+					this.app.connection.emit("chat-manager-opens-group", group);
 				};
 
 				item.oncontextmenu = (e) => {
@@ -406,21 +403,8 @@ class ChatManager {
 
 		if (document.querySelector('.chat-manager-options')) {
 			document.querySelector('.chat-manager-options').onclick = (e) => {
-				if (!this.chatManagerMenu) {
-					this.chatManagerMenu = new ChatManagerMenu(
-						this.app,
-						this.mod
-					);
-				}
-				if (this.chatManagerMenu.active) {
-					this.chatManagerMenu.hide();
-				} else {
-					this.chatManagerMenu.render();
-				}
-				document
-					.querySelector('.chat-manager-options')
-					.classList.toggle('active');
-			};
+				this.mod.loadSettings();
+			}
 		}
 	}
 }

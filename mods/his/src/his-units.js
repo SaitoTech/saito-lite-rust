@@ -383,6 +383,7 @@
         this.game.state.burned.push(debater);
 
         let x = debater.split("-");
+
 	//
 	// also remove reformer (if exists)
 	//
@@ -390,6 +391,8 @@
 	  let reformer = x[0] + "-reformer";
           let s = this.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
 	  if (s) { this.removeReformer(this.debaters[debater].faction, reformer); }
+	  // re-display space
+	  this.displaySpace(s);
 	} catch (err) {
 	  // reformer does not exist
 	}

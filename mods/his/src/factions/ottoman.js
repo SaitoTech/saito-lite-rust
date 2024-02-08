@@ -64,10 +64,13 @@
 
       },
       calculateBonusVictoryPoints  :    function(game_mod) {
-        return this.bonus_vp;
+        return 0;
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
-        return this.special_vp;
+        let base = 0;
+	base += parseInt(game_mod.game.state.events.ottoman_piracy_vp);
+        base += parseInt(game_mod.game.state.events.ottoman_julia_gonzaga_vp);
+	return base;
       },
     });
  

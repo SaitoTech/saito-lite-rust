@@ -9,6 +9,11 @@
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
+    this.game.state.events.cranmer_active = 0;
+    this.game.state.events.more_executed_limits_debates = 0;
+    this.game.state.events.more_bonus = 0;
+    this.game.state.events.sack_of_rome = 0;
+
 
     //
     // reset impulse commits
@@ -51,6 +56,22 @@
     this.game.state.debater_committed_this_impulse = {};
     this.game.state.spaces_assaulted_this_turn = [];
     this.game.state.printing_press_active = 0;
+    this.game.state.events.sack_of_rome = 0;
+    this.game.state.events.julia_gonzaga_activated = 0;
+    this.game.state.events.england_changed_rulers_this_turn = 0;
+
+    this.game.state.may_explore['england'] = 1;
+    this.game.state.may_explore['france'] = 1;
+    this.game.state.may_explore['hapsburg'] = 1;
+    this.game.state.may_conquer['england'] = 1;
+    this.game.state.may_conquer['france'] = 1;
+    this.game.state.may_conquer['hapsburg'] = 1;
+    this.game.state.may_colonize['england'] = 1;
+    this.game.state.may_colonize['france'] = 1;
+    this.game.state.may_colonize['hapsburg'] = 1;
+
+    this.game.state.events.ottoman_piracy_attempts = 0;
+    this.game.state.events.ottoman_piracy_seazones = [];
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -72,6 +93,8 @@
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
     this.game.state.impulse = 0;
+    this.game.state.events.more_executed_limits_debates = 0;
+    this.game.state.events.more_bonus = 0;
         
     //
     // allow stuff to move again
@@ -80,9 +103,12 @@
     this.removeBesiegedSpaces();
 
     this.displayCardsLeft();
+    this.displayTurnTrack();
 
 
   }
+
+
 
 
   returnLoanedUnits() {
@@ -385,12 +411,14 @@
 	leaders = [];
         leaders.push(key);
       }
+if (this.game.options.scenario != "is_testing") {
       if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
 	if (leaders.length == 1) {
 	  factions[leaders[0]].victory = 1;
 	  factions[leaders[0]].reason = "Domination Victory";
 	}
       }
+}
     }
 
     //
@@ -406,16 +434,18 @@
     //
     // 8 VP lead in 2P
     //
+if (this.game.options.scenario != "is_testing") {
     if (this.game.players.length == 2 && this.game.state.round >= 4) {
       if ((factions["protestant"].vp - factions["papacy"].vp) >= 8) {
 	factions["protestant"].victory = 1;
-	factions["protestant"].reason = "Commanding 8VP Lead";
+	factions["protestant"].reason = "Commanding 8 VP Lead";
       }
       if ((factions["papacy"].vp - factions["protestant"].vp) >= 8) {
 	factions["papacy"].victory = 1;
-	factions["papacy"].reason = "Commanding 8VP Lead";
+	factions["papacy"].reason = "Commanding 8 VP Lead";
       }
     }
+}
 
     //
     // tied at 25 VP or higher
@@ -423,7 +453,7 @@
     let highest_vp = 0;
     let fs = [];
     if (this.game.state.round > 0) {
-      this.game.state.vp.push({});
+      while (this.game.state.vp.length < this.game.state.round) { this.game.state.vp.push({}); }
       for (let key in factions) {
         if (factions[key].vp == highest_vp) {
  	  fs.push(key);
@@ -493,8 +523,8 @@
     //
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].language == lang) {
-        for (let z = 0; z < this.game.spaces[key].units.length; z++) {
-	  let u = this.game.spaces[key].units[z];
+        for (let z = 0; z < this.game.spaces[key].units["protestant"].length; z++) {
+	  let u = this.game.spaces[key].units["protestant"][z];
 	  if (u.reformer == true) {
 	    return 1;
 	  }
@@ -562,6 +592,7 @@
     if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;
     state.vp = [];
+    state.newworld = this.returnNewWorld();
     state.impulse = 0;
     state.players = [];
     state.events = {};
@@ -598,6 +629,8 @@
     state.activated_powers['hungary'] = [];
     state.activated_powers['independent'] = [];
 
+    state.events.potosi_silver_miners = "";
+
     state.translations = {};
     state.translations['new'] = {};
     state.translations['new']['german'] = 0;
@@ -614,6 +647,14 @@
     state.hapsburg_war_winner_vp = 0;
     state.england_war_winner_vp = 0;
     state.france_war_winner_vp = 0;
+
+    state.bonus_vp = {};
+    state.bonus_vp['protestant'] = 0;
+    state.bonus_vp['papacy'] = 0;
+    state.bonus_vp['england'] = 0;
+    state.bonus_vp['france'] = 0;
+    state.bonus_vp['hapsburg'] = 0;
+    state.bonus_vp['ottoman'] = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
@@ -651,6 +692,46 @@
     state.tmp_bonus_protestant_translation_english_zone = 0;
     state.tmp_bonus_papacy_burn_books = 0;
 
+    state.events.mercators_map = "";
+    state.events.england_changed_rulers_this_turn = 0;
+
+    state.raiders = {};
+    state.raiders['protestant'] = 0;
+    state.raiders['papacy'] = 0;
+    state.raiders['france'] = 0;
+    state.raiders['england'] = 0;
+    state.raiders['ottoman'] = 0;
+    state.raiders['hapsburg'] = 0;
+    state.plantations = {};
+    state.plantations['protestant'] = 0;
+    state.plantations['papacy'] = 0;
+    state.plantations['france'] = 0;
+    state.plantations['england'] = 0;
+    state.plantations['ottoman'] = 0;
+    state.plantations['hapsburg'] = 0;
+
+    state.may_explore = {};
+    state.may_explore['england'] = 1;
+    state.may_explore['france'] = 1;
+    state.may_explore['hapsburg'] = 1;
+    state.may_explore['protestant'] = 0;
+    state.may_explore['papacy'] = 0;
+    state.may_explore['ottoman'] = 0;
+    state.may_conquer = {};
+    state.may_conquer['england'] = 1;
+    state.may_conquer['france'] = 1;
+    state.may_conquer['hapsburg'] = 1;
+    state.may_conquer['protestant'] = 0;
+    state.may_conquer['papacy'] = 0;
+    state.may_conquer['ottoman'] = 0;
+    state.may_colonize = {};
+    state.may_colonize['england'] = 1;
+    state.may_colonize['france'] = 1;
+    state.may_colonize['hapsburg'] = 1;
+    state.may_colonize['protestant'] = 0;
+    state.may_colonize['papacy'] = 0;
+    state.may_colonize['ottoman'] = 0;
+
     state.skip_next_impulse = [];
 
     //
@@ -666,6 +747,11 @@
     state.cologne_electoral_bonus = 0;
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
+
+    state.galleons = {};
+    state.galleons['french'] = 0;
+    state.galleons['hapsburg'] = 0;
+    state.galleons['england'] = 0;
 
     state.autowin_hapsburg_keys_controlled = 14;
     state.autowin_ottoman_keys_controlled = 11;
@@ -709,17 +795,44 @@
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
 
+    state.knights_of_st_john = "";
+
     state.events.maurice_of_saxony = "";
-    state.events.ottoman_piracy_enabled = 0;
-    state.events.ottoman_corsairs_enabled = 0;
     state.events.papacy_may_found_jesuit_universities = 0;
-    state.events.schmalkaldic_league = 0;
     state.events.edward_vi_born = 0;
     state.events.wartburg = 0;
 
-    state.conquests = [];
+    // mandatory events
+    state.events.schmalkaldic_league = 0;
+    state.events.clement_vii = 0;
+    state.events.barbary_pirates = 0;
+    state.events.paul_iii = 0;
+    state.events.society_of_jesus = 0;
+
+
+    state.events.ottoman_piracy_enabled = 0;
+    state.events.ottoman_corsairs_enabled = 0;
+    state.events.ottoman_piracy_attempts = 0;
+    state.events.ottoman_piracy_seazones = [];
+    state.events.ottoman_piracy_vp = 0;
+
+    //
+    // {
+    //    faction : faction
+    //    round   : 0
+    //  
     state.colonies = [];
+    state.english_colonies = 0;
+    state.french_colonies = 0;
+    state.hapsburg_colonies = 0;
+    state.conquests = [];
     state.explorations = [];
+
+    state.events.smallpox = "";
+    state.events.cabot_england = 0;
+    state.events.cabot_france = 0;
+    state.events.cabot_hapsburg = 0;
+    state.events.ottoman_julia_gonzaga_vp = 0;
 
     return state;
 
@@ -950,52 +1063,84 @@
 
     let nw = {};
 
+    nw['england_colony1'] = {
+      type : "colony" ,
+    }
+    nw['england_colony2'] = {
+      type : "colony" ,
+    }
+    nw['france_colony1'] = {
+      type : "colony" ,
+    }
+    nw['france_colony2'] = {
+      type : "colony" ,
+    }
+    nw['hapsburg_colony1'] = {
+      type : "colony" ,
+    }
+    nw['hapsburg_colony2'] = {
+      type : "colony" ,
+    }
+    nw['hapsburg_colony3'] = {
+      type : "colony" ,
+    }
+    nw['england_conquest1'] = {
+      type : "conquest" ,
+    }
+    nw['england_conquest2'] = {
+      type : "conquest" ,
+    }
+    nw['france_conquest1'] = {
+      type : "conquest" ,
+    }
+    nw['france_conquest2'] = {
+      top : 1340 ,
+    }
+    nw['hapsburg_conquest1'] = {
+      type : "conquest" ,
+    }
+    nw['hapsburg_conquest2'] = {
+      type : "conquest" ,
+    }
+    nw['hapsburg_conquest3'] = {
+      type : "conquest" ,
+    }
     nw['greatlakes'] = {
-      top : 1906 ,
-      left : 280,
+      type : "discovery" ,
       vp : 1
     }
     nw['stlawrence'] = {
-      top : 1886 ,
-      left : 515,
+      type : "discovery" ,
       vp : 1
     }
     nw['mississippi'] = {
-      top : 2075 ,
-      left : 280 ,
+      type : "discovery" ,
       vp : 1
     }
     nw['aztec'] = {
-      top : 2258 ,
-      left : 168 ,
+      type : "discovery" ,
       vp : 2
     }
     nw['maya'] = {
-      top : 2300 ,
-      left : 302 ,
+      type : "discovery" ,
       vp : 2
     }
     nw['amazon'] = {
-      top : 2536 ,
-      left : 668 ,
+      type : "discovery" ,
       vp : 2
     }
     nw['inca'] = {
-      top : 2660 ,
-      left : 225,
+      type : "discovery" ,
       vp : 2
     }
     nw['circumnavigation'] = {
-      top : 2698,
-      left : 128,
+      type : "discovery" ,
       vp : 3
     }
     nw['pacificstrait'] = {
-      top : 2996 ,
-      left : 486 ,
+      type : "discovery" ,
       vp : 1
     }
-
 
     return nw;
 

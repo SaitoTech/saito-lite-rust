@@ -202,6 +202,14 @@ class FactionOverlay {
 				}
 				keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}">${box_inserts}</div>`;
 			}
+
+                        if (his_self.game.state.leaders.calvin == 1) {
+                                this.app.browser.addElementToSelector(
+                                        his_self.returnCardImage('016'),
+                                        '.faction_sheet_ruler'
+                                );
+                        }
+
 		}
 
 		// HAPSBURG

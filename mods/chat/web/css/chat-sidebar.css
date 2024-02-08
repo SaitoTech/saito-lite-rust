@@ -1,0 +1,23 @@
+
+.chat-sidebar {
+	width: 35rem;
+	background: var(--saito-background-color);
+	height: calc(100vh - var(--saito-header-height));
+	border-left: 1px solid var(--saito-border-color);
+}
+
+
+
+.chat-sidebar .saito-profile-icons {
+	margin-right: 1rem;
+}
+
+.chat-sidebar .saito-modal-menu-option {
+	font-size: 2rem;
+	height: unset;
+	width: 100%;
+}
+
+.chat-sidebar .saito-modal-menu-option > div {
+	font-size: 1.8rem;
+}

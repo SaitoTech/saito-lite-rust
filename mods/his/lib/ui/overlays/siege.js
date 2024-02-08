@@ -329,6 +329,7 @@ class AssaultOverlay {
 		if (pre_battle == 1) {
 			res.defender_modified_rolls = res.defender_results;
 		}
+console.log("SOBJ: " + JSON.stringify(res));
 
 		if (res.attacker_modified_rolls) {
 			let faction_name = '';
@@ -359,6 +360,7 @@ class AssaultOverlay {
 				);
 			}
 		}
+
 
 		if (res.defender_modified_rolls) {
 			let faction_name = '';

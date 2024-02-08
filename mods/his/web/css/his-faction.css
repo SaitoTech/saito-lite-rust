@@ -3,6 +3,23 @@
 	width: 5rem;
 }
 
+.factionbar {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: max-content;
+    min-width: max-content;
+    background-color: whitesmoke;
+    padding: 0rem;
+    font-size: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #ddd;
+}
+.factionbar div {
+    padding: 0.75rem;
+}
+
 .saint_peters_tile {
 	background-image: url('/his/img/tiles/papacy/StPetersCP.svg');
 	background-size: cover;

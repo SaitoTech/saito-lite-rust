@@ -85,6 +85,15 @@
 
   }
 
+  displayTurnTrack() {
+
+    let obj = document.querySelector(".turntrack");
+    obj.classList.remove(`turntrack1`);
+    obj.classList.remove(`turntrack${this.game.state.round-1}`);
+    obj.classList.add(`turntrack${this.game.state.round}`);
+
+  }
+
   displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
 
@@ -115,6 +124,31 @@
 
   displayDebaters() {
     this.debaters_overlay.render();
+  }
+
+  displayPersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "block";
+  }
+  hidePersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "none";
+  }
+  displayEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "block";
+  }
+  hideEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "none";
+  }
+  displayIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "block";
+  }
+  hideIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "none";
   }
 
   displayExplorers() {
@@ -298,6 +332,15 @@
 
   displayBoard() {
 
+    if (this.game.state.events.war_in_persia) { this.displayPersia(); }
+    if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
+    if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+
+    try {
+      this.displayTurnTrack();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayWarBox();
     } catch (err) {
@@ -347,6 +390,8 @@
   }
 
   displayNewWorld() {
+    this.displayColony();
+    this.displayConquest();
   }
 
   displaySpaceDetailedView(name) {
@@ -454,7 +499,6 @@
         }
       }
 
-
       if (owner === "hapsburg") {
         tile = "/his/img/tiles/hapsburg/";	  
         if (space.religion === "protestant") {
@@ -492,9 +536,6 @@
         if (space.religion === "protestant") {
           tile += `Protestant_${stype}_back.svg`;
         } else {
-if (space.key === "regensburg") {
-  alert("religion is: " + space.religion);
-}
           tile += `Protestant_${stype}.svg`;
         }
       }
@@ -1589,6 +1630,12 @@ if (space.key === "regensburg") {
       if (space.fortified == 1) {
         obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
       }
+      if (space.pirate_haven == 1) {
+        obj.innerHTML += `<img class="pirate-haven" src="/his/img/tiles/ottoman/PirateHaven.svg" />`;
+      }
+      if (space.university == 1) {
+        obj.innerHTML += `<img class="university" src="/his/img/tiles/papacy/Jesuit_Univ.svg" />`;
+      }
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
@@ -1785,8 +1832,6 @@ try {
     if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
     if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
 
-console.log("cardname: " + cardname);
-
 
     //
     // triggered before card deal
@@ -1843,6 +1888,7 @@ console.log("cardname: " + cardname);
       "img/backgrounds/diet_of_worms.jpeg",
       "img/backgrounds/language-zone.jpg",
       "img/backgrounds/95_theses.jpeg",
+      "img/cards/PASS.png",
     ];
 
     this.preloadImageArray(allImages);

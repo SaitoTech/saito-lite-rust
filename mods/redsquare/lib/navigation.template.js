@@ -18,6 +18,11 @@ module.exports = () => {
             <i class="fas fa-user"></i>
             <span>Profile</span>
           </li>
+          <li class="redsquare-menu-settings">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </li>
+
 <!---
           <li class="redsquare-menu-contacts">
             <i class="fas fa-user"></i>

@@ -220,7 +220,7 @@ class Post {
 			this.app.BROWSER == 1 &&
 			text.length > 5000
 		) {
-			siteMessage('Purchase SAITO to Enable Oversized Posts...', 3000);
+			siteMessage('Insufficient SAITO to Enable Oversized Posts...', 3000);
 			return;
 		}
 

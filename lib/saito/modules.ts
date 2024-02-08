@@ -360,6 +360,10 @@ class Mods {
 		return m;
 	}
 
+	//
+	// respondTo returns Object, Array or null
+	// this function "mistakenly" filters for Objects only
+	// 
 	getRespondTos(request, obj = null) {
 		const compliantInterfaces = [];
 		for (const mod of this.mods) {
