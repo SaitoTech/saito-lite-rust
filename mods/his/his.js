@@ -14821,6 +14821,7 @@ if (space.key == "cagliari") { debugmode = 1;
 	  if (ships.length > 0) {
 	    for (let y = 0; y < ships.length; y++) {
 	      ships[y].spacekey = key;
+	      ships[y].faction = fip[i];
 	      units.push(ships[y]);
 	    }
 	    for (let y = 0; y < leaders.length; y++) {
@@ -14840,6 +14841,7 @@ if (space.key == "cagliari") { debugmode = 1;
       for (let key in this.game.navalspaces) {
 	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
 	  this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
+	  this.game.navalspaces[key].units[fip[i]][z].faction = fip[i];
 	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
 	}
       }
