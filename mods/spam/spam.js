@@ -48,6 +48,10 @@ class Spam extends ModTemplate {
 			this_mod.publicKey = document.querySelector('#publicKey').value;
 			this_mod.fee = document.querySelector('#fee').value;
 
+			if (this.publicKey && this.publicKey.length !== 44) {
+				return console.log('public key is invalid');
+			}
+
 			console.log(this.publicKey, this.fee, 'fee');
 
 			document.querySelector('.spam-loop-count').innerHTML =
@@ -56,6 +60,7 @@ class Spam extends ModTemplate {
 				'green';
 
 			this_mod.loop_start = 1;
+
 			this_mod.changeLoopStatus();
 		};
 
@@ -138,9 +143,6 @@ class Spam extends ModTemplate {
 			obj.data[key] = data[key];
 		}
 
-		if (this.publicKey && this.publicKey.length !== 44) {
-			return console.log('public key is invalid');
-		}
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
