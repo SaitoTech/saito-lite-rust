@@ -1321,6 +1321,12 @@ console.log("and calling callback...");
 
   playerPlayCard(card, player, faction) {
     
+    //
+    // cards left
+    //
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+
     this.cardbox.hide();
     this.game.state.active_card = card;
 
@@ -1749,6 +1755,12 @@ console.log(this.game.player + " -- " + faction);
     }
   }
   playerPlayEvent(card, faction, ops=null) {
+
+    //
+    // cards left
+    //
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
     
     let deck = this.returnDeck();
     if (deck[card].removeFromDeckAfterPlay(this, faction)) {
@@ -1769,9 +1781,6 @@ console.log(this.game.player + " -- " + faction);
       this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     }
 
-// Jan 20 - 2024
-    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1);
     this.endTurn();
   }
 
@@ -3850,6 +3859,7 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 	  }
 	}
         if (space.besieged != 0) { return 0; }
+        if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
         if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	return 0;
       },
@@ -3906,6 +3916,7 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 	  }
 	}
         if (space.besieged != 0) { return 0; }
+        if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
         if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	return 0;
       },
@@ -4442,6 +4453,7 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 	    if (space.key == "egypt") { return 1; }
 	  }
 	}
+        if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
 	return 0;

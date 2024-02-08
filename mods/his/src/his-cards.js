@@ -1060,7 +1060,8 @@ if (space.key === "bordeaux") {
             function(space) {
 	      let anything_here = false;
 	      for (let key in space.units) {
-		if (space.units[key].length > 0) {
+		// requires more than 1 unit
+		if (space.units[key].length > 1) {
 		  if (!his_self.game.state.plague_already_removed.includes(space.key)) {
 		    for (let z = 0; z < space.units[key].length; z++) {
 		      let u = space.units[key][z];
@@ -1124,7 +1125,13 @@ if (space.key === "bordeaux") {
 		let du = -1;
                 for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
                   if (space.units[faction_to_destroy][i].command_value == 0) {
-		    if (!unittypes.includes(space.units[faction_to_destroy][i].type)) {
+		    if (!unittypes.includes(space.units[faction_to_destroy][i].type) &&
+		        (space.units[faction_to_destroy][i].type == "regular" ||
+		        space.units[faction_to_destroy][i].type == "mercenary" ||
+		        space.units[faction_to_destroy][i].type == "squadron" ||
+		        space.units[faction_to_destroy][i].type == "corsair" ||
+		        space.units[faction_to_destroy][i].type == "cavalry")
+		    ) {
 		      if (du == -1) { du = i; } else { du = -2; }
   		      html += `<li class="option nonskip" id="${space.units[faction_to_destroy][i].type}">${space.units[faction_to_destroy][i].type}</li>`;
 		      unittypes.push(space.units[faction_to_destroy][i].type);
@@ -2793,7 +2800,7 @@ alert("HERE");
                     his_self.language_zone_overlay.hide();
                     let selected_papal_debater = $(this).attr("id");
 	            his_self.addMove("theological_debate");
-        	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
+        	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t" + language_zone);
         	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	            if (is_committed == 0) {
 		      his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
@@ -2822,7 +2829,7 @@ alert("HERE");
                     let selected_idx = parseInt($(this).attr("id"));
 		    let prohibited_protestant_debater = his_self.game.state.debaters[selected_idx].type;
 	            his_self.addMove("theological_debate");
-        	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
+        	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t" + language_zone);
         	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	 	    if (is_committed == 0) {
 	              his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t\t"+prohibited_protestant_debater);
@@ -3532,8 +3539,8 @@ alert("HERE");
 	  for (let key in his_self.game.spaces) {
 	    s = his_self.game.spaces[key];
 	    if (s.language == "german") { 
-	      s.home = "protestant"; 
 	      if (s.religion == "protestant") {
+	        s.home = "protestant"; 
 		s.political = "protestant";
 	      }
 	    }

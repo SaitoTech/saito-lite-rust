@@ -51,13 +51,10 @@ this.updateLog(`###############`);
 	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("action_phase");
 	  //this.game.queue.push("diplomacy_card_event\tprotestant\t209");
-	  this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
-	  //this.game.queue.push("spring_deployment_phase");
-	  //this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-if (this.game.options.scenario != "is_testing") {
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("diplomacy_phase");
-}
 
 
 
@@ -415,7 +412,6 @@ if (this.game.options.scenario == "is_testing") {
 
 	}
 
-
 	if (mv[0] === "retreat_to_winter_spaces") {
 
 	  let moves = [];
@@ -427,7 +423,7 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
 		// && clause permits Hapsburgs in Tunis for instance
-//console.log("SPACEKEY: " + i + "("+key+")");
+console.log("SPACEKEY: " + i + "("+key+")");
 //console.log("A: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i))));
 //console.log("B: " + ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)));
 //console.log("C: " + (this.returnPlayerCommandingFaction(key) > 0));
@@ -437,15 +433,16 @@ if (this.game.options.scenario == "is_testing") {
 		// i am not protestant and this is not an electorate and league isn't active
 		// someone controls the faction in question
 		//  the space isn't controlled by the faction
+console.log("F: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i))) + " -- " + ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)) + " - " + (this.returnPlayerCommandingFaction(key) > 0));
 
-		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1) && this.returnPlayerCommandingFaction(key) > 0)) {
+		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))) {
 
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
 		  //
 		  // 2P has to happen automatically
 		  //
-		  if (this.game.players.length == 2 && (key != "protestant" && key != "papacy")) {
+		  if ((this.game.players.length == 2 && (key != "protestant" && key != "papacy")) || this.returnPlayerCommandingFaction(key) == 0) {
 		    if (res.length == 0) {
 		      this.game.spaces[i].units[key] = [];
 		      this.displaySpace(i);
@@ -493,7 +490,6 @@ if (this.game.options.scenario == "is_testing") {
 		      }
 		    }
 		  }
-
 		}
 	      }
 	    }
@@ -830,6 +826,7 @@ if (this.game.options.scenario === "is_testing") {
 	  if (eak != "") { this.game.spaces[spacekey].units[faction].splice(eak_idx, 1); }
 
 	  this.addArmyLeader(faction, spacekey, type);
+	  this.displaySpace(spacekey);
 
     	  this.game.queue.splice(qe, 1);
 
@@ -1148,6 +1145,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let faction = mv[1];
 	  let card = mv[2];
+
+          this.cardbox.hide();
 
           this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
 
@@ -1496,7 +1495,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let space = this.game.spaces[spacekey];
 
-	  if (space.type !== "key" && space.type !== "fortress") {
+	  if (space.type !== "electorate" && space.type !== "key" && space.type !== "fortress") {
 	    return 1;
 	  }
 
@@ -4754,9 +4753,6 @@ console.log("we have made it this far 5!");
                 }
               }
             }
-
-
-
 
 	    let defender_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.defender_faction);
 	    let attacker_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.attacker_faction);

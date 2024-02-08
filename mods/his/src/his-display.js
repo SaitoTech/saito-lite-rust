@@ -499,7 +499,6 @@
         }
       }
 
-
       if (owner === "hapsburg") {
         tile = "/his/img/tiles/hapsburg/";	  
         if (space.religion === "protestant") {
