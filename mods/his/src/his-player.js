@@ -1325,28 +1325,19 @@ console.log("and calling callback...");
     // cards left
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+    let cards_in_hand = this.game.deck[0].fhand[faction_hand_idx].length;
 
     this.cardbox.hide();
     this.game.state.active_card = card;
 
     if (card === "pass") {
       this.updateStatus("Passing this Round...");
-      let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-      let cards_in_hand = 0;
-      if (this.game.deck[0]) {
-	if (this.game.deck[0].fhand[faction_hand_idx]) {
-	  if (this.game.deck[0].fhand[faction_hand_idx].length > 0) {
-	    cards_in_hand = this.game.deck[0].fhand[faction_hand_idx].length;
-	  }
-	}
-      }
-      // auto updates cards_left (last entry)
       this.addMove("pass\t"+faction+"\t"+cards_in_hand);
       this.endTurn();
       return;
+    } else {
+      this.addMove("cards_left\t"+faction+"\t"+(cards_in_hand-1)); // -1 because we playing this card
     }
-
 
     //
     // mandatory event cards effect first, then 2 OPS
@@ -1356,8 +1347,6 @@ console.log("and calling callback...");
     if (deck[card].type === "mandatory" && deck[card].canEvent(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
-      // Feb 8 - speedup by removing?
-      //this.addMove("ACKNOWLEDGE\t"+this.returnFactionName(faction) + " plays 2 OPs");
       this.playerPlayEvent(card, faction);
     } else {
 
@@ -1774,11 +1763,11 @@ console.log(this.game.player + " -- " + faction);
     // don't halt the game for the player moving.
 
     // wartburg is 037
-    if (faction !== "protestant" && !this.game.deck[0].discards["037"]) {
+    if (faction == "protestant" || this.game.deck[0].discards["037"]) {
+      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
+    } else {
       this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
       this.addMove("RESETCONFIRMSNEEDED\tall");
-    } else {
-      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     }
 
     this.endTurn();
@@ -2636,6 +2625,11 @@ if (space.key === "barcelona") {
 	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space, true); // true ==> include minor allies
 	let can_we_quick_move = false;
 	if (max_formation_size >= units_in_space) { can_we_quick_move = true; }
+	for (let f in space.units) {
+	  for (let z = 0; z < space.units[f].length; z++) {
+	    if (space.units[f][z].locked == 1) { can_we_quick_move = false; }
+	  }
+	}
 
 	if (can_we_quick_move == true) {
 
@@ -2955,6 +2949,17 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender, is_attacker_loser=false) {
 
+
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("^^^ PERO: " + defender);
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+
     let his_self = this;
     let retreat_destination = "";
     let space_name = this.game.spaces[spacekey].name;
@@ -3008,6 +3013,7 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
     this.updateStatusWithOptions(`${this.returnFactionName(attacker)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
     this.attachCardboxEvents(function(user_choice) {
+
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
         return;

@@ -3381,7 +3381,7 @@ if (space.key === "bordeaux") {
 
         if (his_self.game.player == p) {
 	  for (let i = hits-1; i >= 0; i--) {
-	    his_self.addMove("corsair_raid\t"+opponent_faction+"\t"+(i+1));
+	    his_self.addMove("corsair_raid\t"+opponent_faction+"\t"+(i+1)+"\t"+hits);
 	  }
 	  his_self.addMove(`NOTIFY\t${his_self.popup('203')} rolls ${hits} hits`);
 	  his_self.endTurn();
@@ -3396,11 +3396,14 @@ if (space.key === "bordeaux") {
 	  // faction is victim
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
+	  let total = parseInt(mv[3]);
+	  let hit = "hit";
 
-	  if (num == 1) { num == "1st"; }
-	  if (num == 2) { num == "2nd"; }
-	  if (num == 3) { num == "3rd"; }
-	  if (num == 4) { num == "4th"; }
+	  if (num == 1) { num = "1st"; }
+	  if (num == 2) { num = "2nd"; hit = "hits"; }
+	  if (num == 3) { num = "3rd"; hit = "hits"; }
+	  if (num == 4) { num = "4th"; hit = "hits"; }
+
 
 	  let player = his_self.returnPlayerOfFaction(faction);
 
@@ -3408,10 +3411,33 @@ if (space.key === "bordeaux") {
 
 	  if (his_self.game.player == player) {
 
- 	    let msg = "Corsair Raid: "+num+" hit:";
+	    let is_squadron_available = false;
+	    if (faction === "papacy") {
+	      for (let key in space.units) {
+	        if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
+	  	  for (let i = 0; i < space.units[key].length; i++) {
+		    if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	          }
+	        }
+	      }
+	    }
+	    if (faction === "protestant") {
+	      for (let key in space.units) {
+	        if (key === "france" || key === "ottoman") {
+	  	  for (let i = 0; i < space.units[key].length; i++) {
+		    if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	          }
+	        }
+	      }
+	    }
+
+
+ 	    let msg = "Corsair Raid: "+num+" of "+total+" "+hits+":";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
-            html += '<li class="option" id="eliminate">eliminate squadron</li>';
+	    if (is_squadron_available) {
+              html += '<li class="option" id="eliminate">eliminate squadron</li>';
+	    }
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -3965,8 +3991,10 @@ if (space.key === "bordeaux") {
 	      },
 
               (spacekey) => {
-                his_self.addMove("build\tland\tpapacy\t"+"mercenary"+"\t"+spacekey);
-                his_self.addMove("build\tland\tpapacy\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
 	        his_self.endTurn();
 	      },
 
@@ -5875,6 +5903,18 @@ alert("HERE");
                   his_self.updateStatusWithOptions(msg, html);
   
                   $('.option').off();
+                  $('.option').on('mouseover', function() {
+                    let action2 = $(this).attr("id");
+                    if (his_self.debaters[action2]) {
+                      his_self.cardbox.show(action2);
+                    }
+                  });
+                  $('.option').on('mouseout', function() {
+                    let action2 = $(this).attr("id");
+                    if (his_self.debaters[action2]) {
+                      his_self.cardbox.hide(action2);
+                    }
+                  });
                   $('.option').on('click', function () {
                     his_self.language_zone_overlay.hide();
                     let selected_idx = parseInt($(this).attr("id"));
@@ -18060,7 +18100,8 @@ console.log("EXACT MATCH 3: " + (p+1));
     //
     this.game.state.events.augsburg_confession = false;
 
-    // impulse incremented in gameloop
+    // allow stuff to move again
+    this.resetLockedTroops();
 
   }
 
@@ -20951,9 +20992,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let card = mv[2];
 
+	  this.updateStatus(this.returnFactionName(faction) + " plays " + this.popup(card));
+          this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
           this.cardbox.hide();
 
-          this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
 
 	  this.game.queue.splice(qe, 1);
 
@@ -21228,8 +21270,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		    if (lqe-1 >= 0) {
 		      // added in reverse order
 		      if (skip_avoid_battle != 1) {
-	                this.game.queue.splice(lqe, 0, "retreat_check\t"+f+"\t"+destination+"\t"+source);
-	                this.game.queue.splice(lqe, 0, "fortification_check\t"+f+"\t"+destination+"\t"+source);
+	                this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+	                this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
 		      }
 	              this.game.queue.splice(lqe, 0, "field_battle\t"+space.key+"\t"+faction);
 	            }
@@ -21300,7 +21342,17 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let space = this.game.spaces[spacekey];
 
+console.log("(");
+console.log("(");
+console.log("(");
+console.log("(");
+console.log("( fortification check");
+console.log("(");
+console.log("(");
+console.log("(");
+
 	  if (space.type !== "electorate" && space.type !== "key" && space.type !== "fortress") {
+console.log("returning as non electorate, key or fortress!");
 	    return 1;
 	  }
 
@@ -21308,8 +21360,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // whoever is being attacked can retreat into the fortification if they
 	  // have 4 or less land units
 	  //
-	  for (f in this.factions) {
+	  for (let f in this.game.spaces[spacekey].units) {
+console.log("examing faction: " + f + " ? " + this.isSpaceControlled(spacekey, f));
 	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
+console.log("not attacker aned we control it!");
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -21319,11 +21373,16 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		//
 	      } else {
 
+console.log("fortcheck2");
+
+
 	        if (fluis > 4) {
 
 		  // must land battle
 
 	        } else {
+
+console.log("fortcheck3");
 
 		  if (this.isMinorPower(f)) {
 
@@ -21357,13 +21416,23 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	          } else {
 
+console.log("fortcheck3");
+
 		    //
 		    // major or independent power - some player decides
 		    //
 		    let cp = this.returnPlayerOfFaction(f);
+
+console.log("fortcheck4 " + f);
+
 		    if (cp != 0) {
+console.log("fortcheck5 " + f);
 		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f+"\t"+spacekey);
+
+
 		    } else {
+
+console.log("fortcheck6? independent key?");
 
 	              //
 		      // independent key
@@ -21388,6 +21457,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	      }
 
 	    } else {
+console.log("no land units found!");
 
 	      //
 	      // no land units (skip)
@@ -21503,6 +21573,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let space = this.game.spaces[spacekey];
 
 	  if (this.game.player == player) {
+console.log("!!!!");
+console.log("!!!!");
+console.log("!!!!");
+console.log(faction + " -- evaluating fortification!");
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
@@ -22049,6 +22123,7 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
 
 	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
+alert("protestants cannot do anything before league forms");
 	    return 1;
 	  }
 
@@ -27184,6 +27259,7 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.state.round == 2 && this.game.state.events.clement_vii != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 2: Clement VII is elected Pope");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tpapacy\t010");
 	    this.game.queue.push("event\tpapacy\t010");
 	  }
 	  //
@@ -27192,6 +27268,7 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.state.round == 4 && this.game.state.events.paul_iii != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 4: Paul III is elected Pope");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tpapacy\t014");
 	    this.game.queue.push("event\tpapacy\t014");
 	  }
 	  //
@@ -27200,6 +27277,7 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.players.length > 2 && this.game.state.round == 3 && this.game.state.events.barbary_pirates != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 3: Barbary Pirates Form!");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tottoman\t009");
 	    this.game.queue.push("event\tottoman\t009");
 	  }
 	  //
@@ -27208,14 +27286,16 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.state.round == 6 && this.game.state.events.society_of_jesus != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 6: Society of Jesus Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tprotestant\t015");
 	    this.game.queue.push("event\tprotestant\t015");
 	  }
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
-	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
+	  if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 4: Schmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tprotestant\t013");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 
@@ -30822,28 +30902,19 @@ console.log("and calling callback...");
     // cards left
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+    let cards_in_hand = this.game.deck[0].fhand[faction_hand_idx].length;
 
     this.cardbox.hide();
     this.game.state.active_card = card;
 
     if (card === "pass") {
       this.updateStatus("Passing this Round...");
-      let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-      let cards_in_hand = 0;
-      if (this.game.deck[0]) {
-	if (this.game.deck[0].fhand[faction_hand_idx]) {
-	  if (this.game.deck[0].fhand[faction_hand_idx].length > 0) {
-	    cards_in_hand = this.game.deck[0].fhand[faction_hand_idx].length;
-	  }
-	}
-      }
-      // auto updates cards_left (last entry)
       this.addMove("pass\t"+faction+"\t"+cards_in_hand);
       this.endTurn();
       return;
+    } else {
+      this.addMove("cards_left\t"+faction+"\t"+(cards_in_hand-1)); // -1 because we playing this card
     }
-
 
     //
     // mandatory event cards effect first, then 2 OPS
@@ -30853,8 +30924,6 @@ console.log("and calling callback...");
     if (deck[card].type === "mandatory" && deck[card].canEvent(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
-      // Feb 8 - speedup by removing?
-      //this.addMove("ACKNOWLEDGE\t"+this.returnFactionName(faction) + " plays 2 OPs");
       this.playerPlayEvent(card, faction);
     } else {
 
@@ -31271,11 +31340,11 @@ console.log(this.game.player + " -- " + faction);
     // don't halt the game for the player moving.
 
     // wartburg is 037
-    if (faction !== "protestant" && !this.game.deck[0].discards["037"]) {
+    if (faction == "protestant" || this.game.deck[0].discards["037"]) {
+      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
+    } else {
       this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
       this.addMove("RESETCONFIRMSNEEDED\tall");
-    } else {
-      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     }
 
     this.endTurn();
@@ -32133,6 +32202,11 @@ if (space.key === "barcelona") {
 	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space, true); // true ==> include minor allies
 	let can_we_quick_move = false;
 	if (max_formation_size >= units_in_space) { can_we_quick_move = true; }
+	for (let f in space.units) {
+	  for (let z = 0; z < space.units[f].length; z++) {
+	    if (space.units[f][z].locked == 1) { can_we_quick_move = false; }
+	  }
+	}
 
 	if (can_we_quick_move == true) {
 
@@ -32452,6 +32526,17 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender, is_attacker_loser=false) {
 
+
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("^^^ PERO: " + defender);
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+
     let his_self = this;
     let retreat_destination = "";
     let space_name = this.game.spaces[spacekey].name;
@@ -32505,6 +32590,7 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
     this.updateStatusWithOptions(`${this.returnFactionName(attacker)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
     this.attachCardboxEvents(function(user_choice) {
+
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
         return;

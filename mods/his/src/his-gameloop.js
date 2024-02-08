@@ -1146,9 +1146,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let card = mv[2];
 
+	  this.updateStatus(this.returnFactionName(faction) + " plays " + this.popup(card));
+          this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
           this.cardbox.hide();
 
-          this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
 
 	  this.game.queue.splice(qe, 1);
 
@@ -1423,8 +1424,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		    if (lqe-1 >= 0) {
 		      // added in reverse order
 		      if (skip_avoid_battle != 1) {
-	                this.game.queue.splice(lqe, 0, "retreat_check\t"+f+"\t"+destination+"\t"+source);
-	                this.game.queue.splice(lqe, 0, "fortification_check\t"+f+"\t"+destination+"\t"+source);
+	                this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+	                this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
 		      }
 	              this.game.queue.splice(lqe, 0, "field_battle\t"+space.key+"\t"+faction);
 	            }
@@ -1495,7 +1496,17 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let space = this.game.spaces[spacekey];
 
+console.log("(");
+console.log("(");
+console.log("(");
+console.log("(");
+console.log("( fortification check");
+console.log("(");
+console.log("(");
+console.log("(");
+
 	  if (space.type !== "electorate" && space.type !== "key" && space.type !== "fortress") {
+console.log("returning as non electorate, key or fortress!");
 	    return 1;
 	  }
 
@@ -1503,8 +1514,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // whoever is being attacked can retreat into the fortification if they
 	  // have 4 or less land units
 	  //
-	  for (f in this.factions) {
+	  for (let f in this.game.spaces[spacekey].units) {
+console.log("examing faction: " + f + " ? " + this.isSpaceControlled(spacekey, f));
 	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
+console.log("not attacker aned we control it!");
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -1514,11 +1527,16 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		//
 	      } else {
 
+console.log("fortcheck2");
+
+
 	        if (fluis > 4) {
 
 		  // must land battle
 
 	        } else {
+
+console.log("fortcheck3");
 
 		  if (this.isMinorPower(f)) {
 
@@ -1552,13 +1570,23 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	          } else {
 
+console.log("fortcheck3");
+
 		    //
 		    // major or independent power - some player decides
 		    //
 		    let cp = this.returnPlayerOfFaction(f);
+
+console.log("fortcheck4 " + f);
+
 		    if (cp != 0) {
+console.log("fortcheck5 " + f);
 		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f+"\t"+spacekey);
+
+
 		    } else {
+
+console.log("fortcheck6? independent key?");
 
 	              //
 		      // independent key
@@ -1583,6 +1611,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	      }
 
 	    } else {
+console.log("no land units found!");
 
 	      //
 	      // no land units (skip)
@@ -1698,6 +1727,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let space = this.game.spaces[spacekey];
 
 	  if (this.game.player == player) {
+console.log("!!!!");
+console.log("!!!!");
+console.log("!!!!");
+console.log(faction + " -- evaluating fortification!");
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
@@ -2244,6 +2277,7 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
 
 	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
+alert("protestants cannot do anything before league forms");
 	    return 1;
 	  }
 
@@ -7379,6 +7413,7 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.state.round == 2 && this.game.state.events.clement_vii != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 2: Clement VII is elected Pope");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tpapacy\t010");
 	    this.game.queue.push("event\tpapacy\t010");
 	  }
 	  //
@@ -7387,6 +7422,7 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.state.round == 4 && this.game.state.events.paul_iii != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 4: Paul III is elected Pope");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tpapacy\t014");
 	    this.game.queue.push("event\tpapacy\t014");
 	  }
 	  //
@@ -7395,6 +7431,7 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.players.length > 2 && this.game.state.round == 3 && this.game.state.events.barbary_pirates != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 3: Barbary Pirates Form!");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tottoman\t009");
 	    this.game.queue.push("event\tottoman\t009");
 	  }
 	  //
@@ -7403,14 +7440,16 @@ alert("flipping more than exist in the zone!");
 	  if (this.game.state.round == 6 && this.game.state.events.society_of_jesus != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 6: Society of Jesus Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tprotestant\t015");
 	    this.game.queue.push("event\tprotestant\t015");
 	  }
 	  //
 	  // form Schmalkaldic League if unformed by end of round 4
 	  //
-	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
+	  if (this.game.state.round == 2 && this.game.state.events.schmalkaldic_league != 1) {
 	    this.game.queue.push("counter_or_acknowledge\tTurn 4: Schmalkaldic League Forms");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("remove\tprotestant\t013");
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 

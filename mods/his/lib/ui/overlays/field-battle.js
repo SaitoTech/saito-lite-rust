@@ -104,7 +104,7 @@ class FieldBattleOverlay {
 			el.remove();
 		});
 		document.querySelectorAll('.hits-assignable').forEach((el) => {
-			let factionspace = el.querySelector('.field-battle-desc').innerHTML;
+			let factionspace = el.querySelector('.field-battle-unit .field-battle-desc').innerHTML;
 			let can_i_kill_this_guy = false;
 
 			if (

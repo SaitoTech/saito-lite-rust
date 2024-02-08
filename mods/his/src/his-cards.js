@@ -330,7 +330,7 @@ if (space.key === "bordeaux") {
 
         if (his_self.game.player == p) {
 	  for (let i = hits-1; i >= 0; i--) {
-	    his_self.addMove("corsair_raid\t"+opponent_faction+"\t"+(i+1));
+	    his_self.addMove("corsair_raid\t"+opponent_faction+"\t"+(i+1)+"\t"+hits);
 	  }
 	  his_self.addMove(`NOTIFY\t${his_self.popup('203')} rolls ${hits} hits`);
 	  his_self.endTurn();
@@ -345,11 +345,14 @@ if (space.key === "bordeaux") {
 	  // faction is victim
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
+	  let total = parseInt(mv[3]);
+	  let hit = "hit";
 
-	  if (num == 1) { num == "1st"; }
-	  if (num == 2) { num == "2nd"; }
-	  if (num == 3) { num == "3rd"; }
-	  if (num == 4) { num == "4th"; }
+	  if (num == 1) { num = "1st"; }
+	  if (num == 2) { num = "2nd"; hit = "hits"; }
+	  if (num == 3) { num = "3rd"; hit = "hits"; }
+	  if (num == 4) { num = "4th"; hit = "hits"; }
+
 
 	  let player = his_self.returnPlayerOfFaction(faction);
 
@@ -357,10 +360,33 @@ if (space.key === "bordeaux") {
 
 	  if (his_self.game.player == player) {
 
- 	    let msg = "Corsair Raid: "+num+" hit:";
+	    let is_squadron_available = false;
+	    if (faction === "papacy") {
+	      for (let key in space.units) {
+	        if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
+	  	  for (let i = 0; i < space.units[key].length; i++) {
+		    if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	          }
+	        }
+	      }
+	    }
+	    if (faction === "protestant") {
+	      for (let key in space.units) {
+	        if (key === "france" || key === "ottoman") {
+	  	  for (let i = 0; i < space.units[key].length; i++) {
+		    if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	          }
+	        }
+	      }
+	    }
+
+
+ 	    let msg = "Corsair Raid: "+num+" of "+total+" "+hits+":";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
-            html += '<li class="option" id="eliminate">eliminate squadron</li>';
+	    if (is_squadron_available) {
+              html += '<li class="option" id="eliminate">eliminate squadron</li>';
+	    }
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -914,8 +940,10 @@ if (space.key === "bordeaux") {
 	      },
 
               (spacekey) => {
-                his_self.addMove("build\tland\tpapacy\t"+"mercenary"+"\t"+spacekey);
-                his_self.addMove("build\tland\tpapacy\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
 	        his_self.endTurn();
 	      },
 
@@ -2824,6 +2852,18 @@ alert("HERE");
                   his_self.updateStatusWithOptions(msg, html);
   
                   $('.option').off();
+                  $('.option').on('mouseover', function() {
+                    let action2 = $(this).attr("id");
+                    if (his_self.debaters[action2]) {
+                      his_self.cardbox.show(action2);
+                    }
+                  });
+                  $('.option').on('mouseout', function() {
+                    let action2 = $(this).attr("id");
+                    if (his_self.debaters[action2]) {
+                      his_self.cardbox.hide(action2);
+                    }
+                  });
                   $('.option').on('click', function () {
                     his_self.language_zone_overlay.hide();
                     let selected_idx = parseInt($(this).attr("id"));

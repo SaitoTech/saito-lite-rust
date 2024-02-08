@@ -44,7 +44,8 @@
     //
     this.game.state.events.augsburg_confession = false;
 
-    // impulse incremented in gameloop
+    // allow stuff to move again
+    this.resetLockedTroops();
 
   }
 
