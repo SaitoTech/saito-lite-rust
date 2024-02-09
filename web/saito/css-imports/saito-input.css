@@ -188,7 +188,7 @@ emoji-picker {
     flex: 1;
     background: var(--saito-background-color);
     border-radius: 0.5rem;
-
+    row-gap: 0.25rem;
     /* for popping up over input field */
     max-height: 200px;
     bottom: 0;
