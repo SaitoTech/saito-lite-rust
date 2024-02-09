@@ -541,14 +541,13 @@ if (space.key === "bordeaux") {
 	    if (!ca.includes("venice")) { ca.push("venice"); }
 	  }
 
-	
 	  let msg = 'Activate or De-activate a Minor Power?';
     	  let html = '<ul>';
 	  for (let i = 0; i < ca.length; i++) {
-            html += `<li class="option" id="${ca[i]}">activate ${ca[i]}</li>`;
+            html += `<li class="option" id="activate_${ca[i]}">activate ${ca[i]}</li>`;
 	  }
 	  for (let i = 0; i < cd.length; i++) {
-            html += `<li class="option" id="${cd[i]}">deactivate ${cd[i]}</li>`;
+            html += `<li class="option" id="deactivate_${cd[i]}">deactivate ${cd[i]}</li>`;
 	  }
           html += `<li class="option" id="skip">skip</li>`;
           his_self.updateStatusWithOptions(msg, html);
@@ -558,27 +557,29 @@ if (space.key === "bordeaux") {
 
 	    let action = $(this).attr("id");
 
-
 	    if (action === "skip") { his_self.endTurn(); return 0; }
 
 	    if (ca.includes(action)) {
 
 	      let finished = 0;
 
-	      if (faction === "protestant" && action === "genoa") {
+	      if (faction === "protestant" && action === "activate_genoa") {
 		his_self.addMove("activate_minor_power\thapsburg\tgenoa");
 		finished = 1;
 	      }
-	      if (faction === "protestant" && action === "venice") {
+	      if (faction === "protestant" && action === "activate_venice") {
 		his_self.addMove("activate_minor_power\thapsburg\tvenice");
 		finished = 1;
 	      }
 	      if (finished == 0) {
+	        let x = action.split("_");
+	        action = x[1];
 	        his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
 	      }
 
 	    } else {
-
+	      let x = action.split("_");
+	      action = x[1];
 	      his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
 	    }
 	    his_self.endTurn();
@@ -4155,7 +4156,9 @@ alert("HERE");
 	      if (his_self.game.state.assault) {
 	        if (his_self.game.state.assault.spacekey) {
 	          if (his_self.isSpaceControlled(his_self.game.state.assault.spacekey, faction)) {
-                    return 1;
+		    if (his_self.returnPlayerCommandingFaction(faction) == his_self.game.player) {
+                      return 1;
+		    }
 	 	  }
 	 	}
 	      }
@@ -4292,11 +4295,24 @@ alert("HERE");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, faction, extra) { // extra= assault spacekey
         if (menu == "assault" && his_self.game.player === his_self.game.state.active_player) {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
-              return 1;
+	      for (let f in his_self.game.spaces[extra].units) {
+		if (his_self.returnFactionLandLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
+		  if (his_self.game.player == his.returnPlayerCommandingFaction(f)) {
+	            for (let z = 0; z < his_self.game.spaces[extra].units[f].length; z++) {
+	              let u = his_self.game.spaces[extra].units[f][z].type;
+		      if (u.type == "mercenary" || u.type == "regular" || u.type == "cavalry") {
+			if (u.besieged != 0) {
+			  return 1;
+			}
+		      }
+		    }
+	          }
+	        }
+	      }
             }
           }
         }
@@ -4337,11 +4353,17 @@ alert("HERE");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, extra) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) { // extra = spacekey of assault
         if (menu == "assault") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
-              return 1;
+	      for (let f in his_self.game.spaces[extra].units) {
+		if (his_self.returnFactionLandLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
+		  if (his_self.game.player == his.returnPlayerCommandingFaction(f)) {
+                    return 1;
+                  }
+                }
+              }
             }
           }
         }
@@ -5064,7 +5086,6 @@ alert("HERE");
       canEvent : function(his_self, faction) { return 1; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu != "" && menu != "pre_spring_deployment") {
-
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
 
           let f = "";
@@ -5080,6 +5101,12 @@ alert("HERE");
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu != "" && menu != "pre_spring_deployment") {
+	  if (his_self.game.state.active_player === his_self.game.player) { 
+	    // not in translation and reformation overlays
+	    if (menu.indexOf("lation") > 0 || menu.indexOf("ormation") > 0) {
+	      return 0;
+	    }
+	  }
 	  if (!his_self.game.deck) { return 0; }
 	  if (!his_self.game.deck[0]) { return 0; }
 	  if (!his_self.game.deck[0].fhand) { return 0; }
@@ -7171,8 +7198,10 @@ alert("HERE");
 	return 0;
       },
     }
+    let csr_img = "cards/HIS-071.svg";
+    if (this.game.players.length == 2) { csr_img = "cards/HIS-071-2P.svg"; }
     deck['071'] = { 
-      img : "cards/HIS-071.svg" , 
+      img : csr_img , 
       name : "City State Rebels" ,
       ops : 4 ,
       turn : 1 ,
@@ -7180,7 +7209,12 @@ alert("HERE");
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 	if (his_self.game.players.length == 2) {
-	  if (his_self.game.state.events.schmalkaldic_league == 1) { return 1; }
+	  if (his_self.game.state.events.schmalkaldic_league == 1) { 
+	    for (let key in his_self.game.spaces) {
+	      let space = his_self.game.spaces[key];
+              if (space.type == "electorate" && space.political == "hapsburg") { return 1; }
+	    }
+	  }
 	  return 0;
 	}
 	return 1;
@@ -7199,7 +7233,7 @@ alert("HERE");
 
 	      // 2P game - may be played against electorate under Hapsburg Control
 	      if (his_self.game.players.length == 2) {
-		if (his_self.game.state.events.schmalkaldic_league) { if (space.type == "electorate" && ((space.political == "protestant" && space.home == "hapsburg") || (space.political == "hapsburg" && space.home == "protestant"))) { if (his_self.returnFactionLandUnitsInSpace("haspburg", space.key)) { return 1; } } }
+		if (his_self.game.state.events.schmalkaldic_league == 1) { if (space.type == "electorate" && space.political == "hapsburg") { return 1; } }
 	        return 0;
 	      }
 

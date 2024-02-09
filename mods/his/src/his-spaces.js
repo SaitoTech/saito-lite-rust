@@ -732,8 +732,8 @@ if (space.key == "cagliari") { debugmode = 1;
       ops_remaining--;
       for (let i = 0; i < viable_navalspaces.length; i++) {
 	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i].key].neighbours.length; z++) {
-          if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
-	    let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
+	  let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
+          if (this.doesFactionHaveNavalUnitsInSpace(faction, ns)) {
 	    let already_included = 0;
 	    for (let z = 0; z < viable_navalspaces.length; z++) {
 	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
@@ -754,7 +754,7 @@ if (space.key == "cagliari") { debugmode = 1;
       for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {      
 	let port = this.game.navalspaces[key].ports[z];
 	if (port != space.key) {
-	  viable_destinations.push({ key : port , cost : (ops - ops_remaining)});
+	  viable_destinations.push({ key : port , cost : (viable_navalspaces[i].ops_remaining-1)});
 	}
       }
     }

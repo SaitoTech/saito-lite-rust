@@ -1416,7 +1416,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    if (lqe >= 0) {
 	      let lmv = this.game.queue[lqe].split("\t");
 
-	      if (lmv[0] == "interception_check") {
+	      if (lmv[0] == "interception_check" && space.besieged == 0) { // not already besieged
 	        for (let f in space.units) {
 	          if (space.units[f].length > 0 && f != faction) {
 		    anyone_else_here = 1;
@@ -1436,8 +1436,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		if (anyone_else_here == 0 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
 		  let f = this.returnFactionControllingSpace(space.key);
 		  if (!this.areAllies(f, faction) && f !== faction) {
-	 	    space.besieged = 2;
-		    this.displaySpace(space.key);
+		    if (space.besieged != 1) { // not if already besieged
+	 	      space.besieged = 2;
+		      this.displaySpace(space.key);
+		    }
 		  }
 	        }
 
@@ -1497,17 +1499,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let space = this.game.spaces[spacekey];
 
-console.log("(");
-console.log("(");
-console.log("(");
-console.log("(");
-console.log("( fortification check");
-console.log("(");
-console.log("(");
-console.log("(");
-
 	  if (space.type !== "electorate" && space.type !== "key" && space.type !== "fortress") {
-console.log("returning as non electorate, key or fortress!");
 	    return 1;
 	  }
 
@@ -1516,9 +1508,7 @@ console.log("returning as non electorate, key or fortress!");
 	  // have 4 or less land units
 	  //
 	  for (let f in this.game.spaces[spacekey].units) {
-console.log("examing faction: " + f + " ? " + this.isSpaceControlled(spacekey, f));
 	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
-console.log("not attacker aned we control it!");
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -1528,16 +1518,11 @@ console.log("not attacker aned we control it!");
 		//
 	      } else {
 
-console.log("fortcheck2");
-
-
 	        if (fluis > 4) {
 
 		  // must land battle
 
 	        } else {
-
-console.log("fortcheck3");
 
 		  if (this.isMinorPower(f)) {
 
@@ -1571,23 +1556,16 @@ console.log("fortcheck3");
 
 	          } else {
 
-console.log("fortcheck3");
-
 		    //
 		    // major or independent power - some player decides
 		    //
 		    let cp = this.returnPlayerOfFaction(f);
 
-console.log("fortcheck4 " + f);
-
 		    if (cp != 0) {
-console.log("fortcheck5 " + f);
 		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f+"\t"+spacekey);
 
 
 		    } else {
-
-console.log("fortcheck6? independent key?");
 
 	              //
 		      // independent key
@@ -1603,6 +1581,7 @@ console.log("fortcheck6? independent key?");
 	              //
 	              // fortify everything
 	              //
+	              his_self.game.queue.push("NOTIFY\t" + his_self.returnFactionName(f) + " fortifies in " + his_self.returnSpaceName(spacekey));
 	              for (let i = 0; i < space.units[f].length; i++) {
 	                his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+f+"\t"+JSON.stringify(space.units[f][i]));
 	              }
@@ -1612,7 +1591,6 @@ console.log("fortcheck6? independent key?");
 	      }
 
 	    } else {
-console.log("no land units found!");
 
 	      //
 	      // no land units (skip)
@@ -1801,8 +1779,9 @@ console.log(faction + " -- evaluating fortification!");
 	  if (this.game.player === player) {
 	    this.playerFortifySpace(faction, attacker, spacekey);
 	  } else {
+	    this.updateLog(this.returnFactionName(faction) + " fortifies in " + this.returnSpaceName(spacekey));
+	    this.updateStatus(this.returnFactionName(faction) + " fortifying in " + this.returnSpaceName(spacekey));
 	    if (this.isPlayerControlledFaction(faction)) {
-	      this.updateStatus(this.returnFactionName(faction) + " handling retreat into fortification");
 	    } else {
 	      //
 	      // non-player controlled, minor power or independent, so auto-handle
@@ -2930,10 +2909,8 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
-console.log("counter_or_acknowledge #3");
 	    if (z[i].key !== this.game.state.active_card) {
               if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
-console.log("triggers: " + z[i].name + " -- " + z[i].key);
                 let x = z[i].menuOption(this, stage, this.game.player, extra);
                 html += x.html;
 	        z[i].faction = x.faction; // add faction

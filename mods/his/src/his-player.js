@@ -3279,7 +3279,7 @@ console.log("^^^");
 
 
 
-  canPlayerNavalTransport(his_self, player, faction, ops) {
+  canPlayerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
@@ -3299,6 +3299,15 @@ console.log("^^^");
       if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
 	spaces_with_infantry.splice(i, 1);
 	i--;
+      } else {
+	let s = his_self.game.spaces[spaces_with_infantry[i]];
+        for (let z = 0; z < s.ports.length; z++) {
+          if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 0) {
+	    spaces_with_infantry.splice(i, 1);
+	    i--;
+	    z = s.ports.length + 2;
+	  }
+	}
       }
     }
 
@@ -3312,13 +3321,22 @@ console.log("^^^");
     return 0;
 
   }
-  async playerNavalTransport(his_self, player, faction) {
+  async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
 
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+      if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
 	spaces_with_infantry.splice(i, 1);
 	i--;
+      } else {
+	let s = his_self.game.spaces[spaces_with_infantry[i]];
+        for (let z = 0; z < s.ports.length; z++) {
+          if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 0) {
+	    spaces_with_infantry.splice(i, 1);
+	    i--;
+	    z = s.ports.length + 2;
+	  }
+	}
       }
     }
 
@@ -3331,27 +3349,26 @@ console.log("^^^");
     his_self.updateStatusWithOptions(`Transport from Which Port?`, html);
     his_self.attachCardboxEvents(function(user_choice) {
 
-      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], ops);
-       
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], (ops_remaining+ops_remaining));
+
+console.log("POTENTIAL NAVAL TRANSPORT DESTINATIONS: " + JSON.stringify(dest)); 
+   
       let html = `<ul>`;
       for (let i = 0; i < dest.length; i++) {
-        html    += `<li class="option" id="${i}">${dest[i].key} (${desk[i].cost} CP)</li>`;
+	let c = ops_remaining + ops_to_spend - dest[i].cost;
+        html    += `<li class="option" id="${i}">${dest[i].key} (${c} CP)</li>`;
       }
       html    += `</ul>`;
 
       his_self.updateStatusWithOptions(`Select Destination:`, html);
       his_self.attachCardboxEvents(function(destination) {
+alert("Go!");
         his_self.endTurn();
       });
     });
 
   }
 
-
-  async playerNavalTransport(his_self, player, faction) {
-    his_self.endTurn();
-    return;
-  }
 
   // 1 = yes, 0 = no / maybe
   canPlayerPlayCard(faction, card) {
@@ -4044,7 +4061,7 @@ console.log("^^^");
 	if (faction == "ottoman" && destination_spacekey == "egypt") { his_self.addMove("war\tottoman\tegypt"); his_self.endTurn(); return; }
 	if (faction == "england" && destination_spacekey == "ireland") { his_self.addMove("war\tottoman\tireland"); his_self.endTurn(); return; }
 	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
-        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault");
+        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
         his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	his_self.endTurn();
       },

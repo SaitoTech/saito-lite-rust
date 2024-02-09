@@ -2,6 +2,7 @@ const MenuTemplate = require('./menu.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class MenuOverlay {
+
 	constructor(app, mod, c1, c2, c3) {
 		this.app = app;
 		this.mod = mod;
@@ -35,16 +36,17 @@ class MenuOverlay {
 	}
 
 	render(menu, player, faction, ops, attachEventsToOptions = null) {
+
 		let his_self = this.mod;
+		let menu_style = "classic"; 	// classic ==> starting menus, then submenus
+						// simple  ==> one-click up to 9 options
+
+
 		this.overlay.show(MenuTemplate());
 
 		this.pushHudUnderOverlay();
 
 		let sub_menu = (main_menu, sub_menu, options) => {
-			//this.overlay.show(MenuTemplate());
-
-			document.querySelector('.menu').classList.remove('menu-large');
-			document.querySelector('.menu').innerHTML = '';
 
 			for (let i = 0; i < options.length; i++) {
 				let menu_item = options[i];
@@ -53,9 +55,8 @@ class MenuOverlay {
 				let cost = menu_item.cost;
 				let active_option = menu_item.active;
 
-			
 				let html = `
-				      <div id="${idx}" class="menu-option-container card ${active_option}">
+				      <div id="${idx}" class="menu-option-container ${active_option}">
 				        <div class="menu-option-image">
 				          <img src="${menu[idx].img}" />
 				        </div>
@@ -79,6 +80,11 @@ class MenuOverlay {
 			let build = [];
 			let special = [];
 			let and_attack = '';
+
+			//
+			// revert to simple menu
+			//
+			let active_menu_options = 0;
 
 			for (let i = 0; i < menu.length; i++) {
 				let id = '';
@@ -107,6 +113,9 @@ class MenuOverlay {
 				}
 
 				if (cost != 100 && active_option != 'inactive') {
+
+					active_menu_options++;
+
 					if (menu[i].category == 'build') {
 						build.push({
 							idx: i,
@@ -143,14 +152,22 @@ class MenuOverlay {
 				}
 			}
 
+			if (active_menu_options <= 9) {
+				sub_menu(main_menu, sub_menu, move);
+				sub_menu(main_menu, sub_menu, build);
+				sub_menu(main_menu, sub_menu, special);
+				document.querySelector('.menu').classList.add(`m${active_menu_options}entries`);
+				return;
+			}
+
 			if (menu.length > 3) {
 				document.querySelector('.menu').classList.add('menu-large');
 
 				let build_html = `
-	    <div id="build" class="menu-option-container-large build-menu">
-	      <div class="menu-option-title-large">Build</div>
-	    </div>
-	  `;
+				    <div id="build" class="menu-option-container-large build-menu">
+				      <div class="menu-option-title-large">Build</div>
+				    </div>
+				`;
 				if (build.length > 0) {
 					this.app.browser.addElementToSelector(build_html, `.menu`);
 					let content = '';
@@ -169,10 +186,10 @@ class MenuOverlay {
 				}
 
 				let move_html = `
-	    <div id="move" class="menu-option-container-large move-menu">
-	      <div class="menu-option-title-large">Move${and_attack}</div>
-	    </div>
-	  `;
+				    <div id="move" class="menu-option-container-large move-menu">
+				      <div class="menu-option-title-large">Move${and_attack}</div>
+				    </div>
+				  `;
 				if (move.length > 0) {
 					this.app.browser.addElementToSelector(move_html, `.menu`);
 					let content = '';
@@ -191,10 +208,10 @@ class MenuOverlay {
 				}
 
 				let special_html = `
-	    <div id="special" class="menu-option-container-large special-menu">
-	      <div class="menu-option-title-large">Special</div>
-	    </div>
-	  `;
+				    <div id="special" class="menu-option-container-large special-menu">
+				      <div class="menu-option-title-large">Special</div>
+				    </div>
+				  `;
 				if (special.length > 0) {
 					this.app.browser.addElementToSelector(
 						special_html,
@@ -221,6 +238,9 @@ class MenuOverlay {
 						obj.onclick = (e) => {};
 						obj.onclick = (e) => {
 							let id = e.currentTarget.id;
+
+							document.querySelector('.menu').classList.remove('menu-large');
+							document.querySelector('.menu').innerHTML = '';
 
 							if (id == 'build') {
 								sub_menu(main_menu, sub_menu, build);
@@ -271,17 +291,8 @@ class MenuOverlay {
 				}
 
 				if (cost != 100) {
-					let html = `
-	      <div id="${id}" class="menu-option-container ${active_option}">
-	        <div class="menu-option-image">
-	          <img src="${menu[i].img}" />
-	        </div>
-	        <div class="menu-option-title">${menu[i].name} [${cost}]</div>
-	      </div>
-	    `;
-
 					if (active_option !== 'inactive') {
-						this.app.browser.addElementToSelector(html, `.menu`);
+						this.app.browser.addElementToSelector(this.returnMenuHTML(menu[i].name, menu[i].img, active_option, menu[i].cost), `.menu`);
 					}
 				}
 			}
@@ -296,6 +307,18 @@ class MenuOverlay {
 	}
 
 	attachEvents() {}
+
+	returnMenuHTML(name="", img="", active_option="active card", cost=0) {
+	  return `
+	      <div id="${id}" class="menu-option-container ${active_option}">
+	        <div class="menu-option-image">
+	          <img src="${img}" />
+	        </div>
+	        <div class="menu-option-title">${name} [${cost}]</div>
+	      </div>
+	  `;
+	}
+
 }
 
 module.exports = MenuOverlay;
