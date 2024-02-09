@@ -14,7 +14,7 @@ module.exports = (app, mod, group, isStatic = false) => {
 
 	let is_encrypted = ``;
 
-	if (group.members.length == 2) {
+	if (group.members.length == 2 && !group.member_ids) {
 		for (let member of group.members) {
 			if (member !== mod.publicKey) {
 				if (app.keychain.hasSharedSecret(member)) {
@@ -26,7 +26,7 @@ module.exports = (app, mod, group, isStatic = false) => {
 
 	let html = `
        <div class="${class_name} chat-popup ${
-	group.members.length == 2 ? 'saito-dm-chat' : ''
+	group.members.length == 2 && !group?.member_ids ? 'saito-dm-chat' : ''
 }" id="chat-popup-${group.id}">
 
           <div class="chat-header" id="chat-header-${group.id}">
@@ -59,7 +59,7 @@ module.exports = (app, mod, group, isStatic = false) => {
 
               ${
 	group.name != mod.communityGroupName &&
-					group.members.length == 2
+					group.members.length == 2 && !group?.member_ids
 		? `
               <div class="chat-action-icons">
                 <div class="chat-actions"></div>

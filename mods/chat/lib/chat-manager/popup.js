@@ -192,7 +192,7 @@ class ChatPopup {
 
 			// add call icon, ignore if community chat
 			let mods = this.app.modules.mods;
-			if (this.group.name != this.mod.communityGroupName && this.group.members.length == 2) {
+			if (this.group.name != this.mod.communityGroupName && this.group.members.length == 2 && !this.group?.member_ids) {
 				let index = 0;
 				for (const mod of mods) {
 					let item = mod.respondTo('chat-actions', {

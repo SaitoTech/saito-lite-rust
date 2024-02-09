@@ -12,30 +12,6 @@ class ChatManagerMenu {
 		this.container = container;
 
 		this.contactList = new ContactsList(app, mod, true);
-		this.contactList.callback = async (person) => {
-			if (Array.isArray(person) && person.length > 1) {
-				let name = await sprompt('Choose a name for the group');
-				//Make sure I am in the group too!
-				person.push(this.mod.publicKey);
-				let group = this.mod.returnOrCreateChatGroupFromMembers(
-					person,
-					name
-				);
-
-				if (group.txs.length == 0) {
-					await this.mod.sendCreateGroupTransaction(group);
-				} else {
-					this.app.connection.emit(
-						'chat-popup-render-request',
-						group
-					);
-				}
-			} else if (Array.isArray(person) && person.length == 1) {
-				this.app.keychain.addKey(person[0], { mute: 0 });
-				person.push(this.mod.publicKey);
-				let group = this.mod.returnOrCreateChatGroupFromMembers(person);
-			}
-		};
 
 		this.chatList = new ChatList(app, mod);
 		this.chatList.callback = (gid) => {
@@ -45,7 +21,6 @@ class ChatManagerMenu {
 				this.mod.returnGroup(gid)
 			);
 			chatMenu.render();
-
 		};
 	}
 
@@ -76,16 +51,38 @@ class ChatManagerMenu {
 	attachEvents() {
 		if (document.getElementById('add-contacts')) {
 			document.getElementById('add-contacts').onclick = (e) => {
+				this.contactList.multi_select = false;
+				this.contactList.callback = async (person) => {
+					if (person) {
+						this.app.connection.emit('open-chat-with', {
+							key: person
+						});
+					}
+				};
 				this.contactList.render();
 			};
 		}
 
-	    if (document.getElementById('edit-contacts')){
-	    	document.getElementById('edit-contacts').onclick = (e) => {
-	    		this.chatList.render();
-	    	}
+		if (document.getElementById('create-group')) {
+			document.getElementById('create-group').onclick = async (e) => {
+				this.contactList.multi_select = true;
+				this.contactList.title = "Invite Contacts";
+				
+				this.contactList.callback = (person) => {
+					person.push(this.mod.publicKey);
+					this.mod.sendCreateGroupTransaction(name, person);
+				};
+
+				let name = await sprompt('Choose a name for the group');
+				this.contactList.render();
+			};
 		}
 
+		if (document.getElementById('edit-contacts')) {
+			document.getElementById('edit-contacts').onclick = (e) => {
+				this.chatList.render();
+			};
+		}
 
 		if (document.getElementById('enable-notifications')) {
 			document
@@ -117,38 +114,44 @@ class ChatManagerMenu {
 				});
 		}
 
+		if (document.getElementById('audio-notifications')) {
+			document
+				.getElementById('audio-notifications')
+				.addEventListener('change', (e) => {
+					if (e.currentTarget.checked) {
+						this.mod.audio_notifications = true;
+					} else {
+						this.mod.audio_notifications = false;
+					}
+					this.mod.saveOptions();
+				});
+		}
 
-    if (document.getElementById("audio-notifications")){
-      document.getElementById("audio-notifications").addEventListener("change", (e) => {
-        if (e.currentTarget.checked){
-        	this.mod.audio_notifications = true;
-        }else{
-        	this.mod.audio_notifications = false;
-        }
-        this.mod.saveOptions();
-      });
+		if (document.getElementById('auto-open')) {
+			document
+				.getElementById('auto-open')
+				.addEventListener('change', (e) => {
+					if (e.currentTarget.checked) {
+						this.mod.auto_open_community = true;
+					} else {
+						this.mod.auto_open_community = false;
+					}
+					this.mod.saveOptions();
+				});
+		}
 
-    }
-
-    if (document.getElementById("auto-open")){
-      document.getElementById("auto-open").addEventListener("change", (e) => {
-        if (e.currentTarget.checked){
-        	this.mod.auto_open_community = true;
-        }else{
-        	this.mod.auto_open_community = false;
-        }
-        this.mod.saveOptions();
-      });
-
-    }
-
-    if (document.getElementById("chat-link")){
-    	document.getElementById("chat-link").addEventListener("click", (e) => {
-    		let link = window.location.origin + "/chat?chat_id="+this.mod.publicKey;
-    		navigator.clipboard.writeText(link);
-    		siteMessage("Link Copied", 2000);
-    	});
-    }
+		if (document.getElementById('chat-link')) {
+			document
+				.getElementById('chat-link')
+				.addEventListener('click', (e) => {
+					let link =
+						window.location.origin +
+						'/chat?chat_id=' +
+						this.mod.publicKey;
+					navigator.clipboard.writeText(link);
+					siteMessage('Link Copied', 2000);
+				});
+		}
 	}
 }
 
