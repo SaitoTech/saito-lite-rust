@@ -366,12 +366,29 @@ class Keychain {
 		if (data == null) {
 			for (let x = 0; x < this.keys.length; x++) {
 				if (
-					/*this.keys[x].lc &&*/ this.keys[x].publicKey !=
-					this.publicKey
+					this.keys[x].publicKey != this.publicKey
 				) {
 					kx.push(this.keys[x]);
 				}
 			}
+
+			//
+			// any modules caching keys?
+			//
+			this.app.modules
+				.getRespondTos('saito-return-key')
+				.forEach((modResponse) => {
+					let keys = modResponse.returnKeys();
+					for (let x = 0; x < keys.length; x++) {
+						if (
+							keys[x].publicKey != this.publicKey
+						) {
+							kx.push(keys[x]);
+						}
+					}
+				});
+
+
 		} else {
 			//
 			// if data filter for keys
@@ -387,6 +404,27 @@ class Keychain {
 					kx.push(this.keys[x]);
 				}
 			}
+
+			//
+			// any modules caching keys?
+			//
+			this.app.modules
+				.getRespondTos('saito-return-key')
+				.forEach((modResponse) => {
+					let keys = modResponse.returnKeys();
+					for (let x = 0; x < keys.length; x++) {
+						let match = true;
+						for (let key in data) {
+							if (keys[x][key] !== data[key]) {
+								match = false;
+							}
+						}
+						if (match == true) {
+							kx.push(keys[x]);
+						}
+					}
+				});
+
 		}
 
 		return kx;
