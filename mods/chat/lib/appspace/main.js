@@ -1,11 +1,9 @@
-const JSON = require('json-bigint');
 const ChatMainTemplate = require('./main.template');
 
 class ChatMain {
-	constructor(app, mod, container = '') {
+	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-
 	}
 
 	render() {
@@ -15,10 +13,7 @@ class ChatMain {
 				'.saito-container'
 			);
 		} else {
-			this.app.browser.addElementToSelector(
-				ChatMainTemplate(),
-				this.container
-			);
+			this.app.browser.addElementToDom(ChatMainTemplate());
 		}
 
 		this.attachEvents();

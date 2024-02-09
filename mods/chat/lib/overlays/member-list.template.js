@@ -43,8 +43,11 @@ module.exports = (app, mod, chat_group) => {
 				}	
 			}
 
-			if (chat_group.member_ids[mod.publicKey] == "admin"){
+			if (chat_group.member_ids[publickey] == "admin"){
 				icon = `<i class="saito-overlaid-icon fa-solid fa-dragon"></i>`;
+			}
+
+			if (chat_group.member_ids[mod.publicKey] == "admin"){
 				if (chat_group.member_ids[publickey] !== "admin"){
 					fourth = `<div class="remove_user saito-user-fourth-elem-large" data-id="${publickey}"><i class="fa-solid fa-user-minus"></i></div>`;
 				}else{

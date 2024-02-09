@@ -124,7 +124,7 @@ class Fileshare extends ModTemplate {
 			if (tx.isTo(this.publicKey)) {
 				let txmsg = tx.returnMessage();
 
-				console.log(txmsg);
+				//console.log(txmsg);
 
 				if (txmsg.request == "query file permission"){
 					let answer = await sconfirm(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} wants to send "${txmsg.data.name}" (${this.calcSize(txmsg.data.size)}, ${txmsg.data.type}). Accept?`);

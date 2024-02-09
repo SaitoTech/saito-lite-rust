@@ -26,10 +26,10 @@ module.exports = (app, mod, chat_group) => {
 
 	if (chat_group.member_ids) {
 
-		html += `<div id="invite" class="saito-modal-menu-option"><i class="fas fa-link"></i><div>Add member</div></div>`;
+		html += `<div id="invite" class="saito-modal-menu-option"><i class="fas fa-link"></i><div>Invite member</div></div>`;
 
 		if (chat_group.member_ids[mod.publicKey] == 'admin') {
-			html += `<div id="admin" class="saito-modal-menu-option"><i class="fa-solid fa-user-plus"></i><div>Add Admin</div></div>`;
+			html += `<div id="admin" class="saito-modal-menu-option"><i class="fa-solid fa-dragon"></i><div>Promote Admin</div></div>`;
 			html += `<div id="remove" class="saito-modal-menu-option"><i class="fa-solid fa-user-minus"></i><div>Remove member</div></div>`;
 		}
 		
