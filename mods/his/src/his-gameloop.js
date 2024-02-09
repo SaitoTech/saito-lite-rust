@@ -2884,7 +2884,8 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  //
 
 	  let msg = mv[1];
-	  let stage = mv[2];
+	  let stage = "";
+	  if (mv[2]) { stage = mv[2]; }
 	  let extra = "";
 	  if (mv[3]) { extra = mv[3]; }
 
@@ -2974,7 +2975,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
             //
             if (attach_menu_events == 1) {
               for (let i = 0; i < menu_triggers.length; i++) {
-console.log("counter_or_acknowledge #4");
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
@@ -3005,7 +3005,6 @@ console.log("counter_or_acknowledge #4");
 
           });
 
-console.log("counter_or_acknowledge #5");
 	  return 0;
 
 	}

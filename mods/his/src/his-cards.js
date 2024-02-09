@@ -5103,6 +5103,7 @@ alert("HERE");
         if (menu != "" && menu != "pre_spring_deployment") {
 	  if (his_self.game.state.active_player === his_self.game.player) { 
 	    // not in translation and reformation overlays
+	
 	    if (menu.indexOf("lation") > 0 || menu.indexOf("ormation") > 0) {
 	      return 0;
 	    }
