@@ -426,6 +426,15 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  isFollowing(key){
+    for (let peer of this.following){
+      if (peer.publicKey == key){
+        return true;
+      }
+    }
+    return false;
+  }
+
   ////////////
   // render //
   ////////////
@@ -606,7 +615,7 @@ class RedSquare extends ModTemplate {
       // will hit up local archive, central server and any peers around... 
       console.log("REDSQUARE: Local archive for initial load");
       this.loadTweets("earlier", (tx_count)=> {
-        if (this.rendered){
+        if (this.rendered && this.manager.mode == "tweets"){
           this.app.connection.emit("redsquare-home-render-request", true);  
         }
       });
@@ -803,15 +812,7 @@ class RedSquare extends ModTemplate {
       }
       if (txmsg.request === "unfollow") {
         if (this.app.BROWSER) {
-          if (tx.isFrom(this.publicKey)) {
-            for (let i = 0; i < this.following.length; i++) {
-              if (this.following[i].publicKey == tx.to[0].publicKey) {
-                this.following.splice(i, 1);
-                break;
-              }
-            }
-            this.saveOptions();
-          } else if (tx.isTo(this.publicKey)) {
+          if (tx.isTo(this.publicKey)) {
             if (!this.app.options.redsquare.followers) {
               this.app.options.redsquare.followers = [];
             }
@@ -1510,6 +1511,11 @@ class RedSquare extends ModTemplate {
   // network functions //
   ///////////////////////
   async sendFollowTransaction(key) {
+    if (!this.app.options.redsquare.following.includes(key)){
+      this.app.options.redsquare.following.push(key);
+      this.app.storage.saveOptions();
+    }
+
     let newtx = await this.app.wallet.createUnsignedTransaction(key);
 
     newtx.msg = {
@@ -1535,6 +1541,15 @@ class RedSquare extends ModTemplate {
 
     await newtx.sign();
     await this.app.network.propagateTransaction(newtx);
+
+    for (let i = 0; i < this.following.length; i++) {
+      if (this.following[i].publicKey == key) {
+        this.following.splice(i, 1);
+        break;
+      }
+    }
+    this.saveOptions();
+
 
     return newtx;
   }

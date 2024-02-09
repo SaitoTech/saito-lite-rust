@@ -33,6 +33,9 @@ This alows for a header with a header with title to be added without extra CSS
   gap: 1rem;
 }
 
+.saito-contact .saito-user .saito-identicon-box, .saito-contact .saito-user .saito-userline{
+  pointer-events: none;
+}
 
 .secure_contact_notice {
   position: absolute;

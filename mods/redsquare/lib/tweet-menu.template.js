@@ -9,7 +9,7 @@ module.exports = (menu, tweet) => {
       </li>
     `;
 
-  if (menu.mod.following.includes(menu.tweeter)){
+  if (menu.mod.isFollowing(menu.tweeter)){
     add_contact = 
     `
       <li id="unfollow_contact" class="tweet-menu-list-item">

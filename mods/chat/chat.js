@@ -859,6 +859,13 @@ class Chat extends ModTemplate {
 
 			this.app.connection.emit('chat-manager-render-request');
 
+			tx.msg.message += `<div class="saito-chat-notice">
+			<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(txmsg.admin)}</span>
+			<span> created the group ${txmsg.name}</span></div>`;
+
+			this.addTransactionToGroup(newGroup, tx);
+
+
 			if (!tx.isFrom(this.publicKey)) {
 				await this.sendJoinGroupTransaction(newGroup);
 			} else {
@@ -912,25 +919,34 @@ class Chat extends ModTemplate {
 				return;
 			}
 
-			if (group.member_ids[tx.from[0].publicKey] == -1) {
+			let new_member = tx.from[0].publicKey;
+
+			if (group.member_ids[new_member] == -1) {
 				console.log('Blacklisted member attempting to rejoin!');
 				return;
 			}
 
-			if (!group.members.includes(tx.from[0].publicKey)) {
-				group.members.push(tx.from[0].publicKey);
+			if (!group.members.includes(new_member)) {
+				group.members.push(new_member);
 			}
 
 			//Don't overwrite admin (if for some reason admin is sending a confirm)
-			if (!group.member_ids[tx.from[0].publicKey]) {
-				group.member_ids[tx.from[0].publicKey] = 1;
+			if (!group.member_ids[new_member]) {
+				group.member_ids[new_member] = 1;
 			}
 
-			this.saveChatGroup(group);
-		
+	
 			if (group.member_ids[this.publicKey] == "admin"){
-				this.sendUpdateGroupTransaction(group, tx.from[0].publicKey);
+				this.sendUpdateGroupTransaction(group, new_member);
 			}
+
+			tx.msg.message = `<div class="saito-chat-notice">
+										<span class="saito-mention saito-address" data-id="${new_member}">${this.app.keychain.returnUsername(new_member)}</span>
+										<span> joined the group</span>
+									</div>`;
+			tx.notice = true;
+			this.addTransactionToGroup(group, tx);
+			this.app.connection.emit('chat-popup-render-request', group);
 		}
 	}
 
@@ -965,6 +981,15 @@ class Chat extends ModTemplate {
 			member_ids: group.member_ids,
 		};
 
+		//
+		// These are stripped down objects, much smaller than the original transactions
+		// but still (hopefully) compatible with the addTransactionToGroup logic 
+		//
+		if (target){
+			console.log(`Sending ${group.txs.length} last messages`);
+			newtx.msg.chat_history = group.txs;
+		}
+
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
@@ -989,10 +1014,13 @@ class Chat extends ModTemplate {
 				return;
 			}
 
-			tx.msg.message = "";
+			let notice = "";
 
 			if (txmsg.group_name !== group.name){
-				tx.msg.message += `<div class="saito-chat-notice">changed the name of the group to ${txmsg.group_name}</div>`;
+
+				notice += `<div class="saito-chat-notice">
+				<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(sender)}</span>
+				<span> changed the name of the group to ${txmsg.group_name}</span></div>`;
 				group.name = txmsg.group_name;
 			}
 
@@ -1001,7 +1029,11 @@ class Chat extends ModTemplate {
 				if (txmsg.member_ids[i] !== group.member_ids[i]){
 					if (txmsg.member_ids[i] == "admin"){
 						group.member_ids[i] = "admin";
-						tx.msg.message += `<div class="saito-chat-notice">granted admin rights to ${this.app.browser.returnAddressHTML(i)}</div>`;
+						notice += `<div class="saito-chat-notice">
+													<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(sender)}</span>
+													<span>granted admin rights to </span>
+													<span class="saito-mention saito-address" data-id="${i}">${this.app.keychain.returnUsername(i)}</span>
+												</div>`;
 						add_member = 1;
 					}
 					if (txmsg.member_ids[i] == 1) {
@@ -1027,9 +1059,20 @@ class Chat extends ModTemplate {
 				}
 			}
 
-			this.addTransactionToGroup(group, tx);
+			if (notice){
+				tx.msg.message = notice;
+				tx.notice = true;
+				this.addTransactionToGroup(group, tx);
+			}
 
-			this.saveChatGroup(group);
+			if (txmsg.chat_history){
+				for (t of txmsg.chat_history){
+					this.addTransactionToGroup(group, t);
+				}
+			}
+
+			this.app.connection.emit('chat-popup-render-request', group);
+			
 		}
 	}
 
@@ -1091,15 +1134,24 @@ class Chat extends ModTemplate {
 				} else {
 					if (tx.isFrom(txmsg.member_id)) {
 						group.member_ids[txmsg.member_id] = 0;
-						tx.msg.message = `<div class="saito-chat-notice">left the group</div>`;
+						tx.msg.message = `<div class="saito-chat-notice">
+													<span class="saito-mention saito-address" data-id="${txmsg.member_id}">${this.app.keychain.returnUsername(txmsg.member_id)}</span>
+													<span>left the group</span></div>`;
 					} else {
 						group.member_ids[txmsg.member_id] = -1;
-						tx.msg.message = `<div class="saito-chat-notice">kicked ${this.app.browser.returnAddressHTML(
-							txmsg.member_id
-						)} out of the group</div>`;
+						tx.msg.message = `<div class="saito-chat-notice">
+													<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(sender)}</span>
+													<span> kicked </span>
+													<span class="saito-mention saito-address" data-id="${txmsg.member_id}">${this.app.keychain.returnUsername(txmsg.member_id)}</span>
+													<span> out of the group</span>
+												</div>`;
 					}
 
+
+					//Flag this as a pseudo chat transaction
+					tx.notice = true;
 					this.addTransactionToGroup(group, tx);
+					this.app.connection.emit('chat-popup-render-request', group);
 				}
 			}
 		}
@@ -1190,7 +1242,8 @@ class Chat extends ModTemplate {
 			request: 'chat message',
 			group_id: group_id,
 			message: msg,
-			timestamp: new Date().getTime()
+			timestamp: new Date().getTime(),
+			mentioned: to_keys
 		};
 
 		// sanity check
@@ -1346,9 +1399,12 @@ class Chat extends ModTemplate {
 		let message_blocks = this.createMessageBlocks(group);
 
 		for (let block of message_blocks) {
+
 			let ts = 0;
 			if (block?.date) {
 				html += `<div class="saito-time-stamp">${block.date}</div>`;
+			} else if (block?.notice) {
+				html += `<div class="saito-time-stamp">${block.notice}</div>`
 			} else {
 				if (block.length > 0) {
 					let sender = '';
@@ -1428,6 +1484,17 @@ class Chat extends ModTemplate {
 			//Same Sender -- keep building block
 			let next = new Date(minimized_tx.timestamp);
 
+			if (minimized_tx?.notice){
+				if (block.length > 0) {
+					blocks.push(block);
+					block = [];
+				}
+				blocks.push({notice: minimized_tx.msg});	
+
+				last_message_sender = "";
+				continue;
+			}
+
 			if (
 				minimized_tx.from.includes(last_message_sender) &&
 				minimized_tx.timestamp - last_message_ts < 300000 &&
@@ -1481,27 +1548,40 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		let content = tx.returnMessage()?.message;
-		if (!content) {
+		let txmsg = tx.msg;
+		try{
+			txmsg = tx.returnMessage();
+		}catch(err){
+
+		}
+
+		let content = txmsg.message || txmsg;
+		let mentions = txmsg?.mentioned || tx?.mentioned || [];
+
+		if (!content || typeof content !== "string") {
 			console.warn('Not a chat message?');
+			console.log(tx);
 			return;
 		}
 		let new_message = {
 			signature: tx.signature,
 			timestamp: tx.timestamp,
 			from: [],
-			msg: content
+			msg: content,
+			mentioned: mentions
 		};
 
-		if (
-			tx.isTo(this.publicKey) &&
-			this.app.BROWSER &&
-			!tx.isFrom(this.publicKey) &&
-			group.members.length !== 2
-		) {
+		if (tx?.notice){
+			new_message.notice = tx.notice;
+		}
+
+
+		// Need to rewrite this!!!
+		if (this.app.BROWSER && new_message.mentioned.includes(this.publicKey)){
 			console.log('CHAT MESSAGE DIRECTED TO ME!!!!');
 			group.mentioned = true;
 			new_message.flag_message = true;
+
 		}
 
 		//Keep the from array just in case....
@@ -1546,11 +1626,7 @@ class Chat extends ModTemplate {
 			console.log(JSON.parse(JSON.stringify(new_message)));
 		}
 
-		if (
-			/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(
-				this.publicKey
-			)
-		) {
+		if (!new_message.from.includes(this.publicKey)) {
 			//
 			// Flag the group that there is a new message
 			// This is so we can add an animation effect on rerender

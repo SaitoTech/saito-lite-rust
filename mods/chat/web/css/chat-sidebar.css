@@ -22,3 +22,7 @@
 .chat-sidebar .saito-modal-menu-option > div {
 	font-size: 1.8rem;
 }
+
+.chat-sidebar .saito-profile-menu > div {
+	float: unset;
+}
