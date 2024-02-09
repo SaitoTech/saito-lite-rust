@@ -15,7 +15,8 @@
 .chat-sidebar .saito-modal-menu-option {
 	font-size: 2rem;
 	height: unset;
-	width: 100%;
+	width: calc(100% - 2rem);
+	margin: 0 1rem;
 }
 
 .chat-sidebar .saito-modal-menu-option > div {

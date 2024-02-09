@@ -61,7 +61,7 @@ class Encrypt extends ModTemplate {
 
       return {
         text: "Add Contact",
-        icon: "far fa-id-card",
+        icon: "fa-solid fa-user-lock",
         callback: function (app, publicKey) {
           encrypt_self.app.keychain.saveKeys();
           encrypt_self.initiate_key_exchange(publicKey, 0);
