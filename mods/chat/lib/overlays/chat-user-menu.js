@@ -1,6 +1,7 @@
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const chatMenuTemplate = require('./chat-user-menu.template');
 const ContactsList = require('./../../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
+const MemberList = require("./member-list.template");
 
 class ChatUserMenu {
 	constructor(app, mod, chat_group) {
@@ -129,7 +130,7 @@ class ChatUserMenu {
 						thisobj.render();
 					}
 				};
-				contactList.render(thisobj.chat_group.members.filter(x => x != thisobj.mod.publicKey));
+				contactList.render(thisobj.chat_group.members.filter(x => thisobj.chat_group.member_ids[x] == 1));
 			};
 		}
 
@@ -152,6 +153,7 @@ class ChatUserMenu {
 				const contactList = new ContactsList(this.app, this.mod, false);
 				contactList.title = "Remove Member";
 				contactList.callback = async (person) => {
+
 					await this.mod.sendRemoveMemberTransaction(
 						thisobj.chat_group,
 						person
@@ -166,17 +168,15 @@ class ChatUserMenu {
 
 					thisobj.chat_group.member_ids[person] = -1;
 				};
-				contactList.render(thisobj.chat_group.members.filter(x => x != thisobj.mod.publicKey));
+				contactList.render(thisobj.chat_group.members.filter(x => thisobj.chat_group.member_ids[x] == 1));
 			}
 			
 		}
 
 		if (document.getElementById("view")){
 			document.getElementById("view").onclick = async (e) => {
-				const contactList = new ContactsList(this.app, this.mod, false);
-				contactList.title = `${thisobj.chat_group.name} Members`;
-				contactList.callback = null;
-				contactList.render(thisobj.chat_group.members);
+				let overlay = new SaitoOverlay(this.app, this.mod);
+				overlay.show(`<div class="chat-member-list-overlay saito-modal">${MemberList(this.app, this.mod, thisobj.chat_group)}</div>`);
 			}
 		}
 

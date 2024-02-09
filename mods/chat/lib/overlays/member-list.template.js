@@ -10,8 +10,8 @@ module.exports = (app, mod, chat_group) => {
 				name = 'Anonymous User';
 			}
 
-			return `<div class="saito-contact${unconfirmed}" data-id="${publickey}">
-								<div class="saito-user">
+			return `<div class="saito-contact${unconfirmed}" >
+								<div class="saito-user saito-address" data-id="${publickey}">
 	                				<div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}">${usericon}</div>
 	                  				${name}
 	                				<div class="saito-userline">${publickey}</div>
@@ -26,7 +26,7 @@ module.exports = (app, mod, chat_group) => {
 	if (chat_group?.member_ids){
 
 		html += `<div class="saito-modal-content">`;
-
+ 
 		for (let publickey in chat_group.member_ids) {
 
 			let icon = "";

@@ -788,3 +788,14 @@
   word-wrap: anywhere;
 }
 
+
+.chat-member-list-overlay{
+  min-width: 30rem;
+  max-height: 90vh;
+  max-width: 95vw;
+  border: 1px solid;
+
+}
+.chat-member-list-overlay .saito-modal-content{
+  border: unset;
+}
