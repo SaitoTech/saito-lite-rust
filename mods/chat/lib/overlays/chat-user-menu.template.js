@@ -28,9 +28,10 @@ module.exports = (app, mod, chat_group) => {
 		if (chat_group.member_ids[mod.publicKey] == 'admin') {
 			html += `<div id="admin" class="saito-modal-menu-option"><i class="fa-solid fa-user-plus"></i><div>Add Admin</div></div>`;
 			html += `<div id="remove" class="saito-modal-menu-option"><i class="fa-solid fa-user-minus"></i><div>Remove member</div></div>`;
-		}else{
-			html += `<div id="view" class="saito-modal-menu-option"><i class="fa-solid fa-users"></i><div>View members</div></div>`;			
 		}
+		
+		html += `<div id="view" class="saito-modal-menu-option"><i class="fa-solid fa-users"></i><div>View members</div></div>`;			
+		
 
 		html += `</div>`;
 
