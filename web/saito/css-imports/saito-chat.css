@@ -353,7 +353,7 @@
 
 .chat-body .saito-user .saito-userline {
   font-size: 1.6rem;
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: 0.5rem 0.5rem 0.5rem 0;
   background: var(--saito-background-color);
   box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -4px 0px 2px -2px var(--key-color);
@@ -474,6 +474,7 @@
 
 .chat-message-line {
   position: relative;
+  padding: 0.25rem;
 }
 
 .saito-userline-reply {
@@ -492,7 +493,7 @@
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  right: -2rem;
+  right: -9rem;
   bottom: 0;
   z-index: 9;
   background: var(--saito-background-color);
