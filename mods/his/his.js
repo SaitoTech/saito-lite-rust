@@ -32882,7 +32882,7 @@ console.log("^^^");
     }
     if (!have_ships_at_sea) { return false; }
 
-    if (ops < 2) { return 0; }
+    if (ops_remaining < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_infantry.length; i++) {
       if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
@@ -32903,7 +32903,7 @@ console.log("^^^");
     if (spaces_with_infantry.length == 0) { return 0; }
 
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops_remaining);
       if (dest.length > 0) { return 1; }
     }
 
@@ -32911,6 +32911,137 @@ console.log("^^^");
 
   }
   async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
+
+    let spacekey = "";
+    let units_to_move = [];
+    let cancel_func = null;
+    let space = null;
+    let destination = "";
+
+    //
+    // destination already set, so just fire the info out
+    //
+    let selectDestinationInterface = function(his_self, units_to_move) {
+
+              units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
+
+              let does_movement_include_cavalry = 0;
+              for (let i = 0; i < units_to_move.length; i++) {
+                if (units_to_move[i].type === "cavalry") {
+                  does_movement_include_cavalry = 1;
+                }
+              }
+
+              his_self.addMove("interception_check\t"+faction+"\t"+destination+"\t"+does_movement_include_cavalry);
+              for (let i = 0; i < units_to_move.length; i++) {
+                his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination+"\t"+units_to_move[i].idx);
+              }
+              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination].name + " via ship\tmove");
+              his_self.addMove("RESETCONFIRMSNEEDED\tall");
+              his_self.endTurn();
+
+    }
+
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) {
+
+	  let unmoved_units = [];
+	  let moved_units = [];
+console.log("SKEY: " + spacekey);
+          let space = his_self.game.spaces[spacekey];
+	  let max_formation_size = 5; // cannot naval transport more than 5 units
+	  let msg = "Max Formation Size: " + max_formation_size + " units";
+	  let html = "<ul>";
+	  for (let key in space.units) {
+	    if (his_self.returnPlayerCommandingFaction(key) == player) {
+	      for (let i = 0; i < space.units[key].length; i++) {
+	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
+	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
+	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
+	    	    let does_units_to_move_have_unit = false;
+	    	    for (let z = 0; z < units_to_move.length; z++) {
+	    	      if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
+	    	    }
+	            if (does_units_to_move_have_unit) {
+	              html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[key][i].name} (${key})*</li>`;
+		      moved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
+	            } else {
+	              html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
+		      unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
+	            }
+	          }
+	        }
+	        }
+	      }
+	    }
+	  }
+
+	  let mobj = {
+	    space : space ,
+	    faction : faction ,
+   	    source : spacekey ,
+   	    unmoved_units : unmoved_units ,
+   	    moved_units : moved_units ,
+	    destination : destination ,
+ 	  }
+
+   	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+	  html += `<li class="option" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      his_self.movement_overlay.hide();
+	      selectDestinationInterface(his_self, units_to_move);
+	      return;
+	    }
+
+	    let x = id.split("-");
+	    let f = x[0];
+	    let idx = x[1];
+
+	    let does_units_to_move_have_unit = false;
+	    for (let z = 0; z < units_to_move.length; z++) {
+	      if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	    }
+
+	    if (does_units_to_move_have_unit) {
+	      for (let z = 0; z < units_to_move.length; z++) {
+	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
+	      }
+	    } else {
+
+
+	      //
+	      // check for max formation size
+	      //
+	      let unitno = 0;
+	      for (let i = 0; i < units_to_move.length; i++) {
+	        if (space.units[units_to_move[i].faction][units_to_move[i].idx].command_value == 0) { unitno++; }
+	        if (unitno >= max_formation_size) { 
+		  max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
+	          if (unitno >= max_formation_size) { 
+	            alert("Maximum Formation Size: " + max_formation_size);
+	            return;
+		  }
+	        }
+	      }
+
+	      units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+    }
+    //
+    // end select units
+    //
+
 
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_infantry.length; i++) {
@@ -32938,7 +33069,9 @@ console.log("^^^");
     his_self.updateStatusWithOptions(`Transport from Which Port?`, html);
     his_self.attachCardboxEvents(function(user_choice) {
 
-      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], (ops_remaining+ops_remaining));
+      spacekey = spaces_with_infantry[user_choice];
+
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], (ops_remaining+ops_to_spend));
 
 console.log("POTENTIAL NAVAL TRANSPORT DESTINATIONS: " + JSON.stringify(dest)); 
    
@@ -32950,9 +33083,9 @@ console.log("POTENTIAL NAVAL TRANSPORT DESTINATIONS: " + JSON.stringify(dest));
       html    += `</ul>`;
 
       his_self.updateStatusWithOptions(`Select Destination:`, html);
-      his_self.attachCardboxEvents(function(destination) {
-alert("Go!");
-        his_self.endTurn();
+      his_self.attachCardboxEvents(function(d) {
+	destination = dest[d].key;
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
       });
     });
 
