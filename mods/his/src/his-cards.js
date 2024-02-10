@@ -381,7 +381,7 @@ if (space.key === "bordeaux") {
 	    }
 
 
- 	    let msg = "Corsair Raid: "+num+" of "+total+" "+hits+":";
+ 	    let msg = "Corsair Raid: "+num+" of "+total+" "+hit+":";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
 	    if (is_squadron_available) {
