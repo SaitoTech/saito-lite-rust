@@ -4,8 +4,7 @@ This is an implement of HERE I STAND written for the open source Saito Game Engi
 
 
 TODO
- - bugtesting -- please report issues
-
+bug - Clement VII showed up after he was removed from the deck
 
 LICENSE
 

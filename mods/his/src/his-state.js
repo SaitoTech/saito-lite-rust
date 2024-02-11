@@ -731,7 +731,9 @@ if (this.game.options.scenario != "is_testing") {
     state.may_colonize['hapsburg'] = 1;
     state.may_colonize['protestant'] = 0;
     state.may_colonize['papacy'] = 0;
-    state.may_colonize['ottoman'] = 0;
+    state.france_uncharted = 1;
+    state.hapsburg_uncharted = 1;
+    state.england_uncharted = 1;
 
     state.skip_next_impulse = [];
 

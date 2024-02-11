@@ -10,82 +10,48 @@ Habsburg conquistadores:
 
 ************************/
 
-      this.importConquistador('orellana', {
-           type              :       "orellana",
-           name              :       "Hector Rodrigo Enriquez Orellana",
-           personage         :       true,
-           img               :       "Orellana.svg",
-      });
-
-      this.importConquistador('magellan', {
-           type              :       "magellan" ,
-           name              :       "Ferdinand Magellan",
-           personage         :       true,
-           img               :       "Magellan.svg",
-      });
-
-      this.importConquistador('leon', {
-           type              :       "leon" ,
-           name              :       "Leon",
-           personage         :       true,
-           img               :       "Leon.svg",
-      });
-
-      this.importConquistador('narvaez', {
-           type              :       "narvaez" ,
-           name              :       "Sofia Narvaez",
-           personage         :       true,
-           img               :       "Narvaez.svg",
-      });
-
-      this.importConquistador('de-vaca', {
-           type              :       "de-vaca" ,
-           name              :       "Cabeza De Vaca",
-           personage         :       true,
-           img               :       "De_Vaca.svg",
-      });
-
-      this.importConquistador('de-soto', {
-           type              :       "de-soto" ,
-           name              :       "DeSoto",
-           personage         :       true,
-           img               :       "DeSoto.svg",
-      });
-
-
-
-
-
       /***** Hapsburg Conquistadors *****/
-
       this.importConquistador('pizarro', {
+	   faction	     :       "hapsburg",
            type              :       "pizarro" ,
            name              :       "Francisco Pizarro",
            personage         :       true,
            img               :       "Pizarro.svg",
+	   power	     :	     3,
       });
-
-      // Montejo
-
+      this.importConquistador('montejo', {
+	   faction	     :       "hapsburg",
+           type              :       "montejo" ,
+           name              :       "Francisco de Montejo",
+           personage         :       true,
+           img               :       "Pizarro.svg",
+	   power	     :	     2,
+      });
       this.importConquistador('cordova', {
+	   faction	     :       "hapsburg",
            type              :       "cordova" ,
            name              :       "Neisa Cordova",
            personage         :       true,
            img               :       "Cordova.svg",
+	   power	     :	     4,
       });
 
       this.importConquistador('coronado', {
+	   faction	     :       "hapsburg",
            type              :       "coronado" ,
            name              :       "Francisco Vázquez de Coronado",
            personage         :       true,
            img               :       "Coronado.svg",
+	   power	     :	     1,
       });
 
       this.importConquistador('cortez', {
+	   faction	     :       "hapsburg",
            type              :       "cortez" ,
            name              :       "Hernan Cortes",
            personage         :       true,
            img               :       "Cortez.svg",
+	   power	     :	     1,
       });
 
 

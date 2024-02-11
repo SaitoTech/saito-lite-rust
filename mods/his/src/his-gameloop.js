@@ -58,7 +58,6 @@ this.updateLog(`###############`);
 	  this.game.queue.push("diplomacy_phase");
 
 
-
 	  //
 	  // start the game with the Protestant Reformation
 	  //
@@ -557,6 +556,8 @@ console.log("F: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(ke
 	    this.game.queue.push("process_mary_i_subverts_protestantism_in_2P");
             this.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+"papacy");
             this.game.queue.push("DEAL\t1\t"+p+"\t"+1);
+	  } else {
+	    this.game.queue.push("NOTIFY\t"+this.popup("021") + ": no Catholic spaces in England");
 	  }
 
 	  return 1;
@@ -1087,6 +1088,8 @@ if (this.game.options.scenario === "is_testing") {
 
 //	  let deck = this.returnDeck();
 //	  deck['013'].onEvent(this, "protestant");
+
+	  this.game.spaces["florence"].units["independent"] = [];
 
     	  this.game.queue.splice(qe, 1);
 
@@ -5517,6 +5520,17 @@ console.log("spacekey: " + spacekey);
 	  let attacker_faction = attacker;
 	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
 
+	  //
+	  // defender-identification can backfire if the attacker is the only faction
+	  // in the space. so we want to safeguard against this and set the defender
+	  // to whomever is controlling the space in the event that we cannot find
+	  // anyone but the attacker here.
+	  //
+	  if (defender_faction === attacker_faction) {
+	    defender_faction = his_self.returnFactionControllingSpace(space);
+console.log("defender is: " + defender_faction);
+	  }
+
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
 
@@ -5526,6 +5540,9 @@ console.log("spacekey: " + spacekey);
 	  let attacking_factions = 0;
 	  let defending_factions = 0;
 	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
+
+
+console.log("FACTION MAP: " + JSON.stringify(faction_map));
           
 	  //
 	  // migrate any bonuses to attacker or defender
@@ -6092,7 +6109,7 @@ console.log("spacekey: " + spacekey);
 	      }
 	    }
 	  }
-	  if (defender_land_units_remaining <= 0) {
+	  if (defender_land_units_remaining <= 0 && attacker_hits > 0) {
 	    for (let f in faction_map) {
 	      if (faction_map[f] === defender_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
@@ -6112,7 +6129,7 @@ console.log("spacekey: " + spacekey);
 	    //
 	    // no land units remain
 	    //
-	    if (defender_land_units_remaining <= 0 && attacker_land_units_remaining > 0) {
+	    if (defender_land_units_remaining <= 0 && attacker_land_units_remaining > 0 && attacker_hits > 0) {
 	      space.besieged = 0;
 	      space.unrest = 0;
 	      this.controlSpace(attacker_faction, space.key);
@@ -7306,8 +7323,10 @@ alert("flipping more than exist in the zone!");
 
         if (mv[0] === "new_world_phase") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  //
-	  // no new world phase in 2P games
+	  // new world phase only in > 2P games
 	  //
 	  if (this.game.players.length > 2) {
 
@@ -7320,9 +7339,8 @@ alert("flipping more than exist in the zone!");
 	  //
 	  // phase otherwise removed entirely for 2P
 	  //
-
-	  this.game.queue.splice(qe, 1);
           return 1;
+
         }
         if (mv[0] === "winter_phase") {
 
@@ -8693,7 +8711,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let player = mv[1];
 	  let faction = mv[2];
 	  let card = mv[3];
-	  let ops = mv[4];
+	  let ops = parseInt(mv[4]);
 	  let limit = "";
 	  if (mv[5]) { limit = mv[5]; }
 

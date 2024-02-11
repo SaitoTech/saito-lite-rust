@@ -325,14 +325,10 @@
       defender = this.returnControllingPower(defender);
     }         
 
-console.log(JSON.stringify(this.game.state.activated_powers));
-
     //
     // defender now controlling power or itself
     //
     for (let p = 0; p < this.game.players.length; p++) {
-
-console.log("player: " + (p+1))
 
       //
       // does player command this faction
@@ -341,20 +337,15 @@ console.log("player: " + (p+1))
 
       let i_command_this_faction = false;
       for (let i = 0; i < player_factions.length; i++) { 
-console.log("player faction " + i + ": " + player_factions[i]);
-console.log("defender: " + defender);
 	if (player_factions[i] === defender) { 
-console.log("EXACT MATCH: " + (p+1));
 	  return (p+1);
 	}
 
         if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { 
-console.log("EXACT MATCH 2: " + (p+1));
 	  return (p+1);
 	}
         for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
           if (this.game.state.activated_powers[player_factions[i]][z] === defender) {
-console.log("EXACT MATCH 3: " + (p+1));
 	    return (p+1);
 	  }
         }

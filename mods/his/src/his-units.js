@@ -196,60 +196,54 @@
     }
   }
 
-  importExplorer(name, obj) {
-    if (obj.type == null)               { obj.type = "unit"; }
+  importConquistador(name, obj) {
+    if (obj.faction == null)            { obj.faction = ""; }
+    if (obj.type == null)               { obj.type = name; }
     if (obj.name == null)               { obj.name = "Unit"; }
-    if (obj.spacekey == null)           { obj.spacekey = ""; }
     if (obj.personage == null)          { obj.personage = false; }
-    if (obj.debater == null)            { obj.debater = false; }
-    if (obj.reformer == null)           { obj.reformer = false; }
-    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
-    if (obj.army_leader == null)        { obj.army_leader = false; }
-    if (obj.navy_leader == null)        { obj.navy_leader = false; }
-    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
-    if (obj.command_value == null)      { obj.command_value = 0; }
-    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
-    if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
-    if (obj.captured == null)           { obj.captured = false; }
-    if (obj.loaned == null)		{ obj.loaned = false; }
-    if (obj.key == null)		{ obj.key = name; }
-    if (obj.onCommitted == null) {
-      obj.onCommitted = function(his_self, faction) { return 1; }
+    if (obj.power == null)		{ obj.power = 0; }
+    if (!this.conquistadors[name]) {
+      this.addEvents(obj);
+      this.conquistadors[name] = obj;
     }
+  }
+
+  importExplorer(name, obj) {
+    if (obj.faction == null)            { obj.faction = ""; }
+    if (obj.type == null)               { obj.type = name; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.power == null)		{ obj.power = 0; }
     if (!this.explorers[name]) {
       this.addEvents(obj);
       this.explorers[name] = obj;
     }
   }
 
-  importConquistador(name, obj) {
-    if (obj.type == null)               { obj.type = "unit"; }
-    if (obj.name == null)               { obj.name = "Unit"; }
-    if (obj.spacekey == null)           { obj.spacekey = ""; }
-    if (obj.personage == null)          { obj.personage = false; }
-    if (obj.debater == null)            { obj.debater = false; }
-    if (obj.reformer == null)           { obj.reformer = false; }
-    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
-    if (obj.army_leader == null)        { obj.army_leader = false; }
-    if (obj.navy_leader == null)        { obj.navy_leader = false; }
-    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
-    if (obj.command_value == null)      { obj.command_value = 0; }
-    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
-    if (obj.img == null)                { obj.img = ""; }
-    if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
-    if (obj.captured == null)           { obj.captured = false; }
-    if (obj.loaned == null)		{ obj.loaned = false; }
-    if (obj.key == null)		{ obj.key = name; }
-    if (obj.onCommitted == null) {
-      obj.onCommitted = function(his_self, faction) { return 1; }
+  returnAvailableExplorers(faction="") {
+
+    let unavailable = [];
+    let available = [];
+
+    for (let z = 0; z < this.game.state.explorations.length; z++) {
+      let exp = this.game.state.explorations[z];
+      if (exp.faction == faction) {
+	if (exp.explorer_lost == 1) {
+	  unavailable.push(exp.explorer);
+        }
+      }
     }
-    if (!this.conquistadors[name]) {
-      this.addEvents(obj);
-      this.conquistadors[name] = obj;
+
+    for (let key in this.explorers) {
+      if (this.explorers[key].faction == faction) {
+        if (unavailable.includes(key)) {
+	  available.push(key);
+        }
+      }
     }
+
   }
 
   removeArmyLeader(faction, space, leader) {

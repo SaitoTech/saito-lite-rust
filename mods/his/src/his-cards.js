@@ -362,26 +362,32 @@ if (space.key === "bordeaux") {
 
 	    let is_squadron_available = false;
 	    if (faction === "papacy") {
-	      for (let key in space.units) {
-	        if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
-	  	  for (let i = 0; i < space.units[key].length; i++) {
-		    if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	      for (let s in his_self.game.spaces) {
+	        let space = his_self.game.spaces[s];
+	        for (let key in space.units) {
+	          if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
+	  	    for (let i = 0; i < space.units[key].length; i++) {
+	  	      if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	            }
 	          }
 	        }
 	      }
 	    }
 	    if (faction === "protestant") {
-	      for (let key in space.units) {
-	        if (key === "france" || key === "ottoman") {
-	  	  for (let i = 0; i < space.units[key].length; i++) {
-		    if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	      for (let s in his_self.game.spaces) {
+	        let space = his_self.game.spaces[s];
+	        for (let key in space.units) {
+	          if (key === "france" || key === "ottoman") {
+	  	    for (let i = 0; i < space.units[key].length; i++) {
+		      if (space.units[key][i].type === "squadron") { is_squadron_available = true; }
+	            }
 	          }
 	        }
 	      }
 	    }
 
 
- 	    let msg = "Corsair Raid: "+num+" of "+total+" "+hits+":";
+ 	    let msg = "Corsair Raid: "+num+" of "+total+" "+hit+":";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
 	    if (is_squadron_available) {
@@ -3446,7 +3452,7 @@ alert("HERE");
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 	his_self.game.state.events.clement_vii = 1;
@@ -11009,6 +11015,17 @@ if (this.game.players.length == 2) {
     delete deck["108"];
     delete deck["110"];
 }
+
+    //
+    // avoid deleted cards
+    //
+    if (this.game?.state?.removed) {
+      for (let i = 0; i < this.game.state.removed.length; i++) {
+        let c = this.game.state.removed[i];
+        if (deck[c]) { delete deck[c]; }
+      }
+    }
+
 
     for (let key in deck) {
       deck[key].key = key;

@@ -389,7 +389,50 @@
   displayConquest() {
   }
 
+  displayExploration() {
+
+    let obj = document.querySelector(".crossing_atlantic");
+        obj.innerHTML = "";
+
+    for (let z = 0; z < this.game.state.explorations.length; z++) {
+
+      let exp = this.game.state.explorations[z];
+      let faction = exp.faction;
+      let round = exp.round;
+
+      //      
+      // current round are unresolved      
+      //      
+      if (round == this.game.state.round) {
+        if (faction == "hapsburg") {
+          if (this.game.state.hapsburg_charted == 1) {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg-ExplorationCharted.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg-Exploration.svg" />`;
+          }
+        }
+        if (faction == "france") {
+          if (this.game.state.france_charted == 1) {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/France-ExplorationCharted.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/France-Exploration.svg" />`;
+          }
+        }
+        if (faction == "england") {
+          if (this.game.state.england_charted == 1) {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/England-ExplorationCharted.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/England-Exploration.svg" />`;
+          }
+        }
+      }
+
+    }
+
+  }
+
   displayNewWorld() {
+    this.displayExploration();
     this.displayColony();
     this.displayConquest();
   }

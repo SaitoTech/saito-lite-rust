@@ -1106,7 +1106,6 @@ if (this.game.state.events.cramner_active == 1) {
 	if (board_clickable) {
 	  document.querySelectorAll(`.${key}`).forEach((el) => { his_self.addSelectable(el); });
 	  document.getElementById(key).onclick = (e) => { 
-console.log("clicked on id of key: " + key);
 	    document.getElementById(key).onclick = (e) => {};
 	    $('.option').off();
      	    $('.hextile').off();
@@ -1117,7 +1116,6 @@ console.log("clicked on id of key: " + key);
 	    e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
 	    his_self.removeSelectable();
             his_self.theses_overlay.space_onclick_callback = null;
-console.log("and calling callback...");
     	    his_self.updateStatus("selected...");
 	    mycallback(key);
 	    return;
@@ -1618,11 +1616,10 @@ console.log("and calling callback...");
               for (let z = 0; z < menu[user_choice].factions.length; z++) {
                 if (menu[user_choice].factions[z] === selected_faction) {
                   ops -= menu[user_choice].cost[z];
-	          z = menu[user_choice].factions.length+1;
 		  ops_to_spend = menu[user_choice].cost[z];
+	          z = menu[user_choice].factions.length+1;
                 }
               }
-
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
@@ -1647,8 +1644,6 @@ console.log("and calling callback...");
       //
       let html = `<ul>`;
       for (let i = 0; i < menu.length; i++) {
-console.log(menu[i].name);
-console.log(this.game.player + " -- " + faction);
 
         if (menu[i].check(this, this.game.player, faction)) {
           for (let z = 0; z < menu[i].factions.length; z++) {
@@ -1669,6 +1664,7 @@ console.log(this.game.player + " -- " + faction);
 
       this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
+
 
 	his_self.menu_overlay.hide();
 
@@ -2169,24 +2165,6 @@ return;
 
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
-if (space.key === "bilbao") {
-
-  console.log("#");
-  console.log("#");
-  console.log("#");
-  console.log("space.key: " + space.key + " " + faction);
-  console.log("is connected: " + his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction));
-
-}
-if (space.key === "barcelona") {
-
-  console.log("#");
-  console.log("#");
-  console.log("#");
-  console.log("space.key: " + space.key + " " + faction);
-  console.log("is connected: " + his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction));
-
-}
               if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction)) {
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
                   return 1;
@@ -2711,8 +2689,6 @@ if (space.key === "barcelona") {
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-console.log("faction_hand_idx: " + faction_hand_idx);
-
     let cards = [];
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
       let c = this.game.deck[0].fhand[faction_hand_idx][i];
@@ -2728,8 +2704,6 @@ console.log("faction_hand_idx: " + faction_hand_idx);
     let his_self = this;
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-
-console.log("faction_hand_idx: " + faction_hand_idx);
 
     let cards = [];
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
@@ -2948,17 +2922,6 @@ console.log("faction_hand_idx: " + faction_hand_idx);
 
 
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender, is_attacker_loser=false) {
-
-
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
-console.log("^^^ PERO: " + defender);
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
 
     let his_self = this;
     let retreat_destination = "";
@@ -3357,7 +3320,6 @@ console.log("^^^");
 
 	  let unmoved_units = [];
 	  let moved_units = [];
-console.log("SKEY: " + spacekey);
           let space = his_self.game.spaces[spacekey];
 	  let max_formation_size = 5; // cannot naval transport more than 5 units
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
@@ -3484,8 +3446,6 @@ console.log("SKEY: " + spacekey);
 
       let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], (ops_remaining+ops_to_spend));
 
-console.log("POTENTIAL NAVAL TRANSPORT DESTINATIONS: " + JSON.stringify(dest)); 
-   
       let html = `<ul>`;
       for (let i = 0; i < dest.length; i++) {
 	let c = ops_remaining + ops_to_spend - dest[i].cost;
@@ -3526,8 +3486,11 @@ console.log("POTENTIAL NAVAL TRANSPORT DESTINATIONS: " + JSON.stringify(dest));
     if (this.isBurned(debater)) { return false; }
 
     let already_committed = false;
+    let found_debater = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
+
+        found_debater = true;
 
         if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") {}
         if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
@@ -3547,6 +3510,9 @@ console.log("POTENTIAL NAVAL TRANSPORT DESTINATIONS: " + JSON.stringify(dest));
         }
       }
     }
+
+    if (found_debater != true) { return false; }
+
     return !already_committed;
   } 
     
