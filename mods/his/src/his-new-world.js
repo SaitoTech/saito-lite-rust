@@ -26,6 +26,7 @@
 	  let z = this.rollDice(6);
 
 	  let total_hits = y + z;
+	  let modifiers = 0;
 
 	  //
 	  // modifications
@@ -39,12 +40,14 @@
 	  // explorer power
 	  //
 	  total_hits += this.explorers[explorer].power;
+	  modifiers += this.explorers[explorer].power;
 
 	  //
 	  // mercators map
 	  //
 	  if (this.game.state.events.mercators_map === exp.faction) {
 	    total_hits += 2;
+	    modifiers += 2;
 	    this.game.state.events.mercators_map = 0;
 	  }
 	  
@@ -52,6 +55,7 @@
 	  if (!this.game.state[`${exp.faction}_uncharted`]) { total_hits++; }
 	
 	  this.game.state.explorations[z].hits = total_hits;
+	  this.game.state.explorations[z].modifiers = modifiers;
 
 	  active_explorations.push(z);
 

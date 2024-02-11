@@ -426,9 +426,47 @@
           }
         }
       }
-
     }
 
+
+    if (this.game.state.nw['stlawrence'].claimed == 1) {
+      let f = this.game.state.nw['stlawrence'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.stlawrence').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.nw['greatlakes'].claimed == 1) {
+      let f = this.game.state.nw['greatlakes'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.greatlakes').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.nw['mississippi'].claimed == 1) {
+      let f = this.game.state.nw['mississippi'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.mississippi').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.nw['amazon'].claimed == 1) {
+      let f = this.game.state.nw['amazon'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.amazon').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.nw['pacificstrait'].claimed == 1) {
+      let f = this.game.state.nw['pacificstrait'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.pacificstrait').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.nw['circumnavigation'].claimed == 1) {
+      let f = this.game.state.nw['circumnavigation'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.circumnavigation').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+
+  }
+
+  returnExplorationTile(f="") {
+    if (f == "hapsburg") { return "Hapsburg_key.svg"; }
+    if (f == "england") { return "England_key.svg"; }
+    if (f == "france") { return "France_key.svg"; }
+    return "";
   }
 
   displayNewWorld() {

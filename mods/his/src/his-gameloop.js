@@ -907,22 +907,175 @@ if (this.game.options.scenario === "is_testing") {
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
+        if (mv[0] === "award_exploration_bonus") {
+
+    	  this.game.queue.splice(qe, 1);
+
+	  let his_self = this;
+	  let faction = mv[1];
+	  let explorer = mv[2];
+	  let idx = parseInt(mv[3]);
+	  let bonus = mv[4];
+
+	  if (bonus === 'stlawrence') {
+	    this.game.state.explorations[idx].resolved = 1;
+	    this.game.state.explorations[idx].explorer_lost = 0;
+	    this.game.state.nw[bonus].faction = faction;
+	    this.game.state.nw[bonus].claimed = 1;
+	  }
+	  if (bonus === 'greatlakes') {
+	    this.game.state.explorations[idx].resolved = 1;
+	    this.game.state.explorations[idx].explorer_lost = 0;
+	    this.game.state.nw[bonus].faction = faction;
+	    this.game.state.nw[bonus].claimed = 1;
+	  }
+	  if (bonus === 'mississippi') {
+	    this.game.state.explorations[idx].resolved = 1;
+	    this.game.state.explorations[idx].explorer_lost = 0;
+	    this.game.state.nw[bonus].faction = faction;
+	    this.game.state.nw[bonus].claimed = 1;
+	  }
+	  if (bonus === 'pacificstrait') {
+	    this.game.state.explorations[idx].resolved = 1;
+	    this.game.state.explorations[idx].explorer_lost = 1;
+	    this.game.state.nw[bonus].faction = faction;
+	    this.game.state.nw[bonus].claimed = 1;
+	  }
+	  if (bonus === 'amazon') {
+	    this.game.state.explorations[idx].resolved = 1;
+	    this.game.state.explorations[idx].explorer_lost = 1;
+	    this.game.state.nw[bonus].faction = faction;
+	    this.game.state.nw[bonus].claimed = 1;
+	  }
+	  if (bonus === 'circumnavigation') {
+
+	    //
+	    // circumnavigation attempt requires another roll here to claim
+	    //
+	    let x = this.rollDice(6) + this.rollDice(6) + this.game.state.explorations[idx].modifiers;
+
+	    if (x > 9) {
+	      this.updateLog("Circumnavigation Attempt succeeds: " + x + " rolled");
+	      this.game.state.explorations[idx].resolved = 1;
+	      this.game.state.explorations[idx].explorer_lost = 1;
+	      this.game.state.nw[bonus].faction = faction;
+	      this.game.state.nw[bonus].claimed = 1;
+	    } else {
+	      this.updateLog("Circumnavigation Attempt fails: " + x + " rolled");
+	      this.game.state.explorations[idx].resolved = 1;
+	      this.game.state.explorations[idx].explorer_lost = 1;
+	    }
+
+	  }
+
+	  this.displayVictoryTrack();
+	  this.displayNewWorld();
+
+	  return 1;
+	}
+
 	if (mv[0] === "resolve_exploration") {
+
+    	  this.game.queue.splice(qe, 1);
+
+	  let his_self = this;
 	  let idx = parseInt(mv[1]);
 this.updateLog("RESOLVING EXPLORATION: ");
 this.updateLog(this.game.state.explorations[idx].faction);
 this.updateLog(this.game.state.explorations[idx].explorer);
 
+	  let faction = this.game.state.explorations[idx].faction;
+	  let explorer = this.game.state.explorations[idx].explorer;
+	  this.game.state.explorations[idx].resolved = 1;
+
 	  let hits = this.game.state.explorations[idx].hits;
 	  if (hits <= 4) {
-	    
+	    this.updateLog(this.returnFactionName(faction) + ": " + explorer + " lost at sea");
+	    this.game.state.explorations[idx].explorer_lost = 1;
+	  }
+	  if (hits > 4 && hits <= 6) {
+	    this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
+	  }
+	  if (hits > 6 && hits <= 9) {
+	    if (his == 9 && this.game.state.nw['mississippi'].claimed != 1) {
+	      this.game.state.nw['mississippi'].claimed = 1;
+	      this.game.state.nw['mississippi'].faction = faction;
+	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the Mississippi (1VP)");
+	    } else { if (hits == 9) { hits--; }}
+
+	    if (his == 8 && this.game.state.nw['greatlakes'].claimed != 1) {
+	      this.game.state.nw['greatlakes'].claimed = 1;
+	      this.game.state.nw['greatlakes'].faction = faction;
+	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the Great Lakes (1VP)");
+	    } else { if (hits == 8) { hits--; }}
+
+	    if (his == 7 && this.game.state.nw['stlawrence'].claimed != 1) {
+	      this.game.state.nw['stlawrence'].claimed = 1;
+	      this.game.state.nw['stlawrence'].faction = faction;
+	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the St. Lawrence (1VP)");
+	    } else {
+	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
+	    }
 	  }
 
-	  this.game.state.explorations[idx].resolved = 1;
-    	  this.game.queue.splice(qe, 1);
+	  if (hits > 10) {
+
+	    //
+	    // nope out if nothing to claim
+	    //
+	    if (this.game.state.nw['stlawrence'].claimed == 1 && this.game.state.nw['greatlakes'].claimed == 1 && this.game.state.nw['mississippi'].claimed == 1 && this.game.state.nw['amazon'].claimed == 1 && this.game.state.nw['circumnavigation'].claimed == 1) {
+	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
+	      return 1;
+	    }
+
+	    //
+	    // otherwise we give the successful faction a manual choice
+	    //
+	    if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
+
+	      let msg = "Select Discovery: ";
+	      let html = '<ul>';
+	      if (this.game.state.nw['stlawrence'].claimed != 1) {
+		html += '<li class="option" id="stlawrence">St. Lawrence (1VP)</li>';
+	      }
+	      if (this.game.state.nw['greatlakes'].claimed != 1) {
+		html += '<li class="option" id="greatlakes">The Great Lakes (1VP)</li>';
+	      }
+	      if (this.game.state.nw['mississippi'].claimed != 1) {
+		html += '<li class="option" id="mississippi">The Mississippi (1VP)</li>';
+	      }
+	      if (this.game.state.nw['amazon'].claimed != 1) {
+		html += '<li class="option" id="amazon">The Amazon (2VP, explorer retires)</li>';
+	      }
+	      if (this.game.state.nw['circumnavigation'].claimed != 1) {
+		let vp_at_stake = "2";
+		if (this.game.state.nw['pacificstrait'].claimed != 1) { vp_at_stake = "2-4"; }
+		html += `<li class="option" id="circumnavigation">Attempt Circumnavigation (${vp_at_stake}VP, explorer retires)</li>`;
+	      }
+
+              his_self.updateStatusWithOptions(msg, html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+                $('.option').off();
+                his_self.updateStatus("acknowledge...");
+                let action = $(this).attr("id");
+
+                his_self.addMove("award_exploration_bonus\t"+faction+"\t"+explorer+"\t"+idx+"\t"+action);
+		if (action == 'circumnavigation' && his_self.game.state.nw['pacificstrait'].claimed != 1) {
+                  his_self.addMove("award_exploration_bonus\t"+faction+"\t"+explorer+"\t"+idx+"\t"+'pacificstrait');
+		}
+
+                his_self.endTurn();
+              });
+
+	    }
+	  
+	    return 0;
+
+	  }
 	  return 1;
 	}
-
 	if (mv[0] === "conquer") {
 	  let faction = mv[1];
 	  this.game.state.conquests.push({
