@@ -240,7 +240,7 @@ body {
 @media screen and (min-width: 801px) {
   .container>div {
     width: 50%;
-    transition: width ease-in-out 1s, all ease-in-out 1s;
+    transition: all ease-in-out 1s;
     display: flex;
     flex-direction: column;
     align-items: center;
