@@ -5799,7 +5799,7 @@ alert("HERE");
 
 	  });
 	} else {
-	  his_self.updateStatus(his_self.returnFactionName(faction) + " placing Potosi Silver Mines");
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing Mercator's Map");
 	}
 
 	return 0;

@@ -901,82 +901,48 @@ Habsburg conquistadores:
 
 ************************/
 
-      this.importConquistador('orellana', {
-           type              :       "orellana",
-           name              :       "Hector Rodrigo Enriquez Orellana",
-           personage         :       true,
-           img               :       "Orellana.svg",
-      });
-
-      this.importConquistador('magellan', {
-           type              :       "magellan" ,
-           name              :       "Ferdinand Magellan",
-           personage         :       true,
-           img               :       "Magellan.svg",
-      });
-
-      this.importConquistador('leon', {
-           type              :       "leon" ,
-           name              :       "Leon",
-           personage         :       true,
-           img               :       "Leon.svg",
-      });
-
-      this.importConquistador('narvaez', {
-           type              :       "narvaez" ,
-           name              :       "Sofia Narvaez",
-           personage         :       true,
-           img               :       "Narvaez.svg",
-      });
-
-      this.importConquistador('de-vaca', {
-           type              :       "de-vaca" ,
-           name              :       "Cabeza De Vaca",
-           personage         :       true,
-           img               :       "De_Vaca.svg",
-      });
-
-      this.importConquistador('de-soto', {
-           type              :       "de-soto" ,
-           name              :       "DeSoto",
-           personage         :       true,
-           img               :       "DeSoto.svg",
-      });
-
-
-
-
-
       /***** Hapsburg Conquistadors *****/
-
       this.importConquistador('pizarro', {
+	   faction	     :       "hapsburg",
            type              :       "pizarro" ,
            name              :       "Francisco Pizarro",
            personage         :       true,
            img               :       "Pizarro.svg",
+	   power	     :	     3,
       });
-
-      // Montejo
-
+      this.importConquistador('montejo', {
+	   faction	     :       "hapsburg",
+           type              :       "montejo" ,
+           name              :       "Francisco de Montejo",
+           personage         :       true,
+           img               :       "Pizarro.svg",
+	   power	     :	     2,
+      });
       this.importConquistador('cordova', {
+	   faction	     :       "hapsburg",
            type              :       "cordova" ,
            name              :       "Neisa Cordova",
            personage         :       true,
            img               :       "Cordova.svg",
+	   power	     :	     4,
       });
 
       this.importConquistador('coronado', {
+	   faction	     :       "hapsburg",
            type              :       "coronado" ,
            name              :       "Francisco Vázquez de Coronado",
            personage         :       true,
            img               :       "Coronado.svg",
+	   power	     :	     1,
       });
 
       this.importConquistador('cortez', {
+	   faction	     :       "hapsburg",
            type              :       "cortez" ,
            name              :       "Hernan Cortes",
            personage         :       true,
            img               :       "Cortez.svg",
+	   power	     :	     1,
       });
 
 
@@ -2015,24 +1981,30 @@ console.log("returning no for: " + spacekey);
       /***** English Explorers *****/
 
       this.importExplorer('chancellor', {
+           faction           :       "england" ,
            type              :       "chancellor" ,
            name              :       "Chancellor",
            personage         :       true,
            img               :       "Chancellor.svg",
+           power	     :       1,
       });
 
       this.importExplorer('willoughby', {
+           faction           :       "england" ,
            type              :       "willoughby" ,
            name              :       "Katherine Willoughby",
            personage         :       true,
            img               :       "Willoughby.svg",
+           power	     :       1,
       });
 
       this.importExplorer('rut', {
+           faction           :       "england" ,
            type              :       "rut" ,
            name              :       "John Rut",
            personage         :       true,
            img               :       "Rut.svg",
+           power	     :       0,
       });
 
 
@@ -2040,24 +2012,30 @@ console.log("returning no for: " + spacekey);
       /***** French Explorers *****/
 
       this.importExplorer('cartier', {
+           faction           :       "france" ,
            type              :       "cartier" ,
            name              :       "Jacques Cartier",
            personage         :       true,
            img               :       "Cartier.svg",
+           power	     :       3,
       });
 
       this.importExplorer('roberval', {
+           faction           :       "france" ,
            type              :       "roberval" ,
            name              :       "Jean-François de La Rocque de Roberval",
            personage         :       true,
            img               :       "Roberval.svg",
+           power	     :       1,
       });
 
       this.importExplorer('verrazano', {
+           faction           :       "france" ,
            type              :       "verrazano" ,
            name              :       "Giovanni da Verrazano" ,
            personage         :       true,
            img               :       "Verrazano.svg",
+           power	     :       2,
       });
 
 
@@ -2065,45 +2043,57 @@ console.log("returning no for: " + spacekey);
       /***** Hapsburg Explorers *****/
 
       this.importExplorer('orellana', {
+           faction           :       "hapsburg" ,
            type              :       "orellana",
            name              :       "Hector Rodrigo Enriquez Orellana",
            personage         :       true,
            img               :       "Orellana.svg",
+           power	     :       3,
       });
 
       this.importExplorer('magellan', {
+           faction           :       "hapsburg" ,
            type              :       "magellan" ,
            name              :       "Ferdinand Magellan",
            personage         :       true,
            img               :       "Magellan.svg",
+           power	     :       4,
       });
 
       this.importExplorer('leon', {
+           faction           :       "hapsburg" ,
            type              :       "leon" ,
            name              :       "Leon",
            personage         :       true,
            img               :       "Leon.svg",
+           power	     :       1,
       });
 
       this.importExplorer('narvaez', {
+           faction           :       "hapsburg" ,
            type              :       "narvaez" ,
            name              :       "Sofia Narvaez",
            personage         :       true,
            img               :       "Narvaez.svg",
+           power	     :       -1,
       });
 
       this.importExplorer('de-vaca', {
+           faction           :       "hapsburg" ,
            type              :       "de-vaca" ,
            name              :       "Cabeza De Vaca",
            personage         :       true,
            img               :       "De_Vaca.svg",
+           power	     :       0,
       });
 
       this.importExplorer('de-soto', {
+           faction           :       "hapsburg" ,
            type              :       "de-soto" ,
            name              :       "DeSoto",
            personage         :       true,
            img               :       "DeSoto.svg",
+           power	     :       2,
       });
 
 
@@ -8850,7 +8840,7 @@ alert("HERE");
 
 	  });
 	} else {
-	  his_self.updateStatus(his_self.returnFactionName(faction) + " placing Potosi Silver Mines");
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing Mercator's Map");
 	}
 
 	return 0;
@@ -20779,6 +20769,7 @@ if (this.game.options.scenario === "is_testing") {
 	  let faction = mv[1];
 	  this.game.state.colonies.push({
 	    faction : faction,
+	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
           this.game.state.may_colonize[faction] = 0;
@@ -20790,9 +20781,25 @@ if (this.game.options.scenario === "is_testing") {
 	  let faction = mv[1];
 	  this.game.state.explorations.push({
 	    faction : faction,
+	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
           this.game.state.may_explore[faction] = 0;
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+	if (mv[0] === "resolve_exploration") {
+	  let idx = parseInt(mv[1]);
+this.updateLog("RESOLVING EXPLORATION: ");
+this.updateLog(this.game.state.explorations[idx].faction);
+this.updateLog(this.game.state.explorations[idx].explorer);
+
+	  let hits = this.game.state.explorations[idx].hits;
+	  if (hits <= 4) {
+	    
+	  }
+
+	  this.game.state.explorations[idx].resolved = 1;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -20801,6 +20808,7 @@ if (this.game.options.scenario === "is_testing") {
 	  let faction = mv[1];
 	  this.game.state.conquests.push({
 	    faction : faction,
+	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
           this.game.state.may_conquer[faction] = 0;
@@ -27209,6 +27217,7 @@ alert("flipping more than exist in the zone!");
           return 1;
 
         }
+
 
 
 
@@ -35516,60 +35525,72 @@ return;
     }
   }
 
-  importExplorer(name, obj) {
-    if (obj.type == null)               { obj.type = "unit"; }
+  importConquistador(name, obj) {
+    if (obj.faction == null)            { obj.faction = ""; }
+    if (obj.type == null)               { obj.type = name; }
     if (obj.name == null)               { obj.name = "Unit"; }
-    if (obj.spacekey == null)           { obj.spacekey = ""; }
     if (obj.personage == null)          { obj.personage = false; }
-    if (obj.debater == null)            { obj.debater = false; }
-    if (obj.reformer == null)           { obj.reformer = false; }
-    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
-    if (obj.army_leader == null)        { obj.army_leader = false; }
-    if (obj.navy_leader == null)        { obj.navy_leader = false; }
-    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
-    if (obj.command_value == null)      { obj.command_value = 0; }
-    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
-    if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
-    if (obj.captured == null)           { obj.captured = false; }
-    if (obj.loaned == null)		{ obj.loaned = false; }
-    if (obj.key == null)		{ obj.key = name; }
-    if (obj.onCommitted == null) {
-      obj.onCommitted = function(his_self, faction) { return 1; }
+    if (obj.power == null)		{ obj.power = 0; }
+    if (!this.conquistadors[name]) {
+      this.addEvents(obj);
+      this.conquistadors[name] = obj;
     }
+  }
+
+  importExplorer(name, obj) {
+    if (obj.faction == null)            { obj.faction = ""; }
+    if (obj.type == null)               { obj.type = name; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.power == null)		{ obj.power = 0; }
     if (!this.explorers[name]) {
       this.addEvents(obj);
       this.explorers[name] = obj;
     }
   }
 
-  importConquistador(name, obj) {
-    if (obj.type == null)               { obj.type = "unit"; }
-    if (obj.name == null)               { obj.name = "Unit"; }
-    if (obj.spacekey == null)           { obj.spacekey = ""; }
-    if (obj.personage == null)          { obj.personage = false; }
-    if (obj.debater == null)            { obj.debater = false; }
-    if (obj.reformer == null)           { obj.reformer = false; }
-    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
-    if (obj.army_leader == null)        { obj.army_leader = false; }
-    if (obj.navy_leader == null)        { obj.navy_leader = false; }
-    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
-    if (obj.command_value == null)      { obj.command_value = 0; }
-    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
-    if (obj.img == null)                { obj.img = ""; }
-    if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
-    if (obj.captured == null)           { obj.captured = false; }
-    if (obj.loaned == null)		{ obj.loaned = false; }
-    if (obj.key == null)		{ obj.key = name; }
-    if (obj.onCommitted == null) {
-      obj.onCommitted = function(his_self, faction) { return 1; }
+  returnAvailableExplorers(faction="") {
+    let unavailable = [];
+    let available = [];
+    for (let z = 0; z < this.game.state.explorations.length; z++) {
+      let exp = this.game.state.explorations[z];
+      if (exp.faction == faction) {
+	if (exp.explorer_lost == 1) {
+	  unavailable.push(exp.explorer);
+        }
+      }
     }
-    if (!this.conquistadors[name]) {
-      this.addEvents(obj);
-      this.conquistadors[name] = obj;
+    for (let key in this.explorers) {
+      if (this.explorers[key].faction == faction) {
+        if (unavailable.includes(key)) {
+	  available.push(key);
+        }
+      }
     }
+    return available;
+  }
+
+  returnAvailableConquistadors(faction="") {
+    let unavailable = [];
+    let available = [];
+    for (let z = 0; z < this.game.state.conquests.length; z++) {
+      let exp = this.game.state.conquests[z];
+      if (exp.faction == faction) {
+	if (exp.conquistador_lost == 1) {
+	  unavailable.push(exp.conquistador);
+        }
+      }
+    }
+    for (let key in this.conquistadors) {
+      if (this.conquistadors[key].faction == faction) {
+        if (unavailable.includes(key)) {
+	  available.push(key);
+        }
+      }
+    }
+    return available;
   }
 
   removeArmyLeader(faction, space, leader) {
@@ -36127,6 +36148,122 @@ return;
 
   
 
+
+
+
+  resolveExplorations() {
+
+    let active_explorations = [];
+    let sorted_explorations = [];
+
+    for (let z = 0; z < this.game.state.explorations.length; z++) {
+      let exp = this.game.state.explorations[z];
+      if (exp.resolved == 0) {
+
+        let available_explorers = this.returnAvailableExplorers(exp.faction);
+	if (available_explorers.length > 0) {
+
+	  //
+	  // find explorer
+	  //
+	  let x = this.rollDice(available_explorers.length) - 1;
+	  let explorer = available_explorers[x];
+	  this.game.state.explorations[z].explorer = explorer;
+
+	  //
+	  // calculate hits
+	  //
+	  let y = this.rollDice(6);
+	  let z = this.rollDice(6);
+
+	  let total_hits = y + z;
+
+	  //
+	  // modifications
+	  //
+	  if (this.game.state[`${exp.faction}_uncharted`]) {
+	    total_hits--;
+	    this.game.state[`${exp.faction}_uncharted`] = 0;
+	  }
+
+	  //
+	  // explorer power
+	  //
+	  total_hits += this.explorers[explorer].power;
+
+	  //
+	  // mercators map
+	  //
+	  if (this.game.state.events.mercators_map === exp.faction) {
+	    total_hits += 2;
+	    this.game.state.events.mercators_map = 0;
+	  }
+	  
+
+	  if (!this.game.state[`${exp.faction}_uncharted`]) { total_hits++; }
+	
+	  this.game.state.explorations[z].hits = total_hits;
+
+	  active_explorations.push(z);
+
+	}
+
+      }
+    }
+
+    //
+    // now determine sorted_explorations (order of resolution)
+    //
+    for (let z = 5; z >= -1; z--) {
+      let idx = 0;
+      let highest = -5;
+      let highest_faction = "";
+
+      //
+      // sort resolution
+      //
+      while (active_explorations.length < sorted_explorations.length) {
+        for (let k = 0; k < active_explorations.length; k++) {
+  	  let exp = this.game.state.explorations[active_explorations[k]];
+	  if (exp.sorted != 1) {
+	    let explorer = exp.explorer;
+	    let f = this.explorers[explorer].faction;
+	    let p = this.explorers[explorer].power;
+	    if (p == highest) {
+	      if (f == "england") { highest = -5; } // force next IF to execute
+    	      if (f == "france" && current_highest == "hapsburg") { highest = -5; } //force next-IF to execute
+	    }
+	    if (p > highest) {
+	      idx = k;
+	      highest = p;
+	      highest_faction = f;
+	    }
+          }
+	  exp.sorted = 1;
+	  sorted_explorations.push(idx);
+        };
+      }
+    }
+
+    //
+    // now resolve in order
+    //
+    for (let z = sorted_explorations.length-1; z >= 0; z--) {
+      this.game.queue.push("resolve_exploration\t"+sorted_explorations[k]);
+    }
+
+    return 1;
+
+  }
+
+  resolveConquests() {
+
+  }
+
+  resolveColonies() {
+
+
+  }
 
 
   hideOverlays() {

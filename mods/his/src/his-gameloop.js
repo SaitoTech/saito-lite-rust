@@ -888,6 +888,7 @@ if (this.game.options.scenario === "is_testing") {
 	  let faction = mv[1];
 	  this.game.state.colonies.push({
 	    faction : faction,
+	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
           this.game.state.may_colonize[faction] = 0;
@@ -899,9 +900,25 @@ if (this.game.options.scenario === "is_testing") {
 	  let faction = mv[1];
 	  this.game.state.explorations.push({
 	    faction : faction,
+	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
           this.game.state.may_explore[faction] = 0;
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+	if (mv[0] === "resolve_exploration") {
+	  let idx = parseInt(mv[1]);
+this.updateLog("RESOLVING EXPLORATION: ");
+this.updateLog(this.game.state.explorations[idx].faction);
+this.updateLog(this.game.state.explorations[idx].explorer);
+
+	  let hits = this.game.state.explorations[idx].hits;
+	  if (hits <= 4) {
+	    
+	  }
+
+	  this.game.state.explorations[idx].resolved = 1;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -910,6 +927,7 @@ if (this.game.options.scenario === "is_testing") {
 	  let faction = mv[1];
 	  this.game.state.conquests.push({
 	    faction : faction,
+	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
           this.game.state.may_conquer[faction] = 0;
@@ -7318,6 +7336,7 @@ alert("flipping more than exist in the zone!");
           return 1;
 
         }
+
 
 
 

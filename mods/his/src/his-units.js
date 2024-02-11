@@ -223,10 +223,8 @@
   }
 
   returnAvailableExplorers(faction="") {
-
     let unavailable = [];
     let available = [];
-
     for (let z = 0; z < this.game.state.explorations.length; z++) {
       let exp = this.game.state.explorations[z];
       if (exp.faction == faction) {
@@ -235,7 +233,6 @@
         }
       }
     }
-
     for (let key in this.explorers) {
       if (this.explorers[key].faction == faction) {
         if (unavailable.includes(key)) {
@@ -243,7 +240,28 @@
         }
       }
     }
+    return available;
+  }
 
+  returnAvailableConquistadors(faction="") {
+    let unavailable = [];
+    let available = [];
+    for (let z = 0; z < this.game.state.conquests.length; z++) {
+      let exp = this.game.state.conquests[z];
+      if (exp.faction == faction) {
+	if (exp.conquistador_lost == 1) {
+	  unavailable.push(exp.conquistador);
+        }
+      }
+    }
+    for (let key in this.conquistadors) {
+      if (this.conquistadors[key].faction == faction) {
+        if (unavailable.includes(key)) {
+	  available.push(key);
+        }
+      }
+    }
+    return available;
   }
 
   removeArmyLeader(faction, space, leader) {
