@@ -74,7 +74,14 @@ class ChatManagerMenu {
 				};
 
 				let name = await sprompt('Choose a name for the group');
-				this.contactList.render();
+				if (name){
+					let myKeys = this.app.keychain.returnKeys();
+					if (myKeys.length > 0){
+						this.contactList.render();		
+					}else{
+						this.mod.sendCreateGroupTransaction(name);		
+					}
+				}
 			};
 		}
 

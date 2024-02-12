@@ -11,9 +11,9 @@ module.exports = (app, mod, chat_group) => {
 			}
 
 			return `<div class="saito-contact${unconfirmed}" >
-								<div class="saito-user saito-address" data-id="${publickey}">
+								<div class="saito-user saito-add-user-menu" data-id="${publickey}">
 	                				<div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}">${usericon}</div>
-	                  				${name}
+	                  				<div class="saito-address" data-id="${publickey}" data-disable="true">${name}</div>
 	                				<div class="saito-userline">${publickey}</div>
 	                				${fourthElement}
 	                			</div>
