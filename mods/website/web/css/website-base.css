@@ -4,7 +4,6 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: Arial, Helvetica, sans-serif;
 }
 
 nav {
@@ -265,18 +264,23 @@ body {
     justify-content: space-around;
     align-items: center;
     height: 5rem;
-    gap: 2rem;
+    transition: all ease-in-out 1s;
   }
+
+  .splash-option button {
+    margin: 0 2rem;
+  }
+  
   .container>div label {
     width: 0;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-align: left;
-    transition: width 1s ease-in-out;
+    transition: all 1s ease-in-out;
   }
   .container>div:hover label {
-    width: 180px;
+    width: 220px;
   }
 }
 
