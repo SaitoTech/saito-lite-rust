@@ -10,13 +10,51 @@ Habsburg conquistadores:
 
 ************************/
 
+
+      /***** English Conquistadors *****/
+      this.importConquistador('english-conquistador1', {
+	   faction	     :       "england",
+           type              :       "english-conquistador1" ,
+           name              :       "English Conquerer",
+           personage         :       true,
+           img               :       "/his/img/tiles/england/English_Conquest.svg",
+	   power	     :	     0,
+      });
+      this.importConquistador('english-conquistador2', {
+	   faction	     :       "england",
+           type              :       "english-conquistador2" ,
+           name              :       "English Conquerer",
+           personage         :       true,
+           img               :       "/his/img/tiles/england/English_Conquest.svg",
+	   power	     :	     0,
+      });
+
+
+      /***** French Conquistadors *****/
+      this.importConquistador('french-conquistador1', {
+	   faction	     :       "france",
+           type              :       "french-conquistador1" ,
+           name              :       "French Conquerer",
+           personage         :       true,
+           img               :       "/his/img/tiles/france/French_Conquest.svg",
+	   power	     :	     0,
+      });
+      this.importConquistador('french-conquistador2', {
+	   faction	     :       "france",
+           type              :       "french-conquistador2" ,
+           name              :       "French Conquerer",
+           personage         :       true,
+           img               :       "/his/img/tiles/france/French_Conquest.svg",
+	   power	     :	     0,
+      });
+
       /***** Hapsburg Conquistadors *****/
       this.importConquistador('pizarro', {
 	   faction	     :       "hapsburg",
            type              :       "pizarro" ,
            name              :       "Francisco Pizarro",
            personage         :       true,
-           img               :       "Pizarro.svg",
+           img               :       "/his/img/tiles/conquistadors/Pizarro.svg",
 	   power	     :	     3,
       });
       this.importConquistador('montejo', {
@@ -24,7 +62,7 @@ Habsburg conquistadores:
            type              :       "montejo" ,
            name              :       "Francisco de Montejo",
            personage         :       true,
-           img               :       "Pizarro.svg",
+           img               :       "/his/img/tiles/conquistadors/Montejo.svg",
 	   power	     :	     2,
       });
       this.importConquistador('cordova', {
@@ -32,7 +70,7 @@ Habsburg conquistadores:
            type              :       "cordova" ,
            name              :       "Neisa Cordova",
            personage         :       true,
-           img               :       "Cordova.svg",
+           img               :       "/his/img/tiles/conquistadors/Cordova.svg",
 	   power	     :	     4,
       });
 
@@ -41,7 +79,7 @@ Habsburg conquistadores:
            type              :       "coronado" ,
            name              :       "Francisco Vázquez de Coronado",
            personage         :       true,
-           img               :       "Coronado.svg",
+           img               :       "/his/img/tiles/conquistadors/Coronado.svg",
 	   power	     :	     1,
       });
 
@@ -50,7 +88,7 @@ Habsburg conquistadores:
            type              :       "cortez" ,
            name              :       "Hernan Cortes",
            personage         :       true,
-           img               :       "Cortez.svg",
+           img               :       "/his/img/tiles/conquistadors/Cortez.svg",
 	   power	     :	     1,
       });
 

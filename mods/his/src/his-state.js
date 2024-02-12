@@ -105,6 +105,9 @@
 
     this.displayCardsLeft();
     this.displayTurnTrack();
+
+    try { document.querySelector(".crossing_atlantic").innerHTML = ""; } catch (err) {}
+
     this.displayNewWorld();
     this.displayVictoryTrack();
 

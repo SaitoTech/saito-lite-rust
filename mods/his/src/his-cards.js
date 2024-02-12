@@ -10759,8 +10759,8 @@ alert("ALL FIVE SELECTED");
   	    let pf = his_self.returnPlayerOfFaction(faction);
 
 	    if (his_self.game.players.length != 2) {
-	      his_self.game.queue.push("hand_to_fhand\t1\t"+hf+"\t"+"hapsburg");
-              his_self.game.queue.push(`DEAL\t1\t${hf}\t1`);
+	      his_self.game.queue.push("hand_to_fhand\t1\t"+hp+"\t"+"hapsburg");
+              his_self.game.queue.push(`DEAL\t1\t${hp}\t1`);
 	    }
 	    if (faction !== "hapsburg") {
 	      his_self.game.queue.push("hand_to_fhand\t1\t"+pf+"\t"+faction);

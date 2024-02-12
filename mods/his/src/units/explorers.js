@@ -6,7 +6,7 @@
            type              :       "chancellor" ,
            name              :       "Chancellor",
            personage         :       true,
-           img               :       "Chancellor.svg",
+           img               :       "/his/img/tiles/explorers/Chancellor.svg",
            power	     :       1,
       });
 
@@ -15,7 +15,7 @@
            type              :       "willoughby" ,
            name              :       "Katherine Willoughby",
            personage         :       true,
-           img               :       "Willoughby.svg",
+           img               :       "/his/img/tiles/explorers/Willoughby.svg",
            power	     :       1,
       });
 
@@ -24,7 +24,7 @@
            type              :       "rut" ,
            name              :       "John Rut",
            personage         :       true,
-           img               :       "Rut.svg",
+           img               :       "/his/img/tiles/explorers/Rut.svg",
            power	     :       0,
       });
 
@@ -37,7 +37,7 @@
            type              :       "cartier" ,
            name              :       "Jacques Cartier",
            personage         :       true,
-           img               :       "Cartier.svg",
+           img               :       "/his/img/tiles/explorers/Cartier.svg",
            power	     :       3,
       });
 
@@ -46,7 +46,7 @@
            type              :       "roberval" ,
            name              :       "Jean-François de La Rocque de Roberval",
            personage         :       true,
-           img               :       "Roberval.svg",
+           img               :       "/his/img/tiles/explorers/Roberval.svg",
            power	     :       1,
       });
 
@@ -55,7 +55,7 @@
            type              :       "verrazano" ,
            name              :       "Giovanni da Verrazano" ,
            personage         :       true,
-           img               :       "Verrazano.svg",
+           img               :       "/his/img/tiles/explorers/Verrazano.svg",
            power	     :       2,
       });
 
@@ -68,7 +68,7 @@
            type              :       "orellana",
            name              :       "Hector Rodrigo Enriquez Orellana",
            personage         :       true,
-           img               :       "Orellana.svg",
+           img               :       "/his/img/tiles/explorers/Orellana.svg",
            power	     :       3,
       });
 
@@ -77,7 +77,7 @@
            type              :       "magellan" ,
            name              :       "Ferdinand Magellan",
            personage         :       true,
-           img               :       "Magellan.svg",
+           img               :       "/his/img/tiles/explorers/Magellan.svg",
            power	     :       4,
       });
 
@@ -86,7 +86,7 @@
            type              :       "leon" ,
            name              :       "Leon",
            personage         :       true,
-           img               :       "Leon.svg",
+           img               :       "/his/img/tiles/explorers/Leon.svg",
            power	     :       1,
       });
 
@@ -95,7 +95,7 @@
            type              :       "narvaez" ,
            name              :       "Sofia Narvaez",
            personage         :       true,
-           img               :       "Narvaez.svg",
+           img               :       "/his/img/tiles/explorers/Narvaez.svg",
            power	     :       -1,
       });
 
@@ -104,7 +104,7 @@
            type              :       "de-vaca" ,
            name              :       "Cabeza De Vaca",
            personage         :       true,
-           img               :       "De_Vaca.svg",
+           img               :       "/his/img/tiles/explorers/De_Vaca.svg",
            power	     :       0,
       });
 
@@ -113,7 +113,7 @@
            type              :       "de-soto" ,
            name              :       "DeSoto",
            personage         :       true,
-           img               :       "DeSoto.svg",
+           img               :       "/his/img/tiles/explorers/DeSoto.svg",
            power	     :       2,
       });
 

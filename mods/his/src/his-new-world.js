@@ -1,11 +1,10 @@
 
   resolveColonies() {
 
-console.log("NUM COLY ATTEMPTS: " + this.game.state.colonies.length);
     for (let z = 0; z < this.game.state.colonies.length; z++) {
       if (this.game.state.colonies[z].resolved != 1) {
 
-console.log("EXAMINING COLONY ATTEMPT: " + JSON.stringify(this.game.state.colonies[z]));
+	this.game.state.colonies[z].resolved = 1;
 
         if (this.game.state.colonies[z].faction === "england") {
 	  if (this.game.state.newworld['england_colony1'].claimed != 1) {
@@ -94,10 +93,10 @@ console.log("picked conquistador: " + conquistador);
 	  //
 	  // calculate hits
 	  //
-	  let y = this.rollDice(6);
-	  let z = this.rollDice(6);
+	  let yy = this.rollDice(6);
+	  let zz = this.rollDice(6);
 
-	  let total_hits = x + y;
+	  let total_hits = yy + zz;
 
 	  //
 	  // conquistador power
@@ -123,8 +122,6 @@ console.log("conquest: " + JSON.stringify(con));
 
 	}
       }
-
-      return 1;
     }
 
     //
@@ -138,9 +135,12 @@ console.log("conquest: " + JSON.stringify(con));
       if (i = 1) { target_faction = "england"; }
       if (i = 2) { target_faction = "france"; }
       for (let k = 0; k < active_conquests.length; k++) {
- 	if (this.game.state.conquests[active_conquests[k]].faction === target_faction) { sorted_conquests.push(idx); }
+ 	if (this.game.state.conquests[active_conquests[k]].faction === target_faction) { sorted_conquests.push(active_conquests[k]); }
       }
     }
+
+
+console.log("SORTED CONQUESTS: " + JSON.stringify(sorted_conquests));
 
     //
     // now resolve in order
@@ -157,7 +157,6 @@ console.log("conquest: " + JSON.stringify(con));
 
     let active_explorations = [];
     let sorted_explorations = [];
-
 
     for (let z = 0; z < this.game.state.explorations.length; z++) {
       let exp = this.game.state.explorations[z];
@@ -180,10 +179,10 @@ console.log("explorers: " + JSON.stringify(available_explorers));
 	  //
 	  // calculate hits
 	  //
-	  let y = this.rollDice(6);
-	  let z = this.rollDice(6);
+	  let yy = this.rollDice(6);
+	  let zz = this.rollDice(6);
 
-	  let total_hits = y + z;
+	  let total_hits = yy + zz;
 	  let modifiers = 0;
 
 	  //
@@ -230,10 +229,13 @@ console.log("explorers: " + JSON.stringify(available_explorers));
       let highest = -5;
       let highest_faction = "";
 
+console.log("ACTIVE EXPL: " + JSON.stringify(active_explorations));
+
       //
       // sort resolution
       //
-      while (active_explorations.length < sorted_explorations.length) {
+      while (active_explorations.length > sorted_explorations.length) {
+console.log("looping here...");
         for (let k = 0; k < active_explorations.length; k++) {
   	  let exp = this.game.state.explorations[active_explorations[k]];
 	  if (exp.sorted != 1) {
@@ -251,10 +253,12 @@ console.log("explorers: " + JSON.stringify(available_explorers));
 	    }
           }
 	  exp.sorted = 1;
-	  sorted_explorations.push(idx);
+	  sorted_explorations.push(active_explorations[k]);
         };
       }
     }
+
+console.log("SORTED EXPL: " + JSON.stringify(sorted_explorations));
 
     //
     // now resolve in order
