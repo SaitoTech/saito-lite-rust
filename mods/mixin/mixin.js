@@ -133,22 +133,6 @@ class Mixin extends ModTemplate {
     }
   }
 
-  ///////////
-  // MIXIN //
-  ///////////
-  //
-  // createWithdrawalAddress(asset_id, withdrawal_address, label, tag, callback)
-  // checkWithdrawalFee(asset_id, callback);
-  // checkBalance(asset_id, callback);
-  // createAccount(callback);
-  // fetchDeposits(asset_id, callback)
-  // fetchAddresses(asset_id, callback)
-  // doesWithdrawalAddressExist(asset_id, address_id_or_withdrawal_address)
-  // async sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash);
-  // sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash, callback)
-  // updateUserPin(new_pin, callback)
-  //
-
 
   onPeerServiceUp(app, peer, service = {}) {
     let mixin_self = this;
@@ -158,14 +142,12 @@ class Mixin extends ModTemplate {
   }
 
   async createAccount(callback){
-    console.log('inside mixin account create ////');
     if (this.account_created == 0) {
       await this.sendCreateAccountTransaction(callback);
     }
   }
 
   async sendCreateAccountTransaction(callback = null){
-    console.log("sendCreateAccountTransaction ///");
     let mixin_self = this;
     let peers = await this.app.network.getPeers();
     // we cannot create an account if the network is down
@@ -203,7 +185,6 @@ class Mixin extends ModTemplate {
   async receiveCreateAccountTransaction(app, tx, peer, callback) {
     if (app.BROWSER == 0) {
 
-      console.log("receiveCreateAccountTransaction ///");
       let mixin_self = this;
       // get mixin env
       let m = this.getEnv();
@@ -240,17 +221,6 @@ class Mixin extends ModTemplate {
 
       // create safe user
       let safe_user = await this.safe_register(user.user_id);
- 
-
-      console.log('callback: ', {
-        user_id:  safe_user.user_id,
-        full_name: safe_user.full_name,
-        session_id:  safe_user.session_id,
-        tip_key_base64:  safe_user.tip_key_base64,
-        spend_private_key: spendPrivateKey.toString('hex'),
-        spend_public_key: spendPublicKey.toString('hex'),
-        session_seed: mixin_self.bot_data.session_private_key
-      });
 
       if (callback) {
         return callback({
@@ -340,14 +310,12 @@ class Mixin extends ModTemplate {
   async createDepositAddress(asset_id){
     let mixin_self = this;
     try {
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -380,14 +348,12 @@ class Mixin extends ModTemplate {
 
   async fetchAsset(asset_id){
     try {
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -412,14 +378,12 @@ class Mixin extends ModTemplate {
 
   async fetchSafeUtxo(asset_id){
     try {
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -446,14 +410,12 @@ class Mixin extends ModTemplate {
 
   async fetchSafeSnapshots(asset_id, limit = 500, callback = null){
     try {
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -474,14 +436,12 @@ class Mixin extends ModTemplate {
 
   async checkNetworkFee(asset_id){
     try {
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -500,14 +460,12 @@ class Mixin extends ModTemplate {
 
   async checkWithdrawalFee(asset_id, recipient){
     try {
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -525,82 +483,14 @@ class Mixin extends ModTemplate {
     }
   }
 
-
-   async receiveFetchAddressTransaction(app, tx, peer, callback) {
-    if (app.BROWSER == 0) {
-
-      let message = tx.returnMessage();
-      let asset_id = message.data.asset_id;
-      let address = message.data.address;
-
-      console.log("receiveFetchAddressTransaction ///");
-      let mixin_self = this;
-      // get mixin env
-      let m = this.getEnv();
-      if (!m) {
-        console.error("MIXIN ENV variable missing.");
-        return;
-      }
-
-      // create bare user
-      let user = await this.bare_register(m);
-
-      // update/create first tipPin
-      this.user = MixinApi({
-        keystore: {
-          app_id: user.user_id,
-          session_id: user.session_id,
-          pin_token_base64: user.pin_token_base64,
-          session_private_key: mixin_self.bot_data.session_private_key
-        },
-      }); 
-
-      let address_fetch = await this.user.address.fetchList(asset_id);
-      console.log("fetchList address: ", address_fetch);
-
-
-      let asset_fetch = await this.user.asset.fetchList(asset_id);
-      console.log("fetchList asset: ", asset_fetch);
-      
-
-    }
-  }
-
-
-  async sendFetchAddressTransaction(asset_id, address, callback = null){
-    let mixin_self = this;
-    let peers = await this.app.network.getPeers();
-    if (peers.length == 0) {
-      console.warn("No peers");
-      return;
-    }
-   
-    let data = {
-      asset_id: asset_id,
-      address: address
-    };
-    mixin_self.app.network.sendRequestAsTransaction(
-      "mixin fetch address",
-      data,
-      function (res) {
-        console.log("Callback for sendFetchAddressTransaction request: ", res);
-        console.log(res)
-      },
-      peers[0].peerIndex
-    );
-  }
-
-
   async createWithdrawalAddress(asset_id, withdrawal_address, tag = "", callback = null) {
     try {
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -626,15 +516,13 @@ class Mixin extends ModTemplate {
 
   async sendInNetworkTransferRequest(asset_id, destination, amount, unique_hash = "") {
     try {
-      let priv_key = (this.mixin.session_seed);
       let spend_private_key = this.mixin.spend_private_key;
-
       let client = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -642,16 +530,6 @@ class Mixin extends ModTemplate {
       const members = [destination];
       const threshold = 1;
       const recipients = [buildSafeTransactionRecipient(members, threshold, amount)];
-
-
-      console.log('members: ', members, 'asset_id: ', asset_id, 'amount: ', amount);
-
-      console.log('keystore: ', {
-          app_id: this.mixin.user_id,
-          session_id: this.mixin.session_id,
-          pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
-        });
 
       // get unspent utxos
       const outputs = await client.utxo.safeOutputs({
@@ -723,14 +601,12 @@ class Mixin extends ModTemplate {
   async sendExternalNetworkTransferRequest(asset_id, destination, amount, unique_hash = ""){
     try {
       let spend_private_key = this.mixin.spend_private_key;
-      let priv_key = (this.mixin.session_seed);
-
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
           session_id: this.mixin.session_id,
           pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: priv_key
+          session_private_key: this.mixin.session_seed
         },
       });
 
@@ -975,19 +851,14 @@ class Mixin extends ModTemplate {
 
   async receiveFetchUserTransaction(app, tx, peer, callback = null){
     let message = tx.returnMessage();
-
     let address = message.data.address;
-
     let sql = `SELECT * FROM mixin_users 
                WHERE address = $address;`;
-
     let params = {
       $address: address,
     };
 
-    let result = await this.app.storage.queryDatabase(sql, params, "Mixin");
-    console.log('fetch user: ', result);
-  
+    let result = await this.app.storage.queryDatabase(sql, params, "Mixin");  
     if (result.length > 0) {
       return callback(result[0]);
     }
@@ -999,7 +870,7 @@ class Mixin extends ModTemplate {
   load() {
     if (this.app?.options?.mixin) {
       this.mixin = this.app.options.mixin;
-      console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
+      console.log("MIXIN OPTIONS: " + JSON.stringify(this.app.options.mixin));
       if (this.mixin.user_id) {
         this.account_created = 1;
       }
@@ -1012,9 +883,6 @@ class Mixin extends ModTemplate {
   }
 
   getEnv(){
-
-    console.log("env process: ", process.env.MIXIN);
-
     if (typeof process.env.MIXIN != "undefined") {
       return JSON.parse(process.env.MIXIN);
     } else {
@@ -1024,8 +892,6 @@ class Mixin extends ModTemplate {
     }
   }
 
- 
 }
 
 module.exports = Mixin;
-
