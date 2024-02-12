@@ -909,7 +909,9 @@ if (this.game.options.scenario === "is_testing") {
 	}
         if (mv[0] === "award_exploration_bonus") {
 
-    	  this.game.quue.splice(qe, 1);
+	  this.updateStatus("Awarding New WOrld Bonus...");
+
+    	  this.game.queue.splice(qe, 1);
 
 	  let his_self = this;
 	  let faction = mv[1];
@@ -954,6 +956,8 @@ if (this.game.options.scenario === "is_testing") {
 	    //
 	    let x = this.rollDice(6) + this.rollDice(6) + this.game.state.explorations[idx].modifiers;
 
+	    this.updateLog("Circumnavigation Attempt: " + x);
+
 	    if (x > 9) {
 	      this.updateLog("Circumnavigation Attempt succeeds: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
@@ -976,7 +980,8 @@ if (this.game.options.scenario === "is_testing") {
 
 	if (mv[0] === "resolve_new_world_riches_rolls") {
 
-console.log("resetting bonuses for new world riches!");
+	  this.updateStatus("Resolving New World Riches...");
+
 
 	  // reset expected bonuses
 	  this.game.state.new_world_bonus = {};
@@ -1081,6 +1086,8 @@ this.updateLog("Incan Conquest rolls: " + x);
 	  }
 
 console.log("new world riches: " + JSON.stringify(this.game.state.new_world_bonus));
+	  this.newworld_overlay.render("results");
+	  return 0;
 
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -1088,14 +1095,17 @@ console.log("new world riches: " + JSON.stringify(this.game.state.new_world_bonu
 
 	if (mv[0] === "resolve_new_world_conquests") {
     	  this.game.queue.splice(qe, 1);
+	  this.updateStatus("Resolving New World Conquests...");
 	  return this.resolveConquests();
         }
 	if (mv[0] === "resolve_new_world_colonies") {
     	  this.game.queue.splice(qe, 1);
+	  this.updateStatus("Establishing New World Colonies...");
 	  return this.resolveColonies();
         }
 	if (mv[0] === "resolve_new_world_explorations") {
     	  this.game.queue.splice(qe, 1);
+	  this.updateStatus("Resolving New World Exploration Attempts...");
 	  return this.resolveExplorations();
         }
 
@@ -1164,6 +1174,8 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  let explorer = this.game.state.explorations[idx].explorer;
 	  let hits = this.game.state.explorations[idx].hits;
 	  this.game.state.explorations[idx].resolved = 1;
+
+	  this.updateStatus("Resolving "+this.returnFactionName(faction) + " Exploration Attempt...");
 
 this.updateLog("RESOLVING EXPLORATION: " + faction + " / " + explorer + " / " + hits);
 

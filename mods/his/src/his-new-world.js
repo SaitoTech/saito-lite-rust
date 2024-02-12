@@ -9,8 +9,10 @@
         if (this.game.state.colonies[z].faction === "england") {
 	  if (this.game.state.newworld['england_colony1'].claimed != 1) {
 	    this.game.state.newworld['england_colony1'].claimed = 1;
+	    this.game.state.newworld.results.colonies.push({ faction : "england" , colony : 'england_colony1' , name : "Roanoke" , img : "/his/img/tiles/colonies/Roanoke.svg" });
 	  } else {
 	    this.game.state.newworld['england_colony2'].claimed = 1;
+	    this.game.state.newworld.results.colonies.push({ faction : "england" , colony : 'england_colony1' , name : "Jamestown" , img : "/his/img/tiles/colonies/Roanoke.svg" });
 	  }
 	  this.updateLog("England founds a colony");
 	  this.game.state.colonies[z].resolved = 1;
@@ -18,8 +20,10 @@
         if (this.game.state.colonies[z].faction === "france") {
 	  if (this.game.state.newworld['france_colony1'].claimed != 1) {
 	    this.game.state.newworld['france_colony1'].claimed = 1;
+	    this.game.state.newworld.results.colonies.push({ faction : "france" , colony : 'france_colony1' , name : "Charlesbourg" , img : "/his/img/tiles/colonies/Charlesbourg.svg" });
 	  } else {
 	    this.game.state.newworld['france_colony2'].claimed = 1;
+	    this.game.state.newworld.results.colonies.push({ faction : "france" , colony : 'france_colony2' , name : "Montreal" , img : "/his/img/tiles/colonies/Montreal.svg" });
 	  }
 	  this.updateLog("France founds a colony");
 	  this.game.state.colonies[z].resolved = 1;
@@ -27,11 +31,14 @@
         if (this.game.state.colonies[z].faction === "hapsburg") {
 	  if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
 	    this.game.state.newworld['hapsburg_colony1'].claimed = 1;
+	    this.game.state.newworld.results.colonies.push({ faction : "hapsburg" , colony : 'hapsburg_colony1' , name : "Puerto Rico" , img : "/his/img/tiles/colonies/PuertoRico.svg" });
 	  } else {
 	    if (this.game.state.newworld['hapsburg_colony2'].claimed != 1) {
 	      this.game.state.newworld['hapsburg_colony2'].claimed = 1;
+	      this.game.state.newworld.results.colonies.push({ faction : "hapsburg" , colony : 'hapsburg_colony2' , name : "Cuba" , img : "/his/img/tiles/colonies/Cuba.svg" });
 	    } else {
 	      this.game.state.newworld['hapsburg_colony3'].claimed = 1;
+	      this.game.state.newworld.results.colonies.push({ faction : "hapsburg" , colony : 'hapsburg_colony3' , name : "Hispanola" , img : "/his/img/tiles/colonies/Hispanola.svg" });
 	    }
 	  }
 
@@ -48,16 +55,19 @@
       this.updateLog("The Hapsburgs found the Potosi Mines");
       this.game.state.newworld['hapsburg_colony3'].claimed = 1;
       this.game.state.newworld['hapsburg_colony3'].img = "Potosi.svg";
+      this.game.state.newworld.results.colonies.push({ faction : "hapsburg" , colony : 'potosi' , name : "Potosi Silver Mines" , img : "/his/img/tiles/colonies/Potosi.svg" });
     }
     if (this.game.state.events.potosi_silver_mines == "france") {
       this.updateLog("France founds the Potosi Mines");
       this.game.state.newworld['france_colony2'].claimed = 1;
       this.game.state.newworld['france_colony2'].img = "Potosi.svg";
+      this.game.state.newworld.results.colonies.push({ faction : "france" , colony : 'potosi' , name : "Potosi Silver Mines" , img : "/his/img/tiles/colonies/Potosi.svg" });
     }
     if (this.game.state.events.potosi_silver_mines == "england") {
       this.updateLog("England founds the Potosi Mines");
       this.game.state.newworld['england_colony2'].claimed = 1;
       this.game.state.newworld['england_colony2'].img = "Potosi.svg";
+      this.game.state.newworld.results.colonies.push({ faction : "england" , colony : 'potosi' , name : "Potosi Silver Mines" , img : "/his/img/tiles/colonies/Potosi.svg" });
     }
 
     this.displayNewWorld();
@@ -72,9 +82,6 @@
     
     for (let z = 0; z < this.game.state.conquests.length; z++) {
 
-console.log("EXAMINING CONQUEST ATTEMPT: " + JSON.stringify(this.game.state.conquests[z]));
-console.log("all conquistadors: " + JSON.stringify(this.conquistadors));
-
       let con = this.game.state.conquests[z];
       if (con.resolved == 0) {
 
@@ -88,8 +95,6 @@ console.log("all conquistadors: " + JSON.stringify(this.conquistadors));
 	  let conquistador = available_conquistadors[x];
 	  con.conquistador = conquistador;
 
-console.log("picked conquistador: " + conquistador);
-
 	  //
 	  // calculate hits
 	  //
@@ -97,6 +102,8 @@ console.log("picked conquistador: " + conquistador);
 	  let zz = this.rollDice(6);
 
 	  let total_hits = yy + zz;
+          let base_hits = total_hits;
+	  let modifiers = 0;
 
 	  //
 	  // conquistador power
@@ -116,9 +123,9 @@ console.log("picked conquistador: " + conquistador);
 	  con.hits = total_hits;
 	  con.modifiers = modifiers;
 
-console.log("conquest: " + JSON.stringify(con));
-
 	  active_conquests.push(z);
+
+          this.game.state.newworld.results.conquests.push({ faction : con.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , conquistador : conquistador });
 
 	}
       }
@@ -146,7 +153,7 @@ console.log("SORTED CONQUESTS: " + JSON.stringify(sorted_conquests));
     // now resolve in order
     //
     for (let z = sorted_conquests.length-1; z >= 0; z--) {
-      this.game.queue.push("resolve_conquests\t"+sorted_conquests[z]);
+      this.game.queue.push("resolve_conquest\t"+sorted_conquests[z]);
     }
 
     return 1;
@@ -162,10 +169,7 @@ console.log("SORTED CONQUESTS: " + JSON.stringify(sorted_conquests));
       let exp = this.game.state.explorations[z];
       if (exp.resolved == 0) {
 
-console.log("EXAMINING EXPLORATIONS ATTEMPT: " + JSON.stringify(exp));
-
         let available_explorers = this.returnAvailableExplorers(exp.faction);
-console.log("explorers: " + JSON.stringify(available_explorers));
 	if (available_explorers.length > 0) {
 
 	  //
@@ -183,6 +187,7 @@ console.log("explorers: " + JSON.stringify(available_explorers));
 	  let zz = this.rollDice(6);
 
 	  let total_hits = yy + zz;
+	  let base_hits = total_hits;
 	  let modifiers = 0;
 
 	  //
@@ -215,6 +220,8 @@ console.log("explorers: " + JSON.stringify(available_explorers));
 	  exp.modifiers = modifiers;
 
 	  active_explorations.push(z);
+ 
+          this.game.state.newworld.results.explorations.push({ faction : exp.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , explorer : explorer });
 
 	}
 
@@ -229,13 +236,10 @@ console.log("explorers: " + JSON.stringify(available_explorers));
       let highest = -5;
       let highest_faction = "";
 
-console.log("ACTIVE EXPL: " + JSON.stringify(active_explorations));
-
       //
       // sort resolution
       //
       while (active_explorations.length > sorted_explorations.length) {
-console.log("looping here...");
         for (let k = 0; k < active_explorations.length; k++) {
   	  let exp = this.game.state.explorations[active_explorations[k]];
 	  if (exp.sorted != 1) {
@@ -244,7 +248,7 @@ console.log("looping here...");
 	    let p = this.explorers[explorer].power;
 	    if (p == highest) {
 	      if (f == "england") { highest = -5; } // force next IF to execute
-    	      if (f == "france" && current_highest == "hapsburg") { highest = -5; } //force next-IF to execute
+    	      if (f == "france" && highest_faction == "hapsburg") { highest = -5; } //force next-IF to execute
 	    }
 	    if (p > highest) {
 	      idx = k;

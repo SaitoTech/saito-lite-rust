@@ -96,7 +96,11 @@
     this.game.state.impulse = 0;
     this.game.state.events.more_executed_limits_debates = 0;
     this.game.state.events.more_bonus = 0;
-        
+ 
+    this.game.state.newworld.results.colonies = [];
+    this.game.state.newworld.results.explorations = [];
+    this.game.state.newworld.results.conquests = [];
+       
     //
     // allow stuff to move again
     //
@@ -1092,6 +1096,11 @@ if (this.game.options.scenario != "is_testing") {
   returnNewWorld() {
 
     let nw = {};
+
+    nw.results = {};
+    nw.results.colonies = [];
+    nw.results.explorations = [];
+    nw.results.conquests = [];
 
     nw['england_colony1'] = {
       type : "colony" ,
