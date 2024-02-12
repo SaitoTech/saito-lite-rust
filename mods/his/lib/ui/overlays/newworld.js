@@ -34,7 +34,7 @@ class NewWorldOverlay {
 
 		let his_self = this.mod;
 		this.visible = true;
-		this.overlay.show(NewWorldTemplate());
+		this.overlay.show(NewWorldTemplate(this.mod));
 
 	        if (stage != "results") {
 
@@ -52,33 +52,45 @@ class NewWorldOverlay {
 		  }
 
 		  if (his_self.game.state.events.cabot_england == 1) {
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "exploration" , name : "Sebastian Cabot", faction : "england" }, stage), ".new-world-overlay .content .explorations");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "/his/img/tiles/explorers/Cabot_English.svg" , type : "exploration" , name : "Sebastian Cabot", faction : "england" }, stage), ".new-world-overlay .content .explorations");
 		  }
 		  if (his_self.game.state.events.cabot_france == 1) {
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "exploration" , name : "Sebastian Cabot", faction : "france" }, stage), ".new-world-overlay .content .explorations");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "/his/img/tiles/explorers/Cabot_French.svg" , type : "exploration" , name : "Sebastian Cabot", faction : "france" }, stage), ".new-world-overlay .content .explorations");
 		  }
 		  if (his_self.game.state.events.cabot_hapsburg == 1) {
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "exploration" , name : "Sebastian Cabot", faction : "hapsburg" }, stage), ".new-world-overlay .content .explorations");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "/his/img/tiles/explorers/Cabot_Hapsburg.svg" , type : "exploration" , name : "Sebastian Cabot", faction : "hapsburg" }, stage), ".new-world-overlay .content .explorations");
 		  }
 		} else {
-
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.colonies.length; i++) {
 		    let col = his_self.game.state.newworld.results.colonies[i];
+		    let prize = "established"; if (col.prize) { prize = col.prize; }
 console.log("COLONY");
 console.log(JSON.stringify(col));
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "colony", name : col.name , faction : col.faction }), ".new-world-overlay .content .colonies");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : col.img , type : "colony", name : col.type , faction : col.faction , total_hits : "/" }, stage), ".new-world-overlay .content .colonies");
 		  }
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.conquests.length; i++) {
 		    let con = his_self.game.state.newworld.results.conquests[i];
+		    let prize = "none"; if (con.prize) { prize = con.prize; }
+		    if (exp.idx) {
+		      if (his_self.game.state.explorations[exp.idx].prize === "killed by natives") {
+			prize = "lost at sea";
+		      }
+		    }
 console.log("CONQUEST");
 console.log(JSON.stringify(con));
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "conquest" , name : con.name , faction : con.faction , conquistador : con.conquistador , total_hits : con.total_hits }, stage), ".new-world-overlay .content .conquests");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : con.type , faction : con.faction , conquistador : con.conquistador , total_hits : con.total_hits }, stage), ".new-world-overlay .content .conquests");
 		  }
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.explorations.length; i++) {
 		    let exp = his_self.game.state.newworld.results.explorations[i];
+		    let prize = "none"; if (exp.prize) { prize = exp.prize; }
+		    if (exp.idx) {
+		      if (his_self.game.state.explorations[exp.idx].prize === "lost at sea") {
+			prize = "lost at sea";
+		      }
+		    }
 console.log("EXPLORATION");
 console.log(JSON.stringify(exp));
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "exploration" , name : exp.name , faction : exp.faction , explorer : exp.explorer , total_hits : exp.total_hits }, stage), ".new-world-overlay .content .explorations");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : exp.img , type : "exploration" , name : exp.type , faction : exp.faction , explorer : exp.explorer , total_hits : exp.total_hits }, stage), ".new-world-overlay .content .explorations");
 		  }
 
 	 	}
@@ -88,21 +100,28 @@ console.log(JSON.stringify(exp));
 
 
 	returnRowHTML(obj={}, stage="") {
+
 		if (stage === "results") {
+		  let img = "";
+		  let total_hits = "?";
+		  let prize = obj.prize;
+		  if (prize == 'undefined' || prize == "") { prize = "unsuccessful"; }
+		  if (obj.img != "") { img = `background-image:url('${obj.img}')`; }
+		  if (obj.total_hits != "") { total_hits = obj.total_hits; }
+		  if (obj.prize != "") { prize = obj.prize; }
+
+		  return `
+	    	    <div class="new-world-row">
+            	      <div class="new-world-explorer" style="${img}"></div>
+            	      <div class="new-world-description"><div class="new-world-details">${prize}</div><div class="new-world-faction">${obj.faction}</div></div>
+            	      <div class="new-world-roll ">${total_hits}</div>
+            	    </div>
+		  `;
+		} else {
 		  return `
 	    	    <div class="new-world-row">
             	      <div class="new-world-explorer">?</div>
             	      <div class="new-world-description"><div class="new-world-details">${obj.type}</div><div class="new-world-faction">${obj.faction}</div></div>
-            	      <div class="new-world-roll ">?</div>
-            	    </div>
-		  `;
-		} else {
-		  let img = "";
-		  if (obj.img != "") { img = `backgroundImage:url('${obj.img}')`; }
-		  return `
-	    	    <div class="new-world-row">
-            	      <div class="new-world-explorer" style="${img}"></div>
-            	      <div class="new-world-description"><div class="new-world-details">${obj.name}</div><div class="new-world-faction">${obj.faction}</div></div>
             	      <div class="new-world-roll ">?</div>
             	    </div>
 		  `;

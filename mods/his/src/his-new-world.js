@@ -125,7 +125,7 @@
 
 	  active_conquests.push(z);
 
-          this.game.state.newworld.results.conquests.push({ faction : con.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , conquistador : conquistador });
+          this.game.state.newworld.results.conquests.push({ faction : con.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , conquistador : conquistador , img : this.conquistadors[conquistador].img , idx : z });
 
 	}
       }
@@ -139,15 +139,14 @@
     let france_done = 0;
     for (let i = 0; i < 3; i++) {
       target_faction = "hapsburg";
-      if (i = 1) { target_faction = "england"; }
-      if (i = 2) { target_faction = "france"; }
+      if (i == 1) { target_faction = "england"; }
+      if (i == 2) { target_faction = "france"; }
       for (let k = 0; k < active_conquests.length; k++) {
- 	if (this.game.state.conquests[active_conquests[k]].faction === target_faction) { sorted_conquests.push(active_conquests[k]); }
+ 	if (this.game.state.conquests[active_conquests[k]].faction === target_faction) { 
+	  sorted_conquests.push(active_conquests[k]);
+	}
       }
     }
-
-
-console.log("SORTED CONQUESTS: " + JSON.stringify(sorted_conquests));
 
     //
     // now resolve in order
@@ -221,7 +220,7 @@ console.log("SORTED CONQUESTS: " + JSON.stringify(sorted_conquests));
 
 	  active_explorations.push(z);
  
-          this.game.state.newworld.results.explorations.push({ faction : exp.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , explorer : explorer });
+          this.game.state.newworld.results.explorations.push({ faction : exp.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , explorer : explorer , img : this.explorers[explorer].img , idx : z });
 
 	}
 
@@ -261,8 +260,6 @@ console.log("SORTED CONQUESTS: " + JSON.stringify(sorted_conquests));
         };
       }
     }
-
-console.log("SORTED EXPL: " + JSON.stringify(sorted_explorations));
 
     //
     // now resolve in order

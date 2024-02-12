@@ -5795,8 +5795,8 @@ console.log("008 eventing!");
 	    let action = $(this).attr("id");
 	    his_self.updateStatus("acknowledge");
 
-            his_self.game.queue.push("explore\t"+action);
-            his_self.game.queue.push("SETVAR\tstate\tevents\tmercators_map\t"+action);
+            his_self.addMove("explore\t"+action);
+            his_self.addMove("SETVAR\tstate\tevents\tmercators_map\t"+action);
             his_self.endTurn();
 
 	  });
@@ -5886,7 +5886,7 @@ console.log("008 eventing!");
 	    let action = $(this).attr("id");
 	    his_self.updateStatus("acknowledge");
 
-            his_self.game.queue.push("SETVAR\tstate\tplantations\t"+action+"\t1");
+            his_self.addMove("SETVAR\tstate\tplantations\t"+action+"\t1");
             his_self.endTurn();
 
 	  });
@@ -5926,7 +5926,7 @@ console.log("008 eventing!");
 	    let action = $(this).attr("id");
 	    his_self.updateStatus("acknowledge");
 
-	    his_self.game.queue.push("SETVAR\tstate\tevents\tpotosi_silver_mines\t"+action);
+	    his_self.addMove("SETVAR\tstate\tevents\tpotosi_silver_mines\t"+action);
             his_self.endTurn();
 
 	  });
@@ -6513,9 +6513,9 @@ console.log("008 eventing!");
 
 	let p = his_self.returnPlayerOfFaction(faction);
 
-        his_self.game.queue.push("lady_jane_grey_papacy_discard\t"+faction);
-        his_self.game.queue.push("hand_to_fhand\t1\t"+p1+"\t"+"england");
-        his_self.game.queue.push("DEAL\t1\t"+p1+"\t"+1);
+        his_self.addMove("lady_jane_grey_papacy_discard\t"+faction);
+        his_self.addMove("hand_to_fhand\t1\t"+p1+"\t"+"england");
+        his_self.addMove("DEAL\t1\t"+p1+"\t"+1);
         his_self.addMove("pull_card\tengland\t"+faction);
         his_self.endTurn();
 
@@ -7659,8 +7659,8 @@ console.log("HITS: " + hits);
     }
     deck['077'] = { 
       img : "cards/HIS-077.svg" , 
-      name : "Card" ,
-      ops : "Fountain of Youth" ,
+      name : "Fountain of Youth" ,
+      ops : 2 ,
       turn : 2 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,

@@ -364,14 +364,31 @@
 
     let obj = document.querySelector(".crossing_atlantic");
     for (let i = 0; i < this.game.state.colonies.length; i++) {
-      if (this.game.state.colonies[i].faction == "france") {
-	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Charlesbourg.svg" />`;
-      }
-      if (this.game.state.colonies[i].faction == "hapsburg") {
-	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Cuba.svg" />`;
-      }
-      if (this.game.state.colonies[i].faction == "england") {
-	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Jamestown.svg" />`;
+      if (this.game.state.colonies[i].resolved != 1) {
+        if (this.game.state.colonies[i].faction == "france") {
+	  let tile = "/his/img/tiles/colonies/Charlesbourg.svg";
+	  if (this.game.state.newworld['french_colony1'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Montreal.svg";
+	  }
+	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
+        }
+        if (this.game.state.colonies[i].faction == "hapsburg") {
+	  let tile = "/his/img/tiles/colonies/PuertoRico.svg";
+	  if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Cuba.svg";
+	  }
+	  if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Hispanola.svg";
+	  }
+	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
+        }
+        if (this.game.state.colonies[i].faction == "england") {
+	  let tile = "/his/img/tiles/colonies/Roanoke.svg";
+	  if (this.game.state.newworld['english_colony1'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Jamestown.svg";
+	  }
+	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
+        }
       }
     }
 

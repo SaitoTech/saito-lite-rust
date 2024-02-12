@@ -1193,7 +1193,7 @@ if (this.game.state.events.cramner_active == 1) {
       cards.push("pass");
     }
 
-    this.updateStatusAndListCards("Select a Card: ", cards);
+    this.updateStatusAndListCards(this.returnFactionName(faction) + " - Select Your Card: ", cards);
     this.attachCardboxEvents((card) => {
       try {
         $('.card').off();
@@ -1771,8 +1771,14 @@ console.log("card: " + card);
     if (faction == "protestant" || this.game.deck[0].discards["037"]) {
       this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     } else {
-      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
-      this.addMove("RESETCONFIRMSNEEDED\tall");
+      // ACKNOWLEDGE invites click but doesn't halt active player - we prefer this if
+      // the event will not fire or it is not a mandatory event but will not fire
+      if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
+        this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
+      } else {
+        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+        this.addMove("RESETCONFIRMSNEEDED\tall");
+      }
     }
 
     this.endTurn();
