@@ -791,7 +791,7 @@ class Chat extends ModTemplate {
 	// Create a n > 2 chat group (currently unencrypted)
 	// We have a single admin (who can add additional members or kick people out)
 	//
-	async sendCreateGroupTransaction(name, invitees) {
+	async sendCreateGroupTransaction(name, invitees = []) {
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
@@ -813,8 +813,6 @@ class Chat extends ModTemplate {
 			name: name,
 			admin: this.publicKey
 		};
-
-		console.log(newtx.msg);
 
 		await newtx.sign();
 
