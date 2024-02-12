@@ -105,6 +105,8 @@
 
     this.displayCardsLeft();
     this.displayTurnTrack();
+    this.displayNewWorld();
+    this.displayVictoryTrack();
 
 
   }
@@ -378,6 +380,21 @@
     }
 
     //
+    // New World
+    //
+    //• Successful voyage of exploration
+    //• Successful voyage of conquest
+    for (let key in this.game.state.newworld) {
+      if (this.game.state.newworld[key].vp > 0) {
+	if (this.game.state.newworld[key].faction) {	  
+	  if (this.factions[this.game.state.newworld[key].faction]) {
+	    this.factions[this.game.state.newworld[key].faction].vp += this.game.state.newworld[key].vp;
+	  }
+	}
+      }
+    }
+
+    //
     //• Bible translation completed (1 VP for each language)    ***
     // protestant faction class
     //• Protestant debater burned (1 per debate rating)         ***
@@ -385,8 +402,6 @@
     //• Papal debater disgraced (1 per debate rating)           ***
     // protestant faction class
 
-    //• Successful voyage of exploration
-    //• Successful voyage of conquest
     //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
     //• War Winner marker received during Peace Segment
     //• Master of Italy VP marker received during Action Phase
@@ -710,6 +725,15 @@ if (this.game.options.scenario != "is_testing") {
     state.plantations['england'] = 0;
     state.plantations['ottoman'] = 0;
     state.plantations['hapsburg'] = 0;
+
+    // bonus cards
+    state.new_world_bonus = {};
+    state.new_world_bonus['england'] = 0;
+    state.new_world_bonus['france'] = 0;
+    state.new_world_bonus['hapsburg'] = 0;
+    state.new_world_bonus['protestant'] = 0;
+    state.new_world_bonus['ottoman'] = 0;
+    state.new_world_bonus['papacy'] = 0;
 
     state.may_explore = {};
     state.may_explore['england'] = 1;
@@ -1068,24 +1092,31 @@ if (this.game.options.scenario != "is_testing") {
 
     nw['england_colony1'] = {
       type : "colony" ,
+      img : '/his/img/tiles/colonies/Roanoke.svg' ,
     }
     nw['england_colony2'] = {
       type : "colony" ,
+      img : '/his/img/tiles/colonies/Jamestown.svg' ,
     }
     nw['france_colony1'] = {
       type : "colony" ,
+      img : '/his/img/tiles/colonies/Charlesbourg.svg' ,
     }
     nw['france_colony2'] = {
       type : "colony" ,
+      img : '/his/img/tiles/colonies/Montreal.svg' ,
     }
     nw['hapsburg_colony1'] = {
       type : "colony" ,
+      img : '/his/img/tiles/colonies/PuertoRico.svg' ,
     }
     nw['hapsburg_colony2'] = {
       type : "colony" ,
+      img : '/his/img/tiles/colonies/Cuba.svg' ,
     }
     nw['hapsburg_colony3'] = {
       type : "colony" ,
+      img : '/his/img/tiles/colonies/Hispaniola.svg' ,
     }
     nw['england_conquest1'] = {
       type : "conquest" ,

@@ -384,15 +384,92 @@
   }
 
   displayColony() {
+
+    let obj = document.querySelector(".crossing_atlantic");
+    for (let i = 0; i < this.game.state.colonies.length; i++) {
+      if (this.game.state.colonies[i].faction == "france") {
+	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Charlesbourg.svg" />`;
+      }
+      if (this.game.state.colonies[i].faction == "hapsburg") {
+	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Cuba.svg" />`;
+      }
+      if (this.game.state.colonies[i].faction == "england") {
+	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Jamestown.svg.svg" />`;
+      }
+    }
+
+    if (this.game.state.newworld['england_colony1'].claimed == 1) {
+      document.querySelector('.england_colony1').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['england_colony1'].img}" />`;
+    }
+    if (this.game.state.newworld['england_colony2'].claimed == 1) {
+      document.querySelector('.england_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['england_colony2'].img}" />`;
+    }
+    if (this.game.state.newworld['france_colony1'].claimed == 1) {
+      document.querySelector('.france_colony1').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['france_colony1'].img}" />`;
+    }
+    if (this.game.state.newworld['france_colony2'].claimed == 1) {
+      document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['france_colony2'].img}" />`;
+    }
+    if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
+      document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['hapsburg_colony1'].img}" />`;
+    }
+    if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
+      document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['hapsburg_colony2'].img}" />`;
+    }
+    if (this.game.state.newworld['hapsburg_colony3'].claimed == 1) {
+      document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['hapsburg_colony3'].img}" />`;
+    }
+
   }
 
   displayConquest() {
+
+    let obj = document.querySelector(".crossing_atlantic");
+        obj.innerHTML = "";
+
+    for (let z = 0; z < this.game.state.conquests.length; z++) {
+
+      let con = this.game.state.conquests[z];
+      let faction = con.faction;
+      let round = con.round;
+
+      //      
+      // current round are unresolved      
+      //      
+      if (round == this.game.state.round) {
+        if (faction == "hapsburg") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_Conquest.svg" />`;
+        }
+        if (faction == "france") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_Conquest.svg" />`;
+        }
+        if (faction == "england") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
+        }
+      }
+    }
+
+    if (this.game.state.newworld['maya'].claimed == 1) {
+      let f = this.game.state.newworld['maya'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.maya').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['aztec'].claimed == 1) {
+      let f = this.game.state.newworld['aztec'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.aztec').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['inca'].claimed == 1) {
+      let f = this.game.state.newworld['inca'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.inca').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+
   }
 
   displayExploration() {
 
     let obj = document.querySelector(".crossing_atlantic");
-        obj.innerHTML = "";
 
     for (let z = 0; z < this.game.state.explorations.length; z++) {
 
@@ -406,56 +483,55 @@
       if (round == this.game.state.round) {
         if (faction == "hapsburg") {
           if (this.game.state.hapsburg_charted == 1) {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg-ExplorationCharted.svg" />`;
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_ExplorationCharted.svg" />`;
           } else {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg-Exploration.svg" />`;
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_Exploration.svg" />`;
           }
         }
         if (faction == "france") {
           if (this.game.state.france_charted == 1) {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/France-ExplorationCharted.svg" />`;
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_ExplorationCharted.svg" />`;
           } else {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/France-Exploration.svg" />`;
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_Exploration.svg" />`;
           }
         }
         if (faction == "england") {
           if (this.game.state.england_charted == 1) {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/England-ExplorationCharted.svg" />`;
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_ExplorationCharted.svg" />`;
           } else {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/England-Exploration.svg" />`;
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Exploration.svg" />`;
           }
         }
       }
     }
 
-
-    if (this.game.state.nw['stlawrence'].claimed == 1) {
-      let f = this.game.state.nw['stlawrence'].faction;
+    if (this.game.state.newworld['stlawrence'].claimed == 1) {
+      let f = this.game.state.newworld['stlawrence'].faction;
       let t = this.returnExplorationTile(f);
       document.querySelector('.stlawrence').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
     }
-    if (this.game.state.nw['greatlakes'].claimed == 1) {
-      let f = this.game.state.nw['greatlakes'].faction;
+    if (this.game.state.newworld['greatlakes'].claimed == 1) {
+      let f = this.game.state.newworld['greatlakes'].faction;
       let t = this.returnExplorationTile(f);
       document.querySelector('.greatlakes').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
     }
-    if (this.game.state.nw['mississippi'].claimed == 1) {
-      let f = this.game.state.nw['mississippi'].faction;
+    if (this.game.state.newworld['mississippi'].claimed == 1) {
+      let f = this.game.state.newworld['mississippi'].faction;
       let t = this.returnExplorationTile(f);
       document.querySelector('.mississippi').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
     }
-    if (this.game.state.nw['amazon'].claimed == 1) {
-      let f = this.game.state.nw['amazon'].faction;
+    if (this.game.state.newworld['amazon'].claimed == 1) {
+      let f = this.game.state.newworld['amazon'].faction;
       let t = this.returnExplorationTile(f);
       document.querySelector('.amazon').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
     }
-    if (this.game.state.nw['pacificstrait'].claimed == 1) {
-      let f = this.game.state.nw['pacificstrait'].faction;
+    if (this.game.state.newworld['pacificstrait'].claimed == 1) {
+      let f = this.game.state.newworld['pacificstrait'].faction;
       let t = this.returnExplorationTile(f);
       document.querySelector('.pacificstrait').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
     }
-    if (this.game.state.nw['circumnavigation'].claimed == 1) {
-      let f = this.game.state.nw['circumnavigation'].faction;
+    if (this.game.state.newworld['circumnavigation'].claimed == 1) {
+      let f = this.game.state.newworld['circumnavigation'].faction;
       let t = this.returnExplorationTile(f);
       document.querySelector('.circumnavigation').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
     }
@@ -470,9 +546,13 @@
   }
 
   displayNewWorld() {
+try {
+    this.displayConquest();
     this.displayExploration();
     this.displayColony();
-    this.displayConquest();
+} catch (err) { 
+  console.log("display error: " + JSON.stringify(err));
+}
   }
 
   displaySpaceDetailedView(name) {

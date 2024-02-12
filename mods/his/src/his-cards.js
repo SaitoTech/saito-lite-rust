@@ -3184,6 +3184,8 @@ alert("HERE");
 	  }
 	}
 
+console.log("008 eventing!");
+
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 1;
 	his_self.game.state.tmp_protestant_reformation_bonus_spaces = [];
@@ -11015,17 +11017,6 @@ if (this.game.players.length == 2) {
     delete deck["108"];
     delete deck["110"];
 }
-
-    //
-    // avoid deleted cards
-    //
-    if (this.game?.state?.removed) {
-      for (let i = 0; i < this.game.state.removed.length; i++) {
-        let c = this.game.state.removed[i];
-        if (deck[c]) { delete deck[c]; }
-      }
-    }
-
 
     for (let key in deck) {
       deck[key].key = key;

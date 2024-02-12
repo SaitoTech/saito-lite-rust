@@ -1,6 +1,5 @@
 
 
-
   //
   // Core Game Logic
   //
@@ -56,6 +55,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("diplomacy_phase");
+
 
 
 	  //
@@ -895,7 +895,6 @@ if (this.game.options.scenario === "is_testing") {
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
-
 	if (mv[0] === "explore") {
 	  let faction = mv[1];
 	  this.game.state.explorations.push({
@@ -909,7 +908,7 @@ if (this.game.options.scenario === "is_testing") {
 	}
         if (mv[0] === "award_exploration_bonus") {
 
-    	  this.game.queue.splice(qe, 1);
+    	  this.game.quue.splice(qe, 1);
 
 	  let his_self = this;
 	  let faction = mv[1];
@@ -920,32 +919,32 @@ if (this.game.options.scenario === "is_testing") {
 	  if (bonus === 'stlawrence') {
 	    this.game.state.explorations[idx].resolved = 1;
 	    this.game.state.explorations[idx].explorer_lost = 0;
-	    this.game.state.nw[bonus].faction = faction;
-	    this.game.state.nw[bonus].claimed = 1;
+	    this.game.state.newworld[bonus].faction = faction;
+	    this.game.state.newworld[bonus].claimed = 1;
 	  }
 	  if (bonus === 'greatlakes') {
 	    this.game.state.explorations[idx].resolved = 1;
 	    this.game.state.explorations[idx].explorer_lost = 0;
-	    this.game.state.nw[bonus].faction = faction;
-	    this.game.state.nw[bonus].claimed = 1;
+	    this.game.state.newworld[bonus].faction = faction;
+	    this.game.state.newworld[bonus].claimed = 1;
 	  }
 	  if (bonus === 'mississippi') {
 	    this.game.state.explorations[idx].resolved = 1;
 	    this.game.state.explorations[idx].explorer_lost = 0;
-	    this.game.state.nw[bonus].faction = faction;
-	    this.game.state.nw[bonus].claimed = 1;
+	    this.game.state.newworld[bonus].faction = faction;
+	    this.game.state.newworld[bonus].claimed = 1;
 	  }
 	  if (bonus === 'pacificstrait') {
 	    this.game.state.explorations[idx].resolved = 1;
 	    this.game.state.explorations[idx].explorer_lost = 1;
-	    this.game.state.nw[bonus].faction = faction;
-	    this.game.state.nw[bonus].claimed = 1;
+	    this.game.state.newworld[bonus].faction = faction;
+	    this.game.state.newworld[bonus].claimed = 1;
 	  }
 	  if (bonus === 'amazon') {
 	    this.game.state.explorations[idx].resolved = 1;
 	    this.game.state.explorations[idx].explorer_lost = 1;
-	    this.game.state.nw[bonus].faction = faction;
-	    this.game.state.nw[bonus].claimed = 1;
+	    this.game.state.newworld[bonus].faction = faction;
+	    this.game.state.newworld[bonus].claimed = 1;
 	  }
 	  if (bonus === 'circumnavigation') {
 
@@ -958,8 +957,8 @@ if (this.game.options.scenario === "is_testing") {
 	      this.updateLog("Circumnavigation Attempt succeeds: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
-	      this.game.state.nw[bonus].faction = faction;
-	      this.game.state.nw[bonus].claimed = 1;
+	      this.game.state.newworld[bonus].faction = faction;
+	      this.game.state.newworld[bonus].claimed = 1;
 	    } else {
 	      this.updateLog("Circumnavigation Attempt fails: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
@@ -973,6 +972,162 @@ if (this.game.options.scenario === "is_testing") {
 
 	  return 1;
 	}
+
+	if (mv[0] === "resolve_new_world_riches_rolls") {
+
+	  // reset expected bonuses
+	  this.game.state.new_world_bonus = {};
+	  this.game.state.new_world_bonus['england'] = 0;
+	  this.game.state.new_world_bonus['france'] = 0;
+	  this.game.state.new_world_bonus['hapsburg'] = 0;
+	  this.game.state.new_world_bonus['protestant'] = 0;
+	  this.game.state.new_world_bonus['ottoman'] = 0;
+	  this.game.state.new_world_bonus['papacy'] = 0;
+	
+
+	  //////////////
+	  // COLONIES //
+	  //////////////
+	  if (this.game.state.newworld['england_colony1'].claimed == 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (this.game.state.plantations['england'] === 1) { x++; }
+	    if (x <= 4) { if (x == 4 && this.game.state.newworld['england_colony1'].img == "Potosi.svg") {} else { this.game.state.newworld['england_colony1'].claimed = 0; } }
+	    if (x == 7) { if (this.game.state.newworld['england_colony1'].img == "Potosi.svg" && this.game.state.galleons['england'] == 1) { this.game.state.new_world_bonus['england']++; } }
+	    if (x == 8) { if (this.game.state.newworld['england_colony1'].img == "Potosi.svg") { this.game.state.new_world_bonus['england']++; } else { if (this.game.state.galleons['england'] == 1) { this.game.state.new_world_bonus['england']++; }}}
+	    if (x > 8) { this.game.state.new_world_bonus['england']++; }
+	  }
+	  if (this.game.state.newworld['england_colony2'].claimed == 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (this.game.state.plantations['england'] === 1) { x++; }
+	    if (x <= 4) { if (x == 4 && this.game.state.newworld['england_colony2'].img == "Potosi.svg") {} else { this.game.state.newworld['england_colony2'].claimed = 0; } }
+	    if (x == 7) { if (this.game.state.newworld['england_colony2'].img == "Potosi.svg" && this.game.state.galleons['england'] == 1) { this.game.state.new_world_bonus['england']++; } }
+	    if (x == 8) { if (this.game.state.newworld['england_colony2'].img == "Potosi.svg") { this.game.state.new_world_bonus['england']++; } else { if (this.game.state.galleons['england'] == 1) { this.game.state.new_world_bonus['england']++; }}}
+	    if (x > 8) { this.game.state.new_world_bonus['england']++; }
+	  }
+
+	  if (this.game.state.newworld['france_colony1'].claimed == 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (this.game.state.plantations['france'] === 1) { x++; }
+	    if (x <= 4) { if (x == 4 && this.game.state.newworld['france_colony1'].img == "Potosi.svg") {} else { this.game.state.newworld['france_colony1'].claimed = 0; } }
+	    if (x == 7) { if (this.game.state.newworld['france_colony1'].img == "Potosi.svg" && this.game.state.galleons['france'] == 1) { this.game.state.new_world_bonus['france']++; } }
+	    if (x == 8) { if (this.game.state.newworld['france_colony1'].img == "Potosi.svg") { this.game.state.new_world_bonus['france']++; } else { if (this.game.state.galleons['france'] == 1) { this.game.state.new_world_bonus['france']++; }}}
+	    if (x > 8) { this.game.state.new_world_bonus['france']++; }
+	  }
+	  if (this.game.state.newworld['france_colony2'].claimed == 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (this.game.state.plantations['france'] === 1) { x++; }
+	    if (x <= 4) { if (x == 4 && this.game.state.newworld['france_colony2'].img == "Potosi.svg") {} else { this.game.state.newworld['france_colony2'].claimed = 0; } }
+	    if (x == 7) { if (this.game.state.newworld['france_colony2'].img == "Potosi.svg" && this.game.state.galleons['france'] == 1) { this.game.state.new_world_bonus['france']++; } }
+	    if (x == 8) { if (this.game.state.newworld['france_colony2'].img == "Potosi.svg") { this.game.state.new_world_bonus['france']++; } else { if (this.game.state.galleons['france'] == 1) { this.game.state.new_world_bonus['france']++; }}}
+	    if (x > 8) { this.game.state.new_world_bonus['france']++; }
+	  }
+
+	  if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (this.game.state.plantations['hapsburg'] === 1) { x++; }
+	    if (x <= 4) { if (x == 4 && this.game.state.newworld['hapsburg_colony1'].img == "Potosi.svg") {} else { this.game.state.newworld['hapsburg_colony1'].claimed = 0; } }
+	    if (x == 7) { if (this.game.state.newworld['hapsburg_colony1'].img == "Potosi.svg" && this.game.state.galleons['hapsburg'] == 1) { this.game.state.new_world_bonus['hapsburg']++; } }
+	    if (x == 8) { if (this.game.state.newworld['hapsburg_colony1'].img == "Potosi.svg") { this.game.state.new_world_bonus['hapsburg']++; } else { if (this.game.state.galleons['hapsburg'] == 1) { this.game.state.new_world_bonus['hapsburg']++; }}}
+	    if (x > 8) { this.game.state.new_world_bonus['hapsburg']++; }
+	  }
+	  if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (this.game.state.plantations['hapsburg'] === 1) { x++; }
+	    if (x <= 4) { if (x == 4 && this.game.state.newworld['hapsburg_colony2'].img == "Potosi.svg") {} else { this.game.state.newworld['hapsburg_colony2'].claimed = 0; } }
+	    if (x == 7) { if (this.game.state.newworld['hapsburg_colony2'].img == "Potosi.svg" && this.game.state.galleons['hapsburg'] == 1) { this.game.state.new_world_bonus['hapsburg']++; } }
+	    if (x == 8) { if (this.game.state.newworld['hapsburg_colony2'].img == "Potosi.svg") { this.game.state.new_world_bonus['hapsburg']++; } else { if (this.game.state.galleons['hapsburg'] == 1) { this.game.state.new_world_bonus['hapsburg']++; }}}
+	    if (x > 8) { this.game.state.new_world_bonus['hapsburg']++; }
+	  }
+	  if (this.game.state.newworld['hapsburg_colony3'].claimed == 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (this.game.state.plantations['hapsburg'] === 1) { x++; }
+	    if (x <= 4) { if (x == 4 && this.game.state.newworld['hapsburg_colony3'].img == "Potosi.svg") {} else { this.game.state.newworld['hapsburg_colony3'].claimed = 0; } }
+	    if (x == 7) { if (this.game.state.newworld['hapsburg_colony3'].img == "Potosi.svg" && this.game.state.galleons['hapsburg'] == 1) { this.game.state.new_world_bonus['hapsburg']++; } }
+	    if (x == 8) { if (this.game.state.newworld['hapsburg_colony3'].img == "Potosi.svg") { this.game.state.new_world_bonus['hapsburg']++; } else { if (this.game.state.galleons['hapsburg'] == 1) { this.game.state.new_world_bonus['hapsburg']++; }}}
+	    if (x > 8) { this.game.state.new_world_bonus['hapsburg']++; }
+	  }
+
+	  if (this.game.state.newworld['maya'].claimed == 1 && this.game.state.newworld['maya'].depleted != 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (x <= 6) { this.game.state.newworld['maya'].depleted = 1; }
+	    if (x == 7 && this.game.state.galleons[this.game.state.newworld['maya'].faction] == 1) { this.game.state.new_world_bonus[this.game.state.newworld['maya'].faction]++; }
+	    if (x > 7) { this.game.state.new_world_bonus[this.game.state.newworld['maya'].faction]++; }
+	  }
+	  if (this.game.state.newworld['aztec'].claimed == 1 && this.game.state.newworld['aztec'].depleted != 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (x <= 5) { this.game.state.newworld['aztec'].depleted = 1; }
+	    if (x == 7 && this.game.state.galleons[this.game.state.newworld['aztec'].faction] == 1) { this.game.state.new_world_bonus[this.game.state.newworld['aztec'].faction]++; }
+	    if (x > 7) { this.game.state.new_world_bonus[this.game.state.newworld['aztec'].faction]++; }
+	  }
+
+	  if (this.game.state.newworld['inca'].claimed == 1 && this.game.state.newworld['inca'].depleted != 1) {
+	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (x <= 5) { this.game.state.newworld['inca'].depleted = 1; }
+	    if (x == 7 && this.game.state.galleons[this.game.state.newworld['inca'].faction] == 1) { this.game.state.new_world_bonus[this.game.state.newworld['inca'].faction]++; }
+	    if (x > 7 || x == 6) { this.game.state.new_world_bonus[this.game.state.newworld['inca'].faction]++; }
+	  }
+
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
+	if (mv[0] === "resolve_new_world_conquests") {
+    	  this.game.queue.splice(qe, 1);
+	  return this.resolveConquests();
+        }
+	if (mv[0] === "resolve_new_world_colonies") {
+    	  this.game.queue.splice(qe, 1);
+	  return this.resolveColonies();
+        }
+	if (mv[0] === "resolve_new_world_explorations") {
+    	  this.game.queue.splice(qe, 1);
+	  return this.resolveExplorations();
+        }
+
+	if (mv[0] === "resolve_conquest") {
+    	  this.game.queue.splice(qe, 1);
+
+	  let his_self = this;
+	  let idx = parseInt(mv[1]);
+this.updateLog("RESOLVING CONQUEST: ");
+this.updateLog(this.game.state.conquests[idx].faction);
+this.updateLog(this.game.state.conquests[idx].conquistador);
+
+	  let faction = this.game.state.conquests[idx].faction;
+	  let conquistador = this.game.state.conquests[idx].conquistador;
+	  this.game.state.conquests[idx].resolved = 1;
+
+	  let hits = this.game.state.conquests[idx].hits;
+	  if (hits <= 6) {
+	    this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " killed by natives");
+	    this.game.state.conquests[idx].conquistador_lost = 1;
+	  }
+	  if (hits > 6 && hits <= 8) {
+	    this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " makes no conquest");
+	  }
+	  if (hits >= 9) {
+	    if (hits >= 11 && this.game.state.newworld['inca'].claimed != 1) {
+	      this.game.state.newworld['inca'].claimed = 1;
+	      this.game.state.newworld['inca'].faction = faction;
+	      this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " conquers the Inca (2VP)");
+	    } else { while (hits > 10) { hits--; }}
+	    if (hits >= 10 && this.game.state.newworld['aztec'].claimed != 1) {
+	      this.game.state.newworld['aztec'].claimed = 1;
+	      this.game.state.newworld['aztec'].faction = faction;
+	      this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " conquers the Aztec (2VP)");
+	    } else { while (hits >= 10) { hits--; }}
+	    if (hits == 9 && this.game.state.newworld['maya'].claimed != 1) {
+	      this.game.state.newworld['maya'].claimed = 1;
+	      this.game.state.newworld['maya'].faction = faction;
+	      this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " conquers the Maya (1VP)");
+	    } else {
+	      this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " makes no conquest");
+	    }
+	  }
+
+	  // conquests don't offer choice, so return for immediate execution
+	  return 1;
+        }
 
 	if (mv[0] === "resolve_exploration") {
 
@@ -997,21 +1152,21 @@ this.updateLog(this.game.state.explorations[idx].explorer);
 	    this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
 	  }
 	  if (hits > 6 && hits <= 9) {
-	    if (his == 9 && this.game.state.nw['mississippi'].claimed != 1) {
-	      this.game.state.nw['mississippi'].claimed = 1;
-	      this.game.state.nw['mississippi'].faction = faction;
+	    if (hits == 9 && this.game.state.newworld['mississippi'].claimed != 1) {
+	      this.game.state.newworld['mississippi'].claimed = 1;
+	      this.game.state.newworld['mississippi'].faction = faction;
 	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the Mississippi (1VP)");
 	    } else { if (hits == 9) { hits--; }}
 
-	    if (his == 8 && this.game.state.nw['greatlakes'].claimed != 1) {
-	      this.game.state.nw['greatlakes'].claimed = 1;
-	      this.game.state.nw['greatlakes'].faction = faction;
+	    if (hits == 8 && this.game.state.newworld['greatlakes'].claimed != 1) {
+	      this.game.state.newworld['greatlakes'].claimed = 1;
+	      this.game.state.newworld['greatlakes'].faction = faction;
 	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the Great Lakes (1VP)");
 	    } else { if (hits == 8) { hits--; }}
 
-	    if (his == 7 && this.game.state.nw['stlawrence'].claimed != 1) {
-	      this.game.state.nw['stlawrence'].claimed = 1;
-	      this.game.state.nw['stlawrence'].faction = faction;
+	    if (hits == 7 && this.game.state.newworld['stlawrence'].claimed != 1) {
+	      this.game.state.newworld['stlawrence'].claimed = 1;
+	      this.game.state.newworld['stlawrence'].faction = faction;
 	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the St. Lawrence (1VP)");
 	    } else {
 	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
@@ -1023,7 +1178,7 @@ this.updateLog(this.game.state.explorations[idx].explorer);
 	    //
 	    // nope out if nothing to claim
 	    //
-	    if (this.game.state.nw['stlawrence'].claimed == 1 && this.game.state.nw['greatlakes'].claimed == 1 && this.game.state.nw['mississippi'].claimed == 1 && this.game.state.nw['amazon'].claimed == 1 && this.game.state.nw['circumnavigation'].claimed == 1) {
+	    if (this.game.state.newworld['stlawrence'].claimed == 1 && this.game.state.newworld['greatlakes'].claimed == 1 && this.game.state.newworld['mississippi'].claimed == 1 && this.game.state.newworld['amazon'].claimed == 1 && this.game.state.newworld['circumnavigation'].claimed == 1) {
 	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
 	      return 1;
 	    }
@@ -1035,21 +1190,21 @@ this.updateLog(this.game.state.explorations[idx].explorer);
 
 	      let msg = "Select Discovery: ";
 	      let html = '<ul>';
-	      if (this.game.state.nw['stlawrence'].claimed != 1) {
+	      if (this.game.state.newworld['stlawrence'].claimed != 1) {
 		html += '<li class="option" id="stlawrence">St. Lawrence (1VP)</li>';
 	      }
-	      if (this.game.state.nw['greatlakes'].claimed != 1) {
+	      if (this.game.state.newworld['greatlakes'].claimed != 1) {
 		html += '<li class="option" id="greatlakes">The Great Lakes (1VP)</li>';
 	      }
-	      if (this.game.state.nw['mississippi'].claimed != 1) {
+	      if (this.game.state.newworld['mississippi'].claimed != 1) {
 		html += '<li class="option" id="mississippi">The Mississippi (1VP)</li>';
 	      }
-	      if (this.game.state.nw['amazon'].claimed != 1) {
+	      if (this.game.state.newworld['amazon'].claimed != 1) {
 		html += '<li class="option" id="amazon">The Amazon (2VP, explorer retires)</li>';
 	      }
-	      if (this.game.state.nw['circumnavigation'].claimed != 1) {
+	      if (this.game.state.newworld['circumnavigation'].claimed != 1) {
 		let vp_at_stake = "2";
-		if (this.game.state.nw['pacificstrait'].claimed != 1) { vp_at_stake = "2-4"; }
+		if (this.game.state.newworld['pacificstrait'].claimed != 1) { vp_at_stake = "2-4"; }
 		html += `<li class="option" id="circumnavigation">Attempt Circumnavigation (${vp_at_stake}VP, explorer retires)</li>`;
 	      }
 
@@ -1062,7 +1217,7 @@ this.updateLog(this.game.state.explorations[idx].explorer);
                 let action = $(this).attr("id");
 
                 his_self.addMove("award_exploration_bonus\t"+faction+"\t"+explorer+"\t"+idx+"\t"+action);
-		if (action == 'circumnavigation' && his_self.game.state.nw['pacificstrait'].claimed != 1) {
+		if (action == 'circumnavigation' && his_self.game.state.newworld['pacificstrait'].claimed != 1) {
                   his_self.addMove("award_exploration_bonus\t"+faction+"\t"+explorer+"\t"+idx+"\t"+'pacificstrait');
 		}
 
@@ -1076,6 +1231,8 @@ this.updateLog(this.game.state.explorations[idx].explorer);
 	  }
 	  return 1;
 	}
+
+
 	if (mv[0] === "conquer") {
 	  let faction = mv[1];
 	  this.game.state.conquests.push({
@@ -1087,7 +1244,6 @@ this.updateLog(this.game.state.explorations[idx].explorer);
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
-
 
 	if (mv[0] === "is_testing") {
 
@@ -1206,6 +1362,7 @@ this.updateLog(this.game.state.explorations[idx].explorer);
 
 	  this.addRegular("venice", "ravenna", 1);
 	  this.addRegular("papacy", "turin", 4);
+
 	  this.setEnemies("papacy", "france");
 	  this.addRegular("france","milan", 1);
 	  this.addMercenary("france","milan", 4);
@@ -1341,6 +1498,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  return 1;
 
 	}
+
 
 
         if (mv[0] === "event") {
@@ -1659,6 +1817,352 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
           return 1;
 	}
+
+
+
+
+
+
+
+
+
+
+
+        if (mv[0] === "fortification_check") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let attacker_comes_from_this_spacekey = mv[3];
+
+	  his_self.game.state.attacker_comes_from_this_spacekey = mv[3];
+
+	  let space = this.game.spaces[spacekey];
+
+	  if (space.type !== "electorate" && space.type !== "key" && space.type !== "fortress") {
+	    return 1;
+	  }
+
+	  //
+	  // whoever is being attacked can retreat into the fortification if they
+	  // have 4 or less land units
+	  //
+	  for (f in this.factions) {
+	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
+
+	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey, 1);
+
+	      if (fluis == 0) {
+		//
+		// no troops - skip
+		//
+	      } else {
+
+	        if (fluis > 4) {
+
+		  // must land battle
+
+	        } else {
+
+		  if (this.isMinorPower(f)) {
+
+		    if (this.isMinorUnactivatedPower(f)) {
+
+		      //
+		      // auto-handled -- we retreat for siege
+		      //
+		      this.game.queue.push("fortification\t"+attacker+"\t"+f+"\t"+spacekey);
+
+		    } else {
+
+		      //
+ 		      // major power decides
+		      //
+		      let cf = "";
+		      let mp = f;
+
+		      if (this.game.state.activated_powers['ottoman'].includes(f)) { cf = "ottoman"; }
+		      if (this.game.state.activated_powers['hapsburg'].includes(f)) { cf = "hapsburg"; }
+		      if (this.game.state.activated_powers['france'].includes(f)) { cf = "france"; }
+		      if (this.game.state.activated_powers['england'].includes(f)) { cf = "england"; }
+		      if (this.game.state.activated_powers['papacy'].includes(f)) { cf = "papacy"; }
+		      if (this.game.state.activated_powers['protestant'].includes(f)) { cf = "protestant"; }
+
+		      let cp = this.returnPlayerOfFaction(cf);
+
+		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+mp+"\t"+spacekey);
+
+		    }
+
+	          } else {
+
+		    //
+		    // major or independent power - some player decides
+		    //
+		    let cp = this.returnPlayerCommandingFaction(f);
+		    if (cp != 0) {
+		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f+"\t"+spacekey);
+		    } else {
+
+	              //
+		      // independent key
+	              //
+	              // non-player controlled, minor power or independent, so auto-handle
+	              //
+	              // If there are 4 or fewer land units in a space, they will always withdraw into
+	              // the fortifications and try to withstand a siege if their space is entered.
+	              // if there are 5 or more land units,they will hold their ground and fight a field
+	              // battle. If they lose that field battle, do not retreat their units from the
+	              // space as usual. Instead, they retain up to 4 units which withdraw into the
+	              // fortifications; all other land units in excess of 4 are eliminated.
+	              //
+	              // fortify everything
+	              //
+	              for (let i = 0; i < space.units[f].length; i++) {
+	                his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+f+"\t"+JSON.stringify(space.units[f][i]));
+	              }
+		    }
+	          }
+	        }
+	      }
+
+	    } else {
+
+	      //
+	      // no land units (skip)
+	      //
+
+	    }
+	    this.game.state.attacker_comes_from_this_spacekey = mv[3];
+	  }
+
+	  // winter retreat into port
+	  if (movetype === "port") {
+	    let units = this.game.navalspaces[source].units[faction];
+	    this.game.navalspaces[source].units[faction] = [];
+	    for (let z = 0; z < units.length; z++) {
+	      this.game.spaces[destination].units[faction].push(units[z]);
+	    }
+	  }
+
+	  if (movetype === "sea") {
+
+	    //
+	    // source = land, destination = sea
+	    //
+	    if (this.game.spaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+ 	      unit_to_move.already_moved = 1;
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.spaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
+	      this.displaySpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = sea
+	    //
+	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
+	      let actual_unitidx = 0;
+	      for (let i = 0; i < this.game.navalspaces[source].units[faction].length; i++) {
+		if (this.game.navalspaces[source].units[faction][i].idx === unitidx) {
+		  actual_unitidx = i;
+		};
+	      }
+
+	      let unit_to_move = this.game.navalspaces[source].units[faction][actual_unitidx];
+ 	      unit_to_move.already_moved = 1;
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(actual_unitidx, 1);
+	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
+	      this.displayNavalSpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = land
+	    //
+	    if (this.game.navalspaces[source] && this.game.spaces[destination]) {
+
+	      let actual_unitidx = 0;
+	      for (let i = 0; i < this.game.navalspaces[source].units[faction].length; i++) {
+		if (this.game.navalspaces[source].units[faction][i].idx === unitidx) {
+		  actual_unitidx = i;
+		};
+	      }
+
+	      let unit_to_move = this.game.navalspaces[source].units[faction][actual_unitidx];
+ 	      unit_to_move.already_moved = 1;
+              this.game.spaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(actual_unitidx, 1);
+	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
+	      this.displayNavalSpace(source);
+	      this.displaySpace(destination);
+	    }
+
+
+	    //
+	    // do we have a jolly sea battle?
+	    //
+            let space;
+	    if (this.game.spaces[destination]) {
+	      space = this.game.spaces[destination];
+	    }
+	    if (this.game.navalspaces[destination]) {
+	      space = this.game.navalspaces[destination];
+	    }
+
+            let anyone_else_here = 0;
+
+	    //
+	    // a single move might trigger multiple combat attempts, so we need to loop backwards and 
+	    // run this check for each destination.
+	    //
+	    let current_destination = destination;
+	    let current_faction = faction;
+            if (qe > 0) {
+              let lmv2 = this.game.queue[qe-1].split("\t");
+              if (lmv2[0] == "naval_interception_check") {
+	  
+	        for (let lqe = qe-1; lqe >= 0; lqe--) {
+
+                  let lmv = this.game.queue[lqe].split("\t");
+                  if (lmv[0] == "naval_interception_check") {
+
+		    current_faction = lmv[1];
+		    current_destination = lmv[2];
+		    current_source = lmv[3];
+
+		    let cdest;
+	            if (this.game.spaces[current_destination]) {
+	              cdest = this.game.spaces[current_destination];
+	            }
+	            if (this.game.navalspaces[current_destination]) {
+	              cdest = this.game.navalspaces[current_destination];
+	            }
+
+                    for (let f in cdest.units) {
+                      if (cdest.units[f].length > 0 && f != faction) {
+                        anyone_else_here = 1;
+                      }
+                      if (f !== faction && cdest.units[f].length > 0 && !this.areAllies(f, faction)) {
+                        if (lqe-1 >= 0) {
+                          // added in reverse order
+                          if (skip_avoid_battle != 1) {
+                            this.game.queue.splice(lqe, 0, "naval_retreat_check\t"+current_faction+"\t"+current_destination+"\t"+current_source);
+                          }
+                          this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
+                          this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tNaval Battle is about to begin in "+this.returnSpaceName(current_destination) + "\tnaval_battle");
+                          this.game.queue.splice(lqe, 0, "naval_battle\t"+current_destination+"\t"+faction);
+                        }
+                      }
+                    }
+                  } else {
+                    //
+                    // we only update the occupier of the space if the next move is not a "move"
+                    // as we require interception check to find out if there are units here already.
+                    //
+                    if (lmv[0] !== "move" && lqe === (qe-1)) {
+                      if (anyone_else_here == 0) {
+                        space.occupier = faction;
+                      }
+		    }
+	          }
+	        }
+	      }
+	    }
+	  }
+
+
+	  if (movetype === "land") {
+
+	    let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+ 	    unit_to_move.already_moved = 1;
+            this.game.spaces[destination].units[faction].push(unit_to_move);
+            this.game.spaces[source].units[faction].splice(unitidx, 1);
+	    this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
+	    this.displaySpace(source);
+	    this.displaySpace(destination);
+
+	    //
+	    // if this space contains two non-allies, field-battle or siege must occur
+	    //
+	    let space = this.game.spaces[destination];
+	    let anyone_else_here = 0;
+
+	    let lqe = qe-1;
+	    if (lqe >= 0) {
+	      let lmv = this.game.queue[lqe].split("\t");
+
+	      if (lmv[0] == "interception_check") {
+	        for (let f in space.units) {
+	          if (space.units[f].length > 0 && f != faction) {
+		    anyone_else_here = 1;
+	          }
+	          if (f !== faction && this.returnFactionLandUnitsInSpace(f, space) > 0 && !this.areAllies(f, faction)) {
+		    if (lqe-1 >= 0) {
+		      // added in reverse order
+		      if (skip_avoid_battle != 1) {
+	                this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+	                this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
+		      }
+	              this.game.queue.splice(lqe, 0, "field_battle\t"+space.key+"\t"+faction);
+	            }
+	          }
+	        }
+
+		if (anyone_else_here == 0 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
+		  let f = this.returnFactionControllingSpace(space.key);
+		  if (!this.areAllies(f, faction) && f !== faction) {
+	 	    space.besieged = 2;
+		    this.displaySpace(space.key);
+		  }
+	        }
+
+	      } else {
+
+		//
+		// no-one is around to intercept, but is this assaultable
+		//
+		if (space.type == "electorate" || space.type == "key" || space.type == "fortress") {
+		  let f = this.returnFactionControllingSpace(space.key);
+		  if (this.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {
+ 		    if (!this.areAllies(f, faction) && f !== faction) {
+	 	      space.besieged = 2;
+		      this.displaySpace(space.key);
+		    }
+		  }
+	        }
+
+		//
+		// we only update the occupier of the space if the next move is not a "move"
+		// as we require interception check to find out if there are units here already.
+		//
+		if (lmv[0] !== "move") {
+	          if (anyone_else_here == 0) {
+	            space.occupier = faction;
+		  }
+		}
+	      }
+	    }
+
+	    //
+	    // did moving remove a siege? check
+	    //
+	    if (!this.isSpaceBesieged(source)) {
+	      this.removeSiege(source);
+	    }
+
+	    this.displaySpace(source);
+	    this.displaySpace(destination);
+
+	  }
+
+          return 1;
+	}
+
 
 
         if (mv[0] === "fortification_check") {
@@ -5623,7 +6127,6 @@ console.log("spacekey: " + spacekey);
         }
 
 
-
 	if (mv[0] === "assault") {
 
           this.game.queue.splice(qe, 1);
@@ -7501,11 +8004,10 @@ alert("flipping more than exist in the zone!");
 	  // new world phase only in > 2P games
 	  //
 	  if (this.game.players.length > 2) {
-
-	    // resolve voyages of exploration
-
-	    // resolve voyages of conquest
-
+	    this.game.queue.push("resolve_new_world_riches_rolls");
+	    this.game.queue.push("resolve_new_world_colonies");
+	    this.game.queue.push("resolve_new_world_conquests");
+	    this.game.queue.push("resolve_new_world_explorations");
 	  }
 
 	  //
@@ -7858,9 +8360,14 @@ if (this.game.state.round == 2) {
 
 
 
+	  //
 	  // multiplayer has diplomacy phase
-	  // this.playerOffer();
-	  // return 0;
+	  //
+	  if (this.game.players.length > 2) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
 
 	  //
 	  // no diplomacy phase round 1
@@ -7880,6 +8387,7 @@ if (this.game.state.round == 2) {
 
 	    this.game.queue.splice(qe, 1);
 	    return 1;
+
 	  }
 
 	  //
@@ -8196,7 +8704,7 @@ if (this.game.state.round == 2) {
 //
 // is_testing
 //
-if (this.game.state.scenario == "is_testing") { cardnum = 8; }
+if (this.game.state.scenario == "is_testing") { cardnum = 1; }
 
 	        //
 	        // fuggers card -1
@@ -9475,377 +9983,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let c_high = 0;
 
 	  let p_roll_desc = [];
-	  let c_roll_desc = [];
-
-	  let protestants_win = 0;
-
-	  let ties_resolve = "protestant";
-
-	  //
-	  // neighbours
-	  //
-	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
-
-	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
-	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
-	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-	        c_neighbours++;
-	      }
-	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
-	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-	        p_neighbours++;
-	      }
-	      if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
-	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-	        p_rolls++;
-	      }
-	      if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
-	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-	        c_rolls++;
-	      }
-	      if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
-	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
-	        p_rolls++;
-	      }
-	      if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
-	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
-	        c_rolls++;
-	      }
-	    }
-	  }
-
-	  //
-	  // ourselves
-	  //
-	  if (this.hasProtestantLandUnits(space)) {
-	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-	    p_rolls++;
-	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-	    p_rolls++;
-	  }
-	  if (this.hasCatholicLandUnits(space)) {
-	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-	    c_rolls++;
-	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-	    c_rolls++;
-	  }
-	  if (this.hasProtestantReformer(space)) {
-	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
-	    p_rolls++;
-	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
-	    p_rolls++;
-	  }
-	  if (this.game.spaces[space].university) {
-	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
-	    c_rolls++;
-	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
-	    c_rolls++;
-	  }
-
-	  //
-	  // language zone
-	  //
-	  if (this.game.spaces[space].language !== target_language_zone && target_language_zone != "all") {
-	    ties_resolve = "catholic";
- 	  }
-
-	  //
-	  // everyone gets a minimum of one roll
-	  //
-	  if (p_rolls == 0 && p_neighbours == 0) {
-	    p_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
-	    p_rolls++;
-	  }
-	  if (c_rolls == 0 && c_neighbours == 0) {
-	    c_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
-	    c_rolls++;
-	  }
-
-	  //
-	  // temporary bonuses
-	  //
-	  if (this.game.state.english_bible_translation_bonus == 1 || this.game.state.french_bible_translation_bonus == 1 || this.game.state.german_bible_translation_bonus == 1) {
-	    p_rolls++;
-	    p_roll_desc.push({ name : "Bonus" , desc : "translation completed"});
-	  }
-	  if (this.game.state.printing_press_active) {
-	    p_rolls++;
-	    p_roll_desc.push({ name : "Bonus" , desc : "printing press"});
-	  }
-	  if (this.game.state.tmp_protestant_reformation_bonus_spaces.length > 0) {
-	    if (!this.game.state.tmp_protestant_reformation_bonus_spaces.includes(space)) {
-	      p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
-	      this.game.state.tmp_protestant_reformation_bonus--;
-	      if (this.game.state.tmp_protestant_reformation_bonus < 0) { this.game.state.tmp_protestant_reformation_bonus = 0; }
-	    }
-	  }
-	  if (this.game.state.tmp_catholic_reformation_bonus_spaces.length > 0) {
-	    if (!this.game.state.tmp_catholic_reformation_bonus_spaces.includes(space)) {
-	      c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
-	      this.game.state.tmp_catholic_reformation_bonus--;
-	      if (this.game.state.tmp_catholic_reformation_bonus < 0) { this.game.state.tmp_catholic_reformation_bonus = 0; }
-	    }
-	  }
-
-	  for (let i = 0; i < this.game.state.tmp_protestant_reformation_bonus; i++) {
-	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
-	  }
-	  for (let i = 0; i < this.game.state.tmp_catholic_reformation_bonus; i++) {
-	    c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
-	  }
-	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
-	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
-
-
-	  //
-	  // calculate total rolls
-	  //
-	  p_rolls += p_neighbours;
-	  p_rolls += p_bonus;
-	  c_rolls += c_neighbours;
-	  c_rolls += c_bonus;
-
-          //
-          // everyone rolls at least 1 dice
-          //
-          if (c_rolls == 0) {
-	    c_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
-	    c_rolls = 1;
-	  }
-          if (p_rolls == 0) {
-	    p_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
-	    p_rolls = 1;
-	  }
-
-	  let pdice = [];
-	  let cdice = [];
-
-	  for (let i = 0; i < p_rolls; i++) {
-	    let x = this.rollDice(6);
-	    if (this.game.state.events.calvins_institutes == 1 && this.game.spaces[space].language === "french") { x++; }
-	    if (x > p_high) { p_high = x; }
-	    pdice.push(x);
-	  }
-
-	  for (let i = 0; i < c_rolls; i++) {
-	    let x = this.rollDice(6);
-	    if (x > c_high) { c_high = x; }
-	    cdice.push(x);
-	  }
-
-	  //
-	  // do protestants win?
-	  //
-	  if (p_high > c_high) { protestants_win = 1; }
-	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
-
-	  //
-	  //
-	  //
-	  let obj = {};
-	  obj.key = mv[1];
-          obj.name = this.spaces[space].name;
-	  obj.pdice = pdice;
-	  obj.cdice = cdice;
-	  obj.p_roll_desc = p_roll_desc;
-	  obj.c_roll_desc = c_roll_desc;
-	  obj.p_high = p_high;
-	  obj.c_high = c_high;
-	  obj.reformation = true;
-	  obj.counter_reformation = false;
-          obj.protestants_win = protestants_win;
-	  this.reformation_overlay.render(obj);
-
-	  //
-	  // handle victory
-	  //
-	  if (protestants_win == 1) {
-	    this.game.queue.push("convert\t"+space+"\tprotestant");
-	  } else {
-	    if (parseInt(this.game.state.events.carlstadt_debater) == 1) {
-	      // unrest
-	      this.game.queue.push("unrest\t"+space);
-	    }
-	    this.updateLog(this.returnSpaceName(space) + " remains Catholic");
-	  }
-
-	  return 1;
-
-	}
-
-
-	if (mv[0] === "counter_reformation") {
-
-	  this.game.queue.splice(qe, 1);
-
-	  let space = mv[1];
-	  let target_language_zone = mv[2] || "german";
-	  this.game.state.tmp_counter_reformations_this_turn.push(space);
-
-	  let p_rolls = 0;
-	  let c_rolls = 0;
-
-	  let p_neighbours = 0;
-	  let c_neighbours = 0;
-
-	  let p_bonus = 0;
-	  let c_bonus = 0;
-
-	  let p_high = 0;
-	  let c_high = 0;
-
-	  let p_roll_desc = [];
-	  let c_roll_desc = [];
-
-	  let catholics_win = 0;
-
-	  let ties_resolve = "protestant";
-
-	  //
-	  // language zone
-	  //
-	  if (this.game.spaces[space].language === target_language_zone) {
-	    //
-	    // catholics win ties if Paul III or Julius III are Pope
-	    //
-	    if (this.game.state.leaders.paul_iii == 1 || this.game.state.leaders.julius_iii == 1) {
-	      ties_resolve = "catholic";
-	    }
- 	  }
-
-          //
-          // neighbours
-          //
-          for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
-	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
-            if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
-              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-              c_neighbours++;
-            }
-            if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
-              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
-              p_neighbours++;
-            }
-            if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
-              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-              p_rolls++;
-            }
-            if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
-              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
-              c_rolls++;
-            }
-            if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
-              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
-              p_rolls++;
-            }
-            if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
-              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
-              c_rolls++;
-            }
-            }
-          }
-
-          //
-          // ourselves
-          //
-          if (this.hasProtestantLandUnits(space)) {
-            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-            p_rolls++;
-            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-            p_rolls++;
-          }
-          if (this.hasCatholicLandUnits(space)) {
-            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-            c_rolls++;
-            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
-            c_rolls++;
-          }
-          if (this.hasProtestantReformer(space)) {
-            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
-            p_rolls++;
-            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
-            p_rolls++;
-          }
-          if (this.game.spaces[space].university) {
-            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
-            c_rolls++;
-            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
-            c_rolls++;
-          }
-
-	  //
-	  // temporary bonuses
-	  //
-	  if (this.game.state.tmp_protestant_counter_reformation_bonus_spaces.length > 0) {
-	    if (!this.game.state.tmp_protestant_counter_reformation_bonus_spaces.includes(space)) {
-	      this.game.state.tmp_protestant_counter_reformation_bonus--;
-	      if (this.game.state.tmp_protestant_counter_reformation_bonus < 0) { this.game.state.tmp_protestant_counter_reformation_bonus = 0; }
-	    }
-	  }
-	  if (this.game.state.tmp_catholic_counter_reformation_bonus_spaces.length > 0) {
-	    if (!this.game.state.tmp_catholic_counter_reformation_bonus_spaces.includes(space)) {
-	      this.game.state.tmp_catholic_counter_reformation_bonus--;
-	      if (this.game.state.tmp_catholic_counter_reformation_bonus < 0) { this.game.state.tmp_catholic_counter_reformation_bonus = 0; }
-	    }
-	  }
-
-          for (let i = 0; i < this.game.state.tmp_protestant_counter_reformation_bonus; i++) {
-            p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
-          }
-          for (let i = 0; i < this.game.state.tmp_catholic_counter_reformation_bonus; i++) {
-            c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
-          }
-          p_bonus += this.game.state.tmp_protestant_counter_reformation_bonus;
-          c_bonus += this.game.state.tmp_catholic_counter_reformation_bonus;
-
-	  //
-	  // calculate total rolls
-	  //
-	  p_rolls += p_neighbours;
-	  p_rolls += p_bonus;
-	  c_rolls += c_neighbours;
-	  c_rolls += c_bonus;
-
-	  //
-	  // everyone rolls at least 1 dice
-	  //
-          if (c_rolls == 0) {
-	    c_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
-	    c_rolls = 1;
-	  }
-          if (p_rolls == 0) {
-	    p_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
-	    p_rolls = 1;
-	  }
-
-	  let pdice = [];
-	  let cdice = [];
-
-	  for (let i = 0; i < p_rolls; i++) {
-	    let x = this.rollDice(6);
-	    pdice.push(x);
-	    if (x > p_high) { p_high = x; }
-	  }
-
-	  for (let i = 0; i < c_rolls; i++) {
-	    let x = this.rollDice(6);
-	    if (his_self.game.state.events.augsburg_confession == 1) { x--; }
-	    cdice.push(x);
-	    if (x > c_high) { c_high = x; }
-	  }
-
-	  //
-	  // do catholics win?
-	  //
-	  if (p_high < c_high) { catholics_win = 1; }
-	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
-
-          //
-          // render results
-          //
-          let obj = {};
-          obj.key = mv[1];
-          obj.name = this.spaces[space].name;
+          obj.pdice = pdice;
+          obj.cdice = cdice;
           obj.pdice = pdice;
           obj.cdice = cdice;
           obj.p_roll_desc = p_roll_desc;

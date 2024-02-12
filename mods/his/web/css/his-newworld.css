@@ -9,6 +9,28 @@
 	text-align: center;
 }
 
+.crossing_atlantic {
+    height: 150px;
+    width: 200px;
+    top: 2100px;
+    left: 700px;
+    position: absolute;
+}
+
+.crossing_atlantic div {
+   position: relative;
+   height: 100px;
+   width: 100px;
+}
+.crossing_atlantic .army_tile:nth-child(1) { margin-left: -30px; margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(2) { margin-left: 20px;  margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(3) { margin-left: 70px;  margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(4) { margin-left: 120px; margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(5) { margin-left: -30px; margin-top: 80px; }
+.crossing_atlantic .army_tile:nth-child(6) { margin-left: 200px; margin-top: 80px;}
+.crossing_atlantic .army_tile:nth-child(7) { margin-left: 70px;  margin-top: 80px; }
+.crossing_atlantic .army_tile:nth-child(8) { margin-left: 120px; margin-top: 80px;}
+.crossing_atlantic .army_tile:nth-child(9) { margin-left: 45px;  margin-top: 40px;}
 
 .new-world-overlay .help {
 	background: #0009;
@@ -171,7 +193,6 @@
   position: absolute;
   height: 10rem;
   width: 10rem;
-  background-color: green;
 }
 
 .england_colony1 {
