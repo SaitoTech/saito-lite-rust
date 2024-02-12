@@ -154,56 +154,34 @@
   displayExplorers() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
-    for (let i = 0; i < this.game.state.explorers.length; i++) {
-      html += `	<div class="personage_tile${i}" data-id="${this.game.state.explorers[i].img}" style="background-image:url('/his/img/tiles/explorers/${this.game.state.explorers[i].img}')"></div>`;
+    let f = ["hapsburg","france","england"];
+    for (let i = 0; i < f.length; i++) {
+      let x = this.returnAvailableExplorers(f[i]);
+      for (let z = 0; z < x.length; z++) {
+        html += `	<div class="personage_tile${z}" data-id="${this.explorers[x[z]].img}" style="background-image:url('${this.explorers[x[z]].img}')"></div>`;
+      }
     }
     html += `</div>`;
 
     this.overlay.showOverlay(html);
-
-    for (let i = 0; i < this.game.state.explorers.length; i++) {
-      let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
-      let tile_b = tile_f.replace('.svg', '_back.svg');
-      if (this.game.state.explorers[i].committed == 1) {
-	let x = tile_f;
-	tile_f = tile_b;
-	tile_b = x;
-      }
-      let divsq = `.personage_tile${i}`;
-      $(divsq).mouseover(function() {
-	$(this).css('background-image', `url('${tile_b}')`);
-      }).mouseout(function() {
-	$(this).css('background-image', `url('${tile_f}')`);
-      });
-    }
 
   }
 
   displayConquistadors() {
 
+console.log("ALL CONQUISTADORS: "+ JSON.stringify(this.conquistadors));
     let html = `<div class="personage_overlay" id="personage_overlay">`;
-    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
-      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.conquistadors[i].img}" style="background-image:url('/his/img/tiles/conquistadors/${this.game.state.conquistadors[i].img}')"></div>`;
+    let f = ["hapsburg","france","england"];
+    for (let i = 0; i < f.length; i++) {
+      let x = this.returnAvailableConquistadors(f[i]);
+      for (let z = 0; z < x.length; z++) {
+        html += `	<div class="personage_tile${z}" data-id="${this.conquistadors[x[z]].img}" style="background-image:url('${this.conquistadors[x[z]].img}')"></div>`;
+      }
     }
     html += `</div>`;
 
     this.overlay.showOverlay(html);
 
-    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
-      let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
-      let tile_b = tile_f.replace('.svg', '_back.svg');
-      if (this.game.state.conquistadors[i].committed == 1) {
-	let x = tile_f;
-	tile_f = tile_b;
-	tile_b = x;
-      }
-      let divsq = `.personage_tile${i}`;
-      $(divsq).mouseover(function() {
-	$(this).css('background-image', `url('${tile_b}')`);
-      }).mouseout(function() {
-	$(this).css('background-image', `url('${tile_f}')`);
-      });
-    }
   }
 
   displayTheologicalDebater(debater, attacker=true) {
@@ -394,30 +372,30 @@
 	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Cuba.svg" />`;
       }
       if (this.game.state.colonies[i].faction == "england") {
-	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Jamestown.svg.svg" />`;
+	obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Jamestown.svg" />`;
       }
     }
 
     if (this.game.state.newworld['england_colony1'].claimed == 1) {
-      document.querySelector('.england_colony1').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['england_colony1'].img}" />`;
+      document.querySelector('.england_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['england_colony1'].img}" />`;
     }
     if (this.game.state.newworld['england_colony2'].claimed == 1) {
-      document.querySelector('.england_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['england_colony2'].img}" />`;
+      document.querySelector('.england_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['england_colony2'].img}" />`;
     }
     if (this.game.state.newworld['france_colony1'].claimed == 1) {
-      document.querySelector('.france_colony1').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['france_colony1'].img}" />`;
+      document.querySelector('.france_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['france_colony1'].img}" />`;
     }
     if (this.game.state.newworld['france_colony2'].claimed == 1) {
-      document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['france_colony2'].img}" />`;
+      document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['france_colony2'].img}" />`;
     }
     if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
-      document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['hapsburg_colony1'].img}" />`;
+      document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony1'].img}" />`;
     }
     if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
-      document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['hapsburg_colony2'].img}" />`;
+      document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony2'].img}" />`;
     }
     if (this.game.state.newworld['hapsburg_colony3'].claimed == 1) {
-      document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/${this.game.state.newworld['hapsburg_colony3'].img}" />`;
+      document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony3'].img}" />`;
     }
 
   }

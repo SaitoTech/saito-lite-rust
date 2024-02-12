@@ -5,7 +5,7 @@ console.log("NUM COLY ATTEMPTS: " + this.game.state.colonies.length);
     for (let z = 0; z < this.game.state.colonies.length; z++) {
       if (this.game.state.colonies[z].resolved != 1) {
 
-console.log("EXAMINING COLONY ATTEMPT: " + (this.game.state.colonies[z]));
+console.log("EXAMINING COLONY ATTEMPT: " + JSON.stringify(this.game.state.colonies[z]));
 
         if (this.game.state.colonies[z].faction === "england") {
 	  if (this.game.state.newworld['england_colony1'].claimed != 1) {
@@ -13,6 +13,7 @@ console.log("EXAMINING COLONY ATTEMPT: " + (this.game.state.colonies[z]));
 	  } else {
 	    this.game.state.newworld['england_colony2'].claimed = 1;
 	  }
+	  this.updateLog("England founds a colony");
 	  this.game.state.colonies[z].resolved = 1;
         }
         if (this.game.state.colonies[z].faction === "france") {
@@ -21,9 +22,10 @@ console.log("EXAMINING COLONY ATTEMPT: " + (this.game.state.colonies[z]));
 	  } else {
 	    this.game.state.newworld['france_colony2'].claimed = 1;
 	  }
+	  this.updateLog("France founds a colony");
 	  this.game.state.colonies[z].resolved = 1;
         }
-        if (this.game.state.colonies[z].faction === "haspburg") {
+        if (this.game.state.colonies[z].faction === "hapsburg") {
 	  if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
 	    this.game.state.newworld['hapsburg_colony1'].claimed = 1;
 	  } else {
@@ -37,20 +39,24 @@ console.log("EXAMINING COLONY ATTEMPT: " + (this.game.state.colonies[z]));
 	  //
 	  // no "resolve colonies" stage, so we resolve here
 	  //
+	  this.updateLog("The Hapsburgs founds a colony");
 	  this.game.state.colonies[z].resolved = 1;
         }
       }
     }
 
     if (this.game.state.events.potosi_silver_mines == "hapsburg") {
+      this.updateLog("The Hapsburgs found the Potosi Mines");
       this.game.state.newworld['hapsburg_colony3'].claimed = 1;
       this.game.state.newworld['hapsburg_colony3'].img = "Potosi.svg";
     }
     if (this.game.state.events.potosi_silver_mines == "france") {
+      this.updateLog("France founds the Potosi Mines");
       this.game.state.newworld['france_colony2'].claimed = 1;
       this.game.state.newworld['france_colony2'].img = "Potosi.svg";
     }
     if (this.game.state.events.potosi_silver_mines == "england") {
+      this.updateLog("England founds the Potosi Mines");
       this.game.state.newworld['england_colony2'].claimed = 1;
       this.game.state.newworld['england_colony2'].img = "Potosi.svg";
     }
@@ -67,12 +73,13 @@ console.log("EXAMINING COLONY ATTEMPT: " + (this.game.state.colonies[z]));
     
     for (let z = 0; z < this.game.state.conquests.length; z++) {
 
-console.log("EXAMINING CONQUEST ATTEMPT: " + (this.game.state.conquests[z]));
+console.log("EXAMINING CONQUEST ATTEMPT: " + JSON.stringify(this.game.state.conquests[z]));
+console.log("all conquistadors: " + JSON.stringify(this.conquistadors));
 
       let con = this.game.state.conquests[z];
       if (con.resolved == 0) {
 
-        let available_conquistadors = this.returnAvailableExplorers(con.faction);
+        let available_conquistadors = this.returnAvailableConquistadors(con.faction);
 	if (available_conquistadors.length > 0) {
 
 	  //
@@ -80,7 +87,9 @@ console.log("EXAMINING CONQUEST ATTEMPT: " + (this.game.state.conquests[z]));
 	  //
 	  let x = this.rollDice(available_conquistadors.length) - 1;
 	  let conquistador = available_conquistadors[x];
-	  this.game.state.conquests[z].conquistador = conquistador;
+	  con.conquistador = conquistador;
+
+console.log("picked conquistador: " + conquistador);
 
 	  //
 	  // calculate hits
@@ -91,7 +100,7 @@ console.log("EXAMINING CONQUEST ATTEMPT: " + (this.game.state.conquests[z]));
 	  let total_hits = x + y;
 
 	  //
-	  // explorer power
+	  // conquistador power
 	  //
 	  total_hits += this.conquistadors[conquistador].power;
 	  modifiers += this.conquistadors[conquistador].power;
@@ -104,7 +113,12 @@ console.log("EXAMINING CONQUEST ATTEMPT: " + (this.game.state.conquests[z]));
 	    modifiers += 2;
 	    this.game.state.events.smallpox = 0;
 	  }
-	  
+
+	  con.hits = total_hits;
+	  con.modifiers = modifiers;
+
+console.log("conquest: " + JSON.stringify(con));
+
 	  active_conquests.push(z);
 
 	}
@@ -145,16 +159,14 @@ console.log("EXAMINING CONQUEST ATTEMPT: " + (this.game.state.conquests[z]));
     let sorted_explorations = [];
 
 
-
     for (let z = 0; z < this.game.state.explorations.length; z++) {
       let exp = this.game.state.explorations[z];
-
       if (exp.resolved == 0) {
 
-console.log("EXAMINING EXPLORATIONS ATTEMPT: " + (this.game.state.explorations[z]));
-
+console.log("EXAMINING EXPLORATIONS ATTEMPT: " + JSON.stringify(exp));
 
         let available_explorers = this.returnAvailableExplorers(exp.faction);
+console.log("explorers: " + JSON.stringify(available_explorers));
 	if (available_explorers.length > 0) {
 
 	  //
@@ -162,7 +174,8 @@ console.log("EXAMINING EXPLORATIONS ATTEMPT: " + (this.game.state.explorations[z
 	  //
 	  let x = this.rollDice(available_explorers.length) - 1;
 	  let explorer = available_explorers[x];
-	  this.game.state.explorations[z].explorer = explorer;
+
+	  exp.explorer = explorer;
 
 	  //
 	  // calculate hits
@@ -199,8 +212,8 @@ console.log("EXAMINING EXPLORATIONS ATTEMPT: " + (this.game.state.explorations[z
 
 	  if (!this.game.state[`${exp.faction}_uncharted`]) { total_hits++; }
 	
-	  this.game.state.explorations[z].hits = total_hits;
-	  this.game.state.explorations[z].modifiers = modifiers;
+	  exp.hits = total_hits;
+	  exp.modifiers = modifiers;
 
 	  active_explorations.push(z);
 

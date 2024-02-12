@@ -50,10 +50,11 @@ this.updateLog(`###############`);
 	  //this.game.queue.push("show_overlay\twinter");
 	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("action_phase");
-	  //this.game.queue.push("diplomacy_card_event\tprotestant\t209");
+if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+}
 	  this.game.queue.push("diplomacy_phase");
 
 
@@ -1135,6 +1136,7 @@ this.updateLog(this.game.state.conquests[idx].conquistador);
 
 	  let his_self = this;
 	  let idx = parseInt(mv[1]);
+
 this.updateLog("RESOLVING EXPLORATION: ");
 this.updateLog(this.game.state.explorations[idx].faction);
 this.updateLog(this.game.state.explorations[idx].explorer);
@@ -1394,8 +1396,8 @@ this.updateLog(this.game.state.explorations[idx].explorer);
     	  this.game.spaces['graz'].occupier = 'protestant';
 
 	  this.setAllies("papacy", "hapsburg");
-	  this.setActivatedPower("papacy", "hapsburg");
-	  this.setActivatedPower("protestant", "france");
+	  //this.setActivatedPower("papacy", "hapsburg");
+	  //this.setActivatedPower("protestant", "france");
 
           this.addReformer("protestant", "modena", "zwingli-reformer");
 
@@ -8704,7 +8706,7 @@ if (this.game.state.round == 2) {
 //
 // is_testing
 //
-if (this.game.state.scenario == "is_testing") { cardnum = 1; }
+if (this.game.options.scenario == "is_testing") { cardnum = 1; }
 
 	        //
 	        // fuggers card -1

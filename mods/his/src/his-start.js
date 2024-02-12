@@ -326,7 +326,6 @@ if (this.game.players.length > 2) {
         game_mod.displayDebaters();
       }
     });
-/***
     this.menu.addSubMenuOption("game-info", {
       text : "Explorers",
       id : "game-explorers",
@@ -345,6 +344,7 @@ if (this.game.players.length > 2) {
         game_mod.displayConquistadors();
       }
     });
+/***
 ***/
 
     this.menu.addMenuOption("game-factions", "Factions");

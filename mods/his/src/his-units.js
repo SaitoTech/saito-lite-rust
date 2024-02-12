@@ -223,6 +223,11 @@
   }
 
   returnAvailableExplorers(faction="") {
+
+console.log("searching for explorers for faction: " + faction);
+console.log("from list: ");
+console.log(JSON.stringify(this.explorers));
+
     let unavailable = [];
     let available = [];
     for (let z = 0; z < this.game.state.explorations.length; z++) {
@@ -233,9 +238,10 @@
         }
       }
     }
+console.log("unavailable: " + JSON.stringify(unavailable));
     for (let key in this.explorers) {
       if (this.explorers[key].faction == faction) {
-        if (unavailable.includes(key)) {
+        if (!unavailable.includes(key)) {
 	  available.push(key);
         }
       }
@@ -256,7 +262,7 @@
     }
     for (let key in this.conquistadors) {
       if (this.conquistadors[key].faction == faction) {
-        if (unavailable.includes(key)) {
+        if (!unavailable.includes(key)) {
 	  available.push(key);
         }
       }

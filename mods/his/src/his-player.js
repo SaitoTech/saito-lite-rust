@@ -1202,8 +1202,17 @@ if (this.game.state.events.cramner_active == 1) {
       this.game_help.hide();
 
       //
+      //
+      //
+      if (card == "pass") {
+        this.playerPlayCard(card, this.game.player, faction);
+	return 1;
+      }
+
+      //
       // if faction is England and Mary I is ruler, we have 50% 
       //
+console.log("card: " + card);
       if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
 	let x = this.rollDice(6);
 	if (x >= 4) {
