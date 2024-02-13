@@ -564,8 +564,9 @@ if (space.key === "bordeaux") {
 	    let action = $(this).attr("id");
 
 	    if (action === "skip") { his_self.endTurn(); return 0; }
+	    let zzt = action.split("_")[0];
 
-	    if (ca.includes(action)) {
+	    if (ca.includes(zzt)) {
 
 	      let finished = 0;
 
