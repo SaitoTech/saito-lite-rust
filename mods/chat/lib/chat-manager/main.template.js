@@ -7,7 +7,7 @@ module.exports = ChatManagerTemplate = (manager_self) => {
         <img class="saito-header-logo" alt="Logo" src="/saito/img/logo.svg">
         <i class="fa-solid fa-arrow-left"></i>
       </div>
-      <div class="chat-manager-options"><i class="fas fa-cog"></i></div>
+      <div class="chat-manager-options"><i class="fa-solid fa-ellipsis"></i></div>
       <div class="alternate-close-button"><i class="fa-solid fa-xmark"></i></div>
     </div>
     <div class="chat-manager-list hide-scrollbar${
