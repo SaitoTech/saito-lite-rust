@@ -98,6 +98,8 @@ class ChatPopup {
 			return;
 		}
 
+		this.app.connection.emit("chat-manager-opens-group", this.group);
+		
 		//
 		// our query selector
 		//

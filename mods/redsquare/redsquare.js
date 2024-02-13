@@ -1118,6 +1118,7 @@ class RedSquare extends ModTemplate {
       let obj = {
         field1: "RedSquare",
         field3: thread_id,
+        flagged: 0,
       };
 
       this.app.storage.loadTransactions(
@@ -2426,54 +2427,6 @@ class RedSquare extends ModTemplate {
     this.saveOptions();
   }
 
-  //
-  // writes the latest 10 tweets to tweets.js
-  // --- DEPRECATED
-  async updateTweetsCacheForBrowsers() {
-    if (this.app.BROWSER) {
-      return;
-    }
-
-    this.app.storage.loadTransactions(
-      { field1: "RedSquare" },
-      (txs) => {
-        if (txs.length > 0) {
-          try {
-            let path = this.app.storage.returnPath();
-            if (!path) {
-              return;
-            }
-
-            const filename = path.join(__dirname, "web/tweets.");
-            let fs = this.app.storage.returnFileSystem();
-            let html = `if (!tweets) { var tweets = [] };`;
-            if (fs != null) {
-              for (let i = 0; i < txs.length; i++) {
-                let thisfile = filename + i + ".js";
-                const fd = fs.openSync(thisfile, "w");
-                //
-                // the tweets might have been edited, so we check the optional field for any edited tx
-                //
-                if (txs[i].optional) {
-                  if (txs[i].optional.update_tx) {
-                    console.log("TXS MSG: " + JSON.stringify(txs[i].msg));
-                  }
-                }
-                html += `  tweets.push(\`${txs[i].serialize_to_web(this.app)}\`);   `;
-                fs.writeSync(fd, html);
-                fs.fsyncSync(fd);
-                fs.closeSync(fd);
-                html = "";
-              }
-            }
-          } catch (err) {
-            console.error("ERROR 2832329: error tweet cache to disk. ", err);
-          }
-        }
-      },
-      "localhost"
-    );
-  }
 
   //
   // Instead of writing 10 tweets.js files to the server FS, we will just dynamically load the 10 most recent tweets

@@ -309,8 +309,6 @@ class Registry extends ModTemplate {
 			newtx.msg.request = 'register';
 			newtx.msg.identifier = identifier + domain;
 
-			newtx.addTo(this.publicKey);
-
 			await newtx.sign();
 			await this.app.network.propagateTransaction(newtx);
 
@@ -471,6 +469,8 @@ class Registry extends ModTemplate {
 
 		if (conf == 0) {
 			if (!!txmsg && txmsg.module === 'Registry') {
+				console.log(`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`);
+
 				/////////////////////////////////////////
 				// REGISTRATION REQUESTS - main server //
 				/////////////////////////////////////////
@@ -829,7 +829,7 @@ class Registry extends ModTemplate {
 
 		let res = await this.app.storage.runDatabase(sql, params, 'registry');
 
-		return res?.stmt?.changes;
+		return res?.changes;
 	}
 
 	async onChainReorganization(bid, bsh, lc) {

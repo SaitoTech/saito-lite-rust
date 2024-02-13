@@ -874,7 +874,7 @@ class SettlersGameloop {
             );
           }else{
             this.updateStatus(
-              `<div class="player-notice">You rolled the ${this.b.name}, but ${this.game.playerNames[player - 1]} gets to move it...</div>`
+              `<div class="player-notice">Robin Hood is on the loose, ${this.game.playerNames[player - 1]} is moving him...</div>`
             );
           }
         }
