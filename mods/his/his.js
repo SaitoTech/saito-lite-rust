@@ -7383,7 +7383,7 @@ console.log("008 eventing!");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction, extra) { // extra= assault spacekey
+      menuOptionTriggers:  function(his_self, menu, player, extra) { // extra= assault spacekey
         if (menu == "assault" && his_self.game.player === his_self.game.state.active_player) {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
@@ -8944,7 +8944,7 @@ console.log("008 eventing!");
 	let p = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player === p) {
 
- 	  let msg = "Choose Faction for Huguenot Raiders?";
+ 	  let msg = "Choose Faction for Plantations?";
           let html = '<ul>';
 	  if (his_self.game.state.plantations['england'] == 0) {
 	    html += '<li class="option" id="england">England</li>';
@@ -20928,7 +20928,7 @@ if (this.game.options.scenario === "is_testing") {
 	      this.updateLog("Circumnavigation Attempt fails: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
-	      this.game.state.explorations[idx].prize = "none";
+	      this.game.state.explorations[idx].prize = "-";
 	    }
 
 	  }
@@ -20968,6 +20968,7 @@ if (this.game.options.scenario === "is_testing") {
 	  //////////////
 	  if (this.game.state.newworld['england_colony1'].claimed == 1) {
 	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (his_self.game.state.plantations['england'] == 1) { x++; }
 	    this.updateLog("England - Roanoke: " + x);
 	    if (this.game.state.plantations['england'] === 1) { x++; }
 	    if (x <= 4) { if (x == 4 && this.game.state.newworld['england_colony1'].img == "Potosi.svg") {} else { this.game.state.newworld['england_colony1'].claimed = 0; } }
@@ -20977,6 +20978,7 @@ if (this.game.options.scenario === "is_testing") {
 	  }
 	  if (this.game.state.newworld['england_colony2'].claimed == 1) {
 	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (his_self.game.state.plantations['england'] == 1) { x++; }
 	    if (this.game.state.newworld['england_colony2'].img == "Potosi.svg") {
 	      this.updateLog("England - Potosi Mines: " + x);
 	    } else {
@@ -20991,6 +20993,7 @@ if (this.game.options.scenario === "is_testing") {
 
 	  if (this.game.state.newworld['france_colony1'].claimed == 1) {
 	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (his_self.game.state.plantations['france'] == 1) { x++; }
 	    this.updateLog("France - Charlesbourg: " + x);
 	    if (this.game.state.plantations['france'] === 1) { x++; }
 	    if (x <= 4) { if (x == 4 && this.game.state.newworld['france_colony1'].img == "Potosi.svg") {} else { this.game.state.newworld['france_colony1'].claimed = 0; } }
@@ -21000,6 +21003,7 @@ if (this.game.options.scenario === "is_testing") {
 	  }
 	  if (this.game.state.newworld['france_colony2'].claimed == 1) {
 	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (his_self.game.state.plantations['france'] == 1) { x++; }
 	    if (this.game.state.newworld['france_colony2'].img == "Potosi.svg") {
 	      this.updateLog("France - Potosi Mines: " + x);
 	    } else {
@@ -21014,6 +21018,7 @@ if (this.game.options.scenario === "is_testing") {
 
 	  if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
 	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (his_self.game.state.plantations['hapsburg'] == 1) { x++; }
 	    this.updateLog("Hapsburg - Puerto Rico: " + x);
 	    if (this.game.state.plantations['hapsburg'] === 1) { x++; }
 	    if (x <= 4) { if (x == 4 && this.game.state.newworld['hapsburg_colony1'].img == "Potosi.svg") {} else { this.game.state.newworld['hapsburg_colony1'].claimed = 0; } }
@@ -21023,6 +21028,7 @@ if (this.game.options.scenario === "is_testing") {
 	  }
 	  if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
 	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (his_self.game.state.plantations['hapsburg'] == 1) { x++; }
 	    this.updateLog("Hapsburg - Cuba: " + x);
 	    if (this.game.state.plantations['hapsburg'] === 1) { x++; }
 	    if (x <= 4) { if (x == 4 && this.game.state.newworld['hapsburg_colony2'].img == "Potosi.svg") {} else { this.game.state.newworld['hapsburg_colony2'].claimed = 0; } }
@@ -21032,6 +21038,7 @@ if (this.game.options.scenario === "is_testing") {
 	  }
 	  if (this.game.state.newworld['hapsburg_colony3'].claimed == 1) {
 	    let x = this.rollDice(6) + this.rollDice(6);
+	    if (his_self.game.state.plantations['hapsburg'] == 1) { x++; }
 	    if (this.game.state.newworld['hapsburg_colony3'].img == "Potosi.svg") {
 	      this.updateLog("Hapsburg - Potosi Mines: " + x);
 	    } else {
@@ -21065,6 +21072,98 @@ if (this.game.options.scenario === "is_testing") {
 	    if (x <= 5) { this.game.state.newworld['inca'].depleted = 1; }
 	    if (x == 7 && this.game.state.galleons[this.game.state.newworld['inca'].faction] == 1) { this.game.state.new_world_bonus[this.game.state.newworld['inca'].faction]++; }
 	    if (x > 7 || x == 6) { this.game.state.new_world_bonus[this.game.state.newworld['inca'].faction]++; }
+	  }
+
+	  //
+	  // huguenaut raiders
+	  //
+	  for (let i = 0; i < this.game.state.new_world_bonus["hapsburg"]; i++) {
+	    let stolen = 0;
+	    if (parseInt(his_self.game.state.raiders['france']) == 1) {
+	      let x = rollDice(6);
+	      his_self.updateLog("French Raiders roll " + x);	
+	      if (x == 1) {
+	        his_self.updateLog("French Raiders eliminated");	
+		his_self.game.state.raiders['france'] = 0;
+	      }
+	      if (x == 2 && his_self.game.state.galleons['hapsburg'] == 1) {
+	        his_self.updateLog("French Raiders eliminated");	
+		his_self.game.state.raiders['france'] = 0;
+	      }
+	      if (x == 3 || x == 4) {
+	        his_self.updateLog("French Raiders unsuccessful");	
+	      }
+	      if (x == 5) {
+	        his_self.updateLog("French Raiders steal Hapsburg shipment");	
+		his_self.game.state.raiders['france'] = 0;
+		his_self.game.state.new_world_bonus['hapsburg']--;
+		his_self.game.state.new_world_bonus['france']++;
+		stolen = 1;
+	      }
+	      if (x == 6) {
+	        his_self.updateLog("French Raiders steal Hapsburg shipment");	
+		his_self.game.state.new_world_bonus['hapsburg']--;
+		his_self.game.state.new_world_bonus['france']++;
+		stolen = 1;
+	      }
+	    }
+	    if (stolen == 0 && parseInt(his_self.game.state.raiders['england']) == 1) {
+	      let x = rollDice(6);
+	      his_self.updateLog("English Raiders roll " + x);	
+	      if (x == 1) {
+	        his_self.updateLog("English Raiders eliminated");	
+		his_self.game.state.raiders['england'] = 0;
+	      }
+	      if (x == 2 && his_self.game.state.galleons['hapsburg'] == 1) {
+	        his_self.updateLog("English Raiders eliminated");	
+		his_self.game.state.raiders['england'] = 0;
+	      }
+	      if (x == 3 || x == 4) {
+	        his_self.updateLog("English Raiders unsuccessful");	
+	      }
+	      if (x == 5) {
+	        his_self.updateLog("English Raiders steal Hapsburg shipment");	
+		his_self.game.state.raiders['england'] = 0;
+		his_self.game.state.new_world_bonus['hapsburg']--;
+		his_self.game.state.new_world_bonus['england']++;
+		stolen = 1;
+	      }
+	      if (x == 6) {
+	        his_self.updateLog("English Raiders steal Hapsburg shipment");	
+		his_self.game.state.new_world_bonus['hapsburg']--;
+		his_self.game.state.new_world_bonus['england']++;
+		stolen = 1;
+	      }
+	    }
+	    if (stolen == 0 && parseInt(his_self.game.state.raiders['protestant']) == 1) {
+	      let x = rollDice(6);
+	      his_self.updateLog("Protestant Raiders roll " + x);	
+	      if (x == 1) {
+	        his_self.updateLog("Protestant Raiders eliminated");	
+		his_self.game.state.raiders['protestant'] = 0;
+	      }
+	      if (x == 2 && his_self.game.state.galleons['hapsburg'] == 1) {
+	        his_self.updateLog("Protestant Raiders eliminated");	
+		his_self.game.state.raiders['protestant'] = 0;
+	      }
+	      if (x == 3 || x == 4) {
+	        his_self.updateLog("Protestant Raiders unsuccessful");	
+	      }
+	      if (x == 5) {
+	        his_self.updateLog("Protestant Raiders steal Hapsburg shipment");	
+		his_self.game.state.raiders['protestant'] = 0;
+		his_self.game.state.new_world_bonus['hapsburg']--;
+		his_self.game.state.new_world_bonus['protestant']++;
+		stolen = 1;
+	      }
+	      if (x == 6) {
+	        his_self.updateLog("Protestant Raiders steal Hapsburg shipment");	
+		his_self.game.state.new_world_bonus['hapsburg']--;
+		his_self.game.state.new_world_bonus['protestant']++;
+		stolen = 1;
+	      }
+	    }
+
 	  }
 
 	  this.newworld_overlay.render("results");
@@ -21108,7 +21207,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  }
 	  if (hits > 6 && hits <= 8) {
 	    this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " makes no conquest");
-	    this.game.state.conquests[idx].prize = "none";
+	    this.game.state.conquests[idx].prize = "-";
 	  }
 	  if (hits >= 9) {
 	    if (hits >= 11) {
@@ -21138,7 +21237,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 		this.game.state.conquests[idx].prize = "Mayan Empire";
 	        this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " conquers the Maya (1VP)");
 	      } else {
-		this.game.state.conquests[idx].prize = "none";
+		this.game.state.conquests[idx].prize = "-";
 	        this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " makes no conquest");
 	      }
 	    }
@@ -21204,7 +21303,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	        this.game.state.explorations[idx].prize = "St. Lawrence";
 	        this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the St. Lawrence (1VP)");
 	      } else {
-	        this.game.state.explorations[idx].prize = "none";
+	        this.game.state.explorations[idx].prize = "-";
 	        this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
 	      }
 	    }
@@ -21223,7 +21322,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	    //
 	    if (this.game.state.newworld['stlawrence'].claimed == 1 && this.game.state.newworld['greatlakes'].claimed == 1 && this.game.state.newworld['mississippi'].claimed == 1 && this.game.state.newworld['amazon'].claimed == 1 && this.game.state.newworld['circumnavigation'].claimed == 1) {
 	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
-	      this.game.state.explorations[idx].prize = "none";
+	      this.game.state.explorations[idx].prize = "-";
               for (let p = 0; p < this.game.state.newworld.results.explorations.length; p++) {
                 if (this.game.state.newworld.results.explorations[p].idx == idx) {
                   this.game.state.newworld.results.explorations[p].prize = this.game.state.explorations[idx].prize;
@@ -36750,12 +36849,18 @@ console.log("unavailable: " + JSON.stringify(unavailable));
     let active_conquests = [];
     let sorted_conquests = [];
     
+console.log("CONQUESTS");
+console.log(JSON.stringify(this.game.state.conquests));
+
     for (let z = 0; z < this.game.state.conquests.length; z++) {
 
       let con = this.game.state.conquests[z];
       if (con.resolved == 0) {
 
         let available_conquistadors = this.returnAvailableConquistadors(con.faction);
+
+console.log("AVAIL CONQUIST: " + JSON.stringify(available_conquistadors));
+
 	if (available_conquistadors.length > 0) {
 
 	  //

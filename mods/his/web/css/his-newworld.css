@@ -64,7 +64,8 @@
 	background-color: transparent;
 	color: white;
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
+	display: flex;
+	flex-direction: row;
 	max-width: max-content;
 	margin-left: auto;
 	margin-right: auto;
@@ -196,9 +197,9 @@
 
 .new-world-overlay .content .conquests,
 .new-world-overlay .content .colonies,
-.new-world-overlay .content .explations {
-	width: 28rem;
-	max-width: 28vw;
+.new-world-overlay .content .explorations {
+	width: 32rem;
+	max-width: 32vw;
 }
 
 

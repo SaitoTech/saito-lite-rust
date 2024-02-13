@@ -4304,7 +4304,7 @@ console.log("008 eventing!");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction, extra) { // extra= assault spacekey
+      menuOptionTriggers:  function(his_self, menu, player, extra) { // extra= assault spacekey
         if (menu == "assault" && his_self.game.player === his_self.game.state.active_player) {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
@@ -5865,7 +5865,7 @@ console.log("008 eventing!");
 	let p = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player === p) {
 
- 	  let msg = "Choose Faction for Huguenot Raiders?";
+ 	  let msg = "Choose Faction for Plantations?";
           let html = '<ul>';
 	  if (his_self.game.state.plantations['england'] == 0) {
 	    html += '<li class="option" id="england">England</li>';
