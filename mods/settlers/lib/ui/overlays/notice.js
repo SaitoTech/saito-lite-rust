@@ -32,7 +32,7 @@ class NoticeOverlay {
 		<ul>
 		<li>The longest road requires a minimum of <em>6</em> road segments</li>
 		<li>The longest road is worth only <em>1</em> victory point</li>
-		<li>If a player is losing by 2 or more points, they get to move the bandit on each roll of the seven</li>
+		<li>The bandit is the famous Robin Hood, who has a sense of justice. If a player is losing by 2 or more points, Robin Hood will come to their aid whenever the 7 is rolled.</li>
 		</ul>
 		</div>
 		`;
