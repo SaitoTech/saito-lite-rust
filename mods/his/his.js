@@ -30024,6 +30024,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
+
 	  let space = mv[1];
 	  let target_language_zone = mv[2] || "german";
 	  this.game.state.tmp_reformations_this_turn.push(space);
@@ -30041,6 +30042,377 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let c_high = 0;
 
 	  let p_roll_desc = [];
+	  let c_roll_desc = [];
+
+	  let protestants_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // neighbours
+	  //
+	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+
+	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
+	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+	        c_neighbours++;
+	      }
+	      if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+	        p_neighbours++;
+	      }
+	      if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	        p_rolls++;
+	      }
+	      if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	        c_rolls++;
+	      }
+	      if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
+	        p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	        p_rolls++;
+	      }
+	      if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
+	        c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	        c_rolls++;
+	      }
+	    }
+	  }
+
+	  //
+	  // ourselves
+	  //
+	  if (this.hasProtestantLandUnits(space)) {
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    p_rolls++;
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    p_rolls++;
+	  }
+	  if (this.hasCatholicLandUnits(space)) {
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    c_rolls++;
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    c_rolls++;
+	  }
+	  if (this.hasProtestantReformer(space)) {
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
+	    p_rolls++;
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
+	    p_rolls++;
+	  }
+	  if (this.game.spaces[space].university) {
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
+	    c_rolls++;
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
+	    c_rolls++;
+	  }
+
+	  //
+	  // language zone
+	  //
+	  if (this.game.spaces[space].language !== target_language_zone && target_language_zone != "all") {
+	    ties_resolve = "catholic";
+ 	  }
+
+	  //
+	  // everyone gets a minimum of one roll
+	  //
+	  if (p_rolls == 0 && p_neighbours == 0) {
+	    p_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
+	    p_rolls++;
+	  }
+	  if (c_rolls == 0 && c_neighbours == 0) {
+	    c_roll_desc.push({ name : "basic roll" , desc : "no adjacency or influence"});
+	    c_rolls++;
+	  }
+
+	  //
+	  // temporary bonuses
+	  //
+	  if (this.game.state.english_bible_translation_bonus == 1 || this.game.state.french_bible_translation_bonus == 1 || this.game.state.german_bible_translation_bonus == 1) {
+	    p_rolls++;
+	    p_roll_desc.push({ name : "Bonus" , desc : "translation completed"});
+	  }
+	  if (this.game.state.printing_press_active) {
+	    p_rolls++;
+	    p_roll_desc.push({ name : "Bonus" , desc : "printing press"});
+	  }
+	  if (this.game.state.tmp_protestant_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_protestant_reformation_bonus_spaces.includes(space)) {
+	      p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
+	      this.game.state.tmp_protestant_reformation_bonus--;
+	      if (this.game.state.tmp_protestant_reformation_bonus < 0) { this.game.state.tmp_protestant_reformation_bonus = 0; }
+	    }
+	  }
+	  if (this.game.state.tmp_catholic_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_catholic_reformation_bonus_spaces.includes(space)) {
+	      c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+	      this.game.state.tmp_catholic_reformation_bonus--;
+	      if (this.game.state.tmp_catholic_reformation_bonus < 0) { this.game.state.tmp_catholic_reformation_bonus = 0; }
+	    }
+	  }
+
+	  for (let i = 0; i < this.game.state.tmp_protestant_reformation_bonus; i++) {
+	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
+	  }
+	  for (let i = 0; i < this.game.state.tmp_catholic_reformation_bonus; i++) {
+	    c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+	  }
+	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
+	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+          //
+          // everyone rolls at least 1 dice
+          //
+          if (c_rolls == 0) {
+	    c_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    c_rolls = 1;
+	  }
+          if (p_rolls == 0) {
+	    p_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    p_rolls = 1;
+	  }
+
+	  let pdice = [];
+	  let cdice = [];
+
+	  for (let i = 0; i < p_rolls; i++) {
+	    let x = this.rollDice(6);
+	    if (this.game.state.events.calvins_institutes == 1 && this.game.spaces[space].language === "french") { x++; }
+	    if (x > p_high) { p_high = x; }
+	    pdice.push(x);
+	  }
+
+	  for (let i = 0; i < c_rolls; i++) {
+	    let x = this.rollDice(6);
+	    if (x > c_high) { c_high = x; }
+	    cdice.push(x);
+	  }
+
+	  //
+	  // do protestants win?
+	  //
+	  if (p_high > c_high) { protestants_win = 1; }
+	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
+
+	  //
+	  //
+	  //
+	  let obj = {};
+	  obj.key = mv[1];
+          obj.name = this.spaces[space].name;
+	  obj.pdice = pdice;
+	  obj.cdice = cdice;
+	  obj.p_roll_desc = p_roll_desc;
+	  obj.c_roll_desc = c_roll_desc;
+	  obj.p_high = p_high;
+	  obj.c_high = c_high;
+	  obj.reformation = true;
+	  obj.counter_reformation = false;
+          obj.protestants_win = protestants_win;
+	  this.reformation_overlay.render(obj);
+
+	  //
+	  // handle victory
+	  //
+	  if (protestants_win == 1) {
+	    this.game.queue.push("convert\t"+space+"\tprotestant");
+	  } else {
+	    if (parseInt(this.game.state.events.carlstadt_debater) == 1) {
+	      // unrest
+	      this.game.queue.push("unrest\t"+space);
+	    }
+	    this.updateLog(this.returnSpaceName(space) + " remains Catholic");
+	  }
+
+	  return 1;
+
+	}
+
+
+	if (mv[0] === "counter_reformation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  let target_language_zone = mv[2] || "german";
+	  this.game.state.tmp_counter_reformations_this_turn.push(space);
+
+	  let p_rolls = 0;
+	  let c_rolls = 0;
+
+	  let p_neighbours = 0;
+	  let c_neighbours = 0;
+
+	  let p_bonus = 0;
+	  let c_bonus = 0;
+
+	  let p_high = 0;
+	  let c_high = 0;
+
+	  let p_roll_desc = [];
+	  let c_roll_desc = [];
+
+	  let catholics_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // language zone
+	  //
+	  if (this.game.spaces[space].language === target_language_zone) {
+	    //
+	    // catholics win ties if Paul III or Julius III are Pope
+	    //
+	    if (this.game.state.leaders.paul_iii == 1 || this.game.state.leaders.julius_iii == 1) {
+	      ties_resolve = "catholic";
+	    }
+ 	  }
+
+          //
+          // neighbours
+          //
+          for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (!this.game.spaces[space].pass.includes(this.game.spaces[space].neighbours[i]) && !this.game.spaces[this.game.spaces[space].neighbours[i]].unrest) {
+            if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+              c_neighbours++;
+            }
+            if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+              p_neighbours++;
+            }
+            if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
+              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+              p_rolls++;
+            }
+            if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
+              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+              c_rolls++;
+            }
+            if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
+              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+              p_rolls++;
+            }
+            if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
+              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+              c_rolls++;
+            }
+            }
+          }
+
+          //
+          // ourselves
+          //
+          if (this.hasProtestantLandUnits(space)) {
+            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+            p_rolls++;
+            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+            p_rolls++;
+          }
+          if (this.hasCatholicLandUnits(space)) {
+            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+            c_rolls++;
+            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+            c_rolls++;
+          }
+          if (this.hasProtestantReformer(space)) {
+            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
+            p_rolls++;
+            p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
+            p_rolls++;
+          }
+          if (this.game.spaces[space].university) {
+            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
+            c_rolls++;
+            c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
+            c_rolls++;
+          }
+
+	  //
+	  // temporary bonuses
+	  //
+	  if (this.game.state.tmp_protestant_counter_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_protestant_counter_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_protestant_counter_reformation_bonus--;
+	      if (this.game.state.tmp_protestant_counter_reformation_bonus < 0) { this.game.state.tmp_protestant_counter_reformation_bonus = 0; }
+	    }
+	  }
+	  if (this.game.state.tmp_catholic_counter_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_catholic_counter_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_catholic_counter_reformation_bonus--;
+	      if (this.game.state.tmp_catholic_counter_reformation_bonus < 0) { this.game.state.tmp_catholic_counter_reformation_bonus = 0; }
+	    }
+	  }
+
+          for (let i = 0; i < this.game.state.tmp_protestant_counter_reformation_bonus; i++) {
+            p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
+          }
+          for (let i = 0; i < this.game.state.tmp_catholic_counter_reformation_bonus; i++) {
+            c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+          }
+          p_bonus += this.game.state.tmp_protestant_counter_reformation_bonus;
+          c_bonus += this.game.state.tmp_catholic_counter_reformation_bonus;
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+	  //
+	  // everyone rolls at least 1 dice
+	  //
+          if (c_rolls == 0) {
+	    c_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    c_rolls = 1;
+	  }
+          if (p_rolls == 0) {
+	    p_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    p_rolls = 1;
+	  }
+
+	  let pdice = [];
+	  let cdice = [];
+
+	  for (let i = 0; i < p_rolls; i++) {
+	    let x = this.rollDice(6);
+	    pdice.push(x);
+	    if (x > p_high) { p_high = x; }
+	  }
+
+	  for (let i = 0; i < c_rolls; i++) {
+	    let x = this.rollDice(6);
+	    if (his_self.game.state.events.augsburg_confession == 1) { x--; }
+	    cdice.push(x);
+	    if (x > c_high) { c_high = x; }
+	  }
+
+	  //
+	  // do catholics win?
+	  //
+	  if (p_high < c_high) { catholics_win = 1; }
+	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
+
+          //
+          // render results
+          //
+          let obj = {};
+          obj.key = mv[1];
+          obj.name = this.spaces[space].name;
           obj.pdice = pdice;
           obj.cdice = cdice;
           obj.pdice = pdice;
