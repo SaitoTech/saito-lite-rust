@@ -73,6 +73,7 @@ class ChatManager {
 				// We use an event so that other components can piggy back off this request
 				//
 				this.app.connection.emit('chat-manager-render-request');
+				this.app.connection.emit("chat-manager-opens-group", group);
 			}
 		});
 
