@@ -68,7 +68,7 @@ class WelcomeOverlay {
 		if (faction === 'ottoman') {
 			document.querySelector(
 				'.welcome-title'
-			).innerHTML = `You are the Ottomans`;
+			).innerHTML = `You are the Turks`;
 			document.querySelector('.welcome-text').innerHTML = `
 			  "If we will not learn out of the Scriptures, we must learn out of the Turk’s scabbard..."
 			  </br>-- <i>Martin Luther</i>
