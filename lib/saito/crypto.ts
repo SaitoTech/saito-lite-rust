@@ -292,11 +292,14 @@ export default class Crypto {
 	isPublicKey(publicKey: string) {
 		// if (publicKey.length == 65 || publicKey.length == 66) {
 		//   return 1;
-		if (publicKey.indexOf('@') <= 0) {
-			if (this.isBase58(publicKey)) {
-				return 1;
+		if (publicKey){
+			if (publicKey.indexOf('@') <= 0) {
+				if (this.isBase58(publicKey)) {
+					return 1;
+				}
 			}
 		}
+
 		// }
 		return 0;
 	}

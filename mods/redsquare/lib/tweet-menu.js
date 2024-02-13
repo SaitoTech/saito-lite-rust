@@ -24,7 +24,6 @@ class TweetMenu {
 		});
 
 		let reference = this.container.getBoundingClientRect();
-		console.log(reference.top, reference.left);
 
 		let new_top = Math.max(0, Math.round(reference.top) - 260);
 		let new_left = Math.max(0, Math.round(reference.left) - 280);
@@ -37,7 +36,7 @@ class TweetMenu {
 	attachEvents() {
 		Array.from(document.querySelectorAll('.tweet-menu-list-item')).forEach(
 			(item) => {
-				item.onclick = (e) => {
+				item.onclick = async (e) => {
 					console.log(e.currentTarget);
 					switch (e.currentTarget.getAttribute("id")) {
 						case 'follow_contact':
@@ -56,7 +55,7 @@ class TweetMenu {
 							this.hideTweet();
 							break;
 						case 'report_tweet':
-							this.reportTweet();
+							await this.reportTweet();
 					}
 
 					this.overlay.close();
@@ -66,7 +65,6 @@ class TweetMenu {
 	}
 
 	close() {
-		console.log('Callback ran on close?');
 		this.tweet = null;
 		this.container = null;
 	}

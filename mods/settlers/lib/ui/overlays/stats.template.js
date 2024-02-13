@@ -120,7 +120,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
                         <div class="settlers-stats-vp-count">${
 	stats.mod.game.state.players[player].road
 }</div>
-                        <div class="settlers-stats-multiplier">+2</div>
+                        <div class="settlers-stats-multiplier">+${stats.mod.longest.value}</div>
                       </div>
                       <div class="settlers-stats-vp settlers-stats-largest-army${
 	stats.mod.game.state.largestArmy.player ==

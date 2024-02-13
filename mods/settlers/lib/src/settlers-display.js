@@ -237,7 +237,7 @@ class SettlersDisplay {
 
         if (this.game.state.longestRoad.player == i) {
           statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}`;
-          statshtml += `<div class="army_knights vproundel">2</div>`;
+          statshtml += `<div class="army_knights vproundel">${this.longest.value}</div>`;
           statshtml += `</div>`;
         }
 
