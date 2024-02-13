@@ -62,6 +62,7 @@ class ChatManager {
 					this.popups[group.id].group = group;
 				}
 
+				console.log("CHAT POPUP", this.render_popups_to_screen, this.popups[group.id].is_rendered);
 				if (
 					this.render_popups_to_screen ||
 					this.popups[group.id].is_rendered
@@ -73,7 +74,6 @@ class ChatManager {
 				// We use an event so that other components can piggy back off this request
 				//
 				this.app.connection.emit('chat-manager-render-request');
-				this.app.connection.emit("chat-manager-opens-group", group);
 			}
 		});
 
@@ -108,6 +108,8 @@ class ChatManager {
 		// (in the absence of a proper chat-manager listing the groups/contacts)
 
 		app.connection.on('open-chat-with', (data = null) => {
+			let popup_status = this.render_popups_to_screen;
+			//Allow this event to force open a chat
 			this.render_popups_to_screen = 1;
 
 			if (this.mod.debug) {
@@ -152,7 +154,7 @@ class ChatManager {
 			}
 
 			app.connection.emit('chat-popup-render-request', group);
-			app.connection.emit("chat-manager-opens-group", group);
+			this.render_popups_to_screen = popup_status;
 		});
 
 		app.connection.on('relay-is-online', (pkey) => {
@@ -360,7 +362,6 @@ class ChatManager {
 					}
 
 					this.app.connection.emit('chat-manager-render-request');
-					this.app.connection.emit("chat-manager-opens-group", group);
 				};
 
 				item.oncontextmenu = (e) => {

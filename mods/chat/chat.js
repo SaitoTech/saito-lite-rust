@@ -91,7 +91,6 @@ class Chat extends ModTemplate {
 		this.app.connection.on('chat-ready', () => {
 			if (this.auto_open_community) {
 				this.app.connection.emit('chat-popup-render-request');
-				this.app.connection.emit("chat-manager-opens-group", this.communityGroup);
 			}
 		});
 
@@ -229,7 +228,8 @@ class Chat extends ModTemplate {
 		) {
 			this.chat_manager.chat_popup_container = '.saito-main';
 		}
-
+		
+		this.chat_manager.render_popups_to_screen = 0;
 		this.chat_manager.render_manager_to_screen = 1;
 
 		this.styles = ['/saito/saito.css', '/chat/style.css'];
@@ -277,11 +277,11 @@ class Chat extends ModTemplate {
 					this.saveChatGroup(chat_group);
 
 					this.app.connection.emit('chat-manager-render-request');
+
 				}
 
 				this.sendJoinGroupTransaction(chat_group);
-				this.app.connection.emit("chat-manager-opens-group", chat_group);
-	
+
 			}
 		
 
@@ -566,7 +566,6 @@ class Chat extends ModTemplate {
 								);
 							}
 
-							chat_self.chat_manager.render_popups_to_screen = 1;
 							chat_self.app.connection.emit('open-chat-with', {
 								key: publicKey
 							});
@@ -596,7 +595,6 @@ class Chat extends ModTemplate {
 									);
 								}
 
-								chat_self.chat_manager.render_popups_to_screen = 1;
 								chat_self.app.connection.emit(
 									'open-chat-with',
 									{ key: publicKey }
@@ -926,6 +924,13 @@ class Chat extends ModTemplate {
 
 			if (!group.members.includes(new_member)) {
 				group.members.push(new_member);
+				tx.msg.message = `<div class="saito-chat-notice">
+											<span class="saito-mention saito-address" data-id="${new_member}">${this.app.keychain.returnUsername(new_member)}</span>
+											<span> joined the group</span>
+										</div>`;
+				tx.notice = true;
+				this.addTransactionToGroup(group, tx);
+
 			}
 
 			//Don't overwrite admin (if for some reason admin is sending a confirm)
@@ -934,12 +939,6 @@ class Chat extends ModTemplate {
 			}
 
 	
-			tx.msg.message = `<div class="saito-chat-notice">
-										<span class="saito-mention saito-address" data-id="${new_member}">${this.app.keychain.returnUsername(new_member)}</span>
-										<span> joined the group</span>
-									</div>`;
-			tx.notice = true;
-			this.addTransactionToGroup(group, tx);
 			this.app.connection.emit('chat-popup-render-request', group);
 
 			if (group.member_ids[this.publicKey] == "admin"){
