@@ -114,7 +114,7 @@ class ChatPopup {
 				`#chat-popup-${this.group.id} .chat-footer`
 			);
 
-			if (this.group.name == this.mod.communityGroupName || this.group?.member_ids) {
+			if (this.group.name == this.mod.communityGroupName || this.group?.member_ids || this.group.members.length > 2) {
 				this.input.enable_mentions = true;
 			}
 

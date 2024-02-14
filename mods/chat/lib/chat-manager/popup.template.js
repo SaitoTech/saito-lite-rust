@@ -14,7 +14,7 @@ module.exports = (app, mod, group, isStatic = false) => {
 
 	let is_encrypted = ``;
 
-	if (group.members.length == 2 && !group.member_ids) {
+	if (group.members.length == 2 && !group?.member_ids) {
 		for (let member of group.members) {
 			if (member !== mod.publicKey) {
 				if (app.keychain.hasSharedSecret(member)) {

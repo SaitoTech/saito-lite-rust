@@ -47,7 +47,7 @@ class ChatUserMenu {
 				if (name) {
 					thisobj.chat_group.name = sanitize(name);
 
-					if (thisobj.chat_group?.member_ids[thisobj.mod.publicKey] == 'admin' ) {
+					if (thisobj.chat_group?.member_ids && thisobj.chat_group.member_ids[thisobj.mod.publicKey] == 'admin' ) {
 						console.log('Send new name as group tx');
 						thisobj.mod.sendUpdateGroupTransaction(thisobj.chat_group);
 					}
