@@ -166,6 +166,9 @@
 	height: 11%;
 	width: 7%;
 }
+.faction_sheet_keytile:hover {
+	opacity: 0.3;
+}
 .henry_viii_marital_status1 {
     top: 52%;
     left: 3%;

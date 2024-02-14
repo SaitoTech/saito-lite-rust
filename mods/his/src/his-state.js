@@ -60,6 +60,7 @@
     this.game.state.events.sack_of_rome = 0;
     this.game.state.events.julia_gonzaga_activated = 0;
     this.game.state.events.england_changed_rulers_this_turn = 0;
+    this.game.state.cards_evented = [];
 
     this.game.state.may_explore['england'] = 1;
     this.game.state.may_explore['france'] = 1;
@@ -623,6 +624,7 @@ if (this.game.options.scenario != "is_testing") {
     state.spaces_assaulted_this_turn = [];
     state.board_updated = new Date().getTime();
     state.board = {}; // units on board
+    state.cards_evented = [];
 
     state.diplomacy = this.returnDiplomacyAlliance();
 

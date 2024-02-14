@@ -284,6 +284,26 @@ class FactionOverlay {
 			}
 		}
 
+
+		//
+		// Bible Translations
+		//
+		if (his_self.factions[faction].key === 'protestant') {
+		  if (his_self.game.state.translations['full']['german'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleGerman.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		  if (his_self.game.state.translations['full']['english'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleEnglish.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		  if (his_self.game.state.translations['full']['french'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleFrench.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		}
+
+
 		this.attachEvents();
 	}
 
