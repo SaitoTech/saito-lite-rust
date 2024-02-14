@@ -76,7 +76,8 @@ class Settlers extends GameTemplate {
 		};
 		this.b = {
 			name: 'bandit',
-			svg: `<img src="/settlers/img/icons/bandit.png"/>`
+			svg: `<img src="/settlers/img/icons/bandit.png"/>`,
+			alt: `<img src="/settlers/img/icons/robinhood.png"/>`
 		};
 		this.s = {
 			name: 'knight',
