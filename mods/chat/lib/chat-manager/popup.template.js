@@ -57,17 +57,10 @@ module.exports = (app, mod, group, isStatic = false) => {
               data-disable="true">${group.name}</div>
               </div>
 
-              ${
-	group.name != mod.communityGroupName &&
-					group.members.length == 2 && !group?.member_ids
-		? `
               <div class="chat-action-icons">
                 <div class="chat-actions"></div>
-                <div class="chat-action-item saito-add-user-menu" data-id="${group.name}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+                <div class="chat-action-menu" data-id="${group.id}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
 	             </div>
-              `
-		: ``
-}
             </div>
           </div>
 
