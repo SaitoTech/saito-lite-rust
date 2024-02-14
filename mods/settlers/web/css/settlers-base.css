@@ -650,10 +650,12 @@ input[type='checkbox'] {
 
 .robinhood .bandit {
 	background-image: url(/settlers/img/icons/robinhood.png);
+	transform: translate(-50%, -50%) scaleX(-1);
 }
 
 .bandit .hexTileCenter {
 	opacity: 0.5;
+	transform: translate(-50%, -50%) scaleX(-1);
 }
 
 .city.p1 {
