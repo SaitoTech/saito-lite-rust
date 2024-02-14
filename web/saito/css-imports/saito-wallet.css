@@ -157,6 +157,20 @@
   overflow: hidden;
 }
 
+.withdraw-address-cont {
+  position: relative;
+}
+
+.withdraw-address-cont i {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
 .mixin-withdraw-token-wrapper {
   margin-bottom: 2rem;
 }
