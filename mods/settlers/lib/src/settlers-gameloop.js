@@ -64,13 +64,16 @@ class SettlersGameloop {
         // 0-index
         let winner = parseInt(mv[1]);
         this.game.queue = [];
+        this.game.canProcess = true;
 
         this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState} and wins the game!`);
+        this.stats_overlay.render(this.game.playerNames[winner]);
 
-        this.stats_overlay.render();
-        $(".settlers-stats-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
-
-        this.sendGameOverTransaction(this.game.players[winner]);
+        if (this.gameOverCallback){
+          this.gameOverCallback();  
+        }else{
+          this.sendGameOverTransaction(this.game.players[winner]);
+        }
 
         return 0;
       }
@@ -88,6 +91,7 @@ class SettlersGameloop {
         //the player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards.push("x"); //Add card for display
+          this.updateStatus(`<div class="persistent player-notice"><span>${this.formatPlayer(player)} bought a ${html}</span></div>`);
         } else {
 
           document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
@@ -124,6 +128,11 @@ class SettlersGameloop {
         this.updateLog(
           `${this.formatPlayer(player)} played ${cardname} to gain 1 victory point`
         );
+
+        this.updateStatus(
+          `<div class="persistent player-notice"><span>${this.formatPlayer(player)} played ${cardname} to gain 1 victory point</span></div>`
+        );
+
         return 1;
       }
 
@@ -159,9 +168,9 @@ class SettlersGameloop {
           this.playerPlayBandit();
         } else {
           this.updateStatus(
-            `<div class="player-notice">Waiting for ${
+            `<div class="player-notice">${
               this.game.playerNames[player - 1]
-            } to move the ${this.b.name}...</div>`
+            } played a ${cardname} and is moving the ${this.b.name}...</div>`
           );
         }
         return 0;

@@ -1,5 +1,6 @@
 const SaitoInput = require('../../../../lib/saito/ui/saito-input/saito-input');
 const ChatPopupTemplate = require('./popup.template');
+const ChatUserMenu = require('./../overlays/chat-user-menu');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const debounce = require('lodash/debounce');
 
@@ -214,6 +215,14 @@ class ChatPopup {
 					}
 					index++;
 				}
+			}
+
+			if (document.querySelector(popup_qs + " .chat-action-menu")){
+				document.querySelector(popup_qs + " .chat-action-menu").onclick = (e) => {
+					let chatMenu = new ChatUserMenu(this.app, this.mod, this.group);
+					chatMenu.render();
+				}
+
 			}
 
 			if (this.group.online){

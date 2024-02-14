@@ -4309,8 +4309,8 @@ console.log("008 eventing!");
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
 	      for (let f in his_self.game.spaces[extra].units) {
-		if (his_self.returnFactionLandLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
-		  if (his_self.game.player == his.returnPlayerCommandingFaction(f)) {
+		if (his_self.returnFactionLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
+		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(f)) {
 	            for (let z = 0; z < his_self.game.spaces[extra].units[f].length; z++) {
 	              let u = his_self.game.spaces[extra].units[f][z].type;
 		      if (u.type == "mercenary" || u.type == "regular" || u.type == "cavalry") {
@@ -4367,8 +4367,8 @@ console.log("008 eventing!");
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
 	      for (let f in his_self.game.spaces[extra].units) {
-		if (his_self.returnFactionLandLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
-		  if (his_self.game.player == his.returnPlayerCommandingFaction(f)) {
+		if (his_self.returnFactionLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
+		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(f)) {
                     return 1;
                   }
                 }
