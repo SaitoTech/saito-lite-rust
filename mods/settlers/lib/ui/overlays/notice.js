@@ -17,8 +17,6 @@ class NoticeOverlay {
 			document.querySelector('.notice_overlay').onclick = () => {
 				this.overlay.hide();
 			};
-			this.overlay.blockClose();
-
 		} catch (err) {
 			console.log(err);
 		}

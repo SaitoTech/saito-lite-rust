@@ -195,7 +195,7 @@
   width: min(800px, 110vh);
   height: auto;
   max-height: 90vh;
-  max-width: 95%;
+  max-width: 95vw;
 }
 
 .splash_overlay img{

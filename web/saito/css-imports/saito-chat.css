@@ -255,8 +255,6 @@
 }
 
 .chat-header-info  i {
-  font-size: 2rem;
-  color: var(--saito-faded-icon-font);
 }
 
 .chat-container.minimized .chat-header-info {
@@ -273,9 +271,12 @@
   flex-direction: row;
   height: 100%;
   align-items: center;
+  font-size: 2rem;
+  color: var(--saito-faded-icon-font);
+
 }
 
-.chat-action-item {
+.chat-action-item, .chat-action-menu {
   cursor: pointer;
   height: 4rem;
   width: 3.5rem;
@@ -285,16 +286,17 @@
   transition: all 0.2s;
 }
 
-.chat-action-item.saito-add-user-menu{
-  width: 2.5rem;
+.chat-action-menu {
+  width: 3rem;
 }
 
-.chat-action-item:hover{
+.chat-action-item:hover, .chat-action-menu:hover{
   background-color: var(--saito-primary);
+  color: var(--saito-white);
 }
 
-.chat-action-item:hover i {
-  color: var(--saito-white);
+.chat-action-item:hover i, .chat-action-menu:hover i {
+  
 }
 
 /*.chat-header > i:last-child:hover {
@@ -501,6 +503,14 @@
   border-radius: 0.5rem;
   border: 1px solid var(--saito-border-color);
   font-size: 1.4rem;
+}
+
+.saito-user-self .chat-message-line:hover .saito-userline-reply{
+  right: -2.5rem;
+}
+
+.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply {
+  display: none;
 }
 
 .saito-user .saito-userline-reply i:hover {

@@ -146,6 +146,16 @@ class SettlersDisplay {
         this.racetrack.lock();
       }
     }
+
+    if (this.game.players.length == 2){
+      if (Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1){
+        console.log("Robin hood");
+        $(".gameboard").addClass("robinhood");
+      }else{
+        $(".gameboard").removeClass("robinhood");
+      }
+    }
+        
   }
 
   displayCardfan(deck = "") {
