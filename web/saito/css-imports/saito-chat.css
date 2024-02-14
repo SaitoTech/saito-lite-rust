@@ -505,6 +505,14 @@
   font-size: 1.4rem;
 }
 
+.saito-user-self .chat-message-line:hover .saito-userline-reply{
+  right: -2.5rem;
+}
+
+.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply {
+  display: none;
+}
+
 .saito-user .saito-userline-reply i:hover {
   color: var(--saito-primary);
 }
