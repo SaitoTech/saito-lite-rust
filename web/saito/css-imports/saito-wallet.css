@@ -352,13 +352,12 @@
   transform: scale(1);
 }
 
-
 .deposit {
   color: #00ae00;
   font-weight: bold;
 }
 
-.withdrawal {
+.withdraw {
   color: #e34927;
   font-weight: bold;
 }
