@@ -332,7 +332,7 @@ class MixinModule extends CryptoModule {
 		) {
 			return 1;
 		}
-		this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {});
+		this.mixin.fetchSafeSnapshots(this.asset_id, 500, (d) => {});
 		return 0;
 	}
 
