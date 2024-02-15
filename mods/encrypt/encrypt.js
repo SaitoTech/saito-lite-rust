@@ -43,6 +43,10 @@ class Encrypt extends ModTemplate {
       salert("Please be patient as this may take some time");
     });
 
+    app.connection.on("encrypt-decryption-failed", (publicKey) => {
+      this.reset_key_exchange(publicKey);
+    });
+
     return this;
   }
 
@@ -113,6 +117,11 @@ class Encrypt extends ModTemplate {
             console.log("ENCRYPT: You have accepted an encrypted channel request from " + sender);
           }          
         }
+
+        if (txmsg.request == "diffie hellman reset"){
+          console.log("ENCRYPTION RESET!");
+          this.app.keychain.updateEncryptionByPublicKey(sender, "reset");
+        }
       }
     }
   }
@@ -151,6 +160,11 @@ class Encrypt extends ModTemplate {
     if (message.request === "diffie hellman key response") {
       this.confirm_key_exchange(txmsg.bob, sender);
     }
+
+    if (message.request === "diffie hellman key reset"){
+      console.log("ENCRYPTION RESET!");
+      this.app.keychain.updateEncryptionByPublicKey(sender, "reset");
+    }
   }
 
   async onPeerHandshakeComplete(app, peer) {
@@ -177,6 +191,30 @@ class Encrypt extends ModTemplate {
     //  this.initiate_key_exchange(peer.peer.publicKey, 1, peer);  // offchain diffie-hellman with server
     //  }
     //}
+  }
+
+  async reset_key_exchange(recipient){
+    let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient);
+    if (!tx){
+      return;
+    }
+
+    console.log(`${recipient} is sending me encrypted messages!`);
+
+    tx.msg = {
+      module: this.name,
+      request: "diffie hellman reset",
+    };
+
+    await tx.sign();
+
+    this.app.connection.emit("relay-send-message", {
+      recipient,
+      request: "diffie hellman key reset",
+      data: tx.toJson(),
+    });
+    this.app.network.propagateTransaction(tx);
+    
   }
 
   /**
