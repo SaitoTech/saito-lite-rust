@@ -91,7 +91,7 @@ class SettlersGameloop {
         //the player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards.push("x"); //Add card for display
-          this.updateStatus(`<div class="persistent player-notice"><span>${this.formatPlayer(player)} bought a ${html}</span></div>`);
+          this.updateStatus(`<div class="persistent player-notice">${this.game.playerNames[player - 1]} bought a ${this.card.name} card</div>`);
         } else {
 
           document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
@@ -130,7 +130,7 @@ class SettlersGameloop {
         );
 
         this.updateStatus(
-          `<div class="persistent player-notice"><span>${this.formatPlayer(player)} played ${cardname} to gain 1 victory point</span></div>`
+          `<div class="persistent player-notice">${this.game.playerNames[player - 1]} played ${cardname} to gain 1 victory point</div>`
         );
 
         return 1;
@@ -215,6 +215,8 @@ class SettlersGameloop {
             }
             if (am_i_a_victim && this.game.player == i + 1) {
               this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} stole all your ${resource}`);
+            }else if (this.game.player == i + 1){
+              this.updateStatus(`<div class="player-notice">${this.game.playerNames[player - 1]} played ${cardname} for ${resource}</div>`);
             }
           }
         }
