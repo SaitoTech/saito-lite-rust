@@ -66,8 +66,10 @@ class Chat extends ModTemplate {
 		this.black_list = [];
 
 		this.app.connection.on('encrypt-key-exchange-confirm', (data) => {
-			this.returnOrCreateChatGroupFromMembers(data?.members);
+			let group = this.returnOrCreateChatGroupFromMembers(data?.members);
 			this.app.connection.emit('chat-manager-render-request');
+			//Refresh the chat app if you are in it
+			this.app.connection.emit("chat-manager-opens-group", group);
 		});
 
 		this.app.connection.on(

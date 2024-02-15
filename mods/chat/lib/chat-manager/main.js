@@ -62,7 +62,6 @@ class ChatManager {
 					this.popups[group.id].group = group;
 				}
 
-				console.log("CHAT POPUP", this.render_popups_to_screen, this.popups[group.id].is_rendered);
 				if (
 					this.render_popups_to_screen ||
 					this.popups[group.id].is_rendered

@@ -124,7 +124,7 @@ class Encrypt extends ModTemplate {
     }
     let message = newtx.returnMessage();
 
-    if (!message.request.includes("diffie hellman")) {
+    if (!message?.request?.includes("diffie hellman")) {
       return super.handlePeerTransaction(app, newtx, peer, mycallback);
     }
 
