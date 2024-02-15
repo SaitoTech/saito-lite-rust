@@ -53,6 +53,7 @@ class ChatUserMenu {
 					}
 					thisobj.mod.saveChatGroup(thisobj.chat_group);
 					thisobj.app.connection.emit('chat-manager-render-request');
+					thisobj.app.connection.emit('chat-popup-refresh-request', thisobj.chat_group);
 				}
 				thisobj.overlay.remove();
 			};

@@ -308,10 +308,13 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  cursor: unset;
+  cursor: default;
   font-size: 1.7rem;
 }
 
+.chat-header .chat-group.saito-address {
+  cursor: pointer;
+}
 
 .chat-header-nav .chat-details,
 .chat-header-info .chat-details {

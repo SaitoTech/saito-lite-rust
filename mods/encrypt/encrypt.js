@@ -208,11 +208,6 @@ class Encrypt extends ModTemplate {
 
     await tx.sign();
 
-    this.app.connection.emit("relay-send-message", {
-      recipient,
-      request: "diffie hellman key reset",
-      data: tx.toJson(),
-    });
     this.app.network.propagateTransaction(tx);
     
   }
