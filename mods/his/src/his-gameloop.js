@@ -3514,7 +3514,7 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  // likely means an automatic response, which likely means no cards permitting
 	  // intervention are in-hand.
 	  //
-	  if (this.faster_play == 1 && menu_index.length == 0 && attach_menu_events != 1) {
+	  if (this.faster_play == 1 && menu_index.length == 0 && attach_menu_events != 1 && this.isGameHalted() != 1) {
 
 	    //
 	    // we don't need to HALT the game because the game will not progress
