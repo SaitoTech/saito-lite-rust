@@ -29,7 +29,6 @@ const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const GameHelp = require('./lib/ui/game-help/game-help');
 const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template');
 
-
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
 const HISingularOption = require('./lib/core/options.template');
@@ -102,6 +101,9 @@ class HereIStand extends GameTemplate {
     // newbie mode
     //
     this.confirm_moves = 1;
+    this.faster_play = 1; // this speeds-up some responses at the cost of potentially
+			  // leaking information on what response cards users have or
+			  // do not have.
 
     //
     // "showcard" popups
@@ -143,6 +145,11 @@ class HereIStand extends GameTemplate {
         this.confirm_moves = 0;
       } else {
         this.confirm_moves = 1;
+      }
+      if (this.app.options.gameprefs.his_faster_play == 1) {
+        this.faster_play = 1;
+      } else {
+        this.faster_play = 0;
       }
     }
 
@@ -2319,7 +2326,6 @@ console.log("\n\n\n\n");
       // Game Queue
       //
       this.game.queue.push("round");
-      this.game.queue.push("READY");
 
       let deck2 = JSON.parse(JSON.stringify(this.deck));
       delete deck2['001'];
@@ -2641,6 +2647,54 @@ console.log("\n\n\n\n");
 	  game_mod.game_help.hide();
 	  game_mod.game_help.enabled = false;
 	  game_mod.confirm_moves = 0;
+        }else{
+          game_mod.menu.hideSubMenus();
+        } 
+      }
+    });
+
+
+    this.menu.addSubMenuOption("game-game", {
+      text : "Gameplay",
+      id : "game-gameplay",
+      class : "game-gameplay",
+      callback : null
+    });
+
+    this.faster_play = 1;
+    if (this.app.options.gameprefs) {
+      if (this.app.options.gameprefs.his_faster_play) {
+	this.faster_play = parseInt(this.app.options.gameprefs.his_faster_play);
+      }
+    }
+    this.menu.addSubMenuOption("game-gameplay",{
+      text: `Faster ${(this.faster_play==1)?"✔":""}`,
+      id:"game-gameplay-faster",
+      class:"game-gameplay-faster",
+      callback: function(app,game_mod){
+        if (game_mod.faster_play == 0){
+	  document.querySelector("#game-gameplay-slower div").innerHTML = "Slower ✔";
+	  document.querySelector("#game-gameplay-faster div").innerHTML = "Faster";
+          game_mod.displayModal("Game Settings", "Gameplay Speedup Disabled");
+          game_mod.saveGamePreference('his_faster_play', 0);
+	  game_mod.faster_play = 0;
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+      
+    this.menu.addSubMenuOption("game-gameplay",{ 
+      text: `Slower ${(this.faster_play==1)?"":"✔"}`,
+      id:"game-gameplay-slower",
+      class:"game-gameplay-slower",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 1){
+	  document.querySelector("#game-gameplay-slower div").innerHTML = "Slower";
+	  document.querySelector("#game-gameplay-faster div").innerHTML = "Faster ✔";
+          game_mod.displayModal("Game Settings", "Gameplay Speedup Enabled");
+          game_mod.saveGamePreference('his_faster_play', 1);
+	  game_mod.faster_play = 1;
         }else{
           game_mod.menu.hideSubMenus();
         } 
@@ -20057,6 +20111,13 @@ if (this.game.options.scenario != "is_testing") {
 
     let his_self = this;
 
+    if (!this.is_first_loop) {
+      this.is_first_loop = 1;
+    } else {
+      this.is_first_loop = 0;
+    }
+
+
     ///////////
     // QUEUE //
     ///////////
@@ -20227,6 +20288,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("show_overlay\twelcome\tfrance");
 	    this.game.queue.push("show_overlay\twelcome\tottoman");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+      	    this.game.queue.push("READY");
 	  }
 
           return 1;
@@ -20242,8 +20304,18 @@ if (this.game.options.scenario == "is_testing") {
 	// so it also inserts this so that when we hit it we remove it and then
 	// look for future moves
 	//
-	if (mv[0] === "halt") {
-          this.game.queue.splice(qe, 1);
+	if (mv[0] === "unhalt_from_acknowledge_speedup") {
+
+	  let msg = mv[1];
+	  this.updateStatus(msg);
+
+	  //
+	  // once we get here we aren't halted any more
+	  //
+	  this.halted = 0;
+	  this.is_halted = 0;
+
+	  // do not splice out, because all players need to resolve
 	  return 0;
 	}
 
@@ -20502,18 +20574,10 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
 		// && clause permits Hapsburgs in Tunis for instance
-console.log("SPACEKEY: " + i + "("+key+")");
-//console.log("A: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i))));
-//console.log("B: " + ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)));
-//console.log("C: " + (this.returnPlayerCommandingFaction(key) > 0));
-//console.log("D: " + (this.returnPlayerCommandingFaction(key) > 0));
-//console.log("E: " + (!this.isSpaceControlled(i, key)));
 		// space is NOT fortified AND controlled by me
 		// i am not protestant and this is not an electorate and league isn't active
 		// someone controls the faction in question
 		//  the space isn't controlled by the faction
-console.log("F: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i))) + " -- " + ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)) + " - " + (this.returnPlayerCommandingFaction(key) > 0));
-
 		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))) {
 
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
@@ -21376,6 +21440,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  // conquests don't offer choice, so return for immediate execution
 	  return 1;
         }
+
 
 	if (mv[0] === "resolve_exploration") {
 
@@ -22864,7 +22929,6 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
 
 	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
-alert("protestants cannot do anything before league forms");
 	    return 1;
 	  }
 
@@ -23130,7 +23194,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  return 1;
 
 	}
-
 
         if (mv[0] === "diet_of_worms_hapsburgs") {
 
@@ -23445,11 +23508,9 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
         }
 
-
-	//
-	// this bit of code is complicated, because it stops and starts game-flow but selecively.
 	//
 	// exists to be removed by counter_or_acknowledge
+	//
 	if (mv[0] === "halted") {
 	  return 0;
 	}
@@ -23487,9 +23548,9 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  //
 	  // if we get this far i have not confirmed and others may or may
 	  // not have confirmed, but we want at least to check to see wheter
-	  // i need to....
+	  // i want to just click ACKNOWLEDGE or take an action that might
+	  // affect future gameplay (such as playing a card)....
 	  //
-
 	  let msg = mv[1];
 	  let stage = "";
 	  if (mv[2]) { stage = mv[2]; }
@@ -23545,6 +23606,65 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	      his_self.updateStatus("skipping acknowledge...");
 	      return 0;
 	    }
+	  }
+
+
+	  //
+	  // in faster_play mode, we will switch to HALTED if there are 
+	  // no other options. this halts OUR game but allows others to continue
+	  // to play more rapidly, which helps speed-up games where network connections
+	  // can be a little slow, at the cost of leaking a small amount of information
+	  // about player hands from the speed of the response (i.e. a fast response 
+	  // likely means an automatic response, which likely means no cards permitting
+	  // intervention are in-hand.
+	  //
+	  if (this.faster_play == 1 && menu_index.length == 0 && attach_menu_events != 1) {
+
+	    //
+	    // we don't need to HALT the game because the game will not progress
+	    // until all players have hit RESOLVE anyway. 
+	    //
+            let my_specific_game_id = his_self.game.id;
+	    his_self.is_halted = 1;
+	    his_self.halted = 1;
+            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
+            his_self.hud.back_button = false;
+
+      	    let html = '<ul><li class="option" id="ok">acknowledge</li></ul>';
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              $('.option').off();
+              let action = $(this).attr("id");
+
+              his_self.game = his_self.loadGame(my_specific_game_id);
+
+	      // tell game engine we can move
+	      his_self.is_halted = 0;
+	      his_self.halted = 0;
+	      his_self.gaming_active = 0;
+
+              his_self.updateStatus('continuing...');
+
+              //
+              // our own move will have been ticked into the future queue, along with
+	      // anyone else's so we skip restartQueue() which will freeze if it sees
+	      // that we have moves still pending, but should clear if it now finds 
+	      // UNHALT is the latest instruction and this resolve is coming from us!
+              //
+	      his_self.processFutureMoves();
+
+	    });
+
+            //
+            // halt my game (copies from ACKNOWLEDGE)
+      	    //
+            his_self.addMove("RESOLVE\t"+his_self.publicKey);
+            his_self.endTurn();
+            return 0;
+
 	  }
 
 	  this.updateStatusWithOptions(msg, html);
@@ -27251,39 +27371,6 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	      }
 	    }
 	  }
-/*****
-	  //
-	  // NOTE -- this bug may be fixed, but we are leaving the code in for now in order to avoid
-	  // potential issues while bugfixing. It can probably be safely removed though. TODO
-	  //
-	  // if Papal Bull removes the only uncommitted debater, then we can have a situation where
-	  // no debater is found for the defense and the game halts. We check against this edge case
-	  // by re-checking and picking a random committed debater in this case...
-	  //
-	  if (this.game.state.theological_debate.defender_debater === "") {
-	    dd = 0;
-	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	          dd++;
-	        }
-	      }
-	    }
-	    x = this.rollDice(dd) - 1;
-	    for (let i = 0, j = 0; i < this.game.state.debaters.length; i++) {
-	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	          if (x === j) {
-		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
-	          }
-		  j++;
-	        }
-	      }
-	    }
-	  }
-******/
 
 console.log("SELECTED DEBATER AT: " + this.game.state.theological_debate.attacker_debater);
 console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defender_debater);
@@ -31520,55 +31607,65 @@ if (this.game.state.events.cramner_active == 1) {
     }
 
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
+
       can_pass = true;
       cards.push("pass");
 
       //
-      // halt my game (copies from ACKNOWLEDGE)
+      // in faster_play mode, we will switch to HALTED if there are     
+      // no other options. this halts OUR game but allows others to continue
+      // to play more rapidly, which helps speed-up games where network connections
+      // can be a little slow, at the cost of leaking a small amount of information
+      // about player hands from the speed of the response (i.e. a fast response 
+      // likely means an automatic response, which likely means no cards permitting
+      // intervention are in-hand.
       //
-      his_self.halted = 1;
-      let my_specific_game_id = his_self.game.id;
-      his_self.game.queue.push("halt"); // clicking will hit this, which will be pruned and then next moves
-      his_self.game.queue.push("ACKNOWLEDGE\tNo Cards Left - You Must Pass");
-
-      his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
-      his_self.attachCardboxEvents((card) => {
-        try {
-          $('.card').off();
-          $('.card img').off();
-        } catch (err) {}
-
-        his_self.game_help.hide();
-
-        if (his_self.game.id != my_specific_game_id) {
-          his_self.game = his_self.loadGame(my_specific_game_id);
-        }
-
-        his_self.acknowledge_overlay.hide();
+      if (this.faster_play == 1) {
+          
+        //
+        // we don't need to HALT the game because the game will not progress
+        // until all players have hit RESOLVE anyway.
+        //
+        let my_specific_game_id = his_self.game.id;
+        his_self.is_halted = 1;
+        his_self.halted = 1;
+        his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
         his_self.hud.back_button = false;
-        his_self.updateStatus('acknowledged...');
-console.log("before remove: " + JSON.stringify(his_self.game.queue));
-	//
-	// remove ACKNOWLEDGE and PLAY
-	//
-        his_self.game.queue.splice(
-          his_self.game.queue.length - 1,
-          1
-        );
-console.log("after remove: " + JSON.stringify(his_self.game.queue));
-        his_self.restartQueue();
-        return 1;
-      });
+              
+        his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
+        his_self.attachCardboxEvents((card) => {
+          try {
+            $('.card').off();
+            $('.card img').off();
+          } catch (err) {}
 
-      //
-      // trigger other players to continue -- I am halted
-      //
-      // this will auto-pass
-      //
-      console.log("AUTO-PASSING!");
-      his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
-      his_self.endTurn();
-      return 0;
+          his_self.game = his_self.loadGame(my_specific_game_id);
+            
+          // tell game engine we can move
+          his_self.is_halted = 0;
+          his_self.halted = 0;
+          his_self.gaming_active = 0;
+
+          his_self.updateStatus('continuing...');
+
+          //
+          // our own move will have been ticked into the future queue, along with
+          // anyone else's so we skip restartQueue() which will freeze if it sees
+          // that we have moves still pending, but should clear if it now finds
+          // UNHALT is the latest instruction and this resolve is coming from us!
+          //
+          his_self.processFutureMoves();
+
+        });
+
+        //
+        // halt my game (copies from ACKNOWLEDGE)
+        //
+        his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
+        his_self.endTurn();
+        return 0;
+
+      }
     }
 
 
@@ -31595,7 +31692,6 @@ console.log("after remove: " + JSON.stringify(his_self.game.queue));
       //
       // if faction is England and Mary I is ruler, we have 50% 
       //
-console.log("card: " + card);
       if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
 	let x = this.rollDice(6);
 	if (x >= 4) {
@@ -37307,17 +37403,17 @@ console.log("AVAIL CONQUIST: " + JSON.stringify(available_conquistadors));
   }
 
   displayTurnTrack() {
-
-    let obj = document.querySelector(".turntrack");
-    obj.classList.remove(`turntrack1`);
-    obj.classList.remove(`turntrack${this.game.state.round-1}`);
-    obj.classList.add(`turntrack${this.game.state.round}`);
-
+    try {
+      let obj = document.querySelector(".turntrack");
+      obj.classList.remove(`turntrack1`);
+      obj.classList.remove(`turntrack${this.game.state.round-1}`);
+      obj.classList.add(`turntrack${this.game.state.round}`);
+    } catch (err) {}
   }
 
   displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
-
+    try {
     let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
     for (let i = 0; i < factions.length; i++) {
       for (let ii = 0; ii < factions.length; ii++) {
@@ -37341,6 +37437,7 @@ console.log("AVAIL CONQUIST: " + JSON.stringify(available_conquistadors));
 	}
       }
     }
+    } catch (err) {}
   }
 
   displayDebaters() {
