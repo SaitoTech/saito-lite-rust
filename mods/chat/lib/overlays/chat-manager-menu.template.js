@@ -10,7 +10,7 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 				<label for="enable-notifications">use system notifications</label>
 
 				<input type="checkbox" id="audio-notifications" ${mod?.audio_notifications ? "checked":"" }/>
-				<label for="audio-notifications">incoming message chime</label>
+				<label for="audio-notifications">incoming message chime <span class="note">(coming soon)</span></label>
 
 			</fieldset>
 

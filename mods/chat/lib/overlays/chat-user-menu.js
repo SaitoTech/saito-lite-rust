@@ -64,6 +64,7 @@ class ChatUserMenu {
 				this.chat_group.muted = true;
 				this.mod.saveChatGroup(this.chat_group);
 				this.overlay.remove();
+				thisobj.app.connection.emit('chat-manager-render-request');
 			}
 		}
 
@@ -72,6 +73,7 @@ class ChatUserMenu {
 				this.chat_group.muted = false;
 				this.mod.saveChatGroup(this.chat_group);
 				this.overlay.remove();
+				thisobj.app.connection.emit('chat-manager-render-request');
 			}
 		}
 
