@@ -53,9 +53,6 @@ this.updateLog(`###############`);
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
-	  //this.game.queue.push("counter_or_acknowledge\tThe Advent of Winter\twinter_phase");
-	  //this.game.queue.push("show_overlay\twinter");
-	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("spring_deployment_phase");
@@ -229,12 +226,12 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.player === player) { 
 	      this.welcome_overlay.render(faction); 
 	      this.game.queue.push("hide_overlay\twelcome");
-	      if (faction == "protestant") { this.game.queue.push("counter_or_acknowledge\tYou are the Protestants"); }
-	      if (faction == "papacy") { this.game.queue.push("counter_or_acknowledge\tYou are the Papacy"); }
-	      if (faction == "hapsburg") { this.game.queue.push("counter_or_acknowledge\tYou are the Hapsburgs"); }
-	      if (faction == "ottoman") { this.game.queue.push("counter_or_acknowledge\tYou are the Ottomans"); }
-	      if (faction == "france") { this.game.queue.push("counter_or_acknowledge\tYou are the French"); }
-	      if (faction == "england") { this.game.queue.push("counter_or_acknowledge\tYou are the English"); }
+	      if (faction == "protestant") { this.game.queue.push("ACKNOWLEDGE\tYou are the Protestants"); }
+	      if (faction == "papacy") { this.game.queue.push("ACKNOWLEDGE\tYou are the Papacy"); }
+	      if (faction == "hapsburg") { this.game.queue.push("ACKNOWLEDGE\tYou are the Hapsburgs"); }
+	      if (faction == "ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the Ottomans"); }
+	      if (faction == "france") { this.game.queue.push("ACKNOWLEDGE\tYou are the French"); }
+	      if (faction == "england") { this.game.queue.push("ACKNOWLEDGE\tYou are the English"); }
 	    }
 	  }
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
