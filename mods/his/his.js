@@ -20179,13 +20179,13 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 } else {
-//	    this.game.queue.push("show_overlay\tvp");
-//	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-//	    this.game.queue.push("diet_of_worms");
-//	    this.game.queue.push("show_overlay\tdiet_of_worms");
+	    this.game.queue.push("show_overlay\tvp");
+	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+	    this.game.queue.push("diet_of_worms");
+	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    this.game.queue.push("card_draw_phase");
-//	    this.game.queue.push("event\tprotestant\t008");
-//	    this.game.queue.push("game_help_start");
+	    this.game.queue.push("event\tprotestant\t008");
+	    this.game.queue.push("game_help_start");
 }
 
 	  } else {
@@ -23610,11 +23610,13 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
 
 	  //
-	  // in faster_play mode, we will switch to ACKNOWLEDGE if there are 
+	  // in faster_play mode, we will switch to HALTED if there are 
 	  // no other options. this halts OUR game but allows others to continue
 	  // to play more rapidly, which helps speed-up games where network connections
 	  // can be a little slow, at the cost of leaking a small amount of information
-	  // about player hands from the speed of the response.
+	  // about player hands from the speed of the response (i.e. a fast response 
+	  // likely means an automatic response, which likely means no cards permitting
+	  // intervention are in-hand.
 	  //
 	  if (this.faster_play == 1 && menu_index.length == 0 && attach_menu_events != 1) {
 
@@ -23631,25 +23633,11 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
       	    let html = '<ul><li class="option" id="ok">acknowledge</li></ul>';
             his_self.updateStatusWithOptions(msg, html);
 
-console.log("# 1");          
-console.log("# 1");          
-console.log("# 1");          
-console.log("# updated status with option of acknowledge...");
-console.log("# 1 msg is: " + msg);          
-console.log("# 1");          
-console.log("# 1");          
-
             $('.option').off();
             $('.option').on('click', function () {
 
               $('.option').off();
               let action = $(this).attr("id");
-
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
-console.log("game queue before load: " + JSON.stringify(his_self.game.queue));
-console.log("confirms needed: " + his_self.game.confirms_needed);
 
               his_self.game = his_self.loadGame(my_specific_game_id);
 
@@ -23657,15 +23645,6 @@ console.log("confirms needed: " + his_self.game.confirms_needed);
 	      his_self.is_halted = 0;
 	      his_self.halted = 0;
 	      his_self.gaming_active = 0;
-
-console.log("# 2");          
-console.log("# 2");          
-console.log("# 2");          
-console.log("loading game - will process queue: " + JSON.stringify(his_self.game.queue));
-console.log("confirms needed 2: " + his_self.game.confirms_needed);
-console.log("# 2");          
-console.log("# 2");          
-console.log("# 2");          
 
               his_self.updateStatus('continuing...');
 
@@ -23675,8 +23654,6 @@ console.log("# 2");
 	      // that we have moves still pending, but should clear if it now finds 
 	      // UNHALT is the latest instruction and this resolve is coming from us!
               //
-console.log("STEPS HERE: " + JSON.stringify(his_self.game.step));
-console.log("executing processFutureMoves...");
 	      his_self.processFutureMoves();
 
 	    });
@@ -31630,53 +31607,65 @@ if (this.game.state.events.cramner_active == 1) {
     }
 
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
+
       can_pass = true;
       cards.push("pass");
 
       //
-      // halt my game (copies from ACKNOWLEDGE)
+      // in faster_play mode, we will switch to HALTED if there are     
+      // no other options. this halts OUR game but allows others to continue
+      // to play more rapidly, which helps speed-up games where network connections
+      // can be a little slow, at the cost of leaking a small amount of information
+      // about player hands from the speed of the response (i.e. a fast response 
+      // likely means an automatic response, which likely means no cards permitting
+      // intervention are in-hand.
       //
-      //
-      // remove this instruction so we don't restart into it
-      //
-      his_self.halted = 1;
-      let my_specific_game_id = his_self.game.id;
-      his_self.game.queue[his_self.game.queue.length-1] = "unhalt_from_acknowledge_speedup\t"+his_self.returnFactionName(faction) + " - You Must Pass";
-
-      his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
-      his_self.attachCardboxEvents((card) => {
-        try {
-          $('.card').off();
-          $('.card img').off();
-        } catch (err) {}
-
-        his_self.game_help.hide();
-
-        if (his_self.game.id != my_specific_game_id) {
-          his_self.game = his_self.loadGame(my_specific_game_id);
-        }
-
-        his_self.is_halted = 0;
-        his_self.acknowledge_overlay.hide();
+      if (this.faster_play == 1) {
+          
+        //
+        // we don't need to HALT the game because the game will not progress
+        // until all players have hit RESOLVE anyway.
+        //
+        let my_specific_game_id = his_self.game.id;
+        his_self.is_halted = 1;
+        his_self.halted = 1;
+        his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
         his_self.hud.back_button = false;
-        his_self.updateStatus('acknowledged...');
-        his_self.game.queue[his_self.game.queue.length-1] = "unhalt_from_acknowledge_speedup\t"+his_self.returnFactionName(faction) + " - Passes";
-	//
-	// remove ACKNOWLEDGE and PLAY
-	//
-        his_self.restartQueueSkipPending();
-        return 1;
-      });
+              
+        his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
+        his_self.attachCardboxEvents((card) => {
+          try {
+            $('.card').off();
+            $('.card img').off();
+          } catch (err) {}
 
-      //
-      // trigger other players to continue -- I am halted
-      //
-      // this will auto-pass
-      //
-      console.log("AUTO-PASSING!");
-      his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
-      his_self.endTurn();
-      return 0;
+          his_self.game = his_self.loadGame(my_specific_game_id);
+            
+          // tell game engine we can move
+          his_self.is_halted = 0;
+          his_self.halted = 0;
+          his_self.gaming_active = 0;
+
+          his_self.updateStatus('continuing...');
+
+          //
+          // our own move will have been ticked into the future queue, along with
+          // anyone else's so we skip restartQueue() which will freeze if it sees
+          // that we have moves still pending, but should clear if it now finds
+          // UNHALT is the latest instruction and this resolve is coming from us!
+          //
+          his_self.processFutureMoves();
+
+        });
+
+        //
+        // halt my game (copies from ACKNOWLEDGE)
+        //
+        his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
+        his_self.endTurn();
+        return 0;
+
+      }
     }
 
 
@@ -31703,7 +31692,6 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // if faction is England and Mary I is ruler, we have 50% 
       //
-console.log("card: " + card);
       if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
 	let x = this.rollDice(6);
 	if (x >= 4) {

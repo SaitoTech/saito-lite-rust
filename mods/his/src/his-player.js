@@ -1187,53 +1187,65 @@ if (this.game.state.events.cramner_active == 1) {
     }
 
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
+
       can_pass = true;
       cards.push("pass");
 
       //
-      // halt my game (copies from ACKNOWLEDGE)
+      // in faster_play mode, we will switch to HALTED if there are     
+      // no other options. this halts OUR game but allows others to continue
+      // to play more rapidly, which helps speed-up games where network connections
+      // can be a little slow, at the cost of leaking a small amount of information
+      // about player hands from the speed of the response (i.e. a fast response 
+      // likely means an automatic response, which likely means no cards permitting
+      // intervention are in-hand.
       //
-      //
-      // remove this instruction so we don't restart into it
-      //
-      his_self.halted = 1;
-      let my_specific_game_id = his_self.game.id;
-      his_self.game.queue[his_self.game.queue.length-1] = "unhalt_from_acknowledge_speedup\t"+his_self.returnFactionName(faction) + " - You Must Pass";
-
-      his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
-      his_self.attachCardboxEvents((card) => {
-        try {
-          $('.card').off();
-          $('.card img').off();
-        } catch (err) {}
-
-        his_self.game_help.hide();
-
-        if (his_self.game.id != my_specific_game_id) {
-          his_self.game = his_self.loadGame(my_specific_game_id);
-        }
-
-        his_self.is_halted = 0;
-        his_self.acknowledge_overlay.hide();
+      if (this.faster_play == 1) {
+          
+        //
+        // we don't need to HALT the game because the game will not progress
+        // until all players have hit RESOLVE anyway.
+        //
+        let my_specific_game_id = his_self.game.id;
+        his_self.is_halted = 1;
+        his_self.halted = 1;
+        his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
         his_self.hud.back_button = false;
-        his_self.updateStatus('acknowledged...');
-        his_self.game.queue[his_self.game.queue.length-1] = "unhalt_from_acknowledge_speedup\t"+his_self.returnFactionName(faction) + " - Passes";
-	//
-	// remove ACKNOWLEDGE and PLAY
-	//
-        his_self.restartQueueSkipPending();
-        return 1;
-      });
+              
+        his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
+        his_self.attachCardboxEvents((card) => {
+          try {
+            $('.card').off();
+            $('.card img').off();
+          } catch (err) {}
 
-      //
-      // trigger other players to continue -- I am halted
-      //
-      // this will auto-pass
-      //
-      console.log("AUTO-PASSING!");
-      his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
-      his_self.endTurn();
-      return 0;
+          his_self.game = his_self.loadGame(my_specific_game_id);
+            
+          // tell game engine we can move
+          his_self.is_halted = 0;
+          his_self.halted = 0;
+          his_self.gaming_active = 0;
+
+          his_self.updateStatus('continuing...');
+
+          //
+          // our own move will have been ticked into the future queue, along with
+          // anyone else's so we skip restartQueue() which will freeze if it sees
+          // that we have moves still pending, but should clear if it now finds
+          // UNHALT is the latest instruction and this resolve is coming from us!
+          //
+          his_self.processFutureMoves();
+
+        });
+
+        //
+        // halt my game (copies from ACKNOWLEDGE)
+        //
+        his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
+        his_self.endTurn();
+        return 0;
+
+      }
     }
 
 
@@ -1260,7 +1272,6 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // if faction is England and Mary I is ruler, we have 50% 
       //
-console.log("card: " + card);
       if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
 	let x = this.rollDice(6);
 	if (x >= 4) {
