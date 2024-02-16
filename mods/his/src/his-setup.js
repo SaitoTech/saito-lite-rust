@@ -30,7 +30,6 @@ console.log("\n\n\n\n");
       // Game Queue
       //
       this.game.queue.push("round");
-      this.game.queue.push("READY");
 
       let deck2 = JSON.parse(JSON.stringify(this.deck));
       delete deck2['001'];

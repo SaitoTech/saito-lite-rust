@@ -194,6 +194,13 @@
     }
   }
 
+  isActivatedPower(faction, activated_power) {
+    if (this.game.state.activated_powers[faction1].includes(activated_power)) {
+      return 1;
+    }
+    return 0;
+  }
+
 
   setAllies(faction1, faction2, amp=1) {
 

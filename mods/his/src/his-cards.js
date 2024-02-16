@@ -258,11 +258,6 @@
                   "Select French Home Port",
 
                   function(space) {
-if (space.key === "bordeaux") {
-  console.log("bordeaux");
-  console.log(space.ports.length + " -- " + space.home);
-  console.log(JSON.stringify(space));
-}
                     if (space.ports.length > 0 && space.home == "france") {
                       return 1;
                     }
@@ -564,7 +559,7 @@ if (space.key === "bordeaux") {
 	    let action = $(this).attr("id");
 
 	    if (action === "skip") { his_self.endTurn(); return 0; }
-	    let zzt = action.split("_")[0];
+	    let zzt = action.split("_")[1];
 
 	    if (ca.includes(zzt)) {
 
@@ -585,9 +580,7 @@ if (space.key === "bordeaux") {
 	      }
 
 	    } else {
-	      let x = action.split("_");
-	      action = x[1];
-	      his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
+	      his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(zzt[1])+"\t"+zzt[1]);
 	    }
 	    his_self.endTurn();
 	  });
@@ -1398,6 +1391,7 @@ if (space.key === "bordeaux") {
 	//
 	// controlling power gets 1 card
 	//
+	his_self.game.queue.push("hand_to_fhand\t1\t"+controlling_player+"\t"+controlling_power);
         his_self.game.queue.push(`DEAL\t1\t${controlling_player}\t1`);
 	his_self.game.queue.push("spanish_invasion_land\t"+controlling_player+"\t"+controlling_power+"\t"+victim_power);
 
@@ -3585,7 +3579,9 @@ console.log("008 eventing!");
           his_self.setEnemies("protestant","papacy");
           his_self.setEnemies("protestant","hapsburg");
           his_self.setAllies("papacy","hapsburg");
+	  //
 	  // protestant home + political spaces
+	  //
 	  for (let key in his_self.game.spaces) {
 	    s = his_self.game.spaces[key];
 	    if (s.language == "german") { 
@@ -3601,6 +3597,61 @@ console.log("008 eventing!");
 	      his_self.game.state.events.spanish_invasion = "";
 	    }
 	  }
+
+	  //
+	  // John Frederick and Philip of Hesse
+	  //
+	  let jf_added = 0;
+	  if (his_self.isSpaceControlled("wittenberg", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "wittenberg") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "wittenberg", "john-frederick");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("brandenburg", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "brandenburg") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "brandenburg", "john-frederick");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("augsburg", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "augsburg") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "augsburg", "john-frederick");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("mainz", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "mainz") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "mainz", "john-frederick");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("trier", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "trier") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "trier", "john-frederick");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("cologne", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "cologne") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "cologne", "john-frederick");
+	    jf_added = 1;
+	  }
+	  jf_added = 0;
+	  if (his_self.isSpaceControlled("mainz", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "mainz") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "mainz", "philip-hesse");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("cologne", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "cologne") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "cologne", "philip-hesse");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("trier", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "trier") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "trier", "philip-hesse");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("augsburg", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "augsburg") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "augsburg", "philip-hesse");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("brandenburg", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "brandenburg") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "brandenburg", "philip-hesse");
+	    jf_added = 1;
+	  }
+	  if (his_self.isSpaceControlled("wittenberg", "protestant") && his_self.returnFactionLandUnitsInSpace("protestant", "wittenberg") > 0 && jf_added == 0) {
+	    his_self.addArmyLeader("protestant", "wittenberg", "philip-hesse");
+	    jf_added = 1;
+	  }
+
           his_self.game.state.activated_powers["papacy"].push("hapsburg");
 	  his_self.displayBoard();
 	  return 1;
@@ -5969,15 +6020,17 @@ console.log("008 eventing!");
 	      function(spacekey) {
 	        his_self.game.spaces[spacekey].university = 1;
 	        his_self.displaySpace(spacekey);
-		his_self.addMove("jesuit_university\t"+spacekey);
-
+		his_self.addMove("found_jesuit_university\t"+spacekey);
+		let first_spacekey = spacekey;
+	
 	        his_self.playerSelectSpaceWithFilter(
 	          "Select Catholic Space for 2nd Jesuit University",
-	          function(space) { if (space.religion === "catholic" && space.university != 1) { return 1; } return 0; },
+	          function(space) { if (space.key != first_spacekey && space.religion === "catholic" && space.university != 1) { return 1; } return 0; },
 	          function(spacekey) {
+		    his_self.updateStatus("building universities...");
 	            his_self.game.spaces[spacekey].university = 1;
 	            his_self.displaySpace(spacekey);
-		    his_self.addMove("jesuit_university\t"+spacekey);
+		    his_self.addMove("found_jesuit_university\t"+spacekey);
 		    his_self.endTurn();
 		  },
 		  null,
@@ -7646,9 +7699,42 @@ console.log("HITS: " + hits);
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { if (faction == "protestant") { return 0; } return 1; },
+      canEvent : function(his_self, faction) {
+	if (faction === "protestant") { 
+          if (his_self.game.state.activated_powers[faction].length > 0) { return 1; }
+	  return 0;
+        };
+	return 1;
+      },
       onEvent : function(his_self, faction) {
 
+	if (his_self.game.state.activated_powers[faction].length > 0) {
+
+	  let msg = "Which Faction gets Recruits?";
+    	  let html = '<ul>';
+	  if (!(faction == "protestant" && his_self.game.state.events.schmalkaldic_league != 1)) {
+            html += `<li class="option" id="${faction}">${his_self.returnFactionName(faction)}</li>`;
+	  }
+	  for (let i = 0; i < his_self.game.state.activated_powers[faction].length; i++) {
+	    let f = his_self.game.state.activated_powers[faction][i];
+            html += `<li class="option" id="${f}">${his_self.returnFactionName(f)}</li>`;
+ 	  }  
+ 	  html += '</ul>';
+    	  his_self.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+	    his_self.updateStatus("acknowledge");
+	    let action = $(this).attr("id");
+  	    his_self.playerPlayOps("", action, 4, "build");
+	  });
+
+	  return 0;
+	}
+
+	//
+	// if no activated factions, must be us
+	//
 	his_self.updateStatus(his_self.returnFactionName(faction) + " playing "+ his_self.popup("076"));
 	let player = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player == player) {
@@ -9873,7 +9959,7 @@ console.log("HITS: " + hits);
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (his_self.game.state.events.schmalkaldic_league != 1 && faction == "protestant") { return 0; }
+	//if (his_self.game.state.events.schmalkaldic_league != 1 && faction == "protestant") { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {
@@ -10201,6 +10287,7 @@ console.log("TESTING: " + JSON.stringify(space.units));
 		      nonregulars_to_delete--;
 		    }
 		  }
+		  his_self.addMove(`${his_self.popup("107")} strikes ${his_self.returnSpaceName(spacekey)}`); 
 		  his_self.endTurn();
 		});
 

@@ -7,6 +7,13 @@
 
     let his_self = this;
 
+    if (!this.is_first_loop) {
+      this.is_first_loop = 1;
+    } else {
+      this.is_first_loop = 0;
+    }
+
+
     ///////////
     // QUEUE //
     ///////////
@@ -107,7 +114,16 @@ if (this.game.options.scenario == "is_testing") {
 	      this.addDebater("protestant", "olivetan-debater");
 	      this.addDebater("protestant", "calvin-debater");
 	      this.addReformer("protestant", "geneva", "calvin-reformer");
+
+	      if (this.game.players.length == 2) {
+	        //
+	        // Henry VIII marries Anne Boleyn
+	        //
+	        this.game.state.henry_viii_marital_status = 2;
+	      }
 	    }
+
+
 
 	    //
 	    // round 5 - cranmer in london
@@ -138,12 +154,13 @@ if (this.game.options.scenario == "is_testing") {
 	    // round 6 or higher - England (Mary, Elizabeth and Edward)
 	    //
 	    // this logic is implemented in newCards
-	    if (this.game.state.round >= 6 ) {
-	      if (this.game.state.healthy_edward == 1) {
+	    //
+	    if (this.game.players.length == 2) {
+	      if (this.game.state.round >= 6 ) {
+                this.game.state.henry_viii_healthy_edward = 1;
+                this.game.state.henry_viii_sickly_edward = 0;
+                this.game.state.henry_viii_add_elizabeth = 0;
 	      }
-              this.game.state.henry_viii_healthy_edward = 1;
-              this.game.state.henry_viii_sickly_edward = 0;
-              this.game.state.henry_viii_add_elizabeth = 0;
 	    }
 
 
@@ -167,6 +184,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("show_overlay\twelcome\tfrance");
 	    this.game.queue.push("show_overlay\twelcome\tottoman");
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+      	    this.game.queue.push("READY");
 	  }
 
           return 1;
@@ -177,7 +195,23 @@ if (this.game.options.scenario == "is_testing") {
 	  return 1;
         }
 
-	if (mv[0] === "halt") {
+	//
+	// passing code uses this, it manually puts up ACKNOWLEDGE then restarts
+	// so it also inserts this so that when we hit it we remove it and then
+	// look for future moves
+	//
+	if (mv[0] === "unhalt_from_acknowledge_speedup") {
+
+	  let msg = mv[1];
+	  this.updateStatus(msg);
+
+	  //
+	  // once we get here we aren't halted any more
+	  //
+	  this.halted = 0;
+	  this.is_halted = 0;
+
+	  // do not splice out, because all players need to resolve
 	  return 0;
 	}
 
@@ -264,6 +298,18 @@ if (this.game.options.scenario == "is_testing") {
           let faction = mv[1];
           let cards_left = parseInt(mv[2]);
 	  this.game.state.cards_left[faction] = cards_left;
+
+	  //
+	  // we don't send this if we aren't playing event or ops, so if cards_left > 0, we 
+	  // do not trigger auto-passing. this "unsets" pass if we have passed earlier, allowing
+	  // players to pass and then decide to continue later.
+	  //
+	  let player = this.returnPlayerCommandingFaction(faction);
+          for (let z = 0; z < this.game.state.players_info[player-1].factions.length; z++) {
+	    if (this.game.state.players_info[player-1].factions[z] == faction) {
+	      this.game.state.players_info[player-1].factions_passed[z] = false;
+	    }
+	  }
 
 	  this.displayCardsLeft();
 
@@ -424,18 +470,10 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
 		// && clause permits Hapsburgs in Tunis for instance
-console.log("SPACEKEY: " + i + "("+key+")");
-//console.log("A: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i))));
-//console.log("B: " + ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)));
-//console.log("C: " + (this.returnPlayerCommandingFaction(key) > 0));
-//console.log("D: " + (this.returnPlayerCommandingFaction(key) > 0));
-//console.log("E: " + (!this.isSpaceControlled(i, key)));
 		// space is NOT fortified AND controlled by me
 		// i am not protestant and this is not an electorate and league isn't active
 		// someone controls the faction in question
 		//  the space isn't controlled by the faction
-console.log("F: " + (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i))) + " -- " + ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)) + " - " + (this.returnPlayerCommandingFaction(key) > 0));
-
 		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))) {
 
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
@@ -1299,6 +1337,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  return 1;
         }
 
+
 	if (mv[0] === "resolve_exploration") {
 
     	  this.game.queue.splice(qe, 1);
@@ -1701,6 +1740,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let card = mv[2];
 
 	  this.game.queue.splice(qe, 1);
+          this.game.state.cards_evented.push(card);
 
           this.updateLog(this.returnFactionName(faction) + " triggers " + this.popup(card));
 
@@ -2785,7 +2825,6 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
 
 	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
-alert("protestants cannot do anything before league forms");
 	    return 1;
 	  }
 
@@ -3051,7 +3090,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  return 1;
 
 	}
-
 
         if (mv[0] === "diet_of_worms_hapsburgs") {
 
@@ -3366,11 +3404,9 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
         }
 
-
-	//
-	// this bit of code is complicated, because it stops and starts game-flow but selecively.
 	//
 	// exists to be removed by counter_or_acknowledge
+	//
 	if (mv[0] === "halted") {
 	  return 0;
 	}
@@ -3408,9 +3444,9 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	  //
 	  // if we get this far i have not confirmed and others may or may
 	  // not have confirmed, but we want at least to check to see wheter
-	  // i need to....
+	  // i want to just click ACKNOWLEDGE or take an action that might
+	  // affect future gameplay (such as playing a card)....
 	  //
-
 	  let msg = mv[1];
 	  let stage = "";
 	  if (mv[2]) { stage = mv[2]; }
@@ -3466,6 +3502,65 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	      his_self.updateStatus("skipping acknowledge...");
 	      return 0;
 	    }
+	  }
+
+
+	  //
+	  // in faster_play mode, we will switch to HALTED if there are 
+	  // no other options. this halts OUR game but allows others to continue
+	  // to play more rapidly, which helps speed-up games where network connections
+	  // can be a little slow, at the cost of leaking a small amount of information
+	  // about player hands from the speed of the response (i.e. a fast response 
+	  // likely means an automatic response, which likely means no cards permitting
+	  // intervention are in-hand.
+	  //
+	  if (this.faster_play == 1 && menu_index.length == 0 && attach_menu_events != 1) {
+
+	    //
+	    // we don't need to HALT the game because the game will not progress
+	    // until all players have hit RESOLVE anyway. 
+	    //
+            let my_specific_game_id = his_self.game.id;
+	    his_self.is_halted = 1;
+	    his_self.halted = 1;
+            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
+            his_self.hud.back_button = false;
+
+      	    let html = '<ul><li class="option" id="ok">acknowledge</li></ul>';
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              $('.option').off();
+              let action = $(this).attr("id");
+
+              his_self.game = his_self.loadGame(my_specific_game_id);
+
+	      // tell game engine we can move
+	      his_self.is_halted = 0;
+	      his_self.halted = 0;
+	      his_self.gaming_active = 0;
+
+              his_self.updateStatus('continuing...');
+
+              //
+              // our own move will have been ticked into the future queue, along with
+	      // anyone else's so we skip restartQueue() which will freeze if it sees
+	      // that we have moves still pending, but should clear if it now finds 
+	      // UNHALT is the latest instruction and this resolve is coming from us!
+              //
+	      his_self.processFutureMoves();
+
+	    });
+
+            //
+            // halt my game (copies from ACKNOWLEDGE)
+      	    //
+            his_self.addMove("RESOLVE\t"+his_self.publicKey);
+            his_self.endTurn();
+            return 0;
+
 	  }
 
 	  this.updateStatusWithOptions(msg, html);
@@ -5357,6 +5452,8 @@ console.log("we have made it this far 5!");
 	    }
 	  }
 
+	  this.updateLog(this.returnFactionName(faction) + " " + unit_type + " destroyed in " + this.returnSpaceName(spacekey));
+
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 	  this.displaySpace(spacekey);
 
@@ -6850,6 +6947,7 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	  let attacker = this.game.state.theological_debate.attacker;
 	  let defender = this.game.state.theological_debate.defender;
 	  let committed = this.game.state.theological_debate.committed;
+	  // 2nd round defaults to uncommitted
 	  let language_zone = this.game.state.theological_debate.language_zone;
 	  this.game.state.theological_debate.round++;
 	  let prohibited_protestant_debater = this.game.state.theological_debate.prohibited_protestant_debater;
@@ -6859,119 +6957,98 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 
 	  let x = 0;
 
-	  //
-	  // attacker chosen randomly from uncommitted
-	  //
+	  let attacker_enters_uncommitted = 1;
+
           let ad = 0;
-	  let cd = 0;
-	  for (let i = 0; i < this.game.state.debaters.length; i++) {
-	    if (this.game.state.debaters[i].owner == attacker) {
-	      if (attacker == "papacy" || (attacker == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	        if (this.game.state.debaters[i].committed == 0) {
-	          ad++;
-	 	} else {
-		  cd++;
-		}
-	      }
-	    }
-	  }
+          for (let i = 0; i < this.game.state.debaters.length; i++) {
+            if (this.game.state.debaters[i].owner == attacker) {
+              if (this.game.state.debaters[i].committed == 0) {
+                if (attacker == "papacy" || (attacker == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+                  ad++;
+                }
+              }
+            }
+          }
+          if (ad == 0) {
+            for (let i = 0; i < this.game.state.debaters.length; i++) {
+              if (this.game.state.debaters[i].owner == attacker) {
+                if (this.game.state.debaters[i].committed == 1) {
+                  if (attacker == "papacy" || (attacker == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+                    ad++;
+                    attacker_enters_uncommitted = 0;
+                  }
+                }
+              }
+            }
+          }
 
-	  //
-	  // defender chosen randomly from type uncommitted
-	  //
-	  let dd = 0;
-	  for (let i = 0; i < this.game.state.debaters.length; i++) {
-	    if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	      // second round picks from uncommitted unless not available
-	      if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed != 1) {
-	        dd++;
-	      }
-	    }
-	  }
+	  x = this.rollDice(ad) - 1;
+          ad = 0;
+          for (let i = 0; i < this.game.state.debaters.length; i++) {
+            if (this.game.state.debaters[i].owner == attacker) {
+              if ((attacker_enters_uncommitted == 1 && this.game.state.debaters[i].committed == 0) || (attacker_enters_uncommitted == 0 && this.game.state.debaters[i].committed == 1)) {
+                if (attacker == "papacy" || (attacker == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+                  if (x == ad) {
+                    this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
+                    this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+                    this.game.state.theological_debate.attacker_debater_entered_uncommitted = attacker_enters_uncommitted;
+                  }
+                  ad++;
+                }
+              }
+            }
+          }
 
-	  //
-	  // unless there aren't any more uncommitted
-	  //
+
+          //
+          // defender chosen randomly from uncommitted if available
+          //
+	  let uncommitted_defender = 1;
+          let dd = 0;
+          for (let i = 0; i < this.game.state.debaters.length; i++) {
+            if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+              if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+                dd++;
+              }
+            }
+          }
 	  if (dd == 0) {
-
-	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	        // second round picks from uncommitted unless not available
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	          dd++;
-	        }
-	      }
-	    }
-	    x = this.rollDice(dd) - 1;
-	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	          if (x === dd) {
-	            this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-	            this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
-		  }
-	          dd++;
-	        }
-	      }
-	    }
-
-	  //
-	  // but if there are pick one here
-	  //
-	  } else {
-
-	    x = this.rollDice(dd) - 1;
-	    dd = 0;
-	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	        if (x === dd) {
-	          this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-	          this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
-	        }
-	        dd++;
-	      }
-	    }
-
+	    uncommitted_defender = 0;
+            for (let i = 0; i < this.game.state.debaters.length; i++) {
+              if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+                if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
+                  dd++;
+                }
+              }
+            }
 	  }
 
-
-	  //
-	  // attacker chosen from uncommitted
-	  //
-	  let tad = 0;
-	  if (ad != 0) {
-	    x = this.rollDice(ad) - 1;
-	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (attacker == "papacy" || (attacker == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
-	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
-	          if (x === tad) {
-		    this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
-		    this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
-	            this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
-		  }
-	          tad++;
-	        }
-	      }
-	    }
-          } else {
-	    x = this.rollDice(cd) - 1;
-	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
-	        if (x === tad) {
-	          this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
-	          this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
-	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
-	        }
-	        tad++;
-	      }
-	    }
-	  }
-
-          this.game.state.theological_debate.round2_attacker_debater = this.game.state.theological_debate.attacker_debater;
-          this.game.state.theological_debate.round2_defender_debater = this.game.state.theological_debate.defender_debater;
-
+          x = this.rollDice(dd) - 1;
+          dd = 0;
+          for (let i = 0; i < this.game.state.debaters.length; i++) {
+            if (defender == "papacy" || (defender == "protestant" && this.game.state.theological_debate.language_zone == this.game.state.debaters[i].language_zone)) {
+              if (uncommitted_defender == 0) {
+                if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
+                  if (x === dd) {
+                    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+                    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+                    this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+                  }
+                  dd++;
+                }
+              } else {
+                if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
+                  if (x === dd) {
+                    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
+                    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+                    this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
+                    this.game.state.theological_debate.defender_debater_bonus++;
+                  }
+                  dd++;
+                }
+              }
+            }
+          }
 
 	  //
 	  // it is possible that we fall through because there are no eligible debaters. in this case
@@ -6994,7 +7071,6 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
 	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
-		    this.game.state.theological_debate.round2_defender_debater = this.game.state.debaters[i].type;
 	          }
 		  j++;
 	        }
@@ -7015,13 +7091,14 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
                   this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
                   this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
                   this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
-                  this.game.state.theological_debate.round2_dttacker_debater = this.game.state.debaters[i].type;
                 }
                 j++;
               }
             }
           }
 
+          this.game.state.theological_debate.round2_attacker_debater = this.game.state.theological_debate.attacker_debater;
+          this.game.state.theological_debate.round2_defender_debater = this.game.state.theological_debate.defender_debater;
 
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
@@ -7074,8 +7151,6 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 
 	  let x = 0;
 
-console.log("prohibited prot: " + this.game.state.theological_debate.prohibited_protestant_debater);
-console.log("language zone: " + this.game.state.theological_debate.language_zone);
 	  let attacker_enters_uncommitted = 1;
 
 	  //
@@ -7122,8 +7197,6 @@ console.log("language zone: " + this.game.state.theological_debate.language_zone
 	        }
 	      }
 	    }
-
-console.log("AD IS WHAT: " + ad);
 
 	    x = this.rollDice(ad) - 1;
 	    ad = 0;
@@ -7194,39 +7267,6 @@ console.log("AD IS WHAT: " + ad);
 	      }
 	    }
 	  }
-/*****
-	  //
-	  // NOTE -- this bug may be fixed, but we are leaving the code in for now in order to avoid
-	  // potential issues while bugfixing. It can probably be safely removed though. TODO
-	  //
-	  // if Papal Bull removes the only uncommitted debater, then we can have a situation where
-	  // no debater is found for the defense and the game halts. We check against this edge case
-	  // by re-checking and picking a random committed debater in this case...
-	  //
-	  if (this.game.state.theological_debate.defender_debater === "") {
-	    dd = 0;
-	    for (let i = 0; i < this.game.state.debaters.length; i++) {
-	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	          dd++;
-	        }
-	      }
-	    }
-	    x = this.rollDice(dd) - 1;
-	    for (let i = 0, j = 0; i < this.game.state.debaters.length; i++) {
-	      if (this.game.state.debaters[i].type !== prohibited_protestant_debater) {
-	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 1) {
-	          if (x === j) {
-		    this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
-		    this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
-	            this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
-	          }
-		  j++;
-	        }
-	      }
-	    }
-	  }
-******/
 
 console.log("SELECTED DEBATER AT: " + this.game.state.theological_debate.attacker_debater);
 console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defender_debater);
@@ -7272,7 +7312,7 @@ console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defende
 	  if (this.game.player == player) {
 	    this.playerCallTheologicalDebate(this, player, faction);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " calling theological debater");
+	    this.updateStatus(this.returnFactionName(faction) + " calling theological debate");
 	  }
 	  return 0;
 	}
@@ -7462,7 +7502,7 @@ this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) +
 	    } else {
 
 	      this.game.queue.push("theological_debate");
-	      this.game.queue.push("counter_or_acknowledge\tTheological Debate: 2nd Round\tdebate");
+	      this.game.queue.push("counter_or_acknowledge\tTheological Debate: 2nd Round\tdebate\t" + language_zone);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate_and_debaters");
 	      this.game.queue.push("pick_second_round_debaters");
@@ -7685,6 +7725,7 @@ alert("flipping more than exist in the zone!");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+	          his_self.updateLog("Protestants +1 VP for completing German Bible");
 		}
 	        if (this.game.state.translations['full']['german'] > 10) { this.game.state.translations['full']['german'] = 10; }
   	      } else {
@@ -7721,6 +7762,7 @@ alert("flipping more than exist in the zone!");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+	          his_self.updateLog("Protestants +1 VP for completing French Bible");
 		}
 	        if (this.game.state.translations['full']['french'] > 10) { this.game.state.translations['full']['french'] = 10; }
 	      } else {
@@ -7758,6 +7800,7 @@ alert("flipping more than exist in the zone!");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
         	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+	          his_self.updateLog("Protestants +1 VP for completing English Bible");
 		}
 	        if (this.game.state.translations['full']['english'] > 10) { this.game.state.translations['full']['english'] = 10; }
 	      } else {
@@ -8606,7 +8649,9 @@ if (this.game.options.scenario != "is_testing") {
 }
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
+		//
 	        // try to update cards_left
+		//
 	        if (!this.game.state.cards_left[this.game.state.players_info[i].factions[z]]) {
 	          this.game.state.cards_left[this.game.state.players_info[i].factions[z]] = 0;
 	        }
@@ -9376,7 +9421,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
             );
 
           } else {
-	    this.updateStatus("Counter-Reformation");
+	    this.updateStatus("Player selecting space to convert Catholic");
 	  }
 	  this.displayVictoryTrack();
 	  return 0;
@@ -9447,7 +9492,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
             );
           } else {
-	    this.updateStatus("Protestant Reformation");
+	    this.updateStatus("Player selecting space to convert Protestant");
 	  }
 
 	  this.displayVictoryTrack();
@@ -9475,6 +9520,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let spacekey = mv[1];
 	  this.game.spaces[spacekey].unrest = 1;
+	  this.updateLog(this.game.returnSpaceName(spacekey) + " enters unrest");
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -9487,6 +9533,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  this.game.spaces[spacekey].unrest = 0;
+	  this.updateLog(this.game.returnSpaceName(spacekey) + " out of unrest");
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
