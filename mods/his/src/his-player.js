@@ -1193,10 +1193,12 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // halt my game (copies from ACKNOWLEDGE)
       //
+      //
+      // remove this instruction so we don't restart into it
+      //
       his_self.halted = 1;
       let my_specific_game_id = his_self.game.id;
-      his_self.game.queue.push("halt"); // clicking will hit this, which will be pruned and then next moves
-      his_self.game.queue.push("ACKNOWLEDGE\tNo Cards Left - You Must Pass");
+      his_self.game.queue[his_self.game.queue.length-1] = "unhalt_from_acknowledge_speedup\t"+his_self.returnFactionName(faction) + " - You Must Pass";
 
       his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
       his_self.attachCardboxEvents((card) => {
@@ -1211,19 +1213,15 @@ if (this.game.state.events.cramner_active == 1) {
           his_self.game = his_self.loadGame(my_specific_game_id);
         }
 
+        his_self.is_halted = 0;
         his_self.acknowledge_overlay.hide();
         his_self.hud.back_button = false;
         his_self.updateStatus('acknowledged...');
-console.log("before remove: " + JSON.stringify(his_self.game.queue));
+        his_self.game.queue[his_self.game.queue.length-1] = "unhalt_from_acknowledge_speedup\t"+his_self.returnFactionName(faction) + " - Passes";
 	//
 	// remove ACKNOWLEDGE and PLAY
 	//
-        his_self.game.queue.splice(
-          his_self.game.queue.length - 1,
-          1
-        );
-console.log("after remove: " + JSON.stringify(his_self.game.queue));
-        his_self.restartQueue();
+        his_self.restartQueueSkipPending();
         return 1;
       });
 
