@@ -2626,6 +2626,7 @@ alert("HERE");
               let selected_reformer = $(this).attr("id");
 	      if (selected_reformer === "cranmer-reformer") {
 		his_self.addEndMove("counter_or_acknowledge\tPapal Bull announces excommunication of Cranmer\tpapal_bull_cranmer_excommunication");
+		his_self.addEndMove("RESETCONFIRMSNEEDED\tall");
 	      }
 	      his_self.addEndMove("excommunicate_reformer\t"+selected_reformer);
 
@@ -3191,8 +3192,6 @@ console.log("008 eventing!");
 
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
-        //his_self.game.queue.push("counter_or_acknowledge\tThe Reformation has begun!");
-        //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");

@@ -3343,8 +3343,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
   	    this.game.queue.push("STATUS\tProtestants selecting towns to convert...\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
   	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
-  	    //this.game.queue.push("counter_or_acknowledge\tProtestants win Diet of Worms");
-  	    //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  } else {
 	    if (protestant_hits < papacy_hits) {
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
@@ -3356,8 +3354,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
   	      this.game.queue.push("STATUS\tPapacy selecting towns to convert...\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
   	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
-  	      //this.game.queue.push("counter_or_acknowledge\tPapacy wins Diet of Worms");
-  	      //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    } else {
   	      //
               // report results
@@ -3365,8 +3361,6 @@ console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
-  	      //this.game.queue.push("counter_or_acknowledge\tDiet of Worms ends in a Stalemate");
-  	      //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    }
 	  }
 
@@ -8324,6 +8318,7 @@ if (this.game.state.round == 2) {
           if (is_papacy_at_war == true) {
             this.game.queue.push("papacy_diplomacy_phase_special_turn");
             this.game.queue.push("counter_or_acknowledge\tPapacy Special Diplomacy Phase");
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
           }
 
 	  this.game.queue.splice(qe, 1);
