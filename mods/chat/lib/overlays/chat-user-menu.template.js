@@ -9,7 +9,7 @@ module.exports = (app, mod, chat_group) => {
 	}
       
 	if (chat_group?.muted) {
-		html += `<div id="unmute" class="saito-modal-menu-option"><i class="fa-solid fa-volume"></i><div>Unmute</div></div>`;
+		html += `<div id="unmute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-high"></i><div>Unmute</div></div>`;
 	} else {
 		html += `<div id="mute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-xmark"></i><div>Mute</div></div>`;
 	}
@@ -17,10 +17,22 @@ module.exports = (app, mod, chat_group) => {
       `;
 
 	if (chat_group.id !== mod.communityGroup.id) {
-		if (chat_group?.member_ids) {
+		if (chat_group?.member_ids || chat_group.members.length > 2) {
 			html += `<div id="leave" class="saito-modal-menu-option"><i class="fa-solid fa-door-open"></i><div>Leave Group</div></div>`;
 		} else {
-			html += `<div id="block" class="saito-modal-menu-option"><i class="fas fa-ban"></i><div>Delete and Block</div></div>`;
+			let other_party = "";
+			for (let mem of chat_group.members){
+				if (mem !== mod.publicKey){
+					other_party = mem;
+				}
+			}
+			
+			if (mod.black_list.includes(other_party)){
+				html += `<div id="unblock" class="saito-modal-menu-option" data-id="${other_party}"><i class="fa-regular fa-circle-check"></i><div>Unblock</div></div>`;	
+			}else{
+				html += `<div id="block" class="saito-modal-menu-option"><i class="fas fa-ban"></i><div>Delete and Block</div></div>`;	
+			}
+			
 		}
 	}
 

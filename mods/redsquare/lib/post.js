@@ -368,9 +368,9 @@ class Post {
         It's an art, not a science
         */
 
-			if (source == 'Post') {
-				this.mod.main.scrollFeed(0);
-			}
+		//	if (source == 'Post') {
+		//		this.mod.main.scrollFeed(0);
+		//	}
 		}
 	}
 

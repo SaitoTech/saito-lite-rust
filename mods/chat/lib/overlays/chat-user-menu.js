@@ -18,7 +18,10 @@ class ChatUserMenu {
 		}
 		if (!document.querySelector('#saito-chat-menu')) {
 			this.overlay.show(
-				chatMenuTemplate(this.app, this.mod, this.chat_group)
+				chatMenuTemplate(this.app, this.mod, this.chat_group), ()=> {
+					this.app.connection.emit('chat-manager-render-request');
+					this.app.connection.emit("chat-popup-refresh-request", this.chat_group);
+				}
 			);
 			this.attachEvents();
 		}
@@ -52,7 +55,6 @@ class ChatUserMenu {
 						thisobj.mod.sendUpdateGroupTransaction(thisobj.chat_group);
 					}
 					thisobj.mod.saveChatGroup(thisobj.chat_group);
-					thisobj.app.connection.emit('chat-manager-render-request');
 				}
 				thisobj.overlay.remove();
 			};
@@ -79,12 +81,27 @@ class ChatUserMenu {
 			document.getElementById('block').onclick = (e) => {
 				for (let pkey of this.chat_group.members){
 					if (pkey !== this.mod.publicKey){
-						this.mod.black_list.push(pkey);		
+						if (!this.mod.black_list.includes(pkey)){
+							this.mod.black_list.push(pkey);			
+						}
 					}
 				}
 				this.mod.deleteChatGroup(this.chat_group);
 				this.overlay.remove();
 				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
+			}
+		}
+
+		if (document.getElementById('unblock')){
+			document.getElementById('unblock').onclick = (e) => {
+	            for (let i = this.mod.black_list.length; i >= 0; i--){
+	              if (this.mod.black_list[i] == e.currentTarget.dataset.id){
+	                this.mod.black_list.splice(i, 1);
+	                break;
+	              }
+	            }
+	          this.mod.saveOptions();
+	          this.overlay.remove();
 			}
 		}
 
@@ -97,16 +114,9 @@ class ChatUserMenu {
 
 		if (document.getElementById('delete')) {
 			document.getElementById('delete').onclick = async (e) => {
-				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
-	
-				let c = await sconfirm(
-					'Remove this chat group from my local storage?'
-				);
-
-				if (c) {
-					thisobj.mod.deleteChatGroup(thisobj.chat_group);
-				}
+				thisobj.mod.deleteChatGroup(thisobj.chat_group);
 				thisobj.overlay.remove();
+				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
 			};
 		}
 
@@ -136,7 +146,6 @@ class ChatUserMenu {
 
 		if (document.getElementById('leave')){
 			document.getElementById('leave').onclick = async (e) => {
-				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
 				await this.mod.sendRemoveMemberTransaction(
 						thisobj.chat_group,
 						this.mod.publicKey
@@ -144,7 +153,9 @@ class ChatUserMenu {
 
 				this.mod.deleteChatGroup(thisobj.chat_group);
 				siteMessage('You left the chat group', 2000);
-				thisobj.overlay.remove();
+				this.overlay.remove();
+				this.app.connection.emit('chat-popup-remove-request', this.chat_group);
+
 			}
 		}
 
