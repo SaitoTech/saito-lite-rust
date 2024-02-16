@@ -103,8 +103,9 @@ input[type="checkbox"].ignore_checkbox {
 }
 
 .commentary {
-    font-size: 1.6rem;
-    line-height: 2.5rem;
+  font-size: 1.6rem;
+  line-height: 2.5rem;
+  cursor: pointer;
 }
 
 .crypto_transfer_btn.hidden{
