@@ -412,7 +412,7 @@
 
 /* Hide user names in 2-person chats */
 
-.saito-dm-chat .chat-body .saito-address {
+.saito-dm-chat .chat-body .saito-user .saito-address {
   visibility: hidden;
   height: 0;
 }

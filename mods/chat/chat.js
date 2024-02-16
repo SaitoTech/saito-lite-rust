@@ -557,8 +557,10 @@ class Chat extends ModTemplate {
 				return null;
 			case 'user-menu':
 				if (obj?.publicKey !== this.publicKey) {
+					let dynamic_text = this.black_list.includes(obj.publicKey) ? "Unblock and Chat" : "Chat";
+
 					return {
-						text: 'Chat',
+						text: dynamic_text,
 						icon: 'far fa-comment-dots',
 						callback: function (app, publicKey) {
 							if (chat_self.chat_manager == null) {
@@ -568,6 +570,13 @@ class Chat extends ModTemplate {
 								);
 							}
 
+							for (let i = 0; i < chat_self.black_list.length; i++){
+								if (chat_self.black_list[i] == publicKey){
+									chat_self.black_list.splice(i, 1);
+									break;
+								}
+							}
+							chat_self.saveOptions();
 							chat_self.app.connection.emit('open-chat-with', {
 								key: publicKey
 							});
@@ -1376,7 +1385,31 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		this.addTransactionToGroup(group, tx);
+		if (this.addTransactionToGroup(group, tx)){
+			//Returns 1 if it is a new message
+
+			if (tx.isFrom(this.publicKey)){
+				for (let key of this.black_list){
+					if (tx.isTo(key)){
+
+						let new_message = `<div class="saito-chat-notice">
+							<span class="saito-mention saito-address" data-id="${key}">${this.app.keychain.returnUsername(key)}</span>
+							<span> is blocked and cannot respond </span>
+						</div>`;
+
+						group.txs.push({
+							signature: tx.signature+'1',
+							timestamp: new Date().getTime(),
+							from: [],
+							msg: new_message,
+							mentioned: [],
+							notice: true
+						});
+						
+					}
+				}
+			}
+		}
 		this.app.connection.emit('chat-popup-render-request', group);
 	}
 
@@ -1558,7 +1591,7 @@ class Chat extends ModTemplate {
 		if (!content || typeof content !== "string") {
 			console.warn('Not a chat message?');
 			console.log(tx);
-			return;
+			return 0;
 		}
 		let new_message = {
 			signature: tx.signature,
@@ -1594,7 +1627,7 @@ class Chat extends ModTemplate {
 				if (this.debug) {
 					console.log('duplicate');
 				}
-				return;
+				return 0;
 			}
 			if (tx.timestamp < group.txs[i].timestamp) {
 				group.txs.splice(i, 0, new_message);
@@ -1605,7 +1638,7 @@ class Chat extends ModTemplate {
 					console.log(JSON.parse(JSON.stringify(new_message)));
 				}
 
-				return;
+				return 0;
 			}
 		}
 
@@ -1616,8 +1649,9 @@ class Chat extends ModTemplate {
 		group.last_update = tx.timestamp;
 
 		if (!this.app.BROWSER) {
-			return;
+			return 0;
 		}
+
 
 		if (this.debug) {
 			console.log(`new msg: ${group.unread} unread`);
@@ -1674,6 +1708,8 @@ class Chat extends ModTemplate {
 				`Not saving because in loading mode (${this.loading})`
 			);
 		}
+
+		return 1;
 	}
 
 	///////////////////

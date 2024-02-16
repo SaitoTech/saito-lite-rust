@@ -47,5 +47,13 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 			<label>my chat id</label>
 		</fieldset>`;
 
+	if (mod?.black_list?.length > 0){
+		html += `<fieldset id="blocked-accounts" class="saito-grid settings-link">
+		<i class="fa-solid fa-ban"></i>
+		<label>Manage Blocked Accounts</label>
+		</fieldset>`;
+	}
+		
+
 	return html;
 };

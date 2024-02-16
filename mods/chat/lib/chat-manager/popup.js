@@ -94,6 +94,10 @@ class ChatPopup {
 					}</div>`,
 					title
 				);
+
+				if (this.is_rendered){
+					this.render();
+				}
 			}
 		});
 	}

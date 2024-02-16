@@ -14,7 +14,13 @@ class ChatSidebar {
         this.render(group);
       }
     });
-	}
+
+    app.connection.on('chat-popup-remove-request', (group = null) => {
+      this.render();
+    });
+  	
+
+  }
 
 	render(chat = null) {
 

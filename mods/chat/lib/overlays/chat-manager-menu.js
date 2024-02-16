@@ -159,6 +159,28 @@ class ChatManagerMenu {
 					siteMessage('Link Copied', 2000);
 				});
 		}
+
+	    if (document.getElementById("blocked-accounts")){
+	      document.getElementById("blocked-accounts").onclick = (e) => {
+	        this.contactList.title = "Blocked Accounts";
+	        this.contactList.multi_button = "Unblock Selected Accounts";
+	        this.contactList.callback = (keys) => {
+	          for (let key of keys){
+	            for (let i = this.mod.black_list.length; i >= 0; i--){
+	              if (this.mod.black_list[i] == key){
+	                this.mod.black_list.splice(i, 1);
+	                break;
+	              }
+	            }
+	          }
+	          this.mod.saveOptions();
+	          this.render();
+	        }
+
+	        this.contactList.render(this.mod.black_list);
+	      }
+	    }
+
 	}
 }
 
