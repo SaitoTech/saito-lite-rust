@@ -82,22 +82,13 @@ class Wuziqi extends GameTemplate {
 		this.racetrack.icon = `<i class="fa-solid fa-trophy"></i>`;
 		for (let i = 0; i < this.game.players.length; i++) {
 			let player = {
-				name: this.roles[i + 1].toUpperCase(),
+				name: this.app.keychain.returnUsername(this.game.players[i])/*this.roles[i + 1].toUpperCase()*/,
 				score: this.game.score[i],
 				color: this.roles[i + 1]
 			};
 			this.racetrack.players.push(player);
 		}
 		this.racetrack.render();
-	}
-
-	/*
-    Utility to make some of the status updates easier, figures out which color this player is using
-    and formats it to capitalize the first letter
-    */
-	formatPlayer() {
-		let myColor = this.roles[this.game.player];
-		return myColor.charAt(0).toUpperCase() + myColor.slice(1);
 	}
 
 	//html for game intro/rules
@@ -337,7 +328,7 @@ class Wuziqi extends GameTemplate {
 					this.updateStatus('You go first');
 				} else {
 					this.updateStatus(
-						`Waiting for <span class="playertitle">${this.roles[first_player]}</span> to start`
+						`Waiting for <span class="playertitle">${this.roles[first_player]} (${this.app.keychain.returnUsername(this.game.players[first_player - 1])})</span> to start`
 					);
 				}
 				return 0;
@@ -351,9 +342,9 @@ class Wuziqi extends GameTemplate {
 					this.addContinueButton(`It's a draw -- no winner.`);
 				} else {
 					this.updateStatus(
-						`It's a draw -- no winner! <span class="playertitle">${
+						`Draw! <span class="playertitle">${
 							this.roles[3 - player]
-						}</span> will start next round.`
+						}</span> (${this.app.keychain.returnUsername(this.game.players[2-player])}) will start`
 					);
 				}
 				// Remove this item from the queue.
@@ -389,9 +380,9 @@ class Wuziqi extends GameTemplate {
 						this.addContinueButton('You lost!');
 					} else {
 						this.updateStatus(
-							`You win the round! Waiting for <span class="playertitle">${
+							`You win the round! <span class="playertitle">${
 								this.roles[3 - winner]
-							}</span> to start`
+							}</span> (${this.app.keychain.returnUsername(this.game.players[2-winner])}) will start`
 						);
 						this.drawBoard(this.game.board);
 					}
@@ -427,9 +418,7 @@ class Wuziqi extends GameTemplate {
 					};
 				} else {
 					this.updateStatus(
-						'Waiting on <span class=\'playertitle\'>' +
-							this.roles[3 - player] +
-							'</span>'
+						`Waiting on <span class='playertitle'>${this.roles[3 - player]}</span> (${this.app.keychain.returnUsername(this.game.players[2-player])})` 
 					);
 				}
 

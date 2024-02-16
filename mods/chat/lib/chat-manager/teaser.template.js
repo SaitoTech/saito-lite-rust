@@ -40,26 +40,36 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
 
 	let imgsrc = app.keychain.returnIdenticon(identicon_source);
 
-	return `
-  <div class="saito-user ${notification}
-      ${group?.online ? ' online' : ''} 
-      ${chat_open ? ' saito-chat-active' : ''
-		}" id="saito-user-${id}" data-id="${id}" data-disable="true">
+	let classes = "saito-user " + notification;
+	if (group?.online) {
+		classes += " online";
+	}
+	if (chat_open){
+		classes += " saito-chat-active";
+	}
+
+	let html = `
+  <div class="${classes}" id="saito-user-${id}" data-id="${id}" data-disable="true">
     <div class="saito-identicon-box">
       <img class="saito-identicon" src="${imgsrc}" data-disable="true"/>
-    
     </div>
-    <div class="saito-address saito-address-long" data-id="${group.name
-	}" data-disable="true">${group.name}</div>
+    <div class="saito-address saito-address-long">
+    	<div class="saito-address" data-id="${group.name}" data-disable="true">${group.name}</div>
+    	${group?.muted ? `<i class="fa-solid fa-volume-xmark"></i>` : ""}
+    </div>
     <div class="saito-userline">${last_msg}</div>
-    <div class="saito-chat-notifications">
-      ${group.mentioned ? `<div class="saito-notification-dot">@</div>` : ''}
-      ${ group.unread > 0
-				? `<div class="saito-notification-dot">${group.unread}</div>`
-				: ''
-		}
-    </div>
+    <div class="saito-chat-notifications">`;
+
+    if (group.mentioned){
+    	html += `<div class="saito-notification-dot">@</div>`;
+    }
+    if (group.unread > 0){
+    	html += `<div class="saito-notification-dot">${group.unread}</div>`;
+    }
+
+  html += `</div>
     <div class="online-status-indicator"></div>
-  </div>
-  `;
+  </div>`;
+
+  return html;
 };

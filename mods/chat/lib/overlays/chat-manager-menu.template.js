@@ -10,7 +10,7 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 				<label for="enable-notifications">use system notifications</label>
 
 				<input type="checkbox" id="audio-notifications" ${mod?.audio_notifications ? "checked":"" }/>
-				<label for="audio-notifications">incoming message chime</label>
+				<label for="audio-notifications">incoming message chime <span class="note">(coming soon)</span></label>
 
 			</fieldset>
 
@@ -46,6 +46,14 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 			<i class="fas fa-link"></i>
 			<label>my chat id</label>
 		</fieldset>`;
+
+	if (mod?.black_list?.length > 0){
+		html += `<fieldset id="blocked-accounts" class="saito-grid settings-link">
+		<i class="fa-solid fa-ban"></i>
+		<label>Manage Blocked Accounts</label>
+		</fieldset>`;
+	}
+		
 
 	return html;
 };

@@ -9,7 +9,7 @@ module.exports = ChatSideTemplate = (app, mod, group) => {
 	let groupName = group.name;
 	let identicon = app.keychain.returnIdenticon(groupKey, 'png');
 
-	if (group.member_ids) {
+	if (group.member_ids || group.members.length > 2) {
 		// Multiparty Group
 		groupKey = "";
 	} else if (group.id == mod.communityGroup?.id || group.name == mod.communityGroupName) {

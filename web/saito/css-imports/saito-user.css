@@ -26,6 +26,10 @@ Saito Username  --- Partially duplicated in saito-base
 
 .saito-user>.saito-address-long:nth-child(2) {
   grid-column-end: 4;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 1rem;
 }
 
 /* ----------------------------------------------------------------
