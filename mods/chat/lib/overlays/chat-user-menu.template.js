@@ -9,7 +9,7 @@ module.exports = (app, mod, chat_group) => {
 	}
       
 	if (chat_group?.muted) {
-		html += `<div id="unmute" class="saito-modal-menu-option"><i class="fa-solid fa-volume"></i><div>Unmute</div></div>`;
+		html += `<div id="unmute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-high"></i><div>Unmute</div></div>`;
 	} else {
 		html += `<div id="mute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-xmark"></i><div>Mute</div></div>`;
 	}

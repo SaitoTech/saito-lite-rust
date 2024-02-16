@@ -1625,15 +1625,8 @@ class Chat extends ModTemplate {
 		}
 
 		if (!new_message.from.includes(this.publicKey)) {
-			//
-			// Flag the group that there is a new message
-			// This is so we can add an animation effect on rerender
-			// and will be reset there
-			//
-			group.notification = true;
-
 			//Send System notification
-			if (this.enable_notifications) {
+			if (this.enable_notifications && !group.muted) {
 				let sender = this.app.keychain.returnIdentifierByPublicKey(
 					new_message.from[0],
 					true
@@ -1658,7 +1651,16 @@ class Chat extends ModTemplate {
 			}
 
 			//Flash new message in browser tab
-			this.startTabNotification();
+			if (!group.muted){
+				this.startTabNotification();
+	
+				// Flag the group that there is a new message
+				// This is so we can add an animation effect on rerender
+				// and will be reset there
+				//
+				group.notification = true;
+
+			}
 
 			//Add liveness indicator to group
 			this.app.connection.emit('group-is-active', group);
@@ -2103,14 +2105,14 @@ class Chat extends ModTemplate {
 		if (!this.tabInterval && document[this.hiddenTab]) {
 			this.orig_title = document.title;
 			this.tabInterval = setInterval(() => {
-				if (document.title === this.orig_title) {
+				if (document.title === 'New message') {
 					document.title = `(${notifications}) unread message${
 						notifications == 1 ? '' : 's'
 					}`;
 				} else {
 					document.title = 'New message';
 				}
-			}, 650);
+			}, 850);
 		}
 	}
 }
