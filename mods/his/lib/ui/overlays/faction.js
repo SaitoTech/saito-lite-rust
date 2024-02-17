@@ -13,6 +13,12 @@ class FactionOverlay {
 		this.overlay.hide();
 	}
 
+	updateNotice(notice="") {
+		try {
+			document.querySelector(".faction_sheet_notice").innerHTML = notice;
+		} catch (err) {}
+	}
+
 	render(faction = '') {
 		let his_self = this.mod;
 
@@ -20,6 +26,8 @@ class FactionOverlay {
 
 		let f = this.mod.factions[faction];
 		this.overlay.show(FactionTemplate(f));
+		this.app.browser.addElementToSelector(`<div class="faction_sheet_notice ${f.key}" id="faction_sheet_notice"></div>`, '.faction_sheet');
+
 
 		let controlled_keys = 0;
 		let keyboxen = '';

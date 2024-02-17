@@ -3233,8 +3233,6 @@ console.log("008 eventing!");
 		  his_self.isSpaceAdjacentToReligion(space, "catholic")
 		  ||
 		  space.university == 1
-		  ||
-		  his_self.doesSpaceContainCatholicReformer(space)
 	        )
 	      ) {
 	        return 1;
@@ -5579,6 +5577,7 @@ console.log("008 eventing!");
 	  }
 	}
 
+	his_self.commitDebater("protestant", "calvin-debater");
 	his_self.removeDebater("protestant", "calvin-debater");
         his_self.game.state.reformers_removed_until_next_round.push(obj);
 

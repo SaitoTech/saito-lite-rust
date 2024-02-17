@@ -7815,6 +7815,7 @@ alert("flipping more than exist in the zone!");
 	  }
 
 	  his_self.faction_overlay.render("protestant");
+	  his_self.faction_overlay.updateNotice("Protestants advance in Bible Translation");
 
 	  return 1;
         }
@@ -7849,6 +7850,7 @@ alert("flipping more than exist in the zone!");
 	  }
 
 	  his_self.faction_overlay.render("papacy");
+	  his_self.faction_overlay.updateNotice("Papacy progresses with Saint Peter's Construction");
 
 	  return 1;
 
@@ -8352,7 +8354,7 @@ if (this.game.state.round == 2) {
 
 	  let is_papacy_at_war = false;
           let enemies = [];
-	  let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
+	  let factions = ["ottoman","france","england","hapsburg"];
 	  for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); is_papacy_at_war = true; } }
 
 	  if (is_papacy_at_war == false) {
@@ -9394,9 +9396,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
                     return 1;
                   }
                 }
-		for (let z = 0; z < space.units["protestant"].length; z++) {
-		  if (space.units["protestant"][z].reformer) { return 1; }
-	        }
                 return 0;
               },
 
@@ -9512,7 +9511,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let spacekey = mv[1];
 	  this.game.spaces[spacekey].unrest = 1;
-	  this.updateLog(this.game.returnSpaceName(spacekey) + " enters unrest");
+	  this.updateLog(this.returnSpaceName(spacekey) + " enters unrest");
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -9525,7 +9524,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  this.game.spaces[spacekey].unrest = 0;
-	  this.updateLog(this.game.returnSpaceName(spacekey) + " out of unrest");
+	  this.updateLog(this.returnSpaceName(spacekey) + " out of unrest");
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);

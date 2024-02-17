@@ -5076,8 +5076,9 @@ return;
     if (faction === "papacy") { return 1; }
     return 0;
   }
-  async playerBurnBooks(his_self, player, faction) {
+  async playerBurnBooksMaryI(his_self, player, faction, mary_i=1) {
     return this.playerBurnBooks(his_self, player, faction, 1);
+    return 0;
   }
   async playerBurnBooks(his_self, player, faction, mary_i=0) {
 

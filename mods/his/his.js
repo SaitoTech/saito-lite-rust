@@ -6366,8 +6366,6 @@ console.log("008 eventing!");
 		  his_self.isSpaceAdjacentToReligion(space, "catholic")
 		  ||
 		  space.university == 1
-		  ||
-		  his_self.doesSpaceContainCatholicReformer(space)
 	        )
 	      ) {
 	        return 1;
@@ -8712,6 +8710,7 @@ console.log("008 eventing!");
 	  }
 	}
 
+	his_self.commitDebater("protestant", "calvin-debater");
 	his_self.removeDebater("protestant", "calvin-debater");
         his_self.game.state.reformers_removed_until_next_round.push(obj);
 
@@ -14814,14 +14813,6 @@ if (space.key == "cagliari") { debugmode = 1;
     return false;
   }
 
-  doesSpaceContainCatholicReformer(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units["papacy"].length; i++) {
-      if (space.units["papacy"][i].reformer == true) { return true; }
-    }
-    return false;
-  }
-
   isSpaceAPortInTheSameSeaZoneAsACatholicPort(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let seas = [];
@@ -15999,10 +15990,12 @@ if (sourcekey == "cagliari") {
   }
 
   returnNumberOfProtestantSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
+console.log("language zone: " + language);
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (do_not_count_unrest == 0) {
         if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
+console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language);
 	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
 	    protestant_spaces++;
 	  }
@@ -27918,6 +27911,7 @@ alert("flipping more than exist in the zone!");
 	  }
 
 	  his_self.faction_overlay.render("protestant");
+	  his_self.faction_overlay.updateNotice("Protestants advance in Bible Translation");
 
 	  return 1;
         }
@@ -27952,6 +27946,7 @@ alert("flipping more than exist in the zone!");
 	  }
 
 	  his_self.faction_overlay.render("papacy");
+	  his_self.faction_overlay.updateNotice("Papacy progresses with Saint Peter's Construction");
 
 	  return 1;
 
@@ -28455,7 +28450,7 @@ if (this.game.state.round == 2) {
 
 	  let is_papacy_at_war = false;
           let enemies = [];
-	  let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
+	  let factions = ["ottoman","france","england","hapsburg"];
 	  for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); is_papacy_at_war = true; } }
 
 	  if (is_papacy_at_war == false) {
@@ -29497,9 +29492,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
                     return 1;
                   }
                 }
-		for (let z = 0; z < space.units["protestant"].length; z++) {
-		  if (space.units["protestant"][z].reformer) { return 1; }
-	        }
                 return 0;
               },
 
@@ -29615,7 +29607,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  let spacekey = mv[1];
 	  this.game.spaces[spacekey].unrest = 1;
-	  this.updateLog(this.game.returnSpaceName(spacekey) + " enters unrest");
+	  this.updateLog(this.returnSpaceName(spacekey) + " enters unrest");
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -29628,7 +29620,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  this.game.spaces[spacekey].unrest = 0;
-	  this.updateLog(this.game.returnSpaceName(spacekey) + " out of unrest");
+	  this.updateLog(this.returnSpaceName(spacekey) + " out of unrest");
 	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
@@ -35487,8 +35479,9 @@ return;
     if (faction === "papacy") { return 1; }
     return 0;
   }
-  async playerBurnBooks(his_self, player, faction) {
+  async playerBurnBooksMaryI(his_self, player, faction, mary_i=1) {
     return this.playerBurnBooks(his_self, player, faction, 1);
+    return 0;
   }
   async playerBurnBooks(his_self, player, faction, mary_i=0) {
 
@@ -36083,6 +36076,7 @@ return;
     if (obj.allies == null)		{ obj.allies = []; }
     if (obj.minor_allies == null)	{ obj.minor_allies = []; }
     if (obj.key == null)		{ obj.key = name; }
+    if (obj.faction == null)		{ obj.faction = name; }
     if (obj.passed == null)		{ obj.passed = false; }
     if (obj.calculateBaseVictoryPoints == null) {
       obj.calculateBaseVictoryPoints = function() { return 0; }
