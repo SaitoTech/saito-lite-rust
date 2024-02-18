@@ -600,8 +600,8 @@ if (limit === "build") {
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2,2,2],
       name : "Regular",
-      check : this.canPlayerRaiseRegular,
-      fnct : this.playerRaiseRegular,
+      check : this.canPlayerBuyRegular,
+      fnct : this.playerBuyRegular,
       category : "build" ,
       img : '/his/img/backgrounds/move/regular.jpg',
     });
@@ -609,8 +609,8 @@ if (limit === "build") {
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
       name : "Squadron",
-      check : this.canPlayerBuildNavalSquadron,
-      fnct : this.playerBuildNavalSquadron,
+      check : this.canPlayerBuyNavalSquadron,
+      fnct : this.playerBuyNavalSquadron,
       category : "build" ,
       img : '/his/img/backgrounds/move/squadron.jpg',
     });
@@ -618,8 +618,8 @@ if (limit === "build") {
       factions : ['ottoman'],
       cost : [1],
       name : "Cavalry",
-      check : this.canPlayerRaiseCavalry,
-      fnct : this.playerRaiseCavalry,
+      check : this.canPlayerBuyCavalry,
+      fnct : this.playerBuyCavalry,
       category : "build" ,
       img : '/his/img/backgrounds/move/cavalry.jpg',
     });
@@ -699,8 +699,8 @@ if (limit === "build") {
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2,2,2],
       name : "Regular",
-      check : this.canPlayerRaiseRegular,
-      fnct : this.playerRaiseRegular,
+      check : this.canPlayerBuyRegular,
+      fnct : this.playerBuyRegular,
       category : "build" ,
       img : '/his/img/backgrounds/move/regular.jpg',
     });
@@ -717,8 +717,8 @@ if (limit === "build") {
       factions : ['ottoman'],
       cost : [1],
       name : "Cavalry",
-      check : this.canPlayerRaiseCavalry,
-      fnct : this.playerRaiseCavalry,
+      check : this.canPlayerBuyCavalry,
+      fnct : this.playerBuyCavalry,
       category : "build" ,
       img : '/his/img/backgrounds/move/cavalry.jpg',
     });
@@ -726,8 +726,8 @@ if (limit === "build") {
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
       name : "Squadron",
-      check : this.canPlayerBuildNavalSquadron,
-      fnct : this.playerBuildNavalSquadron,
+      check : this.canPlayerBuyNavalSquadron,
+      fnct : this.playerBuyNavalSquadron,
       category : "build" ,
       img : '/his/img/backgrounds/move/squadron.jpg',
     });
@@ -4084,14 +4084,14 @@ return;
     );
   }
 
-  canPlayerRaiseRegular(his_self, player, faction) {
+  canPlayerBuyRegular(his_self, player, faction) {
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     return 1;
   }
-  async playerRaiseRegular(his_self, player, faction) {
+  async playerBuyRegular(his_self, player, faction) {
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -4141,14 +4141,14 @@ return;
     );
   }
 
-  canPlayerBuildNavalSquadron(his_self, player, faction) {
+  canPlayerBuyNavalSquadron(his_self, player, faction) {
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     return 1;
   }
-  async playerBuildNavalSquadron(his_self, player, faction) {
+  async playerBuyNavalSquadron(his_self, player, faction) {
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -4630,14 +4630,14 @@ return;
 
     return 0;
   }
-  canPlayerRaiseCavalry(his_self, player, faction) {
+  canPlayerBuyCavalry(his_self, player, faction) {
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     return 1;
   }
-  async playerRaiseCavalry(his_self, player, faction) {
+  async playerBuyCavalry(his_self, player, faction) {
 
     his_self.playerSelectSpaceWithFilter(
 

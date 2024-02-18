@@ -21,6 +21,9 @@
 	cursor: pointer;
 	max-height: 181px;
 }
+.menu-option-container:hover {
+        border: 1px solid #FFF;
+}
 
 .m1entries .menu-option-container {
 	min-width: 100%;
