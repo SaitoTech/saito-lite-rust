@@ -138,8 +138,8 @@
   background: var(--saito-arcade-background);
   color: var(--saito-font-color);
   max-height: 100vh;
-  min-width: 300px;
-  min-height: 150px;
+  min-width: 30rem;
+  min-height: 20rem;
   overflow-x: hidden;
   overflow-y: hidden;
 }
@@ -170,7 +170,7 @@
   grid-template-rows: 30px auto;
 }
 
-.chat-container.minimized .chat-body, .chat-container.minimized .chat-footer {
+.chat-container.minimized .chat-body, .chat-container.minimized .chat-footer{
   height: 0;
   min-height: unset;
   overflow: hidden;
@@ -182,6 +182,10 @@
   */
 }
 
+.chat-container.minimized .chat-header{
+  min-height: unset;
+}
+
 .chat-body img {
   /* If a small image, we don't want to zoom in
   but the width: 100% should keep it from being to big
@@ -191,11 +195,9 @@
 }
 
 .chat-header {  
-  display: flex;
-  flex-direction: column;
-  width: -webkit-fill-available;
-  height: -webkit-fill-available;
   z-index: inherit;
+  min-height: 6rem;
+  width: 100%;
 }
 
 .chat-header > .chat-header-nav {
@@ -341,7 +343,6 @@
 .chat-body {
   padding: 1rem;
   display: block;
-  /*height: calc(100% - 9rem);*/
   height: 100%;
   overflow: clip auto;
   background-image: url(/saito/img/tiled-logo.svg);
@@ -758,7 +759,7 @@
   .chat-container {
     margin: 0;
     width: 100vw;
-    height: 100%;
+    height: 100vh;
     height: calc(100 * var(--saito-vh));
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;
