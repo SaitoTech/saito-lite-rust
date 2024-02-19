@@ -701,6 +701,10 @@
 
 
 @media screen and (max-width: 720px) {
+  .chat-manager-overlay .chat-manager-title {
+    display: none;
+  }
+  
   .chat-header i.chat-sizing-icon {
     display: none;
   }
