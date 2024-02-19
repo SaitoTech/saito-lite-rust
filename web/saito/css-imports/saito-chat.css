@@ -710,7 +710,7 @@
 
   .close-chat-manager i {
     height: var(--saito-header-height);
-    line-height: 5rem;
+    line-height: 4.5rem;
   }
 
   .chat-header > .chat-header-nav > i.chat-container-close {
@@ -730,6 +730,7 @@
 @media screen and (max-width: 600px) {
   .chat-manager-overlay {
     top: 0;
+    height: 100vh;
     height: calc(100 * var(--saito-vh));
     width: 100vw;
     max-height: -webkit-fill-available;
@@ -742,8 +743,7 @@
     margin-right: auto;
     width: 95vw;
     min-height: 25rem;
-    height: fit-content;
-    max-height: 100%;
+    height: 100%;
     grid-template-rows: var(--saito-header-height) 1fr;
   }
 
