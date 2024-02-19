@@ -15,7 +15,8 @@ class DiplomacyConfirmOverlay {
 	}
 
 	render(proposal_idx=0) {
-	  this.overlay.show(DiplomacyConfirmTemplate(this, proposal_idx));
+	  let proposal = this.mod.game.state.diplomacy[proposal_idx];
+	  this.overlay.show(DiplomacyConfirmTemplate(this, proposal, proposal_idx));
     	  this.attachEvents(proposal_idx=0);
 	}
 

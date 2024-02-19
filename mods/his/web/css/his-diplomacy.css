@@ -1,4 +1,4 @@
-.diplomacy-confirm-overlay {
+.diplomacy-confirm-overlay , .diplomacy-propose-overlay {
 	background-image: url(/his/img/backgrounds/diet_of_worms.jpeg);
 	background-size: cover;
 	max-height: 90vh;
@@ -9,7 +9,7 @@
 	text-align: center;
 }
 
-.diplomacy-confirm-overlay .help {
+.diplomacy-confirm-overlay .help , .diplomacy-propose-overlay .html {
 	background: #0009;
 	width: max-content;
 	color: white;
@@ -22,7 +22,7 @@
 	line-height: 3.4rem;
 }
 
-.diplomacy-confirm-overlay .buttons {
+.diplomacy-confirm-overlay .buttons , .diplomacy-propose-overlay .buttons {
         display: flex;
         column-gap: 10rem;
         max-width: max-content;
@@ -30,7 +30,7 @@
         margin-right: auto;
 }
 
-.diplomacy-confirm-overlay .buttons div {
+.diplomacy-confirm-overlay .buttons div , .diplomacy-propose-overlay .buttons div {
         border: 1px solid black;
         width: max-content;
         padding: 1rem 3rem;
@@ -45,7 +45,7 @@
         margin-right: auto;
         min-width: 16rem;
 }
-.diplomacy-confirm-overlay .buttons div:hover {
+.diplomacy-confirm-overlay .buttons div:hover , .diplomacy-propose-overlay .buttons div:hover {
         border: 1px solid white;
         color: white;
         background: #000;

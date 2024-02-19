@@ -1,12 +1,14 @@
-module.exports = DiplomacyProposeTemplate = (obj) => {
+module.exports = DiplomacyProposeTemplate = (obj, proposals_html="") => {
+
+	let his_self = obj.mod;
 
 	let html = `
-	  <div class="diplomacy-confirm-overlay">
+	  <div class="diplomacy-proposal-overlay">
 	    <div class="help"></div>
-	    <div class="content"></div>
+	    <div class="content">${proposals_html}</div>
 	    <div class="buttons">
-	      <div class="accept" id="accept">accept</div>
-	      <div class="reject" id="reject">reject</div>
+	      <div class="add" id="add">add proposal</div>
+	      <div class="end" id="end">end diplomacy</div>
 	    </div>
 	  </div>
 	`;
