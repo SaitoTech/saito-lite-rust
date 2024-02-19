@@ -1,4 +1,4 @@
-const DiplomacyConfirmTemplate = require('./diplomacy_confirm.template');
+const DiplomacyConfirmTemplate = require('./diplomacy-confirm.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class DiplomacyConfirmOverlay {

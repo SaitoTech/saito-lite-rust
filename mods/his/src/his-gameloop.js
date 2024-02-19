@@ -60,17 +60,10 @@ if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
+
 	  if (this.game.players.length == 2) {
-
-	    this.game.queue.push("diplomacy_phase");
-
-	    this.game.state.diplomacy.push({
-	      parties 	: ["papacy", "protestant"] ,
-	      confirms 	: [0,0] ,
-	      terms 	: ["end_war\tpapacy\tprotestant"] ,
-	    });
-
-	    //this.game.queue.push("diplomacy_phase_2P");
+	    //this.game.queue.push("diplomacy_phase");
+	    this.game.queue.push("diplomacy_phase_2P");
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
@@ -8246,7 +8239,12 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  this.game.queue.splice(qe, 1);
 
 	  this.game.state.diplomacy = [];
-	  
+	  this.game.state.diplomacy.push({
+	    parties 	: ["papacy", "protestant"] ,
+	    confirms 	: [0,0] ,
+	    terms 	: ["end_war\tpapacy\tprotestant"] ,
+	  });
+
 	  if (this.game.players.length == 2) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"protestant");
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"papacy");
@@ -8270,7 +8268,7 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  if (this.game.player == player) {
-alert("I am reviewing proposal " + JSON.stringify(proposal));
+	    this.diplomacy_confirm_overlay.render(proposal_idx);
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " reviewing diplomatic proposal...");
 	  }

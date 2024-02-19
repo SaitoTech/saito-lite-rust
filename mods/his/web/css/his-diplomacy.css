@@ -22,6 +22,14 @@
 	line-height: 3.4rem;
 }
 
+.diplomacy-confirm-overlay .buttons {
+        display: flex;
+        column-gap: 10rem;
+        max-width: max-content;
+        margin-left: auto;
+        margin-right: auto;
+}
+
 .diplomacy-confirm-overlay .buttons div {
         border: 1px solid black;
         width: max-content;
@@ -35,6 +43,7 @@
         margin-bottom: 2rem;
         margin-left: auto;
         margin-right: auto;
+        min-width: 16rem;
 }
 .diplomacy-confirm-overlay .buttons div:hover {
         border: 1px solid white;

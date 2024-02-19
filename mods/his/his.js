@@ -9,6 +9,8 @@ const FactionBar = require('./lib/ui/factionbar');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const CouncilOfTrentOverlay = require('./lib/ui/overlays/council-of-trent');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
+const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
+const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
@@ -66,6 +68,8 @@ class HereIStand extends GameTemplate {
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
     this.factionbar = new FactionBar(this.app, this); // shows you which factions you are in multiplayer
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.diplomacy_confirm_overlay = new DiplomacyConfirmOverlay(this.app, this);
+    this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
     this.vp_overlay = new VPOverlay(this.app, this);  // end-of-turn points overlay
@@ -20157,17 +20161,10 @@ if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
+
 	  if (this.game.players.length == 2) {
-
-	    this.game.queue.push("diplomacy_phase");
-
-	    this.game.state.diplomacy.push({
-	      parties 	: ["papacy", "protestant"] ,
-	      confirms 	: [0,0] ,
-	      terms 	: ["end_war\tpapacy\tprotestant"] ,
-	    });
-
-	    //this.game.queue.push("diplomacy_phase_2P");
+	    //this.game.queue.push("diplomacy_phase");
+	    this.game.queue.push("diplomacy_phase_2P");
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
@@ -28343,7 +28340,12 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  this.game.queue.splice(qe, 1);
 
 	  this.game.state.diplomacy = [];
-	  
+	  this.game.state.diplomacy.push({
+	    parties 	: ["papacy", "protestant"] ,
+	    confirms 	: [0,0] ,
+	    terms 	: ["end_war\tpapacy\tprotestant"] ,
+	  });
+
 	  if (this.game.players.length == 2) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"protestant");
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"papacy");
@@ -28367,7 +28369,7 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  if (this.game.player == player) {
-alert("I am reviewing proposal " + JSON.stringify(proposal));
+	    this.diplomacy_confirm_overlay.render(proposal_idx);
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " reviewing diplomatic proposal...");
 	  }
@@ -35970,88 +35972,6 @@ return;
     return menu;
 
   }
-
-
-
-
-  playerOfferAsFaction(faction) {
-
-    let io = this.returnImpulseOrder();
-    let html = `<ul>`;
-
-    for (let i = io.length-1; i>= 0; i--) {
-      for (let i = 0; i < pfactions.length; i++) {
-        html    += `<li class="card" id="${i}">${pfactions[i]}</li>`;
-      }
-      html    += `</ul>`;
-    }
- 
-    this.updateStatusWithOptions(`Offer Agreement to which faction?`, html);
-    this.attachCardboxEvents(function(user_choice) {
-      his_self.factionOfferFaction(faction, faction);
-    });
-
-  }
-
-
-  factionOfferFaction(faction1, faction2) {
-
-    let menu = this.returnDiplomacyMenuOptions(this.game.player);
-
-    let html = `<ul>`;
-    for (let i = 0; i < menu.length; i++) {
-      if (menu[i].check(this, faction1, faction2)) {
-        for (let z = 0; z < menu[i].factions.length; z++) {
-          if (menu[i].factions[z] === selected_faction) {
-            if (menu[i].cost[z] <= ops) {
-              html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
-            }
-            z = menu[i].factions.length+1;
-          }
-        }
-      }
-    }
-    html    += `<li class="card" id="end_turn">end turn</li>`;
-    html += '</ul>';
-
-    this.updateStatusWithOptions(`Type of Agreement`, html);
-    this.attachCardboxEvents(async (user_choice) => {
-
-      if (user_choice === "end_turn") {
-        this.endTurn();
-        return;
-      }
-
-      menu[user_choice].fnct(this, faction1, faction2);
-      return;
-    });
-  }
-
-
-
-
-
-
-  playerOffer() {
-
-    let his_self = this;
-    let pfactions = this.returnPlayerFactions(this.game.player);
-
-    let html = `<ul>`;
-    for (let i = 0; i < pfactions.length; i++) {
-      html    += `<li class="card" id="${i}">${pfactions[i]}</li>`;
-    }
-    html    += `</ul>`;
-
-    this.updateStatusWithOptions(`Offer Agreement as which Faction?`, html);
-    this.attachCardboxEvents(function(user_choice) {
-      his_self.playerOfferAsFaction(faction);
-    });
-
-  }
-
-
-
 
 
 
