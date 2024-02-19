@@ -563,14 +563,6 @@ if (space.key == "cagliari") { debugmode = 1;
     return false;
   }
 
-  doesSpaceContainCatholicReformer(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units["papacy"].length; i++) {
-      if (space.units["papacy"][i].reformer == true) { return true; }
-    }
-    return false;
-  }
-
   isSpaceAPortInTheSameSeaZoneAsACatholicPort(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let seas = [];
@@ -1748,10 +1740,12 @@ if (sourcekey == "cagliari") {
   }
 
   returnNumberOfProtestantSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
+console.log("language zone: " + language);
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (do_not_count_unrest == 0) {
         if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
+console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language);
 	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
 	    protestant_spaces++;
 	  }

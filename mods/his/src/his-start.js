@@ -84,6 +84,54 @@
 
 
     this.menu.addSubMenuOption("game-game", {
+      text : "Gameplay",
+      id : "game-gameplay",
+      class : "game-gameplay",
+      callback : null
+    });
+
+    this.faster_play = 1;
+    if (this.app.options.gameprefs) {
+      if (this.app.options.gameprefs.his_faster_play) {
+	this.faster_play = parseInt(this.app.options.gameprefs.his_faster_play);
+      }
+    }
+    this.menu.addSubMenuOption("game-gameplay",{
+      text: `Faster ${(this.faster_play==1)?"✔":""}`,
+      id:"game-gameplay-faster",
+      class:"game-gameplay-faster",
+      callback: function(app,game_mod){
+        if (game_mod.faster_play == 0){
+	  document.querySelector("#game-gameplay-slower div").innerHTML = "Slower ✔";
+	  document.querySelector("#game-gameplay-faster div").innerHTML = "Faster";
+          game_mod.displayModal("Game Settings", "Gameplay Speedup Disabled");
+          game_mod.saveGamePreference('his_faster_play', 0);
+	  game_mod.faster_play = 0;
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+      
+    this.menu.addSubMenuOption("game-gameplay",{ 
+      text: `Slower ${(this.faster_play==1)?"":"✔"}`,
+      id:"game-gameplay-slower",
+      class:"game-gameplay-slower",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 1){
+	  document.querySelector("#game-gameplay-slower div").innerHTML = "Slower";
+	  document.querySelector("#game-gameplay-faster div").innerHTML = "Faster ✔";
+          game_mod.displayModal("Game Settings", "Gameplay Speedup Enabled");
+          game_mod.saveGamePreference('his_faster_play', 1);
+	  game_mod.faster_play = 1;
+        }else{
+          game_mod.menu.hideSubMenus();
+        } 
+      }
+    });
+
+
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",

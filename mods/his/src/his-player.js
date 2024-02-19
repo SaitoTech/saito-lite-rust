@@ -1187,8 +1187,68 @@ if (this.game.state.events.cramner_active == 1) {
     }
 
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
+
       can_pass = true;
+      cards.push("pass");
+
+      //
+      // in faster_play mode, we will switch to HALTED if there are     
+      // no other options. this halts OUR game but allows others to continue
+      // to play more rapidly, which helps speed-up games where network connections
+      // can be a little slow, at the cost of leaking a small amount of information
+      // about player hands from the speed of the response (i.e. a fast response 
+      // likely means an automatic response, which likely means no cards permitting
+      // intervention are in-hand.
+      //
+      if (this.faster_play == 1) {
+          
+        //
+        // we don't need to HALT the game because the game will not progress
+        // until all players have hit RESOLVE anyway.
+        //
+        let my_specific_game_id = his_self.game.id;
+        his_self.is_halted = 1;
+        his_self.halted = 1;
+        his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
+        his_self.hud.back_button = false;
+              
+        his_self.updateStatusAndListCards(his_self.returnFactionName(faction) + " - You Must Pass", cards);
+        his_self.attachCardboxEvents((card) => {
+          try {
+            $('.card').off();
+            $('.card img').off();
+          } catch (err) {}
+
+          his_self.game = his_self.loadGame(my_specific_game_id);
+            
+          // tell game engine we can move
+          his_self.is_halted = 0;
+          his_self.halted = 0;
+          his_self.gaming_active = 0;
+
+          his_self.updateStatus('continuing...');
+
+          //
+          // our own move will have been ticked into the future queue, along with
+          // anyone else's so we skip restartQueue() which will freeze if it sees
+          // that we have moves still pending, but should clear if it now finds
+          // UNHALT is the latest instruction and this resolve is coming from us!
+          //
+          his_self.processFutureMoves();
+
+        });
+
+        //
+        // halt my game (copies from ACKNOWLEDGE)
+        //
+        his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
+        his_self.endTurn();
+        return 0;
+
+      }
     }
+
+
     if (can_pass) {
       cards.push("pass");
     }
@@ -1212,7 +1272,6 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // if faction is England and Mary I is ruler, we have 50% 
       //
-console.log("card: " + card);
       if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
 	let x = this.rollDice(6);
 	if (x >= 4) {
@@ -1321,6 +1380,10 @@ console.log("card: " + card);
       this.updateStatus(`Playing ${this.popup(card)}`, this.game.deck[1].hand);
       his_self.addMove("diplomacy_card_event\t"+faction+"\t"+card);
       his_self.addMove("discard_diplomacy_card\t"+faction+"\t"+card);
+
+      let faction_hand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
+      his_self.addMove("cards_left\t"+faction+"\t"+his_self.game.deck[0].fhand[faction_hand_idx].length); // no -1 because we r just updating other hand
+
       his_self.endTurn();
     });
 
@@ -1359,7 +1422,7 @@ console.log("card: " + card);
 
       let html = `<ul>`;
       html    += `<li class="card" id="ops">play for ops</li>`;
-      if (deck[card].canEvent(this, faction)) {
+      if (deck[card].canEvent(this, faction) && !this.game.state.cards_evented.includes(card)) {
         html    += `<li class="card" id="event">play for event</li>`;
       }
       html    += `</ul>`;
@@ -1921,6 +1984,7 @@ return;
                     his_self.addMove(`control\tpapacy\t${spacekey}`);
                     his_self.addMove(`withdraw_to_nearest_fortified_space\t${enemy}\t${spacekey}`);
 	            his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
+	            his_self.addMove(`NOTIFY\tProtestants +1 War Winner VP`);
 		    his_self.endTurn();
 		  },
 
@@ -1942,11 +2006,16 @@ return;
 	    // factions no longer At War
 	    //
 	    his_self.addMove("unset_enemies\tpapacy\t"+enemy);
+	    // unset activated power for protestants in 2P
+	    if (his_self.isActivatedPower("protestant", enemy) && (enemy === "hapsburg" || enemy === "france")) {
+	      his_self.addMove("unset_activated_power\tprotestant\t"+enemy);
+	    }
 
 	    //
 	    // protestants get War Winner 1 VP
 	    //
 	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
+            his_self.addMove(`NOTIFY\tProtestants +1 War Winner VP`);
 
 	    //
 	    // papacy removes 2 units
@@ -2109,6 +2178,7 @@ return;
             his_self.addMove(`control\tpapacy\t${spacekey}`);
             his_self.addMove(`withdraw_to_nearest_fortified_space\t${faction}\t${spacekey}`);
 	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t${parseInt(his_self.game.state.protestant_war_winner_vp)+1}`);
+	    his_self.addMove(`NOTIFY\tProtestants +1 War Winner VP`);
 	    his_self.endTurn();
 	  },
 
@@ -5006,8 +5076,9 @@ return;
     if (faction === "papacy") { return 1; }
     return 0;
   }
-  async playerBurnBooks(his_self, player, faction) {
+  async playerBurnBooksMaryI(his_self, player, faction, mary_i=1) {
     return this.playerBurnBooks(his_self, player, faction, 1);
+    return 0;
   }
   async playerBurnBooks(his_self, player, faction, mary_i=0) {
 

@@ -29,7 +29,6 @@ const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const GameHelp = require('./lib/ui/game-help/game-help');
 const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template');
 
-
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
 const HISingularOption = require('./lib/core/options.template');
@@ -102,6 +101,9 @@ class HereIStand extends GameTemplate {
     // newbie mode
     //
     this.confirm_moves = 1;
+    this.faster_play = 1; // this speeds-up some responses at the cost of potentially
+			  // leaking information on what response cards users have or
+			  // do not have.
 
     //
     // "showcard" popups
@@ -143,6 +145,11 @@ class HereIStand extends GameTemplate {
         this.confirm_moves = 0;
       } else {
         this.confirm_moves = 1;
+      }
+      if (this.app.options.gameprefs.his_faster_play == 1) {
+        this.faster_play = 1;
+      } else {
+        this.faster_play = 0;
       }
     }
 

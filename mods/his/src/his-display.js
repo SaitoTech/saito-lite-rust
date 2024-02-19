@@ -86,17 +86,17 @@
   }
 
   displayTurnTrack() {
-
-    let obj = document.querySelector(".turntrack");
-    obj.classList.remove(`turntrack1`);
-    obj.classList.remove(`turntrack${this.game.state.round-1}`);
-    obj.classList.add(`turntrack${this.game.state.round}`);
-
+    try {
+      let obj = document.querySelector(".turntrack");
+      obj.classList.remove(`turntrack1`);
+      obj.classList.remove(`turntrack${this.game.state.round-1}`);
+      obj.classList.add(`turntrack${this.game.state.round}`);
+    } catch (err) {}
   }
 
   displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
-
+    try {
     let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
     for (let i = 0; i < factions.length; i++) {
       for (let ii = 0; ii < factions.length; ii++) {
@@ -120,6 +120,7 @@
 	}
       }
     }
+    } catch (err) {}
   }
 
   displayDebaters() {

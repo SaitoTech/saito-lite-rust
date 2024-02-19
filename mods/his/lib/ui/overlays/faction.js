@@ -13,6 +13,12 @@ class FactionOverlay {
 		this.overlay.hide();
 	}
 
+	updateNotice(notice="") {
+		try {
+			document.querySelector(".faction_sheet_notice").innerHTML = notice;
+		} catch (err) {}
+	}
+
 	render(faction = '') {
 		let his_self = this.mod;
 
@@ -20,6 +26,8 @@ class FactionOverlay {
 
 		let f = this.mod.factions[faction];
 		this.overlay.show(FactionTemplate(f));
+		this.app.browser.addElementToSelector(`<div class="faction_sheet_notice ${f.key}" id="faction_sheet_notice"></div>`, '.faction_sheet');
+
 
 		let controlled_keys = 0;
 		let keyboxen = '';
@@ -283,6 +291,26 @@ class FactionOverlay {
 				}
 			}
 		}
+
+
+		//
+		// Bible Translations
+		//
+		if (his_self.factions[faction].key === 'protestant') {
+		  if (his_self.game.state.translations['full']['german'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleGerman.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		  if (his_self.game.state.translations['full']['english'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleEnglish.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		  if (his_self.game.state.translations['full']['french'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleFrench.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		}
+
 
 		this.attachEvents();
 	}
