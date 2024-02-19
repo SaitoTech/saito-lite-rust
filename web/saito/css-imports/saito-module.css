@@ -36,6 +36,7 @@
     white-space: nowrap;
     overflow-wrap: break-word;
     opacity: 0.80;
+    background: #000a;
 }
 
 .saito-module-titlebar > div {
@@ -114,8 +115,13 @@
 
 .saito-module-header .saito-module-titlebar {
     max-width: 100%;
-    width: fit-content;
+    width: 100%;
     padding: 0.5rem 1rem;
+}
+
+.saito-module-overlay .saito-module-titlebar {
+    color: var(--saito-white);
+    background-color: unset;
 }
 
 .saito-module-details {
