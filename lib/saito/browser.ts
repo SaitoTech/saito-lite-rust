@@ -2270,6 +2270,11 @@ class Browser {
         .find(part => part.type === 'decimal')
         .value;
 	}
+
+	getThousandSeparator() {
+		let decimal_separator = this.getDecimalSeparator();
+		return (decimal_separator == '.') ? ',' : '.';
+	}
 }
 
 export default Browser;

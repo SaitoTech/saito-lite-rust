@@ -455,7 +455,7 @@
 .withdraw-options-cont {
   position: absolute;
   right: 1rem;
-  top: 45%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--saito-font-color);
   cursor: pointer;
