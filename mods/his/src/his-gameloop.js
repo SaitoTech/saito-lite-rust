@@ -62,8 +62,8 @@ if (this.game.options.scenario != "is_testing") {
 
 
 	  if (this.game.players.length == 2) {
-	    this.game.queue.push("diplomacy_phase");
-	    //this.game.queue.push("diplomacy_phase_2P");
+	    //this.game.queue.push("diplomacy_phase");
+	    this.game.queue.push("diplomacy_phase_2P");
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
