@@ -616,6 +616,16 @@
   color: var(--saito-font-color);
 }
 
+.withdraw-error {
+  padding: 0rem 1rem;
+  color: var(--saito-red);
+  display: none;
+}
+
+.withdraw-submit.disabled {
+  cursor: not-allowed;
+}
+
 @keyframes spin {
   to { -webkit-transform: rotate(360deg); }
 }
