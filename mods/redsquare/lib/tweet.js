@@ -290,6 +290,12 @@ class Tweet {
 	}
 
 	render(prepend = false) {
+
+		if (this.mod.hidden_tweets.includes(this.tx.signature)){
+			console.log("Not rendering hidden tweet");
+			return;
+		}
+
 		//
 		// handle if link
 		//
@@ -395,7 +401,7 @@ class Tweet {
 
 		if (this.tx.optional?.update_tx) {
 			this.notice =
-				'this tweet was edited at ' + this.formatDate(this.updated_at);
+				'this tweet was edited on ' + this.formatDate(this.updated_at);
 		}
 
 		if (this.render_after_selector) {
@@ -1048,7 +1054,22 @@ class Tweet {
 				};
 			}
 
-			//////////
+
+			let more = document.querySelector(
+				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-more`
+			);
+			if (more) {
+				more.onclick = (e) => {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+
+					this.app.connection.emit("rs-show-tweet-options", this, more);	
+				}
+				
+			}
+
+
+			/*/////////
 			// flag //
 			//////////
 			let flag = document.querySelector(
@@ -1059,40 +1080,10 @@ class Tweet {
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
-					let wallet_balance = await this.app.wallet.getBalance(
-						'SAITO'
-					);
-
-					// restrict moderation
-					if (wallet_balance == 0 && this.app.BROWSER == 1) {
-						siteMessage('Purchase SAITO to Moderate...', 3000);
-						return;
-					} else {
-						this.mod.sendFlagTransaction(
-							this.app,
-							this.mod,
-							{ signature: this.tx.signature },
-							this.tx
-						);
-						this.flagged = 1;
-
-						// Okay, sure we can delete our local copy of it...
-						this.app.storage.deleteTransaction(
-							this.tx,
-							null,
-							'localhost'
-						);
-
-						let obj = document.querySelector(
-							`.tweet-${this.tx.signature}`
-						);
-						if (obj) {
-							obj.style.display = 'none';
-						}
-						siteMessage('Reporting tweet to moderators...', 5000);
-					}
 				};
-			}
+			}*/
+
+
 		} catch (err) {
 			console.log('ERROR attaching events to tweet: ' + err);
 		}

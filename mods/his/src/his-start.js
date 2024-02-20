@@ -84,6 +84,54 @@
 
 
     this.menu.addSubMenuOption("game-game", {
+      text : "Gameplay",
+      id : "game-gameplay",
+      class : "game-gameplay",
+      callback : null
+    });
+
+    this.faster_play = 1;
+    if (this.app.options.gameprefs) {
+      if (this.app.options.gameprefs.his_faster_play) {
+	this.faster_play = parseInt(this.app.options.gameprefs.his_faster_play);
+      }
+    }
+    this.menu.addSubMenuOption("game-gameplay",{
+      text: `Faster ${(this.faster_play==1)?"✔":""}`,
+      id:"game-gameplay-faster",
+      class:"game-gameplay-faster",
+      callback: function(app,game_mod){
+        if (game_mod.faster_play == 0){
+	  document.querySelector("#game-gameplay-slower div").innerHTML = "Slower ✔";
+	  document.querySelector("#game-gameplay-faster div").innerHTML = "Faster";
+          game_mod.displayModal("Game Settings", "Gameplay Speedup Disabled");
+          game_mod.saveGamePreference('his_faster_play', 0);
+	  game_mod.faster_play = 0;
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+      
+    this.menu.addSubMenuOption("game-gameplay",{ 
+      text: `Slower ${(this.faster_play==1)?"":"✔"}`,
+      id:"game-gameplay-slower",
+      class:"game-gameplay-slower",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 1){
+	  document.querySelector("#game-gameplay-slower div").innerHTML = "Slower";
+	  document.querySelector("#game-gameplay-faster div").innerHTML = "Faster ✔";
+          game_mod.displayModal("Game Settings", "Gameplay Speedup Enabled");
+          game_mod.saveGamePreference('his_faster_play', 1);
+	  game_mod.faster_play = 1;
+        }else{
+          game_mod.menu.hideSubMenus();
+        } 
+      }
+    });
+
+
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -92,6 +140,7 @@
         game_mod.log.toggleLog();
       }
     });
+/****
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
@@ -101,9 +150,10 @@
         game_mod.handleStatsMenu();
       }
     });
+****/
     this.menu.addMenuOption("game-info", "Info");
     this.menu.addSubMenuOption("game-info", {
-      text: "Units",
+      text: "Faction Units",
       id: "game-units",
       class: "game-units",
       callback: function(app, game_mod){
@@ -120,13 +170,15 @@
       }
     });
     this.menu.addSubMenuOption("game-info", {
-      text: "Action Cards",
+      text: "Discard Pile",
       id: "game-cards",
       class: "game-cards",
       callback: function(app, game_mod){
-        game_mod.menu.showSubSubMenu("game-cards");
+	game_mod.menu.hideSubMenus();
+        game_mod.deck_overlay.render("discards");
       }
     });
+/****
     this.menu.addSubMenuOption("game-info", {
       text: "Diplomatic Cards",
       id: "game-diplomatic",
@@ -135,24 +187,7 @@
         game_mod.menu.showSubSubMenu("game-diplomatic");
       }
     });
-    this.menu.addSubMenuOption("game-diplomatic", {
-      text : "My Hand",
-      id : "game-my-dhand",
-      class : "game-my-dhand",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.deck_overlay.render("dhand");
-      }
-    });
-    this.menu.addSubMenuOption("game-diplomatic", {
-      text : "All Cards",
-      id : "game-all-diplomatic",
-      class : "game-add-diplomatic",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.deck_overlay.render("diplomatic");
-      }
-    });
+****/
     this.menu.addSubMenuOption("game-faction-cards", {
       text : "Papacy",
       id : "game-papacy-cards",
@@ -160,7 +195,9 @@
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("papacy") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "papacy");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("papacy");
@@ -173,7 +210,9 @@
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("protestant") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "protestant");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("protestant");
@@ -187,7 +226,9 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("england") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "england");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("england");
@@ -200,7 +241,9 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("france") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "france");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("france");
@@ -213,7 +256,9 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("hapsburg") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "hapsburg");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("hapsburg");
@@ -226,13 +271,16 @@ if (this.game.players.length > 2) {
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
 	if (game_mod.returnPlayerOfFaction("ottoman") == game_mod.game.player) {
-          game_mod.deck_overlay.render("hand");
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "ottoman");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
 	  return;
 	}
         game_mod.deck_overlay.render("ottoman");
       }
     });
 }
+/****
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",
       id : "game-my-hand",
@@ -278,16 +326,7 @@ if (this.game.players.length > 2) {
         game_mod.deck_overlay.render("removed");
       }
     });
-
-    this.menu.addSubMenuOption("game-info", {
-      text : "Field Battle",
-      id : "game-field-battle",
-      class : "game-field_battle",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.field_battle_overlay.renderFortification();
-      }
-    });
+****/
     this.menu.addSubMenuOption("game-info", {
       text : "VP",
       id : "game-vp",
@@ -297,7 +336,6 @@ if (this.game.players.length > 2) {
         game_mod.vp_overlay.render();
       }
     });
-/****
     this.menu.addSubMenuOption("game-info", {
       text : "New World",
       id : "game-new-world",
@@ -307,6 +345,7 @@ if (this.game.players.length > 2) {
         game_mod.newworld_overlay.render();
       }
     });
+/****
     this.menu.addSubMenuOption("game-info", {
       text : "Chateaux",
       id : "game-chateaux-building",
@@ -353,6 +392,8 @@ if (this.game.players.length > 2) {
         game_mod.displayConquistadors();
       }
     });
+/***
+***/
 
     this.menu.addMenuOption("game-factions", "Factions");
     this.menu.addSubMenuOption("game-factions", {
@@ -507,6 +548,8 @@ if (this.game.players.length > 2) {
       }
 
     } catch (err) {}
+
+    this.factionbar.render();
 
     this.hud.render();
 

@@ -62,10 +62,6 @@ class ChatManager {
 					this.popups[group.id].group = group;
 				}
 
-				// For the love of all the is holy, would you stop commenting out this if-condition
-				// to make "stun" work, it breaks chat on mobile
-				// Talk to me about how to get chat to work in your desired field... there are other less
-				// destructive ways to do so
 				if (
 					this.render_popups_to_screen ||
 					this.popups[group.id].is_rendered
@@ -84,14 +80,12 @@ class ChatManager {
 		// handle requests to re-render chat popups
 		//
 		app.connection.on('chat-popup-remove-request', (group = null) => {
-			console.log('removing chat popup', group);
 			if (!group) {
 				return;
 			} else {
 				if (this.popups[group.id]) {
 					this.popups[group.id].remove();
 					delete this.popups[group.id];
-					console.log('removed chat popup', group);
 				}
 			}
 		});
@@ -113,6 +107,8 @@ class ChatManager {
 		// (in the absence of a proper chat-manager listing the groups/contacts)
 
 		app.connection.on('open-chat-with', (data = null) => {
+			let popup_status = this.render_popups_to_screen;
+			//Allow this event to force open a chat
 			this.render_popups_to_screen = 1;
 
 			if (this.mod.debug) {
@@ -147,14 +143,6 @@ class ChatManager {
 						group = group2;
 					}
 				}
-				if (data.admin) {
-					//
-					// It may be overkill to send a group update transaction everytime the admin starts a chat
-					// But if groups have variable memberships, it does push out an update to everyone as long
-					// as the admin has an accurate list
-					//
-					this.mod.sendCreateGroupTransaction(group);
-				}
 			}
 
 			//
@@ -165,6 +153,7 @@ class ChatManager {
 			}
 
 			app.connection.emit('chat-popup-render-request', group);
+			this.render_popups_to_screen = popup_status;
 		});
 
 		app.connection.on('relay-is-online', (pkey) => {
@@ -357,11 +346,11 @@ class ChatManager {
 						this.switchTabs();
 					}
 
-					console.log('clcked popup', this.popups[gid]);
 					// unset manually closed to permit rendering
 					this.popups[gid].manually_closed = false;
 
 					this.popups[gid].render();
+
 					//
 					// We would want to force this if juggling multiple chat popups on a desktop
 					// because the user is choosing to open the popup, otherwise there are safety
@@ -406,21 +395,8 @@ class ChatManager {
 
 		if (document.querySelector('.chat-manager-options')) {
 			document.querySelector('.chat-manager-options').onclick = (e) => {
-				if (!this.chatManagerMenu) {
-					this.chatManagerMenu = new ChatManagerMenu(
-						this.app,
-						this.mod
-					);
-				}
-				if (this.chatManagerMenu.active) {
-					this.chatManagerMenu.hide();
-				} else {
-					this.chatManagerMenu.render();
-				}
-				document
-					.querySelector('.chat-manager-options')
-					.classList.toggle('active');
-			};
+				this.mod.loadSettings();
+			}
 		}
 	}
 }

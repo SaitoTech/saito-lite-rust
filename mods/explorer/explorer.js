@@ -97,12 +97,12 @@ class ExplorerCore extends ModTemplate {
 				if (!blk) {
 					return;
 				}
-				/*
-        const blkwtx = new Block(app);
-        blkwtx.block = JSON.parse(JSON.stringify(blk.block));
-        blkwtx.transactions = blk.transactions;
-        blkwtx.app = null;
-        */
+
+				// const blkwtx = new Block(app);
+				// blkwtx.block = JSON.parse(JSON.stringify(blk.block));
+				// blkwtx.transactions = blk.transactions;
+				// blkwtx.app = null;
+
 				var txwmsgs = [];
 				blk.transactions.forEach((transaction) => {
 					let tx = transaction.toJson();

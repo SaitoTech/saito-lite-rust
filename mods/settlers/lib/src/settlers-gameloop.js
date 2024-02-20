@@ -64,13 +64,16 @@ class SettlersGameloop {
         // 0-index
         let winner = parseInt(mv[1]);
         this.game.queue = [];
+        this.game.canProcess = true;
 
         this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState} and wins the game!`);
+        this.stats_overlay.render(this.game.playerNames[winner]);
 
-        this.stats_overlay.render();
-        $(".settlers-stats-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
-
-        this.sendGameOverTransaction(this.game.players[winner]);
+        if (this.gameOverCallback){
+          this.gameOverCallback();  
+        }else{
+          this.sendGameOverTransaction(this.game.players[winner]);
+        }
 
         return 0;
       }
@@ -87,13 +90,13 @@ class SettlersGameloop {
 
         //the player will update their devcard count on next turn
         if (player != this.game.player) {
-          this.game.state.players[player - 1].devcards++; //Add card for display
+          this.game.state.players[player - 1].devcards.push("x"); //Add card for display
+          this.updateStatus(`<div class="persistent player-notice">${this.game.playerNames[player - 1]} bought a ${this.card.name} card</div>`);
         } else {
 
           document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
 
-          let lastcard =
-            this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
+          let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
           let html = `<span class="tip">${lastcard.card}
                         <div class="tiptext">${this.rules[lastcard.action]}</div>
@@ -101,6 +104,7 @@ class SettlersGameloop {
 
           console.log("Current status: " + this.game.state.canPlayCard);
           if (lastcard.action == 0 && this.game.state.canPlayCard == null){
+            this.game.state.players[player-1].devcards.push(this.game.deck[0].hand.pop());
             this.game.state.canPlayCard = true;
           }
 
@@ -117,11 +121,18 @@ class SettlersGameloop {
 
         //Score gets recounted a lot, so we save the number of VP cards
         this.game.state.players[player - 1].vpc++; //Number of victory point cards for the player
-        this.game.state.players[player - 1].devcards--; //Remove card (for display)
-
+        if (player != this.game.player){
+          this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
+        }
+        
         this.updateLog(
           `${this.formatPlayer(player)} played ${cardname} to gain 1 victory point`
         );
+
+        this.updateStatus(
+          `<div class="persistent player-notice">${this.game.playerNames[player - 1]} played ${cardname} to gain 1 victory point</div>`
+        );
+
         return 1;
       }
 
@@ -131,7 +142,9 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-        this.game.state.players[player - 1].devcards--; //Remove card (for display)
+        if (player != this.game.player){
+          this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
+        }
         this.updateLog(`${this.formatPlayer(player)} played ${cardname}`);
         return 1;
       }
@@ -143,7 +156,9 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.updateLog(`${this.formatPlayer(player)} played a ${cardname}!`);
-        this.game.state.players[player - 1].devcards--; //Remove card (for display)
+        if (player != this.game.player){
+          this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
+        }
         //Update Army!
         this.game.state.players[player - 1].knights++;
         this.checkLargestArmy(player);
@@ -153,9 +168,9 @@ class SettlersGameloop {
           this.playerPlayBandit();
         } else {
           this.updateStatus(
-            `<div class="player-notice">Waiting for ${
+            `<div class="player-notice">${
               this.game.playerNames[player - 1]
-            } to move the ${this.b.name}...</div>`
+            } played a ${cardname} and is moving the ${this.b.name}...</div>`
           );
         }
         return 0;
@@ -173,7 +188,9 @@ class SettlersGameloop {
           this.game.state.players[player - 1].resources.push(j);
         }
 
-        this.game.state.players[player - 1].devcards--; //Remove card (for display)
+        if (player != this.game.player){
+          this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
+        }
         this.updateLog(`${this.formatPlayer(player)} played ${cardname}.`);
         return 1;
       }
@@ -198,6 +215,8 @@ class SettlersGameloop {
             }
             if (am_i_a_victim && this.game.player == i + 1) {
               this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} stole all your ${resource}`);
+            }else if (this.game.player == i + 1){
+              this.updateStatus(`<div class="player-notice">${this.game.playerNames[player - 1]} played ${cardname} for ${resource}</div>`);
             }
           }
         }
@@ -207,10 +226,10 @@ class SettlersGameloop {
 
         if (this.game.player == player){
           this.updateStatus(`<div class="persistent player-notice">You collected ${lootCt} ${this.formatResource(resource)}</div>`);  
+        }else{
+          this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
         }
         
-
-        this.game.state.players[player - 1].devcards--; //Remove card (for display)
         this.updateLog(
           `${
             this.formatPlayer(player)
@@ -685,19 +704,9 @@ class SettlersGameloop {
         this.game.state.playerTurn = player;
 
         if (this.game.player == player) {
-          /*
-          We put a lag in passing the length of the hand to the state.devcards
-          so that we can know that the last card in the hand is "new" and unable to be played until their next turn 
-          */
-          this.game.state.players[player - 1].devcards = this.game.deck[0].hand.length;
-
           //Messaging to User
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
           let controlshtml = `<ul>`;
-          
-          //if (settlers_self.canPlayerPlayCard(true)) {
-          //  controlshtml += `<li class="option" id="playcard">play card</li>`;
-          //}
           
           controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
           controlshtml += `</ul>`;
@@ -854,18 +863,31 @@ class SettlersGameloop {
 
       //Player Chooses where to put bandit
       if (mv[0] == "roll_bandit") {
-        let player = parseInt(mv[1]);
+        let player_who_rolled = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
+
+        let player = player_who_rolled;
+        if (this.game.players.length == 2){
+          if (this.game.state.players[player_who_rolled-1].vp > this.game.state.players[2 - player_who_rolled].vp + 1){
+            player = 3 - player_who_rolled;
+          }
+        }
 
         //Move Bandit
         if (this.game.player == player) {
           this.playerPlayBandit();
         } else {
-          this.updateStatus(
-            `<div class="player-notice">${this.game.playerNames[player - 1]} moving the ${
-              this.b.name
-            }...</div>`
-          );
+          if (player == player_who_rolled){
+            this.updateStatus(
+              `<div class="player-notice">${this.game.playerNames[player - 1]} moving the ${
+                this.b.name
+              }...</div>`
+            );
+          }else{
+            this.updateStatus(
+              `<div class="player-notice">Robin Hood is on the loose, ${this.game.playerNames[player - 1]} is moving him...</div>`
+            );
+          }
         }
         return 0;
       }
@@ -967,9 +989,21 @@ class SettlersGameloop {
 
       if (mv[0] == "end_turn") {
         this.game.state.canPlayCard = null;
-        if (this.game.deck[0].hand.length > 0) {
+
+        /*
+        We put a lag in passing the length of the hand to the state.devcards
+        so that we can know that the last card in the hand is "new" and unable to be played until their next turn 
+        */
+        while (this.game.deck[0].hand.length > 0){
+          this.game.state.players[this.game.player - 1].devcards.push(this.game.deck[0].hand.pop());  
+        }
+
+        // Only set initial flag to true at end of opponents turn, because we loop back to "play"
+        // when playing a knight and don't want to allow multiple knights before the roll
+        if (this.game.state.players[this.game.player - 1].devcards.length > 0) {
           this.game.state.canPlayCard = true;
         }
+
         this.game.state.hasRolled = false;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);

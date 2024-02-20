@@ -9,6 +9,42 @@
 	text-align: center;
 }
 
+.card_bonuses {
+    position: absolute;
+    bottom: 0px;
+    background-color: #0005;
+    color: white;
+    font-size: 2rem;
+    font-style: italic;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding: 1rem;
+}
+
+.crossing_atlantic {
+    height: 150px;
+    width: 200px;
+    top: 2100px;
+    left: 700px;
+    position: absolute;
+}
+
+.crossing_atlantic div {
+   position: relative;
+   height: 100px;
+   width: 100px;
+}
+.crossing_atlantic .army_tile:nth-child(1) { margin-left: -30px; margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(2) { margin-left: 20px;  margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(3) { margin-left: 70px;  margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(4) { margin-left: 120px; margin-top: 0px; }
+.crossing_atlantic .army_tile:nth-child(5) { margin-left: -30px; margin-top: 80px; }
+.crossing_atlantic .army_tile:nth-child(6) { margin-left: 200px; margin-top: 80px;}
+.crossing_atlantic .army_tile:nth-child(7) { margin-left: 70px;  margin-top: 80px; }
+.crossing_atlantic .army_tile:nth-child(8) { margin-left: 120px; margin-top: 80px;}
+.crossing_atlantic .army_tile:nth-child(9) { margin-left: 45px;  margin-top: 40px;}
+
 .new-world-overlay .help {
 	background: #0009;
 	width: 100%;
@@ -28,7 +64,8 @@
 	background-color: transparent;
 	color: white;
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
+	display: flex;
+	flex-direction: row;
 	max-width: max-content;
 	margin-left: auto;
 	margin-right: auto;
@@ -37,17 +74,76 @@
 }
 
 .new-world-row {
-	display: grid;
+	display: flex;
+	flex-direction: rows;
 	justify-items: right;
 	background: #0005;
 	border: 1px solid black;
-	height: min-content;
+	height: 6rem;
 	margin-left: unset;
 	margin-right: unset;
 	margin-top: unset;
 	width: unset;
 	color: whitesmoke;
 	letter-spacing: 0.05rem;
+}
+
+.new-world-explorer {
+    background: #0005;
+    background-image: url(/his/img/tiles/explorers/Cabot_English.svg);
+    background-size: cover;
+    height: 6rem;
+    min-height: 6rem;
+    width: 6rem;
+    min-width: 6rem;
+    max-height: 100%;
+    border: 1px solid black;
+    margin-bottom: 0rem;
+    min-height: 0px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    font-size: 3.5rem;
+    text-align: center;
+    padding-top: 1rem;
+    max-height: 100%;
+}
+
+.new-world-colony {
+    background-image: url(/his/img/tiles/explorers/Cabot_English.svg);
+    background-size: cover;
+    height: 6rem;
+    min-height: 6rem;
+    width: 6rem;
+    min-width: 6rem;
+    max-height: 100%;
+    border: 1px solid black;
+    margin-bottom: 0rem;
+    min-height: 0px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    font-size: 3.5rem;
+    text-align: center;
+    padding-top: 1rem;
+    max-height: 100%;
+}
+
+.new-world-conquest {
+    background-image: url(/his/img/tiles/explorers/Cabot_English.svg);
+    background-size: cover;
+    height: 6rem;
+    min-height: 6rem;
+    width: 6rem;
+    min-width: 6rem;
+    max-height: 100%;
+    border: 1px solid black;
+    margin-bottom: 0rem;
+    min-height: 0px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    font-size: 3.5rem;
+    text-align: center;
+    padding-top: 1rem;
+    max-height: 100%;
 }
 
 .new-world-row .new-world-description {
@@ -101,7 +197,111 @@
 
 .new-world-overlay .content .conquests,
 .new-world-overlay .content .colonies,
-.new-world-overlay .content .explations {
-	width: 28rem;
-	max-width: 28vw;
+.new-world-overlay .content .explorations {
+	width: 32rem;
+	max-width: 32vw;
 }
+
+
+.new-world-bonus , .colony , .conquest {
+  position: absolute;
+  height: 10rem;
+  width: 10rem;
+}
+
+.england_colony1 {
+      top : 1007px;
+      left : 55px;
+}
+.england_colony2 {
+      top : 1120px;
+      left : 55px;
+}
+.france_colony1 {
+      top : 1230px;
+      left : 55px;
+}
+.france_colony2 {
+      top : 1340px;
+      left : 55px;
+}
+.hapsburg_colony1 {
+      top : 1455px;
+      left : 55px;
+}
+.hapsburg_colony2 {
+      top : 1565px;
+      left : 55px;
+}
+.hapsburg_colony3 {
+      top : 1680px;
+      left : 55px;
+}
+.england_conquest1 {
+      top : 1007px;
+      left : 180px;
+}
+.england_conquest2 {
+      top : 1120px;
+      left : 180px;
+}
+.france_conquest1 {
+      top : 1230px;
+      left : 180px;
+}
+.france_conquest2 {
+      top : 1340px;
+      left : 180px;
+}
+.hapsburg_conquest1 {
+      top : 1455px;
+      left : 180px;
+}
+.hapsburg_conquest2 {
+      top : 1565px;
+      left : 180px;
+}
+.hapsburg_conquest3 {
+      top : 1680px;
+      left : 180px;
+}
+.greatlakes {
+      top : 1906px;
+      left : 280px;
+}
+.stlawrence {
+      top : 1886px;
+      left : 515px;
+}
+.mississippi {
+      top : 2075px;
+      left : 280px;
+}
+.aztec {
+      top : 2258px;
+      left : 168px;
+}
+.maya {
+      top : 2300px;
+      left : 302px;
+}
+.amazon {
+      top : 2536px;
+      left : 668px;
+}
+.inca {
+      top : 2660px;
+      left : 525px;
+}
+.circumnavigation {
+      top : 2698px;
+      left : 128px;
+}
+.pacificstrait {
+      top : 2996px;
+      left : 486px;
+}
+
+
+
+

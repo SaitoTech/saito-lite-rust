@@ -68,7 +68,7 @@ class WelcomeOverlay {
 		if (faction === 'ottoman') {
 			document.querySelector(
 				'.welcome-title'
-			).innerHTML = `You are the Ottomans`;
+			).innerHTML = `You are the Turks`;
 			document.querySelector('.welcome-text').innerHTML = `
 			  "If we will not learn out of the Scriptures, we must learn out of the Turk’s scabbard..."
 			  </br>-- <i>Martin Luther</i>
@@ -79,10 +79,9 @@ class WelcomeOverlay {
 		if (faction === 'england') {
 			document.querySelector(
 				'.welcome-title'
-			).innerHTML = `You are the English`;
+			).innerHTML = `You are England`;
 			document.querySelector('.welcome-text').innerHTML = `
-			  Nought shall make us rue,
-			  </br>If England to itself do rest but true.
+			  This fortress built by Nature for herself </br> Against infection and the hand of war, 
 			`;
 		}
 
@@ -93,11 +92,9 @@ class WelcomeOverlay {
 				'.welcome-title'
 			).innerHTML = `You are the French`;
 			document.querySelector('.welcome-text').innerHTML = `
-			  The Saxon princes are weak and divided.
-			  <p></p>
-			  But from their gentle shelter,
-			  <p></p>
-			  Great Oaks may yet spread across Europe...
+			  The French are wiser than they seem...
+			  </br>
+			  <i>-- Francis Bacon</i>
 			`;
 		}
 
@@ -108,11 +105,7 @@ class WelcomeOverlay {
 				'.welcome-title'
 			).innerHTML = `You are the Hapsburg Dynasty`;
 			document.querySelector('.welcome-text').innerHTML = `
-			  The Saxon princes are weak and divided.
-			  <p></p>
-			  But from their gentle shelter,
-			  <p></p>
-			  Great Oaks may yet spread across Europe...
+			  El imperio donde nunca se pone el sol...
 			`;
 		}
 

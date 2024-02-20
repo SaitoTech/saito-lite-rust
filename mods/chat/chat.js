@@ -9,6 +9,8 @@ const JSON = require('json-bigint');
 const localforage = require('localforage');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
+const ChatSettings = require('./lib/overlays/chat-manager-menu');
+const ChatSidebar = require('./lib/appspace/chat-sidebar');
 
 class Chat extends ModTemplate {
 	constructor(app) {
@@ -58,10 +60,16 @@ class Chat extends ModTemplate {
 		this.isRelayConnected = false;
 
 		this.enable_notifications = false;
+		this.audio_notifications = false;
+		this.auto_open_community = false;
+
+		this.black_list = [];
 
 		this.app.connection.on('encrypt-key-exchange-confirm', (data) => {
-			this.returnOrCreateChatGroupFromMembers(data?.members);
+			let group = this.returnOrCreateChatGroupFromMembers(data?.members);
 			this.app.connection.emit('chat-manager-render-request');
+			//Refresh the chat app if you are in it
+			this.app.connection.emit("chat-manager-opens-group", group);
 		});
 
 		this.app.connection.on(
@@ -82,6 +90,12 @@ class Chat extends ModTemplate {
 			}
 		);
 
+		this.app.connection.on('chat-ready', () => {
+			if (this.auto_open_community) {
+				this.app.connection.emit('chat-popup-render-request');
+			}
+		});
+
 		this.app.connection.on('chat-message-user', async (pkey, message) => {
 			let group = this.returnOrCreateChatGroupFromMembers([
 				this.publicKey,
@@ -90,8 +104,6 @@ class Chat extends ModTemplate {
 
 			let newtx = await this.createChatTransaction(group.id, message);
 			await this.sendChatTransaction(this.app, newtx);
-
-			siteMessage('Message sent through chat', 2500);
 		});
 
 		this.postScripts = ['/saito/lib/emoji-picker/emoji-picker.js'];
@@ -103,6 +115,15 @@ class Chat extends ModTemplate {
 
 		this.hiddenTab = 'hidden';
 		this.orig_title = '';
+	}
+
+	hasSettings() {
+		return true;
+	}
+
+	loadSettings(container) {
+		let as = new ChatSettings(this.app, this, container);
+		as.render();
 	}
 
 	async initialize(app) {
@@ -133,26 +154,7 @@ class Chat extends ModTemplate {
 		// BROWSERS ONLY
 		//
 
-		//Enforce compliance with wallet indexing
-		if (!app.options?.chat) {
-			app.options.chat = {};
-			app.options.chat.groups = [];
-			app.options.chat.enable_notifications = this.enable_notifications;
-		} else if (Array.isArray(app.options.chat)) {
-			let newObj = {
-				groups: app.options.chat,
-				enable_notifications: this.enable_notifications
-			};
-			app.options.chat = newObj;
-		} else {
-			this.enable_notifications = app.options.chat?.enable_notifications;
-		}
-
-		if (app.options.chat.groups?.length == 0) {
-			this.createDefaultChatsFromKeys();
-		}
-
-		this.app.storage.saveOptions();
+		this.loadOptions();
 
 		await this.loadChatGroups();
 
@@ -209,6 +211,8 @@ class Chat extends ModTemplate {
 
 			this.main = new ChatMain(this.app, this);
 			this.addComponent(this.main);
+
+			this.addComponent(new ChatSidebar(this.app, this));
 		}
 
 		if (this.chat_manager == null) {
@@ -225,15 +229,66 @@ class Chat extends ModTemplate {
 			window.innerWidth > 599
 		) {
 			this.chat_manager.chat_popup_container = '.saito-main';
-			//Main Chat Application doesn't use popups as such...
-			this.chat_manager.render_popups_to_screen = 0;
 		}
-
+		
+		this.chat_manager.render_popups_to_screen = 0;
 		this.chat_manager.render_manager_to_screen = 1;
 
 		this.styles = ['/saito/saito.css', '/chat/style.css'];
 
 		await super.render();
+
+		let chat_id = this.app.browser.returnURLParameter('chat_id');
+
+		if (chat_id) {
+			if (this.app.crypto.isPublicKey(chat_id)) {
+				//data.key = public key(s) of other chat parties
+				this.app.connection.emit('open-chat-with', { key: chat_id });
+			} else {
+				let chat_group = JSON.parse(
+					this.app.crypto.base64ToString(chat_id)
+				);
+
+				console.log("CHAT LINK:",chat_group);
+
+				let search = this.returnGroup(chat_group.id);
+				if (search) {
+					//data.id = group id
+					this.app.connection.emit('open-chat-with', {
+						id: chat_group.id
+					});
+				} else {
+					// To do -- add here
+
+					chat_group.members = [];
+					chat_group.txs = [];
+					chat_group.unread = 0;
+					chat_group.last_update = 0;
+
+					for (let i in chat_group.member_ids){
+						if (chat_group.member_ids[i] !== -1){
+							chat_group.members.push(i);
+						}
+					}
+
+					chat_group.members.push(this.publicKey);
+					chat_group.member_ids[this.publicKey] = 1;
+
+					this.groups.push(chat_group);
+
+					this.saveChatGroup(chat_group);
+
+					this.app.connection.emit('chat-manager-render-request');
+
+				}
+
+				this.sendJoinGroupTransaction(chat_group);
+
+			}
+		
+
+			window.history.pushState({}, document.title, "/" + this.slug);
+		}
 	}
 
 	async onPeerServiceUp(app, peer, service = {}) {
@@ -298,6 +353,9 @@ class Chat extends ModTemplate {
 			);
 			this.communityGroup.members = [peer.publicKey];
 
+			this.communityGroup.description =
+				'an open forum for anyone on Saito to chat';
+
 			if (this.communityGroup) {
 				//
 				// remove duplicate public chats caused by server update
@@ -360,25 +418,14 @@ class Chat extends ModTemplate {
 						if (this.app.BROWSER) {
 							let active_module =
 								app.modules.returnActiveModule();
-							if (
-								app.browser.isMobileBrowser(
-									navigator.userAgent
-								) ||
+							if (app.browser.isMobileBrowser(navigator.userAgent) ||
 								window.innerWidth < 600 ||
 								active_module?.request_no_interrupts
 							) {
-								this.app.connection.emit(
-									'chat-manager-request-no-interrupts'
-								);
-								return;
+								this.app.connection.emit('chat-manager-request-no-interrupts');
 							}
-							/*
-            Let's see if not auto opening community chat makes for a better UX
-             else{
-              this.app.connection.emit("chat-popup-render-request");
-            }*/
-						
-						this.app.connection.emit("chat-ready");
+
+							this.app.connection.emit('chat-ready');
 						}
 					}
 				);
@@ -402,143 +449,125 @@ class Chat extends ModTemplate {
 		let force = false;
 
 		switch (type) {
-		case 'chat-manager':
-			if (this.chat_manager == null) {
-				this.chat_manager = new ChatManager(this.app, this);
-			}
-			return this.chat_manager;
-		case 'saito-game-menu':
-			// Need to make sure this is created so we can listen for requests to open chat popups
-			if (this.chat_manager == null) {
-				this.chat_manager = new ChatManager(this.app, this);
-			}
-			// Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
-			force = true;
+			case 'chat-manager':
+				if (this.chat_manager == null) {
+					this.chat_manager = new ChatManager(this.app, this);
+				}
+				return this.chat_manager;
 
-		case 'saito-header':
-		case 'saito-floating-menu':
-			//
-			// In mobile, we use the hamburger menu to open chat (without leaving the page)
-			//
-			if (
-				this.app.browser.isMobileBrowser() ||
+			case 'saito-game-menu':
+				// Need to make sure this is created so we can listen for requests to open chat popups
+				if (this.chat_manager == null) {
+					this.chat_manager = new ChatManager(this.app, this);
+				}
+				// Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
+				force = true;
+
+			case 'saito-header':
+
+			case 'saito-floating-menu':
+
+				if (chat_self.browser_active){
+					return null;
+				}
+
+				//
+				// In mobile, we use the hamburger menu to open chat (without leaving the page)
+				//
+				if (
+					this.app.browser.isMobileBrowser() ||
 					(this.app.BROWSER && window.innerWidth < 600) ||
 					force
-			) {
-				if (this.chat_manger) {
-					//Don't want mobile chat auto popping up
-					this.chat_manager.render_popups_to_screen = 0;
-				}
+				) {
+					if (this.chat_manger) {
+						//Don't want mobile chat auto popping up
+						this.chat_manager.render_popups_to_screen = 0;
+					}
 
-				if (this.chat_manager_overlay == null) {
-					this.chat_manager_overlay = new ChatManagerOverlay(
-						this.app,
-						this
-					);
-				}
-				return [
-					{
-						text: 'Chat',
-						icon: 'fas fa-comments',
-						callback: function (app, id) {
-							console.log('Render Chat manager overlay');
-							chat_self.chat_manager_overlay.render();
-						},
-						event: function (id) {
-							chat_self.app.connection.on(
-								'chat-manager-render-request',
-								() => {
-									let elem = document.getElementById(id);
-									//console.log("Chat event, update", elem);
-									if (elem) {
-										let unread = 0;
-										for (let group of chat_self.groups) {
-											unread += group.unread;
-										}
-
-										if (unread) {
-											if (
-												elem.querySelector(
-													'.saito-notification-dot'
-												)
-											) {
-												elem.querySelector(
-													'.saito-notification-dot'
-												).innerHTML = unread;
-											} else {
-												chat_self.app.browser.addElementToId(
-													`<div class="saito-notification-dot">${unread}</div>`,
-													id
-												);
+					if (this.chat_manager_overlay == null) {
+						this.chat_manager_overlay = new ChatManagerOverlay(
+							this.app,
+							this
+						);
+					}
+					return [
+						{
+							text: 'Chat',
+							icon: 'fas fa-comments',
+							callback: function (app, id) {
+								console.log('Render Chat manager overlay');
+								chat_self.chat_manager_overlay.render();
+							},
+							event: function (id) {
+								chat_self.app.connection.on(
+									'chat-manager-render-request',
+									() => {
+										let elem = document.getElementById(id);
+										//console.log("Chat event, update", elem);
+										if (elem) {
+											let unread = 0;
+											for (let group of chat_self.groups) {
+												unread += group.unread;
 											}
-										} else {
-											if (
-												elem.querySelector(
-													'.saito-notification-dot'
-												)
-											) {
-												elem.querySelector(
-													'.saito-notification-dot'
-												).remove();
+
+											if (unread) {
+												if (
+													elem.querySelector(
+														'.saito-notification-dot'
+													)
+												) {
+													elem.querySelector(
+														'.saito-notification-dot'
+													).innerHTML = unread;
+												} else {
+													chat_self.app.browser.addElementToId(
+														`<div class="saito-notification-dot">${unread}</div>`,
+														id
+													);
+												}
+											} else {
+												if (
+													elem.querySelector(
+														'.saito-notification-dot'
+													)
+												) {
+													elem.querySelector(
+														'.saito-notification-dot'
+													).remove();
+												}
 											}
 										}
 									}
-								}
-							);
+								);
 
-							//Trigger my initial display
-							chat_self.app.connection.emit(
-								'chat-manager-render-request'
-							);
+								//Trigger my initial display
+								chat_self.app.connection.emit(
+									'chat-manager-render-request'
+								);
+							}
 						}
-					}
-				];
-			} else if (!chat_self.browser_active) {
-				//
-				// Otherwise we go to the main chat application
-				//
-				return [
-					{
-						text: 'Chat',
-						icon: 'fas fa-comments',
-						callback: function (app, id) {
-							window.location = '/chat';
+					];
+				} else {
+					//
+					// Otherwise we go to the main chat application
+					//
+					return [
+						{
+							text: 'Chat',
+							icon: 'fas fa-comments',
+							callback: function (app, id) {
+								window.location = '/chat';
+							}
 						}
-					}
-				];
-			}
-			return null;
-		case 'user-menu':
-			if (obj?.publicKey !== this.publicKey) {
-				return {
-					text: 'Chat',
-					icon: 'far fa-comment-dots',
-					callback: function (app, publicKey) {
-						if (chat_self.chat_manager == null) {
-							chat_self.chat_manager = new ChatManager(
-								chat_self.app,
-								chat_self
-							);
-						}
+					];
+				}
+				return null;
+			case 'user-menu':
+				if (obj?.publicKey !== this.publicKey) {
+					let dynamic_text = this.black_list.includes(obj.publicKey) ? "Unblock and Chat" : "Chat";
 
-						chat_self.chat_manager.render_popups_to_screen = 1;
-						chat_self.app.connection.emit('open-chat-with', {
-							key: publicKey
-						});
-					}
-				};
-			}
-
-			return null;
-
-		case 'saito-profile-menu':
-			if (obj?.publicKey) {
-				if (
-					chat_self.app.keychain.hasPublicKey(obj.publicKey) &&
-						obj.publicKey !== this.publicKey
-				) {
 					return {
-						text: 'Chat',
+						text: dynamic_text,
 						icon: 'far fa-comment-dots',
 						callback: function (app, publicKey) {
 							if (chat_self.chat_manager == null) {
@@ -548,19 +577,54 @@ class Chat extends ModTemplate {
 								);
 							}
 
-							chat_self.chat_manager.render_popups_to_screen = 1;
-							chat_self.app.connection.emit(
-								'open-chat-with',
-								{ key: publicKey }
-							);
+							for (let i = 0; i < chat_self.black_list.length; i++){
+								if (chat_self.black_list[i] == publicKey){
+									chat_self.black_list.splice(i, 1);
+									break;
+								}
+							}
+							chat_self.saveOptions();
+							chat_self.app.connection.emit('open-chat-with', {
+								key: publicKey
+							});
 						}
 					};
 				}
-			}
 
-			return null;
-		default:
-			return super.respondTo(type);
+				return null;
+
+			//
+			// Abandoned code to duplicate user menu in saito-profile
+			//
+			case 'saito-profile-menu':
+				if (obj?.publicKey) {
+					if (
+						chat_self.app.keychain.hasPublicKey(obj.publicKey) &&
+						obj.publicKey !== this.publicKey
+					) {
+						return {
+							text: 'Chat',
+							icon: 'far fa-comment-dots',
+							callback: function (app, publicKey) {
+								if (chat_self.chat_manager == null) {
+									chat_self.chat_manager = new ChatManager(
+										chat_self.app,
+										chat_self
+									);
+								}
+
+								chat_self.app.connection.emit(
+									'open-chat-with',
+									{ key: publicKey }
+								);
+							}
+						};
+					}
+				}
+
+				return null;
+			default:
+				return super.respondTo(type);
 		}
 	}
 
@@ -576,8 +640,12 @@ class Chat extends ModTemplate {
 
 			let txmsg = tx.returnMessage();
 
+			if (!txmsg.module == "Chat"){
+				return;
+			}
+
 			if (this.debug) {
-				//console.log("Chat onConfirmation: " + txmsg.request);
+				console.log("Chat onConfirmation: " + txmsg.request);
 			}
 
 			if (txmsg.request == 'chat message') {
@@ -586,11 +654,11 @@ class Chat extends ModTemplate {
 			if (txmsg.request == 'chat group') {
 				await this.receiveCreateGroupTransaction(tx);
 			}
-			if (txmsg.request == 'chat confirm') {
-				await this.receiveConfirmGroupTransaction(tx);
+			if (txmsg.request == 'chat join') {
+				await this.receiveJoinGroupTransaction(tx);
 			}
-			if (txmsg.request == 'chat add') {
-				await this.receiveAddMemberTransaction(tx);
+			if (txmsg.request == 'chat update') {
+				await this.receiveUpdateGroupTransaction(tx);
 			}
 			if (txmsg.request == 'chat remove') {
 				await this.receiveRemoveMemberTransaction(tx);
@@ -628,7 +696,7 @@ class Chat extends ModTemplate {
 			let group = this.returnGroup(txmsg?.data?.group_id);
 
 			if (!group) {
-				console.log('Group doesn\'t exist?');
+				console.log("Group doesn't exist?");
 				return 0;
 			}
 
@@ -659,6 +727,25 @@ class Chat extends ModTemplate {
 			}
 
 			return 0;
+		}
+
+		if (txmsg.request == 'chat group') {
+			this.receiveCreateGroupTransaction(tx);
+			return;
+		}
+		if (txmsg.request == 'chat join') {
+			this.receiveJoinGroupTransaction(tx);
+			return;
+		}
+
+		if (txmsg.request == 'chat update') {
+			this.receiveUpdateGroupTransaction(tx);
+			return;
+		}
+
+		if (txmsg.request == 'chat remove') {
+			this.receiveRemoveMemberTransaction(tx);
+			return;
 		}
 
 		if (txmsg.request === 'chat message broadcast') {
@@ -720,7 +807,7 @@ class Chat extends ModTemplate {
 	// Create a n > 2 chat group (currently unencrypted)
 	// We have a single admin (who can add additional members or kick people out)
 	//
-	async sendCreateGroupTransaction(group) {
+	async sendCreateGroupTransaction(name, invitees = []) {
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
@@ -730,77 +817,75 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		for (let i = 0; i < group.members.length; i++) {
-			if (group.members[i] !== this.publicKey) {
-				newtx.addTo(group.members[i]);
+		for (let i = 0; i < invitees.length; i++) {
+			if (invitees[i] !== this.publicKey) {
+				newtx.addTo(invitees[i]);
 			}
 		}
 
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat group',
-			group_id: group.id,
-			group_name: group.name,
-			admin: this.publicKey,
-			timestamp: new Date().getTime()
+			name: name,
+			admin: this.publicKey
 		};
 
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
+
+		this.app.connection.emit('relay-transaction', newtx);
 	}
 
 	async receiveCreateGroupTransaction(tx) {
+		console.log('Receiving group creation tx');
+
 		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
 
-			let group = this.returnGroup(txmsg.group_id);
+			if (this.returnGroup(tx.signature)) {
+				return;
+			}
 
-			//
-			//Get the list of all keys message is sent to
-			//
-			let members = [];
+			let newGroup = {
+				id: tx.signature,
+				members: [],
+				member_ids: {},
+				name: txmsg.name,
+				txs: [],
+				unread: 0,
+				last_update: 0
+			};
+
 			for (let x = 0; x < tx.to.length; x++) {
-				if (!members.includes(tx.to[x].publicKey)) {
-					members.push(tx.to[x].publicKey);
+				if (!newGroup.members.includes(tx.to[x].publicKey)) {
+					newGroup.members.push(tx.to[x].publicKey);
+					newGroup.member_ids[tx.to[x].publicKey] = 0;
 				}
 			}
 
-			if (group) {
-				if (txmsg.group_name) {
-					console.log('Update group name: ' + txmsg.group_name);
-					group.name = txmsg.group_name;
-				}
-			} else {
-				group = this.returnOrCreateChatGroupFromMembers(
-					members,
-					txmsg.group_name
-				);
-				group.id = txmsg.group_id;
-			}
+			newGroup.member_ids[this.publicKey] = 1;
+			newGroup.member_ids[txmsg.admin] = 'admin';
 
-			group.members = members;
+			this.groups.push(newGroup);
 
-			if (!group.member_ids) {
-				group.member_ids = {};
-			}
-			for (let m of group.members) {
-				if (!group.member_ids[m]) {
-					group.member_ids[m] = 0;
-				}
-			}
+			this.saveChatGroup(newGroup);
 
-			group.member_ids[this.publicKey] = 1;
-
-			if (txmsg.admin) {
-				group.member_ids[txmsg.admin] = 'admin';
-			}
-
-			this.saveChatGroup(group);
 			this.app.connection.emit('chat-manager-render-request');
 
+			tx.msg.message = `<div class="saito-chat-notice"><span class="saito-mention saito-address" data-id="${txmsg.admin}">${this.app.keychain.returnUsername(txmsg.admin)}</span>
+			<span> created the group ${txmsg.name}</span></div>`;
+			tx.notice = true;
+
+			this.addTransactionToGroup(newGroup, tx);
+
+
 			if (!tx.isFrom(this.publicKey)) {
-				await this.sendConfirmGroupTransaction(group);
+				await this.sendJoinGroupTransaction(newGroup);
+			} else {
+				// We have now generated a unique ID (transaction signature) for the chat group
+				// and can create a link for anyone else to find it
+				this.generateChatGroupLink(newGroup);
 			}
 		}
 	}
@@ -809,74 +894,86 @@ class Chat extends ModTemplate {
 	// We automatically send a confirmation when added to a chat group (just so that we can make sure that the user was successfully added)
 	// But in the future, we may add a confirmation interface
 	//
-	async sendConfirmGroupTransaction(group) {
-		let newtx = await this.app.wallet.createUnsignedTransaction(
-			this.publicKey,
-			BigInt(0),
-			BigInt(0)
-		);
-		if (newtx == null) {
+	async sendJoinGroupTransaction(group) {
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+		if (!newtx) {
 			return;
 		}
 
-		for (let i = 0; i < group.members.length; i++) {
-			if (group.members[i] !== this.publicKey) {
-				newtx.addTo(group.members[i]);
+		for (let i in group.member_ids) {
+			if (i !== this.publicKey) {
+				newtx.addTo(i);
 			}
 		}
 
 		newtx.msg = {
 			module: 'Chat',
-			request: 'chat confirm',
-			group_id: group.id,
-			group_name: group.name,
-			timestamp: new Date().getTime()
+			request: 'chat join',
+			group_id: group.id
 		};
 
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
+		this.app.connection.emit('relay-transaction', newtx);
 	}
 
-	async receiveConfirmGroupTransaction(tx) {
-		if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+	async receiveJoinGroupTransaction(tx) {
+		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
 
 			let group = this.returnGroup(txmsg.group_id);
 
 			if (!group) {
-				await this.receiveCreateGroupTransaction(tx);
-				group = this.returnGroup(txmsg.group_id);
+				console.warn(
+					"Receiving chat group transaction from a group I don't know"
+				);
+				return;
 			}
 
-			if (!group.members.includes(tx.from[0].publicKey)) {
-				group.members.push(tx.from[0].publicKey);
+			let new_member = tx.from[0].publicKey;
+
+			if (group.member_ids[new_member] == -1) {
+				console.log('Blacklisted member attempting to rejoin!');
+				return;
+			}
+
+			if (!group.members.includes(new_member)) {
+				group.members.push(new_member);
+				tx.msg.message = `<div class="saito-chat-notice">
+											<span class="saito-mention saito-address" data-id="${new_member}">${this.app.keychain.returnUsername(new_member)}</span>
+											<span> joined the group</span>
+										</div>`;
+				tx.notice = true;
+				this.addTransactionToGroup(group, tx);
+
 			}
 
 			//Don't overwrite admin (if for some reason admin is sending a confirm)
-			if (!group.member_ids[tx.from[0].publicKey]) {
-				group.member_ids[tx.from[0].publicKey] = 1;
+			if (!group.member_ids[new_member]) {
+				group.member_ids[new_member] = 1;
 			}
 
-			this.saveChatGroup(group);
+	
+			this.app.connection.emit('chat-popup-render-request', group);
+
+			if (group.member_ids[this.publicKey] == "admin"){
+				this.sendUpdateGroupTransaction(group, new_member);
+			}
+
+
 		}
 	}
 
 	//
-	// Add a member to an existing chat group
+	// 
 	//
-	async sendAddMemberTransaction(group, member) {
-		let newtx = await this.app.wallet.createUnsignedTransaction(
-			this.publicKey,
-			BigInt(0),
-			BigInt(0)
-		);
+	async sendUpdateGroupTransaction(group, target = null) {
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 		if (newtx == null) {
 			return;
-		}
-
-		if (!group.members.includes(member)) {
-			group.members.push(member);
 		}
 
 		for (let i = 0; i < group.members.length; i++) {
@@ -887,31 +984,30 @@ class Chat extends ModTemplate {
 
 		newtx.msg = {
 			module: 'Chat',
-			request: 'chat add',
+			request: 'chat update',
 			group_name: group.name,
 			group_id: group.id,
-			member_id: member
+			member_ids: group.member_ids,
 		};
+
+		//
+		// These are stripped down objects, much smaller than the original transactions
+		// but still (hopefully) compatible with the addTransactionToGroup logic 
+		//
+		if (target){
+			console.log(`Sending ${group.txs.length} last messages to ${target}`);
+			newtx.msg.chat_history = group.txs;
+		}
 
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
+		this.app.connection.emit('relay-transaction', newtx);
 	}
 
-	async receiveAddMemberTransaction(tx) {
+	async receiveUpdateGroupTransaction(tx) {
 		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
-
-			//I am receiving message about being added to the group
-			if (this.publicKey == txmsg.member_id) {
-				await this.receiveCreateGroupTransaction(tx);
-				let group = this.returnGroup(txmsg.group_id);
-
-				tx.msg.message = `<div class="saito-chat-notice">added you to the group</div>`;
-				this.addTransactionToGroup(group, tx);
-
-				return;
-			}
 
 			let group = this.returnGroup(txmsg.group_id);
 
@@ -920,27 +1016,76 @@ class Chat extends ModTemplate {
 				return;
 			}
 
-			if (!group.members.includes(txmsg.member_id)) {
-				group.members.push(txmsg.member_id);
+			console.log("CHAT UPDATE:", txmsg);
+
+			let sender = tx.from[0].publicKey;
+
+			if (group.member_ids[sender] !== "admin"){
+				console.log("Non-admin attempting to change the group!");
+				return;
 			}
 
-			//
-			//Don't overwrite confirmed flag if txs arrive out of order
-			//
-			if (!group.member_ids) {
-				group.member_ids = {};
+			let notice = "";
+
+			if (txmsg.group_name !== group.name){
+
+				notice += `<div class="saito-chat-notice">
+				<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(sender)}</span>
+				<span> changed the name of the group to ${txmsg.group_name}</span></div>`;
+				group.name = txmsg.group_name;
 			}
 
-			if (!group.member_ids[txmsg.member_id]) {
-				group.member_ids[txmsg.member_id] = 0;
+			for (let i in txmsg.member_ids){
+				let add_member = 0;
+				if (txmsg.member_ids[i] !== group.member_ids[i]){
+					if (txmsg.member_ids[i] == "admin"){
+						group.member_ids[i] = "admin";
+						notice += `<div class="saito-chat-notice">
+													<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(sender)}</span>
+													<span>granted admin rights to </span>
+													<span class="saito-mention saito-address" data-id="${i}">${this.app.keychain.returnUsername(i)}</span>
+												</div>`;
+						add_member = 1;
+					}
+					if (txmsg.member_ids[i] == 1) {
+						add_member = 1;	
+					}
+					if (txmsg.member_ids[i] == -1) {
+						add_member = -1;
+					}
+
+					if (add_member){
+						group.member_ids[i] = txmsg.member_ids[i];
+						if (add_member > 0 && !group.members.includes(i)){
+							group.members.push(i);
+						}else if (add_member < 0 && group.members.includes(i)){
+							for (let j = 0; j < group.members.length; j++){
+								if (group.members[j] == i){
+									group.members.splice(j, 1);
+									break;
+								}
+							}
+						}
+					}
+				}
 			}
 
-			tx.msg.message = `<div class="saito-chat-notice">added ${this.app.browser.returnAddressHTML(
-				txmsg.member_id
-			)} to the group</div>`;
-			this.addTransactionToGroup(group, tx);
+			console.log("CHAT:",group);
 
-			//      this.saveChatGroup(group);
+			if (notice){
+				tx.msg.message = notice;
+				tx.notice = true;
+				this.addTransactionToGroup(group, tx);
+			}
+
+			if (txmsg.chat_history){
+				for (t of txmsg.chat_history){
+					this.addTransactionToGroup(group, t);
+				}
+			}
+
+			this.app.connection.emit('chat-popup-render-request', group);
+			
 		}
 	}
 
@@ -970,6 +1115,7 @@ class Chat extends ModTemplate {
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
+		this.app.connection.emit('relay-transaction', newtx);
 	}
 
 	async receiveRemoveMemberTransaction(tx) {
@@ -979,33 +1125,47 @@ class Chat extends ModTemplate {
 			let group = this.returnGroup(txmsg.group_id);
 
 			if (!group) {
-				console.warn('Chat group doesn\'t exist locally');
+				console.warn(`Chat group doesn't exist locally`);
 				return;
 			}
 
-			for (let i = 0; i < group.members.length; i++) {
-				if (group.members[i] == txmsg.member_id) {
-					group.members.splice(i, 1);
-					break;
+			let sender = tx.from[0].publicKey;
+
+			if (
+				group.member_ids[sender] == 'admin' ||
+				sender == txmsg.member_id
+			) {
+				for (let i = 0; i < group.members.length; i++) {
+					if (group.members[i] == txmsg.member_id) {
+						group.members.splice(i, 1);
+						break;
+					}
 				}
-			}
 
-			if (group.member_ids) {
-				delete group.member_ids[txmsg.member_id];
-			}
-
-			if (this.publicKey == txmsg.member_id) {
-				await this.deleteChatGroup(group);
-			} else {
-				if (tx.isFrom(txmsg.member_id)) {
-					tx.msg.message = `<div class="saito-chat-notice">left the group</div>`;
+				if (this.publicKey == txmsg.member_id) {
+					await this.deleteChatGroup(group);
 				} else {
-					tx.msg.message = `<div class="saito-chat-notice">kicked ${this.app.browser.returnAddressHTML(
-						txmsg.member_id
-					)} out of the group</div>`;
-				}
+					if (tx.isFrom(txmsg.member_id)) {
+						group.member_ids[txmsg.member_id] = 0;
+						tx.msg.message = `<div class="saito-chat-notice">
+													<span class="saito-mention saito-address" data-id="${txmsg.member_id}">${this.app.keychain.returnUsername(txmsg.member_id)}</span>
+													<span>left the group</span></div>`;
+					} else {
+						group.member_ids[txmsg.member_id] = -1;
+						tx.msg.message = `<div class="saito-chat-notice">
+													<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(sender)}</span>
+													<span> kicked </span>
+													<span class="saito-mention saito-address" data-id="${txmsg.member_id}">${this.app.keychain.returnUsername(txmsg.member_id)}</span>
+													<span> out of the group</span>
+												</div>`;
+					}
 
-				this.addTransactionToGroup(group, tx);
+
+					//Flag this as a pseudo chat transaction
+					tx.notice = true;
+					this.addTransactionToGroup(group, tx);
+					this.app.connection.emit('chat-popup-render-request', group);
+				}
 			}
 		}
 	}
@@ -1095,7 +1255,8 @@ class Chat extends ModTemplate {
 			request: 'chat message',
 			group_id: group_id,
 			message: msg,
-			timestamp: new Date().getTime()
+			timestamp: new Date().getTime(),
+			mentioned: to_keys
 		};
 
 		// sanity check
@@ -1108,7 +1269,7 @@ class Chat extends ModTemplate {
 			this.app.browser.stripHtml(msg).length >= 1000
 		) {
 			siteMessage(
-				'Purchase SAITO to Send Large Messages in Community Chat...',
+				'Insufficient SAITO to Send Large Messages in Community Chat...',
 				3000
 			);
 			return null;
@@ -1121,7 +1282,7 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		if (members.length == 2) {
+		if (members.length == 2 && !group?.member_ids) {
 			console.log('Chat: Try encrypting Message for ' + secret_holder);
 
 			//
@@ -1160,6 +1321,13 @@ class Chat extends ModTemplate {
 			console.log('Receive Chat Transaction:');
 			console.log(JSON.parse(JSON.stringify(tx)));
 			console.log(JSON.parse(JSON.stringify(txmsg)));
+		}
+
+		for (let blocked of this.black_list) {
+			if (tx.isFrom(blocked)) {
+				console.log('Refuse chat message from blocked account');
+				return;
+			}
 		}
 
 		//
@@ -1224,7 +1392,31 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		this.addTransactionToGroup(group, tx);
+		if (this.addTransactionToGroup(group, tx)){
+			//Returns 1 if it is a new message
+
+			if (tx.isFrom(this.publicKey)){
+				for (let key of this.black_list){
+					if (tx.isTo(key)){
+
+						let new_message = `<div class="saito-chat-notice">
+							<span class="saito-mention saito-address" data-id="${key}">${this.app.keychain.returnUsername(key)}</span>
+							<span> is blocked and cannot respond </span>
+						</div>`;
+
+						group.txs.push({
+							signature: tx.signature+'1',
+							timestamp: new Date().getTime(),
+							from: [],
+							msg: new_message,
+							mentioned: [],
+							notice: true
+						});
+						
+					}
+				}
+			}
+		}
 		this.app.connection.emit('chat-popup-render-request', group);
 	}
 
@@ -1244,9 +1436,12 @@ class Chat extends ModTemplate {
 		let message_blocks = this.createMessageBlocks(group);
 
 		for (let block of message_blocks) {
+
 			let ts = 0;
 			if (block?.date) {
 				html += `<div class="saito-time-stamp">${block.date}</div>`;
+			} else if (block?.notice) {
+				html += `<div class="saito-time-stamp">${block.notice}</div>`
 			} else {
 				if (block.length > 0) {
 					let sender = '';
@@ -1257,8 +1452,8 @@ class Chat extends ModTemplate {
 
 						const replyButton = `
               <div data-id="${block[z].signature}" data-href="${
-	sender + ts
-}" class="saito-userline-reply">
+							sender + ts
+						}" class="saito-userline-reply">
                 <div class="chat-copy"><i class="fas fa-copy"></i></div>
                 <div class="chat-reply"><i class="fas fa-reply"></i></div>
                 <div class="saito-chat-line-controls">
@@ -1275,7 +1470,10 @@ class Chat extends ModTemplate {
 								: ''
 						}">`;
 						if (block[z].msg.indexOf('<img') != 0) {
-							msg += this.app.browser.sanitize(block[z].msg);
+							msg += this.app.browser.sanitize(
+								block[z].msg,
+								true
+							);
 						} else {
 							msg += block[z].msg.substring(
 								0,
@@ -1299,7 +1497,7 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		if (!html){
+		if (!html) {
 			html = `<div class="saito-time-stamp">say hello</div>`;
 		}
 
@@ -1322,6 +1520,17 @@ class Chat extends ModTemplate {
 		for (let minimized_tx of group?.txs) {
 			//Same Sender -- keep building block
 			let next = new Date(minimized_tx.timestamp);
+
+			if (minimized_tx?.notice){
+				if (block.length > 0) {
+					blocks.push(block);
+					block = [];
+				}
+				blocks.push({notice: minimized_tx.msg});	
+
+				last_message_sender = "";
+				continue;
+			}
 
 			if (
 				minimized_tx.from.includes(last_message_sender) &&
@@ -1351,8 +1560,8 @@ class Chat extends ModTemplate {
 			last = next;
 		}
 
-		if (block.length > 0){
-			blocks.push(block);	
+		if (block.length > 0) {
+			blocks.push(block);
 		}
 
 		return blocks;
@@ -1376,33 +1585,47 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		let content = tx.returnMessage()?.message;
-		if (!content) {
+		let txmsg = tx.msg;
+		try{
+			txmsg = tx.returnMessage();
+		}catch(err){
+
+		}
+
+		let content = txmsg.message || txmsg;
+		let mentions = txmsg?.mentioned || tx?.mentioned || [];
+
+		if (!content || typeof content !== "string") {
 			console.warn('Not a chat message?');
-			return;
+			console.log(tx);
+			return 0;
 		}
 		let new_message = {
 			signature: tx.signature,
 			timestamp: tx.timestamp,
 			from: [],
-			msg: content
+			msg: content,
+			mentioned: mentions
 		};
 
-		if (
-			tx.isTo(this.publicKey) &&
-			this.app.BROWSER &&
-			!tx.isFrom(this.publicKey) &&
-			group.members.length !== 2
-		) {
+		if (tx?.notice){
+			new_message.notice = tx.notice;
+		}
+
+
+		// Need to rewrite this!!!
+		if (this.app.BROWSER && new_message.mentioned.includes(this.publicKey)){
 			console.log('CHAT MESSAGE DIRECTED TO ME!!!!');
 			group.mentioned = true;
 			new_message.flag_message = true;
+
 		}
 
 		//Keep the from array just in case....
 		for (let sender of tx.from) {
-			if (!new_message.from.includes(sender.publicKey)) {
-				new_message.from.push(sender.publicKey);
+			let key = sender?.publicKey || sender;
+			if (!new_message.from.includes(key)) {
+				new_message.from.push(key);
 			}
 		}
 
@@ -1411,7 +1634,7 @@ class Chat extends ModTemplate {
 				if (this.debug) {
 					console.log('duplicate');
 				}
-				return;
+				return 0;
 			}
 			if (tx.timestamp < group.txs[i].timestamp) {
 				group.txs.splice(i, 0, new_message);
@@ -1422,7 +1645,7 @@ class Chat extends ModTemplate {
 					console.log(JSON.parse(JSON.stringify(new_message)));
 				}
 
-				return;
+				return 0;
 			}
 		}
 
@@ -1433,28 +1656,18 @@ class Chat extends ModTemplate {
 		group.last_update = tx.timestamp;
 
 		if (!this.app.BROWSER) {
-			return;
+			return 0;
 		}
+
 
 		if (this.debug) {
 			console.log(`new msg: ${group.unread} unread`);
 			console.log(JSON.parse(JSON.stringify(new_message)));
 		}
 
-		if (
-			/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(
-				this.publicKey
-			)
-		) {
-			//
-			// Flag the group that there is a new message
-			// This is so we can add an animation effect on rerender
-			// and will be reset there
-			//
-			group.notification = true;
-
+		if (!new_message.from.includes(this.publicKey)) {
 			//Send System notification
-			if (this.enable_notifications) {
+			if (this.enable_notifications && !group.muted) {
 				let sender = this.app.keychain.returnIdentifierByPublicKey(
 					new_message.from[0],
 					true
@@ -1479,7 +1692,16 @@ class Chat extends ModTemplate {
 			}
 
 			//Flash new message in browser tab
-			this.startTabNotification();
+			if (!group.muted){
+				this.startTabNotification();
+	
+				// Flag the group that there is a new message
+				// This is so we can add an animation effect on rerender
+				// and will be reset there
+				//
+				group.notification = true;
+
+			}
 
 			//Add liveness indicator to group
 			this.app.connection.emit('group-is-active', group);
@@ -1493,6 +1715,8 @@ class Chat extends ModTemplate {
 				`Not saving because in loading mode (${this.loading})`
 			);
 		}
+
+		return 1;
 	}
 
 	///////////////////
@@ -1617,7 +1841,20 @@ class Chat extends ModTemplate {
 	returnMembers(group_id) {
 		for (let i = 0; i < this.groups.length; i++) {
 			if (group_id === this.groups[i].id) {
-				return [...new Set(this.groups[i].members)];
+				if (this.groups[i].member_ids){
+					let members = [];
+					for (let m of this.groups[i].members){
+						if (!members.includes(m)){
+							if (this.groups[i].member_ids[m] == "admin" || this.groups[i].member_ids[m] == 1){
+								members.push(m);
+							}	
+						}
+						
+					}
+					return members;
+				} else{
+					return [...new Set(this.groups[i].members)];	
+				}
 			}
 		}
 		return [];
@@ -1724,6 +1961,47 @@ class Chat extends ModTemplate {
 	///////////////////
 	// LOCAL STORAGE //
 	///////////////////
+	loadOptions() {
+		//Enforce compliance with wallet indexing
+		if (!this.app.options?.chat) {
+			this.app.options.chat = {};
+			this.app.options.chat.groups = [];
+		} else if (Array.isArray(this.app.options.chat)) {
+			let newObj = {
+				groups: this.app.options.chat
+			};
+			this.app.options.chat = newObj;
+		} else {
+			//
+			//These default to false, so will only toggle on if a true value is stored in options
+			//
+			this.enable_notifications =
+				this.app.options.chat?.enable_notifications;
+			this.audio_notifications =
+				this.app.options.chat?.audio_notifications;
+			this.auto_open_community =
+				this.app.options.chat?.auto_open_community;
+			if (this.app.options.chat?.black_list) {
+				this.black_list = this.app.options.chat.black_list;
+			}
+		}
+
+		if (this.app.options.chat.groups?.length == 0) {
+			this.createDefaultChatsFromKeys();
+		}
+
+		this.app.storage.saveOptions();
+	}
+
+	saveOptions() {
+		this.app.options.chat.enable_notifications = this.enable_notifications;
+		this.app.options.chat.audio_notifications = this.audio_notifications;
+		this.app.options.chat.auto_open_community = this.auto_open_community;
+		this.app.options.chat.black_list = this.black_list;
+
+		this.app.storage.saveOptions();
+	}
+
 	async loadChatGroups() {
 		if (!this.app.BROWSER) {
 			return;
@@ -1768,8 +2046,9 @@ class Chat extends ModTemplate {
 		//Save group in app.options
 		if (!this.app.options.chat.groups.includes(group.id)) {
 			this.app.options.chat.groups.push(group.id);
-			this.app.storage.saveOptions();
 		}
+
+		this.saveOptions();
 
 		let online_status = group.online;
 
@@ -1799,7 +2078,7 @@ class Chat extends ModTemplate {
 		let key_to_update = '';
 		for (let i = 0; i < this.groups.length; i++) {
 			if (this.groups[i].id === group.id) {
-				if (this.groups[i].members.length == 2) {
+				if (this.groups[i].members.length == 2 && !this.groups[i]?.member_ids) {
 					for (let member of this.groups[i].members) {
 						if (member !== this.publicKey) {
 							key_to_update = member;
@@ -1819,7 +2098,7 @@ class Chat extends ModTemplate {
 			}
 		}
 
-		this.app.storage.saveOptions();
+		this.saveOptions();
 
 		if (key_to_update) {
 			this.app.keychain.addKey(key_to_update, { mute: 1 });
@@ -1828,6 +2107,21 @@ class Chat extends ModTemplate {
 		await localforage.removeItem(`chat_${group.id}`);
 
 		this.app.connection.emit('chat-manager-render-request');
+	}
+
+	generateChatGroupLink(group) {
+		let obj = {
+			id: group.id,
+			name: group.name,
+			member_ids: group.member_ids
+		};
+
+		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+
+		let link = window.location.origin + '/chat?chat_id=' + base64obj;
+
+		navigator.clipboard.writeText(link);
+		siteMessage('Link Copied', 2000);
 	}
 
 	async onUpgrade(type, privatekey, walletfile) {
@@ -1854,14 +2148,14 @@ class Chat extends ModTemplate {
 		if (!this.tabInterval && document[this.hiddenTab]) {
 			this.orig_title = document.title;
 			this.tabInterval = setInterval(() => {
-				if (document.title === this.orig_title) {
+				if (document.title === 'New message') {
 					document.title = `(${notifications}) unread message${
 						notifications == 1 ? '' : 's'
 					}`;
 				} else {
 					document.title = 'New message';
 				}
-			}, 650);
+			}, 850);
 		}
 	}
 }

@@ -344,7 +344,6 @@ class SettlersPlayer {
     }
 
     if (settlers_self.canPlayerPlayCard()) {
-    //  html += `<li class="option" id="playcard">play card</li>`;
         can_do_something = true;
     }
 
@@ -356,9 +355,7 @@ class SettlersPlayer {
     ) {
       html += `<li class="option" id="spend">spend</li>`;
       can_do_something = true;
-    } else {
-      //html += `<li class="option noselect" id="nospend">spend</li>`;
-    }
+    } 
 
     html += `<li class="option" id="pass">pass dice</li>`;
     html += "</ul>";
@@ -538,9 +535,15 @@ class SettlersPlayer {
     if (this.game.state.bandit) {
       return false;
     }
+    if (this.game.state.playerTurn !== this.game.player) {
+      console.log("not my turn");
+      return false;
+    }
+    
+    console.log(this.game.state.players[this.game.player-1].devcards);
     
     if (onlyKnights){
-      for (let c of this.game.deck[0].hand){
+      for (let c of this.game.state.players[this.game.player-1].devcards){
         let card = this.game.deck[0].cards[c];
         console.log(card);
         if (card.card == "Knight"){
@@ -548,7 +551,7 @@ class SettlersPlayer {
         }
       }
     }else{
-      if (this.game.state.players[this.game.player - 1].devcards > 0) {
+      if (this.game.state.players[this.game.player - 1].devcards.length > 0) {
         return this.game.state.canPlayCard; 
       }
     }

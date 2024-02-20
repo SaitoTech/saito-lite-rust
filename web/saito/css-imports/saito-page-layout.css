@@ -23,17 +23,6 @@
   top: calc(var(--saito-header-height) + 1rem);
 }
 
-/* Perhaps we should select for saito-menu  
-  Also not necessary if the chat-manager has some new "padding" on top
-.saito-sidebar > div:not(:last-child) {
-  margin-bottom: 2rem;
-}
-*/
-
-.saito-sidebar-container {
-  width: 25rem;
-  position: relative;
-}
 
 .saito-sidebar.left {
   position: sticky;
@@ -96,14 +85,19 @@
     grid-template-columns: 1fr min-content;
   }
 
+
   .saito-sidebar.left {
+    display: none;
+    visibility: hidden;
+
+    /* What is the point of all this other stuff if we are hiding it???
     position: fixed;
     top: calc(var(--saito-header-height));
-    visibility: hidden;
     width: 35rem;
     height: 100vh;
     left: 0;
     border-right: 1px solid var(--saito-primary);
+    */
   }
 }
 
@@ -121,19 +115,26 @@
     padding: 2rem 1rem 1rem 1rem;
   }
 
+  /*
+  Hidden at 1200px, what does this do????
   .saito-sidebar.left {
     left: 0;
     width: 100% !important;
   }
+  */
 
   .saito-sidebar.right {
+    visibility: hidden;
+    display: none;
+
+    /*
     position: fixed;
     left: 0;
     width: 100%;
     top: 0;
-    visibility: hidden;
     margin-top: var(--saito-header-height);
     height: 100vh;
     z-index: 12;
+    */
   }
 }

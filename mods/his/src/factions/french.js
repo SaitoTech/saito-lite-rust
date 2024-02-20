@@ -72,10 +72,11 @@
         return 0;
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
+	let base = 0;
 	if (game_mod.game.state.french_chateaux_vp) {
-	  return game_mod.game.state.french_chateaux_vp;
+	  base += game_mod.game.state.french_chateaux_vp;
 	}
-	return 0;
+	return base;
       },
     });
  

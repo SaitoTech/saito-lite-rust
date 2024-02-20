@@ -3,6 +3,41 @@
 	width: 5rem;
 }
 
+.faction_sheet_notice {
+    width: max-content;
+    font-size: 2.6rem;
+    padding: 1.5rem;
+    color: white;
+    background: #ff7700;
+    line-height: 3.8rem;
+    visibility: hidden;
+}
+.faction_sheet_notice.protestant {
+    background: #a2583d;
+    visibility: visible;
+}
+.faction_sheet_notice.papacy {
+    background: #7b4c9b;
+    visibility: visible;
+}
+
+.factionbar {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: max-content;
+    min-width: max-content;
+    background-color: whitesmoke;
+    padding: 0rem;
+    font-size: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #ddd;
+}
+.factionbar div {
+    padding: 0.75rem;
+}
+
 .saint_peters_tile {
 	background-image: url('/his/img/tiles/papacy/StPetersCP.svg');
 	background-size: cover;
@@ -148,6 +183,9 @@
 	position: absolute;
 	height: 11%;
 	width: 7%;
+}
+.faction_sheet_keytile:hover {
+	opacity: 0.3;
 }
 .henry_viii_marital_status1 {
     top: 52%;

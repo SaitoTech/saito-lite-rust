@@ -3,6 +3,7 @@
 }
 
 .saito-profile-menu {
+  margin-left: 0.2rem;
 }
 
 .saito-profile-menu > div {
@@ -45,7 +46,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin: 2rem 0 0.5rem 0.2rem;
+  margin: 2rem 0 0.5rem 1.2rem;
 }
 
 
@@ -53,7 +54,6 @@
   font-size: 1.8rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-left: 1rem;
 }
 
 .saito-follow {

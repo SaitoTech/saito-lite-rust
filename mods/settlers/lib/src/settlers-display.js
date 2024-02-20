@@ -121,7 +121,7 @@ class SettlersDisplay {
 
       //Update Longest Road
       if (this.game.state.longestRoad.player == i + 1) {
-        score += 2;
+        score += this.longest.value;
       }
       //Update Largest Army
       if (this.game.state.largestArmy.player == i + 1) {
@@ -146,6 +146,16 @@ class SettlersDisplay {
         this.racetrack.lock();
       }
     }
+
+    if (this.game.players.length == 2){
+      if (Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1){
+        console.log("Robin hood");
+        $(".gameboard").addClass("robinhood");
+      }else{
+        $(".gameboard").removeClass("robinhood");
+      }
+    }
+        
   }
 
   displayCardfan(deck = "") {
@@ -237,7 +247,7 @@ class SettlersDisplay {
 
         if (this.game.state.longestRoad.player == i) {
           statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}`;
-          statshtml += `<div class="army_knights vproundel">2</div>`;
+          statshtml += `<div class="army_knights vproundel">${this.longest.value}</div>`;
           statshtml += `</div>`;
         }
 
@@ -246,10 +256,11 @@ class SettlersDisplay {
         //
         this.game.state.players[i - 1].resources.sort();
         let num_resources = this.game.state.players[i - 1].resources.length;
-        let num_cards =
-          i == this.game.player
-            ? this.game.deck[0].hand.length
-            : this.game.state.players[i - 1].devcards;
+        let num_cards = this.game.state.players[i - 1].devcards.length;
+
+        if (i == this.game.player){
+          num_cards += this.game.deck[0].hand.length;
+        }
         let userline = "";
         //userline += `<div class="flexline">`;
         userline += `
@@ -337,6 +348,14 @@ class SettlersDisplay {
           }
         }
       }
+
+
+      if (this.game.deck[0].hand.length == 0 && this.game.state.players[this.game.player-1].devcards.length == 0) {
+        document.querySelector('.hud-body .mobile .cards').classList.add('hidden');
+      }else{
+        document.querySelector('.hud-body .mobile .cards').classList.remove('hidden');
+      }
+
 
       if (this.game.player == 0) {
         this.showPlayerResources();

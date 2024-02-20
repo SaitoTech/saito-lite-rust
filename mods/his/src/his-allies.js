@@ -124,13 +124,19 @@
     return f;
   }
 
-  returnEnemies(faction) { 
+  returnEnemies(faction, include_minor_powers=false) { 
     let f = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
       if (io[i] !== faction) {
         if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
       }
+    }
+    if (include_minor_powers) {
+      if (this.areEnemies(faction, "hungary")) { f.push("hungary"); }
+      if (this.areEnemies(faction, "scotland")) { f.push("scotland"); }
+      if (this.areEnemies(faction, "venice")) { f.push("venice"); }
+      if (this.areEnemies(faction, "genoa")) { f.push("genoa"); }
     }
     return f;
   }
@@ -186,6 +192,13 @@
       }
       this.game.state.activated_powers[faction] = x;
     }
+  }
+
+  isActivatedPower(faction, activated_power) {
+    if (this.game.state.activated_powers[faction1].includes(activated_power)) {
+      return 1;
+    }
+    return 0;
   }
 
 
@@ -319,8 +332,6 @@
       defender = this.returnControllingPower(defender);
     }         
 
-console.log(JSON.stringify(this.game.state.activated_powers));
-
     //
     // defender now controlling power or itself
     //
@@ -330,13 +341,20 @@ console.log(JSON.stringify(this.game.state.activated_powers));
       // does player command this faction
       //
       let player_factions = this.returnPlayerFactions((p+1));
+
       let i_command_this_faction = false;
       for (let i = 0; i < player_factions.length; i++) { 
-console.log("testing: " + player_factions[i]);
-	if (player_factions[i] === defender) { return (p+1); }
-        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { return (p+1); }
+	if (player_factions[i] === defender) { 
+	  return (p+1);
+	}
+
+        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { 
+	  return (p+1);
+	}
         for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
-          if (this.game.state.activated_powers[player_factions[i]][z] === defender) { return (p+1); }
+          if (this.game.state.activated_powers[player_factions[i]][z] === defender) {
+	    return (p+1);
+	  }
         }
       }
     }

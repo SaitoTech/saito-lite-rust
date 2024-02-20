@@ -62,7 +62,8 @@ module.exports = (app, mod, tweet) => {
 			controls += `<div class="tweet-tool tweet-tool-delete" title="Delete your tweet"><i class="fas fa-trash"></i></div>`;
 		}
 	} else {
-		controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
+		controls += `<div class="tweet-tool tweet-tool-more" title="More options"><i class="fa-solid fa-ellipsis"></i></div>`;
+		//controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
 	}
 	controls += `           </div>`;
 
@@ -76,7 +77,7 @@ module.exports = (app, mod, tweet) => {
             <div class="tweet-sidebar">
             </div>
             <div class="tweet-main">
-              <div class="tweet-text">${app.browser.sanitize(text)}</div>`;
+              <div class="tweet-text">${app.browser.sanitize(text, true)}</div>`;
 
 	if (tweet.youtube_id != null && tweet.youtube_id != 'null') {
 		html += `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;

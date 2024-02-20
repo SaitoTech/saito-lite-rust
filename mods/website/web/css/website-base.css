@@ -4,7 +4,6 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: Arial, Helvetica, sans-serif;
 }
 
 nav {
@@ -18,48 +17,47 @@ nav > img {
 }
 
 body {
-	background-image: url('/saito/img/dreamscape.png');
-	background-position: cover;
-	height: 100vh;
-	width: 100vw;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	align-items: center;
-	color: #fff;
-	background-size: 100% 125%;
+  background-image: url("/saito/img/dreamscape.png");
+  background-position: cover;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  background-size: 100% 125%;
 }
 
 .content {
-	/* margin-top: 9rem; */
-	width: 80%;
-	max-width: 700px;
-	height: 90%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	text-align: center;
+  /* margin-top: 9rem; */
+  width: 80%;
+  max-width: 1200px;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
 }
 
 .mask {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	text-align: center;
-	background: #0008;
-	padding: 0 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  background: #0008;
+  padding: 0 3rem;
+  min-width: 700px;
 }
 
 .links {
-	text-align: center;
-	display: flex;
-	justify-content: space-around;
-	width: 100%;
-	margin: 3rem 0 0 0;
-	gap: 1rem;
+  display: flex;
+  width: 100%;
+  margin: 3rem 0 0 0;
+  gap: 1rem;
 }
 
 .content > img {
@@ -73,6 +71,7 @@ body {
 	position: absolute;
 	z-index: -1;
 }
+
 /*
 @media (orientation: landscape) {
   video {
@@ -94,30 +93,30 @@ body {
 */
 
 video {
-	width: 100vw;
-	height: 100vh;
-	object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
 }
+
 .feature {
-	width: 100vw;
-	display: flex;
-	justify-content: center;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
 }
 
-@media screen and (max-width: 843px) {
-	video {
-		width: 100vh;
-		width: 100vw;
-	}
-
-	.content > h1 {
-		font-size: 2rem;
-	}
-
-	.links a button {
-		width: 75vw;
-	}
+@media screen and (max-width: 99px) {
+  video {
+    width: 100vh;
+    width: 100vw;
+  }
+  .content>h1 {
+    font-size: 2rem;
+  }
+  .links a button {
+    width: 75vw;
+  }
 }
+
 /* 
 @media (max-aspect-ratio: 9/5) {
   video {
@@ -215,3 +214,166 @@ hr {
 		flex-flow: column;
 	}
 }
+
+.feature {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+body {
+  padding: 0;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.splash-title {
+  font-size: 3rem;
+}
+
+.spalsh-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media screen and (min-width: 801px) {
+  .container>div {
+    width: 50%;
+    transition: all ease-in-out 1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  .container>div:hover {
+    width: 100%;
+  }
+
+
+  .splash-option {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 5rem;
+    transition: all ease-in-out 1s;
+  }
+
+  .splash-option button {
+    margin: 0 2rem;
+  }
+  
+  .container>div label {
+    width: 0;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: left;
+    transition: all 1s ease-in-out;
+  }
+  .container>div:hover label {
+    width: 220px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+
+  .content {
+    width: 90vw;
+  }
+
+  .mask {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  .spalsh-option-list {
+    gap: 2rem;
+  }
+  
+
+  .splash-title {
+    margin: 1rem;
+    text-align: left;
+  }
+
+  .splash-option {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .links a button{
+    width: 100%;
+  }
+
+  .splash-option label {
+    overflow: hidden;
+  }
+}
+
+
+@media screen and (max-height: 840px) {
+  .content {
+    width: 120vw;
+  } 
+  .mask {
+    transform: scale(0.8);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+.splash-option {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+
+@media (max-aspect-ratio: 1/5) {
+  .container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .container>div {
+    width: 500px;
+    height: 50%;
+  }
+
+  .container>div:hover {
+    height: 100%;
+    width: 500px;
+  }
+}
+*/

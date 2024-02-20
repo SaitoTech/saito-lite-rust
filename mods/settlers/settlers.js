@@ -76,7 +76,8 @@ class Settlers extends GameTemplate {
 		};
 		this.b = {
 			name: 'bandit',
-			svg: `<img src="/settlers/img/icons/bandit.png"/>`
+			svg: `<img src="/settlers/img/icons/bandit.png"/>`,
+			alt: `<img src="/settlers/img/icons/robinhood.png"/>`
 		};
 		this.s = {
 			name: 'knight',
@@ -89,7 +90,9 @@ class Settlers extends GameTemplate {
 		};
 		this.longest = {
 			name: 'Longest Road',
-			svg: `<img src="/settlers/img/icons/road.png"/>`
+			svg: `<img src="/settlers/img/icons/road.png"/>`,
+			value: 2,
+			min: 5,
 		};
 		this.largest = {
 			name: 'Largest Army',
@@ -331,11 +334,18 @@ class Settlers extends GameTemplate {
 		//
 		// add extra controls to HUD
 		//
-		console.log(this.game.deck[0].hand);
+		//console.log(this.game.deck[0].hand);
+		let has_cards = false;
+		if (this.game.deck[0]?.hand?.length > 0){
+			has_cards = true;
+		}
+		if (this.game.state.players[this.game.player-1].devcards.length > 0){
+			has_cards = true;
+		}
 
 		this.app.browser.prependElementToSelector(
 			`<div class="mobile"><div class="trade">trade</div><div class="cards ${
-				this.game.deck[0]?.hand?.length > 0 ? '' : 'hidden'
+				has_cards ? '' : 'hidden'
 			}">cards</div><div class="score">score</div></div>`,
 			'.hud-body'
 		);
@@ -475,6 +485,11 @@ class Settlers extends GameTemplate {
 
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 12;
+		} else {
+			//2-player game -- make adjustments!
+
+			this.longest.value = 1;
+			this.longest.min = 6;
 		}
 
 		this.game.playerNames = [];
@@ -511,7 +526,7 @@ class Settlers extends GameTemplate {
 			state.players[i].cities = 4;
 			state.players[i].knights = 0;
 			state.players[i].vpc = 0;
-			state.players[i].devcards = 0;
+			state.players[i].devcards = [];
 			state.players[i].ports = [];
 			state.players[i].road = 0;
 		}

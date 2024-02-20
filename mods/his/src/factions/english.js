@@ -53,10 +53,31 @@
 
       },
       calculateBonusVictoryPoints  :	function(game_mod) {
-        return this.bonus_vp;
+	let base = 0;
+        return base;
       },
       calculateSpecialVictoryPoints  :	function(game_mod) {
-        return this.special_vp;
+        let base = 0;
+
+	//
+	// 5VP if 
+	//
+	if (game_mod.game.state.events.henry_viii_sickly_edward == 1 || game_mod.game.state.events.henry_viii_edward_added == 1 || game_mod.game.state.events.henry_viii_healthy_edward == 1) { 
+	  base += 5;
+        } else {
+	  if (game_mod.game.state.events.henry_viii_elizabeth_added == 1) {
+	    base += 2;
+	  }
+	}
+
+	//
+	// 1VP per every 2 protestant spaces
+	//
+	let eps = game_mod.returnNumberOfProtestantSpacesInLanguageZone("english", 1);
+	while (eps > 1) { eps -= 2; base++; }
+
+	return base;
+
       },
       calculateBaseVictoryPoints  :	function(game_mod) {
 

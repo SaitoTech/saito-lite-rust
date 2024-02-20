@@ -114,6 +114,7 @@ class ChateauxOverlay {
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
 			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+			this.mod.game.state.cards_left["france"]++;
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 			this.mod.game.queue.push(
 				`ACKNOWLEDGE\t${this.mod.returnFactionName(
@@ -129,6 +130,7 @@ class ChateauxOverlay {
 			this.mod.game.state.french_chateaux_vp += 1;
 			this.mod.game.queue.push('hide_overlay\tchateaux');
 			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+			this.mod.game.state.cards_left["france"]++;
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 1);
 			this.mod.game.queue.push(
 				`ACKNOWLEDGE\t${this.mod.returnFactionName(
@@ -159,6 +161,7 @@ class ChateauxOverlay {
 
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
+			this.mod.game.state.cards_left["france"]++;
 			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 			this.mod.game.queue.push(
@@ -168,7 +171,7 @@ class ChateauxOverlay {
 			);
 		}
 
-		this.pullHudOverOverlay();
+		this.pushHudUnderOverlay();
 	}
 }
 

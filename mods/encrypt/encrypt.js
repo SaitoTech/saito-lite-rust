@@ -43,6 +43,10 @@ class Encrypt extends ModTemplate {
       salert("Please be patient as this may take some time");
     });
 
+    app.connection.on("encrypt-decryption-failed", (publicKey) => {
+      this.reset_key_exchange(publicKey);
+    });
+
     return this;
   }
 
@@ -61,7 +65,7 @@ class Encrypt extends ModTemplate {
 
       return {
         text: "Add Contact",
-        icon: "far fa-id-card",
+        icon: "fa-solid fa-user-lock",
         callback: function (app, publicKey) {
           encrypt_self.app.keychain.saveKeys();
           encrypt_self.initiate_key_exchange(publicKey, 0);
@@ -113,6 +117,11 @@ class Encrypt extends ModTemplate {
             console.log("ENCRYPT: You have accepted an encrypted channel request from " + sender);
           }          
         }
+
+        if (txmsg.request == "diffie hellman reset"){
+          console.log("ENCRYPTION RESET!");
+          this.app.keychain.updateEncryptionByPublicKey(sender, "reset");
+        }
       }
     }
   }
@@ -124,7 +133,7 @@ class Encrypt extends ModTemplate {
     }
     let message = newtx.returnMessage();
 
-    if (!message.request.includes("diffie hellman")) {
+    if (!message?.request?.includes("diffie hellman")) {
       return super.handlePeerTransaction(app, newtx, peer, mycallback);
     }
 
@@ -150,6 +159,11 @@ class Encrypt extends ModTemplate {
 
     if (message.request === "diffie hellman key response") {
       this.confirm_key_exchange(txmsg.bob, sender);
+    }
+
+    if (message.request === "diffie hellman key reset"){
+      console.log("ENCRYPTION RESET!");
+      this.app.keychain.updateEncryptionByPublicKey(sender, "reset");
     }
   }
 
@@ -177,6 +191,25 @@ class Encrypt extends ModTemplate {
     //  this.initiate_key_exchange(peer.peer.publicKey, 1, peer);  // offchain diffie-hellman with server
     //  }
     //}
+  }
+
+  async reset_key_exchange(recipient){
+    let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient);
+    if (!tx){
+      return;
+    }
+
+    console.log(`${recipient} is sending me encrypted messages!`);
+
+    tx.msg = {
+      module: this.name,
+      request: "diffie hellman reset",
+    };
+
+    await tx.sign();
+
+    this.app.network.propagateTransaction(tx);
+    
   }
 
   /**

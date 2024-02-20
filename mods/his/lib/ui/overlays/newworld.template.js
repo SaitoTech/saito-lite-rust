@@ -1,5 +1,20 @@
-module.exports = () => {
+module.exports = (his_self) => {
 	let help = `Voyages to the New World`;
+
+	let cb = "";
+
+	if (his_self.game.state.new_world_bonus['england'] > 0)    { if (cb != "") { cb += ', '; } cb += `English (${his_self.game.state.new_world_bonus['england']})`; }
+	if (his_self.game.state.new_world_bonus['france'] > 0)     { if (cb != "") { cb += ', '; } cb += `French (${his_self.game.state.new_world_bonus['france']})`; }
+	if (his_self.game.state.new_world_bonus['ottoman'] > 0)    { if (cb != "") { cb += ', '; } cb += `Tukrs (${his_self.game.state.new_world_bonus['ottoman']})`; }
+	if (his_self.game.state.new_world_bonus['hapsburg'] > 0)   { if (cb != "") { cb += ', '; } cb += `Haps (${his_self.game.state.new_world_bonus['hapsburg']})`; }
+	if (his_self.game.state.new_world_bonus['papacy'] > 0)     { if (cb != "") { cb += ', '; } cb += `Papacy (${his_self.game.state.new_world_bonus['papacy']})`; }
+	if (his_self.game.state.new_world_bonus['protestant'] > 0) { if (cb != "") { cb += ', '; } cb += `Prots (${his_self.game.state.new_world_bonus['protestant']})`; }
+
+	if (cb === "") {
+	  cb = "no new world card bonuses this turn...";
+	} else {
+	  cb = "New World Card Bonuses: " + cb;
+	}
 
 	let html = `
       <div class="new-world-overlay" id="new-world-overlay">
@@ -7,46 +22,15 @@ module.exports = () => {
 	<div class="content">
           <div class="conquests">
             <div class="title">conquests</div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
           </div>
           <div class="colonies">
             <div class="title">colonies</div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
           </div>
           <div class="explorations">
             <div class="title">explorations</div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
-            <div class="new-world-row">
-	      <div class="new-world-description"><div class="new-world-details">Brandenburg</div><div class="new-world-faction">haspburgs</div></div>
-              <div class="new-world-roll ">1</div>
-            </div>
           </div>
         </div>
+	<div class="card_bonuses">${cb}</div>
       </div>
   `;
 	return html;

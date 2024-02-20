@@ -27,7 +27,6 @@
 }
 
 .saito-module-titlebar {
-    background-color: var(--saito-background-color);
     padding: 0.5rem;
     max-width: 18rem;
     min-width: 12rem;
@@ -37,6 +36,7 @@
     white-space: nowrap;
     overflow-wrap: break-word;
     opacity: 0.80;
+    background: #000a;
 }
 
 .saito-module-titlebar > div {
@@ -99,16 +99,15 @@
   flex-direction: column;
   row-gap: 1rem;
   width: min(90vw, 80rem);
-  height: 70vh;
+  max-height: 70vh;
   overflow: auto;
   background: var(--saito-background-color);
   color: var(--saito-font-color);
-  border: 1px solid var(--saito-primary);
   border-radius: 5px;
 }
 
 .saito-module-header {
-    background-image: url(/saito/img/dreamscape.png);
+    background: var(--dreamscape);
     background-size: cover;
     background-position: center;
     padding: 0.5rem;
@@ -116,17 +115,23 @@
 
 .saito-module-header .saito-module-titlebar {
     max-width: 100%;
-    width: fit-content;
+    width: 100%;
     padding: 0.5rem 1rem;
+}
+
+.saito-module-overlay .saito-module-titlebar {
+    color: var(--saito-white);
+    background-color: unset;
 }
 
 .saito-module-details {
     display: grid;
     grid-template-columns: 10rem 1fr;
-    grid-gap: 0.5rem;
+    gap: 1rem;
     margin: 1rem;
-    padding: 1rem;
-    border: 1px solid var(--saito-font-color);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--saito-border-color);
 }
 
 .saito-module-overlay > h4 {
@@ -138,15 +143,29 @@
 }
 
 fieldset.saito-grid {
-    padding: 0.5rem;
+    padding: 2rem;
     display: grid;
     grid-template-columns: 2rem 1fr;
-    row-gap: 0.75rem;
-    column-gap: 1.5rem;
+    gap: 2rem;
     align-items: center;
     margin: 1rem 0;
+    border: 1px solid var(--saito-border-color);
+    border-radius: 0.5rem;
 }
 
 .saito-module-settings .note {
     font-style: italic;
+}
+
+.saito-grid i {
+    margin: 0 0.5rem;
+    font-size: 1.8rem;
+}
+
+.settings-link, .settings-link label {
+    cursor: pointer;
+}
+
+.settings-link:hover label{
+    text-decoration: underline;
 }

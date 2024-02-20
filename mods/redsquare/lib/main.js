@@ -217,9 +217,6 @@ class RedSquareMain {
 
   attachEvents() {
     var scrollableElement = document.querySelector(".saito-container");
-    var sidebar = document.querySelector(".saito-sidebar.right");
-    var scrollTop = 0;
-    var stop = 0;
 
     scrollableElement.addEventListener("scroll", (e) => {
 
@@ -228,38 +225,6 @@ class RedSquareMain {
         this.idleTime = 0;
       }
 
-      //
-      // For keeping the side bar positioned correctly!
-      //
-      if (window.innerHeight - 150 < sidebar.clientHeight) {
-        if (scrollTop < scrollableElement.scrollTop) {
-          stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
-          if (scrollableElement.scrollTop + window.innerHeight > sidebar.clientHeight) {
-            try {
-              sidebar.style.top = stop + "px";
-            } catch (err) {
-              console.log("SIDEBAR ERROR 1");
-            }
-          }
-        } else {
-          if (stop > scrollableElement.scrollTop) {
-            stop = scrollableElement.scrollTop;
-            try {
-              sidebar.style.top = stop + "px";
-            } catch (err) {
-              console.log("SIDEBAR ERROR 2");
-            }
-          }
-        }
-      } else {
-        stop = scrollableElement.scrollTop;
-        try {
-          sidebar.style.top = stop + "px";
-        } catch (err) {
-          console.log("SIDEBAR ERROR 3");
-        }
-      }
-      scrollTop = scrollableElement.scrollTop;
     });
   }
 

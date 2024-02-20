@@ -3,11 +3,12 @@
     --calendar-minwidth: 10rem;
 }
 
+/*
 .container {
     max-width: var(--calendar-width);
     min-width: var(--calendar-minwidth);
 }
-
+*/
 .saito-calendar {
     border-radius: 0.5rem;
     width: 100%;

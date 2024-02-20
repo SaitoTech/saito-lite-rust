@@ -33,6 +33,10 @@ This alows for a header with a header with title to be added without extra CSS
   gap: 1rem;
 }
 
+/* We want to trigger the click event on the container */
+.saito-contact .saito-user .saito-identicon-box, .saito-contact .saito-user .saito-userline, .saito-contact .saito-user .saito-address {
+  pointer-events: none;
+}
 
 .secure_contact_notice {
   position: absolute;
