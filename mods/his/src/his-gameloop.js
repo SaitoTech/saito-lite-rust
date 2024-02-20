@@ -59,7 +59,14 @@ if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
-	  this.game.queue.push("diplomacy_phase");
+
+
+	  if (this.game.players.length == 2) {
+	    //this.game.queue.push("diplomacy_phase");
+	    this.game.queue.push("diplomacy_phase_2P");
+	  } else {
+	    this.game.queue.push("diplomacy_phase");
+	  }
 
 
 
@@ -2428,14 +2435,6 @@ console.log(faction + " -- evaluating fortification!");
 
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
-
-if (io[i] === "france") {
-  console.log("#");
-  console.log("#");
-  console.log("#");
-  console.log("# FRENCH RETREAT CHECK");
-}
-
 	    let can_faction_retreat = 0;
 	    let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
@@ -8215,7 +8214,146 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  return 0;
 
 	}
+
+	//
+	// this is a 3P++ game
+	//
+        if (mv[0] === "diplomacy_reject") {
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+	  let idx = parseInt(mv[2]);
+	  let proposal = this.game.state.diplomacy[idx];
+	  let terms = this.convertTermsToText(proposal);
+	  for (let i = terms.length-1; i >= 0; i--) { this.updateLog("  "+terms[i]); }
+	  this.updateLog(this.returnFactionName(faction) + " rejects " + this.returnFactionName(proposal.proposer) + " offer:");
+	  this.game.state.diplomacy.splice(idx, 1);
+	  return 1;
+
+	}
+        if (mv[0] === "diplomacy_accept") {
+
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+	  let idx = parseInt(mv[2]);
+
+	  let proposal = this.game.state.diplomacy[idx];
+	  let terms = this.convertTermsToText(proposal);
+	  for (let i = terms.length-1; i >= 0; i--) { this.updateLog("  "+terms[i]); }
+	  this.updateLog(this.returnFactionName(faction) + " accepts " + this.returnFactionName(proposal.proposer) + " offer:");
+
+	  for (let i = 0; i < proposal.parties.length; i++) { 
+	    if (proposal.confirms.length < (i+1)) { proposal.confirms.push(0); }
+	    if (proposal.parties[i] === faction || proposal.parties[i] === proposal.proposer) {
+	      proposal.confirms[i] = 1;
+	    }
+	  }
+
+	  let all_confirmed = true;
+	  for (let i = 0; i < proposal.confirms.length; i++) { 
+	    if (proposal.confirms[i] != 1) {
+	     all_confirmed = false;
+	    }
+	  }
+
+	  if (all_confirmed == true) {
+	    this.updateLog(this.returnFactionName(proposal.proposer) + " offer takes effect.");
+	    for (let i = proposal.terms.length-1; i >= 0; i--) {
+	      this.game.queue.push(proposal.terms[i]);
+	    }
+	    this.game.state.diplomacy.splice(idx, 1);
+	  }
+
+	  return 1;
+
+	}
         if (mv[0] === "diplomacy_phase") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  this.game.state.diplomacy = [];
+	  this.game.state.diplomacy.push({
+	    parties 	: ["papacy", "protestant"] ,
+	    confirms 	: [0,0] ,
+	    terms 	: ["end_war\tpapacy\tprotestant"] ,
+	    proposer 	: "england",
+	  });
+
+	  if (this.game.players.length == 2) {
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"protestant");
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"papacy");
+	    return 1;
+	  }
+
+	  let io = this.returnImpulseOrder();
+	  for (let i = io.length-1; i>= 0; i--) {
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+it[i]);
+	  }
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "confirm_diplomatic_proposal") {
+
+	  let faction = mv[1];
+	  let proposal_idx = parseInt(mv[2]);
+	  let proposal = this.game.state.diplomacy[proposal_idx];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.diplomacy_confirm_overlay.render(faction, proposal_idx);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " reviewing diplomatic proposal...");
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+	}
+	if (mv[0] === "confirm_and_propose_diplomatic_proposals") {
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  //
+	  // first, if there are any outstanding proposals that
+	  // involve this faction, we need to ask them one-by-one
+	  // if they agree or disagree. if they agree and are the
+	  // last to agree, it will immediately execute.
+	  //
+	  let anything_to_review = false;
+	  for (let i = 0; i < this.game.state.diplomacy.length; i++) {
+	    if (this.game.state.diplomacy[i].parties.includes(faction)) {
+	      this.game.queue.push("confirm_diplomatic_proposal\t"+faction+"\t"+i);
+	      anything_to_review = true;
+	    }
+	  }
+	  if (anything_to_review) { 
+	    // we have pushed to the queue, so will return and pass-
+	    // through when all proposals are fine.
+	    return 1;
+	  }
+
+
+/***	  
+	  //
+	  // there are no proposals left
+	  //
+	  if (player === this.game.player) {
+	    this.updateStatus(this.returnFactionName(faction) + " considering diplomatic proposals");
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " considering diplomatic proposals");
+	  }
+***/
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+
+        if (mv[0] === "diplomacy_phase_2P") {
 
 //
 // Papacy 
@@ -8243,7 +8381,6 @@ if (this.game.state.round == 2) {
   });
 }
 ******/     
-
 
 
 	  //

@@ -626,7 +626,8 @@ if (this.game.options.scenario != "is_testing") {
     state.board = {}; // units on board
     state.cards_evented = [];
 
-    state.diplomacy = this.returnDiplomacyAlliance();
+    state.alliances = this.returnDiplomacyAlliance();
+    state.diplomacy = [];
 
     // whose turn is it? (attacker)
     state.active_player = -1;
