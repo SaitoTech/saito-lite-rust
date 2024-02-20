@@ -7,6 +7,8 @@ class DiplomacyConfirmOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, false);
+		this.faction = "";
+		this.proposal_idx = 0;
 	}
 
 	hide() {
@@ -14,26 +16,26 @@ class DiplomacyConfirmOverlay {
 		return;
 	}
 
-	render(proposal_idx=0) {
+	render(faction, proposal_idx=0) {
 	  let proposal = this.mod.game.state.diplomacy[proposal_idx];
 	  this.overlay.show(DiplomacyConfirmTemplate(this, proposal, proposal_idx));
-    	  this.attachEvents(proposal_idx=0);
+    	  this.attachEvents(faction, proposal_idx=0);
 	}
 
 	attachEvents(proposal_idx=0) {
 
           if (document.querySelector('.accept')) {
-            document.querySelector('.accept').click = (e) => {
-              this.hide();
-	      this.mod.addMove("diplomacy_accept\t"+protposal_idx);
+            document.querySelector('.accept').onclick = (e) => {
+             this.hide();
+	      this.mod.addMove("diplomacy_accept\t"+faction+"\t"+proposal_idx);
 	      this.mod.endTurn();
             };
           }
 
           if (document.querySelector('.reject')) {
-            document.querySelector('.reject').click = (e) => {
+            document.querySelector('.reject').onclick = (e) => {
               this.hide();
-	      this.mod.addMove("diplomacy_reject\t"+protposal_idx);
+	      this.mod.addMove("diplomacy_reject\t"+faction+"\t"+proposal_idx);
 	      this.mod.endTurn();
             };
           }

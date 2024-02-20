@@ -68,6 +68,8 @@
     let proposal = this.game.state.diplomacy[proposal_idx];
     let text = [];
 
+console.log("PROPOSAL: "+ JSON.stringify(proposal));
+
     for (let i = 0; i < proposal.terms.length; i++) {
 
       let x = proposal.terms[i].split("\t");
@@ -85,13 +87,13 @@
 	text.push(`${this.returnFactionName(x[1])} returns ${x[1]}.`);
       }
       if (x[0] === "offer_mercenaries") {
-	text.push(`${this.returnFactionName(x[1])} offers ${this.returnSpaceName($x[2]) ${x[3]} mercenaries.`);
+	text.push(`${this.returnFactionName(x[1])} offers ${this.returnSpaceName(x[2])} ${x[3]} mercenaries.`);
       }
       if (x[0] === "yield_key") {
-	text.push(`${this.returnFactionName(x[1])} yields ${this.returnSpaceName($x[3]) to ${this.returnFactionName(x[2])}.`);
+	text.push(`${this.returnFactionName(x[1])} yields ${this.returnSpaceName(x[3])} to ${this.returnFactionName(x[2])}.`);
       }
       if (x[0] === "yield_cards") {
-	text.push(`${this.returnFactionName(x[1])} offers ${this.returnSpaceName($x[2]) ${x[3]} card(s).`);
+	text.push(`${this.returnFactionName(x[1])} offers ${this.returnSpaceName(x[2])} ${x[3]} card(s).`);
       }
       if (x[0] === "approve_divorce") {
 	text.push(`${this.returnFactionName(x[1])} approves Henry VIII divorce.`);

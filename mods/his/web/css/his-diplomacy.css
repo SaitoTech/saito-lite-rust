@@ -22,6 +22,23 @@
 	line-height: 3.4rem;
 }
 
+.diplomacy-confirm-overlay .content , .diplomacy-propose-overlay .content {
+    padding: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background-color: #0009;
+    color: white;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    list-style: none;
+    font-size: 1.8rem;
+}
+
+.diplomacy-confirm-overlay .content ul li , .diplomacy-propose-overlay .content ul li {
+    list-style: none;
+}
+
 .diplomacy-confirm-overlay .buttons , .diplomacy-propose-overlay .buttons {
         display: flex;
         column-gap: 10rem;
