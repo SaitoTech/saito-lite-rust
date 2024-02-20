@@ -454,6 +454,7 @@ class Chat extends ModTemplate {
 					this.chat_manager = new ChatManager(this.app, this);
 				}
 				return this.chat_manager;
+
 			case 'saito-game-menu':
 				// Need to make sure this is created so we can listen for requests to open chat popups
 				if (this.chat_manager == null) {
@@ -463,7 +464,13 @@ class Chat extends ModTemplate {
 				force = true;
 
 			case 'saito-header':
+
 			case 'saito-floating-menu':
+
+				if (chat_self.browser_active){
+					return null;
+				}
+
 				//
 				// In mobile, we use the hamburger menu to open chat (without leaving the page)
 				//
@@ -540,7 +547,7 @@ class Chat extends ModTemplate {
 							}
 						}
 					];
-				} else if (!chat_self.browser_active) {
+				} else {
 					//
 					// Otherwise we go to the main chat application
 					//
