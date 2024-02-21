@@ -96,6 +96,18 @@
     return -1;
   }
 
+
+  returnControlledCapitals(faction) {
+    let x = this.returnCapitals(faction);
+    for (let i = 0; i < x.length; i++) {
+      if (!this.isSpaceControlled(x[i], faction)) {
+	x.splice(i, 1);
+	i--;
+      }
+    }
+    return x;
+  }
+
   returnCapitals(faction) {
     for (let i = 0; i < this.game.state.players_info.length; i++) {
       for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {

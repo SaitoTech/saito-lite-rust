@@ -45,8 +45,8 @@
 .fortified {
 	display: block;
 	position: absolute;
-	width: 18rem;
-	height: 18rem;
+	width: 14rem;
+	height: 14rem;
 	left: -4.5rem;
 	top: -4.5rem;
 }
@@ -227,6 +227,9 @@ img {
 	top: -10px;
 	left: -10px;
 	z-index: 999;
+}
+.unrest:hover {
+	opacity: 0.3;
 }
 
 .option {
