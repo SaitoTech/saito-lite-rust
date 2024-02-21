@@ -4,7 +4,6 @@ const Transaction = require("../../lib/saito/transaction").default;
 
 var ModTemplate = require("../../lib/templates/modtemplate");
 //var saito = require("../../lib/saito/saito");
-const Stun = require("./stun-relay");
 const JSON = require("json-bigint");
 
 
@@ -34,7 +33,7 @@ class Relay extends ModTemplate {
     this.debug = false;
     this.busy = false;
 
-    this.stun = new Stun(app, this);
+    this.stun = null;
 
     app.connection.on("relay-send-message", async (obj) => {
       this.sendRelayMessage(obj.recipient, obj.request, obj.data);
@@ -48,6 +47,16 @@ class Relay extends ModTemplate {
       this.busy = true;
     });
 
+  }
+
+
+  async initialize(app) {
+    await super.initialize(app);
+
+    let modList = this.app.modules.returnModulesRespondingTo("peer-manager");
+    if (modList.length > 0){
+      this.stun = modList[0].respondTo("peer-manager");
+    }
   }
 
   returnServices() {
@@ -91,7 +100,7 @@ class Relay extends ModTemplate {
 
   async sendRelayTransaction(tx, force_stun = false){
 
-    if (tx.to.length == 1) {
+    if (tx.to.length == 1 && this.stun) {
       let addressee = tx.to[0].publicKey;
       if (this.stun.hasConnection(addressee)){
         this.stun.sendTransaction(addressee, tx);
@@ -159,10 +168,6 @@ class Relay extends ModTemplate {
           return 0;
         }
 
-        if (message.request == "stun signaling relay"){
-          this.stun.handleSignalingMessage(message.data);
-          return 0;
-        }
       }
 
       if (message.request === "relay peer message") {
