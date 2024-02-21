@@ -308,13 +308,22 @@ class MixinModule extends CryptoModule {
 	 * @param {timestamp} to - timestamp after which the transaction was sent
 	 * @return {Boolean}
 	 */
-	receivePayment(
+	async receivePayment(
 		amount = '',
 		sender = '',
 		recipient = '',
 		timestamp = 0,
 		unique_hash = ''
 	) {
+		let this_self = this;
+		let received_status = 0;
+		let split = sender.split('|');
+
+		console.log('split: ', split);
+
+		let opponent_id = split[1];
+		sender = split[0];
+
 		//
 		// mixin transfers will be registered with a specific TRACE_ID
 		//
@@ -326,19 +335,77 @@ class MixinModule extends CryptoModule {
 		//
 		// the mixin module might have a record of this already stored locally
 		//
-		if (
-			this.hasReceivedPayment(
-				amount,
-				sender,
-				recipient,
-				timestamp,
-				unique_hash
-			) == 1
-		) {
-			return 1;
-		}
-		this.mixin.fetchSafeSnapshots(this.asset_id, 500, (d) => {});
-		return 0;
+
+		console.log('////////////////////////////////////////////////////');
+		console.log('inside receivePayment ///');
+		console.log('amount, sender, timestamp');
+		console.log(amount, sender, timestamp);
+
+		//snapshot_datetime:  Mon Feb 12 2024 16:31:44 GMT+0500 (Pakistan Standard Time)
+		//mixinmodule.js:454 received_datetime:  Sun Sep 20 56111 06:01:14 GMT+0500 (Pakistan Standard Time)
+
+		let status = await this.mixin.fetchSafeSnapshots(this.asset_id, 1000, (d) => {
+
+			if (d.length > 0) {
+
+				for (let i = (d.length - 1); i >= 0; i--) {
+					let row = d[i];
+					let snapshot_asset_id = row.asset_id;
+
+					console.log('*************************************')				
+					console.log("snapshot response ///");
+
+					// filter out specific asset
+					if (snapshot_asset_id == this_self.asset_id) {
+
+						console.log("assets matched ///");
+
+						let snapshot_opponent_id = row.opponent_id;
+
+						console.log('snapshot_opponent_id: ', snapshot_opponent_id);
+						console.log('opponent_id: ', opponent_id);
+
+
+						// filter out opponents
+						if ((opponent_id == snapshot_opponent_id)) {
+
+							console.log('opponent_id matched ////');
+
+							let snapshot_amount = Number(row.amount);
+
+
+							console.log('row.amount: ', row.amount);
+							console.log('snapshot_amount: ', snapshot_amount);
+
+							// filter out deposit only
+							if (snapshot_amount > 0) {
+
+								//compare timestamps
+								let snapshot_date = new Date(row.created_at);
+								let received_date = new Date(timestamp);
+								
+								console.log('received_datetime - snapshot_datetime - diff : ', received_date, snapshot_date, (snapshot_date - received_date));
+
+								if ((snapshot_date - received_date > 0)  && (snapshot_amount == amount) 
+									&& (opponent_id == snapshot_opponent_id)){
+									
+									console.log('match found ///');
+									
+									return 1;
+								}
+							}
+						}
+					}
+				}
+
+				return 0;
+			}
+		});
+
+
+		console.log('status / ////////////////////////////');
+		console.log(status);
+		return status;
 	}
 
 	/**

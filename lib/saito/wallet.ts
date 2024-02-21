@@ -750,7 +750,7 @@ export default class Wallet extends SaitoWallet {
 		mycallback,
 		ticker,
 		tries = 36,
-		pollWaitTime = 5000
+		pollWaitTime = 7000
 	) {
 		let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
 			senders,
@@ -799,6 +799,10 @@ export default class Wallet extends SaitoWallet {
 		//
 		const check_payment_function = async () => {
 			console.log('wallet -> cryptmod receivePayment');
+
+			console.log('senders, ', senders);
+			console.log('receivers, ', receivers);
+
 			return await cryptomod.receivePayment(
 				amounts[0],
 				senders[0],
@@ -824,6 +828,9 @@ export default class Wallet extends SaitoWallet {
 		};
 
 		const did_complete_payment = (result) => {
+
+			console.log('did complete payment: ', result);
+
 			if (result) {
 				// The transaction was found, we're done.
 				console.log('TRANSACTION FOUND');
