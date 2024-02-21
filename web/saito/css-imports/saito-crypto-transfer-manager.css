@@ -185,4 +185,23 @@ input[type="checkbox"].ignore_checkbox {
   margin-bottom: 0;
 }
 
+.transfer-details .saito-identicon-box {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  align-items: center;
+}
 
+.transfer-details .saito-identicon-box .saito-identicon {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.send_from {
+  font-size: 1.4em;
+  margin-bottom: 1rem;
+}
+
+.crypto_transfer_btn {
+  margin-top: 1rem;
+}

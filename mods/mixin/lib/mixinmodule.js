@@ -109,6 +109,11 @@ class MixinModule extends CryptoModule {
 	}
 
 	hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
+	
+		console.log('**********************************************************')
+		console.log('amount, sender, receiver, timestamp, unique_hash');
+		console.log(amount, sender, receiver, timestamp, unique_hash);
+
 		let trace_id = getUuid(unique_hash);
 
 		for (let i = 0; i < this.mixin.deposits.length; i++) {
@@ -397,6 +402,12 @@ class MixinModule extends CryptoModule {
 	 */
 	returnHistory(asset_id = '', records = 20, callback = null) {
 		return this.mixin.fetchSafeSnapshots(asset_id, records, callback);
+	}
+
+	async getMixinUser(address = '', callback = null) {
+		return await this.mixin.sendFetchUserTransaction({address: address}, function(res){
+			return callback(res);
+		});
 	}
 
 }
