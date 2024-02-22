@@ -8,6 +8,7 @@ class BuildOverlay {
 		this.mod = mod;
 		this.visible = false;
 		this.overlay = new SaitoOverlay(app, mod, true, false, false);
+		this.max_units = 1;
 		this.units = 1;
 		this.cost = 0;
 		this.ops_available = 0;
@@ -47,6 +48,7 @@ class BuildOverlay {
 	 	this.cost = cost;
 		this.ops_available = ops;
 		this.ops_spent = cost;
+		this.max_units = his_self.returnNumberOfUnitsAvailableForConstruction(faction, unit);
 
 		//
 		// if we cannot possibly build more than 1 unit, do not show the 
@@ -56,23 +58,18 @@ class BuildOverlay {
 
 		this.overlay.show(BuildTemplate());
 
-console.log("A");
 	 	if (unit === "mercenary") {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/mercenary.jpg)';
 		}
-console.log("B");
 	 	if (unit === "cavalry") {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/cavalry.jpg)';
 		}
-console.log("C");
 	 	if (unit === "corsair") {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/corsair.jpg)';
 		}
-console.log("D");
 	 	if (unit === "squadron") {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/squadron.jpg)';
 		}
-console.log("E");
 
 		this.attachEvents(faction, unit, ops, cost, mycallback);
 	}
@@ -86,7 +83,8 @@ console.log("E");
 	    document.querySelector(".unit-details").innerHTML = this.units;
 	  }
 	  document.querySelector(".more-units").onclick = (e) => {
-	    if (this.ops_available < (this.cost * (this.units+1))) { alert("not enough OPs to produce more"); return }
+	    if (this.ops_available < (this.cost * (this.units+1))) { alert("not enough OPs to produce more"); return; }
+	    if (this.max_units <= this.units) { alert("at unit production limit..."); return; }
 	    this.units++;
 	    this.ops_spent = this.ops_available - (this.cost * this.units);
 	    document.querySelector(".unit-details").innerHTML = this.units;

@@ -559,6 +559,8 @@
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 0;    
+      available_units['corsair']['1'] = 0;    
     }
     if (faction == "england") {
       available_units['regular']['1'] = 9;    
@@ -787,6 +789,37 @@
 
   }
 
-  
 
+  returnNumberOfUnitsAvailableForConstruction(faction, unittype) {
+
+    //
+    // TODO -- implement limits on squadron and corsair construction
+    //
+    if (unittype === "squadron") { return 1; }
+    if (unittype === "corsair") { return 1; }
+    if (unittype === "cavalry") { return 1; }
+
+    if (unittype === "mercenary") { unittype = "regular"; }
+
+    let res = this.returnOnBoardUnits(faction);
+
+    let amount_over_capacity = 0;
+    for (let key in res.missing) {
+      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0)) {
+        return 0;
+      }
+    }
+
+    let x = 0;
+
+    if (res.available[unittype]['1'] > 0) { x += (1 * res.available[unittype]['1']); }
+    if (res.available[unittype]['2'] > 0) { x += (2 * res.available[unittype]['2']); }
+    if (res.available[unittype]['3'] > 0) { x += (3 * res.available[unittype]['3']); }
+    if (res.available[unittype]['4'] > 0) { x += (4 * res.available[unittype]['4']); }
+    if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
+    if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
+
+    return x;
+
+  }
 

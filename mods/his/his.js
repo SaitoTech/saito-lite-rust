@@ -20169,9 +20169,9 @@ if (this.game.options.scenario != "is_testing") {
 
 	  if (this.game.players.length == 2) {
 	    //this.game.queue.push("diplomacy_phase");
-	    if (this.game.state.round != 1 && this.game.state.scenario != "is_testing") {
+	    //if (this.game.state.round != 1 && this.game.state.scenario != "is_testing") {
 	      this.game.queue.push("diplomacy_phase_2P");
-	    }
+	    //}
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
@@ -35026,6 +35026,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "mercenary") == 0) { return false; }
 
     return 1;
   }
@@ -35127,6 +35128,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "regular") == 0) { return false; }
 
     return 1;
   }
@@ -35265,6 +35267,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "squadron") == 0) { return false; }
 
     return 1;
   }
@@ -35754,6 +35757,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "cavalry") == 0) { return false; }
 
     return 1;
   }
@@ -35865,6 +35869,7 @@ return;
   }
   canPlayerBuyCorsair(his_self, player, faction) {
     if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) { return 1; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "corsair") == 0) { return false; }
     return 0;
   }
   async playerBuyCorsair(his_self, player, faction) {
@@ -37730,8 +37735,39 @@ console.log("PROPOSAL: "+ JSON.stringify(proposal));
 
   }
 
-  
 
+  returnNumberOfUnitsAvailableForConstruction(faction, unittype) {
+
+    //
+    // TODO -- implement limits on squadron and corsair construction
+    //
+    if (unittype === "squadron") { return 1; }
+    if (unittype === "corsair") { return 1; }
+    if (unittype === "cavalry") { return 1; }
+
+    if (unittype === "mercenary") { unittype = "regular"; }
+
+    let res = this.returnOnBoardUnits(faction);
+
+    let amount_over_capacity = 0;
+    for (let key in res.missing) {
+      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0)) {
+        return 0;
+      }
+    }
+
+    let x = 0;
+
+    if (res.available[unittype]['1'] > 0) { x += (1 * res.available[unittype]['1']); }
+    if (res.available[unittype]['2'] > 0) { x += (2 * res.available[unittype]['2']); }
+    if (res.available[unittype]['3'] > 0) { x += (3 * res.available[unittype]['3']); }
+    if (res.available[unittype]['4'] > 0) { x += (4 * res.available[unittype]['4']); }
+    if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
+    if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
+
+    return x;
+
+  }
 
 
   resolveColonies() {
@@ -39023,6 +39059,69 @@ try {
 	    }
 	  }
 
+      }
+      //
+      // surplus units that should not technically be available according to
+      // tile limitations will be in the "missing" section. we do want want
+      // pieces appearing and disappearing from the board, so we display them
+      // as single-unit tiles.
+      //
+      if (this.game.state.board[z].missing[spacekey]) {
+          if (z === "hapsburg") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-1.svg" />`;
+	    }
+	  }
+          if (z === "ottoman") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-1.svg" />`;
+	    }
+	  }
+          if (z === "papacy") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-1.svg" />`;
+	    }
+	  }
+          if (z === "england") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-1.svg" />`;
+	    }
+	  }
+          if (z === "france") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-1.svg" />`;
+	    }
+	  }
+          if (z === "protestant") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-1.svg" />`;
+	    }
+	  }
+          if (z === "venice") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/venice/VeniceReg-1.svg" />`;
+	    }
+	  }
+          if (z === "genoa") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/genoa/GenoaReg-1.svg" />`;
+	    }
+	  }
+          if (z === "hungary") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hungary/HungaryReg-1.svg" />`;
+	    }
+	  }
+          if (z === "scotland") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScotlandReg-1.svg" />`;
+	    }
+	  }
+          if (z === "independent") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentReg-1.svg" />`;
+	    }
+	  }
       }
     }
 

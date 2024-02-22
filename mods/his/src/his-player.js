@@ -4319,6 +4319,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "mercenary") == 0) { return false; }
 
     return 1;
   }
@@ -4420,6 +4421,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "regular") == 0) { return false; }
 
     return 1;
   }
@@ -4558,6 +4560,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "squadron") == 0) { return false; }
 
     return 1;
   }
@@ -5047,6 +5050,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "cavalry") == 0) { return false; }
 
     return 1;
   }
@@ -5158,6 +5162,7 @@ return;
   }
   canPlayerBuyCorsair(his_self, player, faction) {
     if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) { return 1; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "corsair") == 0) { return false; }
     return 0;
   }
   async playerBuyCorsair(his_self, player, faction) {
