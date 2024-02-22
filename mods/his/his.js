@@ -12,6 +12,7 @@ const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
 const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
 const FortificationOverlay = require('./lib/ui/overlays/fortification');
+const BuildOverlay = require('./lib/ui/overlays/build');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
@@ -84,6 +85,7 @@ class HereIStand extends GameTemplate {
     this.war_overlay = new WarOverlay(this.app, this);  // naval battles
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
+    this.build_overlay = new BuildOverlay(this.app, this);  // unit building
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
     this.fortification_overlay = new FortificationOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
@@ -31332,8 +31334,8 @@ if (limit === "build") {
       factions : ['ottoman'],
       cost : [1],
       name : "Corsair",
-      check : this.canPlayerBuildCorsair,
-      fnct : this.playerBuildCorsair,
+      check : this.canPlayerBuyCorsair,
+      fnct : this.playerBuyCorsair,
       category : "build" ,
       img : '/his/img/backgrounds/move/corsair.jpg',
     });
@@ -31440,8 +31442,8 @@ if (limit === "build") {
       factions : ['ottoman'],
       cost : [1],
       name : "Corsair",
-      check : this.canPlayerBuildCorsair,
-      fnct : this.playerBuildCorsair,
+      check : this.canPlayerBuyCorsair,
+      fnct : this.playerBuyCorsair,
       category : "build" ,
       img : '/his/img/backgrounds/move/corsair.jpg',
     });
@@ -35027,8 +35029,68 @@ return;
 
     return 1;
   }
-  playerBuyMercenary(his_self, player, faction) {
+  playerBuyMercenary(his_self, player, faction, ops_to_spend, ops_remaining) {
 
+    //
+    // ui for building multiple units
+    //
+    his_self.build_overlay.render(faction, "mercenary", (parseInt(ops_remaining)+parseInt(ops_to_spend)), parseInt(ops_to_spend), (num, costs) => {
+
+      //
+      // modify "continue" instruction if this is a move over a pass
+      //
+      for (let i = 0; i < his_self.moves.length; i++) {
+        let x = his_self.moves[i];
+        let y = x.split("\t");
+        let new_ops_remaining = (parseInt(ops_remaining)+parseInt(ops_to_spend)) - (num*costs);
+        if (y[0] === "continue") {
+          if (new_ops_remaining) {
+            his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+          } else {
+            his_self.moves.splice(i, 1);
+          }
+        }
+      }
+
+      //
+      // and place
+      //
+      his_self.playerSelectSpaceWithFilter(
+
+        `Select Destination for ${num} Mercenaries`,
+
+        function(space) {
+	  if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("england", "ireland") < 5) {
+	      if (space.key == "ireland") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "ireland") { return 1; }
+	    }
+	  }
+          if (space.besieged != 0) { return 0; }
+          if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+          if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
+	  return 0;
+        },
+
+        function(destination_spacekey) {
+  	  his_self.updateStatus("acknowledge...");
+          for (let i = 0; i < num; i++) {
+	    his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
+	  }
+	  his_self.endTurn();
+        },
+
+        null,
+
+        true
+
+      );
+
+    });
+
+  
     his_self.playerSelectSpaceWithFilter(
 
       "Select Destination for Mercenary",
@@ -35068,8 +35130,89 @@ return;
 
     return 1;
   }
-  async playerBuyRegular(his_self, player, faction) {
+  async playerBuyRegular(his_self, player, faction, ops_to_spend, ops_remaining) {
 
+    //
+    // UI for multiple-unit builds
+    //
+    his_self.build_overlay.render(faction, "regular", (parseInt(ops_remaining)+parseInt(ops_to_spend)), parseInt(ops_to_spend), (num, costs) => {
+
+      //
+      // modify "continue" instruction if this is a move over a pass
+      //
+      for (let i = 0; i < his_self.moves.length; i++) {
+        let x = his_self.moves[i];
+        let y = x.split("\t");
+        let new_ops_remaining = (parseInt(ops_remaining)+parseInt(ops_to_spend)) - (num*costs);
+        if (y[0] === "continue") {
+          if (new_ops_remaining) {
+            his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+          } else {
+            his_self.moves.splice(i, 1);
+          }
+        }
+      }
+
+      //
+      // and select destination for these units
+      //
+      his_self.playerSelectSpaceWithFilter(
+
+        `Select Destination for ${num} Regular(s)`,
+
+        function(space) {
+  	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
+	      if (space.key == "persia") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "persia") { return 1; }
+	    }
+	  }
+	  if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "egypt") < 5) {
+	      if (space.key == "egypt") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "egypt") { return 1; }
+	    }
+	  }
+	  if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("england", "ireland") < 5) {
+	      if (space.key == "ireland") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "ireland") { return 1; }
+	    }
+	  }
+          if (space.besieged != 0) { return 0; }
+          if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+          if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
+	  return 0;
+        },
+
+        function(destination_spacekey) {
+	  his_self.updateStatus("acknowledge...");
+	  for (let z = 0; z < num; z++) {
+	    his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
+	  }
+	  his_self.endTurn();
+        },
+
+        null,
+
+        true
+
+      );
+
+      return 0;
+
+    });
+            
+
+    //
+    // fall through is to build a single regular
+    //
     his_self.playerSelectSpaceWithFilter(
 
       "Select Destination for Regular",
@@ -35614,7 +35757,72 @@ return;
 
     return 1;
   }
-  async playerBuyCavalry(his_self, player, faction) {
+  async playerBuyCavalry(his_self, player, faction, ops_to_spend, ops_remaining) {
+
+    //
+    // ui for building multiple units
+    //
+    his_self.build_overlay.render(faction, "cavalry", (parseInt(ops_remaining)+parseInt(ops_to_spend)), parseInt(ops_to_spend), (num, costs) => {
+
+      //
+      // modify "continue" instruction if this is a move over a pass
+      //
+      for (let i = 0; i < his_self.moves.length; i++) {
+        let x = his_self.moves[i];
+        let y = x.split("\t");
+        let new_ops_remaining = (parseInt(ops_remaining)+parseInt(ops_to_spend)) - (num*costs);
+        if (y[0] === "continue") {
+          if (new_ops_remaining) {
+            his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+          } else {
+            his_self.moves.splice(i, 1);
+          }
+        }
+      }
+
+      //
+      // and place
+      //
+      his_self.playerSelectSpaceWithFilter(
+
+        `Select Destination for ${num} Cavalry`,
+
+        function(space) {
+  	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
+	      if (space.key == "persia") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "persia") { return 1; }
+	    }
+	  }
+	  if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "egypt") < 5) {
+	      if (space.key == "egypt") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "egypt") { return 1; }
+	    }
+	  }
+          if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+          if (space.owner === faction) { return 1; }
+          if (space.home === faction) { return 1; }
+	  return 0;
+        },
+
+        function(destination_spacekey) {
+	  his_self.updateStatus("acknowledge...");
+	  his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
+	  his_self.endTurn();
+        },
+
+        null,
+
+        true
+
+      );
+
+    });
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -35655,11 +35863,11 @@ return;
 
     );
   }
-  canPlayerBuildCorsair(his_self, player, faction) {
+  canPlayerBuyCorsair(his_self, player, faction) {
     if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) { return 1; }
     return 0;
   }
-  async playerBuildCorsair(his_self, player, faction) {
+  async playerBuyCorsair(his_self, player, faction) {
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -36958,11 +37166,6 @@ console.log("PROPOSAL: "+ JSON.stringify(proposal));
   }
 
   returnAvailableExplorers(faction="") {
-
-console.log("searching for explorers for faction: " + faction);
-console.log("from list: ");
-console.log(JSON.stringify(this.explorers));
-
     let unavailable = [];
     let available = [];
     for (let z = 0; z < this.game.state.explorations.length; z++) {
@@ -36973,7 +37176,6 @@ console.log(JSON.stringify(this.explorers));
         }
       }
     }
-console.log("unavailable: " + JSON.stringify(unavailable));
     for (let key in this.explorers) {
       if (this.explorers[key].faction == faction) {
         if (!unavailable.includes(key)) {
@@ -37023,31 +37225,25 @@ console.log("unavailable: " + JSON.stringify(unavailable));
 
 
   addArmyLeader(faction, space, leader) {
-
     if (!this.army[leader]) {
       console.log("ARMY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.army[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
   addNavyLeader(faction, space, leader) {
-
     if (!this.navy[leader]) {
       console.log("NAVY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     space.units[faction].push(this.navy[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
@@ -37069,45 +37265,21 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       console.log("REFORMER: " + reformer + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
-  }
-
-  addWife(faction, wife) {
-
-    if (!this.wives[wife]) {
-      console.log("WIFE: " + wife + " not found");
-      return;
-    }
-
-    for (let i = 0; i < this.game.state.wives.length; i++) {
-      if (this.game.state.wives[i].type === wife) {
-	return;
-      }
-    }
-
-
-    this.game.state.wives.push(this.wives[wife]);
-    this.game.state.wives[this.game.state.wives.length-1].owner = faction; 
-
   }
 
   removeDebater(faction, debater) {
-
     if (!this.debaters[debater]) {
       console.log("DEBATER: " + debater + " not found");
       return;
     }
-
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].type == debater) { 
 	this.game.state.debaters.splice(i, 1);
       }
     }
-
   }
 
   disgraceDebater(debater) { return this.burnDebater(debater, 1); }
