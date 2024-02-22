@@ -1,0 +1,102 @@
+const BuildTemplate = require('./build.template');
+const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
+
+class BuildOverlay {
+
+	constructor(app, mod, c1, c2, c3) {
+		this.app = app;
+		this.mod = mod;
+		this.visible = false;
+		this.overlay = new SaitoOverlay(app, mod, true, false, false);
+		this.units = 1;
+		this.cost = 0;
+		this.ops_available = 0;
+		this.ops_spent = 0;
+	}
+
+	hide() {
+		this.overlay.hide();
+	}
+
+	pullHudOverOverlay() {
+		//
+		// pull GAME HUD over overlay
+		//
+		let overlay_zindex = parseInt(this.overlay.zIndex);
+		if (document.querySelector('.hud')) {
+			document.querySelector('.hud').style.zIndex = overlay_zindex + 1;
+			this.mod.hud.zIndex = overlay_zindex + 1;
+		}
+	}
+	pushHudUnderOverlay() {
+		//
+		// push GAME HUD under overlay
+		//
+		let overlay_zindex = parseInt(this.overlay.zIndex);
+		if (document.querySelector('.hud')) {
+			document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
+			this.mod.hud.zIndex = overlay_zindex - 2;
+		}
+	}
+
+	render(faction, unit, ops, cost, mycallback) {
+
+		let his_self = this.mod;
+
+	  	this.units = 1;
+	 	this.cost = cost;
+		this.ops_available = ops;
+		this.ops_spent = cost;
+
+		//
+		// if we cannot possibly build more than 1 unit, do not show the 
+		// UI overlay intended to save us time in building multiple units
+		//
+	        if ((cost * 2) > this.ops_available) { return; }
+
+		this.overlay.show(BuildTemplate());
+
+console.log("A");
+	 	if (unit === "mercenary") {
+		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/mercenary.jpg)';
+		}
+console.log("B");
+	 	if (unit === "cavalry") {
+		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/cavalry.jpg)';
+		}
+console.log("C");
+	 	if (unit === "corsair") {
+		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/corsair.jpg)';
+		}
+console.log("D");
+	 	if (unit === "squadron") {
+		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/squadron.jpg)';
+		}
+console.log("E");
+
+		this.attachEvents(faction, unit, ops, cost, mycallback);
+	}
+
+	attachEvents(faction, unit, ops, cost, mycallback) {
+
+	  document.querySelector(".fewer-units").onclick = (e) => {
+	    if (this.units == 1) { alert("cannot produce less than one unit"); return; }
+	    this.units--;
+	    this.ops_spent = this.ops_available - (this.cost * this.units);
+	    document.querySelector(".unit-details").innerHTML = this.units;
+	  }
+	  document.querySelector(".more-units").onclick = (e) => {
+	    if (this.ops_available < (this.cost * (this.units+1))) { alert("not enough OPs to produce more"); return }
+	    this.units++;
+	    this.ops_spent = this.ops_available - (this.cost * this.units);
+	    document.querySelector(".unit-details").innerHTML = this.units;
+	  }
+	  document.querySelector(".build-submit").onclick = (e) => {
+	    this.hide();
+	    mycallback(this.units, this.cost);
+	  }
+	}
+
+}
+
+module.exports = BuildOverlay;

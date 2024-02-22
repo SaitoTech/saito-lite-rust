@@ -223,11 +223,6 @@
   }
 
   returnAvailableExplorers(faction="") {
-
-console.log("searching for explorers for faction: " + faction);
-console.log("from list: ");
-console.log(JSON.stringify(this.explorers));
-
     let unavailable = [];
     let available = [];
     for (let z = 0; z < this.game.state.explorations.length; z++) {
@@ -238,7 +233,6 @@ console.log(JSON.stringify(this.explorers));
         }
       }
     }
-console.log("unavailable: " + JSON.stringify(unavailable));
     for (let key in this.explorers) {
       if (this.explorers[key].faction == faction) {
         if (!unavailable.includes(key)) {
@@ -288,31 +282,25 @@ console.log("unavailable: " + JSON.stringify(unavailable));
 
 
   addArmyLeader(faction, space, leader) {
-
     if (!this.army[leader]) {
       console.log("ARMY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.army[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
   addNavyLeader(faction, space, leader) {
-
     if (!this.navy[leader]) {
       console.log("NAVY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     space.units[faction].push(this.navy[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
@@ -334,45 +322,21 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       console.log("REFORMER: " + reformer + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
-  }
-
-  addWife(faction, wife) {
-
-    if (!this.wives[wife]) {
-      console.log("WIFE: " + wife + " not found");
-      return;
-    }
-
-    for (let i = 0; i < this.game.state.wives.length; i++) {
-      if (this.game.state.wives[i].type === wife) {
-	return;
-      }
-    }
-
-
-    this.game.state.wives.push(this.wives[wife]);
-    this.game.state.wives[this.game.state.wives.length-1].owner = faction; 
-
   }
 
   removeDebater(faction, debater) {
-
     if (!this.debaters[debater]) {
       console.log("DEBATER: " + debater + " not found");
       return;
     }
-
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].type == debater) { 
 	this.game.state.debaters.splice(i, 1);
       }
     }
-
   }
 
   disgraceDebater(debater) { return this.burnDebater(debater, 1); }
