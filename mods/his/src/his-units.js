@@ -560,7 +560,6 @@
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
       available_units['squadron']['1'] = 0;    
-      available_units['corsair']['1'] = 0;    
     }
     if (faction == "england") {
       available_units['regular']['1'] = 9;    
@@ -569,6 +568,7 @@
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 5;    
     }
     if (faction == "ottoman") {
       available_units['regular']['1'] = 11;    
@@ -577,6 +577,7 @@
       available_units['regular']['4'] = 4;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 9;
     }
     if (faction == "france") {
       available_units['regular']['1'] = 10;    
@@ -585,6 +586,7 @@
       available_units['regular']['4'] = 3;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 5;    
     }
     if (faction == "papacy") {
       available_units['regular']['1'] = 7;    
@@ -593,6 +595,7 @@
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 2;
     }
     if (faction == "hapsburg") {
       available_units['regular']['1'] = 12;    
@@ -601,6 +604,7 @@
       available_units['regular']['4'] = 3;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 6;    
     }
 
     if (faction == "scotland") {
@@ -609,7 +613,7 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 1;    
     }
     if (faction == "genoa") {
       available_units['regular']['1'] = 2;    
@@ -617,7 +621,7 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 1;    
     }
     if (faction == "venice") {
       available_units['regular']['1'] = 4;    
@@ -625,7 +629,7 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 4;    
     }
     if (faction == "hungary") {
       available_units['regular']['1'] = 3;    
@@ -658,6 +662,17 @@
         }
       }
     }
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units) {
+        if (this.game.navalspaces[key].units[faction].length > 0) {
+          for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+      	    if (!my_spaces[key]) { my_spaces[key] = {}; }
+            if (!my_spaces[key][this.game.navalspaces[key].units[faction][i].type]) { my_spaces[key][this.game.navalspaces[key].units[faction][i].type] = 0; }
+            my_spaces[key][this.game.navalspaces[key].units[faction][i].type]++;
+          }
+        }
+      }
+    }
 
     //
     //
@@ -678,6 +693,8 @@
       deployed_units[key]['mercenary']['4'] = 0;
       deployed_units[key]['mercenary']['5'] = 0;
       deployed_units[key]['mercenary']['6'] = 0;
+      deployed_units[key]['squadron'] = {};
+      deployed_units[key]['squadron']['1'] = 0;
     }
 
 
@@ -755,6 +772,20 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
+	if (my_spaces[key]['squadron'] >= 1 && available_units['squadron']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['squadron'] -= 1;
+	  available_units['squadron']['1']--;
+	  deployed_units[key]['squadron']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['corsair'] >= 1 && available_units['squadron']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['corsair'] -= 1;
+	  available_units['squadron']['1']--;
+	  deployed_units[key]['corsair']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
 
       }
 
@@ -795,10 +826,9 @@
     //
     // TODO -- implement limits on squadron and corsair construction
     //
-    if (unittype === "squadron") { return 1; }
-    if (unittype === "corsair") { return 1; }
     if (unittype === "cavalry") { return 1; }
 
+    if (unittype === "corsair") { unittype = "squadron"; }
     if (unittype === "mercenary") { unittype = "regular"; }
 
     let res = this.returnOnBoardUnits(faction);
