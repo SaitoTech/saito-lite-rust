@@ -77,6 +77,10 @@
   margin: 0;
 }
 
+.appspace-menu .saito-menu {
+  padding: 0 1rem;
+}
+
 
 /* So redsquare left side bar displays correctly*/
 .saito-menu>ul>li>i+span, .saito-menu>ul>li>i+span+span {
