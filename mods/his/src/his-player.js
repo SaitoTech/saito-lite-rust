@@ -1289,7 +1289,141 @@ if (this.game.state.events.cramner_active == 1) {
   }
 
 
-  playerFortifySpace(faction, attacker, spacekey) {
+  playerReliefForcesJoinBattle(faction, spacekey) {
+    
+    let space = this.game.spaces[spacekey];
+    let player = this.returnPlayerCommandingFaction(faction);
+
+    let his_self = this;
+    let units_to_move = [];
+    let available_units = [];
+
+    for (f in space.units) {
+      for (let i = 0; i < space.units[f].length; i++) {
+	if (space.units[f][i].besieged != 0) {
+          available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+	}
+      }
+    }
+
+    //
+    // unfortify the units
+    //
+    let finishAndFortify = function(his_self, units_to_move, selectUnitsInterface, finishAndFortify) {
+
+      let fa = {};
+      for (let f in space.units) { fa[f] = []; };
+
+      for (let i = 0; i < units_to_move.length; i++) {
+        let tf = units_to_move[i].faction;
+        let tu = units_to_move[i].idx;
+        fa[tf].push(tu);
+      }
+
+      for (let f in fa) {
+	for (let z = 0; z < fa[f].length; z++) {
+          his_self.addMove("unfortify_unit_by_index\t"+spacekey+"\t"+f+"\t"+fa[f][z]);
+	}
+      }
+      his_self.endTurn();
+      return;
+    }
+ 
+    //
+    // select the units to unfortify
+    //
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, finishAndFortify) {
+
+      let unmoved_units = [];
+      let moved_units = [];
+
+      let msg = "Which Fortified Units Join the Field Battle: ";
+      let html = "<ul>";
+
+      for (let i = 0; i < available_units.length; i++) {
+	let is_this_unit_moving = false;
+	for (let z = 0; z < units_to_move.length; z++) {
+	  if (
+	    units_to_move[z].faction == available_units[i].faction &&
+	    units_to_move[z].idx == available_units[i].unit_idx
+	  ) { 
+	    is_this_unit_moving = true;
+          }
+        }
+        let tf = available_units[i].faction;
+        let tu = space.units[available_units[i].faction][available_units[i].unit_idx];
+	if (is_this_unit_moving) {
+          html += `<li class="option" style="font-weight:bold" id="${i}">* ${tu.name} - ${his_self.returnFactionName(tf)} *</li>`;
+	  moved_units.push({ faction : available_units[i].faction , idx : available_units[i].unit_idx , type : available_units[i].type });
+	} else {
+          html += `<li class="option" style="" id="${i}">${tu.name} - ${his_self.returnFactionName(tf)}</li>`;
+	  unmoved_units.push({ faction : available_units[i].faction , idx : available_units[i].unit_idx , type : available_units[i].type });
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      let mobj = {
+        spacekey : spacekey ,
+        moved_units : moved_units ,
+        unmoved_units : unmoved_units ,
+      }
+
+      his_self.fortification_overlay.render(mobj, [], selectUnitsInterface, finishAndFortify, 1); // 1 => "unfortifying"
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+          his_self.fortification_overlay.hide();
+          finishAndFortify(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
+          areturn;
+        }
+
+	let x = id.split("-");
+	let f = x[0];
+	let idx = x[1];
+
+	let does_units_to_move_have_unit = false;
+	for (let z = 0; z < units_to_move.length; z++) {
+	  if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	}
+	if (does_units_to_move_have_unit) {
+	  for (let z = 0; z < units_to_move.length; z++) {
+	    if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
+	  }
+	} else {
+
+	  let unitno = 0;
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    if (space.units[units_to_move[i].faction][units_to_move[i].idx].army_leader == false) { unitno++; }
+	    if (unitno >= 4) {
+	      alert("Max 4 Units Permitted in Fortification");
+	      return;
+	    }
+	  }
+	  units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
+	}
+
+        selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
+
+      });
+    }
+ 
+    //
+    // PLAYER STARTS HERE
+    //
+    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
+    return 0;
+
+  }
+
+
+
+  playerFortifySpace(faction, attacker, spacekey, post_battle=false) {
 
     let space = this.game.spaces[spacekey];
     let faction_map = this.returnFactionMap(space, attacker, faction);
@@ -1303,68 +1437,181 @@ if (this.game.state.events.cramner_active == 1) {
     for (f in faction_map) { 
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
         for (let i = 0; i < space.units[f].length; i++) {
-          available_units.push({ faction : f , unit_idx : i });
+	  if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry" || space.units[f][i].army_leader == true) {
+            available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+          }
         }
       }
     }
 
-    let selectUnitsInterface = function(his_self, units_to_move, available_units, selectUnitsInterface) {
+    //
+    // fortify the units_to_move
+    //
+    let finishAndFortify = function(his_self, units_to_move, selectUnitsInterface, finishAndFortify) {
+
+      let fa = {};
+      for (let f in faction_map) { fa[f] = []; };
+
+      for (let i = 0; i < units_to_move.length; i++) {
+        let tf = units_to_move[i].faction;
+        let tu = units_to_move[i].idx;
+        fa[tf].push(tu);
+      }
+
+      for (let f in fa) {
+	for (let z = 0; z < fa[f].length; z++) {
+          his_self.addMove("fortify_unit_by_index\t"+spacekey+"\t"+f+"\t"+fa[f][z]);
+	}
+      }
+      his_self.endTurn();
+      return;
+    }
+
+    //
+    // select the units to fortify
+    //
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, finishAndFortify) {
+
+      let unmoved_units = [];
+      let moved_units = [];
 
       let msg = "Fortification Holds 4 Units: ";
       let html = "<ul>";
 
       for (let i = 0; i < available_units.length; i++) {
-	let tf = available_units[i].faction;
-	let tu = space.units[tf][available_units[i].unit_idx];
-	if (units_to_move.includes(i)) {
+	let is_this_unit_moving = false;
+	for (let z = 0; z < units_to_move.length; z++) {
+	  if (
+	    units_to_move[z].faction == available_units[i].faction &&
+	    units_to_move[z].idx == available_units[i].unit_idx
+	  ) { 
+	    is_this_unit_moving = true;
+          }
+        }
+        let tf = available_units[i].faction;
+        let tu = space.units[available_units[i].faction][available_units[i].unit_idx];
+	if (is_this_unit_moving) {
           html += `<li class="option" style="font-weight:bold" id="${i}">* ${tu.name} - ${his_self.returnFactionName(tf)} *</li>`;
+	  moved_units.push({ faction : available_units[i].faction , idx : available_units[i].unit_idx , type : available_units[i].type });
 	} else {
           html += `<li class="option" style="" id="${i}">${tu.name} - ${his_self.returnFactionName(tf)}</li>`;
+	  unmoved_units.push({ faction : available_units[i].faction , idx : available_units[i].unit_idx , type : available_units[i].type });
         }
       }
       html += `<li class="option" id="end">finish</li>`;
       html += "</ul>";
 
+      let mobj = {
+        spacekey : spacekey ,
+        moved_units : moved_units ,
+        unmoved_units : unmoved_units ,
+      }
+
+      his_self.fortification_overlay.render(mobj, [], selectUnitsInterface, finishAndFortify); // no destination interface
       his_self.updateStatusWithOptions(msg, html);
-     
+
       $('.option').off();
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
 
         if (id === "end") {
+          his_self.fortification_overlay.hide();
+          finishAndFortify(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
+          areturn;
+        }
 
-	  // faction associative array
-	  let fa = {};
-	  for (let f in faction_map) { fa[f] = []; };
+	let x = id.split("-");
+	let f = x[0];
+	let idx = x[1];
 
-	  // move in the units
-	  for (let i = 0; i < units_to_move.length; i++) {
-	    let ui = units_to_move[i];
-	    let tf = available_units[ui].faction;
-	    let tu = available_units[ui].unit_idx;
-	    fa[tf].push(tu);
+	let does_units_to_move_have_unit = false;
+	for (let z = 0; z < units_to_move.length; z++) {
+	  if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	}
+	if (does_units_to_move_have_unit) {
+	  for (let z = 0; z < units_to_move.length; z++) {
+	    if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
 	  }
+	} else {
 
-	  for (let f in fa) {
-	    if (his_self.returnPlayerCommandingFaction(f) == his_self.game.player) {
-	      his_self.addMove("fortify_unit\t"+spacekey+"\t"+f+"\t"+JSON.stringify(fa[f]));
+	  let unitno = 0;
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    if (space.units[units_to_move[i].faction][units_to_move[i].idx].army_leader == false) { unitno++; }
+	    if (unitno >= 4) {
+	      alert("Max 4 Units Permitted in Fortification");
+	      return;
 	    }
 	  }
-	  his_self.endTurn();
-
-          return;
+	  units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
 	}
-        
-	units_to_move.push(parseInt(id));
 
-        selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
+        selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
 
       });
-    };
+    }
 
-    selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
 
+    //
+    // PLAYER STARTS HERE
+    //
+    let can_we_quick_fortify = true;
+    if (available_units.length > 4) {
+      let overunits = 0;
+      for (let i = 0; i < available_units.length; i++) {
+	let u = space.units[available_units[i].faction][available_units[i].unit_idx];
+	if (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary") { overunits++; }
+      }
+      if (overunits > 4) {
+        can_we_quick_fortify = false; 
+      }
+    }
+
+    if (can_we_quick_fortify == true) {
+
+      let msg = "Choose Fortification Option: ";
+      let html = "<ul>";
+      html += `<li class="option" id="auto">fortify everything (auto)</li>`;
+      if (post_battle == 1) {
+        html += `<li class="option" id="manual">select units (manual)</li>`;
+      }
+      html += "</ul>";
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "auto") {
+          for (let i = 0; i < available_units.length; i++) {
+            units_to_move.push({ faction : available_units[i].faction , idx : available_units[i].unit_idx , type : available_units[i].type });
+          }
+          finishAndFortify(his_self, units_to_move);
+          return 0;
+        }
+
+        if (id === "manual") {
+          selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
+          return 0;
+        }
+
+      });
+
+      if (post_battle == 0) { $('#auto').click(); }
+      return 0;
+
+    } else {
+
+      //
+      // we have to move manually, this implies post_battle
+      //
+      selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
+      return;
+
+    }
+
+    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
     return 0;
 
   }
@@ -3074,7 +3321,7 @@ return;
   }
 
 
-  playerEvaluateFortification(attacker, faction, spacekey) {
+  playerEvaluateFortification(attacker, faction, spacekey, post_battle=0) {
 
     let his_self = this;
 
@@ -3086,7 +3333,32 @@ return;
     this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "fortify") {
-	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey);
+	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey+"\t"+post_battle);
+	his_self.endTurn();
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+  playerEvaluateReliefForce(faction, spacekey) {
+
+    let his_self = this;
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="break">participate in battle</li>`;
+    html    += `<li class="card" id="skip">remain besieged</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Do Your Besieged Forces participate in this Field Battle?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "break") {
+	his_self.addMove("relief_forces_join_battle\t"+faction+"\t"+spacekey);
 	his_self.endTurn();
         return;
       }

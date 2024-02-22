@@ -63,7 +63,9 @@ if (this.game.options.scenario != "is_testing") {
 
 	  if (this.game.players.length == 2) {
 	    //this.game.queue.push("diplomacy_phase");
-	    this.game.queue.push("diplomacy_phase_2P");
+	    if (this.game.state.round != 1 && this.game.state.scenario != "is_testing") {
+	      this.game.queue.push("diplomacy_phase_2P");
+	    }
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
@@ -478,7 +480,8 @@ if (this.game.options.scenario == "is_testing") {
 		// i am not protestant and this is not an electorate and league isn't active
 		// someone controls the faction in question
 		//  the space isn't controlled by the faction
-		if (!(this.isSpaceFortified(space) && this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))) {
+		// if (space_is_not_fortified AND i_do_not_control_it)
+		if ( (!this.isSpaceFortified(space)) && (!this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))) {
 
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
@@ -564,24 +567,37 @@ if (this.game.options.scenario == "is_testing") {
               if (num_friendly_units > 4 && !capitals.includes(i)) {
 		let units_preserved = 0;
 		for (let q in space.units) {
+
+		  //  capital of unit is
+		  let cap = this.returnControlledCapitals(q);
+		  let cap_idx = 0;
+
 		  for (let ii = 0; ii < space.units[q].length; ii++) {
 		    let u = space.units[q][ii];
 		    if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary") {
 		      units_preserved++;
 		      if (units_preserved > 4) {
+			if (cap.length > 0) {
+			  let selected_capital = cap[cap_idx];
+			  cap_idx++;
+			  if ((cap_idx+1) > cap.length) {
+			    //
+			    // push unit back to capital
+			    //
+			    this.game.spaces[selected_capital].units[q].push(space.units[q][ii]);
+			  }
+			}
 		        space.units[q].splice(ii, 1);
 		        ii--;
 		      }
 		    }
 		  }
 		}
-		this.updateLog("OVERSTACKING " + this.returnName(i) + " (removed)");
+		this.updateLog("OVERSTACKING in " + this.returnName(i) + " (some units returned to capital)");
 		this.displaySpace(i);
               }
-
             }
           }
-
 
 	  return 1;
         }
@@ -1602,7 +1618,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 
 	  this.setEnemies("papacy", "france");
 	  this.addRegular("france","milan", 1);
-	  this.addMercenary("france","milan", 4);
+	  this.addMercenary("france","milan", 2);
 	  this.controlSpace("france", "trent");
 	  this.addRegular("france","trent", 1);
 	  this.addRegular("france","trent", 1);
@@ -1631,8 +1647,8 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
     	  this.game.spaces['graz'].occupier = 'protestant';
 
 	  this.setAllies("papacy", "hapsburg");
-	  //this.setActivatedPower("papacy", "hapsburg");
-	  //this.setActivatedPower("protestant", "france");
+	  this.setActivatedPower("papacy", "hapsburg");
+	  this.setActivatedPower("protestant", "france");
 
           this.addReformer("protestant", "modena", "zwingli-reformer");
 
@@ -1913,56 +1929,53 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
               let lmv2 = this.game.queue[qe-1].split("\t");
               if (lmv2[0] == "naval_interception_check") {
 	  
-	    for (let lqe = qe-1; lqe >= 0; lqe--) {
+	        for (let lqe = qe-1; lqe >= 0; lqe--) {
 
-              let lmv = this.game.queue[lqe].split("\t");
-              if (lmv[0] == "naval_interception_check") {
+                  let lmv = this.game.queue[lqe].split("\t");
+                  if (lmv[0] == "naval_interception_check") {
 
-		current_faction = lmv[1];
-		current_destination = lmv[2];
-		current_source = lmv[3];
+		    current_faction = lmv[1];
+		    current_destination = lmv[2];
+		    current_source = lmv[3];
 
-		let cdest;
-	        if (this.game.spaces[current_destination]) {
-	          cdest = this.game.spaces[current_destination];
-	        }
-	        if (this.game.navalspaces[current_destination]) {
-	          cdest = this.game.navalspaces[current_destination];
-	        }
+		    let cdest;
+	            if (this.game.spaces[current_destination]) {
+	              cdest = this.game.spaces[current_destination];
+	            }
+	            if (this.game.navalspaces[current_destination]) {
+	              cdest = this.game.navalspaces[current_destination];
+	            }
 
-                for (let f in cdest.units) {
-                  if (cdest.units[f].length > 0 && f != faction) {
-                    anyone_else_here = 1;
-                  }
-                  if (f !== faction && cdest.units[f].length > 0 && !this.areAllies(f, faction)) {
-                    if (lqe-1 >= 0) {
-                      // added in reverse order
-                      if (skip_avoid_battle != 1) {
-                        this.game.queue.splice(lqe, 0, "naval_retreat_check\t"+current_faction+"\t"+current_destination+"\t"+current_source);
+                    for (let f in cdest.units) {
+                      if (cdest.units[f].length > 0 && f != faction) {
+                        anyone_else_here = 1;
                       }
-                      this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
-                      this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tNaval Battle is about to begin in "+this.returnSpaceName(current_destination) + "\tnaval_battle");
-                      this.game.queue.splice(lqe, 0, "naval_battle\t"+current_destination+"\t"+faction);
+                      if (f !== faction && cdest.units[f].length > 0 && !this.areAllies(f, faction)) {
+                        if (lqe-1 >= 0) {
+                          // added in reverse order
+                          if (skip_avoid_battle != 1) {
+                            this.game.queue.splice(lqe, 0, "naval_retreat_check\t"+current_faction+"\t"+current_destination+"\t"+current_source);
+                          }
+                          this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
+                          this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tNaval Battle is about to begin in "+this.returnSpaceName(current_destination) + "\tnaval_battle");
+                          this.game.queue.splice(lqe, 0, "naval_battle\t"+current_destination+"\t"+faction);
+                        }
+                      }
                     }
-                  }
-                }
-
-              } else {
-                //
-                // we only update the occupier of the space if the next move is not a "move"
-                // as we require interception check to find out if there are units here already.
-                //
-                if (lmv[0] !== "move" && lqe === (qe-1)) {
-                  if (anyone_else_here == 0) {
-                    space.occupier = faction;
-                  }
-		}
-
+                  } else {
+                    //
+                    // we only update the occupier of the space if the next move is not a "move"
+                    // as we require interception check to find out if there are units here already.
+                    //
+                    if (lmv[0] !== "move" && lqe === (qe-1)) {
+                      if (anyone_else_here == 0) {
+                        space.occupier = faction;
+                      }
+		    }
+	          }
+	        }
 	      }
 	    }
-
-	  }
-	  }
 	  }
 
 
@@ -1986,6 +1999,12 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    if (lqe >= 0) {
 	      let lmv = this.game.queue[lqe].split("\t");
 
+	      //
+	      // this space is not already besieged but it is possible that someone might
+	      // intercept and trigger a field battle. This bit of code is confusing queue-management
+	      // that screws around with the queue to ensure that commands are added only when 
+	      // the last unit has moved into the space.
+	      //
 	      if (lmv[0] == "interception_check" && space.besieged == 0) { // not already besieged
 	        for (let f in space.units) {
 	          if (space.units[f].length > 0 && f != faction) {
@@ -2033,8 +2052,29 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		// as we require interception check to find out if there are units here already.
 		//
 		if (lmv[0] !== "move") {
-	          if (anyone_else_here == 0) {
-	            space.occupier = faction;
+
+		  let enemies_in_space = 0;
+		  space.occupier = faction;
+
+		  //
+		  // relief forces showing up
+		  //
+		  for (let f in space.units) {
+ 		    if (!this.areAllies(f, faction) && f !== faction && enemies_in_space == 0) {
+		      if (this.returnFactionLandUnitsInSpace(f, space.key, 1) > 0) {
+		        //
+		        // someone else is here, so let's trigger a field battle
+		        //
+	                let fac = this.returnControllingPower(f);
+	                this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
+	                this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+		        //
+		        // no fortification check bc we r besieged
+		        //
+	                //this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
+		        this.game.queue.splice(lqe, 0, "field_battle\t"+space.key+"\t"+faction);
+		      }
+		    }
 		  }
 		}
 	      }
@@ -2074,6 +2114,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  if (space.type !== "electorate" && space.type !== "key" && space.type !== "fortress") {
 	    return 1;
 	  }
+
+console.log("in fortification check... attacker " + attacker);
 
 	  //
 	  // whoever is being attacked can retreat into the fortification if they
@@ -2120,7 +2162,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		      if (this.game.state.activated_powers['papacy'].includes(f)) { cf = "papacy"; }
 		      if (this.game.state.activated_powers['protestant'].includes(f)) { cf = "protestant"; }
 
-		      let cp = this.returnPlayerOfFaction(cf);
+		      let cp = this.returnPlayerCommandingFaction(cf);
 
 		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+mp+"\t"+spacekey);
 
@@ -2131,7 +2173,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		    //
 		    // major or independent power - some player decides
 		    //
-		    let cp = this.returnPlayerOfFaction(f);
+		    let cp = this.returnPlayerCommandingFaction(f);
 
 		    if (cp != 0) {
 		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f+"\t"+spacekey);
@@ -2212,7 +2254,7 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  //
 	  if (this.game.player == player) {
 	    this.field_battle_overlay.renderFortification(this.game.state.field_battle);
-	    this.playerEvaluateFortification(attacker, faction, spacekey);
+	    this.playerEvaluateFortification(attacker, faction, spacekey, 1); // 1 = post battle
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
 	      this.field_battle_overlay.renderFortification(this.game.state.field_battle);
@@ -2278,10 +2320,6 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let space = this.game.spaces[spacekey];
 
 	  if (this.game.player == player) {
-console.log("!!!!");
-console.log("!!!!");
-console.log("!!!!");
-console.log(faction + " -- evaluating fortification!");
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
@@ -2315,6 +2353,40 @@ console.log(faction + " -- evaluating fortification!");
 	}
 
 
+	if (mv[0] === "unfortify_unit_by_index") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let spacekey = mv[1];
+	  let faction = mv[2];
+	  let unit_idx = parseInt(mv[3]);
+	  let space = this.game.spaces[spacekey];
+
+	  space.units[faction][unit_idx].besieged = 0;
+
+	  this.displaySpace(spacekey);
+
+	  return 1;
+
+	}
+	if (mv[0] === "fortify_unit_by_index") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let spacekey = mv[1];
+	  let faction = mv[2];
+	  let unit_idx = parseInt(mv[3]);
+	  let space = this.game.spaces[spacekey];
+
+          space.besieged = 2; // 2 = cannot attack this round
+          space.besieged_factions.push(faction);
+	  space.units[faction][unit_idx].besieged = 1;
+
+	  this.displaySpace(spacekey);
+
+	  return 1;
+
+	}
 
 	if (mv[0] === "fortify_unit") {
 
@@ -2331,9 +2403,37 @@ console.log(faction + " -- evaluating fortification!");
 	    space.units[faction][i].besieged = 1;
 	  }
 
+	  this.displaySpace(spacekey);
+
 	  return 1;
 
         }
+
+
+
+        if (mv[0] === "relief_forces_join_battle") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let space = this.game.spaces[spacekey];
+
+	  let player = this.returnPlayerCommandingFaction(faction);
+
+	  if (this.game.player === player) {
+	    this.playerReliefForcesJoinBattle(faction, spacekey);
+	  } else {
+	    this.updateLog(this.returnFactionName(faction) + " deciding whether besieged units join battle");
+	    this.updateStatus(this.returnFactionName(faction) + " deciding whether besieged units join battle");
+	  }
+
+	  this.displaySpace(spacekey);
+
+          return 0;
+
+        }
+
 
 
         if (mv[0] === "fortification") {
@@ -2343,13 +2443,15 @@ console.log(faction + " -- evaluating fortification!");
 	  let attacker = mv[1];
 	  let faction = mv[2];
 	  let spacekey = mv[3];
+	  let post_battle = 0;
+	  if (mv[4]) { post_battle = parseInt(mv[4]); }
 	  let space = this.game.spaces[spacekey];
 
 	  let faction_map = this.returnFactionMap(space, attacker, faction);
 	  let player = this.returnPlayerCommandingFaction(faction);
 
 	  if (this.game.player === player) {
-	    this.playerFortifySpace(faction, attacker, spacekey);
+	    this.playerFortifySpace(faction, attacker, spacekey, post_battle);
 	  } else {
 	    this.updateLog(this.returnFactionName(faction) + " fortifies in " + this.returnSpaceName(spacekey));
 	    this.updateStatus(this.returnFactionName(faction) + " fortifying in " + this.returnSpaceName(spacekey));
@@ -2372,12 +2474,15 @@ console.log(faction + " -- evaluating fortification!");
 		}
 	      } else {
 		//
-		// go into field battle
+		// go into field battle or next step
 		//
 	      }
+	      this.displaySpace(spacekey);
 	      return 1;
 	    }
 	  }
+
+	  this.displaySpace(spacekey);
 
           return 0;
 
@@ -2418,6 +2523,25 @@ console.log(faction + " -- evaluating fortification!");
 
 	  return 1;
 
+	}
+
+
+	if (mv[0] === "relief_forces") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	
+	  let player = this.returnPlayerCommandingFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.playerEvaluateReliefForce(faction, spacekey);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " handling besieged units");
+	  }
+
+	  return 0;
 	}
 
 
@@ -2654,10 +2778,16 @@ console.log(faction + " -- evaluating fortification!");
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];
 
-	  for (let i = 0; i < source.units[faction].length; i++) {
+	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    source.units[faction][i].locked = true;
 	    source.units[faction][i].already_moved = true;
-	    destination.units[faction].push(source.units[faction][i]);
+	    //
+	    // nothing under siege should be fortified
+	    //
+	    if (source.units[faction][i].besieged != 1) {
+	      destination.units[faction].push(source.units[faction][i]);
+	      source.units[faction].splice(i, 0);
+	    }   
 	  }
 
 	  source.units[faction] = [];
@@ -4008,7 +4138,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	    let rolls = 0;
 	    let units = [];
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].personage == false) {
+	      if (space.units[faction][i].personage == false && space.units[faction][i].besieged == 0) {
 		if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 	          rolls++;
 		  units.push(space.units[faction][i].key);
@@ -4023,7 +4153,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
           let calculate_highest_battle_rating = function(faction) {
 	    let highest_battle_rating = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].battle_rating > 0) {
+	      if (space.units[faction][i].battle_rating > 0 && space.units[faction][i].besieged == 0) {
 	        if (highest_battle_rating < space.units[faction][i].battle_rating) {
 		  highest_battle_rating = space.units[faction][i].battle_rating;
 		}
@@ -4412,7 +4542,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 		        if (zzz == 2) { cannon_fodder = "cavalry"; }
 
   	     	        for (let i = 0; i < space.units[f].length; i++) {
-	   	          if (space.units[f][i].type === cannon_fodder) {
+	   	          if (space.units[f][i].type === cannon_fodder && space.units[f][i].besieged == 0) {
 
 			    //
 			    // and remove from field battle unit
@@ -4490,7 +4620,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
                     if (zzz == 2) { cannon_fodder = "cavalry"; }
 
                     for (let ii = 0; ii < space.units[selected_faction].length; ii++) {
-                      if (space.units[selected_faction][ii].type === cannon_fodder) {
+                      if (space.units[selected_faction][ii].type === cannon_fodder && space.units[selected_faction][ii].besieged == 0) {
 
 			his_self.updateLog(this.returnFactionName(f) + " " + space.units[selected_faction][ii].name + " killed");
                         space.units[selected_faction].splice(ii, 1);
@@ -5322,26 +5452,39 @@ console.log("we have made it this far 5!");
 
 	    this.game.queue.push("show_overlay\tfield_battle\tpost_field_battle_defenders_win");
 
-            for (let f in his_self.game.state.field_battle.faction_map) {
-              let can_faction_retreat = 0;
-              if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.attacker_faction) {
-                for (let z = 0; z < space.neighbours.length; z++) {
-                  let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
-                  if (fluis > 0) {
-                    can_faction_retreat = 1;
+            //
+            // if the space is besieged and the attacker controls it, this was a field battle triggered by the 
+	    // defender putting it under siege earlier, in which case we want to permit the attacker to re-fortify
+	    //
+            if (this.isSpaceControlled(space.key, his_self.game.state.field_battle.attacker_faction) && space.besieged > 0) {
+
+	      // attacker and defender oddly reversed
+              this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+              this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+
+            } else {
+
+              for (let f in his_self.game.state.field_battle.faction_map) {
+                let can_faction_retreat = 0;
+                if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.attacker_faction) {
+                  for (let z = 0; z < space.neighbours.length; z++) {
+                    let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
+                    if (fluis > 0) {
+                      can_faction_retreat = 1;
+                    }
                   }
-                }
-                if (can_faction_retreat == 1) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
-		  if (his_self.game.state.field_battle.attacker_land_units_remaining > 0) {
-                    this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
+                  if (can_faction_retreat == 1) {
+                    this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+	  	    if (his_self.game.state.field_battle.attacker_land_units_remaining > 0) {
+                      this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
+                    }
                   }
+	          if (can_faction_retreat == 0) {
+                    this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+	          }
                 }
-	        if (can_faction_retreat == 0) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
-	        }
-              }
-            }
+	      }
+	    }
           }
           if (winner === his_self.game.state.field_battle.attacker_faction) {
 
@@ -6862,6 +7005,20 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 
           let loser = mv[1];
           let spacekey = mv[2];
+
+	  //
+	  // auto-skip if there are < 4 loser units and they are fortified
+	  //
+	  let unfortified_units = 0;
+	  for (let i = 0; i < this.game.spaces[spacekey].units[loser].length; i++) {
+	    if (this.game.spaces[spacekey].units[loser][i].besieged == 0) {
+	      unfortified_units++;
+	    }
+	  }
+	  if (unfortified_units == 0) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
 
 	  //
 	  // auto-skip if loser cannot retreat because they have no land units
