@@ -63,9 +63,6 @@ class Stun extends ModTemplate {
 
 		this.peers = new Map();
 
-		app.connection.on('stun-disconnect', (peerId) => {
-			this.leave(peerId);
-		});
 	}
 
 	respondTo(type, obj) {
@@ -79,8 +76,16 @@ class Stun extends ModTemplate {
 				sendTransaction: (peerId, tx) => {
 					this.sendTransaction(peerId, tx);
 				},
-				createPeerConnection: async (peerId, passive = true) => {
-					this.createPeerConnection(peerId, passive);
+				createPeerConnection: (peerId, callback = null) => {
+					//
+					// send ready message to peer, so if they want to create the channel, we are receptive
+					//
+					if (!callback){
+						callback = (peerId) => {
+							this.sendJoinTransaction(peerId);
+						}			
+					}
+					this.createPeerConnection(peerId, callback);
 				},
 				peers: this.peers
 			};
@@ -171,7 +176,7 @@ class Stun extends ModTemplate {
 		// Stun metadata messages
 		//
 		if (request == 'peer-joined') {
-			this.createPeerConnection(sender, false);
+			this.createPeerConnection(sender);
 			return;
 		}
 
@@ -281,32 +286,27 @@ class Stun extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	async createPeerConnection(peerId, wait_for_confirmation = true) {
+	createPeerConnection(peerId, callback = null) {
 		console.log('STUN: Create Peer Connection with ' + peerId);
 
 		if (peerId === this.publicKey) {
-			console.log(
-				'STUN: Attempting to create a peer Connection with myself!'
-			);
-			return;
+			console.log('STUN: Attempting to create a peer Connection with myself!');
+			return null;
 		}
 
 		if (this.peers.get(peerId)) {
 			if (this.peers.get(peerId).connection == 'connected') {
 				console.log('Already connected to ' + peerId);
-				return;
+				return;	
 			}
+		}else{
+			this.peers.set(peerId, new RTCPeerConnection({
+				iceServers: this.servers
+			}));
 		}
 
-		//this.app.connection.emit('add-remote-stream-request', peerId, null);
-
-		// check if peer connection already exists
-		const peerConnection = new RTCPeerConnection({
-			iceServers: this.servers
-		});
-
-		this.peers.set(peerId, peerConnection);
-
+		const peerConnection = this.peers.get(peerId);
+		
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
 			if (event.candidate) {
@@ -328,47 +328,10 @@ class Stun extends ModTemplate {
 			}
 		};
 
-		/* Receive Remote media
+		//Receive Remote media
 		peerConnection.addEventListener('track', (event) => {
-			const remoteStream = new MediaStream();
-
-			console.log('STUN: another remote stream added', event.track);
-
-			if (this.trackIsPresentation) {
-				remoteStream.addTrack(event.track);
-				this.app.connection.emit(
-					'add-remote-stream-request',
-					'presentation',
-					remoteStream
-				);
-				setTimeout(() => {
-					this.trackIsPresentation = false;
-				}, 1000);
-			} else {
-				if (event.streams.length === 0) {
-					remoteStream.addTrack(event.track);
-				} else {
-					event.streams[0].getTracks().forEach((track) => {
-						remoteStream.addTrack(track);
-					});
-				}
-
-				this.remoteStreams.set(peerId, {
-					remoteStream,
-					peerConnection
-				});
-				this.app.connection.emit(
-					'add-remote-stream-request',
-					peerId,
-					remoteStream
-				);
-
-				if (remoteStream.getAudioTracks()?.length) {
-					this.analyzeAudio(remoteStream, peerId);
-				}
-			}
-
-		});*/
+			this.app.connection.emit("stun-track-event", peerId, event);
+		});
 
 		peerConnection.addEventListener('connectionstatechange', () => {
 			console.log(
@@ -392,14 +355,8 @@ class Stun extends ModTemplate {
 					}
 				}, 3000);
 			}
-			if (
-				this?.firstConnect &&
-				peerConnection.connectionState === 'connected'
-			) {
-				//let sound = new Audio('/videocall/audio/enter-call.mp3');
-				//sound.play();
+			if (peerConnection.connectionState === 'connected') {
 				this.app.connection.emit('stun-connection-connected', peerId);
-				this.firstConnect = false;
 			}
 
 			this.app.connection.emit(
@@ -409,7 +366,7 @@ class Stun extends ModTemplate {
 			);
 		});
 
-		if (wait_for_confirmation) {
+		if (callback) {
 			peerConnection.addEventListener('datachannel', (event) => {
 				console.log('STUN: datachannel event');
 
@@ -431,10 +388,7 @@ class Stun extends ModTemplate {
 				};
 			});
 
-			//
-			// send ready message to peer, so if they want to create the channel, we are receptive
-			//
-			this.sendJoinTransaction(peerId);
+			callback(peerId);
 
 		} else {
 			const dc = peerConnection.createDataChannel('data-channel');
@@ -512,51 +466,6 @@ class Stun extends ModTemplate {
 		}
 	}
 
-	async leave() {
-		if (this.presentationStream) {
-			this.presentationStream.getTracks().forEach((track) => {
-				track.stop();
-			});
-			this.stopSharing();
-		}
-
-		this.localStream.getTracks().forEach((track) => {
-			track.stop();
-			console.log('STUN: stopping track to leave call');
-		});
-		this.localStream = null; //My Video Feed
-
-		await this.sendLeaveTransaction();
-
-		let keys = [];
-		this.peers.forEach((peerConnections, key) => {
-			keys.push(key);
-			peerConnections.close();
-		});
-
-		this.peers = new Map();
-
-		this.app.options.stun.peers = [];
-		this.app.storage.saveOptions();
-
-		if (this.audioStreamAnalysis) {
-			clearInterval(this.audioStreamAnalysis);
-		}
-
-		//
-		// Reset parameters
-		//
-		this.videoEnabled = true;
-		this.audioEnabled = true;
-		this.recording = false;
-		this.remain_in_call = true;
-
-		let data = {
-			type: 'peer-left',
-		};
-
-		
-	}
 }
 
 module.exports = Stun;

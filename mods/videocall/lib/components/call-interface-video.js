@@ -148,7 +148,6 @@ class CallInterfaceVideo {
 
 		app.connection.on('stun-disconnect', () => {
 			this.video_boxes = {};
-			this.app.connection.emit('reset-stun');
 
 			if (this.mod.browser_active) {
 				let homeModule = this.app.options?.homeModule || 'Stun';
@@ -157,7 +156,7 @@ class CallInterfaceVideo {
 				let url = '/' + slug;
 
 				setTimeout(() => {
-					window.location.href = url;
+					//window.location.href = url;
 				}, 2000);
 			} else {
 				//
@@ -219,7 +218,7 @@ class CallInterfaceVideo {
 		let cm = chat_mod.respondTo('chat-manager');
 		let peer = (await this.app.network.getPeers())[0].publicKey;
 		this.chat_group = {
-			id: this.mod.room_obj.room_code,
+			id: this.mod.room_obj.call_id,
 			members: [peer],
 			name: `Video Chat`,
 			txs: [],

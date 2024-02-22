@@ -5,7 +5,7 @@
 
 const localforage = require('localforage');
 
-class PeerManager {
+class StreamManager {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
@@ -74,16 +74,12 @@ class PeerManager {
 			}
 
 			let data = {
-				room_code: this.mod.room_obj.room_code,
-				type: 'toggle-video',
+				call_id: this.mod.room_obj.call_id,
 				enabled: this.videoEnabled,
 				public_key: this.mod.publicKey
 			};
 
-			this.mod.sendStunMessageToPeersTransaction(
-				data,
-				this.app.options.stun.peers
-			);
+			this.mod.sendOffChainMessage("toggle-video", data);
 		});
 
 		app.connection.on('stun-toggle-audio', async () => {
@@ -94,7 +90,7 @@ class PeerManager {
 			});
 
 			let data = {
-				room_code: this.mod.room_obj.room_code,
+				call_id: this.mod.room_obj.call_id,
 				type: 'toggle-audio',
 				public_key: this.mod.publicKey,
 				enabled: this.audioEnabled
@@ -150,13 +146,60 @@ class PeerManager {
 			}
 		});
 
+
+		app.connection.on('stun-connection-connected', (peerId)=> {
+
+			console.log('stun-connection-connected');
+			if (this.firstConnect){
+				let sound = new Audio('/videocall/audio/enter-call.mp3');
+				sound.play();
+				this.firstConnect = false;
+			}
+
+		});
+
+		app.connection.on("stun-track-event", (peerId, event) => {
+			const remoteStream = new MediaStream();
+			console.log('STUN: another remote stream added', event.track);
+
+			if (this.trackIsPresentation) {
+				remoteStream.addTrack(event.track);
+				this.app.connection.emit(
+					'add-remote-stream-request',
+					'presentation',
+					remoteStream
+				);
+				setTimeout(() => {
+					this.trackIsPresentation = false;
+				}, 1000);
+			} else {
+				if (event.streams.length === 0) {
+					remoteStream.addTrack(event.track);
+				} else {
+					event.streams[0].getTracks().forEach((track) => {
+						remoteStream.addTrack(track);
+					});
+				}
+
+				this.remoteStreams.set(peerId, {
+					remoteStream
+				});
+				this.app.connection.emit(
+					'add-remote-stream-request',
+					peerId,
+					remoteStream
+				);
+
+				if (remoteStream.getAudioTracks()?.length) {
+					this.analyzeAudio(remoteStream, peerId);
+				}
+			}
+		});
+
 		//Launch the Stun call
 		app.connection.on('start-stun-call', async () => {
-			console.log('STUN: start-stun-call');
-
+			console.log('STUN: start-stun-call', this.mod.room_obj, this.app.options.stun);
 			this.firstConnect = true;
-
-			console.log('STUN: ', this.mod.room_obj, this.app.options.stun);
 
 			//Render the UI component
 			this.app.connection.emit(
@@ -208,6 +251,11 @@ class PeerManager {
 				this.remain_in_call = state;
 			}
 		});
+
+		app.connection.on('stun-disconnect', () => {
+			this.leave();
+		});
+
 	}
 
 
@@ -248,26 +296,7 @@ class PeerManager {
 		});
 	}
 
-	updatePeers() {
-		let _peers = [];
-		this.peers.forEach((value, key) => {
-			_peers.push(key);
-		});
-
-		this.app.options.stun.peers = _peers;
-
-		console.log('My call list: ', _peers);
-
-		this.app.storage.saveOptions();
-	}
-
-
-	sendSignalingMessage(data) {}
-
-	getPeerConnection(public_key) {
-		return this.peers.get(public_key);
-	}
-	leave() {
+	async leave() {
 		if (this.presentationStream) {
 			this.presentationStream.getTracks().forEach((track) => {
 				track.stop();
@@ -275,26 +304,19 @@ class PeerManager {
 			this.stopSharing();
 		}
 
+		await this.mod.sendCallDisconnectTransaction();
+
 		this.localStream.getTracks().forEach((track) => {
 			track.stop();
 			console.log('STUN: stopping track to leave call');
 		});
+
 		this.localStream = null; //My Video Feed
 
-		let keys = [];
-		this.peers.forEach((peerConnections, key) => {
-			keys.push(key);
-			peerConnections.close();
-		});
-
-		this.peers = new Map();
+		this.app.connection.emit('reset-stun');
 
 		this.app.options.stun.peers = [];
 		this.app.storage.saveOptions();
-
-		if (this.audioStreamAnalysis) {
-			clearInterval(this.audioStreamAnalysis);
-		}
 
 		//
 		// Reset parameters
@@ -303,14 +325,10 @@ class PeerManager {
 		this.audioEnabled = true;
 		this.recording = false;
 		this.remain_in_call = true;
+		if (this.audioStreamAnalysis) {
+			clearInterval(this.audioStreamAnalysis);
+		}
 
-		let data = {
-			room_code: this.mod.room_obj.room_code,
-			type: 'peer-left',
-			public_key: this.mod.publicKey
-		};
-
-		this.mod.sendStunMessageToPeersTransaction(data, keys);
 	}
 
 	analyzeAudio(stream, peer) {
@@ -378,72 +396,6 @@ class PeerManager {
 		const audioContext = new AudioContext();
 		const audioDestination = audioContext.createMediaStreamDestination();
 
-		/*
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = 1280;
-    canvas.height = 720;
-
-    const localVideo = document.createElement("video");
-    localVideo.srcObject = this.localStream;
-    localVideo.muted = true;
-    localVideo.onloadedmetadata = () => localVideo.play();
-
-    const remoteVideos = [];
-    Array.from(this.remoteStreams.values()).forEach((c, index) => {
-      const remoteVideo = document.createElement("video");
-      remoteVideo.srcObject = c.remoteStream;
-      remoteVideo.muted = true;
-      remoteVideo.onloadedmetadata = () => remoteVideo.play();
-      remoteVideos.push(remoteVideo);
-    });
-
-    const draw = () => {
-      if (!this.recording) return;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const totalVideos = 1 + remoteVideos.length;
-
-      const cols = Math.ceil(Math.sqrt(totalVideos));
-      const rows = Math.ceil(totalVideos / cols);
-      const localVideoRatio = localVideo.videoWidth / localVideo.videoHeight;
-      const videoWidth = canvas.width / cols;
-
-      let videoHeight;
-      if (totalVideos == 2) {
-        videoHeight = videoWidth / localVideoRatio;
-      } else {
-        videoHeight = canvas.height / rows;
-      }
-
-      ctx.drawImage(localVideo, 0, 0, videoWidth, videoHeight);
-
-      if (totalVideos === 2) {
-        remoteVideos.forEach((remoteVideo, index) => {
-          const remoteVideoRatio = remoteVideo.videoWidth / remoteVideo.videoHeight;
-          const x = ((index + 1) % cols) * videoWidth;
-          let y = Math.floor((index + 1) / cols) * videoHeight;
-
-          const adjustedHeight = videoWidth / remoteVideoRatio;
-          y += (videoHeight - adjustedHeight) / 2;
-
-          ctx.drawImage(remoteVideo, x, y, videoWidth, adjustedHeight);
-        });
-      } else {
-        remoteVideos.forEach((remoteVideo, index) => {
-          const x = ((index + 1) % cols) * videoWidth;
-          const y = Math.floor((index + 1) / cols) * videoHeight;
-          ctx.drawImage(remoteVideo, x, y, videoWidth, videoHeight);
-        });
-      }
-
-      requestAnimationFrame(draw);
-    };
-
-    draw();
-    */
 
 		[
 			this.localStream,
@@ -524,4 +476,4 @@ class PeerManager {
 	}
 }
 
-module.exports = PeerManager;
+module.exports = StreamManager;

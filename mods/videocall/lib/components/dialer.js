@@ -241,7 +241,7 @@ class Dialer {
 		// create a room
 		if (!this.mod.room_obj) {
 			this.mod.room_obj = {
-				room_code: this.mod.createRoomCode(),
+				call_id: this.mod.createRoomCode(),
 				host_public_key: this.mod.publicKey
 			};
 		}
@@ -307,7 +307,7 @@ class Dialer {
 			break;
 
 		case 'stun-cancel-connection-request':
-			if (this.mod?.room_obj?.room_code == data.room_code) {
+			if (this.mod?.room_obj?.call_id == data.call_id) {
 				this.stopRing();
 				this.overlay.remove();
 				this.app.connection.emit('reset-stun');

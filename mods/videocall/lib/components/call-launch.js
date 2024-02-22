@@ -76,7 +76,7 @@ class CallLaunch {
 				//
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
-						room_code: this.mod.createRoomCode(),
+						call_id: this.mod.createRoomCode(),
 						host_public_key: this.mod.publicKey
 					};
 				}
