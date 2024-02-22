@@ -3059,7 +3059,6 @@ alert("HERE");
 
 	  his_self.updateLog("Protestants trigger " + his_self.popup("007"));
 	  his_self.game.queue.push("ACKNOWLEDGE\tProtestants swap Martin Luther into debate");
-	  his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 	  //
 	  // second option -- only possible if Wartburg not in-play

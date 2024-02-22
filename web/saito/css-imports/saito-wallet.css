@@ -440,10 +440,22 @@
   border: 1px solid var(--saito-font-color);
 }
 
+/* Hide arrows, Chrome, Safari, Edge, Opera */
+.saito-overlay-form-input input::-webkit-outer-spin-button,
+.saito-overlay-form-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.saito-overlay-form-input input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .withdraw-options-cont {
   position: absolute;
   right: 1rem;
-  top: 45%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--saito-font-color);
   cursor: pointer;

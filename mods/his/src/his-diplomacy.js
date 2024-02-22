@@ -63,98 +63,51 @@
   }
 
 
+  convertTermsToText(proposal_idx=0) {
 
+    let proposal = this.game.state.diplomacy[proposal_idx];
+    let text = [];
 
-  playerOfferAsFaction(faction) {
+console.log("PROPOSAL: "+ JSON.stringify(proposal));
 
-    let io = this.returnImpulseOrder();
-    let html = `<ul>`;
+    for (let i = 0; i < proposal.terms.length; i++) {
 
-    for (let i = io.length-1; i>= 0; i--) {
-      for (let i = 0; i < pfactions.length; i++) {
-        html    += `<li class="card" id="${i}">${pfactions[i]}</li>`;
+      let x = proposal.terms[i].split("\t");
+
+      if (x[0] === "end_war") {
+	text.push(`${this.returnFactionName(x[1])} and ${this.returnFactionName(x[1])} agree to peace.`);
       }
-      html    += `</ul>`;
-    }
- 
-    this.updateStatusWithOptions(`Offer Agreement to which faction?`, html);
-    this.attachCardboxEvents(function(user_choice) {
-      his_self.factionOfferFaction(faction, faction);
-    });
-
-  }
-
-
-  factionOfferFaction(faction1, faction2) {
-
-    let menu = this.returnDiplomacyMenuOptions(this.game.player);
-
-    let html = `<ul>`;
-    for (let i = 0; i < menu.length; i++) {
-      if (menu[i].check(this, faction1, faction2)) {
-        for (let z = 0; z < menu[i].factions.length; z++) {
-          if (menu[i].factions[z] === selected_faction) {
-            if (menu[i].cost[z] <= ops) {
-              html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
-            }
-            z = menu[i].factions.length+1;
-          }
-        }
+      if (x[0] === "alliance") {
+	text.push(`${this.returnFactionName(x[1])} and ${this.returnFactionName(x[1])} agree to ally.`);
+      }
+      if (x[0] === "squadron_loan") {
+	text.push(`${this.returnFactionName(x[1])} loans ${this.returnFactionName(x[1])} ${x[3]} squadron(s).`);
+      }
+      if (x[0] === "returns_captured") {
+	text.push(`${this.returnFactionName(x[1])} returns ${x[1]}.`);
+      }
+      if (x[0] === "offer_mercenaries") {
+	text.push(`${this.returnFactionName(x[1])} offers ${this.returnSpaceName(x[2])} ${x[3]} mercenaries.`);
+      }
+      if (x[0] === "yield_key") {
+	text.push(`${this.returnFactionName(x[1])} yields ${this.returnSpaceName(x[3])} to ${this.returnFactionName(x[2])}.`);
+      }
+      if (x[0] === "yield_cards") {
+	text.push(`${this.returnFactionName(x[1])} offers ${this.returnSpaceName(x[2])} ${x[3]} card(s).`);
+      }
+      if (x[0] === "approve_divorce") {
+	text.push(`${this.returnFactionName(x[1])} approves Henry VIII divorce.`);
+      }
+      if (x[0] === "rescind_excommunication") {
+	text.push(`${this.returnFactionName(x[1])} rescinds ${this.returnFactionName(x[1])} excommunication.`);
       }
     }
-    html    += `<li class="card" id="end_turn">end turn</li>`;
-    html += '</ul>';
 
-    this.updateStatusWithOptions(`Type of Agreement`, html);
-    this.attachCardboxEvents(async (user_choice) => {
-
-      if (user_choice === "end_turn") {
-        this.endTurn();
-        return;
-      }
-
-      menu[user_choice].fnct(this, faction1, faction2);
-      return;
-    });
+    return text;
   }
-
-
-
-
-
-
-  playerOffer() {
-
-    let his_self = this;
-    let pfactions = this.returnPlayerFactions(this.game.player);
-
-    let html = `<ul>`;
-    for (let i = 0; i < pfactions.length; i++) {
-      html    += `<li class="card" id="${i}">${pfactions[i]}</li>`;
-    }
-    html    += `</ul>`;
-
-    this.updateStatusWithOptions(`Offer Agreement as which Faction?`, html);
-    this.attachCardboxEvents(function(user_choice) {
-      his_self.playerOfferAsFaction(faction);
-    });
-
-  }
-
-
-
-
 
 
   canPlayerEndWar(his_self, f1, f2) {
-    return 0;
-  }
-
-  canPlayerFormAlliance(his_self, f1, f2) {
-    return 0;
-  }
-
-  canPlayerFormAlliance(his_self, f1, f2) {
     return 0;
   }
 
@@ -189,6 +142,9 @@
   canPlayerRescindExcommunication(his_self, f1, f2) {
     return 0;
   }
+
+
+
 
   async playerFormAlliance(his_self, f1, f2) {
     return 0;

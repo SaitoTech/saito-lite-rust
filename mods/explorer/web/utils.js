@@ -46,102 +46,89 @@ function drawRawBlock(blk, hash) {
 }
 
 function listTransactions(blk, hash) {
-	var html = '<div class="block-table">';
-	html += '<div><h4>id</h4></div><div>' + blk.id + '</div>';
-	html += '<div><h4>hash</h4></div><div>' + hash + '</div>';
-	html += '<div><h4>creator</h4></div><div>' + blk.creator + '</div>';
-	html +=
-		'<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
-		hash +
-		'">click to view source</a></div>';
-	html += '</div>';
+  let nolan_per_saito = 100000000;
 
-	if (blk.transactions.length > 0) {
-		html += '<h3>Bundled Transactions:</h3></div>';
+  var html = '<div class="block-table">';
+  html += "<div><h4>id</h4></div><div>" + blk.id + "</div>";
+  html += "<div><h4>hash</h4></div><div>" + hash + "</div>";
+  html += "<div><h4>creator</h4></div><div>" + blk.creator + "</div>";
+  html +=
+    '<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
+    hash +
+    '">click to view source</a></div>';
+  html += "</div>";
 
-		html += '<div class="block-transactions-table">';
-		html += '<div class="table-header">id</div>';
-		html += '<div class="table-header">sender</div>';
-		html += '<div class="table-header">fee</div>';
-		html += '<div class="table-header">type</div>';
-		html += '<div class="table-header">module</div>';
+  if (blk.transactions.length > 0) {
+    html += "<h3>Bundled Transactions:</h3></div>";
 
-		for (var mt = 0; mt < blk.transactions.length; mt++) {
-			var tmptx = blk.transactions[mt];
-			tmptx.id = mt;
+    html += '<div class="block-transactions-table">';
+    html += '<div class="table-header">id</div>';
+    html += '<div class="table-header">sender</div>';
+    html += '<div class="table-header">fee</div>';
+    html += '<div class="table-header">type</div>';
+    html += '<div class="table-header">module</div>';
 
-			var tx_fees = 0;
-			//if (tmptx.fees_total == "") {
+    for (var mt = 0; mt < blk.transactions.length; mt++) {
+      var tmptx = blk.transactions[mt];
+      tmptx.id = mt;
 
-			//
-			// sum inputs
-			//
-			let inputs = 0;
-			if (tmptx.from != null) {
-				for (let v = 0; v < tmptx.from.length; v++) {
-					inputs += parseFloat(tmptx.from[v].amount);
-				}
-			}
+      var tx_fees = 0;
+      //if (tmptx.fees_total == "") {
 
-			//
-			// sum outputs
-			//
-			let outputs = 0;
-			for (let v = 0; v < tmptx.to.length; v++) {
-				//
-				// only count non-gt transaction outputs
-				//
-				if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
-					outputs += parseFloat(tmptx.to[v].amount);
-				}
-			}
+      //
+      // sum inputs
+      //
+      let inputs = 0;
+      if (tmptx.from != null) {
+        for (let v = 0; v < tmptx.from.length; v++) {
+          inputs += parseFloat(tmptx.from[v].amount);
+        }
+      }
 
-			tx_fees = inputs - outputs;
+      //
+      // sum outputs
+      //
+      let outputs = 0;
+      for (let v = 0; v < tmptx.to.length; v++) {
+        //
+        // only count non-gt transaction outputs
+        //
+        if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
+          outputs += parseFloat(tmptx.to[v].amount);
+        }
+      }
 
-			//}
-			let tx_from = 'fee tx';
-			if (tmptx.from.length > 0) {
-				tx_from = tmptx.from[0].publicKey;
-			}
+      tx_fees = inputs - outputs;
 
-			html +=
-				`<div><a onclick="showTransaction('tx-` +
-				tmptx.id +
-				`');">` +
-				mt +
-				`</a></div>`;
-			html +=
-				`<div><a onclick="showTransaction('tx-` +
-				tmptx.id +
-				`');">` +
-				tx_from +
-				`</a></div>`;
-			html += '<div>' + tx_fees.toFixed(5) + '</div>';
-			html += '<div>' + tmptx.type + '</div>';
-			if (tmptx.type == 0) {
-				if (tmptx.msg.module) {
-					html += '<div>' + tmptx.msg.module + '</div>';
-				} else {
-					html += '<div>Money</div>';
-				}
-			}
-			if (tmptx.type == 1) {
-				html += '<div>' + tmptx.msg.name + '</div>';
-			}
-			if (tmptx.type > 1) {
-				html += '<div> </div>';
-			}
-			html +=
-				'<div class="hidden txbox tx-' +
-				tmptx.id +
-				'">' +
-				JSON.stringify(tmptx) +
-				'</div>';
-		}
-		html += '</div>';
-	}
-	//return html;
-	document.querySelector('.txlist').innerHTML = html;
+      //}
+      let tx_from = "fee tx";
+      if (tmptx.from.length > 0) {
+        tx_from = tmptx.from[0].publicKey;
+      }
+
+      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
+      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
+      html += "<div>" + BigInt(tx_fees*nolan_per_saito) + "</div>";
+      html += "<div>" + tmptx.type + "</div>";
+      if (tmptx.type == 0) {
+        if (tmptx.msg.module) {
+          html += "<div>" + tmptx.msg.module + "</div>";
+        } else {
+          html += "<div>Money</div>";
+        }
+      }
+      if (tmptx.type == 1) {
+        html += "<div>" + tmptx.msg.name + "</div>";
+      }
+      if (tmptx.type > 1) {
+        html += "<div> </div>";
+      }
+      html += '<div class="hidden txbox tx-' + tmptx.id + '">' + JSON.stringify(tmptx) + "</div>";
+    }
+    html += "</div>";
+  }
+  //return html;
+  document.querySelector(".txlist").innerHTML = html;
 }
 
 function showTransaction(obj) {

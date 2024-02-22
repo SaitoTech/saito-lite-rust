@@ -3479,6 +3479,8 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
 
 	let html = '<div class="space_view" id="">';
 
+	let space = his_self.game.spaces[obj.key];
+
 	let home = obj.home;
 	let religion = obj.religion;
 	let political = obj.political;
@@ -3500,19 +3502,19 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
 	  <div class="space_units">
 	`;
 
-        for (let key in obj.units) {
+        for (let key in space.units) {
 	  html += his_self.returnArmyTiles(key, obj.key);
 	  html += his_self.returnMercenaryTiles(key, obj.key);
 	  html += his_self.returnPersonagesTiles(key, obj.key);
 	  html += his_self.returnNavalTiles(key, obj.key);
         }
 
-        for (let f in this.units) {
-	  if (this.units[f].length > 0) {
-            for (let i = 0; i < this.units[f].length; i++) {
+        for (let f in space.units) {
+	  if (space.units[f].length > 0) {
+            for (let i = 0; i < space.units[f].length; i++) {
 	      let b = "";
-	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
-	      html += `<div class="space_unit">${f} - ${this.units[f][i].type} ${b}</div>`;
+	      if (space.units[f][i].besieged) { b = ' (besieged)'; }
+	      html += `<div class="space_unit">${f} - ${space.units[f][i].type} ${b}</div>`;
 	    }
 	  }
 	}

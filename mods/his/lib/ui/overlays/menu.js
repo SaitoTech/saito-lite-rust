@@ -66,6 +66,8 @@ class MenuOverlay {
 				this.app.browser.addElementToSelector(html, `.menu`);
 			}
 
+			document.querySelector('.menu').classList.add(`m${options.length}entries`);
+
 			if (attachEventsToOptions != null) {
 				attachEventsToOptions();
 			}
