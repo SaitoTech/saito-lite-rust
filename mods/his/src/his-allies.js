@@ -183,7 +183,7 @@
   }
 
   unsetActivatedPower(faction, activated_power) {
-    if (this.game.state.activated_powers[faction1].includes(activated_power)) {
+    if (this.game.state.activated_powers[faction].includes(activated_power)) {
       let x = [];
       for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
         if (this.game.state.activated_powers[faction][i] !== activated_power) {
