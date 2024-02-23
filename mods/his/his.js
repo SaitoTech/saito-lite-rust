@@ -30748,6 +30748,7 @@ console.log(": ");
 console.log(": ");
 console.log(": ");
 console.log(": " + JSON.stringify(factions));
+console.log(": " + this.game.options.player1 + " --- " + this.game.options.player2);
 console.log(": ");
 
     for (let i = 0; i < num; i++) {
@@ -30806,7 +30807,7 @@ console.log(": ");
         }
       }
 
-      if (rf == "") {
+      if (rf === "" || rf === "undefined") {
         let dr = this.rollDice(f.length) - 1;
 	rf = f[dr];
       }
@@ -30816,6 +30817,8 @@ console.log(": ");
 	  f.splice(z, 1);
 	}
       }
+
+console.log("SELECTED FACTION: " + rf);
 
       delete factions[rf];
 

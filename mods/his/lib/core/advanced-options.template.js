@@ -7,8 +7,8 @@ module.exports = () => {
             <label for="player1">Play as:</label>
             <select name="player1">
               <option value="random" selected>random</option>
-              <option value="ussr">Protestants</option>
-              <option value="us">Papacy</option>
+              <option value="protestant">Protestants</option>
+              <option value="papacy">Papacy</option>
             </select>
 
             <label for="scenario">Scenario:</label>
