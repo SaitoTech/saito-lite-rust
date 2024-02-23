@@ -40,7 +40,7 @@ class MixinModule extends CryptoModule {
 		this.icon_url = '';
 		this.balance = '0.0';
 		this.balance_timestamp_last_fetched = 0;
-		this.minimum_delay_between_balance_queries = 20000; // if it hasn't been 10 seconds since last fetch, fetch
+		this.minimum_delay_between_balance_queries = 4000;
 		this.deposit_entries = {};
 		this.tag = '';
 		this.price_btc = 0;
