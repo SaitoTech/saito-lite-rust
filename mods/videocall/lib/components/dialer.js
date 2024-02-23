@@ -71,17 +71,6 @@ class Dialer {
 
 				let data = Object.assign({}, this.mod.room_obj);
 
-				this.app.connection.emit(
-					'update-media-preference',
-					'video',
-					video_switch.checked
-				);
-				this.app.connection.emit(
-					'update-media-preference',
-					'ondisconnect',
-					false
-				);
-
 				this.app.connection.emit('relay-send-message', {
 					recipient,
 					request: 'stun-connection-request',
@@ -137,17 +126,6 @@ class Dialer {
 
 		if (answer_button) {
 			answer_button.onclick = (e) => {
-				this.app.connection.emit(
-					'update-media-preference',
-					'video',
-					this.mod.room_obj.ui == 'video'
-				);
-				this.app.connection.emit(
-					'update-media-preference',
-					'ondisconnect',
-					false
-				);
-
 				this.app.connection.emit('relay-send-message', {
 					recipient,
 					request: 'stun-connection-accepted',
@@ -161,7 +139,12 @@ class Dialer {
 					this.overlay.remove();
 					this.app.connection.emit(
 						'stun-init-call-interface',
-						this.mod.room_obj.ui
+						{
+							ui: this.mod.room_obj.ui, 
+							audio: true,
+							video: this.mod.room_obj.ui == "video",
+							remain_in_call: false
+						}
 					);
 					this.app.connection.emit('start-stun-call');
 				}, 1000);
@@ -339,7 +322,13 @@ class Dialer {
 				this.overlay.remove();
 				this.app.connection.emit(
 					'stun-init-call-interface',
-					this.mod.room_obj.ui
+						{
+							ui: this.mod.room_obj.ui, 
+							audio: true,
+							video: this.mod.room_obj.ui == "video",
+							remain_in_call: false
+						}
+
 				);
 				this.app.connection.emit('start-stun-call');
 			}, 1000);

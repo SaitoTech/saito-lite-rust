@@ -27,21 +27,27 @@ class Videocall extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/videocall/style.css'];
 
 		this.stun = null;  //The stun API
-		this.streams = new StreamManager(app, this);
+		this.streams = null;
 		this.dialer = new DialingInterface(app, this);
 
 		//When CallLauncher is rendered or game-menu triggers it
-		app.connection.on('stun-init-call-interface', (ui_type = 'large') => {
+		app.connection.on('stun-init-call-interface', (settings) => {
 			if (this.CallInterface) {
 				console.warn('Already instatiated a video/audio call manager');
 				return;
 			}
 
-			console.log('STUN UI: ' + ui_type);
+			if (!this.streams){
+				this.streams = new StreamManager(this.app, this, settings);
+			}else{
+				this.streams.updateSettings(settings);
+			}
 
-			if (ui_type === 'large') {
+			console.log('STUN UI: ', settings);
+
+			if (settings.ui === 'large') {
 				this.CallInterface = new CallInterfaceVideo(app, this, true);
-			} else if (ui_type === 'video') {
+			} else if (settings.ui === 'video') {
 				this.CallInterface = new CallInterfaceVideo(app, this, false);
 			} else {
 				this.CallInterface = new CallInterfaceFloat(app, this);
@@ -54,6 +60,10 @@ class Videocall extends ModTemplate {
 				this.CallInterface.destroy();
 				this.CallInterface = null;
 			}
+
+			this.app.options.stun.peers = [];
+			this.app.storage.saveOptions();
+
 		});
 	}
 
@@ -306,10 +316,7 @@ class Videocall extends ModTemplate {
 						console.log('OC: Tab is not active');
 						return;
 					}
-					// if (document.hidden) {
-					//   console.log("tab is not active");
-					//   return;
-					// }
+
 
 					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
 						console.log('OnConfirmation: ' + message.request);
@@ -341,15 +348,10 @@ class Videocall extends ModTemplate {
 		if (this.app.BROWSER === 1) {
 			if (txmsg.module == 'Videocall' || txmsg.module == "Stun") {
 				if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-					//console.log(txmsg);
-
+					
 					if (this.hasSeenTransaction(tx)) return;
 
-					if (
-						!this?.room_obj?.call_id ||
-						this.room_obj.call_id !== txmsg.call_id
-					) {
-						console.log('HPT: Tab is not active');
+					if (!this?.room_obj?.call_id ||	this.room_obj.call_id !== txmsg.call_id) {
 						return;
 					}
 
@@ -367,17 +369,12 @@ class Videocall extends ModTemplate {
 					if (txmsg.request === "peer-joined"){
 						let from = tx.from[0].publicKey;
 
+						console.log("Peer-joined! (Videocall)");
+						this.app.connection.emit('add-remote-stream-request', from, null);
+
 						if (!this.app.options.stun.peers.includes(from)){
 							this.app.options.stun.peers.push(from);
 							this.app.storage.saveOptions();
-						}
-						console.log("Peer-joined!");
-						this.app.connection.emit('add-remote-stream-request', from, null);
-						let pc = this.stun.peers.get(from);
-						if (pc){
-							this.streams.localStream.getTracks().forEach((track) => {
-								pc.addTrack(track, this.streams.localStream);
-							});
 						}
 
 						return;
@@ -393,11 +390,25 @@ class Videocall extends ModTemplate {
 							}					
 						}
 						this.app.storage.saveOptions();
+						this.app.connection.emit("remove-peer-box", from);
 					}
 
 					if (txmsg.request === 'toggle-audio' || txmsg.request == 'toggle-video') {
 						this.app.connection.emit(`peer-${txmsg.request}-status`, txmsg.data);		
 					}
+
+					if (txmsg.request === "screen-share-start"){
+						this.screen_share = tx.from[0].publicKey;
+						this.app.connection.emit('add-remote-stream-request','presentation',null);
+					}
+
+					if (txmsg.request === "screen-share-stop"){
+						this.app.connection.emit('remove-peer-box', 'presentation');
+						this.app.connection.emit('stun-switch-view', 'focus');
+						this.screen_share = null;
+					}
+
+
 				}
 			}
 		}
@@ -420,7 +431,8 @@ class Videocall extends ModTemplate {
 		newtx.msg = {
 			module: "Videocall",
 			request,
-			data
+			call_id: this.room_obj.call_id,
+			data,
 		}
 
 		await newtx.sign();
@@ -459,7 +471,7 @@ class Videocall extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	async receiveCallListRequestTransaction(app, tx) {
+	receiveCallListRequestTransaction(app, tx) {
 		let txmsg = tx.returnMessage();
 
 		let from = tx.from[0].publicKey;
@@ -504,7 +516,7 @@ class Videocall extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	async receiveCallListResponseTransaction(app, tx) {
+	receiveCallListResponseTransaction(app, tx) {
 		let txmsg = tx.returnMessage();
 
 		let call_list = txmsg.call_list;
@@ -514,19 +526,21 @@ class Videocall extends ModTemplate {
 		//
 		// Create a connection with everyone
 		//
+		console.log("STUN: My peer list: ", this.app.options.stun.peers, "Received list: ", call_list);
 
 		for (let peer of call_list){
+			if (!this.app.options.stun.peers.includes(peer)){
+				this.app.options.stun.peers.push(peer);
+			}
+
 			if (peer !== this.publicKey){
 				this.stun.createPeerConnection(peer, (peerId)=> {
 					this.sendCallJoinTransaction(peerId);
 				});
-
-				let pc = this.stun.peers.get(peer);
-				this.streams.localStream.getTracks().forEach((track) => {
-					pc.addTrack(track, this.streams.localStream);
-				});
 			}
 		}
+
+		this.app.storage.saveOptions();
 	}
 
 	//
@@ -560,8 +574,11 @@ class Videocall extends ModTemplate {
 	async sendCallDisconnectTransaction(){
 
 		if (!this?.room_obj){
+			console.log("No room object!");
 			return;
 		}
+
+		console.log("STUN: Send disconnect message:", this.room_obj, this.app.options.stun.peers);
 
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 

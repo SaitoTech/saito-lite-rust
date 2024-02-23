@@ -100,7 +100,9 @@ class Stun extends ModTemplate {
 		if (peerConnection) {
 			if (peerConnection?.dc) {
 				if (peerConnection.connectionState == 'connected') {
-					return true;
+					if (peerConnection.dc.readyState == "open"){
+						return true;	
+					}
 				}
 			}
 		}
@@ -291,18 +293,21 @@ class Stun extends ModTemplate {
 
 		if (peerId === this.publicKey) {
 			console.log('STUN: Attempting to create a peer Connection with myself!');
-			return null;
+			return 0;
 		}
 
 		if (this.peers.get(peerId)) {
 			if (this.peers.get(peerId).connection == 'connected') {
 				console.log('Already connected to ' + peerId);
-				return;	
 			}
+			this.peers.get(peerId).restartIce();
 		}else{
-			this.peers.set(peerId, new RTCPeerConnection({
+			const pc = new RTCPeerConnection({
 				iceServers: this.servers
-			}));
+			})
+			this.peers.set(peerId, pc);
+
+			this.app.connection.emit("stun-new-peer-connection", peerId, pc);
 		}
 
 		const peerConnection = this.peers.get(peerId);
@@ -425,6 +430,7 @@ class Stun extends ModTemplate {
 	removePeerConnection(peerId) {
 		const peerConnection = this.peers.get(peerId);
 		if (peerConnection) {
+			console.log("Stun remove peer connection!");
 			peerConnection.close();
 			this.peers.delete(peerId);
 		}
@@ -443,7 +449,11 @@ class Stun extends ModTemplate {
 		console.log(`STUN: sending offer to ${peerId} with peer connection`);
 
 		try {
-			const offer = await peerConnection.createOffer();
+			const offer = await peerConnection.createOffer({
+				iceRestart: true,
+				offerToReceiveAudio: true,
+				offerToReceiveVideo: true,
+			});
 			await peerConnection.setLocalDescription(offer);
 
 			let newtx =

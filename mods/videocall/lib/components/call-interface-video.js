@@ -26,7 +26,7 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'show-call-interface',
 			async (videoEnabled, audioEnabled) => {
-				console.log('Render Video Call Interface');
+				console.log('Render Video Call Interface', videoEnabled, audioEnabled);
 
 				// create chat group
 				this.createRoomTextChat();
@@ -62,6 +62,11 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'stun-update-connection-message',
 			(peer_id, status) => {
+				if (this.app.options.stun.peers.includes(peer_id) && !this.video_boxes[peer_id]){
+					console.warn("Missing video box for expected peer");
+					return;
+				}
+
 				if (status === 'connecting') {
 					this.video_boxes[peer_id].video_box.renderPlaceholder(
 						'connecting'
@@ -156,7 +161,7 @@ class CallInterfaceVideo {
 				let url = '/' + slug;
 
 				setTimeout(() => {
-					//window.location.href = url;
+					window.location.href = url;
 				}, 2000);
 			} else {
 				//
@@ -263,11 +268,11 @@ class CallInterfaceVideo {
 
 		document.querySelectorAll('.disconnect-control').forEach((item) => {
 			item.addEventListener('click', async (e) => {
+				this.app.connection.emit('stun-disconnect');
 				let chat_module = this.app.modules.returnModule('Chat');
 				if (chat_module && this.chat_group) {
 					await chat_module.deleteChatGroup(this.chat_group);
 				}
-				this.app.connection.emit('stun-disconnect');
 				siteMessage('You have been disconnected', 3000);
 			});
 		});
@@ -467,22 +472,6 @@ class CallInterfaceVideo {
 			if (peer_elem) {
 				peer_elem.querySelector('.video-box').click();
 			}
-
-			if (!remoteStream.getVideoTracks()?.length) {
-				this.app.connection.emit(`peer-toggle-video-status`, {
-					public_key: peer,
-					enabled: false
-				});
-			}
-
-			for (let track of remoteStream.getTracks()) {
-				if (!track.enabled) {
-					this.app.connection.emit(
-						`peer-toggle-${track.kind}-status`,
-						{ public_key: peer, enabled: false }
-					);
-				}
-			}
 		}
 
 		this.updateImages();
@@ -511,8 +500,6 @@ class CallInterfaceVideo {
 			const videoBox = new VideoBox(this.app, this.mod, peer, container);
 			this.video_boxes[peer] = { video_box: videoBox };
 		}
-
-		console.log(this.video_boxes);
 	}
 
 	toggleAudio() {
