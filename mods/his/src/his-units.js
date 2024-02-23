@@ -223,11 +223,6 @@
   }
 
   returnAvailableExplorers(faction="") {
-
-console.log("searching for explorers for faction: " + faction);
-console.log("from list: ");
-console.log(JSON.stringify(this.explorers));
-
     let unavailable = [];
     let available = [];
     for (let z = 0; z < this.game.state.explorations.length; z++) {
@@ -238,7 +233,6 @@ console.log(JSON.stringify(this.explorers));
         }
       }
     }
-console.log("unavailable: " + JSON.stringify(unavailable));
     for (let key in this.explorers) {
       if (this.explorers[key].faction == faction) {
         if (!unavailable.includes(key)) {
@@ -288,31 +282,25 @@ console.log("unavailable: " + JSON.stringify(unavailable));
 
 
   addArmyLeader(faction, space, leader) {
-
     if (!this.army[leader]) {
       console.log("ARMY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.army[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
   addNavyLeader(faction, space, leader) {
-
     if (!this.navy[leader]) {
       console.log("NAVY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     space.units[faction].push(this.navy[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
@@ -334,45 +322,21 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       console.log("REFORMER: " + reformer + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
-  }
-
-  addWife(faction, wife) {
-
-    if (!this.wives[wife]) {
-      console.log("WIFE: " + wife + " not found");
-      return;
-    }
-
-    for (let i = 0; i < this.game.state.wives.length; i++) {
-      if (this.game.state.wives[i].type === wife) {
-	return;
-      }
-    }
-
-
-    this.game.state.wives.push(this.wives[wife]);
-    this.game.state.wives[this.game.state.wives.length-1].owner = faction; 
-
   }
 
   removeDebater(faction, debater) {
-
     if (!this.debaters[debater]) {
       console.log("DEBATER: " + debater + " not found");
       return;
     }
-
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].type == debater) { 
 	this.game.state.debaters.splice(i, 1);
       }
     }
-
   }
 
   disgraceDebater(debater) { return this.burnDebater(debater, 1); }
@@ -583,6 +547,8 @@ console.log("unavailable: " + JSON.stringify(unavailable));
     let my_spaces = {};
     let available_units = {};
         available_units['regular'] = {};
+        available_units['squadron'] = {};
+        available_units['cavalry'] = {};
     let deployed_units = {};
 
     //
@@ -595,6 +561,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 0;    
     }
     if (faction == "england") {
       available_units['regular']['1'] = 9;    
@@ -603,6 +570,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 5;    
     }
     if (faction == "ottoman") {
       available_units['regular']['1'] = 11;    
@@ -611,6 +579,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['4'] = 4;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 9;
     }
     if (faction == "france") {
       available_units['regular']['1'] = 10;    
@@ -619,6 +588,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['4'] = 3;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 5;    
     }
     if (faction == "papacy") {
       available_units['regular']['1'] = 7;    
@@ -627,6 +597,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 2;
     }
     if (faction == "hapsburg") {
       available_units['regular']['1'] = 12;    
@@ -635,6 +606,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['4'] = 3;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 6;    
     }
 
     if (faction == "scotland") {
@@ -643,7 +615,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 1;    
     }
     if (faction == "genoa") {
       available_units['regular']['1'] = 2;    
@@ -651,7 +623,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 1;    
     }
     if (faction == "venice") {
       available_units['regular']['1'] = 4;    
@@ -659,7 +631,7 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 4;    
     }
     if (faction == "hungary") {
       available_units['regular']['1'] = 3;    
@@ -692,6 +664,17 @@ console.log("unavailable: " + JSON.stringify(unavailable));
         }
       }
     }
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units) {
+        if (this.game.navalspaces[key].units[faction].length > 0) {
+          for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+      	    if (!my_spaces[key]) { my_spaces[key] = {}; }
+            if (!my_spaces[key][this.game.navalspaces[key].units[faction][i].type]) { my_spaces[key][this.game.navalspaces[key].units[faction][i].type] = 0; }
+            my_spaces[key][this.game.navalspaces[key].units[faction][i].type]++;
+          }
+        }
+      }
+    }
 
     //
     //
@@ -712,6 +695,8 @@ console.log("unavailable: " + JSON.stringify(unavailable));
       deployed_units[key]['mercenary']['4'] = 0;
       deployed_units[key]['mercenary']['5'] = 0;
       deployed_units[key]['mercenary']['6'] = 0;
+      deployed_units[key]['squadron'] = {};
+      deployed_units[key]['squadron']['1'] = 0;
     }
 
 
@@ -789,6 +774,20 @@ console.log("unavailable: " + JSON.stringify(unavailable));
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
+	if (my_spaces[key]['squadron'] >= 1 && available_units['squadron']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['squadron'] -= 1;
+	  available_units['squadron']['1']--;
+	  deployed_units[key]['squadron']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['corsair'] >= 1 && available_units['squadron']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['corsair'] -= 1;
+	  available_units['squadron']['1']--;
+	  deployed_units[key]['corsair']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
 
       }
 
@@ -823,6 +822,36 @@ console.log("unavailable: " + JSON.stringify(unavailable));
 
   }
 
-  
 
+  returnNumberOfUnitsAvailableForConstruction(faction, unittype) {
+
+    //
+    // TODO -- implement limits on squadron and corsair construction
+    //
+    if (unittype === "cavalry") { return 1; }
+
+    if (unittype === "corsair") { unittype = "squadron"; }
+    if (unittype === "mercenary") { unittype = "regular"; }
+
+    let res = this.returnOnBoardUnits(faction);
+
+    let amount_over_capacity = 0;
+    for (let key in res.missing) {
+      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0)) {
+        return 0;
+      }
+    }
+
+    let x = 0;
+
+    if (res.available[unittype]['1'] > 0) { x += (1 * res.available[unittype]['1']); }
+    if (res.available[unittype]['2'] > 0) { x += (2 * res.available[unittype]['2']); }
+    if (res.available[unittype]['3'] > 0) { x += (3 * res.available[unittype]['3']); }
+    if (res.available[unittype]['4'] > 0) { x += (4 * res.available[unittype]['4']); }
+    if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
+    if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
+
+    return x;
+
+  }
 

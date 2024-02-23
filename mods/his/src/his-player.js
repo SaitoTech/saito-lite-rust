@@ -627,8 +627,8 @@ if (limit === "build") {
       factions : ['ottoman'],
       cost : [1],
       name : "Corsair",
-      check : this.canPlayerBuildCorsair,
-      fnct : this.playerBuildCorsair,
+      check : this.canPlayerBuyCorsair,
+      fnct : this.playerBuyCorsair,
       category : "build" ,
       img : '/his/img/backgrounds/move/corsair.jpg',
     });
@@ -735,8 +735,8 @@ if (limit === "build") {
       factions : ['ottoman'],
       cost : [1],
       name : "Corsair",
-      check : this.canPlayerBuildCorsair,
-      fnct : this.playerBuildCorsair,
+      check : this.canPlayerBuyCorsair,
+      fnct : this.playerBuyCorsair,
       category : "build" ,
       img : '/his/img/backgrounds/move/corsair.jpg',
     });
@@ -4319,11 +4319,72 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "mercenary") == 0) { return false; }
 
     return 1;
   }
-  playerBuyMercenary(his_self, player, faction) {
+  playerBuyMercenary(his_self, player, faction, ops_to_spend, ops_remaining) {
 
+    //
+    // ui for building multiple units
+    //
+    his_self.build_overlay.render(faction, "mercenary", (parseInt(ops_remaining)+parseInt(ops_to_spend)), parseInt(ops_to_spend), (num, costs) => {
+
+      //
+      // modify "continue" instruction if this is a move over a pass
+      //
+      for (let i = 0; i < his_self.moves.length; i++) {
+        let x = his_self.moves[i];
+        let y = x.split("\t");
+        let new_ops_remaining = (parseInt(ops_remaining)+parseInt(ops_to_spend)) - (num*costs);
+        if (y[0] === "continue") {
+          if (new_ops_remaining) {
+            his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+          } else {
+            his_self.moves.splice(i, 1);
+          }
+        }
+      }
+
+      //
+      // and place
+      //
+      his_self.playerSelectSpaceWithFilter(
+
+        `Select Destination for ${num} Mercenaries`,
+
+        function(space) {
+	  if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("england", "ireland") < 5) {
+	      if (space.key == "ireland") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "ireland") { return 1; }
+	    }
+	  }
+          if (space.besieged != 0) { return 0; }
+          if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+          if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
+	  return 0;
+        },
+
+        function(destination_spacekey) {
+  	  his_self.updateStatus("acknowledge...");
+          for (let i = 0; i < num; i++) {
+	    his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
+	  }
+	  his_self.endTurn();
+        },
+
+        null,
+
+        true
+
+      );
+
+    });
+
+  
     his_self.playerSelectSpaceWithFilter(
 
       "Select Destination for Mercenary",
@@ -4360,11 +4421,93 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "regular") == 0) { return false; }
 
     return 1;
   }
-  async playerBuyRegular(his_self, player, faction) {
+  async playerBuyRegular(his_self, player, faction, ops_to_spend, ops_remaining) {
 
+    //
+    // UI for multiple-unit builds
+    //
+    his_self.build_overlay.render(faction, "regular", (parseInt(ops_remaining)+parseInt(ops_to_spend)), parseInt(ops_to_spend), (num, costs) => {
+
+      //
+      // modify "continue" instruction if this is a move over a pass
+      //
+      for (let i = 0; i < his_self.moves.length; i++) {
+        let x = his_self.moves[i];
+        let y = x.split("\t");
+        let new_ops_remaining = (parseInt(ops_remaining)+parseInt(ops_to_spend)) - (num*costs);
+        if (y[0] === "continue") {
+          if (new_ops_remaining) {
+            his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+          } else {
+            his_self.moves.splice(i, 1);
+          }
+        }
+      }
+
+      //
+      // and select destination for these units
+      //
+      his_self.playerSelectSpaceWithFilter(
+
+        `Select Destination for ${num} Regular(s)`,
+
+        function(space) {
+  	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
+	      if (space.key == "persia") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "persia") { return 1; }
+	    }
+	  }
+	  if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "egypt") < 5) {
+	      if (space.key == "egypt") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "egypt") { return 1; }
+	    }
+	  }
+	  if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("england", "ireland") < 5) {
+	      if (space.key == "ireland") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "ireland") { return 1; }
+	    }
+	  }
+          if (space.besieged != 0) { return 0; }
+          if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+          if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
+	  return 0;
+        },
+
+        function(destination_spacekey) {
+	  his_self.updateStatus("acknowledge...");
+	  for (let z = 0; z < num; z++) {
+	    his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
+	  }
+	  his_self.endTurn();
+        },
+
+        null,
+
+        true
+
+      );
+
+      return 0;
+
+    });
+            
+
+    //
+    // fall through is to build a single regular
+    //
     his_self.playerSelectSpaceWithFilter(
 
       "Select Destination for Regular",
@@ -4417,6 +4560,7 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "squadron") == 0) { return false; }
 
     return 1;
   }
@@ -4906,10 +5050,76 @@ return;
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "cavalry") == 0) { return false; }
 
     return 1;
   }
-  async playerBuyCavalry(his_self, player, faction) {
+  async playerBuyCavalry(his_self, player, faction, ops_to_spend, ops_remaining) {
+
+    //
+    // ui for building multiple units
+    //
+    his_self.build_overlay.render(faction, "cavalry", (parseInt(ops_remaining)+parseInt(ops_to_spend)), parseInt(ops_to_spend), (num, costs) => {
+
+      //
+      // modify "continue" instruction if this is a move over a pass
+      //
+      for (let i = 0; i < his_self.moves.length; i++) {
+        let x = his_self.moves[i];
+        let y = x.split("\t");
+        let new_ops_remaining = (parseInt(ops_remaining)+parseInt(ops_to_spend)) - (num*costs);
+        if (y[0] === "continue") {
+          if (new_ops_remaining) {
+            his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
+          } else {
+            his_self.moves.splice(i, 1);
+          }
+        }
+      }
+
+      //
+      // and place
+      //
+      his_self.playerSelectSpaceWithFilter(
+
+        `Select Destination for ${num} Cavalry`,
+
+        function(space) {
+  	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
+	      if (space.key == "persia") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "persia") { return 1; }
+	    }
+	  }
+	  if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) {
+	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "egypt") < 5) {
+	      if (space.key == "egypt") { return 1; }
+	      else { return 0; }
+	    } else {
+	      if (space.key == "egypt") { return 1; }
+	    }
+	  }
+          if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+          if (space.owner === faction) { return 1; }
+          if (space.home === faction) { return 1; }
+	  return 0;
+        },
+
+        function(destination_spacekey) {
+	  his_self.updateStatus("acknowledge...");
+	  his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
+	  his_self.endTurn();
+        },
+
+        null,
+
+        true
+
+      );
+
+    });
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -4950,11 +5160,12 @@ return;
 
     );
   }
-  canPlayerBuildCorsair(his_self, player, faction) {
+  canPlayerBuyCorsair(his_self, player, faction) {
     if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) { return 1; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "corsair") == 0) { return false; }
     return 0;
   }
-  async playerBuildCorsair(his_self, player, faction) {
+  async playerBuyCorsair(his_self, player, faction) {
 
     his_self.playerSelectSpaceWithFilter(
 

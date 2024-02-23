@@ -37,7 +37,14 @@ tries to be as faithful as possible, but makes the following simplifications:
  - the game engine will automatically arrange unit tokens on the board whenever
    the board is displayed in order to maximize the availability of small-
    denomination units. this removes most of the complexity around unit management
-   at the cost of making some of the rules here less visible to new players.
+   at the cost of making some of the rules here less visible to new players. 
+
+ - because unit denominations are auto-handled, there are situations in which 
+   too many units will be visible on the board (such as a 4-unit piece which 
+   takes damage without available replacements). In these cases, the game 
+   does not destroy existing units, but prevents construction of new pieces 
+   until the player is "under-capacity" again. This can be done by having the 
+   player manually move pieces to combine them into larger denominations.
 
 
 BUG REPORTING
