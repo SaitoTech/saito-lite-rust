@@ -37495,6 +37495,8 @@ console.log("PROPOSAL: "+ JSON.stringify(proposal));
     let my_spaces = {};
     let available_units = {};
         available_units['regular'] = {};
+        available_units['squadron'] = {};
+        available_units['cavalry'] = {};
     let deployed_units = {};
 
     //
