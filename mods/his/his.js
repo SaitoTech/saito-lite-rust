@@ -13182,12 +13182,10 @@ console.log("HITS: " + hits);
 	      let space = his_self.game.spaces[spacekey];
 	      let attacker = "";
 
-console.log("TESTING: " + JSON.stringify(space.units));
-
 	      for (let key in space.units) {
 		for (let i = 0; i < space.units[key].length; i++) {
 		  if (space.units[key][i].besieged == 0) {
-		    attacker = space.units[key][i].owner;
+		    attacker = key;
 		    if (attacker == "protestant" || attacker == "papacy" || attacker == "hapsburg" || attacker == "ottoman" || attacker == "england" || attacker == "france") { break; }
 		  }
 		}
@@ -17986,7 +17984,7 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
   }
 
   isActivatedPower(faction, activated_power) {
-    if (this.game.state.activated_powers[faction1].includes(activated_power)) {
+    if (this.game.state.activated_powers[faction].includes(activated_power)) {
       return 1;
     }
     return 0;
@@ -20295,7 +20293,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("show_overlay\twelcome\tengland");
 	    this.game.queue.push("show_overlay\twelcome\tfrance");
 	    this.game.queue.push("show_overlay\twelcome\tottoman");
-	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
       	    this.game.queue.push("READY");
 	  }
 
@@ -20581,13 +20579,15 @@ if (this.game.options.scenario == "is_testing") {
 	    for (let key in this.game.spaces[i].units) {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
-		// && clause permits Hapsburgs in Tunis for instance
-		// space is NOT fortified AND controlled by me
-		// i am not protestant and this is not an electorate and league isn't active
-		// someone controls the faction in question
-		//  the space isn't controlled by the faction
-		// if (space_is_not_fortified AND i_do_not_control_it)
-		if ( (!this.isSpaceFortified(space)) && (!this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))) {
+		// space is fortified but i don't control it, OR
+		// space is not fortified
+		// AND
+		// i am protestant and this is an electorate and league has not formed
+		if (  
+			((this.isSpaceFortified(space) && !this.isSpaceControlled(key, i)) || (!this.isSpaceFortified(space)))
+			&& 
+			(key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)
+		) {
 
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
@@ -22669,15 +22669,11 @@ console.log("in fortification check... attacker " + attacker);
 	    let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
   	      if (io[i] !== attacker) {
-  console.log("# not attacker");
 	        let units_in_space = this.returnFactionLandUnitsInSpace(io[i], spacekey);
 	        if (units_in_space > 0) {
-  console.log("# have units in space");
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
-  console.log("# can we retreat? " + fluis);
 	            if (fluis > 0) {
-  console.log("# yes we can!");
 	              let x = "player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i];
 		      if (this.game.queue[this.game.queue.length-1] !== x) {
 	                this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
@@ -30738,6 +30734,22 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
       }
     }
 
+
+    let f = [];
+    if (factions["protestant"]) { f.push("protestant"); }
+    if (factions["papacy"]) { f.push("papacy"); }
+    if (factions["hapsburg"]) { f.push("hapsburg"); }
+    if (factions["ottoman"]) { f.push("ottoman"); }
+    if (factions["france"]) { f.push("france"); }
+    if (factions["england"]) { f.push("england"); }
+
+console.log("FACTION SELECTION");
+console.log(": ");
+console.log(": ");
+console.log(": ");
+console.log(": " + JSON.stringify(factions));
+console.log(": ");
+
     for (let i = 0; i < num; i++) {
 
       if (i == 0) { col = "color1"; }
@@ -30747,8 +30759,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
       if (i == 4) { col = "color5"; }
       if (i == 5) { col = "color6"; }
 
-      var keys = Object.keys(factions);
-      let rf = keys[this.rollDice(keys.length) - 1];
+
+      let rf = "";
+      
 
       if (i == 0) {
         if (this.game.options.player1 != undefined) {
@@ -30793,8 +30806,18 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
         }
       }
 
-      delete factions[rf];
+      if (rf == "") {
+        let dr = this.rollDice(f.length) - 1;
+	rf = f[dr];
+      }
 
+      for (let z = 0; z < f.length; z++) {
+	if (f[z] === rf) {
+	  f.splice(z, 1);
+	}
+      }
+
+      delete factions[rf];
 
       players[i] = {};
       players[i].tmp_debaters_committed_reformation = 0;
@@ -36266,11 +36289,11 @@ return;
     if (faction === "papacy") { return 1; }
     return 0;
   }
-  async playerBurnBooksMaryI(his_self, player, faction, mary_i=1) {
-    return this.playerBurnBooks(his_self, player, faction, 1);
+  async playerBurnBooksMaryI(his_self, player, faction, ops_to_spend, ops_remaining, mary_i=1) {
+    return this.playerBurnBooks(his_self, player, faction, ops_to_spend, ops_remaining, 1);
     return 0;
   }
-  async playerBurnBooks(his_self, player, faction, mary_i=0) {
+  async playerBurnBooks(his_self, player, faction, ops_to_spend, ops_remaining, mary_i=0) {
 
     let msg = "Select Language Zone for Counter Reformations";
     let html = '<ul>';

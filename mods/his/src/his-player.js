@@ -31,6 +31,22 @@
       }
     }
 
+
+    let f = [];
+    if (factions["protestant"]) { f.push("protestant"); }
+    if (factions["papacy"]) { f.push("papacy"); }
+    if (factions["hapsburg"]) { f.push("hapsburg"); }
+    if (factions["ottoman"]) { f.push("ottoman"); }
+    if (factions["france"]) { f.push("france"); }
+    if (factions["england"]) { f.push("england"); }
+
+console.log("FACTION SELECTION");
+console.log(": ");
+console.log(": ");
+console.log(": ");
+console.log(": " + JSON.stringify(factions));
+console.log(": ");
+
     for (let i = 0; i < num; i++) {
 
       if (i == 0) { col = "color1"; }
@@ -40,8 +56,9 @@
       if (i == 4) { col = "color5"; }
       if (i == 5) { col = "color6"; }
 
-      var keys = Object.keys(factions);
-      let rf = keys[this.rollDice(keys.length) - 1];
+
+      let rf = "";
+      
 
       if (i == 0) {
         if (this.game.options.player1 != undefined) {
@@ -86,8 +103,18 @@
         }
       }
 
-      delete factions[rf];
+      if (rf == "") {
+        let dr = this.rollDice(f.length) - 1;
+	rf = f[dr];
+      }
 
+      for (let z = 0; z < f.length; z++) {
+	if (f[z] === rf) {
+	  f.splice(z, 1);
+	}
+      }
+
+      delete factions[rf];
 
       players[i] = {};
       players[i].tmp_debaters_committed_reformation = 0;
@@ -5559,11 +5586,11 @@ return;
     if (faction === "papacy") { return 1; }
     return 0;
   }
-  async playerBurnBooksMaryI(his_self, player, faction, mary_i=1) {
-    return this.playerBurnBooks(his_self, player, faction, 1);
+  async playerBurnBooksMaryI(his_self, player, faction, ops_to_spend, ops_remaining, mary_i=1) {
+    return this.playerBurnBooks(his_self, player, faction, ops_to_spend, ops_remaining, 1);
     return 0;
   }
-  async playerBurnBooks(his_self, player, faction, mary_i=0) {
+  async playerBurnBooks(his_self, player, faction, ops_to_spend, ops_remaining, mary_i=0) {
 
     let msg = "Select Language Zone for Counter Reformations";
     let html = '<ul>';

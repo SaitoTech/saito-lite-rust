@@ -10041,12 +10041,10 @@ console.log("HITS: " + hits);
 	      let space = his_self.game.spaces[spacekey];
 	      let attacker = "";
 
-console.log("TESTING: " + JSON.stringify(space.units));
-
 	      for (let key in space.units) {
 		for (let i = 0; i < space.units[key].length; i++) {
 		  if (space.units[key][i].besieged == 0) {
-		    attacker = space.units[key][i].owner;
+		    attacker = key;
 		    if (attacker == "protestant" || attacker == "papacy" || attacker == "hapsburg" || attacker == "ottoman" || attacker == "england" || attacker == "france") { break; }
 		  }
 		}

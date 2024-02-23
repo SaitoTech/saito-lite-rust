@@ -195,7 +195,7 @@
   }
 
   isActivatedPower(faction, activated_power) {
-    if (this.game.state.activated_powers[faction1].includes(activated_power)) {
+    if (this.game.state.activated_powers[faction].includes(activated_power)) {
       return 1;
     }
     return 0;

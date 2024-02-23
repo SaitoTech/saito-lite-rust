@@ -189,7 +189,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("show_overlay\twelcome\tengland");
 	    this.game.queue.push("show_overlay\twelcome\tfrance");
 	    this.game.queue.push("show_overlay\twelcome\tottoman");
-	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
       	    this.game.queue.push("READY");
 	  }
 
@@ -475,13 +475,15 @@ if (this.game.options.scenario == "is_testing") {
 	    for (let key in this.game.spaces[i].units) {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
-		// && clause permits Hapsburgs in Tunis for instance
-		// space is NOT fortified AND controlled by me
-		// i am not protestant and this is not an electorate and league isn't active
-		// someone controls the faction in question
-		//  the space isn't controlled by the faction
-		// if (space_is_not_fortified AND i_do_not_control_it)
-		if ( (!this.isSpaceFortified(space)) && (!this.isSpaceControlled(key, i)) && ((key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))) {
+		// space is fortified but i don't control it, OR
+		// space is not fortified
+		// AND
+		// i am protestant and this is an electorate and league has not formed
+		if (  
+			((this.isSpaceFortified(space) && !this.isSpaceControlled(key, i)) || (!this.isSpaceFortified(space)))
+			&& 
+			(key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)
+		) {
 
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
@@ -2563,15 +2565,11 @@ console.log("in fortification check... attacker " + attacker);
 	    let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
   	      if (io[i] !== attacker) {
-  console.log("# not attacker");
 	        let units_in_space = this.returnFactionLandUnitsInSpace(io[i], spacekey);
 	        if (units_in_space > 0) {
-  console.log("# have units in space");
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
-  console.log("# can we retreat? " + fluis);
 	            if (fluis > 0) {
-  console.log("# yes we can!");
 	              let x = "player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i];
 		      if (this.game.queue[this.game.queue.length-1] !== x) {
 	                this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
