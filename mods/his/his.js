@@ -13231,6 +13231,11 @@ console.log("HITS: " + hits);
 	    }
 	  }
 
+console.log("attacker is: " + attacker);
+console.log("defender is: " + defender);
+console.log("total attackers: " + total_attackers);
+console.log("total defenders: " + total_defenders);
+
 	  if (total_defenders < total_attackers) {
 	    his_self.game.queue.push(`control\t${attacker}\t${spacekey}`);
 	    his_self.updateLog(his_self.popup("105") + " - besiegers capture defenders and control space");
@@ -20167,9 +20172,7 @@ if (this.game.options.scenario != "is_testing") {
 
 	  if (this.game.players.length == 2) {
 	    //this.game.queue.push("diplomacy_phase");
-	    if (this.game.state.round != 1 && this.game.state.scenario != "is_testing") {
-	      this.game.queue.push("diplomacy_phase_2P");
-	    }
+	    this.game.queue.push("diplomacy_phase_2P");
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
@@ -22147,8 +22150,10 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		  let f = this.returnFactionControllingSpace(space.key);
 		  if (this.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {
  		    if (!this.areAllies(f, faction) && f !== faction) {
-	 	      space.besieged = 2;
-		      this.displaySpace(space.key);
+		      if (space.besieged != 1) { // not if already besieged
+	 	        space.besieged = 2;
+		        this.displaySpace(space.key);
+		      }
 		    }
 		  }
 	        }
@@ -22341,8 +22346,10 @@ console.log("in fortification check... attacker " + attacker);
 	    // immediately besiege if a key
 	    //
 	    if (space.type === "fortress" || space.type === "electorate" || space.type === "key") {
-              space.besieged = 2; // 2 = cannot attack this round
-              space.besieged_factions.push(faction);
+	      if (space.besieged != 1) { // not if already besieged
+                space.besieged = 2; // 2 = cannot attack this round
+                space.besieged_factions.push(faction);
+	      }
 	    }
 	    this.displaySpace(spacekey);
 	    return 1;
@@ -22484,8 +22491,10 @@ console.log("in fortification check... attacker " + attacker);
 	  let unit_idx = parseInt(mv[3]);
 	  let space = this.game.spaces[spacekey];
 
-          space.besieged = 2; // 2 = cannot attack this round
-          space.besieged_factions.push(faction);
+	  if (space.besieged != 1) { // not if already besieged
+            space.besieged = 2; // 2 = cannot attack this round
+            space.besieged_factions.push(faction);
+	  }
 	  space.units[faction][unit_idx].besieged = 1;
 
 	  this.displaySpace(spacekey);
@@ -22503,8 +22512,10 @@ console.log("in fortification check... attacker " + attacker);
 	  let units = JSON.parse(mv[3]);
 	  let space = this.game.spaces[spacekey];
 
-          space.besieged = 2; // 2 = cannot attack this round
-          space.besieged_factions.push(faction);
+	  if (space.besieged != 1) { // not if already besieged
+            space.besieged = 2; // 2 = cannot attack this round
+            space.besieged_factions.push(faction);
+	  }
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    space.units[faction][i].besieged = 1;
 	  }
@@ -22638,8 +22649,22 @@ console.log("in fortification check... attacker " + attacker);
 
 	  let faction = mv[1];
 	  let spacekey = mv[2];
+	  let space = this.game.spaces[spacekey];
 	
 	  let player = this.returnPlayerCommandingFaction(faction);
+
+	  //
+	  // if the player is the attacker, not the defender we want
+	  // to skip this completely.
+	  //
+	  let anyone_besieged = 0;
+	  for (let z = 0; z < space.units[faction].length; z++) {
+	    if (space.units[faction][z].besieged > 0) { anyone_besieged = 1; }
+	  }
+	  //
+	  // pass through if attacker (not besieged)
+	  //
+	  if (anyone_besieged == 0) { return 1; }
 
 	  if (this.game.player == player) {
 	    this.playerEvaluateReliefForce(faction, spacekey);
@@ -24419,9 +24444,11 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	  // siege.
 	  //
 	  if (defender_units.length <= 1 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
-	    space.besieged = 2;
+	    if (space.besieged != 1) { // not if already besieged
+	      space.besieged = 2;
+	      this.updateLog(space.name + " put under siege.");
+	    }
 	    this.displaySpace(space.key);
-	    this.updateLog(space.name + " put under siege.");
 	    return 1;	    
 	  }
 

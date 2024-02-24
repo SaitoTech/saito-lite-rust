@@ -10090,6 +10090,11 @@ console.log("HITS: " + hits);
 	    }
 	  }
 
+console.log("attacker is: " + attacker);
+console.log("defender is: " + defender);
+console.log("total attackers: " + total_attackers);
+console.log("total defenders: " + total_defenders);
+
 	  if (total_defenders < total_attackers) {
 	    his_self.game.queue.push(`control\t${attacker}\t${spacekey}`);
 	    his_self.updateLog(his_self.popup("105") + " - besiegers capture defenders and control space");
