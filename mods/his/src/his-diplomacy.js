@@ -8,54 +8,63 @@
       name : "End War",
       check : this.canPlayerEndWar,
       fnct : this.playerEndWar,
+      img : "diplomacy.png" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Form Alliance",
       check : this.canPlayerFormAlliance,
       fnct : this.playerFormAlliance,
+      img : "diplomacy.png" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Loan Squadrons",
       check : this.canPlayerLoanSquadrons,
       fnct : this.playerLoanSquadrons,
+      img : "squadrons.jpg" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Form Alliance",
       check : this.canPlayerReturnCapturedArmyLeader,
       fnct : this.playerReturnCapturedArmyLeader,
+      img : "diplomacy.png" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Yield Territory",
       check : this.canPlayerYieldTerritory,
       fnct : this.playerYieldTerritory,
+      img : "diplomacy.png" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Issue Cards",
       check : this.canPlayerIssueCards,
       fnct : this.playerIssueCards,
+      img : "the-card-players.jpg" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Give Mercenaries",
       check : this.canPlayerGiveMercenaries,
       fnct : this.playerGiveMercenaries,
+      img : "mercenary.jpg" ,
     });
     menu.push({
       factions : ['papacy'],
-      name : "Give Mercenaries",
+      name : "Approve Divorce",
       check : this.canPlayerApproveDivorce,
       fnct : this.playerApproveDivorce,
+      img : "papal_decree.jpg" ,
     });
     menu.push({
       factions : ['papacy'],
       name : "Rescind Excommunication",
       check : this.canPlayerRescindExcommunication,
       fnct : this.playerRescindExcommunication,
+      img : "excommunication.jpg" ,
     });
 
     return menu;
@@ -68,14 +77,12 @@
     let proposal = this.game.state.diplomacy[proposal_idx];
     let text = [];
 
-console.log("PROPOSAL: "+ JSON.stringify(proposal));
-
     for (let i = 0; i < proposal.terms.length; i++) {
 
       let x = proposal.terms[i].split("\t");
 
-      if (x[0] === "end_war") {
-	text.push(`${this.returnFactionName(x[1])} and ${this.returnFactionName(x[1])} agree to peace.`);
+      if (x[0] === "declare_peace" || x[0] === "end_war") {
+	text.push(`${this.returnFactionName(x[1])} and ${this.returnFactionName(x[1])} end their war.`);
       }
       if (x[0] === "alliance") {
 	text.push(`${this.returnFactionName(x[1])} and ${this.returnFactionName(x[1])} agree to ally.`);

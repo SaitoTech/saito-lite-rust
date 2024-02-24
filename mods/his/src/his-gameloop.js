@@ -63,9 +63,9 @@ if (this.game.options.scenario != "is_testing") {
 
 	  if (this.game.players.length == 2) {
 	    //this.game.queue.push("diplomacy_phase");
-	    //if (this.game.state.round != 1 && this.game.state.scenario != "is_testing") {
+	    if (this.game.state.round != 1 && this.game.state.scenario != "is_testing") {
 	      this.game.queue.push("diplomacy_phase_2P");
-	    //}
+	    }
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
@@ -8376,9 +8376,12 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
         if (mv[0] === "diplomacy_reject") {
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
+
+console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
+
 	  let idx = parseInt(mv[2]);
 	  let proposal = this.game.state.diplomacy[idx];
-	  let terms = this.convertTermsToText(proposal);
+	  let terms = this.convertTermsToText(idx);
 	  for (let i = terms.length-1; i >= 0; i--) { this.updateLog("  "+terms[i]); }
 	  this.updateLog(this.returnFactionName(faction) + " rejects " + this.returnFactionName(proposal.proposer) + " offer:");
 	  this.game.state.diplomacy.splice(idx, 1);
@@ -8429,19 +8432,19 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  this.game.state.diplomacy.push({
 	    parties 	: ["papacy", "protestant"] ,
 	    confirms 	: [0,0] ,
-	    terms 	: ["end_war\tpapacy\tprotestant"] ,
+	    terms 	: ["declare_peace\tpapacy\tprotestant"] ,
 	    proposer 	: "england",
 	  });
 
 	  if (this.game.players.length == 2) {
-	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"protestant");
-	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+"papacy");
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tprotestant");
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tpapacy");
 	    return 1;
 	  }
 
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
-	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+it[i]);
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
 	  }
 
 	  return 1;
@@ -8814,6 +8817,21 @@ if (this.game.state.round == 2) {
 
 	}
 
+
+	if (mv[0] === "declare_peace" || mv[0] === "set_peace" || mv[0] === "end_war") {
+
+	  let f1 = mv[1];
+	  let f2 = mv[2];
+
+  	  this.unsetEnemies(f1, f2);
+	  this.game.queue.splice(qe, 1);
+
+	  this.displayWarBox();
+
+	  return 1;
+
+	}
+
 	if (mv[0] === "declare_war" || mv[0] === "set_enemies") {
 
 	  let f1 = mv[1];
@@ -8821,6 +8839,7 @@ if (this.game.state.round == 2) {
 
   	  this.setEnemies(f1, f2);
 	  this.game.queue.splice(qe, 1);
+	  this.displayWarBox();
 
 	  return 1;
 
@@ -8985,6 +9004,17 @@ if (this.game.options.scenario != "is_testing") {
 	      reshuffle_cards[key] = discards[key];
 	    }
 	  }
+
+	  //
+	  // remove any removed cards (i.e. Clement VII)
+	  //
+	  for (let z = 0; z < this.game.state.removed.length; z++) {
+	    let key = this.game.state.removed[z];
+	    if (reshuffle_cards[key]) { delete reshuffle_cards[key]; }
+	    if (this.game.deck[0].cards[key]) { delete this.game.deck[0].cards[key]; }
+	  }
+
+
 
 	  //
 	  // remove home cards 
