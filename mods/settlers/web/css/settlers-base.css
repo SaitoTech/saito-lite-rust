@@ -135,25 +135,26 @@ dt {
 /* gameboard == ocean, the "board" that gets resized is #hexgrid */
 .gameboard {
 	position: absolute;
-	width: 100%;
-	height: 100%;
-	transition: background 2s;
-	background: linear-gradient(-75deg, #369, #58b, #58b, #369);
-	background-size: 100% 100%;
-	background-blend-mode: multiply;
+    width: 100%;
+    height: 100%;
+    transition: background 2s;
+    background-size: cover;
+    background-blend-mode: multiply;
+    background-image: url(../img/settlers-ocean.svg);
+    background-position: center;
 }
 
 #game-hexgrid {
 	transform-origin: center;
 	z-index: 2;
-	width: 1000px;
-	padding: 10% 5% 15%;
-	/*Creates space for board overflow*/
-	padding: 150px 135px 350px;
-	box-sizing: content-box;
-	border-radius: 400px;
-	cursor: grab;
-	background-color: rgba(200, 200, 240, 0.1);
+    width: 1000px;
+    padding: 150px 135px 350px;
+    box-sizing: content-box;
+    cursor: grab;
+    background-image: url(../img/settlers-beach.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: 0px 50px;
 }
 
 .player-box {
