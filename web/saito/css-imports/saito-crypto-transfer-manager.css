@@ -193,6 +193,7 @@ input[type="checkbox"].ignore_checkbox {
   align-items: center;
   height: fit-content;
   font-size: 1.5rem;
+  cursor: default;
 }
 
 .transfer-details .saito-identicon-box .saito-identicon {
