@@ -6157,14 +6157,14 @@ console.log("spacekey: " + spacekey);
 	  //
 	  let attacker_sea_units_remaining = 0;
 	  let defender_sea_units_remaining = 0;
-	  for (let z = 0; z < this.game.navalspaces[space.key].units[attacker_faction].length; z++) {
-	    let u = this.game.navalspaces[space.key].units[attacker_faction][z];
+	  for (let z = 0; z < space.units[attacker_faction].length; z++) {
+	    let u = space[space.key].units[attacker_faction][z];
    	    if (u.type == "squadron" || u.type == "corsair") {
 	      attacker_sea_units_remaining++;
 	    }
 	  }
-	  for (let z = 0; z < this.game.navalspaces[space.key].units[defender_faction].length; z++) {
-	    let u = this.game.navalspaces[space.key].units[defender_faction][z];
+	  for (let z = 0; z < space.units[defender_faction].length; z++) {
+	    let u = space[space.key].units[defender_faction][z];
    	    if (u.type == "squadron" || u.type == "corsair") {
 	      defender_sea_units_remaining++;
 	    }
@@ -6206,7 +6206,6 @@ console.log("spacekey: " + spacekey);
 	  this.displayNavalSpace(space.key);
 
 	  this.updateLog("Winner: "+this.returnFactionName(winner));
-
 	  this.updateLog("Attacker Units Remaining: "+attacker_sea_units_remaining);
 	  this.updateLog("Defender Units Remaining: "+defender_sea_units_remaining);
 
