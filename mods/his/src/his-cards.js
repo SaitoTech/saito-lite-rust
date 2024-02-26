@@ -2630,7 +2630,7 @@ alert("HERE");
 	      }
 	      his_self.addEndMove("excommunicate_reformer\t"+selected_reformer);
 
-              let msg = "Convene Theological Debate?";
+              let msg = "Convene Theological Debate after Excommunication?";
               let html = '<ul>';
               html += `<li class="option" id="yes">yes</li>`;
               html += `<li class="option" id="no">no</li>`;
@@ -4913,7 +4913,7 @@ console.log("008 eventing!");
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu == "assault") {
+        if (menu == "field_battle") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
@@ -4926,7 +4926,7 @@ console.log("008 eventing!");
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
-        if (menu == "assault") {
+        if (menu == "field_battle") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
               return 1;
@@ -4936,7 +4936,7 @@ console.log("008 eventing!");
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
-        if (menu == "assault") {
+        if (menu == "field_battle") {
           player = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.state.active_player === player) {
 	    player.tmp_roll_first = 1;

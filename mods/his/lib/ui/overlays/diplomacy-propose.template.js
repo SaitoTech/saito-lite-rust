@@ -1,17 +1,18 @@
-module.exports = DiplomacyProposeTemplate = (obj, proposals_html="") => {
+module.exports = DiplomacyProposeTemplate = (obj) => {
 
 	let his_self = obj.mod;
 
 	let html = `
-	  <div class="diplomacy-proposal-overlay">
+	  <div class="diplomacy-propose-overlay">
 	    <div class="help"></div>
-	    <div class="content">${proposals_html}</div>
-	    <div class="menu"></div>
+	    <div class="content">you have made no proposals</div>
+	    <div class="menu m4entries hide-scrollbar"></div>
 	    <div class="buttons">
-	      <div class="mainmenu add" id="add">add proposal</div>
-	      <div class="mainmenu end" id="end">end diplomacy</div>
-	      <div class="submenu also" id="also">also require...</div>
-	      <div class="submenu finish" id="finish">finish proposal</div>
+	      <div class="mainmenu add" id="add">create new proposal</div>
+	      <div class="mainmenu end" id="end">finish diplomacy phase</div>
+	      <div class="submenu also" id="also">add another requirement...</div>
+	      <div class="submenu finish" id="finish">accept and submit proposal</div>
+	      <div class="submenu delete" id="delete">delete (return to main menu)</div>
 	    </div>
 	  </div>
 	`;

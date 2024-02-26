@@ -330,7 +330,7 @@
     //
     if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
       defender = this.returnControllingPower(defender);
-    }         
+    }
 
     //
     // defender now controlling power or itself

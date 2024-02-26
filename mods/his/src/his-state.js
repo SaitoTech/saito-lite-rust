@@ -559,6 +559,25 @@ if (this.game.options.scenario != "is_testing") {
     return 0;
   }
 
+  returnDiplomacyImpulseOrder(faction="") {
+    if (faction == "ottoman") {
+      return ["hapsburg","england","france","papacy","protestant"];
+    }
+    if (faction == "hapsburg") {
+      return ["england","france","papacy","protestant"];
+    }
+    if (faction == "england") {
+      return ["france","papacy","protestant"];
+    }
+    if (faction == "france") {
+      return ["papacy","protestant"];
+    }
+    if (faction == "papacy") {
+      return ["protestant"];
+    }
+    return [];
+  }
+
   returnImpulseOrder() {
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }

@@ -282,7 +282,7 @@ console.log("SELECTED FACTION: " + rf);
       }
     }
     let z = this.returnPlayerCommandingFaction(faction);
-    if (z) { return this.game.players_info[z-1]; }
+    if (z) { return this.game.state.players_info[z-1]; }
     return 0;
   }
 
@@ -5459,11 +5459,6 @@ return;
     }
   }
   canPlayerCallTheologicalDebate(his_self, player, faction, mary_i=0) {
-//
-// TODO
-//
-// If all Protestant debaters in a language zone are committed, the Protestant player may not initiate debates in that language zone. Similarly, if all Papal debaters are committed, the Papal player may not initiate debates in any language zone. If none of the Protestant debaters for a language zone have entered the game (or all of them have been burnt at the stake, excommuni- cated, or removed from play), neither player may call a debate in that zone. 
-//
     if (his_self.returnNumberOfUncommittedDebaters(faction) <= 0) { return 0; }
     if (his_self.game.state.events.wartburg == 1) { if (faction === "protestant") { return 0; } }
     if (faction === "protestant") { return 1; }
@@ -5536,6 +5531,9 @@ return;
       $('.option').off();
       $('.option').on('mouseover', function () {
         let action2 = $(this).attr("id");
+	if (action2 === "uncommitted" || action2 === "committed") {
+alert("mouseover in action!");
+	}
         his_self.cardbox.show(action2);
       });
       $('.option').on('mouseout', function () {

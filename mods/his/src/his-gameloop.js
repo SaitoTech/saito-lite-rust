@@ -63,7 +63,9 @@ if (this.game.options.scenario != "is_testing") {
 
 	  if (this.game.players.length == 2) {
 	    //this.game.queue.push("diplomacy_phase");
-	    this.game.queue.push("diplomacy_phase_2P");
+	    //if (this.game.options.scenario != "is_testing") {
+	      this.game.queue.push("diplomacy_phase_2P");
+	    //}
 	  } else {
 	    this.game.queue.push("diplomacy_phase");
 	  }
@@ -385,6 +387,7 @@ if (this.game.options.scenario == "is_testing") {
 	  let power = mv[2];
 
 	  this.activateMinorPower(faction, power);
+	  this.updateLog(this.returnFactionName(faction) + " now controls " + this.returnFactionName(power));
 	  this.displayBoard();
 
 	  this.game.queue.splice(qe, 1);
@@ -418,6 +421,7 @@ if (this.game.options.scenario == "is_testing") {
 	  let power = mv[2];
 
 	  this.deactivateMinorPower(faction, power);
+	  this.updateLog(this.returnFactionName(faction) + " no longer controls " + this.returnFactionName(power));
 	  this.displayBoard();
 
 	  this.game.queue.splice(qe, 1);
@@ -1609,12 +1613,11 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  this.setAllies("protestant", "france");
 	  this.setAllies("protestant", "ottoman");
 	  this.setAllies("papacy", "hapsburg");
-	  //this.setAllies("papacy", "hapsburg");
-	  this.setAllies("papacy", "genoa");
 	  this.setAllies("papacy", "venice");
 
 	  this.addRegular("venice", "ravenna", 1);
 	  this.addRegular("papacy", "turin", 4);
+	  this.addRegular("genoa", "genoa", 2);
 
 	  this.setEnemies("papacy", "france");
 	  this.addRegular("france","milan", 1);
@@ -1648,7 +1651,9 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 
 	  this.setAllies("papacy", "hapsburg");
 	  this.setActivatedPower("papacy", "hapsburg");
+          this.setActivatedPower("hapsburg", "genoa");
 	  this.setActivatedPower("protestant", "france");
+	  this.controlSpace("hapsburg", "genoa");
 
           this.addReformer("protestant", "modena", "zwingli-reformer");
 
@@ -1660,15 +1665,15 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  this.addMercenary("ottoman", "bucharest", 2);
 	  this.addRegular("ottoman","athens", 3);
 	  this.addRegular("ottoman","istanbul", 3);
-//	  this.addCard("papacy", "102");
+	  this.addCard("papacy", "102");
 //	  this.addCard("ottoman", "110");
 //	  this.addCard("protestant", "031");
-//	  this.addCard("protestant", "032");
+	  this.addCard("protestant", "105");
 //	  this.addCard("papacy", "033");
 //	  this.addCard("papacy", "035");
 
-//	  let deck = this.returnDeck();
-//	  deck['013'].onEvent(this, "protestant");
+	  let deck = this.returnDeck();
+	  deck['013'].onEvent(this, "protestant");
 
 	  this.game.spaces["florence"].units["independent"] = [];
 
@@ -1726,6 +1731,14 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 
 
+	if (mv[0] === "diplomacy_submit_proposal") {
+	  let p = JSON.parse(mv[1]);
+	  this.game.state.diplomacy.push(p);
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
+
         if (mv[0] === "diplomacy_card_event") {
 
 	  let faction = mv[1];
@@ -1734,7 +1747,6 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  this.updateStatus(this.returnFactionName(faction) + " plays " + this.popup(card));
           this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
           this.cardbox.hide();
-
 
 	  this.game.queue.splice(qe, 1);
 
@@ -8515,19 +8527,17 @@ console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
 	  }
 
 
-/***	  
 	  //
 	  // there are no proposals left
 	  //
 	  if (player === this.game.player) {
-	    this.updateStatus(this.returnFactionName(faction) + " considering diplomatic proposals");
+	    this.diplomacy_propose_overlay.render(faction);
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " considering diplomatic proposals");
 	  }
-***/
 
 	  this.game.queue.splice(qe, 1);
-	  return 1;
+	  return 0;
 
 	}
 
@@ -8997,7 +9007,8 @@ if (this.game.options.scenario != "is_testing") {
 	  // DECKRESTORE copies backed-up back into deck
 	  //
           this.game.queue.push("SHUFFLE\t1");
-          this.game.queue.push("DECKRESTORE\t1");
+	  // FEB 24
+          //this.game.queue.push("DECKRESTORE\t1");
 
 	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
@@ -9016,6 +9027,15 @@ if (this.game.options.scenario != "is_testing") {
       	    delete this.game.deck[0].cards[i];
     	  }
     	  this.game.deck[0].discards = {};
+
+	  //
+	  // re-add undealt
+	  //
+	  for (let i in this.game.deck[0].cards) {
+	    if (!discards[this.game.deck[0].cards[i]]) {
+      	      discards[i] = this.game.deck[0].cards[i];
+	    }
+    	  }
 
 	  //
 	  // our deck for re-shuffling
@@ -9081,7 +9101,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
 
 	  // backup any existing DECK #1
-          this.game.queue.push("DECKBACKUP\t1");
+          //this.game.queue.push("DECKBACKUP\t1");
 
 
 	  //
