@@ -900,6 +900,7 @@
 
 	    if (action === "grant") {
 	      his_self.updateStatus("Papacy grants divorce...");
+	      his_self.updateLog(`${his_self.popup("207")} - Papacy grants divorce...`);
 	      his_self.addMove("player_call_theological_debate\tpapacy");
 	      his_self.addMove("henry_petitions_for_divorce_grant");
 	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
@@ -909,6 +910,7 @@
 
 	    if (action === "refuse") {
 	      his_self.updateStatus("Papacy refuses divorce...");
+	      his_self.updateLog(`${his_self.popup("207")} - Papacy refuses divorce...`);
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t3");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t2");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t1");
@@ -945,6 +947,7 @@
                 his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
                 his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
                 his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+	        his_self.addMove(`NOTIFY\tHapsburg recruits 4 mercenaries in ${his_self.returnSpaceName(spacekey)}`);
 	        his_self.endTurn();
 	      },
 
@@ -987,6 +990,7 @@
 
               function(spacekey) {
                 his_self.addMove("build\tland\thapsburg\tregular\t"+spacekey);
+	        his_self.addMove(`NOTIFY\tHapsburg add regular in ${his_self.returnSpaceName(spacekey)}`);
           	his_self.endTurn();
               },
 
@@ -7078,7 +7082,7 @@ console.log("008 eventing!");
 	            "Select Second Space to Convert", 
 
 	            function(space2) {
-	              if (space2.key !== first_choice && space2.religion == "protestant" && his_self.isOccupied(space) == 0 && !his_self.isElectorate(space)) {
+	              if (space2.key !== first_choice && space2.religion == "protestant" && his_self.isOccupied(space2.key) == 0 && !his_self.isElectorate(space2.key)) {
 		        return 1;
 	              }
 	              return 0;
@@ -7735,6 +7739,7 @@ console.log("HITS: " + hits);
 	his_self.updateStatus(his_self.returnFactionName(faction) + " playing "+ his_self.popup("076"));
 	let player = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player == player) {
+	  his_self.game.state.events.foreign_recruits = faction;
   	  his_self.playerPlayOps("", faction, 4, "build");
 	}
 
@@ -10188,6 +10193,7 @@ console.log("total defenders: " + total_defenders);
 		      his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
 		    }
 		  }
+		  his_self.addMove(`NOTIFY\t${his_self.popup("106")} destroys all mercenaries in ${his_self.returnSpaceName(spacekey)}`);
 		  his_self.endTurn();
 		});
 

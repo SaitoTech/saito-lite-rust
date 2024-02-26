@@ -4,6 +4,7 @@
     // remove foul weather
     //
     this.game.state.events.foul_weather = 0;
+    this.game.state.events.foreign_recruits = "";
     this.game.state.spring_deploy_across_passes = [];
     this.game.state.spring_deploy_across_seas = [];
     this.game.state.events.spring_preparations = "";
