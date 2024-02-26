@@ -157,6 +157,20 @@
   overflow: hidden;
 }
 
+.withdraw-address-cont {
+  position: relative;
+}
+
+.withdraw-address-cont i {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
 .mixin-withdraw-token-wrapper {
   margin-bottom: 2rem;
 }
@@ -244,6 +258,10 @@
 .mixin-txn-his-container .saito-table-body {
   height: auto;
   margin-top: 1rem;
+}
+
+.mixin-txn-his-container .saito-table-row {
+  cursor: default;
 }
 
 .amount-item-amount {
@@ -352,13 +370,12 @@
   transform: scale(1);
 }
 
-
 .deposit {
   color: #00ae00;
   font-weight: bold;
 }
 
-.withdrawal {
+.withdraw {
   color: #e34927;
   font-weight: bold;
 }
@@ -438,18 +455,6 @@
   font-size: 1.6rem;
   background: var(--saito-background-light);
   border: 1px solid var(--saito-font-color);
-}
-
-/* Hide arrows, Chrome, Safari, Edge, Opera */
-.saito-overlay-form-input input::-webkit-outer-spin-button,
-.saito-overlay-form-input input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-.saito-overlay-form-input input[type=number] {
-  -moz-appearance: textfield;
 }
 
 .withdraw-options-cont {
@@ -613,6 +618,16 @@
 
 .saito-history-msg {
   color: var(--saito-font-color);
+}
+
+.withdraw-error {
+  padding: 0rem 1rem;
+  color: var(--saito-red);
+  display: none;
+}
+
+.withdraw-submit.disabled {
+  cursor: not-allowed;
 }
 
 @keyframes spin {
