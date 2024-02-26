@@ -260,6 +260,10 @@
   margin-top: 1rem;
 }
 
+.mixin-txn-his-container .saito-table-row {
+  cursor: default;
+}
+
 .amount-item-amount {
   flex-grow: 1;
 }
