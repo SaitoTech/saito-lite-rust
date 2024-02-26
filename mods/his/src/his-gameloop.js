@@ -2606,7 +2606,7 @@ console.log("in fortification check... attacker " + attacker);
 	    let can_faction_retreat = 0;
 	    let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
-  	      if (io[i] !== attacker) {
+  	      if (io[i] !== attacker && (io[i] != this.game.state.active_faction && !this.areAllies(this.game.state.active_faction, io[i], 1))) {
 	        let units_in_space = this.returnFactionLandUnitsInSpace(io[i], spacekey);
 	        if (units_in_space > 0) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
@@ -2625,7 +2625,7 @@ console.log("in fortification check... attacker " + attacker);
 
 	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
 	      let ap = this.game.state.activated_powers[io[i]][zz];
-	      if (ap !== attacker && !io.includes(ap) && io[i] != attacker) {
+	      if (ap !== attacker && !io.includes(ap) && io[i] != attacker && !this.areAllies(this.game.state.active_faction, ap)) {
 	        let units_in_space = this.returnFactionLandUnitsInSpace(ap, spacekey);
 	        if (units_in_space > 0) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
@@ -5497,8 +5497,9 @@ console.log("we have made it this far 5!");
             //
             // if the space is besieged and the attacker controls it, this was a field battle triggered by the 
 	    // defender putting it under siege earlier, in which case we want to permit the attacker to re-fortify
+	    // IF there are any attacker units that survived...
 	    //
-            if (this.isSpaceControlled(space.key, his_self.game.state.field_battle.attacker_faction) && space.besieged > 0) {
+            if (this.isSpaceControlled(space.key, his_self.game.state.field_battle.attacker_faction) && space.besieged > 0 && his_self.game.state.active_faction == his_self.game.state.attacker_faction) {
 
 	      // attacker and defender oddly reversed
               this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
@@ -5509,11 +5510,14 @@ console.log("we have made it this far 5!");
               for (let f in his_self.game.state.field_battle.faction_map) {
                 let can_faction_retreat = 0;
                 if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.attacker_faction) {
+		  //
+		  // attacker must retreat into space it entered from -- if controlled by ally
+		  //
                   for (let z = 0; z < space.neighbours.length; z++) {
-                    let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
-                    if (fluis > 0) {
-                      can_faction_retreat = 1;
-                    }
+		    if (space.neighbours[z] == this.game.state.attacker_comes_from_this_spacekey) {
+		      let fac = this.returnFactionControllingSpace(space.neighbours[z]);
+		      if (fac == f || this.areAllies(fac, f)) { can_faction_retreat = 1; }
+		    }
                   }
                   if (can_faction_retreat == 1) {
                     this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
