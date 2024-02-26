@@ -1,0 +1,92 @@
+.diplomacy-confirm-overlay , .diplomacy-propose-overlay {
+	background-image: url(/his/img/backgrounds/diplomacy/ambassadors.jpeg);
+	background-size: cover;
+	max-height: 100vh;
+	max-width: 100vw;
+	width: 100vw;
+	height: 100vh;
+	min-height: 622px;
+	text-align: center;
+	overflow-y: auto;
+	padding-top: 5rem;
+}
+
+.diplomacy-propose-overlay .content ol li ul {
+	display: inline;
+}
+.diplomacy-propose-overlay .content ol {
+	margin-left: 1rem;
+}
+
+.diplomacy-propose-overlay .menu {
+        min-height: min-content;
+	height: max-content;
+        margin-left: auto;
+        margin-right: auto;
+}
+
+.diplomacy-confirm-overlay .help , .diplomacy-propose-overlay .html {
+	background: #0009;
+	width: max-content;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2.4rem;
+	padding: 0.75rem;
+	max-width: 100%;
+	padding: 2rem;
+	line-height: 3.4rem;
+}
+
+.diplomacy-confirm-overlay .content , .diplomacy-propose-overlay .content {
+    padding: 1.5rem;
+    width: max-content;
+    font-size: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background-color: #0009;
+    color: white;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    list-style: none;
+    font-size: 1.8rem;
+}
+
+.diplomacy-confirm-overlay .content ul li , .diplomacy-propose-overlay .content ul li {
+    list-style: none;
+}
+
+.diplomacy-confirm-overlay .buttons , .diplomacy-propose-overlay .buttons {
+        display: flex;
+        column-gap: 10rem;
+        max-width: max-content;
+        margin-left: auto;
+        margin-right: auto;
+}
+
+.diplomacy-confirm-overlay .buttons div , .diplomacy-propose-overlay .buttons div {
+        border: 1px solid black;
+        width: max-content;
+        padding: 1rem 3rem;
+        font-size: 2rem;
+        border-radius: 0.5rem;
+        background-color: whitesmoke;
+        cursor: pointer;
+        height: 7rem;
+        padding-top: 2rem;
+        margin-bottom: 2rem;
+        margin-left: auto;
+        margin-right: auto;
+        min-width: 16rem;
+}
+.diplomacy-confirm-overlay .buttons div:hover , .diplomacy-propose-overlay .buttons div:hover {
+        border: 1px solid white;
+        color: white;
+        background: #000;
+        margin-bottom: 2rem;
+}
+
+
+
+

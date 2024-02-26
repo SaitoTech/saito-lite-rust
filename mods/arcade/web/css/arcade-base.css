@@ -41,12 +41,13 @@
 	min-width: 18rem; /*Width of the button*/
 	display: flex;
 	flex-direction: column;
-	padding-top: 5rem;
-	gap: 5rem;
 }
 
 .arcade-central-panel .arcade-initializer {
 	height: calc(100vh - var(--saito-header-height) - 3rem);
+	padding-top: 5rem;
+	gap: 5rem;
+
 }
 
 .arcade-game-initializer-success-title {
@@ -70,13 +71,9 @@
 
 @media screen and (max-width: 900px) {
 	.arcade-container .saito-sidebar.right {
-		position: unset;
-		left: unset;
-		width: unset;
-		top: unset;
+		display: block;
 		visibility: visible;
-		margin-top: unset;
-		height: unset;
+		position: unset;
 		grid-row: unset;
 		grid-column-start: unset;
 		padding: 1rem;

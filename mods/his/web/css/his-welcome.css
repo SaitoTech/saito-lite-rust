@@ -4,8 +4,28 @@
 	border-radius: 2rem;
 }
 
+.welcome-england {
+	background-image: url('/his/img/backgrounds/england.png');
+	background-size: cover;
+}
+
+.welcome-france {
+	background-image: url('/his/img/backgrounds/france.png');
+	background-size: cover;
+}
+
+.welcome-ottoman {
+	background-image: url('/his/img/backgrounds/ottoman.png');
+	background-size: cover;
+}
+
+.welcome-hapsburg {
+	background-image: url('/his/img/backgrounds/hapsburg.png');
+	background-size: cover;
+}
+
 .welcome-papacy {
-	background-image: url('/his/img/backgrounds/leo_x.jpg');
+	background-image: url('/his/img/backgrounds/papacy.jpeg');
 	background-size: cover;
 }
 

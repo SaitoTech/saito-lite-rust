@@ -105,8 +105,6 @@ class Stun extends ModTemplate {
 	async initialize(app) {
 		await super.initialize(app);
 
-		console.log('STUN: ' + this.publicKey);
-
 		if (app.BROWSER) {
 			if (!this.app.options?.stun?.settings) {
 				this.app.options.stun = {
@@ -164,12 +162,14 @@ class Stun extends ModTemplate {
 		}
 	}
 
-	respondTo(type = '') {
-		// console.log(type, obj);
+	respondTo(type, obj) {
 		let stun_self = this;
-		let obj = arguments[1];
 
 		if (type === 'user-menu') {
+			//Don't provide a calling hook if in the video call app!
+			if (stun_self.browser_active) {
+				return null;
+			}
 			if (obj?.publicKey) {
 				if (obj.publicKey !== this.app.wallet.publicKey) {
 					this.attachStyleSheets();
@@ -200,18 +200,20 @@ class Stun extends ModTemplate {
 		}
 
 		if (type === 'saito-header') {
-			this.attachStyleSheets();
-			super.render(this.app, this);
 
-			return [
-				{
-					text: 'Video Call',
-					icon: this.icon,
-					allowed_mods: ['redsquare', 'arcade'],
-					callback: function (app, id) {
-						stun_self.renderInto('.saito-overlay');
+			if (!this.browser_active) {
+				this.attachStyleSheets();
+				super.render(this.app, this);
 
-						/*app.connection.emit("stun-init-call-interface", "video");
+				return [
+					{
+						text: 'Saito Talk',
+						icon: this.icon,
+						//allowed_mods: ['redsquare', 'arcade'],
+						callback: function (app, id) {
+							stun_self.renderInto('.saito-overlay');
+
+							/*app.connection.emit("stun-init-call-interface", "video");
             if (!stun_self.room_obj) {
               stun_self.room_obj = {
                 room_code: stun_self.createRoomCode(),
@@ -220,9 +222,10 @@ class Stun extends ModTemplate {
             }
             app.connection.emit("start-stun-call");
             */
+						}
 					}
-				}
-			];
+				];
+			}
 		}
 		//
 		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
@@ -243,7 +246,7 @@ class Stun extends ModTemplate {
 
 			let menu_items = {
 				id: 'game-social',
-				text: 'Chat / Social',
+				text: 'Chat',
 				submenus: []
 			};
 
@@ -269,7 +272,7 @@ class Stun extends ModTemplate {
 			}
 
 			menu_items['submenus'].push({
-				parent: 'game-social',
+				parent: 'game-game',
 				text: 'Record Game',
 				id: 'record-stream',
 				class: 'record-stream',
@@ -307,7 +310,7 @@ class Stun extends ModTemplate {
 						{
 							text: 'Video/Audio Call',
 							icon: 'fas fa-phone',
-							callback: function (app, public_key) {
+							callback: function (app, public_key, id) {
 								if (!stun_self.room_obj) {
 									stun_self.dialer.establishStunCallWithPeers(
 										[public_key]
@@ -330,7 +333,7 @@ class Stun extends ModTemplate {
 	}
 
 	loadSettings(container = null) {
-		let as = new AppSettings(this.app, this.mod, container);
+		let as = new AppSettings(this.app, this, container);
 		as.render();
 	}
 

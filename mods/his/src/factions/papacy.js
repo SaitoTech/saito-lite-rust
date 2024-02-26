@@ -13,12 +13,6 @@
  
         let base = 0;
 
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("HERE");
-console.log("Clement: " + game_mod.game.state.leaders.clement_vii);
-
         if (game_mod.game.state.leaders.leo_x == 1) { base += 0; }
         if (game_mod.game.state.leaders.clement_vii == 1) { base += 1; }
         if (game_mod.game.state.leaders.paul_iii == 1) { base += 1; }

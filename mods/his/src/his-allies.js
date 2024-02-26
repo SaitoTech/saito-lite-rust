@@ -124,7 +124,7 @@
     return f;
   }
 
-  returnEnemies(faction) { 
+  returnEnemies(faction, include_minor_powers=false) { 
     let f = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
@@ -132,22 +132,28 @@
         if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
       }
     }
+    if (include_minor_powers) {
+      if (this.areEnemies(faction, "hungary")) { f.push("hungary"); }
+      if (this.areEnemies(faction, "scotland")) { f.push("scotland"); }
+      if (this.areEnemies(faction, "venice")) { f.push("venice"); }
+      if (this.areEnemies(faction, "genoa")) { f.push("genoa"); }
+    }
     return f;
   }
 
   areAllies(faction1, faction2, count_minor_activated_factions=1) {
     if (faction1 === faction2) { return 1; }
-    try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.alliances[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.alliances[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
     if (count_minor_activated_factions) {
       if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
         let f1cp = this.returnControllingPower(faction1);
         let f2cp = this.returnControllingPower(faction2);
-        try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
-        try { if (this.game.state.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
-        try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.alliances[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.alliances[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.alliances[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
       }
     }
     return 0;
@@ -155,16 +161,16 @@
 
   areEnemies(faction1, faction2, count_minor_activated_factions=1) {
     if (faction1 === faction2) { return 0; }
-    try { if (this.game.state.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.state.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.alliances[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.alliances[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
     if (count_minor_activated_factions) {
       if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
         let f1cp = this.returnControllingPower(faction1);
         let f2cp = this.returnControllingPower(faction2);
-        try { if (this.game.state.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
-        try { if (this.game.state.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.alliances[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
+        try { if (this.game.state.alliances[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
       }
     }
     return 0;
@@ -177,7 +183,7 @@
   }
 
   unsetActivatedPower(faction, activated_power) {
-    if (this.game.state.activated_powers[faction1].includes(activated_power)) {
+    if (this.game.state.activated_powers[faction].includes(activated_power)) {
       let x = [];
       for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
         if (this.game.state.activated_powers[faction][i] !== activated_power) {
@@ -188,13 +194,20 @@
     }
   }
 
+  isActivatedPower(faction, activated_power) {
+    if (this.game.state.activated_powers[faction].includes(activated_power)) {
+      return 1;
+    }
+    return 0;
+  }
+
 
   setAllies(faction1, faction2, amp=1) {
 
-    try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
-    try { this.game.state.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
-    try { this.game.state.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+    try { this.game.state.alliances[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.state.alliances[faction2][faction1].allies = 1; } catch (err) {}
 
     //
     // in the 2P game, Hapsburgs are an activated power for the Papacy
@@ -223,8 +236,8 @@
   }
 
   unsetAllies(faction1, faction2, amp=1) {
-    try { this.game.state.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction2][faction1].allies = 0; } catch (err) {}
 
     if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "papacy") {
       if (this.game.state.events.schmalkaldic_league) { 
@@ -265,10 +278,10 @@
   }
 
   setEnemies(faction1, faction2) {
-    try { this.game.state.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
-    try { this.game.state.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
-    try { this.game.state.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+    try { this.game.state.alliances[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.state.alliances[faction2][faction1].enemies = 1; } catch (err) {}
 
     this.displayWarBox();
 
@@ -298,8 +311,8 @@
     } }
 
 
-    try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction2][faction1].enemies = 0; } catch (err) {}
 
     this.displayWarBox();
 
@@ -317,9 +330,7 @@
     //
     if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
       defender = this.returnControllingPower(defender);
-    }         
-
-console.log(JSON.stringify(this.game.state.activated_powers));
+    }
 
     //
     // defender now controlling power or itself
@@ -330,13 +341,20 @@ console.log(JSON.stringify(this.game.state.activated_powers));
       // does player command this faction
       //
       let player_factions = this.returnPlayerFactions((p+1));
+
       let i_command_this_faction = false;
       for (let i = 0; i < player_factions.length; i++) { 
-console.log("testing: " + player_factions[i]);
-	if (player_factions[i] === defender) { return (p+1); }
-        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { return (p+1); }
+	if (player_factions[i] === defender) { 
+	  return (p+1);
+	}
+
+        if (this.game.state.activated_powers[player_factions[i]].includes(defender)) { 
+	  return (p+1);
+	}
         for (let z = 0; z < this.game.state.activated_powers[player_factions[i]]; z++) {
-          if (this.game.state.activated_powers[player_factions[i]][z] === defender) { return (p+1); }
+          if (this.game.state.activated_powers[player_factions[i]][z] === defender) {
+	    return (p+1);
+	  }
         }
       }
     }

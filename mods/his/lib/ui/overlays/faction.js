@@ -13,6 +13,12 @@ class FactionOverlay {
 		this.overlay.hide();
 	}
 
+	updateNotice(notice="") {
+		try {
+			document.querySelector(".faction_sheet_notice").innerHTML = notice;
+		} catch (err) {}
+	}
+
 	render(faction = '') {
 		let his_self = this.mod;
 
@@ -20,6 +26,8 @@ class FactionOverlay {
 
 		let f = this.mod.factions[faction];
 		this.overlay.show(FactionTemplate(f));
+		this.app.browser.addElementToSelector(`<div class="faction_sheet_notice ${f.key}" id="faction_sheet_notice"></div>`, '.faction_sheet');
+
 
 		let controlled_keys = 0;
 		let keyboxen = '';
@@ -44,19 +52,16 @@ class FactionOverlay {
 		if (his_self.factions[faction].key === 'england') {
 			war_winner_vp = his_self.game.state.england_war_winner_vp;
 			let total_keys = 9;
+			let controlled_keys = his_self.returnNumberOfKeysControlledByFaction('england');
 			let remaining_keys = total_keys - controlled_keys;
-			for (
-				let i = his_self.factions[faction].marital_status;
-				i < 7;
-				i++
-			) {
-				keyboxen += `<div class="faction_sheet_keytile england_marital_status${
-					i + 1
-				}" id="england_marital_status_keytile${i + 1}"></div>`;
+			for (let i = 0; i < 7; i++) {
+			  let hcss = ""; 
+			  if (i == his_self.game.state.henry_viii_marital_status) { hcss = "active "; }
+			  keyboxen += `<div class="${hcss} faction_sheet_keytile henry_viii_marital_status henry_viii_marital_status${i + 1}" id="henry_viii_marital_status${i + 1}"></div>`;
 			}
 			for (let i = 1; i <= 9; i++) {
-				if (i > 9 - remaining_keys) {
-					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+				if (i == controlled_keys) {
+					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} england_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
 
@@ -166,6 +171,7 @@ class FactionOverlay {
 				);
 			}
 		}
+
 		// PROTESTANTS
 		if (his_self.factions[faction].key === 'protestant') {
 			war_winner_vp = his_self.game.state.protestant_war_winner_vp;
@@ -204,6 +210,14 @@ class FactionOverlay {
 				}
 				keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}">${box_inserts}</div>`;
 			}
+
+                        if (his_self.game.state.leaders.calvin == 1) {
+                                this.app.browser.addElementToSelector(
+                                        his_self.returnCardImage('016'),
+                                        '.faction_sheet_ruler'
+                                );
+                        }
+
 		}
 
 		// HAPSBURG
@@ -277,6 +291,26 @@ class FactionOverlay {
 				}
 			}
 		}
+
+
+		//
+		// Bible Translations
+		//
+		if (his_self.factions[faction].key === 'protestant') {
+		  if (his_self.game.state.translations['full']['german'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleGerman.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		  if (his_self.game.state.translations['full']['english'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleEnglish.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		  if (his_self.game.state.translations['full']['french'] >= 10) {
+					let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/factions/BibleFrench.svg"></div>`;
+					this.app.browser.addElementToSelector(html, '.faction_sheet_vp');
+		  } 
+		}
+
 
 		this.attachEvents();
 	}

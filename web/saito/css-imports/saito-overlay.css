@@ -12,17 +12,20 @@
 .saito-overlay {
     position: fixed;
     display: inline-block;
+    z-index: 1000;
+    height: min-content;
+    width: min-content;
+    /*min-height: 10%; Why? */
+    max-height: calc(100 * var(--saito-vh));
+    max-width: 100vw;
+    box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
+}
+
+.center-overlay{
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     margin: 0 auto;
-    z-index: 1000;
-    height: min-content;
-    width: min-content;
-    min-height: 10%;
-    max-height: calc(100 * var(--saito-vh));
-    max-width: 100vw;
-    box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
 }
 
 .saito-overlay>div, .saito-overlay>form {
@@ -218,4 +221,16 @@
     }
 
 
+}
+
+
+.module-settings-overlay {
+    min-width: min(800px, 90vw);
+    min-height: min(400px, 90vh);
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 2rem;
+    background: var(--saito-background-color);
+    border-radius: 0.5rem;
+    border: 1px solid var(--saito-primary);
 }

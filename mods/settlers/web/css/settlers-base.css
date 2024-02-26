@@ -648,6 +648,10 @@ input[type='checkbox'] {
 	background-color: #000b;
 }
 
+.robinhood .bandit {
+	background-image: url(/settlers/img/icons/robinhood.png);
+}
+
 .bandit .hexTileCenter {
 	opacity: 0.5;
 }

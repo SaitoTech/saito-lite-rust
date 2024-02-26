@@ -1,5 +1,6 @@
 const SaitoInput = require('../../../../lib/saito/ui/saito-input/saito-input');
 const ChatPopupTemplate = require('./popup.template');
+const ChatUserMenu = require('./../overlays/chat-user-menu');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const debounce = require('lodash/debounce');
 
@@ -55,6 +56,50 @@ class ChatPopup {
 				}
 			}
 		});
+
+		app.connection.on('relay-is-online', (pkey) => {
+			let target_id = this.mod.createGroupIdFromMembers([
+				pkey,
+				this.mod.publicKey
+			]);
+			if (target_id === this.group?.id) {
+				let icon = document.querySelector(
+					'#chat-popup-' +
+						this.group.id +
+						' .unavailable-without-relay'
+				);
+				if (icon) {
+					icon.classList.remove('unavailable-without-relay');
+				}
+			}
+		});
+
+		app.connection.on('chat-popup-refresh-request', (group) => {
+			if (this.group.id == group.id) {
+				let title = 'chat-group-' + this.group.id;
+				let dm = group.members.length == 2 && !group?.member_ids;
+				if (dm) {
+					for (let i = 0; i < group.members.length; i++) {
+						if (group.members[i] !== mod.publicKey) {
+							dm_counterparty = group.members[i];
+						}
+					}
+				}
+
+				this.app.browser.replaceElementById(
+					`<div id="chat-group-${group.id}" class="chat-group${
+						dm ? ' saito-address' : ''
+					}" data-id="${dm ? dm_counterparty : group.name}">${
+						group.name
+					}</div>`,
+					title
+				);
+
+				if (this.is_rendered){
+					this.render();
+				}
+			}
+		});
 	}
 
 	remove() {
@@ -64,6 +109,9 @@ class ChatPopup {
 		}
 	}
 
+	//
+	// The chat popup has subcomponents, but only the body gets re-rendered
+	//
 	render() {
 		let this_self = this;
 		//
@@ -80,6 +128,8 @@ class ChatPopup {
 			return;
 		}
 
+		this.app.connection.emit('chat-manager-opens-group', this.group);
+
 		//
 		// our query selector
 		//
@@ -93,7 +143,11 @@ class ChatPopup {
 				`#chat-popup-${this.group.id} .chat-footer`
 			);
 
-			if (this.group.name == this.mod.communityGroupName) {
+			if (
+				this.group.name == this.mod.communityGroupName ||
+				this.group?.member_ids ||
+				this.group.members.length > 2
+			) {
 				this.input.enable_mentions = true;
 			}
 
@@ -129,7 +183,7 @@ class ChatPopup {
 			//	html += `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`;
 			//}
 
-            html +=  this.mod.returnChatBody(this.group.id) + "</div>";
+			html += this.mod.returnChatBody(this.group.id) + '</div>';
 			this.app.browser.replaceElementBySelector(
 				html,
 				popup_qs + ' .chat-body'
@@ -171,6 +225,58 @@ class ChatPopup {
 				obj.style.left = x_pos + 'px';
 			}
 
+			// add call icon, ignore if community chat
+			let mods = this.app.modules.mods;
+			if (
+				this.group.name != this.mod.communityGroupName &&
+				this.group.members.length == 2 &&
+				!this.group?.member_ids
+			) {
+				let index = 0;
+				for (const mod of mods) {
+					let item = mod.respondTo('chat-actions', {
+						publicKey: this.group.name
+					});
+					if (item instanceof Array) {
+						item.forEach((j) => {
+							let id = `chat_action_item_${index}`;
+							this_self.callbacks[id] = j.callback;
+							this_self.addChatActionItem(j, id);
+							index++;
+						});
+					} else if (item != null) {
+						let id = `chat_action_item_${index}`;
+						this_self.callbacks[id] = item.callback;
+						this_self.addChatActionItem(item, id);
+					}
+					index++;
+				}
+			}
+
+			if (document.querySelector(popup_qs + ' .chat-action-menu')) {
+				document.querySelector(
+					popup_qs + ' .chat-action-menu'
+				).onclick = (e) => {
+					let chatMenu = new ChatUserMenu(
+						this.app,
+						this.mod,
+						this.group
+					);
+					chatMenu.render();
+				};
+			}
+
+			if (this.group.online) {
+				let icon = document.querySelector(
+					'#chat-popup-' +
+						this.group.id +
+						' .unavailable-without-relay'
+				);
+				if (icon) {
+					icon.classList.remove('unavailable-without-relay');
+				}
+			}
+
 			//
 			// inputs
 			//
@@ -202,38 +308,6 @@ class ChatPopup {
 				}
 			}
 		}
-
-		// add call icon, ignore if community chat
-		let mods = this.app.modules.mods;
-		if (this.group.name != this.mod.communityGroupName) {
-			let index = 0;
-			for (const mod of mods) {
-				let item = mod.respondTo('chat-actions', {
-					publicKey: this.group.name
-				});
-				if (item instanceof Array) {
-					item.forEach((j) => {
-						let id = `chat_action_item_${index}`;
-						this_self.callbacks[id] = j.callback;
-						this_self.addChatActionItem(j, id);
-						index++;
-					});
-				} else if (item != null) {
-					let id = `chat_action_item_${index}`;
-					this_self.callbacks[id] = item.callback;
-					this_self.addChatActionItem(item, id);
-				}
-				index++;
-			}
-		}
-
-		//
-		// re-render typed text
-		//
-		//if (existing_input != "") {
-		//  this.input.setInput(existing_input);
-		//  existing_input = "";
-		//}
 
 		//
 		// attach events
@@ -268,13 +342,13 @@ class ChatPopup {
 		if (this.group.name != this.mod.communityGroupName) {
 			document.querySelectorAll('.chat-action-item').forEach((menu) => {
 				let id = menu.getAttribute('id');
-				if (id && this_self.callbacks[id]){
+				if (id && this_self.callbacks[id]) {
 					let callback = this_self.callbacks[id];
 					menu.addEventListener('click', (e) => {
 						let pk = e.currentTarget.getAttribute('data-id');
 						console.log('clicked on chat-action-item ///');
 						console.log(pk);
-						callback(app, pk);
+						callback(app, pk, id);
 					});
 				}
 			});
@@ -629,11 +703,13 @@ class ChatPopup {
 				<i class="${item.icon}"></i>
 			</div>`;
 
-		this.app.browser.prependElementToSelector(html, `${popup_qs} .chat-actions`);
-
+		this.app.browser.prependElementToSelector(
+			html,
+			`${popup_qs} .chat-actions`
+		);
 	}
 
-	restorePopup(chatPopup)  {
+	restorePopup(chatPopup) {
 		chatPopup.classList.remove('minimized');
 		chatPopup.classList.remove('maximized');
 		chatPopup.classList.add('active');

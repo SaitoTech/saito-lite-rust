@@ -40,7 +40,39 @@ class RedSquareSidebar {
 		this.attachEvents();
 	}
 
-	attachEvents() {}
+	attachEvents() {
+		var scrollableElement = document.querySelector('.saito-container');
+		var sidebar = document.querySelector('.saito-sidebar.right');
+		var scrollTop = 0;
+		var stop = 0;
+
+		scrollableElement.addEventListener('scroll', (e) => {
+			let newScrollTop = scrollableElement.scrollTop;
+			let maxScroll = sidebar.clientHeight - window.innerHeight + 70;
+
+			if (maxScroll > 0) {
+				if (scrollTop < newScrollTop) {
+					if (newScrollTop - stop > maxScroll) {
+						stop =
+							window.innerHeight -
+							70 -
+							sidebar.clientHeight +
+							newScrollTop;
+					}
+				} else {
+					if (stop > newScrollTop) {
+						stop = newScrollTop;
+					}
+				}
+			} else {
+				//Keep top of side bar fixed relative to viewPort
+				stop = newScrollTop;
+			}
+
+			sidebar.style.top = stop + 'px';
+			scrollTop = newScrollTop;
+		});
+	}
 }
 
 module.exports = RedSquareSidebar;

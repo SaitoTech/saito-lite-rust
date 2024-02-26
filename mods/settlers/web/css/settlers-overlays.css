@@ -585,3 +585,18 @@ stats overlay
 		grid-column: 1 / span 2;
 	}
 }
+
+
+.notice_overlay {
+	padding: 3rem;
+	font-size: 1.8rem;
+}
+
+.notice_overlay > div {
+	margin: 1rem;
+}
+
+.notice_overlay ul li {
+	margin-bottom: 0.5rem;
+	font-size: 2rem;
+}

@@ -46,14 +46,22 @@ class InviteManager {
 			// Otherwise we launch an overlay and stick the spinner in there
 			//
 			if (!this.mod.browser_active) {
-				this.loader_overlay.show(
-					'<div class="arcade_game_overlay_loader"></div>'
-				);
+
+				let target = '.arcade_game_overlay_loader';
+
+				if (document.querySelector(".invite-manager")){
+					document.querySelector(".invite-manager").innerHTML = "";	
+					target = ".invite-manager";
+				}else{
+					this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');	
+				}
+
 				let game_loader = new ArcadeInitializer(
 					app,
 					mod,
-					'.arcade_game_overlay_loader'
+					target
 				);
+				
 				game_loader.render();
 			}
 		});

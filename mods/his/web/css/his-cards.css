@@ -6,6 +6,11 @@ ul .option.showcard {
 	border-bottom: 0px;
 }
 
+.deck-overlay .card .cancel_x {
+	width: 100%;
+	max-width: 100%;
+}
+
 .cardtext {
 	position: relative;
 	font-size: 2rem;

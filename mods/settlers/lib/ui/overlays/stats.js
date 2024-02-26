@@ -9,8 +9,8 @@ class StatsOverlay {
 		this.dice_count = [];
 	}
 
-	render() {
-		this.overlay.show(SettlersStatsOverlayTemplate(this));
+	render(winner = "") {
+		this.overlay.show(SettlersStatsOverlayTemplate(this, winner));
 		this.attachEvents();
 	}
 

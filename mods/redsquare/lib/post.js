@@ -148,11 +148,9 @@ class Post {
 			);
 		}
 
-		if (
-			typeof document.querySelector('.my-form') != 'undefined' &&
-			document.querySelector('.my-form')
-		) {
-			document.querySelector('.my-form').style.display = 'none';
+		//
+		if (document.querySelector('.saito-file-uploader')) {
+			document.querySelector('.saito-file-uploader').style.display = 'none';
 		}
 
 		document
@@ -222,7 +220,7 @@ class Post {
 			this.app.BROWSER == 1 &&
 			text.length > 5000
 		) {
-			siteMessage('Purchase SAITO to Enable Oversized Posts...', 3000);
+			siteMessage('Insufficient SAITO to Enable Oversized Posts...', 3000);
 			return;
 		}
 
@@ -370,9 +368,9 @@ class Post {
         It's an art, not a science
         */
 
-			if (source == 'Post') {
-				this.mod.main.scrollFeed(0);
-			}
+		//	if (source == 'Post') {
+		//		this.mod.main.scrollFeed(0);
+		//	}
 		}
 	}
 

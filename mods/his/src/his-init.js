@@ -5,15 +5,21 @@ const VPOverlay = require('./lib/ui/overlays/vp');
 const NewWorldOverlay = require('./lib/ui/overlays/newworld');
 const TreatiseOverlay = require('./lib/ui/overlays/treatise');
 const FactionOverlay = require('./lib/ui/overlays/faction');
+const FactionBar = require('./lib/ui/factionbar');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const CouncilOfTrentOverlay = require('./lib/ui/overlays/council-of-trent');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
+const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
+const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
+const FortificationOverlay = require('./lib/ui/overlays/fortification');
+const BuildOverlay = require('./lib/ui/overlays/build');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const NavalBattleOverlay = require('./lib/ui/overlays/naval-battle');
 const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
+const WarOverlay = require('./lib/ui/overlays/war');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const UnitsOverlay = require('./lib/ui/overlays/units');
@@ -26,7 +32,6 @@ const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 // Tutorial Overlays
 const GameHelp = require('./lib/ui/game-help/game-help');
 const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template');
-
 
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
@@ -63,7 +68,10 @@ class HereIStand extends GameTemplate {
     this.treatise_overlay = new TreatiseOverlay(this.app, this);  // publish treatise
     this.religious_overlay = new ReligiousOverlay(this.app, this);  // religious conflict sheet
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
+    this.factionbar = new FactionBar(this.app, this); // shows you which factions you are in multiplayer
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.diplomacy_confirm_overlay = new DiplomacyConfirmOverlay(this.app, this);
+    this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
     this.vp_overlay = new VPOverlay(this.app, this);  // end-of-turn points overlay
@@ -74,9 +82,12 @@ class HereIStand extends GameTemplate {
     this.debaters_overlay = new DebatersOverlay(this.app, this);  // language zone selection
     this.schmalkaldic_overlay = new SchmalkaldicOverlay(this.app, this);  // schmalkaldic league
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
+    this.war_overlay = new WarOverlay(this.app, this);  // naval battles
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
+    this.build_overlay = new BuildOverlay(this.app, this);  // unit building
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
+    this.fortification_overlay = new FortificationOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
     this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
@@ -98,6 +109,9 @@ class HereIStand extends GameTemplate {
     // newbie mode
     //
     this.confirm_moves = 1;
+    this.faster_play = 1; // this speeds-up some responses at the cost of potentially
+			  // leaking information on what response cards users have or
+			  // do not have.
 
     //
     // "showcard" popups
@@ -139,6 +153,11 @@ class HereIStand extends GameTemplate {
         this.confirm_moves = 0;
       } else {
         this.confirm_moves = 1;
+      }
+      if (this.app.options.gameprefs.his_faster_play == 1) {
+        this.faster_play = 1;
+      } else {
+        this.faster_play = 0;
       }
     }
 

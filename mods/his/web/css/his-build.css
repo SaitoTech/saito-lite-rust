@@ -1,0 +1,65 @@
+
+.build-overlay .build-controls {
+    display: flex;
+    flex-direction: row;
+}
+
+.build-targets {
+    width: 100%;
+    background: #0009;
+    height: max-content;
+    color: white;
+    max-height: 10rem;
+    padding: 1.5rem;
+    font-size: 2rem;
+}
+
+.build-submit {
+        border: 1px solid black;
+        width: max-content;
+        padding: 1rem 3rem;
+        font-size: 2rem;
+        border-radius: 0.5rem;
+        background-color: whitesmoke;
+        cursor: pointer;
+        height: 7rem;
+        padding-top: 2rem;
+        margin-bottom: 2rem;
+        margin-left: auto;
+        margin-right: auto;
+}       
+.build-submit:hover {
+        border: 1px solid white;
+        color: white;
+        background: #000;
+        margin-bottom: 2rem;
+}       
+
+.build-overlay .build-controls .fewer-units , .build-overlay .build-controls .more-units {
+    height: 40rem;
+    width: 20rem;
+    background-color: #0005;
+    font-size: 35rem;
+    color: #FFFD;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 2rem;
+    padding-left: 3rem;
+}
+.build-overlay .build-controls .more-units {
+    padding-left: 0rem;
+    padding-right: 3rem;
+}
+
+.build-overlay .build-controls .unit-details {
+    width: 60rem;
+    height: 40rem;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/regular.jpg);
+    background-size: cover;
+    color: #FFFD;
+    font-size: 34rem;
+    text-align: center;
+}
+
+

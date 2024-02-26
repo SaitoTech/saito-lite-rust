@@ -5,6 +5,7 @@
     return spacekey;
   }
 
+  
 
   resetBesiegedSpaces() {
     for (let space in this.game.spaces) {
@@ -151,6 +152,14 @@
   }
 
 
+  isUnoccupied(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space];  } } catch (err) {}
+    for (let key in space.units) {
+      if (this.returnFactionLandUnitsInSpace(key, space.key) > 0) { return 0; }
+    }
+    return 1;
+  }
+
   isNavalSpaceFriendly(space, faction) {
    
     // if a port, must be controlled by faction
@@ -168,7 +177,39 @@
     return 1;
   }
 
+
+  canFactionMoveIntoSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let cf = this.returnFactionControllingSpace(space);
+    if (cf === faction) { return 1; }
+    if (this.areEnemies(faction, cf)) { return 1; }
+    if (this.areAllies(faction, cf)) { return 1; }
+    if (this.isSpaceIndependent(space.key)) {
+
+      // if controlled by non-independent, we cannot enter
+      if (cf !== "independent") { return 0; }
+
+      let is_empty = true;
+      for (let key in space.units) {
+	if (key != "independent") {
+	  // don't let ourselves be blocked by non-controlling allies/enemies
+          if (!this.areAllies(faction, key) && !this.areEnemies(faction, key)) {
+            if (space.units[key].length > 0) {
+              if (this.returnFactionLandUnitsInSpace(key, space.key, 1)) {
+                is_empty = false;
+  	        if (!this.areEnemies(faction, key) && !this.areAllies(faction, key)) { return 0; }
+	      }
+	    }
+          }
+        }
+      }
+      if (is_empty) { return 1; }
+    }
+    return 0;
+  }
+
   isSpaceFriendly(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
     return this.areAllies(cf, faction);
@@ -183,7 +224,9 @@
 
   isSpaceIndependent(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.political === "independent") { return true; }
     if (space.home === "independent") { return true; }
+    return false;
   }
 
   isSpaceHomeSpace(space, faction) {
@@ -228,14 +271,14 @@
     return this.areEnemies(cf, faction);
   }
 
+
   doesSpaceHaveLineOfControl(space, faction) { return this.isSpaceInLineOfControl(space, faction); }
-  isSpaceInLineOfControl(space, faction) {
+  isSpaceInLineOfControl(space, faction, transit_passes=1, transit_seas=1) {
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     let his_self = this;
     let already_routed_through = {};
-
 
     //
     // path of spaces and sea-zones from that space to friendly-controlled, 
@@ -249,6 +292,7 @@
     // • free of unrest.
     //
     let res = this.returnNearestSpaceWithFilter(
+
       space.key ,
 
       // capitals are good destinations
@@ -270,10 +314,10 @@
       },
 
       // transit passes? 0
-      1,
+      transit_passes,
 
-      // transit seas? 1
-      1,
+      // transit seas?
+      transit_seas,
 
       // faction? optional
       faction,
@@ -301,9 +345,10 @@
 
     // home spaces of other powers seized by the power.
     if (space.home !== faction && space.political === faction) { return true; }
+    if (space.home === faction && space.political === faction) { return true; }
 
     // home spaces of allied minor powers. 
-    if (space.home !== faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
+    if (space.political == "" && space.home !== faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
 
     return false;
   }
@@ -381,7 +426,7 @@
   //
   // similar to above, except it can cross a sea-zone
   //
-  isSpaceConnectedToCapitalSpringDeployment(space, faction) {
+  isSpaceConnectedToCapitalSpringDeployment(space, faction, transit_seas=1) {
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
@@ -398,6 +443,14 @@
       transit_passes = 1;
     }
 
+let debugmode = 0;
+if (space.key == "cagliari") { debugmode = 1; 
+  console.log("!");
+  console.log("!");
+  console.log("!");
+  console.log("cagliari!");
+}
+
     let res = this.returnNearestSpaceWithFilter(
 
       space.key,
@@ -408,6 +461,7 @@
         return 0;
       },
 
+
       // route through this?
       function(spacekey) {
 	if (already_routed_through[spacekey] == 1) { return 0; }
@@ -416,17 +470,22 @@
 	return 0;
       },
 
+      0, // include source
+
       // transit passes? 0
       transit_passes,
 
       // transit seas? 1
-      1,
+      transit_seas,
      
       // faction? optional
       faction,
 
       // already crossed sea zone optional
-      0 
+      0,
+
+      // is spring deployment
+      1
     );
 
     if (res.length > 0) {
@@ -473,18 +532,12 @@
       }
     }
 
-console.log("SQUADRONS IN SPACE: " + number_of_squadrons_in_port);
-
     //
     // adjacent sea
     //
-console.log("SPACE PORTS: " + JSON.stringify(space.ports));
-
     for (let p = 0; p < space.ports.length; p++) {
 
       let sea = this.game.navalspaces[space.ports[p]];
-
-console.log("SEA: " + JSON.stringify(sea));
 
       for (let f in sea.units) {
 
@@ -499,8 +552,6 @@ console.log("SEA: " + JSON.stringify(sea));
       }
     }
 
-console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
-
     return (number_of_squadrons_in_port + number_of_squadrons_at_sea);
 
   }
@@ -512,11 +563,20 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
     return false;
   }
 
-  doesSpaceContainCatholicReformer(space) {
+  isSpaceAPortInTheSameSeaZoneAsACatholicPort(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units["papacy"].length; i++) {
-      if (space.units["papacy"][i].reformer == true) { return true; }
+    let seas = [];
+    for (let i = 0; i < space.ports.length; i++) {
+      if (!seas.includes(space.ports[i])) { seas.push(space.ports[i]); }
     }
+    for (let s in this.game.spaces) {
+      let sp = this.game.spaces[s];
+      if (sp.religion == "catholic" && sp.ports.length > 0) {
+	for (let z = 0; z < sp.ports.length; z++) {
+	  if (seas.includes(sp.ports[z])) { return true; }
+	}
+      }
+    }  
     return false;
   }
 
@@ -609,7 +669,7 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let factions = this.returnImpulseOrder(); 
     for (let i = 0; i < factions.length; i++) {
-      if (this.isSpaceControlled(space, factions[i])) { return factions[i]; }
+      if (this.isSpaceControlled(space.key, factions[i])) { return factions[i]; }
     }
     if (space.political) { return space.political; }
     return space.home;
@@ -664,8 +724,8 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
       ops_remaining--;
       for (let i = 0; i < viable_navalspaces.length; i++) {
 	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i].key].neighbours.length; z++) {
-          if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
-	    let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
+	  let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
+          if (this.doesFactionHaveNavalUnitsInSpace(faction, ns)) {
 	    let already_included = 0;
 	    for (let z = 0; z < viable_navalspaces.length; z++) {
 	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
@@ -686,7 +746,7 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
       for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {      
 	let port = this.game.navalspaces[key].ports[z];
 	if (port != space.key) {
-	  viable_destinations.push({ key : port , cost : (ops - ops_remaining)});
+	  viable_destinations.push({ key : port , cost : (viable_navalspaces[i].ops_remaining-1)});
 	}
       }
     }
@@ -740,8 +800,6 @@ console.log("SQUADRONS AT SEA: " + number_of_squadrons_at_sea);
 	  let leaders = [];
 	  for (let z = 0; z < this.game.spaces[key].units[fip[i]].length; z++) {
 
-console.log("NAVY LEADER: " + this.game.spaces[key].units[fip[i]][z].navy_leader);
-
 	    //
 	    // only add leaders if there is a ship in port
 	    //
@@ -757,14 +815,13 @@ console.log("NAVY LEADER: " + this.game.spaces[key].units[fip[i]][z].navy_leader
 	    }
 	  }
 
-console.log("leaders: " + JSON.stringify(leaders));
-
 	  //
 	  // add and include location
 	  //
 	  if (ships.length > 0) {
 	    for (let y = 0; y < ships.length; y++) {
 	      ships[y].spacekey = key;
+	      ships[y].faction = fip[i];
 	      units.push(ships[y]);
 	    }
 	    for (let y = 0; y < leaders.length; y++) {
@@ -784,6 +841,7 @@ console.log("leaders: " + JSON.stringify(leaders));
       for (let key in this.game.navalspaces) {
 	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
 	  this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
+	  this.game.navalspaces[key].units[fip[i]][z].faction = fip[i];
 	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
 	}
       }
@@ -853,18 +911,11 @@ console.log("leaders: " + JSON.stringify(leaders));
 
     let space = spacekey;
 
-console.log("space: " + space);
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
 
-console.log("space: " + space);
-console.log("space.key: " + space.key);
-
     let his_self = this;
     let already_routed_through = {};
-
-console.log(faction + " 1111 " + space.key);
 
     let res = this.returnNearestNavalSpaceOrPortWithFilter(
 
@@ -873,9 +924,7 @@ console.log(faction + " 1111 " + space.key);
       // ports
       function(spacekey) {
         if (his_self.game.spaces[spacekey]) {
-console.log("checking: " + spacekey + " for control by: " + faction);
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
-console.log("yes!");
 	    return 1;
 	  }
 	}
@@ -890,8 +939,6 @@ console.log("yes!");
 	return 1;
       }
     );
-
-console.log("about to return waht?: " + JSON.stringify(res));
 
     return res;
 
@@ -910,15 +957,14 @@ console.log("about to return waht?: " + JSON.stringify(res));
   canFactionRetreatToNavalSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-console.log("checking if: " + space.key + " is friendly to " + faction);
     if (this.isNavalSpaceFriendly(space, faction) == 1) { console.log("navalspace is friendly"); return 1; }
     if (this.isSpaceFriendly(space, faction) == 1) { console.log("space is friendly!"); return 1; }
-console.log("no...");
     return 0;
   }
 
   convertSpace(religion, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (religion === "papacy") { religion = "catholic"; }
     space.religion = religion;
     this.displayBoard();
   }
@@ -1019,7 +1065,7 @@ console.log("no...");
           if (space.units[f][i].type === "cavalry") { luis++; }
         }
       } else {
-	if (f == faction || this.isAlliedMinorPower(f, faction)) {
+	if (include_minor_allies == true && (f == faction || this.isAlliedMinorPower(f, faction))) {
           for (let i = 0; i < space.units[f].length; i++) {
             if (space.units[f][i].type === "regular") { luis++; }
             if (space.units[f][i].type === "mercenary") { luis++; }
@@ -1046,28 +1092,30 @@ console.log("no...");
     if (this.game.spaces[key]) {
       for (let f in this.game.spaces[key].units) {
 	if (f != exclude_faction) {
-          if (this.game.spaces[key].units[faction]) {
-            for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
+          if (this.game.spaces[key].units[f]) {
+            for (let i = 0; i < this.game.spaces[key].units[f].length; i++) {
+              if (this.game.spaces[key].units[f][i].type === "squadron" || this.game.spaces[key].units[f][i].type === "corsair") {
   	        return 1;
               }
             }
 	  }
 	}
       }
+      return 0;
     }
     if (this.game.navalspaces[key]) {
       for (let f in this.game.navalspaces[key].units) {
 	if (f != exclude_faction) {
-          if (this.game.navalspaces[key].units[faction]) {
-            for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
-              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
+          if (this.game.navalspaces[key].units[f]) {
+            for (let i = 0; i < this.game.navalspaces[key].units[f].length; i++) {
+              if (this.game.navalspaces[key].units[f][i].type === "squadron" || this.game.navalspaces[key].units[f][i].type === "corsair") {
   	        return 1;
               }
             }
 	  }
 	}
       }
+      return 0;
     }
     return 0;
   }
@@ -1185,7 +1233,7 @@ console.log("no...");
     }
     return res;
   }
-  returnNeighbours(space, transit_passes=1, transit_seas=0, faction="") {
+  returnNeighbours(space, transit_passes=1, transit_seas=0, faction="", is_spring_deployment=0) {
 try {
 
     let is_naval_space = false;
@@ -1194,6 +1242,7 @@ try {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; is_naval_space = true; } } catch (err) {}
     try { if (this.game.navalspaces[space.key]) { is_naval_space = true; } } catch (err) {}
+
 
     if (transit_seas == 0 && is_naval_space != true) {
       if (transit_passes == 1) {
@@ -1238,23 +1287,27 @@ try {
 	  for (let i = 0; i < space.ports.length; i++) {
 	    let navalspace = "";
 
-console.log("space ports: " + JSON.stringify(space.ports[i]));
-
 	    if (this.game.navalspaces[space.ports[i]]) {
 	      navalspace = this.game.navalspaces[space.ports[i]];
 	    } else {
 	      navalspace = this.game.spaces[space.ports[i]];
 	    }
 
-console.log("debugging navalspace: " + JSON.stringify(navalspace));
-
 	    let any_unfriendly_ships = false;
+
+
+	    let ignore_hostiles = false;
+
+	    if (this.game.state.spring_deploy_across_passes.includes(faction) && is_spring_deployment == 1) { ignore_hostiles = true; }
+
 	    if (navalspace.ports) {
 	      if (faction != "") {
 	        for (let z = 0; z < navalspace.ports.length; z++) {
 	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z])) {
 		    if (this.game.state.events.spring_preparations != faction) {
-		      any_unfriendly_ships = true;
+	              if (ignore_hostiles == false) {
+		        any_unfriendly_ships = true;
+		      }
 		    }
 		  }
 	        }
@@ -1373,8 +1426,6 @@ console.log("debugging navalspace: " + JSON.stringify(navalspace));
   //
   returnNearestNavalSpaceOrPortWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
 
-console.log("searching for: " + sourcekey);
-
     //
     // return array with results + hops distance
     //
@@ -1459,7 +1510,7 @@ console.log("searching for: " + sourcekey);
   //
   // transit_eas = filters on spring deploment criteria of two friendly ports on either side of the zone + no uncontrolled ships in zone
   //
-  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0, transit_seas=0, faction="", already_crossed_sea_zone=0) {
+  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0, transit_seas=0, faction="", already_crossed_sea_zone=0, is_spring_deployment=0) {
 
     //
     // return array with results + hops distance
@@ -1467,6 +1518,7 @@ console.log("searching for: " + sourcekey);
     let results = [];
     let searched_spaces = {};
     let pending_spaces = {};
+
 
     //
     // if the source matches our destination, return it
@@ -1481,17 +1533,14 @@ console.log("searching for: " + sourcekey);
     //
     // put the neighbours into pending
     //
-    //let n = this.returnNeighboursAsArrayOfKeys(sourcekey, transit_passes, transit_seas, faction);
-    let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction);
+    let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction, is_spring_deployment);
 
-
-if (sourcekey === "candia") {
-
-  console.log("^");
-  console.log("^");
-  console.log("^ NEIGHBOURS ");
-  console.log(JSON.stringify(n));
-
+if (sourcekey == "cagliari") {
+  console.log("faction is: " + faction);
+  console.log("neighbours: " + JSON.stringify(n));
+  let cf = this.returnFactionControllingSpace("toulouse");
+  console.log("controlling faction: " + cf + " faction is: " + faction);
+  console.log("allies: " + this.areAllies(cf, faction));
 }
 
     for (let i = 0; i < n.length; i++) {
@@ -1503,10 +1552,6 @@ if (sourcekey === "candia") {
     //
     let continue_searching = 1;
     while (continue_searching) {
-
-if (sourcekey === "candia") {
-  console.log("loop: " + JSON.stringify(pending_spaces));
-}
 
       let count = 0;
       for (let key in pending_spaces) {
@@ -1551,10 +1596,6 @@ if (sourcekey === "candia") {
 	}
       }
     }
-if (sourcekey == "candia") {
-  console.log(JSON.stringify(results));
-}
-
 
     //
     // at this point we have results or not 
@@ -1678,25 +1719,43 @@ if (sourcekey == "candia") {
     return controlled_keys;
   }
 
-  returnNumberOfCatholicSpacesInLanguageZone(language="") {  
+  returnNumberOfCatholicSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
     let catholic_spaces = 0;
     for (let key in this.game.spaces) {
-      if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
-	if (language == "" || this.game.spaces[key].language == language) {
-	  catholic_spaces++;
+      if (do_not_count_unrest == 0) {
+        if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
+  	  if (language == "" || this.game.spaces[key].language == language) {
+	    catholic_spaces++;
+	  }
 	}
+      } else {
+        if (this.game.spaces[key].religion === "catholic") {
+  	  if (language == "" || this.game.spaces[key].language == language) {
+	    catholic_spaces++;
+	  }
+        }
       }
     }
     return catholic_spaces;
   }
 
-  returnNumberOfProtestantSpacesInLanguageZone(language="") {  
+  returnNumberOfProtestantSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
+console.log("language zone: " + language);
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
-	if (language == "all" || language == "" || this.game.spaces[key].language == language) {
-	  protestant_spaces++;
-	}
+      if (do_not_count_unrest == 0) {
+        if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
+console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language);
+	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
+	    protestant_spaces++;
+	  }
+        }
+      } else {
+        if (this.game.spaces[key].religion === "protestant") {
+	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
+	    protestant_spaces++;
+	  }
+        }
       }
     }
     return protestant_spaces;
@@ -1732,7 +1791,7 @@ if (sourcekey == "candia") {
       top : 1020 ,
       left : 1450 ,
       name : "English Channel" ,
-      ports : ["brest", "plymouth", "portsmouth", "rouen", "bolougne", "calais" ] ,
+      ports : ["brest", "plymouth", "portsmouth", "rouen", "boulogne", "calais" ] ,
       neighbours : ["irish","biscay","north"] ,
     }
     seas['north'] = {
@@ -3349,6 +3408,7 @@ if (sourcekey == "candia") {
     }
 
     for (let key in spaces) {
+      spaces[key].key = key;
       spaces[key].units = {};
       spaces[key].units['england'] = [];
       spaces[key].units['france'] = [];
@@ -3419,6 +3479,8 @@ if (sourcekey == "candia") {
 
 	let html = '<div class="space_view" id="">';
 
+	let space = his_self.game.spaces[obj.key];
+
 	let home = obj.home;
 	let religion = obj.religion;
 	let political = obj.political;
@@ -3440,19 +3502,19 @@ if (sourcekey == "candia") {
 	  <div class="space_units">
 	`;
 
-        for (let key in obj.units) {
+        for (let key in space.units) {
 	  html += his_self.returnArmyTiles(key, obj.key);
 	  html += his_self.returnMercenaryTiles(key, obj.key);
 	  html += his_self.returnPersonagesTiles(key, obj.key);
 	  html += his_self.returnNavalTiles(key, obj.key);
         }
 
-        for (let f in this.units) {
-	  if (this.units[f].length > 0) {
-            for (let i = 0; i < this.units[f].length; i++) {
+        for (let f in space.units) {
+	  if (space.units[f].length > 0) {
+            for (let i = 0; i < space.units[f].length; i++) {
 	      let b = "";
-	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
-	      html += `<div class="space_unit">${f} - ${this.units[f][i].type} ${b}</div>`;
+	      if (space.units[f][i].besieged) { b = ' (besieged)'; }
+	      html += `<div class="space_unit">${f} - ${space.units[f][i].type} ${b}</div>`;
 	    }
 	  }
 	}

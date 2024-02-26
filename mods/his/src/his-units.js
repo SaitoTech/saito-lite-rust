@@ -196,60 +196,72 @@
     }
   }
 
-  importExplorer(name, obj) {
-    if (obj.type == null)               { obj.type = "unit"; }
+  importConquistador(name, obj) {
+    if (obj.faction == null)            { obj.faction = ""; }
+    if (obj.type == null)               { obj.type = name; }
     if (obj.name == null)               { obj.name = "Unit"; }
-    if (obj.spacekey == null)           { obj.spacekey = ""; }
     if (obj.personage == null)          { obj.personage = false; }
-    if (obj.debater == null)            { obj.debater = false; }
-    if (obj.reformer == null)           { obj.reformer = false; }
-    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
-    if (obj.army_leader == null)        { obj.army_leader = false; }
-    if (obj.navy_leader == null)        { obj.navy_leader = false; }
-    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
-    if (obj.command_value == null)      { obj.command_value = 0; }
-    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
-    if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
-    if (obj.captured == null)           { obj.captured = false; }
-    if (obj.loaned == null)		{ obj.loaned = false; }
-    if (obj.key == null)		{ obj.key = name; }
-    if (obj.onCommitted == null) {
-      obj.onCommitted = function(his_self, faction) { return 1; }
+    if (obj.power == null)		{ obj.power = 0; }
+    if (!this.conquistadors[name]) {
+      this.addEvents(obj);
+      this.conquistadors[name] = obj;
     }
+  }
+
+  importExplorer(name, obj) {
+    if (obj.faction == null)            { obj.faction = ""; }
+    if (obj.type == null)               { obj.type = name; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.power == null)		{ obj.power = 0; }
     if (!this.explorers[name]) {
       this.addEvents(obj);
       this.explorers[name] = obj;
     }
   }
 
-  importConquistador(name, obj) {
-    if (obj.type == null)               { obj.type = "unit"; }
-    if (obj.name == null)               { obj.name = "Unit"; }
-    if (obj.spacekey == null)           { obj.spacekey = ""; }
-    if (obj.personage == null)          { obj.personage = false; }
-    if (obj.debater == null)            { obj.debater = false; }
-    if (obj.reformer == null)           { obj.reformer = false; }
-    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
-    if (obj.army_leader == null)        { obj.army_leader = false; }
-    if (obj.navy_leader == null)        { obj.navy_leader = false; }
-    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
-    if (obj.command_value == null)      { obj.command_value = 0; }
-    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
-    if (obj.img == null)                { obj.img = ""; }
-    if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
-    if (obj.captured == null)           { obj.captured = false; }
-    if (obj.loaned == null)		{ obj.loaned = false; }
-    if (obj.key == null)		{ obj.key = name; }
-    if (obj.onCommitted == null) {
-      obj.onCommitted = function(his_self, faction) { return 1; }
+  returnAvailableExplorers(faction="") {
+    let unavailable = [];
+    let available = [];
+    for (let z = 0; z < this.game.state.explorations.length; z++) {
+      let exp = this.game.state.explorations[z];
+      if (exp.faction == faction) {
+	if (exp.explorer_lost == 1) {
+	  unavailable.push(exp.explorer);
+        }
+      }
     }
-    if (!this.conquistadors[name]) {
-      this.addEvents(obj);
-      this.conquistadors[name] = obj;
+    for (let key in this.explorers) {
+      if (this.explorers[key].faction == faction) {
+        if (!unavailable.includes(key)) {
+	  available.push(key);
+        }
+      }
     }
+    return available;
+  }
+
+  returnAvailableConquistadors(faction="") {
+    let unavailable = [];
+    let available = [];
+    for (let z = 0; z < this.game.state.conquests.length; z++) {
+      let exp = this.game.state.conquests[z];
+      if (exp.faction == faction) {
+	if (exp.conquistador_lost == 1) {
+	  unavailable.push(exp.conquistador);
+        }
+      }
+    }
+    for (let key in this.conquistadors) {
+      if (this.conquistadors[key].faction == faction) {
+        if (!unavailable.includes(key)) {
+	  available.push(key);
+        }
+      }
+    }
+    return available;
   }
 
   removeArmyLeader(faction, space, leader) {
@@ -270,31 +282,25 @@
 
 
   addArmyLeader(faction, space, leader) {
-
     if (!this.army[leader]) {
       console.log("ARMY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.army[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
   addNavyLeader(faction, space, leader) {
-
     if (!this.navy[leader]) {
       console.log("NAVY LEADER: " + leader + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     space.units[faction].push(this.navy[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
   }
 
 
@@ -316,45 +322,21 @@
       console.log("REFORMER: " + reformer + " not found");
       return;
     }
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-
-  }
-
-  addWife(faction, wife) {
-
-    if (!this.wives[wife]) {
-      console.log("WIFE: " + wife + " not found");
-      return;
-    }
-
-    for (let i = 0; i < this.game.state.wives.length; i++) {
-      if (this.game.state.wives[i].type === wife) {
-	return;
-      }
-    }
-
-
-    this.game.state.wives.push(this.wives[wife]);
-    this.game.state.wives[this.game.state.wives.length-1].owner = faction; 
-
   }
 
   removeDebater(faction, debater) {
-
     if (!this.debaters[debater]) {
       console.log("DEBATER: " + debater + " not found");
       return;
     }
-
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].type == debater) { 
 	this.game.state.debaters.splice(i, 1);
       }
     }
-
   }
 
   disgraceDebater(debater) { return this.burnDebater(debater, 1); }
@@ -383,6 +365,7 @@
         this.game.state.burned.push(debater);
 
         let x = debater.split("-");
+
 	//
 	// also remove reformer (if exists)
 	//
@@ -390,6 +373,8 @@
 	  let reformer = x[0] + "-reformer";
           let s = this.returnSpaceOfPersonage(this.debaters[debater].faction, reformer);
 	  if (s) { this.removeReformer(this.debaters[debater].faction, reformer); }
+	  // re-display space
+	  this.displaySpace(s);
 	} catch (err) {
 	  // reformer does not exist
 	}
@@ -562,6 +547,8 @@
     let my_spaces = {};
     let available_units = {};
         available_units['regular'] = {};
+        available_units['squadron'] = {};
+        available_units['cavalry'] = {};
     let deployed_units = {};
 
     //
@@ -574,6 +561,7 @@
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 0;    
     }
     if (faction == "england") {
       available_units['regular']['1'] = 9;    
@@ -582,6 +570,7 @@
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 5;    
     }
     if (faction == "ottoman") {
       available_units['regular']['1'] = 11;    
@@ -590,6 +579,7 @@
       available_units['regular']['4'] = 4;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 9;
     }
     if (faction == "france") {
       available_units['regular']['1'] = 10;    
@@ -598,6 +588,7 @@
       available_units['regular']['4'] = 3;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 5;    
     }
     if (faction == "papacy") {
       available_units['regular']['1'] = 7;    
@@ -606,6 +597,7 @@
       available_units['regular']['4'] = 2;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 2;
     }
     if (faction == "hapsburg") {
       available_units['regular']['1'] = 12;    
@@ -614,6 +606,7 @@
       available_units['regular']['4'] = 3;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 6;    
     }
 
     if (faction == "scotland") {
@@ -622,7 +615,7 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 1;    
     }
     if (faction == "genoa") {
       available_units['regular']['1'] = 2;    
@@ -630,7 +623,7 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 1;    
     }
     if (faction == "venice") {
       available_units['regular']['1'] = 4;    
@@ -638,7 +631,7 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 0;    
+      available_units['regular']['6'] = 4;    
     }
     if (faction == "hungary") {
       available_units['regular']['1'] = 3;    
@@ -671,6 +664,17 @@
         }
       }
     }
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units) {
+        if (this.game.navalspaces[key].units[faction].length > 0) {
+          for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+      	    if (!my_spaces[key]) { my_spaces[key] = {}; }
+            if (!my_spaces[key][this.game.navalspaces[key].units[faction][i].type]) { my_spaces[key][this.game.navalspaces[key].units[faction][i].type] = 0; }
+            my_spaces[key][this.game.navalspaces[key].units[faction][i].type]++;
+          }
+        }
+      }
+    }
 
     //
     //
@@ -691,6 +695,8 @@
       deployed_units[key]['mercenary']['4'] = 0;
       deployed_units[key]['mercenary']['5'] = 0;
       deployed_units[key]['mercenary']['6'] = 0;
+      deployed_units[key]['squadron'] = {};
+      deployed_units[key]['squadron']['1'] = 0;
     }
 
 
@@ -768,6 +774,20 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
+	if (my_spaces[key]['squadron'] >= 1 && available_units['squadron']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['squadron'] -= 1;
+	  available_units['squadron']['1']--;
+	  deployed_units[key]['squadron']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['corsair'] >= 1 && available_units['squadron']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['corsair'] -= 1;
+	  available_units['squadron']['1']--;
+	  deployed_units[key]['corsair']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
 
       }
 
@@ -802,6 +822,36 @@
 
   }
 
-  
 
+  returnNumberOfUnitsAvailableForConstruction(faction, unittype) {
+
+    //
+    // TODO -- implement limits on squadron and corsair construction
+    //
+    if (unittype === "cavalry") { return 1; }
+
+    if (unittype === "corsair") { unittype = "squadron"; }
+    if (unittype === "mercenary") { unittype = "regular"; }
+
+    let res = this.returnOnBoardUnits(faction);
+
+    let amount_over_capacity = 0;
+    for (let key in res.missing) {
+      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0)) {
+        return 0;
+      }
+    }
+
+    let x = 0;
+
+    if (res.available[unittype]['1'] > 0) { x += (1 * res.available[unittype]['1']); }
+    if (res.available[unittype]['2'] > 0) { x += (2 * res.available[unittype]['2']); }
+    if (res.available[unittype]['3'] > 0) { x += (3 * res.available[unittype]['3']); }
+    if (res.available[unittype]['4'] > 0) { x += (4 * res.available[unittype]['4']); }
+    if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
+    if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
+
+    return x;
+
+  }
 

@@ -9,38 +9,30 @@
       admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
-        
 	let base = 4; 
-
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
         if (kc > 4) { base += 1; }
-
         if (game_mod.game.state.leaders.luther == 1) { base += 0; }
-
 	return base;        
-
       },
-      returnAdminRating  :       function(game_mod) {
 
+      returnAdminRating  :       function(game_mod) {
 	if (game_mod.game.state.leaders.luther == 1) { return 2; }
 	return 0;
-
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {
 	// 2 VP for every electorate that is under Protesant religious + political control
         let base = 0;
         base += (2 * game_mod.returnNumberOfProtestantElectorates());        
-console.log("protestants electorate VP: " + base);
         return base;
       },
 
       calculateBonusVictoryPoints  :    function(game_mod) {
 	// + VP from disgraced papal debaters
 	let bonus_vp_points = 0;
-	bonus_vp_points += game_mod.game.state.papal_debaters_disgraced_vp;
-	bonus_vp_points += game_mod.game.state.protestant_war_winner_vp;
-console.log("protestants bonus VP from wars, etc.: " + bonus_vp_points);
+	bonus_vp_points += parseInt(game_mod.game.state.papal_debaters_disgraced_vp);
+	bonus_vp_points += parseInt(game_mod.game.state.protestant_war_winner_vp);
         return bonus_vp_points;
       }
 ,
@@ -48,8 +40,6 @@ console.log("protestants bonus VP from wars, etc.: " + bonus_vp_points);
 
 	// protestant spaces track
         let base = game_mod.returnProtestantSpacesTrackVictoryPoints().protestant;
-
-console.log("protestants from spaces track: " + base);
 
 	// burned papal debaters
 	for (let i = 0; i < game_mod.game.state.burned.length; i++) {
@@ -65,8 +55,6 @@ console.log("protestants from spaces track: " + base);
         if (game_mod.game.state.translations['full']['german'] == 10) { base++; }
         if (game_mod.game.state.translations['full']['french'] == 10) { base++; }
         if (game_mod.game.state.translations['full']['english'] == 10) { base++; }
-
-console.log("and after translations...: " + base);
 
         return base;
       },

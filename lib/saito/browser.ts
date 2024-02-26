@@ -1008,14 +1008,14 @@ class Browser {
 		read_as_array_buffer = false
 	) {
 		const hidden_upload_form = `
-      <form class="my-form" style="display:none">
+      <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
         <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated hidden_file_element_${id}">
-        <label class="button" class="hidden_file_element_button_${id}" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
+        <label class="button" class="hidden_file_element_button" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
       </form>
     `;
 
-		if (!document.getElementById(`hidden_file_element_${id}`)) {
+		if (!document.getElementById(`uploader_${id}`)) {
 			this.addElementToId(hidden_upload_form, id);
 			const dropArea = document.getElementById(id);
 			if (!dropArea) {
@@ -1697,10 +1697,13 @@ class Browser {
 		// from tweet.js let expression = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 		// from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
-		return /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+		// The sanitizeHtml converts & into `&amp;` so we should match on ;
+		let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
+
+		return daniels_regex;
 	}
 
-	sanitize(text) {
+	sanitize(text, createLinks = false) {
 		//console.log("Sanitize: ", text);
 		try {
 			if (text !== '') {
@@ -1750,7 +1753,8 @@ class Browser {
 					div: ['class', 'id'],
 					span: ['class', 'id', 'data-id'],
 					img: ['src', 'class'],
-					blockquote: ['href']
+					blockquote: ['href'],
+					i: ['class']
 				},
 				selfClosing: [
 					'img',
@@ -1771,28 +1775,30 @@ class Browser {
 
 			/* wrap link in <a> tag */
 
-			text = text.replace(this.urlRegexp(), function (url) {
-				let url1 = url.trim();
-				let url2 = url1;
-				if (url2.length > 42) {
-					if (url2.indexOf('http') == 0 && url2.includes('://')) {
-						let temp = url2.split('://');
-						url2 = temp[1];
+			if (createLinks){
+				text = text.replace(this.urlRegexp(), function (url) {
+					let url1 = url.trim();
+					let url2 = url1;
+					if (url2.length > 42) {
+						if (url2.indexOf('http') == 0 && url2.includes('://')) {
+							let temp = url2.split('://');
+							url2 = temp[1];
+						}
+						if (url2.indexOf('www.') == 0) {
+							url2 = url2.substr(4);
+						}
+						if (url2.length > 40) {
+							url2 = url2.substr(0, 37) + '...';
+						}
 					}
-					if (url2.indexOf('www.') == 0) {
-						url2 = url2.substr(4);
-					}
-					if (url2.length > 40) {
-						url2 = url2.substr(0, 37) + '...';
-					}
-				}
 
-				return `<a ${
-					url.includes(window.location.host)
-						? ''
-						: "target='_blank' rel='noopener noreferrer' "
-				} class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
-			});
+					return `<a ${
+						url.includes(window.location.host)
+							? ''
+							: "target='_blank' rel='noopener noreferrer' "
+					} class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
+				});
+			}
 
 			//trim lines at start and end
 			text = text.replace(/^\s+|\s+$/g, '');
@@ -2253,6 +2259,21 @@ class Browser {
 				}, 3000);
 			}
 		}
+	}
+
+	getDecimalSeparator() {
+		let locale = (window.navigator?.language) 
+                     ? window.navigator?.language : 'en-US';
+    const numberWithDecimalSeparator = 1.1;
+    return Intl.NumberFormat(locale)
+        .formatToParts(numberWithDecimalSeparator)
+        .find(part => part.type === 'decimal')
+        .value;
+	}
+
+	getThousandSeparator() {
+		let decimal_separator = this.getDecimalSeparator();
+		return (decimal_separator == '.') ? ',' : '.';
 	}
 }
 

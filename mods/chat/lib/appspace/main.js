@@ -1,17 +1,9 @@
-const JSON = require('json-bigint');
 const ChatMainTemplate = require('./main.template');
-const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
 
 class ChatMain {
-	constructor(app, mod, container = '') {
+	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-
-		//
-		// left sidebar
-		//
-		this.sidebar = new SaitoSidebar(this.app, this.mod, '.saito-container');
-		this.sidebar.align = 'nope';
 	}
 
 	render() {
@@ -21,13 +13,8 @@ class ChatMain {
 				'.saito-container'
 			);
 		} else {
-			this.app.browser.addElementToSelector(
-				ChatMainTemplate(),
-				this.container
-			);
+			this.app.browser.addElementToDom(ChatMainTemplate());
 		}
-
-		//this.sidebar.render();
 
 		this.attachEvents();
 	}

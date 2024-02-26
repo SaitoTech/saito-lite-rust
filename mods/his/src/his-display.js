@@ -85,9 +85,18 @@
 
   }
 
+  displayTurnTrack() {
+    try {
+      let obj = document.querySelector(".turntrack");
+      obj.classList.remove(`turntrack1`);
+      obj.classList.remove(`turntrack${this.game.state.round-1}`);
+      obj.classList.add(`turntrack${this.game.state.round}`);
+    } catch (err) {}
+  }
+
   displayDiplomacyTable() { this.displayWarBox(); }
   displayWarBox() {
-
+    try {
     let factions = ["ottoman","hapsburg","england","france","papacy","protestant","genoa","hungary","scotland","venice"];
     for (let i = 0; i < factions.length; i++) {
       for (let ii = 0; ii < factions.length; ii++) {
@@ -111,65 +120,68 @@
 	}
       }
     }
+    } catch (err) {}
   }
 
   displayDebaters() {
     this.debaters_overlay.render();
   }
 
+  displayPersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "block";
+  }
+  hidePersia() {
+    let obj = document.querySelector("#persia");
+    obj.style.display = "none";
+  }
+  displayEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "block";
+  }
+  hideEgypt() {
+    let obj = document.querySelector("#egypt");
+    obj.style.display = "none";
+  }
+  displayIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "block";
+  }
+  hideIreland() {
+    let obj = document.querySelector("#ireland");
+    obj.style.display = "none";
+  }
+
   displayExplorers() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
-    for (let i = 0; i < this.game.state.explorers.length; i++) {
-      html += `	<div class="personage_tile${i}" data-id="${this.game.state.explorers[i].img}" style="background-image:url('/his/img/tiles/explorers/${this.game.state.explorers[i].img}')"></div>`;
+    let f = ["hapsburg","france","england"];
+    for (let i = 0; i < f.length; i++) {
+      let x = this.returnAvailableExplorers(f[i]);
+      for (let z = 0; z < x.length; z++) {
+        html += `	<div class="personage_tile${z}" data-id="${this.explorers[x[z]].type}" style="background-image:url('${this.explorers[x[z]].img}')"></div>`;
+      }
     }
     html += `</div>`;
 
     this.overlay.showOverlay(html);
-
-    for (let i = 0; i < this.game.state.explorers.length; i++) {
-      let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
-      let tile_b = tile_f.replace('.svg', '_back.svg');
-      if (this.game.state.explorers[i].committed == 1) {
-	let x = tile_f;
-	tile_f = tile_b;
-	tile_b = x;
-      }
-      let divsq = `.personage_tile${i}`;
-      $(divsq).mouseover(function() {
-	$(this).css('background-image', `url('${tile_b}')`);
-      }).mouseout(function() {
-	$(this).css('background-image', `url('${tile_f}')`);
-      });
-    }
 
   }
 
   displayConquistadors() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
-    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
-      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.conquistadors[i].img}" style="background-image:url('/his/img/tiles/conquistadors/${this.game.state.conquistadors[i].img}')"></div>`;
+    let f = ["hapsburg","france","england"];
+    for (let i = 0; i < f.length; i++) {
+      let x = this.returnAvailableConquistadors(f[i]);
+      for (let z = 0; z < x.length; z++) {
+        html += `	<div class="personage_tile${z}" data-id="${this.conquistadors[x[z]].type}" style="background-image:url('${this.conquistadors[x[z]].img}')"></div>`;
+      }
     }
     html += `</div>`;
 
     this.overlay.showOverlay(html);
 
-    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
-      let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
-      let tile_b = tile_f.replace('.svg', '_back.svg');
-      if (this.game.state.conquistadors[i].committed == 1) {
-	let x = tile_f;
-	tile_f = tile_b;
-	tile_b = x;
-      }
-      let divsq = `.personage_tile${i}`;
-      $(divsq).mouseover(function() {
-	$(this).css('background-image', `url('${tile_b}')`);
-      }).mouseout(function() {
-	$(this).css('background-image', `url('${tile_f}')`);
-      });
-    }
   }
 
   displayTheologicalDebater(debater, attacker=true) {
@@ -298,6 +310,15 @@
 
   displayBoard() {
 
+    if (this.game.state.events.war_in_persia) { this.displayPersia(); }
+    if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
+    if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+
+    try {
+      this.displayTurnTrack();
+    } catch (err) {
+      console.log("error displaying board... " + err);
+    }
     try {
       this.displayWarBox();
     } catch (err) {
@@ -341,12 +362,192 @@
   }
 
   displayColony() {
+
+    let obj = document.querySelector(".crossing_atlantic");
+    for (let i = 0; i < this.game.state.colonies.length; i++) {
+      if (this.game.state.colonies[i].resolved != 1) {
+        if (this.game.state.colonies[i].faction == "france") {
+	  let tile = "/his/img/tiles/colonies/Charlesbourg.svg";
+	  if (this.game.state.newworld['french_colony1'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Montreal.svg";
+	  }
+	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
+        }
+        if (this.game.state.colonies[i].faction == "hapsburg") {
+	  let tile = "/his/img/tiles/colonies/PuertoRico.svg";
+	  if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Cuba.svg";
+	  }
+	  if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Hispanola.svg";
+	  }
+	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
+        }
+        if (this.game.state.colonies[i].faction == "england") {
+	  let tile = "/his/img/tiles/colonies/Roanoke.svg";
+	  if (this.game.state.newworld['english_colony1'].claimed == 1) {
+	    tile = "/his/img/tiles/colonies/Jamestown.svg";
+	  }
+	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
+        }
+      }
+    }
+
+    if (this.game.state.newworld['england_colony1'].claimed == 1) {
+      document.querySelector('.england_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['england_colony1'].img}" />`;
+    }
+    if (this.game.state.newworld['england_colony2'].claimed == 1) {
+      document.querySelector('.england_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['england_colony2'].img}" />`;
+    }
+    if (this.game.state.newworld['france_colony1'].claimed == 1) {
+      document.querySelector('.france_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['france_colony1'].img}" />`;
+    }
+    if (this.game.state.newworld['france_colony2'].claimed == 1) {
+      document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['france_colony2'].img}" />`;
+    }
+    if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
+      document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony1'].img}" />`;
+    }
+    if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
+      document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony2'].img}" />`;
+    }
+    if (this.game.state.newworld['hapsburg_colony3'].claimed == 1) {
+      document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony3'].img}" />`;
+    }
+
   }
 
   displayConquest() {
+
+    let obj = document.querySelector(".crossing_atlantic");
+        obj.innerHTML = "";
+
+    for (let z = 0; z < this.game.state.conquests.length; z++) {
+
+      let con = this.game.state.conquests[z];
+      let faction = con.faction;
+      let round = con.round;
+
+      //      
+      // current round are unresolved      
+      //      
+      if (round == this.game.state.round) {
+        if (faction == "hapsburg") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_Conquest.svg" />`;
+        }
+        if (faction == "france") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_Conquest.svg" />`;
+        }
+        if (faction == "england") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
+        }
+      }
+    }
+
+    if (this.game.state.newworld['maya'].claimed == 1) {
+      let f = this.game.state.newworld['maya'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.maya').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['aztec'].claimed == 1) {
+      let f = this.game.state.newworld['aztec'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.aztec').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['inca'].claimed == 1) {
+      let f = this.game.state.newworld['inca'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.inca').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+
+  }
+
+  displayExploration() {
+
+    let obj = document.querySelector(".crossing_atlantic");
+
+    for (let z = 0; z < this.game.state.explorations.length; z++) {
+
+      let exp = this.game.state.explorations[z];
+      let faction = exp.faction;
+      let round = exp.round;
+
+      //      
+      // current round are unresolved      
+      //      
+      if (round == this.game.state.round) {
+        if (faction == "hapsburg") {
+          if (this.game.state.hapsburg_charted == 1) {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_ExplorationCharted.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_Exploration.svg" />`;
+          }
+        }
+        if (faction == "france") {
+          if (this.game.state.france_charted == 1) {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_ExplorationCharted.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_Exploration.svg" />`;
+          }
+        }
+        if (faction == "england") {
+          if (this.game.state.england_charted == 1) {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_ExplorationCharted.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Exploration.svg" />`;
+          }
+        }
+      }
+    }
+
+    if (this.game.state.newworld['stlawrence'].claimed == 1) {
+      let f = this.game.state.newworld['stlawrence'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.stlawrence').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['greatlakes'].claimed == 1) {
+      let f = this.game.state.newworld['greatlakes'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.greatlakes').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['mississippi'].claimed == 1) {
+      let f = this.game.state.newworld['mississippi'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.mississippi').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['amazon'].claimed == 1) {
+      let f = this.game.state.newworld['amazon'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.amazon').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['pacificstrait'].claimed == 1) {
+      let f = this.game.state.newworld['pacificstrait'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.pacificstrait').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+    if (this.game.state.newworld['circumnavigation'].claimed == 1) {
+      let f = this.game.state.newworld['circumnavigation'].faction;
+      let t = this.returnExplorationTile(f);
+      document.querySelector('.circumnavigation').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+
+  }
+
+  returnExplorationTile(f="") {
+    if (f == "hapsburg") { return "Hapsburg_key.svg"; }
+    if (f == "england") { return "England_key.svg"; }
+    if (f == "france") { return "France_key.svg"; }
+    return "";
   }
 
   displayNewWorld() {
+try {
+    this.displayConquest();
+    this.displayExploration();
+    this.displayColony();
+} catch (err) { 
+  console.log("display error: " + JSON.stringify(err));
+}
   }
 
   displaySpaceDetailedView(name) {
@@ -403,6 +604,7 @@
 
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
+    if (owner == "protestant") { stype = "hex"; }
 
     if (owner != "") {
 
@@ -453,7 +655,6 @@
         }
       }
 
-
       if (owner === "hapsburg") {
         tile = "/his/img/tiles/hapsburg/";	  
         if (space.religion === "protestant") {
@@ -491,9 +692,6 @@
         if (space.religion === "protestant") {
           tile += `Protestant_${stype}_back.svg`;
         } else {
-if (space.key === "regensburg") {
-  alert("religion is: " + space.religion);
-}
           tile += `Protestant_${stype}.svg`;
         }
       }
@@ -809,6 +1007,69 @@ if (space.key === "regensburg") {
 	    }
 	  }
 
+      }
+      //
+      // surplus units that should not technically be available according to
+      // tile limitations will be in the "missing" section. we do want want
+      // pieces appearing and disappearing from the board, so we display them
+      // as single-unit tiles.
+      //
+      if (this.game.state.board[z].missing[spacekey]) {
+          if (z === "hapsburg") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgReg-1.svg" />`;
+	    }
+	  }
+          if (z === "ottoman") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanReg-1.svg" />`;
+	    }
+	  }
+          if (z === "papacy") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyReg-1.svg" />`;
+	    }
+	  }
+          if (z === "england") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandReg-1.svg" />`;
+	    }
+	  }
+          if (z === "france") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchReg-1.svg" />`;
+	    }
+	  }
+          if (z === "protestant") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-1.svg" />`;
+	    }
+	  }
+          if (z === "venice") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/venice/VeniceReg-1.svg" />`;
+	    }
+	  }
+          if (z === "genoa") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/genoa/GenoaReg-1.svg" />`;
+	    }
+	  }
+          if (z === "hungary") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hungary/HungaryReg-1.svg" />`;
+	    }
+	  }
+          if (z === "scotland") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScotlandReg-1.svg" />`;
+	    }
+	  }
+          if (z === "independent") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentReg-1.svg" />`;
+	    }
+	  }
       }
     }
 
@@ -1588,6 +1849,12 @@ if (space.key === "regensburg") {
       if (space.fortified == 1) {
         obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
       }
+      if (space.pirate_haven == 1) {
+        obj.innerHTML += `<img class="pirate-haven" src="/his/img/tiles/ottoman/PirateHaven.svg" />`;
+      }
+      if (space.university == 1) {
+        obj.innerHTML += `<img class="university" src="/his/img/tiles/papacy/Jesuit_Univ.svg" />`;
+      }
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
@@ -1784,6 +2051,7 @@ try {
     if (c == undefined) { c = cdeck[cardname]; card = cdeck[cardname]; }
     if (c == undefined) { c = ddeck[cardname]; card = ddeck[cardname]; }
 
+
     //
     // triggered before card deal
     //
@@ -1802,7 +2070,7 @@ try {
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-      if (!this.deck[cardname]) {
+      if (this.deck[cardname]) {
         if (!this.deck[cardname].canEvent(this, "")) {
           html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
         }
@@ -1839,6 +2107,7 @@ try {
       "img/backgrounds/diet_of_worms.jpeg",
       "img/backgrounds/language-zone.jpg",
       "img/backgrounds/95_theses.jpeg",
+      "img/cards/PASS.png",
     ];
 
     this.preloadImageArray(allImages);
