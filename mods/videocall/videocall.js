@@ -41,6 +41,7 @@ class Videocall extends ModTemplate {
 				this.streams = new StreamManager(this.app, this, settings);
 			}else{
 				this.streams.updateSettings(settings);
+				this.streams.active = true;
 			}
 
 			console.log('STUN UI: ', settings);
@@ -60,6 +61,8 @@ class Videocall extends ModTemplate {
 				this.CallInterface.destroy();
 				this.CallInterface = null;
 			}
+
+			this.streams = null;
 
 			this.app.options.stun.peers = [];
 			this.app.storage.saveOptions();
@@ -346,10 +349,20 @@ class Videocall extends ModTemplate {
 		let txmsg = tx.returnMessage();
 
 		if (this.app.BROWSER === 1) {
-			if (txmsg.module == 'Videocall' || txmsg.module == "Stun") {
-				if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
 					
-					if (this.hasSeenTransaction(tx)) return;
+				//
+				// These messages are sent exclusively through Relay -- so unsigned 
+				// and not belonging to a module 
+				//
+				if (txmsg.request.includes("stun-connection")){
+					this.dialer.receiveStunCallMessageFromPeers(tx);
+					return;
+				}
+
+				if (this.hasSeenTransaction(tx)) return;
+
+				if (txmsg.module == 'Videocall' || txmsg.module == "Stun") {
 
 					if (!this?.room_obj?.call_id ||	this.room_obj.call_id !== txmsg.call_id) {
 						return;
@@ -391,6 +404,8 @@ class Videocall extends ModTemplate {
 						}
 						this.app.storage.saveOptions();
 						this.app.connection.emit("remove-peer-box", from);
+
+						this.streams.removePeer(from);
 					}
 
 					if (txmsg.request === 'toggle-audio' || txmsg.request == 'toggle-video') {

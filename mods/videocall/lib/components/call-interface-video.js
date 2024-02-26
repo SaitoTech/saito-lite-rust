@@ -87,6 +87,9 @@ class CallInterfaceVideo {
 		);
 
 		this.app.connection.on('remove-peer-box', (peer_id) => {
+
+			this.remote_streams.delete(peer_id);
+			
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
 					this.video_boxes[peer_id].video_box.remove(true);
@@ -152,7 +155,10 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('stun-disconnect', () => {
-			this.video_boxes = {};
+
+			for (let peer in this.video_boxes){
+				this.app.connection.emit("remove-peer-box", peer);
+			}
 
 			if (this.mod.browser_active) {
 				let homeModule = this.app.options?.homeModule || 'Stun';
@@ -178,6 +184,7 @@ class CallInterfaceVideo {
 					);
 					document.title = this.old_title;
 				}
+
 			}
 		});
 	}
@@ -462,10 +469,6 @@ class CallInterfaceVideo {
 		this.createVideoBox(peer);
 		this.video_boxes[peer].video_box.render(remoteStream);
 
-		//
-		// Check if newly added remote stream is muted
-		// TODO -- this doesn't pick up if the audio is disabled/muted for some GD reason!!!!
-		//
 		if (remoteStream) {
 
 			let peer_elem = document.getElementById(`stream_${peer}`);
@@ -544,13 +547,12 @@ class CallInterfaceVideo {
 	updateImages() {
 		let images = ``;
 		let count = 0;
-		for (let i in this.video_boxes) {
-			if (i === 'presentation') {
+		for (let publickey in this.video_boxes) {
+			if (publickey === 'presentation') {
 				continue;
 			}
 
-			let publickey = i;
-			if (i === 'local') {
+			if (publickey === 'local') {
 				publickey = this.mod.publicKey;
 			}
 

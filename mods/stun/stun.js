@@ -297,10 +297,23 @@ class Stun extends ModTemplate {
 		}
 
 		if (this.peers.get(peerId)) {
-			if (this.peers.get(peerId).connection == 'connected') {
-				console.log('Already connected to ' + peerId);
-			}
+			console.log('STUN: already connected to ' + peerId, "Status: " + this.peers.get(peerId).connectionState);
 			this.peers.get(peerId).restartIce();
+			
+			if (callback){
+				this.peers.get(peerId).onnegotiationneeded = null;
+				callback();
+			}else{
+				this.peers.get(peerId).onnegotiationneeded = () => {
+					console.log("STUN (redo): Negotation needed!");
+					this.renegotiate(peerId);
+				};
+
+				if (!this.hasConnection(peerId)){
+					this.renegotiate(peerId);
+				}
+			}
+			return;
 		}else{
 			const pc = new RTCPeerConnection({
 				iceServers: this.servers
@@ -420,6 +433,7 @@ class Stun extends ModTemplate {
 			// However, need to further study "perfect negotiation" with polite/impolite peers
 			//
 			peerConnection.onnegotiationneeded = () => {
+				console.log("Negotation needed!");
 				this.renegotiate(peerId);
 			};
 		}

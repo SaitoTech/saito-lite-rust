@@ -15,7 +15,8 @@ class StreamManager {
 
 		this.videoEnabled = true;
 		this.audioEnabled = true;
-		this.remain_in_call = true;
+		this.auto_disconnect = false;
+		this.active = true;
 
 		this.updateSettings(settings);
 
@@ -23,6 +24,7 @@ class StreamManager {
 
 		app.connection.on('stun-toggle-video', async () => {
 			// Turn off Video
+			if (!this.active) { return; }
 
 			if (this.videoEnabled === true) {
 				if (!this.localStream.getVideoTracks()[0]) return;
@@ -84,6 +86,8 @@ class StreamManager {
 		});
 
 		app.connection.on('stun-toggle-audio', async () => {
+			if (!this.active) { return; }
+
 			this.audioEnabled = !this.audioEnabled;
 
 			this.localStream.getAudioTracks().forEach((track) => {
@@ -99,6 +103,8 @@ class StreamManager {
 		});
 
 		app.connection.on('begin-share-screen', async () => {
+			if (!this.active) { return; }
+
 			try {
 				console.log('Start');
 				this.presentationStream =
@@ -141,12 +147,15 @@ class StreamManager {
 		});
 
 		app.connection.on('stop-share-screen', () => {
+			if (!this.active) { return; }
+
 			console.log('no more');
 			this.endPresentation();
 		});
 
 
 		app.connection.on('stun-connection-connected', (peerId)=> {
+			if (!this.active) { return; }
 
 			if (!this.mod?.room_obj || !this.app.options.stun.peers.includes(peerId)){
 				return;
@@ -172,6 +181,8 @@ class StreamManager {
 		});
 
 		app.connection.on("stun-track-event", (peerId, event) => {
+			if (!this.active) { return; }
+
 			const remoteStream = new MediaStream();
 			console.log('STUN: another remote stream added', event.track);
 
@@ -210,6 +221,8 @@ class StreamManager {
 
 		//Launch the Stun call
 		app.connection.on('start-stun-call', async () => {
+			if (!this.active) { return; }
+
 			console.log('STUN: start-stun-call', this.mod.room_obj, this.app.options.stun);
 			this.firstConnect = true;
 
@@ -254,6 +267,8 @@ class StreamManager {
 		});
 
 		app.connection.on("stun-new-peer-connection", (publicKey, peerConnection) => {
+			if (!this.active) { return; }
+
 			console.log("New Stun peer connection");
 			if (this.app.options.stun.peers.includes(publicKey)){
 				console.log("Attach my video!");
@@ -264,6 +279,8 @@ class StreamManager {
 		});
 
 		app.connection.on('stun-disconnect', () => {
+			if (!this.active) { return; }
+
 			this.leaveCall();
 		});
 
@@ -272,11 +289,7 @@ class StreamManager {
 	updateSettings(settings){
 		this.videoEnabled = settings.video;
 		this.audioEnabled = settings.audio;
-		this.remain_in_call =  true;
-		if (settings?.remain_in_call == false){
-			this.remain_in_call = false;
-		}
-
+		this.auto_disconnect = settings?.auto_disconnect;
 	}
 
 	async getLocalMedia() {
@@ -318,6 +331,18 @@ class StreamManager {
 		});
 	}
 
+	removePeer(peer){
+
+		this.remoteStreams.delete(peer);
+
+		if (this.auto_disconnect){
+			siteMessage(`${this.app.keychain.returnUsername(peer)} hung up`, 2500);
+			this.app.connection.emit("stun-disconnect");
+		}else{
+			siteMessage(`${this.app.keychain.returnUsername(peer)} left the meeting`, 2500);
+		}
+	}
+
 	async leaveCall() {
 		console.log("STUN: Hanging up...");
 
@@ -340,7 +365,8 @@ class StreamManager {
 		this.videoEnabled = true;
 		this.audioEnabled = true;
 		this.recording = false;
-		this.remain_in_call = true;
+		this.auto_disconnect = false;
+		this.active = false;
 		if (this.audioStreamAnalysis) {
 			clearInterval(this.audioStreamAnalysis);
 		}

@@ -78,11 +78,13 @@ class Fileshare extends ModTemplate {
 									//
 									// When stun connection is established, select a file to upload
 									//
+									console.log("Stun fileshare: select file");
 									const input = document.getElementById(
 										`hidden_file_element_${id}`
 									);
 									input.click();
 								}else{
+									console.log("Stun fileshare: createPeerConnection");
 									fss.stun.createPeerConnection(obj.publicKey);
 								}
 

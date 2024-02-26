@@ -56,6 +56,8 @@ class Dialer {
 
 		let recipient = this.receiver.publicKey;
 
+		console.log("Send messages to: " + recipient);
+
 		if (video_switch && call_button) {
 			this.activateOptions();
 
@@ -95,7 +97,7 @@ class Dialer {
 				this.dialing = setTimeout(() => {
 					this.app.connection.emit('relay-send-message', {
 						recipient,
-						request: 'stun-cancel-connection-request',
+						request: 'stun-connection-request-cancel',
 						data
 					});
 					this.stopRing();
@@ -110,7 +112,7 @@ class Dialer {
 					clearTimeout(this.dialing);
 					this.app.connection.emit('relay-send-message', {
 						recipient,
-						request: 'stun-cancel-connection-request',
+						request: 'stun-connection-request-cancel',
 						data
 					});
 					this.stopRing();
@@ -143,7 +145,7 @@ class Dialer {
 							ui: this.mod.room_obj.ui, 
 							audio: true,
 							video: this.mod.room_obj.ui == "video",
-							remain_in_call: false
+							auto_disconnect: true,
 						}
 					);
 					this.app.connection.emit('start-stun-call');
@@ -289,7 +291,7 @@ class Dialer {
 
 			break;
 
-		case 'stun-cancel-connection-request':
+		case 'stun-connection-request-cancel':
 			if (this.mod?.room_obj?.call_id == data.call_id) {
 				this.stopRing();
 				this.overlay.remove();
@@ -326,7 +328,7 @@ class Dialer {
 							ui: this.mod.room_obj.ui, 
 							audio: true,
 							video: this.mod.room_obj.ui == "video",
-							remain_in_call: false
+							auto_disconnect: true,
 						}
 
 				);
@@ -342,7 +344,7 @@ class Dialer {
 				this.dialing = setTimeout(() => {
 					this.app.connection.emit('relay-send-message', {
 						recipient: sender,
-						request: 'stun-cancel-connection-request',
+						request: 'stun-connection-request-cancel',
 						data
 					});
 					this.stopRing();
