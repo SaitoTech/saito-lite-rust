@@ -146,15 +146,15 @@ dt {
 
 #game-hexgrid {
 	transform-origin: center;
-	z-index: 2;
+    z-index: 2;
     width: 1000px;
     padding: 150px 135px 350px;
     box-sizing: content-box;
     cursor: grab;
-    background-image: url(../img/settlers-beach.png);
-    background-size: contain;
+    background-image: url(../img/settlers-coast.svg);
+    background-size: 88%;
     background-repeat: no-repeat;
-    background-position: 0px 50px;
+    background-position: 85px 90px;
 }
 
 .player-box {
