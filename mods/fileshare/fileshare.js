@@ -62,7 +62,7 @@ class Fileshare extends ModTemplate {
 						{
 							text: 'Send File',
 							icon,
-							callback: function (app, public_key, id = "body") {
+							callback: function (app, public_key, id = "") {
 							
 								if (fss.fileId){
 									salert("Currently sending a file!");
@@ -227,9 +227,13 @@ class Fileshare extends ModTemplate {
       </form>
     `;
 
-		if (!document.getElementById(`uploader_${id}`)) {
+		if (!document.getElementById(`uploader_${id}`)){
 
-			this.app.browser.addElementToId(hidden_upload_form, id);
+			if (id){
+				this.app.browser.addElementToId(hidden_upload_form, id);	
+			}else{
+				this.app.browser.addElementToDom(hidden_upload_form);
+			}
 
 			const input = document.getElementById(`hidden_file_element_${id}`);
 
