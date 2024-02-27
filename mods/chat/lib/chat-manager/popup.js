@@ -57,22 +57,24 @@ class ChatPopup {
 			}
 		});
 
-		app.connection.on('relay-is-online', (pkey) => {
-			let target_id = this.mod.createGroupIdFromMembers([
-				pkey,
-				this.mod.publicKey
-			]);
+		app.connection.on('stun-data-channel-open', (pkey) => {
+			let target_id = this.mod.createGroupIdFromMembers([pkey, this.mod.publicKey]);
 			if (target_id === this.group?.id) {
-				let icon = document.querySelector(
-					'#chat-popup-' +
-						this.group.id +
-						' .unavailable-without-relay'
-				);
-				if (icon) {
-					icon.classList.remove('unavailable-without-relay');
+				if (this.is_rendered){
+					this.forceRender();
 				}
 			}
 		});
+
+		app.connection.on('stun-data-channel-close', (pkey) => {
+			let target_id = this.mod.createGroupIdFromMembers([pkey, this.mod.publicKey]);
+			if (target_id === this.group?.id) {
+				if (this.is_rendered){
+					this.forceRender();
+				}
+			}
+		});
+
 
 		app.connection.on('chat-popup-refresh-request', (group) => {
 			if (this.group.id == group.id) {
@@ -106,6 +108,48 @@ class ChatPopup {
 		let popup_qs = '#chat-popup-' + this.group.id;
 		if (document.querySelector(popup_qs)) {
 			document.querySelector(popup_qs).remove();
+		}
+
+		this.is_rendered = false;
+		this.events_attached = false;
+		this.app.connection.emit('chat-manager-render-request');
+	}
+
+	forceRender(){
+		let popup_qs = '#chat-popup-' + this.group.id;
+		let chatPopup = document.querySelector(popup_qs);
+
+		if (!chatPopup){
+			this.render();
+			return;
+		}
+
+		let active = chatPopup.classList.contains("active");
+		let sizing = "";
+		if (chatPopup.classList.contains('minimized')){
+			sizing = "minimized";
+		}
+		if (chatPopup.classList.contains('maximized')){
+			sizing = "maximized";
+		}
+
+		if (!sizing){
+			this.savePopupDimensions(chatPopup);
+		}
+
+		this.remove();
+		this.render();
+
+		chatPopup = document.querySelector(popup_qs);
+
+		if (active){
+			chatPopup.classList.add("active");
+		}
+
+		if (sizing){
+			chatPopup.classList.add(sizing);
+		}else{
+			this.restorePopup(chatPopup);
 		}
 	}
 
@@ -264,17 +308,6 @@ class ChatPopup {
 					);
 					chatMenu.render();
 				};
-			}
-
-			if (this.group.online) {
-				let icon = document.querySelector(
-					'#chat-popup-' +
-						this.group.id +
-						' .unavailable-without-relay'
-				);
-				if (icon) {
-					icon.classList.remove('unavailable-without-relay');
-				}
 			}
 
 			//
@@ -626,10 +659,7 @@ class ChatPopup {
 			`${popup_qs} .chat-header .chat-container-close`
 		).onclick = (e) => {
 			this.manually_closed = true;
-			this.is_rendered = false;
-			this.events_attached = false;
-			document.querySelector(`${popup_qs}`).remove();
-			this.app.connection.emit('chat-manager-render-request');
+			this.remove();
 			app.storage.saveOptions();
 		};
 

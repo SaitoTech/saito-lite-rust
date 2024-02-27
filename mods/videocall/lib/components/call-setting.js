@@ -45,10 +45,12 @@ class CallSetting {
 
 	render() {
 		this.app.browser.addElementToClass(
-			CallSettingTemplate(),
+			CallSettingTemplate(this),
 			'stun-appspace-settings'
 		);
-		this.attachEvents(this.app, this.mod);
+
+		let videoElement = document.getElementById('video');
+		this.getUserMedia(videoElement)
 	}
 
 	remove() {
@@ -61,8 +63,8 @@ class CallSetting {
 		}
 	}
 
-	attachEvents(app, mod) {
-		let videoElement = document.getElementById('video');
+	attachEvents(videoElement) {
+		
 		let toggleVideoButton = document.getElementById('toggle-video');
 		let toggleAudioButton = document.getElementById('toggle-audio');
 		this.videoInput = document.getElementById('video-input');
@@ -96,11 +98,6 @@ class CallSetting {
 					: 'Video disabled';
 				siteMessage(notification, 3000);
 
-				app.connection.emit(
-					'update-media-preference',
-					'video',
-					this.videoEnabled
-				);
 			});
 		}
 
@@ -120,11 +117,7 @@ class CallSetting {
 					? 'Audio enabled'
 					: 'Audio disabled';
 				siteMessage(notification, 3000);
-				app.connection.emit(
-					'update-media-preference',
-					'audio',
-					this.audioEnabled
-				);
+
 			});
 		}
 
@@ -157,7 +150,6 @@ class CallSetting {
 			});
 		}
 
-		this.getUserMedia(videoElement);
 	}
 
 	async getUserMedia(videoElement) {
@@ -165,6 +157,7 @@ class CallSetting {
 			this.audioStream = await navigator.mediaDevices.getUserMedia({
 				audio: true
 			});
+			this.audioEnabled = true;
 		} catch (error) {
 			console.error('Error accessing media devices.', error);
 			salert('Error access media devices, please check your permissions');
@@ -185,12 +178,8 @@ class CallSetting {
 			this.videoEnabled = false;
 			salert('Error access camera, using audio only mode ');
 		}
-		this.app.connection.emit(
-			'update-media-preference',
-			'video',
-			this.videoEnabled
-		);
 
+		this.attachEvents();
 		this.loadMediaDevices();
 	}
 
@@ -289,6 +278,14 @@ class CallSetting {
 		return `${minutes.toString().padStart(2, '0')}:${seconds
 			.toString()
 			.padStart(2, '0')}`;
+	}
+
+	returnSettings(){
+		return {
+			ui: "large",
+			video: this.videoEnabled,
+			audio: this.audioEnabled,
+		};
 	}
 }
 

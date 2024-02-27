@@ -148,7 +148,6 @@ class RedSquare extends ModTemplate {
       sangre: "fa-solid fa-droplet",
     };
 
-
     return this;
   }
 
@@ -413,15 +412,19 @@ class RedSquare extends ModTemplate {
     }
 
     if (this.browser_active) {
-      this.app.connection.on("relay-is-online", pkey => {
-        for (let i = 0; i < this.following.length; i++) {
-          if (this.following[i].publicKey === pkey){
-            this.app.connection.emit("open-stun-relay", pkey, (pc)=> {
-              this.following[i].peer = pc;
-            });
+      try{
+        this.stun = app.modules.returnFirstRespondTo("peer-manager");
+        this.app.connection.on("relay-is-online", pkey => {
+          for (let i = 0; i < this.following.length; i++) {
+            if (this.following[i].publicKey === pkey){
+              this.stun.createPeerConnection(pkey);
+            }
           }
-        }
-      });
+        });
+      }catch(err){
+        console.warn("Stun not available for P2P Redsquare");
+      }
+ 
 
     }
   }
@@ -743,8 +746,11 @@ class RedSquare extends ModTemplate {
             }
 
             console.log(`REDSQUARE (${colleague.publicKey}): returned ${txs.length} ${created_at} tweets, ${count} are new to the feed. `);
-
-            // >>>> How do we get the callback here.....????
+            if (created_at === "earlier"){
+              this.manager.insertOlderTweets(count);
+            }else{
+              this.app.connection.emit("redsquare-home-postcache-render-request", count);
+            }
           }
 
         }
@@ -987,7 +993,7 @@ class RedSquare extends ModTemplate {
     let peer_count = 0;
 
     for (let i = 0; i < this.following.length; i++) {
-      if (this.following[i].peer){
+      if (this?.stun.hasConnection(this.following[i].publicKey)){
         if (!(this.following[i].tweets_earliest_ts == 0 && created_at == "earlier")) {
           peer_count++;
           let obj = {

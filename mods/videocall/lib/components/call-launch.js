@@ -61,10 +61,6 @@ class CallLaunch {
 	attachEvents(app, mod) {
 		if (document.getElementById('createRoom')) {
 			document.getElementById('createRoom').onclick = (e) => {
-				//
-				// Set big screen video as desired call interface
-				//
-				this.app.connection.emit('stun-init-call-interface', 'large');
 
 				if (!this.mod.isRelayConnected) {
 					siteMessage('Wait for peer connection');
@@ -76,10 +72,15 @@ class CallLaunch {
 				//
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
-						room_code: this.mod.createRoomCode(),
-						host_public_key: this.mod.publicKey
+						call_id: this.mod.createRoomCode(),
+						host_public_key: this.mod.publicKey,
 					};
 				}
+
+				//
+				// Set big screen video as desired call interface
+				//
+				this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
 
 				//
 				//Close this component

@@ -50,14 +50,15 @@ class AudioBox {
 	}
 
 	render(stream) {
+		this.stream = stream;
+		console.log(stream, 'stream');
+
 		if (!document.getElementById(`audiostream_${this.stream_id}`)) {
 			this.app.browser.addElementToSelector(
 				AudioBoxTemplate(this.app, this.mod, this.stream_id),
 				this.container
 			);
 		}
-		this.stream = stream;
-		console.log(stream, 'stream');
 
 		const audioBox = document.getElementById(
 			`audiostream_${this.stream_id}`
