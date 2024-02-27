@@ -13,7 +13,7 @@ module.exports = (app, mod) => {
 
       <div class="crypto-stake-confirm-container">
         <input type="checkbox" name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">
-        <div class="commentary">peer-to-peer gaming is legal in my jurisdiction</div>
+        <label for="crypto-stake-confirm-input" class="commentary">peer-to-peer gaming is legal in my jurisdiction</label>
       </div>
 
       <div class="button saito-button-primary crypto_amount_btn" id="enable_staking_no">confirm</div>
