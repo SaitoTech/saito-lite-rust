@@ -117,6 +117,10 @@ class Fileshare extends ModTemplate {
     	return returnObj;
     }
 
+    if (type === "call-actions"){
+    	return returnObj;
+    }
+
 	}
 
 

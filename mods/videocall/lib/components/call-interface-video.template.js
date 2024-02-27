@@ -13,66 +13,45 @@ module.exports = CallInterfaceVideoTemplate = (
 
         <section class="footer">
 
+          
+          <div class="timer">
+            <div class="counter"> 00:00 </div>
+            <div class="users-on-call">
+              <div class="stun-identicon-list"></div>
+              <div class="users-on-call-text"><span class="users-on-call-count">1</span> on call</div>
+            </div>
+            <div class="add_users_container icon_click_area">
+              <label>Invite</label>
+              <i class="add_users fa fa-plus"></i>
+            </div>
+          </div>
+       
           <div class="control-panel">
-            <div class="timer">
-              <div class="counter"> 00:00 </div>
-              <div class="users-on-call">
-                <div class="stun-identicon-list"></div>
-                <div class="users-on-call-text"><span class="users-on-call-count">1</span> on call</div>
-              </div>
-              <div class="add_users_container icon_click_area">
-                <label>Invite</label>
-                <i class="add_users fa fa-plus"></i>
+            <div class="control-list imported-actions">
+              <div class="display-control icon_click_area">
+                <label>Settings</label>
+                <i class="fa-solid fa-cog"></i>
               </div>
             </div>
 
-          <div class="control-list">
-            <span class="display-control icon_click_area">
-              <label>Settings</label>
-              <i class="fa-solid fa-cog"></i>
-            </span>
-          
-            <span class="chat_control_container icon_click_area">
-              <label>Chat</label>
-              <i class="chat_control fa-regular fa-comments"></i>
-            </span>
+            <div class="control-list call-controls">
 
-             ${
-	mod.app.browser.isMobileBrowser === true
-		? ``
-		: `<span class="record-control icon_click_area" id="record-icon">
-                  <label>Record</label>
-                  <i class="fa-solid fa-record-vinyl"></i>
-                </span>`
-}
+              <div class="audio-control icon_click_area${audioEnabled ? '' : ' disabled'}">
+                <label>Audio</label>
+                <i class="fa ${audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'}"> </i>
+              </div>
             
-            <span class="spacer"></span>
-
-            <span class="audio-control mini_okay icon_click_area${
-	audioEnabled ? '' : ' disabled'
-}">
-              <label>Audio</label>
-              <i class="fa ${
-	audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'
-}"> </i>
-            </span>
-         
-          
-            <span class="video-control mini_okay icon_click_area${
-	videoEnabled ? '' : ' disabled'
-}">
-              <label>Video</label>
-              <i class="fas ${
-	videoEnabled ? 'fa-video' : 'fa-video-slash'
-}"></i>
-            </span>
-            <span class="disconnect-control mini_okay icon_click_area">
-               <label>End </label>
-               <i class="disconnect_btn  fas fa-phone"> </i>
-            </span>
+              <div class="video-control icon_click_area${	videoEnabled ? '' : ' disabled'}">
+                <label>Video</label>
+                <i class="fas ${	videoEnabled ? 'fa-video' : 'fa-video-slash'}"></i>
+              </div>
+              <div class="disconnect-control icon_click_area">
+                 <label>End </label>
+                 <i class="disconnect_btn  fas fa-phone"> </i>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
     </main>
 
     ${

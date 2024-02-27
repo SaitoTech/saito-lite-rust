@@ -405,6 +405,7 @@ class Videocall extends ModTemplate {
 						this.app.storage.saveOptions();
 						this.app.connection.emit("remove-peer-box", from);
 
+						//See if we need to also hang up on our end
 						this.streams.removePeer(from);
 					}
 
@@ -613,6 +614,18 @@ class Videocall extends ModTemplate {
 
 		this.app.connection.emit("relay-transaction", newtx);
 		this.app.network.propagateTransaction(newtx);
+
+		//
+		// Allow us to use stun connection to send tx before disconnecting!
+		//
+		for (let peer of this.app.options.stun.peers){
+			if (peer != this.publicKey){
+				//Disconnect stun on our end
+				// the send tx will tell (former) peers to do the same
+				this.stun.removePeerConnection(peer);
+			}
+		}
+
 
 	}
 

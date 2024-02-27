@@ -87,6 +87,9 @@ class Stun extends ModTemplate {
 					}
 					this.createPeerConnection(peerId, callback);
 				},
+				removePeerConnection: (peerId) => {
+					this.removePeerConnection(peerId);
+				},
 				peers: this.peers
 			};
 		}
