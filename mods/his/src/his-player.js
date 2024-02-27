@@ -2610,8 +2610,18 @@ return;
                 destination : destination_spacekey ,
               }
 
-              his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
-              html += `<li class="option" id="end">finish</li>`;
+	      //
+	      // auto-move if only 1 unit
+	      //
+	      let can_we_quick_move = false;
+	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; } 
+
+
+	      if (!can_we_quick_move) {
+                his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+              }
+
+	      html += `<li class="option" id="end">finish</li>`;
               html += "</ul>";
 
               his_self.updateStatusWithOptions(msg, html);
@@ -2663,6 +2673,17 @@ return;
                 selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 
               });
+
+	      if (can_we_quick_move) {
+		units_to_move = JSON.parse(JSON.stringify(mobj.unmoved_units));
+	        selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	        his_self.displaySpace(source_spacekey);
+	        his_self.displaySpace(destination_spacekey);
+		his_self.updateStatus("deploying...");
+		return;
+	      }
+
+
             }
 
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
@@ -3465,7 +3486,16 @@ return;
 	    destination : spacekey ,
  	  }
 
-   	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+          // 
+          // auto-move if only 1 unit
+          //
+          let can_we_quick_move = false;
+          if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; }
+
+	  if (!can_we_quick_move) {
+   	    his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+	  }
+
 	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
@@ -3518,6 +3548,17 @@ return;
 
 	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	  });
+
+
+          if (can_we_quick_move) {
+            units_to_move = JSON.parse(JSON.stringify(mobj.unmoved_units));
+            selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+            his_self.displaySpace(source_spacekey);
+            his_self.displaySpace(destination_spacekey);
+            his_self.updateStatus("intercepting...");
+            return;
+          }
+
 	}
 	//
 	// end select units

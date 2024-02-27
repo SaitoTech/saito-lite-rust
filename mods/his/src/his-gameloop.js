@@ -1594,7 +1594,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  // PAPACY CONVERSIONS BACK IN GERMANY
 	  this.convertSpace("catholic", "munster");
 	  this.convertSpace("catholic", "bremen");
-
+	  this.controlSpace("papacy", "regensburg");
 
 	  // VENICE
     	  this.addRegular("venice", "venice", 2);
@@ -1603,8 +1603,6 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  // ENGLAND
     	  this.addRegular("england", "stirling", 4);
 	  this.game.state.events.henry_viii_healthy_edward = 1;
-
-
 
 	  this.setAllies("protestant", "france");
 	  this.setAllies("protestant", "ottoman");
@@ -1645,10 +1643,9 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  this.addRegular("ottoman","istanbul", 3);
 
 
-
 	  // CARDS
-	  this.addCard("papacy", "102");
-	  this.addCard("protestant", "105");
+//	  this.addCard("papacy", "102");
+//	  this.addCard("protestant", "105");
 
 	  // SCHMALKALDIC LEAGUE
 	  let deck = this.returnDeck();
@@ -2003,13 +2000,32 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 		    anyone_else_here = 1;
 	          }
 	          if (f !== faction && this.returnFactionLandUnitsInSpace(f, space) > 0 && !this.areAllies(f, faction)) {
+
+console.log("there is a non-allied land-force here!");
+
 		    if (lqe-1 >= 0) {
 		      // added in reverse order
 		      if (skip_avoid_battle != 1) {
-			if (faction != this.game.state.active_faction && !this.areAllies(faction, this.game.state.active_faction, 1)) {
+
+console.log("1: " + faction + " == " + this.game.state.active_faction);
+console.log("2: " + this.isSpaceHostileOrIndependent(space, faction));
+console.log("3: " + space.besieged);
+
+			//
+			// inactive faction indicates interception - neither retreat nor fortification
+			//
+			if (faction != this.game.state.active_faction) {
 	                  this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
-	                  this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
+			} else {
+			  //
+			  // active faction
+			  //
+	                  this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+			  if (space.besieged == 0) {
+	                    this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
+			  }
 			}
+
 		      }
 		      //
 		      // "move" is used by the intercept command, so we do not want intercepts to be changing the 
@@ -2053,29 +2069,34 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	        }
 
 		//
-		// we only update the occupier of the space if the next move is not a "move"
-		// as we require interception check to find out if there are units here already.
+		// on the very last move we check to see if there are any enemy factions in the 
+		// space and trigger a field battle, deciding first whether the existing forces
+		// are capable of retreating or fortifying.
 		//
 		if (lmv[0] !== "move") {
 
-		  let enemies_in_space = 0;
+		  // occupie is antequated
 		  space.occupier = faction;
+
+		  let field_battle_triggered = false;
 
 		  //
 		  // relief forces showing up
 		  //
 		  for (let f in space.units) {
- 		    if (!this.areAllies(f, faction) && f !== faction && enemies_in_space == 0) {
-		      if (this.returnFactionLandUnitsInSpace(f, space.key, 1) > 0) {
+ 		    if (!this.areAllies(f, faction, 1) && f !== faction) {
+		      if (this.returnFactionLandUnitsInSpace(f, space.key, 1) > 0 && field_battle_triggered == false) {
+
+			field_battle_triggered = true;
+
 		        //
 		        // someone else is here, so let's trigger a field battle
 		        //
-	                let fac = this.returnControllingPower(f);
-
-			if (faction != this.game.state.active_faction && !this.areAllies(faction, this.game.state.active_faction, 1)) {
+			if (this.game.state.active_faction == faction) {
 	                  this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
 	                  this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 		        }
+
 			//
 		        // "move" is used by the intercept command, so we do not want intercepts to be changing the 
 		        // software's concept of which faction is the attacker. for this reason, if the active player
@@ -2120,11 +2141,6 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let spacekey = mv[2];
 	  let attacker_comes_from_this_spacekey = mv[3];
 
-	  //
-	  // we don't fortify if we are the attacker
-	  //
-	  if (attacker === this.game.state.active_faction) { return 1; }
-
 	  his_self.game.state.attacker_comes_from_this_spacekey = mv[3];
 
 	  let space = this.game.spaces[spacekey];
@@ -2133,14 +2149,12 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    return 1;
 	  }
 
-console.log("in fortification check... attacker " + attacker);
-
 	  //
 	  // whoever is being attacked can retreat into the fortification if they
 	  // have 4 or less land units
 	  //
 	  for (let f in this.game.spaces[spacekey].units) {
-	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
+	    if (f !== attacker && this.isSpaceControlled(spacekey, f) && !this.areAllies(this.game.state.active_faction, f, 1)) {
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -2592,10 +2606,6 @@ console.log("in fortification check... attacker " + attacker);
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  this.game.state.attacker_comes_from_this_spacekey = mv[3];
 
-	  //
-	  // sanity safeguard = attackers should not be asked to retreat
-	  //
-	  if (attacker === this.game.state.active_faction) { return 1; }
 
 	  let space = this.game.spaces[spacekey];
 	  let neighbours = this.returnNeighboursAsArrayOfKeys(spacekey, 0, 0); // 0 cannot intercept across passes or seas
@@ -2606,9 +2616,12 @@ console.log("in fortification check... attacker " + attacker);
 	    let can_faction_retreat = 0;
 	    let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
+console.log("evaluating whether: " + io[i] + " can retreat!");
   	      if (io[i] !== attacker && (io[i] != this.game.state.active_faction && !this.areAllies(this.game.state.active_faction, io[i], 1))) {
+console.log("faction is not attacker and is not active_faction and is not allies with active faction!");
 	        let units_in_space = this.returnFactionLandUnitsInSpace(io[i], spacekey);
 	        if (units_in_space > 0) {
+console.log("faction has units in space!");
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
 	            if (fluis > 0) {
@@ -3024,8 +3037,6 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let defender_spacekey = mv[5];
 	  let units_to_move_idx = JSON.parse(mv[6]); // is actually obj now
 	  let units_to_move = [];
-
-console.log("UNITS TO MOVE IDX: " + JSON.stringify(units_to_move_idx));
 
 	  //
 	  // load actual units to examine them for cavalry, leaders
@@ -8941,7 +8952,7 @@ if (this.game.state.round == 2) {
 //
 // is_testing
 //
-if (this.game.options.scenario == "is_testing") { cardnum = 1; }
+if (this.game.options.scenario == "is_testing") { cardnum = 2; }
 
 	        //
 	        // fuggers card -1
