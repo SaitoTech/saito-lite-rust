@@ -412,7 +412,7 @@ export default class Wallet extends SaitoWallet {
 		throw 'Module Not Found: ' + ticker;
 	}
 
-	setPreferredCrypto(ticker, show_overlay = 0) {
+	async setPreferredCrypto(ticker, show_overlay = 0) {
 		let can_we_do_this = 0;
 		const mods = this.returnInstalledCryptos();
 		let cryptomod = null;
@@ -431,9 +431,9 @@ export default class Wallet extends SaitoWallet {
 		if (can_we_do_this == 1) {
 			this.preferred_crypto = ticker;
 			console.log('Activating cryptomod: ' + cryptomod.ticker);
-			cryptomod.activate();
+			await cryptomod.activate();
 			//cryptomod.returnBalance();
-			//await this.saveWallet();
+			await this.saveWallet();
 		}
 
 		return;
@@ -444,7 +444,7 @@ export default class Wallet extends SaitoWallet {
 			return this.returnCryptoModuleByTicker(this.preferred_crypto);
 		} catch (err) {
 			if (err.startsWith('Module Not Found:')) {
-				this.setPreferredCrypto('SAITO');
+				await this.setPreferredCrypto('SAITO');
 				return this.returnCryptoModuleByTicker(this.preferred_crypto);
 			} else {
 				throw err;
@@ -676,7 +676,7 @@ export default class Wallet extends SaitoWallet {
 		mycallback,
 		ticker,
 		tries = 36,
-		pollWaitTime = 5000
+		pollWaitTime = 7000
 	) {
 		let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
 			senders,
@@ -716,6 +716,10 @@ export default class Wallet extends SaitoWallet {
 		//
 		const check_payment_function = async () => {
 			console.log('wallet -> cryptmod receivePayment');
+
+			console.log('senders, ', senders);
+			console.log('receivers, ', receivers);
+
 			return await cryptomod.receivePayment(
 				amounts[0],
 				senders[0],
@@ -739,6 +743,9 @@ export default class Wallet extends SaitoWallet {
 		};
 
 		const did_complete_payment = (result) => {
+
+			console.log('did complete payment: ', result);
+
 			if (result) {
 				// The transaction was found, we're done.
 				console.log('TRANSACTION FOUND');

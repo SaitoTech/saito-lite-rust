@@ -1,6 +1,6 @@
 module.exports = (app, mod, stream_id) => {
 	let videoAttribute = '';
-	let imgsrc = app.keychain.returnIdenticon(stream_id);
+	let imgsrc = (stream_id) ? app.keychain.returnIdenticon(stream_id) : "";
 	if (stream_id === 'local') {
 		imgsrc = app.keychain.returnIdenticon(mod.publicKey);
 		videoAttribute = 'muted';

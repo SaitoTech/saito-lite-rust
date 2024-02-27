@@ -4,7 +4,6 @@ const Transaction = require("../../lib/saito/transaction").default;
 
 var ModTemplate = require("../../lib/templates/modtemplate");
 //var saito = require("../../lib/saito/saito");
-const Stun = require("./stun-relay");
 const JSON = require("json-bigint");
 
 
@@ -34,20 +33,30 @@ class Relay extends ModTemplate {
     this.debug = false;
     this.busy = false;
 
-    this.stun = new Stun(app, this);
+    this.stun = null;
 
     app.connection.on("relay-send-message", async (obj) => {
       this.sendRelayMessage(obj.recipient, obj.request, obj.data);
     });
 
-    app.connection.on("relay-transaction", async (tx, force_stun = false) => {
-      this.sendRelayTransaction(tx, force_stun);
+    app.connection.on("relay-transaction", async (tx) => {
+      this.sendRelayTransaction(tx);
     });
 
     app.connection.on("set-relay-status-to-busy", () => {
       this.busy = true;
     });
 
+  }
+
+
+  async initialize(app) {
+    await super.initialize(app);
+
+    let modList = this.app.modules.returnModulesRespondingTo("peer-manager");
+    if (modList.length > 0){
+      this.stun = modList[0].respondTo("peer-manager");
+    }
   }
 
   returnServices() {
@@ -89,20 +98,15 @@ class Relay extends ModTemplate {
     return tx;
   }
 
-  async sendRelayTransaction(tx, force_stun = false){
+  async sendRelayTransaction(tx){
 
-    if (tx.to.length == 1) {
+    if (tx.to.length == 1 && this.stun) {
       let addressee = tx.to[0].publicKey;
       if (this.stun.hasConnection(addressee)){
         this.stun.sendTransaction(addressee, tx);
         return;
       }
     } 
-
-    if (force_stun){
-      console.warn("Requested relay to only use stun, but it didn't work");
-      return;
-    }
 
     let peers = await this.app.network.getPeers();
     for (let i = 0; i < peers.length; i++) {
@@ -159,10 +163,6 @@ class Relay extends ModTemplate {
           return 0;
         }
 
-        if (message.request == "stun signaling relay"){
-          this.stun.handleSignalingMessage(message.data);
-          return 0;
-        }
       }
 
       if (message.request === "relay peer message") {

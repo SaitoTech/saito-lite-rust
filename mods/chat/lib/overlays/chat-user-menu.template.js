@@ -46,12 +46,13 @@ module.exports = (app, mod, chat_group) => {
 		}
 		
 		html += `<div id="view" class="saito-modal-menu-option"><i class="fa-solid fa-users"></i><div>View members</div></div>`;			
+	}else{
+		//Or we can query the community group for recently active keys
+		if (chat_group.id == mod.communityGroup.id || chat_group.members.length > 2) {
+			html += `<div id="view" class="saito-modal-menu-option"><i class="fa-solid fa-users"></i><div>View members</div></div>`;			
+		}
 	}
 
-	//Or we can query the community group for recently active keys
-	if (chat_group.id == mod.communityGroup.id || chat_group.members.length > 2) {
-		html += `<div id="view" class="saito-modal-menu-option"><i class="fa-solid fa-users"></i><div>View members</div></div>`;			
-	}
 
 	html += '</div></div>';
 

@@ -38,13 +38,13 @@ module.exports = (app, mod, group, isStatic = false) => {
               			<div class="chat-details">
               				${is_encrypted}
               				<div id="chat-group-${group.id}" class="chat-group${dm?" saito-address":""}" data-id="${dm ? dm_counterparty: group.name}">${group.name}</div>
-              		</div>
-              <div class="chat-action-icons">
-                <div class="chat-actions"></div>
-                <div class="chat-action-menu" data-id="${group.id}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
-	             </div>
-            </div>
-          </div>
+              			</div>
+			              <div class="chat-action-icons">
+			                <div class="chat-actions"></div>
+			                <div class="chat-action-menu" data-id="${group.id}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+				             </div>
+			            </div>
+			          </div>
 
           <div class="chat-body">
             <!--div id="load-older-chats" class="saito-chat-button" data-id="${group.id}">check for earlier messages</div-->

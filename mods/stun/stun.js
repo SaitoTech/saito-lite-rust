@@ -1,29 +1,29 @@
 const saito = require('../../lib/saito/saito');
+const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
-const StunLauncher = require('./lib/appspace/call-launch');
-const CallInterfaceVideo = require('./lib/components/call-interface-video');
-const CallInterfaceFloat = require('./lib/components/call-interface-float');
-const DialingInterface = require('./lib/appspace/dialer');
-const PeerManager = require('./lib/appspace/PeerManager');
-const StreamManager = require('./lib/appspace/StreamManager');
 
-const AppSettings = require('./lib/stun-settings');
+/***
+ *  A generic utility for creating stun connections that other modules can use
+ *  API is a combination of respondTo and event space
+ * 
+ * Will emit (with publicKey of peer):
+ * 	'stun-connection-connected' --- when you have created the basic stun connection (for media streaming)
+ *  'stun-connection-failed'
+ *  'stun-data-channel-open'
+ *  'stun-data-channel-close'
+ * 
+ * 	Your modules can set a listener for these and process accordingly
+ */ 
+
 
 class Stun extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
-		this.appname = 'Saito Talk';
 		this.name = 'Stun';
-		this.slug = 'videocall';
-		this.description = 'P2P Video & Audio Connection Module';
-		this.categories = 'Utilities Communications';
-		this.icon = 'fas fa-video';
-		this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
-		this.isRelayConnected = false;
-		this.hasReceivedData = {};
 
-		this.screen_share = false;
+		this.description = 'P2P Connection Module';
+		this.categories = 'Utilities Communications';
 
 		this.servers = [
 			{
@@ -61,280 +61,70 @@ class Stun extends ModTemplate {
       },*/
 		];
 
-		this.styles = ['/saito/saito.css', '/videocall/style.css'];
+		this.peers = new Map();
 
-		this.peerManager = new PeerManager(app, this);
-		this.dialer = new DialingInterface(app, this);
-
-		//When StunLauncher is rendered or game-menu triggers it
-		app.connection.on('stun-init-call-interface', (ui_type = 'large') => {
-			if (this.CallInterface) {
-				console.warn('Already instatiated a video/audio call manager');
-				return;
-			}
-
-			console.log('STUN UI: ' + ui_type);
-
-			if (ui_type === 'large') {
-				this.CallInterface = new CallInterfaceVideo(app, this, true);
-			} else if (ui_type === 'video') {
-				this.CallInterface = new CallInterfaceVideo(app, this, false);
-			} else {
-				this.CallInterface = new CallInterfaceFloat(app, this);
-			}
-		});
-
-		app.connection.on('reset-stun', () => {
-			this.room_obj = null;
-			if (this.CallInterface) {
-				this.CallInterface.destroy();
-				this.CallInterface = null;
-			}
-		});
-	}
-
-	/**
-	 * Stun will be rendered on
-	 *  - /videocall
-	 *  - Saito-header menu
-	 *  - Saito-user-menu
-	 *  - game-menu options
-	 *
-	 */
-
-	async initialize(app) {
-		await super.initialize(app);
-
-		if (app.BROWSER) {
-			if (!this.app.options?.stun?.settings) {
-				this.app.options.stun = {
-					settings: { privacy: 'all' },
-					peers: []
-				};
-			}
-
-			if (app.browser.returnURLParameter('stun_video_chat')) {
-				this.room_obj = JSON.parse(
-					app.crypto.base64ToString(
-						app.browser.returnURLParameter('stun_video_chat')
-					)
-				);
-
-				// JOIN THE ROOM
-				if (!this.browser_active) {
-					this.renderInto('.saito-overlay');
-				}
-			} else {
-				this.app.options.stun.peers = [];
-			}
-		}
-	}
-
-	async onPeerServiceUp(app, peer, service) {
-		if (app.BROWSER !== 1) {
-			return;
-		}
-
-		if (service.service === 'relay') {
-			if (app.BROWSER !== 1) {
-				return;
-			}
-
-			this.isRelayConnected = true;
-		}
-	}
-
-	render() {
-		this.renderInto('body');
-	}
-
-	renderInto(qs) {
-		if (qs == '.saito-overlay' || qs == 'body') {
-			if (!this.renderIntos[qs]) {
-				this.renderIntos[qs] = [];
-				this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
-			}
-			this.attachStyleSheets();
-			this.renderIntos[qs].forEach((comp) => {
-				comp.render();
-			});
-			this.renderedInto = qs;
-		}
 	}
 
 	respondTo(type, obj) {
 		let stun_self = this;
 
-		if (type === 'user-menu') {
-			//Don't provide a calling hook if in the video call app!
-			if (stun_self.browser_active) {
-				return null;
-			}
-			if (obj?.publicKey) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
-					this.attachStyleSheets();
-					super.render(this.app, this);
-					return [
-						{
-							text: 'Video/Audio Call',
-							icon: 'fas fa-video',
-							callback: function (app, public_key) {
-								if (!stun_self.room_obj) {
-									stun_self.dialer.establishStunCallWithPeers(
-										[public_key]
-									);
-								} else {
-									salert('Already in or establishing a call');
-								}
-							}
-						}
-					];
-				}
-			}
-		}
-
-		if (type === 'invite') {
-			this.attachStyleSheets();
-			super.render(this.app, this);
-			return new StunxInvite(this.app, this);
-		}
-
-		if (type === 'saito-header') {
-
-			if (!this.browser_active) {
-				this.attachStyleSheets();
-				super.render(this.app, this);
-
-				return [
-					{
-						text: 'Saito Talk',
-						icon: this.icon,
-						//allowed_mods: ['redsquare', 'arcade'],
-						callback: function (app, id) {
-							stun_self.renderInto('.saito-overlay');
-
-							/*app.connection.emit("stun-init-call-interface", "video");
-            if (!stun_self.room_obj) {
-              stun_self.room_obj = {
-                room_code: stun_self.createRoomCode(),
-                host_public_key: stun_self.publicKey,
-              };
-            }
-            app.connection.emit("start-stun-call");
-            */
-						}
+		if (type === 'peer-manager') {
+			return {
+				hasConnection: (peerId) => {
+					return this.hasConnection(peerId);
+				},
+				sendTransaction: (peerId, tx) => {
+					this.sendTransaction(peerId, tx);
+				},
+				createPeerConnection: (peerId, callback = null) => {
+					//
+					// send ready message to peer, so if they want to create the channel, we are receptive
+					//
+					if (!callback){
+						callback = (peerId) => {
+							this.sendJoinTransaction(peerId);
+						}			
 					}
-				];
-			}
-		}
-		//
-		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
-		//
-		if (type == 'game-menu') {
-			this.attachStyleSheets();
-			super.render(this.app, this);
-
-			//Set listeners for stun events
-			this.app.connection.on('show-call-interface', () => {
-				document.getElementById(
-					'start-group-video-chat'
-				).style.display = 'none';
-			});
-			this.app.connection.on('reset-stun', () => {
-				document.getElementById('start-group-video-chat').style = '';
-			});
-
-			let menu_items = {
-				id: 'game-social',
-				text: 'Chat',
-				submenus: []
+					this.createPeerConnection(peerId, callback);
+				},
+				removePeerConnection: (peerId) => {
+					this.removePeerConnection(peerId);
+				},
+				peers: this.peers
 			};
-
-			if (obj?.game?.players?.length > 1) {
-				menu_items['submenus'].push({
-					parent: 'game-social',
-					text: 'Start Call',
-					id: 'start-group-video-chat',
-					class: 'start-group-video-chat',
-					callback: function (app, game_mod) {
-						//Start Call
-						game_mod.menu.hideSubMenus();
-
-						if (!stun_self.room_obj) {
-							stun_self.dialer.establishStunCallWithPeers([
-								...game_mod.game.players
-							]);
-						} else {
-							salert('Already in or establishing a call');
-						}
-					}
-				});
-			}
-
-			menu_items['submenus'].push({
-				parent: 'game-game',
-				text: 'Record Game',
-				id: 'record-stream',
-				class: 'record-stream',
-				callback: function (app, game_mod) {
-					game_mod.menu.hideSubMenus();
-					if (!stun_self.streamManager) {
-						stun_self.streamManager = new StreamManager(
-							app,
-							stun_self
-						);
-					}
-					if (!stun_self?.recording) {
-						stun_self.streamManager.recordGameStream();
-						stun_self.recording = true;
-						document.getElementById('record-stream').textContent =
-							'Stop Recording';
-					} else {
-						stun_self.streamManager.stopRecordGameStream();
-						stun_self.recording = false;
-						document.getElementById('record-stream').textContent =
-							'Start Recording';
-					}
-				}
-			});
-
-			return menu_items;
-		}
-
-		if (type === 'chat-actions') {
-			if (obj?.publicKey) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
-					this.attachStyleSheets();
-					super.render(this.app, this);
-					return [
-						{
-							text: 'Video/Audio Call',
-							icon: 'fas fa-phone',
-							callback: function (app, public_key, id) {
-								if (!stun_self.room_obj) {
-									stun_self.dialer.establishStunCallWithPeers(
-										[public_key]
-									);
-								} else {
-									salert('Already in or establishing a call');
-								}
-							}
-						}
-					];
-				}
-			}
 		}
 
 		return null;
 	}
 
-	hasSettings() {
-		return true;
+	hasConnection(peerId) {
+		let peerConnection = this.peers.get(peerId);
+
+		if (peerConnection) {
+			if (peerConnection?.dc) {
+				if (peerConnection.connectionState == 'connected') {
+					if (peerConnection.dc.readyState == "open"){
+						return true;	
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
-	loadSettings(container = null) {
-		let as = new AppSettings(this.app, this, container);
-		as.render();
+	sendTransaction(peerId, tx) {
+		let peerConnection = this.peers.get(peerId);
+		if (!peerConnection?.dc) {
+			console.warn('Stun: no data channel with peer');
+			return;
+		}
+
+		try {
+			peerConnection.dc.send(tx.serialize_to_web(this.app));
+		} catch (err) {
+			console.error(err);
+		}
 	}
 
 	onConfirmation(blk, tx, conf) {
@@ -346,70 +136,16 @@ class Stun extends ModTemplate {
 
 		if (conf === 0) {
 			if (message.module === 'Stun') {
-				//
-				// Do we even need/want to send messages on chain?
-				// There are problems with double processing events...
-				//
+				if (this.app.BROWSER === 1) {
+					if (this.hasSeenTransaction(tx)) return;
 
-				try {
-					if (this.app.BROWSER === 1) {
-						if (this.hasSeenTransaction(tx)) return;
-
-						if (
-							!this?.room_obj?.room_code ||
-							this.room_obj.room_code !== message.data.room_code
-						) {
-							console.log('OC: Tab is not active');
-							return;
-						}
-						// if (document.hidden) {
-						//   console.log("tab is not active");
-						//   return;
-						// }
-
-						if (
-							tx.isTo(this.publicKey) &&
-							!tx.isFrom(this.publicKey)
-						) {
-							if (
-								message.request ===
-								'stun-send-call-list-request'
-							) {
-								console.log(
-									'OnConfirmation:  stun-send-call-list-request'
-								);
-								this.receiveCallListRequestTransaction(
-									this.app,
-									tx
-								);
-							}
-							if (
-								message.request ===
-								'stun-send-call-list-response'
-							) {
-								console.log(
-									'OnConfirmation:  stun-send-call-list-response'
-								);
-								this.receiveCallListResponseTransaction(
-									this.app,
-									tx
-								);
-							}
-
-							if (
-								message.request === 'stun-send-message-to-peers'
-							) {
-								console.log(
-									'OnConfirmation: stun-send-message-to-peers'
-								);
-								this.peerManager.handleSignalingMessage(
-									tx.msg.data
-								);
-							}
-						}
+					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+						this.handleSignalingMessage(
+							tx.from[0].publicKey,
+							message.request,
+							message
+						);
 					}
-				} catch (err) {
-					console.error('Stun Error:', err);
 				}
 			}
 		}
@@ -423,189 +159,340 @@ class Stun extends ModTemplate {
 
 		if (this.app.BROWSER === 1) {
 			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-				//console.log(txmsg);
+				if (this.hasSeenTransaction(tx)) return;
 
-				if (txmsg.request.substring(0, 10) == 'stun-send-') {
-					if (this.hasSeenTransaction(tx)) return;
-
-					if (
-						!this?.room_obj?.room_code ||
-						this.room_obj.room_code !== txmsg.data.room_code
-					) {
-						console.log('HPT: Tab is not active');
-						return;
-					}
-
-					if (txmsg.request === 'stun-send-call-list-request') {
-						console.log('HPT:  stun-send-call-list-request');
-						this.receiveCallListRequestTransaction(this.app, tx);
-						return;
-					}
-					if (txmsg.request === 'stun-send-call-list-response') {
-						console.log('HPT:  stun-send-call-list-response');
-						this.receiveCallListResponseTransaction(this.app, tx);
-						return;
-					}
-
-					if (txmsg.request === 'stun-send-message-to-peers') {
-						//console.log("HPT: stun-send-message-to-peers");
-						this.peerManager.handleSignalingMessage(tx.msg.data);
-						return;
-					}
-
-					console.warn('Unprocessed request:');
-					console.log(txmsg);
-				} else if (txmsg.request.substring(0, 5) == 'stun-') {
-					this.dialer.receiveStunCallMessageFromPeers(tx);
+				if (txmsg.module !== this.name) {
+					return;
 				}
+
+				this.handleSignalingMessage(
+					tx.from[0].publicKey,
+					txmsg.request,
+					txmsg
+				);
 			}
 		}
 
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
 
-	createRoomCode() {
-		return this.app.crypto.generateRandomNumber().substring(0, 12);
-	}
-
-	async sendStunMessageToPeersTransaction(_data, recipients) {
-		//console.log("sending to peers ", recipients, " data ", _data);
-		let request = 'stun-send-message-to-peers';
-
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-
-		if (recipients) {
-			recipients.forEach((recipient) => {
-				if (recipient) {
-					newtx.addTo(recipient);
-				}
-			});
-		}
-		newtx.msg.module = 'Stun';
-		newtx.msg.request = request;
-		newtx.msg.data = _data;
-
-		await newtx.sign();
-
-		this.app.connection.emit('relay-transaction', newtx);
-
-		this.app.network.propagateTransaction(newtx);
-	}
-
-	async sendCallEntryTransaction(public_key = '') {
-		if (!this.room_obj) {
-			console.error('No room object');
+	handleSignalingMessage(sender, request, data) {
+		//
+		// Stun metadata messages
+		//
+		if (request == 'peer-joined') {
+			this.createPeerConnection(sender);
 			return;
 		}
 
-		if (!public_key) {
-			public_key = this.room_obj?.host_public_key;
+		if (request == 'peer-left') {
+			this.removePeerConnection(sender);
+			return;
 		}
 
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-				public_key
+		let peerConnection = this.peers.get(sender);
+
+		if (!peerConnection) {
+			console.warn(
+				'Receiving stun signalling messages for a non-peer connection'
 			);
+			return;
+		}
 
-		let request = 'stun-send-call-list-request';
+		// Stun protocol messages
+		if (request == 'peer-offer') {
+			peerConnection
+				.setRemoteDescription(
+					new RTCSessionDescription({ type: 'offer', sdp: data.sdp })
+				)
+				.then(() => {
+					return peerConnection.createAnswer();
+				})
+				.then((answer) => {
+					return peerConnection.setLocalDescription(answer);
+				})
+				.then(async () => {
+					await this.sendPeerAnswerTransaction(
+						sender,
+						peerConnection.localDescription.sdp
+					);
+				})
+				.catch((error) => {
+					console.error('Error handling offer:', error);
+				});
+			return;
+		}
 
-		newtx.msg.module = 'Stun';
-		newtx.msg.request = request;
+		if (request === 'peer-answer') {
+			peerConnection
+				.setRemoteDescription(
+					new RTCSessionDescription({ type: 'answer', sdp: data.sdp })
+				)
+				.then((answer) => {})
+				.catch((error) => {
+					console.error('Error handling answer:', error);
+				});
+			this.peers.set(sender, peerConnection);
+			return;
+		}
 
-		let data = {
-			room_code: this.room_obj.room_code
-		};
-
-		newtx.msg.data = data;
-		newtx.msg.data.module = 'Stun';
-		await newtx.sign();
-
-		this.app.connection.emit('relay-transaction', newtx);
-		this.app.network.propagateTransaction(newtx);
-	}
-
-	async receiveCallListRequestTransaction(app, tx) {
-		let txmsg = tx.returnMessage();
-
-		let from = tx.from[0].publicKey;
-		let call_list = [];
-		let peers = this.app.options?.stun?.peers;
-
-		if (peers) {
-			peers.forEach((key) => {
-				if (!call_list.includes(key)) {
-					call_list.push(key);
-				}
+		if (request === 'peer-candidate') {
+			if (peerConnection.remoteDescription === null) return;
+			peerConnection.addIceCandidate(data.iceCandidate).catch((error) => {
+				console.error('Error adding remote candidate:', error);
 			});
+			return;
 		}
 
-		if (!call_list.includes(this.publicKey)) {
-			call_list.push(this.publicKey);
-		}
-
-		console.log('STUN: call list', call_list);
-
-		this.sendCallListResponseTransaction(from, call_list);
+		console.warn('Unknown Stun Peer Transaction!');
+		console.log(data);
 	}
 
-	async sendCallListResponseTransaction(public_key, call_list) {
-		let request = 'stun-send-call-list-response';
+	//
+	// We treat all data channel messages a peer request / peer transaction
+	//
+	handleDataChannelMessage(data, peerId) {
+		let relayed_tx = new Transaction();
+		relayed_tx.deserialize_from_web(this.app, data);
+
+		console.log("Data Channel Message: ", relayed_tx, relayed_tx.returnMessage());
+
+		this.app.modules.handlePeerTransaction(relayed_tx);
+	}
+
+	async sendJoinTransaction(peer){
 		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-				public_key
-			);
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
 
-		newtx.msg.module = 'Stun';
-		newtx.msg.request = request;
-		let data = {
-			call_list,
-			room_code: this.room_obj.room_code
+		newtx.msg = {
+			module: 'Stun',
+			request: 'peer-joined',
 		};
-
-		newtx.msg.data = data;
-		newtx.msg.data.module = 'Stun';
 
 		await newtx.sign();
 
 		this.app.connection.emit('relay-transaction', newtx);
-
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	async receiveCallListResponseTransaction(app, tx) {
-		let txmsg = tx.returnMessage();
+	async sendPeerAnswerTransaction(peer, sdp) {
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
 
-		let call_list = txmsg.data.call_list;
-		// remove my own key
-		call_list = call_list.filter((key) => this.publicKey !== key);
-
-		let room_code = txmsg.data.room_code;
-
-		let _data = {
-			type: 'peer-joined',
-			public_key: this.publicKey,
-			room_code
+		newtx.msg = {
+			module: 'Stun',
+			request: 'peer-answer',
+			sdp
 		};
 
-		await this.sendStunMessageToPeersTransaction(_data, call_list);
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
 	}
 
-	hasSeenTransaction(tx) {
-		let hashed_data = tx.signature;
+	createPeerConnection(peerId, callback = null) {
+		console.log('STUN: Create Peer Connection with ' + peerId);
 
-		// this.app.crypto.stringToBase64(txmsg.data) can be short or very long!
-		// signature = 128 characters
-		// running signature though stringToBase64 or stringToHex makes it longer (172, 256 respectively)
-		//
-
-		if (this.hasReceivedData[hashed_data]) {
-			return true;
+		if (peerId === this.publicKey) {
+			console.log('STUN: Attempting to create a peer Connection with myself!');
+			return 0;
 		}
-		this.hasReceivedData[hashed_data] = true;
 
-		return false;
+		if (this.peers.get(peerId)) {
+			console.log('STUN: already connected to ' + peerId, "Status: " + this.peers.get(peerId).connectionState);
+			this.peers.get(peerId).restartIce();
+			
+			if (callback){
+				this.peers.get(peerId).onnegotiationneeded = null;
+				callback();
+			}else{
+				this.peers.get(peerId).onnegotiationneeded = () => {
+					console.log("STUN (redo): Negotation needed!");
+					this.renegotiate(peerId);
+				};
+
+				if (!this.hasConnection(peerId)){
+					this.renegotiate(peerId);
+				}
+			}
+			return;
+		}else{
+			const pc = new RTCPeerConnection({
+				iceServers: this.servers
+			})
+			this.peers.set(peerId, pc);
+
+			this.app.connection.emit("stun-new-peer-connection", peerId, pc);
+		}
+
+		const peerConnection = this.peers.get(peerId);
+		
+		// Handle ICE candidates
+		peerConnection.onicecandidate = async (event) => {
+			if (event.candidate) {
+				let data = {
+					module: 'Stun',
+					request: 'peer-candidate',
+					iceCandidate: event.candidate
+				};
+
+				let tx =
+					await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+						peerId
+					);
+				tx.msg = data;
+				await tx.sign();
+
+				this.app.network.propagateTransaction(tx);
+				this.app.connection.emit('relay-transaction', tx);
+			}
+		};
+
+		//Receive Remote media
+		peerConnection.addEventListener('track', (event) => {
+			this.app.connection.emit("stun-track-event", peerId, event);
+		});
+
+		peerConnection.addEventListener('connectionstatechange', () => {
+			console.log(
+				`STUN: ${peerId} connectionstatechange -- ` +
+					peerConnection.connectionState
+			);
+
+			if (
+				peerConnection.connectionState === 'failed' ||
+				peerConnection.connectionState === 'disconnected'
+			) {
+				setTimeout(() => {
+					if (
+						peerConnection.connectionState === 'failed' ||
+						peerConnection.connectionState === 'disconnected'
+					) {
+						this.app.connection.emit(
+							'stun-connection-failed',
+							peerId
+						);
+					}
+				}, 3000);
+			}
+			if (peerConnection.connectionState === 'connected') {
+				this.app.connection.emit('stun-connection-connected', peerId);
+			}
+
+			this.app.connection.emit(
+				'stun-update-connection-message',
+				peerId,
+				peerConnection.connectionState
+			);
+		});
+
+		if (callback) {
+			peerConnection.addEventListener('datachannel', (event) => {
+				console.log('STUN: datachannel event');
+
+				const receiveChannel = event.channel;
+				peerConnection.dc = receiveChannel;
+
+				receiveChannel.onmessage = (event) => {
+					this.handleDataChannelMessage(event.data, peerId);
+				};
+
+				receiveChannel.onopen = (event) => {
+					console.log('STUN: Data channel is open');
+					this.app.connection.emit('stun-data-channel-open', peerId);
+				};
+
+				receiveChannel.onclose = (event) => {
+					console.log('STUN: Data channel is closed');
+					this.app.connection.emit('stun-data-channel-close', peerId);
+				};
+			});
+
+			callback(peerId);
+
+		} else {
+			const dc = peerConnection.createDataChannel('data-channel');
+			peerConnection.dc = dc;
+
+			dc.onmessage = (event) => {
+				this.handleDataChannelMessage(event.data, peerId);
+			};
+
+			dc.onopen = (event) => {
+				console.log('STUN: Data channel is open');
+				this.app.connection.emit('stun-data-channel-open', peerId);
+			};
+
+			dc.onclose = (event) => {
+				console.log('STUN: Data channel is closed');
+				this.app.connection.emit('stun-data-channel-close', peerId);
+			};
+
+			this.renegotiate(peerId);
+
+			//
+			// This handles the renegotiation for adding/droping media streams
+			// However, need to further study "perfect negotiation" with polite/impolite peers
+			//
+			peerConnection.onnegotiationneeded = () => {
+				console.log("Negotation needed!");
+				this.renegotiate(peerId);
+			};
+		}
 	}
+
+	//This can get double processed by PeerTransaction and onConfirmation
+	//So need safety checks
+	removePeerConnection(peerId) {
+		const peerConnection = this.peers.get(peerId);
+		if (peerConnection) {
+			console.log("Stun remove peer connection!");
+			peerConnection.close();
+			this.peers.delete(peerId);
+		}
+	}
+
+	//
+	// This is to send an offer (or resend it if the mediastream changes)
+	//
+	async renegotiate(peerId) {
+		const peerConnection = this.peers.get(peerId);
+
+		if (!peerConnection) {
+			return;
+		}
+
+		console.log(`STUN: sending offer to ${peerId} with peer connection`);
+
+		try {
+			const offer = await peerConnection.createOffer({
+				iceRestart: true,
+				offerToReceiveAudio: true,
+				offerToReceiveVideo: true,
+			});
+			await peerConnection.setLocalDescription(offer);
+
+			let newtx =
+				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+					peerId
+				);
+
+			newtx.msg = {
+				module: 'Stun',
+				request: 'peer-offer',
+				sdp: peerConnection.localDescription.sdp
+			};
+
+			await newtx.sign();
+
+			this.app.connection.emit('relay-transaction', newtx);
+			this.app.network.propagateTransaction(newtx);
+		} catch (err) {
+			console.error('Error creating offer:', err);
+		}
+	}
+
 }
 
 module.exports = Stun;

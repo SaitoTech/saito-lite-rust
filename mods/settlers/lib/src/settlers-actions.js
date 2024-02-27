@@ -185,6 +185,10 @@ class SettlersActions {
       console.log("undo ghost roads");
       this.displayBoard();
     }
+
+    if (this.game.player == player){
+      this.game.state.last_city = slot;
+    }
   }
 
   /*

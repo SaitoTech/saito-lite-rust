@@ -60,6 +60,8 @@
 .stun-chatbox.minimize {
 	width: 30rem;
 	height: 30rem;
+	min-width: 20rem;
+	min-height: 25rem;
 	overflow: auto;
 	resize: both;
 	/* animation-name: minimize;
@@ -73,6 +75,7 @@
 .stun-chatbox.minimize main {
 	/* Fixed grid layout */
 	grid-template-rows: calc(100% - 40px) 40px;
+	grid-template-columns: minmax(5rem, 1fr);
 }
 
 .stun-chatbox.minimize .minimizer i {
@@ -86,6 +89,7 @@
 
 .stun-chatbox.minimize .expanded-video {
 	width: 100%;
+	min-width: unset;
 	resize: unset;
 }
 
@@ -112,7 +116,7 @@
 
 .stun-chatbox.minimize .users-on-call-text,
 .stun-chatbox.minimize .add_users_container,
-.stun-chatbox.minimize span,
+.stun-chatbox.minimize .imported-actions,
 .stun-chatbox.minimize label {
 	display: none;
 }
@@ -122,7 +126,7 @@
 	justify-content: flex-end;
 }
 
-.stun-chatbox.minimize span.mini_okay {
+.stun-chatbox.minimize .call-controls .icon_click_area {
 	display: flex;
 	width: 3rem;
 	height: 3rem;
@@ -159,10 +163,6 @@
 	position: relative;
 	padding: 1rem;
 	gap: 1rem;
-}
-
-.footer {
-	height: 100%;
 }
 
 .gallery {
@@ -511,7 +511,7 @@ video#local {
 	}
 }
 
-.control-panel {
+.footer {
 	padding: 2rem 2rem;
 	display: flex;
 	justify-content: space-between;
@@ -520,7 +520,7 @@ video#local {
 	color: var(--saito-white);
 }
 
-.control-panel .timer {
+.footer .timer {
 	display: flex;
 	flex-direction: row-reverse;
 	align-items: center;
@@ -565,11 +565,16 @@ video#local {
 	height: 4rem;
 }
 
+.control-panel{
+	display: flex;
+	gap: 5rem;
+}
+
 .control-list {
 	display: flex;
 }
 
-.control-list span,
+.control-list .icon_click_area,
 .add_users_container {
 	margin-right: 2rem;
 	border-radius: 50%;
@@ -582,9 +587,6 @@ video#local {
 	position: relative;
 }
 
-.control-list .spacer {
-	opacity: 0;
-}
 
 .control-list .icon_click_area.disabled {
 	background-color: grey;
@@ -597,7 +599,7 @@ video#local {
 	border: 3px solid var(--saito-primary) !important;
 }
 
-.control-list span label,
+.control-list .icon_click_area label,
 .add_users_container label {
 	position: absolute;
 	color: white;
@@ -627,9 +629,6 @@ video#local {
 	color: var(--saito-red);
 }
 
-.control-list .add_users {
-	color: var(--saito-gray-mid);
-}
 
 @media screen and (max-width: 900px) {
 	.stun-chatbox.full-screen main {
@@ -637,7 +636,7 @@ video#local {
 		grid-template-columns: minmax(100px, 1fr);
 	}
 
-	.full-screen .control-panel {
+	.full-screen .footer {
 		flex-direction: column;
 		align-items: flex-start;
 		justify-content: end;
@@ -645,28 +644,26 @@ video#local {
 		gap: 3rem;
 		padding-bottom: 3rem;
 	}
-	.full-screen .control-panel .control-list {
+	.full-screen .footer .control-list {
 		margin-bottom: 1.7rem;
 		gap: 1.5rem;
 	}
 
-	.control-list span {
+	.control-list .icon_click_area {
 		margin: 0;
 	}
-	.control-list .spacer {
-		display: none;
-	}
+
 	.add_users_container label {
 		display: none;
 	}
 }
 
 @media screen and (max-width: 600px) {
-	.control-panel {
+	.footer {
 		padding: 4rem 1rem;
 	}
 
-	.control-panel .timer {
+	.footer .timer {
 		gap: 0.5rem;
 	}
 
@@ -674,7 +671,7 @@ video#local {
 		display: none;
 	}
 
-	.control-panel .control-list {
+	.control-panel {
 		gap: unset;
 		width: 40rem;
 		max-width: 100%;
@@ -685,7 +682,7 @@ video#local {
 		gap: 0.75rem;
 	}
 
-	.full-screen .control-panel .control-list span {
+	.full-screen .control-panel .control-list .icon_click_area {
 		width: 4rem;
 		height: 4rem;
 	}

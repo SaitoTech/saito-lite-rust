@@ -26,10 +26,7 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'show-call-interface',
 			async (videoEnabled, audioEnabled) => {
-				console.log('Render Video Call Interface');
-
-				// create chat group
-				this.createRoomTextChat();
+				console.log('Render Video Call Interface', videoEnabled, audioEnabled);
 
 				//This will render the (full-screen) component
 				if (!document.querySelector('.stun-chatbox')) {
@@ -62,6 +59,11 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'stun-update-connection-message',
 			(peer_id, status) => {
+				if (this.app.options.stun.peers.includes(peer_id) && !this.video_boxes[peer_id]){
+					console.warn("Missing video box for expected peer");
+					return;
+				}
+
 				if (status === 'connecting') {
 					this.video_boxes[peer_id].video_box.renderPlaceholder(
 						'connecting'
@@ -82,6 +84,9 @@ class CallInterfaceVideo {
 		);
 
 		this.app.connection.on('remove-peer-box', (peer_id) => {
+
+			this.remote_streams.delete(peer_id);
+			
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
 					this.video_boxes[peer_id].video_box.remove(true);
@@ -147,8 +152,10 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('stun-disconnect', () => {
-			this.video_boxes = {};
-			this.app.connection.emit('reset-stun');
+
+			for (let peer in this.video_boxes){
+				this.app.connection.emit("remove-peer-box", peer);
+			}
 
 			if (this.mod.browser_active) {
 				let homeModule = this.app.options?.homeModule || 'Stun';
@@ -174,6 +181,7 @@ class CallInterfaceVideo {
 					);
 					document.title = this.old_title;
 				}
+
 			}
 		});
 	}
@@ -198,6 +206,8 @@ class CallInterfaceVideo {
 			);
 		}
 
+		this.insertActions();
+
 		this.attachEvents();
 
 		if (!this.full_screen) {
@@ -209,34 +219,71 @@ class CallInterfaceVideo {
 		}
 	}
 
-	async createRoomTextChat() {
-		let chat_mod = this.app.modules.returnModule('Chat');
 
-		if (!chat_mod) {
+	insertActions(){
+
+		// add call icons
+
+		let container = document.querySelector(".control-list.imported-actions");
+
+		if (!container) {
 			return;
 		}
+		let index = 0;
 
-		let cm = chat_mod.respondTo('chat-manager');
-		let peer = (await this.app.network.getPeers())[0].publicKey;
-		this.chat_group = {
-			id: this.mod.room_obj.room_code,
-			members: [peer],
-			name: `Video Chat`,
-			txs: [],
-			unread: 0
-			//
-			// USE A TARGET Container if the chat box is supposed to show up embedded within the UI
-			// Don't include if you want it to be just a chat popup....
-			//
-			//target_container: `.stun-chatbox .${this.remote_container}`,
-		};
+		for (const mod of this.app.modules.mods) {
+			let item = mod.respondTo('call-actions', {
+				call_id: this.mod.room_obj.call_id,
+				members: this.app.options.stun.peers,
+			});
+			if (item instanceof Array) {
+				item.forEach((j) => {
+					this.createActionItem(j, container, index++);
+				});
+			} else if (item != null) {
+				this.createActionItem(item, container, index++);
+			}
+		}
 
-		chat_mod.groups.push(this.chat_group);
-
-		//You should be able to just create a Chat Group, but we are duplicating the public chat server
-		//so we need this hacky work around
-		//this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat`);
+		/*
+            <span class="record-control icon_click_area" id="record-icon">
+              <label>Record</label>
+              <i class="fa-solid fa-record-vinyl"></i>
+            </span>
+		*/
 	}
+
+
+	createActionItem(item, container, index) {
+		let id = "call_action_item_" + index;
+		let html = `<div id="${id}" class="icon_click_area">
+						<label>${item.text}</label>
+						<i class="${item.icon}"></i>
+					</div>`;
+
+		const el = document.createElement('div');
+
+		container.appendChild(el);
+		el.outerHTML = html;
+
+		let div = document.getElementById(id);
+		if (div){
+			if (item?.callback){
+				console.log("Add event listener!");
+				div.onclick = () => {
+					console.log("click");
+					item.callback(this.app);
+				};
+			}else{
+				console.warn("Adding an action item with no callback");
+			}
+
+		}else{
+			console.warn("Item not found");
+		}
+
+	} 
+
 
 	attachEvents() {
 		let add_users = document.querySelector('.add_users_container');
@@ -246,13 +293,6 @@ class CallInterfaceVideo {
 			});
 		}
 
-		document
-			.querySelector('.chat_control')
-			.addEventListener('click', (e) => {
-				this.app.connection.emit('open-chat-with', {
-					id: this?.chat_group?.id
-				});
-			});
 
 		if (document.querySelector('.effects-control')) {
 			document
@@ -264,16 +304,12 @@ class CallInterfaceVideo {
 
 		document.querySelectorAll('.disconnect-control').forEach((item) => {
 			item.addEventListener('click', async (e) => {
-				let chat_module = this.app.modules.returnModule('Chat');
-				if (chat_module && this.chat_group) {
-					await chat_module.deleteChatGroup(this.chat_group);
-				}
 				this.app.connection.emit('stun-disconnect');
 				siteMessage('You have been disconnected', 3000);
 			});
 		});
 
-		document.getElementById('record-icon').onclick = async () => {
+		/*document.getElementById('record-icon').onclick = async () => {
 			const recordIcon = document.querySelector('#record-icon i');
 			const recordLabel = document.querySelector('#record-icon label');
 
@@ -308,7 +344,7 @@ class CallInterfaceVideo {
 
 				recordIcon.classList.add('recording');
 			}
-		};
+		};*/
 
 		document.querySelectorAll('.display-control').forEach((item) => {
 			item.onclick = () => {
@@ -458,31 +494,11 @@ class CallInterfaceVideo {
 		this.createVideoBox(peer);
 		this.video_boxes[peer].video_box.render(remoteStream);
 
-		//
-		// Check if newly added remote stream is muted
-		// TODO -- this doesn't pick up if the audio is disabled/muted for some GD reason!!!!
-		//
 		if (remoteStream) {
 
 			let peer_elem = document.getElementById(`stream_${peer}`);
 			if (peer_elem) {
 				peer_elem.querySelector('.video-box').click();
-			}
-
-			if (!remoteStream.getVideoTracks()?.length) {
-				this.app.connection.emit(`peer-toggle-video-status`, {
-					public_key: peer,
-					enabled: false
-				});
-			}
-
-			for (let track of remoteStream.getTracks()) {
-				if (!track.enabled) {
-					this.app.connection.emit(
-						`peer-toggle-${track.kind}-status`,
-						{ public_key: peer, enabled: false }
-					);
-				}
 			}
 		}
 
@@ -512,8 +528,6 @@ class CallInterfaceVideo {
 			const videoBox = new VideoBox(this.app, this.mod, peer, container);
 			this.video_boxes[peer] = { video_box: videoBox };
 		}
-
-		console.log(this.video_boxes);
 	}
 
 	toggleAudio() {
@@ -558,18 +572,17 @@ class CallInterfaceVideo {
 	updateImages() {
 		let images = ``;
 		let count = 0;
-		for (let i in this.video_boxes) {
-			if (i === 'presentation') {
+		for (let publickey in this.video_boxes) {
+			if (publickey === 'presentation') {
 				continue;
 			}
 
-			let publickey = i;
-			if (i === 'local') {
+			if (publickey === 'local') {
 				publickey = this.mod.publicKey;
 			}
 
 			let imgsrc = this.app.keychain.returnIdenticon(publickey);
-			images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
+			images += `<img data-id ="${publickey}" class="saito-identicon" src="${imgsrc}"/>`;
 			count++;
 		}
 		document.querySelector(
