@@ -2664,6 +2664,7 @@ return;
 
               });
             }
+
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
           },
 
