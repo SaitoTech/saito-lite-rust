@@ -13434,7 +13434,7 @@ console.log("total defenders: " + total_defenders);
 		      nonregulars_to_delete--;
 		    }
 		  }
-		  his_self.addMove(`${his_self.popup("107")} strikes ${his_self.returnSpaceName(spacekey)}`); 
+		  his_self.addMove(`NOTIFY\t${his_self.popup("107")} strikes ${his_self.returnSpaceName(spacekey)}`); 
 		  his_self.endTurn();
 		});
 
