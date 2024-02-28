@@ -899,11 +899,12 @@
             $('.option').off();
 
 	    if (action === "grant") {
+
 	      his_self.updateStatus("Papacy grants divorce...");
 	      his_self.updateLog(`${his_self.popup("207")} - Papacy grants divorce...`);
 	      his_self.addMove("player_call_theological_debate\tpapacy");
 	      his_self.addMove("henry_petitions_for_divorce_grant");
-	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
               his_self.addMove(`DEAL\t1\t${p}\t1`);
 	      his_self.endTurn();
 	    }
