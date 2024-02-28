@@ -5,7 +5,48 @@
     return spacekey;
   }
 
-  
+ 
+  moveFactionUnitsInSpaceToCapitalIfPossible(faction, spacekey) {
+
+console.log("TRYING TO MOVE FACTINO UNITS IN SPACEKEY: " + faction + " -- " + spacekey);
+
+    let space = this.game.spaces[spacekey];
+    let cap = this.returnControlledCapitals(faction);
+    let cap_idx = 0;
+    
+    //
+    // do not control capital? remove
+    //
+    if (cap.length == 0) {
+      for (let z = 0; z < space.units[faction].length; z++) {
+        let u = space.units[faction][z];
+        if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry" || u.type == "corsair" || u.type == "squadron") {
+          space.units[faction].splice(z, 1);
+          z--;
+        }
+      }
+      return;
+    }
+
+    //
+    // otherwise move to capital, randomly
+    //
+    for (let ii = 0; ii < space.units[faction].length; ii++) {
+      let u = space.units[faction][ii];
+      if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary") {
+        if (cap.length > 0) {
+          let selected_capital = cap[cap_idx];
+          cap_idx++;
+          if ((cap_idx+1) > cap.length) { cap_idx = 0; }
+          this.game.spaces[selected_capital].units[faction].push(u);
+        }
+        space.units[faction].splice(ii, 1);
+        ii--;
+      }
+    }
+  }       
+
+ 
 
   resetBesiegedSpaces() {
     for (let space in this.game.spaces) {

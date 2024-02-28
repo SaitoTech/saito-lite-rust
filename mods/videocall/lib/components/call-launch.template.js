@@ -8,7 +8,7 @@ module.exports = StunLaunchTemplate = (app, mod) => {
             <div class="stunx-appspace-actions">`;
 
 	if (mod.room_obj) {
-		html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.room_code}">Join Meeting</div>`;
+		html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;
 	} else {
 		html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
 	}

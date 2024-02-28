@@ -7,12 +7,12 @@ module.exports = CallInterfaceFloat = () => {
           <div class="stun-identicon-list"></div>
         </div>  
         <div class="control-list">
-          <span class="audio-control icon_click_area">
+          <div class="audio-control icon_click_area">
             <i class="fa fa-microphone"> </i>
-          </span>
-          <span class="disconnect-control icon_click_area">
+          </div>
+          <div class="disconnect-control icon_click_area">
              <i class="disconnect_btn fas fa-phone"> </i>
-          </span>
+          </div>
         </div>
       </div>
     </div>`;

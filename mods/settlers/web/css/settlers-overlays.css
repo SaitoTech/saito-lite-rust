@@ -252,9 +252,9 @@ stats overlay
 	height: min(22vh, 20vw);
 	width: calc(min(22vh, 20vw) * 0.72);
 	color: white;
-	font-size: bold;
 	font-size: 9rem;
-	-webkit-text-stroke: 2px black;
+	max-width: 15rem;
+	max-height: 20rem;	
 }
 
 .invalid_offer {
