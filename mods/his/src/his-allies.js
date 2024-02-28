@@ -180,9 +180,28 @@
     if (!this.game.state.activated_powers[faction].includes(activated_power)) { 
       this.game.state.activated_powers[faction].push(activated_power);
     }
+
+    //
+    // any units not belonging to this activated_power or the faction must be
+    // relocated to their capital (if exists) or destroyed.
+    //
+    for (let key in this.game.spaces) {
+      let space = this.game.spaces[key];
+      if (space.political == activated_power || (space.political == "" && space.home == activated_power)) {
+	for (let f in space.units) {
+	  if (f !== faction && f !== activated_power) {
+	    if (space.units[f].length > 0) {
+	      this.moveFactionUnitsInSpaceToCapitalIfPossible(f, space.key);
+	    }
+	  }
+	}
+      }
+    }
   }
 
+
   unsetActivatedPower(faction, activated_power) {
+
     if (this.game.state.activated_powers[faction].includes(activated_power)) {
       let x = [];
       for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
@@ -192,6 +211,25 @@
       }
       this.game.state.activated_powers[faction] = x;
     }
+
+   
+    //
+    // any units not belonging to this activated_power must be
+    // relocated to their capital (if exists) or destroyed.
+    //
+    for (let key in this.game.spaces) {
+      let space = this.game.spaces[key];
+      if (space.political == activated_power || (space.political == "" && space.home == activated_power)) {
+        for (let f in space.units) {
+          if (f !== faction && f !== activated_power) {
+            if (space.units[f].length > 0) {
+              this.moveFactionUnitsInSpaceToCapitalIfPossible(f, space.key);
+            }
+          }
+        }
+      }
+    } 
+
   }
 
   isActivatedPower(faction, activated_power) {
@@ -330,7 +368,7 @@
     //
     if (defender == "venice" || defender == "independent" || defender == "genoa" || defender == "scotland" || defender == "hungary") {
       defender = this.returnControllingPower(defender);
-    }         
+    }
 
     //
     // defender now controlling power or itself

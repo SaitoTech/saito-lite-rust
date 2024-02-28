@@ -114,7 +114,6 @@ class CallInterfaceFloat {
 			document.getElementById('small-audio-chatbox').remove();
 		}
 
-		this.app.connection.emit('reset-stun');
 	}
 
 	addStream(peer, remoteStream) {

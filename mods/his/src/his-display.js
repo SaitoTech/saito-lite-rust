@@ -992,10 +992,10 @@ try {
 	  }
           if (z === "scotland") {
 	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['2']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScotlandReg-2.svg" />`;
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScottishReg-2.svg" />`;
 	    }
 	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['regular']['1']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScotlandReg-1.svg" />`;
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScottishReg-1.svg" />`;
 	    }
 	  }
           if (z === "independent") {
@@ -1062,7 +1062,7 @@ try {
 	  }
           if (z === "scotland") {
 	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['regular']['1']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScotlandReg-1.svg" />`;
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScottishReg-1.svg" />`;
 	    }
 	  }
           if (z === "independent") {

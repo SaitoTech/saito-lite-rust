@@ -56,6 +56,8 @@ class Dialer {
 
 		let recipient = this.receiver.publicKey;
 
+		console.log("Send messages to: " + recipient);
+
 		if (video_switch && call_button) {
 			this.activateOptions();
 
@@ -70,17 +72,6 @@ class Dialer {
 				this.mod.room_obj.ui = video_switch.checked ? 'video' : 'voice';
 
 				let data = Object.assign({}, this.mod.room_obj);
-
-				this.app.connection.emit(
-					'update-media-preference',
-					'video',
-					video_switch.checked
-				);
-				this.app.connection.emit(
-					'update-media-preference',
-					'ondisconnect',
-					false
-				);
 
 				this.app.connection.emit('relay-send-message', {
 					recipient,
@@ -106,7 +97,7 @@ class Dialer {
 				this.dialing = setTimeout(() => {
 					this.app.connection.emit('relay-send-message', {
 						recipient,
-						request: 'stun-cancel-connection-request',
+						request: 'stun-connection-request-cancel',
 						data
 					});
 					this.stopRing();
@@ -121,7 +112,7 @@ class Dialer {
 					clearTimeout(this.dialing);
 					this.app.connection.emit('relay-send-message', {
 						recipient,
-						request: 'stun-cancel-connection-request',
+						request: 'stun-connection-request-cancel',
 						data
 					});
 					this.stopRing();
@@ -137,17 +128,6 @@ class Dialer {
 
 		if (answer_button) {
 			answer_button.onclick = (e) => {
-				this.app.connection.emit(
-					'update-media-preference',
-					'video',
-					this.mod.room_obj.ui == 'video'
-				);
-				this.app.connection.emit(
-					'update-media-preference',
-					'ondisconnect',
-					false
-				);
-
 				this.app.connection.emit('relay-send-message', {
 					recipient,
 					request: 'stun-connection-accepted',
@@ -161,7 +141,12 @@ class Dialer {
 					this.overlay.remove();
 					this.app.connection.emit(
 						'stun-init-call-interface',
-						this.mod.room_obj.ui
+						{
+							ui: this.mod.room_obj.ui, 
+							audio: true,
+							video: this.mod.room_obj.ui == "video",
+							auto_disconnect: true,
+						}
 					);
 					this.app.connection.emit('start-stun-call');
 				}, 1000);
@@ -241,7 +226,7 @@ class Dialer {
 		// create a room
 		if (!this.mod.room_obj) {
 			this.mod.room_obj = {
-				room_code: this.mod.createRoomCode(),
+				call_id: this.mod.createRoomCode(),
 				host_public_key: this.mod.publicKey
 			};
 		}
@@ -306,8 +291,8 @@ class Dialer {
 
 			break;
 
-		case 'stun-cancel-connection-request':
-			if (this.mod?.room_obj?.room_code == data.room_code) {
+		case 'stun-connection-request-cancel':
+			if (this.mod?.room_obj?.call_id == data.call_id) {
 				this.stopRing();
 				this.overlay.remove();
 				this.app.connection.emit('reset-stun');
@@ -339,7 +324,13 @@ class Dialer {
 				this.overlay.remove();
 				this.app.connection.emit(
 					'stun-init-call-interface',
-					this.mod.room_obj.ui
+						{
+							ui: this.mod.room_obj.ui, 
+							audio: true,
+							video: this.mod.room_obj.ui == "video",
+							auto_disconnect: true,
+						}
+
 				);
 				this.app.connection.emit('start-stun-call');
 			}, 1000);
@@ -353,7 +344,7 @@ class Dialer {
 				this.dialing = setTimeout(() => {
 					this.app.connection.emit('relay-send-message', {
 						recipient: sender,
-						request: 'stun-cancel-connection-request',
+						request: 'stun-connection-request-cancel',
 						data
 					});
 					this.stopRing();

@@ -401,8 +401,6 @@ class SettlersGameloop {
 
         if (this.game.player != player) {
           this.buildCity(player, slot);
-        } else {
-          this.game.state.last_city = slot;
         }
 
         this.updateLog(`${this.formatPlayer(player)} built a ${this.c1.name}`);

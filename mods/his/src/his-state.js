@@ -4,6 +4,7 @@
     // remove foul weather
     //
     this.game.state.events.foul_weather = 0;
+    this.game.state.events.foreign_recruits = "";
     this.game.state.spring_deploy_across_passes = [];
     this.game.state.spring_deploy_across_seas = [];
     this.game.state.events.spring_preparations = "";
@@ -557,6 +558,25 @@ if (this.game.options.scenario != "is_testing") {
     }
 
     return 0;
+  }
+
+  returnDiplomacyImpulseOrder(faction="") {
+    if (faction == "ottoman") {
+      return ["hapsburg","england","france","papacy","protestant"];
+    }
+    if (faction == "hapsburg") {
+      return ["england","france","papacy","protestant"];
+    }
+    if (faction == "england") {
+      return ["france","papacy","protestant"];
+    }
+    if (faction == "france") {
+      return ["papacy","protestant"];
+    }
+    if (faction == "papacy") {
+      return ["protestant"];
+    }
+    return [];
   }
 
   returnImpulseOrder() {

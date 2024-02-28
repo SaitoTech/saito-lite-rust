@@ -186,7 +186,7 @@ class NavalBattleOverlay {
 							.forEach((el) => {
 								el.onclick = (e) => {};
 							});
-						this.mod.updateInstructions(
+						this.updateInstructions(
 							`Cannot Assign More Hits (squadrons take 2 hits to destroy) - close to continue`
 						);
 						this.mod.endTurn();
@@ -208,7 +208,7 @@ class NavalBattleOverlay {
 			document.querySelectorAll('.hits-assignable').forEach((el) => {
 				el.onclick = (e) => {};
 			});
-			this.mod.updateInstructions(
+			this.updateInstructions(
 				`Cannot Assign More Hits (squadrons take 2 hits to destroy) - close to continue`
 			);
 			if (

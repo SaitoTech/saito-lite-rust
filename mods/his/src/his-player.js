@@ -282,7 +282,7 @@ console.log("SELECTED FACTION: " + rf);
       }
     }
     let z = this.returnPlayerCommandingFaction(faction);
-    if (z) { return this.game.players_info[z-1]; }
+    if (z) { return this.game.state.players_info[z-1]; }
     return 0;
   }
 
@@ -2582,6 +2582,7 @@ return;
                   for (let i = 0; i < space.units[key].length; i++) {
 	            if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
                     if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
+                    if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
                       let does_units_to_move_have_unit = false;
                       for (let z = 0; z < units_to_move.length; z++) {
                         if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
@@ -2593,6 +2594,7 @@ return;
                         html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
                         unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       }
+                    }
                     }
                     }
                   }
@@ -2608,8 +2610,18 @@ return;
                 destination : destination_spacekey ,
               }
 
-              his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
-              html += `<li class="option" id="end">finish</li>`;
+	      //
+	      // auto-move if only 1 unit
+	      //
+	      let can_we_quick_move = false;
+	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; } 
+
+
+	      if (!can_we_quick_move) {
+                his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+              }
+
+	      html += `<li class="option" id="end">finish</li>`;
               html += "</ul>";
 
               his_self.updateStatusWithOptions(msg, html);
@@ -2661,7 +2673,19 @@ return;
                 selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 
               });
+
+	      if (can_we_quick_move) {
+		units_to_move = JSON.parse(JSON.stringify(mobj.unmoved_units));
+	        selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	        his_self.displaySpace(source_spacekey);
+	        his_self.displaySpace(destination_spacekey);
+		his_self.updateStatus("deploying...");
+		return;
+	      }
+
+
             }
+
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
           },
 
@@ -2831,6 +2855,7 @@ return;
 	  for (let key in space.units) {
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
+                if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
@@ -2846,6 +2871,7 @@ return;
 		      unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
 	            }
 	          }
+	        }
 	        }
 	        }
 	      }
@@ -3429,6 +3455,7 @@ return;
 	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
 	      for (let i = 0; i < space.units[key].length; i++) {
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
+                if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
@@ -3445,6 +3472,7 @@ return;
 	          }
 	        }
 	        }
+	        }
 	      }
 	    }
 	  }
@@ -3458,7 +3486,16 @@ return;
 	    destination : spacekey ,
  	  }
 
-   	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+          // 
+          // auto-move if only 1 unit
+          //
+          let can_we_quick_move = false;
+          if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; }
+
+	  if (!can_we_quick_move) {
+   	    his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+	  }
+
 	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
@@ -3511,6 +3548,17 @@ return;
 
 	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	  });
+
+
+          if (can_we_quick_move) {
+            units_to_move = JSON.parse(JSON.stringify(mobj.unmoved_units));
+            selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+            his_self.displaySpace(source_spacekey);
+            his_self.displaySpace(destination_spacekey);
+            his_self.updateStatus("intercepting...");
+            return;
+          }
+
 	}
 	//
 	// end select units
@@ -4394,6 +4442,7 @@ return;
 	  }
           if (space.besieged != 0) { return 0; }
           if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+	  if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
           if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	  return 0;
         },
@@ -4512,6 +4561,7 @@ return;
 	  }
           if (space.besieged != 0) { return 0; }
           if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+	  if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
           if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	  return 0;
         },
@@ -4603,6 +4653,7 @@ return;
       function(space) {
         if (space.ports.length === 0) { return 0; }
         if (space.besieged != 0) { return 0; }
+	if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
 	return 0;
@@ -5132,6 +5183,7 @@ return;
 	    }
 	  }
           if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
+	  if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
           if (space.owner === faction) { return 1; }
           if (space.home === faction) { return 1; }
 	  return 0;
@@ -5204,6 +5256,7 @@ return;
       function(space) {
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
+        if (space.ports.length > 0 && space.pirate_haven == 1 && his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
 	return 0;
       },
 
@@ -5459,11 +5512,6 @@ return;
     }
   }
   canPlayerCallTheologicalDebate(his_self, player, faction, mary_i=0) {
-//
-// TODO
-//
-// If all Protestant debaters in a language zone are committed, the Protestant player may not initiate debates in that language zone. Similarly, if all Papal debaters are committed, the Papal player may not initiate debates in any language zone. If none of the Protestant debaters for a language zone have entered the game (or all of them have been burnt at the stake, excommuni- cated, or removed from play), neither player may call a debate in that zone. 
-//
     if (his_self.returnNumberOfUncommittedDebaters(faction) <= 0) { return 0; }
     if (his_self.game.state.events.wartburg == 1) { if (faction === "protestant") { return 0; } }
     if (faction === "protestant") { return 1; }
@@ -5534,14 +5582,18 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
+/*** show available debaters?
       $('.option').on('mouseover', function () {
         let action2 = $(this).attr("id");
+	if (action2 === "uncommitted" || action2 === "committed") {
+	}
         his_self.cardbox.show(action2);
       });
       $('.option').on('mouseout', function () {
         let action2 = $(this).attr("id");
         his_self.cardbox.hide(action2);
       });
+***/
       $('.option').on('click', function () {
 
         let committed = $(this).attr("id");

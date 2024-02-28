@@ -899,16 +899,19 @@
             $('.option').off();
 
 	    if (action === "grant") {
+
 	      his_self.updateStatus("Papacy grants divorce...");
+	      his_self.updateLog(`${his_self.popup("207")} - Papacy grants divorce...`);
 	      his_self.addMove("player_call_theological_debate\tpapacy");
 	      his_self.addMove("henry_petitions_for_divorce_grant");
-	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
               his_self.addMove(`DEAL\t1\t${p}\t1`);
 	      his_self.endTurn();
 	    }
 
 	    if (action === "refuse") {
 	      his_self.updateStatus("Papacy refuses divorce...");
+	      his_self.updateLog(`${his_self.popup("207")} - Papacy refuses divorce...`);
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t3");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t2");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t1");
@@ -945,6 +948,7 @@
                 his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
                 his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
                 his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+	        his_self.addMove(`NOTIFY\tHapsburg recruits 4 mercenaries in ${his_self.returnSpaceName(spacekey)}`);
 	        his_self.endTurn();
 	      },
 
@@ -987,6 +991,7 @@
 
               function(spacekey) {
                 his_self.addMove("build\tland\thapsburg\tregular\t"+spacekey);
+	        his_self.addMove(`NOTIFY\tHapsburg add regular in ${his_self.returnSpaceName(spacekey)}`);
           	his_self.endTurn();
               },
 
@@ -2630,7 +2635,7 @@ alert("HERE");
 	      }
 	      his_self.addEndMove("excommunicate_reformer\t"+selected_reformer);
 
-              let msg = "Convene Theological Debate?";
+              let msg = "Convene Theological Debate after Excommunication?";
               let html = '<ul>';
               html += `<li class="option" id="yes">yes</li>`;
               html += `<li class="option" id="no">no</li>`;
@@ -4913,7 +4918,7 @@ console.log("008 eventing!");
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu == "assault") {
+        if (menu == "field_battle") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
@@ -4926,7 +4931,7 @@ console.log("008 eventing!");
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
-        if (menu == "assault") {
+        if (menu == "field_battle") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
               return 1;
@@ -4936,7 +4941,7 @@ console.log("008 eventing!");
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
-        if (menu == "assault") {
+        if (menu == "field_battle") {
           player = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.state.active_player === player) {
 	    player.tmp_roll_first = 1;
@@ -7078,7 +7083,7 @@ console.log("008 eventing!");
 	            "Select Second Space to Convert", 
 
 	            function(space2) {
-	              if (space2.key !== first_choice && space2.religion == "protestant" && his_self.isOccupied(space) == 0 && !his_self.isElectorate(space)) {
+	              if (space2.key !== first_choice && space2.religion == "protestant" && his_self.isOccupied(space2.key) == 0 && !his_self.isElectorate(space2.key)) {
 		        return 1;
 	              }
 	              return 0;
@@ -7735,6 +7740,7 @@ console.log("HITS: " + hits);
 	his_self.updateStatus(his_self.returnFactionName(faction) + " playing "+ his_self.popup("076"));
 	let player = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player == player) {
+	  his_self.game.state.events.foreign_recruits = faction;
   	  his_self.playerPlayOps("", faction, 4, "build");
 	}
 
@@ -10188,6 +10194,7 @@ console.log("total defenders: " + total_defenders);
 		      his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
 		    }
 		  }
+		  his_self.addMove(`NOTIFY\t${his_self.popup("106")} destroys all mercenaries in ${his_self.returnSpaceName(spacekey)}`);
 		  his_self.endTurn();
 		});
 
@@ -10287,7 +10294,7 @@ console.log("total defenders: " + total_defenders);
 		      nonregulars_to_delete--;
 		    }
 		  }
-		  his_self.addMove(`${his_self.popup("107")} strikes ${his_self.returnSpaceName(spacekey)}`); 
+		  his_self.addMove(`NOTIFY\t${his_self.popup("107")} strikes ${his_self.returnSpaceName(spacekey)}`); 
 		  his_self.endTurn();
 		});
 

@@ -1,12 +1,28 @@
 .diplomacy-confirm-overlay , .diplomacy-propose-overlay {
-	background-image: url(/his/img/backgrounds/diet_of_worms.jpeg);
+	background-image: url(/his/img/backgrounds/diplomacy/ambassadors.jpeg);
 	background-size: cover;
-	max-height: 90vh;
-	max-width: 90vw;
-	width: 90vw;
-	height: auto;
+	max-height: 100vh;
+	max-width: 100vw;
+	width: 100vw;
+	height: 100vh;
 	min-height: 622px;
 	text-align: center;
+	overflow-y: auto;
+	padding-top: 5rem;
+}
+
+.diplomacy-propose-overlay .content ol li ul {
+	display: inline;
+}
+.diplomacy-propose-overlay .content ol {
+	margin-left: 1rem;
+}
+
+.diplomacy-propose-overlay .menu {
+        min-height: min-content;
+	height: max-content;
+        margin-left: auto;
+        margin-right: auto;
 }
 
 .diplomacy-confirm-overlay .help , .diplomacy-propose-overlay .html {
@@ -24,11 +40,13 @@
 
 .diplomacy-confirm-overlay .content , .diplomacy-propose-overlay .content {
     padding: 1.5rem;
+    width: max-content;
+    font-size: 2rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
     background-color: #0009;
     color: white;
-    width: 80%;
+    max-width: 80%;
     margin-left: auto;
     margin-right: auto;
     list-style: none;

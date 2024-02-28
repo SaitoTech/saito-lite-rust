@@ -64,6 +64,7 @@ class QRScanner extends ModTemplate {
 	}
 
 	respondTo(type = '') {
+		let qr_self = this;
 		if (type === 'saito-header') {
 			return [
 				{
@@ -72,6 +73,21 @@ class QRScanner extends ModTemplate {
 					rank: 110,
 					callback: function (app, id) {
 						app.connection.emit('scanner-start-scanner', {});
+					}
+				}
+			];
+		}
+
+		if (type === 'withdraw') {
+			return [
+				{
+					text: 'Scan',
+					icon: 'fas fa-expand',
+					rank: 110,
+					callback: async function (app, id, callback) {
+						qr_self.scanner_callback = callback;
+						app.connection.emit('scanner-start-scanner',{});
+						
 					}
 				}
 			];
@@ -112,8 +128,7 @@ class QRScanner extends ModTemplate {
 			return;
 		}
 
-		this.scanner_callback = null;
-		if (mycallback) {
+		if (mycallback != null) {
 			this.scanner_callback = mycallback;
 		}
 
@@ -126,7 +141,6 @@ class QRScanner extends ModTemplate {
 		};
 
 		let scanner_self = this;
-
 		scanner_self.start(
 			document.getElementById('qr-video'),
 			document.getElementById('qr-canvas')
@@ -147,8 +161,7 @@ class QRScanner extends ModTemplate {
 			return;
 		}
 
-		this.scanner_callback = null;
-		if (mycallback) {
+		if (mycallback != null) {
 			this.scanner_callback = mycallback;
 		}
 
@@ -198,6 +211,7 @@ class QRScanner extends ModTemplate {
 		} catch (err) {
 			this.handleError(err);
 		}
+
 		this.startQRDecoderInitializationLoop();
 	}
 
