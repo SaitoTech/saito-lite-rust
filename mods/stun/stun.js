@@ -85,7 +85,12 @@ class Stun extends ModTemplate {
 							this.sendJoinTransaction(peerId);
 						}			
 					}
-					this.createPeerConnection(peerId, callback);
+
+					if (Array.isArray(peerId)){
+						peerId.forEach((peer) => this.createPeerConnection(peer, callback));
+					}else{
+						this.createPeerConnection(peerId, callback);	
+					}
 				},
 				removePeerConnection: (peerId) => {
 					this.removePeerConnection(peerId);
@@ -98,6 +103,23 @@ class Stun extends ModTemplate {
 	}
 
 	hasConnection(peerId) {
+		if (Array.isArray(peerId)){
+			if (peerId.length == 0){ 
+				return false;
+			}
+			let answer = true;
+			for (let peer of peerId){
+				if (!this.hasConnectionWithPeer(peer)){
+					return false;
+				}
+			}
+			return answer;
+		}else{
+			return this.hasConnectionWithPeer(peerId);
+		}
+	}
+
+	hasConnectionWithPeer(peerId){
 		let peerConnection = this.peers.get(peerId);
 
 		if (peerConnection) {
@@ -181,6 +203,7 @@ class Stun extends ModTemplate {
 		// Stun metadata messages
 		//
 		if (request == 'peer-joined') {
+			console.log("Stun: Peer joined (requested a connection)");
 			this.createPeerConnection(sender);
 			return;
 		}
@@ -292,7 +315,7 @@ class Stun extends ModTemplate {
 	}
 
 	createPeerConnection(peerId, callback = null) {
-		console.log('STUN: Create Peer Connection with ' + peerId);
+		console.log('STUN: Create Peer Connection with ' + peerId + ` and ${callback?"a":"no"} callback`);
 
 		if (peerId === this.publicKey) {
 			console.log('STUN: Attempting to create a peer Connection with myself!');
@@ -304,9 +327,11 @@ class Stun extends ModTemplate {
 			this.peers.get(peerId).restartIce();
 			
 			if (callback){
+				console.log("STUN: undo my onnegotiationneeded listener");
 				this.peers.get(peerId).onnegotiationneeded = null;
-				callback();
+				callback(peerId);
 			}else{
+				console.log("STUN: create a new onnegotiationneeded listener");
 				this.peers.get(peerId).onnegotiationneeded = () => {
 					console.log("STUN (redo): Negotation needed!");
 					this.renegotiate(peerId);
@@ -405,6 +430,7 @@ class Stun extends ModTemplate {
 
 				receiveChannel.onclose = (event) => {
 					console.log('STUN: Data channel is closed');
+					this.removePeerConnection(peerId);
 					this.app.connection.emit('stun-data-channel-close', peerId);
 				};
 			});
@@ -426,10 +452,9 @@ class Stun extends ModTemplate {
 
 			dc.onclose = (event) => {
 				console.log('STUN: Data channel is closed');
+				this.removePeerConnection(peerId);
 				this.app.connection.emit('stun-data-channel-close', peerId);
 			};
-
-			this.renegotiate(peerId);
 
 			//
 			// This handles the renegotiation for adding/droping media streams
@@ -439,6 +464,9 @@ class Stun extends ModTemplate {
 				console.log("Negotation needed!");
 				this.renegotiate(peerId);
 			};
+
+			//this.renegotiate(peerId);
+
 		}
 	}
 

@@ -94,6 +94,8 @@ class CallInterfaceVideo {
 				delete this.video_boxes[peer_id];
 				this.updateImages();
 			}
+
+			this.insertActions(this.app.options.stun.peers);
 		});
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
@@ -151,6 +153,15 @@ class CallInterfaceVideo {
 				});
 		});
 
+		app.connection.on('stun-data-channel-open', (pkey) => {
+			this.insertActions(this.app.options.stun.peers);
+		});
+
+
+		app.connection.on("videocall-show-settings", ()=> {
+				this.videocall_settings.render(this.display_mode);
+		});
+
 		app.connection.on('stun-disconnect', () => {
 
 			for (let peer in this.video_boxes){
@@ -204,11 +215,12 @@ class CallInterfaceVideo {
 			this.app.browser.addElementToDom(
 				CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled)
 			);
+	
+			this.insertActions();
+			this.attachEvents();
+
 		}
 
-		this.insertActions();
-
-		this.attachEvents();
 
 		if (!this.full_screen) {
 			try {
@@ -229,6 +241,9 @@ class CallInterfaceVideo {
 		if (!container) {
 			return;
 		}
+
+		container.innerHTML = "";
+
 		let index = 0;
 
 		for (const mod of this.app.modules.mods) {
@@ -263,7 +278,12 @@ class CallInterfaceVideo {
 
 		const el = document.createElement('div');
 
-		container.appendChild(el);
+		if (item?.prepend){
+			container.prepend(el);
+		}else{
+			container.appendChild(el);
+		}
+		
 		el.outerHTML = html;
 
 		let div = document.getElementById(id);
@@ -345,12 +365,6 @@ class CallInterfaceVideo {
 				recordIcon.classList.add('recording');
 			}
 		};*/
-
-		document.querySelectorAll('.display-control').forEach((item) => {
-			item.onclick = () => {
-				this.videocall_settings.render(this.display_mode);
-			};
-		});
 
 		document.querySelectorAll('.video-control').forEach((item) => {
 			item.onclick = () => {

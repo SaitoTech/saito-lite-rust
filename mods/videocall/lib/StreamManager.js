@@ -223,7 +223,7 @@ class StreamManager {
 		app.connection.on('start-stun-call', async () => {
 			if (!this.active) { return; }
 
-			console.log('STUN: start-stun-call', this.mod.room_obj, this.app.options.stun);
+			console.log('STUN: start-stun-call', JSON.parse(JSON.stringify(this.mod.room_obj)), JSON.parse(JSON.stringify(this.app.options.stun)));
 			this.firstConnect = true;
 
 			//Render the UI component
@@ -367,9 +367,13 @@ class StreamManager {
 		this.recording = false;
 		this.auto_disconnect = false;
 		this.active = false;
+
 		if (this.audioStreamAnalysis) {
 			clearInterval(this.audioStreamAnalysis);
+			this.audioStreamAnalysis = null;
 		}
+
+		console.log("STUN: Finished hanging up...");
 
 	}
 
@@ -411,9 +415,10 @@ class StreamManager {
 	}
 
 	endPresentation() {
-		console.log('Screen sharing stopped by user');
 
 		if (this.mod.screen_share){
+			console.log('Screen sharing stopped by user');
+
 			this.app.connection.emit('remove-peer-box', 'presentation');
 			this.app.connection.emit('stun-switch-view', 'focus');
 			this.mod.screen_share = false;

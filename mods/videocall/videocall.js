@@ -272,6 +272,7 @@ class Videocall extends ModTemplate {
 							text: 'Video/Audio Call',
 							icon: 'fas fa-phone',
 							callback: function (app, public_key, id) {
+								console.log("Chat Action call");
 								if (call_self?.room_obj) {
 									salert('Already in or establishing a call');
 									console.log(call_self.room_obj);
@@ -283,6 +284,20 @@ class Videocall extends ModTemplate {
 					];
 				}
 			}
+		}
+
+		if (type === "call-actions"){
+			return [
+				{
+					text: 'Settings',
+					icon: 'fa-solid fa-cog',
+					prepend: true,
+					callback: function (app) {
+						app.connection.emit("videocall-show-settings");
+					}
+				}
+			];
+
 		}
 
 		return null;

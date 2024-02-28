@@ -14,32 +14,30 @@ class Fileshare extends ModTemplate {
 		this.callback = null;
 		this.stun = null;
 		this.fileId = null;
-		this.incoming = { };
+		this.incoming = {};
 
 		//
 		// This + this.available is a bit of a hack to interrupt the chunking of the file
-		// if we lose the connection. TODO : write a more robust way of tracking file transfer(s) 
+		// if we lose the connection. TODO : write a more robust way of tracking file transfer(s)
 		// in progress
 		//
-		app.connection.on("relay-stun-send-fail", (publicKey)=> {
+		app.connection.on('relay-stun-send-fail', (publicKey) => {
 			this.available = false;
-			if (this.fileId){
-				siteMessage("Transfer failed!");	
+			if (this.fileId) {
+				siteMessage('Transfer failed!');
 			}
 		});
-
 	}
 
-	async initialize(app){
-
+	async initialize(app) {
 		await super.initialize(app);
 
-		if (app.BROWSER){
+		if (app.BROWSER) {
 			try {
-				this.stun = app.modules.returnFirstRespondTo("peer-manager");
+				this.stun = app.modules.returnFirstRespondTo('peer-manager');
 				this.available = true;
-			}catch(err){
-				console.warn("No Stun available")
+			} catch (err) {
+				console.warn('No Stun available');
 			}
 		}
 	}
@@ -52,90 +50,95 @@ class Fileshare extends ModTemplate {
 		//
 		let returnObj = null;
 
-		if (this?.stun){
-			if (obj?.publicKey) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
-					
-					let icon = this.stun.hasConnection(obj.publicKey) ? "fa-solid fa-file-arrow-up" : 'fa-solid fa-file';
-					
-					returnObj = [
-						{
-							text: 'Send File',
-							icon,
-							callback: function (app, public_key, id = "") {
-							
-								if (fss.fileId){
-									salert("Currently sending a file!");
-									return;
-								}
+		if (this?.stun) {
+			let recipient = obj?.publicKey || obj?.members;
+			let chat_id = obj?.call_id || obj?.publicKey;
 
-								fss.recipient = obj.publicKey;
-								fss.offset = 0;
-								fss.addFileUploader(id);
+			if (recipient && chat_id && recipient !== this.publicKey && recipient.length > 0) {
+				let icon = this.stun.hasConnection(recipient)
+					? 'fa-solid fa-file-arrow-up'
+					: 'fa-solid fa-file';
 
+				returnObj = [
+					{
+						text: 'Send File',
+						icon,
+						callback: function (app, public_key, id = '') {
+							if (fss.fileId) {
+								salert('Currently sending a file!');
+								return;
+							}
+
+							fss.recipient = recipient;
+							fss.offset = 0;
+							fss.addFileUploader(id);
+
+							//
+							if (fss.stun.hasConnection(recipient)) {
 								//
-								if (fss.stun.hasConnection(obj.publicKey)){
-									//
-									// When stun connection is established, select a file to upload
-									//
-									console.log("Stun fileshare: select file");
-									const input = document.getElementById(
-										`hidden_file_element_${id}`
-									);
-									input.click();
-								}else{
-									console.log("Stun fileshare: createPeerConnection");
-									fss.stun.createPeerConnection(obj.publicKey);
-								}
+								// When stun connection is established, select a file to upload
+								//
+								console.log('Stun fileshare: select file');
+								const input = document.getElementById(
+									`hidden_file_element_${id}`
+								);
+								input.click();
+							} else {
+								console.log(
+									'Stun fileshare: createPeerConnection'
+								);
+								fss.stun.createPeerConnection(recipient);
+							}
 
-								fss.callback = (file) => {
-									let html = `
+							fss.callback = (file) => {
+								let html = `
 									<div class="saito-file-transfer" id="saito-file-transfer-${fss.fileId}">
 									<i class="fa-solid fa-file"></i>
-									<div class="file-name">${file.name.replace(/\s+/g, "")}</div>
+									<div class="file-name">${file.name.replace(/\s+/g, '')}</div>
 									<div class="file-size">${fss.calcSize(file.size)}</div>
 									</div>`;
-									fss.app.connection.emit("chat-message-user", obj.publicKey, html.replace(/\s+/, ""));
-								}
-
-							}
+								fss.app.connection.emit(
+									'chat-message-user',
+									chat_id,
+									html.replace(/\s+/, '')
+								);
+							};
 						}
-					];
-				}
+					}
+				];
+			}
+
+			//
+			// Return it here
+			//
+			if (type === 'chat-actions') {
+				return returnObj;
+			}
+
+			if (type === 'user-menu') {
+				return returnObj;
+			}
+
+			if (type === 'call-actions') {
+				return returnObj;
 			}
 		}
 
-
-		//
-		// Return it here
-		//
-		if (type === 'chat-actions') {
-			return returnObj;
-		}
-
-    if (type === "user-menu") {
-    	return returnObj;
-    }
-
-    if (type === "call-actions"){
-    	return returnObj;
-    }
-
+		return super.respondTo(type, obj);
 	}
 
-
-	calcSize(bytes){
+	calcSize(bytes) {
 		let kilobytes = bytes / 1024;
 		let megabytes = kilobytes / 1024;
 		let gigabytes = megabytes / 1024;
 
-		if (gigabytes > 1){
+		if (gigabytes > 1) {
 			return `${gigabytes.toFixed(2)}GB`;
 		}
-		if (megabytes > 1){
+		if (megabytes > 1) {
 			return `${megabytes.toFixed(2)}MB`;
 		}
-		if (kilobytes > 1){
+		if (kilobytes > 1) {
 			return `${kilobytes.toFixed(2)}KB`;
 		}
 
@@ -147,63 +150,94 @@ class Fileshare extends ModTemplate {
 			let txmsg = tx.returnMessage();
 
 			if (tx.isTo(this.publicKey)) {
-
-				if (txmsg.request == "query file permission"){
-					let answer = await sconfirm(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} wants to send "${txmsg.data.name}" (${this.calcSize(txmsg.data.size)}, ${txmsg.data.type}). Accept?`);
-					if (answer){
+				if (txmsg.request == 'query file permission') {
+					let answer = await sconfirm(
+						`${this.app.keychain.returnUsername(
+							tx.from[0].publicKey
+						)} wants to send "${txmsg.data.name}" (${this.calcSize(
+							txmsg.data.size
+						)}, ${txmsg.data.type}). Accept?`
+					);
+					if (answer) {
 						this.fileId = txmsg.data.id;
-						this.app.connection.emit("relay-send-message", {recipient: tx.from[0].publicKey, request: "grant file permission", data: {}});
-					}else{
-						this.app.connection.emit("relay-send-message", {recipient: tx.from[0].publicKey, request: "deny file permission", data: {}});
+						this.app.connection.emit('relay-send-message', {
+							recipient: tx.from[0].publicKey,
+							request: 'grant file permission',
+							data: {}
+						});
+					} else {
+						this.app.connection.emit('relay-send-message', {
+							recipient: tx.from[0].publicKey,
+							request: 'deny file permission',
+							data: {}
+						});
 					}
 					return;
 				}
 
-				if (txmsg.request == "grant file permission"){
+				if (txmsg.request == 'grant file permission') {
 					this.chunkFile(this.file, 0);
 					return;
 				}
 
-				if (txmsg.request == "deny file permission"){
-					salert("User will not accept file transfer");
+				if (txmsg.request == 'deny file permission') {
+					salert('User will not accept file transfer');
 					this.file = null;
 					this.fileId = null;
 					return;
 				}
 
 				if (txmsg.module == this.name) {
-
 					if (txmsg.request == 'share file') {
-						if (!this.incoming[txmsg.data.meta.id]){
+						if (!this.incoming[txmsg.data.meta.id]) {
 							this.incoming[txmsg.data.meta.id] = {
 								receiveBuffer: [],
 								receivedSize: 0,
 								fileSize: txmsg.data.meta.size,
-								name: txmsg.data.meta.name,
-							}
+								name: txmsg.data.meta.name
+							};
 						}
 
 						let blob = this.incoming[txmsg.data.meta.id];
 
-						let restoredBinary = this.convertBase64ToByteArray(txmsg.data.raw);
+						let restoredBinary = this.convertBase64ToByteArray(
+							txmsg.data.raw
+						);
 						blob.receivedSize += restoredBinary.byteLength;
 						blob.receiveBuffer.push(restoredBinary);
-						
-						siteMessage(`Receiving: ${Math.floor(100*blob.receivedSize/blob.fileSize)}%`);
-						console.log(restoredBinary.byteLength, blob.receivedSize, blob.fileSize);
 
-						if (blob.receivedSize === blob.fileSize){
-						
-							const anchor = document.getElementById(`saito-file-transfer-${txmsg.data.meta.id}`);
-							if (!anchor){
-								console.error("Didn't render hook for receiving file!");
-							}else{
+						siteMessage(
+							`Receiving: ${Math.floor(
+								(100 * blob.receivedSize) / blob.fileSize
+							)}%`
+						);
+						console.log(
+							restoredBinary.byteLength,
+							blob.receivedSize,
+							blob.fileSize
+						);
+
+						if (blob.receivedSize === blob.fileSize) {
+							const anchor = document.getElementById(
+								`saito-file-transfer-${txmsg.data.meta.id}`
+							);
+							if (!anchor) {
+								console.error(
+									"Didn't render hook for receiving file!"
+								);
+							} else {
 								siteMessage(`Transfer Complete!`);
 
-								this.app.browser.replaceElementById(`<a id="download-${txmsg.data.meta.id}">${anchor.outerHTML}</a>`, anchor.id);
+								this.app.browser.replaceElementById(
+									`<a id="download-${txmsg.data.meta.id}">${anchor.outerHTML}</a>`,
+									anchor.id
+								);
 								const received = new Blob(blob.receiveBuffer);
-								const downloadLink = document.getElementById(`download-${txmsg.data.meta.id}`);
-								downloadLink.href = URL.createObjectURL(received);	
+								const downloadLink = document.getElementById(
+									`download-${txmsg.data.meta.id}`
+								);
+								downloadLink.href =
+									URL.createObjectURL(received);
 								downloadLink.download = blob.name;
 
 								this.fileId = null;
@@ -217,7 +251,6 @@ class Fileshare extends ModTemplate {
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
 
-
 	addFileUploader(id) {
 		const fss = this; //file share self
 
@@ -227,11 +260,10 @@ class Fileshare extends ModTemplate {
       </form>
     `;
 
-		if (!document.getElementById(`uploader_${id}`)){
-
-			if (id){
-				this.app.browser.addElementToId(hidden_upload_form, id);	
-			}else{
+		if (!document.getElementById(`uploader_${id}`)) {
+			if (id) {
+				this.app.browser.addElementToId(hidden_upload_form, id);
+			} else {
 				this.app.browser.addElementToDom(hidden_upload_form);
 			}
 
@@ -280,17 +312,23 @@ class Fileshare extends ModTemplate {
 
 						this.offset += event.target.result.byteLength;
 
-						siteMessage(`Sending: ${Math.floor(100*this.offset/file.size)}%`);
+						siteMessage(
+							`Sending: ${Math.floor(
+								(100 * this.offset) / file.size
+							)}%`
+						);
 
 						if (this.offset < file.size) {
 							this.chunkFile(file, this.offset);
-						}else{
+						} else {
 							this.fileId = null;
 							this.file = null;
 						}
 					});
 
-					this.fileId = this.app.crypto.generateRandomNumber().substring(0, 12);
+					this.fileId = this.app.crypto
+						.generateRandomNumber()
+						.substring(0, 12);
 
 					if (this.callback) {
 						this.callback(file);
@@ -299,7 +337,6 @@ class Fileshare extends ModTemplate {
 					this.file = file;
 
 					this.sendFileTransferRequest();
-
 				},
 				false
 			);
@@ -313,21 +350,24 @@ class Fileshare extends ModTemplate {
 		}
 	}
 
-	sendFileTransferRequest(){
-
-		if (!this.file){
-			console.warn("No file selected!");
+	sendFileTransferRequest() {
+		if (!this.file) {
+			console.warn('No file selected!');
 			return;
 		}
 
 		let data = {
-			id:   this.fileId,
-			name: this.file.name.replace(/\s+/g, ""),
+			id: this.fileId,
+			name: this.file.name.replace(/\s+/g, ''),
 			size: this.file.size,
-			type: this.file.type,
+			type: this.file.type
 		};
 
-		this.app.connection.emit("relay-send-message", {recipient: this.recipient, request: "query file permission", data});
+		this.app.connection.emit('relay-send-message', {
+			recipient: this.recipient,
+			request: 'query file permission',
+			data
+		});
 	}
 
 	async createFileChunkTransaction(file, rawData) {
@@ -337,20 +377,19 @@ class Fileshare extends ModTemplate {
 
 		//let base64data = this.xorBase64(this.convertByteArrayToBase64(data));
 
-
 		tx.msg = {
 			module: this.name,
 			request: 'share file',
 			data: {
 				meta: {
 					id: this.fileId,
-					name: file.name.replace(/\s+/g, ""),
+					name: file.name.replace(/\s+/g, ''),
 					size: file.size,
 					type: file.type,
 					offset: this.offset,
-					chunk: rawData.byteLength,
+					chunk: rawData.byteLength
 				},
-				raw: this.convertByteArrayToBase64(rawData),
+				raw: this.convertByteArrayToBase64(rawData)
 			}
 		};
 
@@ -361,11 +400,10 @@ class Fileshare extends ModTemplate {
 		//
 		if (this?.stun && this.stun.hasConnection(this.recipient)) {
 			this.stun.sendTransaction(this.recipient, tx);
-		}else{
+		} else {
 			this.available = false;
-		}		
+		}
 	}
-
 
 	convertByteArrayToBase64(data) {
 		return Buffer.from(data, 'binary').toString('base64');
@@ -379,7 +417,6 @@ class Fileshare extends ModTemplate {
 		}
 		return b2;
 	}
-
 }
 
 module.exports = Fileshare;

@@ -28,10 +28,6 @@ module.exports = CallInterfaceVideoTemplate = (
        
           <div class="control-panel">
             <div class="control-list imported-actions">
-              <div class="display-control icon_click_area">
-                <label>Settings</label>
-                <i class="fa-solid fa-cog"></i>
-              </div>
             </div>
 
             <div class="control-list call-controls">
