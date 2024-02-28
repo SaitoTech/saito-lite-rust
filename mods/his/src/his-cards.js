@@ -4906,6 +4906,8 @@ console.log("008 eventing!");
           his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
           his_self.game.queue.push("assault_show_hits_render");
 
+	  return 1;
+
 	}
         return 1;
       }

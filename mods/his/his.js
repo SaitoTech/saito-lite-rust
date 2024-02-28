@@ -8047,6 +8047,8 @@ console.log("008 eventing!");
           his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
           his_self.game.queue.push("assault_show_hits_render");
 
+	  return 1;
+
 	}
         return 1;
       }
@@ -15563,7 +15565,7 @@ try {
       let neighbours = [];
       for (let i = 0; i < space.neighbours.length; i++) {
         let x = space.neighbours[i];      
-        if (!space.pass.includes[x]) {
+        if (!space.pass.includes(x)) {
   	  neighbours.push({ neighbour : x , overseas : false });
         }
       }
@@ -15580,7 +15582,7 @@ try {
         for (let i = 0; i < space.neighbours.length; i++) {
           let x = space.neighbours[i];
 	  if (is_naval_space != true) {
-            if (!space.pass.includes[x]) {
+            if (!space.pass.includes(x)) {
               neighbours.push({ neighbour : x , overseas : false });
             }
           }
@@ -16417,6 +16419,7 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
       political: "france",
       religion: "catholic",
       neighbours: ["brussels","stdizier","paris","boulogne"],
+      language: "french",
       type: "town"
     }
     spaces['stdizier'] = {
@@ -16468,6 +16471,7 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
       political: "france",
       religion: "catholic",
       neighbours: ["stdizier","paris","orleans","lyon","besancon"],
+      language: "french",
       type: "town"
     }
     spaces['limoges'] = {
@@ -21778,6 +21782,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  this.addRegular("hapsburg", "nuremberg", 1);
 	  this.addRegular("hapsburg", "worms", 1);
 	  this.addRegular("hapsburg", "kassel", 1);
+	  this.addRegular("hapsburg", "antwerp", 4);
 
 	  // PAPACY
           this.addMercenary("papacy", "siena", 4);
@@ -22037,6 +22042,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let destination = mv[4];
 	  let unitidx = parseInt(mv[5]);
 	  let skip_avoid_battle = parseInt(mv[6]);
+	  let is_this_an_interception = 0;
+	  if (parseInt(mv[7]) > 0) { is_this_an_interception = 1; }
 
 	  this.game.queue.splice(qe, 1);
 
@@ -22229,9 +22236,7 @@ console.log("3: " + space.besieged);
 			//
 			// inactive faction indicates interception - neither retreat nor fortification
 			//
-			if (faction != this.game.state.active_faction) {
-	                  this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
-			} else {
+			if (!is_this_an_interception) {
 			  //
 			  // active faction
 			  //
@@ -22307,7 +22312,7 @@ console.log("3: " + space.besieged);
 		        //
 		        // someone else is here, so let's trigger a field battle
 		        //
-			if (this.game.state.active_faction == faction) {
+			if (!is_this_an_interception) {
 	                  this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
 	                  this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 		        }
@@ -23339,7 +23344,7 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	      for (let z = 0; z < 100; z++) { factions[units_to_move_idx[i].faction][z] = ""; }
 	    }
 	    for (let i = 0; i < units_to_move_idx.length; i++) {
-	      let m = "move\t"+units_to_move_idx[i].faction+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i].idx+"\t1"; // 1 = skip avoid battle
+	      let m = "move\t"+units_to_move_idx[i].faction+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i].idx+"\t1\t1"; // 1 = skip avoid battle, 1 = is interception
 	      factions[units_to_move_idx[i].faction][units_to_move_idx[i].idx] = m;
 	    }
 
@@ -34820,14 +34825,13 @@ return;
     if (faction !== "protestant" && faction !== "papacy") { return false; }
 
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
-
     if (this.isDisgraced(debater)) { return false; }
     if (this.isBurned(debater)) { return false; }
 
     let already_committed = false;
     let found_debater = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].key == debater) {
+      if (this.game.state.debaters[i].key === debater) {
 
         found_debater = true;
 
@@ -36281,6 +36285,8 @@ return;
 
         let id = $(this).attr("id");
 
+console.log("is calvin debater committed? " + his_self.canPlayerCommitDebater("protestant", "calvin-debater"));
+
 	if (id === "french" && his_self.canPlayerCommitDebater("protestant", "calvin-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 
           let msg = "Use Calvin Debater Bonus +1 Attempt:";
@@ -36320,7 +36326,7 @@ return;
 	    }
 	    his_self.addMove("show_overlay\tpublish_treatise\tfrench");
 	    if (id === "calvin-debater") {
-	      his_self.addMove("commit\tprotestant\tcalvin_debater\t1");
+	      his_self.addMove("commit\tprotestant\tcalvin-debater\t1");
 	    }
 	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	    his_self.endTurn();

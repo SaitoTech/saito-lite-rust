@@ -3916,14 +3916,13 @@ return;
     if (faction !== "protestant" && faction !== "papacy") { return false; }
 
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
-
     if (this.isDisgraced(debater)) { return false; }
     if (this.isBurned(debater)) { return false; }
 
     let already_committed = false;
     let found_debater = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].key == debater) {
+      if (this.game.state.debaters[i].key === debater) {
 
         found_debater = true;
 
@@ -5377,6 +5376,8 @@ return;
 
         let id = $(this).attr("id");
 
+console.log("is calvin debater committed? " + his_self.canPlayerCommitDebater("protestant", "calvin-debater"));
+
 	if (id === "french" && his_self.canPlayerCommitDebater("protestant", "calvin-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 
           let msg = "Use Calvin Debater Bonus +1 Attempt:";
@@ -5416,7 +5417,7 @@ return;
 	    }
 	    his_self.addMove("show_overlay\tpublish_treatise\tfrench");
 	    if (id === "calvin-debater") {
-	      his_self.addMove("commit\tprotestant\tcalvin_debater\t1");
+	      his_self.addMove("commit\tprotestant\tcalvin-debater\t1");
 	    }
 	    his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	    his_self.endTurn();

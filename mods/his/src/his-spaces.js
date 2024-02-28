@@ -1296,7 +1296,7 @@ try {
       let neighbours = [];
       for (let i = 0; i < space.neighbours.length; i++) {
         let x = space.neighbours[i];      
-        if (!space.pass.includes[x]) {
+        if (!space.pass.includes(x)) {
   	  neighbours.push({ neighbour : x , overseas : false });
         }
       }
@@ -1313,7 +1313,7 @@ try {
         for (let i = 0; i < space.neighbours.length; i++) {
           let x = space.neighbours[i];
 	  if (is_naval_space != true) {
-            if (!space.pass.includes[x]) {
+            if (!space.pass.includes(x)) {
               neighbours.push({ neighbour : x , overseas : false });
             }
           }
@@ -2150,6 +2150,7 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
       political: "france",
       religion: "catholic",
       neighbours: ["brussels","stdizier","paris","boulogne"],
+      language: "french",
       type: "town"
     }
     spaces['stdizier'] = {
@@ -2201,6 +2202,7 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
       political: "france",
       religion: "catholic",
       neighbours: ["stdizier","paris","orleans","lyon","besancon"],
+      language: "french",
       type: "town"
     }
     spaces['limoges'] = {

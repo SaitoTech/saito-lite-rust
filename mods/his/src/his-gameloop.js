@@ -1563,6 +1563,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  this.addRegular("hapsburg", "nuremberg", 1);
 	  this.addRegular("hapsburg", "worms", 1);
 	  this.addRegular("hapsburg", "kassel", 1);
+	  this.addRegular("hapsburg", "antwerp", 4);
 
 	  // PAPACY
           this.addMercenary("papacy", "siena", 4);
@@ -1822,6 +1823,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let destination = mv[4];
 	  let unitidx = parseInt(mv[5]);
 	  let skip_avoid_battle = parseInt(mv[6]);
+	  let is_this_an_interception = 0;
+	  if (parseInt(mv[7]) > 0) { is_this_an_interception = 1; }
 
 	  this.game.queue.splice(qe, 1);
 
@@ -2014,9 +2017,7 @@ console.log("3: " + space.besieged);
 			//
 			// inactive faction indicates interception - neither retreat nor fortification
 			//
-			if (faction != this.game.state.active_faction) {
-	                  this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
-			} else {
+			if (!is_this_an_interception) {
 			  //
 			  // active faction
 			  //
@@ -2092,7 +2093,7 @@ console.log("3: " + space.besieged);
 		        //
 		        // someone else is here, so let's trigger a field battle
 		        //
-			if (this.game.state.active_faction == faction) {
+			if (!is_this_an_interception) {
 	                  this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
 	                  this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 		        }
@@ -3124,7 +3125,7 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	      for (let z = 0; z < 100; z++) { factions[units_to_move_idx[i].faction][z] = ""; }
 	    }
 	    for (let i = 0; i < units_to_move_idx.length; i++) {
-	      let m = "move\t"+units_to_move_idx[i].faction+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i].idx+"\t1"; // 1 = skip avoid battle
+	      let m = "move\t"+units_to_move_idx[i].faction+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i].idx+"\t1\t1"; // 1 = skip avoid battle, 1 = is interception
 	      factions[units_to_move_idx[i].faction][units_to_move_idx[i].idx] = m;
 	    }
 
