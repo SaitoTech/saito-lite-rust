@@ -181,6 +181,7 @@ class Stun extends ModTemplate {
 		// Stun metadata messages
 		//
 		if (request == 'peer-joined') {
+			console.log("Stun: Peer joined (requested a connection)");
 			this.createPeerConnection(sender);
 			return;
 		}
@@ -292,7 +293,7 @@ class Stun extends ModTemplate {
 	}
 
 	createPeerConnection(peerId, callback = null) {
-		console.log('STUN: Create Peer Connection with ' + peerId);
+		console.log('STUN: Create Peer Connection with ' + peerId + ` and ${callback?"a":"no"} callback`);
 
 		if (peerId === this.publicKey) {
 			console.log('STUN: Attempting to create a peer Connection with myself!');
@@ -304,9 +305,11 @@ class Stun extends ModTemplate {
 			this.peers.get(peerId).restartIce();
 			
 			if (callback){
+				console.log("STUN: undo my onnegotiationneeded listener");
 				this.peers.get(peerId).onnegotiationneeded = null;
-				callback();
+				callback(peerId);
 			}else{
+				console.log("STUN: create a new onnegotiationneeded listener");
 				this.peers.get(peerId).onnegotiationneeded = () => {
 					console.log("STUN (redo): Negotation needed!");
 					this.renegotiate(peerId);
@@ -405,6 +408,7 @@ class Stun extends ModTemplate {
 
 				receiveChannel.onclose = (event) => {
 					console.log('STUN: Data channel is closed');
+					this.removePeerConnection(peerId);
 					this.app.connection.emit('stun-data-channel-close', peerId);
 				};
 			});
@@ -426,10 +430,9 @@ class Stun extends ModTemplate {
 
 			dc.onclose = (event) => {
 				console.log('STUN: Data channel is closed');
+				this.removePeerConnection(peerId);
 				this.app.connection.emit('stun-data-channel-close', peerId);
 			};
-
-			this.renegotiate(peerId);
 
 			//
 			// This handles the renegotiation for adding/droping media streams
@@ -439,6 +442,9 @@ class Stun extends ModTemplate {
 				console.log("Negotation needed!");
 				this.renegotiate(peerId);
 			};
+
+			//this.renegotiate(peerId);
+
 		}
 	}
 
