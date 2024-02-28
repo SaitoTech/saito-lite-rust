@@ -85,7 +85,12 @@ class Stun extends ModTemplate {
 							this.sendJoinTransaction(peerId);
 						}			
 					}
-					this.createPeerConnection(peerId, callback);
+
+					if (Array.isArray(peerId)){
+						peerId.forEach((peer) => this.createPeerConnection(peer, callback));
+					}else{
+						this.createPeerConnection(peerId, callback);	
+					}
 				},
 				removePeerConnection: (peerId) => {
 					this.removePeerConnection(peerId);
@@ -98,6 +103,23 @@ class Stun extends ModTemplate {
 	}
 
 	hasConnection(peerId) {
+		if (Array.isArray(peerId)){
+			if (peerId.length == 0){ 
+				return false;
+			}
+			let answer = true;
+			for (let peer of peerId){
+				if (!this.hasConnectionWithPeer(peer)){
+					return false;
+				}
+			}
+			return answer;
+		}else{
+			return this.hasConnectionWithPeer(peerId);
+		}
+	}
+
+	hasConnectionWithPeer(peerId){
 		let peerConnection = this.peers.get(peerId);
 
 		if (peerConnection) {

@@ -611,6 +611,7 @@ video#local {
 	bottom: -2.5rem;
 	font-weight: bold;
 	font-size: 1.2rem;
+	white-space: nowrap;
 }
 
 .icon_click_area i {

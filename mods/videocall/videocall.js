@@ -286,6 +286,20 @@ class Videocall extends ModTemplate {
 			}
 		}
 
+		if (type === "call-actions"){
+			return [
+				{
+					text: 'Settings',
+					icon: 'fa-solid fa-cog',
+					prepend: true,
+					callback: function (app) {
+						app.connection.emit("videocall-show-settings");
+					}
+				}
+			];
+
+		}
+
 		return null;
 	}
 
