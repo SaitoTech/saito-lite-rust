@@ -143,11 +143,11 @@ class Videocall extends ModTemplate {
 	}
 
 	respondTo(type, obj) {
-		let stun_self = this;
+		let call_self = this;
 
 		if (type === 'user-menu') {
 			//Don't provide a calling hook if in the video call app!
-			if (stun_self.browser_active) {
+			if (call_self.browser_active) {
 				return null;
 			}
 			if (obj?.publicKey) {
@@ -159,12 +159,11 @@ class Videocall extends ModTemplate {
 							text: 'Video/Audio Call',
 							icon: 'fas fa-video',
 							callback: function (app, public_key) {
-								if (!stun_self.room_obj) {
-									stun_self.dialer.establishStunCallWithPeers(
-										[public_key]
-									);
-								} else {
+								if (call_self?.room_obj) {
 									salert('Already in or establishing a call');
+									console.log(call_self.room_obj);
+								} else {
+									call_self.dialer.establishStunCallWithPeers([public_key]);									
 								}
 							}
 						}
@@ -184,7 +183,7 @@ class Videocall extends ModTemplate {
 						icon: this.icon,
 
 						callback: function (app, id) {
-							stun_self.renderInto('.saito-overlay');
+							call_self.renderInto('.saito-overlay');
 						}
 					}
 				];
@@ -223,12 +222,11 @@ class Videocall extends ModTemplate {
 						//Start Call
 						game_mod.menu.hideSubMenus();
 
-						if (!stun_self.room_obj) {
-							stun_self.dialer.establishStunCallWithPeers([
-								...game_mod.game.players
-							]);
-						} else {
+						if (call_self?.room_obj) {
 							salert('Already in or establishing a call');
+							console.log(call_self.room_obj);
+						} else {
+							call_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);									
 						}
 					}
 				});
@@ -241,20 +239,20 @@ class Videocall extends ModTemplate {
 				class: 'record-stream',
 				callback: function (app, game_mod) {
 					game_mod.menu.hideSubMenus();
-					if (!stun_self.streamManager) {
-						stun_self.streamManager = new StreamManager(
+					if (!call_self.streamManager) {
+						call_self.streamManager = new StreamManager(
 							app,
-							stun_self
+							call_self
 						);
 					}
-					if (!stun_self?.recording) {
-						stun_self.streamManager.recordGameStream();
-						stun_self.recording = true;
+					if (!call_self?.recording) {
+						call_self.streamManager.recordGameStream();
+						call_self.recording = true;
 						document.getElementById('record-stream').textContent =
 							'Stop Recording';
 					} else {
-						stun_self.streamManager.stopRecordGameStream();
-						stun_self.recording = false;
+						call_self.streamManager.stopRecordGameStream();
+						call_self.recording = false;
 						document.getElementById('record-stream').textContent =
 							'Start Recording';
 					}
@@ -274,12 +272,11 @@ class Videocall extends ModTemplate {
 							text: 'Video/Audio Call',
 							icon: 'fas fa-phone',
 							callback: function (app, public_key, id) {
-								if (!stun_self.room_obj) {
-									stun_self.dialer.establishStunCallWithPeers(
-										[public_key]
-									);
-								} else {
+								if (call_self?.room_obj) {
 									salert('Already in or establishing a call');
+									console.log(call_self.room_obj);
+								} else {
+									call_self.dialer.establishStunCallWithPeers([public_key]);									
 								}
 							}
 						}

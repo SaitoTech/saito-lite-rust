@@ -60,8 +60,8 @@
 .stun-chatbox.minimize {
 	width: 30rem;
 	height: 30rem;
-	min-width: 20rem;
-	min-height: 25rem;
+	min-width: 27rem;
+	min-height: 28rem;
 	overflow: auto;
 	resize: both;
 	/* animation-name: minimize;
@@ -78,6 +78,10 @@
 	grid-template-columns: minmax(5rem, 1fr);
 }
 
+
+.stun-chatbox.minimize .footer {
+	padding: unset;
+}
 .stun-chatbox.minimize .minimizer i {
 	font-size: 2rem;
 }
@@ -124,13 +128,13 @@
 .stun-chatbox.minimize .control-list {
 	width: 100%;
 	justify-content: flex-end;
+	gap: 1rem;
 }
 
 .stun-chatbox.minimize .call-controls .icon_click_area {
 	display: flex;
-	width: 3rem;
-	height: 3rem;
-	margin-right: 1rem;
+	width: 3.5rem;
+	height: 3.5rem;
 }
 
 .stun-chatbox.minimize .icon_click_area i {
@@ -572,6 +576,7 @@ video#local {
 
 .control-list {
 	display: flex;
+	align-items: center;
 }
 
 .control-list .icon_click_area,
@@ -663,28 +668,19 @@ video#local {
 		padding: 4rem 1rem;
 	}
 
-	.footer .timer {
-		gap: 0.5rem;
-	}
-
-	.users-on-call-text {
-		display: none;
-	}
-
 	.control-panel {
-		gap: unset;
-		width: 40rem;
+		gap: 2rem;
 		max-width: 100%;
 		justify-content: space-between;
 	}
 
 	.full-screen .control-panel .control-list {
-		gap: 0.75rem;
+		gap: 1rem;
 	}
 
 	.full-screen .control-panel .control-list .icon_click_area {
-		width: 4rem;
-		height: 4rem;
+		width: 4.5rem;
+		height: 4.5rem;
 	}
 
 }

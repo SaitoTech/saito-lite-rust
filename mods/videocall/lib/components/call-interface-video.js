@@ -572,6 +572,14 @@ class CallInterfaceVideo {
 	updateImages() {
 		let images = ``;
 		let count = 0;
+
+		let imageDiv = document.querySelector('.users-on-call .stun-identicon-list');
+		let countDiv = document.querySelector('.users-on-call .users-on-call-count');
+
+		if (!imageDiv || !countDiv){
+			return;
+		}
+
 		for (let publickey in this.video_boxes) {
 			if (publickey === 'presentation') {
 				continue;
@@ -585,12 +593,10 @@ class CallInterfaceVideo {
 			images += `<img data-id ="${publickey}" class="saito-identicon" src="${imgsrc}"/>`;
 			count++;
 		}
-		document.querySelector(
-			'.users-on-call .stun-identicon-list'
-		).innerHTML = images;
-		document.querySelector(
-			'.users-on-call .users-on-call-count'
-		).innerHTML = count;
+
+		imageDiv.innerHTML = images;
+		countDiv.innerHTML = count;
+		
 	}
 
 	startTimer() {
