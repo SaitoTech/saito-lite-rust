@@ -153,13 +153,17 @@ class StreamManager {
 
 
 		app.connection.on('stun-connection-connected', (peerId)=> {
-			if (!this.active) { return; }
+			console.log('stun-connection-connected');
+			console.log(this.active, this.mod.room_obj, JSON.stringify(this.app.options.stun.peers));
+
+			if (!this.active) { 
+				return; 
+			}
 
 			if (!this.mod?.room_obj || !this.app.options.stun.peers.includes(peerId)){
 				return;
 			}
 
-			console.log('stun-connection-connected');
 			if (this.firstConnect){
 				let sound = new Audio('/videocall/audio/enter-call.mp3');
 				sound.play();
@@ -233,12 +237,6 @@ class StreamManager {
 
 			await this.getLocalMedia();
 
-			//Plug local stream into UI component
-			this.app.connection.emit(
-				'add-local-stream-request',
-				this.localStream
-			);
-
 			//
 			// The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
 			// peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
@@ -264,12 +262,13 @@ class StreamManager {
 			this.analyzeAudio(this.localStream, 'local');
 		});
 
-		app.connection.on("stun-new-peer-connection", (publicKey, peerConnection) => {
+		app.connection.on("stun-new-peer-connection", async (publicKey, peerConnection) => {
 			if (!this.active) { return; }
 
 			console.log("New Stun peer connection");
 			if (this.app.options.stun.peers.includes(publicKey)){
-				console.log("Attach my video!");
+				console.log("Attach my audio/video!");
+				await this.getLocalMedia();
 				this.localStream.getTracks().forEach((track) => {
 					peerConnection.addTrack(track, this.localStream);
 				});
@@ -327,6 +326,13 @@ class StreamManager {
 		this.localStream.getAudioTracks().forEach((track) => {
 			track.enabled = this.audioEnabled;
 		});
+
+		//Plug local stream into UI component
+		this.app.connection.emit(
+			'add-local-stream-request',
+			this.localStream
+		);
+
 	}
 
 	removePeer(peer){

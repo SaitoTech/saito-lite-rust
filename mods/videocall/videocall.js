@@ -489,7 +489,8 @@ class Videocall extends ModTemplate {
 
 		let from = tx.from[0].publicKey;
 		let call_list = [];
-		let peers = this.app.options?.stun?.peers;
+
+		let peers = this.app.options?.stun?.peers || [];
 
 		if (peers) {
 			peers.forEach((key) => {
@@ -506,6 +507,15 @@ class Videocall extends ModTemplate {
 		console.log('STUN: call list', call_list);
 
 		this.sendCallListResponseTransaction(from, call_list);
+
+		call_list.push(from);
+
+		//
+		// We need to save here because if stun channel is already open
+		// messages go too fast to process
+		//
+		this.app.options.stun.peers = call_list;
+		this.app.storage.saveOptions();
 	}
 
 	async sendCallListResponseTransaction(public_key, call_list) {

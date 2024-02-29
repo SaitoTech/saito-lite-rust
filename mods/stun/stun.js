@@ -322,11 +322,32 @@ class Stun extends ModTemplate {
 		}
 
 		if (this.peers.get(peerId)) {
-			console.log('STUN: already connected to ' + peerId, "Status: " + this.peers.get(peerId).connectionState);
+			let pc = this.peers.get(peerId);
+			console.log('STUN: already connected to ' + peerId, "Status: " + pc.connectionState);
 			
 			if (callback){
 				callback(peerId);
 			}
+
+			//
+			// Assuming you are properly connected, simulate that the connection just came through,
+			// so the mods listeners can pick up and do their UI things
+			//
+			// Todo: this is a mess, should streamline events in stun, 
+			// the UI components are a little too indebted to the old idiosyncratic logic
+			//
+			this.app.connection.emit("stun-new-peer-connection", peerId, pc);
+
+			if (pc.connectionState === "connected"){
+				this.app.connection.emit("stun-connection-connected", peerId);
+			}
+
+			if (this.hasConnection(peerId)){
+				this.app.connection.emit("stun-data-channel-open", peerId);	
+			}
+
+			this.app.connection.emit("stun-update-connection-message", peerId, pc.connectionState);
+
 			return;
 		}else{
 
