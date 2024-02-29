@@ -20,8 +20,6 @@ class StreamManager {
 
 		this.updateSettings(settings);
 
-		this.recording = false;
-
 		app.connection.on('stun-toggle-video', async () => {
 			// Turn off Video
 			if (!this.active) { return; }
@@ -364,7 +362,6 @@ class StreamManager {
 		//
 		this.videoEnabled = true;
 		this.audioEnabled = true;
-		this.recording = false;
 		this.auto_disconnect = false;
 		this.active = false;
 
@@ -434,100 +431,6 @@ class StreamManager {
 		this.presentationStream = null;
 	}
 
-	async recordCall() {
-		const start_recording = await sconfirm(
-			'Are you sure you want to start recording?'
-		);
-		if (!start_recording) return false;
-
-		this.recording = true;
-		this.chunks = [];
-
-		this.peers.forEach((pc, key) => {
-			pc.dc.send('start-recording');
-		});
-
-		const audioContext = new AudioContext();
-		const audioDestination = audioContext.createMediaStreamDestination();
-
-
-		[
-			this.localStream,
-			...Array.from(this.remoteStreams.values()).map(
-				(c) => c.remoteStream
-			)
-		].forEach((stream) => {
-			const source = audioContext.createMediaStreamSource(stream);
-			source.connect(audioDestination);
-		});
-
-		/*const combinedStream = new MediaStream([
-      ...audioDestination.stream.getTracks(),
-      ...canvas.captureStream(30).getTracks(),
-    ]);*/
-
-		let screenStream = await navigator.mediaDevices.getDisplayMedia({
-			video: {
-				displaySurface: 'browser'
-			},
-			preferCurrentTab: true,
-			selfBrowserSurface: 'include',
-			monitorTypeSurfaces: 'exclude'
-		});
-
-		const combinedStream = new MediaStream([
-			...audioDestination.stream.getTracks(),
-			...screenStream.getTracks()
-		]);
-
-		this.mediaRecorder = new MediaRecorder(combinedStream);
-
-		this.mediaRecorder.start();
-		this.mediaRecorder.ondataavailable = (e) => {
-			if (e.data.size > 0) {
-				this.chunks.push(e.data);
-			}
-		};
-
-		this.mediaRecorder.onstop = async () => {
-			const blob = new Blob(this.chunks, { type: 'video/webm' });
-			const defaultFileName = 'recorded_call.webm';
-			const fileName =
-				(await sprompt(
-					'Please enter a recording name',
-					'recorded_call'
-				)) || defaultFileName;
-
-			// Create an object URL for the Blob
-			const videoUrl = window.URL.createObjectURL(blob);
-
-			const downloadLink = document.createElement('a');
-			document.body.appendChild(downloadLink);
-			downloadLink.style = 'display: none';
-			downloadLink.href = videoUrl;
-			downloadLink.download = fileName;
-			downloadLink.click();
-
-			window.URL.revokeObjectURL(videoUrl);
-			downloadLink.remove();
-			// Stop the audio context
-			if (audioContext.state !== 'closed') {
-				audioContext.close();
-			}
-
-			screenStream.getTracks().forEach((track) => track.stop());
-
-			// Reset recording flag
-			this.recording = false;
-		};
-
-		return true;
-	}
-
-	stopRecordCall() {
-		this.mediaRecorder.stop();
-		this.recording = false;
-	}
 }
 
 module.exports = StreamManager;

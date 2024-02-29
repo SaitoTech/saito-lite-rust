@@ -206,60 +206,34 @@ class Videocall extends ModTemplate {
 				document.getElementById('start-group-video-chat').style = '';
 			});
 
-			let menu_items = {
-				id: 'game-social',
-				text: 'Chat',
-				submenus: []
-			};
-
 			if (obj?.game?.players?.length > 1) {
-				menu_items['submenus'].push({
-					parent: 'game-social',
-					text: 'Start Call',
-					id: 'start-group-video-chat',
-					class: 'start-group-video-chat',
-					callback: function (app, game_mod) {
-						//Start Call
-						game_mod.menu.hideSubMenus();
 
-						if (call_self?.room_obj) {
-							salert('Already in or establishing a call');
-							console.log(call_self.room_obj);
-						} else {
-							call_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);									
+				let menu_items = {
+					id: 'game-social',
+					text: 'Chat',
+					submenus: [{
+						parent: 'game-social',
+						text: 'Start Call',
+						id: 'start-group-video-chat',
+						class: 'start-group-video-chat',
+						callback: function (app, game_mod) {
+							//Start Call
+							game_mod.menu.hideSubMenus();
+
+							if (call_self?.room_obj) {
+								salert('Already in or establishing a call');
+								console.log(call_self.room_obj);
+							} else {
+								call_self.dialer.establishStunCallWithPeers([...game_mod.game.players]);									
+							}
 						}
-					}
-				});
+					}]
+				};
+
+				return menu_items;
+
 			}
 
-			menu_items['submenus'].push({
-				parent: 'game-game',
-				text: 'Record Game',
-				id: 'record-stream',
-				class: 'record-stream',
-				callback: function (app, game_mod) {
-					game_mod.menu.hideSubMenus();
-					if (!call_self.streamManager) {
-						call_self.streamManager = new StreamManager(
-							app,
-							call_self
-						);
-					}
-					if (!call_self?.recording) {
-						call_self.streamManager.recordGameStream();
-						call_self.recording = true;
-						document.getElementById('record-stream').textContent =
-							'Stop Recording';
-					} else {
-						call_self.streamManager.stopRecordGameStream();
-						call_self.recording = false;
-						document.getElementById('record-stream').textContent =
-							'Start Recording';
-					}
-				}
-			});
-
-			return menu_items;
 		}
 
 		if (type === 'chat-actions') {
@@ -300,7 +274,18 @@ class Videocall extends ModTemplate {
 
 		}
 
-		return null;
+		if (type === "media-request"){
+			if (this?.streams?.active){
+				return {
+					localStream: this.streams.localStream,
+					remoteStreams: this.streams.remoteStreams,
+				}
+			}else{
+				return null;
+			}
+		}
+
+		return super.respondTo(type, obj);
 	}
 
 	hasSettings() {

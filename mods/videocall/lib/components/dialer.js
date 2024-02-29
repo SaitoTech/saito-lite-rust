@@ -296,7 +296,7 @@ class Dialer {
 				this.stopRing();
 				this.overlay.remove();
 				this.app.connection.emit('reset-stun');
-				siteMessage(`${sender} hung up`);
+				siteMessage(`${this.app.keychain.returnUsername(sender)} hung up`);
 			}
 			break;
 

@@ -1,4 +1,5 @@
-const VideoBox = require('./video-box');
+const VideoBox = require('../../../../lib/saito/ui/saito-videobox/video-box');
+
 const CallInterfaceVideoTemplate = require('./call-interface-video.template');
 
 const SwitchDisplay = require('../overlays/switch-display');
