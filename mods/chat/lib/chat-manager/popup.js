@@ -372,20 +372,6 @@ class ChatPopup {
 			return;
 		}
 
-		if (this.group.name != this.mod.communityGroupName) {
-			document.querySelectorAll('.chat-action-item').forEach((menu) => {
-				let id = menu.getAttribute('id');
-				if (id && this_self.callbacks[id]) {
-					let callback = this_self.callbacks[id];
-					menu.addEventListener('click', (e) => {
-						let pk = e.currentTarget.getAttribute('data-id');
-						console.log('clicked on chat-action-item ///');
-						console.log(pk);
-						callback(app, pk, id);
-					});
-				}
-			});
-		}
 
 		// add reply functionality
 		document
@@ -553,6 +539,23 @@ class ChatPopup {
 		} else {
 			return;
 		}
+
+		if (this.group.name != this.mod.communityGroupName) {
+			document.querySelectorAll('.chat-action-item').forEach((menu) => {
+				let id = menu.getAttribute('id');
+				if (id && this_self.callbacks[id]) {
+					let callback = this_self.callbacks[id];
+					menu.onclick = (e) => {
+						let pk = e.currentTarget.getAttribute('data-id');
+						console.log('clicked on chat-action-item ///');
+						console.log(pk);
+						callback(app, pk, id);
+					};
+				}
+			});
+		}
+
+		
 
 		if (!this.mod.browser_active && !this.app.browser.isMobileBrowser()) {
 			//

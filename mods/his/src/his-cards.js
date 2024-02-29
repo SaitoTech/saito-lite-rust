@@ -2053,7 +2053,7 @@ console.log("considering: " + space.key);
 	}
 
 	if (faction === "protestant") {
-	  his_self.game.queue.push("request_reveal_hand\tprotestant\tpapacy");
+	  his_self.game.queue.push("request_reveal_hand\tpapacy\tprotestant");
 	  his_self.game.queue.push("NOTIFY\tProtestants play Spanish Inquisition");
    	}
 
@@ -2473,52 +2473,52 @@ alert("HERE");
 	    return 1;
 	  }
 
-	  this.updateLog("Henry VIII advances his marital status");
+	  his_self.updateLog("Henry VIII advances his marital status");
 
-	  this.game.state.henry_viii_marital_status++;
-	  if (this.game.state.henry_viii_marital_status > 7) { this.game.state.henry_viii_marital_status = 7; return 1; }
+	  his_self.game.state.henry_viii_marital_status++;
+	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
 
-	  if (this.game.state.henry_viii_marital_status > 2) {
-	    this.updateStatus("Henry VIII makes a roll on the pregnancy chart");
-	    let dd = this.rollDice(6);
+	  if (his_self.game.state.henry_viii_marital_status > 2) {
+	    his_self.updateStatus("Henry VIII makes a roll on the pregnancy chart");
+	    let dd = his_self.rollDice(6);
 
-	    if (this.game.state.henry_viii_rolls.includes(dd)) {
-	      while (this.game.state.henry_viii_rolls.includes(dd) && dd < 6) {
+	    if (his_self.game.state.henry_viii_rolls.includes(dd)) {
+	      while (his_self.game.state.henry_viii_rolls.includes(dd) && dd < 6) {
 	        dd++;
 	      }
 	    }
-	    this.game.state.henry_viii_rolls.push(dd);
+	    his_self.game.state.henry_viii_rolls.push(dd);
 
-	    if (this.game.state.henry_viii_marital_status == 3) { 
-	      this.updateStatus("Henry VIII receives +1 bonus for Jane Seymour");
+	    if (his_self.game.state.henry_viii_marital_status == 3) { 
+	      his_self.updateStatus("Henry VIII receives +1 bonus for Jane Seymour");
 	      dd++;
 	    }
 
 	    // results of pregnancy chart rolls
 	    if (dd == 1) {
-	      this.updateLog("Henry VIII rolls 1: marriage fails");
+	      his_self.updateLog("Henry VIII rolls 1: marriage fails");
 	    }
 	    if (dd == 2) {
-	      this.updateLog("Henry VIII rolls 2: marriage barren");
+	      his_self.updateLog("Henry VIII rolls 2: marriage barren");
 	    }
 	    if (dd == 3) {
-	      this.updateLog("Henry VIII rolls 3: wife beheaded - reroll");
-	      this.game.state.henry_viii_auto_reroll = 1;
+	      his_self.updateLog("Henry VIII rolls 3: wife beheaded - reroll");
+	      his_self.game.state.henry_viii_auto_reroll = 1;
 	    }
 	    if (dd == 4) {
-	      this.updateLog("Henry VIII rolls 4: Elizabeth I born");
-	      this.game.state.henry_viii_add_elizabeth = 1;
+	      his_self.updateLog("Henry VIII rolls 4: Elizabeth I born");
+	      his_self.game.state.henry_viii_add_elizabeth = 1;
 	    }
 	    if (dd == 5) {
-	      this.updateLog("Henry VIII rolls 5: sickly Edward VI");
-	      this.game.state.henry_viii_sickly_edward = 1;
-	      this.game.state.henry_viii_add_elizabeth = 0;
+	      his_self.updateLog("Henry VIII rolls 5: sickly Edward VI");
+	      his_self.game.state.henry_viii_sickly_edward = 1;
+	      his_self.game.state.henry_viii_add_elizabeth = 0;
 	    }
 	    if (dd >= 6) {
-	      this.updateLog("Henry VIII rolls 6: healthy Edward VI");
-	      this.game.state.henry_viii_healthy_edward = 1;
-	      this.game.state.henry_viii_sickly_edward = 0;
-	      this.game.state.henry_viii_add_elizabeth = 0;
+	      his_self.updateLog("Henry VIII rolls 6: healthy Edward VI");
+	      his_self.game.state.henry_viii_healthy_edward = 1;
+	      his_self.game.state.henry_viii_sickly_edward = 0;
+	      his_self.game.state.henry_viii_add_elizabeth = 0;
 	    }
 
 	  }
@@ -3218,6 +3218,8 @@ console.log("008 eventing!");
 
         if (mv[0] == "catholic_counter_reformation") {
 
+	  his_self.updateStatus("Catholic Counter-Reformation...");
+
           let player = parseInt(mv[1]);
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
@@ -3315,6 +3317,8 @@ console.log("008 eventing!");
         }
 
         if (mv[0] == "protestant_reformation") {
+
+	  his_self.updateStatus("Protestant Reformation...");
 
           let player = parseInt(mv[1]);
           if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
@@ -3580,6 +3584,7 @@ console.log("008 eventing!");
           his_self.setEnemies("protestant","papacy");
           his_self.setEnemies("protestant","hapsburg");
           his_self.setAllies("papacy","hapsburg");
+
 	  //
 	  // protestant home + political spaces
 	  //
@@ -3653,9 +3658,49 @@ console.log("008 eventing!");
 	    jf_added = 1;
 	  }
 
+	  //
+	  // move protestant regulars in catholic spaces to nearest protestant-controlled electorates
+	  //
+	  for (let key in his_self.game.spaces) {
+	    if (his_self.game.spaces[key].political != "protestant") {
+	      if (his_self.game.spaces[key].units["protestant"].length > 0) {
+		let already_routed_through = {};
+    		let res = his_self.returnNearestSpaceWithFilter(
+				key ,
+				function(spacekey) {
+				  if (his_self.game.spaces[spacekey].type === "electorate" && his_self.game.spaces[spacekey].political === "protestant") { return 1; }
+				  return 0;
+				},
+				function(spacekey) {
+        			  if (already_routed_through[spacekey] == 1) { return 0; }
+				  already_routed_through[spacekey] = 1;
+				  return 1;
+				},
+				0, // transit passes (no need)
+				0, // transit seas (no need)
+				"protestant" ,
+				0 // already crossed sea zone
+		);
+
+		for (let z = 0; z < his_self.game.spaces[key].units["protestant"].length; z++) {
+    		  let u = his_self.game.spaces[key].units["protestant"][z];
+		  if (u.type == "regular" || u.type == "mercenary" || u.army_leader == true) {
+		    if (res.length > 0) {
+		      his_self.game.spaces[res[0].key].units["protestant"].push(u);
+		    }
+    		    his_self.game.spaces[key].units["protestant"].splice(z, 1);
+		    z--;
+		  }
+		}
+	      }
+	    }
+	  }
+
+	
           his_self.game.state.activated_powers["papacy"].push("hapsburg");
 	  his_self.displayBoard();
 	  return 1;
+
         }
       }
     } else {
@@ -3995,7 +4040,7 @@ console.log("008 eventing!");
 	// it is a mandatory card, so we make a note to re-add it next turn.
 	//
         if (his_self.game.state.henry_viii_sickly_edward == 1) {
-	  this.game.state.henry_viii_mary_i_added_with_sickly_edward_played = 1;
+	  his_self.game.state.henry_viii_mary_i_added_with_sickly_edward_played = 1;
 	  return 1;
         }
 
@@ -4905,6 +4950,8 @@ console.log("008 eventing!");
           his_self.game.queue.push("counter_or_acknowledge\tUpdated Assault Results (post Siege Artillery)");
           his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
           his_self.game.queue.push("assault_show_hits_render");
+
+	  return 1;
 
 	}
         return 1;
@@ -6658,8 +6705,8 @@ console.log("008 eventing!");
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 
-          for (let i = 0; i < this.game.players.length; i++) {
-            let p = this.game.state.players_info[i];
+          for (let i = 0; i < his_self.game.players.length; i++) {
+            let p = his_self.game.state.players_info[i];
             for (let z = 0; z < p.captured.length; z++) {
 	      if (p.captured[z].type == "maurice-of-saxony") {
 		p.captured[z].splice(z, 1);
