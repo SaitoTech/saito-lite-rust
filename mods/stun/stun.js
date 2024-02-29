@@ -198,7 +198,7 @@ class Stun extends ModTemplate {
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
 
-	handleSignalingMessage(sender, request, data) {
+	async handleSignalingMessage(sender, request, data) {
 		//
 		// Stun metadata messages
 		//
@@ -224,38 +224,44 @@ class Stun extends ModTemplate {
 
 		// Stun protocol messages
 		if (request == 'peer-offer') {
-			peerConnection
-				.setRemoteDescription(
-					new RTCSessionDescription({ type: 'offer', sdp: data.sdp })
-				)
-				.then(() => {
-					return peerConnection.createAnswer();
-				})
-				.then((answer) => {
-					return peerConnection.setLocalDescription(answer);
-				})
-				.then(async () => {
-					await this.sendPeerAnswerTransaction(
-						sender,
-						peerConnection.localDescription.sdp
-					);
-				})
-				.catch((error) => {
-					console.error('Error handling offer:', error);
-				});
+
+			try{
+				let offerCollision = this.makingOffer || peerConnection.signalingState != "stable";
+				let ignoreOffer = offerCollision && peerConnection?.rude;
+				if (ignoreOffer) {
+					console.log("STUN: Impolite peer ignores offer collision");
+					return;
+				}
+
+				let description = new RTCSessionDescription({ type: 'offer', sdp: data.sdp });
+
+				if (offerCollision){
+					await Promise.all([peerConnection.setLocalDescription({type: "rollback"}),
+														 peerConnection.setRemoteDescription(description)]);
+				}else{
+					await peerConnection.setRemoteDescription(description);
+				}
+
+				await peerConnection.setLocalDescription(await peerConnection.createAnswer());
+				this.peers.set(sender, peerConnection);
+				this.sendPeerAnswerTransaction(sender, peerConnection.localDescription.sdp);
+			}catch(err){
+				console.error("STUN: failure in peer-offer --- ", err);
+			}
 			return;
 		}
 
 		if (request === 'peer-answer') {
-			peerConnection
+			try{
+				await peerConnection
 				.setRemoteDescription(
 					new RTCSessionDescription({ type: 'answer', sdp: data.sdp })
-				)
-				.then((answer) => {})
-				.catch((error) => {
-					console.error('Error handling answer:', error);
-				});
-			this.peers.set(sender, peerConnection);
+				);
+				this.peers.set(sender, peerConnection);
+			}catch(error){
+				console.error('Error handling answer:', error);
+			}
+
 			return;
 		}
 
@@ -322,30 +328,25 @@ class Stun extends ModTemplate {
 			return 0;
 		}
 
+		this.makingOffer = false;
+
 		if (this.peers.get(peerId)) {
 			console.log('STUN: already connected to ' + peerId, "Status: " + this.peers.get(peerId).connectionState);
 			this.peers.get(peerId).restartIce();
 			
 			if (callback){
-				console.log("STUN: undo my onnegotiationneeded listener");
-				this.peers.get(peerId).onnegotiationneeded = null;
 				callback(peerId);
-			}else{
-				console.log("STUN: create a new onnegotiationneeded listener");
-				this.peers.get(peerId).onnegotiationneeded = () => {
-					console.log("STUN (redo): Negotation needed!");
-					this.renegotiate(peerId);
-				};
-
-				if (!this.hasConnection(peerId)){
-					this.renegotiate(peerId);
-				}
 			}
 			return;
 		}else{
 			const pc = new RTCPeerConnection({
 				iceServers: this.servers
 			})
+
+			if (callback){
+				pc.rude = true;
+			}
+
 			this.peers.set(peerId, pc);
 
 			this.app.connection.emit("stun-new-peer-connection", peerId, pc);
@@ -412,62 +413,74 @@ class Stun extends ModTemplate {
 			);
 		});
 
+
+		const dc = peerConnection.createDataChannel('data-channel', {negotiated: true, id: 42});
+		peerConnection.dc = dc;
+
+		dc.onmessage = (event) => {
+			this.handleDataChannelMessage(event.data, peerId);
+		};
+
+		dc.onopen = (event) => {
+			console.log('STUN: Data channel is open');
+			this.app.connection.emit('stun-data-channel-open', peerId);
+		};
+
+		dc.onclose = (event) => {
+			console.log('STUN: Data channel is closed');
+			this.removePeerConnection(peerId);
+			this.app.connection.emit('stun-data-channel-close', peerId);
+		};
+
+		//
+		// This handles the renegotiation for adding/droping media streams
+		// However, need to further study "perfect negotiation" with polite/impolite peers
+		//
+		peerConnection.onnegotiationneeded = async () => {
+			console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection`);
+
+			try {
+				this.makingOffer = true;
+				const offer = await peerConnection.createOffer({
+					iceRestart: true,
+					offerToReceiveAudio: true,
+					offerToReceiveVideo: true,
+				});
+
+				if (peerConnection.signalingState != "stable"){
+					return;
+				}
+
+				await peerConnection.setLocalDescription(offer);
+
+				let newtx =
+					await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+						peerId
+					);
+
+				newtx.msg = {
+					module: 'Stun',
+					request: 'peer-offer',
+					sdp: peerConnection.localDescription.sdp
+				};
+
+				await newtx.sign();
+
+				this.app.connection.emit('relay-transaction', newtx);
+				this.app.network.propagateTransaction(newtx);
+			} catch (err) {
+				console.error('Error creating offer:', err);
+			} finally {
+				this.makingOffer = false;
+			}
+
+		};
+
 		if (callback) {
-			peerConnection.addEventListener('datachannel', (event) => {
-				console.log('STUN: datachannel event');
-
-				const receiveChannel = event.channel;
-				peerConnection.dc = receiveChannel;
-
-				receiveChannel.onmessage = (event) => {
-					this.handleDataChannelMessage(event.data, peerId);
-				};
-
-				receiveChannel.onopen = (event) => {
-					console.log('STUN: Data channel is open');
-					this.app.connection.emit('stun-data-channel-open', peerId);
-				};
-
-				receiveChannel.onclose = (event) => {
-					console.log('STUN: Data channel is closed');
-					this.removePeerConnection(peerId);
-					this.app.connection.emit('stun-data-channel-close', peerId);
-				};
-			});
-
 			callback(peerId);
-
-		} else {
-			const dc = peerConnection.createDataChannel('data-channel');
-			peerConnection.dc = dc;
-
-			dc.onmessage = (event) => {
-				this.handleDataChannelMessage(event.data, peerId);
-			};
-
-			dc.onopen = (event) => {
-				console.log('STUN: Data channel is open');
-				this.app.connection.emit('stun-data-channel-open', peerId);
-			};
-
-			dc.onclose = (event) => {
-				console.log('STUN: Data channel is closed');
-				this.removePeerConnection(peerId);
-				this.app.connection.emit('stun-data-channel-close', peerId);
-			};
-
-			//
-			// This handles the renegotiation for adding/droping media streams
-			// However, need to further study "perfect negotiation" with polite/impolite peers
-			//
-			peerConnection.onnegotiationneeded = () => {
-				console.log("Negotation needed!");
-				this.renegotiate(peerId);
-			};
-
-			//this.renegotiate(peerId);
-
 		}
+
+
 	}
 
 	//This can get double processed by PeerTransaction and onConfirmation
@@ -478,46 +491,6 @@ class Stun extends ModTemplate {
 			console.log("Stun remove peer connection!");
 			peerConnection.close();
 			this.peers.delete(peerId);
-		}
-	}
-
-	//
-	// This is to send an offer (or resend it if the mediastream changes)
-	//
-	async renegotiate(peerId) {
-		const peerConnection = this.peers.get(peerId);
-
-		if (!peerConnection) {
-			return;
-		}
-
-		console.log(`STUN: sending offer to ${peerId} with peer connection`);
-
-		try {
-			const offer = await peerConnection.createOffer({
-				iceRestart: true,
-				offerToReceiveAudio: true,
-				offerToReceiveVideo: true,
-			});
-			await peerConnection.setLocalDescription(offer);
-
-			let newtx =
-				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-					peerId
-				);
-
-			newtx.msg = {
-				module: 'Stun',
-				request: 'peer-offer',
-				sdp: peerConnection.localDescription.sdp
-			};
-
-			await newtx.sign();
-
-			this.app.connection.emit('relay-transaction', newtx);
-			this.app.network.propagateTransaction(newtx);
-		} catch (err) {
-			console.error('Error creating offer:', err);
 		}
 	}
 

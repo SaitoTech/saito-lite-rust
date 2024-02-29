@@ -73,21 +73,29 @@ class Fileshare extends ModTemplate {
 							fss.offset = 0;
 							fss.addFileUploader(id);
 
+							const input = document.getElementById(
+								`hidden_file_element_${id}`
+							);
+
 							//
 							if (fss.stun.hasConnection(recipient)) {
 								//
 								// When stun connection is established, select a file to upload
 								//
 								console.log('Stun fileshare: select file');
-								const input = document.getElementById(
-									`hidden_file_element_${id}`
-								);
 								input.click();
 							} else {
 								console.log(
 									'Stun fileshare: createPeerConnection'
 								);
 								fss.stun.createPeerConnection(recipient);
+								siteMessage("Establishing connection...", 1000);
+								let oneUse = true;
+								fss.app.connection.on("stun-data-channel-open", peerId => {
+									if (oneUse && peerId == recipient){
+										input.click();
+									}
+								})
 							}
 
 							fss.callback = (file) => {
