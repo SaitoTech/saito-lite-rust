@@ -2859,9 +2859,6 @@ console.log("faction has units in space!");
 	        for (let zz = 0; zz < neighbours.length; zz++) {
 	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[zz]);
 	          if (fluis > 0) {
-
-HACK
-
 		    if (!already_asked.includes(his_self.returnPlayerCommandingFaction(io[i])) && !already_asked.includes(neighbours[zz])) {
 	              this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
 	  	      already_asked.push(neighbours[zz]);

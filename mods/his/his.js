@@ -23183,9 +23183,6 @@ console.log("faction has units in space!");
 	        for (let zz = 0; zz < neighbours.length; zz++) {
 	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[zz]);
 	          if (fluis > 0) {
-
-HACK
-
 		    if (!already_asked.includes(his_self.returnPlayerCommandingFaction(io[i])) && !already_asked.includes(neighbours[zz])) {
 	              this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
 	  	      already_asked.push(neighbours[zz]);
@@ -33556,8 +33553,11 @@ return;
 	    //
 	    let selectDestinationInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+
 	      // MOVE THE UNITS
 	      units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
+
+console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
@@ -33573,6 +33573,7 @@ return;
 
               let unmoved_units = [];
               let moved_units = [];
+	      let space = his_self.game.spaces[source_spacekey];
 
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, source_spacekey);
 	      if (faction != his_self.game.state.events.spring_preparations) { 
@@ -33584,21 +33585,26 @@ return;
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
 	      let html = '<ul>';
 
+console.log("SPACE: " + source_spacekey);
+console.log("SPACE UNITS: " + JSON.stringify(space.units));
+
 	      for (let key in space.units) {
                 if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
                   for (let i = 0; i < space.units[key].length; i++) {
+console.log("i: " + i + " for faction " + key);
 	            if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
                     if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
                     if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
                       let does_units_to_move_have_unit = false;
                       for (let z = 0; z < units_to_move.length; z++) {
-                        if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
+                        if (units_to_move[z].faction === key && units_to_move[z].idx === i) { does_units_to_move_have_unit = true; break; }
                       }
                       if (does_units_to_move_have_unit) {
-                        html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[key][i].name} (${key})*</li>`;
+                        html += `<li class="option" style="font-weight:bold" id="${key}-${i}">*${space.units[key][i].name} (${key})*</li>`;
                         moved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       } else {
                         html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
+console.log("pushing into unmoved units with idx: " + i + " --- " + space.units[key][i].type);
                         unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       }
                     }
@@ -33617,14 +33623,18 @@ return;
                 destination : destination_spacekey ,
               }
 
+
 	      //
 	      // auto-move if only 1 unit
 	      //
 	      let can_we_quick_move = false;
-	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; } 
+	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; console.log("setting quick move to true"); } 
 
+console.log("moved and unmoved units");
+console.log(JSON.stringify(mobj.moved_units));
+console.log(JSON.stringify(mobj.unmoved_units));
 
-	      if (!can_we_quick_move) {
+	      if (can_we_quick_move == false) {
                 his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
               }
 
@@ -33677,11 +33687,13 @@ return;
 	          units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
 	        }
 
+console.log("running select units interface with units_to_move 2: " + units_to_move.length);
                 selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 
               });
 
 	      if (can_we_quick_move) {
+console.log("we are in quick move 1");
 		units_to_move = JSON.parse(JSON.stringify(mobj.unmoved_units));
 	        selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	        his_self.displaySpace(source_spacekey);
@@ -33693,6 +33705,7 @@ return;
 
             }
 
+console.log("running select units interface with units_to_move 1: " + units_to_move.length);
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
           },
 
@@ -33833,7 +33846,11 @@ return;
 	        }
 	      }
 
+
 	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+
+              units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
+
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
 	      }
@@ -33855,7 +33872,7 @@ return;
 	  let unmoved_units = [];
 	  let moved_units = [];
 
-          space = his_self.game.spaces[spacekey];
+          let space = his_self.game.spaces[spacekey];
 	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 	  let html = "<ul>";
@@ -33925,7 +33942,6 @@ return;
 	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
 	      }
 	    } else {
-
 
 	      //
 	      // check for max formation size
@@ -34035,9 +34051,11 @@ return;
 	      for (let key in space.units) {
 	        if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
 	          for (let i = 0; i < space.units[key].length; i++) {
+	            if (space.units[key][i].type !== "squadron" && space.units[key][i].type !== "corsair") {
 	            if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	            if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
 		      units_to_move.push({ faction : key , idx : i , type : space.units[key][i].type });
+	            }
 	            }
 	            }
 	          }
