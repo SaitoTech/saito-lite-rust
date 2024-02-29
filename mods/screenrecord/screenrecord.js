@@ -9,20 +9,28 @@ class Screenrecord extends ModTemplate {
 		this.chunks = [];
 		this.localStream = null; // My Video Feed
 		this.mediaRecorder = null;
-		this.canvasStream = null; // The stream from the canvas
 	}
 
 	respondTo(type, obj) {
 		let mod_self = this;
 
 		if (type === 'call-actions') {
-			return [
-				{
-					text: 'Record',
-					icon: 'fa-solid fa-record-vinyl',
-					callback: function (app, public_key, id = '') {}
-				}
-			];
+			if (obj?.members){
+				return [
+					{
+						text: 'Record',
+						icon: 'fa-solid fa-record-vinyl',
+						callback: function (app, public_key, id = '') {
+							console.log("Click on record");
+							if (mod_self.mediaRecorder){
+								mod_self.stop();
+							}else{
+								mod_self.record(app.options.stun.peers);
+							}
+						}
+					}
+				];
+			}
 		}
 
 		//
@@ -41,12 +49,12 @@ class Screenrecord extends ModTemplate {
 						callback: function (app, game_mod) {
 							game_mod.menu.hideSubMenus();
 							if (mod_self?.mediaRecorder) {
-								mod_self.streamManager.stop();
+								mod_self.stop();
 								document.getElementById(
 									'record-stream'
 								).textContent = 'Start Recording';
 							} else {
-								mod_self.streamManager.record(game_mod.game.players);
+								mod_self.record(game_mod.game.players);
 								document.getElementById(
 									'record-stream'
 								).textContent = 'Stop Recording';
@@ -161,6 +169,7 @@ class Screenrecord extends ModTemplate {
 			return;
 		}
 
+		this.toggleNotification();
 
 		// Set up the media recorder with the canvas stream
 		// Create a new stream for the combined video and audio
@@ -169,7 +178,12 @@ class Screenrecord extends ModTemplate {
 		// Add the audio tracks from the screen and camera to the combined stream
 		screenStream
 			.getTracks()
-			.forEach((track) => combinedStream.addTrack(track));
+			.forEach((track) => {
+				combinedStream.addTrack(track);
+				track.onended = () => {
+					this.stop();
+				}
+			});
 
 		if (this.localStream && this.localStream.getAudioTracks().length > 0) {
 			combinedStream.addTrack(this.localStream.getAudioTracks()[0]);
@@ -188,6 +202,8 @@ class Screenrecord extends ModTemplate {
 
 		// When the recording stops, create a video file
 		this.mediaRecorder.onstop = async () => {
+			console.log("Media Recorder stopped!");
+			this.toggleNotification();
 			screenStream.getTracks().forEach((track) => track.stop());
 
 			const completeBlob = new Blob(this.chunks, { type: 'video/webm' });
@@ -226,7 +242,7 @@ class Screenrecord extends ModTemplate {
 		console.log('Stop recording!');
 
 		if (this.mediaRecorder) {
-			this.mediaRecorder.stop();
+			await this.mediaRecorder.stop();
 			this.mediaRecorder = null;
 		}
 
@@ -234,10 +250,7 @@ class Screenrecord extends ModTemplate {
 			this.localStream.getTracks().forEach((track) => track.stop());
 			this.localStream = null;
 		}
-		if (this.canvasStream) {
-			this.canvasStream.getTracks().forEach((track) => track.stop());
-			this.canvasStream = null;
-		}
+
 		if (this.videoBox) {
 			this.videoBox.remove();
 			this.videoBox = null;
@@ -245,7 +258,7 @@ class Screenrecord extends ModTemplate {
 	}
 
 	async sendStartRecordingTransaction(keys){
-		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 
 		newtx.msg = {
 			module: 'Screenrecord',
@@ -265,7 +278,7 @@ class Screenrecord extends ModTemplate {
 	}
 
 	async sendStopRecordingTransaction(keys){
-		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 
 		newtx.msg = {
 			module: 'Screenrecord',
@@ -304,7 +317,10 @@ class Screenrecord extends ModTemplate {
 						if (message.request === "stop recording"){
 							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
 						}
+
+						this.toggleNotification();
 					}
+
 				}
 			}
 		}
@@ -318,13 +334,12 @@ class Screenrecord extends ModTemplate {
 		let txmsg = tx.returnMessage();
 
 		if (this.app.BROWSER === 1) {
+			
+			if (this.hasSeenTransaction(tx) || txmsg.module !== this.name) {
+				return;
+			}
+
 			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-				if (this.hasSeenTransaction(tx)) return;
-
-				if (txmsg.module !== this.name) {
-					return;
-				}
-
 				if (txmsg.request === "start recording"){
 					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
 				}
@@ -332,12 +347,22 @@ class Screenrecord extends ModTemplate {
 					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
 				}
 
+				this.toggleNotification();
 			}
+
 		}
 
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
 
+
+	toggleNotification(){
+		let vinyl = document.querySelector(".fa-record-vinyl");
+		if (vinyl){
+			vinyl.classList.toggle("recording");	
+		}
+
+	}
 
 }
 
