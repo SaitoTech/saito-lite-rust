@@ -787,7 +787,7 @@
 .saito-file-transfer{
   height: 20rem;
   width: 18rem;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   border: 1px dashed;
   display: flex;
   flex-direction: column;
@@ -795,6 +795,7 @@
   justify-content: space-evenly;
   background: var(--saito-background-light);
   margin: 1rem 0;
+  padding: 1rem;
 }
 
 .saito-file-transfer i {
