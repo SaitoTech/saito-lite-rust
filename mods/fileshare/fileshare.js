@@ -91,9 +91,13 @@ class Fileshare extends ModTemplate {
 								fss.stun.createPeerConnection(recipient);
 								siteMessage("Establishing connection...", 1000);
 								let oneUse = true;
-								fss.app.connection.on("stun-data-channel-open", peerId => {
+								fss.app.connection.on("stun-data-channel-open", async peerId => {
 									if (oneUse && peerId == recipient){
-										input.click();
+										oneUse = false;
+										let c = await sconfirm("Connection Established. Select a file to send");
+										if (c){
+											input.click();	
+										}
 									}
 								})
 							}

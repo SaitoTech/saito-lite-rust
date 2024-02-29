@@ -149,7 +149,7 @@ class Stun extends ModTemplate {
 		}
 	}
 
-	onConfirmation(blk, tx, conf) {
+	async onConfirmation(blk, tx, conf) {
 		if (tx == null) {
 			return;
 		}
@@ -162,7 +162,7 @@ class Stun extends ModTemplate {
 					if (this.hasSeenTransaction(tx)) return;
 
 					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-						this.handleSignalingMessage(
+						await this.handleSignalingMessage(
 							tx.from[0].publicKey,
 							message.request,
 							message
@@ -187,7 +187,7 @@ class Stun extends ModTemplate {
 					return;
 				}
 
-				this.handleSignalingMessage(
+				await this.handleSignalingMessage(
 					tx.from[0].publicKey,
 					txmsg.request,
 					txmsg
@@ -223,53 +223,46 @@ class Stun extends ModTemplate {
 		}
 
 		// Stun protocol messages
-		if (request == 'peer-offer') {
-
+		if (request == 'peer-description') {
+			let description = data.description;
 			try{
-				let offerCollision = this.makingOffer || peerConnection.signalingState != "stable";
-				let ignoreOffer = offerCollision && peerConnection?.rude;
-				if (ignoreOffer) {
+
+				const readyForOffer = !peerConnection?.makingOffer && (peerConnection.signalingState == "stable" || peerConnection?.answerPending);
+				const offerCollision = description.type === "offer" && !readyForOffer;
+
+				peerConnection.ignoreOffer = offerCollision && peerConnection?.rude;
+
+				if (peerConnection.ignoreOffer) {
 					console.log("STUN: Impolite peer ignores offer collision");
 					return;
 				}
 
-				let description = new RTCSessionDescription({ type: 'offer', sdp: data.sdp });
+				peerConnection.answerPending = description.type == "answer";
+				await peerConnection.setRemoteDescription(description);
+				peerConnection.answerPending = false;
 
-				if (offerCollision){
-					await Promise.all([peerConnection.setLocalDescription({type: "rollback"}),
-														 peerConnection.setRemoteDescription(description)]);
-				}else{
-					await peerConnection.setRemoteDescription(description);
+				if (description.type === "offer"){
+					await peerConnection.setLocalDescription();	
+					this.sendPeerDescriptionTransaction(sender, peerConnection.localDescription);
 				}
-
-				await peerConnection.setLocalDescription(await peerConnection.createAnswer());
+				
 				this.peers.set(sender, peerConnection);
-				this.sendPeerAnswerTransaction(sender, peerConnection.localDescription.sdp);
+				
 			}catch(err){
 				console.error("STUN: failure in peer-offer --- ", err);
 			}
 			return;
 		}
 
-		if (request === 'peer-answer') {
-			try{
-				await peerConnection
-				.setRemoteDescription(
-					new RTCSessionDescription({ type: 'answer', sdp: data.sdp })
-				);
-				this.peers.set(sender, peerConnection);
-			}catch(error){
-				console.error('Error handling answer:', error);
-			}
-
-			return;
-		}
 
 		if (request === 'peer-candidate') {
-			if (peerConnection.remoteDescription === null) return;
-			peerConnection.addIceCandidate(data.iceCandidate).catch((error) => {
-				console.error('Error adding remote candidate:', error);
-			});
+			try{
+				await peerConnection.addIceCandidate(data.iceCandidate);
+			}catch(err){
+				if (!peerConnection?.ignoreOffer){
+					console.error('Error adding remote candidate:', err);	
+				}
+			}
 			return;
 		}
 
@@ -304,20 +297,20 @@ class Stun extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	async sendPeerAnswerTransaction(peer, sdp) {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
+	async sendPeerDescriptionTransaction(peer, description) {
+				let newtx =
+					await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
 
-		newtx.msg = {
-			module: 'Stun',
-			request: 'peer-answer',
-			sdp
-		};
+				newtx.msg = {
+					module: 'Stun',
+					request: 'peer-description',
+					description
+				};
 
-		await newtx.sign();
+				await newtx.sign();
 
-		this.app.connection.emit('relay-transaction', newtx);
-		this.app.network.propagateTransaction(newtx);
+				this.app.connection.emit('relay-transaction', newtx);
+				this.app.network.propagateTransaction(newtx);
 	}
 
 	createPeerConnection(peerId, callback = null) {
@@ -328,22 +321,20 @@ class Stun extends ModTemplate {
 			return 0;
 		}
 
-		this.makingOffer = false;
-
 		if (this.peers.get(peerId)) {
 			console.log('STUN: already connected to ' + peerId, "Status: " + this.peers.get(peerId).connectionState);
-			this.peers.get(peerId).restartIce();
 			
 			if (callback){
 				callback(peerId);
 			}
 			return;
 		}else{
+
 			const pc = new RTCPeerConnection({
 				iceServers: this.servers
 			})
 
-			if (callback){
+			if (!callback){
 				pc.rude = true;
 			}
 
@@ -380,7 +371,7 @@ class Stun extends ModTemplate {
 			this.app.connection.emit("stun-track-event", peerId, event);
 		});
 
-		peerConnection.addEventListener('connectionstatechange', () => {
+		peerConnection.onconnectionstatechange = () => {
 			console.log(
 				`STUN: ${peerId} connectionstatechange -- ` +
 					peerConnection.connectionState
@@ -411,8 +402,13 @@ class Stun extends ModTemplate {
 				peerId,
 				peerConnection.connectionState
 			);
-		});
+		};
 
+		peerConnection.oniceconnectionstatechange = () => {
+			if (peerConnection.iceConnectionState === "failed"){
+				peerConnection.restartIce();
+			}	
+		}
 
 		const dc = peerConnection.createDataChannel('data-channel', {negotiated: true, id: 42});
 		peerConnection.dc = dc;
@@ -440,40 +436,17 @@ class Stun extends ModTemplate {
 			console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection`);
 
 			try {
-				this.makingOffer = true;
-				const offer = await peerConnection.createOffer({
-					iceRestart: true,
-					offerToReceiveAudio: true,
-					offerToReceiveVideo: true,
-				});
+				peerConnection.makingOffer = true;
 
-				if (peerConnection.signalingState != "stable"){
-					return;
-				}
+				await peerConnection.setLocalDescription();
 
-				await peerConnection.setLocalDescription(offer);
+				await this.sendPeerDescriptionTransaction(peerId, peerConnection.localDescription);
 
-				let newtx =
-					await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-						peerId
-					);
-
-				newtx.msg = {
-					module: 'Stun',
-					request: 'peer-offer',
-					sdp: peerConnection.localDescription.sdp
-				};
-
-				await newtx.sign();
-
-				this.app.connection.emit('relay-transaction', newtx);
-				this.app.network.propagateTransaction(newtx);
 			} catch (err) {
 				console.error('Error creating offer:', err);
 			} finally {
-				this.makingOffer = false;
+				peerConnection.makingOffer = false;
 			}
-
 		};
 
 		if (callback) {
