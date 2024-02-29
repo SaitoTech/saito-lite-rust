@@ -140,7 +140,7 @@ dt {
     transition: background 2s;
     background-size: cover;
     background-blend-mode: multiply;
-    background-image: url(../img/settlers-ocean.svg);
+    background-image: url(/settlers/img/settlers-ocean.svg);
     background-position: center;
 }
 
@@ -151,7 +151,7 @@ dt {
     padding: 150px 135px 350px;
     box-sizing: content-box;
     cursor: grab;
-    background-image: url(../img/settlers-coast.svg);
+    background-image: url(/settlers/img/settlers-coast.svg);
     background-size: 88%;
     background-repeat: no-repeat;
     background-position: 85px 90px;
