@@ -475,14 +475,19 @@ if (this.game.options.scenario == "is_testing") {
 	    for (let key in this.game.spaces[i].units) {
 	      if (this.game.spaces[i].units[key].length > 0) {
 	        let space = this.game.spaces[i];
+
+		//
 		// space is fortified but i don't control it, OR
 		// space is not fortified
+		//
 		// AND
-		// i am protestant and this is an electorate and league has not formed
+		//
+		// (not) i am protestant and this is an electorate and league has not formed
+		//
 		if (  
 			((this.isSpaceFortified(space) && !this.isSpaceControlled(key, i)) || (!this.isSpaceFortified(space)))
-			&& 
-			(key != "protestant" && !this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1)
+			&&
+			(!(key == "protestant" && this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))
 		) {
 
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
@@ -552,54 +557,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push(moves[i]);
 	  }
 
-
           //
           // fortified spaces - any units in excess of stacking limit returned to capital
           //
-          for (let i in this.game.spaces) {
-            if (this.isSpaceFortified(this.game.spaces[i])) {
-
-              let space = this.game.spaces[i];
-              let f = this.returnFactionControllingSpace(i);
-
-              let num_friendly_units = this.returnFriendlyLandUnitsInSpace(f, space);
-              let num_faction_units = this.returnFactionLandUnitsInSpace(f, space);
-	      let capitals = this.returnCapitals(f);
-
-              if (num_friendly_units > 4 && !capitals.includes(i)) {
-		let units_preserved = 0;
-		for (let q in space.units) {
-
-		  //  capital of unit is
-		  let cap = this.returnControlledCapitals(q);
-		  let cap_idx = 0;
-
-		  for (let ii = 0; ii < space.units[q].length; ii++) {
-		    let u = space.units[q][ii];
-		    if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary") {
-		      units_preserved++;
-		      if (units_preserved > 4) {
-			if (cap.length > 0) {
-			  let selected_capital = cap[cap_idx];
-			  cap_idx++;
-			  if ((cap_idx+1) > cap.length) {
-			    //
-			    // push unit back to capital
-			    //
-			    this.game.spaces[selected_capital].units[q].push(space.units[q][ii]);
-			  }
-			}
-		        space.units[q].splice(ii, 1);
-		        ii--;
-		      }
-		    }
-		  }
-		}
-		this.updateLog("OVERSTACKING in " + this.returnName(i) + " (some units returned to capital)");
-		this.displaySpace(i);
-              }
-            }
-          }
+	  this.returnOverstackedUnitsToCapitals();
 
 	  return 1;
         }
@@ -830,6 +791,11 @@ if (this.game.options.scenario === "is_testing") {
 	  for (let i = 0; i < moves.length; i++) {
 	    this.game.queue.push(moves[i]);
 	  }
+
+	  //
+	  // anything left gets swept
+	  //
+	  this.returnOverstackedUnitsToCapitals();
 
 	  return 1;
         }
@@ -2750,6 +2716,18 @@ console.log("faction has units in space!");
 	  let spacekey = mv[2];
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  let defender = mv[4];
+          let space = this.game.spaces[spacekey];
+
+          //
+          // you cannot retreat if besieged, so check if besieged, and one besieged unit 
+          // means the whole stack is besieged
+          //
+          if (space.besieged > 0) {
+            for (let x = 0; x < space.units[defender].length; x++) {
+              if (space.units[defender][x].besieged == 1) { return 1; }
+            }
+          }
+
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
@@ -2881,6 +2859,9 @@ console.log("faction has units in space!");
 	        for (let zz = 0; zz < neighbours.length; zz++) {
 	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[zz]);
 	          if (fluis > 0) {
+
+HACK
+
 		    if (!already_asked.includes(his_self.returnPlayerCommandingFaction(io[i])) && !already_asked.includes(neighbours[zz])) {
 	              this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
 	  	      already_asked.push(neighbours[zz]);
@@ -3003,6 +2984,17 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let defender_spacekey = mv[5];
 	  let controller_of_defender = this.returnPlayerCommandingFaction(defender);
 	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
+	  let space = this.game.spaces[defender_spacekey];
+
+	  //
+	  // you cannot intercept if besieged, so check if besieged, and one besieged unit
+	  // means the whole stack is besieged
+	  //
+	  if (space.besieged > 0) {
+	    for (let x = 0; x < space.units[defender].length; x++) {
+	      if (space.units[defender][x].besieged == 1) { return 1; }
+	    }
+	  }
 
 	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
 	    return 1;
@@ -7868,9 +7860,6 @@ defender_hits - attacker_hits;
 
 	      for (let i = flip_this_number; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
-
-alert("flipping more than exist in the zone!");
-
 		  if (defender === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
 		  } else {
@@ -8563,6 +8552,9 @@ console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
 
 
         if (mv[0] === "diplomacy_phase_2P") {
+
+	  // removed besieged spaces
+	  this.removeBesiegedSpaces();
 
 //
 // Papacy 
@@ -10105,8 +10097,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  if (religion == "protestant") {
 	    this.updateLog(this.returnSpaceName(space) + " converts Protestant");
+	    this.updateStatus(this.returnSpaceName(space) + " converts Protestant");
 	  } else {
-	    this.updateLog(this.returnSpaceName(space) + " converts Catholic");
+	    this.updateStatus(this.returnSpaceName(space) + " converts Catholic");
 	  }
 
 	  if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0 && (this.game.state.events.schmalkaldic_league == 0 || this.isSpaceControlled(space, "protestant"))) {

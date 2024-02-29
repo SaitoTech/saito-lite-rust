@@ -56,7 +56,10 @@ console.log("TRYING TO MOVE FACTINO UNITS IN SPACEKEY: " + faction + " -- " + sp
   removeBesiegedSpaces() { this.removeSieges(); }
   removeSieges() {
     for (let space in this.game.spaces) {
-      this.removeSiege(space);
+      if (space.besieged > 0) {
+        this.removeSiege(space);
+	this.displaySpace(space);
+      }
     }
   }
   resetLockedTroops() {
@@ -698,14 +701,6 @@ if (space.key == "cagliari") { debugmode = 1;
   }
 
 
-
-
-
-
-
-
-
-
   returnFactionControllingSpace(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let factions = this.returnImpulseOrder(); 
@@ -896,6 +891,56 @@ if (space.key == "cagliari") { debugmode = 1;
 
 
 
+  returnOverstackedUnitsToCapitals() {
+
+    for (let i in this.game.spaces) {
+      if (this.isSpaceFortified(this.game.spaces[i])) {
+
+        let space = this.game.spaces[i];
+        let f = this.returnFactionControllingSpace(i);
+
+        let num_friendly_units = this.returnFriendlyLandUnitsInSpace(f, space);
+        let num_faction_units = this.returnFactionLandUnitsInSpace(f, space);
+        let capitals = this.returnCapitals(f);
+
+        if (num_friendly_units > 4 && !capitals.includes(i)) {
+
+          let units_preserved = 0;
+          for (let q in space.units) {
+
+            //  capital of unit is
+            let cap = this.returnControlledCapitals(q);
+            let cap_idx = 0;
+
+            for (let ii = 0; ii < space.units[q].length; ii++) {
+              let u = space.units[q][ii];
+              if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary") {
+                units_preserved++;
+                if (units_preserved > 4) {
+                  if (cap.length > 0) {
+                    let selected_capital = cap[cap_idx];
+                    this.game.spaces[selected_capital].units[q].push(space.units[q][ii]);
+                    cap_idx++;
+                    if ((cap_idx+1) > cap.length) {
+                      cap_idx = 0;
+                    }
+                    this.displaySpace(selected_capital);
+                    this.displaySpace(space.key);
+                  }
+                  space.units[q].splice(ii, 1);
+                  ii--;
+                }
+              }
+            }
+          }
+          this.updateLog("OVERSTACKING in " + this.returnName(i) + " (some units returned to capital)");
+          this.displaySpace(i);
+        }
+      }
+    }
+
+  }
+
 
 
   returnNearestFriendlyFortifiedSpaces(faction, space) {
@@ -991,6 +1036,11 @@ if (space.key == "cagliari") { debugmode = 1;
     try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[attacker_comes_from_this_space]; } } catch (err) {}
     if (space === attacker_comes_from_this_space) { return 0; }
     if (this.isSpaceInUnrest(space) == 1) { return 0; }
+    for (let z in space.units) {
+      if (this.returnFactionLandUnitsInSpace(z, space.key)) {
+	if (!this.areAllies(z, faction, 1)) { return 0; }
+      }
+    }
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
     return 0;
   }
@@ -1576,14 +1626,6 @@ try {
     //
     let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction, is_spring_deployment);
 
-if (sourcekey == "cagliari") {
-  console.log("faction is: " + faction);
-  console.log("neighbours: " + JSON.stringify(n));
-  let cf = this.returnFactionControllingSpace("toulouse");
-  console.log("controlling faction: " + cf + " faction is: " + faction);
-  console.log("allies: " + this.areAllies(cf, faction));
-}
-
     for (let i = 0; i < n.length; i++) {
       pending_spaces[n[i].neighbour] = { hops : 0 , key : n[i] , overseas : n[i].overseas };
     }
@@ -1675,8 +1717,17 @@ if (sourcekey == "cagliari") {
     if (this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys++; }
     return controlled_keys;
   }
-  returnNumberOfElectoratesControlledByCatholics() {
+  returnNumberOfElectoratesControlledByCatholics(political_control=0) {
     let controlled_keys = 0;
+    if (political_control == 1) {
+      if (this.game.spaces['augsburg'].political != "protestant") { controlled_keys++; }
+      if (this.game.spaces['mainz'].political != "protestant") { controlled_keys++; }
+      if (this.game.spaces['trier'].political != "protestant") { controlled_keys++; }
+      if (this.game.spaces['cologne'].political != "protestant") { controlled_keys++; }
+      if (this.game.spaces['wittenberg'].political != "protestant") { controlled_keys++; }
+      if (this.game.spaces['brandenburg'].political != "protestant") { controlled_keys++; }
+      return controlled_keys;
+    }
     if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
     if (this.game.spaces['mainz'].religion === "catholic") { controlled_keys++; }
     if (this.game.spaces['trier'].religion === "catholic") { controlled_keys++; }
@@ -1685,8 +1736,17 @@ if (sourcekey == "cagliari") {
     if (this.game.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
     return controlled_keys;
   }
-  returnNumberOfElectoratesControlledByProtestants() {
+  returnNumberOfElectoratesControlledByProtestants(political_control=0) {
     let controlled_keys = 0;
+    if (political_control == 1) {
+      if (this.game.spaces['augsburg'].political === "protestant") { controlled_keys++; }
+      if (this.game.spaces['mainz'].political === "protestant") { controlled_keys++; }
+      if (this.game.spaces['trier'].political === "protestant") { controlled_keys++; }
+      if (this.game.spaces['cologne'].political === "protestant") { controlled_keys++; }
+      if (this.game.spaces['wittenberg'].political === "protestant") { controlled_keys++; }
+      if (this.game.spaces['brandenburg'].political === "protestant") { controlled_keys++; }
+      return controlled_keys;
+    }
     if (this.game.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
     if (this.game.spaces['mainz'].religion === "protestant") { controlled_keys++; }
     if (this.game.spaces['trier'].religion === "protestant") { controlled_keys++; }
