@@ -2,6 +2,7 @@ const GameTableTemplate = require('../../lib/templates/table-gametemplate');
 const JSON = require('json-bigint');
 const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
+const HealthMeter = require("./lib/poker-health-meter");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -22,6 +23,7 @@ class Poker extends GameTableTemplate {
 		this.minPlayers = 2;
 		this.maxPlayers = 6;
 		this.settlement = [];
+		this.healthBars = [];
 
 		/********************
      *********************
@@ -199,6 +201,12 @@ class Poker extends GameTableTemplate {
 					}
 				} catch (err) {}
 			}
+		}
+
+		for (let i = 0; i < this.game.players.length; i++){
+			let hm = new HealthMeter(this.app, this, `.game-playerbox-${i+1}`);
+			this.healthBars.push(hm);
+			hm.render(Math.round(200 * Math.random()));
 		}
 
 		//
