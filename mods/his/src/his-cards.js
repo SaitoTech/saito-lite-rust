@@ -6815,11 +6815,13 @@ console.log("008 eventing!");
 	return 1;
       },
     }
+    let dom_img = "cards/HIS-063.svg";
+    if (this.game.players.length == 2) { csr_img = "cards/HIS-063-2P.svg"; }
     deck['063'] = { 
-      img : "cards/HIS-063.svg" , 
+      img : dom_img , 
       name : "Dissolution of the Monasteries" ,
       ops : 4 ,
-      turn : 0 ,
+      turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
@@ -11158,6 +11160,13 @@ if (this.game.players.length == 2) {
     delete deck["103"];
     delete deck["108"];
     delete deck["110"];
+    delete deck["111"];
+    delete deck["112"];
+    delete deck["113"];
+    delete deck["114"];
+    delete deck["115"];
+    delete deck["116"];
+
 }
 
     for (let key in deck) {

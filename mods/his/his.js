@@ -9956,11 +9956,13 @@ console.log("008 eventing!");
 	return 1;
       },
     }
+    let dom_img = "cards/HIS-063.svg";
+    if (this.game.players.length == 2) { csr_img = "cards/HIS-063-2P.svg"; }
     deck['063'] = { 
-      img : "cards/HIS-063.svg" , 
+      img : dom_img , 
       name : "Dissolution of the Monasteries" ,
       ops : 4 ,
-      turn : 0 ,
+      turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
@@ -14299,6 +14301,13 @@ if (this.game.players.length == 2) {
     delete deck["103"];
     delete deck["108"];
     delete deck["110"];
+    delete deck["111"];
+    delete deck["112"];
+    delete deck["113"];
+    delete deck["114"];
+    delete deck["115"];
+    delete deck["116"];
+
 }
 
     for (let key in deck) {
@@ -20724,9 +20733,12 @@ if (this.game.options.scenario == "is_testing") {
   this.game_help.render(TutorialTemplate, {
     help : `First Time Playing?` ,
     content : `
-	Here I Stand opens with the publication of Luther's 95 Theses in 1517, which sparked the start of the Protestant Reformation in Wittenburg. Four years later, the spreading Protestant faith led to the convocation of the Diet of Worms, an Imperial assembly held in the Free City of Worms where Martin Luther refused to recant and was declared a heretic.
+
+	Here I Stand opens with the publication of Martin Luther's 95 Theses, which marked the start of the Protestant Reformation, and the convocation of the Diet of Worms, an Imperial assembly where Luther refused to recant and was declared a heretic.
+	
 	<p></p>
-	These opening acts set the stage for the religious and military conflict that forms the heart of Here I Stand. In the early period, the Protestants should focus on reforming spaces in Germany, and strive to control the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). The Papacy should focus on slowing the Protestant advance while expanding its territorial claims and defusing military confrontations in Italy.
+
+	The early game occurs before the Protestants form a German Defense League and become an independent military power. During this period the Protestants should convert spaces in Germany, and particularly the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). The Papacy should slow the Protestant advance while expanding its own territorial claims and alliances in Italy.
     `,
     img : "/his/img/backgrounds/tutorials/95theses.jpg",
     line1 : "first",
@@ -23625,6 +23637,30 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 
 	  let game_self = this;
 	  let my_faction = "";
+
+
+  this.game_help.render(TutorialTemplate, {
+    help : `Diet of Worms` ,
+    content : `
+
+	The Diet of Worms was an Imperial Assembly convened by the Hapsburg Emperor in 1521 in the Free Imperial City of Worms. Its focus of discussion was on Martin Luther's critique of the Catholic Church and the question of whether he would recant. Luther refused to recant and the assembly ended with him fleeing Worms under the protection of Frederick III of Saxony before being condemned as a heretic by the religious and political establishment.
+
+	<p></p>
+
+	In simulating this event, the Protestant and Papacy both pick a card to reflect their level of commitment to the debate. In the two player game, the Protestants add +4 to the value of the card selected, while the Papacy pulls a card from the deck and adds its value. In all other games, the Hapsburg player contributes the second card for the Papacy.
+
+	<p></p>
+
+	Both players roll the appropriate number of dice and hit on all rolls of 5 or 6. The winner flips the difference in hits to the Protestant or Catholic faith.
+
+    `,
+    img : "/his/img/backgrounds/diet_of_worms.jpeg",
+    line1 : "diet",
+    line2 : "of worms?",
+    fontsize : "2.1rem" ,
+  });
+
+
 
 	  // first time it happens, lets update menu
 	  this.displayCardsLeft();
@@ -26799,14 +26835,18 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	  //
 	  // PRINT OUT INFO TO LOG
 	  //
-	  //this.updateLog("Attackers: " + attacker_rolls + " in total rolls");
-	  //for (let i = 0; i < attacker_results.length; i++) {
-	  //  this.updateLog(" ... rolls: " + attacker_results[i]);
-          //}
-	  //this.updateLog("Defenders: " + defender_rolls + " in total rolls");
-	  //for (let i = 0; i < defender_results.length; i++) {
-	  //  this.updateLog(" ... rolls: " + defender_results[i]);
-          //}
+	  this.updateLog("************************");
+	  this.updateLog("******** Assault *******");
+	  this.updateLog("************************");
+	  this.updateLog("Attackers: " + attacker_rolls + " rolls");
+	  for (let i = 0; i < attacker_results.length; i++) {
+	    this.updateLog(" ...: " + attacker_results[i]);
+          }
+	  this.updateLog("Defenders: " + defender_rolls + " rolls");
+	  for (let i = 0; i < defender_results.length; i++) {
+	    this.updateLog(" ...: " + defender_results[i]);
+          }
+
 
 	  //
 	  // things get messy and conditional now, because Ottomans may play
@@ -28547,11 +28587,11 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
     help : `Your Goal` ,
     content : `
-	Slow the Protestant expansion in Germany and expand Papal control in Italy.
+	<b>Burn Books</b> and hold <b>Theological Debates</b> to slow the Protestant expansion in Germany and flip spaces back to Catholicism. 
 	<p></p>
-	Play events which hurt the Protestants. Or play cards for OPs to <b>Burn Books</b> and hold <b>Theological Debates</b> which flip spaces back to Catholicism. 
-	<p></p>
-	The Papacy can also raise Regulars and Mercenaries to capture strategic keys like Florence and earn 2VP per key and additional cards each turn.
+	The Papacy is the harder faction to learn as it can also play an early-war military strategy. Consider building Regulars and Mercenaries in Rome and using them to capture strategic keys like Florence (the square spaces on the board). You will earn an additional 2 VP from each key you or your allies control and gain additional cards at the beginning of each turn.
+        <p></p>
+	If you do try to take control of additional keys, note that you will need an unbroken line of spaces controlled by the Papacy or your allies connecting your existing keys to these new spaces. If you do not have such a "line of control" you will be unable to assault and may lose all your forces if defeated in a military battle in the space.
     `,
     line1 : "your",
     line2 : "first turn",
@@ -28568,8 +28608,10 @@ if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
     content : `
         Convert spaces to the Protestant religion.
 	<p></p>
-	Play cards for OPs to <b>Publish Treatises</b> and hold <b>Theological Debates</b> to flip to Protestantism. Spend additional OPs to translate the New Testament into any language for bonus reformation attempts in that language zone.
-    `,        
+	<b>Publish Treatises</b> and hold <b>Theological Debates</b> to flip spaces to the Protestant religion. Spend additional OPs on translating the bible into any language for bonus reformation attempts in that language zone.
+	<p></p>
+	Remember that you cannot attempt to reform any space until it is adjacent to an existing Protestant space, so be careful not to use your translation bonuses in non-German regions until you are ready to take advantage of them!
+    `,
     line1 : "your",
     line2 : "first turn",
     fontsize : "2.1rem",      
@@ -38325,6 +38367,9 @@ console.log("is calvin debater committed? " + his_self.canPlayerCommitDebater("p
     return x;
 
   }
+
+
+
 
 
   resolveColonies() {
