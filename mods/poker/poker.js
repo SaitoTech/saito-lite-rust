@@ -29,35 +29,37 @@ class Poker extends GameTableTemplate {
      *********************
      *********************
      ***
-     *** prior to any refactor, we will simply store all crypto values in string format and do
-     *** sanity checks to prevent division errors. all conversions should be handled via the
-     *** functions provided at the top of this file.
+     *** CRYPTO *NEEDS* to be in a string, but the internal math/logic of the game is a lot less bug-ridden
+     *** if we _secretly_ make all games use 100 chip buy ins, with all bets as whole numbers of chips... 
+     *** so everything -- the blind, the pot, the debt, the credit is a whole number... 
+     *** If there is a stake, such as 32 TRX or 0.005 BTC, we divide that by 100, and multiply by the whole numbers
+     *** when rendering UI or initiating transfers.
+     *** Stake 250.67 SAITO --> x = 2.5067 SAITO. Bets are in increments of 2.5067 SAITO, e.g. 1x, 2x, 3x ...  
      ***
      ***
      this.game.crypto;       // (STRING) TICKER of crypto or "CHIPS" in standard game
      this.game.stake;        // (STRING) TOTAL crypto buy-in OR 100 (if chips)
-     this.game.chips;        // (STRING) TOTAL CHIPS per buy-in,
+     this.game.chips;        // (INTEGER) TOTAL CHIPS per buy-in,
      this.game.blind_mode;     // (STRING) "static" or "increase"
 
 
      this.game.state.round;    // (INT) round in game
-     this.game.state.big_blind;    // (STRING) value of big-blind
-     this.game.state.small_blind;  // (STRING) value of small-blind
-     this.game.state.last_raise;   // (STRING) value of last raise
-     this.game.state.required_pot; // (STRING) value players need in pot to keep playing
-     this.game.state.pot;    // (STRING) current pot
+     this.game.state.big_blind;    // (INTEGER) value of big-blind
+     this.game.state.small_blind;  // (INTEGER) value of small-blind
+     this.game.state.last_raise;   // (INTEGER) value of last raise
+     this.game.state.required_pot; // (INTEGER) value players need in pot to keep playing
+     this.game.state.pot;    // (INTEGER) current pot
 
      this.game.state.passed[i];    // (INT) 1 = has passed
-     this.game.state.player_pot[i];  // (STRING) value contributed to pot
-     this.game.state.debt[i];    // (STRING) amount due
-     this.game.state.player_credit[i]; // (STRING) bankroll
+     this.game.state.player_pot[i];  // (INTEGER) value contributed to pot
+     this.game.state.debt[i];    // (INTEGER) amount due
+     this.game.state.player_credit[i]; // (INTEGER) bankroll
      *********************
      *********************
      ********************/
 
 		this.updateHTML = '';
 
-		this.useGraphics = false;
 	}
 
 	//
@@ -205,8 +207,9 @@ class Poker extends GameTableTemplate {
 
 		for (let i = 0; i < this.game.players.length; i++){
 			let hm = new HealthMeter(this.app, this, `.game-playerbox-${i+1}`);
+			hm.divisor = this.game.players.length;
 			this.healthBars.push(hm);
-			hm.render(Math.round(200 * Math.random()));
+			hm.render(this.game.state.player_credit[i]);
 		}
 
 		//
@@ -223,11 +226,13 @@ class Poker extends GameTableTemplate {
 	// initializes chips / pools / pots information
 	//
 	initializeGameStake(crypto = 'CHIPS', stake = '100') {
+		console.log("Initialize Poker Stakes!");
 		this.game.crypto = crypto;
 		this.game.stake = stake;
 		this.game.chips = 100;
 		this.game.blind_mode = 'static';
 
+		//Update from game.options (deactivated by Dave)
 		if (this.game.options.num_chips > 0) {
 			this.game.chips = this.game.options.num_chips;
 		}
@@ -242,6 +247,7 @@ class Poker extends GameTableTemplate {
 		}
 
 		this.settleNow = true;
+
 		this.game.state.round = 1;
 
 		this.game.state.big_blind = 2;
@@ -265,8 +271,11 @@ class Poker extends GameTableTemplate {
 			this.playerbox.updateGraphics('', i);
 		}
 
+		console.log(JSON.parse(JSON.stringify(this.game.state)));
+
 		this.displayBoard();
 
+		//Doesn't do anything
 		super.initializeGameStake(crypto, stake);
 	}
 
@@ -1460,7 +1469,7 @@ class Poker extends GameTableTemplate {
 		//
 		// TODO - buy-ins will change this smallest stack calculation
 		//
-		let smallest_stack = this.game.stake * poker_self.game.players.length; //Start with total amount of money in the game
+		let smallest_stack = this.game.chips * poker_self.game.players.length; //Start with total amount of money in the game
 		let smallest_stack_player = 0;
 
 		poker_self.game.state.player_credit.forEach((stack, index) => {
@@ -1800,15 +1809,6 @@ class Poker extends GameTableTemplate {
 			this.game.state.pot
 		)}</div>`;
 
-		if (this.useGraphics) {
-			for (let i = 0; i < this.game.state.player_pot.length; i++) {
-				html += this.returnPlayerStackHTML(
-					i + 1,
-					this.game.state.player_pot[i]
-				);
-			}
-		}
-
 		$('#pot').css('display', 'flex');
 
 		html += '</div>';
@@ -1952,59 +1952,10 @@ class Poker extends GameTableTemplate {
 				true
 			)}</div>`;
 		this.playerbox.updateUserline(userline, player);
+
+		this.healthBars[player-1].render(this.game.state.player_credit[player - 1]);
 	}
 
-	returnPlayerStackHTML(player, numChips) {
-		let html = `<div class="chip_stack tip">`;
-		let identicon = this.app.keychain.returnIdenticon(
-			this.app.keychain.returnUsername(this.game.players[player - 1])
-		);
-
-		let chipSizes = [100, 25, 5, 1];
-		let idx = 0;
-		for (size of chipSizes) {
-			let numChipsToRender = Math.floor(numChips / size);
-			numChips -= numChipsToRender * size;
-			for (let i = 0; i < numChipsToRender; i++) {
-				html += this.returnChipHTML(size, idx * 8);
-				idx++;
-			}
-		}
-
-		html += `<img class="chipstack-identicon" src="${identicon}" style="bottom:${
-			(idx - 3) * 8 - 2
-		}px;">`;
-
-		html += '</div>';
-		return html;
-	}
-
-	returnChipHTML(value, offset = 0) {
-		let color = '#ffffff';
-		let stroke_color = 'black';
-		if (value == 5) {
-			color = '#fd403f';
-		}
-		if (value == 25) {
-			color = '#2a8072';
-		}
-		if (value == 100) {
-			color = '#090909';
-			stroke_color = 'white';
-		}
-
-		return `<svg class="poker_chip" style="bottom:${offset}px; fill:${color}; stroke: ${stroke_color}" viewbox="0 0 100 35">
-            <path d="
-                M 2 13
-                A 41 10 0 0 0 98 13
-                A 41 10 0 0 0 2 13
-                L 2 21
-                A 41 10 0 0 0 98 21
-                L 98 13
-              " 
-              stroke-width="1">
-            </svg>`;
-	}
 
 	async receiveStopGameTransaction(resigning_player, txmsg) {
 		await super.receiveStopGameTransaction(resigning_player, txmsg);
@@ -3404,7 +3355,6 @@ class Poker extends GameTableTemplate {
 	returnShortGameOptionsArray(options) {
 		let sgoa = super.returnShortGameOptionsArray(options);
 		let ngoa = {};
-		let useGraphics = false;
 		let crypto = '';
 		for (let i in sgoa) {
 			if (sgoa[i] != '') {
@@ -3430,13 +3380,7 @@ class Poker extends GameTableTemplate {
 				if (okey == 'num_chips') {
 					okey = 'chips';
 				}
-				if (okey == 'chip_graphics') {
-					if (oval == 1) {
-						useGraphics = true;
-						okey = 'show chips';
-						oval = null;
-					}
-				}
+
 				/*if (okey == "crypto"){
           output_me = 0;
           crypto = oval;
@@ -3449,11 +3393,6 @@ class Poker extends GameTableTemplate {
 					ngoa[okey] = oval;
 				}
 			}
-		}
-
-		//Only checked options are stored, but we want visual confirmation of not checked
-		if (!useGraphics) {
-			ngoa['hide chips'] = null;
 		}
 
 		return ngoa;
