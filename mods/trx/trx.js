@@ -29,6 +29,7 @@ class TRX extends ModTemplate {
 			};
 		}
 		if (type == 'crypto-logo') {
+			console.log(obj?.ticker);
 			if (obj?.ticker == this.ticker) {
 				return {
 					svg: `<?xml version="1.0" encoding="utf-8"?>
