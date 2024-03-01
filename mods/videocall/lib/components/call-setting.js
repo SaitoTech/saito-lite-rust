@@ -59,11 +59,11 @@ class CallSetting {
 	}
 
 	remove() {
-		if (document.querySelector('.chat-settings-container')) {
+		if (document.querySelector('.chat-settings')) {
 			document
-				.querySelector('.chat-settings-container')
+				.querySelector('.chat-settings')
 				.parentElement.removeChild(
-					document.querySelector('.chat-settings-container')
+					document.querySelector('.chat-settings')
 				);
 		}
 	}
@@ -190,6 +190,8 @@ class CallSetting {
 
 	async loadMediaDevices() {
 		const devices = await navigator.mediaDevices.enumerateDevices();
+		let videoCt = 0;
+		let audioCt = 0;
 		devices.forEach((device) => {
 			console.log(device);
 			const option = document.createElement('option');
@@ -197,11 +199,19 @@ class CallSetting {
 			option.textContent =
 				device.label || `${device.kind} - ${device.deviceId}`;
 			if (device.kind === 'videoinput') {
+				videoCt++;
 				this.videoInput.appendChild(option);
 			} else if (device.kind === 'audioinput') {
+				audioCt++;
 				this.audioInput.appendChild(option);
 			}
 		});
+		if (videoCt > 1){
+			this.videoInput.style.display = "flex";
+		}
+		if (audioCt > 1){
+			this.audioInput.style.display = "flex";
+		}
 	}
 
 	async updateMedia(kind, videoElement) {
