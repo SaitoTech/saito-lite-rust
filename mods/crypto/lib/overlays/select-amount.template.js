@@ -1,7 +1,7 @@
 module.exports = (app, mod) => {
 	return `
 
-    <div class="game-crypto-transfer-manager-container">
+    <div class="game-crypto-transfer-manager-container" id="stake-crypto-request-container">
 
       <h2 class="auth_title">Amount to Stake?</h2>
       
