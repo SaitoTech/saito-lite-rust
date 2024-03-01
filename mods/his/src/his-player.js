@@ -40,14 +40,6 @@
     if (factions["france"]) { f.push("france"); }
     if (factions["england"]) { f.push("england"); }
 
-console.log("FACTION SELECTION");
-console.log(": ");
-console.log(": ");
-console.log(": ");
-console.log(": " + JSON.stringify(factions));
-console.log(": " + this.game.options.player1 + " --- " + this.game.options.player2);
-console.log(": ");
-
     for (let i = 0; i < num; i++) {
 
       if (i == 0) { col = "color1"; }
@@ -114,8 +106,6 @@ console.log(": ");
 	  f.splice(z, 1);
 	}
       }
-
-console.log("SELECTED FACTION: " + rf);
 
       delete factions[rf];
 
@@ -2549,11 +2539,8 @@ return;
 	    //
 	    let selectDestinationInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
-
 	      // MOVE THE UNITS
 	      units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
-
-console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
@@ -2566,7 +2553,6 @@ console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 	    };
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) { 
-
               let unmoved_units = [];
               let moved_units = [];
 	      let space = his_self.game.spaces[source_spacekey];
@@ -2581,26 +2567,22 @@ console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
 	      let html = '<ul>';
 
-console.log("SPACE: " + source_spacekey);
-console.log("SPACE UNITS: " + JSON.stringify(space.units));
-
 	      for (let key in space.units) {
                 if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
                   for (let i = 0; i < space.units[key].length; i++) {
-console.log("i: " + i + " for faction " + key);
 	            if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
                     if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
                     if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
                       let does_units_to_move_have_unit = false;
                       for (let z = 0; z < units_to_move.length; z++) {
-                        if (units_to_move[z].faction === key && units_to_move[z].idx === i) { does_units_to_move_have_unit = true; break; }
-                      }
+                        if (units_to_move[z].faction == key && units_to_move[z].idx == i) { 
+does_units_to_move_have_unit = true; }
+		      }
                       if (does_units_to_move_have_unit) {
                         html += `<li class="option" style="font-weight:bold" id="${key}-${i}">*${space.units[key][i].name} (${key})*</li>`;
                         moved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       } else {
                         html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
-console.log("pushing into unmoved units with idx: " + i + " --- " + space.units[key][i].type);
                         unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       }
                     }
@@ -2624,14 +2606,10 @@ console.log("pushing into unmoved units with idx: " + i + " --- " + space.units[
 	      // auto-move if only 1 unit
 	      //
 	      let can_we_quick_move = false;
-	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; console.log("setting quick move to true"); } 
-
-console.log("moved and unmoved units");
-console.log(JSON.stringify(mobj.moved_units));
-console.log(JSON.stringify(mobj.unmoved_units));
+	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; } 
 
 	      if (can_we_quick_move == false) {
-                his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+   	        his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
               }
 
 	      html += `<li class="option" id="end">finish</li>`;
@@ -2643,6 +2621,8 @@ console.log(JSON.stringify(mobj.unmoved_units));
               $('.option').on('click', function () {
 
                 let id = $(this).attr("id");
+
+alert("clicked");
 
 	        if (id === "end") {
 	          his_self.movement_overlay.hide();
@@ -2683,13 +2663,11 @@ console.log(JSON.stringify(mobj.unmoved_units));
 	          units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
 	        }
 
-console.log("running select units interface with units_to_move 2: " + units_to_move.length);
                 selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 
               });
 
 	      if (can_we_quick_move) {
-console.log("we are in quick move 1");
 		units_to_move = JSON.parse(JSON.stringify(mobj.unmoved_units));
 	        selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	        his_self.displaySpace(source_spacekey);
@@ -2697,11 +2675,8 @@ console.log("we are in quick move 1");
 		his_self.updateStatus("deploying...");
 		return;
 	      }
-
-
             }
 
-console.log("running select units interface with units_to_move 1: " + units_to_move.length);
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
           },
 
@@ -5396,8 +5371,6 @@ console.log("running select units interface with units_to_move 1: " + units_to_m
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
-
-console.log("is calvin debater committed? " + his_self.canPlayerCommitDebater("protestant", "calvin-debater"));
 
 	if (id === "french" && his_self.canPlayerCommitDebater("protestant", "calvin-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 

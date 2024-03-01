@@ -1795,6 +1795,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let is_this_an_interception = 0;
 	  if (parseInt(mv[7]) > 0) { is_this_an_interception = 1; }
 
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
+
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.player == this.returnPlayerCommandingFaction(faction) && this.game.player == this.game.state.active_player) {

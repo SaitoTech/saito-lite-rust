@@ -841,6 +841,8 @@ try {
     let space = this.game.spaces[spacekey];
     let html = "";
 
+    try {
+
     if (this.game.state.board[z]) {
       if (this.game.state.board[z].deployed[spacekey]) {
           if (z === "hapsburg") {
@@ -1010,7 +1012,7 @@ try {
       }
       //
       // surplus units that should not technically be available according to
-      // tile limitations will be in the "missing" section. we do want want
+      // tile limitations will be in the "missing" section. we do not want
       // pieces appearing and disappearing from the board, so we display them
       // as single-unit tiles.
       //
@@ -1071,6 +1073,13 @@ try {
 	    }
 	  }
       }
+    }
+    //
+    // if there is an error
+    //
+    } catch (err) {
+	console.log("ERROR: need to run returnOnBoardUnits: " + JSON.stringify(err));
+	this.returnOnBoardUnits();
     }
 
     return html;

@@ -801,6 +801,32 @@
     results.deployed = deployed_units;
     results.available = available_units;
     results.missing = {};
+    for (let key in this.game.spaces) {
+      results.missing[key] = {};
+      results.missing[key]['regular'] = {}
+      results.missing[key]['regular']['1'] = 0;
+      results.missing[key]['regular']['2'] = 0;
+      results.missing[key]['regular']['3'] = 0;
+      results.missing[key]['regular']['4'] = 0;
+      results.missing[key]['regular']['5'] = 0;
+      results.missing[key]['regular']['6'] = 0;
+      results.missing[key]['mercenary'] = {};
+      results.missing[key]['mercenary']['1'] = 0;
+      results.missing[key]['mercenary']['2'] = 0;
+      results.missing[key]['mercenary']['3'] = 0;
+      results.missing[key]['mercenary']['4'] = 0;
+      results.missing[key]['mercenary']['5'] = 0;
+      results.missing[key]['mercenary']['6'] = 0;
+      results.missing[key]['cavalry'] = {};
+      results.missing[key]['cavalry']['1'] = 0;
+      results.missing[key]['cavalry']['2'] = 0;
+      results.missing[key]['cavalry']['3'] = 0;
+      results.missing[key]['cavalry']['4'] = 0;
+      results.missing[key]['cavalry']['5'] = 0;
+      results.missing[key]['cavalry']['6'] = 0;
+      results.missing[key]['squadron'] = {};
+      results.missing[key]['squadron']['1'] = 0;
+    }
 
     //
     // pieces we are having difficulty assigning
