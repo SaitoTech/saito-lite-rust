@@ -11,6 +11,12 @@
 	--p4-color-lite: #644700e9; /* brown */
 }
 
+@font-face {
+    font-family: bagnard-sans;
+    src: url("/settlers/bagnard-sans.otf") format("opentype");
+	/* https://open-foundry.com/fonts/bagnard_sans_regular */
+}
+
 .mobile-log-tab {
 	background-color: #d3c38df5;
 	color: #424143;
@@ -1004,6 +1010,7 @@ ul.horizontal_list li.iconoption {
 
 .saitoa,
 #saito-alert-box {
+	font-family: bagnard-sans;
 	border: 5px solid #424143;
 	background-color: #d3c38df5;
 	border-image: url(/settlers/img/border.png);
