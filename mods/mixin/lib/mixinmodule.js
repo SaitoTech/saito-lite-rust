@@ -89,7 +89,6 @@ class MixinModule extends CryptoModule {
 	async activate() {
 		let this_self = this;
 		if (this.mixin.account_created == 0) {
-			if (this.mixin.mixin.session_id === '') {
 				this.app.connection.emit('create-mixin-account');
 				await this.mixin.createAccount(async(res) => {
 					if (Object.keys(res).length > 0) {
@@ -102,7 +101,6 @@ class MixinModule extends CryptoModule {
 						this.app.connection.emit('update_identifier', this.publicKey);
 					}
 				});
-			}
 		} else {
 			super.activate();
 		}

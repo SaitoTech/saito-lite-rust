@@ -221,8 +221,7 @@ input:checked + .slider:before {
 }
 
 @media screen and (max-width: 600px) {
-	.stun-appspace,
-	.chat-settings-wrapper {
+	.stun-appspace {
 		padding: 1rem;
 		margin: 0;
 	}
@@ -238,10 +237,6 @@ input:checked + .slider:before {
 	.stunx-appspace-splash {
 		padding: 0;
 		height: unset;
-	}
-
-	.chat-settings-preview-message {
-		width: 60%;
 	}
 
 	.stun-appspace-navigation {

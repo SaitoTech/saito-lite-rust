@@ -15,6 +15,8 @@ class StreamManager {
 
 		this.videoEnabled = true;
 		this.audioEnabled = true;
+		this.videoSource = null;
+		this.audioSource = null;
 		this.auto_disconnect = false;
 		this.active = true;
 
@@ -36,9 +38,7 @@ class StreamManager {
 				if (!this.localStream.getVideoTracks()?.length) {
 					try {
 						const newLocalStream =
-							await navigator.mediaDevices.getUserMedia({
-								video: true
-							});
+							await navigator.mediaDevices.getUserMedia(this.returnConstraints(true));
 
 						const videoTrack = newLocalStream.getVideoTracks()[0];
 						this.localStream.addTrack(videoTrack);
@@ -284,9 +284,47 @@ class StreamManager {
 	}
 
 	updateSettings(settings){
-		this.videoEnabled = settings.video;
-		this.audioEnabled = settings.audio;
+		if (settings?.video){
+			this.videoEnabled = true;
+			if (settings.video !== true){
+				this.videoSource = settings.video;
+			}
+		}else{
+			this.videoEnabled = false;
+		}
+
+		if (settings?.audio){
+			this.audioEnabled = true;
+			if (settings.audio !== true){
+				this.audioSource = settings.audio;
+			}
+		}else{
+			this.audioEnabled = false;
+		}
+		 
 		this.auto_disconnect = settings?.auto_disconnect;
+	}
+
+	returnConstraints(onlyVideo = false){
+		let constraints = {};
+
+		if (this.videoSource){
+			constraints.video = { deviceId: this.videoSource};
+		}else if (this.videoEnabled){
+			constraints.video = true;
+		}else{
+			constraints.video = false;
+		}
+
+		if (!onlyVideo){
+			if (this.audioSource){
+				constraints.audio = { deviceId: this.audioSource};
+			}else {
+				constraints.audio = true;
+			}
+		}
+
+		return constraints;
 	}
 
 	async getLocalMedia() {
@@ -294,23 +332,21 @@ class StreamManager {
 			return;
 		}
 
-		console.log(this.videoEnabled, this.audioEnabled);
+		console.log(this.videoSource, this.audioSource);
+
+		let c = this.returnConstraints();
 
 		//Get my local media
 		try {
-			this.localStream = await navigator.mediaDevices.getUserMedia({
-				video: this.videoEnabled,
-				audio: true
-			});
+			this.localStream = await navigator.mediaDevices.getUserMedia(c);
 		} catch (err) {
 			console.warn('Problem attempting to get User Media', err);
 			console.log('Trying without video');
 
 			this.videoEnabled = false;
-			this.localStream = await navigator.mediaDevices.getUserMedia({
-				video: false,
-				audio: true
-			});
+			c.video = false;
+			
+			this.localStream = await navigator.mediaDevices.getUserMedia(c);
 		}
 
 		if (this.videoEnabled) {

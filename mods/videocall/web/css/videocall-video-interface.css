@@ -688,37 +688,13 @@ video#local {
 
 /* CHAT SETTINGS */
 
-.chat-settings-container {
-	background-color: #000;
-	color: var(--saito-white);
-	display: flex;
-	justify-content: center;
-	margin: 0;
-	color: var(--saito-white);
-	top: 0;
-	z-index: 200;
-}
-
-.chat-settings-wrapper {
-	overflow-y: scroll;
-	-webkit-overflow-scrolling: touch;
-	padding: 1rem;
-}
-
-.chat-settings {
-	display: flex;
-	padding: 2rem;
-	border-radius: 1rem;
-	z-index: 40;
-}
-
 .chat-settings-preview-section {
 	display: flex;
-	flex-direction: column-reverse;
+	flex-direction: column;
 	row-gap: 2rem;
 	align-items: center;
 	color: var(--saito-white);
-	max-width: 100vw;
+	width: min(55rem, 60vw);
 }
 
 .chat-settings-preview-section p {
@@ -771,8 +747,7 @@ video#local {
 	border: 1px solid #e5e5e59d;
 	padding: 1rem;
 	border-radius: var(--saito-border-radius);
-	width: 55rem;
-	max-width: 92%;
+	width: 100%;
 	display: flex;
 }
 
@@ -806,7 +781,8 @@ video#local {
 .chat-settings select {
 	background-color: var(--saito-black-faded);
 	color: var(--saito-white);
-	width: 55rem;
+	width: 95%;
+	padding-left: 1rem;
 }
 
 .chat-settings select option {
@@ -854,18 +830,15 @@ video#local {
 	transition: width 0.1s;
 }
 
-@media screen and (max-width: 1024px) {
-	.chat-settings {
-		padding: 1rem;
-	}
-	.chat-settings-preview {
-		width: 45rem;
-	}
-}
 
 @media screen and (max-width: 900px) {
 	.chat-settings-preview {
-		width: 40rem;
+		padding: 0.5rem;
+	}
+
+	.chat-settings-preview-section{
+		width: 45rem;
+		max-width: 90vw;
 	}
 }
 
@@ -873,16 +846,6 @@ video#local {
 	.video-call-info i {
 		font-size: 1rem;
 		margin-right: 0.5rem;
-	}
-	.chat-settings {
-		flex-direction: column;
-		padding: 1rem;
-		margin-top: 0;
-	}
-
-	.chat-settings-preview {
-		margin-bottom: unset;
-		padding: 0.5rem;
 	}
 
 	.video-container-large {
