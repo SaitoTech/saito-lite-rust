@@ -139,3 +139,13 @@ div.h3{
   text-transform: uppercase;
   font-family: impact;
 }
+
+/*******************
+    Crypto
+******************/
+.crypto_logo {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 20vw;
+}
