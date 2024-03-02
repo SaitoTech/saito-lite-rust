@@ -11,6 +11,7 @@ const CouncilOfTrentOverlay = require('./lib/ui/overlays/council-of-trent');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
 const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
+const AvailableUnitsOverlay = require('./lib/ui/overlays/available-units');
 const FortificationOverlay = require('./lib/ui/overlays/fortification');
 const BuildOverlay = require('./lib/ui/overlays/build');
 const MovementOverlay = require('./lib/ui/overlays/movement');
@@ -86,6 +87,7 @@ class HereIStand extends GameTemplate {
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.build_overlay = new BuildOverlay(this.app, this);  // unit building
+    this.available_units_overlay = new AvailableUnitsOverlay(this.app, this);  // unit movement
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
     this.fortification_overlay = new FortificationOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world

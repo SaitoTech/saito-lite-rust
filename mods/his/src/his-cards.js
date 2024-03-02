@@ -1700,28 +1700,33 @@
 	//
 	// TODO -- cannot pick an invasion card played earlier this turn
 	//
-        let msg = "Select Invasion Card:";
-        let html = '<ul>';
-        html += '<li class="option showcard" id="216">Ottoman Invasion</li>';
-        html += '<li class="option showcard" id="214">Imperial Invasion</li>';
-        html += '<li class="option showcard" id="213">Austrian Invasion</li>';
-        html += '<li class="option showcard" id="211">Spanish Invasion</li>';
-        html += '<li class="option showcard" id="206">French Invasion</li>';
-        html += '<li class="option showcard" id="202">French Constable Invades</li>';
-        html += '</ul>';
+	if (his_self.game.player == his_self.returnPlayerOfFaction(winner)) {
 
-        his_self.updateStatusWithOptions(msg, html);
+          let msg = "Select Invasion Card:";
+          let html = '<ul>';
+          html += '<li class="option showcard" id="216">Ottoman Invasion</li>';
+          html += '<li class="option showcard" id="214">Imperial Invasion</li>';
+          html += '<li class="option showcard" id="213">Austrian Invasion</li>';
+          html += '<li class="option showcard" id="211">Spanish Invasion</li>';
+          html += '<li class="option showcard" id="206">French Invasion</li>';
+          html += '<li class="option showcard" id="202">French Constable Invades</li>';
+          html += '</ul>';
 
-        $('.option').off();
-        $('.option').on('click', function () {
+          his_self.updateStatusWithOptions(msg, html);
 
-	  his_self.updateStatus("acknowledge...");
-          let card = $(this).attr("id");
-	  his_self.addMove("reshuffle_diplomacy_deck");
-	  his_self.addMove("diplomacy_card_event\t"+winner+"\t"+card);
-	  his_self.endTurn();
+          $('.option').off();
+          $('.option').on('click', function () {
 
-	});
+	    his_self.updateStatus("acknowledge...");
+            let card = $(this).attr("id");
+	    his_self.addMove("reshuffle_diplomacy_deck");
+	    his_self.addMove("diplomacy_card_event\t"+winner+"\t"+card);
+	    his_self.endTurn();
+
+	  });
+	} else {
+	  his_self.updateStatus("Opponent playing " + his_self.popup("215"));
+	}
 
         return 0;
       },
@@ -1796,6 +1801,8 @@
 
 	let p = his_self.returnPlayerOfFaction("protestant");
 	let d = his_self.rollDice(6);
+
+	his_self.rollDice("Secret Protestant Circle - rolls: " + d);
 
 	if (d <= 3) {
 	  his_self.updateLog("Protestants may flip an Italian and Spanish space");
@@ -10239,7 +10246,7 @@ console.log("total defenders: " + total_defenders);
 	    	  let action = $(this).attr("id");
 
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
-		    if (his_self.game.spaces[spacekey].units[action][z].type == "mercenary") {
+		    if (his_self.game.spaces[spacekey].units[action][z].type === "mercenary") {
 		      his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
 		    }
 		  }
@@ -10248,7 +10255,7 @@ console.log("total defenders: " + total_defenders);
 		});
 
 	      } else {
-		for (let z = his_self.game.spaces[spacekey].units[factions[0]].length-1; z >= 0; z--) {
+		for (let z = 0; z < his_self.game.spaces[spacekey].units[factions[0]].length; z++) {
 		  his_self.addMove(`destroy_unit_by_index\t${factions[0]}\t${spacekey}\t${z}`);
 		}
 		his_self.endTurn();

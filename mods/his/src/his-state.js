@@ -167,7 +167,7 @@
       //
       for (let f in space.units) {
         for (let i = 0; i < space.units[f].length; i++) {
-  	  if (!space.units[f][i].besieged) {
+  	  if (space.units[f][i].besieged) {
 	    return true;
 	  }
         }

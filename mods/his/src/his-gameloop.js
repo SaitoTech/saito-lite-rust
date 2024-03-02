@@ -8149,18 +8149,18 @@ defender_hits - attacker_hits;
 
 	  // Remove the Renegade Leader if in play
 	  let rl_idx = "";
-	  rl_s = his_self.returnSpaceOfPersonage("hapsburg", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\thapsburg\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("papacy", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tpapacy\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("england", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tengland\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("france", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tfrance\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("ottoman", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tottoman\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("protestant", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tprotestant\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("hapsburg", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\thapsburg\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("papacy", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tpapacy\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("england", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tengland\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("france", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tfrance\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("ottoman", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tottoman\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("protestant", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tprotestant\trenegade\t"+rl_s+"\t0"); }
 
 	  // Remove major power alliance markers
 	  this.unsetAllies("hapsburg", "papacy");
@@ -8628,7 +8628,7 @@ if (this.game.state.round == 2) {
 	  //
 	  // no diplomacy phase round 1
 	  //
-	  if (this.game.state.round == 1 || (this.game.state.round == 7 && this.game.options.scenario === "is_testing")) {
+	  if (this.game.state.round == 1) {
 
             this.game.queue.push("SHUFFLE\t2");
             this.game.queue.push("DECKRESTORE\t2");
@@ -9051,7 +9051,7 @@ if (this.game.options.scenario != "is_testing") {
 	  //
           this.game.queue.push("SHUFFLE\t1");
 	  // FEB 24
-          //this.game.queue.push("DECKRESTORE\t1");
+          this.game.queue.push("DECKRESTORE\t1");
 
 	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
@@ -9060,6 +9060,7 @@ if (this.game.options.scenario != "is_testing") {
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
 
+console.log("BEFORE RESHUFFLE - FHANDS: " + JSON.stringify(this.game.deck[0].fhand));
 
 	  //
 	  // re-add discards
@@ -9069,16 +9070,14 @@ if (this.game.options.scenario != "is_testing") {
       	    discards[i] = this.game.deck[0].cards[i];
       	    delete this.game.deck[0].cards[i];
     	  }
-    	  this.game.deck[0].discards = {};
-
-	  //
-	  // re-add undealt
-	  //
-	  for (let i in this.game.deck[0].cards) {
-	    if (!discards[this.game.deck[0].cards[i]]) {
-      	      discards[i] = this.game.deck[0].cards[i];
-	    }
+	  for (let i in this.game.deck[0].removed) {
+      	    delete this.game.deck[0].cards[i];
+      	    delete discards[i];
     	  }
+	  for (let z = 0; z < this.game.state.removed.length; z++) {
+      	    delete this.game.deck[0].cards[this.game.state.removed[z]];
+	  }
+    	  this.game.deck[0].discards = {};
 
 	  //
 	  // our deck for re-shuffling
@@ -9091,15 +9090,13 @@ if (this.game.options.scenario != "is_testing") {
 	  }
 
 	  //
-	  // remove any removed cards (i.e. Clement VII)
+	  // remove any removed cards again for sanity sake (i.e. Clement VII)
 	  //
 	  for (let z = 0; z < this.game.state.removed.length; z++) {
 	    let key = this.game.state.removed[z];
 	    if (reshuffle_cards[key]) { delete reshuffle_cards[key]; }
 	    if (this.game.deck[0].cards[key]) { delete this.game.deck[0].cards[key]; }
 	  }
-
-
 
 	  //
 	  // remove home cards 
@@ -9112,6 +9109,7 @@ if (this.game.options.scenario != "is_testing") {
 	  if (this.game.deck[0].cards['006']) { delete this.game.deck[0].cards['006']; }
 	  if (this.game.deck[0].cards['007']) { delete this.game.deck[0].cards['007']; }
 	  if (this.game.deck[0].cards['008']) { delete this.game.deck[0].cards['008']; }
+
 
 	  //
 	  // new cards this turn
@@ -9135,6 +9133,7 @@ for (let i = this.game.state.round; i < 7; i++) {
 	  }
 }
 
+
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
@@ -9144,7 +9143,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
 
 	  // backup any existing DECK #1
-          //this.game.queue.push("DECKBACKUP\t1");
+          this.game.queue.push("DECKBACKUP\t1");
 
 
 	  //
@@ -9154,12 +9153,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // or enter via a Mandatory Event. Place Maurice in any
 	  // electorate under Protestant political control."
 	  //
-//
-// is not debater
-//
-//	  if (this.game.round == 6) {
-//    	    this.game.queue.push("place_protestant_debater\tmaurice_of_saxony\tselect");
-//	  }
 	  if (this.game.round == 2) {
     	    this.game.queue.push("place_protestant_debater\tzwingli\tzurich");
 	  }
@@ -10131,6 +10124,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    this.updateLog(this.returnSpaceName(space) + " converts Protestant");
 	    this.updateStatus(this.returnSpaceName(space) + " converts Protestant");
 	  } else {
+	    this.updateLog(this.returnSpaceName(space) + " converts Catholic");
 	    this.updateStatus(this.returnSpaceName(space) + " converts Catholic");
 	  }
 
@@ -10230,12 +10224,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
+
 	  let deckidx = parseInt(mv[1])-1;
 	  let player = parseInt(mv[2]);
 	  let faction = mv[3];
 	  let fhand_idx = this.returnFactionHandIdx(player, faction);
 
 	  if (this.game.player == player) {
+
+
+console.log("EXISTING FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
+
 	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
 	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }
 
@@ -10245,6 +10244,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	    // and clear the hand we have dealt
 	    this.game.deck[deckidx].hand = [];
+
+console.log("NEW FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
+
 	  }
 
 	  return 1;

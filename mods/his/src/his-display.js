@@ -1072,6 +1072,61 @@ try {
               html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentReg-1.svg" />`;
 	    }
 	  }
+          if (z === "hapsburg") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "ottoman") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "papacy") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "england") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "france") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "protestant") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "venice") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/venice/VeniceMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "genoa") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/genoa/GenoaMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "hungary") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hungary/HungaryMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "scotland") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScottishMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "independent") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentMerc-1.svg" />`;
+	    }
+	  }
       }
     }
     //

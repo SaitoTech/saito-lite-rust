@@ -1,44 +1,4 @@
 
-.build-overlay-units-available {
-    display: flex;
-    flex-direction: row;
-    row-gap: 1px;
-    position: absolute;
-    top: 0px;
-    margin-left: auto;
-    margin-right: auto;
-    width: max-content;
-    height: max-content;
-    max-width: max-content;
-    min-width: min-content;
-    text-align: center;
-    justify-items: center;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 5rem;
-    z-index:9999;
-}
-
-.build-overlay-units-available .army_tile {
-    position: relative;
-    margin-left: 0px !important;
-    margin-right 0px !important;
-    margin-top: 0px !important;
-    margin-bottom 0px !important;
-}
-.build-overlay-units-available .army_tile {
-    opacity: 0.95;
-}
-.build-overlay-units-available .army_tile:hover {
-    opacity: 1;
-}
-.build-overlay-units-available .army_tile.unavailable {
-    opacity: 0.6;
-}
-.build-overlay-units-available .army_tile.unavailable:hover {
-    opacity: 0.6;
-}
-
 .build-overlay .build-controls {
     display: flex;
     flex-direction: row;

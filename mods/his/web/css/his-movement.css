@@ -4,7 +4,7 @@
 	background-image: url(/his/img/backgrounds/Jozef-Brandt-Pospolite-ruszenie-u-brodu.jpeg);
 	background-size: cover;
 	display: grid;
-	grid-template-rows: min-content 1fr min-content;
+	grid-template-rows: min-content min-content 1fr min-content;
 	user-select: none;
         overflow-y: auto;
 }
@@ -71,7 +71,7 @@
 	margin-right: auto;
 	width: 100%;
 	column-gap: 5rem;
-	margin-top: 5rem;
+	margin-top: 1rem;
 	margin-bottom: 5rem;
 }
 

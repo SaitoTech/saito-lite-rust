@@ -109,8 +109,7 @@ console.log("\n\n\n\n");
           this.addRegular("france", "milan", 2);
 
 	  // PAPACY
-          this.addRegular("papacy", "rome", 2);
-          //this.addRegular("papacy", "rome", 1);
+          this.addRegular("papacy", "rome", 1);
           this.addNavalSquadron("papacy", "rome", 1);
           this.addRegular("papacy", "ravenna", 1);
 	
