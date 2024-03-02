@@ -8588,6 +8588,23 @@ console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
 	  // removed besieged spaces
 	  this.removeBesiegedSpaces();
 
+	  //
+	  // remove french, hapsburg and ottoman army leaders
+	  //
+	  let rf = ["hapsburg", "france", "ottoman"];
+	  for (let key in this.game.spaces) {
+	    for (let z = 0; z < rf.length; z++) {
+	      let f = rf[z];
+	      for (let i = 0; i < this.game.spaces[key].units[f].length; i++) {
+		let u = this.game.spaces[key].units[f][i];
+		if (u.army_leader || u.navy_leader) {
+		  this.game.spaces[key].units[f].splice(i, 1);
+		  i--;
+		}
+	      }
+	    }
+	  }
+
 //
 // Papacy 
 //
