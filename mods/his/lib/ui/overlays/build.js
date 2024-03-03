@@ -1,4 +1,3 @@
-const AvailableUnits = require('./available-units');
 const BuildTemplate = require('./build.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
@@ -9,7 +8,6 @@ class BuildOverlay {
 		this.mod = mod;
 		this.visible = false;
 		this.overlay = new SaitoOverlay(app, mod, true, false, false);
-		this.available_units = new AvailableUnits(app, mod);
 		this.max_units = 1;
 		this.units = 1;
 		this.cost = 0;
@@ -19,14 +17,12 @@ class BuildOverlay {
 
 	hide() {
 		this.overlay.hide();
-		this.available_units.hide();
-		document.querySelector(".build-overlay-units-available").remove();
+		try { 
+		  this.mod.available_units_overlay.hide();
+		} catch (err) {}
 	}
 
 	pullHudOverOverlay() {
-		//
-		// pull GAME HUD over overlay
-		//
 		let overlay_zindex = parseInt(this.overlay.zIndex);
 		if (document.querySelector('.hud')) {
 			document.querySelector('.hud').style.zIndex = overlay_zindex + 1;
@@ -34,9 +30,6 @@ class BuildOverlay {
 		}
 	}
 	pushHudUnderOverlay() {
-		//
-		// push GAME HUD under overlay
-		//
 		let overlay_zindex = parseInt(this.overlay.zIndex);
 		if (document.querySelector('.hud')) {
 			document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
@@ -76,7 +69,10 @@ class BuildOverlay {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/squadron.jpg)';
 		}
 
-		this.available_units.renderBuild(faction, unit, ops, cost, mycallback);
+		this.mod.available_units_overlay.renderBuild(faction, unit, ops, cost, (num) => {
+	          this.hide();
+	    	  mycallback(num, this.cost);
+		});
 		this.attachEvents(faction, unit, ops, cost, mycallback);
 	}
 

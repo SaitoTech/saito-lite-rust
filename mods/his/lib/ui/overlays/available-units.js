@@ -16,12 +16,23 @@ class AvailableUnitsOverlay {
 		document.querySelector(".available-units-overlay").remove();
 	}
 
-	fadeOut() {
-		document.querySelector(".movement-overlay .available-units-overlay").style.backgroundColor = "#0009";
-		document.querySelector(".movement-overlay .available-units-overlay").style.opacity = 0.2;
+	fadeOut(force=false) {
+		try {
+			if (this.units_already_moved_by_idx.length == 0 || force) {
+				document.querySelector(".movement-overlay .available-units-overlay").style.backgroundColor = "#0009";
+				document.querySelector(".movement-overlay .available-units-overlay").style.opacity = 0.2;
+			}
+		} catch (err) {
+		}
 	}
 
 	renderMove(mobj, faction, spacekey) {
+
+                let max_formation_size = this.mod.returnMaxFormationSize(
+                        mobj.units_to_move,
+                        faction,
+                        spacekey
+                );     
 
 		let his_self = this.mod;
 
@@ -40,7 +51,20 @@ class AvailableUnitsOverlay {
 	  	  if (this.mod.isAlliedMinorPower(f, faction) || f === faction) {
 
 	  	    let x = this.mod.returnOnBoardUnits(f);
+		    if (x.deployed[spacekey]) {
 	  	    let us = x.deployed[spacekey];
+	  	    let usm = x.missing[spacekey];
+
+		    let army_leaders = [];
+		    //
+		    // HACK -- fetch army leaders from separate mobj data structure
+		    //
+		    for (let i = 0; i < io[f].length; i++) {
+		      let u = io[f][i];
+		      if (u.army_leader) {
+		        document.querySelector(qs).innerHTML += this.returnTile(f, i, u.type, i, true); // true = leader 
+		      }
+		    }
 
 if (us['regular']) {
 	  	    for (let i = 0; i < us['regular']['1']; i++) {
@@ -60,6 +84,9 @@ if (us['regular']) {
 		    }
 	  	    for (let i = 0; i < us['regular']['6']; i++) {
 		      document.querySelector(qs).innerHTML += this.returnTile(f, this.added, "regular", 6); 
+		    }
+	  	    for (let i = 0; i < usm['regular']['1']; i++) {
+		      document.querySelector(qs).innerHTML += this.returnTile(f, this.added, "regular", 1); 
 		    }
 }
 if (us['cavalry']) {
@@ -81,6 +108,9 @@ if (us['cavalry']) {
 	  	    for (let i = 0; i < us['cavalry']['6']; i++) {
 		      document.querySelector(qs).innerHTML += this.returnTile(f, this.added, "cavalry", 6); 
 		    }
+	  	    for (let i = 0; i < usm['cavalry']['1']; i++) {
+		      document.querySelector(qs).innerHTML += this.returnTile(f, this.added, "cavalry", 1); 
+		    }
 }
 if (us['mercenary']) {
 	  	    for (let i = 0; i < us['mercenary']['1']; i++) {
@@ -101,7 +131,11 @@ if (us['mercenary']) {
 	  	    for (let i = 0; i < us['mercenary']['6']; i++) {
 		      document.querySelector(qs).innerHTML += this.returnTile(f, this.added, "mercenary", 6); 
 }
+	  	    for (let i = 0; i < usm['mercenary']['1']; i++) {
+		      document.querySelector(qs).innerHTML += this.returnTile(f, this.added, "mercenary", 1); 
+}
 		    }
+		    } // if exists
 		  }
 		}
 
@@ -113,8 +147,6 @@ if (us['mercenary']) {
 		//
 	  	document.querySelectorAll(".available-units-overlay .army_tile").forEach((el) => { el.onclick = (e) => {
 
-	  	  let id = e.currentTarget.id;
-	  	  let x = id.split("-");
 		  let adding = false;
 
 		  if (e.currentTarget.classList.contains("nonopaque")) {
@@ -126,10 +158,39 @@ if (us['mercenary']) {
 		    adding = true;
 		  }
 
-	  	  let num = x[0];
+	  	  let id = e.currentTarget.id;
+	  	  let x = id.split("-");
+
+	  	  let num = parseInt(x[0]);
 	  	  let faction = x[1];
 	  	  let type = x[2];
+		  let is_army_leader = false;
+		  // army leader
+		  if (type.indexOf("_") > 0) { is_army_leader = true; type = type.replace(/_/g, "-"); }
 	  	  let idx = parseInt(x[3]);
+		  let mobj = this.mod.movement_overlay.mobj;
+
+		  let existing_land_units = 0;
+		  for (let z = 0; z < mobj.moved_units.length; z++) {
+		    if (mobj.moved_units[z].type == "regular" || 
+		        mobj.moved_units[z].type == "mercenary" || 
+		        mobj.moved_units[z].type == "cavalry"
+		    ) {
+		      existing_land_units++;
+		    }
+		  }
+
+		  if (max_formation_size < (num + existing_land_units) && adding == true) {
+		    alert("You cannot move these units without surpassing your max formation capacity of " + max_formation_size);
+		    if (e.currentTarget.classList.contains("nonopaque")) {
+		      e.currentTarget.classList.remove("nonopaque");
+		      e.currentTarget.classList.add("opaque");
+		    } else {
+		      e.currentTarget.classList.remove("opaque");
+		      e.currentTarget.classList.add("nonopaque");
+		    }
+		    return;
+		  }
 
 		  if (adding == true) {
 
@@ -137,7 +198,6 @@ if (us['mercenary']) {
 
 	 	    let qs = `.regular:nth-child(-n+` + num + `)`;
 	  	    let objs = document.querySelectorAll(qs);
-		    let mobj = this.mod.movement_overlay.mobj;
 
 		    for (let i = 0; i < num; i++) {
 		      let moved = false;
@@ -163,26 +223,34 @@ if (us['mercenary']) {
 
 		    for (let i = 0; i < num; i++) {
 		      let moved = false;
-		      for (let z = 0; z < mobj.moved_units.length; z++) {
+		      for (let z = 0; z < mobj.moved_units.length && moved == false; z++) {
 		        if (mobj.moved_units[z].faction == faction && mobj.moved_units[z].type == type && moved == false) {
-			  mobj.unmoved_units.push(mobj.moved_units[z]);
-			  for (let yy = 0; yy < units_to_move.length; yy++) {
-			    let mrem = false;
+			  let mrem = false;
+			  for (let yy = 0; yy < mobj.units_to_move.length; yy++) {
 		            if (mobj.units_to_move[yy].faction == faction && mobj.units_to_move[yy].type == type && mrem == false) {
-			      mobj.units_to_move[yy].splice(yy, 1);
+			      mobj.units_to_move.splice(yy, 1);
 			      mrem = true;
+			      yy--;
+			      break;
 			    }
 			  }
+			  mobj.unmoved_units.push(mobj.moved_units[z]);
 			  mobj.moved_units.splice(z, 1);
 			  z--;
 			  moved = true;
 		        }
 		      }
 		    }
-
 		  }
 
                   this.mod.movement_overlay.selectUnitsInterface(this.mod, mobj.units_to_move, this.mod.movement_overlay.selectUnitsInterface, this.mod.movement_overlay.selectDestinationInterface);
+		  //
+		  // disable manual
+		  //
+		  document.querySelectorAll(".movement-unit .option").forEach((el) => { el.onclick = (e) => {
+		    alert("Once you have started to move units by tokens, please continue doing so. This avoids problems with auto-breaking up units and exceeding faction capacity...");
+		  } });
+
 
 	  	} });
 
@@ -197,19 +265,28 @@ if (us['mercenary']) {
 		}
 		this.max_units = his_self.returnNumberOfUnitsAvailableForConstruction(faction, unit);
 		this.addUnitsAvailableToPage(faction, unit, (ops / cost));
-		this.attachEvents(faction, unit, ops, cost, mycallback);
+		document.querySelectorAll(".available-units-overlay .army_tile").forEach((el) => { el.onclick = (e) => {
+		  let num = parseInt(e.currentTarget.id);
+		  if ((cost*num) > ops) {
+		    alert("You do not have the OPs to purchase that many units");
+		    return;
+		  }
+		  mycallback(num);
+		} });
 	}
 
-	attachEvents(faction, unit, ops, cost, mycallback) {
-	}
 
-
-	returnTile(faction, added = 0, utype, num=1) {
+	returnTile(faction, added = 0, utype, num=1, leader=false) {
 
 	  let muc = "opaque";
 	  if (this.units_already_moved_by_idx.includes(added)) { muc = "nonopaque"; }
 
 	  let imgtile = "";
+
+	  if (leader) {
+	    imgtile = `<img class="army_tile ${muc}" id="1-${faction}-${utype.replace(/-/g, "_")}-${num}" src="/his/img/tiles/army/${this.mod.army[utype].img}" />`;
+	    return imgtile;
+	  }
 
 	  if (utype == "regular") {
 	    if (faction == "hapsburg") {

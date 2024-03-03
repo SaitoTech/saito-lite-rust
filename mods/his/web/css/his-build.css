@@ -5,16 +5,6 @@
     margin-top: 9rem;
 }
 
-.build-targets {
-    width: 100%;
-    background: #0009;
-    height: max-content;
-    color: white;
-    max-height: 10rem;
-    padding: 1.5rem;
-    font-size: 2rem;
-}
-
 .build-submit {
         border: 1px solid black;
         width: max-content;

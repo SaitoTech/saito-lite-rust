@@ -680,6 +680,9 @@
     //
     //
     for (let key in my_spaces) {
+if (key == "rome") {
+  console.log("deployed units: " + key);
+}
       deployed_units[key] = {};
       deployed_units[key]['regular'] = {};
       deployed_units[key]['regular']['1'] = 0;
@@ -835,10 +838,12 @@
       if (my_spaces[key]['regular'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
 	results.missing[key]['regular'] = my_spaces[key]['regular'];
+	results.overcapacity = 1;
       }	
       if (my_spaces[key]['mercenary'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
 	results.missing[key]['mercenary'] = my_spaces[key]['mercenary'];
+	results.overcapacity = 1;
       }	
     }
 

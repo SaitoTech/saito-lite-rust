@@ -2437,7 +2437,6 @@ console.log("considering: " + space.key);
 	  if (!his_self.areAllies("england", "scotland") && !his_self.areEnemies("england", "scotland")) { target_scotland = true; }
 	  if (!his_self.areAllies("england", "france") && !his_self.areEnemies("england", "france")) { target_france = true; }
 
-alert("HERE");
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("england")) {
 
           let msg = "Declare War on Whom?";

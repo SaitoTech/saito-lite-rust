@@ -1893,7 +1893,7 @@ if (this.game.state.events.cramner_active == 1) {
 	    } else {
               ops -= 3;
 	      if (ops > 0) {
- 	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
+ 	        his_self.addMove("continue\t"+this.game.player+"\t"+selected_faction+"\t"+card+"\t"+ops+"\t"+limit); 
               }
               menu[user_choice].fnct(this, this.game.player, selected_faction, 3, ops);
               return;
@@ -1911,7 +1911,7 @@ if (this.game.state.events.cramner_active == 1) {
 	      //
 	      if (ops == 1) {
 
-                  menu[user_choice].fnct(this, this.game.player, faction, 1, 0);
+                  menu[user_choice].fnct(this, this.game.player, selected_faction, 1, 0);
                   return;
 
 	      } else {
@@ -2173,14 +2173,11 @@ return;
         let opt = "<ul>";
 	let allow_bull = 0;
 
-	if (his_self.game.state.excommunicated_factions["hapsburg"]) {
-	  if (enemy == "hapsburg" && his_self.game.state.excommunicated_factions["hapsburg"] != 1) { allow_bull = 1; }
-	}
-	if (his_self.game.state.excommunicated_factions["hapsburg"]) {
-	  if (enemy == "france" && his_self.game.state.excommunicated_factions["france"] != 1) { allow_bull = 1; }
-	}
+	if (enemy == "hapsburg" && his_self.game.state.excommunicated_factions["hapsburg"] != 1) { allow_bull = 1; }
+	if (enemy == "france" && his_self.game.state.excommunicated_factions["france"] != 1) { allow_bull = 1; }
+
 	if (allow_bull) {
-          opt += `<li class="option" id="005">Papal Bull</li>`;
+          opt += `<li class="option" id="005">papal bull</li>`;
 	}
         opt += `<li class="option" id="sue">sue for peace</li>`;
         opt += '</ul>';
@@ -2623,24 +2620,38 @@ does_units_to_move_have_unit = true; }
 
 	        let x = id.split("-");
 	        let f = x[0];
-	        let idx = x[1];
+	        let idx = parseInt(x[1]);
 
 	        let uob = his_self.returnOnBoardUnits(f);
-	        if (uob.missing[units_to_move[z].type]['1'] > 0) {
-	          alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of shifting forces in 1-UNIT increments");
-	          return;
-	        }
 
 	        let does_units_to_move_have_unit = false;
 	        for (let z = 0; z < units_to_move.length; z++) {
-	          if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	          if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+		    does_units_to_move_have_unit = true;
+		    break;
+		  }
 	        }
 
 	        if (does_units_to_move_have_unit) {
+
+	          if (uob.overcapacity == 1) {
+	            alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	            return;
+	          }
+
 	          for (let z = 0; z < units_to_move.length; z++) {
-	            if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
+	            if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+		      units_to_move.splice(z, 1);
+		      break;
+		    }
 	          }
 	        } else {
+
+	          if (uob.overcapacity == 1) {
+	            alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	            return;
+	          }
+
 
 	          //
 	          // check for max formation size
@@ -2900,25 +2911,41 @@ does_units_to_move_have_unit = true; }
 
 	    let x = id.split("-");
 	    let f = x[0];
-	    let idx = x[1];
+	    let idx = parseInt(x[1]);
 
 	    let uob = his_self.returnOnBoardUnits(f);
-	    if (uob.missing[units_to_move[z].type]['1'] > 0) {
-	      alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of shifting forces in 1-UNIT increments");
-	      return;
-	    }
-
 
 	    let does_units_to_move_have_unit = false;
 	    for (let z = 0; z < units_to_move.length; z++) {
-	      if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	      if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+	        does_units_to_move_have_unit = true; 
+		break; 
+	      }
 	    }
 
 	    if (does_units_to_move_have_unit) {
-	      for (let z = 0; z < units_to_move.length; z++) {
-	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
+
+	      if (uob.overcapacity == 1) {
+	        alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	        return;
 	      }
+
+	      for (let z = 0; z < units_to_move.length; z++) {
+	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+		  units_to_move.splice(z, 1);
+		  break;
+		}
+	      }
+
+	      // movement overlay, so force fadeout
+	      his_self.available_units_overlay.fadeOut(true);
+
 	    } else {
+
+	      if (uob.overcapacity == 1) {
+	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of shifting forces in 1-UNIT increments");
+	        return;
+	      }
 
 	      //
 	      // check for max formation size

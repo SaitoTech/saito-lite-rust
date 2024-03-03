@@ -59,10 +59,20 @@ class MovementOverlay {
 		let unmoved_units = mobj.unmoved_units;
 		let destination_units = [];
 
+console.log("MOVED: " + JSON.stringify(moved_units));
+
 		//
 		// reset on-chit-ui if no moved units
 		//
-		if (moved_units.length == 0) { this.fade_out_available_units = false; }
+		if (moved_units.length == 0) { 
+		  this.fade_out_available_units = false; 
+		  document.querySelectorAll(".army_tile").forEach((el) => {
+		    if (el.classList.contains("nonopaque")) {
+		      el.classList.remove("nonopaque");
+		      el.classList.add("opaque");
+		    }
+		  });
+		}
 
 
 		let s = destination;

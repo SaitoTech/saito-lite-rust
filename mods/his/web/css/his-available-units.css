@@ -4,12 +4,12 @@
 .movement-overlay  .available-units-overlay {
     display: flex;
     flex-direction: rows;
-    justify-content: space-around;
+    justify-content: center;
     margin-left: auto;
     margin-right: auto;
-    column-gap: 5rem;
+    column-gap: 0.5rem;
     width: 100%;
-    row-gap: 1px;
+    row-gap: 0px;
     position: relative;
     top: 0px;
     height: auto;

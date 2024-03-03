@@ -8645,7 +8645,7 @@ if (this.game.state.round == 2) {
 	  //
 	  // no diplomacy phase round 1
 	  //
-	  if (this.game.state.round == 1) {
+	  if (this.game.state.round == 1 || (this.game.state.round == 7 && this.game.options.scenario == "is_testing")) {
 
             this.game.queue.push("SHUFFLE\t2");
             this.game.queue.push("DECKRESTORE\t2");

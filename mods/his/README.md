@@ -14,40 +14,24 @@ DIFFERENCES:
 
 The original game is so complicated that it is challenging to push all of the 
 richness of choice into a digital version. Some trade-offs exist. This edition
-tries to be as faithful as possible, but makes the following simplifications:
+aims to be as faithful as possible, but makes the following simplifications in
+order to speed-up gameplay:
 
  - browsers will "automatically" respond "no" when asked if they want to play 
    event-response cards (like Wartburg) if they do not have those cards. This 
-   speeds up gameplay considerably, but the speed of response can "leak" info
-   that the player does not hold that card. This feature can be disabled by 
-   switching into slow gameplay move.
+   speeds up gameplay at the cost of "leaking" info that the player does not
+   hold that card. This feature can be disabled by switching into slow gameplay
+   mode.
 
- - any overstacked units will be automatically returned to the Faction capital
-   if said capital is under the control of the Faction itself. This is done to 
-   in order to speed up the winter phrase, simplify gameplay for newer players
-   and avoid excessive complexity in implementation rules required for handling
-   edge-cases like equidistant. In the case of the Hapsburgs who have two capitals
-   units will be split between them automatically.
+ - winter retreat is heavily automated, and overstacked units are returned to 
+   faction capitals automatically. this simplifies winter phase for newer 
+   players and avoids excessive complexity with token management.
 
- - winter attrition will automatically move overflow-units to the capital, which
-   means that players concerned about regular / mercenary unit mix will lose 
-   control over which units return. the current implementation keeps the oldest
-   units and moves and "newer" ones back to the space.
-
- - the game engine will automatically arrange unit tokens on the board whenever
-   the board is displayed in order to maximize the availability of small-
-   denomination units. this removes most of the complexity around unit management
-   at the cost of making some of the rules here less visible to new players. 
-
- - because unit denominations are auto-handled, there are situations in which 
-   too many units will be visible on the board (such as a 4-unit piece which 
-   takes damage without available replacements). In these cases, the game 
-   does not destroy existing units, but prevents construction of new pieces 
-   until the player is "under-capacity" again. This can be done by having the 
-   player manually move pieces to combine them into larger denominations.
-
-
-BUG REPORTING
+ - the game engine automatically handles token denomination, merging smaller 
+   units into larger ones as possible. units are not destroyed when combat 
+   or movement splits a larger tokens, but if smaller tokens are not available
+   the faction is registered as being in a state of "over-capacity" and cannot
+   construct new units until the player is back under their token limit. 
 
  - current priorities are on getting the 2P version as flawless as possible. Once
    this is done we can move onto 6P game. Please report issues on RedSquare as
