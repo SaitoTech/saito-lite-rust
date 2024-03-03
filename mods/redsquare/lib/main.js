@@ -143,8 +143,6 @@ class RedSquareMain {
         publicKey = this.mod.publicKey;
       }
 
-      this.manager.render("profile")
-
       this.manager.renderProfile(publicKey);
 
       this.app.connection.emit("saito-header-replace-logo", (e) => {
@@ -209,7 +207,7 @@ class RedSquareMain {
     } else {
       this.app.browser.addElementToDom(RedSquareMainTemplate());
     }
-    this.manager.render();
+    this.manager.render("tweets");
     this.attachEvents();
 
     this.monitorUserInteraction();

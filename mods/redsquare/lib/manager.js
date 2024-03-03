@@ -262,7 +262,7 @@ class TweetManager {
 
 	insertOlderTweets(tx_count) {
 		if (this.mode !== 'tweets') {
-			console.log('Not on main feed anymore');
+			console.log('Not on main feed anymore, currently on: ' + this.mode);
 			return;
 		}
 
@@ -312,7 +312,8 @@ class TweetManager {
 	}
 
 	renderProfile(publicKey) {
-		this.mode = 'profile';
+
+    this.render("profile")
 
 		if (!document.querySelector('.tweet-manager')) {
 			this.app.browser.addElementToSelector(
