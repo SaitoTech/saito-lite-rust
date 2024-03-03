@@ -38,7 +38,7 @@ class TweetManager {
 						if (this.mode === 'tweets') {
 							this.mod.loadTweets(
 								'earlier',
-								this.insertOlderTweets
+								this.insertOlderTweets.bind(this)
 							);
 						}
 
@@ -297,7 +297,7 @@ class TweetManager {
 				}
 			} else {
 				console.log('Keep looking for tweets');
-				this.mod.loadTweets('earlier', this.insertOlderTweets);
+				this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 			}
 		} else {
 			this.hideLoader();
