@@ -455,6 +455,7 @@ class Poker extends GameTableTemplate {
 				}
 
 				this.game.state.last_fold = null;
+				this.game.state.winners = [];
 
 				//Adjust blind levels if necessary
 				if (
@@ -617,13 +618,8 @@ class Poker extends GameTableTemplate {
 					this.game.stats[this.game.players[player_left_idx]]
 						.handsWon++;
 
-					let userline = `Winner! <div class="saito-balance">${this.formatWager(
-						this.game.state.player_credit[player_left_idx]
-					)}</div>`;
-					this.playerbox.updateUserline(
-						userline,
-						player_left_idx + 1
-					);
+					//So that userline updates with winner
+					this.game.state.winners = [player_left_idx+1];
 
 					//
 					// everyone settles with winner if needed
@@ -894,6 +890,10 @@ class Poker extends GameTableTemplate {
 				var updateHTML = '';
 				var winlist = [];
 
+				for (let i = 1; i <= this.game.players.length; i++){
+					this.playerbox.updateUserline(`<span></span><div class="saito-balance">${this.formatWager(this.game.state.player_credit[i-1])}</div>`, i);			
+				}
+
 				//Sort hands from low to high
 				for (var key in this.game.state.player_cards) {
 					let deck = this.game.state.player_cards[key];
@@ -926,6 +926,7 @@ class Poker extends GameTableTemplate {
 
 				// Populate winners with winning players
 				let topPlayer = winlist[winlist.length - 1];
+				let winning_hand = topPlayer.player_hand.hand_description;
 
 				// ... and anyone else who ties
 				for (let p = 0; p < winlist.length; p++) {
@@ -985,10 +986,8 @@ class Poker extends GameTableTemplate {
 					//this.game.state.player_credit[winners[i]] += pot_size;
 					//this.game.state.pot -= pot_size;
 
-					let userline = `Winner! <div class="saito-balance">${this.formatWager(
-						this.game.state.player_credit[winners[i]]
-					)}</div>`;
-					this.playerbox.updateUserline(userline, winners[i] + 1);
+					this.game.state.winners.push(winners[i]+1);
+
 				}
 
 				//update log
@@ -997,12 +996,12 @@ class Poker extends GameTableTemplate {
 				// update splash!
 				if (winners.length == 1) {
 					if (winners[0] == this.game.player -1 ){
-						winnerStr += ' win the pot!';
+						winnerStr += ` win with ${winning_hand.toUpperCase()}!`;
 					}else{
-						winnerStr += ' wins the pot!';	
+						winnerStr += ` wins with ${winning_hand.toUpperCase()}!`;	
 					}
 				} else {
-					winnerStr += ' split the pot!';
+					winnerStr += ` split the pot with ${winning_hand.toUpperCase()}!`;
 				}
 
 				winlist.forEach((pl) => {
@@ -1027,6 +1026,8 @@ class Poker extends GameTableTemplate {
 					updateHTML = `<div class="h3">${
 						this.game.state.player_names[pl.player - 1]
 					}: ${pl.player_hand.hand_description}</div>${updateHTML}`;
+
+
 				});
 
 				this.updateHTML = updateHTML;
@@ -1217,7 +1218,7 @@ class Poker extends GameTableTemplate {
 				//
 				
 				this.game.state.player_pot[player - 1] += amount_to_call;
-				this.animateBet(amount_to_call, player - 1);
+				this.animateBet(amount_to_call, player - 1, true);
 				//this.game.state.pot += amount_to_call;
 				//this.game.state.player_credit[player - 1] -= amount_to_call;
 				
@@ -1243,6 +1244,7 @@ class Poker extends GameTableTemplate {
 						this.game.state.player_names[player - 1] + ' calls'
 					);
 				}
+				return 0;
 			}
 
 			if (mv[0] === 'fold') {
@@ -1594,6 +1596,9 @@ class Poker extends GameTableTemplate {
 		state.passed = [];
 		state.debt = [];
 
+		state.winners = [];
+		state.last_fold = null;
+
 		//
 		// initializeGameStake should flesh this out
 		//
@@ -1723,6 +1728,9 @@ class Poker extends GameTableTemplate {
 	}
 
 	returnPlayerRole(player) {
+		if (this.game.state.winners.includes(player)){
+			return "Winner!";
+		}
 		if (player == this.game.state.small_blind_player) {
 			return 'small blind';
 		}
@@ -1846,21 +1854,18 @@ class Poker extends GameTableTemplate {
 	//
 	async animateWin(amount, player_indices){	
 
-		console.log("ANIMATE WIN: ", amount, player_indices);
-
-		for (let j = 0; j < player_indices.length; j++){
-			let player = player_indices[j] + 1;
-
-			for (let i = 0; i < amount; i++){
+		for (let i = 0; i < amount; i++){
+	
+			for (let j = 0; j < player_indices.length; j++){
 
 				this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, ".pot-chips"),
-					`.game-playerbox-${player}`,
+					`.game-playerbox-${player_indices[j] + 1}`,
 					{
 						callback: () => {
 							this.game.state.pot--;
 							this.game.state.player_credit[player_indices[j]]++;
 							this.updatePot();
-							this.refreshPlayerStack(player);
+							this.refreshPlayerStack(player_indices[j] + 1);
 						},
 						run_all_callbacks: true
 					},
@@ -1879,7 +1884,7 @@ class Poker extends GameTableTemplate {
 
 	}
 
-	async animateBet(amount, player_index){
+	async animateBet(amount, player_index, restartQueue = false){
 
 		for (let i = 0; i < amount; i++){
 
@@ -1892,10 +1897,16 @@ class Poker extends GameTableTemplate {
 						this.updatePot();
 						this.refreshPlayerStack(player_index+1);
 					},
-					run_all_callbacks: true
+					run_all_callbacks: !restartQueue
 				},
 				(item) => {
-					$(item).remove();
+					if (!restartQueue){
+						$(item).remove();	
+					}else{
+						$('.animated_elem').remove();
+						this.restartQueue();
+					}
+					
 				});
 			await this.timeout(500/amount);
 		}
@@ -1963,10 +1974,7 @@ class Poker extends GameTableTemplate {
 
 		let userline =
 			this.returnPlayerRole(player) +
-			`<div class="saito-balance">${this.formatWager(
-				credit,
-				true
-			)}</div>`;
+			`<div class="saito-balance">${this.formatWager(credit)}</div>`;
 		this.playerbox.updateUserline(userline, player);
 
 		this.healthBars[player-1].render(credit);
