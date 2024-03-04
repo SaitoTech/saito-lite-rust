@@ -37,7 +37,9 @@
         }
 
         if (game_mod.game.state.leaders.suleiman == 1) { base += 0; }        
-       
+ 
+        base += game_mod.game.state.ottoman_card_bonus;
+      
         // TODO - bonus for home spaces under protestant control
         return base;
 

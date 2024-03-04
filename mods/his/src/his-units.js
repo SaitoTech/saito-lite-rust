@@ -408,6 +408,24 @@
 
   }
 
+  removeConquistador(faction, conquistador) {
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      if (this.game.state.conquistadors[i].type === conquistador) {
+	this.game.state.conquistadors.splice(i, 1);
+	return;
+      }
+    }
+  }
+
+  removeExplorer(faction, explorer) {
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].type === explorer) {
+	this.game.state.explorers.splice(i, 1);
+	return;
+      }
+    }
+  }
+
   addExplorer(faction, explorer) {
 
     if (!this.explorers[explorer]) {
@@ -549,6 +567,7 @@
         available_units['regular'] = {};
         available_units['squadron'] = {};
         available_units['cavalry'] = {};
+        available_units['squadron'] = {};
     let deployed_units = {};
 
     //
@@ -680,9 +699,6 @@
     //
     //
     for (let key in my_spaces) {
-if (key == "rome") {
-  console.log("deployed units: " + key);
-}
       deployed_units[key] = {};
       deployed_units[key]['regular'] = {};
       deployed_units[key]['regular']['1'] = 0;
@@ -700,6 +716,8 @@ if (key == "rome") {
       deployed_units[key]['mercenary']['6'] = 0;
       deployed_units[key]['squadron'] = {};
       deployed_units[key]['squadron']['1'] = 0;
+      deployed_units[key]['corsair'] = {};
+      deployed_units[key]['corsair']['1'] = 0;
     }
 
 

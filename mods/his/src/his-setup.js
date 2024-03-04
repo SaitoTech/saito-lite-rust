@@ -63,7 +63,7 @@ console.log("\n\n\n\n");
       //
       // 1517 scenario
       //
-      if (this.game.state.scenario == "1517") {
+      if (this.game.options.scenario === "1517") {
 
         //
         // 2P variant
@@ -227,6 +227,11 @@ console.log("\n\n\n\n");
           this.addNavalSquadron("genoa", "genoa", 1);
           this.addRegular("genoa", "genoa", 2);
 	
+	  // HUNGARY
+          this.addRegular("hungary", "belgrade", 1);
+          this.addRegular("hungary", "buda", 5);
+          this.addRegular("hungary", "prague", 1);
+
 	  // SCOTLAND
           this.addRegular("scotland", "edinburgh", 3);
           this.addNavalSquadron("scotland", "edinburgh", 1);
@@ -255,11 +260,379 @@ console.log("\n\n\n\n");
       //
       // 1532 scenario
       //
-      if (this.game.state.scenario === "1532") {
+      if (this.game.options.scenario === "1532") {
+
+	  this.game.state.starting_round = 4;
+	  this.game.state.round = 3; // start for +1
+
+	  // OTTOMAN
+          this.addArmyLeader("ottoman", "istanbul", "suleiman");
+          this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");
+          this.addRegular("ottoman", "istanbul", 5);
+          this.addCavalry("ottoman", "istanbul", 1);
+          this.addNavalSquadron("ottoman", "istanbul", 1);
+          this.addRegular("ottoman", "edirne");
+          this.addRegular("ottoman", "salonika", 1);
+          this.addNavalSquadron("ottoman", "salonika", 1);
+          this.addRegular("ottoman", "athens", 1);
+          this.addNavalSquadron("ottoman", "athens", 1);
+          this.addNavyLeader("ottoman", "algiers", "barbarossa");
+          this.addRegular("ottoman", "algiers", 2);
+          this.addCorsair("ottoman", "algiers", 2);
+          this.controlSpace("ottoman", "algiers");
+          this.addRegular("ottoman", "buda", 3);
+          this.addCavalry("ottoman", "buda", 1);
+          this.controlSpace("ottoman", "buda");
+          this.addRegular("ottoman", "belgrade", 1);
+          this.controlSpace("ottoman", "belgrade");
+          this.controlSpace("ottoman", "mohacs");
+          this.controlSpace("ottoman", "szegedin");
+          this.controlSpace("ottoman", "agram");
+          this.controlSpace("ottoman", "rhodes");
+
+	  this.game.state.ottoman_war_winner_vp = 2;
+
+
+	  // HAPSBURG
+	  this.addArmyLeader("hapsburg", "valladolid", "charles-v");
+	  this.addArmyLeader("hapsburg", "valladolid", "duke-of-alva");
+          this.addRegular("hapsburg", "valladolid", 4);
+          this.addRegular("hapsburg", "seville", 1);
+          this.addNavalSquadron("hapsburg", "seville", 1);
+          this.addRegular("hapsburg", "barcelona", 1);
+          this.addNavalSquadron("hapsburg", "barcelona", 1);
+          this.addRegular("hapsburg", "navarre", 1);
+          this.addRegular("hapsburg", "naples", 2);
+          this.addNavalSquadron("hapsburg", "naples", 1);
+          this.addRegular("hapsburg", "besancon", 1);
+          this.addRegular("hapsburg", "brussels", 1);
+	  this.addArmyLeader("hapsburg", "vienna", "ferdinand");
+          this.addRegular("hapsburg", "vienna", 4);
+          this.addMercenary("hapsburg", "vienna", 2);
+          this.addRegular("hapsburg", "antwerp", 3);
+          this.controlSpace("hapsburg", "prague");
+          this.controlSpace("hapsburg", "breslau");
+          this.controlSpace("hapsburg", "brunn");
+          this.controlSpace("hapsburg", "pressburg");
+          this.controlSpace("hapsburg", "regensburg");
+          this.controlSpace("hapsburg", "salzburg");
+          this.controlSpace("hapsburg", "munster");
+          this.controlSpace("hapsburg", "cologne");
+          this.controlSpace("hapsburg", "trier");
+
+	  this.game.state.hapsburg_war_winner_vp = 1;
+
+          this.game.state.newworld['circumnavigation'].faction = "hapsburg";
+          this.game.state.newworld['circumnavigation'].claimed = 1;
+          this.game.state.newworld['pacificstrait'].faction = "hapsburg";
+          this.game.state.newworld['pacificstrait'].claimed = 1;
+          this.game.state.newworld['aztec'].faction = "hapsburg";
+          this.game.state.newworld['aztec'].claimed = 1;
+
+          this.game.state.newworld['hapsburg_colony1'].faction = "hapsburg";
+          this.game.state.newworld['hapsburg_colony1'].claimed = 1;
+          this.game.state.newworld['hapsburg_colony2'].faction = "hapsburg";
+          this.game.state.newworld['hapsburg_colony2'].claimed = 1;
+
+	  this.removeExplorer("hapsburg", "magellan");
+	  this.removeExplorer("hapsburg", "leon");
+	  this.removeExplorer("hapsburg", "narvaez");
+	  this.removeConquistador("hapsburg", "cordova");
+
+	  this.game.state['hapsburg_uncharted'] = 0;
+
+
+	  // ENGLAND
+          this.addArmyLeader("england", "london", "henry-viii");
+          this.addArmyLeader("england", "london", "charles-brandon");
+          this.addRegular("england", "london", 3);
+          this.addMercenary("england", "london", 2);
+          this.addNavalSquadron("england", "london", 1);
+          this.addNavalSquadron("england", "plymouth", 1);
+          this.addNavalSquadron("england", "portsmouth", 1);
+          this.addRegular("england", "calais", 2);
+          this.addRegular("england", "york", 1);
+          this.addRegular("england", "bristol", 1);
+
+	  this.game.state.england_card_bonus = 1;
+	  this.game.state.henry_viii_marital_status = 1;
+	  this.game.state['england_uncharted'] = 0;
+
+
+
+	  // FRANCE
+          this.addArmyLeader("france", "paris", "francis-i");
+          this.addArmyLeader("france", "paris", "montmorency");
+          this.addRegular("france", "paris", 4);
+          this.addMercenary("france", "paris", 2);
+          this.addRegular("france", "rouen", 1);
+          this.addNavalSquadron("france", "rouen", 1);
+          this.addRegular("france", "bordeaux", 2);
+          this.addRegular("france", "lyon", 1);
+          this.addRegular("france", "marseille", 1);
+          this.addNavalSquadron("france", "marseille", 1);
+
+	  this.removeExplorer("france", "verrazano");
+
+	  this.game.state.france_card_bonus = 1;
+	  this.game.state['france_uncharted'] = 0;
+	  this.game.state.french_chateaux_vp = 2;
+
+
+	  // PAPACY
+          this.addRegular("papacy", "rome", 1);
+          this.addMercenary("papacy", "rome", 1);
+          this.addNavalSquadron("papacy", "rome", 1);
+          this.addRegular("papacy", "ravenna", 1);
+          this.addMercenary("papacy", "ravenna", 1);
+	  this.controlSpace("papacy", "florence");
+          this.addRegular("papacy", "florence", 1);
+	  this.controlSpace("papacy", "siena");
+	
+	  // TODO Papal bonuses etc.
+          this.game.state.saint_peters_cathedral['state'] = 0;
+          this.game.state.saint_peters_cathedral['vp'] = 1;
+	  this.game.state.leaders.leo_x = 0;
+	  this.game.state.events.clement_vii = 1;
+	  this.game.state.leaders.clement_vii = 1;
+	  this.game.state.already_excommunicated.push("luther-debater");
+
+	  // PROTESTANT
+	  this.addRegular("protestant", "brandenburg");	
+	  this.addRegular("protestant", "wittenberg", 2);
+	  this.addRegular("protestant", "mainz");	
+	  this.addMercenary("protestant", "mainz", 2);	
+	  this.addRegular("protestant", "augsburg", 2);	
+
+    	  this.game.state.augsburg_electoral_bonus = 1;
+    	  this.game.state.mainz_electoral_bonus = 1;
+    	  this.game.state.trier_electoral_bonus = 0;
+    	  this.game.state.cologne_electoral_bonus = 0;
+    	  this.game.state.wittenberg_electoral_bonus = 1;
+    	  this.game.state.brandenburg_electoral_bonus = 1;
+
+          this.game.state.translations['full']['german'] = 0;
+          this.game.state.translations['full']['english'] = 0;
+          this.game.state.translations['full']['french'] = 0;
+          this.game.state.translations['new']['german'] = 6;
+          this.game.state.translations['new']['english'] = 2;
+          this.game.state.translations['new']['french'] = 4;
+
+	  this.removeDebater("protestant", "zwingli-debater");
+	  this.removeReformer("protestant", "geneva", "zwingli-debater");
+
+
+          // DEBATERS
+          this.addDebater("papacy", "eck-debater");
+          this.addDebater("papacy", "campeggio-debater");
+          this.addDebater("papacy", "aleander-debater");
+          this.addDebater("papacy", "contarini-debater");
+          this.addDebater("papacy", "tetzel-debater");
+          this.addDebater("papacy", "cajetan-debater");
+
+          this.addDebater("protestant", "luther-debater");
+          this.addDebater("protestant", "melanchthon-debater");
+          this.addDebater("protestant", "bucer-debater");
+          this.addDebater("protestant", "carlstadt-debater");
+          this.addDebater("protestant", "bullinger-debater");
+          this.addDebater("protestant", "oekolampadius-debater");
+          this.addDebater("protestant", "tyndale-debater");
+
+	  // VENICE
+          this.addRegular("venice", "venice", 2);
+          this.addNavalSquadron("venice", "venice", 3);
+          this.addRegular("venice", "corfu", 1);
+          this.addRegular("venice", "candia", 1);
+	
+	  // GENOA
+          this.addNavyLeader("genoa", "genoa", "andrea-doria");
+          this.addNavalSquadron("genoa", "genoa", 1);
+          this.addRegular("genoa", "genoa", 2);
+	
+	  // HUNGARY
+	  this.addRegular("hungary", "prague", 1);
+
+	  // SCOTLAND
+          this.addRegular("scotland", "edinburgh", 3);
+          this.addNavalSquadron("scotland", "edinburgh", 1);
+          this.game.spaces['stirling'].fortify = 1;
+	
+	  // INDEPENDENT
+          this.addRegular("independent", "malta", 1);
+          this.controlSpace("hapsburg", "malta", 1);
+          this.addRegular("independent", "metz", 1);
+          this.addRegular("independent", "milan", 1);
+          this.addRegular("independent", "tunis", 1);
+          this.controlSpace("independent", "basel", 1);
+          this.controlSpace("independent", "zurich", 1);
+	
+	  // DEBATERS
+	  this.setEnemies("ottoman", "hapsburg");
+	  this.setEnemies("hapsburg", "protestant");
+	  this.setEnemies("papacy", "protestant");
+	  this.setAllies("hapsburg", "hungary");
 
       }
 
-      if (this.game.state.scenario === "tournament") {
+      if (this.game.options.scenario === "tournament") {
+
+      }
+
+
+      if (this.game.options.scenario === "is_testing") {
+
+	  this.game.state.starting_round = 7;
+
+          // moar debaters
+          this.addDebater("papacy", "gardiner-debater");
+          this.addDebater("papacy", "canisius-debater");
+          this.addDebater("protestant", "bucer-debater");
+              
+          // DEBATERS
+          this.addDebater("papacy", "eck-debater");
+          this.addDebater("papacy", "campeggio-debater");
+          this.addDebater("papacy", "aleander-debater");
+          this.addDebater("papacy", "tetzel-debater");
+          this.addDebater("papacy", "cajetan-debater");
+              
+          this.addDebater("protestant", "luther-debater");
+          this.addDebater("protestant", "melanchthon-debater");
+          this.addDebater("protestant", "carlstadt-debater");
+              
+          this.addUnit("protestant", "wittenberg", "regular");
+          this.addUnit("protestant", "wittenberg", "regular");
+          this.addReformer("protestant", "wittenberg", "luther-reformer");
+          this.addDebater("protestant", "luther-debater");
+
+          this.addDebater("protestant", "oekolampadius-debater");
+          this.addDebater("protestant", "zwingli-debater");
+          this.addReformer("protestant", "zurich", "zwingli-reformer");
+          this.addDebater("papacy", "contarini-debater");
+          this.addDebater("protestant", "bullinger-debater");
+          this.addDebater("protestant", "farel-debater");
+          this.addDebater("protestant", "cop-debater");
+          this.addDebater("protestant", "olivetan-debater");
+          this.addDebater("protestant", "calvin-debater");
+          this.addReformer("protestant", "geneva", "calvin-reformer");
+          this.addDebater("protestant", "cranmer-debater");
+          this.addReformer("protestant", "london", "cranmer-reformer");
+          this.addDebater("protestant", "latimer-debater");
+          this.addDebater("protestant", "coverdale-debater");
+          this.addDebater("papacy", "pole-debater");
+          this.addDebater("papacy", "caraffa-debater");
+          this.addDebater("protestant", "wishart-debater");
+          this.addDebater("protestant", "knox-debater");
+          this.addDebater("papacy", "loyola-debater");
+          this.addDebater("papacy", "faber-debater");
+          this.addDebater("papacy", "canisius-debater");
+
+         // FRANCE
+          this.game.state.leaders.francis_i = 1;
+          this.addArmyLeader("france", "paris", "francis-i");
+          this.addRegular("france", "glasgow", 2);
+          this.setAllies("france", "scotland");
+          this.controlSpace("france", "ragusa");
+          this.addRegular("france", "ragusa", 1);
+          this.addNavalSquadron("france", "ragusa", 4);
+          this.addRegular("france","graz", 1);
+
+          // HAPSBURG
+          this.addArmyLeader("hapsburg", "gibraltar", "duke-of-alva");
+          this.addArmyLeader("hapsburg", "naples", "charles-v");
+          this.addRegular("hapsburg", "naples", 4);
+          this.addNavalSquadron("hapsburg", "naples", 2);
+          this.addRegular("hapsburg", "nuremberg", 1);
+          this.addRegular("hapsburg", "worms", 1);
+          this.addRegular("hapsburg", "kassel", 1);
+          this.addRegular("hapsburg", "antwerp", 4);
+
+          // PAPACY
+          this.addMercenary("papacy", "siena", 4);
+          this.addArmyLeader("papacy", "ravenna", "renegade");
+          this.addRegular("papacy", "linz", 4);
+          this.addRegular("papacy", "ravenna", 4);
+          this.addRegular("papacy", "ravenna", 2);
+          this.addRegular("papacy", "rome", 2);
+          this.addNavalSquadron("papacy", "rome", 1);
+          this.activateMinorPower("papacy", "venice");
+          this.controlSpace("papacy", "siena");
+          this.addMercenary("papacy", "siena", 1);
+          this.addMercenary("papacy", "siena", 1);
+          this.addMercenary("papacy", "siena", 1);
+          this.addRegular("papacy", "siena", 1);
+          this.addRegular("hapsburg", "besancon", 1);
+
+
+          // PROTESTANT
+          this.addRegular("protestant", "worms", 3);
+          this.addRegular("protestant", "graz", 3);
+          for (let key in this.game.spaces) {
+            if (this.game.spaces[key].language == "german") {
+              this.convertSpace("protestant", key);
+            }
+          }
+
+
+          // PAPACY CONVERSIONS BACK IN GERMANY
+          this.convertSpace("catholic", "munster");
+          this.convertSpace("catholic", "bremen");
+          this.controlSpace("papacy", "regensburg");
+
+          // VENICE
+          this.addRegular("venice", "venice", 2);
+          this.addNavalSquadron("venice", "venice", 1);
+
+          // ENGLAND
+          this.addRegular("england", "stirling", 4);
+          this.game.state.events.henry_viii_healthy_edward = 1;
+
+          this.setAllies("protestant", "france");
+          this.setAllies("protestant", "ottoman");
+          this.setAllies("papacy", "hapsburg");
+          this.setAllies("papacy", "venice");
+
+          this.addRegular("venice", "ravenna", 1);
+          this.addRegular("papacy", "turin", 4);
+          this.addRegular("genoa", "genoa", 2);
+
+          this.setEnemies("papacy", "france");
+          this.addRegular("france","milan", 1);
+          this.addMercenary("france","milan", 2);
+          this.controlSpace("france", "trent");
+          this.addRegular("france","trent", 1);
+          this.addRegular("france","trent", 1);
+          this.addRegular("france","trent", 1);
+          this.addRegular("france","trent", 1);
+          this.addRegular("france","trent", 1);
+          this.addArmyLeader("france", "trent", "montmorency");
+
+          this.setAllies("papacy", "hapsburg");
+          this.setActivatedPower("papacy", "hapsburg");
+          this.setActivatedPower("hapsburg", "genoa");
+          this.setActivatedPower("protestant", "france");
+          this.controlSpace("hapsburg", "genoa");
+
+          this.addReformer("protestant", "modena", "zwingli-reformer");
+
+          this.game.state.events.ottoman_piracy_enabled = 1;
+          this.game.state.events.ottoman_corsairs_enabled = 1;
+
+          // OTTOMAN
+          this.addArmyLeader("ottoman", "sofia", "ibrahim-pasha");
+          this.addArmyLeader("ottoman", "bucharest", "suleiman");
+          this.addMercenary("ottoman", "bucharest", 2);
+          this.addRegular("ottoman","athens", 3);
+          this.addRegular("ottoman","istanbul", 3);
+
+
+
+	this.controlSpace("protestant", "brandenburg");
+  	this.controlSpace("protestant", "trier"); 
+  	this.game.spaces["brandenburg"].home = "protestant";
+  	this.game.spaces["trier"].home = "protestant";
+  	this.displaySpace("brandenburg");
+  	this.displaySpace("trier");
+
 
       }
 

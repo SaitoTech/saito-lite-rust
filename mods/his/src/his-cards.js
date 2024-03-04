@@ -11174,6 +11174,27 @@ if (this.game.players.length == 2) {
     delete deck["116"];
 
 }
+if (this.game.options.scenario === "1532") {
+
+    delete deck["008"];
+    delete deck["009"];
+    delete deck["010"];
+    delete deck["011"];
+    delete deck["013"];
+    delete deck["038"];
+    delete deck["039"];
+    delete deck["041"];
+    delete deck["043"];
+    delete deck["078"];
+    delete deck["083"];
+    delete deck["085"];
+    delete deck["088"];
+    delete deck["095"];
+    delete deck["096"];
+    delete deck["112"];
+    delete deck["113"];
+}
+
 
     for (let key in deck) {
       deck[key].key = key;

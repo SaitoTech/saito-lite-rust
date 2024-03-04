@@ -15,7 +15,6 @@
     this.game.state.events.more_bonus = 0;
     this.game.state.events.sack_of_rome = 0;
 
-
     //
     // reset impulse commits
     //
@@ -436,7 +435,7 @@
 	leaders = [];
         leaders.push(key);
       }
-if (this.game.options.scenario != "is_testing") {
+if (this.game.state.scenario != "is_testing") {
       if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
 	if (leaders.length == 1) {
 	  factions[leaders[0]].victory = 1;
@@ -459,7 +458,7 @@ if (this.game.options.scenario != "is_testing") {
     //
     // 8 VP lead in 2P
     //
-if (this.game.options.scenario != "is_testing") {
+if (this.game.state.scenario != "is_testing") {
     if (this.game.players.length == 2 && this.game.state.round >= 4) {
       if ((factions["protestant"].vp - factions["papacy"].vp) >= 8) {
 	factions["protestant"].victory = 1;
@@ -635,6 +634,7 @@ if (this.game.options.scenario != "is_testing") {
     state.scenario = "1517";
     if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;
+    state.starting_round = 0; // if we start > 1, set this
     state.vp = [];
     state.newworld = this.returnNewWorld();
     state.impulse = 0;
@@ -686,6 +686,14 @@ if (this.game.options.scenario != "is_testing") {
     state.translations['full']['german'] = 0;
     state.translations['full']['french'] = 0;
     state.translations['full']['english'] = 0;
+
+    state.papacy_card_bonus = 0;
+    state.protestant_card_bonus = 0;
+    state.ottoman_card_bonus = 0;
+    state.france_card_bonus = 0;
+    state.england_card_bonus = 0;
+    state.hapsburg_card_bonus = 0;
+
 
     state.protestant_war_winner_vp = 0;
     state.papacy_war_winner_vp = 0;

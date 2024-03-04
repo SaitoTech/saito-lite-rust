@@ -53,7 +53,7 @@
   }
 
   displayCardsLeft() {
-
+    try {
     for (let key in this.game.state.cards_left) {
 
       let qs = ".game-factions .game-menu-sub-options ";
@@ -82,7 +82,7 @@
 	document.querySelector(qs).innerHTML = `Papacy (${this.game.state.cards_left[key]} cards)`;
       }
     }
-
+    } catch (err) {}
   }
 
   displayTurnTrack() {
@@ -607,9 +607,6 @@ try {
     if (owner == "protestant") { stype = "hex"; }
 
     if (owner != "") {
-
-      // if these have a major ally, we make them
-      // the owner for tile-display purposes.
       if (owner === "hungary") {
 	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "hungary") {
@@ -1850,6 +1847,7 @@ try {
     if (this.game.navalspaces[key]) { this.displayNavalSpace(key); return; }
 
     let ts = new Date().getTime();
+    let no_keytiles_in_keys = [];
     if (this.game.state.board_updated < ts + 20000) {
       this.refreshBoardUnits();
     }
@@ -1875,6 +1873,16 @@ try {
     if (space.political == space.home && space.religion != "protestant") { show_tile = 0; }
     if (space.political === "" && space.religion != "protestant") { show_tile = 0; }
     if (space.political == "protestant" && space.religion != "protestant") { show_tile = 1; }
+    if (
+      space.religion === "catholic" && 
+      (
+	(space.home == "venice" || space.home == "genoa" || space.home == "scotland" || space.home == "hungary") &&
+	(space.home == space.political || space.political == "")
+      )
+    ) {
+      no_keytiles_in_keys.push(space.key);
+      show_tile = 0;
+    }
     if (space.language == "german" && space.units["protestant"].length > 0) { show_tile = 1; }
 
     //
@@ -1904,7 +1912,9 @@ try {
       obj.innerHTML = "";
 
       if (show_tile === 1) {
-        obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+	if (!no_keytiles_in_keys.includes(key)) {
+          obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+	}
         obj.innerHTML += this.returnArmies(space);
         obj.innerHTML += this.returnNavies(space);
         obj.innerHTML += this.returnPersonages(space);
@@ -1996,6 +2006,7 @@ try {
       this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
       this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
     }
+
 
     //
     // add tiles

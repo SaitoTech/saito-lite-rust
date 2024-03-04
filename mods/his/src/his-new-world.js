@@ -80,17 +80,12 @@
     let active_conquests = [];
     let sorted_conquests = [];
     
-console.log("CONQUESTS");
-console.log(JSON.stringify(this.game.state.conquests));
-
     for (let z = 0; z < this.game.state.conquests.length; z++) {
 
       let con = this.game.state.conquests[z];
       if (con.resolved == 0) {
 
         let available_conquistadors = this.returnAvailableConquistadors(con.faction);
-
-console.log("AVAIL CONQUIST: " + JSON.stringify(available_conquistadors));
 
 	if (available_conquistadors.length > 0) {
 

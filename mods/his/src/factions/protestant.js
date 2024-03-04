@@ -13,7 +13,8 @@
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants(1); // 1 = political control
         if (kc > 4) { base += 1; }
         if (game_mod.game.state.leaders.luther == 1) { base += 0; }
-	return base;        
+	base += game_mod.game.state.protestant_card_bonus;
+	return base;
       },
 
       returnAdminRating  :       function(game_mod) {

@@ -48,6 +48,8 @@
 	if (game_mod.game.state.leaders.mary_i == 1) { base += 0; }
 	if (game_mod.game.state.leaders.elizabeth_i == 1) { base += 2; }
 
+        base += game_mod.game.state.england_card_bonus;
+
 	// TODO - bonus for home spaces under protestant control
 	return base;
 
