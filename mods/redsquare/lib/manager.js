@@ -38,7 +38,7 @@ class TweetManager {
 						if (this.mode === 'tweets') {
 							this.mod.loadTweets(
 								'earlier',
-								this.insertOlderTweets
+								this.insertOlderTweets.bind(this)
 							);
 						}
 
@@ -262,7 +262,7 @@ class TweetManager {
 
 	insertOlderTweets(tx_count) {
 		if (this.mode !== 'tweets') {
-			console.log('Not on main feed anymore');
+			console.log('Not on main feed anymore, currently on: ' + this.mode);
 			return;
 		}
 
@@ -297,7 +297,7 @@ class TweetManager {
 				}
 			} else {
 				console.log('Keep looking for tweets');
-				this.mod.loadTweets('earlier', this.insertOlderTweets);
+				this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 			}
 		} else {
 			this.hideLoader();
@@ -312,7 +312,8 @@ class TweetManager {
 	}
 
 	renderProfile(publicKey) {
-		this.mode = 'profile';
+
+    this.render("profile")
 
 		if (!document.querySelector('.tweet-manager')) {
 			this.app.browser.addElementToSelector(
