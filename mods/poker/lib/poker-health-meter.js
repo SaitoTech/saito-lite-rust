@@ -18,7 +18,6 @@ class HealthMeter {
 	}
 
 	render(health = 0) {
-		console.log(health);
 		health = parseInt(health);
 		if (this.ordinal == 0) {
 			let max = 0;
@@ -43,7 +42,6 @@ class HealthMeter {
 		}
 
 		let superlative = Math.floor(health / this.multiple);
-		console.log(health, superlative);
 
 		if (superlative){
 			for (let j = 0; j < superlative; j++){
