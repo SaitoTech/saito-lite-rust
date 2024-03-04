@@ -33,8 +33,8 @@
 	  let discarded = false;
 
 	  if (action2 !== "skip") {
-            twilight_self.removeCardFromHand(discarded);
-	    twilight_self.addMove("discard\tussr\t"+discarded);
+            twilight_self.removeCardFromHand(action2);
+	    twilight_self.addMove("discard\tussr\t"+action2);
 	    discarded = true;
 	  }
 
