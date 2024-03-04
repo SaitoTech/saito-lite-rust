@@ -6,8 +6,6 @@ module.exports = () => {
               <div class="unit-details">1</div>
               <div class="more-units"><i class="fa fa-caret-right"></i></div>
             </div>
-	    <div class="build-targets">
-            </div>
 	    <div class="build-submit">confirm and build</div>
           </div>
   `;

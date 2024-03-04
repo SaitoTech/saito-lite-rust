@@ -40,14 +40,6 @@
     if (factions["france"]) { f.push("france"); }
     if (factions["england"]) { f.push("england"); }
 
-console.log("FACTION SELECTION");
-console.log(": ");
-console.log(": ");
-console.log(": ");
-console.log(": " + JSON.stringify(factions));
-console.log(": " + this.game.options.player1 + " --- " + this.game.options.player2);
-console.log(": ");
-
     for (let i = 0; i < num; i++) {
 
       if (i == 0) { col = "color1"; }
@@ -114,8 +106,6 @@ console.log(": ");
 	  f.splice(z, 1);
 	}
       }
-
-console.log("SELECTED FACTION: " + rf);
 
       delete factions[rf];
 
@@ -698,15 +688,6 @@ if (limit === "build") {
       category : "move" ,
       img : '/his/img/backgrounds/move/move_in_clear.jpg',
     });
-    //menu.push({
-    //  factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
-    //  cost : [2,2,2,2,2,2,2,2,2,2],
-    //  name : "Move over Pass",
-    //  check : this.canPlayerMoveFormationOverPass,
-    //  fnct : this.playerMoveFormationOverPass,
-    //  category : "move" ,
-    //  img : '/his/img/backgrounds/move/move_over_pass.jpg',
-    //});
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
@@ -1912,7 +1893,7 @@ if (this.game.state.events.cramner_active == 1) {
 	    } else {
               ops -= 3;
 	      if (ops > 0) {
- 	        his_self.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
+ 	        his_self.addMove("continue\t"+this.game.player+"\t"+selected_faction+"\t"+card+"\t"+ops+"\t"+limit); 
               }
               menu[user_choice].fnct(this, this.game.player, selected_faction, 3, ops);
               return;
@@ -1930,7 +1911,7 @@ if (this.game.state.events.cramner_active == 1) {
 	      //
 	      if (ops == 1) {
 
-                  menu[user_choice].fnct(this, this.game.player, faction, 1, 0);
+                  menu[user_choice].fnct(this, this.game.player, selected_faction, 1, 0);
                   return;
 
 	      } else {
@@ -2192,14 +2173,11 @@ return;
         let opt = "<ul>";
 	let allow_bull = 0;
 
-	if (his_self.game.state.excommunicated_factions["hapsburg"]) {
-	  if (enemy == "hapsburg" && his_self.game.state.excommunicated_factions["hapsburg"] != 1) { allow_bull = 1; }
-	}
-	if (his_self.game.state.excommunicated_factions["hapsburg"]) {
-	  if (enemy == "france" && his_self.game.state.excommunicated_factions["france"] != 1) { allow_bull = 1; }
-	}
+	if (enemy == "hapsburg" && his_self.game.state.excommunicated_factions["hapsburg"] != 1) { allow_bull = 1; }
+	if (enemy == "france" && his_self.game.state.excommunicated_factions["france"] != 1) { allow_bull = 1; }
+
 	if (allow_bull) {
-          opt += `<li class="option" id="005">Papal Bull</li>`;
+          opt += `<li class="option" id="005">papal bull</li>`;
 	}
         opt += `<li class="option" id="sue">sue for peace</li>`;
         opt += '</ul>';
@@ -2549,11 +2527,8 @@ return;
 	    //
 	    let selectDestinationInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
-
 	      // MOVE THE UNITS
 	      units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
-
-console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
@@ -2566,7 +2541,6 @@ console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 	    };
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) { 
-
               let unmoved_units = [];
               let moved_units = [];
 	      let space = his_self.game.spaces[source_spacekey];
@@ -2581,26 +2555,22 @@ console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
 	      let html = '<ul>';
 
-console.log("SPACE: " + source_spacekey);
-console.log("SPACE UNITS: " + JSON.stringify(space.units));
-
 	      for (let key in space.units) {
                 if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
                   for (let i = 0; i < space.units[key].length; i++) {
-console.log("i: " + i + " for faction " + key);
 	            if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
                     if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
                     if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
                       let does_units_to_move_have_unit = false;
                       for (let z = 0; z < units_to_move.length; z++) {
-                        if (units_to_move[z].faction === key && units_to_move[z].idx === i) { does_units_to_move_have_unit = true; break; }
-                      }
+                        if (units_to_move[z].faction == key && units_to_move[z].idx == i) { 
+does_units_to_move_have_unit = true; }
+		      }
                       if (does_units_to_move_have_unit) {
                         html += `<li class="option" style="font-weight:bold" id="${key}-${i}">*${space.units[key][i].name} (${key})*</li>`;
                         moved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       } else {
                         html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
-console.log("pushing into unmoved units with idx: " + i + " --- " + space.units[key][i].type);
                         unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
                       }
                     }
@@ -2617,6 +2587,8 @@ console.log("pushing into unmoved units with idx: " + i + " --- " + space.units[
                 unmoved_units : unmoved_units ,
                 moved_units : moved_units ,
                 destination : destination_spacekey ,
+		units_to_move : units_to_move ,
+		max_formation_size : max_formation_size ,
               }
 
 
@@ -2624,14 +2596,10 @@ console.log("pushing into unmoved units with idx: " + i + " --- " + space.units[
 	      // auto-move if only 1 unit
 	      //
 	      let can_we_quick_move = false;
-	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; console.log("setting quick move to true"); } 
-
-console.log("moved and unmoved units");
-console.log(JSON.stringify(mobj.moved_units));
-console.log(JSON.stringify(mobj.unmoved_units));
+	      if (mobj.moved_units.length == 0 && mobj.unmoved_units.length == 1) { can_we_quick_move = true; } 
 
 	      if (can_we_quick_move == false) {
-                his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+   	        his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
               }
 
 	      html += `<li class="option" id="end">finish</li>`;
@@ -2652,18 +2620,38 @@ console.log(JSON.stringify(mobj.unmoved_units));
 
 	        let x = id.split("-");
 	        let f = x[0];
-	        let idx = x[1];
+	        let idx = parseInt(x[1]);
+
+	        let uob = his_self.returnOnBoardUnits(f);
 
 	        let does_units_to_move_have_unit = false;
 	        for (let z = 0; z < units_to_move.length; z++) {
-	          if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	          if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+		    does_units_to_move_have_unit = true;
+		    break;
+		  }
 	        }
 
 	        if (does_units_to_move_have_unit) {
+
+	          if (uob.overcapacity == 1) {
+	            alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	            return;
+	          }
+
 	          for (let z = 0; z < units_to_move.length; z++) {
-	            if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
+	            if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+		      units_to_move.splice(z, 1);
+		      break;
+		    }
 	          }
 	        } else {
+
+	          if (uob.overcapacity == 1) {
+	            alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	            return;
+	          }
+
 
 	          //
 	          // check for max formation size
@@ -2683,13 +2671,11 @@ console.log(JSON.stringify(mobj.unmoved_units));
 	          units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
 	        }
 
-console.log("running select units interface with units_to_move 2: " + units_to_move.length);
                 selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 
               });
 
 	      if (can_we_quick_move) {
-console.log("we are in quick move 1");
 		units_to_move = JSON.parse(JSON.stringify(mobj.unmoved_units));
 	        selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	        his_self.displaySpace(source_spacekey);
@@ -2697,11 +2683,8 @@ console.log("we are in quick move 1");
 		his_self.updateStatus("deploying...");
 		return;
 	      }
-
-
             }
 
-console.log("running select units interface with units_to_move 1: " + units_to_move.length);
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
           },
 
@@ -2905,7 +2888,9 @@ console.log("running select units interface with units_to_move 1: " + units_to_m
    	    unmoved_units : unmoved_units ,
    	    moved_units : moved_units ,
 	    destination : "" ,
- 	  }
+	    units_to_move : units_to_move ,
+	    max_formation_size : max_formation_size , 
+	  }
 
    	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 	  html += `<li class="option" id="end">finish</li>`;
@@ -2926,18 +2911,41 @@ console.log("running select units interface with units_to_move 1: " + units_to_m
 
 	    let x = id.split("-");
 	    let f = x[0];
-	    let idx = x[1];
+	    let idx = parseInt(x[1]);
+
+	    let uob = his_self.returnOnBoardUnits(f);
 
 	    let does_units_to_move_have_unit = false;
 	    for (let z = 0; z < units_to_move.length; z++) {
-	      if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
+	      if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+	        does_units_to_move_have_unit = true; 
+		break; 
+	      }
 	    }
 
 	    if (does_units_to_move_have_unit) {
-	      for (let z = 0; z < units_to_move.length; z++) {
-	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
+
+	      if (uob.overcapacity == 1) {
+	        alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	        return;
 	      }
+
+	      for (let z = 0; z < units_to_move.length; z++) {
+	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+		  units_to_move.splice(z, 1);
+		  break;
+		}
+	      }
+
+	      // movement overlay, so force fadeout
+	      his_self.available_units_overlay.fadeOut(true);
+
 	    } else {
+
+	      if (uob.overcapacity == 1) {
+	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of shifting forces in 1-UNIT increments");
+	        return;
+	      }
 
 	      //
 	      // check for max formation size
@@ -3505,6 +3513,8 @@ console.log("running select units interface with units_to_move 1: " + units_to_m
    	    unmoved_units : unmoved_units ,
    	    moved_units : moved_units ,
 	    destination : spacekey ,
+	    units_to_move : units_to_move ,
+	    max_formation_size : max_formation_size ,
  	  }
 
           // 
@@ -3971,270 +3981,6 @@ console.log("running select units interface with units_to_move 1: " + units_to_m
     return !already_committed;
   } 
     
-
-  //canPlayerMoveFormationOverPass(his_self, player, faction) {
-  //  // no for protestants early-game
-  //  if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
-  //  let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
-  //  for (let i = 0; i < spaces_with_units.length; i++) {
-  //    if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
-  //      for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
-  //	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked != true) {
-  //	    return 1;
-  //	  }
-  //      }
-  //    }
-  //  }
-  //  return 0;
-  //}
-/******
-  async playerMoveFormationOverPass(his_self, player, faction, ops_to_spend=0, ops_remaining=0, movement_obj={}) {
-
-    let parent_faction = faction;
-    let units_to_move = [];
-    let cancel_func = null;
-    let spacekey = "";
-    let space = null;
-    let protestant_player = his_self.returnPlayerOfFaction("protestant");
-    let parent_player = his_self.returnPlayerCommandingFaction(faction);
-
-	//
-	// first define the functions that will be used internally
-	//
-	let selectDestinationInterface = function(his_self, units_to_move) {  
-    	  his_self.playerSelectSpaceWithFilter(
-
-            "Select Destination for these Units",
-
-      	    function(space) {
-	      // no-one can move into electorates before schmalkaldic league forms
-              if (his_self.game.player != protestant_player && his_self.game.state.events.schmalkaldic_league == 0) {
-		if (space.type == "electorate") { return 0; }
-	      }
-	      if (space.neighbours.includes(spacekey)) {
-		if (space.pass) {
-		  if (space.pass.includes(spacekey)) { return 1; }
-		}
-              }
-	      return 0;
-            },
-
-      	    function(destination_spacekey) {
-
-	      units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
-	
-	      let does_movement_include_cavalry = 0;
-	      for (let i = 0; i < units_to_move.length; i++) {
-		if (units_to_move[i].type === "cavalry") {
-		  does_movement_include_cavalry = 1;
-		}
-	      }
-
-	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
-	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
-	      }
-              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
-	      his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	      his_self.endTurn();
-
-	    },
-
-	    cancel_func,
-
-	    true 
-
-	  );
-	}
-
-	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
-
-	  let unmoved_units = [];
-	  let moved_units = [];
-
-          space = his_self.game.spaces[spacekey];
-	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
-	  let msg = "Max Formation Size: " + max_formation_size + " units";
-	  let html = "<ul>";
-	  for (let key in space.units) {
-	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
-	      for (let i = 0; i < space.units[key].length; i++) {
-	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
-	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
-	    	    let does_units_to_move_have_unit = false;
-	    	    for (let z = 0; z < units_to_move.length; z++) {
-	    	      if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
-	    	    }
-	            if (does_units_to_move_have_unit) {
-	              html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[key][i].name} (${key})*</li>`;
-		      moved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
-	            } else {
-	              html += `<li class="option" id="${key}-${i}">${space.units[key][i].name} (${key})</li>`;
-		      unmoved_units.push({ faction : key , idx : i , type : space.units[key][i].type });
-	            }
-	          }
-	        }
-	        }
-	      }
-	    }
-	  }
-
-	  let mobj = {
-	    space : space ,
-	    faction : faction ,
-   	    source : spacekey ,
-   	    unmoved_units : unmoved_units ,
-   	    moved_units : moved_units ,
-	    destination : "" ,
- 	  }
-
-   	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
-	  html += `<li class="option" id="end">finish</li>`;
-	  html += "</ul>";
-
-	  his_self.updateStatusWithOptions(msg, html);
-
-          $('.option').off();
-          $('.option').on('click', function () {
-
-            let id = $(this).attr("id");
-
-	    if (id === "end") {
-	      his_self.movement_overlay.hide();
-	      selectDestinationInterface(his_self, units_to_move);
-	      return;
-	    }
-
-	    let x = id.split("-");
-	    let f = x[0];
-	    let idx = x[1];
-
-	    let does_units_to_move_have_unit = false;
-	    for (let z = 0; z < units_to_move.length; z++) {
-	      if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { does_units_to_move_have_unit = true; break; }
-	    }
-
-	    if (does_units_to_move_have_unit) {
-	      for (let z = 0; z < units_to_move.length; z++) {
-	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) { units_to_move.splice(z, 1); break; }
-	      }
-	    } else {
-
-
-	      //
-	      // check for max formation size
-	      //
-	      let unitno = 0;
-	      for (let i = 0; i < units_to_move.length; i++) {
-	        if (space.units[units_to_move[i].faction][units_to_move[i].idx].command_value == 0) { unitno++; }
-	        if (unitno >= max_formation_size) { 
-		  max_formation_size = his_self.returnMaxFormationSize(units_to_move, faction, spacekey);
-	          if (unitno >= max_formation_size) { 
-	            alert("Maximum Formation Size: " + max_formation_size);
-	            return;
-		  }
-	        }
-	      }
-
-	      units_to_move.push( { faction : f , idx : idx , type : space.units[f][idx].type });
-	    }
-
-	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	  });
-	}
-	//
-	// end select units
-	//
-
-
-    his_self.playerSelectSpaceWithFilter(
-
-      "Select Town from which to Move Units:",
-
-      function(space) {
-	for (let z in space.units) {
-	  let fluis = his_self.returnFactionLandUnitsInSpace(z, space);
-	  if (space.pass.length > 0 && fluis > 0 && faction === z) {
-	    return 1;
-          }
-	}
-	return 0;
-      },
-
-
-      function(skey) {
-
-	spacekey = skey;
-
-        let space = his_self.game.spaces[spacekey];
-
-	//
-	// is this a rapid move ?
-	//
-	let max_formation_size = his_self.returnMaxFormationSize(space.units[faction]);
-	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space);
-	let can_we_quick_move = false;
-	if (max_formation_size >= units_in_space) { can_we_quick_move = true; }
-
-	if (can_we_quick_move == true) {
-
-	  let msg = "Choose Movement Option: ";
-	  let html = "<ul>";
-	  html += `<li class="option" id="auto">move everything (auto)</li>`;
-	  html += `<li class="option" id="manual">select units (manual)</li>`;
-	  html += "</ul>";
-	  his_self.updateStatusWithOptions(msg, html);
-
-          $('.option').off();
-          $('.option').on('click', function () {
-
-	    $('.option').off();
-            let id = $(this).attr("id");
-
-	    if (id === "auto") {
-	      for (let key in space.units) {
-	        if (his_self.returnPlayerCommandingFaction(key) == his_self.game.player) {
-	          for (let i = 0; i < space.units[key].length; i++) {
-	            if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-		      units_to_move.push({ faction : key , idx : i , type : space.units[key][i].type });
-	            }
-	          }
-	        }
-	      }
-	      selectDestinationInterface(his_self, units_to_move);
-	      return;
-	    }
-
-	    if (id === "manual") {
-	      //
-	      // we have to move manually
-	      //
-	      selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	      return;
-	    }
-
-	  });
-
-	} else {
-
-	  //
-	  // we have to move manually
-	  //
-	  selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	  return;
-
-	}
-      },
-
-      cancel_func,
-
-      true,
-
-    );
-
-  }
-*****/
 
   canPlayerNavalMove(his_self, player, faction) {
 
@@ -5396,8 +5142,6 @@ console.log("running select units interface with units_to_move 1: " + units_to_m
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
-
-console.log("is calvin debater committed? " + his_self.canPlayerCommitDebater("protestant", "calvin-debater"));
 
 	if (id === "french" && his_self.canPlayerCommitDebater("protestant", "calvin-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 

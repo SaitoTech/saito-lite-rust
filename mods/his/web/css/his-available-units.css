@@ -1,0 +1,71 @@
+
+
+
+.movement-overlay  .available-units-overlay {
+    display: flex;
+    flex-direction: rows;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    column-gap: 0.5rem;
+    width: 100%;
+    row-gap: 0px;
+    position: relative;
+    top: 0px;
+    height: auto;
+    max-width: 100%;
+    min-width: 100%;
+    text-align: center;
+    justify-items: center;
+    left: unset !important;
+    transform: unset !important;
+    margin-top: 1rem;
+    z-index:9999;
+}
+
+.available-units-overlay {
+    display: flex;
+    flex-direction: row;
+    row-gap: 1px;
+    position: absolute;
+    top: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    width: max-content;
+    height: max-content;
+    max-width: max-content;
+    min-width: min-content;
+    text-align: center;
+    justify-items: center;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 5rem;
+    z-index:9999;
+}
+
+.available-units-overlay .army_tile {
+    position: relative;
+    margin-left: 0px !important;
+    margin-right 0px !important;
+    margin-top: 0px !important;
+    margin-bottom 0px !important;
+}
+.available-units-overlay .army_tile {
+    opacity: 0.90;
+}
+.available-units-overlay .army_tile:hover {
+    opacity: 1;
+}
+.available-units-overlay .army_tile.unavailable {
+    opacity: 0.6;
+}
+.available-units-overlay .army_tile.unavailable:hover {
+    opacity: 0.6;
+}
+.available-units-overlay .army_tile.nonopaque {
+    opacity: 1;
+}
+.available-units-overlay .army_tile.opaque {
+    opacity: 0.5;
+}
+

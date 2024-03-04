@@ -1700,28 +1700,33 @@
 	//
 	// TODO -- cannot pick an invasion card played earlier this turn
 	//
-        let msg = "Select Invasion Card:";
-        let html = '<ul>';
-        html += '<li class="option showcard" id="216">Ottoman Invasion</li>';
-        html += '<li class="option showcard" id="214">Imperial Invasion</li>';
-        html += '<li class="option showcard" id="213">Austrian Invasion</li>';
-        html += '<li class="option showcard" id="211">Spanish Invasion</li>';
-        html += '<li class="option showcard" id="206">French Invasion</li>';
-        html += '<li class="option showcard" id="202">French Constable Invades</li>';
-        html += '</ul>';
+	if (his_self.game.player == his_self.returnPlayerOfFaction(winner)) {
 
-        his_self.updateStatusWithOptions(msg, html);
+          let msg = "Select Invasion Card:";
+          let html = '<ul>';
+          html += '<li class="option showcard" id="216">Ottoman Invasion</li>';
+          html += '<li class="option showcard" id="214">Imperial Invasion</li>';
+          html += '<li class="option showcard" id="213">Austrian Invasion</li>';
+          html += '<li class="option showcard" id="211">Spanish Invasion</li>';
+          html += '<li class="option showcard" id="206">French Invasion</li>';
+          html += '<li class="option showcard" id="202">French Constable Invades</li>';
+          html += '</ul>';
 
-        $('.option').off();
-        $('.option').on('click', function () {
+          his_self.updateStatusWithOptions(msg, html);
 
-	  his_self.updateStatus("acknowledge...");
-          let card = $(this).attr("id");
-	  his_self.addMove("reshuffle_diplomacy_deck");
-	  his_self.addMove("diplomacy_card_event\t"+winner+"\t"+card);
-	  his_self.endTurn();
+          $('.option').off();
+          $('.option').on('click', function () {
 
-	});
+	    his_self.updateStatus("acknowledge...");
+            let card = $(this).attr("id");
+	    his_self.addMove("reshuffle_diplomacy_deck");
+	    his_self.addMove("diplomacy_card_event\t"+winner+"\t"+card);
+	    his_self.endTurn();
+
+	  });
+	} else {
+	  his_self.updateStatus("Opponent playing " + his_self.popup("215"));
+	}
 
         return 0;
       },
@@ -1796,6 +1801,8 @@
 
 	let p = his_self.returnPlayerOfFaction("protestant");
 	let d = his_self.rollDice(6);
+
+	his_self.rollDice("Secret Protestant Circle - rolls: " + d);
 
 	if (d <= 3) {
 	  his_self.updateLog("Protestants may flip an Italian and Spanish space");
@@ -2430,7 +2437,6 @@ console.log("considering: " + space.key);
 	  if (!his_self.areAllies("england", "scotland") && !his_self.areEnemies("england", "scotland")) { target_scotland = true; }
 	  if (!his_self.areAllies("england", "france") && !his_self.areEnemies("england", "france")) { target_france = true; }
 
-alert("HERE");
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("england")) {
 
           let msg = "Declare War on Whom?";
@@ -6815,11 +6821,13 @@ console.log("008 eventing!");
 	return 1;
       },
     }
+    let dom_img = "cards/HIS-063.svg";
+    if (this.game.players.length == 2) { csr_img = "cards/HIS-063-2P.svg"; }
     deck['063'] = { 
-      img : "cards/HIS-063.svg" , 
+      img : dom_img , 
       name : "Dissolution of the Monasteries" ,
       ops : 4 ,
-      turn : 0 ,
+      turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
@@ -10237,7 +10245,7 @@ console.log("total defenders: " + total_defenders);
 	    	  let action = $(this).attr("id");
 
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
-		    if (his_self.game.spaces[spacekey].units[action][z].type == "mercenary") {
+		    if (his_self.game.spaces[spacekey].units[action][z].type === "mercenary") {
 		      his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
 		    }
 		  }
@@ -10246,7 +10254,7 @@ console.log("total defenders: " + total_defenders);
 		});
 
 	      } else {
-		for (let z = his_self.game.spaces[spacekey].units[factions[0]].length-1; z >= 0; z--) {
+		for (let z = 0; z < his_self.game.spaces[spacekey].units[factions[0]].length; z++) {
 		  his_self.addMove(`destroy_unit_by_index\t${factions[0]}\t${spacekey}\t${z}`);
 		}
 		his_self.endTurn();
@@ -11158,7 +11166,35 @@ if (this.game.players.length == 2) {
     delete deck["103"];
     delete deck["108"];
     delete deck["110"];
+    delete deck["111"];
+    delete deck["112"];
+    delete deck["113"];
+    delete deck["114"];
+    delete deck["115"];
+    delete deck["116"];
+
 }
+if (this.game.options.scenario === "1532") {
+
+    delete deck["008"];
+    delete deck["009"];
+    delete deck["010"];
+    delete deck["011"];
+    delete deck["013"];
+    delete deck["038"];
+    delete deck["039"];
+    delete deck["041"];
+    delete deck["043"];
+    delete deck["078"];
+    delete deck["083"];
+    delete deck["085"];
+    delete deck["088"];
+    delete deck["095"];
+    delete deck["096"];
+    delete deck["112"];
+    delete deck["113"];
+}
+
 
     for (let key in deck) {
       deck[key].key = key;

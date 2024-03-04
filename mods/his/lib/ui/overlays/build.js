@@ -17,12 +17,12 @@ class BuildOverlay {
 
 	hide() {
 		this.overlay.hide();
+		try { 
+		  this.mod.available_units_overlay.hide();
+		} catch (err) {}
 	}
 
 	pullHudOverOverlay() {
-		//
-		// pull GAME HUD over overlay
-		//
 		let overlay_zindex = parseInt(this.overlay.zIndex);
 		if (document.querySelector('.hud')) {
 			document.querySelector('.hud').style.zIndex = overlay_zindex + 1;
@@ -30,9 +30,6 @@ class BuildOverlay {
 		}
 	}
 	pushHudUnderOverlay() {
-		//
-		// push GAME HUD under overlay
-		//
 		let overlay_zindex = parseInt(this.overlay.zIndex);
 		if (document.querySelector('.hud')) {
 			document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
@@ -49,6 +46,7 @@ class BuildOverlay {
 		this.ops_available = ops;
 		this.ops_spent = cost;
 		this.max_units = his_self.returnNumberOfUnitsAvailableForConstruction(faction, unit);
+		let max_buildable_units = (ops / cost);
 
 		//
 		// if we cannot possibly build more than 1 unit, do not show the 
@@ -71,11 +69,14 @@ class BuildOverlay {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/squadron.jpg)';
 		}
 
+		this.mod.available_units_overlay.renderBuild(faction, unit, ops, cost, (num) => {
+	          this.hide();
+	    	  mycallback(num, this.cost);
+		});
 		this.attachEvents(faction, unit, ops, cost, mycallback);
 	}
 
 	attachEvents(faction, unit, ops, cost, mycallback) {
-
 	  document.querySelector(".fewer-units").onclick = (e) => {
 	    if (this.units == 1) { alert("cannot produce less than one unit"); return; }
 	    this.units--;

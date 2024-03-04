@@ -43,6 +43,8 @@
         if (game_mod.game.state.leaders.francis_i == 1) { base += 1; }        
         if (game_mod.game.state.leaders.henry_ii == 1) { base += 0; }        
 
+        base += game_mod.game.state.france_card_bonus;
+
         // TODO - bonus for home spaces under protestant control
         return base;
 

@@ -11,6 +11,12 @@
 	--p4-color-lite: #644700e9; /* brown */
 }
 
+@font-face {
+    font-family: bagnard-sans;
+    src: url("/settlers/bagnard-sans.otf") format("opentype");
+	/* https://open-foundry.com/fonts/bagnard_sans_regular */
+}
+
 .mobile-log-tab {
 	background-color: #d3c38df5;
 	color: #424143;
@@ -140,7 +146,7 @@ dt {
     transition: background 2s;
     background-size: cover;
     background-blend-mode: multiply;
-    background-image: url(../img/settlers-ocean.svg);
+    background-image: url(/settlers/img/settlers-ocean.svg);
     background-position: center;
 }
 
@@ -151,7 +157,7 @@ dt {
     padding: 150px 135px 350px;
     box-sizing: content-box;
     cursor: grab;
-    background-image: url(../img/settlers-coast.svg);
+    background-image: url(/settlers/img/settlers-coast.svg);
     background-size: 88%;
     background-repeat: no-repeat;
     background-position: 85px 90px;
@@ -1004,6 +1010,7 @@ ul.horizontal_list li.iconoption {
 
 .saitoa,
 #saito-alert-box {
+	font-family: bagnard-sans;
 	border: 5px solid #424143;
 	background-color: #d3c38df5;
 	border-image: url(/settlers/img/border.png);

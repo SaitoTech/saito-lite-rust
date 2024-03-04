@@ -6,6 +6,10 @@ class MovementOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, false);
+		this.fade_out_available_units = false;
+		this.mobj = null;
+		this.selectUnitsInterface = null;
+		this.selectDestinationInterface = null;
 	}
 
 	hide() {
@@ -21,6 +25,9 @@ class MovementOverlay {
 	) {
 		let his_self = this.mod;
 		let space = mobj.space;
+		this.mobj = mobj;
+		this.selectUnitsInterface = selectUnitsInterface;
+		this.selectDestinationInterface = selectDestinationInterface;
 		let faction = mobj.faction;
 		let source = mobj.source;
 		let destination = mobj.destination;
@@ -51,6 +58,22 @@ class MovementOverlay {
 		let moved_units = mobj.moved_units;
 		let unmoved_units = mobj.unmoved_units;
 		let destination_units = [];
+
+console.log("MOVED: " + JSON.stringify(moved_units));
+
+		//
+		// reset on-chit-ui if no moved units
+		//
+		if (moved_units.length == 0) { 
+		  this.fade_out_available_units = false; 
+		  document.querySelectorAll(".army_tile").forEach((el) => {
+		    if (el.classList.contains("nonopaque")) {
+		      el.classList.remove("nonopaque");
+		      el.classList.add("opaque");
+		    }
+		  });
+		}
+
 
 		let s = destination;
 		try {
@@ -83,15 +106,29 @@ class MovementOverlay {
 			space: space,
 			from: from,
 			to: to,
-			max_formation_size: max_formation_size
+			max_formation_size: max_formation_size ,
+			units_to_move : units_to_move ,
+			selectUnitsInterface : selectUnitsInterface ,
+			selectDestinationInterface : selectDestinationInterface ,
 		};
 
 		this.overlay.show(MovementOverlayTemplate(obj, this.mod));
+		this.mod.available_units_overlay.renderMove(mobj, faction, space.key);
+		if (this.fade_out_available_units) { this.mod.available_units_overlay.fadeOut(); }
 
 		this.attachEvents(obj);
 	}
 
-	attachEvents(obj) {}
+	attachEvents(obj) {
+	  
+	  document.querySelectorAll(".movement-unit.option").forEach((el) => {
+	    el.onclick = (e) => {
+	      this.fade_out_available_units = true;
+	    }
+	  });
+
+	}
 }
 
 module.exports = MovementOverlay;
+

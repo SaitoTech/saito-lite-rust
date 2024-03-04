@@ -1082,9 +1082,9 @@ class League extends ModTemplate {
 				let myRank = leag.rank;
 				this.fetchLeagueLeaderboard(leag.id, () => {
 					if (myRank <= 0 && leag.rank > 0) {
-						siteMessage(
-							`You are now ranked ${leag.rank} on the ${leag.name} leaderboard`
-						);
+						if (is_gameover){
+							siteMessage(`You are now ranked ${leag.rank} on the ${leag.name} leaderboard`);	
+						}
 					} else {
 						let point_message = '';
 						if (
@@ -1120,14 +1120,16 @@ class League extends ModTemplate {
 							} on the leaderboard`;
 						}
 
-						if (point_message && rank_message) {
-							siteMessage(
-								`${leag.name}: You ${point_message} and ${rank_message}`
-							);
-						} else if (point_message || rank_message) {
-							siteMessage(
-								`${leag.name}: You ${point_message}${rank_message}`
-							);
+						if (is_gameover){
+							if (point_message && rank_message) {
+								siteMessage(
+									`${leag.name}: You ${point_message} and ${rank_message}`
+								);
+							} else if (point_message || rank_message) {
+								siteMessage(
+									`${leag.name}: You ${point_message}${rank_message}`
+								);
+							}	
 						}
 					}
 					console.log(

@@ -64,7 +64,7 @@ class Mixin extends ModTemplate {
 
   async initialize(app) {
     await super.initialize(app);
-    this.load();
+    await this.load();
     await this.loadCryptos();
     this.app.connection.emit('update_balance');
   }
@@ -125,7 +125,7 @@ class Mixin extends ModTemplate {
       this.mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
       let pc = await this.app.wallet.returnPreferredCryptoTicker();
-      if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
+      if (mixin_self.account_created !== 0 || (pc !== "SAITO" && pc !== "")) {
         if (crypto_module.returnIsActivated()) {
           await this.fetchSafeUtxo();
         }
@@ -141,7 +141,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  async createAccount(callback){
+  async createAccount(callback = null){
     if (this.account_created == 0) {
       await this.sendCreateAccountTransaction(callback);
     }
@@ -155,12 +155,7 @@ class Mixin extends ModTemplate {
       console.warn("No peers");
       return;
     }
-   
-    if (this.mixin.publickey !== "") {
-      console.warn("Mixin Account already created. Skipping");
-      return;
-    }
-
+  
     let data = {
     };
     mixin_self.app.network.sendRequestAsTransaction(
@@ -867,18 +862,35 @@ class Mixin extends ModTemplate {
   }
 
 
-  load() {
+  async load() {
     if (this.app?.options?.mixin) {
       this.mixin = this.app.options.mixin;
       console.log("MIXIN OPTIONS: " + JSON.stringify(this.app.options.mixin));
       if (this.mixin.user_id) {
         this.account_created = 1;
+
+        //check if legacy user        
+        if (typeof this.mixin.pin_token_base64 != 'undefined') {
+          await this.saveLegacy();
+          this.account_created = 0;
+          this.mixin = {};
+          this.save();
+
+          await this.app.wallet.setPreferredCrypto('SAITO', 1);
+          this.app.connection.emit("wallet-updated");
+          this.app.connection.emit('update_identifier', this.publicKey);
+        }
       }
     }
   }
 
   save() {
     this.app.options.mixin = this.mixin;
+    this.app.storage.saveOptions();
+  }
+
+  async saveLegacy() {
+    this.app.options.mixin_legacy = this.mixin;
     this.app.storage.saveOptions();
   }
 

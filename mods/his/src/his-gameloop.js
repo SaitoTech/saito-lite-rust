@@ -62,10 +62,11 @@ if (this.game.options.scenario != "is_testing") {
 
 
 	  if (this.game.players.length == 2) {
-	    //this.game.queue.push("diplomacy_phase");
 	    this.game.queue.push("diplomacy_phase_2P");
 	  } else {
-	    this.game.queue.push("diplomacy_phase");
+	    if (this.game.state.starting_round != this.game.state.round) {
+	      this.game.queue.push("diplomacy_phase");
+	    }
 	  }
 
 
@@ -180,7 +181,7 @@ if (this.game.options.scenario == "is_testing") {
 	  //
 	  // show all - will only trigger for relevant faction
 	  //
-	  if (this.game.state.round == 1) {
+	  if (this.game.state.round == 1 || (this.game.state.round == this.game.state.starting_round)) {
 	    this.game.queue.push("show_overlay\twelcome\tprotestant");
 	    this.game.queue.push("show_overlay\twelcome\tpapacy");
 	    this.game.queue.push("show_overlay\twelcome\thapsburg");
@@ -400,9 +401,12 @@ if (this.game.options.scenario == "is_testing") {
   this.game_help.render(TutorialTemplate, {
     help : `First Time Playing?` ,
     content : `
-	Here I Stand opens with the publication of Luther's 95 Theses in 1517, which sparked the start of the Protestant Reformation in Wittenburg. Four years later, the spreading Protestant faith led to the convocation of the Diet of Worms, an Imperial assembly held in the Free City of Worms where Martin Luther refused to recant and was declared a heretic.
+
+	Here I Stand opens with the publication of Martin Luther's 95 Theses, which marked the start of the Protestant Reformation, and the convocation of the Diet of Worms, an Imperial assembly where Luther refused to recant and was declared a heretic.
+	
 	<p></p>
-	These opening acts set the stage for the religious and military conflict that forms the heart of Here I Stand. In the early period, the Protestants should focus on reforming spaces in Germany, and strive to control the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). The Papacy should focus on slowing the Protestant advance while expanding its territorial claims and defusing military confrontations in Italy.
+
+	The early game occurs before the Protestants form a German Defense League and become an independent military power. During this period the Protestants should convert spaces in Germany, and particularly the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). The Papacy should slow the Protestant advance while expanding its own territorial claims and alliances in Italy.
     `,
     img : "/his/img/backgrounds/tutorials/95theses.jpg",
     line1 : "first",
@@ -693,15 +697,6 @@ if (this.game.options.scenario == "is_testing") {
         if (mv[0] === "protestants-place-maurice-of-saxony-round-six") {
 
 	  this.game.queue.splice(qe, 1);
-
-if (this.game.options.scenario === "is_testing") {
-  this.controlSpace("protestant", "brandenburg");
-  this.controlSpace("protestant", "trier");
-  this.game.spaces["brandenburg"].home = "protestant";
-  this.game.spaces["trier"].home = "protestant";
-  this.displaySpace("brandenburg");
-  this.displaySpace("trier");
-}
 
 	  let player = this.returnPlayerOfFaction("protestant");
 
@@ -1466,164 +1461,27 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  return 1;
 	}
 
+
 	if (mv[0] === "is_testing") {
-
-	  // moar debaters
-          this.addDebater("papacy", "gardiner-debater");
-          this.addDebater("papacy", "canisius-debater");
-    	  this.addDebater("protestant", "bucer-debater");
-
-          // DEBATERS
-          this.addDebater("papacy", "eck-debater");
-          this.addDebater("papacy", "campeggio-debater");
-          this.addDebater("papacy", "aleander-debater");
-          this.addDebater("papacy", "tetzel-debater");
-          this.addDebater("papacy", "cajetan-debater");
-
-          this.addDebater("protestant", "luther-debater");
-          this.addDebater("protestant", "melanchthon-debater");
-          this.addDebater("protestant", "carlstadt-debater");
-
-          this.addUnit("protestant", "wittenberg", "regular");
-          this.addUnit("protestant", "wittenberg", "regular");
-          this.addReformer("protestant", "wittenberg", "luther-reformer");
-      	  this.addDebater("protestant", "luther-debater");  
-
-	  this.addDebater("protestant", "oekolampadius-debater");
-	  this.addDebater("protestant", "zwingli-debater");
-	  this.addReformer("protestant", "zurich", "zwingli-reformer");
-	  this.addDebater("papacy", "contarini-debater");
-	  this.addDebater("protestant", "bullinger-debater");
-	  this.addDebater("protestant", "farel-debater");
-	  this.addDebater("protestant", "cop-debater");
-	  this.addDebater("protestant", "olivetan-debater");
-	  this.addDebater("protestant", "calvin-debater");
-	  this.addReformer("protestant", "geneva", "calvin-reformer");
-	  this.addDebater("protestant", "cranmer-debater");
-	  this.addReformer("protestant", "london", "cranmer-reformer");
-	  this.addDebater("protestant", "latimer-debater");
-	  this.addDebater("protestant", "coverdale-debater");
-	  this.addDebater("papacy", "pole-debater");
-	  this.addDebater("papacy", "caraffa-debater");
-	  this.addDebater("protestant", "wishart-debater");
-	  this.addDebater("protestant", "knox-debater");
-	  this.addDebater("papacy", "loyola-debater");
-	  this.addDebater("papacy", "faber-debater");
-	  this.addDebater("papacy", "canisius-debater");
-
-	  // FRANCE
-	  this.game.state.leaders.francis_i = 1;
-          this.addArmyLeader("france", "paris", "francis-i");
-	  this.addRegular("france", "glasgow", 2);
-	  this.setAllies("france", "scotland");
-	  this.controlSpace("france", "ragusa");
-	  this.addRegular("france", "ragusa", 1);
-	  this.addNavalSquadron("france", "ragusa", 4); 
-	  this.addRegular("france","graz", 1);
-
-	  // HAPSBURG
-          this.addArmyLeader("hapsburg", "gibraltar", "duke-of-alva");
-          this.addArmyLeader("hapsburg", "naples", "charles-v");
-	  this.addRegular("hapsburg", "naples", 4);
-	  this.addNavalSquadron("hapsburg", "naples", 2);
-	  this.addRegular("hapsburg", "nuremberg", 1);
-	  this.addRegular("hapsburg", "worms", 1);
-	  this.addRegular("hapsburg", "kassel", 1);
-	  this.addRegular("hapsburg", "antwerp", 4);
-
-	  // PAPACY
-          this.addMercenary("papacy", "siena", 4);
-          this.addArmyLeader("papacy", "ravenna", "renegade");
-          this.addRegular("papacy", "linz", 4);
-          this.addRegular("papacy", "ravenna", 4);
-          this.addRegular("papacy", "ravenna", 2);
-          this.addRegular("papacy", "rome", 2);
-    	  this.addNavalSquadron("papacy", "rome", 1);
-    	  this.activateMinorPower("papacy", "venice");
-	  this.controlSpace("papacy", "siena");
-	  this.addMercenary("papacy", "siena", 1);
-	  this.addMercenary("papacy", "siena", 1);
-	  this.addMercenary("papacy", "siena", 1);
-	  this.addRegular("papacy", "siena", 1);
-	  this.addRegular("hapsburg", "besancon", 1);
-
-
-	  // PROTESTANT
-    	  this.addRegular("protestant", "worms", 3);
-    	  this.addRegular("protestant", "graz", 3);
-	  for (let key in this.game.spaces) {
-	    if (this.game.spaces[key].language == "german") {
-	      this.convertSpace("protestant", key);
-	    }
-	  }
-
-
-	  // PAPACY CONVERSIONS BACK IN GERMANY
-	  this.convertSpace("catholic", "munster");
-	  this.convertSpace("catholic", "bremen");
-	  this.controlSpace("papacy", "regensburg");
-
-	  // VENICE
-    	  this.addRegular("venice", "venice", 2);
-    	  this.addNavalSquadron("venice", "venice", 1);
-
-	  // ENGLAND
-    	  this.addRegular("england", "stirling", 4);
-	  this.game.state.events.henry_viii_healthy_edward = 1;
-
-	  this.setAllies("protestant", "france");
-	  this.setAllies("protestant", "ottoman");
-	  this.setAllies("papacy", "hapsburg");
-	  this.setAllies("papacy", "venice");
-
-	  this.addRegular("venice", "ravenna", 1);
-	  this.addRegular("papacy", "turin", 4);
-	  this.addRegular("genoa", "genoa", 2);
-
-	  this.setEnemies("papacy", "france");
-	  this.addRegular("france","milan", 1);
-	  this.addMercenary("france","milan", 2);
-	  this.controlSpace("france", "trent");
-	  this.addRegular("france","trent", 1);
-	  this.addRegular("france","trent", 1);
-	  this.addRegular("france","trent", 1);
-	  this.addRegular("france","trent", 1);
-	  this.addRegular("france","trent", 1);
-	  this.addArmyLeader("france", "trent", "montmorency");
-
-	  this.setAllies("papacy", "hapsburg");
-	  this.setActivatedPower("papacy", "hapsburg");
-          this.setActivatedPower("hapsburg", "genoa");
-	  this.setActivatedPower("protestant", "france");
-	  this.controlSpace("hapsburg", "genoa");
-
-          this.addReformer("protestant", "modena", "zwingli-reformer");
-
-    	  this.game.state.events.ottoman_piracy_enabled = 1;
-    	  this.game.state.events.ottoman_corsairs_enabled = 1;
-
-	  // OTTOMAN
-	  this.addArmyLeader("ottoman", "sofia", "ibrahim-pasha");
-	  this.addArmyLeader("ottoman", "bucharest", "suleiman");
-	  this.addMercenary("ottoman", "bucharest", 2);
-	  this.addRegular("ottoman","athens", 3);
-	  this.addRegular("ottoman","istanbul", 3);
-
-
-	  // CARDS
-//	  this.addCard("papacy", "102");
-//	  this.addCard("protestant", "105");
 
 	  // SCHMALKALDIC LEAGUE
 	  let deck = this.returnDeck();
 	  deck['013'].onEvent(this, "protestant");
 
-	  // CLEAR FLORENCE
-	  this.game.spaces["florence"].units["independent"] = [];
+    	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "is_1532") {
+
+	  // SCHMALKALDIC LEAGUE
+	  let deck = this.returnDeck();
+	  deck['013'].onEvent(this, "protestant");
 
     	  this.game.queue.splice(qe, 1);
-
 	  return 1;
+
 	}
 
 
@@ -1791,6 +1649,8 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let skip_avoid_battle = parseInt(mv[6]);
 	  let is_this_an_interception = 0;
 	  if (parseInt(mv[7]) > 0) { is_this_an_interception = 1; }
+
+	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 
 	  this.game.queue.splice(qe, 1);
 
@@ -3302,6 +3162,30 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	  let game_self = this;
 	  let my_faction = "";
 
+
+  this.game_help.render(TutorialTemplate, {
+    help : `Diet of Worms` ,
+    content : `
+
+	The Diet of Worms was an Imperial Assembly convened by the Hapsburg Emperor in 1521 in the Free Imperial City of Worms. Its focus of discussion was on Martin Luther's critique of the Catholic Church and the question of whether he would recant. Luther refused to recant and the assembly ended with him fleeing Worms under the protection of Frederick III of Saxony before being condemned as a heretic by the religious and political establishment.
+
+	<p></p>
+
+	In simulating this event, the Protestant and Papacy both pick a card to reflect their level of commitment to the debate. In the two player game, the Protestants add +4 to the value of the card selected, while the Papacy pulls a card from the deck and adds its value. In all other games, the Hapsburg player contributes the second card for the Papacy.
+
+	<p></p>
+
+	Both players roll the appropriate number of dice and hit on all rolls of 5 or 6. The winner flips the difference in hits to the Protestant or Catholic faith.
+
+    `,
+    img : "/his/img/backgrounds/diet_of_worms.jpeg",
+    line1 : "diet",
+    line2 : "of worms?",
+    fontsize : "2.1rem" ,
+  });
+
+
+
 	  // first time it happens, lets update menu
 	  this.displayCardsLeft();
 
@@ -3635,6 +3519,15 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
+
+console.log("I: " + i);
+console.log("z[i].name " + JSON.stringify(z[i]));
+console.log("obj: " + JSON.stringify(z[i]));
+	    //
+	    // maybe event has been removed, will fail
+	    //
+	    try {
+
 	    if (z[i].key !== this.game.state.active_card) {
               if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
                 let x = z[i].menuOption(this, stage, this.game.player, extra);
@@ -3645,6 +3538,9 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	        attach_menu_events = 1;
 	      }
 	    }
+
+	    } catch (err) {}
+
 	  }
 	  html += '</ul>';
 
@@ -6475,14 +6371,18 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	  //
 	  // PRINT OUT INFO TO LOG
 	  //
-	  //this.updateLog("Attackers: " + attacker_rolls + " in total rolls");
-	  //for (let i = 0; i < attacker_results.length; i++) {
-	  //  this.updateLog(" ... rolls: " + attacker_results[i]);
-          //}
-	  //this.updateLog("Defenders: " + defender_rolls + " in total rolls");
-	  //for (let i = 0; i < defender_results.length; i++) {
-	  //  this.updateLog(" ... rolls: " + defender_results[i]);
-          //}
+	  this.updateLog("************************");
+	  this.updateLog("******** Assault *******");
+	  this.updateLog("************************");
+	  this.updateLog("Attackers: " + attacker_rolls + " rolls");
+	  for (let i = 0; i < attacker_results.length; i++) {
+	    this.updateLog(" ...: " + attacker_results[i]);
+          }
+	  this.updateLog("Defenders: " + defender_rolls + " rolls");
+	  for (let i = 0; i < defender_results.length; i++) {
+	    this.updateLog(" ...: " + defender_results[i]);
+          }
+
 
 	  //
 	  // things get messy and conditional now, because Ottomans may play
@@ -8116,18 +8016,18 @@ defender_hits - attacker_hits;
 
 	  // Remove the Renegade Leader if in play
 	  let rl_idx = "";
-	  rl_s = his_self.returnSpaceOfPersonage("hapsburg", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\thapsburg\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("papacy", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tpapacy\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("england", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tengland\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("france", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tfrance\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("ottoman", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tottoman\trenegade-leader\t"+rl_s+"\t0"); }
-	  rl_s = his_self.returnSpaceOfPersonage("protestant", "renegade-leader");
-          if (rl_s) { this.game.queue.push("remove_unit\tprotestant\trenegade-leader\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("hapsburg", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\thapsburg\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("papacy", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tpapacy\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("england", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tengland\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("france", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tfrance\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("ottoman", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tottoman\trenegade\t"+rl_s+"\t0"); }
+	  rl_s = his_self.returnSpaceOfPersonage("protestant", "renegade");
+          if (rl_s) { this.game.queue.push("remove_unit\tprotestant\trenegade\t"+rl_s+"\t0"); }
 
 	  // Remove major power alliance markers
 	  this.unsetAllies("hapsburg", "papacy");
@@ -8223,11 +8123,11 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
   this.game_help.render(TutorialTemplate, {
     help : `Your Goal` ,
     content : `
-	Slow the Protestant expansion in Germany and expand Papal control in Italy.
+	<b>Burn Books</b> and hold <b>Theological Debates</b> to slow the Protestant expansion in Germany and flip spaces back to Catholicism. 
 	<p></p>
-	Play events which hurt the Protestants. Or play cards for OPs to <b>Burn Books</b> and hold <b>Theological Debates</b> which flip spaces back to Catholicism. 
-	<p></p>
-	The Papacy can also raise Regulars and Mercenaries to capture strategic keys like Florence and earn 2VP per key and additional cards each turn.
+	The Papacy is the harder faction to learn as it can also play an early-war military strategy. Consider building Regulars and Mercenaries in Rome and using them to capture strategic keys like Florence (the square spaces on the board). You will earn an additional 2 VP from each key you or your allies control and gain additional cards at the beginning of each turn.
+        <p></p>
+	If you do try to take control of additional keys, note that you will need an unbroken line of spaces controlled by the Papacy or your allies connecting your existing keys to these new spaces. If you do not have such a "line of control" you will be unable to assault and may lose all your forces if defeated in a military battle in the space.
     `,
     line1 : "your",
     line2 : "first turn",
@@ -8244,8 +8144,10 @@ if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
     content : `
         Convert spaces to the Protestant religion.
 	<p></p>
-	Play cards for OPs to <b>Publish Treatises</b> and hold <b>Theological Debates</b> to flip to Protestantism. Spend additional OPs to translate the New Testament into any language for bonus reformation attempts in that language zone.
-    `,        
+	<b>Publish Treatises</b> and hold <b>Theological Debates</b> to flip spaces to the Protestant religion. Spend additional OPs on translating the bible into any language for bonus reformation attempts in that language zone.
+	<p></p>
+	Remember that you cannot attempt to reform any space until it is adjacent to an existing Protestant space, so be careful not to use your translation bonuses in non-German regions until you are ready to take advantage of them!
+    `,
     line1 : "your",
     line2 : "first turn",
     fontsize : "2.1rem",      
@@ -8553,6 +8455,23 @@ console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
 	  // removed besieged spaces
 	  this.removeBesiegedSpaces();
 
+	  //
+	  // remove french, hapsburg and ottoman army leaders
+	  //
+	  let rf = ["hapsburg", "france", "ottoman"];
+	  for (let key in this.game.spaces) {
+	    for (let z = 0; z < rf.length; z++) {
+	      let f = rf[z];
+	      for (let i = 0; i < this.game.spaces[key].units[f].length; i++) {
+		let u = this.game.spaces[key].units[f][i];
+		if (u.army_leader || u.navy_leader) {
+		  this.game.spaces[key].units[f].splice(i, 1);
+		  i--;
+		}
+	      }
+	    }
+	  }
+
 //
 // Papacy 
 //
@@ -8593,7 +8512,7 @@ if (this.game.state.round == 2) {
 	  //
 	  // no diplomacy phase round 1
 	  //
-	  if (this.game.state.round == 1 || (this.game.state.round == 7 && this.game.options.scenario === "is_testing")) {
+	  if (this.game.state.round == 1 || (this.game.state.round < this.game.state.starting_round)) {
 
             this.game.queue.push("SHUFFLE\t2");
             this.game.queue.push("DECKRESTORE\t2");
@@ -8939,10 +8858,10 @@ if (this.game.state.round == 2) {
 
                 let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
-//
-// is_testing
-//
-if (this.game.options.scenario == "is_testing") { cardnum = 2; }
+		//
+		// is_testing
+		//
+		if (this.game.options.scenario == "is_testing") { cardnum = 2; }
 
 	        //
 	        // fuggers card -1
@@ -9016,7 +8935,7 @@ if (this.game.options.scenario != "is_testing") {
 	  //
           this.game.queue.push("SHUFFLE\t1");
 	  // FEB 24
-          //this.game.queue.push("DECKRESTORE\t1");
+          this.game.queue.push("DECKRESTORE\t1");
 
 	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
@@ -9025,6 +8944,7 @@ if (this.game.options.scenario != "is_testing") {
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
 
+console.log("BEFORE RESHUFFLE - FHANDS: " + JSON.stringify(this.game.deck[0].fhand));
 
 	  //
 	  // re-add discards
@@ -9034,16 +8954,14 @@ if (this.game.options.scenario != "is_testing") {
       	    discards[i] = this.game.deck[0].cards[i];
       	    delete this.game.deck[0].cards[i];
     	  }
-    	  this.game.deck[0].discards = {};
-
-	  //
-	  // re-add undealt
-	  //
-	  for (let i in this.game.deck[0].cards) {
-	    if (!discards[this.game.deck[0].cards[i]]) {
-      	      discards[i] = this.game.deck[0].cards[i];
-	    }
+	  for (let i in this.game.deck[0].removed) {
+      	    delete this.game.deck[0].cards[i];
+      	    delete discards[i];
     	  }
+	  for (let z = 0; z < this.game.state.removed.length; z++) {
+      	    delete this.game.deck[0].cards[this.game.state.removed[z]];
+	  }
+    	  this.game.deck[0].discards = {};
 
 	  //
 	  // our deck for re-shuffling
@@ -9056,15 +8974,13 @@ if (this.game.options.scenario != "is_testing") {
 	  }
 
 	  //
-	  // remove any removed cards (i.e. Clement VII)
+	  // remove any removed cards again for sanity sake (i.e. Clement VII)
 	  //
 	  for (let z = 0; z < this.game.state.removed.length; z++) {
 	    let key = this.game.state.removed[z];
 	    if (reshuffle_cards[key]) { delete reshuffle_cards[key]; }
 	    if (this.game.deck[0].cards[key]) { delete this.game.deck[0].cards[key]; }
 	  }
-
-
 
 	  //
 	  // remove home cards 
@@ -9078,27 +8994,29 @@ if (this.game.options.scenario != "is_testing") {
 	  if (this.game.deck[0].cards['007']) { delete this.game.deck[0].cards['007']; }
 	  if (this.game.deck[0].cards['008']) { delete this.game.deck[0].cards['008']; }
 
+
 	  //
 	  // new cards this turn
 	  //
-if (this.game.options.scenario == "is_testing") {
-for (let i = this.game.state.round; i < 7; i++) {
-	  this.game.state.round++;
-	  let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);;
-	  for (let key in deck_to_deal) { 
-	    if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
-	      reshuffle_cards[key] = deck_to_deal[key]; 
+	  if (this.game.state.starting_round > this.game.state.round) {
+	    for (let i = this.game.state.round; i < this.game.state.starting_round; i++) {
+	      this.game.state.round++;
+	      let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);
+	      for (let key in deck_to_deal) { 
+	        if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+	          reshuffle_cards[key] = deck_to_deal[key]; 
+	        }
+	      }
+	    }
+	  } else {
+	    let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);;
+	    for (let key in deck_to_deal) { 
+	      if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+	        reshuffle_cards[key] = deck_to_deal[key]; 
+	      }
 	    }
 	  }
-}
-} else {
-	  let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);;
-	  for (let key in deck_to_deal) { 
-	    if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
-	      reshuffle_cards[key] = deck_to_deal[key]; 
-	    }
-	  }
-}
+
 
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
@@ -9109,7 +9027,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
 
 	  // backup any existing DECK #1
-          //this.game.queue.push("DECKBACKUP\t1");
+          this.game.queue.push("DECKBACKUP\t1");
 
 
 	  //
@@ -9119,12 +9037,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // or enter via a Mandatory Event. Place Maurice in any
 	  // electorate under Protestant political control."
 	  //
-//
-// is not debater
-//
-//	  if (this.game.round == 6) {
-//    	    this.game.queue.push("place_protestant_debater\tmaurice_of_saxony\tselect");
-//	  }
 	  if (this.game.round == 2) {
     	    this.game.queue.push("place_protestant_debater\tzwingli\tzurich");
 	  }
@@ -9148,6 +9060,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  // units available to be constructed at this time."
 	  //
     	  //this.game.queue.push("restore\tnaval_leaders");
+
+	
+	  //
+	  // remove any card bonuses
+	  //
+  	  this.game.state.papacy_card_bonus = 0;
+  	  this.game.state.protestant_card_bonus = 0;
+  	  this.game.state.ottoman_card_bonus = 0;
+  	  this.game.state.france_card_bonus = 0;
+  	  this.game.state.england_card_bonus = 0;
+  	  this.game.state.hapsburg_card_bonus = 0;
 
 
 	  this.game.queue.splice(qe, 1);
@@ -10096,6 +10019,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    this.updateLog(this.returnSpaceName(space) + " converts Protestant");
 	    this.updateStatus(this.returnSpaceName(space) + " converts Protestant");
 	  } else {
+	    this.updateLog(this.returnSpaceName(space) + " converts Catholic");
 	    this.updateStatus(this.returnSpaceName(space) + " converts Catholic");
 	  }
 
@@ -10195,12 +10119,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
+
 	  let deckidx = parseInt(mv[1])-1;
 	  let player = parseInt(mv[2]);
 	  let faction = mv[3];
 	  let fhand_idx = this.returnFactionHandIdx(player, faction);
 
 	  if (this.game.player == player) {
+
+
+console.log("EXISTING FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
+
 	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
 	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }
 
@@ -10210,6 +10139,9 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	    // and clear the hand we have dealt
 	    this.game.deck[deckidx].hand = [];
+
+console.log("NEW FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
+
 	  }
 
 	  return 1;

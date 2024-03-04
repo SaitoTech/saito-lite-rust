@@ -408,6 +408,24 @@
 
   }
 
+  removeConquistador(faction, conquistador) {
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      if (this.game.state.conquistadors[i].type === conquistador) {
+	this.game.state.conquistadors.splice(i, 1);
+	return;
+      }
+    }
+  }
+
+  removeExplorer(faction, explorer) {
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].type === explorer) {
+	this.game.state.explorers.splice(i, 1);
+	return;
+      }
+    }
+  }
+
   addExplorer(faction, explorer) {
 
     if (!this.explorers[explorer]) {
@@ -549,6 +567,7 @@
         available_units['regular'] = {};
         available_units['squadron'] = {};
         available_units['cavalry'] = {};
+        available_units['squadron'] = {};
     let deployed_units = {};
 
     //
@@ -697,6 +716,8 @@
       deployed_units[key]['mercenary']['6'] = 0;
       deployed_units[key]['squadron'] = {};
       deployed_units[key]['squadron']['1'] = 0;
+      deployed_units[key]['corsair'] = {};
+      deployed_units[key]['corsair']['1'] = 0;
     }
 
 
@@ -801,6 +822,32 @@
     results.deployed = deployed_units;
     results.available = available_units;
     results.missing = {};
+    for (let key in this.game.spaces) {
+      results.missing[key] = {};
+      results.missing[key]['regular'] = {}
+      results.missing[key]['regular']['1'] = 0;
+      results.missing[key]['regular']['2'] = 0;
+      results.missing[key]['regular']['3'] = 0;
+      results.missing[key]['regular']['4'] = 0;
+      results.missing[key]['regular']['5'] = 0;
+      results.missing[key]['regular']['6'] = 0;
+      results.missing[key]['mercenary'] = {};
+      results.missing[key]['mercenary']['1'] = 0;
+      results.missing[key]['mercenary']['2'] = 0;
+      results.missing[key]['mercenary']['3'] = 0;
+      results.missing[key]['mercenary']['4'] = 0;
+      results.missing[key]['mercenary']['5'] = 0;
+      results.missing[key]['mercenary']['6'] = 0;
+      results.missing[key]['cavalry'] = {};
+      results.missing[key]['cavalry']['1'] = 0;
+      results.missing[key]['cavalry']['2'] = 0;
+      results.missing[key]['cavalry']['3'] = 0;
+      results.missing[key]['cavalry']['4'] = 0;
+      results.missing[key]['cavalry']['5'] = 0;
+      results.missing[key]['cavalry']['6'] = 0;
+      results.missing[key]['squadron'] = {};
+      results.missing[key]['squadron']['1'] = 0;
+    }
 
     //
     // pieces we are having difficulty assigning
@@ -809,10 +856,12 @@
       if (my_spaces[key]['regular'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
 	results.missing[key]['regular'] = my_spaces[key]['regular'];
+	results.overcapacity = 1;
       }	
       if (my_spaces[key]['mercenary'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
 	results.missing[key]['mercenary'] = my_spaces[key]['mercenary'];
+	results.overcapacity = 1;
       }	
     }
 
@@ -854,4 +903,7 @@
     return x;
 
   }
+
+
+
 

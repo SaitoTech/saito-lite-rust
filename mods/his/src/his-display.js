@@ -53,7 +53,7 @@
   }
 
   displayCardsLeft() {
-
+    try {
     for (let key in this.game.state.cards_left) {
 
       let qs = ".game-factions .game-menu-sub-options ";
@@ -82,7 +82,7 @@
 	document.querySelector(qs).innerHTML = `Papacy (${this.game.state.cards_left[key]} cards)`;
       }
     }
-
+    } catch (err) {}
   }
 
   displayTurnTrack() {
@@ -607,9 +607,6 @@ try {
     if (owner == "protestant") { stype = "hex"; }
 
     if (owner != "") {
-
-      // if these have a major ally, we make them
-      // the owner for tile-display purposes.
       if (owner === "hungary") {
 	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "hungary") {
@@ -841,6 +838,8 @@ try {
     let space = this.game.spaces[spacekey];
     let html = "";
 
+    try {
+
     if (this.game.state.board[z]) {
       if (this.game.state.board[z].deployed[spacekey]) {
           if (z === "hapsburg") {
@@ -1010,7 +1009,7 @@ try {
       }
       //
       // surplus units that should not technically be available according to
-      // tile limitations will be in the "missing" section. we do want want
+      // tile limitations will be in the "missing" section. we do not want
       // pieces appearing and disappearing from the board, so we display them
       // as single-unit tiles.
       //
@@ -1070,7 +1069,69 @@ try {
               html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentReg-1.svg" />`;
 	    }
 	  }
+          if (z === "hapsburg") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hapsburg/HapsburgMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "ottoman") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "papacy") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/papacy/PapacyMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "england") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/england/EnglandMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "france") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/france/FrenchMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "protestant") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "venice") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/venice/VeniceMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "genoa") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/genoa/GenoaMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "hungary") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/hungary/HungaryMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "scotland") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/scotland/ScottishMerc-1.svg" />`;
+	    }
+	  }
+          if (z === "independent") {
+	    for (let i = 0; i < this.game.state.board[z].missing[spacekey]['mercenary']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/independent/IndependentMerc-1.svg" />`;
+	    }
+	  }
       }
+    }
+    //
+    // if there is an error
+    //
+    } catch (err) {
+	console.log("ERROR: need to run returnOnBoardUnits: " + JSON.stringify(err));
+	this.returnOnBoardUnits();
     }
 
     return html;
@@ -1786,6 +1847,7 @@ try {
     if (this.game.navalspaces[key]) { this.displayNavalSpace(key); return; }
 
     let ts = new Date().getTime();
+    let no_keytiles_in_keys = [];
     if (this.game.state.board_updated < ts + 20000) {
       this.refreshBoardUnits();
     }
@@ -1811,6 +1873,16 @@ try {
     if (space.political == space.home && space.religion != "protestant") { show_tile = 0; }
     if (space.political === "" && space.religion != "protestant") { show_tile = 0; }
     if (space.political == "protestant" && space.religion != "protestant") { show_tile = 1; }
+    if (
+      space.religion === "catholic" && 
+      (
+	(space.home == "venice" || space.home == "genoa" || space.home == "scotland" || space.home == "hungary") &&
+	(space.home == space.political || space.political == "")
+      )
+    ) {
+      no_keytiles_in_keys.push(space.key);
+      show_tile = 0;
+    }
     if (space.language == "german" && space.units["protestant"].length > 0) { show_tile = 1; }
 
     //
@@ -1840,7 +1912,9 @@ try {
       obj.innerHTML = "";
 
       if (show_tile === 1) {
-        obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+	if (!no_keytiles_in_keys.includes(key)) {
+          obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+	}
         obj.innerHTML += this.returnArmies(space);
         obj.innerHTML += this.returnNavies(space);
         obj.innerHTML += this.returnPersonages(space);
@@ -1932,6 +2006,7 @@ try {
       this.game.state.board["ottoman"] = this.returnOnBoardUnits("ottoman");
       this.game.state.board["hapsburg"] = this.returnOnBoardUnits("hapsburg");
     }
+
 
     //
     // add tiles

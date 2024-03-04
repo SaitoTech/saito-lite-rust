@@ -19,13 +19,6 @@ body {
 	justify-content: space-around;
 }
 
-.crypto_logo {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 20vw;
-}
-
 .hand {
 	position: relative;
 }
@@ -59,6 +52,14 @@ body {
 	padding-right: 2rem;
 }
 
+.pot-chips{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	left: -35px;
+	top: 2px;
+}
+
 .pot-counter {
 	text-align: center;
 	font-weight: bold;
@@ -68,11 +69,6 @@ body {
 	padding: 0;
 }
 
-.pot .chip_stack {
-	top: unset;
-	left: unset;
-	width: 100px;
-}
 
 .player-info-chips {
 	text-align: center;
@@ -150,6 +146,20 @@ body {
 	padding: 0.5em;
 	background-color: #fefefeee;
 }
+
+.poker-chip {
+	width: 50px;
+	height: 50px;
+	background-image: url(/poker/img/poker-chip.svg);
+	background-size: cover;
+	border-radius: 50%;
+
+	/* Correct for bad image */
+	background-size: 250%;
+	background-position: top;
+
+}
+
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
 	.game-scoreboard {

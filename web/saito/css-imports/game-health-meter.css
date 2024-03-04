@@ -1,0 +1,16 @@
+.health-meter{
+	height: calc(100%);
+	width: 10px;
+	border: solid 1px gray;
+	background-color: black;
+	position: absolute;
+	left: -15px;
+	top: -1px;
+	box-sizing: content-box;
+}
+
+.health-meter-health {
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+}

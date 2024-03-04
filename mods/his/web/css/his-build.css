@@ -2,16 +2,7 @@
 .build-overlay .build-controls {
     display: flex;
     flex-direction: row;
-}
-
-.build-targets {
-    width: 100%;
-    background: #0009;
-    height: max-content;
-    color: white;
-    max-height: 10rem;
-    padding: 1.5rem;
-    font-size: 2rem;
+    margin-top: 9rem;
 }
 
 .build-submit {
@@ -24,6 +15,7 @@
         cursor: pointer;
         height: 7rem;
         padding-top: 2rem;
+	margin-top: 1rem;
         margin-bottom: 2rem;
         margin-left: auto;
         margin-right: auto;

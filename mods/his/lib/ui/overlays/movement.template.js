@@ -17,6 +17,7 @@ module.exports = MovementOverlayTemplate = (obj, his_self) => {
 	let html = `<div class="movement-overlay">
     <div class="help">
 	<div class="movement-from">${obj.from}</div> to <div class="movement-to">${obj.to}</div></div>
+    <div class="available-units-overlay"></div>
     <div class="movement-table"><div class="movement-source">`;
 	for (let i = 0; i < obj.unmoved_units.length; i++) {
 		console.log('UNMOVED: ' + JSON.stringify(obj.unmoved_units[i]));

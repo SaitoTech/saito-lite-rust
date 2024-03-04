@@ -49,16 +49,21 @@ class CallSetting {
 			'stun-appspace-settings'
 		);
 
-		let videoElement = document.getElementById('video');
-		this.getUserMedia(videoElement)
+		let previewWindow = document.getElementById('video');
+		if (previewWindow){
+			this.getUserMedia(previewWindow);	
+		}else{
+			console.error("No video element to display user media");
+		}
+		
 	}
 
 	remove() {
-		if (document.querySelector('.chat-settings-container')) {
+		if (document.querySelector('.chat-settings')) {
 			document
-				.querySelector('.chat-settings-container')
+				.querySelector('.chat-settings')
 				.parentElement.removeChild(
-					document.querySelector('.chat-settings-container')
+					document.querySelector('.chat-settings')
 				);
 		}
 	}
@@ -180,22 +185,33 @@ class CallSetting {
 		}
 
 		this.attachEvents();
-		this.loadMediaDevices();
+		return this.loadMediaDevices();
 	}
 
 	async loadMediaDevices() {
 		const devices = await navigator.mediaDevices.enumerateDevices();
+		let videoCt = 0;
+		let audioCt = 0;
 		devices.forEach((device) => {
+			console.log(device);
 			const option = document.createElement('option');
 			option.value = device.deviceId;
 			option.textContent =
 				device.label || `${device.kind} - ${device.deviceId}`;
 			if (device.kind === 'videoinput') {
+				videoCt++;
 				this.videoInput.appendChild(option);
 			} else if (device.kind === 'audioinput') {
+				audioCt++;
 				this.audioInput.appendChild(option);
 			}
 		});
+		if (videoCt > 1){
+			this.videoInput.style.display = "flex";
+		}
+		if (audioCt > 1){
+			this.audioInput.style.display = "flex";
+		}
 	}
 
 	async updateMedia(kind, videoElement) {
@@ -283,8 +299,8 @@ class CallSetting {
 	returnSettings(){
 		return {
 			ui: "large",
-			video: this.videoEnabled,
-			audio: this.audioEnabled,
+			video: (this.videoEnabled) ? this.videoInput.value : false,
+			audio: (this.audioEnabled) ? this.audioInput.value : false,
 		};
 	}
 }

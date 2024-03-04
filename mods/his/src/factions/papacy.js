@@ -41,6 +41,8 @@
         if (game_mod.game.state.leaders.paul_iii == 1) { base += 1; }
         if (game_mod.game.state.leaders.julius_iii == 1) { base += 1; }       
 
+        base += game_mod.game.state.papacy_card_bonus;
+
         // TODO - bonus for home spaces under protestant control
         return base;
 
