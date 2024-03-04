@@ -104,6 +104,10 @@ class Mixin extends ModTemplate {
       await this.receiveFetchUserTransaction(app, tx, peer, mycallback);
     }
 
+    if (message.request === "mixin fetch user by publickey") {
+      await this.receiveFetchUserByPublickeyTransaction(app, tx, peer, mycallback);
+    }
+
     return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
@@ -856,6 +860,43 @@ class Mixin extends ModTemplate {
     let result = await this.app.storage.queryDatabase(sql, params, "Mixin");  
     if (result.length > 0) {
       return callback(result[0]);
+    }
+
+    return callback(false);
+  }
+
+  async sendFetchUserByPublickeyTransaction(params = {}, callback){
+    let peers = await this.app.network.getPeers();
+    if (peers.length == 0) {
+      console.warn("No peers");
+      return;
+    }
+
+    console.log('params: ', params);
+
+    let data = params;
+    await this.app.network.sendRequestAsTransaction(
+      "mixin fetch user by publickey",
+      data,
+      function (res) {
+        console.log("Callback for sendFetchUserByPublickeyTransaction request: ", res);
+        return callback(res);
+      },
+      peers[0].peerIndex
+    );
+  }
+
+  async receiveFetchUserByPublickeyTransaction(app, tx, peer, callback = null){
+    let message = tx.returnMessage();
+    let publickey = message.data.publickey;
+    let sql = `SELECT * FROM mixin_users 
+               WHERE publickey = $publickey;`;
+    let params = {
+      $publickey: publickey,
+    };
+    let result = await this.app.storage.queryDatabase(sql, params, "Mixin");
+    if (result.length > 0) {
+      return callback(result);
     }
 
     return callback(false);

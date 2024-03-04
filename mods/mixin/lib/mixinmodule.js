@@ -475,6 +475,12 @@ class MixinModule extends CryptoModule {
 		});
 	}
 
+	async getMixinUserByPublicKey(publickey = '', callback = null) {
+		return await this.mixin.sendFetchUserByPublickeyTransaction({publickey: publickey}, function(res){
+			return callback(res);
+		});
+	}
+
 }
 
 module.exports = MixinModule;
