@@ -1,6 +1,9 @@
 
 
 
+
+
+
 import { Saito } from '../../apps/core';
 import Peer from './peer';
 import Transaction from './transaction';
@@ -258,7 +261,6 @@ class Mods {
 		this.app.connection.on(
 			'handshake_complete',
 			async (peerIndex: bigint) => {
-				// await this.app.network.propagateServices(peerIndex);
 				let peer = await this.app.network.getPeer(BigInt(peerIndex));
 				if (this.app.BROWSER == 0) {
 					let data = `{"build_number": "${this.app.build_number}"}`;
@@ -272,25 +274,33 @@ class Mods {
 				}
 				console.log('handshake complete');
 
+				console.log(peer.publicKey, "publickey")
+
 				const myPublicKey = await this.app.wallet.getPublicKey();
+				const currentKeyList = await this.app.wallet.getKeyList();
 
-				let keylist = peer.keyList || [];
+				let newKeyList = peer.keyList || [];
 
-				if (!keylist.includes(myPublicKey)) {
-					keylist.push(myPublicKey);
+
+				if (!newKeyList.includes(myPublicKey)) {
+					newKeyList.push(myPublicKey);
 				}
 
-				if (peer.publicKey && !keylist.includes(peer.publicKey)) {
-					keylist.push(peer.publicKey);
+				if (peer.publicKey && !newKeyList.includes(peer.publicKey)) {
+					newKeyList.push(peer.publicKey);
 				}
 
-				await this.app.wallet.setKeyList(keylist);
 
-				console.log('Keylist from wallet:', await this.app.wallet.getKeyList());
+				const mergedKeyList = Array.from(new Set([...currentKeyList, ...newKeyList]));
+
+				await this.app.wallet.setKeyList(mergedKeyList);
+
+				console.log('Keylist from wallet:', mergedKeyList);
 
 				await onPeerHandshakeComplete(peer);
 			}
 		);
+
 
 		const onConnectionUnstable = this.onConnectionUnstable.bind(this);
 		this.app.connection.on('peer_disconnect', async (peerIndex: bigint) => {
@@ -590,4 +600,5 @@ class Mods {
 }
 
 export default Mods;
+
 
