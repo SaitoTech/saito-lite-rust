@@ -48,7 +48,12 @@ export default class Wallet extends SaitoWallet {
 		if (publicKey == '') {
 			publicKey = await this.getPublicKey();
 		}
-		return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
+		return S.getInstance().createTransaction(
+			publicKey,
+			amount,
+			fee,
+			force_merge
+		);
 	}
 
 	public async getBalance(ticker = 'SAITO'): Promise<bigint> {
@@ -64,7 +69,10 @@ export default class Wallet extends SaitoWallet {
 		let privateKey = await this.getPrivateKey();
 		let publicKey = await this.getPublicKey();
 		this.publicKey = publicKey;
-		console.log('public key = ' + publicKey, ' / private key ? ' + (privateKey !== ''));
+		console.log(
+			'public key = ' + publicKey,
+			' / private key ? ' + (privateKey !== '')
+		);
 
 		// add ghost crypto module so Saito interface available
 		class SaitoCrypto extends CryptoModule {
@@ -78,7 +86,9 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			async returnBalance() {
-				return this.app.wallet.convertNolanToSaito(await this.app.wallet.getBalance());
+				return this.app.wallet.convertNolanToSaito(
+					await this.app.wallet.getBalance()
+				);
 			}
 
 			returnAddress() {
@@ -103,17 +113,17 @@ export default class Wallet extends SaitoWallet {
 			async sendPayment(amount, to_address, unique_hash = '') {
 				let nolan_amount = this.app.wallet.convertSaitoToNolan(amount);
 
-				let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-					to_address,
-					nolan_amount
-				);
+				let newtx =
+					await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+						to_address,
+						nolan_amount
+					);
 				await this.app.wallet.signAndEncryptTransaction(newtx);
 				await this.app.network.propagateTransaction(newtx);
 				return newtx.signature;
 			}
 
 			async receivePayment(howMuch, from, to, timestamp) {
-        
 				return false;
 
 				// Returning false temporarily for all cases now.
@@ -176,19 +186,20 @@ export default class Wallet extends SaitoWallet {
 			async formatBalance(precision = 2) {
 				let balance = await this.returnBalance();
 
-				if (typeof(balance) == 'undefined') {
+				if (typeof balance == 'undefined') {
 					balance = '0.00';
 				}
 
-				let locale = (window.navigator?.language) 
-					? window.navigator?.language : 'en-US';
+				let locale = window.navigator?.language
+					? window.navigator?.language
+					: 'en-US';
 				let nf = new Intl.NumberFormat(locale, {
 					minimumFractionDigits: 2,
 					maximumFractionDigits: precision
 				});
 
 				let balance_as_float = parseFloat(balance);
-				return (nf.format(balance_as_float)).toString();
+				return nf.format(balance_as_float).toString();
 			}
 		}
 
@@ -196,7 +207,8 @@ export default class Wallet extends SaitoWallet {
 
 		if (this.app.options.wallet != null) {
 			if (this.app.options.archive) {
-				this.app.options.archive.wallet_version = this.app.options.wallet.version;
+				this.app.options.archive.wallet_version =
+					this.app.options.wallet.version;
 			}
 
 			/////////////
@@ -204,7 +216,9 @@ export default class Wallet extends SaitoWallet {
 			/////////////
 			if (this.app.options.wallet.version < this.version) {
 				if (this.app.BROWSER == 1) {
-					console.log('upgrading wallet version to : ' + this.version);
+					console.log(
+						'upgrading wallet version to : ' + this.version
+					);
 					let tmpprivkey = this.app.options.wallet.privateKey;
 					let tmppubkey = this.app.options.wallet.publicKey;
 
@@ -246,18 +260,21 @@ export default class Wallet extends SaitoWallet {
 					await this.setPublicKey(tmppubkey);
 
 					// this.app.options.wallet = this.wallet;
-					this.app.options.wallet.preferred_crypto = this.preferred_crypto;
+					this.app.options.wallet.preferred_crypto =
+						this.preferred_crypto;
 					this.app.options.wallet.preferred_txs = this.preferred_txs;
 					this.app.options.wallet.version = this.version;
 					this.app.options.wallet.default_fee = this.default_fee;
 					// this.app.options.wallet.slips = [];
 
 					if (this.app.options.wallet.slips) {
-						let slips = this.app.options.wallet.slips.map((json: any) => {
-							let slip = new WalletSlip();
-							slip.copyFrom(json);
-							return slip;
-						});
+						let slips = this.app.options.wallet.slips.map(
+							(json: any) => {
+								let slip = new WalletSlip();
+								slip.copyFrom(json);
+								return slip;
+							}
+						);
 						await this.addSlips(slips);
 					}
 					// reset games and restore game settings
@@ -290,15 +307,21 @@ export default class Wallet extends SaitoWallet {
 					this.app.storage.saveOptions();
 				}
 			} else {
-				if (typeof this.app.options.wallet.preferred_crypto != 'undefined') {
-					this.preferred_crypto = this.app.options.wallet.preferred_crypto;
+				if (
+					typeof this.app.options.wallet.preferred_crypto !=
+					'undefined'
+				) {
+					this.preferred_crypto =
+						this.app.options.wallet.preferred_crypto;
 				}
 				if (this.app.options.wallet.slips) {
-					let slips = this.app.options.wallet.slips.map((json: any) => {
-						let slip = new WalletSlip();
-						slip.copyFrom(json);
-						return slip;
-					});
+					let slips = this.app.options.wallet.slips.map(
+						(json: any) => {
+							let slip = new WalletSlip();
+							slip.copyFrom(json);
+							return slip;
+						}
+					);
 					await this.addSlips(slips);
 				}
 			}
@@ -326,9 +349,9 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	/**
-   * Generates a new keypair for the user, resets all stored wallet info, and saves
-   * the new wallet to local storage.
-   */
+	 * Generates a new keypair for the user, resets all stored wallet info, and saves
+	 * the new wallet to local storage.
+	 */
 	async resetWallet() {
 		console.log('resetting wallet : ' + (await this.getPublicKey()));
 
@@ -360,8 +383,8 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	/**
-   * Saves the current wallet state to local storage.
-   */
+	 * Saves the current wallet state to local storage.
+	 */
 	async saveWallet() {
 		if (!this.app.options.wallet) {
 			this.app.options.wallet = {};
@@ -370,6 +393,8 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.preferred_txs = this.preferred_txs;
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
+		this.app.options.wallet.key_list = await this.getKeyList();
+
 		let slips = await this.getSlips();
 
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
@@ -383,7 +408,8 @@ export default class Wallet extends SaitoWallet {
 	/////////////////////////
 
 	returnInstalledCryptos() {
-		const cryptoModules = this.app.modules.returnModulesBySubType(CryptoModule);
+		const cryptoModules =
+			this.app.modules.returnModulesBySubType(CryptoModule);
 		if (this.saitoCrypto !== null) {
 			cryptoModules.push(this.saitoCrypto);
 		}
@@ -505,7 +531,11 @@ export default class Wallet extends SaitoWallet {
 		return cryptos;
 	}
 
-	async returnPreferredCryptoBalances(addresses = [], mycallback = null, ticker = '') {
+	async returnPreferredCryptoBalances(
+		addresses = [],
+		mycallback = null,
+		ticker = ''
+	) {
 		if (ticker == '') {
 			ticker = this.preferred_crypto;
 		}
@@ -533,7 +563,10 @@ export default class Wallet extends SaitoWallet {
 				if (cryptomods[i].returnAddress() === address) {
 					// cache the results, so i know if payments are new
 					cryptomods[i].balance = balance;
-					this.app.wallet.cryptos[ticker] = { address: address, balance: balance };
+					this.app.wallet.cryptos[ticker] = {
+						address: address,
+						balance: balance
+					};
 				}
 			}
 		}
@@ -541,7 +574,11 @@ export default class Wallet extends SaitoWallet {
 
 	/*** courtesy function to simplify balance checks for a single address w/ ticker ***/
 	async checkBalance(address, ticker) {
-		const robj = await this.returnPreferredCryptoBalances([address], null, ticker);
+		const robj = await this.returnPreferredCryptoBalances(
+			[address],
+			null,
+			ticker
+		);
 		if (robj.length < 1) {
 			return 0;
 		}
@@ -553,19 +590,22 @@ export default class Wallet extends SaitoWallet {
 
 	async returnPreferredCryptoBalance() {
 		const cryptomod = await this.returnPreferredCrypto();
-		return await this.checkBalance(cryptomod.returnAddress(), cryptomod.ticker);
+		return await this.checkBalance(
+			cryptomod.returnAddress(),
+			cryptomod.ticker
+		);
 	}
 
 	/**
-   * Sends payments to the addresses provided if this user is the corresponding
-   * sender. Will not send if similar payment was found after the given timestamp.
-   * @param {Array} senders - Array of addresses -- in web3 currency
-   * @param {Array} receivers - Array of addresses -- in web3 curreny
-   * @param {Array} amounts - Array of amounts to send
-   * @param {Int} timestamp - Timestamp of time after which payment should be made
-   * @param {Function} mycallback - ({hash: {String}}) -> {...}
-   * @param {String} ticker - Ticker of install crypto module
-   */
+	 * Sends payments to the addresses provided if this user is the corresponding
+	 * sender. Will not send if similar payment was found after the given timestamp.
+	 * @param {Array} senders - Array of addresses -- in web3 currency
+	 * @param {Array} receivers - Array of addresses -- in web3 curreny
+	 * @param {Array} amounts - Array of amounts to send
+	 * @param {Int} timestamp - Timestamp of time after which payment should be made
+	 * @param {Function} mycallback - ({hash: {String}}) -> {...}
+	 * @param {String} ticker - Ticker of install crypto module
+	 */
 	async sendPayment(
 		senders = [],
 		receivers = [],
@@ -577,7 +617,10 @@ export default class Wallet extends SaitoWallet {
 	) {
 		console.log('wallet sendPayment 1');
 		// validate inputs
-		if (senders.length != receivers.length || senders.length != amounts.length) {
+		if (
+			senders.length != receivers.length ||
+			senders.length != amounts.length
+		) {
 			//mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
 			return;
 		}
@@ -591,7 +634,13 @@ export default class Wallet extends SaitoWallet {
 		// only send if hasn't been sent before
 
 		if (
-			!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+			!this.doesPreferredCryptoTransactionExist(
+				senders,
+				receivers,
+				amounts,
+				unique_hash,
+				ticker
+			)
 		) {
 			console.log('preferred crypto transaction does not already exist');
 			const cryptomod = this.returnCryptoModuleByTicker(ticker);
@@ -610,19 +659,26 @@ export default class Wallet extends SaitoWallet {
 						ticker
 					);
 					try {
-						let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
-							senders,
-							receivers,
-							amounts,
-							unique_hash,
-							ticker
+						let unique_tx_hash =
+							this.generatePreferredCryptoTransactionHash(
+								senders,
+								receivers,
+								amounts,
+								unique_hash,
+								ticker
+							);
+						const hash = await cryptomod.sendPayment(
+							amounts[i],
+							receivers[i],
+							unique_tx_hash
 						);
-						const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
 						//
 						// hash is "" if unsuccessful, trace_id if successful
 						//
 						if (hash === '') {
-							console.log('Deleting preferred crypto transaction');
+							console.log(
+								'Deleting preferred crypto transaction'
+							);
 							this.deletePreferredCryptoTransaction(
 								senders,
 								receivers,
@@ -638,13 +694,23 @@ export default class Wallet extends SaitoWallet {
 						return;
 					} catch (err) {
 						// it failed, delete the transaction
-						console.log('sendPayment ERROR: payment failed....\n' + err);
-						this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+						console.log(
+							'sendPayment ERROR: payment failed....\n' + err
+						);
+						this.deletePreferredCryptoTransaction(
+							senders,
+							receivers,
+							amounts,
+							unique_hash,
+							ticker
+						);
 						//mycallback({err: err});
 						return;
 					}
 				} else {
-					console.warn('Cannot send payment from wrong crypto address');
+					console.warn(
+						'Cannot send payment from wrong crypto address'
+					);
 					console.log(cryptomod.name);
 					console.log(senders[i], cryptomod.returnAddress());
 				}
@@ -656,17 +722,17 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	/**
-   * Checks that a payment has been received if the current user is the receiver.
-   * @param {Array} senders - Array of addresses
-   * @param {Array} receivers - Array of addresses
-   * @param {Array} amounts - Array of amounts to send
-   * @param {Int} timestamp - Timestamp of time after which payment should be made
-   * @param {Function} mycallback - (Array of {address: {String}, balance: {Int}}) -> {...}
-   * @param {String} ticker - Ticker of install crypto module
-   * @param {Int} tries - (default: 36) Number of tries to query the underlying crypto API before giving up. Sending -1 will cause infinite retries.
-   * @param {Int} pollWaitTime - (default: 5000) Amount of time to wait between tries
-   * @return {Array} Array of {address: {String}, balance: {Int}}
-   */
+	 * Checks that a payment has been received if the current user is the receiver.
+	 * @param {Array} senders - Array of addresses
+	 * @param {Array} receivers - Array of addresses
+	 * @param {Array} amounts - Array of amounts to send
+	 * @param {Int} timestamp - Timestamp of time after which payment should be made
+	 * @param {Function} mycallback - (Array of {address: {String}, balance: {Int}}) -> {...}
+	 * @param {String} ticker - Ticker of install crypto module
+	 * @param {Int} tries - (default: 36) Number of tries to query the underlying crypto API before giving up. Sending -1 will cause infinite retries.
+	 * @param {Int} pollWaitTime - (default: 5000) Amount of time to wait between tries
+	 * @return {Array} Array of {address: {String}, balance: {Int}}
+	 */
 	async receivePayment(
 		senders = [],
 		receivers = [],
@@ -686,7 +752,10 @@ export default class Wallet extends SaitoWallet {
 			ticker
 		);
 
-		if (senders.length != receivers.length || senders.length != amounts.length) {
+		if (
+			senders.length != receivers.length ||
+			senders.length != amounts.length
+		) {
 			console.log(
 				'receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same'
 			);
@@ -701,7 +770,13 @@ export default class Wallet extends SaitoWallet {
 		// if payment already received, return
 		//
 		if (
-			this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+			this.doesPreferredCryptoTransactionExist(
+				senders,
+				receivers,
+				amounts,
+				unique_hash,
+				ticker
+			)
 		) {
 			mycallback();
 			console.log('our preferred crypto transaction exists!');
@@ -730,7 +805,9 @@ export default class Wallet extends SaitoWallet {
 		};
 
 		const poll_check_payment_function = async () => {
-			console.log('poll_check_payment_function remaining tries: ' + tries);
+			console.log(
+				'poll_check_payment_function remaining tries: ' + tries
+			);
 			let result = null;
 			try {
 				result = await check_payment_function();
@@ -749,7 +826,13 @@ export default class Wallet extends SaitoWallet {
 			if (result) {
 				// The transaction was found, we're done.
 				console.log('TRANSACTION FOUND');
-				this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+				this.savePreferredCryptoTransaction(
+					senders,
+					receivers,
+					amounts,
+					unique_hash,
+					ticker
+				);
 				mycallback(result);
 			} else {
 				// The transaction was not found.
@@ -765,7 +848,9 @@ export default class Wallet extends SaitoWallet {
 					// Do not delete this console.log, at least maybe the engineer who is maintaining this needs
 					// some hope of figuring out why the game isn't progressing.
 					console.log(
-						'Did not receive payment after ' + (pollWaitTime * tries) / 1000 + ' seconds'
+						'Did not receive payment after ' +
+							(pollWaitTime * tries) / 1000 +
+							' seconds'
 					);
 					return;
 					// mycallback({err: "Did not receive payment after " + ((pollWaitTime * tries)/1000) + " seconds"});
@@ -786,16 +871,22 @@ export default class Wallet extends SaitoWallet {
 		return this.app.crypto.hash(
 			Buffer.from(
 				JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        unique_hash +
-        ticker,
+					JSON.stringify(receivers) +
+					JSON.stringify(amounts) +
+					unique_hash +
+					ticker,
 				'utf-8'
 			)
 		);
 	}
 
-	async savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
+	async savePreferredCryptoTransaction(
+		senders = [],
+		receivers = [],
+		amounts,
+		unique_hash,
+		ticker
+	) {
 		let sig = this.generatePreferredCryptoTransactionHash(
 			senders,
 			receivers,
@@ -805,10 +896,13 @@ export default class Wallet extends SaitoWallet {
 		);
 		this.preferred_txs.push({
 			sig: sig,
-			ts: new Date().getTime(),
+			ts: new Date().getTime()
 		});
 		for (let i = this.preferred_txs.length - 1; i >= 0; i--) {
-			if (this.preferred_txs[i].timestamp < new Date().getTime() - 100000000) {
+			if (
+				this.preferred_txs[i].timestamp <
+				new Date().getTime() - 100000000
+			) {
 				this.preferred_txs.splice(i, 1);
 			}
 		}
@@ -818,7 +912,13 @@ export default class Wallet extends SaitoWallet {
 		return 1;
 	}
 
-	doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, unique_hash, ticker) {
+	doesPreferredCryptoTransactionExist(
+		senders = [],
+		receivers = [],
+		amounts,
+		unique_hash,
+		ticker
+	) {
 		const sig = this.generatePreferredCryptoTransactionHash(
 			senders,
 			receivers,
@@ -834,7 +934,13 @@ export default class Wallet extends SaitoWallet {
 		return 0;
 	}
 
-	deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
+	deletePreferredCryptoTransaction(
+		senders = [],
+		receivers = [],
+		amounts,
+		unique_hash,
+		ticker
+	) {
 		const sig = this.generatePreferredCryptoTransactionHash(
 			senders,
 			receivers,
@@ -883,8 +989,8 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	/**
-   * Serialized the user's wallet to JSON and downloads it to their local machine
-   */
+	 * Serialized the user's wallet to JSON and downloads it to their local machine
+	 */
 	async backupWallet() {
 		try {
 			if (this.app.BROWSER == 1) {
@@ -893,7 +999,8 @@ export default class Wallet extends SaitoWallet {
 				pom.setAttribute('type', 'hidden');
 				pom.setAttribute(
 					'href',
-					'data:application/json;utf-8,' + encodeURIComponent(this.exportWallet())
+					'data:application/json;utf-8,' +
+						encodeURIComponent(this.exportWallet())
 				);
 				pom.setAttribute('download', 'saito.wallet.json');
 				document.body.appendChild(pom);
@@ -917,6 +1024,7 @@ export default class Wallet extends SaitoWallet {
 				await this.reset();
 				await this.setPublicKey(wobj.wallet.publicKey);
 				await this.setPrivateKey(wobj.wallet.privateKey);
+				await this.setKeyList(wobj.wallet.key_list);
 				wobj.wallet.version = this.version;
 				wobj.wallet.inputs = [];
 				wobj.wallet.outputs = [];
@@ -931,7 +1039,9 @@ export default class Wallet extends SaitoWallet {
 				window.location.reload();
 			} catch (err) {
 				if (err.name == 'SyntaxError') {
-					alert('Error reading wallet file. Did you upload the correct file?');
+					alert(
+						'Error reading wallet file. Did you upload the correct file?'
+					);
 				} else if (false) {
 					// put this back when we support encrypting wallet backups again...
 					alert('Error decrypting wallet file. Password incorrect');
@@ -943,11 +1053,11 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	/**
-   * If the to field of the transaction contains a pubkey which has previously negotiated a diffie-hellman
-   * key exchange, encrypt the message part of message, attach it to the transaction, and resign the transaction
-   * @param {Transaction}
-   * @return {Transaction}
-   */
+	 * If the to field of the transaction contains a pubkey which has previously negotiated a diffie-hellman
+	 * key exchange, encrypt the message part of message, attach it to the transaction, and resign the transaction
+	 * @param {Transaction}
+	 * @return {Transaction}
+	 */
 	async signAndEncryptTransaction(tx: Transaction, recipient = '') {
 		if (tx == null) {
 			return null;
@@ -961,23 +1071,30 @@ export default class Wallet extends SaitoWallet {
 		// limits in NodeJS!
 		//
 		try {
-
 			// Empty placeholder protects data in case encryption fails to fire
-			let encryptedMessage = ''
+			let encryptedMessage = '';
 
 			// if recipient input has a shared secret in keychain
 			if (this.app.keychain.hasSharedSecret(recipient)) {
-				encryptedMessage = this.app.keychain.encryptMessage(recipient, tx.msg);
+				encryptedMessage = this.app.keychain.encryptMessage(
+					recipient,
+					tx.msg
+				);
 			}
 			// if tx sendee's public address has shared secret
 			else if (this.app.keychain.hasSharedSecret(tx.to[0].publicKey)) {
-				encryptedMessage = this.app.keychain.encryptMessage(tx.to[0].publicKey, tx.msg);
+				encryptedMessage = this.app.keychain.encryptMessage(
+					tx.to[0].publicKey,
+					tx.msg
+				);
 			}
 
 			if (encryptedMessage) {
 				tx.msg = encryptedMessage;
 			} else {
-				console.warn('Not encrypting transaction because don\'t have shared key with recipient');
+				console.warn(
+					'Not encrypting transaction because don\'t have shared key with recipient'
+				);
 			}
 
 			//
@@ -1048,7 +1165,7 @@ export default class Wallet extends SaitoWallet {
 				} catch (err) {
 					try {
 						alert('error: ' + JSON.stringify(err));
-					} catch (err) { }
+					} catch (err) {}
 					console.log(err);
 					return err.name;
 				}
@@ -1083,35 +1200,35 @@ export default class Wallet extends SaitoWallet {
 		return true;
 	}
 
-	public convertSaitoToNolan(amount = '0.0'){
+	public convertSaitoToNolan(amount = '0.0') {
 		let nolan = 0;
 		let num = Number(amount);
 		if (num > 0) {
-			nolan = num * this.nolan_per_saito; // 100,000,000  
+			nolan = num * this.nolan_per_saito; // 100,000,000
 		}
-    
+
 		return BigInt(nolan);
 	}
 
-	public convertNolanToSaito(amount = BigInt(0)){
+	public convertNolanToSaito(amount = BigInt(0)) {
 		let string = '0.00';
 		let num = 0;
 		let bigint_divider = 100000000n;
 
 		if (typeof amount == 'bigint') {
-
 			// convert bigint to number
-			num = Number(amount * 100000000n / bigint_divider) / 100000000;
+			num = Number((amount * 100000000n) / bigint_divider) / 100000000;
 
 			// convert number to string
 			string = num.toString();
-
 		} else {
-			console.error(`convertNolanToSaito: Type ` + typeof amount + ` provided. BigInt required`);
+			console.error(
+				`convertNolanToSaito: Type ` +
+					typeof amount +
+					` provided. BigInt required`
+			);
 		}
 
 		return string;
 	}
-
-  
 }
