@@ -4,6 +4,8 @@
 	background: var(--saito-background-color);
 	height: calc(100vh - var(--saito-header-height));
 	border-left: 1px solid var(--saito-border-color);
+	display: grid;
+	grid-template-rows: min-content auto;
 }
 
 
@@ -42,7 +44,8 @@
 	display: flex;
 	flex-direction: column;
 	font-size: 1.3rem;
-	height: 4rem;
+	height: 100%;
+	overflow: auto;
 }
 
 .chat-sidebar .saito-modal-content .saito-user .saito-identicon-box {
