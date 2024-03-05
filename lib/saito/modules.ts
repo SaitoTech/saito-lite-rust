@@ -1,3 +1,6 @@
+
+
+
 import { Saito } from '../../apps/core';
 import Peer from './peer';
 import Transaction from './transaction';
@@ -93,7 +96,7 @@ class Mods {
 					this.app.browser.updateSoftwareVersion(receivedBuildNumber);
 				}
 			}
-		} catch (err) {}
+		} catch (err) { }
 
 		for (let iii = 0; iii < this.mods.length; iii++) {
 			try {
@@ -268,6 +271,23 @@ class Mods {
 					);
 				}
 				console.log('handshake complete');
+
+				const myPublicKey = await this.app.wallet.getPublicKey();
+
+				let keylist = peer.keyList || [];
+
+				if (!keylist.includes(myPublicKey)) {
+					keylist.push(myPublicKey);
+				}
+
+				if (peer.publicKey && !keylist.includes(peer.publicKey)) {
+					keylist.push(peer.publicKey);
+				}
+
+				await this.app.wallet.setKeyList(keylist);
+
+				console.log('Keylist from wallet:', await this.app.wallet.getKeyList());
+
 				await onPeerHandshakeComplete(peer);
 			}
 		);
@@ -276,7 +296,7 @@ class Mods {
 		this.app.connection.on('peer_disconnect', async (peerIndex: bigint) => {
 			console.log(
 				'connection dropped -- triggering on connection unstable : ' +
-					peerIndex
+				peerIndex
 			);
 			// // todo : clone peer before disconnection and send with event
 			// let peer = await this.app.network.getPeer(BigInt(peerIndex));
@@ -562,11 +582,12 @@ class Mods {
 
 	/*
   async getBuildNumber() {
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].getBuildNumber()
-    }
+	for (let i = 0; i < this.mods.length; i++) {
+	  await this.mods[i].getBuildNumber()
+	}
   }
   */
 }
 
 export default Mods;
+
