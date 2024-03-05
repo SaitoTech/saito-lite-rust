@@ -109,7 +109,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 	}
 
 	ensureBlockDirExists(path: string): void {
-
+		// functionality already handled in compile script
 	}
 
 	readValue(key: string): Uint8Array {
