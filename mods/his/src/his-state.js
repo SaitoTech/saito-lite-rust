@@ -956,6 +956,7 @@ if (this.game.state.scenario != "is_testing") {
     //
     // add to excommunicated list
     //
+    this.game.state.reformers_removed_until_next_round.push(obj);
     this.game.state.excommunicated.push(obj);
 
     return;
@@ -988,6 +989,8 @@ if (this.game.state.scenario != "is_testing") {
 	}
       }
     }
+
+    this.game.state.reformers_removed_until_next_round = [];
 
   }
   restoreMilitaryLeaders() {

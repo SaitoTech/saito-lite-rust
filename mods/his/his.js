@@ -5410,6 +5410,9 @@ if (this.game.players.length > 2) {
 	if (spaces.length >= 1) {
 	  his_self.game.queue.push("siege_of_vienna\t"+faction+"\t1");
 	}
+	if (spaces.length == 0) {
+console.log("Siege of Vienna - no valid spaces");
+	}
 
         return 1;
       },
@@ -6701,7 +6704,7 @@ console.log("considering: " + space.key);
       ops : 0 ,
       turn : 1 ,
       type : "mandatory" ,
-      removeFromDeck : function(his_self, player) { return 1; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
 	return 1;
       },
@@ -6716,8 +6719,6 @@ console.log("considering: " + space.key);
 	    players_to_go.push(i);
 	  }
 	}
-
-console.log("008 eventing!");
 
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 1;
@@ -7231,6 +7232,8 @@ console.log("008 eventing!");
 
 	
           his_self.game.state.activated_powers["papacy"].push("hapsburg");
+	  his_self.removeCardFromGame("013");
+
 	  his_self.displayBoard();
 	  return 1;
 
@@ -7260,6 +7263,8 @@ console.log("008 eventing!");
 	      }
 	    }
 	  }
+
+	  his_self.removeCardFromGame("013");
 	  his_self.displayBoard();
 	  return 1;
         }
@@ -7271,7 +7276,7 @@ console.log("008 eventing!");
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 	his_self.game.state.events.paul_iii = 1;
@@ -7334,7 +7339,7 @@ console.log("008 eventing!");
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
@@ -7508,7 +7513,7 @@ console.log("008 eventing!");
       canEvent : function(his_self, faction) {
         return 1;
       },
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	his_self.game.state.leaders.francis_i = 0;
@@ -8723,7 +8728,7 @@ console.log("008 eventing!");
       ops : 2 ,
       turn : 3 ,
       type : "response" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu != "" && menu != "pre_spring_deployment") {
@@ -8762,6 +8767,7 @@ console.log("008 eventing!");
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu != "" && menu != "pre_spring_deployment") {
+  	  his_self.addMove("remove\t"+faction+"\t038");
   	  his_self.addMove("event\t"+faction+"\t038");
   	  his_self.addMove("discard\t"+faction+"\t038");
 	  his_self.endTurn();
@@ -9142,7 +9148,7 @@ console.log("008 eventing!");
       ops : 1 ,
       turn : 4 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
@@ -9163,7 +9169,7 @@ console.log("008 eventing!");
 
 	his_self.commitDebater("protestant", "calvin-debater");
 	his_self.removeDebater("protestant", "calvin-debater");
-        his_self.game.state.reformers_removed_until_next_round.push(obj);
+        his_self.excommunicateReformer("calvin-reformer");
 
 	his_self.displaySpace(target);
 
@@ -9176,7 +9182,7 @@ console.log("008 eventing!");
       ops : 5 ,
       turn : 4 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { if (!his_self.isCommitted("calvin-debater")) { return 1; } return 0; } ,
       onEvent : function(his_self, faction) {
 
@@ -9203,7 +9209,7 @@ console.log("008 eventing!");
       ops : 6 ,
       turn : 5 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
@@ -9243,7 +9249,7 @@ console.log("008 eventing!");
 	} else {
 
 	  his_self.game.state.events.copernicus = faction;
-	  his_self.game.state.events.copernicus_vp = 2;
+	  his_self.game.state.events.copernicus_vp = 1;
 
 	  let p = his_self.returnPlayerOfFaction(faction);
 
@@ -9447,7 +9453,7 @@ console.log("008 eventing!");
       ops : 4 ,
       turn : 4 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
@@ -9537,7 +9543,7 @@ console.log("008 eventing!");
       ops : 3 ,
       turn : 4 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
@@ -11688,7 +11694,7 @@ console.log("HITS: " + hits);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
 	return 1;
       },
@@ -11720,7 +11726,7 @@ console.log("HITS: " + hits);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
 	if (his_self.game.state.events.barbary_pirates) { return 1; }
 	return 0;
@@ -11739,7 +11745,7 @@ console.log("HITS: " + hits);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
 	if (!his_self.isDebaterCommitted("luther-debater")) {
 	  return 1;
@@ -11988,7 +11994,7 @@ console.log("HITS: " + hits);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
         let res = his_self.returnSpacesWithFilter(function(spacekey) {
 	  if (his_self.isOccupied(spacekey)) { return 0; }
@@ -12999,6 +13005,11 @@ console.log("HITS: " + hits);
 	  if (his_self.game.state.field_battle.attacker_hits > his_self.game.state.field_battle.defender_hits) {
 
 	    //
+	    // remove this card from game
+	    //
+	    his_self.removeCardFromGame("095");
+
+	    //
 	    // deduct vp
 	    //
 	    let total_to_deduct = 5;
@@ -13086,7 +13097,7 @@ console.log("HITS: " + hits);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
 	if (his_self.game.state.newworld['circumnavigation'].faction) {
 	  return 1;
@@ -13937,7 +13948,7 @@ console.log("total defenders: " + total_defenders);
 /***
         if (menu == "pre_field_battle_hits_assignment") {
           let f = "";
-          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+          for (let i = 0; i < his_self.game.deck[0].fhan1.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               i = 100;
@@ -14721,8 +14732,11 @@ if (this.game.options.scenario === "1532") {
     delete deck["112"];
     delete deck["113"];
 }
-
-
+if (this.game?.state?.removed) {
+for (let z = 0; z < this.game.state.removed.length; z++) {
+    try { delete deck[this.game.state.removed[z]]; } catch (err) {}
+}
+}
     for (let key in deck) {
       deck[key].key = key;
       deck[key] = this.addEvents(deck[key]);
@@ -19844,6 +19858,7 @@ if (this.game.state.scenario != "is_testing") {
     //
     // add to excommunicated list
     //
+    this.game.state.reformers_removed_until_next_round.push(obj);
     this.game.state.excommunicated.push(obj);
 
     return;
@@ -19876,6 +19891,8 @@ if (this.game.state.scenario != "is_testing") {
 	}
       }
     }
+
+    this.game.state.reformers_removed_until_next_round = [];
 
   }
   restoreMilitaryLeaders() {
@@ -22093,6 +22110,10 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	    this.updateLog(this.returnFactionName(faction) + ": " + explorer + " lost at sea");
 	    this.game.state.explorations[idx].prize = "lost at sea";
 	    this.game.state.explorations[idx].explorer_lost = 1;
+
+	    // remove Cabot if he dies at sea
+	    if (explorer.indexOf("cabot") > -1) { this.removeCardFromGame("099"); }
+
 	  }
 	  if (hits > 4 && hits <= 6) {
 	    this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
@@ -22248,8 +22269,8 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
           // DECKRESTORE copies backed-up back into deck
           //
           this.game.queue.push("SHUFFLE\t2");
-          this.game.queue.push("DECKRESTORE\t");
-          
+          this.game.queue.push("DECKRESTORE\t2");          
+
           for (let i = this.game.state.players_info.length; i > 0; i--) {
             this.game.queue.push("DECKENCRYPT\t2\t"+(i));
           } 
@@ -22622,7 +22643,7 @@ console.log("3: " + space.besieged);
 	          }
 	        }
 
-		if (anyone_else_here == 0 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
+		if (anyone_else_here == 0 && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
 		  let f = this.returnFactionControllingSpace(space.key);
 		  if (!this.areAllies(f, faction) && f !== faction) {
 		    if (space.besieged != 1) { // not if already besieged
@@ -22637,7 +22658,7 @@ console.log("3: " + space.besieged);
 		//
 		// no-one is around to intercept, but is this assaultable
 		//
-		if (space.type == "electorate" || space.type == "key" || space.type == "fortress") {
+		if (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress") {
 		  let f = this.returnFactionControllingSpace(space.key);
 		  if (this.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {
  		    if (!this.areAllies(f, faction) && f !== faction) {
@@ -23606,6 +23627,19 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	      if (space.units[defender][x].besieged == 1) { return 1; }
 	    }
 	  }
+
+	  //
+	  // you cannot intercept if the space contains independent units
+	  //
+	  if (space.units["independent"].length > 0) { return 1; }
+
+	  //
+	  // you cannot intercept if the space is controlled by non-ally and non-enemy
+	  //
+	  let fcs = this.returnFactionControllingSpace(space.key);
+	  if (!this.areAllies(fcs, defender, 1) && !this.areEnemies(fcs, defender, 1)) { return 1; }
+
+	  if (space.units["independent"].length > 0) { return 1; }
 
 	  if (defender === "protestant" && this.game.state.events.schmalkaldic_league != 1) {
 	    return 1;
@@ -25007,7 +25041,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	  // a field battle, so we just nope out and put the space immediately under 
 	  // siege.
 	  //
-	  if (defender_units.length <= 1 && (space.type == "electorate" || space.type == "key" || space.type == "fortress")) {
+	  if (defender_units.length <= 1 && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
 	    if (space.besieged != 1) { // not if already besieged
 	      space.besieged = 2;
 	      this.updateLog(space.name + " put under siege.");
@@ -27969,6 +28003,8 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	  let prohibited_protestant_debater = "";
 	  if (mv[6]) { prohibited_protestant_debater = mv[6]; }
 
+	  this.updateLog(this.returnFactionName(attacker) + " targets " + committed + " debater");
+
 	  this.game.state.theological_debate = {};
 	  this.game.state.theological_debate.attacker_rolls = 0;
 	  this.game.state.theological_debate.defender_rolls = 0;
@@ -29269,7 +29305,6 @@ if (this.game.state.round == 2) {
 	  if (this.game.state.round == 1 || (this.game.state.round < this.game.state.starting_round)) {
 
             this.game.queue.push("SHUFFLE\t2");
-            this.game.queue.push("DECKRESTORE\t2");
 	    for (let i = this.game.state.players_info.length; i > 0; i--) {
     	      this.game.queue.push("DECKENCRYPT\t2\t"+(i));
 	    }
@@ -29595,6 +29630,63 @@ if (this.game.state.round == 2) {
 	}
 
 
+
+	//
+	// this checks we have not been dealt a removed card (can happen if Clement VII is floating 
+	// around the undealt cards and removed. and asks for a new one if this is the case.
+	//
+	if (mv[0] === "check_replacement_cards") {
+
+	  this.game.queue.splice(qe, 1);
+	  faction = mv[1];
+
+	  let num = 0;
+	  let p = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == p) {
+
+	    this.updateStatus("checking "+this.returnFactionName(faction)+" has no removed cards...");
+
+            let fhand_idx = this.returnFactionHandIdx(p, faction);
+	    for (let zz = 0; zz < this.game.deck[0].fhand[fhand_idx].length; zz++) {
+	      let c = this.game.deck[0].fhand[fhand_idx][zz];
+	      if (this.game.state.removed.includes(c)) {
+	        this.game.deck[0].fhand[fhand_idx].splice(zz, 1);
+		num++;
+		zz--;
+	      }
+	    }
+
+	    //
+	    // we need a new/replacement card
+	    //
+	    if (num > 0) {
+
+	      //
+	      // not good - deal another!
+	      //
+	      this.addMove("check_replacement_cards\t"+faction);
+    	      this.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
+    	      this.addMove("DEAL\t1\t"+p+"\t"+(num));
+	      this.endTurn();
+
+	    } else {
+
+	      //
+	      // we are good - continue!
+	      //
+	      this.endTurn();
+	    }
+
+	  } else {
+	    this.updateStatus("checking "+this.returnFactionName(faction)+" has no removed cards...");
+	  }
+
+	  return 0;
+	  
+
+	}
+
         if (mv[0] === "card_draw_phase") {
 
 	  //
@@ -29661,6 +29753,7 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
+    	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
 if (this.game.options.scenario != "is_testing") {
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -29688,7 +29781,6 @@ if (this.game.options.scenario != "is_testing") {
 	  // DECKRESTORE copies backed-up back into deck
 	  //
           this.game.queue.push("SHUFFLE\t1");
-	  // FEB 24
           this.game.queue.push("DECKRESTORE\t1");
 
 	  for (let i = this.game.state.players_info.length; i > 0; i--) {
@@ -29697,8 +29789,6 @@ if (this.game.options.scenario != "is_testing") {
 	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
-
-console.log("BEFORE RESHUFFLE - FHANDS: " + JSON.stringify(this.game.deck[0].fhand));
 
 	  //
 	  // re-add discards
@@ -29712,8 +29802,13 @@ console.log("BEFORE RESHUFFLE - FHANDS: " + JSON.stringify(this.game.deck[0].fha
       	    delete this.game.deck[0].cards[i];
       	    delete discards[i];
     	  }
+	  //
+	  // remove any removed cards again for sanity sake (i.e. Clement VII)
+	  //
 	  for (let z = 0; z < this.game.state.removed.length; z++) {
+console.log("removed: " + this.game.state.removed[z]);
       	    delete this.game.deck[0].cards[this.game.state.removed[z]];
+      	    delete discards[this.game.state.removed[z]];
 	  }
     	  this.game.deck[0].discards = {};
 
@@ -29727,14 +29822,6 @@ console.log("BEFORE RESHUFFLE - FHANDS: " + JSON.stringify(this.game.deck[0].fha
 	    }
 	  }
 
-	  //
-	  // remove any removed cards again for sanity sake (i.e. Clement VII)
-	  //
-	  for (let z = 0; z < this.game.state.removed.length; z++) {
-	    let key = this.game.state.removed[z];
-	    if (reshuffle_cards[key]) { delete reshuffle_cards[key]; }
-	    if (this.game.deck[0].cards[key]) { delete this.game.deck[0].cards[key]; }
-	  }
 
 	  //
 	  // remove home cards 
@@ -30241,6 +30328,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	      discards.sort();
 	      for (let zz = 0; zz < discards.length; zz++) {
 	        this.addMove("discard\t"+faction+"\t"+this.game.deck[0].fhand[fhand_idx][discards[zz]]);
+	        this.addMove("NOTIFY\t"+this.returnFactionName(faction)+" discards "+this.popup(this.game.deck[0].fhand[fhand_idx][discards[zz]]));
 	      }
 	      this.endTurn();
 
@@ -30629,8 +30717,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	      source_spacekey ,
 
               function(spacekey) {
-                if ( !not_these_spaces.includes(spacekey) && his_self.game.spaces[spacekey].home == faction && (his_self.game.spaces[spacekey].type == "key" || his_self.game.spaces[spacekey].type == "electorate" || his_self.game.spaces[spacekey].type == "fortress")) {
-		  if (his_self.returnFactionLandUnitsInSpace(faction, spacekey) < 4) { return 1; }
+                if ( !not_these_spaces.includes(spacekey) && his_self.game.spaces[spacekey].home == faction && (his_self.isSpaceFortified(space.key) || his_self.game.spaces[spacekey].type == "key" || his_self.game.spaces[spacekey].type == "electorate" || his_self.game.spaces[spacekey].type == "fortress")) {
+		  if (his_self.returnFactionLandUnitsInSpace(faction, spacekey) < 4) { return 1; } 
 		}
                 return 0;
               },
@@ -39365,12 +39453,12 @@ try {
     let stype = "hex";
 
     if (space.type == "town") { stype = "hex"; }
-    if (space.type == "key") { stype = "key"; }
-    if (owner == "protestant") { stype = "hex"; }
+    if (space.type == "key") { stype = "key"; owner = this.returnControllingPower(owner); }
+    if (owner == "protestant") { stype = "hex"; owner = this.returnControllingPower(owner); }
+
 
     if (owner != "") {
       if (owner === "hungary") {
-	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "hungary") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -39381,7 +39469,6 @@ try {
         }
       }
       if (owner === "scotland") {
-	owner = this.returnAllyOfMinorPower(owner);
 	if (owner === "scotland") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -39392,7 +39479,6 @@ try {
         }
       }
       if (owner === "venice") {
-	owner = this.returnAllyOfMinorPower(owner);
 	if (owner === "venice") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -39403,7 +39489,6 @@ try {
         }
       }
       if (owner === "genoa") {
-	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "genoa") {
 	  tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {

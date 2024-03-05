@@ -603,12 +603,12 @@ try {
     let stype = "hex";
 
     if (space.type == "town") { stype = "hex"; }
-    if (space.type == "key") { stype = "key"; }
-    if (owner == "protestant") { stype = "hex"; }
+    if (space.type == "key") { stype = "key"; owner = this.returnControllingPower(owner); }
+    if (owner == "protestant") { stype = "hex"; owner = this.returnControllingPower(owner); }
+
 
     if (owner != "") {
       if (owner === "hungary") {
-	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "hungary") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -619,7 +619,6 @@ try {
         }
       }
       if (owner === "scotland") {
-	owner = this.returnAllyOfMinorPower(owner);
 	if (owner === "scotland") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -630,7 +629,6 @@ try {
         }
       }
       if (owner === "venice") {
-	owner = this.returnAllyOfMinorPower(owner);
 	if (owner === "venice") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -641,7 +639,6 @@ try {
         }
       }
       if (owner === "genoa") {
-	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "genoa") {
 	  tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
