@@ -8116,7 +8116,7 @@ console.log("considering: " + space.key);
 	  his_self.game.state.events.foul_weather = 1;
 
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
-	    if (his_self.game.queue[i].indexOf("continue") == -1) {
+	    if (his_self.game.queue[i].indexOf("continue") == -1 && his_self.game.queue[i].indexOf("discard") == -1 || his_self.game.queue[i].indexOf("cards_left") == -1) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
 	      break;
