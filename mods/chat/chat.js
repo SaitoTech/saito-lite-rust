@@ -37,6 +37,9 @@ class Chat extends ModTemplate {
             ts = number
             from = "string" //Assuming only one sender
             msg = "" // raw message
+            notice = (optional) flag that the tx is not really a chat message, but meta data
+            mentioned = array of keys for saito mention
+            flag_message = (optional) flag that message is a notification to me
         }
         last_update
     }
@@ -527,14 +530,8 @@ class Chat extends ModTemplate {
 													);
 												}
 											} else {
-												if (
-													elem.querySelector(
-														'.saito-notification-dot'
-													)
-												) {
-													elem.querySelector(
-														'.saito-notification-dot'
-													).remove();
+												if (elem.querySelector('.saito-notification-dot')) {
+													elem.querySelector('.saito-notification-dot').remove();
 												}
 											}
 										}
@@ -1506,6 +1503,8 @@ class Chat extends ModTemplate {
 		}
 		let message_blocks = this.createMessageBlocks(group);
 
+		let new_message_flag = false;
+
 		for (let block of message_blocks) {
 			let ts = 0;
 			if (block?.date) {
@@ -1521,38 +1520,37 @@ class Chat extends ModTemplate {
 						sender = block[z].from[0];
 
 						const replyButton = `
-              <div data-id="${block[z].signature}" data-href="${
-							sender + ts
-						}" class="saito-userline-reply">
-                <div class="chat-copy"><i class="fas fa-copy"></i></div>
-                <div class="chat-reply"><i class="fas fa-reply"></i></div>
-                <div class="saito-chat-line-controls">
-                  <span class="saito-chat-line-timestamp">
-                    ${this.app.browser.returnTime(ts)}
-                  </span>
-                </div>
-              </div>`;
-						msg += `<div class="chat-message-line message-${
-							block[z].signature
-						}${
-							block[z].flag_message
-								? ' user-mentioned-in-chat-line'
-								: ''
-						}">`;
+						 	<div data-id="${block[z].signature}" data-href="${sender + ts}" class="saito-userline-reply">
+		                  <div class="chat-copy"><i class="fas fa-copy"></i></div>
+		                  <div class="chat-reply"><i class="fas fa-reply"></i></div>
+		                  <div class="saito-chat-line-controls">
+		                    <span class="saito-chat-line-timestamp">${this.app.browser.returnTime(ts)}</span>
+		                  </div>
+		               </div>`;
+
+
+						msg += `<div class="chat-message-line message-${block[z].signature}`;
+						if (block[z]?.flag_message){
+							msg += ' user-mentioned-in-chat-line';
+						};
+						if (new_message_flag){
+							msg += ' new-message'
+						}
+						msg += `">`;
 						if (block[z].msg.indexOf('<img') != 0) {
 							msg += this.app.browser.sanitize(
 								block[z].msg,
 								true
 							);
 						} else {
-							msg += block[z].msg.substring(
-								0,
-								block[z].msg.indexOf('>') + 1
-							);
+							msg += block[z].msg.substring(0,	block[z].msg.indexOf('>') + 1);
 						}
-						msg += `
-                ${replyButton}
-              </div>`;
+						msg += `${replyButton}</div>`;
+
+						if (group?.last_read_message && block[z].signature == group.last_read_message && group.unread > 0){
+							console.log("Mark remaining messages as new!");
+							new_message_flag = true;
+						}
 					}
 
 					//Use FA 5 so compatible in games (until we upgrade everything to FA6)
@@ -1571,7 +1569,6 @@ class Chat extends ModTemplate {
 			html = `<div class="saito-time-stamp">say hello</div>`;
 		}
 
-		group.unread = 0;
 		group.mentioned = false;
 
 		//Save the status that we have read these messages
@@ -1698,6 +1695,7 @@ class Chat extends ModTemplate {
 			}
 		}
 
+		let insertion_index = 0;
 		for (let i = 0; i < group.txs.length; i++) {
 			if (group.txs[i].signature === tx.signature) {
 				if (this.debug) {
@@ -1706,21 +1704,24 @@ class Chat extends ModTemplate {
 				return 0;
 			}
 			if (tx.timestamp < group.txs[i].timestamp) {
-				group.txs.splice(i, 0, new_message);
-				group.unread++;
-
 				if (this.debug) {
 					console.log('out of order ' + i);
 					console.log(JSON.parse(JSON.stringify(new_message)));
 				}
-
-				return 0;
+				break;
 			}
+			insertion_index++;
 		}
 
-		group.txs.push(new_message);
+		if (!tx.isFrom(this.publicKey)){
+			group.unread++;
+		}else{
+			group.last_read_message = tx.signature;
+		}
 
-		group.unread++;
+		//Handle new messages (possibly out of order)
+
+		group.txs.splice(insertion_index, 0, new_message);
 
 		group.last_update = tx.timestamp;
 
@@ -2094,6 +2095,13 @@ class Chat extends ModTemplate {
 						currentGroup = Object.assign(currentGroup, value);
 					} else {
 						chat_self.groups.push(value);
+					}
+
+					currentGroup = chat_self.returnGroup(g_id);
+					if (!currentGroup?.last_read_message){
+						if (currentGroup.txs.length > 0){
+							currentGroup.last_read_message = currentGroup.txs.slice(-1)[0].signature;
+						}
 					}
 
 					//console.log(value);
