@@ -80,6 +80,20 @@ class ExplorerCore extends ModTemplate {
 			}
 		});
 
+		expressapp.get('/explorer/balance', async function (req, res) {
+			var pubkey = sanitizer.sanitize(req.query.pubkey);
+
+			if (pubkey == null) {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send('Please provide a public key.');
+			} else {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(await explorer_self.returnBalanceHTML(app, pubkey));
+			}
+		});
+
 		// //////////////////////
 		// full json blocks //
 		//////////////////////
@@ -182,7 +196,7 @@ class ExplorerCore extends ModTemplate {
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
 			txs.length +
 			' txs</a></div> \
-        </div>' +
+        </div>' + this.returnInputBalanceHTML() +
 			'\
         <div class="explorer-data"><h4>Search for Block (by hash):</h4> \
         <form method="get" action="/explorer/block"><div class="one-line-form"><input type="text" name="hash" class="hash-search-input" /> \
@@ -354,6 +368,54 @@ class ExplorerCore extends ModTemplate {
       </script> \
       ';
 
+		html += this.returnPageClose();
+		return html;
+	}
+
+	// Input Balance HTML
+	returnInputBalanceHTML() {
+		var html = `
+		<div class="explorer-data">
+			<h4>Check balance (by wallet)</h4>
+			<form method="get" action="/explorer/balance">
+				<div class="one-line-form">
+					<input type="text" class="balance-search-input" name="pubkey">
+					<input type="submit" class="button" value="check">
+				</div>
+			</form>
+		</div>
+		`;
+
+		return html;
+	}
+
+	// Balance HTML
+	async returnBalanceHTML(app, pubkey) {
+		var html = this.returnHead() + this.returnHeader();
+
+		html += `
+		<div class="explorer-main">
+			<div class="block-table">
+				<div class="explorer-data">
+					<h4>Wallet Address:</h4>
+				</div>
+				<div class="address">` + pubkey + `</div>
+					<div class="explorer-data">
+						<h4>Balance:</h4>
+					</div>
+					<div class="balance">-</div>
+				</div>
+			` + this.returnInputBalanceHTML() + `
+			<div class="explorer-data">
+				<a href="/explorer">
+					<button class="explorer-nav"><i class="fas fa-cubes"></i> Back to explorer</button>
+				</a>
+			</div>
+		</div>
+		<script>
+			checkBalance("`+ pubkey + `");
+		</script>
+		`;
 		html += this.returnPageClose();
 		return html;
 	}

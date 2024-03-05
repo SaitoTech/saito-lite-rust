@@ -176,3 +176,17 @@ async function* makeTextFileLineIterator(fileURL) {
 		yield chunk.substr(startIndex);
 	}
 }
+
+async function checkBalance(pubkey = "") {
+  if (pubkey.length == 44){ // check length 44 or it will return the whole list if less
+    // API
+    let response = await fetch('/balance/' + pubkey);
+    let data = await response.text();
+    console.log(data);
+    // format
+    let balance = data.split(/\s/);
+    // Draw balance
+    var div = document.querySelector('.balance');
+    div.innerHTML = balance[5] || 0; // undefined = 0?
+  }
+}
