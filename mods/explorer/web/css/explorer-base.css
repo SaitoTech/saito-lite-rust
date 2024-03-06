@@ -15,7 +15,7 @@ h5 {
 
 .explorer-main {
 	margin-top: 75px;
-	padding: 0 10px;
+	/* padding: 0 10px; */
 	line-height: 1.6em;
 	font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
 	height: 91vh;
@@ -158,4 +158,25 @@ a {
 .blockJson {
 	border: 1px solid #ddd;
 	padding: 1em 0;
+}
+
+input.balance-button {
+	background: var(--saito-primary-background);
+    transition: 0.5s;
+    background-size: 400% auto;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    letter-spacing: 1px;
+    min-width: 10rem;
+    font-size: 1.8rem;
+    color: var(--saito-white);
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background-position: 1% 1%;
+}
+
+.explorer-balance {
+	padding: 1rem 0rem;
 }
