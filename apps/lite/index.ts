@@ -75,6 +75,10 @@ class WebMethods extends WebSharedMethods {
 		});
 	}
 
+	ensureBlockDirExists(path: string): void {
+
+	}
+
 	sendWalletUpdate() {
 		this.app.connection.emit('wallet-updated');
 	}
