@@ -97,7 +97,7 @@ class Poker extends GameTableTemplate {
 		}
 	}
 
-	render(app) {
+	async render(app) {
 		if (!this.browser_active) {
 			return;
 		}
@@ -128,28 +128,7 @@ class Poker extends GameTableTemplate {
 			}
 		});
 
-		/****
-     this.menu.addSubMenuOption("game-game", {
-      text: "Exit",
-      id: "game-exit",
-      class: "game-exit",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        //let c = confirm("Forfeit the Game?");
-        //if (c) {
-    //if (game_mod.game.state.passed[game_mod.game.player] != 1) {
-    //  game_mod.addMove("fold\t" + game_mod.game.player);
-    //  game_mod.endTurn();
-          //  game_mod.willleave = true;
-          //  game_mod.sendMetaMessage("LEAVE");
-    //}
-    window.location = "/arcade";
-        //}
-      },
-    });
-     ****/
-
-		super.render(app);
+		await super.render(app);
 
 		this.menu.addChatMenu();
 		this.menu.render();
@@ -1260,6 +1239,15 @@ class Poker extends GameTableTemplate {
 			if (mv[0] === 'fold') {
 				let player = parseInt(mv[1]);
 
+				this.updateLog(
+					this.game.state.player_names[player - 1] + ' folds'
+				);
+
+				this.game.stats[this.game.players[player - 1]].handsFolded++;
+				this.game.state.passed[player - 1] = 1;
+				this.game.state.last_fold = player;
+				this.game.queue.splice(qe, 1);
+
 				if (this.browser_active) {
 					if (this.game.player !== player) {
 						this.refreshPlayerLog(
@@ -1271,14 +1259,6 @@ class Poker extends GameTableTemplate {
 					}
 				}
 
-				this.updateLog(
-					this.game.state.player_names[player - 1] + ' folds'
-				);
-
-				this.game.stats[this.game.players[player - 1]].handsFolded++;
-				this.game.state.passed[player - 1] = 1;
-				this.game.state.last_fold = player;
-				this.game.queue.splice(qe, 1);
 			}
 
 			if (mv[0] === 'check') {
@@ -1647,11 +1627,15 @@ class Poker extends GameTableTemplate {
 	}
 
 	removePlayerFromState(index) {
-		this.game.state.player_names.splice(index, 1);
-		this.game.state.player_pot.splice(index, 1);
-		this.game.state.player_credit.splice(index, 1);
-		this.game.state.passed.splice(index, 1);
-		this.game.state.debt.splice(index, 1);
+		if (index >= 0 && index < this.game.state.player_names.length){
+			this.game.state.player_names.splice(index, 1);
+			this.game.state.player_pot.splice(index, 1);
+			this.game.state.player_credit.splice(index, 1);
+			this.game.state.passed.splice(index, 1);
+			this.game.state.debt.splice(index, 1);
+		}else{
+			console.warn("Invalid index removePlayerFromState");
+		}
 	}
 
 	returnCardFromDeck(idx) {
@@ -1998,32 +1982,75 @@ class Poker extends GameTableTemplate {
 		this.healthBars[player-1].render(credit);
 	}
 
+	async exitGame(){
+      if (this.game.over == 0){
+	      let c = await sconfirm("forfeit the game?");
+	      if (c) {
+	      	await this.sendStopGameTransaction("forfeit");
+	      	this.game.over = 2;
+					this.removePlayer(this.publicKey);
+	      	this.saveGame(this.game.id);
+	      	setTimeout(
+	      		() => {
+	      			super.exitGame();
+	      		}, 500); 
+				}
+      }else{
+      	super.exitGame();
+      }
+	}
+
 
 	async receiveStopGameTransaction(resigning_player, txmsg) {
+		console.log("Poker: receiveStopGameTransaction", txmsg, resigning_player);
+
 		await super.receiveStopGameTransaction(resigning_player, txmsg);
 
-		if (!txmsg.loser) {
+		if (this.publicKey == resigning_player){
 			return;
+		}
+
+		let loser = -1;
+		for (let i = 0; i < this.game.players.length; i++){
+			console.log(this.game.players[i]);
+			if (this.game.players[i] == resigning_player){
+				loser = i + 1;
+				break;
+			}
+		}
+
+		if (loser < 0){
+			console.log("Player is not in the game");
+			return;
+		}
+
+		if (txmsg?.deck){
+			if (!this.game?.opponent_decks){
+				this.game.opponent_decks = {};	
+			}
+			if (!this.game.opponent_decks[`${loser}`]){
+			 this.game.opponent_decks[`${loser}`] = txmsg.deck;
+			}
 		}
 
 		if (this.browser_active) {
 			if (this.publicKey !== resigning_player) {
 				this.refreshPlayerLog(
-					`<div class="plog-update">leaves the table</div>`,
-					txmsg.loser
+					`<div class="plog-update">left the table</div>`,
+					loser
 				);
 			}
 		}
 
 		this.updateLog(
-			this.game.state.player_names[txmsg.loser - 1] + ' left the table'
+			this.game.state.player_names[loser - 1] + ' left the table'
 		);
 
 		this.game.stats[resigning_player].handsFolded++;
-		this.game.state.passed[txmsg.loser - 1] = 1;
-		this.game.state.player_credit[txmsg.loser - 1] = '0';
+		this.game.state.passed[loser - 1] = 1;
+		this.game.state.last_fold = loser;
 
-		if (this.game.target == txmsg.loser) {
+		if (this.game.target == loser) {
 			this.game.state.plays_since_last_raise--;
 			this.startQueue();
 		}
@@ -3588,6 +3615,8 @@ class Poker extends GameTableTemplate {
 			pre_images[idx].src = imageArray[idx];
 		}
 	}
+
+
 }
 
 module.exports = Poker;
