@@ -1213,6 +1213,33 @@ class Poker extends GameTableTemplate {
 					console.error('Zero/Negative Call');
 				}
 
+
+				if (this.game.state.player_credit[player - 1] === amount_to_call) {
+					this.game.state.all_in = true;
+					this.updateLog(
+						this.game.state.player_names[player - 1] +
+							' goes all in to call'
+					);
+					if (this.game.player !== player) {
+					this.refreshPlayerLog(
+						`<div class="plog-update">All in!</div>`,
+						player
+					);
+				}
+
+				} else {
+					this.updateLog(
+						this.game.state.player_names[player - 1] + ' calls'
+					);
+					if (this.game.player !== player) {
+						this.refreshPlayerLog(
+							`<div class="plog-update">calls</div>`,
+							player
+						);
+					}
+
+				}
+
 				//
 				// reset plays since last raise
 				//
@@ -1226,24 +1253,7 @@ class Poker extends GameTableTemplate {
 
 				this.refreshPlayerStack(player); //Here we don't want to hide cards
 
-				if (this.browser_active == 1 && this.game.player !== player) {
-					this.refreshPlayerLog(
-						`<div class="plog-update">calls</div>`,
-						player
-					);
-				}
 
-				if (this.game.state.player_credit[player - 1] === 0) {
-					this.game.state.all_in = true;
-					this.updateLog(
-						this.game.state.player_names[player - 1] +
-							' goes all in to call'
-					);
-				} else {
-					this.updateLog(
-						this.game.state.player_names[player - 1] + ' calls'
-					);
-				}
 				return 0;
 			}
 
@@ -1300,16 +1310,9 @@ class Poker extends GameTableTemplate {
 				//this.game.state.player_credit[player - 1] -= raise;
 				this.game.state.player_pot[player - 1] += raise;
 				//this.game.state.pot += raise;
-				this.animateBet(raise, player - 1);
 
-				this.game.state.last_raise = raise_portion;
-				this.game.state.required_pot += raise_portion;
-
-				let raise_message = `raises ${this.formatWager(
-					raise_portion
-				)} `;
-				if (this.game.state.player_credit[player - 1] === 0) {
-					this.game.state.all_in = 1;
+				if (this.game.state.player_credit[player - 1] === raise) {
+					this.game.state.all_in = true;
 					raise_message = `goes all in `;
 					if (this.game.player !== player && this.browser_active) {
 						this.refreshPlayerLog(
@@ -1318,6 +1321,16 @@ class Poker extends GameTableTemplate {
 						);
 					}
 				}
+
+				this.animateBet(raise, player - 1, true);
+
+				this.game.state.last_raise = raise_portion;
+				this.game.state.required_pot += raise_portion;
+
+				let raise_message = `raises ${this.formatWager(
+					raise_portion
+				)} `;
+
 				if (call_portion > 0) {
 					if (raise_portion > 0) {
 						this.updateLog(
@@ -1376,7 +1389,7 @@ class Poker extends GameTableTemplate {
 				this.game.queue.splice(qe, 1);
 				this.refreshPlayerStack(player); //Here we don't want to hide cards
 
-				return 1;
+				return 0;
 			}
 
 			//
@@ -1395,7 +1408,7 @@ class Poker extends GameTableTemplate {
 			return;
 		}
 		if (this.game.player == 0) {
-			salert('How the fuck did we call player-zero turn??');
+			salert('How on earth did we call player-zero turn??');
 			return;
 		}
 
@@ -1886,6 +1899,10 @@ class Poker extends GameTableTemplate {
 
 	async animateBet(amount, player_index, restartQueue = false){
 
+		if (restartQueue){
+			this.halted = 1;
+		}
+		
 		for (let i = 0; i < amount; i++){
 
 			this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${player_index+1}`),
@@ -1904,6 +1921,7 @@ class Poker extends GameTableTemplate {
 						$(item).remove();	
 					}else{
 						$('.animated_elem').remove();
+						console.log("*******************************");
 						this.restartQueue();
 					}
 					
