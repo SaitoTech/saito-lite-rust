@@ -160,14 +160,14 @@ a {
 	padding: 1em 0;
 }
 
-input.balance-button {
+.balance-button {
 	background: var(--saito-primary-background);
     transition: 0.5s;
     background-size: 400% auto;
     padding: 1rem 1.5rem;
     text-align: center;
     letter-spacing: 1px;
-    min-width: 10rem;
+    min-width: 13rem;
     font-size: 1.8rem;
     color: var(--saito-white);
     font-weight: 500;
@@ -199,4 +199,9 @@ input.balance-button {
 	text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+.explorer-balance-row-button {
+	display: grid;
+	grid-template-columns: 1fr 7.5em;
+	max-width: 850px;
 }

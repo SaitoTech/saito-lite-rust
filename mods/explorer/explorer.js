@@ -432,7 +432,7 @@ class ExplorerCore extends ModTemplate {
 					</div>
 				</form>
 			</div>
-			<div class="explorer-balance-row">
+			<div class="explorer-balance-row-button">
 				<a href="/explorer">
 					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
 				</a>
