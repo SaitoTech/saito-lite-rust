@@ -66,7 +66,7 @@ class Crypto extends ModTemplate {
 							game_mod.game.crypto != 'CHIPS'
 						) {
 							salert(
-								`Exiting: ${game_mod.game.crypto} already enabled for this game!`
+								`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
 							);
 							return;
 						}
