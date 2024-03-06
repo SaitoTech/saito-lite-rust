@@ -216,16 +216,17 @@ async function checkAllBalance() {
     wallet.setAttribute("class","explorer-balance-data");
     wallet.innerHTML = col_data[0];
     node.appendChild(wallet);
-
+    
     let balance_saito = document.createElement("div");
     balance_saito.setAttribute("class","explorer-balance-data");
-    balance_saito.innerHTML = col_data[4];
+    let nolan_per_saito = parseFloat(col_data[4])/10000000;
+    balance_saito.innerHTML = nolan_per_saito;
     node.appendChild(balance_saito);
+    
+    let balance_nolan = document.createElement("div");
+    balance_nolan.setAttribute("class","explorer-balance-data");
+    balance_nolan.innerHTML = col_data[4];
+    node.appendChild(balance_nolan);
 
-    let nolan_per_saito = document.createElement("div");
-    nolan_per_saito.setAttribute("class","explorer-balance-data");
-    let nolan = parseFloat(col_data[4])/10000000;
-    nolan_per_saito.innerHTML = nolan;
-    node.appendChild(nolan_per_saito);
   }
 }

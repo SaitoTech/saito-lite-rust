@@ -183,7 +183,7 @@ input.balance-button {
 
 .explorer-balance-table {  
 	display: grid;
-	grid-template-columns: minmax(0, auto) auto auto;
+	grid-template-columns: minmax(28rem, auto) auto auto;
 	gap: 0px 0px;
 	background-color: lightgray;
 	border-radius: 5px;
