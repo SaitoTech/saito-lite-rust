@@ -475,9 +475,65 @@ class MixinModule extends CryptoModule {
 		});
 	}
 
-	async getMixinUserByPublicKey(publickey = '', callback = null) {
-		return await this.mixin.sendFetchUserByPublickeyTransaction({publickey: publickey}, function(res){
-			return callback(res);
+	async getMixinAddress(publicKey, asset_id, callback = null) {
+		this_self = this;
+		try {
+			//check if key exists in keychain
+			let return_data = null;
+			let key_exists = false;
+			let keys = this.app.keychain.returnKeys();
+
+			for(let i=0; i< keys.length; i++) {
+				// check key exists in keychain
+				if (publicKey == keys[i].publicKey) {
+					key_exists = true;
+					//check if specific asset address exists
+					if (typeof keys[i].crypto_addresses != 'undefined') {
+						let crypto_addresses = keys[i].crypto_addresses;
+
+						for(let j=0; j<crypto_addresses.length; j++) {
+							if (crypto_addresses[j].asset_id == asset_id) {
+								return_data = crypto_addresses[j];
+								break;
+							}
+						}
+					}	
+				}
+			}
+
+			if (return_data == null) {
+				// if it doesnt exist fetch it from node db
+				await this.mixin.sendFetchUserByPublicKeyTransaction({
+					publicKey: publicKey,
+					asset_id: asset_id
+				}, 
+				async function(res){
+					return_data = res;
+					for(let i=0; i< res.length; i++) {
+						if (res[i].asset_id == asset_id) {
+							if (key_exists) {
+								// save address to keychain if publickey exists in keychain
+								await this_self.addCryptoAddressToKey(publicKey, res[i].address, res[i].asset_id);
+							}
+							return callback(res[i]);
+						}
+					}
+				
+				});
+			}
+
+			return callback(return_data);
+		} catch(err) {
+			console.error("Error getMixinAddress: ", err);
+		}
+	}
+
+	async addCryptoAddressToKey(publicKey, address, asset_id){
+		console.log('address, asset_id', address, asset_id);
+		this.app.keychain.addKey(publicKey, {
+			crypto_addresses: [
+				{address: address, asset_id: asset_id}
+			]
 		});
 	}
 

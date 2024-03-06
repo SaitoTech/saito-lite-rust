@@ -221,6 +221,10 @@ class Mixin extends ModTemplate {
       // create safe user
       let safe_user = await this.safe_register(user.user_id);
 
+      if (safe_user == false) {
+        return callback({});
+      }
+
       if (callback) {
         return callback({
           user_id:  safe_user.user_id,
@@ -301,7 +305,7 @@ class Mixin extends ModTemplate {
       console.log(account);
       return account;
     } catch(err) {
-      console.error("ERROR: Mixin error safe register: " + err);
+      console.error("ERROR: Mixin error safe register: " + err.stack);
       return false;
     }
   }
@@ -865,7 +869,7 @@ class Mixin extends ModTemplate {
     return callback(false);
   }
 
-  async sendFetchUserByPublickeyTransaction(params = {}, callback){
+  async sendFetchUserByPublicKeyTransaction(params = {}, callback){
     let peers = await this.app.network.getPeers();
     if (peers.length == 0) {
       console.warn("No peers");
@@ -879,7 +883,7 @@ class Mixin extends ModTemplate {
       "mixin fetch user by publickey",
       data,
       function (res) {
-        console.log("Callback for sendFetchUserByPublickeyTransaction request: ", res);
+        console.log("Callback for sendFetchUserByPublicKeyTransaction request: ", res);
         return callback(res);
       },
       peers[0].peerIndex
@@ -888,11 +892,13 @@ class Mixin extends ModTemplate {
 
   async receiveFetchUserByPublickeyTransaction(app, tx, peer, callback = null){
     let message = tx.returnMessage();
-    let publickey = message.data.publickey;
+    let publicKey = message.data.publicKey;
+    let asset_id = message.data.asset_id;
     let sql = `SELECT * FROM mixin_users 
-               WHERE publickey = $publickey;`;
+               WHERE publickey = $publicKey AND asset_id = $asset_id ORDER BY created_at DESC;`;
     let params = {
-      $publickey: publickey,
+      $publicKey: publicKey,
+      $asset_id: asset_id
     };
     let result = await this.app.storage.queryDatabase(sql, params, "Mixin");
     if (result.length > 0) {
