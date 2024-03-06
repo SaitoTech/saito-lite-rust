@@ -178,15 +178,18 @@ async function* makeTextFileLineIterator(fileURL) {
 }
 
 async function checkBalance(pubkey = "") {
-  if (pubkey.length == 44){ // check length 44 or it will return the whole list if less
+  document.querySelector('.balance-search-input').placeholder = pubkey;
+  if (pubkey != ""){
     // API
     let response = await fetch('/balance/' + pubkey);
     let data = await response.text();
     console.log(data);
     // format
-    let balance = data.split(/\s/);
-    // Draw balance
-    var div = document.querySelector('.balance');
-    div.innerHTML = balance[5] || 0; // undefined = 0?
+    let nolan_balance = data.split(/\n/)[1].split(/\s/)[4] || 0; // undefined = 0?
+    // draw
+    let nolan_per_saito = 10000000;
+    let balance_saito = nolan_balance/nolan_per_saito;
+    document.querySelector('.balance-saito').innerHTML = balance_saito;
+    document.querySelector('.balance-nolan').innerHTML = nolan_balance;
   }
 }

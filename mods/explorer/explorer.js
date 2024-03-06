@@ -400,15 +400,27 @@ class ExplorerCore extends ModTemplate {
 					<h4>Wallet Address:</h4>
 				</div>
 				<div class="address">` + pubkey + `</div>
-					<div class="explorer-data">
-						<h4>Balance:</h4>
-					</div>
-					<div class="balance">-</div>
+				<div class="explorer-data">
+					<h4>Saito:</h4>
 				</div>
-			` + this.returnInputBalanceHTML() + `
-			<div class="explorer-data">
+				<div class="balance-saito">-</div>
+				<div class="explorer-data">
+					<h4>Nolan:</h4>
+				</div>
+				<div class="balance-nolan">-</div>
+			</div>
+			<div class="explorer-balance">
+				<h4>Check balance (by wallet)</h4>
+				<form method="get" action="/explorer/balance">
+					<div class="one-line-form">
+						<input type="text" class="balance-search-input" name="pubkey">
+						<input type="submit" class="balance-button" value="check">
+					</div>
+				</form>
+			</div>
+			<div class="explorer-balance">
 				<a href="/explorer">
-					<button class="explorer-nav"><i class="fas fa-cubes"></i> Back to explorer</button>
+					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
 				</a>
 			</div>
 		</div>
