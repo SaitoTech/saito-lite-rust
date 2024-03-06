@@ -94,6 +94,20 @@ class ExplorerCore extends ModTemplate {
 			}
 		});
 
+		expressapp.get('/explorer/balance/all', async function (req, res) {
+			// var pubkey = sanitizer.sanitize(req.query.pubkey);
+
+			// if (pubkey == null) {
+			// 	res.setHeader('Content-type', 'text/html');
+			// 	res.charset = 'UTF-8';
+			// 	res.send('Please provide a public key.');
+			// } else {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(await explorer_self.returnAllBalanceHTML(app, res));
+			// }
+		});
+
 		// //////////////////////
 		// full json blocks //
 		//////////////////////
@@ -409,23 +423,52 @@ class ExplorerCore extends ModTemplate {
 				</div>
 				<div class="balance-nolan">-</div>
 			</div>
-			<div class="explorer-balance">
+			<div class="explorer-balance-row">
 				<h4>Check balance (by wallet)</h4>
 				<form method="get" action="/explorer/balance">
 					<div class="one-line-form">
-						<input type="text" class="balance-search-input" name="pubkey">
+						<input type="text" class="balance-search-input" name="pubkey" >
 						<input type="submit" class="balance-button" value="check">
 					</div>
 				</form>
 			</div>
-			<div class="explorer-balance">
+			<div class="explorer-balance-row">
 				<a href="/explorer">
 					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
+				</a>
+				<a href="/explorer/balance/all">
+					<button class="balance-button">Show all</button>
 				</a>
 			</div>
 		</div>
 		<script>
 			checkBalance("`+ pubkey + `");
+		</script>
+		`;
+		html += this.returnPageClose();
+		return html;
+	}
+
+	async returnAllBalanceHTML(app, res) {
+		var html = this.returnHead() + this.returnHeader();
+
+		html += `
+		<div class="explorer-main">
+			<div class="explorer-balance-row">
+				<a href="/explorer">
+					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
+				</a>
+			</div>
+			<div class="explorer-balance-row">
+				<div class="explorer-balance-table">
+					<div class="explorer-balance-header">Wallet</div>
+					<div class="explorer-balance-header">Saito</div>
+					<div class="explorer-balance-header">Nolan</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			checkAllBalance();
 		</script>
 		`;
 		html += this.returnPageClose();

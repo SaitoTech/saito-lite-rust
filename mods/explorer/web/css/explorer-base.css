@@ -177,6 +177,26 @@ input.balance-button {
     background-position: 1% 1%;
 }
 
-.explorer-balance {
+.explorer-balance-row {
 	padding: 1rem 0rem;
+}
+
+.explorer-balance-table {  
+	display: grid;
+	grid-template-columns: minmax(0, auto) auto auto;
+	gap: 0px 0px;
+	background-color: lightgray;
+	border-radius: 5px;
+	overflow: hidden;
+}
+  
+.explorer-balance-header{
+	padding: 1rem 1.5rem;
+	font-weight: bold;
+}
+.explorer-balance-data{
+	padding: 1rem 1.5rem;
+	text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
