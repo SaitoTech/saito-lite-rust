@@ -127,6 +127,14 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		}
 	}
 
+	ensureBlockDirExists(): void {
+		const dirPath = path.resolve(__dirname, "../../../data/blocks");
+		if (!fs.existsSync(dirPath)) {
+			fs.mkdirSync(dirPath, { recursive: true });
+			console.log(`Directory created at: ${dirPath}`);
+		}
+	}
+
 	isExistingFile(key: string): boolean {
 		try {
 			let result = fs.existsSync(key);
@@ -136,6 +144,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			return false;
 		}
 	}
+
+
 
 	removeValue(key: string): void {
 		try {
@@ -158,9 +168,9 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			.then((buffer: ArrayBuffer) => {
 				console.log(
 					'block data fetched for ' +
-						url +
-						' with size : ' +
-						buffer.byteLength
+					url +
+					' with size : ' +
+					buffer.byteLength
 				);
 				return new Uint8Array(buffer);
 			})
@@ -246,7 +256,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		minor: number,
 		patch: number,
 		peerIndex: bigint
-	): void {}
+	): void { }
 }
 
 /**
@@ -316,7 +326,7 @@ class Server {
 			socket.on('message', (buffer: any) => {
 				S.getLibInstance()
 					.process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-					.then(() => {});
+					.then(() => { });
 			});
 			socket.on('close', () => {
 				S.getLibInstance().process_peer_disconnection(index);
@@ -640,9 +650,9 @@ class Server {
 				);
 				console.log(
 					'valid txs : ' +
-						newblk.transactions.filter(
-							(tx) => tx.type !== TransactionType.SPV
-						).length
+					newblk.transactions.filter(
+						(tx) => tx.type !== TransactionType.SPV
+					).length
 				);
 
 				res.writeHead(200, {
