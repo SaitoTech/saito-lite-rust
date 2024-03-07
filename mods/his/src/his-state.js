@@ -824,7 +824,6 @@ if (this.game.state.scenario != "is_testing") {
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
-    state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
     state.excommunicated_factions = {};
     state.already_excommunicated = [];
@@ -956,7 +955,6 @@ if (this.game.state.scenario != "is_testing") {
     //
     // add to excommunicated list
     //
-    this.game.state.reformers_removed_until_next_round.push(obj);
     this.game.state.excommunicated.push(obj);
 
     return;
@@ -973,7 +971,8 @@ if (this.game.state.scenario != "is_testing") {
 
   restoreReformers() {
 
-    for (let i = 0; i < this.game.state.reformers_removed_until_next_round.length; i++) {
+    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+      let obj = this.game.state.excommunicated[i];
       if (obj.reformer) {
 
         let leader = obj.reformer;
@@ -987,10 +986,17 @@ if (this.game.state.scenario != "is_testing") {
 	    }
 	  }
 	}
+
+	if (obj.debater) {
+          this.game.state.debaters.push(obj.debater);
+	}
+
+
+	this.game.state.excommunicated.splice(i, 1);
+	i--;
+
       }
     }
-
-    this.game.state.reformers_removed_until_next_round = [];
 
   }
   restoreMilitaryLeaders() {
@@ -1017,9 +1023,7 @@ if (this.game.state.scenario != "is_testing") {
   unexcommunicateReformers() {
 
     for (let i = 0; i < this.game.state.excommunicated.length; i++) {
-
       let obj = this.game.state.excommunicated[i];
-
       if (obj.reformer) {
 
         let reformer = obj.reformer;

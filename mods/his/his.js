@@ -2907,6 +2907,7 @@ console.log("\n\n\n\n");
           this.setAllies("protestant", "ottoman");
           this.setAllies("papacy", "hapsburg");
           this.setAllies("papacy", "venice");
+	  this.setEnemies("papacy","france");
 
           this.addRegular("venice", "ravenna", 1);
           this.addRegular("papacy", "turin", 4);
@@ -2925,7 +2926,6 @@ console.log("\n\n\n\n");
 
           this.setAllies("papacy", "hapsburg");
           this.setActivatedPower("papacy", "hapsburg");
-          this.setActivatedPower("hapsburg", "genoa");
           this.setActivatedPower("protestant", "france");
           this.controlSpace("hapsburg", "genoa");
 
@@ -4428,7 +4428,7 @@ if (this.game.players.length > 2) {
 	    if (action === "grant") {
 
 	      his_self.updateStatus("Papacy grants divorce...");
-	      his_self.updateLog(`${his_self.popup("207")} - Papacy grants divorce...`);
+	      his_self.addMove(`NOTIFY\t${his_self.popup("207")} - Papacy grants divorce...`);
 	      his_self.addMove("player_call_theological_debate\tpapacy");
 	      his_self.addMove("henry_petitions_for_divorce_grant");
 	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
@@ -4438,7 +4438,7 @@ if (this.game.players.length > 2) {
 
 	    if (action === "refuse") {
 	      his_self.updateStatus("Papacy refuses divorce...");
-	      his_self.updateLog(`${his_self.popup("207")} - Papacy refuses divorce...`);
+	      his_self.addMove(`NOTIFY\t${his_self.popup("207")} - Papacy refuses divorce...`);
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t3");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t2");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t1");
@@ -8607,7 +8607,13 @@ console.log("considering: " + space.key);
 
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
-		if (his_self.isSpaceUnderSiege(space.key)) { return 0; }
+		if (his_self.isSpaceUnderSiege(space.key)) {
+		  for (let i = 0; i < space.units[faction].length; i++) {
+		    // if we aren't besieged it is OK
+		    if (space.units[faction][i].besieged == 0) { return 1; }
+		  }
+		  return 0; 
+		}
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
 		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
 	        return 0;
@@ -9154,22 +9160,10 @@ console.log("considering: " + space.key);
 
         let obj = {};
         obj.faction = "protestant";
-	obj.space = "geneva";
-	obj.reformer = his_self.reformers["calvin-reformer"];
-        let target = his_self.returnSpaceOfPersonage("protestant", "calvin-reformer");
 
-	if (target) {
-  	  for (let i = 0; i < his_self.game.spaces[target].units["protestant"].length; i++) {
-	    if (his_self.game.spaces[target].units["protestant"][i].type == "calvin-reformer") {
-              obj.reformer = his_self.game.spaces[target].units["protestant"][i];
-	      his_self.game.spaces[target].units["protestant"].splice(i, 1);
-	    }
-	  }
-	}
-
+        his_self.excommunicateReformer("calvin-reformer");
 	his_self.commitDebater("protestant", "calvin-debater");
 	his_self.removeDebater("protestant", "calvin-debater");
-        his_self.excommunicateReformer("calvin-reformer");
 
 	his_self.displaySpace(target);
 
@@ -9178,7 +9172,7 @@ console.log("considering: " + space.key);
     }
     deck['046'] = { 
       img : "cards/HIS-046.svg" , 
-      name : "Calvin's Insitutes" ,
+      name : "Calvin's Institutes" ,
       ops : 5 ,
       turn : 4 ,
       type : "normal" ,
@@ -18817,12 +18811,18 @@ console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language
   }
 
   returnAllyOfMinorPower(power) {
-    if (!this.game.state.minor_activated_powers.includes(power)) { return power; }
+    if (this.isMajorPower(power)) { return power; }
     for (let key in this.game.state.activated_powers) {
       if (this.game.state.activated_powers[key].includes(power)) {
 	return key;
       }
     }
+    if (this.areAllies(power, "papacy", 0)) { return "papacy"; }
+    if (this.areAllies(power, "protestant", 0)) { return "protestant"; }
+    if (this.areAllies(power, "france", 0)) { return "france"; }
+    if (this.areAllies(power, "england", 0)) { return "england"; }
+    if (this.areAllies(power, "hapsburg", 0)) { return "hapsburg"; }
+    if (this.areAllies(power, "ottoman", 0)) { return "ottoman"; }
     return power;
   }
 
@@ -19726,7 +19726,6 @@ if (this.game.state.scenario != "is_testing") {
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
-    state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
     state.excommunicated_factions = {};
     state.already_excommunicated = [];
@@ -19858,7 +19857,6 @@ if (this.game.state.scenario != "is_testing") {
     //
     // add to excommunicated list
     //
-    this.game.state.reformers_removed_until_next_round.push(obj);
     this.game.state.excommunicated.push(obj);
 
     return;
@@ -19875,7 +19873,8 @@ if (this.game.state.scenario != "is_testing") {
 
   restoreReformers() {
 
-    for (let i = 0; i < this.game.state.reformers_removed_until_next_round.length; i++) {
+    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+      let obj = this.game.state.excommunicated[i];
       if (obj.reformer) {
 
         let leader = obj.reformer;
@@ -19889,10 +19888,17 @@ if (this.game.state.scenario != "is_testing") {
 	    }
 	  }
 	}
+
+	if (obj.debater) {
+          this.game.state.debaters.push(obj.debater);
+	}
+
+
+	this.game.state.excommunicated.splice(i, 1);
+	i--;
+
       }
     }
-
-    this.game.state.reformers_removed_until_next_round = [];
 
   }
   restoreMilitaryLeaders() {
@@ -19919,9 +19925,7 @@ if (this.game.state.scenario != "is_testing") {
   unexcommunicateReformers() {
 
     for (let i = 0; i < this.game.state.excommunicated.length; i++) {
-
       let obj = this.game.state.excommunicated[i];
-
       if (obj.reformer) {
 
         let reformer = obj.reformer;
@@ -20953,13 +20957,36 @@ if (this.game.options.scenario == "is_testing") {
 	  // show all - will only trigger for relevant faction
 	  //
 	  if (this.game.state.round == 1 || (this.game.state.round == this.game.state.starting_round)) {
-	    this.game.queue.push("show_overlay\twelcome\tprotestant");
-	    this.game.queue.push("show_overlay\twelcome\tpapacy");
-	    this.game.queue.push("show_overlay\twelcome\thapsburg");
-	    this.game.queue.push("show_overlay\twelcome\tengland");
-	    this.game.queue.push("show_overlay\twelcome\tfrance");
-	    this.game.queue.push("show_overlay\twelcome\tottoman");
-	    //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    if (this.game.players.length == 2) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant");
+	      this.game.queue.push("show_overlay\twelcome\tpapacy");
+	    }
+	    if (this.game.players.length == 3) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant_england");
+	      this.game.queue.push("show_overlay\twelcome\tfrance_ottoman");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg_papacy");
+	    }
+	    if (this.game.players.length == 4) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant_england");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg_papacy");
+	      this.game.queue.push("show_overlay\twelcome\tfrance");
+	      this.game.queue.push("show_overlay\twelcome\tottoman");
+	    }
+	    if (this.game.players.length == 5) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant_england");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg");
+	      this.game.queue.push("show_overlay\twelcome\tpapacy");
+	      this.game.queue.push("show_overlay\twelcome\tfrance");
+	      this.game.queue.push("show_overlay\twelcome\tottoman");
+	    }
+	    if (this.game.players.length == 6) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant");
+	      this.game.queue.push("show_overlay\twelcome\tpapacy");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg");
+	      this.game.queue.push("show_overlay\twelcome\tengland");
+	      this.game.queue.push("show_overlay\twelcome\tfrance");
+	      this.game.queue.push("show_overlay\twelcome\tottoman");
+	    }
       	    this.game.queue.push("READY");
 	  }
 
@@ -21002,15 +21029,21 @@ if (this.game.options.scenario == "is_testing") {
 	  if (mv[1] === "welcome") { 
 	    let faction = mv[2];
 	    let player = this.returnPlayerOfFaction(faction);
+	    if (faction === "protestant_england") { player = this.returnPlayerOfFaction("protestant"); }
+	    if (faction === "hapsburg_papacy") { player = this.returnPlayerOfFaction("hapsburg"); }
+	    if (faction === "france_ottoman") { player = this.returnPlayerOfFaction("france"); }
 	    if (this.game.player === player) { 
 	      this.welcome_overlay.render(faction); 
 	      this.game.queue.push("hide_overlay\twelcome");
-	      if (faction == "protestant") { this.game.queue.push("ACKNOWLEDGE\tYou are the Protestants"); }
-	      if (faction == "papacy") { this.game.queue.push("ACKNOWLEDGE\tYou are the Papacy"); }
-	      if (faction == "hapsburg") { this.game.queue.push("ACKNOWLEDGE\tYou are the Hapsburgs"); }
-	      if (faction == "ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the Ottomans"); }
-	      if (faction == "france") { this.game.queue.push("ACKNOWLEDGE\tYou are the French"); }
-	      if (faction == "england") { this.game.queue.push("ACKNOWLEDGE\tYou are the English"); }
+	      if (faction === "protestant") { this.game.queue.push("ACKNOWLEDGE\tYou are the Protestants"); }
+	      if (faction === "papacy") { this.game.queue.push("ACKNOWLEDGE\tYou are the Papacy"); }
+	      if (faction === "hapsburg") { this.game.queue.push("ACKNOWLEDGE\tYou are the Hapsburgs"); }
+	      if (faction === "ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the Ottomans"); }
+	      if (faction === "france") { this.game.queue.push("ACKNOWLEDGE\tYou are the French"); }
+	      if (faction === "england") { this.game.queue.push("ACKNOWLEDGE\tYou are the English"); }
+	      if (faction === "protestant_england") { this.game.queue.push("ACKNOWLEDGE\tYou are the Protestants and English"); }
+	      if (faction === "france_ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the French and Ottomans"); }
+	      if (faction === "hapsburg_papacy") { this.game.queue.push("ACKNOWLEDGE\tYou are the Hapsburgs and Papacy"); }
 	    }
 	  }
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
@@ -29299,10 +29332,15 @@ if (this.game.state.round == 2) {
 	  }
 
 
+console.log("&");
+console.log("&");
+console.log("&");
+console.log(this.game.state.round + " -- " + this.game.state.starting_round);
+
 	  //
 	  // no diplomacy phase round 1
 	  //
-	  if (this.game.state.round == 1 || (this.game.state.round < this.game.state.starting_round)) {
+	  if (this.game.state.round == 1 || (this.game.state.round <= this.game.state.starting_round)) {
 
             this.game.queue.push("SHUFFLE\t2");
 	    for (let i = this.game.state.players_info.length; i > 0; i--) {
@@ -39456,7 +39494,6 @@ try {
     if (space.type == "key") { stype = "key"; owner = this.returnControllingPower(owner); }
     if (owner == "protestant") { stype = "hex"; owner = this.returnControllingPower(owner); }
 
-
     if (owner != "") {
       if (owner === "hungary") {
         if (owner === "hungary") {
@@ -40727,8 +40764,19 @@ try {
 	(space.home == space.political || space.political == "")
       )
     ) {
-      no_keytiles_in_keys.push(space.key);
-      show_tile = 0;
+      let allied_to_major_power = false;
+      if (space.type === "key" || space.type == "electorate") {
+        if (this.areAllies(space.home, "protestant", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "papacy", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "france", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "england", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "ottoman", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "hapsburg", 0)) { allied_to_major_power = true; }
+      }
+      if (allied_to_major_power == false) {
+        no_keytiles_in_keys.push(space.key);
+        show_tile = 0;
+      }
     }
     if (space.language == "german" && space.units["protestant"].length > 0) { show_tile = 1; }
 

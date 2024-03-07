@@ -182,13 +182,36 @@ if (this.game.options.scenario == "is_testing") {
 	  // show all - will only trigger for relevant faction
 	  //
 	  if (this.game.state.round == 1 || (this.game.state.round == this.game.state.starting_round)) {
-	    this.game.queue.push("show_overlay\twelcome\tprotestant");
-	    this.game.queue.push("show_overlay\twelcome\tpapacy");
-	    this.game.queue.push("show_overlay\twelcome\thapsburg");
-	    this.game.queue.push("show_overlay\twelcome\tengland");
-	    this.game.queue.push("show_overlay\twelcome\tfrance");
-	    this.game.queue.push("show_overlay\twelcome\tottoman");
-	    //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    if (this.game.players.length == 2) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant");
+	      this.game.queue.push("show_overlay\twelcome\tpapacy");
+	    }
+	    if (this.game.players.length == 3) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant_england");
+	      this.game.queue.push("show_overlay\twelcome\tfrance_ottoman");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg_papacy");
+	    }
+	    if (this.game.players.length == 4) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant_england");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg_papacy");
+	      this.game.queue.push("show_overlay\twelcome\tfrance");
+	      this.game.queue.push("show_overlay\twelcome\tottoman");
+	    }
+	    if (this.game.players.length == 5) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant_england");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg");
+	      this.game.queue.push("show_overlay\twelcome\tpapacy");
+	      this.game.queue.push("show_overlay\twelcome\tfrance");
+	      this.game.queue.push("show_overlay\twelcome\tottoman");
+	    }
+	    if (this.game.players.length == 6) {
+	      this.game.queue.push("show_overlay\twelcome\tprotestant");
+	      this.game.queue.push("show_overlay\twelcome\tpapacy");
+	      this.game.queue.push("show_overlay\twelcome\thapsburg");
+	      this.game.queue.push("show_overlay\twelcome\tengland");
+	      this.game.queue.push("show_overlay\twelcome\tfrance");
+	      this.game.queue.push("show_overlay\twelcome\tottoman");
+	    }
       	    this.game.queue.push("READY");
 	  }
 
@@ -231,15 +254,21 @@ if (this.game.options.scenario == "is_testing") {
 	  if (mv[1] === "welcome") { 
 	    let faction = mv[2];
 	    let player = this.returnPlayerOfFaction(faction);
+	    if (faction === "protestant_england") { player = this.returnPlayerOfFaction("protestant"); }
+	    if (faction === "hapsburg_papacy") { player = this.returnPlayerOfFaction("hapsburg"); }
+	    if (faction === "france_ottoman") { player = this.returnPlayerOfFaction("france"); }
 	    if (this.game.player === player) { 
 	      this.welcome_overlay.render(faction); 
 	      this.game.queue.push("hide_overlay\twelcome");
-	      if (faction == "protestant") { this.game.queue.push("ACKNOWLEDGE\tYou are the Protestants"); }
-	      if (faction == "papacy") { this.game.queue.push("ACKNOWLEDGE\tYou are the Papacy"); }
-	      if (faction == "hapsburg") { this.game.queue.push("ACKNOWLEDGE\tYou are the Hapsburgs"); }
-	      if (faction == "ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the Ottomans"); }
-	      if (faction == "france") { this.game.queue.push("ACKNOWLEDGE\tYou are the French"); }
-	      if (faction == "england") { this.game.queue.push("ACKNOWLEDGE\tYou are the English"); }
+	      if (faction === "protestant") { this.game.queue.push("ACKNOWLEDGE\tYou are the Protestants"); }
+	      if (faction === "papacy") { this.game.queue.push("ACKNOWLEDGE\tYou are the Papacy"); }
+	      if (faction === "hapsburg") { this.game.queue.push("ACKNOWLEDGE\tYou are the Hapsburgs"); }
+	      if (faction === "ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the Ottomans"); }
+	      if (faction === "france") { this.game.queue.push("ACKNOWLEDGE\tYou are the French"); }
+	      if (faction === "england") { this.game.queue.push("ACKNOWLEDGE\tYou are the English"); }
+	      if (faction === "protestant_england") { this.game.queue.push("ACKNOWLEDGE\tYou are the Protestants and English"); }
+	      if (faction === "france_ottoman") { this.game.queue.push("ACKNOWLEDGE\tYou are the French and Ottomans"); }
+	      if (faction === "hapsburg_papacy") { this.game.queue.push("ACKNOWLEDGE\tYou are the Hapsburgs and Papacy"); }
 	    }
 	  }
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
@@ -8528,10 +8557,15 @@ if (this.game.state.round == 2) {
 	  }
 
 
+console.log("&");
+console.log("&");
+console.log("&");
+console.log(this.game.state.round + " -- " + this.game.state.starting_round);
+
 	  //
 	  // no diplomacy phase round 1
 	  //
-	  if (this.game.state.round == 1 || (this.game.state.round < this.game.state.starting_round)) {
+	  if (this.game.state.round == 1 || (this.game.state.round <= this.game.state.starting_round)) {
 
             this.game.queue.push("SHUFFLE\t2");
 	    for (let i = this.game.state.players_info.length; i > 0; i--) {

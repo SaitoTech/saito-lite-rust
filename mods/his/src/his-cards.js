@@ -901,7 +901,7 @@
 	    if (action === "grant") {
 
 	      his_self.updateStatus("Papacy grants divorce...");
-	      his_self.updateLog(`${his_self.popup("207")} - Papacy grants divorce...`);
+	      his_self.addMove(`NOTIFY\t${his_self.popup("207")} - Papacy grants divorce...`);
 	      his_self.addMove("player_call_theological_debate\tpapacy");
 	      his_self.addMove("henry_petitions_for_divorce_grant");
 	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
@@ -911,7 +911,7 @@
 
 	    if (action === "refuse") {
 	      his_self.updateStatus("Papacy refuses divorce...");
-	      his_self.updateLog(`${his_self.popup("207")} - Papacy refuses divorce...`);
+	      his_self.addMove(`NOTIFY\t${his_self.popup("207")} - Papacy refuses divorce...`);
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t3");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t2");
 	      his_self.addMove("henry_petitions_for_divorce_refuse\t1");
@@ -5080,7 +5080,13 @@ console.log("considering: " + space.key);
 
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
-		if (his_self.isSpaceUnderSiege(space.key)) { return 0; }
+		if (his_self.isSpaceUnderSiege(space.key)) {
+		  for (let i = 0; i < space.units[faction].length; i++) {
+		    // if we aren't besieged it is OK
+		    if (space.units[faction][i].besieged == 0) { return 1; }
+		  }
+		  return 0; 
+		}
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
 		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
 	        return 0;
@@ -5627,22 +5633,10 @@ console.log("considering: " + space.key);
 
         let obj = {};
         obj.faction = "protestant";
-	obj.space = "geneva";
-	obj.reformer = his_self.reformers["calvin-reformer"];
-        let target = his_self.returnSpaceOfPersonage("protestant", "calvin-reformer");
 
-	if (target) {
-  	  for (let i = 0; i < his_self.game.spaces[target].units["protestant"].length; i++) {
-	    if (his_self.game.spaces[target].units["protestant"][i].type == "calvin-reformer") {
-              obj.reformer = his_self.game.spaces[target].units["protestant"][i];
-	      his_self.game.spaces[target].units["protestant"].splice(i, 1);
-	    }
-	  }
-	}
-
+        his_self.excommunicateReformer("calvin-reformer");
 	his_self.commitDebater("protestant", "calvin-debater");
 	his_self.removeDebater("protestant", "calvin-debater");
-        his_self.excommunicateReformer("calvin-reformer");
 
 	his_self.displaySpace(target);
 
@@ -5651,7 +5645,7 @@ console.log("considering: " + space.key);
     }
     deck['046'] = { 
       img : "cards/HIS-046.svg" , 
-      name : "Calvin's Insitutes" ,
+      name : "Calvin's Institutes" ,
       ops : 5 ,
       turn : 4 ,
       type : "normal" ,
