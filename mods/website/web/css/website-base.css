@@ -258,6 +258,12 @@ body {
   .splash-option button {
     margin: 0 2rem;
   }
+  .splash-option a {
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
   .container>div label {
     width: 0;
     display: block;

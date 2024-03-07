@@ -33,7 +33,6 @@ class Settlers extends GameTemplate {
 		this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
 		this.categories = 'Games Boardgame Strategy';
 
-		this.cardbox.a_prompt = 0;
 		this.minPlayers = 2;
 		this.maxPlayers = 4;
 		this.game_length = 20; //Estimated number of minutes to complete a game
@@ -275,10 +274,6 @@ class Settlers extends GameTemplate {
 		this.hexgrid.render('.gameboard');
 
 		try {
-			this.cardbox.render();
-			this.cardbox.addCardType('handy-help', '', null);
-			this.cardbox.makeDraggable();
-
 			this.playerbox.render();
 
 			//
@@ -421,6 +416,56 @@ class Settlers extends GameTemplate {
 				this.trade_overlay.render();
 			}
 		};
+	}
+
+
+	initializeGameStake(crypto, stake){
+		super.initializeGameStake(crypto, stake);
+
+		//Reset Game
+		this.game.state = this.initializeState();
+		this.game.stats = this.initializeStats();
+		this.game.queue = [];
+
+		this.game.queue.push('init');
+
+		let numPlay = this.game.players.length;
+
+		for (let i = 1; i <= numPlay; i++) {
+			this.game.queue.push('player_build_road\t' + i + '\t1');
+			this.game.queue.push(`player_build_city\t${i}\t0`);
+		}
+		for (let i = numPlay; i >= 1; i--) {
+			this.game.queue.push('player_build_road\t' + i + '\t1');
+			this.game.queue.push(`player_build_city\t${i}\t0`);
+		}
+
+		this.game.queue.push('READY');
+		this.saveGame(this.game.id);
+
+		$(".gameboard").html("");
+
+		this.hexgrid.render('.gameboard');
+
+		if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+			console.log('mobile environment');
+			this.hammer.render('#game-hexgrid');
+		} else {
+			this.sizer.render();
+			this.sizer.attachEvents('#game-hexgrid');
+		}
+
+		//
+		// Preliminary DOM set up, adding elements to display
+		//
+		this.generateMap();
+		this.addCitiesToGameboard();
+		this.addPortsToGameboard();
+
+		this.displayBoard();
+
+		this.initializeGameQueue(this.game.id);
+		
 	}
 
 	initializeGame(game_id) {
