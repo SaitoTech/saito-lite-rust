@@ -317,28 +317,28 @@ class ChatPopup {
 		}
 
 		//
-		// scroll to bottom
+		// fancy scrolling!
 		//
 		let chatBody = document.querySelector(popup_qs + ' .chat-body');
 		if (chatBody) {
-			if (this.is_scrolling == null) {
-				chatBody.scroll(0, 1000000000);
-			} else {
-				chatBody.scroll({ top: this.is_scrolling, left: 0 });
-				this.is_scrolling = null;
 
-				let notification = document.querySelector(
-					popup_qs + ' .saito-notification-dot .new-message-count'
-				);
-				if (notification) {
-					let count = parseInt(notification.textContent) + 1;
-					notification.innerText = count;
-				} else {
-					this.app.browser.addElementToSelector(
-						`<div class="saito-notification-dot"><div class="new-message-count">1</div><i class="fa-solid fa-down-long"></i></div>`,
-						popup_qs
-					);
+			if (this.is_scrolling) {
+				chatBody.scroll({ top: this.is_scrolling, left: 0 });
+				this.updateNotification(this.group.unread);
+			}else{
+
+				let anchor = (this.group?.last_read_message) ? document.querySelector(popup_qs + ' .message-' + this.group.last_read_message): null;
+					
+				if (anchor && this.group.unread && !this.is_rendered) {
+					anchor.scrollIntoView(false);
+					this.updateNotification(this.group.unread);
+				}else{
+					//
+					//Scroll to bottom
+					//
+					chatBody.scroll(0, 1000000000);
 				}
+
 			}
 		}
 
@@ -348,6 +348,31 @@ class ChatPopup {
 		this.attachEvents();
 
 		this.is_rendered = true;
+	}
+
+	updateNotification(count){
+		let popup_id = 'chat-popup-' + this.group.id;
+		let popup_qs = '#' + popup_id;
+
+		if (document.querySelector(popup_qs + " .saito-notification-dot .new-message-count")){
+			let notification = document.querySelector(popup_qs + " .saito-notification-dot .new-message-count");
+			notification.innerText = count;
+			if (count == 0){
+				document.querySelector(popup_qs + " .saito-notification-dot").remove();
+			}
+		}else{
+			if (count == 0){
+				return;
+			}
+			this.app.browser.addElementToSelector(
+				`<div class="saito-notification-dot"><div class="new-message-count">${this.group.unread}</div><i class="fa-solid fa-down-long"></i></div>`,
+				popup_qs
+			);
+		}
+
+		//update notification counts in the chat manager
+		this.app.connection.emit("chat-manager-render-request");
+
 	}
 
 	attachEvents() {
@@ -451,6 +476,9 @@ class ChatPopup {
 				});
 			});
 
+		//
+		// Click on a block quote to see original message being replied to
+		//
 		document.querySelectorAll(`${popup_qs} blockquote`).forEach((el) => {
 			el.onclick = (e) => {
 				let href = el.getAttribute('href');
@@ -466,6 +494,9 @@ class ChatPopup {
 			};
 		});
 
+		// 
+		// At top of chat body, check for older chat messages 
+		//
 		if (document.querySelector(popup_qs + ' #load-older-chats')) {
 			document.querySelector(popup_qs + ' #load-older-chats').onclick =
 				async (e) => {
@@ -475,41 +506,56 @@ class ChatPopup {
 				};
 		}
 
+		// 
+		// While scrolled up, new messages below... scroll to bottom
+		//
 		if (document.querySelector(popup_qs + ' .saito-notification-dot')) {
 			document.querySelector(
 				popup_qs + ' .saito-notification-dot'
 			).onclick = (e) => {
-				document
-					.querySelector(popup_qs + ' .chat-body')
-					.lastElementChild.scrollIntoView({ behavior: 'smooth' });
+				document.querySelector(popup_qs + ' .chat-body').lastElementChild.scrollIntoView({ behavior: 'smooth' });
 			};
 		}
 
+		//
+		// Remove scroll notification dynamically
+		// 
 		let myBody = document.querySelector(popup_qs + ' .chat-body');
 		if (myBody && myBody?.lastElementChild) {
+
 			const pollScrollHeight = () => {
+
+				let lastChild = myBody.lastElementChild;
+				if (lastChild.querySelector(".saito-user .saito-userline")){
+					lastChild = myBody.lastElementChild.lastElementChild.lastElementChild;
+				}
+
 				if (
-					myBody.lastElementChild.getBoundingClientRect().top >
+					lastChild.getBoundingClientRect().top >
 					myBody.getBoundingClientRect().bottom
 				) {
 					this.is_scrolling = myBody.scrollTop;
 				} else {
 					this.is_scrolling = null;
-
-					if (
-						document.querySelector(
-							popup_qs + ' .saito-notification-dot'
-						)
-					) {
-						document
-							.querySelector(
-								popup_qs + ' .saito-notification-dot'
-							)
-							.remove();
-					}
+					this.group.unread = 0;
+					this.updateNotification(0);
 				}
+
+				//Check position of new messages...
+				let next_new = document.querySelector(popup_qs + " .chat-body .new-message");
+				while (next_new && next_new.getBoundingClientRect().top < myBody.getBoundingClientRect().bottom){
+					//the message has scrolled into view
+					next_new.classList.remove("new-message");
+					this.group.unread = Math.max(0, this.group.unread-1);
+					this.group.last_read_message = next_new.dataset.id;
+					this.updateNotification(this.group.unread);
+					next_new = document.querySelector(popup_qs + " .chat-body .new-message");
+				}
+				this.mod.saveChatGroup(this.group);
+
 			};
 
+			pollScrollHeight();
 			myBody.addEventListener('scroll', debounce(pollScrollHeight, 100));
 		}
 
@@ -529,7 +575,7 @@ class ChatPopup {
 			};
 		});
 
-		/* 
+	/* 
       avoids re-adding of events to same element, to fix issues with resizing 
       The following events apply to the whole popup, its header or its footer, which
       don't get rerendered... 

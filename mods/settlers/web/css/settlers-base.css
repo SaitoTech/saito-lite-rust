@@ -81,21 +81,6 @@ span.tip {
 	z-index: 300;
 }
 
-.handy-help {
-	margin: 0 auto;
-	grid-row: span 2;
-	font-size: 22px;
-	padding: 5px;
-}
-
-/* Building costs as cardbox overlay */
-
-.game-cardbox {
-	display: none;
-	width: fit-content;
-	background-color: rgba(245, 245, 245, 0.95);
-}
-
 .cardfan {
 	top: 45vh;
 	left: 5vw;

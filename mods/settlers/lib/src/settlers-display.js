@@ -362,8 +362,6 @@ class SettlersDisplay {
         return;
       }
 
-      this.cardbox.attachCardEvents();
-
       //Show player cards and add events (Doesn't need to be in for loop!)
       this.displayCardfan();
     } catch (e) {

@@ -15,7 +15,7 @@ h5 {
 
 .explorer-main {
 	margin-top: 75px;
-	padding: 0 10px;
+	/* padding: 0 10px; */
 	line-height: 1.6em;
 	font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
 	height: 91vh;
@@ -87,11 +87,11 @@ a.button {
 }
 
 .one-line-form {
-	display: grid;
-	grid-template-columns: 1fr 7.5em;
+	display: flex;
+	flex-direction: row;
 	width: 100%;
 	max-width: 850px;
-	grid-gap: 10px;
+	gap: 10px;
 }
 
 .blockchain-table div {
@@ -158,4 +158,50 @@ a {
 .blockJson {
 	border: 1px solid #ddd;
 	padding: 1em 0;
+}
+
+.balance-button {
+	background: var(--saito-primary-background);
+    transition: 0.5s;
+    background-size: 400% auto;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    letter-spacing: 1px;
+    min-width: 13rem;
+    font-size: 1.8rem;
+    color: var(--saito-white);
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background-position: 1% 1%;
+}
+
+.explorer-balance-row {
+	padding: 1rem 0rem;
+}
+
+.explorer-balance-table {  
+	display: grid;
+	grid-template-columns: minmax(28rem, auto) auto auto;
+	gap: 0px 0px;
+	background-color: lightgray;
+	border-radius: 5px;
+	overflow: hidden;
+}
+  
+.explorer-balance-header{
+	padding: 1rem 1.5rem;
+	font-weight: bold;
+}
+.explorer-balance-data{
+	padding: 1rem 1.5rem;
+	text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.explorer-balance-row-button {
+	display: grid;
+	grid-template-columns: 1fr 7.5em;
+	max-width: 850px;
 }

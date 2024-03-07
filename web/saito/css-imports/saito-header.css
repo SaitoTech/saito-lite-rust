@@ -30,6 +30,10 @@
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
+  font-size: 3rem;
+  transform: scaleX(1.3);
+  width: 4rem;
+  text-align: center;
 }
 
 #saito-header-menu-toggle:hover {

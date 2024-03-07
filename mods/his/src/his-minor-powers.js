@@ -23,12 +23,18 @@
   }
 
   returnAllyOfMinorPower(power) {
-    if (!this.game.state.minor_activated_powers.includes(power)) { return power; }
+    if (this.isMajorPower(power)) { return power; }
     for (let key in this.game.state.activated_powers) {
       if (this.game.state.activated_powers[key].includes(power)) {
 	return key;
       }
     }
+    if (this.areAllies(power, "papacy", 0)) { return "papacy"; }
+    if (this.areAllies(power, "protestant", 0)) { return "protestant"; }
+    if (this.areAllies(power, "france", 0)) { return "france"; }
+    if (this.areAllies(power, "england", 0)) { return "england"; }
+    if (this.areAllies(power, "hapsburg", 0)) { return "hapsburg"; }
+    if (this.areAllies(power, "ottoman", 0)) { return "ottoman"; }
     return power;
   }
 

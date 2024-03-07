@@ -80,6 +80,34 @@ class ExplorerCore extends ModTemplate {
 			}
 		});
 
+		expressapp.get('/explorer/balance', async function (req, res) {
+			var pubkey = sanitizer.sanitize(req.query.pubkey);
+
+			if (pubkey == null) {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send('Please provide a public key.');
+			} else {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(await explorer_self.returnBalanceHTML(app, pubkey));
+			}
+		});
+
+		expressapp.get('/explorer/balance/all', async function (req, res) {
+			// var pubkey = sanitizer.sanitize(req.query.pubkey);
+
+			// if (pubkey == null) {
+			// 	res.setHeader('Content-type', 'text/html');
+			// 	res.charset = 'UTF-8';
+			// 	res.send('Please provide a public key.');
+			// } else {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(await explorer_self.returnAllBalanceHTML(app, res));
+			// }
+		});
+
 		// //////////////////////
 		// full json blocks //
 		//////////////////////
@@ -182,7 +210,7 @@ class ExplorerCore extends ModTemplate {
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
 			txs.length +
 			' txs</a></div> \
-        </div>' +
+        </div>' + this.returnInputBalanceHTML() +
 			'\
         <div class="explorer-data"><h4>Search for Block (by hash):</h4> \
         <form method="get" action="/explorer/block"><div class="one-line-form"><input type="text" name="hash" class="hash-search-input" /> \
@@ -354,6 +382,93 @@ class ExplorerCore extends ModTemplate {
       </script> \
       ';
 
+		html += this.returnPageClose();
+		return html;
+	}
+
+	// Input Balance HTML
+	returnInputBalanceHTML() {
+		var html = `
+		<div class="explorer-data">
+			<h4>Check balance (by wallet)</h4>
+			<form method="get" action="/explorer/balance">
+				<div class="one-line-form">
+					<input type="text" class="balance-search-input" name="pubkey">
+					<input type="submit" class="button" value="check">
+				</div>
+			</form>
+		</div>
+		`;
+
+		return html;
+	}
+
+	// Balance HTML
+	async returnBalanceHTML(app, pubkey) {
+		var html = this.returnHead() + this.returnHeader();
+
+		html += `
+		<div class="explorer-main">
+			<div class="block-table">
+				<div class="explorer-data">
+					<h4>Wallet Address:</h4>
+				</div>
+				<div class="address">` + pubkey + `</div>
+				<div class="explorer-data">
+					<h4>Saito:</h4>
+				</div>
+				<div class="balance-saito">-</div>
+				<div class="explorer-data">
+					<h4>Nolan:</h4>
+				</div>
+				<div class="balance-nolan">-</div>
+			</div>
+			<div class="explorer-balance-row">
+				<h4>Check balance (by wallet)</h4>
+				<form method="get" action="/explorer/balance">
+					<div class="one-line-form">
+						<input type="text" class="balance-search-input" name="pubkey" >
+						<input type="submit" class="balance-button" value="check">
+						<a href="/explorer/balance/all" class="balance-button">Show all</a>
+					</div>
+				</form>
+			</div>
+			<div class="explorer-balance-row-button">
+				<a href="/explorer">
+					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
+				</a>
+			</div>
+		</div>
+		<script>
+			checkBalance("`+ pubkey + `");
+		</script>
+		`;
+		html += this.returnPageClose();
+		return html;
+	}
+
+	async returnAllBalanceHTML(app, res) {
+		var html = this.returnHead() + this.returnHeader();
+
+		html += `
+		<div class="explorer-main">
+			<div class="explorer-balance-row">
+				<a href="/explorer">
+					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
+				</a>
+			</div>
+			<div class="explorer-balance-row">
+				<div class="explorer-balance-table">
+					<div class="explorer-balance-header">Wallet</div>
+					<div class="explorer-balance-header">Saito</div>
+					<div class="explorer-balance-header">Nolan</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			checkAllBalance();
+		</script>
+		`;
 		html += this.returnPageClose();
 		return html;
 	}

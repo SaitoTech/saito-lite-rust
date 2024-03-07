@@ -603,12 +603,11 @@ try {
     let stype = "hex";
 
     if (space.type == "town") { stype = "hex"; }
-    if (space.type == "key") { stype = "key"; }
-    if (owner == "protestant") { stype = "hex"; }
+    if (space.type == "key") { stype = "key"; owner = this.returnControllingPower(owner); }
+    if (owner == "protestant") { stype = "hex"; owner = this.returnControllingPower(owner); }
 
     if (owner != "") {
       if (owner === "hungary") {
-	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "hungary") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -619,7 +618,6 @@ try {
         }
       }
       if (owner === "scotland") {
-	owner = this.returnAllyOfMinorPower(owner);
 	if (owner === "scotland") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -630,7 +628,6 @@ try {
         }
       }
       if (owner === "venice") {
-	owner = this.returnAllyOfMinorPower(owner);
 	if (owner === "venice") {
           tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -641,7 +638,6 @@ try {
         }
       }
       if (owner === "genoa") {
-	owner = this.returnAllyOfMinorPower(owner);
         if (owner === "genoa") {
 	  tile = "/his/img/tiles/independent/";	  
           if (space.religion === "protestant") {
@@ -1880,8 +1876,19 @@ try {
 	(space.home == space.political || space.political == "")
       )
     ) {
-      no_keytiles_in_keys.push(space.key);
-      show_tile = 0;
+      let allied_to_major_power = false;
+      if (space.type === "key" || space.type == "electorate") {
+        if (this.areAllies(space.home, "protestant", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "papacy", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "france", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "england", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "ottoman", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "hapsburg", 0)) { allied_to_major_power = true; }
+      }
+      if (allied_to_major_power == false) {
+        no_keytiles_in_keys.push(space.key);
+        show_tile = 0;
+      }
     }
     if (space.language == "german" && space.units["protestant"].length > 0) { show_tile = 1; }
 
