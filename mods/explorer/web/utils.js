@@ -1,48 +1,48 @@
 HTMLElement.prototype.toggleClass = function toggleClass(className) {
-	if (this.classList.contains(className)) {
-		this.classList.remove(className);
-	} else {
-		this.classList.add(className);
-	}
+  if (this.classList.contains(className)) {
+    this.classList.remove(className);
+  } else {
+    this.classList.add(className);
+  }
 };
 
 async function fetchBlock(hash) {
-	var url = window.location.origin + '/explorer/json-block/' + hash;
+  var url = window.location.origin + '/explorer/json-block/' + hash;
 
-	fetch(url)
-		.then((response) => response.json())
-		.then((data) => {
-			listTransactions(data, hash);
-		})
-		.catch((err) => {
-			console.error('Error fetching content: ' + err);
-			return '';
-		});
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      listTransactions(data, hash);
+    })
+    .catch((err) => {
+      console.error('Error fetching content: ' + err);
+      return '';
+    });
 }
 
 async function fetchRawBlock(hash) {
-	var url = window.location.origin + '/explorer/json-block/' + hash;
-	var block = [];
-	for await (let line of makeTextFileLineIterator(url)) {
-		block.push(JSON.parse(line));
-	}
+  var url = window.location.origin + '/explorer/json-block/' + hash;
+  var block = [];
+  for await (let line of makeTextFileLineIterator(url)) {
+    block.push(JSON.parse(line));
+  }
 
-	console.log('this block', block);
-	drawRawBlock(block, hash);
+  console.log('this block', block);
+  drawRawBlock(block, hash);
 }
 
 function drawRawBlock(blk, hash) {
-	var jsonBlk = document.querySelector('.blockJson');
-	jsonBlk.innerHTML = '';
-	blk.forEach((row, index) => {
-		jsonBlk.innerHTML += "<div class='block-row-" + index + "'></div>";
-	});
-	blk.forEach((row, index) => {
-		var tree = jsonTree.create(
-			row,
-			document.querySelector('.block-row-' + index)
-		);
-	});
+  var jsonBlk = document.querySelector('.blockJson');
+  jsonBlk.innerHTML = '';
+  blk.forEach((row, index) => {
+    jsonBlk.innerHTML += "<div class='block-row-" + index + "'></div>";
+  });
+  blk.forEach((row, index) => {
+    var tree = jsonTree.create(
+      row,
+      document.querySelector('.block-row-' + index)
+    );
+  });
 }
 
 function listTransactions(blk, hash) {
@@ -108,7 +108,7 @@ function listTransactions(blk, hash) {
 
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
-      html += "<div>" + BigInt(tx_fees*nolan_per_saito) + "</div>";
+      html += "<div>" + BigInt(tx_fees * nolan_per_saito) + "</div>";
       html += "<div>" + tmptx.type + "</div>";
       if (tmptx.type == 0) {
         if (tmptx.msg.module) {
@@ -132,47 +132,101 @@ function listTransactions(blk, hash) {
 }
 
 function showTransaction(obj) {
-	var txdiv = document.querySelector('.txbox.' + obj);
-	console.log('A');
-	if (!txdiv.classList.contains('treated')) {
-		console.log('B');
-		var txjson = JSON.parse(txdiv.innerText);
-		txdiv.innerHTML = '';
-		var tree = jsonTree.create(txjson, txdiv);
-		txdiv.classList.add('treated');
-		txdiv.style.display = 'block';
-	}
-	txdiv.toggleClass('hidden');
+  var txdiv = document.querySelector('.txbox.' + obj);
+  console.log('A');
+  if (!txdiv.classList.contains('treated')) {
+    console.log('B');
+    var txjson = JSON.parse(txdiv.innerText);
+    txdiv.innerHTML = '';
+    var tree = jsonTree.create(txjson, txdiv);
+    txdiv.classList.add('treated');
+    txdiv.style.display = 'block';
+  }
+  txdiv.toggleClass('hidden');
 }
 
 async function* makeTextFileLineIterator(fileURL) {
-	const utf8Decoder = new TextDecoder('utf-8');
-	const response = await fetch(fileURL);
-	const reader = response.body.getReader();
-	let { value: chunk, done: readerDone } = await reader.read();
-	chunk = chunk ? utf8Decoder.decode(chunk) : '';
+  const utf8Decoder = new TextDecoder('utf-8');
+  const response = await fetch(fileURL);
+  const reader = response.body.getReader();
+  let { value: chunk, done: readerDone } = await reader.read();
+  chunk = chunk ? utf8Decoder.decode(chunk) : '';
 
-	const re = /\n|\r|\r\n/gm;
-	let startIndex = 0;
-	let result;
+  const re = /\n|\r|\r\n/gm;
+  let startIndex = 0;
+  let result;
 
-	for (;;) {
-		let result = re.exec(chunk);
-		if (!result) {
-			if (readerDone) {
-				break;
-			}
-			let remainder = chunk.substr(startIndex);
-			({ value: chunk, done: readerDone } = await reader.read());
-			chunk = remainder + (chunk ? utf8Decoder.decode(chunk) : '');
-			startIndex = re.lastIndex = 0;
-			continue;
-		}
-		yield chunk.substring(startIndex, result.index);
-		startIndex = re.lastIndex;
-	}
-	if (startIndex < chunk.length) {
-		// last line didn't end in a newline char
-		yield chunk.substr(startIndex);
-	}
+  for (; ;) {
+    let result = re.exec(chunk);
+    if (!result) {
+      if (readerDone) {
+        break;
+      }
+      let remainder = chunk.substr(startIndex);
+      ({ value: chunk, done: readerDone } = await reader.read());
+      chunk = remainder + (chunk ? utf8Decoder.decode(chunk) : '');
+      startIndex = re.lastIndex = 0;
+      continue;
+    }
+    yield chunk.substring(startIndex, result.index);
+    startIndex = re.lastIndex;
+  }
+  if (startIndex < chunk.length) {
+    // last line didn't end in a newline char
+    yield chunk.substr(startIndex);
+  }
+}
+
+async function checkBalance(pubkey = "") {
+  if (pubkey) {
+    document.querySelector('.balance-search-input').placeholder = pubkey;
+    // API
+    let response = await fetch('/balance/' + pubkey);
+    let data = await response.text();
+    // format
+    data = data.split(/\n/); // undefined = 0?
+    if (data.length <= 3) {
+      console.log(data);
+      let nolan_balance = data[1].split(/\s/)[4] || 0;
+      let nolan_per_saito = 10000000;
+      let balance_saito = nolan_balance / nolan_per_saito;
+      // draw
+      document.querySelector('.balance-saito').innerHTML = balance_saito;
+      document.querySelector('.balance-nolan').innerHTML = nolan_balance;
+    } 
+  } 
+}
+
+async function checkAllBalance() {
+  // API
+  let response = await fetch('/balance/' + "");
+  let data = await response.text();
+  console.log(data);
+
+  // format
+  data = data.split(/\n/); // undefined = 0?
+  
+  // draw
+  let node = document.querySelector(".explorer-balance-table");
+  for (let i = 1; i < data.length-1 ; i++) {
+    const e = data[i];
+    col_data = e.split(/\s/);
+    
+    let wallet = document.createElement("div");
+    wallet.setAttribute("class","explorer-balance-data");
+    wallet.innerHTML = col_data[0];
+    node.appendChild(wallet);
+    
+    let balance_saito = document.createElement("div");
+    balance_saito.setAttribute("class","explorer-balance-data");
+    let nolan_per_saito = parseFloat(col_data[4])/10000000;
+    balance_saito.innerHTML = nolan_per_saito;
+    node.appendChild(balance_saito);
+    
+    let balance_nolan = document.createElement("div");
+    balance_nolan.setAttribute("class","explorer-balance-data");
+    balance_nolan.innerHTML = col_data[4];
+    node.appendChild(balance_nolan);
+
+  }
 }
