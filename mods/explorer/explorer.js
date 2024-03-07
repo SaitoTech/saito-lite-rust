@@ -429,15 +429,13 @@ class ExplorerCore extends ModTemplate {
 					<div class="one-line-form">
 						<input type="text" class="balance-search-input" name="pubkey" >
 						<input type="submit" class="balance-button" value="check">
+						<a href="/explorer/balance/all" class="balance-button">Show all</a>
 					</div>
 				</form>
 			</div>
 			<div class="explorer-balance-row-button">
 				<a href="/explorer">
 					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
-				</a>
-				<a href="/explorer/balance/all">
-					<button class="balance-button">Show all</button>
 				</a>
 			</div>
 		</div>

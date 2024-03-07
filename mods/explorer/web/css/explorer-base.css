@@ -87,11 +87,11 @@ a.button {
 }
 
 .one-line-form {
-	display: grid;
-	grid-template-columns: 1fr 7.5em;
+	display: flex;
+	flex-direction: row;
 	width: 100%;
 	max-width: 850px;
-	grid-gap: 10px;
+	gap: 10px;
 }
 
 .blockchain-table div {
