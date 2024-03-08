@@ -30,6 +30,7 @@ class Arcade extends ModTemplate {
 		this.description =
 			'Interface for creating and joining games coded for the Saito Open Source Game Engine.';
 		this.categories = 'Games Entertainment Utilities';
+		this.class = 'utility';
 
 		// We store reference to all the installed modules which are arcade compatible
 		// Useful for rendering the sidebar menu, or any list of games for game-selector (prior to game-wizard)
@@ -125,7 +126,7 @@ class Arcade extends ModTemplate {
 						game.players.includes(this.publicKey) ||
 						game.accepted.includes(this.publicKey)
 					) {
-						if (game.over == 1) {
+						if (game.over) {
 							if (game.last_block > 0) {
 								console.log('Game Over');
 								return;
@@ -960,63 +961,6 @@ class Arcade extends ModTemplate {
 			data: close_tx.toJson()
 		});
 
-		this.app.connection.emit('relay-send-message', {
-			recipient: 'PEERS',
-			request: 'arcade spv update',
-			data: close_tx.toJson()
-		});
-	}
-
-	////////////////////////////////////////////////////////////////////
-	// Quit
-	// We can send a message from the arcade to kill a game
-	// We don't process the tx in the arcade, but rather the game engine
-	// and use an internal message to finish the process (because the sequencing matters!)
-	/////////////////////////////////////////////////////////////////////
-
-	async createQuitTransaction(orig_tx, reason) {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-
-		for (let player of orig_tx.msg.players) {
-			newtx.addTo(player);
-		}
-		newtx.addTo(this.publicKey);
-
-		newtx.msg = {
-			request: 'stopgame',
-			module: orig_tx.msg.game,
-			game_id: orig_tx.signature,
-			reason: reason
-		};
-		await newtx.sign();
-
-		console.info(
-			`Send ${
-				reason == 'cancellation' ? 'close' : 'quit'
-			} message from Arcade to ${orig_tx.msg.game}: `,
-			JSON.parse(JSON.stringify(newtx.msg))
-		);
-
-		return newtx;
-	}
-
-	async sendQuitTransaction(game_id, reason = 'cancellation') {
-		let game = this.returnGame(game_id);
-
-		if (!game) {
-			console.warn('Game not found');
-			return;
-		}
-
-		let close_tx = await this.createQuitTransaction(game, reason);
-		this.app.network.propagateTransaction(close_tx);
-
-		this.app.connection.emit('relay-send-message', {
-			recipient: game.msg.players,
-			request: 'game relay stopgame',
-			data: close_tx.toJson()
-		});
 		this.app.connection.emit('relay-send-message', {
 			recipient: 'PEERS',
 			request: 'arcade spv update',

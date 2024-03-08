@@ -14,6 +14,11 @@
 	background-size: cover;
 }
 
+.welcome-france_ottoman {
+	background-image: url('/his/img/backgrounds/france_ottoman.jpg');
+	background-size: cover;
+}
+
 .welcome-ottoman {
 	background-image: url('/his/img/backgrounds/ottoman.jpg');
 	background-size: cover;
@@ -24,6 +29,11 @@
 	background-size: cover;
 }
 
+.welcome-hapsburg_papacy {
+	background-image: url('/his/img/backgrounds/hapsburg_papacy.png');
+	background-size: cover;
+}
+
 .welcome-papacy {
 	background-image: url('/his/img/backgrounds/papacy.jpeg');
 	background-size: cover;
@@ -31,6 +41,11 @@
 
 .welcome-protestant {
 	background-image: url('/his/img/backgrounds/martin_luther.jpg');
+	background-size: cover;
+}
+
+.welcome-protestant_england {
+	background-image: url('/his/img/backgrounds/protestant_england.png');
 	background-size: cover;
 }
 

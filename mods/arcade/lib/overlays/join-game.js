@@ -131,7 +131,8 @@ class JoinGameOverlay {
 						'CloseActiveGame',
 						this.invite.game_mod.name
 					);
-					this.mod.sendQuitTransaction(this.invite.game_id);
+
+					this.app.connection.emit("stop-game", this.invite.game_mod.name, this.invite.game_id, "cancellation");
 				};
 		}
 
@@ -154,7 +155,9 @@ class JoinGameOverlay {
 					'ForfeitGame',
 					this.invite.game_mod.name
 				);
-				this.mod.sendQuitTransaction(this.invite.game_id, 'forfeit');
+
+				this.app.connection.emit("stop-game", this.invite.game_mod.name, this.invite.game_id, "forfeit");
+
 			};
 		}
 

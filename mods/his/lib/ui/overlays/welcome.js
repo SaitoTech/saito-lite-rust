@@ -40,6 +40,34 @@ class WelcomeOverlay {
 		this.overlay.show(WelcomeTemplate(faction));
 		this.pushHudUnderOverlay();
 
+		// COMBOS
+		if (faction === 'hapsburg_papacy') {
+			document.querySelector(
+				'.welcome-title'
+			).innerHTML = `Hapsburgs and Papacy`;
+			document.querySelector(
+				'.welcome-text'
+			).innerHTML = `You are playing as both Hapsburg and Papacy this game.`;
+		}
+		if (faction === 'france_ottoman') {
+			document.querySelector(
+				'.welcome-title'
+			).innerHTML = `France and Ottoman Empire`;
+			document.querySelector(
+				'.welcome-text'
+			).innerHTML = `You are playing as both France and the Ottoman Empire.`;
+		}
+		if (faction === 'protestant_england') {
+			document.querySelector(
+				'.welcome-title'
+			).innerHTML = `Protestants and England`;
+			document.querySelector(
+				'.welcome-text'
+			).innerHTML = `You are playing as both the Protestants and the English.`;
+		}
+
+
+
 		// PAPACY
 		if (faction === 'papacy') {
 			document.querySelector(
@@ -99,7 +127,7 @@ class WelcomeOverlay {
 		}
 
 
-		// HAPSBURGS
+		// HAPSBURG
 		if (faction === 'hapsburg') {
 			document.querySelector(
 				'.welcome-title'

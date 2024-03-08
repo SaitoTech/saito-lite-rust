@@ -590,6 +590,7 @@ console.log("\n\n\n\n");
           this.setAllies("protestant", "ottoman");
           this.setAllies("papacy", "hapsburg");
           this.setAllies("papacy", "venice");
+	  this.setEnemies("papacy","france");
 
           this.addRegular("venice", "ravenna", 1);
           this.addRegular("papacy", "turin", 4);
@@ -608,7 +609,6 @@ console.log("\n\n\n\n");
 
           this.setAllies("papacy", "hapsburg");
           this.setActivatedPower("papacy", "hapsburg");
-          this.setActivatedPower("hapsburg", "genoa");
           this.setActivatedPower("protestant", "france");
           this.controlSpace("hapsburg", "genoa");
 

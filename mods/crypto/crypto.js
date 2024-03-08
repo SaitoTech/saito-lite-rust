@@ -17,6 +17,7 @@ class Crypto extends ModTemplate {
 		this.name = 'Crypto';
 		this.description = 'Enable crypto gaming';
 		this.categories = 'Utility Entertainment';
+		this.class = 'utility';
 		this.min_balance = 0.0;
 		this.overlay = new CryptoSelectAmount(app, this);
 		this.overlay_inadequate = new CryptoInadequate(app, this);
@@ -66,7 +67,7 @@ class Crypto extends ModTemplate {
 							game_mod.game.crypto != 'CHIPS'
 						) {
 							salert(
-								`Exiting: ${game_mod.game.crypto} already enabled for this game!`
+								`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
 							);
 							return;
 						}

@@ -29,6 +29,7 @@ class Mixin extends ModTemplate {
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
     this.icon = "fas fa-wallet";
+    this.class = 'utility';
 
     this.mixin = {};
     this.mixin.app_id = "";

@@ -253,21 +253,27 @@ body {
     justify-content: space-around;
     align-items: center;
     height: 5rem;
-    transition: all ease-in-out 1s;
+    gap: 2rem;
   }
   .splash-option button {
     margin: 0 2rem;
   }
+  .splash-option a {
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
   .container>div label {
     width: 0;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-align: left;
-    transition: all 1s ease-in-out;
+    transition: width 1s ease-in-out;
   }
   .container>div:hover label {
-    width: 220px;
+    width: 180px;
   }
 }
 

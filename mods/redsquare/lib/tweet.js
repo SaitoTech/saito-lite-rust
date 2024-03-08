@@ -1357,6 +1357,12 @@ class Tweet {
 					videoId = urlParams.get('v');
 				}
 
+				//check for shorts
+				let split = this.link.split('/shorts/');
+				if (typeof split[1] != 'undefined') {
+					videoId = split[1];
+				}
+ 
 				if (videoId != null && videoId != 'null') {
 					this.youtube_id = videoId;
 				}
