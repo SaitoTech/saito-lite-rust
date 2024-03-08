@@ -20,6 +20,7 @@ class AppStore extends ModTemplate {
 		this.description =
 			'Application manages installing, indexing, compiling and serving Saito modules.';
 		this.categories = 'Utilities Dev';
+		this.class = 'utility';
 		this.featured_apps = [
 			'Polkadot',
 			'Kusama',

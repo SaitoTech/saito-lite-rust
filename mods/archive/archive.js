@@ -32,7 +32,7 @@ class Archive extends ModTemplate {
 		this.description =
 			'Supports the saving and serving of network transactions';
 		this.categories = 'Utilities Core';
-
+		this.class = 'utility';
 		this.localDB = null;
 		this.localDB_purge = false;
 

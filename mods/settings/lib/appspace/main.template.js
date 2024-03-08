@@ -3,9 +3,6 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 	let key = app.keychain.returnKey({ publicKey: publicKey });
 	let identifier_registered;
 
-	console.log('key ////////');
-	console.log(key);
-
 	if (key?.identifier) {
 		identifier_registered = `<div class="username">${key.identifier}</div>`;
 	} else {
@@ -20,25 +17,31 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
 	try {
 		console.log(app.options.modules);
-
 		for (let i = 0; i < app.options.modules.length; i++) {
 			let mod = app.modules.returnModule(app.options.modules[i].name);
 			let shortName = app.options.modules[i].name;
 			let fullName = mod ? mod.returnName() : shortName;
 
+      console.log(mod);
+
 			let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
-			modules_html += `
-      <div class="settings-appspace-app">
-          <div class="saito-switch">
-            <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
-          </div>
-          <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>`;
+      let modClass = (typeof mod.class != 'undefined') ? mod.class : null;
 
-      if (mod.hasSettings()){
-        modules_html += `<i class="fas fa-cog"></i>`
+      // filter out core modules  
+      if (modClass != 'utility') {
+  			modules_html += `
+        <div class="settings-appspace-app">
+            <div class="saito-switch">
+              <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
+            </div>
+            <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>`;
+
+        if (mod.hasSettings()){
+          modules_html += `<i class="fas fa-cog"></i>`
+        }
+
+        modules_html += "</div>";
       }
-
-      modules_html += "</div>";
 		}
 	} catch (err) {
 		console.error(err);

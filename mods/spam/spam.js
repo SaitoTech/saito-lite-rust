@@ -10,6 +10,7 @@ class Spam extends ModTemplate {
 		this.name = 'spam';
 		this.description = 'Tool to generate spam txs';
 		this.categories = 'Core Utilities Messaging';
+		this.class = 'utility';
 		this.publickey = '';
 		this.loop_start = 0;
 		this.frequency = 1; //no of tx per period

@@ -17,6 +17,7 @@ class Crypto extends ModTemplate {
 		this.name = 'Crypto';
 		this.description = 'Enable crypto gaming';
 		this.categories = 'Utility Entertainment';
+		this.class = 'utility';
 		this.min_balance = 0.0;
 		this.overlay = new CryptoSelectAmount(app, this);
 		this.overlay_inadequate = new CryptoInadequate(app, this);

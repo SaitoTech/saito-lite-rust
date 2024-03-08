@@ -10,6 +10,7 @@ class Wallet extends ModTemplate {
 		this.description =
 			'Adds menu element for sending and receiving tokens.';
 		this.categories = 'Finance Utilities';
+		this.class = 'utility';
 	}
 
 	respondTo(type = '') {
