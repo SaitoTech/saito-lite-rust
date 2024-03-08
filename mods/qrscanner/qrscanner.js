@@ -30,7 +30,7 @@ class QRScanner extends ModTemplate {
 
 		this.description = 'Helper module with QR code scanning functionality.';
 		this.categories = 'Dev Data Utilities';
-
+		this.class = 'utility';
 		this.constraints = {
 			audio: false,
 			video: {
