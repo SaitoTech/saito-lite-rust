@@ -187,14 +187,14 @@ async function checkBalance(pubkey = "") {
     data = data.split(/\n/); // undefined = 0?
     if (data.length <= 3) {
       console.log(data);
-      let nolan_balance = data[1].split(/\s/)[4] || 0;
+      let balance_nolan = data[1].split(/\s/)[4] || 0;
       let nolan_per_saito = 10000000;
-      let balance_saito = nolan_balance / nolan_per_saito;
+      let balance_saito = formatNumberLocale(balance_nolan / nolan_per_saito);
       // draw
       document.querySelector('.balance-saito').innerHTML = balance_saito;
-      document.querySelector('.balance-nolan').innerHTML = nolan_balance;
-    } 
-  } 
+      document.querySelector('.balance-nolan').innerHTML = balance_nolan;
+    }
+  }
 }
 
 async function checkAllBalance() {
@@ -205,28 +205,38 @@ async function checkAllBalance() {
 
   // format
   data = data.split(/\n/); // undefined = 0?
-  
+
   // draw
   let node = document.querySelector(".explorer-balance-table");
-  for (let i = 1; i < data.length-1 ; i++) {
+  for (let i = 1; i < data.length - 1; i++) {
     const e = data[i];
     col_data = e.split(/\s/);
-    
+
     let wallet = document.createElement("div");
-    wallet.setAttribute("class","explorer-balance-data");
+    wallet.setAttribute("class", "explorer-balance-data");
     wallet.innerHTML = col_data[0];
     node.appendChild(wallet);
-    
+
     let balance_saito = document.createElement("div");
-    balance_saito.setAttribute("class","explorer-balance-data");
-    let nolan_per_saito = parseFloat(col_data[4])/10000000;
-    balance_saito.innerHTML = nolan_per_saito;
+    balance_saito.setAttribute("class", "explorer-balance-data");
+    let nolan_per_saito = parseFloat(col_data[4]) / 10000000;
+    balance_saito.innerHTML = formatNumberLocale(nolan_per_saito);
     node.appendChild(balance_saito);
-    
+
     let balance_nolan = document.createElement("div");
-    balance_nolan.setAttribute("class","explorer-balance-data");
+    balance_nolan.setAttribute("class", "explorer-balance-data");
     balance_nolan.innerHTML = col_data[4];
     node.appendChild(balance_nolan);
-
   }
+}
+
+function formatNumberLocale(number) {
+  const locale = (window.navigator?.language) ? window.navigator?.language : 'en-US';
+  const numberFormatter = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 1,
+    // maximumFractionDigits: 4,
+    minimumSignificantDigits: 1,
+    // maximumSignificantDigits: 4
+  });
+  return numberFormatter.format(number);
 }
