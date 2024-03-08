@@ -902,9 +902,14 @@ if (this.game.state.scenario != "is_testing") {
 
   }
 
+  unexcommunicateFaction(faction="") {
+    this.game.state.excommunicated_factions[faction] = 0;
+    return;
+  }
+
   excommunicateFaction(faction="") {
     this.game.state.already_excommunicated.push(faction);
-    this.game.state.excommunicated_faction[faction] = 1;
+    this.game.state.excommunicated_factions[faction] = 1;
     return;
   }
 
@@ -975,7 +980,7 @@ if (this.game.state.scenario != "is_testing") {
       let obj = this.game.state.excommunicated[i];
       if (obj.reformer) {
 
-        let leader = obj.reformer;
+        let reformer = obj.reformer;
 	let s = obj.space;
         let faction = obj.faction;
 

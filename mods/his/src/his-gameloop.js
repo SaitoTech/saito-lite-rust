@@ -9509,6 +9509,18 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
         }
 
 
+	if (mv[0] === "unexcommunicate_faction") {
+
+	  let faction = mv[1];
+	  this.unexcommunicateFaction(faction);
+
+	  this.game.queue.splice(qe, 1);
+
+          return 1;
+
+	}
+
+	// discards N cards from faction hand
 	if (mv[0] === "excommunicate_faction") {
 
 	  let faction = mv[1];
