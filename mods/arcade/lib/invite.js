@@ -152,6 +152,10 @@ class Invite {
 			} else {
 				this.invite_data.verbose_game_type = alt_game_type;
 			}
+
+			if (txmsg.options["game-wizard-players-select-max"] && txmsg.options["open-table"]){
+				this.invite_data.max_players = parseInt(txmsg.options["game-wizard-players-select-max"]);
+			}
 		}
 
 		// calculate empty slots
@@ -159,6 +163,13 @@ class Invite {
 			0,
 			this.invite_data.players_needed - this.invite_data.players.length
 		);
+		
+		if (!this.invite_data.empty_slots && this.invite_data.max_players){
+			this.invite_data.empty_slots = Math.max(0, this.invite_data.max_players - this.invite_data.players.length);
+			if (this.invite_data.empty_slots){
+				this.invite_data.empty_slots = 1;
+			}
+		}
 
 		// remove empty slots if any players are requested
 		// because we will pre-fill in the invitees
