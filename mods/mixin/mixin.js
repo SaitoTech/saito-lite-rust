@@ -105,6 +105,10 @@ class Mixin extends ModTemplate {
       await this.receiveFetchUserTransaction(app, tx, peer, mycallback);
     }
 
+    if (message.request === "mixin fetch user by publickey") {
+      await this.receiveFetchUserByPublickeyTransaction(app, tx, peer, mycallback);
+    }
+
     return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
@@ -218,6 +222,10 @@ class Mixin extends ModTemplate {
       // create safe user
       let safe_user = await this.safe_register(user.user_id);
 
+      if (safe_user == false) {
+        return callback({});
+      }
+
       if (callback) {
         return callback({
           user_id:  safe_user.user_id,
@@ -298,7 +306,7 @@ class Mixin extends ModTemplate {
       console.log(account);
       return account;
     } catch(err) {
-      console.error("" + err);
+      console.error("ERROR: Mixin error safe register: " + err.stack);
       return false;
     }
   }
@@ -857,6 +865,45 @@ class Mixin extends ModTemplate {
     let result = await this.app.storage.queryDatabase(sql, params, "Mixin");  
     if (result.length > 0) {
       return callback(result[0]);
+    }
+
+    return callback(false);
+  }
+
+  async sendFetchUserByPublicKeyTransaction(params = {}, callback){
+    let peers = await this.app.network.getPeers();
+    if (peers.length == 0) {
+      console.warn("No peers");
+      return;
+    }
+
+    console.log('params: ', params);
+
+    let data = params;
+    await this.app.network.sendRequestAsTransaction(
+      "mixin fetch user by publickey",
+      data,
+      function (res) {
+        console.log("Callback for sendFetchUserByPublicKeyTransaction request: ", res);
+        return callback(res);
+      },
+      peers[0].peerIndex
+    );
+  }
+
+  async receiveFetchUserByPublickeyTransaction(app, tx, peer, callback = null){
+    let message = tx.returnMessage();
+    let publicKey = message.data.publicKey;
+    let asset_id = message.data.asset_id;
+    let sql = `SELECT * FROM mixin_users 
+               WHERE publickey = $publicKey AND asset_id = $asset_id ORDER BY created_at DESC;`;
+    let params = {
+      $publicKey: publicKey,
+      $asset_id: asset_id
+    };
+    let result = await this.app.storage.queryDatabase(sql, params, "Mixin");
+    if (result.length > 0) {
+      return callback(result);
     }
 
     return callback(false);

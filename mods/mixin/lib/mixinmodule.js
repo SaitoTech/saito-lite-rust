@@ -475,6 +475,98 @@ class MixinModule extends CryptoModule {
 		});
 	}
 
+	async getMixinAddress(publicKey, ticker, callback = null) {
+		this_self = this;
+		try {
+			if (publicKey == '' || ticker == '') {
+				return {};
+			}
+
+			//check if key exists in keychain
+			let return_data = null;
+			let key_exists = false;
+			let keys = this.app.keychain.returnKeys();
+			let asset_id = this.getAssetIdByTicker(ticker);
+
+			console.log('asset_id: ///////////////////////', asset_id);
+
+			for(let i=0; i< keys.length; i++) {
+				// check key exists in keychain
+				if (publicKey == keys[i].publicKey) {
+					key_exists = true;
+					//check if specific asset address exists
+					if (typeof keys[i].crypto_addresses != 'undefined') {
+						let crypto_addresses = keys[i].crypto_addresses;
+						console.log('crypto_addresses in key:', crypto_addresses);
+						for (const key in crypto_addresses) {
+							if (key == ticker) {
+								return_data = crypto_addresses;
+								break;
+							}
+						}
+					}	
+				}
+			}
+
+			if (return_data == null) {
+				// if it doesnt exist fetch it from node db
+				await this.mixin.sendFetchUserByPublicKeyTransaction({
+					publicKey: publicKey,
+					asset_id: asset_id
+				}, 
+				async function(res){
+					console.log('miximodule res: ', res);
+					if (res.length > 0) {
+						for(let i=0; i< res.length; i++) {
+
+							console.log(res[i].asset_id, ' - ' , asset_id, ' - ', res[i].asset_id == asset_id);
+
+							if (res[i].asset_id == asset_id) {
+								if (key_exists) {
+									// save address to keychain if publickey exists in keychain
+									await this_self.addCryptoAddressToKey(publicKey, res[i].address, ticker);
+								}
+								let obj = {};
+								obj[ticker] = res[i].address;
+								return_data = obj;
+								break;
+							}
+						}
+					}
+				});
+			}
+
+			console.log('return_data: ', return_data);
+			return callback(return_data);
+		} catch(err) {
+			console.error("Error getMixinAddress: ", err);
+		}
+	}
+
+	async addCryptoAddressToKey(publicKey, address, ticker){
+		console.log('address, asset_id', address, ticker);
+		let crypto_addresses = {};
+		crypto_addresses[ticker] = address;
+		this.app.keychain.addKey(publicKey, {
+			crypto_addresses: crypto_addresses
+		});
+	}
+
+	getAssetIdByTicker(ticker){
+		let available_cryptos = this.app.wallet.returnInstalledCryptos();
+		console.log(available_cryptos);
+		for (let i=0; i<available_cryptos.length; i++) {
+			console.log(available_cryptos[i].ticker, ' - ' , ticker, ' - ', available_cryptos[i].ticker == ticker);
+			if (available_cryptos[i].ticker == ticker) {
+				if (typeof available_cryptos[i].asset_id != 'undefined') {
+					return available_cryptos[i].asset_id;
+				}
+			}
+		}
+
+		return null;
+	}
+
 }
 
 module.exports = MixinModule;
