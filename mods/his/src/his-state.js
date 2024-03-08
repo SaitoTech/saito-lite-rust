@@ -160,6 +160,7 @@
   }
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let faction_with_units = "";
     if (space.besieged == 1 || space.besieged == 2 || space.besieged == true) {
       //
       // are we still besieged? will be unit
@@ -168,9 +169,13 @@
         for (let i = 0; i < space.units[f].length; i++) {
   	  if (space.units[f][i].besieged) {
 	    return true;
+	  } else {
+            faction_with_units = f;
 	  }
         }
       }
+      let faction_in_control = this.returnFactionControllingSpace(space);
+      if (!this.areAllies(faction_in_control, faction_with_units)) { return true; }
       return false; // no besieging units left!
     }
     return false;

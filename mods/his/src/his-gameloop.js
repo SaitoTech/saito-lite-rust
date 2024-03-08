@@ -1863,16 +1863,9 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	          }
 	          if (f !== faction && this.returnFactionLandUnitsInSpace(f, space) > 0 && !this.areAllies(f, faction)) {
 
-console.log("there is a non-allied land-force here!");
-
 		    if (lqe-1 >= 0) {
 		      // added in reverse order
 		      if (skip_avoid_battle != 1) {
-
-console.log("1: " + faction + " == " + this.game.state.active_faction);
-console.log("2: " + this.isSpaceHostileOrIndependent(space, faction));
-console.log("3: " + space.besieged);
-
 			//
 			// inactive faction indicates interception - neither retreat nor fortification
 			//
@@ -5463,16 +5456,21 @@ console.log("we have made it this far 5!");
 		    }
                   }
                   if (can_faction_retreat == 1) {
-                    this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+                    this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
 	  	    if (his_self.game.state.field_battle.attacker_land_units_remaining > 0) {
                       this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
                     }
                   }
 	          if (can_faction_retreat == 0) {
-                    this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+                    this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
 	          }
                 }
 	      }
+	      if (this.isSpaceControlled(space.key, his_self.game.state.field_battle.attacker_faction)) {
+		// attacker here means "not me", since "I'm fortifying"
+                this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+	      }
+
 	    }
           }
           if (winner === his_self.game.state.field_battle.attacker_faction) {
@@ -5489,11 +5487,16 @@ console.log("we have made it this far 5!");
                   }
                 }
                 if (can_faction_retreat == 1) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+                  this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
 		  if (his_self.game.state.field_battle.defender_land_units_remaining > 0) {
 		    this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
                   }
                 }
+		if (space.units[f].length > 0) {
+		  if (his_self.isSpaceControlled(his_self.game.state.field_battle.defender_faction, space.key)) {
+                    this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.defender_faction)+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+	          }
+	        }
               }
             }
 
@@ -6270,11 +6273,10 @@ console.log("spacekey: " + spacekey);
 	  //
 	  if (defender_faction === attacker_faction) {
 	    defender_faction = his_self.returnFactionControllingSpace(space);
-console.log("defender is: " + defender_faction);
 	  }
 
- 	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
- 	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
+ 	  let attacker_player = his_self.returnPlayerCommandingFaction(attacker_faction);
+ 	  let defender_player = his_self.returnPlayerCommandingFaction(defender_faction);
 
 	  //
 	  // map every faction in space to attacker or defender
@@ -6284,14 +6286,13 @@ console.log("defender is: " + defender_faction);
 	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
 
 
-console.log("FACTION MAP: " + JSON.stringify(faction_map));
-          
 	  //
 	  // migrate any bonuses to attacker or defender
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      try {
+	      let p = his_self.game.state.players_info[his_self.returnPlayerCommandingFaction(attacker)-1];
 	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
@@ -6300,8 +6301,10 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]);
 	        }
 	      }
+	      } catch (err) {}
 	    }
-	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
+	    if (f !== defender_faction && faction_map[f] === defender_faction) {
+	      try {
 	      if (defender_player > 0) {
 	        let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	        let dp = his_self.game.state.players_info[defender_player-1];
@@ -6313,6 +6316,7 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	          }
 	        }
 	      }
+	      } catch (err) {}
 	    }
           }
 
@@ -6417,17 +6421,17 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	  //
 	  // PRINT OUT INFO TO LOG
 	  //
-	  this.updateLog("************************");
-	  this.updateLog("******** Assault *******");
-	  this.updateLog("************************");
-	  this.updateLog("Attackers: " + attacker_rolls + " rolls");
 	  for (let i = 0; i < attacker_results.length; i++) {
 	    this.updateLog(" ...: " + attacker_results[i]);
           }
-	  this.updateLog("Defenders: " + defender_rolls + " rolls");
+	  this.updateLog("Attackers: " + attacker_rolls + " rolls");
 	  for (let i = 0; i < defender_results.length; i++) {
 	    this.updateLog(" ...: " + defender_results[i]);
           }
+	  this.updateLog("Defenders: " + defender_rolls + " rolls");
+	  this.updateLog("************************");
+	  this.updateLog("******** Assault *******");
+	  this.updateLog("************************");
 
 
 	  //
@@ -6912,6 +6916,31 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 
 
 
+	if (mv[0] === "purge_units_and_capture_leaders_if_unbesieged") {
+
+          this.game.queue.splice(qe, 1);
+
+          let loser = mv[1];
+          let winner = mv[2];
+          let spacekey = mv[3];
+
+	  let space = this.game.spaces[spacekey];
+
+	  if (space.units[loser].length > 0) {
+	    for (let z = 0; z < space.units[loser].length; z++) {
+	      if (space.units[loser][z].army_leader == 1) {
+	        this.captureLeader(loser, winner, spacekey, space.units[loser][z]);
+	      } else {
+	        if (space.units[loser][z].besieged == 0) { space.units[loser].splice(z, 1); z--; }
+	      }
+	    }
+	  }
+
+	  return 1;
+
+	}
+
+
 	if (mv[0] === "purge_units_and_capture_leaders") {
 
           this.game.queue.splice(qe, 1);
@@ -6998,16 +7027,23 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
           let loser = mv[1];
           let spacekey = mv[2];
 
+console.log("^");
+console.log("^");
+console.log("^");
+console.log("loser: " + loser);
+
 	  //
 	  // auto-skip if there are < 4 loser units and they are fortified
 	  //
 	  let unfortified_units = 0;
+	  let fortified_units = 0;
 	  for (let i = 0; i < this.game.spaces[spacekey].units[loser].length; i++) {
 	    if (this.game.spaces[spacekey].units[loser][i].besieged == 0) {
 	      unfortified_units++;
 	    }
 	  }
 	  if (unfortified_units == 0) {
+console.log("we have no unfortified units -- skipping");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -7017,8 +7053,9 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
 	  //
 	  let loser_can_retreat = false;
 	  for (let i = 0; i < this.game.spaces[spacekey].units[loser].length; i++) {
-	    if (["regular", "mercentary", "calvary"].includes(this.game.spaces[spacekey].units[loser][i].type)) { loser_can_retreat = true; }
+	    if (["regular", "mercenary", "calvary"].includes(this.game.spaces[spacekey].units[loser][i].type)) { loser_can_retreat = true; }
 	  }
+console.log("can loser retreat: " + loser_can_retreat);
 	  if (loser_can_retreat == false) { return 1; }
 
           let faction_map = his_self.game.state.field_battle.faction_map;
@@ -7046,6 +7083,7 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
           if (loser === attacker_faction) {
 	    let winning_faction = defender_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
+console.log("attacker evaluate battle retreat");
 	      this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
             } else {
               this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
@@ -7053,6 +7091,7 @@ console.log("FACTION MAP: " + JSON.stringify(faction_map));
           } else {
 	    let winning_faction = attacker_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
+console.log("defender evaluate battle retreat");
 	      this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
             } else {
               this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
@@ -8515,6 +8554,7 @@ console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
 		if (u.army_leader || u.navy_leader) {
 		  this.game.spaces[key].units[f].splice(i, 1);
 		  i--;
+		  this.displaySpace(key);
 		}
 	      }
 	    }

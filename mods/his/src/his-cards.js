@@ -6192,6 +6192,7 @@ console.log("considering: " + space.key);
 	    $('.option').on('click', function () {
 
 	      $('.option').off();
+	      his_self.updateStatus("selecting...");
 	      let action = $(this).attr("id");
 
               his_self.addMove("papal_inquisition_card_draw\t"+action);
@@ -6822,7 +6823,7 @@ console.log("considering: " + space.key);
       },
     }
     let dom_img = "cards/HIS-063.svg";
-    if (this.game.players.length == 2) { csr_img = "cards/HIS-063-2P.svg"; }
+    if (this.game.players.length == 2) { dom_img = "cards/HIS-063-2P.svg"; }
     deck['063'] = { 
       img : dom_img , 
       name : "Dissolution of the Monasteries" ,

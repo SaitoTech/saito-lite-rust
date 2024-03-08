@@ -350,7 +350,7 @@ console.log("SOBJ: " + JSON.stringify(res));
 
 				let html = `
                 <div class="siege-row" data-unit-type="${unit_type}" data-faction="${faction_name}">
-                	<div class="siege-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
+                	<div class="siege-unit">${unit_type}<div class="siege-desc">${faction_name}</div></div>
                 	<div class="siege-roll ${rrclass}">${roll}</div>
                 </div>
               `;
