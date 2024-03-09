@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.616;
+	version = 5.617;
 
 	nolan_per_saito = 100000000;
 
@@ -280,7 +280,7 @@ export default class Wallet extends SaitoWallet {
 
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					alert('Saito Upgrade: Wallet Reset');
+					alert('Saito Upgrade: Wallet Version: ' + this.version);
 					// window.location.reload();
 				} else {
 					// purge old slips
