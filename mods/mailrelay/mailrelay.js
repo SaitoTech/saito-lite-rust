@@ -13,6 +13,7 @@ class MailRelay extends ModTemplate {
 		this.deascription =
 			'Adds support for integrating on-chain messages with legacy off-chain email notifications';
 		this.categories = 'Core Utilities';
+		this.class = 'utility';
 	}
 
 	onConfirmation(blk, tx, conf) {}

@@ -205,3 +205,7 @@ a {
 	grid-template-columns: 1fr 7.5em;
 	max-width: 850px;
 }
+
+input.button{
+	width: 10rem;
+}

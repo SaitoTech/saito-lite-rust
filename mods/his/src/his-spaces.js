@@ -8,8 +8,6 @@
  
   moveFactionUnitsInSpaceToCapitalIfPossible(faction, spacekey) {
 
-console.log("TRYING TO MOVE FACTINO UNITS IN SPACEKEY: " + faction + " -- " + spacekey);
-
     let space = this.game.spaces[spacekey];
     let cap = this.returnControlledCapitals(faction);
     let cap_idx = 0;

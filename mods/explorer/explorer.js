@@ -11,6 +11,7 @@ class ExplorerCore extends ModTemplate {
 		this.description =
 			'Block explorer for the Saito blockchain. Not suitable for lite-clients';
 		this.categories = 'Utilities Dev';
+		this.class = 'utility';
 	}
 
 	webServer(app, expressapp) {

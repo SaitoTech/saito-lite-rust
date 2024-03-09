@@ -13,8 +13,8 @@ class DiplomacyProposeOverlay {
 		this.proposal = {};
 		this.proposal.terms = [];
 		this.proposal.parties = [];
+		this.proposal.proposer = "";
 	}
-
 
 	showSubMenu() {
 	  document.querySelectorAll(".mainmenu").forEach((el) => { el.style.display = "none"; });
@@ -27,9 +27,6 @@ class DiplomacyProposeOverlay {
 	}
 
         pullHudOverOverlay() {
-                //
-                // pull GAME HUD over overlay
-                //
                 let overlay_zindex = parseInt(this.overlay.zIndex);
                 if (document.querySelector('.hud')) {
                         document.querySelector('.hud').style.zIndex = overlay_zindex + 1;
@@ -37,9 +34,6 @@ class DiplomacyProposeOverlay {
                 }
         }
         pushHudUnderOverlay() {
-                //
-                // push GAME HUD under overlay
-                //
                 let overlay_zindex = parseInt(this.overlay.zIndex);
                 if (document.querySelector('.hud')) {
                         document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
@@ -47,14 +41,10 @@ class DiplomacyProposeOverlay {
                 }
         }
 
-
 	hide() {
 		this.overlay.hide();
 		return;
 	}
-
-
-
 
 	render(faction="") {
 
@@ -84,15 +74,9 @@ class DiplomacyProposeOverlay {
 	  let his_self = this.mod;
 	  let menu = this.mod.returnDiplomacyMenuOptions(this.mod.game.player, faction);
 
-	  //
-	  // hide the overlay
-	  //
   	  document.querySelector(".diplomacy-propose-overlay").style.backgroundImage = "";
   	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "hidden";
 
-          //
-          // duplicates code below
-          //
           let html = "";
           for (let i = 0; i < menu.length; i++) {
             if (menu[i].check(his_self, his_self.game.player, faction)) {
@@ -119,7 +103,7 @@ class DiplomacyProposeOverlay {
 		  for (let z = 0; z < terms.length; z++) {
 		    let io = this.mod.returnDiplomacyImpulseOrder(faction);
 	 	    for (let y = 0; y < io.length; y++) {
-		      if (terms[z].substring(io[y]) && !this.proposal.parties.includes(io[y])) { this.proposal.parties.push(io[y]); }
+		      if (terms[z].indexOf(io[y]) > -1 && !this.proposal.parties.includes(io[y])) { this.proposal.parties.push(io[y]); }
 		    }
 		    this.proposal.terms.push(terms[z]);
 		  }
@@ -178,13 +162,10 @@ class DiplomacyProposeOverlay {
 
 	attachEvents(faction="") {
 
-//alert("proposals in attachEvents is: " + JSON.stringify(this.proposals));
-
 	  //
 	  // finish diplomacy stage
 	  //
 	  document.querySelector(".end").onclick = (e) => {
-//alert("end");
 	    this.mod.updateLog("NOTIFY\t"+this.mod.returnFactionName(faction)+" concludes diplomacy");
 	    for (let z = 0; z < this.proposals.length; z++) {
 	      this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
@@ -197,7 +178,6 @@ class DiplomacyProposeOverlay {
 	  // start new proposal
 	  //
 	  document.querySelector(".add").onclick = (e) => {
-//alert("add"); 
  	    document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "hidden";
 	    document.querySelector(".content").innerHTML = "";
 	    this.terms = [];
@@ -209,7 +189,6 @@ class DiplomacyProposeOverlay {
 	  // add condition to proposal
 	  //
 	  document.querySelector(".also").onclick = (e) => {
-//alert("also"); 
 	    this.renderCurrentProposal();
 	    this.renderAddProposalMenu(faction);
 	  }
@@ -218,12 +197,13 @@ class DiplomacyProposeOverlay {
 	  // submit
 	  //
 	  document.querySelector(".finish").onclick = (e) => {
-//alert("finish"); 
 
+	    this.proposal.proposer = this.faction;
 	    this.proposals.push(this.proposal);
 	    this.proposal = {};
 	    this.proposal.terms = [];
 	    this.proposal.parties = [];
+	    this.proposal.proposer = this.faction;
 
 	    this.render(faction);
 	    this.showMainMenu();
@@ -234,7 +214,12 @@ class DiplomacyProposeOverlay {
 	  // delete
 	  //
 	  document.querySelector(".delete").onclick = (e) => {
-//alert("delete"); 
+
+	    this.proposal = {};
+	    this.proposal.terms = [];
+	    this.proposal.parties = [];
+	    this.proposal.proposer = this.faction;
+
 	    this.render(faction);
 	    this.showMainMenu();
 	    this.renderAllProposals(faction);

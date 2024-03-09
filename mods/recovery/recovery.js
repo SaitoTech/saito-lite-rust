@@ -11,7 +11,7 @@ class Recovery extends ModTemplate {
 		this.name = 'Recovery';
 		this.description = 'Secure wallet backup and recovery';
 		this.categories = 'Utilities Core';
-
+		this.class = 'utility';
 		this.backup_overlay = new SaitoBackup(app, this);
 		this.login_overlay = new SaitoLogin(app, this);
 

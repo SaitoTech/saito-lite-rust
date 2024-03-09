@@ -160,6 +160,7 @@
   }
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let faction_with_units = "";
     if (space.besieged == 1 || space.besieged == 2 || space.besieged == true) {
       //
       // are we still besieged? will be unit
@@ -168,9 +169,13 @@
         for (let i = 0; i < space.units[f].length; i++) {
   	  if (space.units[f][i].besieged) {
 	    return true;
+	  } else {
+            faction_with_units = f;
 	  }
         }
       }
+      let faction_in_control = this.returnFactionControllingSpace(space);
+      if (!this.areAllies(faction_in_control, faction_with_units)) { return true; }
       return false; // no besieging units left!
     }
     return false;
@@ -902,9 +907,14 @@ if (this.game.state.scenario != "is_testing") {
 
   }
 
+  unexcommunicateFaction(faction="") {
+    this.game.state.excommunicated_factions[faction] = 0;
+    return;
+  }
+
   excommunicateFaction(faction="") {
     this.game.state.already_excommunicated.push(faction);
-    this.game.state.excommunicated_faction[faction] = 1;
+    this.game.state.excommunicated_factions[faction] = 1;
     return;
   }
 
@@ -975,7 +985,7 @@ if (this.game.state.scenario != "is_testing") {
       let obj = this.game.state.excommunicated[i];
       if (obj.reformer) {
 
-        let leader = obj.reformer;
+        let reformer = obj.reformer;
 	let s = obj.space;
         let faction = obj.faction;
 
