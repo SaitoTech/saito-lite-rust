@@ -1501,6 +1501,8 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  let deck = this.returnDeck();
 	  deck['013'].onEvent(this, "protestant");
 
+this.addCard("papacy", "043");
+
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -2699,16 +2701,12 @@ console.log("faction has units in space!");
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    source.units[faction][i].locked = true;
 	    source.units[faction][i].already_moved = true;
-	    //
-	    // nothing under siege should be fortified
-	    //
 	    if (source.units[faction][i].besieged != 1) {
 	      destination.units[faction].push(source.units[faction][i]);
 	      source.units[faction].splice(i, 0);
-	    }   
+	    }
 	  }
 
-	  source.units[faction] = [];
 	  this.displaySpace(from);
 	  this.displaySpace(to);
 

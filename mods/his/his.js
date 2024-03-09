@@ -9065,61 +9065,54 @@ console.log("considering: " + space.key);
 	his_self.removeReformer("protestant", "zurich", "zwingli-reformer");
 	his_self.removeDebater("protestant", "zwingli-debater");
 
-	if (player == his_self.game.player) {
+        if (player == his_self.game.player) {
+          let count = his_self.countSpacesWithFilter(function(space) {
+            if (targets.includes(space.key) && his_self.hasCatholicLandUnits(space.key)) {
+              return 1
+            }
+            return 0;
+          });
 
-	  let msg = "Remove 1 Catholic Land Unit?";
-	  let viable_targets = 0;
-          let html = '<ul>';
-	  for (let i = 0; i < targets.length; i++) {
-	    if (his_self.hasCatholicLandUnits(targets[i])) {
-	      viable_targets++;
-              html += `<li class="option" id="${targets[i]}">${targets[i]}</li>`;
-	    }
-	  }
-	  if (viable_targets == 0) {
-            html += '<li class="option" id="skip">skip</li>';
-	  }
-          html += '</ul>';
+          if (count == 0) { return 1; }
 
-    	  his_self.updateStatusWithOptions(msg, html);
+          his_self.playerSelectSpaceWithFilter(
+            "Select Space to Remove Catholic Land Unit",
+            function(space) {
+              if (targets.includes(space.key) && his_self.hasCatholicLandUnits(space.key)) {
+                return 1
+              }
+              return 0;
+            },
+            function(spacekey) {
 
-	  $('.option').off();
-	  $('.option').on('click', function () {
-
-	    $('.option').off();
-	    let action = $(this).attr("id");
-
-	    if (action === "skip") {
-
-	      his_self.endTurn();
-
-	    } else {
-
-	      let catholic_land_units = his_self.returnCatholicLandUnitsInSpace(action);
-	      let msg = "Remove which Unit?";
+              let catholic_land_units = his_self.returnCatholicLandUnitsInSpace(spacekey);
+              let msg = "Remove which Unit?";
               let html = '<ul>';
-	      for (let i = 0; i < catholic_land_units.length; i++) {
-	        let u = his_self.game.spaces[action].units[catholic_land_units[i].faction][catholic_land_units[i].unit_idx];
+              for (let i = 0; i < catholic_land_units.length; i++) {
+                let u = his_self.game.spaces[spacekey].units[catholic_land_units[i].faction][catholic_land_units[i].unit_idx];
                 html += `<li class="option" id="${catholic_land_units[i].faction}_${catholic_land_units[i].unit_idx}">${catholic_land_units[i].faction} - ${u.type}</li>`;
+              }
+
+	      if (catholic_land_units.length == 1) {
+		his_self.addMove("destroy_unit_by_index\t"+catholic_land_units[0].faction+"\t"+spacekey+"\t"+"\t"+catholic_land_units[0].unit_idx);
+		his_self.endTurn();
+		return 0;
 	      }
 
-    	      his_self.updateStatusWithOptions(msg, html);
+              his_self.updateStatusWithOptions(msg, html);
 
 	      $('.option').off();
 	      $('.option').on('click', function () {
 	        $('.option').off();
 	        let x = $(this).attr("id").split("_");
-		his_self.addMove("destroy_unit_by_index\t"+x[0]+"\t"+action+"\t"+"\t"+x[1]);
+		his_self.addMove("destroy_unit_by_index\t"+x[0]+"\t"+spacekey+"\t"+"\t"+x[1]);
 		his_self.endTurn();            
 	      });
-
-	    }
-	  });
-
-          return 0;
-
+            },
+            null,
+            true,
+          );
         }
-
 	return 0;
       },
     }
@@ -22285,6 +22278,8 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  let deck = this.returnDeck();
 	  deck['013'].onEvent(this, "protestant");
 
+this.addCard("papacy", "043");
+
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -23483,16 +23478,12 @@ console.log("faction has units in space!");
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    source.units[faction][i].locked = true;
 	    source.units[faction][i].already_moved = true;
-	    //
-	    // nothing under siege should be fortified
-	    //
 	    if (source.units[faction][i].besieged != 1) {
 	      destination.units[faction].push(source.units[faction][i]);
 	      source.units[faction].splice(i, 0);
-	    }   
+	    }
 	  }
 
-	  source.units[faction] = [];
 	  this.displaySpace(from);
 	  this.displaySpace(to);
 
