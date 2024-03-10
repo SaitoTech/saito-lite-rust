@@ -34192,6 +34192,7 @@ does_units_to_move_have_unit = true; }
 	          for (let z = 0; z < units_to_move.length; z++) {
 	            if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
 		      units_to_move.splice(z, 1);
+	              his_self.available_units_overlay.fadeOut(true);
 		      break;
 		    }
 	          }
@@ -34483,12 +34484,11 @@ does_units_to_move_have_unit = true; }
 	      for (let z = 0; z < units_to_move.length; z++) {
 	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
 		  units_to_move.splice(z, 1);
+	          his_self.available_units_overlay.fadeOut(true);
 		  break;
 		}
 	      }
 
-	      // movement overlay, so force fadeout
-	      his_self.available_units_overlay.fadeOut(true);
 
 	    } else {
 
