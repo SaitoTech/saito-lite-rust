@@ -34086,6 +34086,7 @@ return;
               his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
               his_self.endTurn();
+	      his_self.available_units_overlay.faded_out = false;
               return;
 
 	    };
@@ -34387,6 +34388,7 @@ does_units_to_move_have_unit = true; }
               his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
 	      his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
+	      his_self.available_units_overlay.faded_out = false;
 
 	    },
 
@@ -34489,6 +34491,9 @@ does_units_to_move_have_unit = true; }
 		}
 	      }
 
+	      if (units_to_move.length == 0) {
+		his_self.available_units_overlay.faded_out = false;
+	      }
 
 	    } else {
 

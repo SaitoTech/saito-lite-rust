@@ -27,6 +27,7 @@ class AvailableUnitsOverlay {
 			}
 		} catch (err) {
 		}
+	  	document.querySelectorAll(".available-units-overlay .army_tile").forEach((el) => { el.onclick = (e) => {}; });
 	}
 
 	renderMove(mobj, faction, spacekey) {
