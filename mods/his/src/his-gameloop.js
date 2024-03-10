@@ -3847,6 +3847,7 @@ console.log("obj: " + JSON.stringify(z[i]));
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
+try {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerCommandingFaction(attacker)-1];
 	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p && ap) {
@@ -3858,8 +3859,10 @@ console.log("obj: " + JSON.stringify(z[i]));
 	          }
 	        }
 	      }
+} catch (err) {}
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
+try {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerCommandingFaction(defender_faction)-1];
 	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p && dp) {
@@ -3871,6 +3874,7 @@ console.log("obj: " + JSON.stringify(z[i]));
 	          }
 	        }
 	      }
+} catch (err) {}
 	    }
           }
 

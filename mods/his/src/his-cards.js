@@ -1941,6 +1941,8 @@ console.log("considering: " + space.key);
 
                   function(spacekey) {
 
+console.log("selected: " + spacekey);
+
 		    let has_mercenary = false;
 		    let has_regular = false;
 		    let has_cavalry = false;
