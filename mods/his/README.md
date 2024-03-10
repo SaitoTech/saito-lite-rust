@@ -60,7 +60,7 @@ sure that any players you support can fulfill these conditions by making it easy
 them to purchase commercial copies of the game.
 
 GMT GAMES:
-https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx
+https://www.gmtgames.com/p-917-here-i-stand-500th-anniversary-reprint-edition-2nd-printing.aspx
 
 AMAZON:
 https://www.amazon.com/Here-I-Stand-Board-Game/dp/B077QTQGYQ
