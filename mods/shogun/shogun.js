@@ -2296,8 +2296,9 @@ initializeGame(game_id) {
         let recipient = parseInt(gmv[2]);
         let cards = parseInt(gmv[3]);
 
-        game_self.displayDecks();
         if (recipient == game_self.game.player && game_self.browser_active){
+          game_self.displayDecks();
+
           console.log("ANIMATE CARD DEALING");
 
           for (let i = 0; i < cards; i++){
