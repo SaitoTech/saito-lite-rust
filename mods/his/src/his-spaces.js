@@ -1715,6 +1715,16 @@ try {
     if (this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys++; }
     return controlled_keys;
   }
+  returnProtestantElectorates() {
+    let controlled_keys = [];
+    if (this.isSpaceControlled('augsburg', "protestant")) { controlled_keys.push("augsburg"); }
+    if (this.isSpaceControlled('mainz', "protestant")) { controlled_keys.push("mainz"); }
+    if (this.isSpaceControlled('trier', "protestant")) { controlled_keys.push("trier"); }
+    if (this.isSpaceControlled('cologne', "protestant")) { controlled_keys.push("cologne"); }
+    if (this.isSpaceControlled('wittenberg', "protestant")) { controlled_keys.push("wittenberg"); }
+    if (this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys.push("brandenburg"); }
+    return controlled_keys;
+  }
   returnNumberOfElectoratesControlledByCatholics(political_control=0) {
     let controlled_keys = 0;
     if (political_control == 1) {

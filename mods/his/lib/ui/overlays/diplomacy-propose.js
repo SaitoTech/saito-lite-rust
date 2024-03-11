@@ -16,6 +16,21 @@ class DiplomacyProposeOverlay {
 		this.proposal.proposer = "";
 	}
 
+	purgeProposals() {
+		this.proposal = {};
+		this.proposal.confirms = [];
+		this.proposal.terms = [];
+		this.proposal.parties = [];
+		this.proposal.proposer = "";
+	}
+
+        updateInstructions(msg="") {
+          try {
+            document.querySelector(".diplomacy-propose-overlay .help").innerHTML = msg;
+          } catch (err) {
+          }
+        }
+        
 	showSubMenu() {
 	  document.querySelectorAll(".mainmenu").forEach((el) => { el.style.display = "none"; });
 	  document.querySelectorAll(".submenu").forEach((el) => { el.style.display = "block"; });
@@ -61,6 +76,7 @@ class DiplomacyProposeOverlay {
 
 	  document.querySelector(".diplomacy-propose-overlay").style.visibility = "visible";
   	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "visible";
+  	  document.querySelector(".diplomacy-propose-overlay").style.display = "block";
 
 	  this.showMainMenu();
 
@@ -95,6 +111,7 @@ class DiplomacyProposeOverlay {
 		document.querySelectorAll(".diplomacy-propose-overlay .menu").innerHTML = "";
 		document.querySelectorAll(".diplomacy-propose-overlay .help").innerHTML = "Please Continue Using Game HUD...";
 		document.querySelectorAll(".diplomacy-propose-overlay .content").innerHTML = "";
+  	        document.querySelector(".diplomacy-propose-overlay").style.display = "none";
 
 		this.pullHudOverOverlay();
 
@@ -132,9 +149,17 @@ class DiplomacyProposeOverlay {
 	  proposals_html += '</ol>';
 
 	  if (any_proposals) {
+	    this.updateInstructions(`${this.mod.returnFactionName(faction)} - Diplomacy Stage - All Proposals`);
 	    document.querySelector(".content").innerHTML = proposals_html;
+	    try {
+	      document.querySelector(".mainmenu.add").innerHTML = "yes, create another";
+	      document.querySelector(".mainmenu.end").innerHTML = "no, submit to peers";
+	    } catch (err) {
+	      console.log(JSON.stringify(err));
+	    }
 	  } else {
-	    document.querySelector(".content").innerHTML = "You have no proposals...";
+	    this.updateInstructions(`${this.mod.returnFactionName(faction)} - Diplomacy Stage`);
+	    document.querySelector(".content").innerHTML = "propose a diplomatic agreement?";
 	  }
 
 	}
@@ -148,11 +173,15 @@ class DiplomacyProposeOverlay {
 	    proposals_html += '<li>' + t[z] + '</li>';
 	  }
 	  proposals_html += '</ul>';
+	  this.updateInstructions("Creating New Proposal");
 
 	  if (any_proposals) {
+	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "your proposal consists of the following:";
 	    document.querySelector(".content").innerHTML = proposals_html;
+	    document.querySelector(".content").style.display = "block";
 	  } else {
-	    document.querySelector(".content").innerHTML = "select option";;
+	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "add term to your new proposal";
+	    document.querySelector(".content").style.display = "none";
 	  }
 
 	  this.showSubMenu();

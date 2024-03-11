@@ -4544,9 +4544,7 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu == "move" || menu == "assault" || menu == "piracy") {
-
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
-
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('031')) {
@@ -4572,7 +4570,6 @@ console.log("selected: " + spacekey);
         if (menu == "move" || menu == "assault" || menu == "piracy") {
 	  his_self.addMove(`foul_weather\t${player}\t${faction}`);
   	  his_self.addMove("discard\t"+faction+"\t"+"031");
-  	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.endTurn();
         }
         return 1;

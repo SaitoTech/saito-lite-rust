@@ -25,7 +25,7 @@
         margin-right: auto;
 }
 
-.diplomacy-confirm-overlay .help , .diplomacy-propose-overlay .html {
+.diplomacy-confirm-overlay .help , .diplomacy-propose-overlay .help {
 	background: #0009;
 	width: max-content;
 	color: white;
@@ -36,6 +36,7 @@
 	max-width: 100%;
 	padding: 2rem;
 	line-height: 3.4rem;
+        margin-bottom: 2rem;
 }
 
 .diplomacy-confirm-overlay .content , .diplomacy-propose-overlay .content {
@@ -63,7 +64,13 @@
         max-width: max-content;
         margin-left: auto;
         margin-right: auto;
+	min-width: 30rem;
 }
+
+.diplomacy-propose-overlay .menu .menu-option-container .menu-option-image img {
+  max-height: 20rem;
+}
+
 
 .diplomacy-confirm-overlay .buttons div , .diplomacy-propose-overlay .buttons div {
         border: 1px solid black;

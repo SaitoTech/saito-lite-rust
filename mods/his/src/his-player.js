@@ -919,6 +919,8 @@ if (this.game.state.events.cramner_active == 1) {
   }
 
 
+
+
   playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
 
     let his_self = this;
