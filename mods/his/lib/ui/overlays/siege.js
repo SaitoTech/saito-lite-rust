@@ -209,61 +209,64 @@ class AssaultOverlay {
 			el.remove();
 		});
 		document.querySelectorAll('.hits-assignable').forEach((el) => {
-			let factionspace = el.querySelector('.siege-desc').innerHTML;
-			let can_i_kill_this_guy = false;
+			let obj = el.querySelector('.siege-desc');
+			if (obj) {
+				let factionspace = el.querySelector('.siege-desc').innerHTML;
+				let can_i_kill_this_guy = false;
 
-			if (
-				factionspace === faction ||
-				his_self.returnAllyOfMinorPower(factionspace) === faction
-			) {
-				can_i_kill_this_guy = true;
-			}
-
-			if (can_i_kill_this_guy) {
-				if (factionspace) {
-					factionspace.innerHTML += ' (click to assign hit)';
+				if (
+					factionspace === faction ||
+					his_self.returnAllyOfMinorPower(factionspace) === faction
+				) {
+					can_i_kill_this_guy = true;
 				}
-				el.classList.add('hits-assignable-hover-effect');
 
-				hits_assignable++;
-				el.onclick = (e) => {
-					hits_assigned++;
-					let hits_left = hits_to_assign - hits_assigned;
-
-					document
-						.querySelectorAll('hits_to_assign')
-						.forEach((el) => {
-							el.innerHTML = hits_left;
-						});
-
-					let unit_type = el.getAttribute('data-unit-type');
-					let faction = el.getAttribute('data-faction');
-					let spacekey = res.spacekey;
-
-					el.remove();
-
-					this.mod.addMove(
-						'siege_destroy_unit\t' +
-							faction +
-							'\t' +
-							spacekey +
-							'\t' +
-							unit_type
-					);
-					if (
-						hits_assigned == hits_to_assign ||
-						hits_assigned >= hits_assignable
-					) {
-						document
-							.querySelectorAll('.hits-assignable')
-							.forEach((el) => {
-								el.onclick = (e) => {};
-							});
-						this.mod.endTurn();
-						this.pushHudUnderOverlay();
-						this.overlay.hide();
+				if (can_i_kill_this_guy) {
+					if (factionspace) {
+						factionspace.innerHTML += ' (click to assign hit)';
 					}
-				};
+					el.classList.add('hits-assignable-hover-effect');
+	
+					hits_assignable++;
+					el.onclick = (e) => {
+						hits_assigned++;
+						let hits_left = hits_to_assign - hits_assigned;
+
+						document
+							.querySelectorAll('hits_to_assign')
+							.forEach((el) => {
+								el.innerHTML = hits_left;
+							});
+
+						let unit_type = el.getAttribute('data-unit-type');
+						let faction = el.getAttribute('data-faction');
+						let spacekey = res.spacekey;
+
+						el.remove();
+
+						this.mod.addMove(
+							'siege_destroy_unit\t' +
+								faction +
+								'\t' +
+								spacekey +
+								'\t' +
+								unit_type
+						);
+						if (
+							hits_assigned == hits_to_assign ||
+							hits_assigned >= hits_assignable
+						) {
+							document
+								.querySelectorAll('.hits-assignable')
+								.forEach((el) => {
+									el.onclick = (e) => {};
+								});
+							this.mod.endTurn();
+							this.pushHudUnderOverlay();
+							this.overlay.hide();
+						}
+					};
+				}
 			}
 		});
 		if (faction != '') {

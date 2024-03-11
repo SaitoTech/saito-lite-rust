@@ -1501,6 +1501,8 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	  let deck = this.returnDeck();
 	  deck['013'].onEvent(this, "protestant");
 
+this.addCard("papacy", "043");
+
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -2699,16 +2701,12 @@ console.log("faction has units in space!");
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    source.units[faction][i].locked = true;
 	    source.units[faction][i].already_moved = true;
-	    //
-	    // nothing under siege should be fortified
-	    //
 	    if (source.units[faction][i].besieged != 1) {
 	      destination.units[faction].push(source.units[faction][i]);
 	      source.units[faction].splice(i, 0);
-	    }   
+	    }
 	  }
 
-	  source.units[faction] = [];
 	  this.displaySpace(from);
 	  this.displaySpace(to);
 
@@ -3849,6 +3847,7 @@ console.log("obj: " + JSON.stringify(z[i]));
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
+try {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerCommandingFaction(attacker)-1];
 	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p && ap) {
@@ -3860,8 +3859,10 @@ console.log("obj: " + JSON.stringify(z[i]));
 	          }
 	        }
 	      }
+} catch (err) {}
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
+try {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerCommandingFaction(defender_faction)-1];
 	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p && dp) {
@@ -3873,6 +3874,7 @@ console.log("obj: " + JSON.stringify(z[i]));
 	          }
 	        }
 	      }
+} catch (err) {}
 	    }
           }
 
