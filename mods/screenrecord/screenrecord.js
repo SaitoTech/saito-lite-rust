@@ -9,6 +9,8 @@ class Screenrecord extends ModTemplate {
 		this.chunks = [];
 		this.localStream = null; // My Video Feed
 		this.mediaRecorder = null;
+	    this.description = "simple tool for recording a screen capture video";
+	    this.categories = "Utilities Communications";
 	}
 
 	respondTo(type, obj) {
