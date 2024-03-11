@@ -21,7 +21,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 		}saitoa">`;
 
 	if (winner) {
-		html += `<h1>Game Over: ${winner} wins!</h1>`;
+		html += `<h1>Game Over:<br>${winner} wins!</h1>`;
 	} else {
 		//Fucking Dice
 		html += `<div class="settlers-state-container">
