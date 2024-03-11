@@ -17,6 +17,7 @@ class DiplomacyProposeOverlay {
 	}
 
 	purgeProposals() {
+		this.proposals = [];
 		this.proposal = {};
 		this.proposal.confirms = [];
 		this.proposal.terms = [];
@@ -57,6 +58,7 @@ class DiplomacyProposeOverlay {
         }
 
 	hide() {
+		this.purgeProposals();
 		this.overlay.hide();
 		return;
 	}
@@ -134,6 +136,15 @@ class DiplomacyProposeOverlay {
 
 	renderAllProposals(faction="") {
 
+console.log("render all proposals!");
+console.log("render all proposals!");
+console.log("render all proposals!");
+console.log("render all proposals!");
+console.log("render all proposals!");
+console.log("render all proposals!");
+console.log("render all proposals!");
+console.log(JSON.stringify(this.game.state.diplomacy));
+
 	  let any_proposals = false;
 	  let proposals_html = "<ol>";
           for (let i = 0; i < this.proposals.length; i++) {
@@ -152,8 +163,8 @@ class DiplomacyProposeOverlay {
 	    this.updateInstructions(`${this.mod.returnFactionName(faction)} - Diplomacy Stage - All Proposals`);
 	    document.querySelector(".content").innerHTML = proposals_html;
 	    try {
-	      document.querySelector(".mainmenu.add").innerHTML = "yes, create another";
-	      document.querySelector(".mainmenu.end").innerHTML = "no, submit to peers";
+	      document.querySelector(".mainmenu.add").innerHTML = "create new proposal";
+	      document.querySelector(".mainmenu.end").innerHTML = "submit/finish offers";
 	    } catch (err) {
 	      console.log(JSON.stringify(err));
 	    }

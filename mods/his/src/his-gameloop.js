@@ -8688,6 +8688,7 @@ console.log(JSON.stringify(this.game.state.diplomacy));
 	      this.game.queue.push(proposal.terms[i]);
 	    }
 	    this.game.state.diplomacy.splice(idx, 1);
+	    this.diplomacy_propose_overlay.purgeProposals();
 	  }
 
 console.log("after splicing: " + JSON.stringify(this.game.state.diplomacy));

@@ -1532,19 +1532,31 @@
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { return 1; },
+      canEvent : function(his_self, faction) { 
+	if (faction == "ottoman" && his_self.returnControllingPower("venice") != "venice") {
+	  return 1;
+	}
+	if (faction == "papacy") {
+	  return 1;
+	}
+	return 0;
+      },
       onEvent : function(his_self, faction) {
 
 	let ally = his_self.returnAllyOfMinorPower("venice");
 
+	// papacy is only faction that can activate
 	if (ally === "" || ally === "venice") {
 	  his_self.activateMinorPower("papacy", "venice");
 	}
 	if (ally == "hapsburg") {
 	  his_self.deactivateMinorPower("hapsburg", "venice");
 	}
-        if (ally === "papacy") {
+        if (ally === "papacy" && faction == "papacy") {
 	  his_self.game.queue.push("venetian_alliance_placement");
+	}
+        if (ally === "papacy" && faction == "ottoman") {
+	  his_self.deactivateMinorPower("papacy", "venice");
 	}
 	his_self.displayWarBox();
 
@@ -7661,10 +7673,10 @@ console.log("HITS: " + hits);
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
-        if (his_self.game.player == 0) {
+        if (his_self.game.player != 0) {
 
 	  // deal 2 cards to faction
-	  his_self.game_queue.push("diplomatic-overturn\t"+faction);
+	  his_self.game.queue.push("diplomatic-overture\t"+faction);
           his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction);
           his_self.game.queue.push("DEAL\t1\t"+p+"\t"+1);
           his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction);
@@ -7676,7 +7688,7 @@ console.log("HITS: " + hits);
       },
       handleGameLoop : function(his_self, qe, mv) {
 
-        if (mv[0] == "diplomatic-overturn") {
+        if (mv[0] == "diplomatic-overture") {
 
           his_self.game.queue.splice(qe, 1);
 

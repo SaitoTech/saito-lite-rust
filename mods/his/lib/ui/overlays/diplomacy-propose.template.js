@@ -11,8 +11,8 @@ module.exports = DiplomacyProposeTemplate = (obj) => {
 	      <div class="mainmenu add" id="add">create proposal</div>
 	      <div class="mainmenu end" id="end">no thanks</div>
 	      <div class="submenu also" id="also">add more requirements...</div>
-	      <div class="submenu finish" id="finish">accept and finish...</div>
-	      <div class="submenu delete" id="delete">return to main menu</div>
+	      <div class="submenu finish" id="finish">accept this proposal...</div>
+	      <div class="submenu delete" id="delete">delete this proposal...</div>
 	    </div>
 	  </div>
 	`;

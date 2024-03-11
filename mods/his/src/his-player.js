@@ -5035,9 +5035,14 @@ does_units_to_move_have_unit = true; }
 
       function(destination_spacekey) {
 	his_self.updateStatus("acknowledge...");
-	his_self.addMove("build\tsea\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
+	// corsair is naval unit, but gets built in port (land --> game.spaces)
+	his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
+
+      null,
+
+      true
 
     );
   }
