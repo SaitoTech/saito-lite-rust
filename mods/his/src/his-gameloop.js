@@ -55,9 +55,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+//	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -65,12 +65,12 @@ if (this.game.options.scenario != "is_testing") {
 	    this.game.queue.push("diplomacy_phase_2P");
 	  } else {
 	    if (this.game.state.starting_round != this.game.state.round) {
-	      this.game.queue.push("diplomacy_phase");
-	      this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomacy Phase");
+if (this.game.options.scenario != "is_testing") {
+//	      this.game.queue.push("diplomacy_phase");
+//	      this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomacy Phase");
+}
 	    }
 	  }
-
-
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -81,10 +81,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 } else {
-	    this.game.queue.push("show_overlay\tvp");
-	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-	    this.game.queue.push("diet_of_worms");
-	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//	    this.game.queue.push("show_overlay\tvp");
+//	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//	    this.game.queue.push("diet_of_worms");
+//	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
 	    this.game.queue.push("game_help_start");
@@ -610,7 +610,7 @@ if (this.game.options.scenario == "is_testing") {
 
 	  if (num > 0) {
 	    this.game.queue.push("process_mary_i_subverts_protestantism_in_2P");
-            this.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+"papacy");
+            this.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+"papacy"+"\t1"); // 1 = show overlay
             this.game.queue.push("DEAL\t1\t"+p+"\t"+1);
 	  } else {
 	    this.game.queue.push("NOTIFY\t"+this.popup("021") + ": no Catholic spaces in England");
@@ -1726,12 +1726,6 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 
 
 	if (mv[0] === "is_testing") {
-
-	  // SCHMALKALDIC LEAGUE
-	  let deck = this.returnDeck();
-	  deck['013'].onEvent(this, "protestant");
-
-this.addCard("papacy", "043");
 
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -3787,9 +3781,6 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
 
-console.log("I: " + i);
-console.log("z[i].name " + JSON.stringify(z[i]));
-console.log("obj: " + JSON.stringify(z[i]));
 	    //
 	    // maybe event has been removed, will fail
 	    //
@@ -4497,10 +4488,13 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	  let attacker_highest_battle_rating_figure = "";
 	  let defender_highest_battle_rating_figure = "";
 
+console.log("DEFENDER UNITS: " + JSON.stringify(defender_units));
+
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
 	      let x = calculate_rolls(f);
 	      attacker_rolls += x.rolls;
+console.log("attacker adds: " + x.rolls);
 	      attacker_units.push(...x.units);
 	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f); }
 	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
@@ -4510,6 +4504,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	    if (faction_map[f] === defender_faction) {
 	      let x = calculate_rolls(f);
 	      defender_rolls += x.rolls;
+console.log("defender adds: " + x.rolls);
 	      defender_units.push(...x.units);
 	      for (let i = 0; i < x.rolls; i++) { defender_units_faction.push(f); }
 	      if (calculate_highest_battle_rating(f) > defender_highest_battle_rating) {
@@ -4517,6 +4512,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	      }
 	    }
 	  }
+
 
 	  //
 	  // if the defender has no units in the space and this is a fortified space
@@ -4538,9 +4534,11 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	  // add rolls for highest battle ranking
 	  //
 	  for (let z = 0; z < attacker_highest_battle_rating; z++) {
+console.log("attacker highest battle rating: " + attacker_highest_battle_rating);
 	    attacker_rolls++;
 	  }
 	  for (let z = 0; z < defender_highest_battle_rating; z++) {
+console.log("defender highest battle rating: " + defender_highest_battle_rating);
 	    defender_rolls++;
 	  }
 
@@ -4548,9 +4546,11 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	  // add bonus rolls
 	  //
 	  if (attacker_player.tmp_roll_bonus) {
+console.log("attacker tmp roll bonus: " + attacker_player.tmp_roll_bonus);
   	    attacker_rolls += parseInt(attacker_player.tmp_roll_bonus);
 	  }
 	  if (defender_player.tmp_roll_bonus) {
+console.log("defender tmp roll bonus: " + defender_player.tmp_roll_bonus);
             defender_rolls += parseInt(defender_player.tmp_roll_bonus);
 	  }
 
@@ -4580,7 +4580,7 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
 	  // modify rolls as needed
 	  //
 	  let attacker_modified_rolls = attacker_results;
-	  let defender_modified_rolls = attacker_results;
+	  let defender_modified_rolls = defender_results;
   	  if (his_self.game.state.field_battle.attacker_player > 0) {
 	    attacker_modified_rolls = modify_rolls(his_self.game.state.players_info[his_self.game.state.field_battle.attacker_player-1], attacker_results);
 	  }
@@ -4588,12 +4588,18 @@ console.log(JSON.stringify(his_self.game.state.naval_battle));
  	    defender_modified_rolls = modify_rolls(his_self.game.state.players_info[his_self.game.state.field_battle.defender_player-1], defender_results);
 	  }
 
+console.log("ATTACKER MODIFIED ROLLS: " + JSON.stringify(attacker_modified_rolls));
+console.log("DEFENDER MODIFIED ROLLS: " + JSON.stringify(defender_modified_rolls));
+
 	  for (let i = 0; i < attacker_modified_rolls; i++) {
 	    if (attacker_modified_rolls[i] >= 5) { attacker_hits++; }
 	  }
 	  for (let i = 0; i < defender_modified_rolls; i++) {
 	    if (defender_modified_rolls[i] >= 5) { defender_hits++; }
 	  }
+
+console.log("ATTACKER MODIFIED ROLLS 2: " + JSON.stringify(attacker_modified_rolls));
+console.log("DEFENDER MODIFIED ROLLS 2: " + JSON.stringify(defender_modified_rolls));
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -8997,6 +9003,12 @@ if (this.game.state.round == 2) {
 	  
 	}
 
+	if (mv[0] === "display_new_world") {
+	  this.game.queue.splice(qe, 1);
+	  this.displayNewWorld();
+	  return 1;
+	}
+
 
 	if (mv[0] === "war_cleanup") {
 
@@ -9266,7 +9278,7 @@ if (this.game.state.round == 2) {
 		//
 		// is_testing
 		//
-		if (this.game.options.scenario == "is_testing") { cardnum = 2; }
+		if (this.game.options.scenario == "is_testing") { cardnum = 5; }
 
 	        //
 	        // fuggers card -1
@@ -9314,9 +9326,7 @@ if (this.game.state.round == 2) {
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-if (this.game.options.scenario != "is_testing") {
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-}
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
@@ -9598,11 +9608,16 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let p2 = this.returnPlayerOfFaction(faction_giving);
 
 	  if (this.game.player == p1) {
-	    this.updateLog("Cards Revealed: ");
 	    for (let i = 0; i < cards.length; i++) {
-	      this.updateLog(this.game.deck[0].cards[cards[i]].name);
+	      this.updateLog(" * " + this.popup(cards[i]));
 	    }
+	    this.updateLog(this.returnFactionName(faction_giving) + " Hand: ");
 	  }
+
+	  //
+	  // does this show our cards
+	  //
+	  this.deck_overlay.render("hand", cards);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -10532,15 +10547,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
-
 	  let deckidx = parseInt(mv[1])-1;
 	  let player = parseInt(mv[2]);
 	  let faction = mv[3];
+	  let show_overlay = false;
+	  if (mv[4]) { show_overlay = true; }
 	  let fhand_idx = this.returnFactionHandIdx(player, faction);
+	  let cards = [];
 
 	  if (this.game.player == player) {
 
-
+console.log("EXISTING HAND: " + JSON.stringify(this.game.deck[deckidx].hand));
 console.log("EXISTING FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
@@ -10548,12 +10565,15 @@ console.log("EXISTING FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	    for (let i = 0; i < this.game.deck[deckidx].hand.length; i++) {
 	      this.game.deck[deckidx].fhand[fhand_idx].push(this.game.deck[deckidx].hand[i]);
+	      cards.push(this.game.deck[deckidx].hand[i]);
 	    }
 
 	    // and clear the hand we have dealt
 	    this.game.deck[deckidx].hand = [];
 
-console.log("NEW FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
+	    if (show_overlay) {
+	      this.deck_overlay.render('hand', cards);
+	    }
 
 	  }
 

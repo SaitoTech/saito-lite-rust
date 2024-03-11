@@ -361,6 +361,67 @@
     }
   }
 
+  displayNewWorldBonuses() {
+    try {
+      //
+      // Galleons Colony #1
+      //
+      if (this.game.state.galleons['french'] == 1) {
+	document.querySelector(".france_colony1_bonus").innerHTML = `<img class="army_tile" src="/his/img/Galleons.svg" />`;
+      }
+      if (this.game.state.galleons['england'] == 1) {
+	document.querySelector(".england_colony1_bonus").innerHTML = `<img class="army_tile" src="/his/img/Galleons.svg" />`;
+      }
+      if (this.game.state.galleons['hapsburg'] == 1) {
+	document.querySelector(".hapsburg_colony1_bonus").innerHTML = `<img class="army_tile" src="/his/img/Galleons.svg" />`;
+      }
+      //
+      // Plantations Colony #2
+      //
+      if (this.game.state.plantations['france'] == 1) {
+	document.querySelector(".france_colony2_bonus").innerHTML = `<img class="army_tile" src="/his/img/tiles/colonies/Plantations.svg" />`;
+      }
+      if (this.game.state.events.colonial_governor == "france") {
+	document.querySelector(".france_colony2_bonus").innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/ColonialGovernor.svg" />`;
+      }
+      if (this.game.state.plantations['england'] == 1) {
+	document.querySelector(".england_colony2_bonus").innerHTML = `<img class="army_tile" src="/his/img/tiles/colonies/Plantations.svg" />`;
+      }
+      if (this.game.state.events.colonial_governor == "england") {
+	document.querySelector(".england_colony2_bonus").innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/ColonialGovernor.svg" />`;
+      }
+      if (this.game.state.plantations['hapsburg'] == 1) {
+	document.querySelector(".hapsburg_colony2_bonus").innerHTML = `<img class="army_tile" src="/his/img/tiles/colonies/Plantations.svg" />`;
+      }
+      if (this.game.state.events.colonial_governor == "hapsburg") {
+	document.querySelector(".hapsburg_colony2_bonus").innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/ColonialGovernor.svg" />`;
+      }
+      //
+      // Raiders Colony #3
+      //
+      if (this.game.state.raiders['protestant'] == 1) {
+	document.querySelector(".hapsburg_colony3_bonus").innerHTML = `<img class="army_tile" src="/his/img/Raider_Protestant.svg" />`;
+      }
+      if (this.game.state.raiders['england'] == 1) {
+	document.querySelector(".hapsburg_colony3_bonus").innerHTML += `<img class="army_tile" src="/his/img/Raider_French.svg" />`;
+      }
+      if (this.game.state.raiders['france'] == 1) {
+	document.querySelector(".hapsburg_colony3_bonus").innerHTML += `<img class="army_tile" src="/his/img/Raider_English.svg" />`;
+      }
+      //
+      // Mercator's Map
+      //
+      if (this.game.state.events.mercators_map != "") {
+	if (document.querySelector(".crossing_atlantic").innerHTML.indexOf("Mercator") == -1) {
+	  document.querySelector(".crossing_atlantic").innerHTML += `<img class="army_tile" src="/his/img/Mercator.svg" />`;
+        }
+      }
+    } catch (err) {
+      console.log("error displaying New World bonuses: " + JSON.stringify(err));
+    }
+  }
+
+
   displayColony() {
 
     let obj = document.querySelector(".crossing_atlantic");
@@ -414,6 +475,16 @@
     if (this.game.state.newworld['hapsburg_colony3'].claimed == 1) {
       document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony3'].img}" />`;
     }
+    if (this.game.state.events.potosi_silver_mines === "hapsburg") {
+      document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
+    }
+    if (this.game.state.events.potosi_silver_mines === "england") {
+      document.querySelector('.england_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
+    }
+    if (this.game.state.events.potosi_silver_mines === "france") {
+      document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
+    }
+
 
   }
 
@@ -545,6 +616,7 @@ try {
     this.displayConquest();
     this.displayExploration();
     this.displayColony();
+    this.displayNewWorldBonuses();
 } catch (err) { 
   console.log("display error: " + JSON.stringify(err));
 }

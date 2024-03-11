@@ -143,7 +143,7 @@ console.log("render all proposals!");
 console.log("render all proposals!");
 console.log("render all proposals!");
 console.log("render all proposals!");
-console.log(JSON.stringify(this.game.state.diplomacy));
+console.log(JSON.stringify(this.mod.game.state.diplomacy));
 
 	  let any_proposals = false;
 	  let proposals_html = "<ol>";

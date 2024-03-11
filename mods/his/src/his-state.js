@@ -753,6 +753,7 @@ if (this.game.state.scenario != "is_testing") {
 
     state.events.mercators_map = "";
     state.events.england_changed_rulers_this_turn = 0;
+    state.events.colonial_governor = "";
 
     state.raiders = {};
     state.raiders['protestant'] = 0;

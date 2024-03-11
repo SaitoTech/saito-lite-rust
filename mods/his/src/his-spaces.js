@@ -485,14 +485,6 @@
       transit_passes = 1;
     }
 
-let debugmode = 0;
-if (space.key == "cagliari") { debugmode = 1; 
-  console.log("!");
-  console.log("!");
-  console.log("!");
-  console.log("cagliari!");
-}
-
     let res = this.returnNearestSpaceWithFilter(
 
       space.key,
@@ -1849,12 +1841,10 @@ try {
   }
 
   returnNumberOfProtestantSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
-console.log("language zone: " + language);
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (do_not_count_unrest == 0) {
         if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
-console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language);
 	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
 	    protestant_spaces++;
 	  }

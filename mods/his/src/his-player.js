@@ -286,6 +286,8 @@
     let space = spacekey;
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
+    units_to_destroy = [];
+
     let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
 
       let msg = "Hits Remaining: " + hits_to_assign;
@@ -957,7 +959,7 @@ if (this.game.state.events.cramner_active == 1) {
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
-      if (filter_func(this.game.deck[0].fhand[faction_hand_idx])) {
+      if (filter_func(this.game.deck[0].fhand[faction_hand_idx][i])) {
 	cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
       }
     }
@@ -2475,8 +2477,8 @@ return;
       this.endTurn();
     } else {
 
-      let msg = "Spring Deploy from: ";
-     
+      let msg = this.returnFactionName(faction) + " - Spring Deploy from:";     
+
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
 	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;

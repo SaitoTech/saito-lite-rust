@@ -43,15 +43,17 @@ class ChateauxOverlay {
 
 		if (this.mod.isSpaceControlled('milan', 'france')) {
 			bonus += 2;
-			document.querySelector('.modifier1').style.backgroundColor =
-				'yellow';
-			document.querySelector('.modifier1').style.color = 'black';
+			document.querySelectorAll('.modifier1').forEach((el) => {
+			  el.style.borderBottom = "2px dashed yellow";
+			  el.style.color = "white";
+	 		});
 		}
 		if (this.mod.isSpaceControlled('florence', 'france')) {
 			bonus += 1;
-			document.querySelector('.modifier2').style.backgroundColor =
-				'yellow';
-			document.querySelector('.modifier2').style.color = 'black';
+			document.querySelectorAll('.modifier2').forEach((el) => {
+			  el.style.borderBottom = "2px dashed yellow";
+			  el.style.color = "white";
+			});
 		}
 
 		let italian_keys = 0;
@@ -77,21 +79,24 @@ class ChateauxOverlay {
 
 		if (italian_keys >= 3) {
 			bonus += 2;
-			document.querySelector('.modifier3').style.backgroundColor =
-				'yellow';
-			document.querySelector('.modifier3').style.color = 'black';
+			document.querySelectorAll('.modifier3').forEach((el) => {
+			  el.style.borderBottom = "2px dashed yellow";
+			  el.style.color = "white";
+			});
 		}
 		if (controlled_french_space > 0) {
 			bonus -= 1;
-			document.querySelector('.modifier5').style.backgroundColor =
-				'yellow';
-			document.querySelector('.modifier5').style.color = 'black';
+			document.querySelectorAll('.modifier5').forEach((el) => {
+			  el.style.borderBottom = "2px dashed yellow";
+			  el.style.color = "white";
+			});
 		}
 		if (occupied_french_space > 0) {
 			bonus -= 2;
-			document.querySelector('.modifier6').style.backgroundColor =
-				'yellow';
-			document.querySelector('.modifier6').style.color = 'black';
+			document.querySelectorAll('.modifier6').forEach((el) => {
+			  el.style.borderBottom = "2px dashed yellow";
+			  el.style.color = "white";
+			});
 		}
 
 		this.bonus = bonus;
@@ -106,14 +111,14 @@ class ChateauxOverlay {
 		} (modified: ${modified_roll})`;
 
 		if (modified_roll >= 8) {
-			document.querySelector('.outcome1').style.backgroundColor =
-				'yellow';
-			document.querySelector('.outcome1').style.color = 'black';
-
+			document.querySelectorAll(".outcome1").forEach((el) => {
+				el.style.backgroundColor = "yellow";
+				el.style.color = "black";
+			});
 			this.mod.game.state.french_chateaux_vp += 1;
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
-			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
 			this.mod.game.state.cards_left["france"]++;
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 			this.mod.game.queue.push(
@@ -123,13 +128,13 @@ class ChateauxOverlay {
 			);
 		}
 		if (modified_roll >= 5 && modified_roll < 8) {
-			document.querySelector('.outcome2').style.backgroundColor =
-				'yellow';
-			document.querySelector('.outcome2').style.color = 'black';
-
+			document.querySelectorAll(".outcome2").forEach((el) => {
+				el.style.backgroundColor = "yellow";
+				el.style.color = "black";
+			});
 			this.mod.game.state.french_chateaux_vp += 1;
 			this.mod.game.queue.push('hide_overlay\tchateaux');
-			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
 			this.mod.game.state.cards_left["france"]++;
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 1);
 			this.mod.game.queue.push(
@@ -139,14 +144,14 @@ class ChateauxOverlay {
 			);
 		}
 		if (modified_roll >= 3 && modified_roll < 5) {
-			document.querySelector('.outcome3').style.backgroundColor =
-				'yellow';
-			document.querySelector('.outcome3').style.color = 'black';
-
+			document.querySelectorAll(".outcome3").forEach((el) => {
+				el.style.backgroundColor = "yellow";
+				el.style.color = "black";
+			});
 			this.mod.game.state.french_chateaux_vp += 1;
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
-			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 1);
 			this.mod.game.queue.push(
 				`ACKNOWLEDGE\t${this.mod.returnFactionName(
@@ -155,14 +160,14 @@ class ChateauxOverlay {
 			);
 		}
 		if (modified_roll <= 2) {
-			document.querySelector('.outcome4').style.backgroundColor =
-				'yellow';
-			document.querySelector('.outcome4').style.color = 'black';
-
+			document.querySelectorAll(".outcome4").forEach((el) => {
+				el.style.backgroundColor = "yellow";
+				el.style.color = "black";
+			});
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
 			this.mod.game.state.cards_left["france"]++;
-			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction);
+			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 			this.mod.game.queue.push(
 				`ACKNOWLEDGE\t${this.mod.returnFactionName(
