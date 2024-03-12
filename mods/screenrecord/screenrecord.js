@@ -100,7 +100,7 @@ class Screenrecord extends ModTemplate {
 							audio: true // Capture microphone audio
 						});
 
-					this.videoBox = new VideoBox(this.app, this.mod, 'local');
+					this.videoBox = new VideoBox(this.app, this, 'local');
 					this.videoBox.render(this.localStream);
 					let videoElement = document.querySelector(
 						'.video-box-container-large'

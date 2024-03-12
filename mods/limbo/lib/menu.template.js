@@ -1,14 +1,22 @@
-module.exports = () => {
-	return `
-      <div class="saito-menu redsquare-menu">
+module.exports = (app, mod) => {
+	
 
-        <div id="new-space" class="saito-button-primary">New Space</div>
-        <div class="sidebar-header">
+  let html = `<div id="limbo-menu" class="saito-menu redsquare-menu">`;
+
+  if (mod.publicKey !== mod.dreamer){
+    html += `<div id="new-space" class="saito-button-primary">New Space</div>`
+  }else{
+    html += `<div id="exit-space" class="saito-button-primary">End Space</div>`
+  }
+
+  html +=`<div class="sidebar-header">
             <div class="sidebar-title">Spaces</div>
         </div>
 
-        <ul id="spaces" class="saito-menu-list saito-sidebar-element"></ul>
+        <div id="spaces" class="spaces-list saito-sidebar-element"></div>
 
       </div>
   `;
+
+  return html;
 };

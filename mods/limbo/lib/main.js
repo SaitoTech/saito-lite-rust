@@ -1,7 +1,7 @@
 const JSON = require('json-bigint');
 const LimboMainTemplate = require('./main.template');
 const LimboMenu = require('./menu');
-const ArcadeInitializer = require('./initializer');
+//const ArcadeInitializer = require('./initializer');
 const SaitoSidebar = require('./../../../lib/saito/ui/saito-sidebar/saito-sidebar');
 
 class LimboMain {

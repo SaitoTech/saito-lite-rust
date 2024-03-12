@@ -1,0 +1,21 @@
+
+
+/* Left Sidebar */
+
+.spaces-list{
+	gap: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	min-height: 10rem;
+}
+
+.spaces-list .saito-user{
+	padding: 0.5rem;
+	cursor: pointer;
+	border-radius: 0.5rem;
+}
+
+.spaces-list .saito-user:hover{
+	background-color: var(--saito-primary);
+	color: var(--saito-background-color);
+}
