@@ -752,7 +752,9 @@ class GameTestSuite extends GameTemplate {
 			id: 'game-exit',
 			class: 'game-exit',
 			callback: function (app, game_mod) {
-				window.location.href = '/arcade';
+				setTimeout(() => {
+					window.location.href = '/arcade';
+				}, 300);
 			}
 		});
 		await this.menu.render(this.app, this);

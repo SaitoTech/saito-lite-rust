@@ -141,17 +141,17 @@ class Pandemic extends GameTemplate {
 
 		if (!this.skin) {
 			switch (this.game.options.theme) {
-			case 'classic':
-				this.skin = new PandemicOriginalSkin(this.app, this);
-				break;
-			case 'retro':
-				this.skin = new PandemicRetroSkin(this.app, this);
-				break;
-			case 'modern':
-				this.skin = new PandemicNewSkin(this.app, this);
-				break;
-			default:
-				this.skin = new PandemicRetroSkin(this.app, this);
+				case 'classic':
+					this.skin = new PandemicOriginalSkin(this.app, this);
+					break;
+				case 'retro':
+					this.skin = new PandemicRetroSkin(this.app, this);
+					break;
+				case 'modern':
+					this.skin = new PandemicNewSkin(this.app, this);
+					break;
+				default:
+					this.skin = new PandemicRetroSkin(this.app, this);
 			}
 		}
 
@@ -217,7 +217,9 @@ class Pandemic extends GameTemplate {
 				game_mod.game.options.theme = 'classic';
 				game_mod.saveGame(game_mod.game.id);
 				setTimeout(() => {
-					window.location.reload();
+					setTimeout(() => {
+						window.location.reload();
+					}, 300);
 				}, 1000);
 			}
 		});
@@ -230,7 +232,9 @@ class Pandemic extends GameTemplate {
 				game_mod.game.options.theme = 'retro';
 				game_mod.saveGame(game_mod.game.id);
 				setTimeout(() => {
-					window.location.reload();
+					setTimeout(() => {
+						window.location.reload();
+					}, 300);
 				}, 1000);
 			}
 		});
@@ -242,7 +246,9 @@ class Pandemic extends GameTemplate {
       callback: function(app,game_mod){
         game_mod.game.options.theme = "modern";
         game_mod.saveGame(game_mod.game.id);
-        setTimeout(()=>{window.location.reload();},1000);
+        setTimeout(()=>{setTimeout(() => {
+								window.location.reload();
+							}, 300);;},1000);
       }
     });*/
 
@@ -685,8 +691,8 @@ class Pandemic extends GameTemplate {
 					? 1
 					: 0.4;
 			switch (action) {
-			case 'move':
-				html = `<div class="status-message">${statMsg}</div>
+				case 'move':
+					html = `<div class="status-message">${statMsg}</div>
             <div class="status-icon-menu">
             <div class="menu_icon tip" id="goback" ><i class="menu_icon_icon fas fa-arrow-alt-circle-left fa-fw fa-border "></i><div class="menu-text">Go back</div><div class="tiptext">return to previous menu</div></div>
             <div class="menu_icon tip" id="move" ><i class="menu_icon_icon fas fa-car-side fa-fw fa-border "></i><div class="menu-text">Drive/Ferry</div><div class="tiptext">ground transportation to an adjacent city</div></div>
@@ -695,95 +701,95 @@ class Pandemic extends GameTemplate {
             <div class="menu_icon tip" id="shuttle" style="opacity:${flight3}" ><i class="menu_icon_icon fas fa-plane fa-fw fa-border"></i><div class="menu-text">Shuttle flight</div><div class="tiptext">move between research stations</div></div>
             </div>`;
 
-				$('.menu_icon').off();
-				pandemic_self.updateStatus(html);
-				$('.menu_icon').on('click', function () {
-					let action = $(this).attr('id');
-					if (action == 'goback') {
-						pandemic_self.playerMakeMove();
+					$('.menu_icon').off();
+					pandemic_self.updateStatus(html);
+					$('.menu_icon').on('click', function () {
+						let action = $(this).attr('id');
+						if (action == 'goback') {
+							pandemic_self.playerMakeMove();
+						}
+						if (action === 'move') {
+							pandemic_self.movePlayer();
+						}
+						if (action === 'direct' && player.cards.length > 0) {
+							pandemic_self.directFlight();
+						}
+						if (action === 'charter' && can_charter_flight) {
+							pandemic_self.charterFlight(city);
+						}
+						if (action === 'shuttle' && flight3 === 1) {
+							pandemic_self.shuttleFlight();
+						}
+					});
+					break;
+				case 'treat':
+					if (treat_opacity != 1) {
+						salert('You may not treat disease');
+						return;
 					}
-					if (action === 'move') {
-						pandemic_self.movePlayer();
+					pandemic_self.cureDisease();
+					break;
+				case 'discover_cure':
+					if (discover_cure_opacity != 1) {
+						salert('You may not discover a cure now');
+						return;
 					}
-					if (action === 'direct' && player.cards.length > 0) {
-						pandemic_self.directFlight();
+					pandemic_self.discoverCure();
+					break;
+				case 'build':
+					if (build_opacity != 1) {
+						salert('You cannot build a research station here');
+						return;
 					}
-					if (action === 'charter' && can_charter_flight) {
-						pandemic_self.charterFlight(city);
-					}
-					if (action === 'shuttle' && flight3 === 1) {
-						pandemic_self.shuttleFlight();
-					}
-				});
-				break;
-			case 'treat':
-				if (treat_opacity != 1) {
-					salert('You may not treat disease');
-					return;
-				}
-				pandemic_self.cureDisease();
-				break;
-			case 'discover_cure':
-				if (discover_cure_opacity != 1) {
-					salert('You may not discover a cure now');
-					return;
-				}
-				pandemic_self.discoverCure();
-				break;
-			case 'build':
-				if (build_opacity != 1) {
-					salert('You cannot build a research station here');
-					return;
-				}
-				pandemic_self.buildResearchStation();
+					pandemic_self.buildResearchStation();
 
-				break;
+					break;
 
-			case 'cards':
-				if (cards_opacity != 1) {
-					salert(
-						'You do not have event cards and cannot share cards with anyone now'
-					);
-					return;
-				}
-				if (can_play_event_card && !can_share_knowledge) {
-					pandemic_self.playEventCard();
-					return 0;
-				}
-				if (!can_play_event_card && can_share_knowledge) {
-					pandemic_self.shareKnowledge();
-					return 0;
-				}
-				html = '<ul>';
-				if (can_play_event_card == 1) {
-					html +=
-							'<li class="option" id="eventcard">play event card</li>';
-				}
-				if (can_share_knowledge == 1) {
-					html +=
-							'<li class="option" id="shareknowledge">share knowledge</li>';
-				}
-				html += '</ul>';
-
-				$('.option').off();
-				pandemic_self.updateStatusWithOptions(statMsg, html, true);
-				$('.option').on('click', function () {
-					let action = $(this).attr('id');
-
-					if (action === 'eventcard') {
+				case 'cards':
+					if (cards_opacity != 1) {
+						salert(
+							'You do not have event cards and cannot share cards with anyone now'
+						);
+						return;
+					}
+					if (can_play_event_card && !can_share_knowledge) {
 						pandemic_self.playEventCard();
 						return 0;
 					}
-					if (action === 'shareknowledge') {
+					if (!can_play_event_card && can_share_knowledge) {
 						pandemic_self.shareKnowledge();
 						return 0;
 					}
-				});
-				break;
+					html = '<ul>';
+					if (can_play_event_card == 1) {
+						html +=
+							'<li class="option" id="eventcard">play event card</li>';
+					}
+					if (can_share_knowledge == 1) {
+						html +=
+							'<li class="option" id="shareknowledge">share knowledge</li>';
+					}
+					html += '</ul>';
 
-			default:
-				// "pass"?
-				pandemic_self.playerMakeMove();
+					$('.option').off();
+					pandemic_self.updateStatusWithOptions(statMsg, html, true);
+					$('.option').on('click', function () {
+						let action = $(this).attr('id');
+
+						if (action === 'eventcard') {
+							pandemic_self.playEventCard();
+							return 0;
+						}
+						if (action === 'shareknowledge') {
+							pandemic_self.shareKnowledge();
+							return 0;
+						}
+					});
+					break;
+
+				default:
+					// "pass"?
+					pandemic_self.playerMakeMove();
 			}
 		});
 	}
@@ -1958,7 +1964,7 @@ class Pandemic extends GameTemplate {
 						let cards =
 							this.game.player > 0
 								? this.game.players_info[this.game.player - 1]
-									.cards
+										.cards
 								: null;
 						this.updateStatusAndListCards(
 							`Waiting for ${this.app.keychain.returnUsername(
@@ -1985,8 +1991,8 @@ class Pandemic extends GameTemplate {
 								this.game.players[rudePlayer - 1]
 							)} 
               (${
-	this.game.players_info[rudePlayer - 1].name
-}) is playing an event card`,
+					this.game.players_info[rudePlayer - 1].name
+				}) is playing an event card`,
 							this.game.players_info[this.game.player - 1].cards
 						);
 					} else {
@@ -1995,8 +2001,8 @@ class Pandemic extends GameTemplate {
 								this.game.players[rudePlayer - 1]
 							)} 
               (${
-	this.game.players_info[rudePlayer - 1].name
-}) to play an event`,
+					this.game.players_info[rudePlayer - 1].name
+				}) to play an event`,
 							this.game.players_info[this.game.player - 1].cards
 						);
 					}
@@ -2769,41 +2775,41 @@ class Pandemic extends GameTemplate {
 
 			if (colors > 0) {
 				switch (this.game.state.cities[i].virus[color]) {
-				case 1:
-					cubedeath = `<img class="cube" src="${this.skin.returnDiseaseImg(
-						color
-					)}" style="top:${this.scale(10)}px;left:${this.scale(
-						15
-					)}px;"/>`;
-					break;
-				case 2:
-					cubedeath = `<img class="cube" src="${this.skin.returnDiseaseImg(
-						color
-					)}" style="top:${this.scale(0)}px;left:${this.scale(
-						35
-					)}px;"/>
+					case 1:
+						cubedeath = `<img class="cube" src="${this.skin.returnDiseaseImg(
+							color
+						)}" style="top:${this.scale(10)}px;left:${this.scale(
+							15
+						)}px;"/>`;
+						break;
+					case 2:
+						cubedeath = `<img class="cube" src="${this.skin.returnDiseaseImg(
+							color
+						)}" style="top:${this.scale(0)}px;left:${this.scale(
+							35
+						)}px;"/>
              <img class="cube" src="${this.skin.returnDiseaseImg(
-		color
-	)}" style="top:${this.scale(10)}px;left:${this.scale(0)}px;"/>`;
-					break;
-				case 3:
-					cubedeath = `<img class="cube" src="${this.skin.returnDiseaseImg(
-						color
-					)}" style="top:-${this.scale(10)}px;left:${this.scale(
-						35
-					)}px;"/>
+					color
+				)}" style="top:${this.scale(10)}px;left:${this.scale(0)}px;"/>`;
+						break;
+					case 3:
+						cubedeath = `<img class="cube" src="${this.skin.returnDiseaseImg(
+							color
+						)}" style="top:-${this.scale(10)}px;left:${this.scale(
+							35
+						)}px;"/>
              <img class="cube" src="${this.skin.returnDiseaseImg(
-		color
-	)}" style="top:${this.scale(0)}px;left:${this.scale(0)}px;"/>
+					color
+				)}" style="top:${this.scale(0)}px;left:${this.scale(0)}px;"/>
              <img class="cube" src="${this.skin.returnDiseaseImg(
-		color
-	)}" style="top:-${this.scale(30)}px;left:${this.scale(
-	20
-)}px;"/>`;
-					break;
-				default:
-					console.error('Cube death');
-					console.log(cubes);
+					color
+				)}" style="top:-${this.scale(30)}px;left:${this.scale(
+							20
+						)}px;"/>`;
+						break;
+					default:
+						console.error('Cube death');
+						console.log(cubes);
 				}
 				if (colors > 1) {
 					//multiple colors
@@ -2869,8 +2875,8 @@ class Pandemic extends GameTemplate {
 			html += `<div id="${v}-count" class="scoreboard_virus_group tip">
                 <img class="cube" src="${this.skin.returnDiseaseImg(v)}">
                 <div class="virus-count ${threat_level}">: ${
-	24 - cubeCounts[v]
-}</div>
+				24 - cubeCounts[v]
+			}</div>
                 <div class="tiptext">Don't let this number reach zero!</div>
               </div>`;
 		}
@@ -3113,11 +3119,11 @@ class Pandemic extends GameTemplate {
             <table>
               <tr>
                 <td class="player_role_description_header">Player ${
-	i + 1
-}: </td>
+					i + 1
+				}: </td>
                 <td>${this.app.keychain.returnUsername(
-		this.game.players[i]
-	)}</td>
+					this.game.players[i]
+				)}</td>
               </tr>
               <tr>
                 <td class="player_role_description_header">Role: </td>

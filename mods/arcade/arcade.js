@@ -223,10 +223,10 @@ class Arcade extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, async (res) => {
 			if (res.rows) {
 				for (let record of res.rows) {
-					if (this.debug){
+					if (this.debug) {
 						console.log(JSON.parse(JSON.stringify(record)));
 					}
-					
+
 					//This is the save openTX
 
 					let game_tx = new Transaction(
@@ -1019,7 +1019,7 @@ class Arcade extends ModTemplate {
 			game.msg.method = txmsg.reason;
 			game.msg.time_finished = txmsg.timestamp;
 		} else {
-			console.warn('Game not found, arcade can\'t process gameover tx');
+			console.warn("Game not found, arcade can't process gameover tx");
 		}
 
 		await this.changeGameStatus(txmsg.game_id, 'over');
@@ -1574,7 +1574,7 @@ class Arcade extends ModTemplate {
 		// Sanity check the tx and make sure we don't already have it
 		//
 		if (!tx || !tx.msg || !tx.signature) {
-			console.error('Invalid Game TX, won\'t add to list', tx);
+			console.error("Invalid Game TX, won't add to list", tx);
 			return false;
 		}
 
@@ -1593,15 +1593,15 @@ class Arcade extends ModTemplate {
 		//Update the game status (open/private/active/close/over)
 		tx.msg.request = list;
 
-	 	if (list !== 'over' && list !== 'close') {
-	 		if (tx.msg?.options["open-table"]){
-	 			list = "open";
-	 		}
+		if (list !== 'over' && list !== 'close') {
+			if (tx.msg?.options['open-table']) {
+				list = 'open';
+			}
 
 			//
 			// Sanity check the target list so my games are grouped together
 			//
-			if (this.isMyGame(tx)){
+			if (this.isMyGame(tx)) {
 				list = 'mine';
 			}
 		}

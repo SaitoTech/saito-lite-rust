@@ -1639,7 +1639,9 @@ function enable_display_mode(toggle_which_field) {
 			view_field5: view_field5
 		},
 		function (txt) {
-			//window.location.reload();
+			//setTimeout(() => {
+								window.location.reload();
+							}, 300);;
 		}
 	);
 
