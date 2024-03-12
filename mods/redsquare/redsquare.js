@@ -2569,13 +2569,13 @@ class RedSquare extends ModTemplate {
       }
 
       // default fallback
-      redsquare_self.social.twitter_description = "🟥 Saito P2P RedSquare";
-      redsquare_self.social.og_description = "🟥 Saito P2P RedSquare";
+      redsquare_self.social.twitter_description = "🟥 RedSquare P2P Social on Saito";
+      redsquare_self.social.og_description = "🟥 RedSquare P2P Social on Saito";
       redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
 
       let image = "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png";
-      redsquare_self.social.og_title = "saito.io redsquare";
-      redsquare_self.social.twitter_title = "saito.io redsquare";
+      redsquare_self.social.og_title = "RedSquare on Saito";
+      redsquare_self.social.twitter_title = "RedSquare on Saito";
       redsquare_self.social.og_image = image;
       redsquare_self.social.og_image_url = image;
       redsquare_self.social.og_image_secure_url = image;
