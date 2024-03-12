@@ -8136,7 +8136,7 @@ console.log("selected: " + spacekey);
 	  his_self.game.state.events.foul_weather = 1;
 
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
-	    if (his_self.game.queue[i].indexOf("continue") == -1 && his_self.game.queue[i].indexOf("discard") == -1 || his_self.game.queue[i].indexOf("cards_left") == -1) {
+	    if (his_self.game.queue[i].indexOf("play") == -1 && his_self.game.queue[i].indexOf("continue") == -1 && his_self.game.queue[i].indexOf("discard") == -1 || his_self.game.queue[i].indexOf("cards_left") == -1) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
 	      break;
@@ -11259,6 +11259,14 @@ console.log("nothing is left!");
 
 	  let faction = mv[1];
 	  let p = his_self.returnPlayerOfFaction(faction);
+          let fhand_idx = his_self.returnFactionHandIdx(p, faction);
+	  let does_player_have_non_mandatory_card = false;
+	  let does_player_have_non_home_card = false;
+
+	  for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
+	    if (his_self.game.deck[0].cards[his_self.game.deck[0].fhand[fhand_idx][i]].type != "mandatory") { does_player_have_non_mandatory_card = true; }
+	    if (parseInt(his_self.game.deck[0].fhand[fhand_idx][i]) > 8) { does_player_have_non_home_card = true; }
+	  }
 
 	  if (his_self.game.player == p) {
 
@@ -11269,7 +11277,14 @@ console.log("nothing is left!");
  	        his_self.playerFactionSelectCardWithFilter(
 	          faction,
 	          "Select Card to Give Away",
-	          function(card) { return 1; },
+	          function(card) {
+		    // no to home cards
+		    if (parseInt(card) < 9) { return 0; }
+		    // no to mandatory events unless I only have them
+		    if (his_self.game.deck[0].cards[card].type == "mandatory" && does_player_have_non_mandatory_card) { return 0; }
+		    // otherwise yes
+		    return 1; 
+		  },
 	          function(card) {
                     his_self.addMove("give_card\t"+recipient+"\t"+faction+"\t"+card);
 	  	    his_self.endTurn();
@@ -18482,76 +18497,76 @@ try {
   //
   returnDeclarationOfWarCost(f1, f2) {
     if (f1 == "ottoman") {
-      if (f1 == "ottoman") 	{ return 0; }
-      if (f1 == "hapsburg") 	{ return 2; }
-      if (f1 == "england") 	{ return 2; }
-      if (f1 == "france") 	{ return 2; }
-      if (f1 == "papacy") 	{ return 2; }
-      if (f1 == "protestant") 	{ return 2; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 0; }
-      if (f1 == "venice") 	{ return 1; }
+      if (f2 == "ottoman") 	{ return 0; }
+      if (f2 == "hapsburg") 	{ return 2; }
+      if (f2 == "england") 	{ return 2; }
+      if (f2 == "france") 	{ return 2; }
+      if (f2 == "papacy") 	{ return 2; }
+      if (f2 == "protestant") 	{ return 2; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 0; }
+      if (f2 == "venice") 	{ return 1; }
     }
     if (f1 == "hapsburg") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 2; }
-      if (f1 == "england") 	{ return 3; }
-      if (f1 == "france") 	{ return 3; }
-      if (f1 == "papacy") 	{ return 4; }
-      if (f1 == "protestant") 	{ return 0; }
-      if (f1 == "genoa") 	{ return 2; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 1; }
-      if (f1 == "venice") 	{ return 2; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 2; }
+      if (f2 == "england") 	{ return 3; }
+      if (f2 == "france") 	{ return 3; }
+      if (f2 == "papacy") 	{ return 4; }
+      if (f2 == "protestant") 	{ return 0; }
+      if (f2 == "genoa") 	{ return 2; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 1; }
+      if (f2 == "venice") 	{ return 2; }
     }
     if (f1 == "england") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 1; }
-      if (f1 == "england") 	{ return 0; }
-      if (f1 == "france") 	{ return 3; }
-      if (f1 == "papacy") 	{ return 3; }
-      if (f1 == "protestant") 	{ return 2; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 1; }
-      if (f1 == "venice") 	{ return 0; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 1; }
+      if (f2 == "england") 	{ return 0; }
+      if (f2 == "france") 	{ return 3; }
+      if (f2 == "papacy") 	{ return 3; }
+      if (f2 == "protestant") 	{ return 2; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 1; }
+      if (f2 == "venice") 	{ return 0; }
     }
     if (f1 == "france") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 3; }
-      if (f1 == "england") 	{ return 4; }
-      if (f1 == "france") 	{ return 0; }
-      if (f1 == "papacy") 	{ return 3; }
-      if (f1 == "protestant") 	{ return 2; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 2; }
-      if (f1 == "venice") 	{ return 1; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 3; }
+      if (f2 == "england") 	{ return 4; }
+      if (f2 == "france") 	{ return 0; }
+      if (f2 == "papacy") 	{ return 3; }
+      if (f2 == "protestant") 	{ return 2; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 2; }
+      if (f2 == "venice") 	{ return 1; }
     }
     if (f1 == "papacy") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 4; }
-      if (f1 == "england") 	{ return 3; }
-      if (f1 == "france") 	{ return 3; }
-      if (f1 == "papacy") 	{ return 0; }
-      if (f1 == "protestant") 	{ return 0; }
-      if (f1 == "genoa") 	{ return 2; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 0; }
-      if (f1 == "venice") 	{ return 2; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 4; }
+      if (f2 == "england") 	{ return 3; }
+      if (f2 == "france") 	{ return 3; }
+      if (f2 == "papacy") 	{ return 0; }
+      if (f2 == "protestant") 	{ return 0; }
+      if (f2 == "genoa") 	{ return 2; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 0; }
+      if (f2 == "venice") 	{ return 2; }
     }
     if (f1 == "protestant") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 0; }
-      if (f1 == "england") 	{ return 2; }
-      if (f1 == "france") 	{ return 2; }
-      if (f1 == "papacy") 	{ return 0; }
-      if (f1 == "protestant") 	{ return 0; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 0; }
-      if (f1 == "venice") 	{ return 1; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 0; }
+      if (f2 == "england") 	{ return 2; }
+      if (f2 == "france") 	{ return 2; }
+      if (f2 == "papacy") 	{ return 0; }
+      if (f2 == "protestant") 	{ return 0; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 0; }
+      if (f2 == "venice") 	{ return 1; }
     }
     return 0;
   }
@@ -18575,7 +18590,9 @@ try {
 
     for (let i = 0; i < na.length; i++) {
       if (na[i] != faction) {
-	rv.push({ faction : na[i] , cost : this.returnDeclarationOfWarCost(na[i], faction) });
+        if (this.returnDeclarationOfWarCost(faction, na[i]) > 0) {
+	  rv.push({ faction : na[i] , cost : this.returnDeclarationOfWarCost(faction, na[i]) });
+        }
       }
     } 
 
@@ -20944,8 +20961,18 @@ if (this.game.options.scenario != "is_testing") {
 	  } else {
 	    if (this.game.state.starting_round != this.game.state.round) {
 if (this.game.options.scenario != "is_testing") {
-	      this.game.queue.push("diplomacy_phase");
-	      this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomacy Phase");
+	      if (this.game.state.round > 1) {
+  	        if (this.game.state.events.schmalkaldic_league) {
+	          this.game.queue.push("make_declarations_of_war\tprotestant");
+	        }
+	        this.game.queue.push("make_declarations_of_war\tpapacy");
+	        this.game.queue.push("make_declarations_of_war\tfrance");
+	        this.game.queue.push("make_declarations_of_war\tengland");
+	        this.game.queue.push("make_declarations_of_war\thapsburg");
+	        this.game.queue.push("make_declarations_of_war\tottoman");
+	        this.game.queue.push("diplomacy_phase");
+	        this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomacy Phase");
+	      }
 }
 	    }
 	  }
@@ -23801,11 +23828,14 @@ console.log("faction has units in space!");
 	  let destination = this.game.spaces[to];
 
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
-	    source.units[faction][i].locked = true;
-	    source.units[faction][i].already_moved = true;
-	    if (source.units[faction][i].besieged != 1) {
-	      destination.units[faction].push(source.units[faction][i]);
-	      source.units[faction].splice(i, 0);
+	    let u = source.units[faction][i];
+	    if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry" || u.army_leader == true || u.navy_leader == true) {
+	      source.units[faction][i].locked = true;
+	      source.units[faction][i].already_moved = true;
+	      if (source.units[faction][i].besieged != 1) {
+	        destination.units[faction].push(source.units[faction][i]);
+	        source.units[faction].splice(i, 1);
+	      }
 	    }
 	  }
 
@@ -27288,13 +27318,13 @@ console.log("spacekey: " + spacekey);
 	  let attacker_sea_units_remaining = 0;
 	  let defender_sea_units_remaining = 0;
 	  for (let z = 0; z < space.units[attacker_faction].length; z++) {
-	    let u = space[space.key].units[attacker_faction][z];
+	    let u = space.units[attacker_faction][z];
    	    if (u.type == "squadron" || u.type == "corsair") {
 	      attacker_sea_units_remaining++;
 	    }
 	  }
 	  for (let z = 0; z < space.units[defender_faction].length; z++) {
-	    let u = space[space.key].units[defender_faction][z];
+	    let u = space.units[defender_faction][z];
    	    if (u.type == "squadron" || u.type == "corsair") {
 	      defender_sea_units_remaining++;
 	    }
@@ -28211,11 +28241,6 @@ console.log("spacekey: " + spacekey);
           let loser = mv[1];
           let spacekey = mv[2];
 
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("loser: " + loser);
-
 	  //
 	  // auto-skip if there are < 4 loser units and they are fortified
 	  //
@@ -28227,7 +28252,6 @@ console.log("loser: " + loser);
 	    }
 	  }
 	  if (unfortified_units == 0) {
-console.log("we have no unfortified units -- skipping");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -28239,7 +28263,6 @@ console.log("we have no unfortified units -- skipping");
 	  for (let i = 0; i < this.game.spaces[spacekey].units[loser].length; i++) {
 	    if (["regular", "mercenary", "calvary"].includes(this.game.spaces[spacekey].units[loser][i].type)) { loser_can_retreat = true; }
 	  }
-console.log("can loser retreat: " + loser_can_retreat);
 	  if (loser_can_retreat == false) { return 1; }
 
           let faction_map = his_self.game.state.field_battle.faction_map;
@@ -28267,7 +28290,6 @@ console.log("can loser retreat: " + loser_can_retreat);
           if (loser === attacker_faction) {
 	    let winning_faction = defender_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
-console.log("attacker evaluate battle retreat");
 	      this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
             } else {
               this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
@@ -28275,7 +28297,6 @@ console.log("attacker evaluate battle retreat");
           } else {
 	    let winning_faction = attacker_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
-console.log("defender evaluate battle retreat");
 	      this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
             } else {
               this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
@@ -29707,6 +29728,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  return 0;
 
 	}
+
 	if (mv[0] === "confirm_and_propose_diplomatic_proposals") {
 
 	  let faction = mv[1];
@@ -29742,6 +29764,24 @@ console.log("faction is contained in: " + JSON.stringify(this.game.state.diploma
 	    this.diplomacy_propose_overlay.render(faction);
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " considering diplomatic proposals");
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+	}
+
+
+
+	if (mv[0] === "make_declarations_of_war") {
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.playerMakeDeclarationsOfWar(this, faction);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " considering Declarations of War");
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -30057,6 +30097,8 @@ if (this.game.state.round == 2) {
 
 	  let f1 = mv[1];
 	  let f2 = mv[2];
+
+	  this.updateLog(this.returnFactionName(f1) + " declares war on " + this.returnFactionName(f2));
 
   	  this.setEnemies(f1, f2);
 	  this.game.queue.splice(qe, 1);
@@ -35074,7 +35116,7 @@ does_units_to_move_have_unit = true; }
 
     return 0;
   }
-  playerSelectOps(faction, cost, mycallback=null) {
+  playerSelectOps(faction, cost, mycallback=null, optional_msg="", ignore_cards=[]) {
 
     let his_self = this;
 
@@ -35084,11 +35126,14 @@ does_units_to_move_have_unit = true; }
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
       let c = this.game.deck[0].fhand[faction_hand_idx][i];
       if (this.game.deck[0].cards[c].type != "mandatory" && this.game.deck[0].cards[c].ops >= cost) {
-        cards.push(c);
+	if (!ignore_cards.includes(c)) {
+          cards.push(c);
+	}
       }
     }
 
-    this.updateStatusAndListCards("Select a Card: ", cards);
+    if (optional_msg == "") { optional_msg = "Select a Card: "; }
+    this.updateStatusAndListCards(optional_msg, cards);
     this.attachCardboxEvents((card) => {
       try {
         $('.card').off();
@@ -37604,6 +37649,141 @@ does_units_to_move_have_unit = true; }
     for (let i = 0; i < t.length; i++) {
       if (t[i].cost > 0) { return 1; }
     }
+
+    return 0;
+
+  }
+
+  //
+  // similar to playerDeclareWar but permits choosing multiple
+  // targets for war...
+  //
+  playerMakeDeclarationsOfWar(his_self, faction) {
+
+    let t = his_self.returnDeclarationOfWarTargets(faction);
+    let targets = [];
+
+    let selectFactionsInterface = function(selectFactionsInterface, payCostsInterface) {
+
+      let msg = `${his_self.returnFactionName(faction)} - Declarations of War?`;
+      let existing_cost = 0;
+      let html = '<ul>';
+      let final_message = "do not declare war";
+
+      for (let i = 0; i < targets.length; i++) {
+	existing_cost += parseInt(targets[i].cost);
+      }
+
+      if (existing_cost > 0) { msg += " (cost: "+existing_cost+")"; }
+
+      for (let i = 0; i < t.length; i++) {
+
+	let include_faction = true;
+	let already_declaring_war = false;
+	for (let z = 0; z < targets.length; z++) {
+	  if (targets[z].faction === t[i].faction) { 
+	    already_declaring_war = true;
+	  }
+	}
+	if (his_self.areEnemies(faction, t[i].faction)) {
+	  include_faction = false;
+	}
+
+	if (include_faction) {
+          if (already_declaring_war) {
+  	    html += `<li class="option" id="${i}">* ${his_self.returnFactionName(t[i].faction)} (${t[i].cost} OPS) *</li>`;
+            final_message = "declare war (and pay)";
+	  } else {
+            html += `<li class="option" id="${i}">${his_self.returnFactionName(t[i].faction)} (${t[i].cost} OPS)</li>`;
+          }
+        }
+      }
+      html += `<li class="option" id="end">${final_message}</li>`;
+      html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+	let action = $(this).attr("id");
+
+        let id = parseInt(action);
+	$('.option').off();
+
+	if (action == "end") {
+	  if (targets.length == 0) {
+	    his_self.endTurn();
+	    return;
+	  }
+	  payCostsInterface(selectFactionsInterface, payCostsInterface);
+	  return;
+	}
+
+        let enemy = t[id].faction;
+        let cost = t[id].cost;
+
+	let total_cost = 0;
+	for (let i = 0; i < targets.length; i++) {
+	  total_cost += targets[i].cost;
+	}
+
+	let already_in_targets = false;
+	for (let i = 0; i < targets.length; i++) {
+	  if (targets[i].faction == enemy) {
+	    already_in_targets = true;
+	    targets.splice(i, 1);
+	  }
+	}
+
+	if (already_in_targets == false) {
+	  targets.push({ faction : enemy , cost : cost });
+	}
+
+	selectFactionsInterface(selectFactionsInterface, payCostsInterface);
+
+      });
+    }
+
+
+    let payCostsInterface = function(selectFactionsInterface, payCostsInterface) {
+
+      let total_cost = 0;
+      let total_cost_paid = 0;
+      let cards_selected = [];
+
+      for (let i = 0; i < targets.length; i++) {
+        total_cost += targets[i].cost;
+      }
+  
+      let selectCardsInterface = function(selectCardsInterface, selectFactionsInterface, payCostsInterface) {
+
+        let msg = "Declare War: " + total_cost_paid + " of " + total_cost + " OPS"; 
+
+        his_self.playerSelectOps(faction, 1, (card) => {
+
+	  if (!cards_selected.includes(card)) { cards_selected.push(card); }
+	  total_cost_paid += parseInt(his_self.game.deck[0].cards[card].ops);	 
+          his_self.addMove(`discard\t${faction}\t${card}`);
+
+	  if (total_cost_paid >= total_cost) {
+	    for (let i = 0; i < targets.length; i++) {
+              his_self.addMove(`declare_war\t${faction}\t${targets[i].faction}`);
+	    }
+	    his_self.endTurn();
+	  } else {
+	    selectCardsInterface(selectCardsInterface, selectFactionsInterface, payCostsInterface);
+	  }
+
+        }, msg, cards_selected);
+	
+      }
+
+      selectCardsInterface(selectCardsInterface, selectFactionsInterface, payCostsInterface);
+
+    }
+
+    selectFactionsInterface(selectFactionsInterface, payCostsInterface);
 
     return 0;
 

@@ -4609,7 +4609,7 @@ console.log("selected: " + spacekey);
 	  his_self.game.state.events.foul_weather = 1;
 
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
-	    if (his_self.game.queue[i].indexOf("continue") == -1 && his_self.game.queue[i].indexOf("discard") == -1 || his_self.game.queue[i].indexOf("cards_left") == -1) {
+	    if (his_self.game.queue[i].indexOf("play") == -1 && his_self.game.queue[i].indexOf("continue") == -1 && his_self.game.queue[i].indexOf("discard") == -1 || his_self.game.queue[i].indexOf("cards_left") == -1) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
 	      break;
@@ -7732,6 +7732,14 @@ console.log("nothing is left!");
 
 	  let faction = mv[1];
 	  let p = his_self.returnPlayerOfFaction(faction);
+          let fhand_idx = his_self.returnFactionHandIdx(p, faction);
+	  let does_player_have_non_mandatory_card = false;
+	  let does_player_have_non_home_card = false;
+
+	  for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
+	    if (his_self.game.deck[0].cards[his_self.game.deck[0].fhand[fhand_idx][i]].type != "mandatory") { does_player_have_non_mandatory_card = true; }
+	    if (parseInt(his_self.game.deck[0].fhand[fhand_idx][i]) > 8) { does_player_have_non_home_card = true; }
+	  }
 
 	  if (his_self.game.player == p) {
 
@@ -7742,7 +7750,14 @@ console.log("nothing is left!");
  	        his_self.playerFactionSelectCardWithFilter(
 	          faction,
 	          "Select Card to Give Away",
-	          function(card) { return 1; },
+	          function(card) {
+		    // no to home cards
+		    if (parseInt(card) < 9) { return 0; }
+		    // no to mandatory events unless I only have them
+		    if (his_self.game.deck[0].cards[card].type == "mandatory" && does_player_have_non_mandatory_card) { return 0; }
+		    // otherwise yes
+		    return 1; 
+		  },
 	          function(card) {
                     his_self.addMove("give_card\t"+recipient+"\t"+faction+"\t"+card);
 	  	    his_self.endTurn();

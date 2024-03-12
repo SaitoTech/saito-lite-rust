@@ -3127,7 +3127,7 @@ does_units_to_move_have_unit = true; }
 
     return 0;
   }
-  playerSelectOps(faction, cost, mycallback=null) {
+  playerSelectOps(faction, cost, mycallback=null, optional_msg="", ignore_cards=[]) {
 
     let his_self = this;
 
@@ -3137,11 +3137,14 @@ does_units_to_move_have_unit = true; }
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
       let c = this.game.deck[0].fhand[faction_hand_idx][i];
       if (this.game.deck[0].cards[c].type != "mandatory" && this.game.deck[0].cards[c].ops >= cost) {
-        cards.push(c);
+	if (!ignore_cards.includes(c)) {
+          cards.push(c);
+	}
       }
     }
 
-    this.updateStatusAndListCards("Select a Card: ", cards);
+    if (optional_msg == "") { optional_msg = "Select a Card: "; }
+    this.updateStatusAndListCards(optional_msg, cards);
     this.attachCardboxEvents((card) => {
       try {
         $('.card').off();
@@ -5657,6 +5660,141 @@ does_units_to_move_have_unit = true; }
     for (let i = 0; i < t.length; i++) {
       if (t[i].cost > 0) { return 1; }
     }
+
+    return 0;
+
+  }
+
+  //
+  // similar to playerDeclareWar but permits choosing multiple
+  // targets for war...
+  //
+  playerMakeDeclarationsOfWar(his_self, faction) {
+
+    let t = his_self.returnDeclarationOfWarTargets(faction);
+    let targets = [];
+
+    let selectFactionsInterface = function(selectFactionsInterface, payCostsInterface) {
+
+      let msg = `${his_self.returnFactionName(faction)} - Declarations of War?`;
+      let existing_cost = 0;
+      let html = '<ul>';
+      let final_message = "do not declare war";
+
+      for (let i = 0; i < targets.length; i++) {
+	existing_cost += parseInt(targets[i].cost);
+      }
+
+      if (existing_cost > 0) { msg += " (cost: "+existing_cost+")"; }
+
+      for (let i = 0; i < t.length; i++) {
+
+	let include_faction = true;
+	let already_declaring_war = false;
+	for (let z = 0; z < targets.length; z++) {
+	  if (targets[z].faction === t[i].faction) { 
+	    already_declaring_war = true;
+	  }
+	}
+	if (his_self.areEnemies(faction, t[i].faction)) {
+	  include_faction = false;
+	}
+
+	if (include_faction) {
+          if (already_declaring_war) {
+  	    html += `<li class="option" id="${i}">* ${his_self.returnFactionName(t[i].faction)} (${t[i].cost} OPS) *</li>`;
+            final_message = "declare war (and pay)";
+	  } else {
+            html += `<li class="option" id="${i}">${his_self.returnFactionName(t[i].faction)} (${t[i].cost} OPS)</li>`;
+          }
+        }
+      }
+      html += `<li class="option" id="end">${final_message}</li>`;
+      html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+	let action = $(this).attr("id");
+
+        let id = parseInt(action);
+	$('.option').off();
+
+	if (action == "end") {
+	  if (targets.length == 0) {
+	    his_self.endTurn();
+	    return;
+	  }
+	  payCostsInterface(selectFactionsInterface, payCostsInterface);
+	  return;
+	}
+
+        let enemy = t[id].faction;
+        let cost = t[id].cost;
+
+	let total_cost = 0;
+	for (let i = 0; i < targets.length; i++) {
+	  total_cost += targets[i].cost;
+	}
+
+	let already_in_targets = false;
+	for (let i = 0; i < targets.length; i++) {
+	  if (targets[i].faction == enemy) {
+	    already_in_targets = true;
+	    targets.splice(i, 1);
+	  }
+	}
+
+	if (already_in_targets == false) {
+	  targets.push({ faction : enemy , cost : cost });
+	}
+
+	selectFactionsInterface(selectFactionsInterface, payCostsInterface);
+
+      });
+    }
+
+
+    let payCostsInterface = function(selectFactionsInterface, payCostsInterface) {
+
+      let total_cost = 0;
+      let total_cost_paid = 0;
+      let cards_selected = [];
+
+      for (let i = 0; i < targets.length; i++) {
+        total_cost += targets[i].cost;
+      }
+  
+      let selectCardsInterface = function(selectCardsInterface, selectFactionsInterface, payCostsInterface) {
+
+        let msg = "Declare War: " + total_cost_paid + " of " + total_cost + " OPS"; 
+
+        his_self.playerSelectOps(faction, 1, (card) => {
+
+	  if (!cards_selected.includes(card)) { cards_selected.push(card); }
+	  total_cost_paid += parseInt(his_self.game.deck[0].cards[card].ops);	 
+          his_self.addMove(`discard\t${faction}\t${card}`);
+
+	  if (total_cost_paid >= total_cost) {
+	    for (let i = 0; i < targets.length; i++) {
+              his_self.addMove(`declare_war\t${faction}\t${targets[i].faction}`);
+	    }
+	    his_self.endTurn();
+	  } else {
+	    selectCardsInterface(selectCardsInterface, selectFactionsInterface, payCostsInterface);
+	  }
+
+        }, msg, cards_selected);
+	
+      }
+
+      selectCardsInterface(selectCardsInterface, selectFactionsInterface, payCostsInterface);
+
+    }
+
+    selectFactionsInterface(selectFactionsInterface, payCostsInterface);
 
     return 0;
 
