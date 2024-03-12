@@ -248,5 +248,5 @@ console.log("#HOPS: nantes to nevers " + this.returnHopsToDestination("nantes", 
     // initialize game objects
     //
     this.deck = this.returnDeck("all");
-
+  }}
 

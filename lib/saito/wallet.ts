@@ -283,7 +283,7 @@ export default class Wallet extends SaitoWallet {
 					alert('Saito Upgrade: Wallet Version: ' + this.version);
 					// setTimeout(() => {
 					// 	window.location.reload();
-					// }, 300);;
+					// }, 300);
 				} else {
 					// purge old slips
 					this.app.options.wallet.version = this.version;
@@ -932,7 +932,7 @@ export default class Wallet extends SaitoWallet {
 				alert('Restoration Complete ... click to reload Saito');
 				setTimeout(() => {
 					window.location.reload();
-				}, 300);;
+				}, 300);
 			} catch (err) {
 				if (err.name == 'SyntaxError') {
 					alert('Error reading wallet file. Did you upload the correct file?');

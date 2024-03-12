@@ -2260,9 +2260,7 @@ class Browser {
 					`New software update found: ${receivedBuildNumber}. Updating...`
 				);
 				setTimeout(function () {
-					setTimeout(() => {
-						window.location.reload();
-					}, 300);;
+					window.location.reload();
 				}, 3000);
 			}
 		}

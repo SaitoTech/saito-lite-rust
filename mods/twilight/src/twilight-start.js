@@ -171,18 +171,18 @@ class Twilight extends GameTemplate {
         twilight_self.displayModal("Card Menu options changed to text-mode. Please reload.");
         twilight_self.interface = 0;
         twilight_self.saveGamePreference("interface", 0);
-	      setTimeout(function() { setTimeout(() => {
+	      setTimeout(function() {
 								window.location.reload();
-							}, 300);; }, 1000);
+					 }, 1000);
       }
 
       if (action2 === "graphics") {
         twilight_self.displayModal("Card Menu options changed to graphical mode. Please reload.");
         twilight_self.interface = 1;
         twilight_self.saveGamePreference("interface", 1);
-      	setTimeout(function() { setTimeout(() => {
+      	setTimeout(function() { 
 								window.location.reload();
-							}, 300);;	}, 1000);
+							;	}, 1000);
       }
 
     });
@@ -245,9 +245,9 @@ class Twilight extends GameTemplate {
           game_mod.displayModal("Game Settings", "Will confirm moves before committing");
           game_mod.confirm_moves = 1;
           game_mod.saveGamePreference('twilight_expert_mode', 0);
-          setTimeout(function() { setTimeout(() => {
+          setTimeout(function() { 
 								window.location.reload();
-							}, 300);; }, 1000);
+						 }, 1000);
         }else{
           game_mod.menu.hideSubMenus();
         }
@@ -263,9 +263,9 @@ class Twilight extends GameTemplate {
           game_mod.displayModal("Game Settings", "No need to confirm moves");
           game_mod.confirm_moves = 0;
           game_mod.saveGamePreference('twilight_expert_mode', 1);
-          setTimeout(function() { setTimeout(() => {
+          setTimeout(function() { 
 								window.location.reload();
-							}, 300);; }, 1000);
+						 }, 1000);
         }else{
           game_mod.menu.hideSubMenus();
         }
@@ -350,9 +350,9 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("Language Settings", "Card settings changed to English");
         game_mod.lang = "en";
         game_mod.saveGamePreference("lang", "en");
-        setTimeout(function() { setTimeout(() => {
+        setTimeout(function() { 
 								window.location.reload();
-							}, 300);; }, 1000);
+ }, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -362,9 +362,9 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("语言设定", "卡牌语言改成简体中文");
         game_mod.lang = "zh";
         game_mod.saveGamePreference("lang", "zh");
-        setTimeout(function() { setTimeout(() => {
+        setTimeout(function() {
 								window.location.reload();
-							}, 300);; }, 1000);
+			 }, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -374,9 +374,9 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("");
         game_mod.lang = "ru";
         game_mod.saveGamePreference("lang", "ru");
-        setTimeout(function() { setTimeout(() => {
+        setTimeout(function() {  
 								window.location.reload();
-							}, 300);; }, 1000);
+	 }, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -386,9 +386,9 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("");
         game_mod.lang = "es";
         game_mod.saveGamePreference("lang", "es");
-        setTimeout(function() { setTimeout(() => {
+        setTimeout(function() {
 								window.location.reload();
-							}, 300);; }, 1000);
+		 }, 1000);
       }
     });
 
@@ -9846,7 +9846,9 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
           
     return discarded;
 
+
   }
+  
 
 
   /////////////////
@@ -9873,5 +9875,6 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
     let i_played_the_card = (this.roles[this.game.player] == player);
 
+  }
 
-
+}

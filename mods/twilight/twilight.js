@@ -173,9 +173,7 @@ class Twilight extends GameTemplate {
 				twilight_self.interface = 0;
 				twilight_self.saveGamePreference('interface', 0);
 				setTimeout(function () {
-					setTimeout(() => {
-						window.location.reload();
-					}, 300);
+					window.location.reload();
 				}, 1000);
 			}
 
@@ -186,9 +184,7 @@ class Twilight extends GameTemplate {
 				twilight_self.interface = 1;
 				twilight_self.saveGamePreference('interface', 1);
 				setTimeout(function () {
-					setTimeout(() => {
-						window.location.reload();
-					}, 300);
+					window.location.reload();
 				}, 1000);
 			}
 		});
@@ -255,9 +251,7 @@ class Twilight extends GameTemplate {
 					game_mod.confirm_moves = 1;
 					game_mod.saveGamePreference('twilight_expert_mode', 0);
 					setTimeout(function () {
-						setTimeout(() => {
-							window.location.reload();
-						}, 300);
+						window.location.reload();
 					}, 1000);
 				} else {
 					game_mod.menu.hideSubMenus();
@@ -278,9 +272,7 @@ class Twilight extends GameTemplate {
 					game_mod.confirm_moves = 0;
 					game_mod.saveGamePreference('twilight_expert_mode', 1);
 					setTimeout(function () {
-						setTimeout(() => {
 							window.location.reload();
-						}, 300);
 					}, 1000);
 				} else {
 					game_mod.menu.hideSubMenus();
@@ -378,9 +370,7 @@ class Twilight extends GameTemplate {
 				game_mod.lang = 'en';
 				game_mod.saveGamePreference('lang', 'en');
 				setTimeout(function () {
-					setTimeout(() => {
-						window.location.reload();
-					}, 300);
+					window.location.reload();
 				}, 1000);
 			}
 		});
@@ -392,9 +382,7 @@ class Twilight extends GameTemplate {
 				game_mod.lang = 'zh';
 				game_mod.saveGamePreference('lang', 'zh');
 				setTimeout(function () {
-					setTimeout(() => {
-						window.location.reload();
-					}, 300);
+					window.location.reload();
 				}, 1000);
 			}
 		});
@@ -406,9 +394,7 @@ class Twilight extends GameTemplate {
 				game_mod.lang = 'ru';
 				game_mod.saveGamePreference('lang', 'ru');
 				setTimeout(function () {
-					setTimeout(() => {
-						window.location.reload();
-					}, 300);
+					window.location.reload();
 				}, 1000);
 			}
 		});
@@ -420,9 +406,7 @@ class Twilight extends GameTemplate {
 				game_mod.lang = 'es';
 				game_mod.saveGamePreference('lang', 'es');
 				setTimeout(function () {
-					setTimeout(() => {
-						window.location.reload();
-					}, 300);
+					window.location.reload();
 				}, 1000);
 			}
 		});
