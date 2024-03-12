@@ -55,9 +55,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -66,8 +66,8 @@ if (this.game.options.scenario != "is_testing") {
 	  } else {
 	    if (this.game.state.starting_round != this.game.state.round) {
 if (this.game.options.scenario != "is_testing") {
-//	      this.game.queue.push("diplomacy_phase");
-//	      this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomacy Phase");
+	      this.game.queue.push("diplomacy_phase");
+	      this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomacy Phase");
 }
 	    }
 	  }
@@ -81,10 +81,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 } else {
-//	    this.game.queue.push("show_overlay\tvp");
-//	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-//	    this.game.queue.push("diet_of_worms");
-//	    this.game.queue.push("show_overlay\tdiet_of_worms");
+	    this.game.queue.push("show_overlay\tvp");
+	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+	    this.game.queue.push("diet_of_worms");
+	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
 	    this.game.queue.push("game_help_start");
