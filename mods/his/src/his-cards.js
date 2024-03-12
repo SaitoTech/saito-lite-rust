@@ -2182,16 +2182,18 @@ console.log("selected: " + spacekey);
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               i = 100;
             }
+            return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
           }
-          return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, extra) {
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "pre_field_battle_hits_assignment") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
-              return 1;
+	      if (his_self.doesFactionHaveLandUnitsInSpace("ottoman", spacekey)) {
+                return 1;
+              }
             }
           }
         }
@@ -2326,11 +2328,11 @@ console.log("selected: " + spacekey);
 		    if (action === "yes") {
 		      his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
 		      if (ck_idx > ak_idx) {
-		        his_self.addMove("move" + "\t" + faction + "\t" + "land" + "\t" + ck + "\t" + spacekey + "\t" + ck_idx + "\t1");
 		        his_self.addMove("move" + "\t" + faction + "\t" + "land" + "\t" + ak + "\t" + spacekey + "\t" + ak_idx + "\t1");
+		        his_self.addMove("move" + "\t" + faction + "\t" + "land" + "\t" + ck + "\t" + spacekey + "\t" + ck_idx + "\t1");
 		      } else {
-		        his_self.addMove("move" + "\t" + faction + "\t" + "land" + "\t" + ak + "\t" + spacekey + "\t" + ak_idx + "\t1");
 		        his_self.addMove("move" + "\t" + faction + "\t" + "land" + "\t" + ck + "\t" + spacekey + "\t" + ck_idx + "\t1");
+		        his_self.addMove("move" + "\t" + faction + "\t" + "land" + "\t" + ak + "\t" + spacekey + "\t" + ak_idx + "\t1");
 		      }
 		      his_self.endTurn();
 		    } else {
@@ -7383,7 +7385,7 @@ console.log("selected: " + spacekey);
 	      if (space.type == "key" && space.home === "independent" && (space.political !== space.home && space.political !== "" && space.political)) { return 1; }
 
 	      // captured non-allied home
-	      if (space.home !== space.political && space.political !== "") {
+	      if (space.home !== space.political && space.political !== "" && space.type == "key") {
 		if (!space.besieged) {
 	          if (!his_self.areAllies(space.home, space.political)) { 
 		    if (space.home !== "" && space.political !== "") { return 1; }
@@ -7439,14 +7441,25 @@ console.log("in city state rebels now...");
 	    }
 	  }
 
+console.log("HITS: " + hits);
+
 	  //
 	  // TODO, return zero and add choice of unit removal, for now remove army before navy
 	  //
 	  let p = his_self.returnPlayerCommandingFaction(respondent);
 
-console.log("HITS: " + hits);
-
+	  if (p == 0) {
+	    for (let z = 0, assigned_hits = 0; assigned_hits < hits && z < his_self.game.spaces[spacekey].units[respondent].length; z++) {
+	      try { if (his_self.game.spaces[spacekey].units[respondent][z].type == "regular") {
+		his_self.game.spaces[spacekey].units[respondent].splice(z, 1);
+		z--;
+	      } } catch (err) {}
+	    }
+	    his_self.game.queue.push("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
+	    return 1;
+	  }
 	  if (his_self.game.player == p) {
+console.log("a player will assign the hits!");
 	    his_self.addMove("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
 	    his_self.playerAssignHits(faction, spacekey, hits, 1);
 	  }
@@ -7458,6 +7471,7 @@ console.log("HITS: " + hits);
 	if (mv[0] === "finish-city-state-rebels") {
 
 console.log("finish city state rebels..");
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction    = mv[1];
 	  let respondent = mv[2];
@@ -7471,6 +7485,7 @@ console.log("finish city state rebels..");
 	  }
 
 	  if (!anything_left) {
+console.log("nothing is left!");
             for (let i = 0; i < space.units[f].length; i++) {
               his_self.captureLeader(faction, respondent, spacekey, space.units[f][i]);
               space.units[f].splice(i, 1);
@@ -8108,9 +8123,7 @@ console.log("finish city state rebels..");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-	return 0;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let at_war = false;
@@ -9766,6 +9779,10 @@ console.log("finish city state rebels..");
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      canEvent : function(his_self, faction) {
+	if (faction == "protestant" || faction == "england" || faction == "hapsburg") { return 1; }
+	return 0;
+      },
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 	if (faction == "england" && his_self.game.state.events.cabot_england == 0) { return 0; }

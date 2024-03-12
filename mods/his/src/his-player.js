@@ -288,6 +288,8 @@
 
     units_to_destroy = [];
 
+console.log("play assigning hits...");
+
     let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
 
       let msg = "Hits Remaining: " + hits_to_assign;

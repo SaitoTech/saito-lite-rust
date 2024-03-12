@@ -380,18 +380,26 @@
       //
       if (this.game.state.plantations['france'] == 1) {
 	document.querySelector(".france_colony2_bonus").innerHTML = `<img class="army_tile" src="/his/img/tiles/colonies/Plantations.svg" />`;
+      } else {
+	document.querySelector(".france_colony2_bonus").innerHTML = ``;
       }
       if (this.game.state.events.colonial_governor == "france") {
 	document.querySelector(".france_colony2_bonus").innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/ColonialGovernor.svg" />`;
       }
+
       if (this.game.state.plantations['england'] == 1) {
 	document.querySelector(".england_colony2_bonus").innerHTML = `<img class="army_tile" src="/his/img/tiles/colonies/Plantations.svg" />`;
+      } else {
+	document.querySelector(".england_colony2_bonus").innerHTML = ``;
       }
       if (this.game.state.events.colonial_governor == "england") {
 	document.querySelector(".england_colony2_bonus").innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/ColonialGovernor.svg" />`;
       }
+
       if (this.game.state.plantations['hapsburg'] == 1) {
 	document.querySelector(".hapsburg_colony2_bonus").innerHTML = `<img class="army_tile" src="/his/img/tiles/colonies/Plantations.svg" />`;
+      } else {
+	document.querySelector(".hapsburg_colony2_bonus").innerHTML = ``;
       }
       if (this.game.state.events.colonial_governor == "hapsburg") {
 	document.querySelector(".hapsburg_colony2_bonus").innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/ColonialGovernor.svg" />`;
