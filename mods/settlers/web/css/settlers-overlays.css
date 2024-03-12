@@ -208,7 +208,7 @@ stats overlay
 }
 
 .no-vp {
-	filter: brightness(65%) grayscale(50%);
+	filter: brightness(65%) grayscale(50%) opacity(0.33);
 }
 
 .settlers-achievements-row .victory_point_cards img {

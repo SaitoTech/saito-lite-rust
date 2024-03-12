@@ -4,6 +4,7 @@
 
 .game-cardgrid .card {
 	position: relative;
+	height: calc(10vw * 1.6);
 }
 
 .hud-header {
@@ -24,18 +25,23 @@
 .hud-body #drawpile {
 	position: absolute;
 	right: 105%;
-	bottom: 5%;
+	/*bottom: 5%;*/
+	top: 7rem;
 }
 
 .hud-body #discardpile {
 	position: absolute;
 	left: 105%;
-	bottom: 5%;
+	/*bottom: 5%;*/
+	top: 7rem;
 }
 
 .hud .cardpile {
-	width: 120px;
-	height: 190px;
+	/*width: 120px;
+	height: 190px;*/
+
+	width: 10vw;
+	height: calc(10vw * 1.6);
 }
 
 .hud .cardpile div:first-child {

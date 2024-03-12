@@ -437,19 +437,19 @@ dt {
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
-	background-color: var(--p1-color);
+	border-bottom: 3px solid var(--p1-color);
 }
 
 .p2 {
-	background-color: var(--p2-color);
+	border-bottom: 3px solid var(--p2-color);
 }
 
 .p3 {
-	background-color: var(--p3-color);
+	border-bottom: 3px solid var(--p3-color);
 }
 
 .p4 {
-	background-color: var(--p4-color);
+	border-bottom: 3px solid var(--p4-color);
 }
 
 .display-name {

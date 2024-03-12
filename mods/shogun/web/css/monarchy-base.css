@@ -39,6 +39,7 @@ img.animated_elem {
 	position: absolute;
 	background-image: url('/shogun/img/gameboard.jpg');
 	background-size: cover;
+	background-position: right;
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
@@ -111,11 +112,6 @@ img,
 	pointer-events: none;
 }
 
-.status-header,
-.status-message {
-	background-color: #030303;
-	color: ghostwhite;
-}
 
 .hidden {
 	visibility: hidden;
@@ -366,6 +362,8 @@ img,
 	width: 40vh;
 	max-width: 350px;
 	pointer-events: none;
+	height: 65vh;
+	max-height: 600px;
 }
 
 /* Card Hud Deal animation */
