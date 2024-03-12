@@ -104,11 +104,15 @@ class PathsOfGlory extends GameTemplate {
 	if (game_mod.confirm_moves == 0) {
 	  game_mod.confirm_moves = 1;
           game_mod.saveGamePreference('his_expert_mode', 0);
-	  window.location.reload();	
+	  setTimeout(() => {
+								window.location.reload();
+							}, 300);;	
 	} else {
 	  game_mod.confirm_moves = 0;
           game_mod.saveGamePreference('his_expert_mode', 1);
-	  window.location.reload();	
+	  setTimeout(() => {
+								window.location.reload();
+							}, 300);;	
 	}
       }
     });
@@ -244,5 +248,5 @@ console.log("#HOPS: nantes to nevers " + this.returnHopsToDestination("nantes", 
     // initialize game objects
     //
     this.deck = this.returnDeck("all");
-
+  }}
 

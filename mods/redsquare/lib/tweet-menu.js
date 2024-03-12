@@ -38,7 +38,7 @@ class TweetMenu {
 			(item) => {
 				item.onclick = async (e) => {
 					console.log(e.currentTarget);
-					switch (e.currentTarget.getAttribute("id")) {
+					switch (e.currentTarget.getAttribute('id')) {
 						case 'follow_contact':
 							this.mod.sendFollowTransaction(this.tweeter);
 							break;
@@ -74,7 +74,9 @@ class TweetMenu {
 		this.mod.saveOptions();
 		siteMessage('User muted... reloading feed');
 		setTimeout(() => {
-			window.location.reload();
+			setTimeout(() => {
+				window.location.reload();
+			}, 300);
 		}, 1500);
 	}
 
@@ -83,7 +85,9 @@ class TweetMenu {
 		this.mod.saveOptions();
 		siteMessage('User blocked... reloading feed');
 		setTimeout(() => {
-			window.location.reload();
+			setTimeout(() => {
+				window.location.reload();
+			}, 300);
 		}, 1500);
 	}
 

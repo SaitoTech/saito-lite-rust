@@ -117,7 +117,7 @@ function save_tooltip() {
 	}
 
 	var inset2 = row_1;
-	inset2 = inset2.replace(/\'/g, '\'');
+	inset2 = inset2.replace(/\'/g, "'");
 
 	row_1 = p(q(row_1));
 	row_2 = p(q(row_2));
@@ -135,15 +135,15 @@ function save_tooltip() {
 		row_6 +
 		'\')" onmouseover="tip(event,\'' +
 		row_4 +
-		'\',\'' +
+		"','" +
 		row_3 +
-		'\',\'' +
+		"','" +
 		row_1 +
-		'\',\'' +
+		"','" +
 		row_2 +
-		'\',\'' +
+		"','" +
 		row_5 +
-		'\',\'' +
+		"','" +
 		row_6 +
 		'\')" onmouseout="htip()">' +
 		inset2 +
@@ -199,18 +199,18 @@ function save_tooltip() {
 						field6 +
 						'\')" onmouseover="tip(event,\'' +
 						p(q(field1)) +
-						'\',\'' +
+						"','" +
 						p(q(field2)) +
-						'\',\'' +
+						"','" +
 						p(q(field3)) +
-						'\',\'' +
+						"','" +
 						p(q(field4)) +
-						'\',\'' +
+						"','" +
 						p(q(field5)) +
-						'\',\'' +
+						"','" +
 						field6 +
 						'\')" onmouseout="htip()">' +
-						field3.replace(/\\\'/g, '\'') +
+						field3.replace(/\\\'/g, "'") +
 						'</span>';
 				}
 			}
@@ -347,12 +347,12 @@ function tip(event, event1, event2, event3, event4, event5, divdef) {
 		return;
 	}
 
-	event1 = rp(event1.replace(/`/g, '\''));
-	event2 = rp(event2.replace(/`/g, '\''));
-	event3 = rp(event3.replace(/`/g, '\''));
-	event4 = rp(event4.replace(/`/g, '\''));
+	event1 = rp(event1.replace(/`/g, "'"));
+	event2 = rp(event2.replace(/`/g, "'"));
+	event3 = rp(event3.replace(/`/g, "'"));
+	event4 = rp(event4.replace(/`/g, "'"));
 	try {
-		event5 = rp(event5.replace(/`/g, '\''));
+		event5 = rp(event5.replace(/`/g, "'"));
 	} catch (err) {} // backwards compatible with older markup script
 
 	try {
@@ -606,19 +606,19 @@ function adso_resegment_ajax(source, translation, divdef1, divdef2) {
 				}
 
 				// DOM manipulation is inconsistent across Firefox, so fall back on innerHTML manipulation
-				original_string = '\'\',\'\',\'' + new_field3 + '\',\'\',\'\'';
+				original_string = "'','','" + new_field3 + "','',''";
 				replace_string =
-					'\'' +
+					"'" +
 					new_field1 +
-					'\',\'' +
+					"','" +
 					new_field2 +
-					'\',\'' +
+					"','" +
 					new_field3 +
-					'\',\'' +
+					"','" +
 					new_field4 +
-					'\',\'' +
+					"','" +
 					new_field5 +
-					'\'';
+					"'";
 				re = new RegExp(original_string, 'g');
 				temp = temp.replace(re, replace_string);
 				object_under_updating.innerHTML = temp;
@@ -689,17 +689,17 @@ function adso_resegment_ajax(source, translation, divdef1, divdef2) {
 				} catch (err) {}
 
 				// DOM manipulation is inconsistent across Firefox, so fall back on innerHTML manipulation
-				original_string = '\'\',\'' + mnew_field3 + '\',\'\',\'\'';
+				original_string = "'','" + mnew_field3 + "','',''";
 				replace_string =
-					'\'' +
+					"'" +
 					mnew_field2 +
-					'\',\'' +
+					"','" +
 					mnew_field3 +
-					'\',\'' +
+					"','" +
 					mnew_field4 +
-					'\',\'' +
+					"','" +
 					mnew_field5 +
-					'\'';
+					"'";
 				re = new RegExp(original_string, 'g');
 				temp = temp.replace(re, replace_string);
 				object_under_updating.innerHTML = temp;
@@ -749,19 +749,19 @@ function adso_resegment_ajax(source, translation, divdef1, divdef2) {
 				}
 
 				// DOM manipulation is inconsistent across Firefox, so fall back on innerHTML manipulation
-				original_string = '\'\',\'\',\'' + bnew_field3 + '\',\'\',\'\'';
+				original_string = "'','','" + bnew_field3 + "','',''";
 				replace_string =
-					'\'' +
+					"'" +
 					bnew_field1 +
-					'\',\'' +
+					"','" +
 					bnew_field2 +
-					'\',\'' +
+					"','" +
 					bnew_field3 +
-					'\',\'' +
+					"','" +
 					bnew_field4 +
-					'\',\'' +
+					"','" +
 					bnew_field5 +
-					'\'';
+					"'";
 				re = new RegExp(original_string, 'g');
 				temp = temp.replace(re, replace_string);
 				object_under_updating.innerHTML = temp;
@@ -790,12 +790,12 @@ function extract_pre(text) {
 }
 function extract_field(text, field) {
 	text = text.replace(/event, /g, 'event,');
-	if (text.indexOf('event,\'') != -1) {
-		bodyarray = text.split('event,\'');
-		bodyarray2 = bodyarray[1].split('\')');
-		temp = bodyarray2[0].split('\',\'');
+	if (text.indexOf("event,'") != -1) {
+		bodyarray = text.split("event,'");
+		bodyarray2 = bodyarray[1].split("')");
+		temp = bodyarray2[0].split("','");
 		// might be closing parens
-		if (temp == ')\',') {
+		if (temp == ")',") {
 			return ')';
 		}
 		return temp[field - 1];
@@ -851,15 +851,15 @@ function adso_redefine_word(source, pinyin, translation, text, divdef) {
 					divdef +
 					'\');" onclick="onWordClick()" onmouseover="tip(event,\'' +
 					p(pinyin) +
-					'\',\'' +
+					"','" +
 					p(translation) +
-					'\',\'' +
+					"','" +
 					p(field3) +
-					'\',\'' +
+					"','" +
 					p(field4) +
-					'\',\'' +
+					"','" +
 					p(field5) +
-					'\',\'' +
+					"','" +
 					divdef +
 					'\')" onmouseout="htip()">' +
 					this_inset +
@@ -874,15 +874,15 @@ function adso_redefine_word(source, pinyin, translation, text, divdef) {
 					divdef +
 					'\');" onclick="onWordClick()" onmouseover="tip(event,\'' +
 					p(field1) +
-					'\',\'' +
+					"','" +
 					p(field2) +
-					'\',\'' +
+					"','" +
 					p(field3) +
-					'\',\'' +
+					"','" +
 					p(field4) +
-					'\',\'' +
+					"','" +
 					p(field5) +
-					'\',\'' +
+					"','" +
 					field6 +
 					'\')" onmouseout="htip()">' +
 					this_inset +
@@ -898,15 +898,15 @@ function adso_redefine_word(source, pinyin, translation, text, divdef) {
 				divdef +
 				'\');" onclick="onWordClick()" onmouseover="tip(event,\'' +
 				p(field1) +
-				'\',\'' +
+				"','" +
 				p(field2) +
-				'\',\'' +
+				"','" +
 				p(field3) +
-				'\',\'' +
+				"','" +
 				p(field4) +
-				'\',\'' +
+				"','" +
 				p(field5) +
-				'\',\'' +
+				"','" +
 				field6 +
 				'\')" onmouseout="htip()">' +
 				this_inset +
@@ -1089,7 +1089,7 @@ function adso_resegment_engine(
 							extract_field3(array_of_entries[j]);
 					}
 
-					temp = temp.replace(/\\\'/g, '\'');
+					temp = temp.replace(/\\\'/g, "'");
 					var matched = temp.substr(0, source.length);
 
 					if (matched == source) {
@@ -1109,7 +1109,7 @@ function adso_resegment_engine(
 							post_field2 = '';
 							temp67 = 0;
 							for (zzp = 0; zzp < source.length; zzp++) {
-								if (source[zzp] == '\'') {
+								if (source[zzp] == "'") {
 									temp67++;
 								}
 							}
@@ -1161,30 +1161,30 @@ function adso_resegment_engine(
 					/\\&apos;/,
 					'&apos;'
 				);
-				pre_field1 = pre_field1.replace(/\'/g, '\\\'');
-				pre_field2 = pre_field2.replace(/\'/g, '\\\'');
-				pre_field3 = pre_field3.replace(/\'/g, '\\\'');
-				pre_field4 = pre_field4.replace(/\'/g, '\\\'');
-				match_field1 = match_field1.replace(/\'/g, '\\\'');
-				match_field2 = match_field2.replace(/\'/g, '\\\'');
-				match_field3 = match_field3.replace(/\'/g, '\\\'');
-				match_field4 = match_field4.replace(/\'/g, '\\\'');
-				post_field1 = post_field1.replace(/\'/g, '\\\'');
-				post_field2 = post_field2.replace(/\'/g, '\\\'');
-				post_field3 = post_field3.replace(/\'/g, '\\\'');
-				post_field4 = post_field4.replace(/\'/g, '\\\'');
+				pre_field1 = pre_field1.replace(/\'/g, "\\'");
+				pre_field2 = pre_field2.replace(/\'/g, "\\'");
+				pre_field3 = pre_field3.replace(/\'/g, "\\'");
+				pre_field4 = pre_field4.replace(/\'/g, "\\'");
+				match_field1 = match_field1.replace(/\'/g, "\\'");
+				match_field2 = match_field2.replace(/\'/g, "\\'");
+				match_field3 = match_field3.replace(/\'/g, "\\'");
+				match_field4 = match_field4.replace(/\'/g, "\\'");
+				post_field1 = post_field1.replace(/\'/g, "\\'");
+				post_field2 = post_field2.replace(/\'/g, "\\'");
+				post_field3 = post_field3.replace(/\'/g, "\\'");
+				post_field4 = post_field4.replace(/\'/g, "\\'");
 
 				// Apostrophe Support Paranoia (bug-fix)
-				pre_field1 = pre_field1.replace(/\\\'/g, '\'');
-				pre_field2 = pre_field2.replace(/\\\'/g, '\'');
-				pre_field3 = pre_field3.replace(/\\\'/g, '\'');
-				pre_field4 = pre_field4.replace(/\\\'/g, '\'');
+				pre_field1 = pre_field1.replace(/\\\'/g, "'");
+				pre_field2 = pre_field2.replace(/\\\'/g, "'");
+				pre_field3 = pre_field3.replace(/\\\'/g, "'");
+				pre_field4 = pre_field4.replace(/\\\'/g, "'");
 
 				// Match Field Not Required Check For
-				post_field1 = post_field1.replace(/\\\'/g, '\'');
-				post_field2 = post_field2.replace(/\\\'/g, '\'');
-				post_field3 = post_field3.replace(/\\\'/g, '\'');
-				post_field4 = post_field4.replace(/\\\'/g, '\'');
+				post_field1 = post_field1.replace(/\\\'/g, "'");
+				post_field2 = post_field2.replace(/\\\'/g, "'");
+				post_field3 = post_field3.replace(/\\\'/g, "'");
+				post_field4 = post_field4.replace(/\\\'/g, "'");
 
 				// Calculate Locate Positioning
 				location_adjustment = 0;
@@ -1203,15 +1203,15 @@ function adso_resegment_engine(
 						(location_adjustment + pre_position) +
 						'\');" onclick="onWordClick()" onmouseover="tip(event,\'' +
 						p(pre_field1) +
-						'\',\'' +
+						"','" +
 						p(pre_field2) +
-						'\',\'' +
+						"','" +
 						p(pre_field3) +
-						'\',\'' +
+						"','" +
 						p(pre_field4) +
-						'\',\'' +
+						"','" +
 						p(pre_field5) +
-						'\',\'' +
+						"','" +
 						(pre_position + location_adjustment) +
 						'\')" onmouseout="htip()">' +
 						pre_field3_inset +
@@ -1229,15 +1229,15 @@ function adso_resegment_engine(
 						(location_adjustment + match_position) +
 						'\');" onclick="onWordClick()" onmouseover="tip(event,\'' +
 						p(match_field1) +
-						'\',\'' +
+						"','" +
 						p(match_field2) +
-						'\',\'' +
+						"','" +
 						p(match_field3) +
-						'\',\'' +
+						"','" +
 						p(match_field4) +
-						'\',\'' +
+						"','" +
 						p(match_field5) +
-						'\',\'' +
+						"','" +
 						(location_adjustment + match_position) +
 						'\')" onmouseout="htip()">' +
 						match_field3_inset +
@@ -1256,15 +1256,15 @@ function adso_resegment_engine(
 						(location_adjustment + post_position) +
 						'\');" onclick="onWordClick()" onmouseover="tip(event,\'' +
 						p(post_field1) +
-						'\',\'' +
+						"','" +
 						p(post_field2) +
-						'\',\'' +
+						"','" +
 						p(post_field3) +
-						'\',\'' +
+						"','" +
 						p(post_field4) +
-						'\',\'' +
+						"','" +
 						p(post_field5) +
-						'\',\'' +
+						"','" +
 						(location_adjustment + post_position) +
 						'\')" onmouseout="htip()">' +
 						post_field3_inset +
@@ -1287,15 +1287,15 @@ function adso_resegment_engine(
 							field6 +
 							'\');" onclick="onWordClick()" onmouseover="tip(event,\'' +
 							p(field1) +
-							'\',\'' +
+							"','" +
 							p(field2) +
-							'\',\'' +
+							"','" +
 							p(field3) +
-							'\',\'' +
+							"','" +
 							p(field4) +
-							'\',\'' +
+							"','" +
 							p(field5) +
-							'\',\'' +
+							"','" +
 							p(field6) +
 							'\')" onmouseout="htip()">' +
 							myinset +
@@ -1639,7 +1639,9 @@ function enable_display_mode(toggle_which_field) {
 			view_field5: view_field5
 		},
 		function (txt) {
-			//window.location.reload();
+			//setTimeout(() => {
+			// window.location.reload();
+			// }, 300);;
 		}
 	);
 
