@@ -87,6 +87,9 @@ class WebMethods extends WebSharedMethods {
 		this.app.options.wallet.balance = await this.app.wallet.getBalance();
 	}
 
+	ensureBlockDirExists(path: string): void {
+
+	}
 	async loadWallet() {
 		throw new Error('Method not implemented.');
 	}

@@ -1,3 +1,9 @@
+
+
+
+
+
+
 import { Saito } from '../../apps/core';
 import Peer from './peer';
 import Transaction from './transaction';
@@ -93,7 +99,7 @@ class Mods {
 					this.app.browser.updateSoftwareVersion(receivedBuildNumber);
 				}
 			}
-		} catch (err) {}
+		} catch (err) { }
 
 		for (let iii = 0; iii < this.mods.length; iii++) {
 			try {
@@ -255,7 +261,6 @@ class Mods {
 		this.app.connection.on(
 			'handshake_complete',
 			async (peerIndex: bigint) => {
-				// await this.app.network.propagateServices(peerIndex);
 				let peer = await this.app.network.getPeer(BigInt(peerIndex));
 				if (this.app.BROWSER == 0) {
 					let data = `{"build_number": "${this.app.build_number}"}`;
@@ -268,15 +273,40 @@ class Mods {
 					);
 				}
 				console.log('handshake complete');
+
+				console.log(peer.publicKey, "publickey")
+
+				const myPublicKey = await this.app.wallet.getPublicKey();
+				const currentKeyList = await this.app.wallet.getKeyList();
+
+				let newKeyList = peer.keyList || [];
+
+
+				if (!newKeyList.includes(myPublicKey)) {
+					newKeyList.push(myPublicKey);
+				}
+
+				if (peer.publicKey && !newKeyList.includes(peer.publicKey)) {
+					newKeyList.push(peer.publicKey);
+				}
+
+
+				const mergedKeyList = Array.from(new Set([...currentKeyList, ...newKeyList]));
+
+				await this.app.wallet.setKeyList(mergedKeyList);
+
+				console.log('Keylist from wallet:', mergedKeyList);
+
 				await onPeerHandshakeComplete(peer);
 			}
 		);
+
 
 		const onConnectionUnstable = this.onConnectionUnstable.bind(this);
 		this.app.connection.on('peer_disconnect', async (peerIndex: bigint) => {
 			console.log(
 				'connection dropped -- triggering on connection unstable : ' +
-					peerIndex
+				peerIndex
 			);
 			// // todo : clone peer before disconnection and send with event
 			// let peer = await this.app.network.getPeer(BigInt(peerIndex));
@@ -562,11 +592,13 @@ class Mods {
 
 	/*
   async getBuildNumber() {
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].getBuildNumber()
-    }
+	for (let i = 0; i < this.mods.length; i++) {
+	  await this.mods[i].getBuildNumber()
+	}
   }
   */
 }
 
 export default Mods;
+
+
