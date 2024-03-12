@@ -2574,8 +2574,8 @@ class RedSquare extends ModTemplate {
       redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
 
       let image = "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png";
-      redsquare_self.social.og_title = "RedSquare on Saito";
-      redsquare_self.social.twitter_title = "RedSquare on Saito";
+      redsquare_self.social.og_title = "saito.io RedSquare";
+      redsquare_self.social.twitter_title = "saito.io RedSquare";
       redsquare_self.social.og_image = image;
       redsquare_self.social.og_image_url = image;
       redsquare_self.social.og_image_secure_url = image;
