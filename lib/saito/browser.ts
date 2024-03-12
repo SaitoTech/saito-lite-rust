@@ -2277,7 +2277,7 @@ class Browser {
 		return (decimal_separator == '.') ? ',' : '.';
 	}
 
-	addMentions(users, textarea, listDiv){
+	addSaitoMentions(users, textarea, listDiv){
 		 const resolveFn = prefix => prefix === ''
       ? users
       : users.filter(user => user.username.startsWith(prefix))
@@ -2285,17 +2285,14 @@ class Browser {
 	    const replaceFn = (user, trigger) => `${trigger}${user.username} `
 
 	    const menuItemFn = (user, setItem, selected) => {
-
-	    	console.log('user:', user);
-
 	      const parentDiv = document.createElement('div');
 	      parentDiv.classList.add('saito-mentions-contact');
-	      
+
 
 	      // identifier 
 	      const identicon = document.createElement('img');
 	      identicon.classList.add('saito-identicon');
-	      identicon.setAttribute('src', user.identifier);
+	      identicon.setAttribute('src', user.identicon);
 
 	      parentDiv.appendChild(identicon);
 

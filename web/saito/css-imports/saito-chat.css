@@ -557,6 +557,10 @@
   height: 4.2rem;
 }
 
+.chat-footer .text-input {
+  height: 4.5rem;
+}
+
 .chat-footer .saito-emoji {
   padding: 1.3rem 0.5rem;
 }

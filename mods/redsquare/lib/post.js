@@ -166,15 +166,16 @@ class Post {
 					let users = [];
 					console.log('keys: ', keys);
 					for (let key of keys) {
-						let identifier = post_self.app.keychain.returnIdenticon(key.publicKey);
+						let identicon = post_self.app.keychain.returnIdenticon(key.publicKey);
 						let username = post_self.app.keychain.returnUsername(key.publicKey);
-						users.push({username: key.publicKey, identifier: identifier});
+						users.push({username: key.publicKey, identicon: identicon});
 					}
 
-				   post_self.app.browser.addMentions(
+				   post_self.app.browser.addSaitoMentions(
 				   	users, 
-				   	document.getElementById('post-tweet-textarea'), 
-				   	document.getElementById('saito-mentions-list')
+				   	document.querySelector('#tweet-overlay #post-tweet-textarea'), 
+				   	document.querySelector('#tweet-overlay #saito-mentions-list'),
+				   	'input'
 				   );
 				}
 			});

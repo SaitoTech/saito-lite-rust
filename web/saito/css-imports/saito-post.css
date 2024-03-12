@@ -129,9 +129,11 @@
 .saito-mentions-list {
   background-color: var(--saito-background-color);
   position: absolute;
-  z-index: 2;
+  z-index: 104;
   color: var(--saito-font-color);
+  max-height: 30rem;
   border: 1px solid var(--saito-font-color);
+  overflow-y: scroll;
 }
 
 .menu-item {
@@ -149,10 +151,9 @@
   cursor: pointer;
 }
 
-.menu-item:hover:not(.selected) {
-  background-color: #fafafa;
-  color: var(--saito-font-color-inverse);
-}
+/*.menu-item:hover:not(.selected) {
+
+}*/
 
 
 .saito-mentions-contact {
@@ -163,6 +164,11 @@
   align-items: center;
   height: 4rem;
   padding: 0.75rem 0.5rem;
+}
+
+.saito-mentions-contact:hover .menu-item {
+  background-color: #fafafa;
+  color: var(--saito-font-color-inverse); 
 }
 
 @media screen and (max-width: 768px) {
