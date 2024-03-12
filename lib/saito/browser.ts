@@ -12,6 +12,7 @@ const Deposit = require('./ui/saito-crypto/overlays/deposit');
 const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
 const History = require('./ui/saito-crypto/overlays/history');
 const debounce = require('lodash/debounce');
+const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 
 class Browser {
 	public app: any;
@@ -2274,6 +2275,52 @@ class Browser {
 	getThousandSeparator() {
 		let decimal_separator = this.getDecimalSeparator();
 		return (decimal_separator == '.') ? ',' : '.';
+	}
+
+	addMentions(users, textarea, listDiv){
+		 const resolveFn = prefix => prefix === ''
+      ? users
+      : users.filter(user => user.username.startsWith(prefix))
+
+	    const replaceFn = (user, trigger) => `${trigger}${user.username} `
+
+	    const menuItemFn = (user, setItem, selected) => {
+
+	    	console.log('user:', user);
+
+	      const parentDiv = document.createElement('div');
+	      parentDiv.classList.add('saito-mentions-contact');
+	      
+
+	      // identifier 
+	      const identicon = document.createElement('img');
+	      identicon.classList.add('saito-identicon');
+	      identicon.setAttribute('src', user.identifier);
+
+	      parentDiv.appendChild(identicon);
+
+	      // username div
+	      const div = document.createElement('div')
+	      div.setAttribute('role', 'option')
+	      div.className = 'menu-item'
+	      if (selected) {
+	        div.classList.add('selected')
+	        div.setAttribute('aria-selected', '')
+	      }
+	      div.textContent = user.username
+	      
+	      parentDiv.appendChild(div);
+	      parentDiv.onclick = setItem;
+	      return parentDiv;
+	    }
+
+		new SaitoMentions(
+		  textarea,
+		  listDiv,
+		  resolveFn,
+		  replaceFn,
+		  menuItemFn
+		)
 	}
 }
 

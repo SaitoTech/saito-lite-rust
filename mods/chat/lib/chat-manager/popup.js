@@ -398,6 +398,8 @@ class ChatPopup {
 		}
 
 
+
+
 		// add reply functionality
 		document
 			.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`)
