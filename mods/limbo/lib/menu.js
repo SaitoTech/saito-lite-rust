@@ -42,13 +42,17 @@ class LimboMenu {
 
 	createStub(dreamer, audience){
 
+		let currentDream = (this.mod.dreamer === dreamer);
 		let imgsrc = this.app.keychain.returnIdenticon(dreamer);
 
-		return `<div class="saito-user dream" id="saito-user-${dreamer}" data-id="${dreamer}" data-disable="true">
+		return `<div class="saito-user dream ${currentDream?"active":""}" id="saito-user-${dreamer}" data-id="${dreamer}" data-disable="true">
 					    <div class="saito-identicon-box">
 					      <img class="saito-identicon" src="${imgsrc}" data-disable="true"/>
 					    </div>
-					    <div class="saito-address" data-id="${dreamer}" data-disable="true">${dreamer}</div>
+					    <div class="saito-address saito-address-long">
+					    	<div class="saito-address" data-id="${dreamer}" data-disable="true">${dreamer}</div>
+					    	${currentDream ? `<i class="fa-solid fa-volume-high"></i>` : ""}
+					    </div>
 					    <div class="saito-userline">${audience.length} listening</div>
 					</div>`;
 
@@ -59,7 +63,17 @@ class LimboMenu {
 
 		let button = document.getElementById("new-space");
 		if (button){
-			button.onclick = () => {
+			button.onclick = async () => {
+				let c = true;
+				if (this.dreamer){
+					c = await sconfirm("Leave current space?");
+					if (c){
+						await this.mod.sendLeaveTransaction();	
+					}else{
+						return;
+					}
+				}
+
 				this.mod.exitSpace();
 				this.mod.broadcastDream();
 			}
@@ -67,23 +81,30 @@ class LimboMenu {
 
 		let alt_button = document.getElementById("exit-space");
 		if (alt_button){
-			alt_button.onclick = () => {
-				this.mod.sendKickTransaction();
-				this.mod.stop();
+			alt_button.onclick = async () => {
+				await this.mod.sendKickTransaction();
+				this.mod.exitSpace();
 			}
 		}
 
 
 		document.querySelectorAll("#spaces .saito-user.dream").forEach(element => {
 			element.onclick = async (e) => {
-				let dreamer = e.currentTarget.datatset.id;
+				let dreamer = e.currentTarget.dataset.id;
 
-				if (this.dreamer){
-					if (this.dreamer !== dreamer){
-						let c = await sconfirm("Leave current space?");
+				if (this.mod.dreamer){
+					if (this.mod.dreamer !== dreamer){
+						let c = await sconfirm("Leave current space to join new one?");
 						if (c) {
+							await this.mod.sendLeaveTransaction();
 							this.mod.exitSpace();
 							this.mod.joinDream(dreamer);
+						}
+					}else{
+						let c = await sconfirm("Leave current space?");
+						if (c) {
+							await this.mod.sendLeaveTransaction();
+							this.mod.exitSpace();
 						}
 					}
 				}else{

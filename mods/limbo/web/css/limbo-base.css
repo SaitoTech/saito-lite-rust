@@ -15,7 +15,35 @@
 	border-radius: 0.5rem;
 }
 
-.spaces-list .saito-user:hover{
+.spaces-list .saito-user:hover, .spaces-list .dream.active{
 	background-color: var(--saito-primary);
 	color: var(--saito-background-color);
+}
+
+
+/*  Control Window */
+
+.dream-controls {
+	position: absolute;
+	max-width: 80vw;
+	max-height: 80vh;
+	display: grid;
+	grid-template-rows: 1fr 7rem;
+
+	border: 2px solid silver;
+	border-radius: 5px;
+	background-color: var(--saito-black);
+}
+
+.video-preview{
+}
+
+
+.dream-controls .control-panel{
+	align-items: center;
+	justify-content: space-between;
+}
+
+.dream-controls .control-panel .timer {
+	margin-left: 2rem;
 }
