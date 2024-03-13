@@ -286,6 +286,10 @@
     let space = spacekey;
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
+    units_to_destroy = [];
+
+console.log("play assigning hits...");
+
     let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
 
       let msg = "Hits Remaining: " + hits_to_assign;
@@ -919,6 +923,8 @@ if (this.game.state.events.cramner_active == 1) {
   }
 
 
+
+
   playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
 
     let his_self = this;
@@ -955,7 +961,7 @@ if (this.game.state.events.cramner_active == 1) {
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
-      if (filter_func(this.game.deck[0].fhand[faction_hand_idx])) {
+      if (filter_func(this.game.deck[0].fhand[faction_hand_idx][i])) {
 	cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
       }
     }
@@ -2473,8 +2479,8 @@ return;
       this.endTurn();
     } else {
 
-      let msg = "Spring Deploy from: ";
-     
+      let msg = this.returnFactionName(faction) + " - Spring Deploy from:";     
+
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
 	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -2536,6 +2542,7 @@ return;
               his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.addMove("RESETCONFIRMSNEEDED\tall");
               his_self.endTurn();
+	      his_self.available_units_overlay.faded_out = false;
               return;
 
 	    };
@@ -2642,6 +2649,7 @@ does_units_to_move_have_unit = true; }
 	          for (let z = 0; z < units_to_move.length; z++) {
 	            if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
 		      units_to_move.splice(z, 1);
+	              his_self.available_units_overlay.fadeOut(true);
 		      break;
 		    }
 	          }
@@ -2836,6 +2844,7 @@ does_units_to_move_have_unit = true; }
               his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
 	      his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
+	      his_self.available_units_overlay.faded_out = false;
 
 	    },
 
@@ -2933,12 +2942,14 @@ does_units_to_move_have_unit = true; }
 	      for (let z = 0; z < units_to_move.length; z++) {
 	        if (units_to_move[z].faction === f && units_to_move[z].idx == idx) {
 		  units_to_move.splice(z, 1);
+	          his_self.available_units_overlay.fadeOut(true);
 		  break;
 		}
 	      }
 
-	      // movement overlay, so force fadeout
-	      his_self.available_units_overlay.fadeOut(true);
+	      if (units_to_move.length == 0) {
+		his_self.available_units_overlay.faded_out = false;
+	      }
 
 	    } else {
 
@@ -5028,9 +5039,14 @@ does_units_to_move_have_unit = true; }
 
       function(destination_spacekey) {
 	his_self.updateStatus("acknowledge...");
-	his_self.addMove("build\tsea\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
+	// corsair is naval unit, but gets built in port (land --> game.spaces)
+	his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
+
+      null,
+
+      true
 
     );
   }

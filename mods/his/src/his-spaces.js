@@ -485,14 +485,6 @@
       transit_passes = 1;
     }
 
-let debugmode = 0;
-if (space.key == "cagliari") { debugmode = 1; 
-  console.log("!");
-  console.log("!");
-  console.log("!");
-  console.log("cagliari!");
-}
-
     let res = this.returnNearestSpaceWithFilter(
 
       space.key,
@@ -1715,6 +1707,16 @@ try {
     if (this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys++; }
     return controlled_keys;
   }
+  returnProtestantElectorates() {
+    let controlled_keys = [];
+    if (this.isSpaceControlled('augsburg', "protestant")) { controlled_keys.push("augsburg"); }
+    if (this.isSpaceControlled('mainz', "protestant")) { controlled_keys.push("mainz"); }
+    if (this.isSpaceControlled('trier', "protestant")) { controlled_keys.push("trier"); }
+    if (this.isSpaceControlled('cologne', "protestant")) { controlled_keys.push("cologne"); }
+    if (this.isSpaceControlled('wittenberg', "protestant")) { controlled_keys.push("wittenberg"); }
+    if (this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys.push("brandenburg"); }
+    return controlled_keys;
+  }
   returnNumberOfElectoratesControlledByCatholics(political_control=0) {
     let controlled_keys = 0;
     if (political_control == 1) {
@@ -1839,12 +1841,10 @@ try {
   }
 
   returnNumberOfProtestantSpacesInLanguageZone(language="", do_not_count_unrest = 0) {  
-console.log("language zone: " + language);
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (do_not_count_unrest == 0) {
         if (this.game.spaces[key].religion === "protestant" && this.game.spaces[key].unrest == 0) {
-console.log(this.game.spaces[key].name + " -- " + this.game.spaces[key].language);
 	  if (language == "all" || language == "" || this.game.spaces[key].language == language) {
 	    protestant_spaces++;
 	  }

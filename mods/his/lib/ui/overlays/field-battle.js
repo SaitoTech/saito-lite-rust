@@ -157,6 +157,7 @@ class FieldBattleOverlay {
 							.forEach((el) => {
 								el.onclick = (e) => {};
 							});
+							this.updateInstructions("All Hits Assigned");
 						this.mod.endTurn();
 					}
 				};

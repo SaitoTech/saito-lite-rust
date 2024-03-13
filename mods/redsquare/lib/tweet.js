@@ -290,9 +290,8 @@ class Tweet {
 	}
 
 	render(prepend = false) {
-
-		if (this.mod.hidden_tweets.includes(this.tx.signature)){
-			console.log("Not rendering hidden tweet");
+		if (this.mod.hidden_tweets.includes(this.tx.signature)) {
+			console.log('Not rendering hidden tweet');
 			return;
 		}
 
@@ -837,7 +836,9 @@ class Tweet {
 								}
 							}, 50);
 						} else {
-							window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
+							setTimeout(() => {
+								window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
+							}, 300);
 						}
 					}
 				};
@@ -1054,7 +1055,6 @@ class Tweet {
 				};
 			}
 
-
 			let more = document.querySelector(
 				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-more`
 			);
@@ -1063,11 +1063,13 @@ class Tweet {
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
-					this.app.connection.emit("rs-show-tweet-options", this, more);	
-				}
-				
+					this.app.connection.emit(
+						'rs-show-tweet-options',
+						this,
+						more
+					);
+				};
 			}
-
 
 			/*/////////
 			// flag //
@@ -1082,8 +1084,6 @@ class Tweet {
 
 				};
 			}*/
-
-
 		} catch (err) {
 			console.log('ERROR attaching events to tweet: ' + err);
 		}
@@ -1362,7 +1362,7 @@ class Tweet {
 				if (typeof split[1] != 'undefined') {
 					videoId = split[1];
 				}
- 
+
 				if (videoId != null && videoId != 'null') {
 					this.youtube_id = videoId;
 				}

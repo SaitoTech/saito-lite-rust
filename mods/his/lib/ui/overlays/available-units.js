@@ -10,20 +10,24 @@ class AvailableUnitsOverlay {
 		this.ops_spend = 0;
 		this.units_already_moved_by_idx = [];
 		this.added = 0; // just idx tracker
+		this.faded_out = false;
 	}
 
 	hide() {
 		document.querySelector(".available-units-overlay").remove();
+		this.faded_out = false;
 	}
 
 	fadeOut(force=false) {
 		try {
-			if (this.units_already_moved_by_idx.length == 0 || force) {
+			if (this.units_already_moved_by_idx.length == 0 || force == true) {
+				this.faded_out = true;
 				document.querySelector(".movement-overlay .available-units-overlay").style.backgroundColor = "#0009";
 				document.querySelector(".movement-overlay .available-units-overlay").style.opacity = 0.2;
 			}
 		} catch (err) {
 		}
+	  	document.querySelectorAll(".available-units-overlay .army_tile").forEach((el) => { el.onclick = (e) => {}; });
 	}
 
 	renderMove(mobj, faction, spacekey) {
@@ -46,6 +50,8 @@ class AvailableUnitsOverlay {
 	  	let p = this.mod.returnPlayerCommandingFaction(faction);
 	  	let io = this.mod.game.spaces[spacekey].units;
 		this.added = 0;
+
+		if (this.faded_out) { this.fadeOut(true); }
 
 		for (let f in io) {
 	  	  if (this.mod.isAlliedMinorPower(f, faction) || f === faction) {

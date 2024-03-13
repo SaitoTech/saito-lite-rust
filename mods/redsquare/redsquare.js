@@ -2568,13 +2568,23 @@ class RedSquare extends ModTemplate {
         console.log("Loading OG data failed with error: " + err);
       }
 
-      //Insert recent tweets into the index template directly
-      let recent_tweets = await redsquare_self.fetchRecentTweets();
+      // default fallback
+      redsquare_self.social.twitter_description = "🟥 RedSquare P2P Social on Saito";
+      redsquare_self.social.og_description = "🟥 RedSquare P2P Social on Saito";
+      redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
+
+      let image = "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png";
+      redsquare_self.social.og_title = "saito.io RedSquare";
+      redsquare_self.social.twitter_title = "saito.io RedSquare";
+      redsquare_self.social.og_image = image;
+      redsquare_self.social.og_image_url = image;
+      redsquare_self.social.og_image_secure_url = image;
+      redsquare_self.social.twitter_image = image;
 
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self, app.build_number, recent_tweets));
+      res.send(redsquareHome(app, redsquare_self, app.build_number));
       return;
     });
 

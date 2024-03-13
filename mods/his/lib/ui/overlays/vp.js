@@ -28,6 +28,7 @@ class VPOverlay {
   
     hide() {
         this.visible = false;
+        try { document.querySelector(".acknowledge").click(); } catch (err) {}
         this.overlay.hide();
     }
     render() {
@@ -61,15 +62,29 @@ class VPOverlay {
 	}
 
         this.app.browser.addElementToSelector("Victory at 25 VP", '.vp-overlay .help');
-	if (this.mod.game.state.round <= 4) {
-          this.app.browser.addElementToSelector("Protestants must be within 8 VP of the Papacy by the end of Round 4", '.vp-overlay .advice');
-	}
-	if (this.mod.game.state.round > 4) {    
-          this.app.browser.addElementToSelector("Instant win with 8 VP difference in points");
+	if (this.mod.game.players.length == 2) {
+	  if (this.mod.game.state.round <= 4) {
+            this.app.browser.addElementToSelector("Protestants must be within 8 VP of the Papacy by the end of Round 4", '.vp-overlay .advice');
+	  }
+	  if (this.mod.game.state.round > 4) {    
+            this.app.browser.addElementToSelector("Instant win with 8 VP difference in points");
+	  }
+	} else {
+          this.app.browser.addElementToSelector("check your Faction Sheet for auto-win conditions...", '.vp-overlay .advice');
 	}
 
 	this.pullHudOverOverlay();
 
+	this.attachEvents();
+    }
+
+    attachEvents() {
+      try {
+	document.querySelector(".vp-overlay").onclick = (e) => {
+	  this.hide();
+	};
+      } catch (err) {
+      }
     }
 
 }

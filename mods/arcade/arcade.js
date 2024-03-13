@@ -23,7 +23,7 @@ class Arcade extends ModTemplate {
 		//
 		// DEBUGGING MODE
 		//
-		this.debug = false;
+		this.debug = true;
 
 		this.name = 'Arcade';
 
@@ -223,7 +223,10 @@ class Arcade extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, async (res) => {
 			if (res.rows) {
 				for (let record of res.rows) {
-					//console.log(JSON.parse(JSON.stringify(record)));
+					if (this.debug) {
+						console.log(JSON.parse(JSON.stringify(record)));
+					}
+
 					//This is the save openTX
 
 					let game_tx = new Transaction(
@@ -262,6 +265,9 @@ class Arcade extends ModTemplate {
 						let step = JSON.parse(record.step);
 						game_tx.msg.step = step?.game;
 						game_tx.msg.timestamp = step?.timestamp;
+
+						// Make sure an active game (one that has started, will not be considered an open invite)
+						game_tx.msg.players_needed = game_tx.msg.players.length;
 					}
 
 					if (arcade_self.debug) {
@@ -1013,7 +1019,7 @@ class Arcade extends ModTemplate {
 			game.msg.method = txmsg.reason;
 			game.msg.time_finished = txmsg.timestamp;
 		} else {
-			console.warn('Game not found, arcade can\'t process gameover tx');
+			console.warn("Game not found, arcade can't process gameover tx");
 		}
 
 		await this.changeGameStatus(txmsg.game_id, 'over');
@@ -1568,7 +1574,7 @@ class Arcade extends ModTemplate {
 		// Sanity check the tx and make sure we don't already have it
 		//
 		if (!tx || !tx.msg || !tx.signature) {
-			console.error('Invalid Game TX, won\'t add to list', tx);
+			console.error("Invalid Game TX, won't add to list", tx);
 			return false;
 		}
 
@@ -1587,11 +1593,17 @@ class Arcade extends ModTemplate {
 		//Update the game status (open/private/active/close/over)
 		tx.msg.request = list;
 
-		//
-		// Sanity check the target list so my games are grouped together
-		//
-		if (this.isMyGame(tx) && list !== 'over' && list !== 'close') {
-			list = 'mine';
+		if (list !== 'over' && list !== 'close') {
+			if (tx.msg?.options['open-table']) {
+				list = 'open';
+			}
+
+			//
+			// Sanity check the target list so my games are grouped together
+			//
+			if (this.isMyGame(tx)) {
+				list = 'mine';
+			}
 		}
 
 		if (!this.games[list]) {
@@ -1687,8 +1699,6 @@ class Arcade extends ModTemplate {
       }
     }*/
 
-		console.log(game_tx.msg.request);
-
 		return true;
 	}
 
@@ -1736,9 +1746,6 @@ class Arcade extends ModTemplate {
 		for (let key in this.games) {
 			let game = this.games[key].find((g) => g.signature == game_id);
 			if (game) {
-				if (this.debug) {
-					console.log(`Game found in ${key} list`);
-				}
 				return game;
 			}
 		}

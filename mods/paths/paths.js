@@ -98,11 +98,15 @@ class PathsOfGlory extends GameTemplate {
 				if (game_mod.confirm_moves == 0) {
 					game_mod.confirm_moves = 1;
 					game_mod.saveGamePreference('his_expert_mode', 0);
-					window.location.reload();
+					setTimeout(() => {
+						window.location.reload();
+					}, 300);
 				} else {
 					game_mod.confirm_moves = 0;
 					game_mod.saveGamePreference('his_expert_mode', 1);
-					window.location.reload();
+					setTimeout(() => {
+						window.location.reload();
+					}, 300);
 				}
 			}
 		});
@@ -1653,7 +1657,7 @@ class PathsOfGlory extends GameTemplate {
 			console.log('\n\n\n\n');
 
 			this.updateStatus(
-				'<div class=\'status-message\' id=\'status-message\'>Generating the Game</div>'
+				"<div class='status-message' id='status-message'>Generating the Game</div>"
 			);
 
 			//

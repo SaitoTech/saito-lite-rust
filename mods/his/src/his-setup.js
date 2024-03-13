@@ -483,6 +483,8 @@ console.log("\n\n\n\n");
 
 	  this.game.state.starting_round = 7;
 
+	  this.setAllies("france", "ottoman");
+
           // moar debaters
           this.addDebater("papacy", "gardiner-debater");
           this.addDebater("papacy", "canisius-debater");
@@ -608,8 +610,6 @@ console.log("\n\n\n\n");
           this.addArmyLeader("france", "trent", "montmorency");
 
           this.setAllies("papacy", "hapsburg");
-          this.setActivatedPower("papacy", "hapsburg");
-          this.setActivatedPower("protestant", "france");
           this.controlSpace("hapsburg", "genoa");
 
           this.addReformer("protestant", "modena", "zwingli-reformer");

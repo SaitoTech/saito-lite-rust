@@ -86,8 +86,7 @@ class QRScanner extends ModTemplate {
 					rank: 110,
 					callback: async function (app, id, callback) {
 						qr_self.scanner_callback = callback;
-						app.connection.emit('scanner-start-scanner',{});
-						
+						app.connection.emit('scanner-start-scanner', {});
 					}
 				}
 			];
@@ -135,7 +134,9 @@ class QRScanner extends ModTemplate {
 		this.app.browser.addElementToDom(this.returnScannerHTML());
 		//document.body.innerHTML = this.returnScannerHTML();
 		document.querySelector('.close-scanner').onclick = () => {
-			//window.location.reload();
+			// //setTimeout(() => {
+			// 					window.location.reload();
+			// 				}, 300);;
 			document.querySelector('.qrscanner-container').remove();
 			this.stop();
 		};
@@ -167,7 +168,9 @@ class QRScanner extends ModTemplate {
 
 		el.innerHTML = this.returnScannerHTML();
 		document.querySelector('.close-scanner').onclick = () => {
-			window.location.reload();
+			setTimeout(() => {
+				window.location.reload();
+			}, 300);
 		};
 
 		let scanner_self = this;

@@ -59,8 +59,6 @@ class MovementOverlay {
 		let unmoved_units = mobj.unmoved_units;
 		let destination_units = [];
 
-console.log("MOVED: " + JSON.stringify(moved_units));
-
 		//
 		// reset on-chit-ui if no moved units
 		//
@@ -73,7 +71,6 @@ console.log("MOVED: " + JSON.stringify(moved_units));
 		    }
 		  });
 		}
-
 
 		let s = destination;
 		try {

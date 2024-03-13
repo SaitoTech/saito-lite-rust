@@ -265,6 +265,37 @@
       top : 1680px;
       left : 180px;
 }
+.england_colony1_bonus img , .england_colony2_bonus img , .france_colony1_bonus img , .france_colony2_bonus img , .hapsburg_colony1_bonus img , .hapsburg_colony2_bonus img , .hapsburg_colony3_bonus img {
+      width: 100%;
+}
+.england_colony1_bonus {
+      top : 1007px;
+      left : -60px;
+}
+.england_colony2_bonus {
+      top : 1120px;
+      left : -60px;
+}
+.france_colony1_bonus {
+      top : 1230px;
+      left : -60px;
+}
+.france_colony2_bonus {
+      top : 1340px;
+      left : -60px;
+}
+.hapsburg_colony1_bonus {
+      top : 1455px;
+      left : 60px;
+}
+.hapsburg_colony2_bonus {
+      top : 1565px;
+      left : -60px;
+}
+.hapsburg_colony3_bonus {
+      top : 1680px;
+      left : -60px;
+}
 .greatlakes {
       top : 1906px;
       left : 280px;

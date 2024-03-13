@@ -41,6 +41,12 @@ class MenuOverlay {
 		let menu_style = "classic"; 	// classic ==> starting menus, then submenus
 						// simple  ==> one-click up to 9 options
 
+console.log("MENU");
+console.log("MENU");
+console.log("MENU");
+console.log("MENU");
+console.log("MENU");
+console.log(JSON.stringify(menu));
 
 		this.overlay.show(MenuTemplate());
 
@@ -91,6 +97,8 @@ class MenuOverlay {
 			for (let i = 0; i < menu.length; i++) {
 				let id = '';
 				let cost = 100;
+
+console.log("check: " + player + " - " + faction + " - " + ops);
 
 				if (menu[i].check(this.mod, player, faction, ops)) {
 					for (let z = 0; z < menu[i].factions.length; z++) {
@@ -153,6 +161,10 @@ class MenuOverlay {
 					}
 				}
 			}
+
+
+
+console.log("active menu options? " + active_menu_options);
 
 			if (active_menu_options <= 9) {
 				sub_menu(main_menu, sub_menu, move);

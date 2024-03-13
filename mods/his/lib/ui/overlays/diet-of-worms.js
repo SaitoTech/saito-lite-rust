@@ -11,6 +11,7 @@ class DietOfWormsOverlay {
 
 	hide() {
 		this.visible = false;
+                try { document.querySelector(".acknowledge").click(); } catch (err) {}
 		this.overlay.hide();
 	}
 
@@ -156,7 +157,7 @@ class DietOfWormsOverlay {
 		document.querySelector('.diet-overlay .help').innerHTML = html;
 		$('.diet_of_worms_noskip').off();
 		$('.diet_of_worms_noskip').on('click', () => {
-			this.overlay.remove();
+			this.hide();
 		});
 
 		$('.diet_of_worms_end').off();

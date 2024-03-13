@@ -1,6 +1,6 @@
-module.exports = DiplomacyConfirmTemplate = (obj, proposal, proposal_idx=0) => {
+module.exports = DiplomacyConfirmTemplate = (obj, proposal, proposal_idx=0, faction="") => {
 
-	let help = `${obj.mod.returnFactionName(proposal.proposer)} offers the following pact:`;
+	let help = `${obj.mod.returnFactionName(faction)} - ${obj.mod.returnFactionName(proposal.proposer)} offers the following pact:`;
 
 	let terms = obj.mod.convertTermsToText(proposal.terms);
 	let proposal_html = '<ul>';

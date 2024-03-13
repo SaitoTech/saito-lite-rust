@@ -16,11 +16,18 @@ class DiplomacyConfirmOverlay {
 		return;
 	}
 
+	updateInstructions(msg="") {
+	  try {
+	    document.querySelector(".diplomacy-confirm-overlay .help").innerHTML = msg;
+	  } catch (err) {
+	  }
+	}
+
 	render(faction, proposal_idx=0) {
 	  let proposal = this.mod.game.state.diplomacy[proposal_idx];
 	  this.faction = faction;
-	  this.overlay.show(DiplomacyConfirmTemplate(this, proposal, proposal_idx));
-    	  this.attachEvents(faction, proposal_idx=0);
+	  this.overlay.show(DiplomacyConfirmTemplate(this, proposal, proposal_idx, faction));
+    	  this.attachEvents(faction, proposal_idx);
 	}
 
 	attachEvents(faction, proposal_idx=0) {
