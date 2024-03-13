@@ -140,8 +140,12 @@
   max-height: 100vh;
   min-width: 30rem;
   min-height: 20rem;
+
+  /*
+  making overflow hiddent for saito mention list
   overflow-x: hidden;
   overflow-y: hidden;
+  */
 }
 
 .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
@@ -555,10 +559,6 @@
   overflow-y: auto;
   word-break: break-word;
   height: 4.2rem;
-}
-
-.chat-footer .text-input {
-  height: 4.5rem;
 }
 
 .chat-footer .saito-emoji {

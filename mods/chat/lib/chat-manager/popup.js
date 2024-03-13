@@ -397,6 +397,11 @@ class ChatPopup {
 			return;
 		}
 
+		// document.querySelector(`${popup_qs} .saito-input #text-input`).addEventListener("input", function(){
+		//   this.style.height = '0px';
+		//   this.style.height = this.scrollHeight + 'px';
+		// })
+
 		document.querySelector(`${popup_qs} .saito-input #text-input`).addEventListener('keydown', (e) => {				
 			if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
 				console.log('inside @ keycode ////');
@@ -414,16 +419,14 @@ class ChatPopup {
 			   	users, 
 			   	document.querySelector(`${popup_qs} #text-input`), 
 			   	document.querySelector(`${popup_qs} #saito-mentions-list`),
-			   	'textarea'
+			   	'div'
 			   );
-
 
 			}
 
 
-		   e.currentTarget.style.height = "";
-		   e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 300) + "px";
-
+		   //e.currentTarget.style.height = "";
+		   //e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 300) + "px";
 		});
 
 		// add reply functionality

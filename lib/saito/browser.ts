@@ -2277,7 +2277,7 @@ class Browser {
 		return (decimal_separator == '.') ? ',' : '.';
 	}
 
-	addSaitoMentions(users, textarea, listDiv){
+	addSaitoMentions(users, textarea, listDiv, inputType){
 		 const resolveFn = prefix => prefix === ''
       ? users
       : users.filter(user => user.username.startsWith(prefix))
@@ -2316,7 +2316,8 @@ class Browser {
 		  listDiv,
 		  resolveFn,
 		  replaceFn,
-		  menuItemFn
+		  menuItemFn,
+		  inputType
 		)
 	}
 }

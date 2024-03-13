@@ -161,7 +161,7 @@ class Post {
 					e.preventDefault();
 				}
 
-				if (e.keyCode == 50) {
+				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
 					let keys = post_self.input.findKeyOrIdentifier();
 					let users = [];
 					console.log('keys: ', keys);
