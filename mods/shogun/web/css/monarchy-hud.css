@@ -2,10 +2,6 @@
 	column-gap: 1rem;
 }
 
-.game-cardgrid .card {
-	position: relative;
-	height: calc(10vw * 1.6);
-}
 
 .hud-header {
 	background-color: #0005;
@@ -36,12 +32,16 @@
 	top: 7rem;
 }
 
-.hud .cardpile {
+.game-cardgrid .card, .hud .cardpile {
 	/*width: 120px;
 	height: 190px;*/
 
+	position: relative;
 	width: 10vw;
 	height: calc(10vw * 1.6);
+
+	max-width: 120px;
+	max-height: 190px;
 }
 
 .hud .cardpile div:first-child {

@@ -45,15 +45,37 @@ img.animated_elem {
 	overflow: hidden;
 }
 
+.shogun-main{
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+	gap: 2rem;
+	align-items: center;
+	position: relative;
+	height: 200px;
+	top:30%;
+	max-width: 90vw;
+	min-width: 400px;
+}
+
+.shop{
+	height: 10rem;
+	width: 10rem;
+	font-size: 6rem;
+	color: tan;
+	cursor: pointer;
+	border: 5px solid;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 1rem;
+}
+
 .active_card_zone {
 	width: 120px;
 	height: 190px;
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-	left: 5px;
 	display: flex;
-	/*flex-wrap: wrap;*/
+	flex-grow: 1;
 }
 
 .active_card_zone .cardimg {
@@ -138,8 +160,11 @@ img,
 	right: 5px;
 	top: 5px;
 	/*visibility: hidden;*/
-	width: 140px;
-	height: 150px;
+	width: 10vw;
+	height: calc(10vw * 1.6);
+
+	max-width: 120px;
+	max-height: 190px;
 }
 
 .rules-overlay {
@@ -175,57 +200,6 @@ img,
 	}
 }
 
-.attack_overlay {
-	background-color: var(--dominion-dark);
-	border-radius: 3px;
-	font-family: 'Papyrus';
-	border: solid var(--dominion-parchment) 1px;
-	color: ghostwhite;
-	padding: 1em;
-	min-width: min(500px, 95vw);
-}
-
-.attack_overlay h1,
-.attack_overlay h2 {
-	font-size: 1.5em;
-	color: ghostwhite;
-	text-align: center;
-}
-
-.attack_overlay .overlay-img {
-	min-width: 150px;
-	max-width: 180px;
-	margin-right: 20px;
-}
-
-.attack_overlay .overlay-input {
-	display: grid;
-	grid-template-columns: 1fr 2fr;
-}
-
-.attack_overlay .overlay_content {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-}
-
-.attack_details {
-	display: grid;
-	align-items: center;
-	max-width: 250px;
-	grid-gap: 10px;
-	grid-template-rows: 10px auto;
-	grid-template-columns: repeat(auto-fit, minmax(auto, 100px));
-}
-
-.attack_details .overlay-msg {
-	grid-column: 1 / 4;
-}
-
-.aoc {
-	max-width: 100px;
-}
 
 .board-display {
 	position: absolute;
@@ -235,135 +209,14 @@ img,
 	font-size: 28px;
 }
 
-.cardstacks {
-	position: absolute;
-	display: grid;
-	grid-gap: 1px;
-	grid-template-columns: repeat(30, 20px);
-	width: 660px;
-	transition: opacity 1s ease;
-	margin: 60px 30px 250px 30px;
-}
 
-.cardstacks .cardpile {
-	width: 100px;
-	height: 85px;
-	grid-column: span 5;
-	position: relative;
-}
-
-.cardstacks .cardpile:nth-child(n + 7) {
-	grid-column: span 6;
-	width: 120px;
-	height: 100px;
-}
-
-/* Default is compact square 1:1*/
-
-.cardstacks.old {
-	position: absolute;
-	display: grid;
-	grid-gap: 5px;
-	grid-template-columns: repeat(30, 20px);
-	width: 770px;
-	padding-left: 30px;
-	transition: opacity 1s ease;
-	margin: 60px 30px 250px 30px;
-}
-
-.cardstacks.old .cardpile {
-	width: 100px;
-	height: 160px;
-	grid-column: span 5;
-	position: relative;
-}
-
-.cardstacks.old .cardpile:nth-child(n + 7) {
-	grid-column: span 6;
-	width: 120px;
-	height: 192px;
-}
-
-.cardstacks.old .cardpile:nth-child(n + 7) img {
-	transform: translateX(5%);
-}
-
-/* 16:9 configuration */
-.cardstacks.long {
-	width: 1150px;
-	height: 280px;
-	padding-top: 20px;
-	grid-template-columns: repeat(30, auto);
-	grid-template-rows: 90px 150px;
-}
-
-.cardstacks.long .cardpile img {
-	transform: rotate(-90deg) translate(40%, 25%);
-}
-
-.cardstacks.long .cardpile:nth-child(n + 7) {
-	grid-column: span 3;
-	width: 100px;
-	height: 160px;
-}
-.cardstacks.long .cardpile:nth-child(n + 7) img {
-	transform: unset;
-}
-
-/* 4:3 card configuration */
-.cardstacks.large {
-	width: 1280px;
-	grid-template-columns: repeat(26, 1fr);
-	grid-template-rows: repeat(12, 1fr);
-}
-
-.cardstacks.large .cardpile {
-	margin: 2px;
-	width: 120px;
-	height: 190px;
-	grid-row-end: span 4;
-	grid-column-end: span 3;
-}
-
-.cardstacks.large .cardpile:nth-child(n + 7) {
-	grid-column: span 4;
-	grid-row-end: span 6;
-	width: 180px;
-	height: 270px;
-	transform: translateY(7%);
-}
-
-.cardstacks.large .cardpile:nth-child(1) {
-	grid-column-start: 1;
-	grid-row-start: 1;
-}
-.cardstacks.large .cardpile:nth-child(2) {
-	grid-column-start: 1;
-	grid-row-start: 5;
-}
-.cardstacks.large .cardpile:nth-child(3) {
-	grid-column-start: 1;
-	grid-row-start: 9;
-}
-.cardstacks.large .cardpile:nth-child(4) {
-	grid-column-start: 4;
-	grid-row-start: 1;
-}
-.cardstacks.large .cardpile:nth-child(5) {
-	grid-column-start: 4;
-	grid-row-start: 5;
-}
-.cardstacks.large .cardpile:nth-child(6) {
-	grid-column-start: 4;
-	grid-row-start: 9;
-}
 
 .game-cardbox {
-	width: 40vh;
-	max-width: 350px;
+	width: 30vh;
+	max-width: 240px;
 	pointer-events: none;
-	height: 65vh;
-	max-height: 600px;
+	height: 48vh;
+	max-height: 384px;
 }
 
 /* Card Hud Deal animation */

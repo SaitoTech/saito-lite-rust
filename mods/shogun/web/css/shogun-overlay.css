@@ -1,0 +1,122 @@
+
+.overlay-img {
+	position: relative;
+	width: 100px;
+	height: auto;
+}
+
+.attack_overlay {
+	background-color: var(--dominion-dark);
+	border-radius: 3px;
+	font-family: 'Papyrus';
+	border: solid var(--dominion-parchment) 1px;
+	color: ghostwhite;
+	padding: 1em;
+	min-width: min(500px, 95vw);
+}
+
+.attack_overlay h1,
+.attack_overlay h2 {
+	font-size: 1.5em;
+	color: ghostwhite;
+	text-align: center;
+}
+
+.attack_overlay .overlay-img {
+	width: 150px;
+}
+
+.attack_overlay .overlay-input {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+}
+
+.attack_overlay .overlay_content {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.attack_details {
+	display: grid;
+	align-items: center;
+	max-width: 250px;
+	grid-gap: 10px;
+	grid-template-rows: 10px auto;
+	grid-template-columns: repeat(auto-fit, minmax(auto, 100px));
+}
+
+.attack_details .overlay-msg {
+	grid-column: 1 / 4;
+}
+
+.aoc {
+	max-width: 100px;
+}
+
+
+
+.shop-overlay{
+	max-width: 95vw;
+	max-height: 90vh;
+	background-color: dimgray;
+	border: 2px solid black;
+	padding: 2rem;
+	display: grid;
+	grid-template-rows: auto auto;
+	grid-template-columns: auto auto;
+	grid-gap: 1rem;
+}
+
+.shop-title {
+	font-size: 2.4rem;
+	color: black;
+	text-shadow: 1px 0px 3px white;
+	text-align: center;
+	margin: 1rem;
+}
+
+.cardbox-header{
+	font-size: 16px;
+	color: black;
+	text-align: center;
+}
+
+.cardstacks {
+	display: grid;
+	grid-gap: 1px;
+	grid-template-columns: repeat(30, 20px);
+	width: 630px;
+	transition: opacity 1s ease;
+	margin: 1rem;
+}
+
+.cardstacks .cardpile {
+	width: 100px;
+	height: 85px;
+	grid-column: span 5;
+	position: relative;
+}
+
+.cardstacks .cardpile:nth-child(n + 7) {
+	grid-column: span 6;
+	width: 120px;
+	height: 100px;
+}
+
+
+
+/*** Move to shogun-cardbox eventually ***/
+.card-preview {
+	width: 240px;
+}
+
+.card-preview .game-cardbox {
+	position: relative;
+	width: 100%;
+	height: auto;
+	top: unset;
+	left: unset;
+	transform: unset;
+}
