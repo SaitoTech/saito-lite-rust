@@ -5,7 +5,7 @@
   padding: 1rem;
   border-radius: 0.5rem;
   max-height: 95vh;
-  overflow: visible;
+  overflow-y: auto;
 }
 
 .tweet-overlay-content {
@@ -112,6 +112,8 @@
 .post-tweet-img-preview:hover i {
   display: flex;
 }
+
+
 
 .post-tweet-button, .post-delete-button {
   width: 20rem;

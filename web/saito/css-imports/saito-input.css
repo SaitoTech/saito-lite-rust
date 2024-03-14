@@ -265,63 +265,6 @@ emoji-picker {
 	color: var(--saito-white);
 }
 
-
-/* saito mentions list */
-.saito-mentions-list {
-  background-color: var(--saito-background-color);
-  position: absolute;
-  z-index: 104;
-  color: var(--saito-font-color);
-  max-height: 30rem;
-  border: 1px solid var(--saito-border-color);
-  overflow-y: scroll;
-  font-size: 1.6rem;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0 0.5rem 0.2rem;
-}
-
-.saito-mentions-list.hidden {
-  border: none;
-}
-
-.saito-mentions-list .menu-item {
-	padding: 0.5rem;
-}
-
-.saito-mentions-list .saito-identicon {
-	width: 3rem;
-	height: 3rem;
-}
-
-.menu-item {
-  cursor: default;
-  padding: 1rem;
-  color: var(--saito-font-color);
-}
-
-.menu-item.selected {
-  background-color: var(--saito-primary);
-  color: white;
-}
-
-.menu-item:hover {
-  cursor: pointer;
-}
-
-.saito-mentions-contact {
-  cursor: pointer;
-  display: flex;
-  gap: 0.5rem;
-  width: 100%;
-  align-items: center;
-  height: 4rem;
-  padding: 0.75rem 0.5rem;
-}
-
-.saito-mentions-contact:hover .menu-item {
-  background-color: #fafafa;
-  color: var(--saito-font-color-inverse); 
-}
  
 
 @media only screen and (max-width: 768px) {
