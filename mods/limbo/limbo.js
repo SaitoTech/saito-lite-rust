@@ -2,7 +2,7 @@ const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const DreamControls = require("./lib/dream-controls");
-//const VideoBox = require('./../../lib/saito/ui/saito-videobox/video-box');
+const DreamSpace = require("./lib/dream-space");
 const LimboMain = require('./lib/main');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
 
@@ -36,8 +36,8 @@ class Limbo extends ModTemplate {
 
 		//Browsers
 		this.dreamer = null;
-		this.upstream = null;
-		this.downstream = [];
+		this.upstream = new Map();
+		this.downstream = new Map();
 		//
 
 		app.connection.on("limbo-toggle-video", ()=> {
@@ -55,6 +55,61 @@ class Limbo extends ModTemplate {
 				})
 			}
 		});
+
+
+
+		app.connection.on("stun-track-event", (peerId, event) => {
+			if (!this.dreamer || !this.upstream.has(peerId) || this.dreamer === this.publicKey) { 
+				return; 
+			}
+
+			console.log('STUN: another remote stream added', event.track);
+
+			if (event.streams.length === 0) {
+				this.combinedStream.addTrack(event.track);
+			} else {
+				event.streams[0].getTracks().forEach((track) => {
+					this.combinedStream.addTrack(track);
+				});
+			}
+
+			//Forward to peers if peers already established!
+			this.downstream.forEach((key, pc)=> {
+				if (event.streams.length === 0) {
+					pc.addTrack(event.track);
+				} else {
+					event.streams[0].getTracks().forEach((track) => {
+						pc.addTrack(track);
+					});
+				}
+
+			});
+
+			this.space.render(this.combinedStream);
+		});
+
+		app.connection.on("stun-new-peer-connection", async (publicKey, peerConnection) => {
+			if (!this.dreamer) { 
+				return; 
+			}
+
+			console.log("New Stun peer connection");
+
+			if (this.downstream.has(publicKey)){
+				console.log("Forwardd audio/video!");
+				this.combinedStream.getTracks().forEach((track) => {
+					peerConnection.addTrack(track, this.combinedStream);
+				})
+				//Save peerConnection in downstream
+				this.downstream.set(publicKey, peerConnection);
+			}
+
+			if (this.upsteam.has(publicKey)){
+				this.upstream.set(publicKey, peerConnection);
+			}
+		});
+
+
 	}
 
 	async initialize(app) {
@@ -159,6 +214,7 @@ class Limbo extends ModTemplate {
 			this.addComponent(this.main);
 
 			this.controls = new DreamControls(this.app, this, "#limbo-main");
+			this.space = new DreamSpace(this.app, this, "#limbo-main");
 		}
 
 		for (const mod of this.app.modules.returnModulesRespondingTo(
@@ -328,6 +384,7 @@ class Limbo extends ModTemplate {
 		this.dreamer = dreamer;
 		this.sendJoinTransaction();
 		this.app.connection.emit("limbo-open-dream", dreamer);
+		this.combinedStream = new MediaStream();
 	}
 
 	async sendDreamTransaction() {
@@ -353,8 +410,8 @@ class Limbo extends ModTemplate {
 		if (this.app.BROWSER) {
 			if (this.publicKey == sender) {
 				this.dreamer = this.publicKey;
-				this.upstream = null;
-				this.downstream = [];
+				this.upstream = new Map();
+				this.downstream = new Map();
 				this.copyInviteLink();
 			}
 		}
@@ -388,9 +445,10 @@ class Limbo extends ModTemplate {
 		//
 		// Don't process if not our dreamer
 		//
-		if (this.app.BROWSER && this.dreamer !== sender){
+		if (this.dreamer !== sender){
 			return;
 		}
+
 		this.exitSpace();
 	}
 
@@ -431,6 +489,20 @@ class Limbo extends ModTemplate {
 		if (!this.dreams[dreamer].includes(sender)) {
 			this.dreams[dreamer].push(sender);
 		}
+
+		if (this.app.BROWSER){
+			if (this.publicKey !== sender && this.combinedStream && this.downstream.size < 10){
+				this.sendOfferTransaction(sender);
+				this.downstream.set(sender, null);
+				setTimeout(()=> {
+					//Rescind offer after 90 seconds if not taken up
+					if (this.downstream.has(sender) && !this.downstream.get(sender)){
+						this.downstream.delete(sender);
+					}
+				}, 90000);
+			}	
+		}
+		
 	}
 
 	async sendLeaveTransaction() {
@@ -481,6 +553,63 @@ class Limbo extends ModTemplate {
 				break;
 			}
 		}
+
+		if (this.downstream.has(sender)){
+			let pc = this.downstream.get(sender);
+			if (pc){
+				try{
+					pc.close();	
+				}catch(err){
+					console.error(err);
+				}
+			}
+			this.downstream.delete(sender);
+		}
+
+		if (this.upstream.has(sender)){
+			this.upstream.delete(sender);
+			this.sendJoinTransaction();
+		}
+	}
+
+
+	async sendOfferTransaction(target){
+		
+		if (!this.dreamer){
+			console.error("No dreamer to join");
+		}
+
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				target
+			);
+
+		newtx.msg = {
+			module: this.name,
+			request: 'offer dream',
+			dreamer: this.dreamer
+		};
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+	}
+
+
+	receiveOfferTransaction(sender, tx){
+		if (!this.app.BROWSER){
+			return;
+		}
+		if (!this.dreamer || this.upstream.size > 0){
+			return;
+		}
+
+		this.upstream.set(sender, 1);
+
+		//Attempt to get connection
+		this.stun.createPeerConnection(sender);
+
 	}
 
 	onConfirmation(blk, tx, conf) {
@@ -514,6 +643,11 @@ class Limbo extends ModTemplate {
 					}
 					if (message.request === 'leave dream') {
 						this.receiveLeaveTransaction(sender, tx);
+					}
+					if (message.request === "offer dream"){
+						this.receiveOfferTransaction(sender, tx);
+						//Important, we don't need server rebroadcasting this or standard UI updates
+						return;
 					}
 
 					this.app.connection.emit('limbo-populated', "tx");
@@ -577,6 +711,11 @@ class Limbo extends ModTemplate {
 			if (txmsg.request === 'leave dream') {
 				this.receiveLeaveTransaction(sender, tx);
 			}
+			if (txmsg.request === "offer dream"){
+				this.receiveOfferTransaction(sender, tx);
+				//Important, we don't need server rebroadcasting this or standard UI updates
+				return;
+			}
 
 			this.app.connection.emit('limbo-populated', "tx");
 			if (txmsg?.dreamer === this.dreamer){
@@ -628,9 +767,15 @@ class Limbo extends ModTemplate {
 	exitSpace() {
 		this.dreamer = null;
 
+		this.downstream.forEach((key, value) => {
+			if (value){
+				value.close();
+			}
+		});
+
 		// Need to notify and close these peer connections
-		this.upstream = null;
-		this.downstream = null;
+		this.upstream.clear();
+		this.downstream.clear();
 
 		this.stop();
 
