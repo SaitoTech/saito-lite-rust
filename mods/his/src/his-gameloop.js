@@ -34,6 +34,14 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+
+          //
+          // TODO - sanity placement here as earlier did not catch everything
+          // maybe eliminate redundancy in the future.
+	  //
+          this.returnOverstackedUnitsToCapitals();
+
+
 this.updateLog(`###############`);
 this.updateLog(`### Round ${this.game.state.round} ###`);
 this.updateLog(`###############`);
@@ -255,6 +263,16 @@ if (this.game.options.scenario == "is_testing") {
 	}
 
 	if (mv[0] === "show_overlay") {
+
+/***
+this.welcome_overlay.renderCustom({
+  text : "This is our test",
+  title : "Clement VII",
+  img : "/his/img/backgrounds/chateaux.png",
+  card : "006",
+});
+return;
+***/
 
 	  //
 	  // hide any cardbox
@@ -1737,6 +1755,10 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 
 	if (mv[0] === "is_testing") {
 
+          // SCHMALKALDIC LEAGUE
+          let deck = this.returnDeck();
+          deck['013'].onEvent(this, "protestant");
+
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -2928,6 +2950,8 @@ console.log("faction has units in space!");
 	  let faction = mv[1];
 	  let from = mv[2];
 	  let to = mv[3];
+
+	  this.updateLog(this.returnFactionName(faction) + " retreats from " + this.returnSpaceName(from) + " to " + this.returnSpaceName(to));
 
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];
@@ -7946,7 +7970,7 @@ console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defende
 	    if (x >= 5) { defender_hits++; }
 	  }
 
-this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) + " vs " + this.popup(this.game.state.theological_debate.defender_debater) + ` [${attacker_hits}/${defender_hits}]`);
+	  this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) + " vs " + this.popup(this.game.state.theological_debate.defender_debater) + ` [${attacker_hits}/${defender_hits}]`);
 
 	  //
 	  //
@@ -9200,13 +9224,27 @@ if (this.game.state.round == 2) {
 
 	if (mv[0] === "declare_war" || mv[0] === "set_enemies") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  let f1 = mv[1];
 	  let f2 = mv[2];
+	  let skip_natural_ally_intervention = 0;
+	  if (parseInt(mv[3])) { skip_natural_ally_intervention = 1; }
 
 	  this.updateLog(this.returnFactionName(f1) + " declares war on " + this.returnFactionName(f2));
 
   	  this.setEnemies(f1, f2);
-	  this.game.queue.splice(qe, 1);
+
+	  if (!skip_natural_ally_intervention) {
+	    if (f2 == "scotland") {
+	      his_self.game.queue.push(`natural_ally_intervention\tfrance\tscotland\t${f1}\t2\t${this.returnFactionName(f1)} declares war on Scotland`);
+	    }
+	    if (f2 == "venice") {
+	      his_self.game.queue.push(`natural_ally_intervention\tpapacy\tvenice\t${f1}\t2\t${this.returnFactionName(f1)} declares war on Venice`);
+	    }
+	  }
+
+
 	  this.displayWarBox();
 
 	  return 1;

@@ -1676,9 +1676,17 @@ if (this.game.state.events.cramner_active == 1) {
     //
     // mandatory event cards effect first, then 2 OPS
     //
-    let deck = this.returnDeck();
+    let deck = this.returnDeck(true); // removed don't get evented
+    let event_this = false;
+    let can_event_this = false;
 
-    if (deck[card].type === "mandatory" && deck[card].canEvent(this, faction)) {
+    try {
+      if (deck[card].type === "mandatory" && deck[card].canEvent(this, faction)) {
+        event_this = true;
+      }
+    } catch (err) {}
+
+    if (event_this) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -1686,7 +1694,12 @@ if (this.game.state.events.cramner_active == 1) {
 
       let html = `<ul>`;
       html    += `<li class="card" id="ops">play for ops</li>`;
-      if (deck[card].canEvent(this, faction) && !this.game.state.cards_evented.includes(card)) {
+      try {
+        if (deck[card].canEvent(this, faction) && !this.game.state.cards_evented.includes(card)) {
+  	  can_event_this = true;
+        }
+      } catch (err) {}
+      if (can_event_this) {
         html    += `<li class="card" id="event">play for event</li>`;
       }
       html    += `</ul>`;
@@ -1814,6 +1827,9 @@ if (this.game.state.events.cramner_active == 1) {
       html    += `<li class="card" id="${faction}">${faction}</li>`;
       for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
          html    += `<li class="card" id="${this.game.state.activated_powers[faction][i]}">${this.game.state.activated_powers[faction][i]}</li>`;
+         for (let z = 0; z < this.game.state.activated_powers[this.game.state.activated_powers[faction][i]].length; z++) {
+	   html += `<li class="card" id="${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}">${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}</li>`;
+	 }
       }
       html    += `</ul>`;
 

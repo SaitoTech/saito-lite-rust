@@ -10,6 +10,11 @@ between this implementation and the standard game and information on known bugs
 in the system.
 
 
+TODO:
+
+- "declare_war" -> 6. Check for Phony War: If the declaration of war was against Scotland or Venice and a major power intervened, add a “Phony War –1 VP” marker to the Bonus VP box of the declaring power. That power loses this VP until the marker is removed. Remove the marker once a land combat or assault occurs between that declaring power and either the target minor or the major power who intervened on behalf of that minor. If peace is made with the intervening major power before such a combat or assault occurs, the –1 VP becomes permanent.
+
+
 DIFFERENCES:
 
 The original game is so complicated that it is challenging to push all of the 

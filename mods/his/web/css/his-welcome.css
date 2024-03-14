@@ -4,6 +4,17 @@
 	border-radius: 2rem;
 }
 
+.welcome-card {
+    position: relative;
+    display: block;
+    right: 5rem;
+    width: 30vw;
+    transform: rotate(5deg);
+    top: 0px;
+    float: right;
+    margin-top: 8vh;
+}
+
 .welcome-england {
 	background-image: url('/his/img/backgrounds/england.png');
 	background-size: cover;
@@ -74,3 +85,11 @@
 	padding: 1rem;
 	background: #0005;
 }
+
+
+@media screen and (max-width: 900px) {
+  .welcome-card { 
+    display:none;
+  }
+}
+
