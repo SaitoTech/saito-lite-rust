@@ -223,6 +223,8 @@
   canFactionMoveIntoSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
+    // maybe space is controlled by minor power but we are allied with or enemies of actual controller
+    if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
     if (cf === faction) { return 1; }
     if (this.areEnemies(faction, cf)) { return 1; }
     if (this.areAllies(faction, cf)) { return 1; }
@@ -1201,6 +1203,30 @@
     return 0;
   }
 
+  doesPlayerHaveLandUnitsInSpace(p1, spacekey) {
+    for (let f in this.game.spaces[spacekey].units) {
+      if (this.returnPlayerCommandingFaction(p1) == p1) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+          if (this.game.spaces[key].units[f][i].type === "regular" || this.game.spaces[key].units[f][i].type === "cavalry" || this.game.spaces[key].units[f][i].type === "mercenary") {
+            return 1;
+          }
+        }
+      }
+    }
+    return 0;
+  }
+  doesFactionHaveLandUnitsInSpace(faction, key) {
+    if (this.game.spaces[key]) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+          if (this.game.spaces[key].units[faction][i].type === "regular" || this.game.spaces[key].units[faction][i].type === "cavalry" || this.game.spaces[key].units[faction][i].type === "mercenary") {
+  	    return 1;
+          }
+        }
+      }
+    }
+    return 0;
+  }
   doesFactionHaveNavalUnitsInSpace(faction, key) {
     if (this.game.spaces[key]) {
       if (this.game.spaces[key].units[faction]) {

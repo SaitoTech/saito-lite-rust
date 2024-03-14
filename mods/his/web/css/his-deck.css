@@ -1,11 +1,18 @@
 .deck-overlay {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-	column-gap: 2rem;
-	row-gap: 2rem;
-	max-width: 90vw;
-	max-height: 90vh;
-	overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2rem;
+  row-gap: 2rem;
+  width: 90vw;
+  height: min-content;
+  max-height: 90vh;
+  overflow: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.saito-overlay:has(> .deck-overlay) {
+  box-shadow: none;
 }
 
 .deck-overlay .card {

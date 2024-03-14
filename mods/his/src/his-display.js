@@ -2184,12 +2184,12 @@ try {
 
 
 
-  returnCardImage(cardname) {
+  returnCardImage(cardname, faction="") {
 
     let cardclass = "cardimg";
     let deckidx = -1;
     let card;
-    let cdeck = this.returnDeck();
+    let cdeck = this.returnDeck(true); // include removed cards
     let ddeck = this.returnDiplomaticDeck();
 
     if (cardname === "pass") {
@@ -2233,13 +2233,13 @@ try {
     //
     if (deckidx == 0) { 
       if (this.deck[cardname]) {
-        if (!this.deck[cardname].canEvent(this, "")) {
+        if (!this.deck[cardname].canEvent(this, faction)) {
           html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
         }
       }
     }
     if (deckidx == 1) { 
-      if (!this.diplomatic_deck[cardname].canEvent(this, "")) {
+      if (!this.diplomatic_deck[cardname].canEvent(this, faction)) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
     }

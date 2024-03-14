@@ -9,76 +9,76 @@
   //
   returnDeclarationOfWarCost(f1, f2) {
     if (f1 == "ottoman") {
-      if (f1 == "ottoman") 	{ return 0; }
-      if (f1 == "hapsburg") 	{ return 2; }
-      if (f1 == "england") 	{ return 2; }
-      if (f1 == "france") 	{ return 2; }
-      if (f1 == "papacy") 	{ return 2; }
-      if (f1 == "protestant") 	{ return 2; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 0; }
-      if (f1 == "venice") 	{ return 1; }
+      if (f2 == "ottoman") 	{ return 0; }
+      if (f2 == "hapsburg") 	{ return 2; }
+      if (f2 == "england") 	{ return 2; }
+      if (f2 == "france") 	{ return 2; }
+      if (f2 == "papacy") 	{ return 2; }
+      if (f2 == "protestant") 	{ return 2; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 0; }
+      if (f2 == "venice") 	{ return 1; }
     }
     if (f1 == "hapsburg") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 2; }
-      if (f1 == "england") 	{ return 3; }
-      if (f1 == "france") 	{ return 3; }
-      if (f1 == "papacy") 	{ return 4; }
-      if (f1 == "protestant") 	{ return 0; }
-      if (f1 == "genoa") 	{ return 2; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 1; }
-      if (f1 == "venice") 	{ return 2; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 2; }
+      if (f2 == "england") 	{ return 3; }
+      if (f2 == "france") 	{ return 3; }
+      if (f2 == "papacy") 	{ return 4; }
+      if (f2 == "protestant") 	{ return 0; }
+      if (f2 == "genoa") 	{ return 2; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 1; }
+      if (f2 == "venice") 	{ return 2; }
     }
     if (f1 == "england") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 1; }
-      if (f1 == "england") 	{ return 0; }
-      if (f1 == "france") 	{ return 3; }
-      if (f1 == "papacy") 	{ return 3; }
-      if (f1 == "protestant") 	{ return 2; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 1; }
-      if (f1 == "venice") 	{ return 0; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 1; }
+      if (f2 == "england") 	{ return 0; }
+      if (f2 == "france") 	{ return 3; }
+      if (f2 == "papacy") 	{ return 3; }
+      if (f2 == "protestant") 	{ return 2; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 1; }
+      if (f2 == "venice") 	{ return 0; }
     }
     if (f1 == "france") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 3; }
-      if (f1 == "england") 	{ return 4; }
-      if (f1 == "france") 	{ return 0; }
-      if (f1 == "papacy") 	{ return 3; }
-      if (f1 == "protestant") 	{ return 2; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 2; }
-      if (f1 == "venice") 	{ return 1; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 3; }
+      if (f2 == "england") 	{ return 4; }
+      if (f2 == "france") 	{ return 0; }
+      if (f2 == "papacy") 	{ return 3; }
+      if (f2 == "protestant") 	{ return 2; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 2; }
+      if (f2 == "venice") 	{ return 1; }
     }
     if (f1 == "papacy") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 4; }
-      if (f1 == "england") 	{ return 3; }
-      if (f1 == "france") 	{ return 3; }
-      if (f1 == "papacy") 	{ return 0; }
-      if (f1 == "protestant") 	{ return 0; }
-      if (f1 == "genoa") 	{ return 2; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 0; }
-      if (f1 == "venice") 	{ return 2; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 4; }
+      if (f2 == "england") 	{ return 3; }
+      if (f2 == "france") 	{ return 3; }
+      if (f2 == "papacy") 	{ return 0; }
+      if (f2 == "protestant") 	{ return 0; }
+      if (f2 == "genoa") 	{ return 2; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 0; }
+      if (f2 == "venice") 	{ return 2; }
     }
     if (f1 == "protestant") {
-      if (f1 == "ottoman") 	{ return 2; }
-      if (f1 == "hapsburg") 	{ return 0; }
-      if (f1 == "england") 	{ return 2; }
-      if (f1 == "france") 	{ return 2; }
-      if (f1 == "papacy") 	{ return 0; }
-      if (f1 == "protestant") 	{ return 0; }
-      if (f1 == "genoa") 	{ return 1; }
-      if (f1 == "hungary") 	{ return 0; }
-      if (f1 == "scotland") 	{ return 0; }
-      if (f1 == "venice") 	{ return 1; }
+      if (f2 == "ottoman") 	{ return 2; }
+      if (f2 == "hapsburg") 	{ return 0; }
+      if (f2 == "england") 	{ return 2; }
+      if (f2 == "france") 	{ return 2; }
+      if (f2 == "papacy") 	{ return 0; }
+      if (f2 == "protestant") 	{ return 0; }
+      if (f2 == "genoa") 	{ return 1; }
+      if (f2 == "hungary") 	{ return 0; }
+      if (f2 == "scotland") 	{ return 0; }
+      if (f2 == "venice") 	{ return 1; }
     }
     return 0;
   }
@@ -102,7 +102,9 @@
 
     for (let i = 0; i < na.length; i++) {
       if (na[i] != faction) {
-	rv.push({ faction : na[i] , cost : this.returnDeclarationOfWarCost(na[i], faction) });
+        if (this.returnDeclarationOfWarCost(faction, na[i]) > 0) {
+	  rv.push({ faction : na[i] , cost : this.returnDeclarationOfWarCost(faction, na[i]) });
+        }
       }
     } 
 

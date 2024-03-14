@@ -72,6 +72,7 @@
     this.game.state.may_colonize['france'] = 1;
     this.game.state.may_colonize['hapsburg'] = 1;
 
+    this.game.state.events.ottoman_piracy_wartburg = 0;
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
 
@@ -1006,8 +1007,11 @@ if (this.game.state.scenario != "is_testing") {
 	this.game.state.excommunicated.splice(i, 1);
 	i--;
 
+        this.displaySpace(s);
+
       }
     }
+
 
   }
   restoreMilitaryLeaders() {
