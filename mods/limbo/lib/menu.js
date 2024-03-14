@@ -64,17 +64,6 @@ class LimboMenu {
 		let button = document.getElementById("new-space");
 		if (button){
 			button.onclick = async () => {
-				let c = true;
-				if (this.dreamer){
-					c = await sconfirm("Leave current space?");
-					if (c){
-						await this.mod.sendLeaveTransaction();	
-					}else{
-						return;
-					}
-				}
-
-				this.mod.exitSpace();
 				this.mod.broadcastDream();
 			}
 		}
@@ -82,7 +71,12 @@ class LimboMenu {
 		let alt_button = document.getElementById("exit-space");
 		if (alt_button){
 			alt_button.onclick = async () => {
-				await this.mod.sendKickTransaction();
+				if (this.mod.dreamer == this.mod.publicKey){
+					await this.mod.sendKickTransaction();	
+				}else{
+					await this.mod.sendLeaveTransaction();	
+				}
+				
 				this.mod.exitSpace();
 			}
 		}

@@ -25,7 +25,13 @@ class Limbo extends ModTemplate {
 		this.stun = null;
 		this.rendered = false;
 
-		//Server
+		/*
+		Indexed by public key of dreamer
+		contains
+		ts: (int) start time
+		shared: (array) people in the dream including dreamer
+		description: (string) 
+		*/
 		this.dreams = {};
 
 		//Browsers
@@ -168,6 +174,11 @@ class Limbo extends ModTemplate {
 
 		await super.render();
 
+		if (this.app.browser.returnURLParameter('dream')) {
+			let dreamer = this.app.crypto.base64ToString(this.app.browser.returnURLParameter('dream'));
+			this.joinDream(dreamer);
+		}
+
 		this.rendered = true;
 	}
 
@@ -197,7 +208,7 @@ class Limbo extends ModTemplate {
 						});
 					}
 
-					this.app.connection.emit('limbo-populated');
+					this.app.connection.emit('limbo-populated', "service");
 				}
 			);
 		}
@@ -316,6 +327,7 @@ class Limbo extends ModTemplate {
 	joinDream(dreamer) {
 		this.dreamer = dreamer;
 		this.sendJoinTransaction();
+		this.app.connection.emit("limbo-open-dream", dreamer);
 	}
 
 	async sendDreamTransaction() {
@@ -504,7 +516,11 @@ class Limbo extends ModTemplate {
 						this.receiveLeaveTransaction(sender, tx);
 					}
 
-					this.app.connection.emit('limbo-populated');
+					this.app.connection.emit('limbo-populated', "tx");
+					if (message?.dreamer === this.dreamer){
+						this.app.connection.emit("limbo-open-dream", this.dreamer);
+					}
+
 
 					//
 					// only servers notify lite-clients
@@ -562,7 +578,10 @@ class Limbo extends ModTemplate {
 				this.receiveLeaveTransaction(sender, tx);
 			}
 
-			this.app.connection.emit('limbo-populated');
+			this.app.connection.emit('limbo-populated', "tx");
+			if (txmsg?.dreamer === this.dreamer){
+				this.app.connection.emit("limbo-open-dream", this.dreamer);
+			}
 		}
 
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
@@ -614,6 +633,8 @@ class Limbo extends ModTemplate {
 		this.downstream = null;
 
 		this.stop();
+
+		this.app.connection.emit("limbo-open-dream");
 	}
 
 	createLink() {

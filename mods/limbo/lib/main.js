@@ -1,7 +1,9 @@
 const JSON = require('json-bigint');
 const LimboMainTemplate = require('./main.template');
 const LimboMenu = require('./menu');
-//const ArcadeInitializer = require('./initializer');
+const LimboSidebar = require("./limbo-sidebar");
+const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
+
 const SaitoSidebar = require('./../../../lib/saito/ui/saito-sidebar/saito-sidebar');
 
 class LimboMain {
@@ -12,10 +14,25 @@ class LimboMain {
 		//
 		// left sidebar
 		//
-		this.sidebar = new SaitoSidebar(this.app, this.mod, '.saito-container');
-		this.sidebar.align = 'nope';
-		this.menu = new LimboMenu(this.app, this.mod, '.saito-sidebar.left');
-		this.sidebar.addComponent(this.menu);
+		let menu = new LimboMenu(this.app, this.mod, '.saito-sidebar.left');
+
+		this.lsidebar = new SaitoSidebar(this.app, this.mod, '.saito-container');
+		this.lsidebar.align = 'left';
+		this.lsidebar.addComponent(menu);
+		
+		let sidebar = new LimboSidebar(this.app, this.mod, ".saito-sidebar.right");
+
+		this.rsidebar = new SaitoSidebar(this.app, this.mod, '.saito-container');
+		this.rsidebar.align = "right";
+		this.rsidebar.addComponent(sidebar);
+
+		this.loader = new SaitoLoader(this.app, this.mod, "#limbo-main");
+
+		app.connection.on("limbo-populated", (source) => {
+			if (source == "service"){
+				this.loader.remove(250);
+			}
+		});
 
 	}
 
@@ -32,13 +49,15 @@ class LimboMain {
 			);
 		}
 
-		await this.sidebar.render();
+		await this.lsidebar.render();
+		await this.rsidebar.render();
 
 		//
 		// invite manager
 		//
 		await this.app.modules.renderInto('.limbo-chat-box');
 
+		this.loader.render();
 
 		this.attachEvents();
 	}
