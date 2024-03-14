@@ -404,7 +404,6 @@ class ChatPopup {
 
 		document.querySelector(`${popup_qs} .saito-input #text-input`).addEventListener('keydown', (e) => {				
 			if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-				console.log('inside @ keycode ////');
 
 				let keys = this_self.input.findKeyOrIdentifier();
 				let users = [];

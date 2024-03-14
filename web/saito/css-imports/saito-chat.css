@@ -540,6 +540,7 @@
   z-index: 2;
   border-top: 1px solid var(--saito-border-color);
   background: var(--saito-arcade-background);
+  position: relative;
 }
 
 .chat-container blockquote {
