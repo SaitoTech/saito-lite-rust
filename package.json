@@ -86,6 +86,7 @@
     "unzipper": "^0.10.5",
     "url": "^0.11.0",
     "uuid-by-string": "^3.0.6",
+    "v8-profiler-next": "^1.10.0",
     "vanilla-toast": "^0.5.0",
     "webrtc-adapter": "^8.2.0",
     "websocket": "^1.0.34",

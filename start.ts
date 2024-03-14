@@ -8,6 +8,29 @@ import Factory from './lib/saito/factory';
 import Wallet from './lib/saito/wallet';
 import Blockchain from './lib/saito/blockchain';
 
+
+
+// Profiler 
+const profiler_config = JSON.parse(require('fs').readFileSync('config/profiler.config.json', 'utf8'));
+if (profiler_config.status === true) {
+	const profiler = require('v8-profiler-next');
+	profiler.startProfiling('CPU profile', true);
+	setTimeout(() => {
+		const profile = profiler.stopProfiling('CPU profile');
+		profile.export((error, result) => {
+			require('fs').writeFileSync('cpu-profile.cpuprofile', result);
+			profile.delete();
+		});
+
+		profiler.takeSnapshot('Heap snapshot').export((error, result) => {
+			require('fs').writeFileSync('heap-snapshot.heapsnapshot', result);
+		});
+
+	}, profiler_config.period);
+}
+
+
+
 function getCommandLineArg(key) {
 	const prefix = key + '=';
 	const arg = process.argv.find((arg) => arg.startsWith(prefix));
