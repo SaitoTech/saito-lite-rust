@@ -43,7 +43,7 @@ class Post {
 				this.mod,
 				'.tweet-overlay-content'
 			);
-			this.input.enable_mentions = true;
+			this.input.enable_mentions = false;
 		}
 
 		this.input.display = 'large';
@@ -159,6 +159,24 @@ class Post {
 				if (e.keyCode === 13 && e.ctrlKey) {
 					document.getElementById('post-tweet-button').click();
 					e.preventDefault();
+				}
+
+				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
+					let keys = post_self.input.findKeyOrIdentifier();
+					let users = [];
+					console.log('keys: ', keys);
+					for (let key of keys) {
+						let identicon = post_self.app.keychain.returnIdenticon(key.publicKey);
+						let username = post_self.app.keychain.returnUsername(key.publicKey);
+						users.push({username: key.publicKey, identicon: identicon});
+					}
+
+				   post_self.app.browser.addSaitoMentions(
+				   	users, 
+				   	document.querySelector('#tweet-overlay #post-tweet-textarea'), 
+				   	document.querySelector('#tweet-overlay #saito-mentions-list'),
+				   	'input'
+				   );
 				}
 			});
 		try {

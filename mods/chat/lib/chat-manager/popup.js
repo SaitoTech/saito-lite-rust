@@ -192,7 +192,7 @@ class ChatPopup {
 				this.group?.member_ids ||
 				this.group.members.length > 2
 			) {
-				this.input.enable_mentions = true;
+				this.input.enable_mentions = false;
 			}
 
 			if (this.container) {
@@ -388,7 +388,7 @@ class ChatPopup {
 		let popup_qs = '#chat-popup-' + this.group.id;
 		let resize_id = 'chat-resize-' + this.group.id;
 		let header_qs = '#chat-header-' + this.group.id;
-		this_self = this;
+		let this_self = this;
 
 		let chatPopup = document.querySelector(popup_qs);
 
@@ -397,6 +397,27 @@ class ChatPopup {
 			return;
 		}
 
+		document.querySelector(`${popup_qs} .saito-input #text-input`).addEventListener('keydown', (e) => {				
+			if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
+
+				let keys = this_self.input.findKeyOrIdentifier();
+				let users = [];
+				console.log('keys: ', keys);
+				for (let key of keys) {
+					let identicon = this_self.app.keychain.returnIdenticon(key.publicKey);
+					let username = this_self.app.keychain.returnUsername(key.publicKey);
+					users.push({username: key.publicKey, identicon: identicon});
+				}
+
+			   this_self.app.browser.addSaitoMentions(
+			   	users, 
+			   	document.querySelector(`${popup_qs} #text-input`), 
+			   	document.querySelector(`${popup_qs} #saito-mentions-list`),
+			   	'div'
+			   );
+
+			}
+		});
 
 		// add reply functionality
 		document
@@ -753,6 +774,9 @@ class ChatPopup {
 			img.src = filesrc;
 			let msg = img.outerHTML;
 			this.input.callbackOnReturn(msg);
+			document.querySelector(
+			`${popup_qs} .saito-input .text-input`
+			).value = '';
 		};
 
 		//
@@ -761,7 +785,10 @@ class ChatPopup {
 		document.querySelector(
 			`${popup_qs} .chat-footer .chat-input-submit`
 		).onclick = (e) => {
-			this.input.callbackOnReturn(this.input.getInput());
+			this.input.callbackOnReturn(this.input.getInput(false));
+			document.querySelector(
+			`${popup_qs} .saito-input .text-input`
+			).value = '';
 		};
 
 		//

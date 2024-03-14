@@ -1496,6 +1496,7 @@ class Chat extends ModTemplate {
 	// single speaker blocks
 	//
 	returnChatBody(group_id) {
+		let chat_self = this;
 		let html = '';
 		let group = this.returnGroup(group_id);
 		if (!group) {
@@ -1506,6 +1507,7 @@ class Chat extends ModTemplate {
 		let new_message_flag = false;
 
 		for (let block of message_blocks) {
+
 			let ts = 0;
 			if (block?.date) {
 				html += `<div class="saito-time-stamp">${block.date}</div>`;
@@ -1518,6 +1520,16 @@ class Chat extends ModTemplate {
 					for (let z = 0; z < block.length; z++) {
 						ts = ts || block[z].timestamp;
 						sender = block[z].from[0];
+						
+						// replace @mentions with saito treated address
+						block[z].msg = block[z].msg.replaceAll(/(@.*?(\w+))/g, function(k){
+							let key = (k.split('@'))[1];
+							let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
+															data-disable="true" contenteditable="false">${chat_self.app.keychain.returnUsername(
+								key
+							)}</span>`;
+							return replaced;
+						});
 
 						const replyButton = `
 						 	<div data-id="${block[z].signature}" data-href="${sender + ts}" class="saito-userline-reply">

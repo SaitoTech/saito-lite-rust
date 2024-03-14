@@ -53,7 +53,9 @@ module.exports = (app, mod, group, isStatic = false) => {
 
           <div class="chat-footer">
             <i class="fa-regular fa-paper-plane chat-input-submit" id="chat-input-submit"></i>
+          	<div class="saito-mentions-list hidden" id="saito-mentions-list"></div>
           </div>
+
 
       </div>
   `;
