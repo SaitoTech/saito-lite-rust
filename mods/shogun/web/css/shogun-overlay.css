@@ -78,9 +78,10 @@
 }
 
 .cardbox-header{
-	font-size: 16px;
+	font-size: 18px;
 	color: black;
 	text-align: center;
+	padding-top: 1.5rem;
 }
 
 .cardstacks {
@@ -110,6 +111,7 @@
 /*** Move to shogun-cardbox eventually ***/
 .card-preview {
 	width: 240px;
+	height: 360px;
 }
 
 .card-preview .game-cardbox {

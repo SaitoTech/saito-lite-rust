@@ -1,4 +1,4 @@
-module.exports = ShopOverlayTemplate = (mod, prompt) => {
+module.exports = ShopOverlayTemplate = (mod, prompt, optional = false) => {
 	
   let html = `
     <div class="shop-overlay">
@@ -20,9 +20,13 @@ module.exports = ShopOverlayTemplate = (mod, prompt) => {
 
   html += "</div>";
 
-  html += `<div class="card-preview"></div>`;
+  html += `<div class="card-preview">`;
+  if (optional){
+    html += `<div class="no-purchase">Don't buy a card</div>`;
+  }
+  
 
-  html += "</div>";
+  html += "</div></div>";
 
   return html;
 };

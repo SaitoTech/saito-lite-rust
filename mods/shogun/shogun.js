@@ -50,7 +50,7 @@ constructor(app) {
     this.card_img_dir = `/${this.name.toLowerCase()}/img/cards`;
     
     this.card_back = "blank.jpg";
-    this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
+    this.back_button_html = `<i class="fas fa-window-close" aria-hidden="true"></i>`;
     this.menu_backup_callback = ()=>{this.endTurn();} //Default behavior
   }
 
@@ -140,9 +140,10 @@ constructor(app) {
     // add card events -- text shown and callback run if there
     //
     this.cardbox.skip_card_prompt = 0;
+    this.cardbox.show_exit_button = false;
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("card", "", this.cardbox_callback);
+    this.cardbox.addCardType("playcard", "", this.cardbox_callback);
 
     //Test for mobile
     try {
@@ -441,19 +442,6 @@ initializeGame(game_id) {
       }
 
 
-      if (mv[0] == "DISCARD"){
-        let deckidx = parseInt(mv[1]);
-        let card = mv[2];
-
-        let handidx = this.game.deck[deckidx-1].hand.indexOf(card);
-        if (handidx > -1){
-          this.game.deck[deckidx-1].hand.splice(handidx,1);
-        }
-        this.game.deck[deckidx-1].discards[card] = this.game.deck[deckidx-1].cards[card];
-        this.game.queue.splice(qe, 1);
-        return 1;
-      }
-
       if (mv[0] == "trash"){
         this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
@@ -636,33 +624,25 @@ initializeGame(game_id) {
           Animate the purchase
         */
 
-        const game_self = this;
-       
-        if (player !== this.game.player){
-          this.game.halted = 1;
-          let animator;
-          if (document.querySelector(`.cardstacks #${card_to_buy}`)){
-            animator = this.copyGameElement(`.cardstacks #${card_to_buy} img`);
-          }else{
-            animator = this.createGameElement(this.returnCardImage(card_to_buy), "#active_card_zone", ".purchase_zone");
-          }
-          this.moveGameElement(animator, ".purchase_zone", {insert: 1}, 
-            ()=>{ 
-              $(".purchase_zone img").fadeOut(1800); 
-              this.finishAnimation();
-            });
-        }else{
-          let animationOrigin = (card_to_buy === "curse" || !document.querySelector(`.cardstacks #${card_to_buy}`)) ? `.cardstacks .cardpile` : `.cardstacks #${card_to_buy}`;
+        this.game.halted = 1;
+        let delay = 1500;
 
-            this.animationSequence.push({callback: this.moveGameElement, 
-                                        params: [this.createGameElement(this.returnCardImage(card_to_buy), animationOrigin, animationDestination),  
-                                                  animationDestination, 
-                                                  {},
-                                                  ()=>{ this.finishAnimation();}
-                                                ]});
-            
-          this.runAnimationQueue(500);
+        if (player !== this.game.player){
+          animationDestination = ".purchase_zone";
         }
+          
+        let element = this.createGameElement(this.returnCardImage(card_to_buy), ".shop", animationDestination);
+
+        this.animationSequence.push({callback: this.moveGameElement, 
+                                    params: [ element,  
+                                              animationDestination, 
+                                              {},
+                                              ()=>{ this.finishAnimation();}
+                                            ],
+                                    delay});
+          
+        this.runAnimationQueue();
+        
 
         return 0;
       }
@@ -675,12 +655,17 @@ initializeGame(game_id) {
 
         if (this.game.player !== player){
           msg = `Player ${player}`;
-          $(this.returnCardImage(card_to_play)).hide().appendTo("#active_card_zone").fadeIn();
+          $(`<div class="card">${this.returnCardImage(card_to_play)}</div>`).hide().appendTo("#active_card_zone").fadeIn();
         }
 
         this.updateLog(`${msg} played ${this.cardToText(card_to_play)}`);
 
         return this.playCard(player, card_to_play);
+      }
+
+      if (mv[0] == "spend"){
+        this.game.queue.splice(qe, 1);
+        return 1;
       }
 
       if (mv[0] == "hand"){
@@ -696,9 +681,7 @@ initializeGame(game_id) {
             this.endTurn();
             return 0;
           }
-          this.hud.updateStatus(`<div class="status-header">${optional ? this.back_button_html : ""}
-                                              <span id="status-content">Select (${number}) cards to move to ${target}:</span>
-                                           </div>`);
+          this.hud.updateStatus(`<span id="status-content">Select (${number}) cards to move to ${target}:</span>`);
           //this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,[],optional);
           if (optional){
             this.bindBackButtonFunction(()=>{
@@ -1218,9 +1201,8 @@ initializeGame(game_id) {
     //this.game.deck[this.game.player - 1].hand = this.sortHand(this.game.deck[this.game.player - 1].hand);
 
     if ((this.game.state.throneroom || this.game.state.actions > 0) && this.hasActionCard()){
-      this.controls();
-      this.updateStatusAndListCards(`Pick a card to play${this.game.state.throneroom?" twice":""}`,[],true);
-      this.attachCardboxEvents(function(action){
+      this.hud.back_button = true;
+      this.updateStatusAndListCards(`Pick a card to play${this.game.state.throneroom?" twice":""}`,[], function(action){
         if (we_self.deck[action].type.includes("action")){
 
           we_self.cards_in_play.push(we_self.lastCardKey); //In lieau of discard
@@ -1342,17 +1324,12 @@ initializeGame(game_id) {
       this.finishAnimation();
     }
 
+    let destination = (this.game.player === player) ? "#discardpile" : ".purchase_zone";
     
-    if (this.game.player === player){
       Array.from(document.querySelectorAll("#active_card_zone div.card")).forEach(card => {
         this.animationSequence.push({callback: this.moveGameElement,
-                                     params: [this.copyGameElement(card), "#discardpile", {resize: 1}, resetHTML]});
-      });
-      
-    }else{
-      $("#active_card_zone").children().fadeOut("slow", resetHTML); 
-    }
-
+                                     params: [this.copyGameElement(card), destination, {resize: 1}, resetHTML]});
+      });      
   }
 
   /*
@@ -1520,11 +1497,12 @@ initializeGame(game_id) {
     }
 
     for (let bill of used){
-      this.discardCard(bill);
+      this.discardCard(bill, ()=>{this.finishAnimation(0, false);});
       this.addMove(`DISCARD\t${this.game.player}\t${this.lastCardKey}`);
-      await this.timeout(250);
+      this.addMove(`spend\t${this.game.player}\t${this.lastCardKey}`)
     }
-    this.endTurn();
+
+    this.runAnimationQueue();
   }
 
   cardToText(card, textonly = false){
@@ -1557,12 +1535,12 @@ initializeGame(game_id) {
   /*
   Get the card out of the hand (but don't add it to the discards ...yet)
   */
-  discardCard(card, pause){
+  discardCard(card, callback){
     this.removeCardFromHand(card);
 
-    if (pause) {
+    if (callback) {
       this.animationSequence.push({callback: this.moveGameElement, 
-                                   params: [this.copyGameElement(`#controls #${card}:not(.copied_elem)`), "#discardpile", {}, () => {this.finishAnimation();}]});
+                                   params: [this.copyGameElement(`#controls #${card}:not(.copied_elem)`), "#discardpile", {}, callback]});
     }else{
       this.moveGameElement(this.copyGameElement(`#controls #${card}:not(.copied_elem)`), "#discardpile", {});
     }  
@@ -2225,7 +2203,6 @@ initializeGame(game_id) {
       }
       return 1;
     });
-
 
   }
 

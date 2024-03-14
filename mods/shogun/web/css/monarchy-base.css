@@ -82,6 +82,10 @@ img.animated_elem {
 	width: 120px;
 }
 
+.card {
+	position: relative;
+}
+
 img,
 .cardimg,
 .cardBack {
@@ -255,4 +259,18 @@ img,
 
 .flippable-card.flipped .cardBack {
 	transform: rotateY(-180deg);
+}
+
+
+.pay-attention {
+	animation: 1.5s linear 0.5s infinite alternate undulate;
+}
+
+@keyframes undulate {
+	from {
+		box-shadow: 0 0 10px 10px floralwhite;
+	}
+	to {
+		box-shadow: 0 0 30px 30px floralwhite;
+	}
 }
