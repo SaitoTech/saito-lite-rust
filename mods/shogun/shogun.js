@@ -224,7 +224,7 @@ initializeGame(game_id) {
   this.augmentQueueCommands();
 
   if (this.browser_active){
-     this.displayBoard();
+     this.displayDecks();
   }
  
 }
@@ -359,7 +359,7 @@ initializeGame(game_id) {
           return 0;
         }
 
-        this.displayBoard();
+        this.displayDecks();
 
         let player = parseInt(mv[1]);
         if (this.game.player == player){
@@ -625,10 +625,11 @@ initializeGame(game_id) {
         */
 
         this.game.halted = 1;
-        let delay = 1500;
+        let delay = 750;
 
         if (player !== this.game.player){
           animationDestination = ".purchase_zone";
+          delay = delay * 2;
         }
           
         let element = this.createGameElement(this.returnCardImage(card_to_buy), ".shop", animationDestination);
@@ -1342,11 +1343,6 @@ initializeGame(game_id) {
   }*/
 
 
-  displayBoard(){
-    console.log("Redrawing board");
-
-    this.displayDecks();
-  }
 
   displayDecks(){
     //Show Discard/DrawPiles
@@ -1497,10 +1493,13 @@ initializeGame(game_id) {
     }
 
     for (let bill of used){
+      console.log("spend "  + bill);
       this.discardCard(bill, ()=>{this.finishAnimation(0, false);});
       this.addMove(`DISCARD\t${this.game.player}\t${this.lastCardKey}`);
       this.addMove(`spend\t${this.game.player}\t${this.lastCardKey}`)
     }
+
+    this.updateStatus("Buying card...");
 
     this.runAnimationQueue();
   }
@@ -2161,10 +2160,14 @@ initializeGame(game_id) {
       }
       //Tighten up display
       this.displayDecks();
+      //Redraw controls with removed/added cards 
+      //(so that things don't bounce back when we remove the classes that hide them during animation)
+      this.updateStatusAndListCards();
 
       if (cont){
         this.restartQueue();    
       }else{
+        this.halted = 0;
         this.endTurn();
       }
       

@@ -12,6 +12,7 @@
 
 .hud-long {
 	/* max-height: 310px; */
+	width: 98vw;
 }
 
 .hud-body {
@@ -20,16 +21,17 @@
 
 .hud-body #drawpile {
 	position: absolute;
-	right: 105%;
+	left: 1rem;
 	/*bottom: 5%;*/
 	top: 7rem;
 }
 
 .hud-body #discardpile {
 	position: absolute;
-	left: 105%;
+	right: 1rem;
 	/*bottom: 5%;*/
 	top: 7rem;
+	filter: brightness(0.75);
 }
 
 .card, .hud .cardpile {
