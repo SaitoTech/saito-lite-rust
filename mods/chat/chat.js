@@ -1521,6 +1521,7 @@ class Chat extends ModTemplate {
 						ts = ts || block[z].timestamp;
 						sender = block[z].from[0];
 						
+						// replace @mentions with saito treated address
 						block[z].msg = block[z].msg.replaceAll(/(@.*?(\w+))/g, function(k){
 							let key = (k.split('@'))[1];
 							let replaced = `<span class="saito-mention saito-address" data-id="${key}" 

@@ -397,11 +397,6 @@ class ChatPopup {
 			return;
 		}
 
-		// document.querySelector(`${popup_qs} .saito-input #text-input`).addEventListener("input", function(){
-		//   this.style.height = '0px';
-		//   this.style.height = this.scrollHeight + 'px';
-		// })
-
 		document.querySelector(`${popup_qs} .saito-input #text-input`).addEventListener('keydown', (e) => {				
 			if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
 
@@ -422,10 +417,6 @@ class ChatPopup {
 			   );
 
 			}
-
-
-		   //e.currentTarget.style.height = "";
-		   //e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 300) + "px";
 		});
 
 		// add reply functionality
@@ -746,7 +737,6 @@ class ChatPopup {
 		// submit
 		//
 		this.input.callbackOnReturn = async (message) => {
-			console.log('message:', message);
 			if (message.trim() == `${this.input.quote}`) {
 				console.log('Reply with no content');
 				return;
@@ -795,8 +785,6 @@ class ChatPopup {
 		document.querySelector(
 			`${popup_qs} .chat-footer .chat-input-submit`
 		).onclick = (e) => {
-			let text = this.input.getInput(false);
-			console.log('text: ', text);
 			this.input.callbackOnReturn(this.input.getInput(false));
 			document.querySelector(
 			`${popup_qs} .saito-input .text-input`

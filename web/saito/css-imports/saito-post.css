@@ -120,12 +120,6 @@
   font-size: 2.2rem;
 }
 
-.container {
-  margin: 0 auto;
-  max-width: 80ch;
-  width: calc(100% - 4rem);
-}
-
 
 @media screen and (max-width: 768px) {
   .post-tweet-preview {
