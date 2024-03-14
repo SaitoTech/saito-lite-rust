@@ -26,6 +26,7 @@ const webserver = new Ser(expressApp);
 
 export class NodeSharedMethods extends CustomSharedMethods {
 	public app: Saito;
+
 	constructor(app: Saito) {
 		super();
 		this.app = app;
@@ -247,6 +248,13 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		patch: number,
 		peerIndex: bigint
 	): void {}
+
+	ensureBlockDirExists(path: string): void {
+		if (fs.existsSync(path)) {
+			return;
+		}
+		fs.mkdirSync(path);
+	}
 }
 
 /**
@@ -807,14 +815,14 @@ class Server {
 			// caching in prod
 			//
 			/* Not needed as handled by nginx.
-	  const caching =
-		process.env.NODE_ENV === "prod"
-		  ? "private max-age=31536000"
-		  : "private, no-cache, no-store, must-revalidate";
-	  res.setHeader("Cache-Control", caching);
-	  res.setHeader("expires", "-1");
-	  res.setHeader("pragma", "no-cache");
-	  */
+    const caching =
+    process.env.NODE_ENV === "prod"
+      ? "private max-age=31536000"
+      : "private, no-cache, no-store, must-revalidate";
+    res.setHeader("Cache-Control", caching);
+    res.setHeader("expires", "-1");
+    res.setHeader("pragma", "no-cache");
+    */
 			res.sendFile(this.web_dir + '/saito/saito.js');
 			return;
 		});

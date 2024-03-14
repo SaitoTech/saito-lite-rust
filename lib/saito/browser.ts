@@ -55,7 +55,9 @@ class Browser {
 		this.app.connection.on('new-version-detected', (version, peerIndex) => {
 			console.log('New wallet version detected: ' + version);
 			//localStorage.setItem('wallet_version', JSON.stringify(version));
-			window.location.reload();
+			setTimeout(() => {
+				window.location.reload();
+			}, 300);;
 		});
 
 		try {
@@ -79,25 +81,25 @@ class Browser {
 				}
 
 				/* channel.onmessage = async (e) => {
-                  console.log("document onmessage change");
-                  if (!document.hidden) {
-                    channel.postMessage({active: 1, publicKey: publicKey});
-                    this.setActiveTab(1);
-                  } else {
-                    //
-                    // only disable if someone else active w/ same key
-                    //
-                    if (e.data) {
-                      if (e.data.active == 1) {
-                        if (e.data.active == 1 && e.data.publicKey === publicKey) {
-                          this.setActiveTab(0);
-                          salert("Saito is already open in another tab");
-                        }
-                      }
-                    }
-                  }
-                };
-        */
+				  console.log("document onmessage change");
+				  if (!document.hidden) {
+					channel.postMessage({active: 1, publicKey: publicKey});
+					this.setActiveTab(1);
+				  } else {
+					//
+					// only disable if someone else active w/ same key
+					//
+					if (e.data) {
+					  if (e.data.active == 1) {
+						if (e.data.active == 1 && e.data.publicKey === publicKey) {
+						  this.setActiveTab(0);
+						  salert("Saito is already open in another tab");
+						}
+					  }
+					}
+				  }
+				};
+		*/
 
 				document.addEventListener(
 					'visibilitychange',
@@ -435,7 +437,7 @@ class Browser {
 					return pair[1];
 				}
 			}
-		} catch (err) {}
+		} catch (err) { }
 		return '';
 	}
 
@@ -446,7 +448,7 @@ class Browser {
 				return x.substring(0, 2);
 			}
 			return x;
-		} catch (err) {}
+		} catch (err) { }
 		return 'en';
 	}
 
@@ -546,7 +548,11 @@ class Browser {
 				console.log(e.key);
 				console.log(navigator.userAgent);
 				//alert("Saito already open in another tab!");
-				window.location.href = '/tabs.html';
+
+				setTimeout(() => {
+					window.location.href = '/tabs.html';
+				}, 300)
+
 			}
 		};
 		window.addEventListener('storage', onLocalStorageEvent, false);
@@ -839,8 +845,8 @@ class Browser {
 		} catch (err) {
 			console.log(
 				'ERROR 582342: error in addElementToElement. Does ' +
-					elem +
-					' exist?'
+				elem +
+				' exist?'
 			);
 			console.log(html);
 		}
@@ -858,9 +864,9 @@ class Browser {
 		} catch (err) {
 			console.log(
 				'ERROR 582346: error in addElementToElement. Does ' +
-					elem +
-					' exist? : ' +
-					err
+				elem +
+				' exist? : ' +
+				err
 			);
 			console.log(html);
 		}
@@ -1082,13 +1088,13 @@ class Browser {
 						}
 
 						/*if (!drag_and_drop) {
-              let paste = (e.clipboardData || window.clipboardData).getData("text");
-              const selection = window.getSelection();
-              if (!selection.rangeCount) return;
-              selection.deleteFromDocument();
-              selection.getRangeAt(0).insertNode(document.createTextNode(paste));
-              selection.collapseToEnd();
-            }*/
+			  let paste = (e.clipboardData || window.clipboardData).getData("text");
+			  const selection = window.getSelection();
+			  if (!selection.rangeCount) return;
+			  selection.deleteFromDocument();
+			  selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+			  selection.collapseToEnd();
+			}*/
 					},
 					false
 				);
@@ -1211,7 +1217,7 @@ class Browser {
 
 				if (
 					resizeable.indexOf(getComputedStyle(e.target).resize) >
-						-1 ||
+					-1 ||
 					resizeable.indexOf(
 						getComputedStyle(e.target.parentElement).resize
 					) > -1
@@ -1332,7 +1338,7 @@ class Browser {
 						if (
 							Math.abs(
 								element_to_move.getBoundingClientRect().y <
-									threshold
+								threshold
 							)
 						) {
 							element_to_move.classList.add('dockedTop');
@@ -1343,9 +1349,9 @@ class Browser {
 						if (
 							Math.abs(
 								element_to_move.getBoundingClientRect().x +
-									element_to_move.getBoundingClientRect()
-										.width -
-									window.innerWidth
+								element_to_move.getBoundingClientRect()
+									.width -
+								window.innerWidth
 							) < threshold
 						) {
 							element_to_move.classList.add('dockedRight');
@@ -1356,9 +1362,9 @@ class Browser {
 						if (
 							Math.abs(
 								element_to_move.getBoundingClientRect().y +
-									element_to_move.getBoundingClientRect()
-										.height -
-									window.innerHeight
+								element_to_move.getBoundingClientRect()
+									.height -
+								window.innerHeight
 							) < threshold
 						) {
 							element_to_move.classList.add('dockedBottom');
@@ -1374,9 +1380,9 @@ class Browser {
 						if (
 							Math.abs(
 								newPosX +
-									element_to_move.getBoundingClientRect()
-										.width -
-									window.innerWidth
+								element_to_move.getBoundingClientRect()
+									.width -
+								window.innerWidth
 							) < threshold
 						) {
 							newPosX =
@@ -1390,9 +1396,9 @@ class Browser {
 						if (
 							Math.abs(
 								newPosY +
-									element_to_move.getBoundingClientRect()
-										.height -
-									window.innerHeight
+								element_to_move.getBoundingClientRect()
+									.height -
+								window.innerHeight
 							) < threshold
 						) {
 							newPosY =
@@ -1775,7 +1781,7 @@ class Browser {
 
 			/* wrap link in <a> tag */
 
-			if (createLinks){
+			if (createLinks) {
 				text = text.replace(this.urlRegexp(), function (url) {
 					let url1 = url.trim();
 					let url2 = url1;
@@ -1792,11 +1798,10 @@ class Browser {
 						}
 					}
 
-					return `<a ${
-						url.includes(window.location.host)
-							? ''
-							: "target='_blank' rel='noopener noreferrer' "
-					} class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
+					return `<a ${url.includes(window.location.host)
+						? ''
+						: "target='_blank' rel='noopener noreferrer' "
+						} class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
 				});
 			}
 
@@ -1937,8 +1942,8 @@ class Browser {
 				let html = `<div id="saito-alert-shim">
                       <div id="saito-alert-box">
                         <div class="saito-alert-message">${browser_self.sanitize(
-							message
-						)}</div>
+					message
+				)}</div>
                         <div id="saito-alert-buttons">
                           <button id="alert-ok">OK</button>
                         </div>
@@ -1977,8 +1982,8 @@ class Browser {
 					let html = `<div id="saito-alert-shim">
                         <div id="saito-alert-box">
                           <div class="saito-alert-message">${browser_self.sanitize(
-								message
-							)}</div>
+						message
+					)}</div>
                           <div id="saito-alert-buttons">
                             <button id="alert-cancel">Cancel</button>
                             <button id="alert-ok">OK</button>
@@ -2023,8 +2028,8 @@ class Browser {
 					let html = `<div id="saito-alert-shim">
                         <div id="saito-alert-box">
                           <div class="saito-alert-message">${browser_self.sanitize(
-								message
-							)}</div>
+						message
+					)}</div>
                           <div class="alert-prompt"><input type="text" id="promptval" class="promptval" placeholder="${suggestion}" /></div>
                           <div id="alert-buttons">
                             <button id="alert-cancel">Cancel</button>
@@ -2232,7 +2237,7 @@ class Browser {
 			} else {
 				return true;
 			}
-		} catch (err) {}
+		} catch (err) { }
 		return false;
 	}
 
@@ -2262,13 +2267,13 @@ class Browser {
 	}
 
 	getDecimalSeparator() {
-		let locale = (window.navigator?.language) 
-                     ? window.navigator?.language : 'en-US';
-    const numberWithDecimalSeparator = 1.1;
-    return Intl.NumberFormat(locale)
-        .formatToParts(numberWithDecimalSeparator)
-        .find(part => part.type === 'decimal')
-        .value;
+		let locale = (window.navigator?.language)
+			? window.navigator?.language : 'en-US';
+		const numberWithDecimalSeparator = 1.1;
+		return Intl.NumberFormat(locale)
+			.formatToParts(numberWithDecimalSeparator)
+			.find(part => part.type === 'decimal')
+			.value;
 	}
 
 	getThousandSeparator() {

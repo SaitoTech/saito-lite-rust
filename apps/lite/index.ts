@@ -26,9 +26,6 @@ class WebMethods extends WebSharedMethods {
 		msgIndex: number,
 		peerIndex: bigint
 	): Promise<void> {
-		// console.log(
-		//   "WebMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
-		// );
 		const mycallback = async (response_object) => {
 			try {
 				await S.getInstance().sendApiSuccess(
@@ -43,7 +40,6 @@ class WebMethods extends WebSharedMethods {
 		let peer = await this.app.network.getPeer(peerIndex);
 		let newtx = new Transaction();
 		try {
-			// console.log("buffer length : " + buffer.byteLength, buffer);
 			newtx.deserialize(buffer);
 			newtx.unpackData();
 		} catch (error) {
@@ -54,7 +50,6 @@ class WebMethods extends WebSharedMethods {
 	}
 
 	sendInterfaceEvent(event: string, peerIndex: bigint) {
-		// console.log("web shared methods . emit : " + event, this.app.connection);
 		this.app.connection.emit(event, peerIndex);
 	}
 
@@ -105,6 +100,8 @@ class WebMethods extends WebSharedMethods {
 		result.forEach((s) => list.push(s));
 		return list;
 	}
+
+	ensureBlockDirExists(path: string): void {}
 }
 
 async function init() {

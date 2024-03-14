@@ -180,7 +180,9 @@ class SettingsAppspace {
 									alert(
 										'Restoration Complete ... click to reload Saito'
 									);
-									window.location.reload();
+									setTimeout(() => {
+										window.location.reload();
+									}, 300);
 								} else {
 									let err = result;
 									if (err.name == 'SyntaxError') {
@@ -209,7 +211,9 @@ class SettingsAppspace {
 				if (confirmation) {
 					await app.wallet.onUpgrade('nuke');
 					if (this.app.browser.browser_active == 1) {
-						window.location.reload();
+						setTimeout(() => {
+							window.location.reload();
+						}, 300);
 					}
 				}
 			};
@@ -219,7 +223,7 @@ class SettingsAppspace {
 					e
 				) => {
 					let confirmation = await sconfirm(
-						'This will clear your browser\'s DB, proceed cautiously'
+						"This will clear your browser's DB, proceed cautiously"
 					);
 					if (confirmation) {
 						localforage
@@ -278,7 +282,9 @@ class SettingsAppspace {
 								'Success! Confirm to reload'
 							);
 							if (c) {
-								window.location.reload();
+								setTimeout(() => {
+									window.location.reload();
+								}, 300);
 							}
 						} else {
 							let err = result;

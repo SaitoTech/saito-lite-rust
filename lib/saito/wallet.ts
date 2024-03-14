@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.617;
+	version = 5.618;
 
 	nolan_per_saito = 100000000;
 
@@ -113,7 +113,7 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			async receivePayment(howMuch, from, to, timestamp) {
-        
+
 				return false;
 
 				// Returning false temporarily for all cases now.
@@ -176,11 +176,11 @@ export default class Wallet extends SaitoWallet {
 			async formatBalance(precision = 2) {
 				let balance = await this.returnBalance();
 
-				if (typeof(balance) == 'undefined') {
+				if (typeof (balance) == 'undefined') {
 					balance = '0.00';
 				}
 
-				let locale = (window.navigator?.language) 
+				let locale = (window.navigator?.language)
 					? window.navigator?.language : 'en-US';
 				let nf = new Intl.NumberFormat(locale, {
 					minimumFractionDigits: 2,
@@ -281,7 +281,9 @@ export default class Wallet extends SaitoWallet {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					alert('Saito Upgrade: Wallet Version: ' + this.version);
-					// window.location.reload();
+					// setTimeout(() => {
+					// 	window.location.reload();
+					// }, 300);
 				} else {
 					// purge old slips
 					this.app.options.wallet.version = this.version;
@@ -786,10 +788,10 @@ export default class Wallet extends SaitoWallet {
 		return this.app.crypto.hash(
 			Buffer.from(
 				JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        unique_hash +
-        ticker,
+				JSON.stringify(receivers) +
+				JSON.stringify(amounts) +
+				unique_hash +
+				ticker,
 				'utf-8'
 			)
 		);
@@ -928,7 +930,9 @@ export default class Wallet extends SaitoWallet {
 				// this.app.storage.saveOptions(); //Included above, no need to double save
 
 				alert('Restoration Complete ... click to reload Saito');
-				window.location.reload();
+				setTimeout(() => {
+					window.location.reload();
+				}, 300);
 			} catch (err) {
 				if (err.name == 'SyntaxError') {
 					alert('Error reading wallet file. Did you upload the correct file?');
@@ -1083,17 +1087,17 @@ export default class Wallet extends SaitoWallet {
 		return true;
 	}
 
-	public convertSaitoToNolan(amount = '0.0'){
+	public convertSaitoToNolan(amount = '0.0') {
 		let nolan = 0;
 		let num = Number(amount);
 		if (num > 0) {
 			nolan = num * this.nolan_per_saito; // 100,000,000  
 		}
-    
+
 		return BigInt(nolan);
 	}
 
-	public convertNolanToSaito(amount = BigInt(0)){
+	public convertNolanToSaito(amount = BigInt(0)) {
 		let string = '0.00';
 		let num = 0;
 		let bigint_divider = 100000000n;
@@ -1113,5 +1117,5 @@ export default class Wallet extends SaitoWallet {
 		return string;
 	}
 
-  
+
 }
