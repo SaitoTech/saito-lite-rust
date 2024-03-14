@@ -8,6 +8,9 @@ saitolitedocs
 
 .env
 
+cpu-profile.cpuprofile
+heap-snapshot.heapsnapshot
+
 options
 
 logs
