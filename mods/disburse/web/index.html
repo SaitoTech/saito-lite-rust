@@ -32,17 +32,34 @@
 
 <body>
 	<div class="disburse-header">
-		<h1>Disburse APP</h4>
+		Disburse APP
 	</div>
 	<div class="disburse-main">
 		<div class="block-table">
-			<div>Wallet:</div>
-			<div class="wallet">-</div>
-			<div>Balance:</div>
-			<div class="balance">-</div>
+			<div class="wallet-name">Wallet:</div>
+			<div class="wallet-value">-</div>
+			<div class="balance-name">Balance:</div>
+			<div class="balance-value">-</div>
 		</div>
-		<textarea name="disburse-input" id="disburse-input" contenteditable="true" placeholder="paste here..."></textarea>
-		<button class="click-button" id="validate-input">Validate</button>
+		<div class="disburse-textarea">
+			<textarea name="disburse-input" id="disburse-input" contenteditable="true"
+				placeholder="paste here..."></textarea>
+		</div>
+		<div class="disburse-message">
+			<div class="block-table-2">
+				<div>Total recievers wallets :</div>
+				<div id="total_wallet">-</div>
+				<div>Sender balance (Nolan):</div>
+				<div id="sender_balance">-</div>
+				<div>Total out (Nolan):</div>
+				<div id="total_out">-</div>
+				<div>Final balance (Nolan): </div>
+				<div id="final_balance">-</div>
+			</div>
+		</div>
+		<div class="disburse-button-area">
+			<button class="click-button" id="validate-input">Validate</button>
+		</div>
 	</div>
 	<script type="text/javascript" src="/saito/saito.js" id="saito"></script>
 </body>

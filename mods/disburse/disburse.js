@@ -27,18 +27,25 @@ class Disburse extends ModTemplate {
 			return;
 		}
 		let this_mod = this;
-		document.querySelector(".wallet").innerHTML = this.app.wallet.publicKey;
-		document.querySelector(".balance").innerHTML = await this.app.wallet.getBalance();
-
+		document.querySelector(".wallet-value").innerHTML = this.app.wallet.publicKey;
+		let this_wallet_balance = parseFloat(await this.app.wallet.getBalance());
+		document.querySelector(".balance-value").innerHTML = this_wallet_balance;
+		//
+		//	Manual input
+		//
 		let click_button = document.querySelector("#validate-input");
 		click_button.onclick = (e) => {
-			let text = document.querySelector("#disburse-input").value;
-			this_mod.parseData(text);
+			let raw_data = document.querySelector("#disburse-input").value;
+			this_mod.parseData(raw_data, this_wallet_balance);
 		};
+		//
+		//	Paste Logic
+		//
+
 		// let input_area = document.querySelector("#disburse-input");
 		// input_area.addEventListener("paste", (e) => {
 		// 	e.preventDefault();
-		// 	let paste = e.clipboardData.getData("text");
+		// 	let paste = e.clipboardData.getData("raw_data");
 		// 	input_area.value = paste;
 		// 	this_mod.parseData(paste);
 		// });
@@ -55,46 +62,68 @@ class Disburse extends ModTemplate {
 		}
 	}
 
-	parseData(text) { /*    expected data, list of 'wallet \t value \n'    */
-		// console.log('Raw data');
-		// console.log(text);
+	parseData(raw_data, this_wallet_balance) { /*    expected data, list of 'wallet \t value \n'    */
 		try {
-			// let a = [];
-			// text.split(/\n/).filter(Boolean).map( (e) => {
-			// 	a.push(e.split(/\t/));
-			// })
-			// console.log(a);
-
 			// console.log('Splitting data in rows');
 			// Split on new line - and discard empty lines?
-			let rows = text.split(/\n/).filter(Boolean);
-			// console.log(rows);
-			// console.log('here3');
+			let rows = raw_data.split(/\n/).filter(Boolean);
 			let dataArray = [];
 			if (rows.length > 0) {
-				console.log('Numbers of wallets:' + rows.length);
+				// console.log('Numbers of wallets:' + rows.length);
+				let total_out = 0;
 				for (let i = 0; i < rows.length; i++) {
 					let row = rows[i];
 					row = row.split(/\t/);
 					if (row.length == 2) {
 						// console.log(row);
+						total_out = total_out + parseFloat(row[1]);
 						dataArray.push(row);
 					} else {
 						console.log('ERROR at row[' + i + ']\n data is:' + rows[i]);
-						alert('Unable to parse, please verify.');
+						// alert('Unable to parse, please verify.');
 					}
 				}
-				if (dataArray.length == rows.length) {
-					console.log(dataArray);
+				if (dataArray.length == rows.length && this_wallet_balance >= total_out) {
+					// console.log(dataArray);
+					// console.log("total recievers wallets:" + dataArray.length
+					// 	+ "\nWallet (nolan) sender balance: " + this_wallet_balance
+					// 	+ "\ntotal (nolan) out : " + total_out
+					// 	+ "\nFinal (nolan) balance: " + (this_wallet_balance - total_out)
+					// );
+					let message_area = document.querySelector(".disburse-message");
+					message_area.style.display = "block";
+					document.getElementById("total_wallet").innerHTML = dataArray.length
+					document.getElementById("total_out").innerHTML = total_out
+					document.getElementById("sender_balance").innerHTML = this_wallet_balance
+					document.getElementById("final_balance").innerHTML = (this_wallet_balance - total_out)
+
 					document.getElementById("validate-input").remove();
 					document.getElementById("disburse-input").readOnly = true;
-					let node = document.querySelector(".disburse-main");
-					let sendTransaction_button = document.createElement("button", { id: "send-transaction" });
+					let button_area = document.querySelector(".disburse-button-area");
+
+					let reset_button = document.createElement("button");
+					reset_button.id = "reset";
+					reset_button.innerHTML = "Reset";
+					button_area.appendChild(reset_button);
+
+					reset_button.addEventListener("click", (e) => {
+						dataArray = [];
+						document.location.reload();
+					});
+
+					let sendTransaction_button = document.createElement("button");
+					sendTransaction_button.id = "send-transaction";
 					sendTransaction_button.innerHTML = "Send transaction";
-					node.appendChild(sendTransaction_button);
+					button_area.appendChild(sendTransaction_button);
 					sendTransaction_button.addEventListener("click", (e) => {
 						this.sendBalance(dataArray);
 					});
+				} else {
+					if (this_wallet_balance < total_out) alert("Not enought funds");
+					else {
+
+						alert('Unable to parse, please check wallet funds or recievers.');
+					}
 				}
 			} else {
 				alert('Unable to parse, please verify.');
@@ -105,33 +134,40 @@ class Disburse extends ModTemplate {
 	}
 
 	async sendBalance(dataArray) {
-		console.log("sendBalance()");
-		console.log(dataArray);
-		document.querySelector("button").remove();
-		this.sendBalanceTransaction(dataArray[0][0], dataArray[0][1])
+		try {
+			console.log("sendBalance()");
+			document.getElementById("send-transaction").remove();
+			// console.table(dataArray);
+			this.sendBalanceTransaction(dataArray)
+		} catch (error) {
+			console.log(error);
+		}
 
 	}
 
-	async sendBalanceTransaction(wallet, value) {
-		console.log('Sending ' + value + ' to ' + wallet);
+	async sendBalanceTransaction(dataArray) {
 		try {
-			let senders = this.app.wallet.publicKey;
-			let receivers = wallet;
-			let amounts = value;
+			let senders = []
+			let receivers = [];
+			let amounts = [];
+			dataArray.forEach(row => {
+				senders.push(this.app.wallet.publicKey);
+				receivers.push(row[0]);
+				amounts.push(row[1]);
+			});
 			let timestamp = new Date().getTime();
 			let unique_hash = btoa(senders + receivers + amounts + timestamp);
 			let ticker = 'SAITO';
-			console.log(senders + '\n' + receivers + '\n' + amounts + '\n' + timestamp + '\n' + unique_hash + '\n' + ticker)
 			let hash = await this.app.wallet.sendPayment(
-				[senders],
-				[receivers],
-				[amounts],
+				senders,
+				receivers,
+				amounts,
 				timestamp,
 				unique_hash,
 				null,
 				ticker
 			);
-			console.log(hash);
+			console.log('hash: ' + hash);
 		} catch (error) {
 			console.log(error);
 		}
