@@ -17,7 +17,7 @@ class AttackOverlay {
 			details += `<div class="overlay-msg">${text}</div>`;
 		}
 		for (let i = 0; i < cards.length; i++) {
-			details += `<div class="aoc">${this.mod.returnCardImage(
+			details += `<div class="overlay-img aoc">${this.mod.returnCardImage(
 				cards[i]
 			)}</div>`;
 		}

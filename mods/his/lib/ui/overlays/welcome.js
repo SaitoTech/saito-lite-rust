@@ -34,6 +34,19 @@ class WelcomeOverlay {
 		}
 	}
 
+	renderCustom(obj={}) {
+
+		let his_self = this.mod;
+		this.overlay.show(WelcomeTemplate(""));
+		this.pushHudUnderOverlay();
+
+		if (obj.title) { document.querySelector('.welcome-title').innerHTML = obj.title; }
+		if (obj.text)  { document.querySelector('.welcome-text').innerHTML  = obj.text; }
+		if (obj.img)   { document.querySelector('.welcome').style.backgroundImage = `url(${obj.img})`; }
+		if (obj.card)  { his_self.app.browser.addElementToSelector(`<div class="welcome-card">${his_self.returnCardImage(obj.card)}<div>`, '.welcome'); }
+
+	}
+
 	render(faction = '') {
 		let his_self = this.mod;
 

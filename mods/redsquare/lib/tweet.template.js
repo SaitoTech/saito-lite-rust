@@ -15,6 +15,17 @@ module.exports = (app, mod, tweet) => {
 		}
 	}
 
+	// replace @ key/identifer
+	text = text.replaceAll(/(@.*?(\w+))/g, function(k){
+		let key = (k.split('@'))[1];
+		let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
+										data-disable="true" contenteditable="false">${app.keychain.returnUsername(
+			key
+		)}</span>`;
+		return replaced;
+	});
+
+
 	let html_markers = '';
 	if (tweet.data_source) {
 		html_markers += ` data-source="${tweet.data_source}"`;

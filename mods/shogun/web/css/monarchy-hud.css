@@ -2,10 +2,6 @@
 	column-gap: 1rem;
 }
 
-.game-cardgrid .card {
-	position: relative;
-	height: calc(10vw * 1.6);
-}
 
 .hud-header {
 	background-color: #0005;
@@ -16,6 +12,7 @@
 
 .hud-long {
 	/* max-height: 310px; */
+	width: 98vw;
 }
 
 .hud-body {
@@ -24,24 +21,29 @@
 
 .hud-body #drawpile {
 	position: absolute;
-	right: 105%;
+	left: 1rem;
 	/*bottom: 5%;*/
 	top: 7rem;
 }
 
 .hud-body #discardpile {
 	position: absolute;
-	left: 105%;
+	right: 1rem;
 	/*bottom: 5%;*/
 	top: 7rem;
+	filter: brightness(0.75);
 }
 
-.hud .cardpile {
+.card, .hud .cardpile {
 	/*width: 120px;
 	height: 190px;*/
 
+	position: relative;
 	width: 10vw;
 	height: calc(10vw * 1.6);
+
+	max-width: 120px;
+	max-height: 190px;
 }
 
 .hud .cardpile div:first-child {

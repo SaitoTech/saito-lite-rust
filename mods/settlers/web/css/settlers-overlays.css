@@ -207,6 +207,27 @@ stats overlay
 	text-overflow: ellipsis;
 }
 
+.settlers-stats-player.p1 {
+	border-bottom: 3px solid var(--p1-color);
+	background-color: unset;
+}
+
+.settlers-stats-player.p2 {
+	border-bottom: 3px solid var(--p2-color);
+	background-color: unset;
+}
+
+.settlers-stats-player.p3 {
+	border-bottom: 3px solid var(--p3-color);
+	background-color: unset;
+}
+
+.settlers-stats-player.p4 {
+	border-bottom: 3px solid var(--p4-color);
+	background-color: unset;
+}
+
+
 .no-vp {
 	filter: brightness(65%) grayscale(50%) opacity(0.33);
 }

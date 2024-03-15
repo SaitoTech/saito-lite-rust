@@ -188,7 +188,7 @@ async function checkBalance(pubkey = "") {
     if (data.length <= 3) {
       console.log(data);
       let balance_nolan = data[1].split(/\s/)[4] || 0;
-      let nolan_per_saito = 10000000;
+      let nolan_per_saito = 100000000;
       let balance_saito = formatNumberLocale(balance_nolan / nolan_per_saito);
       // draw
       document.querySelector('.balance-saito').innerHTML = balance_saito;
@@ -219,7 +219,7 @@ async function checkAllBalance() {
 
     let balance_saito = document.createElement("div");
     balance_saito.setAttribute("class", "explorer-balance-data");
-    let nolan_per_saito = parseFloat(col_data[4]) / 10000000;
+    let nolan_per_saito = parseFloat(col_data[4]) / 100000000;
     balance_saito.innerHTML = formatNumberLocale(nolan_per_saito);
     node.appendChild(balance_saito);
 
