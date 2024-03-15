@@ -6,7 +6,7 @@ class DreamSpace{
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
-		this.video = new VideoBox(app, mod, "local", "video-preview");
+		this.video = new VideoBox(app, mod, "presentation", "video-preview");
 	}
 
 	render(stream) {

@@ -104,7 +104,7 @@ class Limbo extends ModTemplate {
 				this.downstream.set(publicKey, peerConnection);
 			}
 
-			if (this.upsteam.has(publicKey)){
+			if (this.upstream.has(publicKey)){
 				this.upstream.set(publicKey, peerConnection);
 			}
 		});
@@ -375,7 +375,8 @@ class Limbo extends ModTemplate {
 		}
 
 		this.controls.render(this.combinedStream);
-
+		this.receiveDreamTransaction(this.publicKey);
+		this.app.connection.emit("limbo-open-dream", this.publicKey);
 		this.sendDreamTransaction();
 	}
 
@@ -768,8 +769,13 @@ class Limbo extends ModTemplate {
 		this.dreamer = null;
 
 		this.downstream.forEach((key, value) => {
+			console.log(key, value);
 			if (value){
-				value.close();
+				try{
+					value.close();
+				}catch(err){
+					console.error(err);
+				}
 			}
 		});
 

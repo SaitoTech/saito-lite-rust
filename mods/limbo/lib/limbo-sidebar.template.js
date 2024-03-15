@@ -47,6 +47,7 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
     }
     
     html += `</div>
+      		<div class="saito-profile-menu vertical"></div>
     		</div>
     		<div class="saito-modal-content">`;
 

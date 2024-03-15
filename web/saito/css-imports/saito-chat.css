@@ -310,7 +310,7 @@
 }*/
 
 .chat-header .chat-group {
-  max-width: 70%;
+  max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

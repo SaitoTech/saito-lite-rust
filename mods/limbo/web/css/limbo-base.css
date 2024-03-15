@@ -47,3 +47,60 @@
 .dream-controls .control-panel .timer {
 	margin-left: 2rem;
 }
+
+
+
+
+.limbo-sidebar {
+	width: 35rem;
+	background: var(--saito-background-color);
+	height: calc(100vh - var(--saito-header-height));
+	border-left: 1px solid var(--saito-border-color);
+	display: grid;
+	grid-template-rows: min-content auto;
+}
+
+
+
+.limbo-sidebar .saito-profile-icons {
+	margin-right: 1rem;
+}
+
+.limbo-sidebar .saito-modal-menu-option {
+    font-size: 2rem;
+    height: unset;
+    width: 100%;
+    padding: 1rem;
+    margin: 0;
+}
+
+.limbo-sidebar .saito-modal-menu-option > div {
+	font-size: 1.8rem;
+}
+
+.limbo-sidebar .saito-profile-menu > div {
+	float: unset;
+}
+
+
+.limbo-sidebar .saito-user {
+	font-size: 1.8rem;
+	height: unset;
+}
+
+.limbo-sidebar .saito-contact {
+	padding: 1rem;
+}
+
+.limbo-sidebar .saito-modal-content {
+	display: flex;
+	flex-direction: column;
+	font-size: 1.3rem;
+	height: 100%;
+	overflow: auto;
+}
+
+.limbo-sidebar .saito-modal-content .saito-user .saito-identicon-box {
+    width: 3.5rem;
+    height: 3.5rem;
+}
