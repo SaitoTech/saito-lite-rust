@@ -26,7 +26,7 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
 
 
 
-	let group = mod.dreams[dreamer];
+	let group = mod.dreams[dreamer].members;
 
 	let groupName = app.keychain.returnUsername(dreamer);
 	let identicon = app.keychain.returnIdenticon(dreamer, 'png');

@@ -85,6 +85,7 @@ class Limbo extends ModTemplate {
 
 			});
 
+			this.space.startTime = this.dreams[this.dreamer].ts;
 			this.space.render(this.combinedStream);
 		});
 
@@ -375,8 +376,6 @@ class Limbo extends ModTemplate {
 		}
 
 		this.controls.render(this.combinedStream);
-		this.receiveDreamTransaction(this.publicKey);
-		this.app.connection.emit("limbo-open-dream", this.publicKey);
 		this.sendDreamTransaction();
 	}
 
@@ -405,6 +404,9 @@ class Limbo extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 
 		console.log('sendDreamTransaction');
+		this.receiveDreamTransaction(this.publicKey, newtx);
+		this.app.connection.emit("limbo-open-dream", this.publicKey);
+
 	}
 
 	receiveDreamTransaction(sender, tx) {
@@ -417,7 +419,10 @@ class Limbo extends ModTemplate {
 			}
 		}
 
-		this.dreams[sender] = [sender];
+		this.dreams[sender] = {
+			members: [sender],
+			ts: tx.timestamp,
+		}
 	}
 
 	async sendKickTransaction() {
@@ -487,8 +492,8 @@ class Limbo extends ModTemplate {
 			return;
 		}
 
-		if (!this.dreams[dreamer].includes(sender)) {
-			this.dreams[dreamer].push(sender);
+		if (!this.dreams[dreamer].members.includes(sender)) {
+			this.dreams[dreamer].members.push(sender);
 		}
 
 		if (this.app.BROWSER){
@@ -543,14 +548,15 @@ class Limbo extends ModTemplate {
 
 		console.log(`${sender} is leaving ${dreamer}'s dream`);
 
-		if (!this.dreams[dreamer] || !this.dreams[dreamer].includes(sender)) {
+		if (!this.dreams[dreamer] || !this.dreams[dreamer].members.includes(sender)) {
 			console.log("nothing to remove");
 			return;
 		}
 
-		for (let i = 0; i < this.dreams[dreamer].length; i++) {
-			if (this.dreams[dreamer][i] == sender) {
-				this.dreams[dreamer].splice(i, 1);
+		let members = this.dreams[dreamer].members;
+		for (let i = 0; i < members.length; i++) {
+			if (members[i] == sender) {
+				members.splice(i, 1);
 				break;
 			}
 		}
@@ -701,10 +707,10 @@ class Limbo extends ModTemplate {
 			let sender = tx.from[0].publicKey;
 
 			if (txmsg.request === 'start dream') {
-				this.receiveDreamTransaction(sender);
+				this.receiveDreamTransaction(sender, tx);
 			}
 			if (txmsg.request === 'stop dream') {
-				this.receiveKickTransaction(sender);
+				this.receiveKickTransaction(sender, tx);
 			}
 			if (txmsg.request === 'join dream') {
 				this.receiveJoinTransaction(sender, tx);

@@ -7,6 +7,7 @@ class DreamControls{
 		this.mod = mod;
 		this.container = container;
 		this.video = new VideoBox(app, mod, "local", "video-preview");
+		this.timer_interval = null;
 	}
 
 	render(stream) {
@@ -25,6 +26,7 @@ class DreamControls{
 
 		if (stream){
 			this.video.render(stream);
+			this.startTimer();
 		}
 
 		this.attachEvents();
@@ -96,6 +98,47 @@ class DreamControls{
 		} catch (err) {
 			console.warn('Stun UI error', err);
 		}
+	}
+
+
+	startTimer() {
+		if (this.timer_interval) {
+			return;
+		}
+		let timerElement = document.querySelector('.dream-controls .counter');
+		let seconds = 0;
+
+		const timer = () => {
+			seconds++;
+
+			// Get hours
+			let hours = Math.floor(seconds / 3600);
+			// Get minutes
+			let minutes = Math.floor((seconds - hours * 3600) / 60);
+			// Get seconds
+			let secs = Math.floor(seconds % 60);
+
+			if (hours > 0) {
+				hours = `0${hours}:`;
+			} else {
+				hours = '';
+			}
+			if (minutes < 10) {
+				minutes = `0${minutes}`;
+			}
+			if (secs < 10) {
+				secs = `0${secs}`;
+			}
+
+			timerElement.innerHTML = `${hours}${minutes}:${secs}`;
+		};
+
+		this.timer_interval = setInterval(timer, 1000);
+	}
+
+	stopTimer() {
+		clearInterval(this.timer_interval);
+		this.timer_interval = null;
 	}
 
 

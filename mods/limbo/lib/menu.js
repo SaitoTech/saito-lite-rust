@@ -17,7 +17,7 @@ class LimboMenu {
 
 		if (Object.keys(this.mod.dreams)?.length > 0){
 			for (let key in this.mod.dreams){
-				html += this.createStub(key, this.mod.dreams[key]);
+				html += this.createStub(key, this.mod.dreams[key].members);
 			}
 		}
 
