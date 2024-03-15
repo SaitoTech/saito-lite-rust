@@ -140,8 +140,12 @@
   max-height: 100vh;
   min-width: 30rem;
   min-height: 20rem;
+
+  /*
+  making overflow hiddent for saito mention list
   overflow-x: hidden;
   overflow-y: hidden;
+  */
 }
 
 .chat-container, .chat-container .chat-body, .chat-container .chat-footer {
@@ -536,6 +540,7 @@
   z-index: 2;
   border-top: 1px solid var(--saito-border-color);
   background: var(--saito-arcade-background);
+  position: relative;
 }
 
 .chat-container blockquote {
