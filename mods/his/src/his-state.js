@@ -924,7 +924,7 @@ if (this.game.state.scenario != "is_testing") {
 
     this.game.state.already_excommunicated.push(reformer);
     if (reformer == "") { return; }
-    if (!this.returnSpaceOfPersonage("protestant", reformer)) { return; }
+    if (this.returnSpaceOfPersonage("protestant", reformer) == "") { return; }
 
     //
     // debater
@@ -988,6 +988,7 @@ if (this.game.state.scenario != "is_testing") {
       if (obj.reformer) {
 
         let reformer = obj.reformer;
+        let debater = obj.debater;
 	let s = obj.space;
         let faction = obj.faction;
 
@@ -1000,6 +1001,8 @@ if (this.game.state.scenario != "is_testing") {
 	}
 
 	if (obj.debater) {
+	  // debater uncommitted for restoration
+	  obj.debater.committed = 0;
           this.game.state.debaters.push(obj.debater);
 	}
 
@@ -1011,7 +1014,6 @@ if (this.game.state.scenario != "is_testing") {
 
       }
     }
-
 
   }
   restoreMilitaryLeaders() {
@@ -1034,41 +1036,6 @@ if (this.game.state.scenario != "is_testing") {
     }
 
   }
-
-  unexcommunicateReformers() {
-
-    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
-      let obj = this.game.state.excommunicated[i];
-      if (obj.reformer) {
-
-        let reformer = obj.reformer;
-	let debater = obj.debater;
-	let s = obj.space;
-        let faction = obj.faction;
-
-	if (reformer) {
-	  if (s) {
-	    if (faction) {
-	      this.game.spaces[s].units[faction].push(reformer);
-	    }
-	  }
-	}
-
-	if (debater) {
-	  this.game.state.debaters.push(debater);
-	}
-
-	this.displaySpace(s);
-
-        this.game.state.excommunicated.splice(i, 1);
-        i--;
-
-      }
-    }
-
-  }
-
-
 
   returnPregnancyChart() {
 

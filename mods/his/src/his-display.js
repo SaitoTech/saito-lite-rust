@@ -1,4 +1,33 @@
 
+  displayCustomOverlay(c="", msg="") {
+
+    let deck = this.returnDeck(true); // include removed
+    if (deck[c]) {
+      if (deck[c].returnCustomOverlay) {
+
+        let obj = deck[c].returnCustomOverlay();    
+        let title = obj.title;
+        let text = obj.text;
+        let img = obj.img;
+        let card = this.returnCardImage(c);
+
+        if (msg == "") {
+    	  msg = this.popup(c) + " triggers";
+        }
+  
+        this.welcome_overlay.renderCustom({
+          text : text,
+          title : title,
+          img : img,
+          card : card,
+        });
+        this.game.queue.push(`ACKNOWLEDGE\t${msg}`);
+
+      }
+    }
+
+  }
+
   hideOverlays() {
     this.debate_overlay.hide();
     this.treatise_overlay.hide();
@@ -2175,7 +2204,6 @@ try {
       obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
 } catch (err) {
-  console.log("Error Displaying Victory Track: " + JSON.stringify(err));
 }
 
     }

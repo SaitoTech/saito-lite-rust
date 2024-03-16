@@ -1,4 +1,4 @@
-
+ 
 
   returnPlayers(num = 0) {
 
@@ -9,15 +9,15 @@
     // < 6 player games
     if (num == 2) {
       for (let key in factions) {
-	if (key !== "protestant" && key !== "papacy") {
-	  delete factions[key];
-	}
+        if (key !== "protestant" && key !== "papacy") {
+          delete factions[key];
+        }
       }
     }
 
     if (num == 3) {
       for (let key in factions) {
-	if (key !== "protestant" && key != "france" && key !== "papacy") {
+	if (key !== "protestant" && key !== "france" && key !== "papacy") {
 	  delete factions[key];
 	}
       }
@@ -25,12 +25,14 @@
 
     if (num == 4) {
       for (let key in factions) {
-	if (key !== "protestant" && key != "france" && key != "ottoman" && key !== "papacy") {
+	if (key !== "protestant" && key !== "france" && key !== "ottoman" && key !== "papacy") {
 	  delete factions[key];
 	}
       }
     }
 
+
+console.log("FACTIONS: " + JSON.stringify(factions));
 
     let f = [];
     if (factions["protestant"]) { f.push("protestant"); }
@@ -133,6 +135,8 @@
 
     }
 
+
+console.log("PLAYERS: " + JSON.stringify(players));
 
     if (num == 3) {
       for (let i = 0; i < players.length; i++) {
@@ -3201,11 +3205,16 @@ does_units_to_move_have_unit = true; }
     };
 
     let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
+      let available_destinations = false;
       let html = "<ul>";
       for (let i = 0; i < neighbours.length; i++) {
         if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
+          available_destinations = true;
           html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
 	}
+      }
+      if (available_destinations == false) {
+        html += `<li class="option" id="skip">skip (no options)</li>`;
       }
       html += "</ul>";
 
@@ -3214,6 +3223,10 @@ does_units_to_move_have_unit = true; }
       $('.option').off();
       $('.option').on('click', function () {
         let id = $(this).attr("id");
+	if (id === "skip") {
+	  his_self.endTurn();
+	  return;
+	}
         onFinishSelect(his_self, id);
       });
     };
@@ -5359,6 +5372,7 @@ does_units_to_move_have_unit = true; }
     // show visual language zone selector
     //
     his_self.language_zone_overlay.render();
+    his_self.language_zone_overlay.pushHudUnderOverlay();
 
     his_self.updateStatusWithOptions(msg, html);
 
@@ -5383,18 +5397,6 @@ does_units_to_move_have_unit = true; }
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
-/*** show available debaters?
-      $('.option').on('mouseover', function () {
-        let action2 = $(this).attr("id");
-	if (action2 === "uncommitted" || action2 === "committed") {
-	}
-        his_self.cardbox.show(action2);
-      });
-      $('.option').on('mouseout', function () {
-        let action2 = $(this).attr("id");
-        his_self.cardbox.hide(action2);
-      });
-***/
       $('.option').on('click', function () {
 
         let committed = $(this).attr("id");

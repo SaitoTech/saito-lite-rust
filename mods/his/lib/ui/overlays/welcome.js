@@ -45,6 +45,9 @@ class WelcomeOverlay {
 		if (obj.img)   { document.querySelector('.welcome').style.backgroundImage = `url(${obj.img})`; }
 		if (obj.card)  { his_self.app.browser.addElementToSelector(`<div class="welcome-card">${his_self.returnCardImage(obj.card)}<div>`, '.welcome'); }
 
+		// this will clear any ACKNOWLEDGE
+		this.attachEvents();
+
 	}
 
 	render(faction = '') {
@@ -158,9 +161,16 @@ class WelcomeOverlay {
 	attachEvents() {
 		let his_self = this.mod;
 
-		$('.welcome').on('click', function () {
-			if (document.querySelector('.option')) {
-				$('.option').click();
+		$('.welcome').on('click', () => {
+			if (document.querySelector('.option.acknowledge')) {
+				document.querySelector('.option.acknowledge').click();
+				this.hide();
+			}
+		});
+		$('.saito-overlay:has(> .welcome) + .saito-overlay-backdrop').on('click', () => {
+			if (document.querySelector('.option.acknowledge')) {
+				document.querySelector('.option.acknowledge').click();
+				this.hide();
 			}
 		});
 	}

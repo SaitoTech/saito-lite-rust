@@ -483,14 +483,17 @@ console.log("\n\n\n\n");
 
 	  this.game.state.starting_round = 7;
 
-	  this.setAllies("france", "ottoman");
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "protestant");
 	  this.setActivatedPower("protestant", "france");
 
           this.setAllies("papacy", "hapsburg");
           this.setAllies("papacy", "venice");
+	  this.setEnemies("france", "ottoman");
 	  this.setEnemies("papacy","france");
+	  this.setEnemies("papacy", "ottoman");
+	  this.setEnemies("hapsburg", "ottoman");
+	  this.setEnemies("protestant", "ottoman");
 
           // DEBATERS
           this.addDebater("papacy", "gardiner-debater");
@@ -611,6 +614,12 @@ console.log("\n\n\n\n");
 	  this.addRegular("papacy", "prague", 5);
 
           this.setAllies("papacy", "hapsburg");
+
+	  //this.addCard("ottoman", "024");
+	  //this.addCard("ottoman", "025");
+	  //this.addCard("ottoman", "026");
+	  //this.addCard("ottoman", "027");
+
 
           this.game.state.events.ottoman_piracy_enabled = 1;
           this.game.state.events.ottoman_corsairs_enabled = 1;
