@@ -968,7 +968,7 @@ export default class Wallet extends SaitoWallet {
 		try {
 
 			// Empty placeholder protects data in case encryption fails to fire
-			let encryptedMessage = ''
+			let encryptedMessage = '';
 
 			// if recipient input has a shared secret in keychain
 			if (this.app.keychain.hasSharedSecret(recipient)) {
