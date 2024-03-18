@@ -284,6 +284,11 @@ emoji-picker {
   border: none;
 }
 
+.saito-mentions-list.empty {
+  border: none;
+  background: none;
+}
+
 .saito-mentions-list .menu-item {
 	padding: 0.5rem;
 }
